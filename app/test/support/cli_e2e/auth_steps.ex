@@ -21,8 +21,16 @@ defmodule Operately.Support.CliE2E.AuthSteps do
     Factory.add_api_token(ctx, :api_token, :creator, read_only: true)
   end
 
+  step :given_a_second_company_for_the_same_account, ctx do
+    Factory.add_company(ctx, :second_company, ctx.account, name: "Second Company")
+  end
+
   step :use_profile, ctx, profile do
     Map.put(ctx, :profile, profile)
+  end
+
+  step :expect_the_second_company_after_login, ctx do
+    remember_expected_identity(ctx, ctx.creator.full_name, ctx.creator.email, ctx.second_company.name)
   end
 
   step :log_in_with_token, ctx do
@@ -61,6 +69,32 @@ defmodule Operately.Support.CliE2E.AuthSteps do
     |> Map.put(:expected_password_prompts, [{"Password:", @password}])
   end
 
+  step :log_in_with_password_flags, ctx do
+    company_name = if ctx[:second_company], do: ctx.second_company.name, else: ctx.company.name
+
+    result =
+      run_cli(ctx, [
+        "auth",
+        "login",
+        "--method",
+        "email-password",
+        "--email",
+        ctx.account.email,
+        "--password",
+        @password,
+        "--company-name",
+        company_name,
+        "--access-mode",
+        "full-access",
+        "--base-url",
+        ctx.cli_base_url,
+        "--profile",
+        ctx.profile
+      ])
+
+    Map.put(ctx, :cli_result, result)
+  end
+
   step :log_in_with_email_code, ctx do
     result =
       run_cli(
@@ -71,6 +105,34 @@ defmodule Operately.Support.CliE2E.AuthSteps do
           {"Email:", "#{ctx.account.email}\n"},
           {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.account.email)},
           {"Enter choice (1-2):", "2\n"}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
+  step :log_in_with_email_code_flags, ctx do
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "login",
+          "--method",
+          "emailCode",
+          "--email",
+          ctx.account.email,
+          "--company-name",
+          ctx.company.name,
+          "--access-mode",
+          "read-only",
+          "--base-url",
+          ctx.cli_base_url,
+          "--profile",
+          ctx.profile
+        ],
+        script: [
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.account.email)}
         ]
       )
 
@@ -88,6 +150,28 @@ defmodule Operately.Support.CliE2E.AuthSteps do
             {"Enter choice (1-2):", "2\n"}
           ]
         )
+      end)
+
+    Map.put(ctx, :cli_task, task)
+  end
+
+  step :start_google_login_with_flags, ctx do
+    task =
+      Task.async(fn ->
+        run_cli(ctx, [
+          "auth",
+          "login",
+          "--method",
+          "google",
+          "--company-name",
+          ctx.company.name,
+          "--access-mode",
+          "full-access",
+          "--base-url",
+          ctx.cli_base_url,
+          "--profile",
+          ctx.profile
+        ])
       end)
 
     Map.put(ctx, :cli_task, task)
@@ -114,6 +198,22 @@ defmodule Operately.Support.CliE2E.AuthSteps do
         ctx.cli_base_url,
         "--profile",
         ctx.profile
+      ])
+
+    Map.put(ctx, :cli_result, result)
+  end
+
+  step :log_in_with_invalid_hybrid_flags, ctx do
+    result =
+      run_cli(ctx, [
+        "auth",
+        "login",
+        "--method",
+        "google",
+        "--email",
+        "bad@example.com",
+        "--base-url",
+        ctx.cli_base_url
       ])
 
     Map.put(ctx, :cli_result, result)
@@ -151,6 +251,29 @@ defmodule Operately.Support.CliE2E.AuthSteps do
     assert ctx.cli_result.exit_code == 4
     assert ctx.cli_result.output =~ "Authentication failed: Invalid token for #{ctx.cli_base_url}"
     assert ctx.cli_result.output =~ "Please check your token and try again."
+
+    verify_config_not_written(ctx)
+  end
+
+  step :assert_the_cli_output_contains, ctx, snippets do
+    Enum.each(snippets, fn snippet ->
+      assert ctx.cli_result.output =~ snippet
+    end)
+
+    ctx
+  end
+
+  step :assert_the_cli_output_does_not_contain, ctx, snippets do
+    Enum.each(snippets, fn snippet ->
+      refute ctx.cli_result.output =~ snippet
+    end)
+
+    ctx
+  end
+
+  step :assert_invalid_hybrid_flags_were_rejected, ctx do
+    assert ctx.cli_result.exit_code == 2
+    assert ctx.cli_result.output =~ "`--method google` cannot be combined with `--email` or `--password`."
 
     verify_config_not_written(ctx)
   end

@@ -91,6 +91,15 @@ async function executeAuthLogin(
     return executeAuthBootstrap(flags, config, registry);
   }
 
+  const hybridOnlyFlags = ["method", "email", "password", "company-id", "company-name", "access-mode"];
+  const conflictingFlags = hybridOnlyFlags.filter((name) => flags.has(name));
+
+  if (conflictingFlags.length > 0) {
+    const formatted = conflictingFlags.map((name) => `\`--${name}\``).join(", ");
+    printError(`\`--token\` cannot be combined with ${formatted}.`);
+    return 2;
+  }
+
   const baseUrl = readStringFlag(flags, "base-url");
   const profile = readStringFlag(flags, "profile") ?? config.activeProfile ?? "default";
   const getMe = registry.find(["people", "get_me"]);

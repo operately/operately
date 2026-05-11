@@ -224,6 +224,22 @@ describe("Auth Commands", () => {
     assert.strictEqual(result, 1);
     assert.ok(capture.errors.some((e) => e.includes("Not logged in")));
   });
+
+  it("rejects hybrid login flags when --token is provided", async () => {
+    const capture = captureConsole();
+    const result = await executeAuthCommand({
+      action: "login",
+      flags: new Map([
+        ["token", ["op_live_xxx"]],
+        ["method", ["google"]],
+        ["company-id", ["c1"]],
+      ]),
+      registry: { find: () => null, byKey: new Map(), endpoints: [], commandFor: () => "" },
+    });
+
+    assert.strictEqual(result, 2);
+    assert.ok(capture.errors.some((error) => error.includes("`--token` cannot be combined with `--method`, `--company-id`.")));
+  });
 });
 
 describe("runTokenFlow", () => {
