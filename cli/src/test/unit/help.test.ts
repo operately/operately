@@ -95,3 +95,22 @@ test("prints hybrid signup help with flag-driven guidance", () => {
   assert.ok(output.includes("operately auth signup --method google --next-step later"));
   assert.ok(output.includes("operately auth signup --method email-password --full-name \"New User\" --email newuser@example.com --password secret123456 --next-step create-company --company-name \"Acme Corp\" --profile team"));
 });
+
+test("prints hybrid login help with quick token guidance", () => {
+  const output = captureHelpOutput(() => {
+    printAuthCommandHelp("login");
+  });
+
+  assert.ok(output.includes("operately auth login [--token <token>] [--method <email-password|email-code|google>]"));
+  assert.ok(output.includes("fully interactive flow, or pass any subset of login flags"));
+  assert.ok(output.includes("Missing values are still asked interactively."));
+  assert.ok(output.includes("Google login always requires browser confirmation."));
+  assert.ok(output.includes("Email-code login always sends a verification code that must be entered manually."));
+  assert.ok(output.includes("All other login prompts can be skipped with flags."));
+  assert.ok(output.includes("--method <email-password|email-code|google>  (accepted aliases: password, emailCode)"));
+  assert.ok(output.includes("--company-name <name>                (must match exactly one authenticated company)"));
+  assert.ok(output.includes("--token <token>                      (quick token mode; cannot be combined with hybrid login flags)"));
+  assert.ok(output.includes("operately auth login --method email-password --email user@example.com --password secret123456 --company-id c123 --access-mode full-access --profile work"));
+  assert.ok(output.includes("operately auth login --method google --company-name \"Acme Corp\" --access-mode full-access"));
+  assert.ok(output.includes("operately auth login --token op_live_xxx"));
+});

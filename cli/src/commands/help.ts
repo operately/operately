@@ -57,7 +57,7 @@ Available Commands:
 ${namespaceLines}
 
 Authentication & Setup:
-  auth login [--token <token>] [--base-url <url>] [--profile <name>]
+  auth login [--token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--access-mode <read-only|full-access>] [--base-url <url>] [--profile <name>]
   auth signup [--method <email-password|google>] [--full-name <name>] [--email <email>] [--password <password>] [--next-step <create-company|join|later>] [--company-name <name>] [--invite-token <token>] [--base-url <url>] [--profile <name>]
   auth join [--invite-token <token>] [--base-url <url>] [--profile <name>]
   auth create-company [--base-url <url>] [--profile <name>]
@@ -89,26 +89,48 @@ interface AuthCommandHelp {
 
 const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
   login: {
-    usage: "operately auth login [--token <token>] [--base-url <url>] [--profile <name>]",
+    usage: "operately auth login [--token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--access-mode <read-only|full-access>] [--base-url <url>] [--profile <name>]",
     description: [
-      "Log in interactively or with a token",
+      "Log in interactively, with hybrid flags, or with a token",
       "",
-      "  1. Interactive mode: run 'operately auth login' and follow prompts.",
-      `     You will be asked for a base URL (default: ${DEFAULT_BASE_URL}),`,
-      "     a profile name (default: default), and an authentication method",
-      "     (email/password, email code, Google OAuth, or existing API token).",
+      "  1. Hybrid login: run 'operately auth login' with no extra flags for the",
+      "     fully interactive flow, or pass any subset of login flags to skip only",
+      "     those prompts. Missing values are still asked interactively.",
+      "",
+      `     If --base-url is omitted, the CLI asks for it and defaults to ${DEFAULT_BASE_URL}.`,
+      "     If --method is omitted, the CLI asks whether to use email/password,",
+      "     email code, Google OAuth, or a prompted API token.",
+      "     If multiple companies are available and neither --company-id nor",
+      "     --company-name is provided, the CLI asks which company to use.",
+      "     If --access-mode is omitted, the CLI asks whether the token should be",
+      "     read-only or full access.",
       "",
       "  2. Quick token mode: run 'operately auth login --token <token>'",
-      "     to skip prompts and log in directly with a token.",
+      "     to skip the bootstrap flow and log in directly with an existing token.",
       "     Optionally pass --base-url and --profile to override defaults.",
+      "",
+      "  Unavoidable manual steps:",
+      "    - Google login always requires browser confirmation.",
+      "    - Email-code login always sends a verification code that must be entered manually.",
+      "",
+      "  All other login prompts can be skipped with flags.",
     ],
     flags: [
-      "--token <token>       (skip interactive flow and use an existing token)",
+      "--token <token>                      (quick token mode; cannot be combined with hybrid login flags)",
+      "--method <email-password|email-code|google>  (accepted aliases: password, emailCode)",
+      "--email <email>                      (email/password and email-code login only)",
+      "--password <password>                (email/password login only)",
+      "--company-id <id>                    (takes precedence over --company-name)",
+      "--company-name <name>                (must match exactly one authenticated company)",
+      "--access-mode <read-only|full-access>",
       "--base-url <url>",
       "--profile <name>",
     ],
     examples: [
       "operately auth login",
+      "operately auth login --method email-password --email user@example.com --password secret123456 --company-id c123 --access-mode full-access --profile work",
+      "operately auth login --method email-code --email user@example.com --company-name \"Acme Corp\" --access-mode read-only",
+      "operately auth login --method google --company-name \"Acme Corp\" --access-mode full-access",
       "operately auth login --token op_live_xxx",
       "operately auth login --token op_staging_xxx --profile staging --base-url https://staging.operately.com",
     ],

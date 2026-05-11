@@ -22,6 +22,21 @@ import type { EndpointRegistry } from "../commands/registry";
 import type { Company, AuthMethod } from "./types";
 import type { ChildProcess } from "child_process";
 
+type HybridLoginMethod = Exclude<AuthMethod, "token">;
+
+interface LoginFlagOptions {
+  baseUrl: string | null;
+  profile: string | null;
+  method: HybridLoginMethod | null;
+  email: string | null;
+  password: string | null;
+  companyId: string | null;
+  companyName: string | null;
+  readOnly: boolean | null;
+}
+
+class LoginFlagError extends Error {}
+
 export interface BootstrapDeps {
   askChoice: typeof askChoice;
   askQuestion: typeof askQuestion;
@@ -62,17 +77,27 @@ export async function executeAuthBootstrap(
 ): Promise<number> {
   const d = { ...defaultDeps, ...deps };
 
-  let baseUrl = readStringFlag(flags, "base-url");
-  let profile = readStringFlag(flags, "profile");
-  let runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
+  let options: LoginFlagOptions;
+  let baseUrl: string | null = null;
+  let profile: string | null = null;
+  let runtimeBaseUrl = DEFAULT_BASE_URL;
 
   try {
-    const method = await d.askChoice<AuthMethod>("How would you like to authenticate?", [
-      { label: "Email and password", value: "password" },
-      { label: "Email code (no password)", value: "emailCode" },
-      { label: "Google OAuth (opens browser)", value: "google" },
-      { label: "I have an API token", value: "token" },
-    ]);
+    options = parseLoginFlagOptions(flags);
+    validateLoginFlagOptions(flags, options);
+
+    baseUrl = options.baseUrl;
+    profile = options.profile;
+    runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
+
+    const method =
+      options.method ??
+      await d.askChoice<AuthMethod>("How would you like to authenticate?", [
+        { label: "Email and password", value: "password" },
+        { label: "Email code (no password)", value: "emailCode" },
+        { label: "Google OAuth (opens browser)", value: "google" },
+        { label: "I have an API token", value: "token" },
+      ]);
 
     if (!baseUrl) {
       const answer = await d.askQuestion(
@@ -117,6 +142,9 @@ export async function executeAuthBootstrap(
         askQuestion: d.askQuestion,
         askPassword: d.askPassword,
         callInternalMutation: d.callInternalMutation,
+      }, {
+        email: options.email ?? undefined,
+        password: options.password ?? undefined,
       });
       bootstrapToken = result.bootstrapToken;
       companies = result.companies;
@@ -124,6 +152,8 @@ export async function executeAuthBootstrap(
       const result = await runEmailCodeFlow(runtime.baseUrl, {
         askQuestion: d.askQuestion,
         callInternalMutation: d.callInternalMutation,
+      }, {
+        email: options.email ?? undefined,
       });
       bootstrapToken = result.bootstrapToken;
       companies = result.companies;
@@ -143,12 +173,14 @@ export async function executeAuthBootstrap(
       return 1;
     }
 
-    const company = await selectCompany(companies, d.askChoice);
+    const company = await resolveLoginCompany(companies, options, d.askChoice);
 
-    const readOnly = await d.askChoice<boolean>("Select access mode:", [
-      { label: "Read-only", value: true },
-      { label: "Full access", value: false },
-    ]);
+    const readOnly =
+      options.readOnly ??
+      await d.askChoice<boolean>("Select access mode:", [
+        { label: "Read-only", value: true },
+        { label: "Full access", value: false },
+      ]);
 
     return await createTokenAndSaveProfile({
       baseUrl: baseUrl ?? null,
@@ -168,12 +200,124 @@ export async function executeAuthBootstrap(
       writeConfig: d.writeConfig,
     });
   } catch (error) {
+    if (error instanceof LoginFlagError) {
+      d.printError(error.message);
+      return 2;
+    }
+
     return handleBootstrapError(error, runtimeBaseUrl, d.printError);
   }
 }
 
+function parseLoginFlagOptions(flags: Map<string, unknown[]>): LoginFlagOptions {
+  return {
+    baseUrl: readStringFlag(flags, "base-url"),
+    profile: readStringFlag(flags, "profile"),
+    method: normalizeLoginMethod(readStringFlag(flags, "method")),
+    email: readStringFlag(flags, "email"),
+    password: readStringFlag(flags, "password"),
+    companyId: readStringFlag(flags, "company-id"),
+    companyName: readStringFlag(flags, "company-name"),
+    readOnly: normalizeAccessMode(readStringFlag(flags, "access-mode")),
+  };
+}
+
+function validateLoginFlagOptions(
+  flags: Map<string, unknown[]>,
+  options: Pick<LoginFlagOptions, "method">,
+): void {
+  if (options.method === "google" && (flags.has("email") || flags.has("password"))) {
+    throw new LoginFlagError("`--method google` cannot be combined with `--email` or `--password`.");
+  }
+
+  if (options.method === "emailCode" && flags.has("password")) {
+    throw new LoginFlagError("`--method email-code` cannot be combined with `--password`.");
+  }
+}
+
+async function resolveLoginCompany(
+  companies: Company[],
+  options: Pick<LoginFlagOptions, "companyId" | "companyName">,
+  askChoiceFn: typeof askChoice,
+): Promise<Company> {
+  const companyId = options.companyId?.trim();
+  if (companyId) {
+    const match = companies.find((company) => company.id === companyId);
+    if (!match) {
+      throw new LoginFlagError(`No authenticated company matched \`--company-id\` value "${companyId}".`);
+    }
+
+    console.log(`Using company: ${match.name ?? match.id}`);
+    return match;
+  }
+
+  const companyName = options.companyName?.trim();
+  if (companyName) {
+    const matches = companies.filter((company) => company.name === companyName);
+
+    if (matches.length === 0) {
+      throw new LoginFlagError(`No authenticated company matched \`--company-name\` value "${companyName}".`);
+    }
+
+    if (matches.length > 1) {
+      throw new LoginFlagError(
+        `Multiple authenticated companies matched \`--company-name\` value "${companyName}". Use \`--company-id\` instead.`,
+      );
+    }
+
+    console.log(`Using company: ${matches[0].name ?? matches[0].id}`);
+    return matches[0];
+  }
+
+  return await selectCompany(companies, askChoiceFn);
+}
+
+function normalizeLoginMethod(value: string | null): HybridLoginMethod | null {
+  if (value === null) return null;
+
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === "email-password" || normalized === "password") {
+    return "password";
+  }
+
+  if (normalized === "email-code" || normalized === "emailcode") {
+    return "emailCode";
+  }
+
+  if (normalized === "google") {
+    return "google";
+  }
+
+  throw new LoginFlagError("Invalid value for `--method`. Use `email-password`, `email-code`, or `google`.");
+}
+
+function normalizeAccessMode(value: string | null): boolean | null {
+  if (value === null) return null;
+
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === "read-only") {
+    return true;
+  }
+
+  if (normalized === "full-access") {
+    return false;
+  }
+
+  throw new LoginFlagError("Invalid value for `--access-mode`. Use `read-only` or `full-access`.");
+}
+
 function readStringFlag(flags: Map<string, unknown[]>, name: string): string | null {
   const value = flags.get(name)?.at(-1);
-  if (typeof value === "string") return value;
-  return null;
+
+  if (value === undefined) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  throw new LoginFlagError(`Flag \`--${name}\` requires a value.`);
 }

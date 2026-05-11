@@ -25,9 +25,14 @@ type AskPasswordFn = (prompt: string) => Promise<string>;
 const calls: MockCall[] = [];
 let responses: Array<unknown> = [];
 let promptQueue: Array<unknown> = [];
+const askedPrompts: string[] = [];
 const scriptedChoiceStates: Array<{ remainingScripts: () => string[] }> = [];
 
-function nextPrompt<T>(..._args: unknown[]): Promise<T> {
+function nextPrompt<T>(prompt?: unknown, ..._args: unknown[]): Promise<T> {
+  if (typeof prompt === "string") {
+    askedPrompts.push(prompt);
+  }
+
   if (promptQueue.length === 0) {
     throw new Error("Prompt requested, but promptQueue is empty");
   }
@@ -87,6 +92,8 @@ function createScriptedChoicePrompter(...scripts: string[]) {
   });
 
   return async function askChoice<T>(prompt: string, choices: { label: string; value: T }[]): Promise<T> {
+    askedPrompts.push(prompt);
+
     if (callIndex >= scripts.length) {
       throw new Error("Scripted choice requested more times than configured");
     }
@@ -158,6 +165,7 @@ describe("Auth Bootstrap", () => {
     calls.length = 0;
     responses = [];
     promptQueue = [];
+    askedPrompts.length = 0;
     scriptedChoiceStates.length = 0;
     errorsPrinted.length = 0;
     successPrinted.length = 0;
@@ -195,6 +203,10 @@ describe("Auth Bootstrap", () => {
       },
       resolveRuntimeOptions: (_c: unknown, _o: unknown) => ({ baseUrl: "https://app.operately.com", token: null, timeoutMs: 30000, profile: "default" }),
     };
+  }
+
+  function flagsFrom(entries: Array<[string, unknown]>): Map<string, unknown[]> {
+    return new Map(entries.map(([name, value]) => [name, [value]]));
   }
 
   it("password flow with single company creates and saves token", async () => {
@@ -241,6 +253,14 @@ describe("Auth Bootstrap", () => {
     assert.strictEqual((calls[1].inputs as any).company_id, "c1");
     assert.strictEqual((calls[1].inputs as any).read_only, false);
     assert.strictEqual(calls[1].token, "bootstrap_xxx");
+    assert.deepStrictEqual(askedPrompts, [
+      "How would you like to authenticate?",
+      "Base URL for the Operately instance (default: https://app.operately.com):",
+      "Profile name (default: default):",
+      "Email:",
+      "Password:",
+      "Select access mode:",
+    ]);
   });
 
   it("email-code flow with single company creates and saves token", async () => {
@@ -281,6 +301,225 @@ describe("Auth Bootstrap", () => {
     assert.strictEqual(calls[2].token, "bootstrap_email");
   });
 
+  it("fully flag-driven password login skips all prompts and prefers company-id over company-name", async () => {
+    responses.push({
+      status: "authenticated",
+      bootstrap_token: "bootstrap_flags",
+      companies: [
+        { id: "c1", name: "Acme Corp" },
+        { id: "c2", name: "Beta Inc" },
+      ],
+    });
+
+    responses.push({
+      token: "op_live_flags_token",
+      company: { id: "c2", name: "Beta Inc" },
+    });
+
+    responses.push({ me: { full_name: "Flag User", email: "user@example.com" } });
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      flagsFrom([
+        ["method", "password"],
+        ["email", "user@example.com"],
+        ["password", "secret123"],
+        ["company-id", "c2"],
+        ["company-name", "Acme Corp"],
+        ["access-mode", "full-access"],
+        ["base-url", "https://custom.example.com"],
+        ["profile", "work"],
+      ]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, []);
+    assert.strictEqual(calls[0].path, cliAuth.authPassword);
+    assert.deepStrictEqual(calls[0].inputs, { email: "user@example.com", password: "secret123" });
+    assert.strictEqual((calls[1].inputs as any).company_id, "c2");
+    assert.strictEqual((calls[1].inputs as any).read_only, false);
+  });
+
+  it("email-code login with flags only prompts for the verification code", async () => {
+    responses.push({});
+    responses.push({
+      status: "authenticated",
+      bootstrap_token: "bootstrap_email_flags",
+      companies: [
+        { id: "c1", name: "Acme Corp" },
+        { id: "c2", name: "Beta Inc" },
+      ],
+    });
+
+    responses.push({
+      token: "op_live_email_flags_token",
+      company: { id: "c2", name: "Beta Inc" },
+    });
+
+    responses.push({ me: { full_name: "Email Code User", email: "user@example.com" } });
+
+    promptQueue.push("ABC123");
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      flagsFrom([
+        ["method", "emailCode"],
+        ["email", "user@example.com"],
+        ["company-id", "c2"],
+        ["access-mode", "read-only"],
+        ["base-url", "https://custom.example.com"],
+        ["profile", "work"],
+      ]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, ["A verification code was sent to your email. Enter the code:"]);
+    assert.strictEqual(calls[0].path, cliAuth.requestEmailCode);
+    assert.deepStrictEqual(calls[0].inputs, { email: "user@example.com" });
+    assert.strictEqual(calls[1].path, cliAuth.authEmailCode);
+    assert.deepStrictEqual(calls[1].inputs, { email: "user@example.com", code: "ABC123" });
+    assert.strictEqual((calls[2].inputs as any).company_id, "c2");
+    assert.strictEqual((calls[2].inputs as any).read_only, true);
+  });
+
+  it("google login with flags leaves only browser confirmation", async () => {
+    responses.push({
+      status: "pending",
+      bootstrap_token: "bootstrap_google_flags",
+      login_url: "https://example.com/auth",
+      poll_interval_ms: 50,
+    });
+    responses.push({ status: "authenticated", companies: [{ id: "c1", name: "Acme Corp" }] });
+    responses.push({ token: "op_google_flags_token", company: { id: "c1", name: "Acme Corp" } });
+    responses.push({ me: { full_name: "Google User", email: "google@example.com" } });
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      flagsFrom([
+        ["method", "google"],
+        ["company-id", "c1"],
+        ["access-mode", "full-access"],
+        ["base-url", "https://custom.example.com"],
+        ["profile", "google"],
+      ]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, []);
+    assert.strictEqual(calls[0].path, cliAuth.startGoogle);
+    assert.strictEqual((calls[2].inputs as any).company_id, "c1");
+  });
+
+  it("company-name selects the matching authenticated company", async () => {
+    responses.push({
+      status: "authenticated",
+      bootstrap_token: "bootstrap_name",
+      companies: [
+        { id: "c1", name: "Acme Corp" },
+        { id: "c2", name: "Beta Inc" },
+      ],
+    });
+
+    responses.push({
+      token: "op_live_name_token",
+      company: { id: "c2", name: "Beta Inc" },
+    });
+
+    responses.push({ me: { full_name: "Name User", email: "user@example.com" } });
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      flagsFrom([
+        ["method", "email-password"],
+        ["email", "user@example.com"],
+        ["password", "secret123"],
+        ["company-name", "Beta Inc"],
+        ["access-mode", "read-only"],
+        ["base-url", "https://custom.example.com"],
+        ["profile", "company-name"],
+      ]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, []);
+    assert.strictEqual((calls[1].inputs as any).company_id, "c2");
+    assert.strictEqual((calls[1].inputs as any).read_only, true);
+  });
+
+  it("returns a flag error when company-name does not match an authenticated company", async () => {
+    responses.push({
+      status: "authenticated",
+      bootstrap_token: "bootstrap_missing_company",
+      companies: [{ id: "c1", name: "Acme Corp" }],
+    });
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      flagsFrom([
+        ["method", "email-password"],
+        ["email", "user@example.com"],
+        ["password", "secret123"],
+        ["company-name", "Missing Corp"],
+        ["base-url", "https://custom.example.com"],
+        ["profile", "missing-company"],
+      ]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.ok(errorsPrinted.some((error) => error.includes("No authenticated company matched")));
+    assert.ok(errorsPrinted.some((error) => error.includes("Missing Corp")));
+  });
+
+  it("returns a flag error when company-name matches multiple authenticated companies", async () => {
+    responses.push({
+      status: "authenticated",
+      bootstrap_token: "bootstrap_duplicate_company",
+      companies: [
+        { id: "c1", name: "Acme Corp" },
+        { id: "c2", name: "Acme Corp" },
+      ],
+    });
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      flagsFrom([
+        ["method", "email-password"],
+        ["email", "user@example.com"],
+        ["password", "secret123"],
+        ["company-name", "Acme Corp"],
+        ["base-url", "https://custom.example.com"],
+        ["profile", "duplicate-company"],
+      ]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.ok(errorsPrinted.some((error) => error.includes("Multiple authenticated companies matched")));
+    assert.ok(errorsPrinted.some((error) => error.includes("--company-id")));
+  });
+
   it("password flow with no companies returns error", async () => {
     promptQueue.push("password", "", "", "user@example.com", "secret123");
 
@@ -302,6 +541,64 @@ describe("Auth Bootstrap", () => {
     assert.ok(errorsPrinted.some((e) => e.includes("No companies found")));
     assert.ok(errorsPrinted.some((e) => e.includes("operately auth create-company")));
     assert.ok(errorsPrinted.some((e) => e.includes("operately auth join")));
+  });
+
+  it("returns a flag error for an invalid login method", async () => {
+    const result = await executeAuthBootstrap(
+      flagsFrom([["method", "github"]]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.deepStrictEqual(calls, []);
+    assert.ok(errorsPrinted.some((error) => error.includes("Invalid value for `--method`")));
+  });
+
+  it("returns a flag error for an invalid access mode", async () => {
+    const result = await executeAuthBootstrap(
+      flagsFrom([["access-mode", "admin"]]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.deepStrictEqual(calls, []);
+    assert.ok(errorsPrinted.some((error) => error.includes("Invalid value for `--access-mode`")));
+  });
+
+  it("returns a flag error for contradictory google login flags", async () => {
+    const result = await executeAuthBootstrap(
+      flagsFrom([
+        ["method", "google"],
+        ["email", "user@example.com"],
+      ]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.deepStrictEqual(calls, []);
+    assert.ok(errorsPrinted.some((error) => error.includes("`--method google` cannot be combined")));
+  });
+
+  it("returns a flag error for contradictory email-code login flags", async () => {
+    const result = await executeAuthBootstrap(
+      flagsFrom([
+        ["method", "email-code"],
+        ["password", "secret123"],
+      ]),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.deepStrictEqual(calls, []);
+    assert.ok(errorsPrinted.some((error) => error.includes("`--method email-code` cannot be combined with `--password`")));
   });
 
   it("invalid credentials return exit code 4", async () => {
@@ -587,6 +884,12 @@ describe("Auth Bootstrap", () => {
     const saved = JSON.parse(fs.readFileSync(configPath, "utf8"));
     assert.strictEqual(saved.profiles.default.baseUrl, "https://custom.example.com");
     assert.strictEqual(calls[0].token, "op_test_token");
+    assert.ok(!askedPrompts.includes("Base URL for the Operately instance (default: https://app.operately.com):"));
+    assert.deepStrictEqual(askedPrompts, [
+      "How would you like to authenticate?",
+      "Profile name (default: default):",
+      "API token:",
+    ]);
   });
 
   it("profile flag skips profile prompt", async () => {
@@ -611,6 +914,12 @@ describe("Auth Bootstrap", () => {
     const saved = JSON.parse(fs.readFileSync(configPath, "utf8"));
     assert.strictEqual(saved.activeProfile, "work");
     assert.strictEqual(saved.profiles.work.token, "op_test_token");
+    assert.ok(!askedPrompts.includes("Profile name (default: default):"));
+    assert.deepStrictEqual(askedPrompts, [
+      "How would you like to authenticate?",
+      "Base URL for the Operately instance (default: https://app.operately.com):",
+      "API token:",
+    ]);
   });
 });
 
