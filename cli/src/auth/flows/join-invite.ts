@@ -22,6 +22,21 @@ import type { EndpointRegistry } from "../../commands/registry";
 import type { Company } from "../types";
 import type { ChildProcess } from "child_process";
 
+type JoinMethod = "password" | "emailCode" | "google";
+
+interface JoinFlagOptions {
+  inviteToken: string | null;
+  baseUrl: string | null;
+  profile: string | null;
+  method: JoinMethod | null;
+  email: string | null;
+  password: string | null;
+  companyId: string | null;
+  companyName: string | null;
+}
+
+class JoinFlagError extends Error {}
+
 interface JoinInviteFlowDeps {
   askQuestion: typeof askQuestion;
   askPassword: typeof askPassword;
@@ -62,12 +77,20 @@ export async function runJoinInviteFlow(
 ): Promise<number> {
   const d = { ...defaultDeps, ...deps };
 
-  let baseUrl = readStringFlag(flags, "base-url");
-  let profile = readStringFlag(flags, "profile");
-  let inviteToken = readStringFlag(flags, "invite-token");
+  let options: JoinFlagOptions;
+  let baseUrl: string | null = null;
+  let profile: string | null = null;
+  let inviteToken: string | null = null;
   let runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
 
   try {
+    options = parseJoinFlagOptions(flags);
+    validateJoinFlagOptions(flags, options);
+
+    baseUrl = options.baseUrl;
+    runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
+    profile = options.profile;
+    inviteToken = options.inviteToken;
     if (!inviteToken) {
       inviteToken = (await d.askQuestion("Invite token:")).trim();
     } else {
@@ -104,7 +127,7 @@ export async function runJoinInviteFlow(
     const linkType = inviteResult.invite_link.type;
 
     if (linkType === "personal") {
-      return await handlePersonalInvite(runtime.baseUrl, inviteToken, runtime.timeoutMs, baseUrl, profile, config, registry, d);
+      return await handlePersonalInvite(runtime.baseUrl, inviteToken, runtime.timeoutMs, baseUrl, profile, config, registry, d, options);
     }
 
     return await handleCompanyWideInvite(
@@ -117,8 +140,14 @@ export async function runJoinInviteFlow(
       registry,
       d,
       inviteResult.invite_link.company as Company | undefined,
+      options,
     );
   } catch (error) {
+    if (error instanceof JoinFlagError) {
+      d.printError(error.message);
+      return 2;
+    }
+
     return handleBootstrapError(error, runtimeBaseUrl, d.printError);
   }
 }
@@ -132,6 +161,7 @@ async function handlePersonalInvite(
   config: CliConfig,
   registry: EndpointRegistry,
   d: JoinInviteFlowDeps,
+  options: JoinFlagOptions,
 ): Promise<number> {
   const invitation = (await d.callInternalQuery(
     baseUrl,
@@ -144,19 +174,26 @@ async function handlePersonalInvite(
 
   const memberEmail = invitation.member.email;
   const hasOpenInvitation = invitation.member.has_open_invitation === true;
+  validatePersonalInviteEmail(memberEmail, options.email);
 
   d.printInfo(`\nJoining as ${memberEmail}`);
   let bootstrapToken: string;
 
   if (hasOpenInvitation) {
-    const method = await d.askChoice<"password" | "google">("How would you like to sign in?", [
-      { label: "Email and password", value: "password" },
-      { label: "Google OAuth (opens browser)", value: "google" },
-    ]);
+    if (options.method === "emailCode") {
+      throw new JoinFlagError("`--method email-code` is not available for first-time personal invites.");
+    }
+
+    const method =
+      options.method ??
+      await d.askChoice<"password" | "google">("How would you like to sign in?", [
+        { label: "Email and password", value: "password" },
+        { label: "Google OAuth (opens browser)", value: "google" },
+      ]);
 
     if (method === "password") {
-      const password = await d.askPassword("Password:");
-      const passwordConfirmation = await d.askPassword("Confirm password:");
+      const password = options.password ?? await d.askPassword("Password:");
+      const passwordConfirmation = options.password ?? await d.askPassword("Confirm password:");
 
       const response = (await d.callInternalMutation(baseUrl, cliAuth.joinCompany, {
         token: inviteToken,
@@ -182,18 +219,24 @@ async function handlePersonalInvite(
       bootstrapToken = result.bootstrapToken;
     }
   } else {
-    const method = await d.askChoice<"password" | "emailCode" | "google">("How would you like to sign in?", [
-      { label: "Email and password", value: "password" },
-      { label: "Email code (no password)", value: "emailCode" },
-      { label: "Google OAuth (opens browser)", value: "google" },
-    ]);
+    const method =
+      options.method ??
+      await d.askChoice<"password" | "emailCode" | "google">("How would you like to sign in?", [
+        { label: "Email and password", value: "password" },
+        { label: "Email code (no password)", value: "emailCode" },
+        { label: "Google OAuth (opens browser)", value: "google" },
+      ]);
 
     if (method === "password") {
       const result = await runPasswordFlow(baseUrl, {
         askQuestion: d.askQuestion,
         askPassword: d.askPassword,
         callInternalMutation: d.callInternalMutation,
-      }, inviteToken);
+      }, {
+        email: options.email ? memberEmail : undefined,
+        password: options.password ?? undefined,
+        inviteToken,
+      });
 
       if (!result.bootstrapToken) {
         d.printError("Authentication failed: no bootstrap token returned.");
@@ -221,13 +264,20 @@ async function handlePersonalInvite(
     }
   }
 
+  const company = await resolveJoinCompany(
+    invitation.invite_link.company,
+    [invitation.invite_link.company],
+    options,
+    d.askChoice,
+  );
+
   return await createTokenAndSaveProfile({
     baseUrl: explicitBaseUrl,
     profile,
     config,
     runtimeBaseUrl: baseUrl,
     bootstrapToken,
-    company: invitation.invite_link.company,
+    company,
     readOnly: false,
     timeoutMs,
     registry,
@@ -250,12 +300,15 @@ async function handleCompanyWideInvite(
   registry: EndpointRegistry,
   d: JoinInviteFlowDeps,
   invitedCompany?: Company,
+  options?: JoinFlagOptions,
 ): Promise<number> {
-  const method = await d.askChoice<"password" | "emailCode" | "google">("How would you like to sign in?", [
-    { label: "Email and password", value: "password" },
-    { label: "Email code (no password)", value: "emailCode" },
-    { label: "Google OAuth (opens browser)", value: "google" },
-  ]);
+  const method =
+    options?.method ??
+    await d.askChoice<"password" | "emailCode" | "google">("How would you like to sign in?", [
+      { label: "Email and password", value: "password" },
+      { label: "Email code (no password)", value: "emailCode" },
+      { label: "Google OAuth (opens browser)", value: "google" },
+    ]);
 
   let bootstrapToken: string;
   let companies: Company[];
@@ -265,14 +318,21 @@ async function handleCompanyWideInvite(
       askQuestion: d.askQuestion,
       askPassword: d.askPassword,
       callInternalMutation: d.callInternalMutation,
-    }, inviteToken);
+    }, {
+      email: options?.email ?? undefined,
+      password: options?.password ?? undefined,
+      inviteToken,
+    });
     bootstrapToken = result.bootstrapToken;
     companies = result.companies;
   } else if (method === "emailCode") {
     const result = await runEmailCodeFlow(baseUrl, {
       askQuestion: d.askQuestion,
       callInternalMutation: d.callInternalMutation,
-    }, { inviteToken });
+    }, {
+      email: options?.email ?? undefined,
+      inviteToken,
+    });
     bootstrapToken = result.bootstrapToken;
     companies = result.companies;
   } else {
@@ -290,7 +350,7 @@ async function handleCompanyWideInvite(
     return 1;
   }
 
-  const company = invitedCompany ?? (await selectCompany(companies, d.askChoice));
+  const company = await resolveJoinCompany(invitedCompany, companies, options ?? emptyJoinFlagOptions(), d.askChoice);
 
   return await createTokenAndSaveProfile({
     baseUrl: explicitBaseUrl,
@@ -311,8 +371,134 @@ async function handleCompanyWideInvite(
   });
 }
 
+function parseJoinFlagOptions(flags: Map<string, unknown[]>): JoinFlagOptions {
+  return {
+    inviteToken: readStringFlag(flags, "invite-token"),
+    baseUrl: readStringFlag(flags, "base-url"),
+    profile: readStringFlag(flags, "profile"),
+    method: normalizeJoinMethod(readStringFlag(flags, "method")),
+    email: readStringFlag(flags, "email"),
+    password: readStringFlag(flags, "password"),
+    companyId: readStringFlag(flags, "company-id"),
+    companyName: readStringFlag(flags, "company-name"),
+  };
+}
+
+function validateJoinFlagOptions(
+  flags: Map<string, unknown[]>,
+  options: Pick<JoinFlagOptions, "method">,
+): void {
+  if (options.method === "google" && (flags.has("email") || flags.has("password"))) {
+    throw new JoinFlagError("`--method google` cannot be combined with `--email` or `--password`.");
+  }
+
+  if (options.method === "emailCode" && flags.has("password")) {
+    throw new JoinFlagError("`--method email-code` cannot be combined with `--password`.");
+  }
+}
+
+function validatePersonalInviteEmail(memberEmail: string, email: string | null): void {
+  if (email === null) {
+    return;
+  }
+
+  if (email.trim().toLowerCase() !== memberEmail.trim().toLowerCase()) {
+    throw new JoinFlagError("`--email` must match the invited email address for personal invites.");
+  }
+}
+
+async function resolveJoinCompany(
+  invitedCompany: Company | undefined,
+  companies: Company[],
+  options: Pick<JoinFlagOptions, "companyId" | "companyName">,
+  askChoiceFn: typeof askChoice,
+): Promise<Company> {
+  const companyId = options.companyId?.trim();
+  const companyName = options.companyName?.trim();
+
+  if (invitedCompany?.id) {
+    if (companyId && companyId !== invitedCompany.id) {
+      throw new JoinFlagError("`--company-id` must match the invited company for this invite.");
+    }
+
+    if (companyName && companyName !== invitedCompany.name) {
+      throw new JoinFlagError("`--company-name` must match the invited company for this invite.");
+    }
+
+    return invitedCompany;
+  }
+
+  if (companyId) {
+    const match = companies.find((company) => company.id === companyId);
+    if (!match) {
+      throw new JoinFlagError(`No authenticated company matched \`--company-id\` value "${companyId}".`);
+    }
+
+    return match;
+  }
+
+  if (companyName) {
+    const matches = companies.filter((company) => company.name === companyName);
+
+    if (matches.length === 0) {
+      throw new JoinFlagError(`No authenticated company matched \`--company-name\` value "${companyName}".`);
+    }
+
+    if (matches.length > 1) {
+      throw new JoinFlagError(
+        `Multiple authenticated companies matched \`--company-name\` value "${companyName}". Use \`--company-id\` instead.`,
+      );
+    }
+
+    return matches[0];
+  }
+
+  return await selectCompany(companies, askChoiceFn);
+}
+
+function normalizeJoinMethod(value: string | null): JoinMethod | null {
+  if (value === null) return null;
+
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === "email-password" || normalized === "password") {
+    return "password";
+  }
+
+  if (normalized === "email-code" || normalized === "emailcode") {
+    return "emailCode";
+  }
+
+  if (normalized === "google") {
+    return "google";
+  }
+
+  throw new JoinFlagError("Invalid value for `--method`. Use `email-password`, `email-code`, or `google`.");
+}
+
+function emptyJoinFlagOptions(): JoinFlagOptions {
+  return {
+    inviteToken: null,
+    baseUrl: null,
+    profile: null,
+    method: null,
+    email: null,
+    password: null,
+    companyId: null,
+    companyName: null,
+  };
+}
+
 function readStringFlag(flags: Map<string, unknown[]>, name: string): string | null {
   const value = flags.get(name)?.at(-1);
-  if (typeof value === "string") return value;
-  return null;
+
+  if (value === undefined) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  throw new JoinFlagError(`Flag \`--${name}\` requires a value.`);
 }

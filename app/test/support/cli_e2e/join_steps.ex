@@ -125,6 +125,28 @@ defmodule Operately.Support.CliE2E.JoinSteps do
     |> Map.put(:expected_password_prompts, [{"Password:", @existing_account_password}])
   end
 
+  step :join_personal_invite_as_a_returning_member_with_password_flags, ctx do
+    result =
+      run_cli(ctx, [
+        "auth",
+        "join",
+        "--invite-token",
+        ctx.invite_token,
+        "--method",
+        "email-password",
+        "--email",
+        ctx.invitee.email,
+        "--password",
+        @existing_account_password,
+        "--base-url",
+        ctx.cli_base_url,
+        "--profile",
+        ctx.profile
+      ])
+
+    Map.put(ctx, :cli_result, result)
+  end
+
   step :join_personal_invite_as_a_returning_member_with_email_code, ctx do
     result =
       run_cli(
@@ -141,6 +163,32 @@ defmodule Operately.Support.CliE2E.JoinSteps do
         ],
         script: [
           {"How would you like to sign in?", "2\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.invitee.email)}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
+  step :join_personal_invite_as_a_returning_member_with_email_code_flags, ctx do
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "join",
+          "--invite-token",
+          ctx.invite_token,
+          "--method",
+          "emailCode",
+          "--email",
+          ctx.invitee.email,
+          "--base-url",
+          ctx.cli_base_url,
+          "--profile",
+          ctx.profile
+        ],
+        script: [
           {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.invitee.email)}
         ]
       )
@@ -196,6 +244,26 @@ defmodule Operately.Support.CliE2E.JoinSteps do
             {"How would you like to sign in?", "2\n"}
           ]
         )
+      end)
+
+    Map.put(ctx, :cli_task, task)
+  end
+
+  step :start_personal_invite_google_join_with_flags, ctx do
+    task =
+      Task.async(fn ->
+        run_cli(ctx, [
+          "auth",
+          "join",
+          "--invite-token",
+          ctx.invite_token,
+          "--method",
+          "google",
+          "--base-url",
+          ctx.cli_base_url,
+          "--profile",
+          ctx.profile
+        ])
       end)
 
     Map.put(ctx, :cli_task, task)
@@ -287,6 +355,30 @@ defmodule Operately.Support.CliE2E.JoinSteps do
     ctx
     |> Map.put(:cli_result, result)
     |> Map.put(:expected_password_prompts, [{"Password:", @existing_account_password}])
+  end
+
+  step :join_company_wide_invite_with_password_flags, ctx do
+    result =
+      run_cli(ctx, [
+        "auth",
+        "join",
+        "--invite-token",
+        ctx.invite_token,
+        "--method",
+        "email-password",
+        "--email",
+        ctx.account.email,
+        "--password",
+        @existing_account_password,
+        "--company-name",
+        ctx.invited_company.name,
+        "--base-url",
+        ctx.cli_base_url,
+        "--profile",
+        ctx.profile
+      ])
+
+    Map.put(ctx, :cli_result, result)
   end
 
   step :join_company_wide_invite_with_email_code, ctx do
@@ -398,6 +490,47 @@ defmodule Operately.Support.CliE2E.JoinSteps do
 
   step :assert_people_get_me_command_works, ctx do
     verify_people_get_me_command_works(ctx)
+  end
+
+  step :join_with_invalid_hybrid_flags, ctx do
+    result =
+      run_cli(ctx, [
+        "auth",
+        "join",
+        "--invite-token",
+        ctx.invite_token,
+        "--method",
+        "google",
+        "--email",
+        "bad@example.com",
+        "--base-url",
+        ctx.cli_base_url
+      ])
+
+    Map.put(ctx, :cli_result, result)
+  end
+
+  step :assert_the_cli_output_contains, ctx, snippets do
+    Enum.each(snippets, fn snippet ->
+      assert ctx.cli_result.output =~ snippet
+    end)
+
+    ctx
+  end
+
+  step :assert_the_cli_output_does_not_contain, ctx, snippets do
+    Enum.each(snippets, fn snippet ->
+      refute ctx.cli_result.output =~ snippet
+    end)
+
+    ctx
+  end
+
+  step :assert_invalid_hybrid_flags_were_rejected, ctx do
+    assert ctx.cli_result.exit_code == 2
+    assert ctx.cli_result.output =~ "`--method google` cannot be combined with `--email` or `--password`."
+
+    verify_config_not_written(ctx)
   end
 
   defp remember_expected_identity(ctx, name, email, company_name) do

@@ -114,3 +114,32 @@ test("prints hybrid login help with quick token guidance", () => {
   assert.ok(output.includes("operately auth login --method google --company-name \"Acme Corp\" --access-mode full-access"));
   assert.ok(output.includes("operately auth login --token op_live_xxx"));
 });
+
+test("prints hybrid join help with invite-aware guidance", () => {
+  const output = captureHelpOutput(() => {
+    printAuthCommandHelp("join");
+  });
+
+  assert.ok(output.includes("operately auth join [--invite-token <token>] [--method <email-password|email-code|google>]"));
+  assert.ok(output.includes("fully interactive invite flow, or pass any subset of join flags"));
+  assert.ok(output.includes("Google join always requires browser confirmation."));
+  assert.ok(output.includes("Email-code join always sends a verification code that must be entered manually."));
+  assert.ok(output.includes("First-time personal invites only support email/password or Google OAuth."));
+  assert.ok(output.includes("--email <email>                      (company-wide joins, or returning personal invites when it matches the invited email)"));
+  assert.ok(output.includes("--company-name <name>                (used only when company selection is needed; must match exactly one authenticated company)"));
+  assert.ok(output.includes("operately auth join --invite-token abc123 --method email-password --email user@example.com --password secret123456 --profile team"));
+});
+
+test("prints hybrid create-company help with flag-driven guidance", () => {
+  const output = captureHelpOutput(() => {
+    printAuthCommandHelp("create-company");
+  });
+
+  assert.ok(output.includes("operately auth create-company [--method <email-password|email-code|google>]"));
+  assert.ok(output.includes("fully interactive flow, or pass any subset of create-company flags"));
+  assert.ok(output.includes("Google create-company always requires browser confirmation."));
+  assert.ok(output.includes("Email-code create-company always sends a verification code that must be entered manually."));
+  assert.ok(output.includes("All other create-company prompts can be skipped with flags."));
+  assert.ok(output.includes("--company-name <name>                (skip the company-name prompt)"));
+  assert.ok(output.includes("operately auth create-company --method email-password --email user@example.com --password secret123456 --company-name \"Acme Corp\" --profile team"));
+});
