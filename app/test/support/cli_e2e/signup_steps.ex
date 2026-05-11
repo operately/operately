@@ -144,6 +144,99 @@ defmodule Operately.Support.CliE2E.SignupSteps do
     ])
   end
 
+  step :sign_up_with_email_flags_and_create_a_company, ctx do
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "signup",
+          "--method",
+          "email-password",
+          "--base-url",
+          ctx.cli_base_url,
+          "--full-name",
+          ctx.expected_name,
+          "--email",
+          ctx.expected_email,
+          "--password",
+          ctx.signup_password,
+          "--next-step",
+          "create-company",
+          "--company-name",
+          ctx.expected_company_name,
+          "--profile",
+          ctx.profile
+        ],
+        script: [
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.expected_email)}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
+  step :sign_up_with_email_flags_and_prompt_for_invite, ctx do
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "signup",
+          "--method",
+          "email-password",
+          "--base-url",
+          ctx.cli_base_url,
+          "--full-name",
+          ctx.expected_name,
+          "--email",
+          ctx.expected_email,
+          "--password",
+          ctx.signup_password,
+          "--next-step",
+          "join",
+          "--profile",
+          ctx.profile
+        ],
+        script: [
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.expected_email)},
+          {"Invite token:", "#{ctx.invite_token}\n"}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
+  step :sign_up_with_email_flags_and_do_this_later, ctx do
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "signup",
+          "--method",
+          "email-password",
+          "--base-url",
+          ctx.cli_base_url,
+          "--full-name",
+          ctx.expected_name,
+          "--email",
+          ctx.expected_email,
+          "--password",
+          ctx.signup_password,
+          "--next-step",
+          "later",
+          "--profile",
+          "should-not-save"
+        ],
+        script: [
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.expected_email)}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
   step :sign_up_with_email_and_expect_existing_account_rejection, ctx do
     password = "new password 123"
 
@@ -169,6 +262,23 @@ defmodule Operately.Support.CliE2E.SignupSteps do
     ])
   end
 
+  step :sign_up_with_invalid_hybrid_flags, ctx do
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "signup",
+          "--method",
+          "google",
+          "--email",
+          "bad@example.com"
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
   step :start_google_signup_to_create_a_company, ctx do
     task =
       Task.async(fn ->
@@ -181,6 +291,31 @@ defmodule Operately.Support.CliE2E.SignupSteps do
             {"What would you like to do next?", "1\n"},
             {"Company name:", "#{ctx.expected_company_name}\n"},
             {"Profile name (default: default):", "#{ctx.profile}\n"}
+          ]
+        )
+      end)
+
+    Map.put(ctx, :cli_task, task)
+  end
+
+  step :start_google_signup_with_flags_to_create_a_company, ctx do
+    task =
+      Task.async(fn ->
+        run_cli(
+          ctx,
+          [
+            "auth",
+            "signup",
+            "--method",
+            "google",
+            "--base-url",
+            ctx.cli_base_url,
+            "--next-step",
+            "create-company",
+            "--company-name",
+            ctx.expected_company_name,
+            "--profile",
+            ctx.profile
           ]
         )
       end)
@@ -352,6 +487,30 @@ defmodule Operately.Support.CliE2E.SignupSteps do
   step :assert_email_signup_existing_account_was_rejected, ctx do
     assert ctx.cli_result.exit_code == 1
     assert ctx.cli_result.output =~ "An account already exists for this email."
+    refute File.exists?(cli_config_path(ctx))
+
+    ctx
+  end
+
+  step :assert_the_cli_output_contains, ctx, snippets do
+    Enum.each(snippets, fn snippet ->
+      assert ctx.cli_result.output =~ snippet
+    end)
+
+    ctx
+  end
+
+  step :assert_the_cli_output_does_not_contain, ctx, snippets do
+    Enum.each(snippets, fn snippet ->
+      refute ctx.cli_result.output =~ snippet
+    end)
+
+    ctx
+  end
+
+  step :assert_invalid_hybrid_flags_were_rejected, ctx do
+    assert ctx.cli_result.exit_code == 2
+    assert ctx.cli_result.output =~ "`--method google` cannot be combined with `--full-name`, `--email`, or `--password`."
     refute File.exists?(cli_config_path(ctx))
 
     ctx

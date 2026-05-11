@@ -58,7 +58,7 @@ ${namespaceLines}
 
 Authentication & Setup:
   auth login [--token <token>] [--base-url <url>] [--profile <name>]
-  auth signup [--base-url <url>] [--profile <name>]
+  auth signup [--method <email-password|google>] [--full-name <name>] [--email <email>] [--password <password>] [--next-step <create-company|join|later>] [--company-name <name>] [--invite-token <token>] [--base-url <url>] [--profile <name>]
   auth join [--invite-token <token>] [--base-url <url>] [--profile <name>]
   auth create-company [--base-url <url>] [--profile <name>]
   auth profiles
@@ -114,23 +114,44 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
     ],
   },
   signup: {
-    usage: "operately auth signup [--base-url <url>] [--profile <name>]",
+    usage: "operately auth signup [--method <email-password|google>] [--full-name <name>] [--email <email>] [--password <password>] [--next-step <create-company|join|later>] [--company-name <name>] [--invite-token <token>] [--base-url <url>] [--profile <name>]",
     description: [
-      "Create a new account, then create or join a company",
+      "Create a new account interactively or with flags, then create or join a company",
       "",
-      "  Interactive flow: run 'operately auth signup' and follow prompts.",
-      `     You will be asked for a base URL (default: ${DEFAULT_BASE_URL}),`,
-      "     a signup method (email/password or Google OAuth), and then",
-      "     whether to create a company, join with an invite token,",
-      "     or do that later.",
+      "  Hybrid flow: run 'operately auth signup' with no extra flags for the",
+      "  full interactive experience, or pass any subset of signup flags to skip",
+      "  only those prompts. Missing values are still asked interactively.",
+      "",
+      `  If --base-url is omitted, the CLI asks for it and defaults to ${DEFAULT_BASE_URL}.`,
+      "  If --method is omitted, the CLI asks whether to use email/password or Google OAuth.",
+      "  If --next-step is omitted, the CLI asks whether to create a company, join with an invite token, or stop for now.",
+      "",
+      "  Unavoidable manual steps:",
+      "    - Google signup always requires browser confirmation.",
+      "    - Email/password signup always sends a verification code that must be entered manually.",
+      "",
+      "  All other signup prompts can be skipped with flags.",
       "",
       "  The --profile flag is only used if the flow reaches a point where",
       "  the CLI can save an authenticated profile.",
     ],
-    flags: ["--base-url <url>", "--profile <name>"],
+    flags: [
+      "--method <email-password|google>  (accepted alias: password)",
+      "--full-name <name>                (email/password signup only)",
+      "--email <email>                   (email/password signup only)",
+      "--password <password>             (email/password signup only; skips password confirmation prompt)",
+      "--next-step <create-company|join|later>  (accepted alias: join-invite)",
+      "--company-name <name>             (used with --next-step create-company)",
+      "--invite-token <token>            (used with --next-step join)",
+      "--base-url <url>",
+      "--profile <name>",
+    ],
     examples: [
       "operately auth signup",
-      "operately auth signup --base-url https://staging.operately.com --profile staging",
+      "operately auth signup --method email-password --full-name \"New User\" --email newuser@example.com --password secret123456 --next-step later",
+      "operately auth signup --method google --next-step later",
+      "operately auth signup --method email-password --full-name \"New User\" --email newuser@example.com --password secret123456 --next-step create-company --company-name \"Acme Corp\" --profile team",
+      "operately auth signup --method email-password --full-name \"New User\" --email newuser@example.com --password secret123456 --next-step join --invite-token invite-123 --base-url https://staging.operately.com --profile staging",
     ],
   },
   join: {

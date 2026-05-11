@@ -19,6 +19,7 @@ interface MockCall {
 type AskChoiceFn = <T>(prompt: string, choices: { label: string; value: T }[]) => Promise<T>;
 type AskQuestionFn = (prompt: string) => Promise<string>;
 type AskPasswordFn = (prompt: string) => Promise<string>;
+type SignupChoice = "password" | "google" | "create-company" | "join" | "later" | boolean;
 
 const calls: MockCall[] = [];
 let responses: Array<unknown> = [];
@@ -79,7 +80,11 @@ function mockOpen(_url: string): Promise<ChildProcess | boolean | undefined> {
   return Promise.resolve(true);
 }
 
-function createMockAskChoice(sequence: Array<"password" | "google" | "create-company" | "join-invite" | "later" | boolean>) {
+function flagsFrom(entries: Record<string, unknown>): Map<string, unknown[]> {
+  return new Map(Object.entries(entries).map(([key, value]) => [key, [value]]));
+}
+
+function createMockAskChoice(sequence: SignupChoice[]) {
   let index = 0;
 
   return async function askChoice<T>(
@@ -87,6 +92,11 @@ function createMockAskChoice(sequence: Array<"password" | "google" | "create-com
     _choices: { label: string; value: T }[],
   ): Promise<T> {
     askedPrompts.push(prompt);
+
+    if (index >= sequence.length) {
+      throw new Error(`Choice requested unexpectedly for prompt: ${prompt}`);
+    }
+
     const value = sequence[index++];
     return value as T;
   };
@@ -150,7 +160,7 @@ describe("runSignupFlow", () => {
     }
   });
 
-  function makeDeps(choiceSequence: Array<"password" | "google" | "create-company" | "join-invite" | "later" | boolean>) {
+  function makeDeps(choiceSequence: SignupChoice[]) {
     return {
       askChoice: createMockAskChoice(choiceSequence) as AskChoiceFn,
       askQuestion: nextPrompt as AskQuestionFn,
@@ -234,7 +244,7 @@ describe("runSignupFlow", () => {
     responses.push({ token: "op_joined_token", company: { id: "joined-company", name: "Joined Company" } });
     responses.push({ me: { full_name: "New User", email: "newuser@example.com" } });
 
-    const result = await runSignupFlow(new Map(), emptyConfig, registryStub, makeDeps(["password", "join-invite"]));
+    const result = await runSignupFlow(new Map(), emptyConfig, registryStub, makeDeps(["password", "join"]));
 
     assert.strictEqual(result, 0);
     assert.strictEqual(calls[4].path, cliAuth.joinWithInvite);
@@ -263,6 +273,176 @@ describe("runSignupFlow", () => {
     assert.ok(infoPrinted.some((msg) => msg.includes("operately auth join")));
     assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
     assert.ok(!askedPrompts.includes("Profile name (default: default):"));
+  });
+
+  it("uses provided flags and only prompts for missing email signup values", async () => {
+    promptQueue.push("New User", "secret123456", "secret123456", "ABC123");
+
+    responses.push({ configured: true });
+    responses.push({ exists: false });
+    responses.push({});
+    responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
+
+    const result = await runSignupFlow(
+      flagsFrom({
+        method: "email-password",
+        "base-url": "https://app.operately.com",
+        email: "newuser@example.com",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps(["later"]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.ok(!askedPrompts.includes("How would you like to sign up?"));
+    assert.ok(!askedPrompts.includes(`Base URL for the Operately instance (default: https://app.operately.com):`));
+    assert.ok(!askedPrompts.includes("Email:"));
+    assert.ok(askedPrompts.includes("Full name:"));
+    assert.ok(askedPrompts.includes("Password:"));
+    assert.ok(askedPrompts.includes("Confirm password:"));
+    assert.ok(askedPrompts.includes("A verification code was sent to your email. Enter the code:"));
+    assert.ok(askedPrompts.includes("What would you like to do next? You can also do this later with `operately auth create-company` or `operately auth join`."));
+  });
+
+  it("uses email signup flags so only the verification code prompt remains", async () => {
+    promptQueue.push("ABC123");
+
+    responses.push({ configured: true });
+    responses.push({ exists: false });
+    responses.push({});
+    responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
+
+    const result = await runSignupFlow(
+      flagsFrom({
+        method: "password",
+        "base-url": "https://app.operately.com",
+        "full-name": "New User",
+        email: "newuser@example.com",
+        password: "secret123456",
+        "next-step": "later",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, ["A verification code was sent to your email. Enter the code:"]);
+    assert.deepStrictEqual(calls.map((call) => call.path), [
+      cliAuth.companyCreationStatus,
+      cliAuth.checkAccount,
+      "/create_email_activation_code",
+      cliAuth.signup,
+    ]);
+    assert.deepStrictEqual(calls[3].inputs, {
+      email: "newuser@example.com",
+      code: "ABC123",
+      full_name: "New User",
+      password: "secret123456",
+    });
+  });
+
+  it("uses Google signup flags and only prompts for an intentionally omitted company name", async () => {
+    promptQueue.push("Google Company");
+
+    responses.push({ configured: true });
+    responses.push({
+      status: "pending",
+      bootstrap_token: "bootstrap_google",
+      login_url: "https://example.com/cli-login/123",
+      poll_interval_ms: 10,
+    });
+    responses.push({ status: "authenticated", companies: [] });
+    responses.push({ company: { id: "google-company", name: "Google Company" } });
+    responses.push({ token: "op_google_token", company: { id: "google-company", name: "Google Company" } });
+    responses.push({ me: { full_name: "Google User", email: "google@example.com" } });
+
+    const result = await runSignupFlow(
+      flagsFrom({
+        method: "google",
+        "base-url": "https://app.operately.com",
+        "next-step": "create-company",
+        profile: "google",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, ["Company name:"]);
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[1].path, cliAuth.startGoogleSignup);
+    assert.strictEqual(calls[2].path, cliAuth.status);
+    assert.strictEqual(calls[3].path, cliAuth.createCompany);
+  });
+
+  it("prompts only for company name after email signup when next step is create-company", async () => {
+    promptQueue.push("ABC123", "Acme Corp");
+
+    responses.push({ configured: true });
+    responses.push({ exists: false });
+    responses.push({});
+    responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
+    responses.push({ company: { id: "c1", name: "Acme Corp" } });
+    responses.push({ token: "op_live_final_token", company: { id: "c1", name: "Acme Corp" } });
+    responses.push({ me: { full_name: "New User", email: "newuser@example.com" } });
+
+    const result = await runSignupFlow(
+      flagsFrom({
+        method: "email-password",
+        "base-url": "https://app.operately.com",
+        "full-name": "New User",
+        email: "newuser@example.com",
+        password: "secret123456",
+        "next-step": "create-company",
+        profile: "team",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, [
+      "A verification code was sent to your email. Enter the code:",
+      "Company name:",
+    ]);
+  });
+
+  it("prompts only for invite token after email signup when next step is join", async () => {
+    promptQueue.push("ABC123", "invite-token-123");
+
+    responses.push({ configured: true });
+    responses.push({ exists: false });
+    responses.push({});
+    responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
+    responses.push({ company: { id: "joined-company", name: "Joined Company" } });
+    responses.push({ token: "op_joined_token", company: { id: "joined-company", name: "Joined Company" } });
+    responses.push({ me: { full_name: "New User", email: "newuser@example.com" } });
+
+    const result = await runSignupFlow(
+      flagsFrom({
+        method: "email-password",
+        "base-url": "https://app.operately.com",
+        "full-name": "New User",
+        email: "newuser@example.com",
+        password: "secret123456",
+        "next-step": "join-invite",
+        profile: "joined",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, [
+      "A verification code was sent to your email. Enter the code:",
+      "Invite token:",
+    ]);
+    assert.strictEqual(calls[4].path, cliAuth.joinWithInvite);
   });
 
   it("rejects signup when the email already exists", async () => {
@@ -381,6 +561,75 @@ describe("runSignupFlow", () => {
     assert.ok(errorsPrinted.some((msg) => msg.includes("An account already exists for this Google account")));
     assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
   });
+
+  it("does not save a profile on the later path even when --profile is passed", async () => {
+    promptQueue.push("ABC123");
+
+    responses.push({ configured: true });
+    responses.push({ exists: false });
+    responses.push({});
+    responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
+
+    const result = await runSignupFlow(
+      flagsFrom({
+        method: "email-password",
+        "base-url": "https://app.operately.com",
+        "full-name": "New User",
+        email: "newuser@example.com",
+        password: "secret123456",
+        "next-step": "later",
+        profile: "team",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
+  });
+
+  for (const scenario of [
+    {
+      name: "rejects an unsupported --method value",
+      flags: flagsFrom({ method: "github" }),
+      expected: "Invalid value for `--method`. Use `email-password` or `google`.",
+    },
+    {
+      name: "rejects an unsupported --next-step value",
+      flags: flagsFrom({ "next-step": "create" }),
+      expected: "Invalid value for `--next-step`. Use `create-company`, `join`, or `later`.",
+    },
+    {
+      name: "rejects Google signup when email flags are also passed",
+      flags: flagsFrom({ method: "google", email: "newuser@example.com" }),
+      expected: "`--method google` cannot be combined with `--full-name`, `--email`, or `--password`.",
+    },
+    {
+      name: "rejects later next step when company flags are also passed",
+      flags: flagsFrom({ "next-step": "later", "invite-token": "invite-123" }),
+      expected: "`--next-step later` cannot be combined with `--company-name` or `--invite-token`.",
+    },
+    {
+      name: "rejects create-company next step with invite token",
+      flags: flagsFrom({ "next-step": "create-company", "invite-token": "invite-123" }),
+      expected: "`--next-step create-company` cannot be combined with `--invite-token`.",
+    },
+    {
+      name: "rejects join next step with company name",
+      flags: flagsFrom({ "next-step": "join", "company-name": "Acme Corp" }),
+      expected: "`--next-step join` cannot be combined with `--company-name`.",
+    },
+  ]) {
+    it(scenario.name, async () => {
+      const result = await runSignupFlow(scenario.flags, emptyConfig, registryStub, makeDeps([]));
+
+      assert.strictEqual(result, 2);
+      assert.deepStrictEqual(errorsPrinted, [scenario.expected]);
+      assert.deepStrictEqual(askedPrompts, []);
+      assert.deepStrictEqual(calls, []);
+    });
+  }
 
   it("cancels cleanly when the user aborts a prompt", async () => {
     const deps = makeDeps(["password"]);
