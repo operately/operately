@@ -88,6 +88,7 @@ export async function runJoinInviteFlow(
     validateJoinFlagOptions(flags, options);
 
     baseUrl = options.baseUrl;
+    runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
     profile = options.profile;
     inviteToken = options.inviteToken;
     if (!inviteToken) {
