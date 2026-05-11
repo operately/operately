@@ -29,27 +29,79 @@ When multiple options are used together, command flags win, then environment var
 
 ## Auth Commands
 
+### Signup
+
+Create a new Operately account:
+
+```bash
+operately auth signup [--method <email-password|google>] [--full-name <name>] [--email <email>] [--password <password>] [--next-step <create-company|join|later>] [--company-name <name>] [--invite-token <token>] [--base-url <url>] [--profile <name>]
+```
+
+Hybrid flow: run with no flags for the fully interactive experience, or pass any subset of flags to suppress those prompts. After signup, the CLI asks whether to create a company, join with an invite token, or stop for now.
+
+Unavoidable manual steps:
+- Google signup always requires browser confirmation.
+- Email/password signup always sends a verification code to the inbox that must be entered.
+
+### Join Company
+
+Join an existing company using an invite token:
+
+```bash
+operately auth join [--invite-token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--base-url <url>] [--profile <name>]
+```
+
+Hybrid flow: pass any subset of flags to suppress those prompts. The invite token determines whether the invite is personal or company-wide, which affects the available sign-in methods.
+
+Unavoidable manual steps:
+- Google join always requires browser confirmation.
+- Email-code join always sends a verification code to the inbox that must be entered.
+
+### Create Company
+
+Authenticate and create a new company, saving a full-access profile:
+
+```bash
+operately auth create-company [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-name <name>] [--base-url <url>] [--profile <name>]
+```
+
+Hybrid flow: pass any subset of flags to suppress those prompts. Does not accept `--token` because company creation happens before a company-scoped token exists.
+
+Unavoidable manual steps:
+- Google create-company always requires browser confirmation.
+- Email-code create-company always sends a verification code to the inbox that must be entered.
+
+Use `operately auth <command> --help` for the full flag list, accepted method aliases, validation rules, and examples for any auth command.
+
 ### Login
 
-Save a token to a profile, and optionally set the API base URL for that profile:
+Log in interactively, with hybrid flags, or with a token:
+
+```bash
+operately auth login [--token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--access-mode <read-only|full-access>] [--base-url <url>] [--profile <name>]
+```
+
+Two modes:
+
+**1. Hybrid login** — run with no extra flags for the fully interactive flow, or pass any subset of flags to suppress only those prompts:
+
+```bash
+# Fully interactive
+operately auth login
+
+# Suppress individual prompts
+operately auth login --method email-password --email user@example.com --password secret123456 --company-name "Acme Corp" --access-mode full-access
+```
+
+Unavoidable manual steps:
+- Google login always requires browser confirmation.
+- Email-code login always sends a verification code to the inbox that must be entered.
+
+**2. Quick token mode** — skip the bootstrap flow and log in directly with an existing token:
 
 ```bash
 operately auth login --token <token> [--base-url <url>] [--profile <name>]
 ```
-
-Use `--base-url` when your token should talk to a non-default environment (for example staging or local).
-
-If you omit `--base-url`, the CLI uses the default production URL:
-
-`https://app.operately.com`
-
-Good pattern: one profile per environment.
-
-- `default` profile -> production URL
-- `staging` profile -> staging URL
-- `local` profile -> localhost URL
-
-When an interactive auth flow asks for a profile name, pressing Enter uses the current active profile.
 
 Examples:
 
@@ -63,6 +115,16 @@ operately auth login --token op_staging_xxx --profile staging --base-url https:/
 # Local profile
 operately auth login --token op_local_xxx --profile local --base-url http://localhost:4000
 ```
+
+Use `--base-url` when your token should talk to a non-default environment. If omitted, the CLI defaults to `https://app.operately.com`.
+
+Good pattern: one profile per environment.
+
+- `default` profile -> production URL
+- `staging` profile -> staging URL
+- `local` profile -> localhost URL
+
+When an interactive auth flow asks for a profile name, pressing Enter uses the current active profile.
 
 #### How Base URL Is Resolved
 
