@@ -95,7 +95,7 @@ operately tasks list --project-id p1
 Utility commands are separate from API endpoints:
 
 ```bash
-operately auth <login|status|whoami|logout> [flags]
+operately auth <login|signup|join|create-company|profiles|status|whoami|logout> [flags]
 operately --version
 operately help [namespace] [command]
 ```

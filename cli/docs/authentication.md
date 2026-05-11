@@ -29,6 +29,50 @@ When multiple options are used together, command flags win, then environment var
 
 ## Auth Commands
 
+### Signup
+
+Create a new Operately account:
+
+```bash
+operately auth signup [--method <email-password|google>] [--full-name <name>] [--email <email>] [--password <password>] [--next-step <create-company|join|later>] [--company-name <name>] [--invite-token <token>] [--base-url <url>] [--profile <name>]
+```
+
+Hybrid flow: run with no flags for the fully interactive experience, or pass any subset of flags to suppress those prompts. After signup, the CLI asks whether to create a company, join with an invite token, or stop for now.
+
+Unavoidable manual steps:
+- Google signup always requires browser confirmation.
+- Email/password signup always sends a verification code to the inbox that must be entered.
+
+### Join Company
+
+Join an existing company using an invite token:
+
+```bash
+operately auth join [--invite-token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--base-url <url>] [--profile <name>]
+```
+
+Hybrid flow: pass any subset of flags to suppress those prompts. The invite token determines whether the invite is personal or company-wide, which affects the available sign-in methods.
+
+Unavoidable manual steps:
+- Google join always requires browser confirmation.
+- Email-code join always sends a verification code to the inbox that must be entered.
+
+### Create Company
+
+Authenticate and create a new company, saving a full-access profile:
+
+```bash
+operately auth create-company [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-name <name>] [--base-url <url>] [--profile <name>]
+```
+
+Hybrid flow: pass any subset of flags to suppress those prompts. Does not accept `--token` because company creation happens before a company-scoped token exists.
+
+Unavoidable manual steps:
+- Google create-company always requires browser confirmation.
+- Email-code create-company always sends a verification code to the inbox that must be entered.
+
+Use `operately auth <command> --help` for the full flag list, accepted method aliases, validation rules, and examples for any auth command.
+
 ### Login
 
 Save a token to a profile, and optionally set the API base URL for that profile:
