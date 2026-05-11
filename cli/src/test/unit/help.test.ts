@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import * as assert from "node:assert";
-import { printEndpointHelp } from "../../commands/help";
+import { printAuthCommandHelp, printEndpointHelp } from "../../commands/help";
 import type { CatalogEndpoint } from "../../types/catalog";
 import { fixtureCatalog } from "./fixture-catalog";
 
@@ -77,4 +77,21 @@ test("prints companion file flags for markdown input fields", () => {
   assert.ok(output.includes("--description <markdown> (required)"));
   assert.ok(output.includes("--description-file <path> (optional, alternative to --description)"));
   assert.ok(output.includes("File input: use --<field>-file <path> to load markdown from a file"));
+});
+
+test("prints hybrid signup help with flag-driven guidance", () => {
+  const output = captureHelpOutput(() => {
+    printAuthCommandHelp("signup");
+  });
+
+  assert.ok(output.includes("operately auth signup [--method <email-password|google>]"));
+  assert.ok(output.includes("--next-step <create-company|join|later>"));
+  assert.ok(output.includes("Hybrid flow: run 'operately auth signup' with no extra flags"));
+  assert.ok(output.includes("Missing values are still asked interactively."));
+  assert.ok(output.includes("Google signup always requires browser confirmation."));
+  assert.ok(output.includes("Email/password signup always sends a verification code that must be entered manually."));
+  assert.ok(output.includes("All other signup prompts can be skipped with flags."));
+  assert.ok(output.includes("--password <password>             (email/password signup only; skips password confirmation prompt)"));
+  assert.ok(output.includes("operately auth signup --method google --next-step later"));
+  assert.ok(output.includes("operately auth signup --method email-password --full-name \"New User\" --email newuser@example.com --password secret123456 --next-step create-company --company-name \"Acme Corp\" --profile team"));
 });

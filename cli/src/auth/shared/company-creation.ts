@@ -26,6 +26,7 @@ interface CreateCompanyAndSaveProfileInput {
   timeoutMs: number;
   bootstrapToken: string;
   mode: CompanyCreationMode;
+  companyName?: string | null;
   deps: CreateCompanyAndSaveProfileDeps;
 }
 
@@ -38,7 +39,7 @@ export async function resolveCompanyCreationMode(
 }
 
 export async function createCompanyAndSaveProfile(input: CreateCompanyAndSaveProfileInput): Promise<number> {
-  const companyName = await input.deps.askQuestion("Company name:");
+  const companyName = input.companyName ?? await input.deps.askQuestion("Company name:");
   const path = input.mode === "setup" ? cliAuth.setupCompany : cliAuth.createCompany;
 
   const result = (await input.deps.callInternalMutation(
