@@ -45,7 +45,7 @@ operately <namespace> <endpoint_name> [flags]
 Utility commands:
 
 ```bash
-operately auth <login|status|whoami|logout> [flags]
+operately auth <login|signup|join|create-company|profiles|status|whoami|logout> [flags]
 operately version
 operately help [command]
 ```
