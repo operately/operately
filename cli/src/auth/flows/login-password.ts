@@ -9,16 +9,23 @@ interface PasswordFlowDeps {
   callInternalMutation: typeof callInternalMutation;
 }
 
+interface PasswordFlowOptions {
+  email?: string;
+  password?: string;
+  inviteToken?: string;
+}
+
 export async function runPasswordFlow(
   baseUrl: string,
   deps: PasswordFlowDeps,
-  inviteToken?: string,
+  options: string | PasswordFlowOptions = {},
 ): Promise<{ bootstrapToken: string; companies: Company[] }> {
-  const email = await deps.askQuestion("Email:");
-  const password = await deps.askPassword("Password:");
+  const normalized = typeof options === "string" ? { inviteToken: options } : options;
+  const email = (normalized.email ?? await deps.askQuestion("Email:")).trim();
+  const password = normalized.password ?? await deps.askPassword("Password:");
 
   const payload: Record<string, unknown> = { email, password };
-  if (inviteToken) payload.invite_token = inviteToken;
+  if (normalized.inviteToken) payload.invite_token = normalized.inviteToken;
 
   const response = (await deps.callInternalMutation(baseUrl, cliAuth.authPassword, payload)) as {
     status: string;
