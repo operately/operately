@@ -56,24 +56,18 @@ defmodule Operately.Support.Features.UI do
   end
 
   def click(state, %Wallaby.Query{} = query) do
-    execute("click", state, fn session ->
-      session |> Browser.click(query)
-    end)
+    click_with_retry(state, query)
   end
 
   def click(state, css: css) do
-    execute("click", state, fn session ->
-      Browser.click(session, Query.css(css))
-    end)
+    click_with_retry(state, Query.css(css))
   end
 
   def click(state, opts) do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)
 
-    execute("click", state, fn session ->
-      session |> Browser.click(Query.css(css_query))
-    end)
+    click_with_retry(state, Query.css(css_query))
   rescue
     _e in Wallaby.QueryError ->
       raise """
@@ -217,7 +211,7 @@ defmodule Operately.Support.Features.UI do
         session |> Browser.click(query)
       end)
     rescue
-      e in [Wallaby.QueryError, Wallaby.ExpectationNotMetError] ->
+      e in [Wallaby.QueryError, Wallaby.ExpectationNotMetError, Wallaby.StaleReferenceError] ->
         if remaining_attempts != [] do
           click_with_retry(state, query, attempts: remaining_attempts)
         else
