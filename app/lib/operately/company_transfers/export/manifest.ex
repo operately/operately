@@ -1,6 +1,4 @@
 defmodule Operately.CompanyTransfers.Export.Manifest do
-  alias Operately.Repo
-
   def build(export_run, company, collected, file_count) do
     exported_at = DateTime.utc_now() |> DateTime.truncate(:second)
 
@@ -16,7 +14,6 @@ defmodule Operately.CompanyTransfers.Export.Manifest do
         "name" => company.name,
         "short_id" => company.short_id
       },
-      "schema_migrations" => load_schema_migrations(),
       "tables_count" => collected.non_empty_tables_count,
       "rows_count" => collected.rows_count,
       "files_count" => file_count,
@@ -34,12 +31,5 @@ defmodule Operately.CompanyTransfers.Export.Manifest do
       "rows_count" => collected.rows_count,
       "files_count" => manifest["files_count"]
     }
-  end
-
-  defp load_schema_migrations do
-    case Repo.query("SELECT version FROM schema_migrations ORDER BY version", []) do
-      {:ok, %{rows: rows}} -> Enum.map(rows, fn [version] -> version end)
-      {:error, _reason} -> []
-    end
   end
 end

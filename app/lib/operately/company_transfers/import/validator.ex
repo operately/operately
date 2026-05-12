@@ -5,7 +5,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
 
   alias Operately.CompanyTransfers.Import.Package
   alias Operately.CompanyTransfers.Package.Limits
-  alias Operately.Repo
 
   @package_format_version 1
   @supported_slice "relational_minimal"
@@ -29,7 +28,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
     |> validate_package_format(manifest)
     |> validate_slice(manifest)
     |> validate_operately_version(manifest)
-    |> validate_schema_migrations(manifest)
   end
 
   defp validate_package_format(errors, manifest) do
@@ -63,19 +61,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
       [error("operately_version_mismatch", "Operately version does not match the package", %{
          "expected" => current_version,
          "actual" => manifest["operately_version"]
-       }) | errors]
-    end
-  end
-
-  defp validate_schema_migrations(errors, manifest) do
-    current = load_schema_migrations()
-
-    if manifest["schema_migrations"] == current do
-      errors
-    else
-      [error("schema_migration_mismatch", "Schema migrations do not match the package", %{
-         "expected" => current,
-         "actual" => manifest["schema_migrations"]
        }) | errors]
     end
   end
@@ -184,13 +169,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   end
 
   defp valid_file_entry?(_), do: false
-
-  defp load_schema_migrations do
-    case Repo.query("SELECT version FROM schema_migrations ORDER BY version", []) do
-      {:ok, %{rows: rows}} -> Enum.map(rows, fn [version] -> version end)
-      {:error, _reason} -> []
-    end
-  end
 
   defp error(code, message, details) do
     %{
