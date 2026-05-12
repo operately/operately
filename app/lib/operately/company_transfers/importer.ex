@@ -15,12 +15,37 @@ defmodule Operately.CompanyTransfers.Importer do
   }
 
   def run(import_run) do
+    case load_package(import_run) do
+      {:ok, workspace, package} ->
+        case import_loaded_package(import_run, workspace, package) do
+          {:ok, import_run} ->
+            {:ok, import_run}
+
+          {:error, _reason} = error ->
+            save_failure_manifest_summary(import_run, package)
+            error
+        end
+
+      {:error, _reason} = error ->
+        error
+    end
+  rescue
+    error ->
+      {:error, {:exception, Exception.message(error)}}
+  end
+
+  defp load_package(import_run) do
     with {:ok, workspace} <- fetch_package_workspace(import_run),
          :ok <- mark_progress(import_run, "loading_package", @steps.loading_package),
          :ok <- validate_artifact_sizes(workspace),
          package = Package.load!(workspace.json_path),
-         :ok <- mark_progress(import_run, "validating_package", @steps.validating_package),
-         :ok <- validate_package(package),
+         :ok <- mark_progress(import_run, "validating_package", @steps.validating_package) do
+      {:ok, workspace, package}
+    end
+  end
+
+  defp import_loaded_package(import_run, workspace, package) do
+    with :ok <- validate_package(package),
          files_root <- extract_files(workspace, package),
          :ok <- mark_progress(import_run, "importing_rows", @steps.importing_rows),
          {:ok, result} <- import_package(package, files_root, import_run.requested_by_id),
@@ -28,13 +53,7 @@ defmodule Operately.CompanyTransfers.Importer do
          :ok <- notify_imported_people(import_run, result),
          {:ok, import_run} <- complete_import(import_run, package, result) do
       {:ok, import_run}
-    else
-      {:error, _reason} = error ->
-        error
     end
-  rescue
-    error ->
-      {:error, {:exception, Exception.message(error)}}
   end
 
   defp fetch_package_workspace(import_run) do
@@ -96,6 +115,15 @@ defmodule Operately.CompanyTransfers.Importer do
         {:error, reason} -> Repo.rollback(reason)
       end
     end)
+  end
+
+  defp save_failure_manifest_summary(import_run, package) do
+    CompanyTransfers.update_import_run(import_run, %{
+      manifest_summary: %{
+        "operately_version" => package.manifest["operately_version"],
+        "source_company" => package.manifest["source_company"]
+      }
+    })
   end
 
   defp complete_import(import_run, package, result) do

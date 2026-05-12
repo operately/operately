@@ -2217,6 +2217,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :zip_blob_id, :id
     field? :error_message, :string
     field? :validation_errors, :json
+    field? :manifest_summary, :json
     field :inserted_at, :datetime, null: false
     field? :started_at, :datetime
     field? :completed_at, :datetime

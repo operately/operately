@@ -16,6 +16,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ImportRun
       zip_blob_id: run.zip_blob_id,
       error_message: run.error_message,
       validation_errors: run.validation_errors,
+      manifest_summary: run.manifest_summary,
       inserted_at: Serializer.serialize(run.inserted_at),
       started_at: Serializer.serialize(run.started_at),
       completed_at: Serializer.serialize(run.completed_at)
