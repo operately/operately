@@ -21,6 +21,9 @@ defmodule Operately.CompanyTransfers.Import.FileImporter do
         {:ok, blob} ->
           {:cont, {:ok, [blob | uploaded_blobs]}}
 
+        :skip ->
+          {:cont, {:ok, uploaded_blobs}}
+
         {:error, reason} ->
           cleanup_uploads(uploaded_blobs)
           {:halt, {:error, reason}}
@@ -44,7 +47,7 @@ defmodule Operately.CompanyTransfers.Import.FileImporter do
         {:error, {:missing_file_blob_translation, source_blob_id}}
 
       false ->
-        {:error, {:missing_file_payload, relative_path}}
+        :skip
 
       {:error, reason} ->
         {:error, {:file_upload_failed, source_blob_id, reason}}

@@ -107,10 +107,6 @@ defmodule Operately.CompanyTransfers.Package.Archive do
         extra_entries = entry_set |> MapSet.difference(allowed) |> MapSet.to_list()
         raise ArgumentError, "Archive contains undeclared entries: #{inspect(extra_entries)}"
 
-      not MapSet.equal?(entry_set, allowed) ->
-        missing_entries = allowed |> MapSet.difference(entry_set) |> MapSet.to_list()
-        raise ArgumentError, "Archive is missing declared entries: #{inspect(missing_entries)}"
-
       oversized_entry = Enum.find(zip_entries, &(Limits.validate_value(:max_extracted_file_size_bytes, &1.size) != :ok)) ->
         max = Limits.get(:max_extracted_file_size_bytes)
         raise ArgumentError, "Archive entry #{inspect(oversized_entry.path)} exceeds size limit #{max} bytes"

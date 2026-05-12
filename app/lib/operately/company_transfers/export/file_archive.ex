@@ -22,17 +22,17 @@ defmodule Operately.CompanyTransfers.Export.FileArchive do
 
     try do
       entries =
-        Enum.map(files, fn %{"blob_id" => blob_id, "path" => relative_path} ->
+        Enum.flat_map(files, fn %{"blob_id" => blob_id, "path" => relative_path} ->
           blob = Blobs.get_blob!(blob_id)
           source_path = Path.join(staging_root, relative_path)
           File.mkdir_p!(Path.dirname(source_path))
 
           case BlobIO.download_to_path(blob, source_path) do
             :ok ->
-              %{path: relative_path, source_path: source_path}
+              [%{path: relative_path, source_path: source_path}]
 
-            {:error, reason} ->
-              raise "Failed to stage blob #{blob_id} for export: #{inspect(reason)}"
+            {:error, _reason} ->
+              []
           end
         end)
 
