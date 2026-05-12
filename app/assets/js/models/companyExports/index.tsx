@@ -30,7 +30,7 @@ export function mergeRun<T extends MergeableRun>(runs: T[], nextRun: T) {
 
 export function toImportPageRun(run: CompanyImportRun) {
   const manifestSummary = (run.manifestSummary as Record<string, string> | undefined) ?? null;
-  const manifestVersion = manifestSummary?.operately_version;
+  const manifestVersion = manifestSummary?.operatelyVersion;
   const currentVersion = window.appConfig?.version;
 
   const showVersionWarning = Boolean(
