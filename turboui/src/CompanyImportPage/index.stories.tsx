@@ -26,17 +26,10 @@ const defaultArgs: CompanyImportPage.Props = {
   canStartImport: true,
   uploadsUnavailableMessage: null,
   onStartImport: () => {},
-  onSelectJsonFile: () => {},
-  onSelectZipFile: () => {},
-  jsonFile: {
-    blobId: "blob-json",
-    fileName: "company-export.json",
-    progress: 100,
-    uploading: false,
-  },
-  zipFile: {
-    blobId: "blob-zip",
-    fileName: "company-files.zip",
+  onSelectPackageFile: () => {},
+  packageFile: {
+    blobId: "blob-package",
+    fileName: "operately.zip",
     progress: 100,
     uploading: false,
   },
@@ -75,7 +68,7 @@ export const UploadsUnavailable: Story = {
     ...defaultArgs,
     canUpload: false,
     canStartImport: false,
-    uploadsUnavailableMessage: "Uploads are unavailable for this account because staging still requires a company context.",
+    uploadsUnavailableMessage: "Uploads are unavailable for this account right now.",
   },
 };
 
@@ -83,8 +76,7 @@ export const EmptyState: Story = {
   args: {
     ...defaultArgs,
     runs: [],
-    jsonFile: { blobId: null, fileName: null, progress: 0, uploading: false },
-    zipFile: { blobId: null, fileName: null, progress: 0, uploading: false },
+    packageFile: { blobId: null, fileName: null, progress: 0, uploading: false },
     canStartImport: false,
   },
 };

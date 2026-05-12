@@ -29,7 +29,7 @@ defmodule Operately.CompanyTransfers.Package.Paths do
   end
 
   def staged_zip_path(kind, run_id) when kind in [:export, :import] and is_binary(run_id) do
-    Path.join(workspace(kind, run_id), "files.zip")
+    Path.join(workspace(kind, run_id), "operately.zip")
   end
 
   def export_artifact_dir(run_id) when is_binary(run_id) do

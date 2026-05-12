@@ -42,7 +42,7 @@ function Page() {
 
     try {
       await Api.company_transfers.startExport({});
-      showSuccessToast("Export started", "You'll receive the artifacts here when the job finishes.");
+      showSuccessToast("Export started", "You'll receive the package here when the job finishes.");
       await refreshRuns();
     } catch {
       showErrorToast("Failed to start export", "Please try again.");
@@ -51,14 +51,13 @@ function Page() {
     }
   }, [refreshRuns, starting]);
 
-  const handleDownload = React.useCallback(async (runId: string, kind: "json" | "zip") => {
-    const key = `${runId}:${kind}`;
-    setDownloading(key);
+  const handleDownload = React.useCallback(async (runId: string) => {
+    setDownloading(runId);
 
     try {
       const response = await Api.company_transfers.getExportRun({ id: runId });
       const run = response.exportRun;
-      const url = kind === "json" ? run.jsonDownloadUrl : run.zipDownloadUrl;
+      const url = run.packageDownloadUrl;
 
       if (!url) {
         throw new Error("missing download url");
@@ -72,7 +71,7 @@ function Page() {
       link.click();
       document.body.removeChild(link);
     } catch {
-      showErrorToast("Download failed", "The export artifacts are not ready yet.");
+      showErrorToast("Download failed", "The export package is not ready yet.");
     } finally {
       setDownloading(null);
     }

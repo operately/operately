@@ -4,22 +4,19 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
   alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
-  alias Operately.CompanyTransfers.Package.PackageJson
-  alias Operately.People.{Account, Person}
+  alias Operately.CompanyTransfers.Package.{Archive, PackageJson}
+  alias Operately.People.Account
   alias Operately.Repo
-
-  import Ecto.Query
 
   def export!(%Company{} = company, %Account{} = account) do
     {:ok, export_run} = CompanyTransfers.create_export_run(company, account, %{}, dispatch: false)
     {:ok, export_run} = CompanyTransfers.mark_export_run_running(export_run)
     {:ok, export_run} = Exporter.run(export_run)
 
-    # Download blob to read package
-    export_run = Repo.preload(export_run, :json_blob)
-    temp_path = Path.join(System.tmp_dir!(), "export_#{export_run.id}.json")
-    :ok = Operately.Blobs.download_blob_to_file(export_run.json_blob, temp_path)
-    package = PackageJson.read!(temp_path)
+    export_run = Repo.preload(export_run, :package_blob)
+    temp_path = Path.join(System.tmp_dir!(), "export_#{export_run.id}.zip")
+    :ok = Operately.Blobs.download_blob_to_file(export_run.package_blob, temp_path)
+    package = temp_path |> Archive.read_entry!("data.json") |> Jason.decode!()
     File.rm!(temp_path)
 
     %{
@@ -29,42 +26,22 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
   end
 
   def upload_import_artifacts_as_blobs(import_run, workspace, account, opts \\ []) do
-    ensure_import_zip!(workspace, opts)
+    build_import_package!(workspace, opts)
 
-    # Get the first person associated with this account to use as blob author
-    # Import runs don't have a company yet, so we use any company the account belongs to
-    person = Repo.one!(
-      from p in Person,
-      where: p.account_id == ^account.id,
-      limit: 1
-    )
+    {:ok, package_blob} =
+      Operately.Blobs.create_blob(%{
+        purpose: :company_transfer_import_artifact,
+        account_id: account.id,
+        status: :pending,
+        filename: Path.basename(workspace.zip_path),
+        size: File.stat!(workspace.zip_path).size,
+        content_type: "application/zip"
+      })
 
-    # Create and upload JSON blob
-    {:ok, json_blob} = Operately.Blobs.create_blob(%{
-      company_id: person.company_id,
-      author_id: person.id,
-      status: :pending,
-      filename: "import_#{import_run.id}.json",
-      size: File.stat!(workspace.json_path).size,
-      content_type: "application/json"
-    })
-    {:ok, json_blob} = BlobIO.upload_to_blob(json_blob, workspace.json_path)
+    {:ok, package_blob} = BlobIO.upload_to_blob(package_blob, workspace.zip_path)
 
-    # Create and upload ZIP blob
-    {:ok, zip_blob} = Operately.Blobs.create_blob(%{
-      company_id: person.company_id,
-      author_id: person.id,
-      status: :pending,
-      filename: "import_#{import_run.id}.zip",
-      size: File.stat!(workspace.zip_path).size,
-      content_type: "application/zip"
-    })
-    {:ok, zip_blob} = BlobIO.upload_to_blob(zip_blob, workspace.zip_path)
-
-    # Update import run with blob IDs
     CompanyTransfers.update_import_run(import_run, %{
-      json_blob_id: json_blob.id,
-      zip_blob_id: zip_blob.id
+      package_blob_id: package_blob.id
     })
   end
 
@@ -166,19 +143,40 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
     end)
   end
 
-  defp ensure_import_zip!(workspace, opts) do
-    cond do
-      File.exists?(workspace.zip_path) ->
+  defp build_import_package!(workspace, opts) do
+    package = PackageJson.read!(workspace.json_path)
+
+    case Keyword.get(opts, :source_export_run) do
+      %ExportRun{} = export_run ->
+        source_package_path = Path.join(workspace.root_path, "source-operately.zip")
+        export_run = Repo.preload(export_run, :package_blob)
+        :ok = BlobIO.download_to_path(export_run.package_blob, source_package_path)
+        Archive.extract_present!(source_package_path, workspace.root_path, package_archive_paths(package))
+        File.rm!(source_package_path)
+
+      _ ->
         :ok
-
-      match?(%ExportRun{}, Keyword.get(opts, :source_export_run)) ->
-        export_run = Keyword.fetch!(opts, :source_export_run)
-        export_run = Repo.preload(export_run, :zip_blob)
-        :ok = BlobIO.download_to_path(export_run.zip_blob, workspace.zip_path)
-
-      true ->
-        alias Operately.CompanyTransfers.Package.Archive
-        Archive.create!(workspace.zip_path, [%{path: "README.txt", content: "Test import placeholder\n"}])
     end
+
+    Archive.create!(workspace.zip_path, package_entries(workspace, package))
+  end
+
+  defp package_archive_paths(package) do
+    Enum.map(Map.get(package, "files", []), fn %{"path" => relative_path} ->
+      Path.join("files", relative_path)
+    end)
+  end
+
+  defp package_entries(workspace, package) do
+    [%{path: "data.json", source_path: workspace.json_path}] ++
+      Enum.flat_map(Map.get(package, "files", []), fn %{"path" => relative_path} ->
+        source_path = Path.join(workspace.files_path, relative_path)
+
+        if File.exists?(source_path) do
+          [%{path: Path.join("files", relative_path), source_path: source_path}]
+        else
+          []
+        end
+      end)
   end
 end
