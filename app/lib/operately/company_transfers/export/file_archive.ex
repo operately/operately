@@ -7,6 +7,8 @@ defmodule Operately.CompanyTransfers.Export.FileArchive do
   area and creates the ZIP from the staged files.
   """
 
+  require Logger
+
   alias Operately.Blobs
   alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.Package.Archive
@@ -31,7 +33,8 @@ defmodule Operately.CompanyTransfers.Export.FileArchive do
             :ok ->
               [%{path: relative_path, source_path: source_path}]
 
-            {:error, _reason} ->
+            {:error, reason} ->
+              Logger.warning("Skipping blob #{blob_id} during export: storage file unavailable (#{inspect(reason)})")
               []
           end
         end)
