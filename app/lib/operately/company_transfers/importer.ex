@@ -110,7 +110,6 @@ defmodule Operately.CompanyTransfers.Importer do
       files_count: result.files_count,
       validation_errors: [],
       manifest_summary: %{
-        "package_format_version" => package.manifest["package_format_version"],
         "operately_version" => package.manifest["operately_version"],
         "source_company" => package.manifest["source_company"],
         "account_resolution" => %{

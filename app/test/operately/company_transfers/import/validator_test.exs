@@ -12,18 +12,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
     assert :ok = Validator.validate(build_package())
   end
 
-  test "validate/1 rejects unsupported package formats" do
-    package =
-      build_package(%{
-        manifest: %{
-          "package_format_version" => 99
-        }
-      })
-
-    assert {:error, errors} = Validator.validate(package)
-    assert find_error(errors, "unsupported_package_format")["details"]["actual"] == 99
-  end
-
   test "validate/1 rejects version mismatches" do
     package =
       build_package(%{
@@ -128,7 +116,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
     package =
       build_package(%{
         manifest: %{
-          "package_format_version" => 2,
           "operately_version" => "0.0.0-test",
           "files_count" => 1
         },
@@ -139,7 +126,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
     assert {:error, errors} = Validator.validate(package)
 
     assert Enum.map(errors, & &1["code"]) == [
-             "unsupported_package_format",
              "operately_version_mismatch",
              "invalid_company_count",
              "invalid_file_entries"
@@ -149,7 +135,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
   defp build_package(overrides \\ %{}) do
     manifest =
       %{
-        "package_format_version" => 1,
         "operately_version" => Operately.version()
       }
       |> Map.merge(Map.get(overrides, :manifest, %{}))

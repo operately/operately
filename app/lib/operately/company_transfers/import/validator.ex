@@ -6,8 +6,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   alias Operately.CompanyTransfers.Import.Package
   alias Operately.CompanyTransfers.Package.Limits
 
-  @package_format_version 1
-
   def validate(%Package{} = package) do
     []
     |> validate_manifest(package)
@@ -24,19 +22,7 @@ defmodule Operately.CompanyTransfers.Import.Validator do
 
   defp validate_manifest(errors, %Package{manifest: manifest}) do
     errors
-    |> validate_package_format(manifest)
     |> validate_operately_version(manifest)
-  end
-
-  defp validate_package_format(errors, manifest) do
-    if manifest["package_format_version"] == @package_format_version do
-      errors
-    else
-      [error("unsupported_package_format", "Unsupported package format version", %{
-         "expected" => @package_format_version,
-         "actual" => manifest["package_format_version"]
-       }) | errors]
-    end
   end
 
   defp validate_operately_version(errors, manifest) do
