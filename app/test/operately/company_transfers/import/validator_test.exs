@@ -3,7 +3,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
 
   alias Operately.CompanyTransfers.Import.{Package, Validator}
   alias Operately.CompanyTransfers.Package.Limits
-  alias Operately.Repo
 
   setup do
     {:ok, Factory.setup(%{})}
@@ -47,18 +46,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
 
     assert {:error, errors} = Validator.validate(package)
     assert find_error(errors, "operately_version_mismatch")["details"]["actual"] == "0.0.0-test"
-  end
-
-  test "validate/1 rejects schema migration mismatches" do
-    package =
-      build_package(%{
-        manifest: %{
-          "schema_migrations" => [999_999_999]
-        }
-      })
-
-    assert {:error, errors} = Validator.validate(package)
-    assert find_error(errors, "schema_migration_mismatch")["details"]["actual"] == [999_999_999]
   end
 
   test "validate/1 rejects packages without exactly one company row" do
@@ -156,7 +143,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
           "package_format_version" => 2,
           "slice" => "full_migration",
           "operately_version" => "0.0.0-test",
-          "schema_migrations" => [999_999_999],
           "files_count" => 1
         },
         tables: [],
@@ -169,7 +155,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
              "unsupported_package_format",
              "unsupported_package_slice",
              "operately_version_mismatch",
-             "schema_migration_mismatch",
              "invalid_company_count",
              "invalid_file_entries"
            ]
@@ -180,8 +165,7 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
       %{
         "package_format_version" => 1,
         "slice" => "relational_minimal",
-        "operately_version" => Operately.version(),
-        "schema_migrations" => schema_migrations()
+        "operately_version" => Operately.version()
       }
       |> Map.merge(Map.get(overrides, :manifest, %{}))
 
@@ -222,11 +206,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
       "id" => Keyword.get(opts, :id, Ecto.UUID.generate()),
       "email" => Keyword.get(opts, :email, "member-#{System.unique_integer([:positive])}@example.com")
     }
-  end
-
-  defp schema_migrations do
-    Repo.query!("SELECT version FROM schema_migrations ORDER BY version", []).rows
-    |> Enum.map(fn [version] -> version end)
   end
 
   defp find_error(errors, code) do

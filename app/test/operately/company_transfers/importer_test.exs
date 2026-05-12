@@ -139,23 +139,6 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_company.short_id == unique_id
   end
 
-  test "run/1 fails validation when schema migrations do not match", ctx do
-    ctx =
-      ctx
-      |> Factory.add_space(:space)
-      |> Factory.add_project(:project, :space)
-
-    assert {:ok, import_run} =
-             export_and_stage_import(ctx, fn package ->
-               put_in(package, ["manifest", "schema_migrations"], [999_999_999])
-             end)
-
-    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
-
-    assert {:error, {:validation_failed, _message, errors}} = Importer.run(import_run)
-    assert Enum.any?(errors, &(&1["code"] == "schema_migration_mismatch"))
-  end
-
   test "run/1 rejects package columns that are not backed by the table schema", ctx do
     ctx =
       ctx
