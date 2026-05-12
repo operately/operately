@@ -182,7 +182,9 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :visit_project_page, ctx do
-    ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_has(testid: "project-page")
   end
 
   step :assert_project_page_loaded, ctx do
@@ -990,15 +992,22 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :change_reviewer, ctx, name: name do
     ctx
+    |> UI.sleep(150)
+    |> UI.assert_has(testid: "reviewer-field")
     |> UI.click(testid: "reviewer-field")
+    |> UI.assert_has(testid: "reviewer-field-assign-another")
     |> UI.click(testid: "reviewer-field-assign-another")
+    |> UI.assert_has(testid: UI.testid(["reviewer-field-search-result", name]))
     |> UI.click(testid: UI.testid(["reviewer-field-search-result", name]))
     |> UI.sleep(300)
   end
 
   step :remove_reviewer, ctx do
     ctx
+    |> UI.sleep(150)
+    |> UI.assert_has(testid: "reviewer-field")
     |> UI.click(testid: "reviewer-field")
+    |> UI.assert_has(testid: "reviewer-field-clear-assignment")
     |> UI.click(testid: "reviewer-field-clear-assignment")
     |> UI.sleep(300)
   end
