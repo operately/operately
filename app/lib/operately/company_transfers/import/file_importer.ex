@@ -8,6 +8,8 @@ defmodule Operately.CompanyTransfers.Import.FileImporter do
   cleans up any already-uploaded files if a later upload fails.
   """
 
+  require Logger
+
   alias Operately.Blobs
   alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.Import.Package
@@ -47,6 +49,7 @@ defmodule Operately.CompanyTransfers.Import.FileImporter do
         {:error, {:missing_file_blob_translation, source_blob_id}}
 
       false ->
+        Logger.warning("Skipping file #{relative_path} during import: payload not present in package")
         :skip
 
       {:error, reason} ->
