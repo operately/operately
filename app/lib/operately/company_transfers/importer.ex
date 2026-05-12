@@ -111,7 +111,6 @@ defmodule Operately.CompanyTransfers.Importer do
       validation_errors: [],
       manifest_summary: %{
         "package_format_version" => package.manifest["package_format_version"],
-        "slice" => package.manifest["slice"],
         "operately_version" => package.manifest["operately_version"],
         "source_company" => package.manifest["source_company"],
         "account_resolution" => %{

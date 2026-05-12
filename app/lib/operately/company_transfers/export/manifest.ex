@@ -4,7 +4,6 @@ defmodule Operately.CompanyTransfers.Export.Manifest do
 
     %{
       "package_format_version" => 1,
-      "slice" => "relational_minimal",
       "operately_version" => Operately.version(),
       "exported_at" => DateTime.to_iso8601(exported_at),
       "export_run_id" => export_run.id,
@@ -24,7 +23,6 @@ defmodule Operately.CompanyTransfers.Export.Manifest do
   def summary(manifest, collected) do
     %{
       "package_format_version" => manifest["package_format_version"],
-      "slice" => manifest["slice"],
       "operately_version" => manifest["operately_version"],
       "source_company" => manifest["source_company"],
       "tables_count" => collected.non_empty_tables_count,

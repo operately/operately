@@ -7,7 +7,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   alias Operately.CompanyTransfers.Package.Limits
 
   @package_format_version 1
-  @supported_slice "relational_minimal"
 
   def validate(%Package{} = package) do
     []
@@ -26,7 +25,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   defp validate_manifest(errors, %Package{manifest: manifest}) do
     errors
     |> validate_package_format(manifest)
-    |> validate_slice(manifest)
     |> validate_operately_version(manifest)
   end
 
@@ -37,17 +35,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
       [error("unsupported_package_format", "Unsupported package format version", %{
          "expected" => @package_format_version,
          "actual" => manifest["package_format_version"]
-       }) | errors]
-    end
-  end
-
-  defp validate_slice(errors, manifest) do
-    if manifest["slice"] == @supported_slice do
-      errors
-    else
-      [error("unsupported_package_slice", "Unsupported package slice", %{
-         "expected" => @supported_slice,
-         "actual" => manifest["slice"]
        }) | errors]
     end
   end

@@ -24,18 +24,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
     assert find_error(errors, "unsupported_package_format")["details"]["actual"] == 99
   end
 
-  test "validate/1 rejects unsupported package slices" do
-    package =
-      build_package(%{
-        manifest: %{
-          "slice" => "full_migration"
-        }
-      })
-
-    assert {:error, errors} = Validator.validate(package)
-    assert find_error(errors, "unsupported_package_slice")["details"]["actual"] == "full_migration"
-  end
-
   test "validate/1 rejects version mismatches" do
     package =
       build_package(%{
@@ -141,7 +129,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
       build_package(%{
         manifest: %{
           "package_format_version" => 2,
-          "slice" => "full_migration",
           "operately_version" => "0.0.0-test",
           "files_count" => 1
         },
@@ -153,7 +140,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
 
     assert Enum.map(errors, & &1["code"]) == [
              "unsupported_package_format",
-             "unsupported_package_slice",
              "operately_version_mismatch",
              "invalid_company_count",
              "invalid_file_entries"
@@ -164,7 +150,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
     manifest =
       %{
         "package_format_version" => 1,
-        "slice" => "relational_minimal",
         "operately_version" => Operately.version()
       }
       |> Map.merge(Map.get(overrides, :manifest, %{}))
