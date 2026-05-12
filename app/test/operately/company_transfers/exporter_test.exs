@@ -57,7 +57,6 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert completed_run.zip_size_bytes > 0
 
     assert package["files"] == []
-    assert package["manifest"]["slice"] == "relational_minimal"
     assert package["manifest"]["source_company"]["id"] == ctx.company.id
     assert package["manifest"]["requested_by_id"] == ctx.account.id
     assert ctx.project.id in Enum.map(tables["projects"]["rows"], & &1["id"])

@@ -1166,6 +1166,7 @@ export interface CompanyImportRun {
   zipBlobId?: Id;
   errorMessage?: string;
   validationErrors?: Json;
+  manifestSummary?: Json;
   insertedAt: string;
   startedAt?: string;
   completedAt?: string;
