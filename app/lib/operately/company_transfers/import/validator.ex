@@ -6,12 +6,8 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   alias Operately.CompanyTransfers.Import.Package
   alias Operately.CompanyTransfers.Package.Limits
 
-  @package_format_version 1
-  @supported_slice "relational_minimal"
-
   def validate(%Package{} = package) do
     []
-    |> validate_manifest(package)
     |> validate_package_limits(package)
     |> validate_company_row(package)
     |> validate_account_emails(package)
@@ -20,48 +16,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
     |> case do
       [] -> :ok
       errors -> {:error, errors}
-    end
-  end
-
-  defp validate_manifest(errors, %Package{manifest: manifest}) do
-    errors
-    |> validate_package_format(manifest)
-    |> validate_slice(manifest)
-    |> validate_operately_version(manifest)
-  end
-
-  defp validate_package_format(errors, manifest) do
-    if manifest["package_format_version"] == @package_format_version do
-      errors
-    else
-      [error("unsupported_package_format", "Unsupported package format version", %{
-         "expected" => @package_format_version,
-         "actual" => manifest["package_format_version"]
-       }) | errors]
-    end
-  end
-
-  defp validate_slice(errors, manifest) do
-    if manifest["slice"] == @supported_slice do
-      errors
-    else
-      [error("unsupported_package_slice", "Unsupported package slice", %{
-         "expected" => @supported_slice,
-         "actual" => manifest["slice"]
-       }) | errors]
-    end
-  end
-
-  defp validate_operately_version(errors, manifest) do
-    current_version = Operately.version()
-
-    if manifest["operately_version"] == current_version do
-      errors
-    else
-      [error("operately_version_mismatch", "Operately version does not match the package", %{
-         "expected" => current_version,
-         "actual" => manifest["operately_version"]
-       }) | errors]
     end
   end
 

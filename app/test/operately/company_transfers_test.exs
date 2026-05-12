@@ -111,7 +111,6 @@ defmodule Operately.CompanyTransfersTest do
     assert run.json_size_bytes > 0
     assert run.zip_size_bytes > 0
     assert package["files"] == []
-    assert package["manifest"]["slice"] == "relational_minimal"
     assert package["manifest"]["source_company"]["id"] == ctx.company.id
     assert package["manifest"]["source_company"]["name"] == ctx.company.name
     assert run.manifest_summary["source_company"]["id"] == ctx.company.id

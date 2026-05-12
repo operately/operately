@@ -178,7 +178,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
         end
 
       _ ->
-        row
+        Map.put(row, "short_id", Operately.Companies.ShortId.generate())
     end
   end
 

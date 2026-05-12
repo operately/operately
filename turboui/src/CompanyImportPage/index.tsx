@@ -23,6 +23,9 @@ export namespace CompanyImportPage {
     tablesCount?: number | null;
     rowsCount?: number | null;
     errorMessage?: string | null;
+    manifestSummary?: Record<string, unknown> | null;
+    showVersionWarning?: boolean;
+    versionWarning?: string | null;
     insertedAt: string;
     completedAt?: string | null;
     companyPath?: string | null;
@@ -213,6 +216,11 @@ function ImportRunCard({ run, latest }: { run: CompanyImportPage.Run; latest: bo
           </div>
 
           {run.errorMessage && <div className="mt-2 text-sm text-red-600">{run.errorMessage}</div>}
+          {run.showVersionWarning && run.versionWarning && (
+            <div className="mt-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+              {run.versionWarning}
+            </div>
+          )}
         </div>
 
         {run.companyPath && run.status === "completed" && (
