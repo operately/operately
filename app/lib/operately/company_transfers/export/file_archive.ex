@@ -7,6 +7,8 @@ defmodule Operately.CompanyTransfers.Export.FileArchive do
   area and creates the ZIP from the staged files.
   """
 
+  require Logger
+
   alias Operately.Blobs
   alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.Package.Archive
@@ -22,17 +24,18 @@ defmodule Operately.CompanyTransfers.Export.FileArchive do
 
     try do
       entries =
-        Enum.map(files, fn %{"blob_id" => blob_id, "path" => relative_path} ->
+        Enum.flat_map(files, fn %{"blob_id" => blob_id, "path" => relative_path} ->
           blob = Blobs.get_blob!(blob_id)
           source_path = Path.join(staging_root, relative_path)
           File.mkdir_p!(Path.dirname(source_path))
 
           case BlobIO.download_to_path(blob, source_path) do
             :ok ->
-              %{path: relative_path, source_path: source_path}
+              [%{path: relative_path, source_path: source_path}]
 
             {:error, reason} ->
-              raise "Failed to stage blob #{blob_id} for export: #{inspect(reason)}"
+              Logger.warning("Skipping blob #{blob_id} during export: storage file unavailable (#{inspect(reason)})")
+              []
           end
         end)
 

@@ -10,7 +10,7 @@ defmodule Operately.CompanyTransfers.Import.FileImporterTest do
     {:ok, Factory.setup(%{})}
   end
 
-  test "import/3 cleans up already-uploaded files when a later payload is missing", ctx do
+  test "import/3 skips files whose payload is missing from the package", ctx do
     first_blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id})
     second_blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id})
 
@@ -35,10 +35,9 @@ defmodule Operately.CompanyTransfers.Import.FileImporterTest do
       "source-2" => second_blob.id
     }
 
-    assert {:error, {:missing_file_payload, "blobs/source-2/two.txt"}} =
-             FileImporter.import(package, files_root, blob_id_map)
+    assert {:ok, 1} = FileImporter.import(package, files_root, blob_id_map)
 
-    refute File.exists?(storage_path(first_blob))
+    assert File.exists?(storage_path(first_blob))
   end
 
   defp storage_path(%Blob{} = blob) do
