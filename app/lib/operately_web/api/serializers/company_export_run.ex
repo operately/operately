@@ -26,12 +26,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ExportRun
 
   defp blob_fields(run) do
     %{
-      json_blob_id: run.json_blob_id,
-      zip_blob_id: run.zip_blob_id,
-      json_download_url: signed_url(run.json_blob),
-      zip_download_url: signed_url(run.zip_blob),
-      json_size_bytes: run.json_size_bytes,
-      zip_size_bytes: run.zip_size_bytes
+      package_blob_id: run.package_blob_id,
+      package_download_url: signed_url(run.package_blob),
+      package_size_bytes: run.package_size_bytes
     }
   end
 

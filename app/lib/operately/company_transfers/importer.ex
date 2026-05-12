@@ -38,7 +38,7 @@ defmodule Operately.CompanyTransfers.Importer do
     with {:ok, workspace} <- fetch_package_workspace(import_run),
          :ok <- mark_progress(import_run, "loading_package", @steps.loading_package),
          :ok <- validate_artifact_sizes(workspace),
-         package = Package.load!(workspace.json_path),
+         {:ok, package} <- load_package_from_archive(workspace),
          :ok <- mark_progress(import_run, "validating_package", @steps.validating_package) do
       {:ok, workspace, package}
     end
@@ -57,20 +57,16 @@ defmodule Operately.CompanyTransfers.Importer do
   end
 
   defp fetch_package_workspace(import_run) do
-    import_run = Repo.preload(import_run, [:json_blob, :zip_blob])
+    import_run = Repo.preload(import_run, :package_blob)
 
     cond do
-      is_nil(import_run.json_blob) ->
-        {:error, {:package_not_found, "No JSON blob associated with import run"}}
-
-      is_nil(import_run.zip_blob) ->
-        {:error, {:package_not_found, "No ZIP blob associated with import run"}}
+      is_nil(import_run.package_blob) ->
+        {:error, {:package_not_found, "No package blob associated with import run"}}
 
       true ->
         workspace = Workspace.prepare!(:import, import_run.id)
 
-        with :ok <- download_blob(import_run.json_blob, workspace.json_path),
-             :ok <- download_blob(import_run.zip_blob, workspace.zip_path) do
+        with :ok <- download_blob(import_run.package_blob, workspace.zip_path) do
           {:ok, workspace}
         else
           {:error, reason} -> {:error, {:package_not_found, reason}}
@@ -79,21 +75,47 @@ defmodule Operately.CompanyTransfers.Importer do
   end
 
   defp validate_artifact_sizes(workspace) do
-    with :ok <- Limits.validate_file_size(:max_json_size_bytes, workspace.json_path),
-         :ok <- Limits.validate_file_size(:max_zip_size_bytes, workspace.zip_path) do
-      :ok
+    Limits.validate_file_size(:max_zip_size_bytes, workspace.zip_path)
+  end
+
+  defp load_package_from_archive(workspace) do
+    entries = Archive.list_entries!(workspace.zip_path)
+    data_json_entry = find_data_json_entry!(entries)
+
+    with :ok <- Limits.validate_value(:max_json_size_bytes, data_json_entry.size) do
+      workspace.json_path
+      |> File.write!(Archive.read_entry!(workspace.zip_path, "data.json"))
+
+      {:ok, Package.load!(workspace.json_path)}
     end
   end
 
-  defp extract_files(workspace, %Package{files: []}), do: workspace.files_path
+  defp find_data_json_entry!(entries) do
+    case Enum.filter(entries, &(&1.path == "data.json")) do
+      [entry] ->
+        entry
 
-  defp extract_files(workspace, %Package{} = package) do
-    Archive.extract!(workspace.zip_path, workspace.files_path, declared_file_paths(package))
+      [] ->
+        raise ArgumentError, "Archive does not contain data.json"
+
+      duplicate_entries ->
+        raise ArgumentError, "Archive contains duplicate data.json entries: #{inspect(duplicate_entries)}"
+    end
+  end
+
+  defp extract_files(workspace, %Package{files: []}) do
+    Archive.extract_present!(workspace.zip_path, workspace.root_path, ["data.json"])
     workspace.files_path
   end
 
-  defp declared_file_paths(%Package{} = package) do
-    Enum.map(package.files, & &1["path"])
+  defp extract_files(workspace, %Package{} = package) do
+    allowed_archive_paths = ["data.json" | Enum.map(package.files, &archive_file_path/1)]
+    Archive.extract_present!(workspace.zip_path, workspace.root_path, allowed_archive_paths)
+    workspace.files_path
+  end
+
+  defp archive_file_path(%{"path" => relative_path}) when is_binary(relative_path) do
+    Path.join("files", relative_path)
   end
 
   defp validate_package(package) do

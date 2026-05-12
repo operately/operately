@@ -92,6 +92,17 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert File.read!(Path.join(extract_path, "blobs/blob-1/file.txt")) == "payload"
   end
 
+  test "archive helper can read a single entry from a zip package" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+
+    Archive.create!(zip_path, [
+      {"data.json", "{\"ok\":true}"},
+      {"files/blobs/blob-1/file.txt", "payload"}
+    ])
+
+    assert Archive.read_entry!(zip_path, "data.json") == "{\"ok\":true}"
+  end
+
   test "archive helper rejects undeclared zip entries in strict mode" do
     zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
     extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
@@ -167,6 +178,27 @@ defmodule Operately.CompanyTransfersFilesTest do
     end
   end
 
+  test "archive helper extracts only present entries when missing declared files are allowed" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+    extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
+
+    Archive.create!(zip_path, [
+      {"data.json", "{\"ok\":true}"},
+      {"files/blobs/blob-1/file.txt", "payload"}
+    ])
+
+    extracted_files =
+      Archive.extract_present!(zip_path, extract_path, [
+        "data.json",
+        "files/blobs/blob-1/file.txt",
+        "files/blobs/blob-2/file.txt"
+      ])
+
+    assert Path.join(extract_path, "data.json") in extracted_files
+    assert Path.join(extract_path, "files/blobs/blob-1/file.txt") in extracted_files
+    refute Path.join(extract_path, "files/blobs/blob-2/file.txt") in extracted_files
+  end
+
   test "archive helper rejects unsafe entry paths" do
     zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
 
@@ -182,38 +214,25 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert {:ok, run, workspace} = CompanyTransfers.prepare_export_workspace(run)
 
     PackageJson.write!(workspace.json_path, %{"company" => %{"name" => ctx.company.name}})
-    Archive.create!(workspace.zip_path, [])
+    Archive.create!(workspace.zip_path, [%{path: "data.json", source_path: workspace.json_path}])
 
     assert {:ok, run} = CompanyTransfers.publish_export_artifacts(run, workspace)
 
     # Verify blob records were created
-    assert run.json_blob_id != nil
-    assert run.zip_blob_id != nil
-    assert run.json_size_bytes > 0
-    assert run.zip_size_bytes >= 0
+    assert run.package_blob_id != nil
+    assert run.package_size_bytes > 0
 
-    # Verify blobs have correct properties
-    json_blob = Blobs.get_blob!(run.json_blob_id)
-    assert json_blob.company_id == ctx.company.id
-    assert json_blob.status == :uploaded
-    assert json_blob.content_type == "application/json"
-    assert json_blob.size == run.json_size_bytes
+    package_blob = Blobs.get_blob!(run.package_blob_id)
+    assert package_blob.company_id == ctx.company.id
+    assert package_blob.status == :uploaded
+    assert package_blob.content_type == "application/zip"
+    assert package_blob.filename == "operately.zip"
+    assert package_blob.size == run.package_size_bytes
 
-    zip_blob = Blobs.get_blob!(run.zip_blob_id)
-    assert zip_blob.company_id == ctx.company.id
-    assert zip_blob.status == :uploaded
-    assert zip_blob.content_type == "application/zip"
-    assert zip_blob.size == run.zip_size_bytes
+    package_storage_path = "/media/#{Operately.Blobs.Blob.path(package_blob)}"
+    assert File.exists?(package_storage_path)
 
-    # Verify files were uploaded to storage
-    json_storage_path = "/media/#{Operately.Blobs.Blob.path(json_blob)}"
-    zip_storage_path = "/media/#{Operately.Blobs.Blob.path(zip_blob)}"
-    assert File.exists?(json_storage_path)
-    assert File.exists?(zip_storage_path)
-
-    # Cleanup
-    File.rm(json_storage_path)
-    File.rm(zip_storage_path)
+    File.rm(package_storage_path)
   end
 
   test "workspace cleanup removes the temp directory" do

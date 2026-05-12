@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.CompanyTransfers.GetExportRun do
   defp fetch_run(id) do
     case CompanyTransfers.get_export_run(id) do
       nil -> {:error, :not_found}
-      run -> {:ok, Repo.preload(run, [:json_blob, :zip_blob])}
+      run -> {:ok, Repo.preload(run, :package_blob)}
     end
   end
 

@@ -24,7 +24,7 @@ const defaultArgs: CompanyExportPage.Props = {
   starting: false,
   downloading: null,
   onStartExport: () => {},
-  onDownload: () => {},
+  onDownload: (_runId: string) => {},
   runs: [
     {
       id: "run-1",
