@@ -12,18 +12,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
     assert :ok = Validator.validate(build_package())
   end
 
-  test "validate/1 rejects version mismatches" do
-    package =
-      build_package(%{
-        manifest: %{
-          "operately_version" => "0.0.0-test"
-        }
-      })
-
-    assert {:error, errors} = Validator.validate(package)
-    assert find_error(errors, "operately_version_mismatch")["details"]["actual"] == "0.0.0-test"
-  end
-
   test "validate/1 rejects packages without exactly one company row" do
     package =
       build_package(%{
@@ -116,7 +104,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
     package =
       build_package(%{
         manifest: %{
-          "operately_version" => "0.0.0-test",
           "files_count" => 1
         },
         tables: [],
@@ -126,7 +113,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
     assert {:error, errors} = Validator.validate(package)
 
     assert Enum.map(errors, & &1["code"]) == [
-             "operately_version_mismatch",
              "invalid_company_count",
              "invalid_file_entries"
            ]

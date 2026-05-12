@@ -8,7 +8,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
 
   def validate(%Package{} = package) do
     []
-    |> validate_manifest(package)
     |> validate_package_limits(package)
     |> validate_company_row(package)
     |> validate_account_emails(package)
@@ -17,24 +16,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
     |> case do
       [] -> :ok
       errors -> {:error, errors}
-    end
-  end
-
-  defp validate_manifest(errors, %Package{manifest: manifest}) do
-    errors
-    |> validate_operately_version(manifest)
-  end
-
-  defp validate_operately_version(errors, manifest) do
-    current_version = Operately.version()
-
-    if manifest["operately_version"] == current_version do
-      errors
-    else
-      [error("operately_version_mismatch", "Operately version does not match the package", %{
-         "expected" => current_version,
-         "actual" => manifest["operately_version"]
-       }) | errors]
     end
   end
 
