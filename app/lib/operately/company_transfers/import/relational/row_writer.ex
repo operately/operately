@@ -8,10 +8,11 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriter do
   alias Operately.CompanyTransfers.Schema.PolicyRegistry
   alias Operately.Repo
 
-  def insert_row(table, columns, row) when is_binary(table) and is_list(columns) and is_map(row) do
+  def insert_row(table, row) when is_binary(table) and is_map(row) do
+    columns = Map.keys(row)
+
     with {:ok, schema, fields} <- schema_metadata(table),
          :ok <- validate_columns(table, columns, fields),
-         :ok <- validate_row_keys(table, row, columns),
          {:ok, attrs} <- cast_attrs(schema, fields, columns, row) do
       schema
       |> struct()
@@ -24,11 +25,12 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriter do
     end
   end
 
-  def update_row(table, columns, row) when is_binary(table) and is_list(columns) and is_map(row) do
+  def update_row(table, row) when is_binary(table) and is_map(row) do
+    columns = Map.keys(row) -- ["id"]
+
     with {:ok, schema, fields} <- schema_metadata(table),
          :ok <- validate_update_row(table, row),
          :ok <- validate_columns(table, columns, fields),
-         :ok <- validate_row_keys(table, row, ["id" | columns]),
          {:ok, attrs} <- cast_attrs(schema, fields, columns, row),
          {:ok, record} <- fetch_update_record(schema, table, row["id"]) do
       record
@@ -67,15 +69,6 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriter do
           [] -> :ok
           unknown_columns -> {:error, {:unknown_columns, table, unknown_columns}}
         end
-    end
-  end
-
-  defp validate_row_keys(table, row, allowed_columns) do
-    allowed = MapSet.new(allowed_columns)
-
-    case row |> Map.keys() |> Enum.reject(&MapSet.member?(allowed, &1)) do
-      [] -> :ok
-      extra_keys -> {:error, {:unknown_row_keys, table, extra_keys}}
     end
   end
 

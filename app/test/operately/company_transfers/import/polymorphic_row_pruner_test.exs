@@ -40,7 +40,7 @@ defmodule Operately.CompanyTransfers.Import.PolymorphicRowPrunerTest do
   end
 
   defp table(name, rows) do
-    %{"name" => name, "rows" => rows, "row_count" => length(rows), "columns" => []}
+    %{"name" => name, "rows" => rows, "row_count" => length(rows)}
   end
 
   defp row_ids(package, table_name) do

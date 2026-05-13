@@ -24,7 +24,6 @@ defmodule Operately.CompanyTransfers.Export.Relational.PackageTables do
         %{
           "name" => table,
           "classification" => Atom.to_string(schema.classifications[table]),
-          "columns" => Enum.map(columns, &normalize_column/1),
           "row_count" => length(rows),
           "rows" => Enum.map(rows, &RowSerializer.serialize_row(&1, column_types))
         }
@@ -52,14 +51,5 @@ defmodule Operately.CompanyTransfers.Export.Relational.PackageTables do
 
     {:ok, ordered_tables} = TopologicalSort.sort(filtered_graph)
     Enum.filter(ordered_tables, &(&1 in selected_tables))
-  end
-
-  defp normalize_column(column) do
-    %{
-      "name" => column.name,
-      "type" => column.type,
-      "nullable" => column.nullable,
-      "default" => column.default
-    }
   end
 end
