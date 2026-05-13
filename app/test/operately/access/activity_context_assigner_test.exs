@@ -80,6 +80,18 @@ defmodule Operately.AccessActivityContextAssignerTest do
       |> assert_context_assigned(ctx.company.access_context.id)
     end
 
+    test "company_member_joined action", ctx do
+      member = person_fixture_with_account(%{company_id: ctx.company.id})
+      attrs = %{
+        action: "company_member_joined",
+        author_id: member.id,
+        content: %{company_id: ctx.company.id, person_id: member.id}
+      }
+
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.company.access_context.id)
+    end
+
     test "company_member_converted_to_guest action", ctx do
       member = person_fixture_with_account(%{company_id: ctx.company.id})
       attrs = %{

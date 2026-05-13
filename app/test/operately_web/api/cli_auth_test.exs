@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.CliAuthTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Activities.Activity
   alias Operately.People.{CliAuthSession, EmailActivationCode}
   alias Operately.Support.Factory
 
@@ -806,6 +807,11 @@ defmodule OperatelyWeb.Api.CliAuthTest do
 
       assert res.company.id == Paths.company_id(ctx.company)
       assert Repo.reload!(invite_link).is_active == false
+
+      activity = Repo.get_by(Activity, action: "company_member_joined", author_id: member.id)
+
+      assert activity.content["company_id"] == ctx.company.id
+      assert activity.content["person_id"] == member.id
     end
 
     test "returns bad_request for invalid invite token", ctx do
