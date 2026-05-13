@@ -223,6 +223,13 @@ function InlineTextField(
 
   useEffect(() => {
     if (!state.isEditing) return;
+    if (state.multiline) return;
+
+    adjustInputWidth();
+  }, [state.currentText, state.isEditing, state.multiline]);
+
+  useEffect(() => {
+    if (!state.isEditing) return;
     if (!state.multiline) return;
 
     const el = textareaRef.current;
