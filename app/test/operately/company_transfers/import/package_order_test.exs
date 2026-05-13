@@ -91,8 +91,7 @@ defmodule Operately.CompanyTransfers.Import.PackageOrderTest do
   defp table(name, rows \\ []) do
     %{
       "name" => name,
-      "rows" => rows,
-      "columns" => []
+      "rows" => rows
     }
   end
 
