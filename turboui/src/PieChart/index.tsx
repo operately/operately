@@ -8,10 +8,12 @@ interface Slice {
 interface PieChartProps {
   size?: number;
   bgcolor?: string;
+  ariaLabel?: string;
+  title?: string;
   slices: Slice[];
 }
 
-export function PieChart({ size = 20, bgcolor = "var(--color-surface-subtle)", slices }: PieChartProps) {
+export function PieChart({ size = 20, bgcolor = "var(--color-surface-subtle)", ariaLabel, title, slices }: PieChartProps) {
   const colors = React.useMemo(() => {
     let start = 0;
     let total = 0;
@@ -36,6 +38,9 @@ export function PieChart({ size = 20, bgcolor = "var(--color-surface-subtle)", s
   return (
     <div
       className="rounded-full"
+      role={ariaLabel ? "img" : undefined}
+      aria-label={ariaLabel}
+      title={title}
       style={{
         background: colors,
         width: `${size}px`,

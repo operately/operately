@@ -67,6 +67,8 @@ export function MilestoneCard({
 
   // Generate default stats if not provided
   const milestoneStats = stats || calculateMilestoneStats(sortedTasks);
+  const completionPercentage = calculateCompletionPercentage(milestoneStats);
+  const completionLabel = `${Math.round(completionPercentage)}% complete`;
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator();
 
@@ -101,9 +103,11 @@ export function MilestoneCard({
             {/* Progress pie chart */}
             <PieChart
               size={16}
+              ariaLabel={`Milestone progress: ${completionLabel}`}
+              title={`Milestone progress: ${completionLabel}`}
               slices={[
                 {
-                  percentage: calculateCompletionPercentage(milestoneStats),
+                  percentage: completionPercentage,
                   color: "var(--color-callout-success-content)",
                 },
               ]}
