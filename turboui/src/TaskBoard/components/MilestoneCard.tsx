@@ -244,8 +244,9 @@ export function MilestoneCard({
                 </div>
               </>
             ) : (
-              <div className="text-center text-content-subtle text-sm">
-                Click + or press 'c' to add a task, or drag a task here.
+              <div className="text-left text-content-subtle text-sm sm:text-center">
+                <span className="sm:hidden">Tap + to add a task.</span>
+                <span className="hidden sm:inline">Click + or press 'c' to add a task, or drag a task here.</span>
               </div>
             )}
           </EmptyMilestoneDropZone>
