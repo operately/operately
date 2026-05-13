@@ -65,7 +65,7 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
 
     return (
       <div className="px-4 py-2.5 bg-surface-base">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <input
             ref={inputRef}
             value={title}
@@ -74,21 +74,24 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
             placeholder={placeholder}
             aria-label="Add task"
             data-test-id={testId || "inline-task-title"}
-            className="flex-1 rounded-md border border-surface-outline bg-transparent px-2 py-1 text-base sm:text-sm outline-none focus:border-indigo-500"
+            className="w-full rounded-md border border-surface-outline bg-transparent px-2 py-2 text-base outline-none focus:border-indigo-500 sm:flex-1 sm:py-1 sm:text-sm"
           />
 
-          <PrimaryButton size="xs" disabled={!title.trim()} onClick={submit}>
-            Add
-          </PrimaryButton>
-          <SecondaryButton
-            size="xs"
-            onClick={() => {
-              setTitle("");
-              onCancel?.();
-            }}
-          >
-            Cancel
-          </SecondaryButton>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+            <PrimaryButton size="xs" disabled={!title.trim()} onClick={submit} className="w-full sm:w-auto">
+              Add
+            </PrimaryButton>
+            <SecondaryButton
+              size="xs"
+              className="w-full sm:w-auto"
+              onClick={() => {
+                setTitle("");
+                onCancel?.();
+              }}
+            >
+              Cancel
+            </SecondaryButton>
+          </div>
         </div>
       </div>
     );
