@@ -11,7 +11,7 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
     {:ok, Factory.setup(%{})}
   end
 
-  describe "insert_row/3" do
+  describe "insert_row/2" do
     test "inserts a row through its Ecto schema" do
       id = Ecto.UUID.generate()
       timestamp = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -19,7 +19,6 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
       assert :ok =
                RowWriter.insert_row(
                  "companies",
-                 ["id", "name", "inserted_at", "updated_at"],
                  %{
                    "id" => id,
                    "name" => "Imported Company",
@@ -44,7 +43,6 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
       assert :ok =
                RowWriter.insert_row(
                  "companies",
-                 ["id", "name", "inserted_at", "updated_at"],
                  %{
                    "id" => id,
                    "name" => malicious_name,
@@ -57,52 +55,49 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
       assert Repo.aggregate(Person, :count, :id) == people_count_before
     end
 
-    test "rejects row keys outside the package metadata" do
+    test "rejects row keys outside the schema fields" do
       id = Ecto.UUID.generate()
       timestamp = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
-      assert {:error, {:unknown_row_keys, "companies", extra_keys}} =
+      assert {:error, {:unknown_columns, "companies", unknown_columns}} =
                RowWriter.insert_row(
                  "companies",
-                 ["id", "name", "inserted_at", "updated_at"],
                  %{
                    "id" => id,
                    "name" => "Only Name Should Persist",
-                   "mission" => "should not be accepted",
+                   "nonexistent_field" => "should not be accepted",
                    "inserted_at" => NaiveDateTime.to_iso8601(timestamp),
                    "updated_at" => NaiveDateTime.to_iso8601(timestamp),
                    ~s(name", mission = 'pwned) => "malicious-key"
                  }
                )
 
-      assert "mission" in extra_keys
-      assert ~s(name", mission = 'pwned) in extra_keys
+      assert "nonexistent_field" in unknown_columns
+      assert ~s(name", mission = 'pwned) in unknown_columns
       refute Repo.get(Company, id)
     end
 
     test "rejects unknown tables and schema-qualified names" do
       assert {:error, {:table_not_importable, "nonexistent_table"}} =
-               RowWriter.insert_row("nonexistent_table", ["id"], %{"id" => Ecto.UUID.generate()})
+               RowWriter.insert_row("nonexistent_table", %{"id" => Ecto.UUID.generate()})
 
       assert {:error, {:table_not_importable, "public.companies"}} =
-               RowWriter.insert_row("public.companies", ["id"], %{"id" => Ecto.UUID.generate()})
+               RowWriter.insert_row("public.companies", %{"id" => Ecto.UUID.generate()})
 
       assert {:error, {:table_not_importable, "companies; DROP TABLE people; --"}} =
-               RowWriter.insert_row("companies; DROP TABLE people; --", ["id"], %{"id" => Ecto.UUID.generate()})
+               RowWriter.insert_row("companies; DROP TABLE people; --", %{"id" => Ecto.UUID.generate()})
     end
 
     test "rejects excluded schema-backed tables" do
       assert {:error, {:table_not_importable, "api_tokens"}} =
                RowWriter.insert_row(
                  "api_tokens",
-                 ["id", "token_hash"],
                  %{"id" => Ecto.UUID.generate(), "token_hash" => "abc"}
                )
 
       assert {:error, {:table_not_importable, "invite_links"}} =
                RowWriter.insert_row(
                  "invite_links",
-                 ["id", "token"],
                  %{"id" => Ecto.UUID.generate(), "token" => String.duplicate("a", 32)}
                )
     end
@@ -111,26 +106,24 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
       assert {:error, {:table_not_importable, "accounts"}} =
                RowWriter.insert_row(
                  "accounts",
-                 ["id", "email", "full_name"],
                  %{"id" => Ecto.UUID.generate(), "email" => "person@example.com", "full_name" => "Person"}
                )
     end
 
     test "rejects unknown columns" do
       assert {:error, {:unknown_columns, "companies", ["nonexistent_column"]}} =
-               RowWriter.insert_row("companies", ["nonexistent_column"], %{"nonexistent_column" => "x"})
+               RowWriter.insert_row("companies", %{"nonexistent_column" => "x"})
     end
 
-    test "rejects empty columns" do
+    test "rejects empty rows" do
       assert {:error, {:empty_columns, "companies"}} =
-               RowWriter.insert_row("companies", [], %{"id" => Ecto.UUID.generate()})
+               RowWriter.insert_row("companies", %{})
     end
 
     test "returns a cast error for invalid field values" do
       assert {:error, {:invalid_value, "companies", "inserted_at", _reason}} =
                RowWriter.insert_row(
                  "companies",
-                 ["id", "inserted_at"],
                  %{"id" => Ecto.UUID.generate(), "inserted_at" => "not-a-timestamp"}
                )
     end
@@ -142,19 +135,6 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
       assert :ok =
                RowWriter.insert_row(
                  "blobs",
-                 [
-                   "id",
-                   "company_id",
-                   "author_id",
-                   "purpose",
-                   "status",
-                   "storage_type",
-                   "filename",
-                   "size",
-                   "content_type",
-                   "inserted_at",
-                   "updated_at"
-                 ],
                  %{
                    "id" => id,
                    "company_id" => ctx.company.id,
@@ -178,14 +158,13 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
     end
   end
 
-  describe "update_row/3" do
-    test "updates only listed columns", ctx do
+  describe "update_row/2" do
+    test "updates columns present in the row", ctx do
       original = ctx.company
 
       assert :ok =
                RowWriter.update_row(
                  "companies",
-                 ["name"],
                  %{
                    "id" => original.id,
                    "name" => "Updated Name"
@@ -198,36 +177,35 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
       assert company.mission == original.mission
     end
 
-    test "rejects extra update row keys", ctx do
-      assert {:error, {:unknown_row_keys, "companies", extra_keys}} =
+    test "rejects row keys outside the schema fields", ctx do
+      assert {:error, {:unknown_columns, "companies", unknown_columns}} =
                RowWriter.update_row(
                  "companies",
-                 ["name"],
                  %{
                    "id" => ctx.company.id,
                    "name" => "Visible Change",
-                   "mission" => "hidden change",
+                   "nonexistent_field" => "hidden change",
                    ~s(name", mission = 'pwned) => "malicious-key"
                  }
                )
 
-      assert "mission" in extra_keys
+      assert "nonexistent_field" in unknown_columns
       assert Repo.get!(Company, ctx.company.id).name == ctx.company.name
     end
 
     test "rejects update rows without a binary id" do
       assert {:error, {:invalid_update_row, "companies"}} =
-               RowWriter.update_row("companies", ["name"], %{"name" => "missing id"})
+               RowWriter.update_row("companies", %{"name" => "missing id"})
 
       assert {:error, {:invalid_update_row, "companies"}} =
-               RowWriter.update_row("companies", ["name"], %{"id" => 123, "name" => "x"})
+               RowWriter.update_row("companies", %{"id" => 123, "name" => "x"})
     end
 
     test "returns an error when the update row is missing" do
       fake_id = Ecto.UUID.generate()
 
       assert {:error, {:missing_update_row, "companies", ^fake_id}} =
-               RowWriter.update_row("companies", ["name"], %{"id" => fake_id, "name" => "Should Not Exist"})
+               RowWriter.update_row("companies", %{"id" => fake_id, "name" => "Should Not Exist"})
     end
 
     test "casts maps and embeds", ctx do
@@ -264,7 +242,6 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
       assert :ok =
                RowWriter.update_row(
                  "projects",
-                 ["description", "health", "timeframe", "task_statuses"],
                  %{
                    "id" => ctx.project.id,
                    "description" => %{"type" => "doc", "content" => []},

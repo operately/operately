@@ -53,8 +53,6 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     refute other_ctx.creator.id in row_ids(tables, "people")
     refute other_ctx.account.id in row_ids(tables, "accounts")
 
-    assert "id" in column_names(company_table)
-    assert "name" in column_names(company_table)
     assert collected.rows_count == total_row_count(collected)
     assert collected.non_empty_tables_count == non_empty_table_count(collected)
 
@@ -122,10 +120,6 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     |> Map.fetch!(table_name)
     |> Map.fetch!("rows")
     |> Enum.find(&(&1["id"] == row_id))
-  end
-
-  defp column_names(table) do
-    Enum.map(table["columns"], & &1["name"])
   end
 
   defp total_row_count(collected) do

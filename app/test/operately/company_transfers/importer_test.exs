@@ -620,9 +620,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     update_in(package, ["tables"], fn tables ->
       Enum.map(tables, fn table ->
         if table["name"] == "companies" do
-          table
-          |> update_in(["columns"], &(&1 ++ [%{"name" => column, "type" => "text", "nullable" => true}]))
-          |> update_in(["rows"], fn rows ->
+          update_in(table, ["rows"], fn rows ->
             Enum.map(rows, &Map.put(&1, column, value))
           end)
         else
