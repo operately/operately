@@ -175,11 +175,23 @@ export function TaskList({
             <div className="transition-transform duration-200">
               {hiddenTasksExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
             </div>
-            <span>
-              {hiddenTasksExpanded
-                ? `${totalHiddenCount} completed task${totalHiddenCount !== 1 ? "s" : ""} (click to collapse)`
-                : `Show ${totalHiddenCount} completed task${totalHiddenCount !== 1 ? "s" : ""}`}
-            </span>
+            {hiddenTasksExpanded ? (
+              <>
+                <span className="sm:hidden">Hide completed</span>
+                <span className="hidden sm:inline">
+                  {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""} (click to collapse)
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="sm:hidden">
+                  {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""}
+                </span>
+                <span className="hidden sm:inline">
+                  Show {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""}
+                </span>
+              </>
+            )}
           </div>
         </div>
       )}
