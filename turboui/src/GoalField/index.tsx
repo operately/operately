@@ -71,6 +71,12 @@ const DefaultProps = {
   extraDialogMenuOptions: [],
 };
 
+const DIALOG_WIDTH = {
+  menu: 220,
+  search: "min(420px, calc(100vw - 32px))",
+} as const;
+const SEARCH_RESULTS_MAX_HEIGHT = 210;
+
 export function useGoalFieldState(p: GoalField.Props): GoalField.State {
   const props = { ...DefaultProps, ...p };
 
@@ -169,7 +175,8 @@ function Dialog({ state }: { state: GoalField.State }) {
     <Popover.Portal>
       <Popover.Content
         className="bg-surface-base shadow rounded border border-stroke-base p-0.5"
-        style={{ width: 220 }}
+        style={{ width: state.dialogMode === "search" ? DIALOG_WIDTH.search : DIALOG_WIDTH.menu }}
+        data-test-id={`${state.testId}-dialog`}
         sideOffset={4}
         alignOffset={2}
         align="start"
@@ -265,18 +272,26 @@ function DialogSearch({ state }: { state: GoalField.State }) {
         />
       </div>
 
-      <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
+      <div
+        className="overflow-y-auto pt-0.5 pb-0.5"
+        style={{ maxHeight: SEARCH_RESULTS_MAX_HEIGHT }}
+        data-test-id={`${state.testId}-search-results`}
+      >
         {state.searchResults.map((goal) => (
           <div
             key={goal.id}
-            className="flex items-center gap-2 px-1.5 py-1 rounded hover:bg-surface-dimmed cursor-pointer"
+            className="flex items-start gap-2 px-1.5 py-1.5 rounded hover:bg-surface-dimmed cursor-pointer"
             onClick={() => {
               state.setGoal(goal);
               state.setIsOpen(false);
             }}
           >
-            <div className="flex items-center gap-1.5 truncate">
-              <div className="text-sm truncate" data-test-id={createTestId(state.testId, goal.name)}>
+            <div className="min-w-0 flex-1">
+              <div
+                className="text-sm whitespace-normal break-words"
+                title={goal.name}
+                data-test-id={createTestId(state.testId, goal.name)}
+              >
                 {goal.name}
               </div>
             </div>
