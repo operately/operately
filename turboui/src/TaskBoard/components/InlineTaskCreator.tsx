@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import * as Types from "../types";
-import { PrimaryButton, SecondaryButton } from "../../Button";
+import { PrimaryButton } from "../../Button";
 
 export interface InlineTaskCreatorProps {
   milestone: Types.Milestone | null;
@@ -81,16 +81,16 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
             <PrimaryButton size="xs" disabled={!title.trim()} onClick={submit} className="w-full sm:w-auto">
               Add
             </PrimaryButton>
-            <SecondaryButton
-              size="xs"
-              className="w-full sm:w-auto"
+            <button
+              type="button"
+              className="w-full rounded-md px-2.5 py-1 text-sm font-semibold text-content-dimmed transition hover:bg-surface-dimmed hover:text-content-base sm:w-auto"
               onClick={() => {
                 setTitle("");
                 onCancel?.();
               }}
             >
               Cancel
-            </SecondaryButton>
+            </button>
           </div>
         </div>
       </div>
