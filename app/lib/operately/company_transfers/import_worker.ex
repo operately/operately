@@ -4,6 +4,7 @@ defmodule Operately.CompanyTransfers.ImportWorker do
 
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.Importer
+  alias Operately.CompanyTransfers.PublicErrorMessage
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"import_run_id" => import_run_id}}) do
@@ -21,20 +22,9 @@ defmodule Operately.CompanyTransfers.ImportWorker do
           {:ok, _run} ->
             :ok
 
-          {:error, {:validation_failed, message, errors}} ->
-            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, message, %{validation_errors: errors})
-            :ok
-
-          {:error, {:package_not_found, path}} ->
-            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, "Import package not found: #{inspect(path)}")
-            :ok
-
-          {:error, {:exception, message}} ->
-            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, message)
-            :ok
-
           {:error, reason} ->
-            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, format_reason(reason))
+            Logger.error("Company import failed for run #{run.id}: #{inspect(reason)}")
+            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, PublicErrorMessage.for_import(reason), failure_attrs(reason))
             :ok
         end
 
@@ -48,25 +38,14 @@ defmodule Operately.CompanyTransfers.ImportWorker do
       handle_trapped_failure(import_run_id, {kind, reason})
   end
 
-  defp format_reason({:account_creation_failed, email, changeset}) do
-    "Failed to create imported account #{email}: #{inspect(changeset.errors)}"
-  end
-
-  defp format_reason({:invalid_account_row, row}) do
-    "Invalid imported account row: #{inspect(row)}"
-  end
-
-  defp format_reason({:missing_reference_translation, table, column, referenced_table, source_id}) do
-    "Missing reference translation for #{table}.#{column} -> #{referenced_table} (#{source_id})"
-  end
-
-  defp format_reason(reason), do: inspect(reason)
+  defp failure_attrs({:validation_failed, _message, errors}), do: %{validation_errors: errors}
+  defp failure_attrs(_reason), do: %{}
 
   defp handle_trapped_failure(import_run_id, {:error, error, stacktrace}) do
     Logger.error(Exception.format(:error, error, stacktrace))
 
     if run = CompanyTransfers.get_import_run(import_run_id) do
-      {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, Exception.message(error))
+      {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, PublicErrorMessage.for_import({:error, error, stacktrace}))
     end
 
     :ok
@@ -77,7 +56,7 @@ defmodule Operately.CompanyTransfers.ImportWorker do
     Logger.error(message)
 
     if run = CompanyTransfers.get_import_run(import_run_id) do
-      {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, message)
+      {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, PublicErrorMessage.for_import({kind, reason}))
     end
 
     :ok

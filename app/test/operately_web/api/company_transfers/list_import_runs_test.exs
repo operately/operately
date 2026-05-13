@@ -67,5 +67,21 @@ defmodule OperatelyWeb.Api.CompanyTransfers.ListImportRunsTest do
 
       assert length(res.import_runs) == 1
     end
+
+    test "sanitizes failed import error messages", ctx do
+      {:ok, run} =
+        Operately.CompanyTransfers.create_import_run(
+          ctx.member.account,
+          %{status: :failed, error_message: "Archive does not contain data.json"},
+          dispatch: false
+        )
+
+      assert {200, res} = query(ctx.conn, [:company_transfers, :list_import_runs], %{})
+
+      failed_run = Enum.find(res.import_runs, &(&1.id == run.id))
+
+      assert failed_run.error_message ==
+               "This ZIP file looks incomplete or damaged. Export the company again and try again."
+    end
   end
 end

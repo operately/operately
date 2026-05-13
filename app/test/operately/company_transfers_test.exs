@@ -128,8 +128,7 @@ defmodule Operately.CompanyTransfersTest do
 
     assert run.status == :failed
     assert run.completed_at != nil
-    assert run.error_message =~ "exit"
-    assert run.error_message =~ "boom"
+    assert run.error_message == "We couldn't create the export package. Please try again. If it keeps failing, contact support."
   end
 
   test "import worker imports a staged relational package", ctx do
@@ -200,7 +199,6 @@ defmodule Operately.CompanyTransfersTest do
 
     assert run.status == :failed
     assert run.completed_at != nil
-    assert run.error_message =~ "exit"
-    assert run.error_message =~ "boom"
+    assert run.error_message == "We couldn't import this company. Please try again with a new export package. If it keeps failing, contact support."
   end
 end
