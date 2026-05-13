@@ -158,8 +158,9 @@ export function TaskList({
 
         {/* Empty state message when no visible tasks but there are hidden tasks */}
         {visibleTasks.length === 0 && totalHiddenCount > 0 && showHiddenTasksToggle && (
-          <div className="py-3 px-4 text-center text-content-subtle text-sm bg-surface-base">
-            Click + or press c to add a task, or drag a task here.
+          <div className="py-3 px-4 text-left text-content-subtle text-sm bg-surface-base sm:text-center">
+            <span className="sm:hidden">Tap + to add a task.</span>
+            <span className="hidden sm:inline">Click + or press c to add a task, or drag a task here.</span>
           </div>
         )}
       </div>
@@ -174,11 +175,23 @@ export function TaskList({
             <div className="transition-transform duration-200">
               {hiddenTasksExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
             </div>
-            <span>
-              {hiddenTasksExpanded
-                ? `${totalHiddenCount} completed task${totalHiddenCount !== 1 ? "s" : ""} (click to collapse)`
-                : `Show ${totalHiddenCount} completed task${totalHiddenCount !== 1 ? "s" : ""}`}
-            </span>
+            {hiddenTasksExpanded ? (
+              <>
+                <span className="sm:hidden">Hide completed</span>
+                <span className="hidden sm:inline">
+                  {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""} (click to collapse)
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="sm:hidden">
+                  {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""}
+                </span>
+                <span className="hidden sm:inline">
+                  Show {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""}
+                </span>
+              </>
+            )}
           </div>
         </div>
       )}

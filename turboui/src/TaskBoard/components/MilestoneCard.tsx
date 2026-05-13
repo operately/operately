@@ -67,6 +67,8 @@ export function MilestoneCard({
 
   // Generate default stats if not provided
   const milestoneStats = stats || calculateMilestoneStats(sortedTasks);
+  const completionPercentage = calculateCompletionPercentage(milestoneStats);
+  const completionLabel = `${Math.round(completionPercentage)}% complete`;
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator();
 
@@ -101,9 +103,11 @@ export function MilestoneCard({
             {/* Progress pie chart */}
             <PieChart
               size={16}
+              ariaLabel={`Milestone progress: ${completionLabel}`}
+              title={`Milestone progress: ${completionLabel}`}
               slices={[
                 {
-                  percentage: calculateCompletionPercentage(milestoneStats),
+                  percentage: completionPercentage,
                   color: "var(--color-callout-success-content)",
                 },
               ]}
@@ -112,11 +116,13 @@ export function MilestoneCard({
               <BlackLink
                 to={milestone.link || ""}
                 // Hover color change on medium+ screens (hover disabled on small screens to prevent double-tap on mobile) 
-                className="truncate text-sm font-semibold text-content-base md:hover:text-link-hover transition-colors min-w-0"
+                className="min-w-0 text-sm font-semibold text-content-base transition-colors md:hover:text-link-hover"
                 underline="hover"
                 title={milestone.name}
               >
-                <span className="truncate">{milestone.name}</span>
+                <span className="overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] sm:block sm:truncate">
+                  {milestone.name}
+                </span>
               </BlackLink>
 
               {/* Milestone indicators */}
@@ -178,7 +184,13 @@ export function MilestoneCard({
               </Tooltip>
             )}
 
-            <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="milestone-add-task">
+            <SecondaryButton
+              size="xs"
+              icon={IconPlus}
+              className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
+              onClick={openCreator}
+              testId="milestone-add-task"
+            >
               {/* icon-only for reduced repetition; keep accessible label */}
               <span className="sr-only">Add task</span>
             </SecondaryButton>
@@ -231,13 +243,14 @@ export function MilestoneCard({
                   autoFocus
                   testId="inline-task-creator-empty"
                 />
-                <div className="px-4 pb-3 text-center text-content-subtle text-xs">
+                <div className="hidden px-4 pb-3 text-center text-content-subtle text-xs sm:block">
                   Press Enter to add. You can also drag tasks here.
                 </div>
               </>
             ) : (
-              <div className="text-center text-content-subtle text-sm">
-                Click + or press 'c' to add a task, or drag a task here.
+              <div className="text-left text-content-subtle text-sm sm:text-center">
+                <span className="sm:hidden">Tap + to add a task.</span>
+                <span className="hidden sm:inline">Click + or press 'c' to add a task, or drag a task here.</span>
               </div>
             )}
           </EmptyMilestoneDropZone>
