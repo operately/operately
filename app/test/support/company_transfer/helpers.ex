@@ -149,10 +149,19 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
     case Keyword.get(opts, :source_export_run) do
       %ExportRun{} = export_run ->
         source_package_path = Path.join(workspace.root_path, "source-operately.zip")
+        source_extract_path = Path.join(workspace.root_path, "source-package")
         export_run = Repo.preload(export_run, :package_blob)
         :ok = BlobIO.download_to_path(export_run.package_blob, source_package_path)
-        Archive.extract_present!(source_package_path, workspace.root_path, package_archive_paths(package))
+        Archive.extract_present!(source_package_path, source_extract_path, package_archive_paths(package))
+
+        source_files_path = Path.join(source_extract_path, "files")
+
+        if File.dir?(source_files_path) do
+          File.cp_r!(source_files_path, workspace.files_path)
+        end
+
         File.rm!(source_package_path)
+        File.rm_rf!(source_extract_path)
 
       _ ->
         :ok
@@ -162,9 +171,10 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
   end
 
   defp package_archive_paths(package) do
-    Enum.map(Map.get(package, "files", []), fn %{"path" => relative_path} ->
-      Path.join("files", relative_path)
-    end)
+    ["data.json"] ++
+      Enum.map(Map.get(package, "files", []), fn %{"path" => relative_path} ->
+        Path.join("files", relative_path)
+      end)
   end
 
   defp package_entries(workspace, package) do
