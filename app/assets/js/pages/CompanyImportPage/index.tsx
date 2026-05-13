@@ -92,6 +92,11 @@ function Page() {
     }
   }, [packageFile.blobId, refreshRuns, starting]);
 
+  const handleClearPackageFile = React.useCallback(() => {
+    if (starting) return;
+    setPackageFile(EMPTY_UPLOAD_STATE);
+  }, [starting]);
+
   const canUpload = true;
   const canStartImport = !!packageFile.blobId && !packageFile.uploading;
 
@@ -105,6 +110,7 @@ function Page() {
       backPath={Paths.lobbyPath()}
       uploadsUnavailableMessage="Uploads are unavailable for this account."
       onSelectPackageFile={uploadArtifact}
+      onClearPackageFile={handleClearPackageFile}
       onStartImport={handleStartImport}
     />
   );

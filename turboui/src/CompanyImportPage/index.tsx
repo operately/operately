@@ -5,6 +5,7 @@ import { Page } from "../Page";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { ProgressBar } from "../ProgressBar";
 import { Tooltip } from "../Tooltip";
+import { IconX } from "../icons";
 import classNames from "../utils/classnames";
 
 export namespace CompanyImportPage {
@@ -41,6 +42,7 @@ export namespace CompanyImportPage {
     uploadsUnavailableMessage?: string | null;
     onStartImport: () => void | Promise<void>;
     onSelectPackageFile: (file: File) => void | Promise<void>;
+    onClearPackageFile: () => void;
   }
 }
 
@@ -50,7 +52,7 @@ export function CompanyImportPage(props: CompanyImportPage.Props) {
   return (
     <Page title="Import Company" size="small" testId="company-import-page" navigation={navigation}>
       <div className="px-4 sm:px-10 py-8">
-        <header className="flex items-start justify-between gap-4">
+        <header>
           <div>
             <div className="uppercase text-sm tracking-wide">Company Import</div>
             <h1 className="text-content-accent text-3xl font-extrabold">Import company</h1>
@@ -58,16 +60,6 @@ export function CompanyImportPage(props: CompanyImportPage.Props) {
               Upload the exported ZIP package, then start importing the company into this Operately instance.
             </p>
           </div>
-
-          <PrimaryButton
-            size="sm"
-            onClick={props.onStartImport}
-            loading={props.starting}
-            disabled={!props.canStartImport}
-            testId="start-import-button"
-          >
-            Start import
-          </PrimaryButton>
         </header>
 
         <section className="mt-10">
@@ -82,6 +74,15 @@ export function CompanyImportPage(props: CompanyImportPage.Props) {
                 accept=".zip,application/zip"
                 buttonLabel="Choose ZIP"
                 onSelectFile={props.onSelectPackageFile}
+                onClearFile={props.onClearPackageFile}
+                clearDisabled={props.starting}
+                action={
+                  props.canStartImport ? (
+                    <PrimaryButton size="sm" onClick={props.onStartImport} loading={props.starting} testId="start-import-button">
+                      Start import
+                    </PrimaryButton>
+                  ) : null
+                }
               />
             </div>
           ) : (
@@ -116,6 +117,9 @@ interface ArtifactUploadCardProps {
   accept: string;
   buttonLabel: string;
   onSelectFile: (file: File) => void | Promise<void>;
+  onClearFile?: () => void;
+  clearDisabled?: boolean;
+  action?: React.ReactNode;
 }
 
 function ArtifactUploadCard({
@@ -125,8 +129,12 @@ function ArtifactUploadCard({
   accept,
   buttonLabel,
   onSelectFile,
+  onClearFile,
+  clearDisabled,
+  action,
 }: ArtifactUploadCardProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const hasUploadedFile = !!state.blobId;
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,13 +170,33 @@ function ArtifactUploadCard({
       />
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <SecondaryButton size="sm" onClick={() => inputRef.current?.click()}>
-          {buttonLabel}
-        </SecondaryButton>
+        {!hasUploadedFile && (
+          <SecondaryButton size="sm" onClick={() => inputRef.current?.click()}>
+            {buttonLabel}
+          </SecondaryButton>
+        )}
 
         <Tooltip content={state.fileName || "No file selected"} size="sm">
-          <div className="text-sm text-content-dimmed truncate" data-test-id={`${testIdPrefix}-filename`}>
-            {state.fileName || "No file selected"}
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="text-sm text-content-dimmed truncate" data-test-id={`${testIdPrefix}-filename`}>
+              {state.fileName || "No file selected"}
+            </div>
+
+            {hasUploadedFile && onClearFile && (
+              <button
+                type="button"
+                onClick={onClearFile}
+                disabled={clearDisabled}
+                aria-label="Clear ZIP"
+                data-test-id={`${testIdPrefix}-clear`}
+                className={classNames("shrink-0 rounded p-1 transition-colors", {
+                  "cursor-pointer text-content-subtle hover:bg-surface-highlight hover:text-content-base": !clearDisabled,
+                  "cursor-not-allowed text-content-subtle opacity-50": clearDisabled,
+                })}
+              >
+                <IconX size={14} />
+              </button>
+            )}
           </div>
         </Tooltip>
       </div>
@@ -178,6 +206,8 @@ function ArtifactUploadCard({
           <ProgressBar progress={state.progress} status={uploadProgressStatus(state)} />
         </div>
       )}
+
+      {action && <div className="mt-4 flex justify-start border-t border-surface-outline pt-4">{action}</div>}
     </div>
   );
 }

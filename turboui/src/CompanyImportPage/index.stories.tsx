@@ -27,6 +27,7 @@ const defaultArgs: CompanyImportPage.Props = {
   uploadsUnavailableMessage: null,
   onStartImport: () => {},
   onSelectPackageFile: () => {},
+  onClearPackageFile: () => {},
   packageFile: {
     blobId: "blob-package",
     fileName: "operately.zip",
