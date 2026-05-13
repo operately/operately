@@ -1,6 +1,7 @@
 defmodule Operately.CompanyTransfersTest do
   use Operately.DataCase
   use Oban.Testing, repo: Operately.Repo
+  import ExUnit.CaptureLog
   import Ecto.Query, only: [from: 2]
   import Mock
 
@@ -200,5 +201,24 @@ defmodule Operately.CompanyTransfersTest do
     assert run.status == :failed
     assert run.completed_at != nil
     assert run.error_message == "We couldn't import this company. Please try again with a new export package. If it keeps failing, contact support."
+  end
+
+  test "import worker logs account creation failures with the underlying changeset details", ctx do
+    assert {:ok, run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
+
+    changeset =
+      %Operately.People.Account{}
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.add_error(:email, "has already been taken")
+
+    log =
+      capture_log(fn ->
+        with_mock Importer, run: fn _run -> {:error, {:account_creation_failed, "deleted+account-123@operately.invalid", changeset}} end do
+          assert :ok = perform_job(ImportWorker, %{import_run_id: run.id})
+        end
+      end)
+
+    assert log =~ "Company import failed for run #{run.id}: failed to create imported account for deleted+account-123@operately.invalid"
+    assert log =~ "email: has already been taken"
   end
 end
