@@ -315,8 +315,8 @@ function StickyActionBar({
   onDisplayModeChange,
 }: ActionBarProps) {
   return (
-    <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between py-6 bg-surface-base px-4 lg:px-0">
-      <div className="flex flex-row items-center gap-4">
+    <header className="sticky top-0 z-10 flex items-start justify-between gap-3 py-4 bg-surface-base px-4 sm:items-center sm:py-6 lg:px-0">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-4">
         {canCreateTask && (
           <PrimaryButton
             size="xs"
@@ -342,7 +342,7 @@ function StickyActionBar({
         {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
       </div>
 
-      <div className="flex items-center -mb-2">
+      <div className="flex flex-shrink-0 items-center gap-1 sm:-mb-2">
         <TasksMenu
           canManageStatuses={canManageStatuses}
           statuses={statuses}
