@@ -1,9 +1,13 @@
 defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
   use Operately.DataCase
 
+  import ExUnit.CaptureLog
+  import Mock
+
   alias Operately.Blobs.Blob
   alias Operately.Companies.Company
   alias Operately.CompanyTransfers.Import.Relational.RowWriter
+  alias Operately.CompanyTransfers.Schema.AppSchemas
   alias Operately.People.Person
   alias Operately.Projects.Project
 
@@ -113,6 +117,29 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
     test "rejects unknown columns" do
       assert {:error, {:unknown_columns, "companies", ["nonexistent_column"]}} =
                RowWriter.insert_row("companies", %{"nonexistent_column" => "x"})
+    end
+
+    test "logs runtime diagnostics when an importable table is missing from the schema map" do
+      diagnostics = %{
+        table: "companies",
+        cached_schema_module: nil,
+        cached_map_contains_table: false,
+        application_schema_candidates: [%{module: Operately.Companies.Company}]
+      }
+
+      log =
+        capture_log(fn ->
+          with_mock AppSchemas,
+            schema_for_table: fn "companies" -> nil end,
+            unknown_table_diagnostics: fn "companies" -> diagnostics end do
+            assert {:error, {:unknown_table, "companies"}} =
+                     RowWriter.insert_row("companies", %{"id" => Ecto.UUID.generate()})
+          end
+        end)
+
+      assert log =~ "Unknown import table encountered during company import"
+      assert log =~ "table=companies"
+      assert log =~ "application_schema_candidates"
     end
 
     test "rejects empty rows" do
