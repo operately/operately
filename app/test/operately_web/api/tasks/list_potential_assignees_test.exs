@@ -81,17 +81,18 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:engineering)
       |> Factory.add_project(:website, :engineering)
-      |> Factory.add_space_member(:john, :engineering, name: "John Doe")
-      |> Factory.add_space_member(:mike, :engineering, name: "Mike Smith")
-      |> Factory.add_space_member(:sarah, :engineering, name: "Sarah Johnson")
+      |> Factory.add_project_contributor(:project_contributor, :website, :as_person)
+      |> Factory.add_space_member(:john, :engineering, name: "AssignmentTarget One")
+      |> Factory.add_space_member(:mike, :engineering, name: "Needle Beta")
+      |> Factory.add_space_member(:sarah, :engineering, name: "AssignmentTarget Two")
     end
 
-    test "returns all people with access to the project", ctx do
+    test "returns current user, project contributors, and space members by default", ctx do
       assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: Paths.project_id(ctx.website), type: "project"})
 
-      # Should include creator + 3 space members
-      assert length(res.people) == 4
+      assert length(res.people) == 5
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.creator)))
+      assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.project_contributor)))
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.john)))
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.mike)))
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.sarah)))
@@ -101,7 +102,7 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
       assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
-        query: "Mike"
+        query: "Needle"
       })
 
       assert length(res.people) == 1
@@ -112,7 +113,7 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
       assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
-        query: "Smith"
+        query: "Beta"
       })
 
       assert length(res.people) == 1
@@ -123,21 +124,20 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
       assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
-        query: "doe"
+        query: "needle"
       })
 
       assert length(res.people) == 1
-      assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.john)))
+      assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.mike)))
     end
 
     test "query matches partial names", ctx do
       assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
-        query: "John"
+        query: "AssignmentTarget"
       })
 
-      # Should match both "John Doe" and "Sarah Johnson"
       assert length(res.people) == 2
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.john)))
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.sarah)))
@@ -150,9 +150,9 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
         ignored_ids: [Paths.person_id(ctx.john), Paths.person_id(ctx.mike)]
       })
 
-      # Should only include creator and sarah
-      assert length(res.people) == 2
+      assert length(res.people) == 3
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.creator)))
+      assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.project_contributor)))
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.sarah)))
       refute Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.john)))
       refute Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.mike)))
@@ -162,20 +162,44 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
       assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
-        query: "John",
+        query: "AssignmentTarget",
         ignored_ids: [Paths.person_id(ctx.john)]
       })
 
-      # Should match "John" but exclude john, leaving only sarah (Sarah Johnson)
       assert length(res.people) == 1
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.sarah)))
     end
 
-    test "returns people ordered by full name", ctx do
+    test "returns current user first, then project contributors, then space members by full name", ctx do
       assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: Paths.project_id(ctx.website), type: "project"})
 
-      names = Enum.map(res.people, & &1.full_name)
-      assert names == Enum.sort(names)
+      [first | rest] = res.people
+      assert first.id == Paths.person_id(ctx.creator)
+
+      assert Enum.find_index(rest, &(&1.id == Paths.person_id(ctx.project_contributor))) <
+               Enum.find_index(rest, &(&1.id == Paths.person_id(ctx.john)))
+
+      space_member_names =
+        rest
+        |> Enum.filter(&(&1.id in [Paths.person_id(ctx.john), Paths.person_id(ctx.mike), Paths.person_id(ctx.sarah)]))
+        |> Enum.map(& &1.full_name)
+
+      assert space_member_names == Enum.sort(space_member_names)
+    end
+
+    test "does not show company-only members by default, but finds them by search when they have access", ctx do
+      ctx = Factory.add_company_member(ctx, :company_only, name: "Company Only")
+
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: Paths.project_id(ctx.website), type: "project"})
+      refute Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.company_only)))
+
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
+        id: Paths.project_id(ctx.website),
+        type: "project",
+        query: "Company"
+      })
+
+      assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.company_only)))
     end
 
     test "returns empty list when query matches no one", ctx do
@@ -195,8 +219,8 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
       |> Factory.setup()
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
-      |> Factory.add_space_member(:john, :space, name: "John Doe")
-      |> Factory.add_space_member(:sarah, :space, name: "Sarah Johnson")
+      |> Factory.add_space_member(:john, :space, name: "SpaceAssignee One")
+      |> Factory.add_space_member(:sarah, :space, name: "SpaceAssignee Two")
     end
 
     test "returns people with access to the space", ctx do
@@ -213,10 +237,9 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
       assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.space_id(ctx.space),
         type: "space",
-        query: "John"
+        query: "SpaceAssignee"
       })
 
-      # Should match both "John Doe" and "Sarah Johnson"
       assert length(res.people) == 2
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.john)))
       assert Enum.any?(res.people, &(&1.id == Paths.person_id(ctx.sarah)))
