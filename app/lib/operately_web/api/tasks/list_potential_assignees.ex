@@ -13,6 +13,9 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssignees do
   alias Operately.Access.Binding
   alias OperatelyWeb.Api.Serializer
   alias Operately.Groups.Group
+  alias Operately.Groups.Member
+  alias Operately.Projects.Contributor
+  alias Operately.Projects.Project
 
   inputs do
     field :id, :id, null: false
@@ -28,38 +31,56 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssignees do
   def call(conn, inputs) do
     me = me(conn)
 
-    with {:ok, access_context} <- load_access_context(me, inputs),
-         {:ok, people} <- load_people(access_context.id, inputs) do
+    with {:ok, scope} <- load_scope(me, inputs),
+         {:ok, people} <- load_people(scope, me, inputs) do
       {:ok, %{people: Serializer.serialize(people, level: :essential)}}
     else
       {:error, :not_found} -> {:error, :not_found}
     end
   end
 
-  defp load_access_context(me, %{id: id, type: :project}) do
-    case Operately.Projects.Project.get(me, id: id, opts: [preload: [:access_context]]) do
-      {:ok, project} -> {:ok, project.access_context}
+  defp load_scope(me, %{id: id, type: :project}) do
+    case Project.get(me, id: id, opts: [preload: [:access_context]]) do
+      {:ok, project} ->
+        {:ok,
+         %{
+           type: :project,
+           access_context_id: project.access_context.id,
+           project_id: project.id,
+           space_id: project.group_id
+         }}
+
       {:error, _} -> {:error, :not_found}
     end
   end
 
-  defp load_access_context(me, %{id: id, type: :space}) do
+  defp load_scope(me, %{id: id, type: :space}) do
     case Group.get(me, id: id, opts: [preload: [:access_context]]) do
-      {:ok, space} -> {:ok, space.access_context}
+      {:ok, space} ->
+        {:ok,
+         %{
+           type: :space,
+           access_context_id: space.access_context.id,
+           space_id: space.id
+         }}
+
       {:error, _} -> {:error, :not_found}
     end
   end
 
-  defp load_access_context(_me, _inputs), do: {:error, :not_found}
+  defp load_scope(_me, _inputs), do: {:error, :not_found}
 
-  defp load_people(access_context_id, inputs) do
+  defp load_people(scope, me, inputs) do
+    project_contributor_ids = project_contributor_ids(scope)
+    space_member_ids = space_member_ids(scope.space_id)
+
     people =
       from(p in Person,
         join: m in assoc(p, :access_group_memberships),
         join: g in assoc(m, :group),
         join: b in assoc(g, :bindings),
         join: c in assoc(b, :context),
-        where: c.id == ^access_context_id and is_nil(p.suspended_at) and b.access_level >= ^Binding.view_access(),
+        where: c.id == ^scope.access_context_id and is_nil(p.suspended_at) and b.access_level >= ^Binding.view_access(),
         group_by: p.id,
         select: %{person: p, access_level: max(b.access_level)},
         order_by: [asc: p.full_name]
@@ -70,8 +91,47 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssignees do
       |> Enum.map(fn %{person: p, access_level: level} ->
         %{p | access_level: level}
       end)
+      |> maybe_filter_preferred_people(inputs[:query], me.id, project_contributor_ids, space_member_ids)
+      |> sort_people(me.id, project_contributor_ids, space_member_ids)
 
     {:ok, people}
+  end
+
+  defp project_contributor_ids(%{type: :project, project_id: project_id}) do
+    from(c in Contributor, where: c.project_id == ^project_id, select: c.person_id)
+    |> Repo.all()
+    |> MapSet.new()
+  end
+
+  defp project_contributor_ids(_scope), do: MapSet.new()
+
+  defp space_member_ids(space_id) do
+    from(m in Member, where: m.group_id == ^space_id, select: m.person_id)
+    |> Repo.all()
+    |> MapSet.new()
+  end
+
+  defp maybe_filter_preferred_people(people, query, me_id, project_contributor_ids, space_member_ids) when query in [nil, ""] do
+    Enum.filter(people, fn person ->
+      person.id == me_id or MapSet.member?(project_contributor_ids, person.id) or MapSet.member?(space_member_ids, person.id)
+    end)
+  end
+
+  defp maybe_filter_preferred_people(people, _query, _me_id, _project_contributor_ids, _space_member_ids), do: people
+
+  defp sort_people(people, me_id, project_contributor_ids, space_member_ids) do
+    Enum.sort_by(people, fn person ->
+      {person_rank(person, me_id, project_contributor_ids, space_member_ids), String.downcase(person.full_name || "")}
+    end)
+  end
+
+  defp person_rank(person, me_id, project_contributor_ids, space_member_ids) do
+    cond do
+      person.id == me_id -> 0
+      MapSet.member?(project_contributor_ids, person.id) -> 1
+      MapSet.member?(space_member_ids, person.id) -> 2
+      true -> 3
+    end
   end
 
   defp maybe_filter_query(query, nil), do: query
