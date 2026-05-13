@@ -65,6 +65,9 @@ describe("GoalField", () => {
     const dialog = container.ownerDocument.querySelector('[data-test-id="parent-goal-field-dialog"]');
     expect(dialog).toHaveStyle({ width: "min(420px, calc(100vw - 32px))" });
 
+    const results = container.ownerDocument.querySelector('[data-test-id="parent-goal-field-search-results"]');
+    expect(results).toHaveStyle({ maxHeight: "210px" });
+
     const result = await screen.findByText(longGoalName);
     expect(result).toHaveClass("whitespace-normal", "break-words");
     expect(result).not.toHaveClass("truncate");
