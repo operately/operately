@@ -112,11 +112,13 @@ export function MilestoneCard({
               <BlackLink
                 to={milestone.link || ""}
                 // Hover color change on medium+ screens (hover disabled on small screens to prevent double-tap on mobile) 
-                className="truncate text-sm font-semibold text-content-base md:hover:text-link-hover transition-colors min-w-0"
+                className="min-w-0 text-sm font-semibold text-content-base transition-colors md:hover:text-link-hover"
                 underline="hover"
                 title={milestone.name}
               >
-                <span className="truncate">{milestone.name}</span>
+                <span className="overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] sm:block sm:truncate">
+                  {milestone.name}
+                </span>
               </BlackLink>
 
               {/* Milestone indicators */}
