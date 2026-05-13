@@ -1,4 +1,5 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ImportRun do
+  alias Operately.CompanyTransfers.PublicErrorMessage
   alias OperatelyWeb.Api.Serializer
 
   def serialize(run, level: _level) do
@@ -13,7 +14,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ImportRun
       tables_count: run.tables_count,
       rows_count: run.rows_count,
       package_blob_id: run.package_blob_id,
-      error_message: run.error_message,
+      error_message: PublicErrorMessage.for_import(run),
       validation_errors: run.validation_errors,
       manifest_summary: run.manifest_summary,
       inserted_at: Serializer.serialize(run.inserted_at),

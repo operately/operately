@@ -80,5 +80,24 @@ defmodule OperatelyWeb.Api.CompanyTransfers.ListExportRunsTest do
 
       assert length(res.export_runs) == 1
     end
+
+    test "sanitizes failed export error messages", ctx do
+      Operately.Companies.add_owner(ctx.creator, ctx.owner.id)
+
+      {:ok, run} =
+        Operately.CompanyTransfers.create_export_run(
+          ctx.company,
+          ctx.owner.account,
+          %{status: :failed, error_message: "No ownership path to company for table projects"},
+          dispatch: false
+        )
+
+      assert {200, res} = query(ctx.conn, [:company_transfers, :list_export_runs], %{})
+
+      failed_run = Enum.find(res.export_runs, &(&1.id == run.id))
+
+      assert failed_run.error_message ==
+               "We couldn't create the export package. Please try again. If it keeps failing, contact support."
+    end
   end
 end
