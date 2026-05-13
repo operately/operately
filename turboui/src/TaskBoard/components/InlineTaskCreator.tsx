@@ -74,7 +74,7 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
             placeholder={placeholder}
             aria-label="Add task"
             data-test-id={testId || "inline-task-title"}
-            className="flex-1 rounded-md border border-surface-outline bg-transparent px-2 py-1 text-sm outline-none focus:border-indigo-500"
+            className="flex-1 rounded-md border border-surface-outline bg-transparent px-2 py-1 text-base sm:text-sm outline-none focus:border-indigo-500"
           />
 
           <PrimaryButton size="xs" disabled={!title.trim()} onClick={submit}>
