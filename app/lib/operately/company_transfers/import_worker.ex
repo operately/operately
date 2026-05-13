@@ -2,6 +2,8 @@ defmodule Operately.CompanyTransfers.ImportWorker do
   use Oban.Worker, queue: :default
   require Logger
 
+  import Ecto.Changeset, only: [traverse_errors: 2]
+
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.Importer
   alias Operately.CompanyTransfers.PublicErrorMessage
@@ -23,7 +25,7 @@ defmodule Operately.CompanyTransfers.ImportWorker do
             :ok
 
           {:error, reason} ->
-            Logger.error("Company import failed for run #{run.id}: #{inspect(reason)}")
+            Logger.error("Company import failed for run #{run.id}: #{format_failure_reason(reason)}")
             {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, PublicErrorMessage.for_import(reason), failure_attrs(reason))
             :ok
         end
@@ -40,6 +42,32 @@ defmodule Operately.CompanyTransfers.ImportWorker do
 
   defp failure_attrs({:validation_failed, _message, errors}), do: %{validation_errors: errors}
   defp failure_attrs(_reason), do: %{}
+
+  defp format_failure_reason({:account_creation_failed, email, %Ecto.Changeset{} = changeset}) do
+    "failed to create imported account for #{email}: #{format_changeset_errors(changeset)}"
+  end
+
+  defp format_failure_reason({:invalid_account_row, account_row}) do
+    "invalid account row in package: #{inspect(account_row)}"
+  end
+
+  defp format_failure_reason({:package_not_found, reason}) do
+    "import package unavailable: #{inspect(reason)}"
+  end
+
+  defp format_failure_reason({:package_limit_exceeded, limit, max, actual}) do
+    "package exceeds configured import limit #{limit} (max=#{max}, actual=#{actual})"
+  end
+
+  defp format_failure_reason({:validation_failed, message, errors}) do
+    "#{message} (validation_errors=#{inspect(errors)})"
+  end
+
+  defp format_failure_reason({:exception, message}) when is_binary(message) do
+    "unexpected exception inside importer: #{message}"
+  end
+
+  defp format_failure_reason(reason), do: inspect(reason)
 
   defp handle_trapped_failure(import_run_id, {:error, error, stacktrace}) do
     Logger.error(Exception.format(:error, error, stacktrace))
@@ -60,5 +88,17 @@ defmodule Operately.CompanyTransfers.ImportWorker do
     end
 
     :ok
+  end
+
+  defp format_changeset_errors(changeset) do
+    changeset
+    |> traverse_errors(fn {message, opts} ->
+      Regex.replace(~r"%{(\w+)}", message, fn _, key ->
+        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+      end)
+    end)
+    |> Enum.map_join(", ", fn {field, messages} ->
+      "#{field}: #{Enum.join(messages, ", ")}"
+    end)
   end
 end
