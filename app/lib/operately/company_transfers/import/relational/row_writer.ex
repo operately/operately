@@ -7,7 +7,6 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriter do
   alias Operately.CompanyTransfers.Schema.AppSchemas
   alias Operately.CompanyTransfers.Schema.PolicyRegistry
   alias Operately.Repo
-  require Logger
 
   def insert_row(table, row) when is_binary(table) and is_map(row) do
     columns = Map.keys(row)
@@ -52,14 +51,7 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriter do
       true ->
         case AppSchemas.schema_for_table(table) do
           nil ->
-            Logger.error("""
-            Unknown import table encountered during company import
-            table=#{table}
-            diagnostics=#{inspect(AppSchemas.unknown_table_diagnostics(table), pretty: true, limit: :infinity)}
-            """)
-
             {:error, {:unknown_table, table}}
-
           schema -> {:ok, schema, AppSchemas.persisted_fields_for_table(table)}
         end
     end

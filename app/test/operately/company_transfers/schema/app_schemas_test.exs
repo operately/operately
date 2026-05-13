@@ -3,14 +3,17 @@ defmodule Operately.CompanyTransfers.Schema.AppSchemasTest do
 
   alias Operately.CompanyTransfers.Schema.AppSchemas
 
-  test "unknown_table_diagnostics/1 reports schema candidates for task_assignees" do
-    diagnostics = AppSchemas.unknown_table_diagnostics("task_assignees")
+  test "schema_for_table/1 resolves task_assignees in release-safe discovery" do
+    assert AppSchemas.schema_for_table("task_assignees") == Operately.Tasks.Assignee
+  end
 
-    assert diagnostics.cached_schema_module == Operately.Tasks.Assignee
-    assert diagnostics.cached_map_contains_table == true
-
-    assert Enum.any?(diagnostics.application_schema_candidates, fn candidate ->
-             candidate.module == Operately.Tasks.Assignee
-           end)
+  test "persisted_fields_for_table/1 exposes task assignee columns" do
+    assert AppSchemas.persisted_fields_for_table("task_assignees") == %{
+             "id" => :id,
+             "inserted_at" => :inserted_at,
+             "person_id" => :person_id,
+             "task_id" => :task_id,
+             "updated_at" => :updated_at
+           }
   end
 end
