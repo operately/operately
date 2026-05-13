@@ -91,14 +91,13 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   defp insert_table(table_entry, %SchemaSnapshot{} = schema, %TranslationPlan{} = plan) do
     table = table_entry["name"]
     schema_columns = Map.get(schema.columns, table, [])
-    columns = Enum.map(schema_columns, & &1.name)
     nullable_columns = Map.new(schema_columns, &{&1.name, &1.nullable})
     foreign_keys = Map.get(schema.foreign_keys, table, [])
     map_fields = AppSchemas.map_fields_for_table(table)
 
     Enum.reduce_while(table_entry["rows"], {:ok, []}, fn row, {:ok, deferred_updates} ->
-      case build_import_row(row, table, columns, nullable_columns, foreign_keys, map_fields, plan) do
-      {:ok, import_row, row_deferred_updates} ->
+      case build_import_row(row, table, nullable_columns, foreign_keys, map_fields, plan) do
+        {:ok, import_row, row_deferred_updates} ->
           case RowWriter.insert_row(table, import_row) do
             :ok ->
               {:cont, {:ok, deferred_updates ++ row_deferred_updates}}
@@ -118,7 +117,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
 
   # Prepares one row for insert by rewriting serialized content, translating IDs,
   # and deferring later foreign keys.
-  defp build_import_row(row, table, _columns, nullable_columns, foreign_keys, map_fields, %TranslationPlan{} = plan) do
+  defp build_import_row(row, table, nullable_columns, foreign_keys, map_fields, %TranslationPlan{} = plan) do
     with {:ok, row} <- prepare_row(row, table, map_fields, plan),
          {:ok, row} <- apply_translations(row, table, plan),
          {:ok, translated_row, deferred_updates} <- translate_foreign_keys(row, table, nullable_columns, foreign_keys, plan) do
