@@ -4,6 +4,7 @@ defmodule Operately.CompanyTransfers.ExportWorker do
 
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.Exporter
+  alias Operately.CompanyTransfers.PublicErrorMessage
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"export_run_id" => export_run_id}}) do
@@ -22,7 +23,8 @@ defmodule Operately.CompanyTransfers.ExportWorker do
             :ok
 
           {:error, reason} ->
-            {:ok, _run} = CompanyTransfers.mark_export_run_failed(run, format_reason(reason))
+            Logger.error("Company export failed for run #{run.id}: #{inspect(reason)}")
+            {:ok, _run} = CompanyTransfers.mark_export_run_failed(run, PublicErrorMessage.for_export(reason))
             :ok
         end
     end
@@ -34,17 +36,11 @@ defmodule Operately.CompanyTransfers.ExportWorker do
       handle_trapped_failure(export_run_id, {kind, reason})
   end
 
-  defp format_reason({:exception, message}) when is_binary(message), do: message
-  defp format_reason({:no_company_path, table}) when is_binary(table), do: "No ownership path to company for table #{table}"
-  defp format_reason(:company_not_found), do: "Company not found"
-  defp format_reason(reason) when is_binary(reason), do: reason
-  defp format_reason(reason), do: inspect(reason)
-
   defp handle_trapped_failure(export_run_id, {:error, error, stacktrace}) do
     Logger.error(Exception.format(:error, error, stacktrace))
 
     if run = CompanyTransfers.get_export_run(export_run_id) do
-      {:ok, _run} = CompanyTransfers.mark_export_run_failed(run, Exception.message(error))
+      {:ok, _run} = CompanyTransfers.mark_export_run_failed(run, PublicErrorMessage.for_export({:error, error, stacktrace}))
     end
 
     :ok
@@ -55,7 +51,7 @@ defmodule Operately.CompanyTransfers.ExportWorker do
     Logger.error(message)
 
     if run = CompanyTransfers.get_export_run(export_run_id) do
-      {:ok, _run} = CompanyTransfers.mark_export_run_failed(run, message)
+      {:ok, _run} = CompanyTransfers.mark_export_run_failed(run, PublicErrorMessage.for_export({kind, reason}))
     end
 
     :ok

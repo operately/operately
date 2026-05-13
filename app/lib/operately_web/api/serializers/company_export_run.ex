@@ -1,5 +1,6 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ExportRun do
   alias Operately.Blobs
+  alias Operately.CompanyTransfers.PublicErrorMessage
   alias OperatelyWeb.Api.Serializer
 
   def serialize(run, level: level) do
@@ -12,7 +13,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ExportRun
       percentage: run.percentage,
       tables_count: run.tables_count,
       rows_count: run.rows_count,
-      error_message: run.error_message,
+      error_message: PublicErrorMessage.for_export(run),
       inserted_at: Serializer.serialize(run.inserted_at),
       started_at: Serializer.serialize(run.started_at),
       completed_at: Serializer.serialize(run.completed_at)
