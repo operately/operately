@@ -7,12 +7,14 @@ defmodule Operately.CompanyTransfers.PublicErrorMessageTest do
     reason =
       {:validation_failed, "raw validation message", [
         %{"code" => "duplicate_account_emails"},
+        %{"code" => "invalid_goal_update_authors"},
         %{"code" => "file_count_mismatch"},
         %{"code" => "file_count_mismatch"}
       ]}
 
     assert PublicErrorMessage.for_import(reason) ==
              "This package contains duplicate email addresses and can't be imported until that is fixed. " <>
+               "This export package is missing some people data and can't be imported. " <>
                "This ZIP file looks incomplete or damaged. Export the company again and try again."
   end
 

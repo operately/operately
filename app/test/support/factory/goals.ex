@@ -139,7 +139,11 @@ defmodule Operately.Support.Factory.Goals do
   end
 
   def acknowledge_goal_update(ctx, update_name, person_name) do
-    update = Map.fetch!(ctx, update_name)
+    update =
+      ctx
+      |> Map.fetch!(update_name)
+      |> Operately.Repo.preload(:goal)
+
     person = Map.fetch!(ctx, person_name)
 
     {:ok, update} = Operately.Operations.GoalUpdateAcknowledging.run(person, update)

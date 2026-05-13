@@ -61,6 +61,36 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
            ]
   end
 
+  test "validate/1 rejects discussion and goal update rows without valid authors" do
+    invalid_message_id = Ecto.UUID.generate()
+    invalid_goal_update_id = Ecto.UUID.generate()
+
+    package =
+      build_package(%{
+        tables: [
+          company_table([company_row()]),
+          account_table([account_row()]),
+          message_table([
+            %{
+              "id" => invalid_message_id,
+              "author_id" => nil
+            }
+          ]),
+          goal_update_table([
+            %{
+              "id" => invalid_goal_update_id,
+              "author_id" => 123
+            }
+          ])
+        ]
+      })
+
+    assert {:error, errors} = Validator.validate(package)
+
+    assert find_error(errors, "invalid_message_authors")["details"]["row_ids"] == [invalid_message_id]
+    assert find_error(errors, "invalid_goal_update_authors")["details"]["row_ids"] == [invalid_goal_update_id]
+  end
+
   test "validate/1 accepts packages with matching file metadata" do
     package =
       build_package(%{
@@ -146,6 +176,20 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
   defp account_table(rows) do
     %{
       "name" => "accounts",
+      "rows" => rows
+    }
+  end
+
+  defp message_table(rows) do
+    %{
+      "name" => "messages",
+      "rows" => rows
+    }
+  end
+
+  defp goal_update_table(rows) do
+    %{
+      "name" => "goal_updates",
       "rows" => rows
     }
   end
