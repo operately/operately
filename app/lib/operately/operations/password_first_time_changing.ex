@@ -1,6 +1,8 @@
 defmodule Operately.Operations.PasswordFirstTimeChanging do
   alias Ecto.Multi
   alias Operately.Repo
+  alias Operately.Activities.Activity
+  alias Operately.Companies.Company
   alias Operately.People.Account
 
   def run(attrs, invite_link) do
@@ -12,6 +14,7 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
     |> change_password(attrs, member.account)
     |> deactivate_invite_link(invite_link)
     |> insert_activity(invite_link, admin, member)
+    |> insert_joined_activity(member)
     |> Repo.transaction()
   end
 
@@ -34,6 +37,20 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
         member_name: member.full_name,
         member_email: member.email,
       }
+    end)
+  end
+
+  defp insert_joined_activity(multi, member) do
+    Multi.insert(multi, :joined_activity, fn _changes ->
+      company = Repo.get!(Company, member.company_id) |> Repo.preload(:access_context)
+      {:ok, content} = Operately.Activities.build_content("company_member_joined", %{company_id: company.id, person_id: member.id})
+
+      Activity.changeset(%{
+        author_id: member.id,
+        action: "company_member_joined",
+        content: content,
+        access_context_id: company.access_context.id,
+      })
     end)
   end
 

@@ -87,6 +87,7 @@ export const DISPLAYED_IN_FEED = [
   "company_owner_removing",
   "company_member_restoring",
   "company_member_added",
+  "company_member_joined",
   "company_member_converted_to_guest",
   "guest_invited",
   "company_adding",
@@ -189,6 +190,7 @@ import CompanyOwnerRemoving from "@/features/activities/CompanyOwnerRemoving";
 import CompanyOwnersAdding from "@/features/activities/CompanyOwnersAdding";
 import CompanyMembersPermissionsEdited from "@/features/activities/CompanyMembersPermissionsEdited";
 import CompanyMemberAdded from "@/features/activities/CompanyMemberAdded";
+import CompanyMemberJoined from "@/features/activities/CompanyMemberJoined";
 import CompanyMemberConvertedToGuest from "@/features/activities/CompanyMemberConvertedToGuest";
 import GuestInvited from "@/features/activities/GuestInvited";
 import DiscussionCommentSubmitted from "@/features/activities/DiscussionCommentSubmitted";
@@ -282,9 +284,9 @@ import GoalTargetDeleting from "./GoalTargetDeleting";
 import GoalTargetUpdating from "./GoalTargetUpdating";
 import ProjectMilestoneCreation from "./ProjectMilestoneCreation";
 import ProjectMilestoneUpdating from "./ProjectMilestoneUpdating";
-import GoalCheckAdding from './GoalCheckAdding';
-import GoalCheckRemoving from './GoalCheckRemoving';
-import GoalCheckToggled from './GoalCheckToggled';
+import GoalCheckAdding from "./GoalCheckAdding";
+import GoalCheckRemoving from "./GoalCheckRemoving";
+import GoalCheckToggled from "./GoalCheckToggled";
 
 function handler(activity: Activity) {
   return match(activity.action)
@@ -299,6 +301,7 @@ function handler(activity: Activity) {
     .with("company_member_restoring", () => CompanyMemberRestoring)
     .with("company_members_permissions_edited", () => CompanyMembersPermissionsEdited)
     .with("company_member_added", () => CompanyMemberAdded)
+    .with("company_member_joined", () => CompanyMemberJoined)
     .with("company_member_converted_to_guest", () => CompanyMemberConvertedToGuest)
     .with("guest_invited", () => GuestInvited)
     .with("discussion_posting", () => DiscussionPosting)

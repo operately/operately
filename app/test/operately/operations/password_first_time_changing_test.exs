@@ -50,4 +50,13 @@ defmodule Operately.Operations.PasswordFirstTimeChangingTest do
     assert activity.content["company_id"] == ctx.company.id
     assert activity.content["invite_link_id"] == ctx.invite_link.id
   end
+
+  test "PasswordFirstTimeChanging operation creates joined activity", ctx do
+    {:ok, _} = Operately.Operations.PasswordFirstTimeChanging.run(ctx.attrs, ctx.invite_link)
+
+    activity = from(a in Activity, where: a.action == "company_member_joined" and a.author_id == ^ctx.member.id) |> Repo.one()
+
+    assert activity.content["company_id"] == ctx.company.id
+    assert activity.content["person_id"] == ctx.member.id
+  end
 end

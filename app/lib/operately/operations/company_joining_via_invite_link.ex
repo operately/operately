@@ -1,5 +1,7 @@
 defmodule Operately.Operations.CompanyJoiningViaInviteLink do
   alias Ecto.Multi
+  alias Operately.Activities.Activity
+  alias Operately.Companies.Company
   alias Operately.Repo
   alias Operately.InviteLinks
   alias Operately.People
@@ -82,6 +84,7 @@ defmodule Operately.Operations.CompanyJoiningViaInviteLink do
         account_id: account.id
       })
     end)
+    |> insert_activity()
     |> Multi.run(:invite_link_update, fn _repo, %{invite_link: invite_link} ->
       InviteLinks.increment_use_count(invite_link)
     end)
@@ -110,9 +113,24 @@ defmodule Operately.Operations.CompanyJoiningViaInviteLink do
     |> Multi.run(:account_first_login, fn _, _ ->
       People.mark_account_first_login(account)
     end)
+    |> insert_activity()
     |> Multi.run(:invite_link_update, fn _repo, %{invite_link: invite_link} ->
       InviteLinks.revoke_invite_link(invite_link)
     end)
     |> Repo.transaction()
+  end
+
+  defp insert_activity(multi) do
+    Multi.insert(multi, :joined_activity, fn %{person: person} ->
+      company = Repo.get!(Company, person.company_id) |> Repo.preload(:access_context)
+      {:ok, content} = Operately.Activities.build_content("company_member_joined", %{company_id: company.id, person_id: person.id})
+
+      Activity.changeset(%{
+        author_id: person.id,
+        action: "company_member_joined",
+        content: content,
+        access_context_id: company.access_context.id,
+      })
+    end)
   end
 end
