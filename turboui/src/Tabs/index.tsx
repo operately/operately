@@ -58,8 +58,8 @@ function useTabPath(tabId: string, urlPath?: string) {
 
 export function Tabs({ tabs }: { tabs: TabsState }) {
   return (
-    <div className="border-stroke-base border-b shadow-b-xs pl-4 mt-2 overflow-x-auto">
-      <nav className="flex gap-4 px-2 sm:px-0 whitespace-nowrap">
+    <div className="border-stroke-base border-b shadow-b-xs pl-1 mt-2 overflow-x-auto sm:pl-4">
+      <nav className="flex gap-2 px-1 whitespace-nowrap sm:gap-4 sm:px-0">
         {tabs.tabs.map((tab) => (
           <TabItem key={tab.id} tab={tab} activeTab={tabs.active} urlPath={tabs.urlPath} />
         ))}
@@ -72,7 +72,7 @@ function TabItem({ tab, activeTab, urlPath }: { tab: Tab; activeTab: string; url
   const tabPath = useTabPath(tab.id, urlPath);
   const testId = `tab-${tab.label.toLowerCase()}`;
 
-  const labelClass = classNames("flex items-center gap-1 px-1.5 py-1.5 text-sm relative -mb-px font-medium -mx-1.5", {
+  const labelClass = classNames("flex items-center gap-1 px-1 py-1.5 text-sm relative -mb-px font-medium sm:px-1.5 sm:-mx-1.5", {
     "text-white rounded-t": activeTab === tab.id,
     "text-content-dimmed hover:text-content-base": activeTab !== tab.id,
     "hover:bg-surface-dimmed rounded-lg": activeTab !== tab.id,
@@ -81,8 +81,8 @@ function TabItem({ tab, activeTab, urlPath }: { tab: Tab; activeTab: string; url
   return (
     <div className="relative pb-1.5">
       <DivLink className={labelClass} to={tabPath} testId={testId}>
-        <span className="flex-shrink-0">{tab.icon}</span>
-        <span className="leading-none whitespace-nowrap ml-1">{tab.label}</span>
+        <span className="hidden flex-shrink-0 sm:inline-flex">{tab.icon}</span>
+        <span className="leading-none whitespace-nowrap sm:ml-1">{tab.label}</span>
         <TabCountBadge count={tab.count} />
       </DivLink>
 

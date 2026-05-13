@@ -39,7 +39,7 @@ export function TasksMenu({ canManageStatuses, statuses, onSaveCustomStatuses }:
         <Menu
           customTrigger={
             <button
-              className="p-1.5 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full transition"
+              className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-content-dimmed transition hover:bg-surface-dimmed hover:text-content-base sm:min-h-0 sm:min-w-0 sm:p-1.5"
               aria-label="Settings"
             >
               <IconSettings size={20} />
