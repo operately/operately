@@ -178,7 +178,13 @@ export function MilestoneCard({
               </Tooltip>
             )}
 
-            <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="milestone-add-task">
+            <SecondaryButton
+              size="xs"
+              icon={IconPlus}
+              className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
+              onClick={openCreator}
+              testId="milestone-add-task"
+            >
               {/* icon-only for reduced repetition; keep accessible label */}
               <span className="sr-only">Add task</span>
             </SecondaryButton>

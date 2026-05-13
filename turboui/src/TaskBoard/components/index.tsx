@@ -235,6 +235,7 @@ export function TaskBoard({
                     <SecondaryButton
                       size="xs"
                       icon={IconPlus}
+                      className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
                       onClick={openNoMilestoneCreator}
                       testId="no-milestone-add-task"
                     >
