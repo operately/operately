@@ -547,6 +547,7 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
       |> Factory.add_space(:space)
       |> Factory.add_goal(:goal, :space, champion: :admin, reviewer: :manager)
       |> Factory.add_goal_update(:goal_update, :goal, :admin, status: "caution")
+      |> Factory.acknowledge_goal_update(:goal_update, :manager)
       |> Factory.add_goal_check(:goal_check, :goal, creator: :admin, completed: true)
       |> Factory.add_project(:project, :space, creator: :admin, goal: :goal)
       |> Factory.add_project_check_in(:check_in, :project, :admin, status: "caution")
@@ -614,6 +615,7 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
       company_space: company_space_snapshot(package),
       managers: manager_snapshot(package),
       goals: goal_snapshot(package),
+      messages: message_snapshot(package),
       projects: project_last_check_in_snapshot(package),
       task_assignees: task_assignee_snapshot(package)
     }
@@ -818,6 +820,19 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
     |> Enum.sort()
   end
 
+  defp message_snapshot(package) do
+    package
+    |> table_rows("messages")
+    |> Enum.map(fn row ->
+      {
+        row["title"],
+        resolve_name(package, "messages_boards", row["messages_board_id"], "name"),
+        person_name(package, row["author_id"])
+      }
+    end)
+    |> Enum.sort()
+  end
+
   defp check_in_signature(_package, nil), do: nil
 
   defp check_in_signature(package, check_in_id) do
@@ -829,7 +844,7 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
 
   defp goal_update_signature(package, update_id) do
     row = find_row!(package, "goal_updates", update_id)
-    {row["status"], row["inserted_at"]}
+    {row["status"], person_name(package, row["author_id"]), person_name(package, row["acknowledged_by_id"]), row["inserted_at"]}
   end
 
   defp context_scope_for_id(package, context_id) do

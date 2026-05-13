@@ -248,6 +248,15 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     {:cont, {:ok, Map.put(acc_row, "comment_thread_id", nil), deferred_updates}}
   end
 
+  defp handle_missing_reference_translation("goal_updates", %{column: "acknowledged_by_id"}, acc_row, deferred_updates, _source_id) do
+    updated_row =
+      acc_row
+      |> Map.put("acknowledged_by_id", nil)
+      |> Map.put("acknowledged_at", nil)
+
+    {:cont, {:ok, updated_row, deferred_updates}}
+  end
+
   defp handle_missing_reference_translation(table, fk, _acc_row, _deferred_updates, source_id) do
     {:halt, {:error, {:missing_reference_translation, table, fk.column, fk.references_table, source_id}}}
   end
