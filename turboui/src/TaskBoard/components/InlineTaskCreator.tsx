@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import * as Types from "../types";
-import { PrimaryButton, SecondaryButton } from "../../Button";
+import { PrimaryButton } from "../../Button";
 
 export interface InlineTaskCreatorProps {
   milestone: Types.Milestone | null;
@@ -17,7 +17,7 @@ export interface InlineTaskCreatorHandle {
 }
 
 export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskCreatorProps>(
-  ({ milestone, onCreate, onRequestAdvanced, onCancel, placeholder = "Add a task...", testId, autoFocus }, ref) => {
+  ({ milestone, onCreate, onRequestAdvanced, onCancel, placeholder = "Task name", testId, autoFocus }, ref) => {
     const [title, setTitle] = useState("");
     const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -28,7 +28,14 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
     }));
 
     useEffect(() => {
-      if (autoFocus) inputRef.current?.focus();
+      if (!autoFocus) return;
+
+      const input = inputRef.current;
+      input?.focus();
+
+      if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
+        input?.scrollIntoView({ block: "center", inline: "nearest" });
+      }
     }, [autoFocus]);
 
     const submit = () => {
@@ -65,7 +72,7 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
 
     return (
       <div className="px-4 py-2.5 bg-surface-base">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <input
             ref={inputRef}
             value={title}
@@ -74,21 +81,24 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
             placeholder={placeholder}
             aria-label="Add task"
             data-test-id={testId || "inline-task-title"}
-            className="flex-1 rounded-md border border-surface-outline bg-transparent px-2 py-1 text-base sm:text-sm outline-none focus:border-indigo-500"
+            className="w-full rounded-md border border-surface-outline bg-transparent px-2 py-2 text-base outline-none focus:border-indigo-500 sm:flex-1 sm:py-1 sm:text-sm"
           />
 
-          <PrimaryButton size="xs" disabled={!title.trim()} onClick={submit}>
-            Add
-          </PrimaryButton>
-          <SecondaryButton
-            size="xs"
-            onClick={() => {
-              setTitle("");
-              onCancel?.();
-            }}
-          >
-            Cancel
-          </SecondaryButton>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+            <PrimaryButton size="xs" disabled={!title.trim()} onClick={submit} className="w-full sm:w-auto">
+              Add
+            </PrimaryButton>
+            <button
+              type="button"
+              className="w-full rounded-md px-2.5 py-1 text-sm font-semibold text-content-dimmed transition hover:bg-surface-dimmed hover:text-content-base sm:w-auto"
+              onClick={() => {
+                setTitle("");
+                onCancel?.();
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     );

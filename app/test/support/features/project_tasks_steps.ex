@@ -263,7 +263,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :add_task_from_milestone_page, ctx, title do
     ctx
     |> UI.click(testid: "tasks-section-add-task")
-    |> UI.fill(placeholder: "Add a task...", with: title)
+    |> UI.fill(Wallaby.Query.css("[data-test-id^=\"inline-task-creator-milestonepage\"]"), with: title)
     |> UI.press_enter()
     |> UI.sleep(500)
   end

@@ -15,13 +15,13 @@ export function TaskDisplayMenu({ mode, onChange }: Props) {
     <Menu
       customTrigger={
         <button
-          className="inline-flex items-center gap-1 py-1.5 px-2 rounded-md text-sm font-medium text-content-dimmed hover:text-content-base hover:bg-surface-dimmed transition"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center gap-0 rounded-md px-2 py-1.5 text-sm font-medium text-content-dimmed transition hover:bg-surface-dimmed hover:text-content-base sm:min-h-0 sm:min-w-0 sm:gap-1"
           aria-label="Display options"
           data-test-id="display-menu-trigger"
           type="button"
         >
           <IconAdjustmentsHorizontal size={18} />
-          <span>Display</span>
+          <span className="hidden sm:inline">Display</span>
         </button>
       }
       size="tiny"
