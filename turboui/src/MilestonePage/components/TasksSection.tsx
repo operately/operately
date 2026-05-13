@@ -159,7 +159,7 @@ export function TasksSection({
                     autoFocus
                     testId="inline-task-creator-milestonepage-empty"
                   />
-                  <div className="px-0 pt-2 text-center text-content-subtle text-xs">
+                  <div className="hidden px-0 pt-2 text-center text-content-subtle text-xs sm:block">
                     Press Enter to add. You can also drag tasks here.
                   </div>
                 </>

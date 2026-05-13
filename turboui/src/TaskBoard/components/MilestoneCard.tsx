@@ -239,7 +239,7 @@ export function MilestoneCard({
                   autoFocus
                   testId="inline-task-creator-empty"
                 />
-                <div className="px-4 pb-3 text-center text-content-subtle text-xs">
+                <div className="hidden px-4 pb-3 text-center text-content-subtle text-xs sm:block">
                   Press Enter to add. You can also drag tasks here.
                 </div>
               </>
