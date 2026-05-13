@@ -11,6 +11,8 @@ defmodule Operately.CompanyTransfers.Import.Validator do
     |> validate_package_limits(package)
     |> validate_company_row(package)
     |> validate_account_emails(package)
+    |> validate_message_authors(package)
+    |> validate_goal_update_authors(package)
     |> validate_files(package)
     |> Enum.reverse()
     |> case do
@@ -77,6 +79,40 @@ defmodule Operately.CompanyTransfers.Import.Validator do
     end
   end
 
+  defp validate_message_authors(errors, %Package{} = package) do
+    validate_required_author_references(
+      errors,
+      package,
+      "messages",
+      "invalid_message_authors",
+      "Package contains discussions without a valid author"
+    )
+  end
+
+  defp validate_goal_update_authors(errors, %Package{} = package) do
+    validate_required_author_references(
+      errors,
+      package,
+      "goal_updates",
+      "invalid_goal_update_authors",
+      "Package contains goal check-ins without a valid author"
+    )
+  end
+
+  defp validate_required_author_references(errors, %Package{} = package, table_name, code, message) do
+    invalid_row_ids =
+      package
+      |> Package.table_rows(table_name)
+      |> Enum.filter(&(not valid_uuid?(Map.get(&1, "author_id"))))
+      |> Enum.map(&row_identifier/1)
+
+    if invalid_row_ids == [] do
+      errors
+    else
+      [error(code, message, %{"row_ids" => invalid_row_ids}) | errors]
+    end
+  end
+
   defp validate_files(errors, %Package{manifest: manifest, files: files}) do
     errors
     |> validate_files_count(manifest, files)
@@ -117,6 +153,15 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   end
 
   defp normalized_email(_), do: nil
+
+  defp valid_uuid?(value) when is_binary(value) do
+    match?({:ok, _}, Ecto.UUID.cast(value))
+  end
+
+  defp valid_uuid?(_), do: false
+
+  defp row_identifier(%{"id" => id}) when is_binary(id), do: id
+  defp row_identifier(_), do: "<missing id>"
 
   defp valid_file_entry?(%{"blob_id" => blob_id, "path" => path}) when is_binary(blob_id) and is_binary(path) do
     not String.starts_with?(path, "/") and not String.contains?(path, "../")

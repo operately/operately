@@ -6,6 +6,7 @@ defmodule Operately.CompanyTransfers.PublicErrorMessage do
 
   @import_damaged_zip "This ZIP file looks incomplete or damaged. Export the company again and try again."
   @import_duplicate_emails "This package contains duplicate email addresses and can't be imported until that is fixed."
+  @import_missing_people_data "This export package is missing some people data and can't be imported."
   @import_too_large "This package is too large to import here."
   @import_generic "We couldn't import this company. Please try again with a new export package. If it keeps failing, contact support."
 
@@ -77,6 +78,8 @@ defmodule Operately.CompanyTransfers.PublicErrorMessage do
     case Map.get(error, "code") || Map.get(error, :code) do
       "package_limit_exceeded" -> @import_too_large
       "duplicate_account_emails" -> @import_duplicate_emails
+      "invalid_message_authors" -> @import_missing_people_data
+      "invalid_goal_update_authors" -> @import_missing_people_data
       "invalid_company_count" -> @import_damaged_zip
       "file_count_mismatch" -> @import_damaged_zip
       "invalid_file_entries" -> @import_damaged_zip
@@ -91,6 +94,9 @@ defmodule Operately.CompanyTransfers.PublicErrorMessage do
     cond do
       contains_any?(message, ["duplicate account emails", "duplicate email addresses"]) ->
         @import_duplicate_emails
+
+      contains_any?(message, ["without a valid author", "missing some people data"]) ->
+        @import_missing_people_data
 
       contains_any?(message, [
         "package exceeds configured import limit",
