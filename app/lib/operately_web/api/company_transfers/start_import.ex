@@ -7,8 +7,7 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
   alias Operately.Blobs.Blob
 
   inputs do
-    field :json_blob_id, :id, null: false
-    field :zip_blob_id, :id, null: false
+    field :package_blob_id, :id, null: false
   end
 
   outputs do
@@ -18,8 +17,8 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
   def call(conn, inputs) do
     Action.new()
     |> run(:account, fn -> find_account(conn) end)
-    |> run(:blobs, fn ctx -> validate_blobs(inputs.json_blob_id, inputs.zip_blob_id, ctx.account) end)
-    |> run(:import_run, fn ctx -> create_import(ctx.account, ctx.blobs) end)
+    |> run(:blob, fn ctx -> validate_blob(inputs.package_blob_id, ctx.account) end)
+    |> run(:import_run, fn ctx -> create_import(ctx.account, ctx.blob) end)
     |> respond()
   end
 
@@ -28,17 +27,17 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
       {:ok, ctx} ->
         {:ok, %{import_run: Serializer.serialize(ctx.import_run, level: :full)}}
 
-      {:error, :blobs, %{error: :not_found}} ->
+      {:error, :blob, %{error: :not_found}} ->
         {:error, :not_found}
 
-      {:error, :blobs, %{error: :forbidden}} ->
+      {:error, :blob, %{error: :forbidden}} ->
         {:error, :forbidden}
 
-      {:error, :blobs, %{error: :invalid_purpose}} ->
-        {:error, :bad_request, "Import artifacts must be staged through the company import flow"}
+      {:error, :blob, %{error: :invalid_purpose}} ->
+        {:error, :bad_request, "Import packages must be staged through the company import flow"}
 
-      {:error, :blobs, %{error: :not_uploaded}} ->
-        {:error, :bad_request, "Import artifacts must finish uploading before the import can start"}
+      {:error, :blob, %{error: :not_uploaded}} ->
+        {:error, :bad_request, "Import package must finish uploading before the import can start"}
 
       {:error, :import_run, changeset} ->
         {:error, changeset}
@@ -49,32 +48,30 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
     end
   end
 
-  defp validate_blobs(json_blob_id, zip_blob_id, account) do
-    json_blob = Repo.get(Blob, json_blob_id)
-    zip_blob = Repo.get(Blob, zip_blob_id)
+  defp validate_blob(package_blob_id, account) do
+    package_blob = Repo.get(Blob, package_blob_id)
 
     cond do
-      is_nil(json_blob) or is_nil(zip_blob) ->
+      is_nil(package_blob) ->
         {:error, :not_found}
 
-      json_blob.purpose != :company_transfer_import_artifact or zip_blob.purpose != :company_transfer_import_artifact ->
+      package_blob.purpose != :company_transfer_import_artifact ->
         {:error, :invalid_purpose}
 
-      json_blob.account_id != account.id or zip_blob.account_id != account.id ->
+      package_blob.account_id != account.id ->
         {:error, :forbidden}
 
-      json_blob.status != :uploaded or zip_blob.status != :uploaded ->
+      package_blob.status != :uploaded ->
         {:error, :not_uploaded}
 
       true ->
-        {:ok, {json_blob, zip_blob}}
+        {:ok, package_blob}
     end
   end
 
-  defp create_import(account, {json_blob, zip_blob}) do
+  defp create_import(account, package_blob) do
     attrs = %{
-      json_blob_id: json_blob.id,
-      zip_blob_id: zip_blob.id
+      package_blob_id: package_blob.id
     }
 
     CompanyTransfers.create_import_run(account, attrs)

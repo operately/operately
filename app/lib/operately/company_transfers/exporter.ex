@@ -23,8 +23,8 @@ defmodule Operately.CompanyTransfers.Exporter do
          :ok <- mark_progress(export_run, "writing_package", @steps.writing_package),
          json_meta <- PackageJson.write!(workspace.json_path, payload),
          :ok <- mark_progress(export_run, "publishing_artifacts", @steps.publishing_artifacts),
-         zip_path <- FileArchive.create!(workspace.zip_path, file_discovery.files),
-         {:ok, export_run} <- CompanyTransfers.publish_export_artifacts(export_run, %{json_path: workspace.json_path, zip_path: zip_path}),
+         zip_path <- FileArchive.create!(workspace.zip_path, workspace.json_path, file_discovery.files),
+         {:ok, export_run} <- CompanyTransfers.publish_export_artifacts(export_run, %{zip_path: zip_path}),
          {:ok, export_run} <- complete_export(export_run, manifest, collected, files_count, json_meta) do
       {:ok, export_run}
     else
@@ -66,7 +66,7 @@ defmodule Operately.CompanyTransfers.Exporter do
         |> Map.put("package", %{
           "json_sha256" => json_meta.sha256,
           "json_size_bytes" => json_meta.size_bytes,
-          "zip_placeholder" => files_count == 0,
+          "package_size_bytes" => export_run.package_size_bytes,
           "files_count" => files_count
         })
     }

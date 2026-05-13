@@ -125,29 +125,18 @@ defmodule Operately.CompanyTransfers do
     export_run = Repo.preload(export_run, [:company, :requested_by])
     person = Operately.People.get_person!(export_run.requested_by, export_run.company)
 
-    {:ok, json_blob} = BlobIO.create_and_upload_company_file(
-      export_run.company,
-      person,
-      artifact_paths.json_path,
-      "application/json"
-    )
-
-    {:ok, zip_blob} = BlobIO.create_and_upload_company_file(
+    {:ok, package_blob} = BlobIO.create_and_upload_company_file(
       export_run.company,
       person,
       artifact_paths.zip_path,
       "application/zip"
     )
 
-    # Get file sizes
-    json_size = File.stat!(artifact_paths.json_path).size
-    zip_size = File.stat!(artifact_paths.zip_path).size
+    package_size = File.stat!(artifact_paths.zip_path).size
 
     attrs = %{
-      json_blob_id: json_blob.id,
-      zip_blob_id: zip_blob.id,
-      json_size_bytes: json_size,
-      zip_size_bytes: zip_size
+      package_blob_id: package_blob.id,
+      package_size_bytes: package_size
     }
 
     update_export_run(export_run, attrs)

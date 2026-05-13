@@ -29,10 +29,69 @@ defmodule Operately.CompanyTransfers.Package.Archive do
   end
 
   def extract!(zip_path, destination_path, allowed_paths) when is_binary(zip_path) and is_binary(destination_path) do
+    extract_entries!(zip_path, destination_path, allowed_paths, require_all?: true)
+  end
+
+  def extract_present!(zip_path, destination_path, allowed_paths) when is_binary(zip_path) and is_binary(destination_path) do
+    extract_entries!(zip_path, destination_path, allowed_paths, require_all?: false)
+  end
+
+  def list_entries!(zip_path) when is_binary(zip_path) do
+    case :zip.table(String.to_charlist(zip_path)) do
+      {:ok, entries} ->
+        entries
+        |> Enum.filter(&zip_file_entry?/1)
+        |> Enum.map(fn {:zip_file, path, info, _comment, _offset, _compressed_size} ->
+          %{
+            path: normalize_relative_path!(List.to_string(path)),
+            size: zip_file_size(info)
+          }
+        end)
+
+      {:error, reason} ->
+        raise "Failed to inspect zip archive #{zip_path}: #{inspect(reason)}"
+    end
+  end
+
+  def read_entry!(zip_path, entry_path) when is_binary(zip_path) and is_binary(entry_path) do
+    entry_path = normalize_relative_path!(entry_path)
+
+    case :zip.extract(String.to_charlist(zip_path), [:memory, file_list: [String.to_charlist(entry_path)]]) do
+      {:ok, [{_path, contents}]} ->
+        contents
+
+      {:ok, []} ->
+        raise ArgumentError, "Archive does not contain #{inspect(entry_path)}"
+
+      {:ok, entries} ->
+        raise ArgumentError, "Archive contains duplicate entries for #{inspect(entry_path)}: #{inspect(entries)}"
+
+      {:error, reason} ->
+        raise "Failed to read #{inspect(entry_path)} from zip archive #{zip_path}: #{inspect(reason)}"
+    end
+  end
+
+  defp extract_entries!(zip_path, destination_path, :all, _opts) do
     File.mkdir_p!(destination_path)
-    validate_zip_entries!(zip_path, allowed_paths)
 
     case :zip.extract(String.to_charlist(zip_path), cwd: String.to_charlist(destination_path)) do
+      {:ok, files} ->
+        Enum.map(files, &List.to_string/1)
+
+      {:error, reason} ->
+        raise "Failed to extract zip archive #{zip_path}: #{inspect(reason)}"
+    end
+  end
+
+  defp extract_entries!(zip_path, destination_path, allowed_paths, opts) when is_list(allowed_paths) do
+    File.mkdir_p!(destination_path)
+
+    {present_paths, _allowed} = validate_zip_entries!(zip_path, allowed_paths, opts)
+
+    case :zip.extract(String.to_charlist(zip_path),
+           cwd: String.to_charlist(destination_path),
+           file_list: Enum.map(present_paths, &String.to_charlist/1)
+         ) do
       {:ok, files} ->
         Enum.map(files, &List.to_string/1)
 
@@ -91,13 +150,12 @@ defmodule Operately.CompanyTransfers.Package.Archive do
     end
   end
 
-  defp validate_zip_entries!(_zip_path, :all), do: :ok
-
-  defp validate_zip_entries!(zip_path, allowed_paths) when is_list(allowed_paths) do
+  defp validate_zip_entries!(zip_path, allowed_paths, opts) when is_list(allowed_paths) do
     allowed = allowed_paths |> Enum.map(&normalize_relative_path!/1) |> MapSet.new()
-    zip_entries = zip_entries!(zip_path)
-    entries = Enum.map(zip_entries, &normalize_relative_path!(&1.path))
+    zip_entries = list_entries!(zip_path)
+    entries = Enum.map(zip_entries, & &1.path)
     entry_set = MapSet.new(entries)
+    require_all? = Keyword.get(opts, :require_all?, false)
 
     cond do
       length(entries) != MapSet.size(entry_set) ->
@@ -107,7 +165,7 @@ defmodule Operately.CompanyTransfers.Package.Archive do
         extra_entries = entry_set |> MapSet.difference(allowed) |> MapSet.to_list()
         raise ArgumentError, "Archive contains undeclared entries: #{inspect(extra_entries)}"
 
-      not MapSet.equal?(entry_set, allowed) ->
+      require_all? and not MapSet.subset?(allowed, entry_set) ->
         missing_entries = allowed |> MapSet.difference(entry_set) |> MapSet.to_list()
         raise ArgumentError, "Archive is missing declared entries: #{inspect(missing_entries)}"
 
@@ -116,21 +174,7 @@ defmodule Operately.CompanyTransfers.Package.Archive do
         raise ArgumentError, "Archive entry #{inspect(oversized_entry.path)} exceeds size limit #{max} bytes"
 
       true ->
-        :ok
-    end
-  end
-
-  defp zip_entries!(zip_path) do
-    case :zip.table(String.to_charlist(zip_path)) do
-      {:ok, entries} ->
-        entries
-        |> Enum.filter(&zip_file_entry?/1)
-        |> Enum.map(fn {:zip_file, path, info, _comment, _offset, _compressed_size} ->
-          %{path: List.to_string(path), size: zip_file_size(info)}
-        end)
-
-      {:error, reason} ->
-        raise "Failed to inspect zip archive #{zip_path}: #{inspect(reason)}"
+        {entries, allowed}
     end
   end
 

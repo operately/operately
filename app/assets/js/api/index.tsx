@@ -1141,12 +1141,9 @@ export interface CompanyExportRun {
   percentage?: number;
   tablesCount?: number;
   rowsCount?: number;
-  jsonBlobId?: Id;
-  zipBlobId?: Id;
-  jsonDownloadUrl?: string;
-  zipDownloadUrl?: string;
-  jsonSizeBytes?: number;
-  zipSizeBytes?: number;
+  packageBlobId?: Id;
+  packageDownloadUrl?: string;
+  packageSizeBytes?: number;
   errorMessage?: string;
   insertedAt: string;
   startedAt?: string;
@@ -1162,8 +1159,7 @@ export interface CompanyImportRun {
   percentage?: number;
   tablesCount?: number;
   rowsCount?: number;
-  jsonBlobId?: Id;
-  zipBlobId?: Id;
+  packageBlobId?: Id;
   errorMessage?: string;
   validationErrors?: Json;
   manifestSummary?: Json;
@@ -3607,8 +3603,7 @@ export interface CompanyTransfersStartExportResult {
 }
 
 export interface CompanyTransfersStartImportInput {
-  jsonBlobId: Id;
-  zipBlobId: Id;
+  packageBlobId: Id;
 }
 
 export interface CompanyTransfersStartImportResult {

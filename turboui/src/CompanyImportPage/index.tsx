@@ -33,16 +33,14 @@ export namespace CompanyImportPage {
 
   export interface Props {
     runs: Run[];
-    jsonFile: UploadedFileState;
-    zipFile: UploadedFileState;
+    packageFile: UploadedFileState;
     starting: boolean;
     canUpload: boolean;
     canStartImport: boolean;
     backPath: string;
     uploadsUnavailableMessage?: string | null;
     onStartImport: () => void | Promise<void>;
-    onSelectJsonFile: (file: File) => void | Promise<void>;
-    onSelectZipFile: (file: File) => void | Promise<void>;
+    onSelectPackageFile: (file: File) => void | Promise<void>;
   }
 }
 
@@ -57,8 +55,7 @@ export function CompanyImportPage(props: CompanyImportPage.Props) {
             <div className="uppercase text-sm tracking-wide">Company Import</div>
             <h1 className="text-content-accent text-3xl font-extrabold">Import company</h1>
             <p className="mt-2 text-content-dimmed">
-              Upload the exported JSON package and ZIP archive, then start importing the company into this Operately
-              instance.
+              Upload the exported ZIP package, then start importing the company into this Operately instance.
             </p>
           </div>
 
@@ -74,26 +71,17 @@ export function CompanyImportPage(props: CompanyImportPage.Props) {
         </header>
 
         <section className="mt-10">
-          <h2 className="font-bold">Artifacts</h2>
+          <h2 className="font-bold">Package</h2>
 
           {props.canUpload ? (
-            <div className="grid gap-4 md:grid-cols-2 mt-3">
+            <div className="mt-3">
               <ArtifactUploadCard
-                title="JSON package"
-                testIdPrefix="import-json"
-                state={props.jsonFile}
-                accept=".json,application/json"
-                buttonLabel="Choose JSON"
-                onSelectFile={props.onSelectJsonFile}
-              />
-
-              <ArtifactUploadCard
-                title="ZIP archive"
-                testIdPrefix="import-zip"
-                state={props.zipFile}
+                title="Operately package"
+                testIdPrefix="import-package"
+                state={props.packageFile}
                 accept=".zip,application/zip"
                 buttonLabel="Choose ZIP"
-                onSelectFile={props.onSelectZipFile}
+                onSelectFile={props.onSelectPackageFile}
               />
             </div>
           ) : (
@@ -224,7 +212,6 @@ function ImportRunCard({ run, latest }: { run: CompanyImportPage.Run; latest: bo
         </div>
 
         {run.companyPath && run.status === "completed" && (
-          // Use a plain anchor on purpose: opening the imported company needs a full document reload.
           <a
             href={run.companyPath}
             data-test-id={latest ? "latest-import-open-company" : undefined}
@@ -252,7 +239,7 @@ function ImportRunCard({ run, latest }: { run: CompanyImportPage.Run; latest: bo
 function EmptyState() {
   return (
     <div className="rounded-lg border border-dashed border-surface-outline p-6 text-sm text-content-dimmed mt-3">
-      No imports yet. Upload artifacts above to create the first one.
+      No imports yet. Upload a package above to create the first one.
     </div>
   );
 }
