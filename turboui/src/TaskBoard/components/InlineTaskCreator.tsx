@@ -28,7 +28,14 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
     }));
 
     useEffect(() => {
-      if (autoFocus) inputRef.current?.focus();
+      if (!autoFocus) return;
+
+      const input = inputRef.current;
+      input?.focus();
+
+      if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
+        input?.scrollIntoView({ block: "center", inline: "nearest" });
+      }
     }, [autoFocus]);
 
     const submit = () => {
