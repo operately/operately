@@ -17,7 +17,7 @@ export interface InlineTaskCreatorHandle {
 }
 
 export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskCreatorProps>(
-  ({ milestone, onCreate, onRequestAdvanced, onCancel, placeholder = "Add a task...", testId, autoFocus }, ref) => {
+  ({ milestone, onCreate, onRequestAdvanced, onCancel, placeholder = "Task name", testId, autoFocus }, ref) => {
     const [title, setTitle] = useState("");
     const inputRef = useRef<HTMLInputElement | null>(null);
 
