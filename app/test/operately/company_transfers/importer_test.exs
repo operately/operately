@@ -13,7 +13,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
   alias Operately.InviteLinks
-  alias Operately.CompanyTransfers.Package.{Limits, PackageJson, Paths}
+  alias Operately.CompanyTransfers.Package.{Archive, Limits, PackageJson, Paths}
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.People
   alias Operately.People.Account
@@ -179,6 +179,36 @@ defmodule Operately.CompanyTransfers.ImporterTest do
       assert {:error, {:package_limit_exceeded, :max_zip_size_bytes, 1, actual}} = Importer.run(zip_limited_run)
       assert actual > 1
     end)
+  end
+
+  test "run/1 fails when the package is missing data.json", ctx do
+    assert {:ok, import_run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
+    assert {:ok, import_run, workspace} = CompanyTransfers.prepare_import_workspace(import_run)
+
+    Archive.create!(workspace.zip_path, [
+      {"files/blobs/blob-1/file.txt", "payload"}
+    ])
+
+    assert {:ok, import_run} = stage_package_blob(import_run, ctx.account, workspace.zip_path)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+
+    assert {:error, {:exception, message}} = Importer.run(import_run)
+    assert message =~ "Archive does not contain data.json"
+  end
+
+  test "run/1 fails when data.json is invalid JSON", ctx do
+    assert {:ok, import_run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
+    assert {:ok, import_run, workspace} = CompanyTransfers.prepare_import_workspace(import_run)
+
+    Archive.create!(workspace.zip_path, [
+      {"data.json", "{invalid"}
+    ])
+
+    assert {:ok, import_run} = stage_package_blob(import_run, ctx.account, workspace.zip_path)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+
+    assert {:error, {:exception, message}} = Importer.run(import_run)
+    assert message =~ "unexpected byte"
   end
 
   test "run/1 creates missing destination accounts when exported emails do not exist", ctx do
@@ -473,8 +503,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
              CompanyTransfers.create_import_run(
                ctx.account,
                %{
-                 json_blob_id: export_run.json_blob_id,
-                 zip_blob_id: export_run.zip_blob_id
+                 package_blob_id: export_run.package_blob_id
                },
                dispatch: false
              )
@@ -549,13 +578,14 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert {:ok, export_run} = Exporter.run(export_run)
 
     # Download blob to read and mutate package
-    export_run = Repo.preload(export_run, :json_blob)
-    temp_export_path = Path.join(System.tmp_dir!(), "export_#{export_run.id}.json")
-    :ok = Operately.Blobs.download_blob_to_file(export_run.json_blob, temp_export_path)
+    export_run = Repo.preload(export_run, :package_blob)
+    temp_export_path = Path.join(System.tmp_dir!(), "export_#{export_run.id}.zip")
+    :ok = Operately.Blobs.download_blob_to_file(export_run.package_blob, temp_export_path)
 
     package =
       temp_export_path
-      |> PackageJson.read!()
+      |> Archive.read_entry!("data.json")
+      |> Jason.decode!()
       |> mutate_package.()
 
     File.rm!(temp_export_path)
@@ -729,5 +759,20 @@ defmodule Operately.CompanyTransfers.ImporterTest do
         Application.put_env(:operately, Limits, original)
       end
     end
+  end
+
+  defp stage_package_blob(import_run, account, package_path) do
+    {:ok, package_blob} =
+      Operately.Blobs.create_blob(%{
+        purpose: :company_transfer_import_artifact,
+        account_id: account.id,
+        status: :pending,
+        filename: Path.basename(package_path),
+        size: File.stat!(package_path).size,
+        content_type: "application/zip"
+      })
+
+    {:ok, package_blob} = BlobIO.upload_to_blob(package_blob, package_path)
+    CompanyTransfers.update_import_run(import_run, %{package_blob_id: package_blob.id})
   end
 end

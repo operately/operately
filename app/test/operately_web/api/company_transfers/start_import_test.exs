@@ -17,32 +17,13 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImportTest do
     end
 
     test "any authenticated user can start an import", ctx do
-      {:ok, json_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.member.account_id,
-          status: :uploaded,
-          filename: "import.json",
-          size: 1024,
-          content_type: "application/json"
-        })
-
-      {:ok, zip_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.member.account_id,
-          status: :uploaded,
-          filename: "import.zip",
-          size: 2048,
-          content_type: "application/zip"
-        })
+      {:ok, package_blob} = create_package_blob(ctx.member.account_id)
 
       {:ok, res} =
         Oban.Testing.with_testing_mode(:manual, fn ->
           {200, res} =
             mutation(ctx.conn, [:company_transfers, :start_import], %{
-              json_blob_id: json_blob.id,
-              zip_blob_id: zip_blob.id
+              package_blob_id: package_blob.id
             })
 
           {:ok, res}
@@ -54,37 +35,17 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImportTest do
       run = Operately.CompanyTransfers.get_import_run(res.import_run.id)
       assert run.requested_by_id == ctx.member.account_id
       assert run.status == :pending
-      assert run.json_blob_id == json_blob.id
-      assert run.zip_blob_id == zip_blob.id
+      assert run.package_blob_id == package_blob.id
     end
 
     test "enqueues an import worker", ctx do
-      {:ok, json_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.member.account_id,
-          status: :uploaded,
-          filename: "import.json",
-          size: 1024,
-          content_type: "application/json"
-        })
-
-      {:ok, zip_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.member.account_id,
-          status: :uploaded,
-          filename: "import.zip",
-          size: 2048,
-          content_type: "application/zip"
-        })
+      {:ok, package_blob} = create_package_blob(ctx.member.account_id)
 
       {:ok, res} =
         Oban.Testing.with_testing_mode(:manual, fn ->
           {200, res} =
             mutation(ctx.conn, [:company_transfers, :start_import], %{
-              json_blob_id: json_blob.id,
-              zip_blob_id: zip_blob.id
+              package_blob_id: package_blob.id
             })
 
           {:ok, res}
@@ -95,100 +56,39 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImportTest do
       assert hd(jobs).args["import_run_id"] == res.import_run.id
     end
 
-    test "requires json_blob_id parameter", ctx do
-      {:ok, zip_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.member.account_id,
-          status: :uploaded,
-          filename: "import.zip",
-          size: 2048,
-          content_type: "application/zip"
-        })
-
-      assert {400, _res} =
-               mutation(ctx.conn, [:company_transfers, :start_import], %{
-                 zip_blob_id: zip_blob.id
-               })
+    test "requires package_blob_id parameter", ctx do
+      assert {400, _res} = mutation(ctx.conn, [:company_transfers, :start_import], %{})
     end
 
-    test "requires zip_blob_id parameter", ctx do
-      {:ok, json_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.member.account_id,
-          status: :uploaded,
-          filename: "import.json",
-          size: 1024,
-          content_type: "application/json"
-        })
-
-      assert {400, _res} =
-               mutation(ctx.conn, [:company_transfers, :start_import], %{
-                 json_blob_id: json_blob.id
-               })
-    end
-
-    test "requires both blobs to be marked as uploaded", ctx do
-      {:ok, json_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.member.account_id,
-          status: :pending,
-          filename: "import.json",
-          size: 1024,
-          content_type: "application/json"
-        })
-
-      {:ok, zip_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.member.account_id,
-          status: :pending,
-          filename: "import.zip",
-          size: 2048,
-          content_type: "application/zip"
-        })
+    test "requires the package blob to be marked as uploaded", ctx do
+      {:ok, package_blob} = create_package_blob(ctx.member.account_id, status: :pending)
 
       assert {400, res} =
                mutation(ctx.conn, [:company_transfers, :start_import], %{
-                 json_blob_id: json_blob.id,
-                 zip_blob_id: zip_blob.id
+                 package_blob_id: package_blob.id
                })
 
-      assert res.message == "Import artifacts must finish uploading before the import can start"
+      assert res.message == "Import package must finish uploading before the import can start"
     end
 
     test "rejects regular company blobs for import staging", ctx do
-      {:ok, json_blob} =
+      {:ok, package_blob} =
         Operately.Blobs.create_blob(%{
           purpose: :company_file,
           company_id: ctx.company.id,
           author_id: ctx.member.id,
           status: :uploaded,
-          filename: "import.json",
-          size: 1024,
-          content_type: "application/json"
-        })
-
-      {:ok, zip_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_file,
-          company_id: ctx.company.id,
-          author_id: ctx.member.id,
-          status: :uploaded,
-          filename: "import.zip",
+          filename: "operately.zip",
           size: 2048,
           content_type: "application/zip"
         })
 
       assert {400, res} =
                mutation(ctx.conn, [:company_transfers, :start_import], %{
-                 json_blob_id: json_blob.id,
-                 zip_blob_id: zip_blob.id
+                 package_blob_id: package_blob.id
                })
 
-      assert res.message == "Import artifacts must be staged through the company import flow"
+      assert res.message == "Import packages must be staged through the company import flow"
     end
 
     test "allows an account without companies to start an import", ctx do
@@ -197,32 +97,13 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImportTest do
         |> Factory.add_account(:loose_account)
         |> Factory.log_in_account(:loose_account)
 
-      {:ok, json_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.loose_account.id,
-          status: :uploaded,
-          filename: "import.json",
-          size: 1024,
-          content_type: "application/json"
-        })
-
-      {:ok, zip_blob} =
-        Operately.Blobs.create_blob(%{
-          purpose: :company_transfer_import_artifact,
-          account_id: ctx.loose_account.id,
-          status: :uploaded,
-          filename: "import.zip",
-          size: 2048,
-          content_type: "application/zip"
-        })
+      {:ok, package_blob} = create_package_blob(ctx.loose_account.id)
 
       {:ok, res} =
         Oban.Testing.with_testing_mode(:manual, fn ->
           {200, res} =
             mutation(ctx.conn, [:company_transfers, :start_import], %{
-              json_blob_id: json_blob.id,
-              zip_blob_id: zip_blob.id
+              package_blob_id: package_blob.id
             })
 
           {:ok, res}
@@ -230,8 +111,18 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImportTest do
 
       run = Operately.CompanyTransfers.get_import_run(res.import_run.id)
       assert run.requested_by_id == ctx.loose_account.id
-      assert run.json_blob_id == json_blob.id
-      assert run.zip_blob_id == zip_blob.id
+      assert run.package_blob_id == package_blob.id
     end
+  end
+
+  defp create_package_blob(account_id, opts \\ []) do
+    Operately.Blobs.create_blob(%{
+      purpose: :company_transfer_import_artifact,
+      account_id: account_id,
+      status: Keyword.get(opts, :status, :uploaded),
+      filename: "operately.zip",
+      size: 2048,
+      content_type: "application/zip"
+    })
   end
 end

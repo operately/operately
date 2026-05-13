@@ -4,7 +4,7 @@ defmodule Operately.CompanyTransfers.ExporterTest do
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.{ExportRun, Exporter}
-  alias Operately.CompanyTransfers.Package.{Archive, PackageJson, Paths}
+  alias Operately.CompanyTransfers.Package.{Archive, Paths}
   alias Operately.Blobs
   alias Operately.Blobs.Blob
   alias Operately.Repo
@@ -33,11 +33,7 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert {:ok, completed_run} = Exporter.run(run)
 
     # Download blob to read package
-    completed_run = Repo.preload(completed_run, :json_blob)
-    temp_path = Path.join(System.tmp_dir!(), "export_test_#{completed_run.id}.json")
-    :ok = Operately.Blobs.download_blob_to_file(completed_run.json_blob, temp_path)
-    package = PackageJson.read!(temp_path)
-    File.rm!(temp_path)
+    package = read_package!(completed_run)
     tables = Map.new(package["tables"], &{&1["name"], &1})
 
     assert completed_run.status == :completed
@@ -51,10 +47,8 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert completed_run.rows_count == package["manifest"]["rows_count"]
     assert completed_run.tables_count == package["manifest"]["tables_count"]
 
-    assert completed_run.json_blob_id != nil
-    assert completed_run.zip_blob_id != nil
-    assert completed_run.json_size_bytes > 0
-    assert completed_run.zip_size_bytes > 0
+    assert completed_run.package_blob_id != nil
+    assert completed_run.package_size_bytes > 0
 
     assert package["files"] == []
     assert package["manifest"]["source_company"]["id"] == ctx.company.id
@@ -70,28 +64,26 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert completed_run.manifest_summary["rows_count"] == package["manifest"]["rows_count"]
 
     assert completed_run.artifacts_metadata["workspace"]["run_id"] == run.id
-    assert completed_run.artifacts_metadata["package"]["zip_placeholder"] == true
-    assert completed_run.artifacts_metadata["package"]["json_size_bytes"] == completed_run.json_size_bytes
+    assert completed_run.artifacts_metadata["package"]["package_size_bytes"] == completed_run.package_size_bytes
+    assert completed_run.artifacts_metadata["package"]["json_size_bytes"] > 0
   end
 
-  test "run/1 writes a placeholder zip artifact", ctx do
+  test "run/1 writes data.json into the package when no files are exported", ctx do
     assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
     assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
     assert {:ok, completed_run} = Exporter.run(run)
 
-    # Download zip blob to extract
-    completed_run = Repo.preload(completed_run, :zip_blob)
+    completed_run = Repo.preload(completed_run, :package_blob)
     temp_zip_path = Path.join(System.tmp_dir!(), "export_test_#{completed_run.id}.zip")
-    :ok = Operately.Blobs.download_blob_to_file(completed_run.zip_blob, temp_zip_path)
+    :ok = Operately.Blobs.download_blob_to_file(completed_run.package_blob, temp_zip_path)
 
     extract_dir = Path.join(Paths.root(), "extract-#{Ecto.UUID.generate()}")
     extracted_paths = Archive.extract!(temp_zip_path, extract_dir)
-    readme_path = Path.join(extract_dir, "README.txt")
+    data_json_path = Path.join(extract_dir, "data.json")
 
-    assert readme_path in extracted_paths
-    assert File.read!(readme_path) == "No files are included in this export yet.\n"
+    assert data_json_path in extracted_paths
+    refute Enum.any?(extracted_paths, &String.starts_with?(&1, Path.join(extract_dir, "files")))
 
-    # Cleanup
     File.rm!(temp_zip_path)
   end
 
@@ -140,11 +132,7 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
     assert {:ok, completed_run} = Exporter.run(run)
 
-    completed_run = Repo.preload(completed_run, :json_blob)
-    temp_path = Path.join(System.tmp_dir!(), "export_test_#{completed_run.id}.json")
-    :ok = Operately.Blobs.download_blob_to_file(completed_run.json_blob, temp_path)
-    package = PackageJson.read!(temp_path)
-    File.rm!(temp_path)
+    package = read_package!(completed_run)
 
     assert MapSet.new(package["files"]) ==
              MapSet.new([
@@ -158,7 +146,7 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert package["manifest"]["files_count"] == 4
     assert completed_run.artifacts_metadata["package"]["files_count"] == 4
     assert completed_run.manifest_summary["files_count"] == 4
-    assert completed_run.artifacts_metadata["package"]["zip_placeholder"] == false
+    assert completed_run.artifacts_metadata["package"]["package_size_bytes"] == completed_run.package_size_bytes
   end
 
   test "run/1 writes referenced blob payloads into the zip artifact", ctx do
@@ -182,14 +170,14 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
     assert {:ok, completed_run} = Exporter.run(run)
 
-    completed_run = Repo.preload(completed_run, :zip_blob)
+    completed_run = Repo.preload(completed_run, :package_blob)
     temp_zip_path = Path.join(System.tmp_dir!(), "export_test_payloads_#{completed_run.id}.zip")
-    :ok = Operately.Blobs.download_blob_to_file(completed_run.zip_blob, temp_zip_path)
+    :ok = Operately.Blobs.download_blob_to_file(completed_run.package_blob, temp_zip_path)
 
     extract_dir = Path.join(Paths.root(), "extract-#{Ecto.UUID.generate()}")
     extracted_paths = Archive.extract!(temp_zip_path, extract_dir)
 
-    embedded_path = Path.join(extract_dir, Path.join(["blobs", ctx.embedded_blob.id, ctx.embedded_blob.filename]))
+    embedded_path = Path.join(extract_dir, Path.join(["files", "blobs", ctx.embedded_blob.id, ctx.embedded_blob.filename]))
 
     assert embedded_path in extracted_paths
     assert File.read!(embedded_path) == "embedded payload"
@@ -233,6 +221,15 @@ defmodule Operately.CompanyTransfers.ExporterTest do
         }
       ]
     }
+  end
+
+  defp read_package!(run) do
+    run = Repo.preload(run, :package_blob)
+    temp_path = Path.join(System.tmp_dir!(), "export_test_#{run.id}.zip")
+    :ok = Operately.Blobs.download_blob_to_file(run.package_blob, temp_path)
+    package = temp_path |> Archive.read_entry!("data.json") |> Jason.decode!()
+    File.rm!(temp_path)
+    package
   end
 
   defp file_entry(blob) do

@@ -67,6 +67,35 @@ defmodule OperatelyWeb.Api.CompanyTransfers.GetExportRunTest do
       assert res.export_run.inserted_at
     end
 
+    test "returns package download fields for completed exports", ctx do
+      Operately.Companies.add_owner(ctx.creator, ctx.owner.id)
+      owner = Operately.Repo.preload(ctx.owner, :account)
+      {:ok, run} = Operately.CompanyTransfers.create_export_run(ctx.company, owner.account, %{}, dispatch: false)
+
+      {:ok, package_blob} =
+        Operately.Blobs.create_blob(%{
+          company_id: ctx.company.id,
+          author_id: ctx.owner.id,
+          status: :uploaded,
+          filename: "operately.zip",
+          size: 2048,
+          content_type: "application/zip"
+        })
+
+      {:ok, run} =
+        Operately.CompanyTransfers.update_export_run(run, %{
+          status: :completed,
+          package_blob_id: package_blob.id,
+          package_size_bytes: 2048
+        })
+
+      assert {200, res} = query(ctx.conn, [:company_transfers, :get_export_run], %{id: run.id})
+
+      assert res.export_run.package_blob_id == package_blob.id
+      assert res.export_run.package_download_url
+      assert res.export_run.package_size_bytes == 2048
+    end
+
     test "returns 404 for non-existent export run", ctx do
       Operately.Companies.add_owner(ctx.creator, ctx.owner.id)
 

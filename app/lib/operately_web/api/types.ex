@@ -2192,12 +2192,9 @@ defmodule OperatelyWeb.Api.Types do
     field? :percentage, :float
     field? :tables_count, :integer
     field? :rows_count, :integer
-    field? :json_blob_id, :id
-    field? :zip_blob_id, :id
-    field? :json_download_url, :string
-    field? :zip_download_url, :string
-    field? :json_size_bytes, :integer
-    field? :zip_size_bytes, :integer
+    field? :package_blob_id, :id
+    field? :package_download_url, :string
+    field? :package_size_bytes, :integer
     field? :error_message, :string
     field :inserted_at, :datetime, null: false
     field? :started_at, :datetime
@@ -2213,8 +2210,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :percentage, :float
     field? :tables_count, :integer
     field? :rows_count, :integer
-    field? :json_blob_id, :id
-    field? :zip_blob_id, :id
+    field? :package_blob_id, :id
     field? :error_message, :string
     field? :validation_errors, :json
     field? :manifest_summary, :json

@@ -88,6 +88,13 @@ defmodule Operately.CompanyTransfers.Package.PathsTest do
   end
 
   describe "staged_json_path/2 and staged_zip_path/2" do
+    test "use data.json and operately.zip staging names" do
+      run_id = "550e8400-e29b-41d4-a716-446655440000"
+
+      assert String.ends_with?(Paths.staged_json_path(:export, run_id), "/workspaces/exports/#{run_id}/data.json")
+      assert String.ends_with?(Paths.staged_zip_path(:import, run_id), "/workspaces/imports/#{run_id}/operately.zip")
+    end
+
     test "inherit security validation from workspace/2" do
       run_id = "../../../etc/passwd"
 

@@ -27,7 +27,7 @@ export namespace CompanyExportPage {
     downloading: string | null;
     backPath: string;
     onStartExport: () => void | Promise<void>;
-    onDownload: (runId: string, kind: "json" | "zip") => void | Promise<void>;
+    onDownload: (runId: string) => void | Promise<void>;
   }
 }
 
@@ -42,8 +42,7 @@ export function CompanyExportPage(props: CompanyExportPage.Props) {
             <div className="uppercase text-sm tracking-wide">Company Export</div>
             <h1 className="text-content-accent text-3xl font-extrabold">Export company data</h1>
             <p className="mt-2 text-content-dimmed">
-              Export all data from this company. You'll get a JSON file with the company data and a ZIP file with the
-              related files.
+              Export all data from this company as a ZIP package with the company data and related files.
             </p>
           </div>
 
@@ -93,12 +92,11 @@ function ExportRunCard({
   run: CompanyExportPage.Run;
   latest: boolean;
   downloading: string | null;
-  onDownload: (runId: string, kind: "json" | "zip") => void | Promise<void>;
+  onDownload: (runId: string) => void | Promise<void>;
 }) {
   const latestStatusTestId = latest ? "latest-export-run-status" : undefined;
   const latestProgressTestId = latest ? "latest-export-run-progress" : undefined;
-  const latestJsonTestId = latest ? "latest-export-download-json" : undefined;
-  const latestZipTestId = latest ? "latest-export-download-zip" : undefined;
+  const latestPackageTestId = latest ? "latest-export-download-package" : undefined;
 
   return (
     <div className="rounded-lg border border-surface-outline p-4" data-test-id={latest ? "latest-export-run" : undefined}>
@@ -120,24 +118,13 @@ function ExportRunCard({
         <div className="flex flex-wrap gap-2">
           <SecondaryButton
             size="xs"
-            onClick={() => onDownload(run.id, "json")}
+            onClick={() => onDownload(run.id)}
             disabled={run.status !== "completed"}
-            loading={downloading === `${run.id}:json`}
-            testId={latestJsonTestId}
+            loading={downloading === run.id}
+            testId={latestPackageTestId}
             icon={IconDownload}
           >
-            JSON
-          </SecondaryButton>
-
-          <SecondaryButton
-            size="xs"
-            onClick={() => onDownload(run.id, "zip")}
-            disabled={run.status !== "completed"}
-            loading={downloading === `${run.id}:zip`}
-            testId={latestZipTestId}
-            icon={IconDownload}
-          >
-            ZIP
+            Download
           </SecondaryButton>
         </div>
       </div>
