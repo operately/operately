@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 196
+- Endpoints: 195
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -12,7 +12,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `comments list` | `op comments list` | `GET` | `/api/external/v1/comments/list` |
 | `comments update` | `op comments update` | `POST` | `/api/external/v1/comments/update` |
 | `companies convert_member_to_guest` | `op companies convert_member_to_guest` | `POST` | `/api/external/v1/companies/convert_member_to_guest` |
-| `companies create` | `op companies create` | `POST` | `/api/external/v1/companies/create` |
 | `companies create_admins` | `op companies create_admins` | `POST` | `/api/external/v1/companies/create_admins` |
 | `companies create_member` | `op companies create_member` | `POST` | `/api/external/v1/companies/create_member` |
 | `companies delete_admin` | `op companies delete_admin` | `POST` | `/api/external/v1/companies/delete_admin` |
@@ -99,7 +98,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people list_possible_managers` | `op people list_possible_managers` | `GET` | `/api/external/v1/people/list_possible_managers` |
 | `people search` | `op people search` | `GET` | `/api/external/v1/people/search` |
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
-| `people update_picture` | `op people update_picture` | `POST` | `/api/external/v1/people/update_picture` |
 | `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
 | `projects acknowledge_check_in` | `op projects acknowledge_check_in` | `POST` | `/api/external/v1/projects/acknowledge_check_in` |
 | `projects close` | `op projects close` | `POST` | `/api/external/v1/projects/close` |
@@ -113,6 +111,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects create_milestone` | `op projects create_milestone` | `POST` | `/api/external/v1/projects/create_milestone` |
 | `projects create_milestone_comment` | `op projects create_milestone_comment` | `POST` | `/api/external/v1/projects/create_milestone_comment` |
 | `projects delete` | `op projects delete` | `POST` | `/api/external/v1/projects/delete` |
+| `projects delete_check_in` | `op projects delete_check_in` | `POST` | `/api/external/v1/projects/delete_check_in` |
 | `projects delete_contributor` | `op projects delete_contributor` | `POST` | `/api/external/v1/projects/delete_contributor` |
 | `projects delete_key_resource` | `op projects delete_key_resource` | `POST` | `/api/external/v1/projects/delete_key_resource` |
 | `projects delete_milestone` | `op projects delete_milestone` | `POST` | `/api/external/v1/projects/delete_milestone` |
