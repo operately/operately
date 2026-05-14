@@ -1,5 +1,6 @@
 import Api, { Task as BackendTask, TaskStatus } from "@/api";
 import { parseContextualDate } from "../contextualDates";
+import * as Time from "@/utils/time";
 import { Paths } from "@/routes/paths";
 import { parseMilestoneForTurboUi } from "../milestones";
 import { parseContent, richContentToString } from "turboui";
@@ -48,6 +49,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, opts: Parse
     assignees: parsePeopleForTurboUi(paths, task.assignees || []),
     milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
     dueDate: parseContextualDate(task.dueDate),
+    closedAt: Time.parse(task.closedAt),
     hasDescription: richContentToString(description).trim().length > 0,
     hasComments,
     commentCount,

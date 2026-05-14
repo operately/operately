@@ -190,7 +190,9 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
       const response = await Api.tasks.updateStatus({ taskId, status: backendStatus, type: "space" });
 
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, { type: "space", space });
-      setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: updatedTask.status } : t)));
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? { ...t, status: updatedTask.status, closedAt: updatedTask.closedAt } : t)),
+      );
 
       await invalidateAndRefresh();
 

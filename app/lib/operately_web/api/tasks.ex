@@ -675,9 +675,29 @@ defmodule OperatelyWeb.Api.Tasks do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{
           task_status: new_status,
-          status: new_status.value
+          status: new_status.value,
+          closed_at: next_closed_at(task, new_status),
+          reopened_at: next_reopened_at(task, new_status)
         })
       end)
+    end
+
+    defp next_closed_at(task, new_status) do
+      cond do
+        new_status.closed && task.closed_at -> task.closed_at
+        new_status.closed -> NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+        true -> nil
+      end
+    end
+
+    defp next_reopened_at(task, new_status) do
+      was_closed = task.closed_at || (task.task_status && task.task_status.closed)
+
+      if was_closed && !new_status.closed do
+        NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      else
+        task.reopened_at
+      end
     end
 
     def update_task_due_date(multi, new_due_date) do
@@ -826,7 +846,8 @@ defmodule OperatelyWeb.Api.Tasks do
             due_date: inputs.due_date,
             subscription_list_id: changes.subscription_list.id,
             task_status: status,
-            status: status.value
+            status: status.value,
+            closed_at: closed_at_for_status(status)
           })
           |> Repo.insert()
         end
@@ -851,6 +872,14 @@ defmodule OperatelyWeb.Api.Tasks do
         task = maybe_attach_milestone(task, changes)
         {:ok, task}
       end)
+    end
+
+    defp closed_at_for_status(status) do
+      if status.closed do
+        NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      else
+        nil
+      end
     end
 
     defp maybe_attach_milestone(task, changes) do
