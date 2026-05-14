@@ -1286,6 +1286,7 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
+    field? :closed_at, :datetime, null: true
     field? :due_date, :contextual_date, null: true
     field? :size, :string, null: true
     field? :priority, :string, null: true

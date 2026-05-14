@@ -19,6 +19,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       due_date: OperatelyWeb.Api.Serializer.serialize(task.due_date),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(task.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(task.updated_at),
+      closed_at: OperatelyWeb.Api.Serializer.serialize(task.closed_at),
       assignees: OperatelyWeb.Api.Serializer.serialize(task.assigned_people),
       milestone: OperatelyWeb.Api.Serializer.serialize(task.milestone),
       project: OperatelyWeb.Api.Serializer.serialize(task.project),
