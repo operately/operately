@@ -1,5 +1,7 @@
 defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
   alias Operately.Support.RichText
+  alias Operately.Notifications.SubscriptionList
+
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
 
@@ -217,7 +219,8 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
       assert {200, res} = mutation(ctx.conn, [:projects, :create_discussion], inputs)
       assert res.discussion.title == "Default Discussion"
 
-      discussion = Operately.Repo.get(Operately.Comments.CommentThread, res.discussion.id)
+      {:ok, discussion_id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
+      discussion = Operately.Repo.get(Operately.Comments.CommentThread, discussion_id)
       {:ok, list} = SubscriptionList.get(:system, parent_id: discussion.id, opts: [preload: :subscriptions])
 
       refute list.send_to_everyone
