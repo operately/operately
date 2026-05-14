@@ -178,7 +178,7 @@ defmodule OperatelyWeb.Api do
 
         mutation(:update, OperatelyWeb.Api.People.Update)
         mutation(:update_theme, OperatelyWeb.Api.People.UpdateTheme)
-        mutation(:update_picture, OperatelyWeb.Api.People.UpdatePicture)
+        mutation(:update_picture, OperatelyWeb.Api.People.UpdatePicture, catalog: false)
       end
 
       @doc "Get, list, update and manage company settings, members, and permissions"
@@ -266,6 +266,8 @@ defmodule OperatelyWeb.Api do
         mutation(:unsubscribe, OperatelyWeb.Api.Notifications.Unsubscribe)
       end
 
+      mutation(:create_avatar_blob, OperatelyWeb.Api.Mutations.CreateAvatarBlob, catalog: false)
+
       subscription(:assignments_count, S.AssignmentsCount)
       subscription(:reload_comments, S.ReloadComments)
       subscription(:unread_notifications_count, S.UnreadNotificationsCount)
@@ -279,7 +281,6 @@ defmodule OperatelyWeb.Api do
       common_endpoints()
 
       mutation(:create_blob, OperatelyWeb.Api.Mutations.CreateBlob)
-      mutation(:create_avatar_blob, OperatelyWeb.Api.Mutations.CreateAvatarBlob)
       mutation(:mark_blob_uploaded, OperatelyWeb.Api.Mutations.MarkBlobUploaded)
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)
       mutation(:add_company_owners, OperatelyWeb.Api.Mutations.AddCompanyOwners)
