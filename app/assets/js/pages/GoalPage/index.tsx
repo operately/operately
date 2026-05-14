@@ -296,11 +296,9 @@ function Page() {
 
 function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage.Props["checkIns"] {
   return checkIns.map((checkIn) => {
-    assertPresent(checkIn.author, "author must be present in check-in");
-
     return {
       id: checkIn.id,
-      author: People.parsePersonForTurboUi(paths, checkIn.author)!,
+      author: People.parsePersonForTurboUi(paths, checkIn.author),
       date: Time.parse(checkIn.insertedAt)!,
       link: paths.goalCheckInPath(checkIn.id),
       content: JSON.parse(checkIn.message!),

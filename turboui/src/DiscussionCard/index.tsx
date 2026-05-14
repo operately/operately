@@ -12,7 +12,7 @@ namespace DiscussionCard {
   interface Discussion {
     id: string;
     title: string;
-    author: AvatarPerson;
+    author: AvatarPerson | null;
     date: Date;
     link: string;
     content: string;
@@ -36,9 +36,11 @@ export function DiscussionCard({ discussion, mentionedPersonLookup }: Discussion
   return (
     <DivLink to={discussion.link} className={className}>
       <div className="flex gap-4 flex-1">
-        <div className="shrink-0">
-          <Avatar person={discussion.author} size="large" />
-        </div>
+        {discussion.author && (
+          <div className="shrink-0">
+            <Avatar person={discussion.author} size="large" />
+          </div>
+        )}
 
         <div className="flex-1 h-full">
           <div className="font-semibold leading-none mb-1">{discussion.title}</div>
@@ -47,8 +49,12 @@ export function DiscussionCard({ discussion, mentionedPersonLookup }: Discussion
           </div>
 
           <div className="flex gap-1 mt-1 text-xs">
-            <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
-            <div className="text-sm text-content-dimmed">·</div>
+            {discussion.author && (
+              <>
+                <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
+                <div className="text-sm text-content-dimmed">·</div>
+              </>
+            )}
             <div className="text-sm text-content-dimmed">
               <FormattedTime time={discussion.date!} format="relative-weekday-or-date" />
             </div>

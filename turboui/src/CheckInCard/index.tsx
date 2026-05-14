@@ -12,7 +12,7 @@ import { StatusBadge, BadgeStatus } from "../StatusBadge";
 namespace CheckInCard {
   interface CheckIn {
     link: string;
-    author: AvatarPerson;
+    author: AvatarPerson | null;
     date: Date;
     content: string;
     commentCount: number;
@@ -37,9 +37,11 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type }: CheckInCar
   return (
     <DivLink to={checkIn.link} className={className}>
       <div className="flex gap-4 flex-1">
-        <div className="shrink-0">
-          <Avatar person={checkIn.author} size="large" />
-        </div>
+        {checkIn.author && (
+          <div className="shrink-0">
+            <Avatar person={checkIn.author} size="large" />
+          </div>
+        )}
 
         <div className="flex-1 h-full">
           <div className="flex items-center gap-2 mb-1">
@@ -51,8 +53,12 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type }: CheckInCar
           </div>
 
           <div className="flex gap-1 mt-1 text-xs">
-            <div className="text-sm text-content-dimmed">{checkIn.author.fullName}</div>
-            <div className="text-sm text-content-dimmed">·</div>
+            {checkIn.author && (
+              <>
+                <div className="text-sm text-content-dimmed">{checkIn.author.fullName}</div>
+                <div className="text-sm text-content-dimmed">·</div>
+              </>
+            )}
             <div className="text-sm text-content-dimmed">
               <FormattedTime time={checkIn.date} format="relative-weekday-or-date" />
             </div>
