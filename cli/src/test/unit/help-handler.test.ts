@@ -121,6 +121,17 @@ test("resolves custom endpoint help from trailing help", () => {
   }
 });
 
+test("resolves files create custom endpoint help", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const request = resolveHelpRequest(["help", "files", "create"], registry);
+
+  assert.ok(request);
+  assert.equal(request.kind, "endpoint");
+  if (request.kind === "endpoint") {
+    assert.equal(request.endpoint.full_name, "files/create");
+  }
+});
+
 test("returns null for executable commands", () => {
   const registry = createRegistry(fixtureCatalog);
   const request = resolveHelpRequest(["auth", "whoami"], registry);

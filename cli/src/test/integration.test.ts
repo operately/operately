@@ -100,6 +100,14 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Updates the authenticated user's profile picture using a local file path or clears the current picture."));
     });
 
+    it("shows custom catalog commands in files namespace help", async () => {
+      const result = await runCLI(["files", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("files namespace"));
+      assert.ok(result.stdout.includes("create"));
+      assert.ok(result.stdout.includes("Uploads one local file into a resource hub and creates the corresponding file record."));
+    });
+
     it("shows namespace help with trailing help", async () => {
       const result = await runCLI(["projects", "help"]);
       assert.strictEqual(result.exitCode, 0);
@@ -142,6 +150,23 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Command: people update_picture"));
       assert.ok(result.stdout.includes("--avatar-file <path> (optional)"));
       assert.ok(result.stdout.includes("operately people update_picture --clear"));
+    });
+
+    it("shows files create custom endpoint help with --help flag", async () => {
+      const result = await runCLI(["files", "create", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command: files create"));
+      assert.ok(result.stdout.includes("--file <path> (required)"));
+      assert.ok(result.stdout.includes("--description-file <path> (optional, alternative to --description)"));
+      assert.ok(result.stdout.includes("operately files create --resource-hub-id rh_123 --file ./report.png"));
+      assert.ok(!result.stdout.includes("--files.0.blob-id"));
+    });
+
+    it("shows files create custom endpoint help from help command", async () => {
+      const result = await runCLI(["help", "files", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command: files create"));
+      assert.ok(result.stdout.includes("--resource-hub-id <id> (required)"));
     });
 
     it("shows command help with trailing help", async () => {
@@ -578,7 +603,10 @@ describe("CLI Integration Tests", () => {
       const commandsDoc = fs.readFileSync(commandsDocPath, "utf8");
 
       assert.ok(!commandsDoc.includes("`people update_picture`"));
+      assert.ok(!commandsDoc.includes("`files create`"));
       assert.ok(!commandsDoc.includes("create_avatar_blob"));
+      assert.ok(!commandsDoc.includes("create_blob"));
+      assert.ok(!commandsDoc.includes("mark_blob_uploaded"));
     });
   });
 

@@ -195,3 +195,38 @@ test("parses bare boolean flags for custom endpoints", () => {
     });
   }
 });
+
+test("parses custom file input for files create", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(
+    ["files", "create", "--resource-hub-id", "rh1", "--file", "./report.png"],
+    registry,
+    fixtureCatalog.types,
+  );
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      resource_hub_id: "rh1",
+      file: "./report.png",
+    });
+  }
+});
+
+test("rejects repeated --file flags for files create", () => {
+  const registry = createRegistry(fixtureCatalog);
+
+  assert.throws(
+    () =>
+      parseCommand(
+        ["files", "create", "--resource-hub-id", "rh1", "--file", "./a.png", "--file", "./b.png"],
+        registry,
+        fixtureCatalog.types,
+      ),
+    (error: unknown) => {
+      assert.ok(error instanceof UsageError);
+      assert.equal(error.message, "Expected string for 'file', got object.");
+      return true;
+    },
+  );
+});

@@ -29,6 +29,6 @@ defmodule Operately.Operations.ResourceHubFileEditing do
       }
     end)
     |> Repo.transaction()
-    |> Repo.extract_result(:file)
+    |> Repo.extract_result(:file_with_node)
   end
 end

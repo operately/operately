@@ -19,7 +19,11 @@ test("namespaced command is exactly '<namespace> <endpoint_name>'", () => {
 
 test("custom catalog commands are still normal registry endpoints", () => {
   const registry = createRegistry(fixtureCatalog);
-  const endpoint = registry.find(["people", "update_picture"]);
-  assert.ok(endpoint);
-  assert.equal(endpoint?.full_name, "people/update_picture");
+  const pictureEndpoint = registry.find(["people", "update_picture"]);
+  const fileEndpoint = registry.find(["files", "create"]);
+
+  assert.ok(pictureEndpoint);
+  assert.ok(fileEndpoint);
+  assert.equal(pictureEndpoint?.full_name, "people/update_picture");
+  assert.equal(fileEndpoint?.full_name, "files/create");
 });
