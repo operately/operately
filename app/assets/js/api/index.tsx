@@ -1853,6 +1853,7 @@ export interface Task {
   name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
+  closedAt?: string | null;
   dueDate?: ContextualDate | null;
   size?: string | null;
   priority?: string | null;

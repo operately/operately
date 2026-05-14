@@ -314,7 +314,11 @@ export function useProjectTasksForTurboUi({ backendTasks, projectId, cacheKey, m
       const response = await Api.tasks.updateStatus({ taskId, status: backendStatus, type: "project" });
 
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, { type: "project" });
-      setTasks((prev) => prev.map((t) => (compareIds(t.id, taskId) ? { ...t, status: updatedTask.status } : t)));
+      setTasks((prev) =>
+        prev.map((t) =>
+          compareIds(t.id, taskId) ? { ...t, status: updatedTask.status, closedAt: updatedTask.closedAt } : t,
+        ),
+      );
 
       updateMilestonesFromServer(response.updatedMilestone ?? null, null);
 

@@ -64,7 +64,7 @@ export function TaskList({
       }
     });
 
-    return { visibleTasks: visible, hiddenTasks: hidden };
+    return { visibleTasks: visible, hiddenTasks: sortCompletedTasks(hidden) };
   }, [tasks]);
 
   const { items: visibleTasksProjected, placeholderIndex } = useMemo(
@@ -220,6 +220,14 @@ export function TaskList({
         ))}
     </>
   );
+}
+
+function sortCompletedTasks(tasks: Types.Task[]): Types.Task[] {
+  return [...tasks].sort((a, b) => completionTime(b) - completionTime(a));
+}
+
+function completionTime(task: Types.Task): number {
+  return task.closedAt?.getTime() ?? 0;
 }
 
 export default TaskList;
