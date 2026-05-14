@@ -140,6 +140,23 @@ defmodule OperatelyWeb.Api.Spaces.CreateDiscussionTest do
       assert message.subscription_list_id
     end
 
+    test "uses defaults for omitted optional inputs", ctx do
+      assert {200, res} = mutation(ctx.conn, [:spaces, :create_discussion], %{
+        space_id: Paths.space_id(ctx.space),
+        title: "Message",
+        body: RichText.rich_text("Content", :as_string),
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
+      {:ok, message} = Message.get(:system, id: id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      assert message.state == :published
+      refute list.send_to_everyone
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.person.id
+    end
+
     test "adds mentioned people to subscription list", ctx do
       people = ctx.people ++ ctx.people ++ ctx.people
       content = RichText.rich_text(mentioned_people: people)

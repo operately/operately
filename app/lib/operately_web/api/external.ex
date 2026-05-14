@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api.External do
-  use TurboConnect.Api
+  use TurboConnect.Api, default_source: :external
 
   plug(OperatelyWeb.Api.Plugs.RequireApiToken)
   plug(OperatelyWeb.Api.Plugs.EnforceTokenAccessMode)

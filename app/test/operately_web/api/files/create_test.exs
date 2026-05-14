@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
   alias Operately.ResourceHubs
   alias Operately.Access.Binding
   alias Operately.Support.RichText
+  alias Operately.Notifications.SubscriptionList
 
   import Operately.GroupsFixtures
   import Operately.ResourceHubsFixtures
@@ -141,6 +142,40 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
       Enum.each(files, fn f ->
         assert Enum.find(res.files, &(&1.id == Paths.file_id(f)))
       end)
+    end
+  end
+
+  describe "subscriptions to notifications" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:p1, :space)
+      |> Factory.add_space_member(:p2, :space)
+      |> Factory.add_space_member(:p3, :space)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_blob(:blob1)
+    end
+
+    test "uses defaults for omitted optional inputs", ctx do
+      assert {200, res} = mutation(ctx.conn, [:files, :create], %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        files: [
+          %{
+            blob_id: ctx.blob1.id,
+            name: "My file",
+            description: RichText.rich_text("description", :as_string),
+          }
+        ]
+      })
+
+      file = hd(res.files)
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(file.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      refute list.send_to_everyone
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.creator.id
     end
   end
 
