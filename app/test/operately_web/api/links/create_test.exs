@@ -123,6 +123,34 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
     end
   end
 
+  describe "subscriptions to notifications" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:p1, :space)
+      |> Factory.add_space_member(:p2, :space)
+      |> Factory.add_space_member(:p3, :space)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+    end
+
+    test "uses defaults for omitted optional inputs", ctx do
+      assert {200, res} = mutation(ctx.conn, [:links, :create], %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        name: "My link",
+        url: "http://localhost:4000",
+        type: "other",
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.link.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      refute list.send_to_everyone
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.creator.id
+    end
+  end
+
   #
   # Helpers
   #
