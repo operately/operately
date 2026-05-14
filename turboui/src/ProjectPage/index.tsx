@@ -49,7 +49,7 @@ export namespace ProjectPage {
   export interface Discussion {
     id: string;
     title: string;
-    author: Person;
+    author: Person | null;
     date: Date;
     link: string;
     content: string;

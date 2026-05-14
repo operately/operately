@@ -551,7 +551,7 @@ function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): P
       id: discussion.id,
       date: Time.parse(discussion.insertedAt)!,
       title: discussion.title || "",
-      author: People.parsePersonForTurboUi(paths, discussion.author)!,
+      author: People.parsePersonForTurboUi(paths, discussion.author),
       link: paths.projectDiscussionPath(discussion.id),
       content: JSON.parse(discussion.message || "{}"),
       commentCount: discussion.commentsCount || 0,
