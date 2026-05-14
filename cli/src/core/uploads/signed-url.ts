@@ -12,6 +12,12 @@ export interface SignedUploadArgs {
   verbose?: boolean;
 }
 
+function assertMultipartUploadSupport() {
+  if (typeof FormData === "undefined" || typeof Blob === "undefined") {
+    throw new Error("Multipart upload requires Node.js 18+ with global FormData and Blob support.");
+  }
+}
+
 export async function uploadToSignedUrl(args: SignedUploadArgs): Promise<void> {
   if (args.verbose) {
     console.error(`[operately] UPLOAD ${args.signedUploadUrl}`);
@@ -19,6 +25,8 @@ export async function uploadToSignedUrl(args: SignedUploadArgs): Promise<void> {
 
   try {
     if (args.uploadStrategy === "multipart") {
+      assertMultipartUploadSupport();
+
       const formData = new FormData();
       const bytes = Uint8Array.from(args.fileBytes);
       formData.append("file", new Blob([bytes], { type: args.contentType }), path.basename(args.filePath));
