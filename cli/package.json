@@ -32,10 +32,11 @@
     "@tiptap/extension-highlight": "^2.1.13",
     "@tiptap/extension-link": "^2.1.13",
     "@tiptap/starter-kit": "^2.1.13",
+    "axios": "^1.7.3",
     "jsdom": "^23.0.1",
     "marked": "^11.1.1",
-    "axios": "^1.7.3",
-    "open": "^10.1.0"
+    "open": "^10.1.0",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.6",

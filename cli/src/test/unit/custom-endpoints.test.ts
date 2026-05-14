@@ -6,6 +6,11 @@ import { createRegistry } from "../../commands/registry";
 import { UsageError } from "../../core/parser";
 import { fixtureCatalog } from "./fixture-catalog";
 
+const ONE_BY_ONE_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+tmH0AAAAASUVORK5CYII=",
+  "base64",
+);
+
 function findEndpoint(fullName: string) {
   const endpoint = createRegistry(fixtureCatalog).endpoints.find((candidate) => candidate.full_name === fullName);
 
@@ -14,11 +19,12 @@ function findEndpoint(fullName: string) {
 }
 
 function buildInput(
+  fullName: string,
   endpointInputs: Record<string, unknown>,
   registry = createRegistry(fixtureCatalog),
 ) {
   return {
-    endpoint: findEndpoint("people/update_picture"),
+    endpoint: findEndpoint(fullName),
     endpointInputs,
     registry,
     runtime: {
@@ -39,11 +45,11 @@ describe("custom endpoint registry", () => {
   });
 });
 
-describe("custom endpoint execution", () => {
+describe("people/update_picture", () => {
   it("uploads an avatar file through the hidden blob flow", async () => {
     const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
 
-    const payload = await executeCustomEndpointCommand(buildInput({ avatar_file: "./avatar.png" }), {
+    const payload = await executeCustomEndpointCommand(buildInput("people/update_picture", { avatar_file: "./avatar.png" }), {
       callEndpoint: async ({ endpoint, inputs }) => {
         calls.push({ kind: "query", path: endpoint.path, inputs });
         return { me: { id: "person-1" } };
@@ -124,7 +130,7 @@ describe("custom endpoint execution", () => {
   it("clears the current avatar without touching the blob flow", async () => {
     const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
 
-    const payload = await executeCustomEndpointCommand(buildInput({ clear: true }), {
+    const payload = await executeCustomEndpointCommand(buildInput("people/update_picture", { clear: true }), {
       callEndpoint: async ({ endpoint, inputs }) => {
         calls.push({ kind: "query", path: endpoint.path, inputs });
         return { me: { id: "person-1" } };
@@ -167,7 +173,7 @@ describe("custom endpoint execution", () => {
   });
 
   it("rejects missing mode flags", async () => {
-    await assert.rejects(executeCustomEndpointCommand(buildInput({})), (error: unknown) => {
+    await assert.rejects(executeCustomEndpointCommand(buildInput("people/update_picture", {})), (error: unknown) => {
       assert.ok(error instanceof UsageError);
       assert.equal(error.message, "Specify exactly one of '--avatar-file <path>' or '--clear'.");
       return true;
@@ -176,7 +182,7 @@ describe("custom endpoint execution", () => {
 
   it("rejects conflicting mode flags", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput({ avatar_file: "./avatar.png", clear: true })),
+      executeCustomEndpointCommand(buildInput("people/update_picture", { avatar_file: "./avatar.png", clear: true })),
       (error: unknown) => {
         assert.ok(error instanceof UsageError);
         assert.equal(error.message, "Specify exactly one of '--avatar-file <path>' or '--clear'.");
@@ -184,111 +190,337 @@ describe("custom endpoint execution", () => {
       },
     );
   });
+});
+
+describe("files/create", () => {
+  it("uploads a non-image file through the hidden blob flow", async () => {
+    const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
+
+    const payload = await executeCustomEndpointCommand(
+      buildInput("files/create", {
+        resource_hub_id: "hub-1",
+        file: "./report.pdf",
+      }),
+      {
+        callEndpoint: async () => {
+          throw new Error("callEndpoint should not run");
+        },
+        callExternalMutation: async ({ path, inputs }) => {
+          calls.push({ kind: "mutation", path, inputs });
+
+          if (path === "/create_blob") {
+            return {
+              blobs: [
+                {
+                  id: "blob-1",
+                  url: "https://app.operately.com/blobs/blob-1",
+                  signed_upload_url: "https://uploads.example.com/blob-1",
+                  upload_strategy: "direct",
+                },
+              ],
+            };
+          }
+
+          return { files: [{ id: "file-1" }] };
+        },
+        uploadToSignedUrl: async ({ signedUploadUrl, contentType, fileBytes }) => {
+          calls.push({
+            kind: "upload",
+            path: signedUploadUrl,
+            inputs: {
+              contentType,
+              size: fileBytes.byteLength,
+            },
+          });
+        },
+        readFile: () => Buffer.from("file-bytes"),
+        statFile: () => ({ size: 10 } as Stats),
+        inferMimeType: () => "application/pdf",
+      },
+    );
+
+    assert.deepEqual(payload, { files: [{ id: "file-1" }] });
+    assert.deepEqual(calls, [
+      {
+        kind: "mutation",
+        path: "/create_blob",
+        inputs: {
+          files: [
+            {
+              filename: "report.pdf",
+              size: 10,
+              content_type: "application/pdf",
+            },
+          ],
+        },
+      },
+      {
+        kind: "upload",
+        path: "https://uploads.example.com/blob-1",
+        inputs: {
+          contentType: "application/pdf",
+          size: 10,
+        },
+      },
+      {
+        kind: "mutation",
+        path: "/mark_blob_uploaded",
+        inputs: {
+          blob_id: "blob-1",
+        },
+      },
+      {
+        kind: "mutation",
+        path: "/api/external/v1/files/create",
+        inputs: {
+          resource_hub_id: "hub-1",
+          files: [
+            {
+              blob_id: "blob-1",
+              preview_blob_id: null,
+              name: "report.pdf",
+              description: "{\"type\":\"doc\",\"content\":[]}",
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  it("uploads an image file with a generated preview and preserves the original extension on renamed files", async () => {
+    const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
+
+    const payload = await executeCustomEndpointCommand(
+      buildInput("files/create", {
+        resource_hub_id: "hub-1",
+        file: "./chart.png",
+        folder_id: "folder-1",
+        name: "Q2-report",
+        description: "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Notes\"}]}]}",
+        send_notifications_to_everyone: false,
+        subscriber_ids: ["person-2"],
+      }),
+      {
+        callEndpoint: async () => {
+          throw new Error("callEndpoint should not run");
+        },
+        callExternalMutation: async ({ path, inputs }) => {
+          calls.push({ kind: "mutation", path, inputs });
+
+          if (path === "/create_blob") {
+            return {
+              blobs: [
+                {
+                  id: "blob-1",
+                  url: "https://app.operately.com/blobs/blob-1",
+                  signed_upload_url: "https://uploads.example.com/blob-1",
+                  upload_strategy: "direct",
+                },
+                {
+                  id: "blob-2",
+                  url: "https://app.operately.com/blobs/blob-2",
+                  signed_upload_url: "https://uploads.example.com/blob-2",
+                  upload_strategy: "direct",
+                },
+              ],
+            };
+          }
+
+          return { files: [{ id: "file-1" }] };
+        },
+        uploadToSignedUrl: async ({ signedUploadUrl, contentType, fileBytes }) => {
+          calls.push({
+            kind: "upload",
+            path: signedUploadUrl,
+            inputs: {
+              contentType,
+              size: fileBytes.byteLength,
+            },
+          });
+        },
+        readFile: () => ONE_BY_ONE_PNG,
+        statFile: () => ({ size: ONE_BY_ONE_PNG.byteLength } as Stats),
+        inferMimeType: () => "image/png",
+      },
+    );
+
+    assert.deepEqual(payload, { files: [{ id: "file-1" }] });
+
+    const createBlobCall = calls.find((call) => call.path === "/create_blob");
+    assert.ok(createBlobCall);
+    assert.ok(createBlobCall.inputs);
+    assert.equal(Array.isArray(createBlobCall.inputs.files), true);
+    assert.equal((createBlobCall.inputs.files as any[]).length, 2);
+    assert.deepEqual((createBlobCall.inputs.files as any[])[0], {
+      filename: "chart.png",
+      size: ONE_BY_ONE_PNG.byteLength,
+      content_type: "image/png",
+      width: 1,
+      height: 1,
+    });
+    assert.equal((createBlobCall.inputs.files as any[])[1].filename, "chart.png");
+    assert.equal((createBlobCall.inputs.files as any[])[1].content_type, "image/png");
+    assert.equal((createBlobCall.inputs.files as any[])[1].width, 100);
+    assert.equal((createBlobCall.inputs.files as any[])[1].height, 100);
+    assert.equal(typeof (createBlobCall.inputs.files as any[])[1].size, "number");
+    assert.ok((createBlobCall.inputs.files as any[])[1].size > 0);
+
+    assert.deepEqual(
+      calls.filter((call) => call.path === "/mark_blob_uploaded").map((call) => call.inputs),
+      [{ blob_id: "blob-1" }, { blob_id: "blob-2" }],
+    );
+
+    const finalCreateCall = calls.find((call) => call.path === "/api/external/v1/files/create");
+    assert.ok(finalCreateCall);
+    assert.deepEqual(finalCreateCall.inputs, {
+      resource_hub_id: "hub-1",
+      folder_id: "folder-1",
+      send_notifications_to_everyone: false,
+      subscriber_ids: ["person-2"],
+      files: [
+        {
+          blob_id: "blob-1",
+          preview_blob_id: "blob-2",
+          name: "Q2-report.png",
+          description: "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Notes\"}]}]}",
+        },
+      ],
+    });
+  });
 
   it("surfaces unreadable file paths as usage errors", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput({ avatar_file: "./missing.png" }), {
-        callEndpoint: async () => ({ me: { id: "person-1" } }),
+      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./missing.png" }), {
         readFile: () => {
           throw new Error("ENOENT");
         },
       }),
       (error: unknown) => {
         assert.ok(error instanceof UsageError);
-        assert.ok(error.message.includes("Failed to read file for '--avatar-file'"));
+        assert.ok(error.message.includes("Failed to read file for '--file'"));
         return true;
       },
     );
   });
 
-  it("fails when blob creation does not return upload metadata", async () => {
+  it("fails when blob creation does not return main upload metadata", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput({ avatar_file: "./avatar.png" }), {
-        callEndpoint: async () => ({ me: { id: "person-1" } }),
+      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
-          if (path === "/create_avatar_blob") {
+          if (path === "/create_blob") {
             return { blobs: [] };
           }
 
-          return { success: true };
+          return { files: [{ id: "file-1" }] };
         },
-        readFile: () => Buffer.from("avatar-bytes"),
-        statFile: () => ({ size: 12 } as Stats),
-        inferMimeType: () => "image/png",
+        readFile: () => Buffer.from("file-bytes"),
+        statFile: () => ({ size: 10 } as Stats),
+        inferMimeType: () => "application/pdf",
       }),
-      /Failed to create avatar blob for upload/,
+      /Failed to create a blob for the main file/,
     );
   });
 
   it("surfaces upload failures", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput({ avatar_file: "./avatar.png" }), {
-        callEndpoint: async () => ({ me: { id: "person-1" } }),
+      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
-          if (path === "/create_avatar_blob") {
+          if (path === "/create_blob") {
             return {
               blobs: [
                 {
                   id: "blob-1",
-                  url: "https://app.operately.com/media/avatar.png",
-                  signed_upload_url: "https://uploads.example.com/avatar.png",
+                  url: "https://app.operately.com/blobs/blob-1",
+                  signed_upload_url: "https://uploads.example.com/blob-1",
                   upload_strategy: "direct",
                 },
               ],
             };
           }
 
-          return { success: true };
+          return { files: [{ id: "file-1" }] };
         },
         uploadToSignedUrl: async () => {
           throw new Error("upload failed");
         },
-        readFile: () => Buffer.from("avatar-bytes"),
-        statFile: () => ({ size: 12 } as Stats),
-        inferMimeType: () => "image/png",
+        readFile: () => Buffer.from("file-bytes"),
+        statFile: () => ({ size: 10 } as Stats),
+        inferMimeType: () => "application/pdf",
       }),
       /upload failed/,
     );
   });
 
-  it("surfaces final update failures", async () => {
-    let updateCallSeen = false;
-
+  it("surfaces blob finalization failures", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput({ avatar_file: "./avatar.png" }), {
-        callEndpoint: async () => ({ me: { id: "person-1" } }),
+      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
-          if (path === "/create_avatar_blob") {
+          if (path === "/create_blob") {
             return {
               blobs: [
                 {
                   id: "blob-1",
-                  url: "https://app.operately.com/media/avatar.png",
-                  signed_upload_url: "https://uploads.example.com/avatar.png",
+                  url: "https://app.operately.com/blobs/blob-1",
+                  signed_upload_url: "https://uploads.example.com/blob-1",
                   upload_strategy: "direct",
                 },
               ],
             };
           }
 
-          updateCallSeen = true;
-          throw new Error("update failed");
+          if (path === "/mark_blob_uploaded") {
+            throw new Error("mark failed");
+          }
+
+          return { files: [{ id: "file-1" }] };
         },
         uploadToSignedUrl: async () => undefined,
-        readFile: () => Buffer.from("avatar-bytes"),
-        statFile: () => ({ size: 12 } as Stats),
-        inferMimeType: () => "image/png",
+        readFile: () => Buffer.from("file-bytes"),
+        statFile: () => ({ size: 10 } as Stats),
+        inferMimeType: () => "application/pdf",
       }),
-      /update failed/,
+      /mark failed/,
     );
+  });
 
-    assert.equal(updateCallSeen, true);
+  it("surfaces final create failures", async () => {
+    await assert.rejects(
+      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+        callExternalMutation: async ({ path }) => {
+          if (path === "/create_blob") {
+            return {
+              blobs: [
+                {
+                  id: "blob-1",
+                  url: "https://app.operately.com/blobs/blob-1",
+                  signed_upload_url: "https://uploads.example.com/blob-1",
+                  upload_strategy: "direct",
+                },
+              ],
+            };
+          }
+
+          if (path === "/api/external/v1/files/create") {
+            throw new Error("create failed");
+          }
+
+          return { blob: { id: "blob-1", status: "uploaded" } };
+        },
+        uploadToSignedUrl: async () => undefined,
+        readFile: () => Buffer.from("file-bytes"),
+        statFile: () => ({ size: 10 } as Stats),
+        inferMimeType: () => "application/pdf",
+      }),
+      /create failed/,
+    );
   });
 });
 
 describe("custom endpoint registration", () => {
   it("accepts catalogs where all custom endpoints are implemented", () => {
-    assert.doesNotThrow(() => validateCustomEndpointImplementations([findEndpoint("people/update_picture")]));
+    assert.doesNotThrow(() =>
+      validateCustomEndpointImplementations([findEndpoint("people/update_picture"), findEndpoint("files/create")]),
+    );
   });
 
   it("fails fast when a custom catalog endpoint has no implementation", () => {
