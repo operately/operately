@@ -82,6 +82,21 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       fks = Graph.get_foreign_keys("companies")
       assert is_list(fks)
     end
+
+    test "includes restored message and goal update author foreign keys" do
+      message_author_fk = Enum.find(Graph.get_foreign_keys("messages"), &(&1.column == "author_id"))
+      goal_update_author_fk = Enum.find(Graph.get_foreign_keys("goal_updates"), &(&1.column == "author_id"))
+      goal_update_acknowledger_fk = Enum.find(Graph.get_foreign_keys("goal_updates"), &(&1.column == "acknowledged_by_id"))
+
+      assert message_author_fk.references_table == "people"
+      assert message_author_fk.on_delete == "SET NULL"
+
+      assert goal_update_author_fk.references_table == "people"
+      assert goal_update_author_fk.on_delete == "SET NULL"
+
+      assert goal_update_acknowledger_fk.references_table == "people"
+      assert goal_update_acknowledger_fk.on_delete == "SET NULL"
+    end
   end
 
   describe "SchemaGraph.build_dependency_graph/0" do

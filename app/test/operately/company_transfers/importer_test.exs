@@ -18,6 +18,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.People
   alias Operately.People.Account
   alias Operately.People.Person
+  alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.Project
   alias Operately.ResourceHubs.Document
   alias Operately.Repo
@@ -418,6 +419,77 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_activity.comment_thread_id == nil
     assert imported_activity.content["project_id"] == imported_project.id
     assert imported_activity.content["new_champion_id"] == missing_champion_id
+  end
+
+  test "run/1 fails when a message author_id cannot be translated", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_messages_board(:board, :space)
+      |> Factory.add_message(:message, :board)
+
+    missing_author_id = Ecto.UUID.generate()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               Transfers.update_row(package, "messages", ctx.message.id, &Map.put(&1, "author_id", missing_author_id))
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+
+    assert {:error, {:missing_reference_translation, "messages", "author_id", "people", ^missing_author_id}} = Importer.run(import_run)
+  end
+
+  test "run/1 fails when a goal update author_id cannot be translated", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_goal_update(:goal_update, :goal, :creator)
+
+    missing_author_id = Ecto.UUID.generate()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               Transfers.update_row(package, "goal_updates", ctx.goal_update.id, &Map.put(&1, "author_id", missing_author_id))
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+
+    assert {:error, {:missing_reference_translation, "goal_updates", "author_id", "people", ^missing_author_id}} = Importer.run(import_run)
+  end
+
+  test "run/1 clears goal update acknowledgment fields when acknowledged_by_id cannot be translated", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:reviewer)
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_goal_update(:goal_update, :goal, :creator)
+      |> Factory.acknowledge_goal_update(:goal_update, :reviewer)
+
+    missing_acknowledger_id = Ecto.UUID.generate()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               Transfers.update_row(package, "goal_updates", ctx.goal_update.id, &Map.put(&1, "acknowledged_by_id", missing_acknowledger_id))
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_goal =
+      Repo.one!(
+        from g in Goal,
+          join: s in assoc(g, :group),
+          where: s.company_id == ^completed_run.company_id,
+          where: g.name == ^ctx.goal.name
+      )
+
+    imported_update = Repo.get_by!(Update, goal_id: imported_goal.id)
+
+    assert imported_update.acknowledged_by_id == nil
+    assert imported_update.acknowledged_at == nil
   end
 
   test "run/1 fails when an activity author_id cannot be translated", ctx do
