@@ -3,6 +3,7 @@
 import catalogJson from "./generated/api-catalog.json";
 import type { Catalog } from "./types/catalog";
 import { createRegistry } from "./commands/registry";
+import { validateCustomEndpointImplementations } from "./commands/custom-endpoints";
 import { handleHelpRequest } from "./commands/help-handler";
 import { executeAuthCommand } from "./auth";
 import { executeEndpointCommand } from "./commands/executor";
@@ -27,6 +28,7 @@ function loadCatalog(rawCatalog: any): Catalog {
 
 async function main(argv: string[]): Promise<number> {
   const catalog = loadCatalog(catalogJson);
+  validateCustomEndpointImplementations();
   const registry = createRegistry(catalog);
 
   const helpExitCode = handleHelpRequest({
@@ -71,6 +73,7 @@ async function main(argv: string[]): Promise<number> {
     endpoint: parsed.endpoint,
     globalFlags: parsed.globalFlags,
     endpointInputs: parsed.endpointInputs,
+    registry,
   });
 }
 

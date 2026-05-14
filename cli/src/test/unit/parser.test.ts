@@ -171,3 +171,27 @@ test("rejects --*-file flags for non-markdown fields", () => {
     },
   );
 });
+
+test("parses custom path input for people update_picture", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(["people", "update_picture", "--avatar-file", "./avatar.png"], registry, fixtureCatalog.types);
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      avatar_file: "./avatar.png",
+    });
+  }
+});
+
+test("parses bare boolean flags for custom endpoints", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(["people", "update_picture", "--clear"], registry, fixtureCatalog.types);
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      clear: true,
+    });
+  }
+});

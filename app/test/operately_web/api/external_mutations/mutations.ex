@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
     [
       Mutations.Companies.CreateAdmins,
       Mutations.Companies.CreateMember,
+      Mutations.CreateAvatarBlob,
       Mutations.Comments.Create,
       Mutations.Companies.ConvertMemberToGuest,
       Mutations.ResourceHubs.CopyFolder,

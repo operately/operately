@@ -5,6 +5,9 @@
   "license": "Apache-2.0",
   "type": "commonjs",
   "main": "./dist/index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "bin": {
     "operately": "dist/index.js",
     "op": "dist/index.js"

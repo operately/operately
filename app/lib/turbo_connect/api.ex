@@ -45,19 +45,19 @@ defmodule TurboConnect.Api do
     end
   end
 
-  defmacro query(name, module) do
+  defmacro query(name, module, opts \\ []) do
     quote do
       namespace = Module.get_attribute(__MODULE__, :tc_namespace)
       full_name = TurboConnect.Api.full_name(namespace, unquote(name))
-      @queries {full_name, namespace, unquote(name), unquote(module)}
+      @queries {full_name, namespace, unquote(name), unquote(module), unquote(opts)}
     end
   end
 
-  defmacro mutation(name, module) do
+  defmacro mutation(name, module, opts \\ []) do
     quote do
       namespace = Module.get_attribute(__MODULE__, :tc_namespace)
       full_name = TurboConnect.Api.full_name(namespace, unquote(name))
-      @mutations {full_name, namespace, unquote(name), unquote(module)}
+      @mutations {full_name, namespace, unquote(name), unquote(module), unquote(opts)}
     end
   end
 
@@ -93,31 +93,33 @@ defmodule TurboConnect.Api do
       end
 
       def __queries__() do
-        Enum.map(@queries, fn {full_name, namespace, name, module} ->
-          {full_name,
-           %{
-             inputs: module.__inputs__(),
-             outputs: module.__outputs__(),
-             handler: module,
-             name: name,
-             namespace: namespace,
-             type: :query
-           }}
+        Enum.map(@queries, fn {full_name, namespace, name, module, opts} ->
+          spec = %{
+            inputs: module.__inputs__(),
+            outputs: module.__outputs__(),
+            handler: module,
+            name: name,
+            namespace: namespace,
+            type: :query
+          }
+
+          {full_name, maybe_put_endpoint_opts(spec, opts)}
         end)
         |> Enum.into(%{})
       end
 
       def __mutations__() do
-        Enum.map(@mutations, fn {full_name, namespace, name, module} ->
-          {full_name,
-           %{
-             inputs: module.__inputs__(),
-             outputs: module.__outputs__(),
-             handler: module,
-             name: name,
-             namespace: namespace,
-             type: :mutation
-           }}
+        Enum.map(@mutations, fn {full_name, namespace, name, module, opts} ->
+          spec = %{
+            inputs: module.__inputs__(),
+            outputs: module.__outputs__(),
+            handler: module,
+            name: name,
+            namespace: namespace,
+            type: :mutation
+          }
+
+          {full_name, maybe_put_endpoint_opts(spec, opts)}
         end)
         |> Enum.into(%{})
       end
@@ -135,8 +137,8 @@ defmodule TurboConnect.Api do
       end
 
       def __namespaces__() do
-        query_namespaces = Enum.map(@queries, fn {_, namespace, _, _} -> namespace end)
-        mutuation_namespaces = Enum.map(@mutations, fn {_, namespace, _, _} -> namespace end)
+        query_namespaces = Enum.map(@queries, fn {_, namespace, _, _, _} -> namespace end)
+        mutuation_namespaces = Enum.map(@mutations, fn {_, namespace, _, _, _} -> namespace end)
         subscription_namespaces = Enum.map(@subscriptions, fn {_, namespace, _, _} -> namespace end)
         all_namespaces = query_namespaces ++ mutuation_namespaces ++ subscription_namespaces
 
@@ -145,6 +147,13 @@ defmodule TurboConnect.Api do
 
       def __namespace_descriptions__() do
         Enum.into(@namespace_descriptions, %{})
+      end
+
+      defp maybe_put_endpoint_opts(spec, opts) do
+        case opts do
+          [] -> spec
+          _ -> Map.merge(spec, Map.new(opts))
+        end
       end
     end
   end

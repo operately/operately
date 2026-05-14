@@ -1,13 +1,16 @@
 import { callEndpoint, ApiError } from "../core/http";
 import { readConfig, resolveRuntimeOptions } from "../auth/config";
 import { printError, printJson, writeJsonFile } from "../core/output";
-import type { GlobalFlags } from "../core/parser";
+import { UsageError, type GlobalFlags } from "../core/parser";
+import { executeCustomEndpointCommand } from "./custom-endpoints";
 import type { CatalogEndpoint } from "../types/catalog";
+import type { EndpointRegistry } from "./registry";
 
 interface EndpointExecutionInput {
   endpoint: CatalogEndpoint;
   globalFlags: GlobalFlags;
   endpointInputs: Record<string, unknown>;
+  registry: EndpointRegistry;
 }
 
 export async function executeEndpointCommand(input: EndpointExecutionInput): Promise<number> {
@@ -24,14 +27,27 @@ export async function executeEndpointCommand(input: EndpointExecutionInput): Pro
   }
 
   try {
-    const payload = await callEndpoint({
-      endpoint: input.endpoint,
-      baseUrl: runtime.baseUrl,
-      token: runtime.token,
-      timeoutMs: runtime.timeoutMs,
-      inputs: input.endpointInputs,
-      verbose: input.globalFlags.verbose,
-    });
+    const payload =
+      input.endpoint.execution_mode === "custom"
+        ? await executeCustomEndpointCommand({
+            endpoint: input.endpoint,
+            endpointInputs: input.endpointInputs,
+            registry: input.registry,
+            runtime: {
+              baseUrl: runtime.baseUrl,
+              token: runtime.token,
+              timeoutMs: runtime.timeoutMs,
+            },
+            globalFlags: input.globalFlags,
+          })
+        : await callEndpoint({
+            endpoint: input.endpoint,
+            baseUrl: runtime.baseUrl,
+            token: runtime.token,
+            timeoutMs: runtime.timeoutMs,
+            inputs: input.endpointInputs,
+            verbose: input.globalFlags.verbose,
+          });
 
     if (input.globalFlags.output) {
       writeJsonFile(input.globalFlags.output, payload, input.globalFlags.compact);
@@ -41,6 +57,11 @@ export async function executeEndpointCommand(input: EndpointExecutionInput): Pro
     printJson(payload, input.globalFlags.compact);
     return 0;
   } catch (error) {
+    if (error instanceof UsageError) {
+      printError(error.message);
+      return 2;
+    }
+
     if (error instanceof ApiError) {
       if (error.status >= 500 || error.status === 0) {
         printError(error.message);

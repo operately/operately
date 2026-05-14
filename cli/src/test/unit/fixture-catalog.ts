@@ -4,8 +4,8 @@ export const fixtureCatalog: Catalog = {
   schema_version: 1,
   api_base_path: "/api/external/v1",
   generated_at: "2026-01-01T00:00:00Z",
-  endpoint_count: 5,
-  query_count: 1,
+  endpoint_count: 6,
+  query_count: 2,
   mutation_count: 4,
   types: {
     primitives: {
@@ -184,6 +184,18 @@ export const fixtureCatalog: Catalog = {
       ],
       outputs: [],
       docstring: null,
+    },
+    {
+      full_name: "people/get_me",
+      namespace: "people",
+      name: "get_me",
+      type: "query",
+      method: "GET",
+      path: "/api/external/v1/people/get_me",
+      handler: "OperatelyWeb.Api.People.GetMe",
+      inputs: [],
+      outputs: [],
+      docstring: "Retrieves the authenticated user.",
     },
     {
       full_name: "projects/update_description",

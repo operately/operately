@@ -15252,9 +15252,9 @@
       ]
     }
   },
-  "endpoint_count": 196,
+  "endpoint_count": 195,
   "query_count": 63,
-  "mutation_count": 133,
+  "mutation_count": 132,
   "endpoints": [
     {
       "name": "create",
@@ -21086,64 +21086,6 @@
       ],
       "docstring": "Updates a person's profile information.",
       "full_name": "people/update",
-      "method": "POST"
-    },
-    {
-      "name": "update_picture",
-      "type": "mutation",
-      "path": "/api/external/v1/people/update_picture",
-      "handler": "OperatelyWeb.Api.People.UpdatePicture",
-      "outputs": [
-        {
-          "default": null,
-          "name": "person",
-          "type": {
-            "name": "person",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "people",
-      "inputs": [
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "avatar_blob_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "avatar_url",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Updates a person's profile picture.",
-      "full_name": "people/update_picture",
       "method": "POST"
     },
     {
@@ -27877,6 +27819,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-05-14T14:14:23Z",
+  "generated_at": "2026-05-14T18:16:36Z",
   "schema_version": 1
 }

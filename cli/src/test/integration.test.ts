@@ -92,6 +92,14 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("projects namespace"));
     });
 
+    it("shows custom catalog commands in namespace help", async () => {
+      const result = await runCLI(["people", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("people namespace"));
+      assert.ok(result.stdout.includes("update_picture"));
+      assert.ok(result.stdout.includes("Updates the authenticated user's profile picture using a local file path or clears the current picture."));
+    });
+
     it("shows namespace help with trailing help", async () => {
       const result = await runCLI(["projects", "help"]);
       assert.strictEqual(result.exitCode, 0);
@@ -113,6 +121,27 @@ describe("CLI Integration Tests", () => {
       assert.ok(!result.stdout.includes("Required flags:"));
       assert.ok(!result.stdout.includes("Optional flags:"));
       assert.ok(!result.stdout.includes("Include flags:"));
+    });
+
+    it("shows custom endpoint help with --help flag", async () => {
+      const result = await runCLI(["people", "update_picture", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command: people update_picture"));
+      assert.ok(result.stdout.includes("--avatar-file <path> (optional)"));
+      assert.ok(result.stdout.includes("--clear <boolean> (optional)"));
+      assert.ok(result.stdout.includes("operately people update_picture --avatar-file ./avatar.png"));
+      assert.ok(result.stdout.includes("operately people update_picture --clear"));
+      assert.ok(!result.stdout.includes("--person-id"));
+      assert.ok(!result.stdout.includes("--avatar-blob-id"));
+      assert.ok(!result.stdout.includes("--avatar-url"));
+    });
+
+    it("shows custom endpoint help from help command", async () => {
+      const result = await runCLI(["help", "people", "update_picture"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command: people update_picture"));
+      assert.ok(result.stdout.includes("--avatar-file <path> (optional)"));
+      assert.ok(result.stdout.includes("operately people update_picture --clear"));
     });
 
     it("shows command help with trailing help", async () => {
@@ -540,6 +569,16 @@ describe("CLI Integration Tests", () => {
       } finally {
         fs.rmSync(dir, { recursive: true, force: true });
       }
+    });
+  });
+
+  describe("Generated Catalog Artifacts", () => {
+    it("hides internal blob plumbing and custom CLI-only commands from generated commands docs", async () => {
+      const commandsDocPath = path.join(__dirname, "../../docs/commands.md");
+      const commandsDoc = fs.readFileSync(commandsDocPath, "utf8");
+
+      assert.ok(!commandsDoc.includes("`people update_picture`"));
+      assert.ok(!commandsDoc.includes("create_avatar_blob"));
     });
   });
 
