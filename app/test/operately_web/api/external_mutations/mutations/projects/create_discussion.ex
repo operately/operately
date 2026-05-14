@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Discussions.Crea
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
+  alias Operately.Notifications.SubscriptionList
+
   @impl true
   def mutation_name, do: "projects/create_discussion"
 
@@ -11,7 +13,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Discussions.Crea
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
-    |> Factory.add_company_member(:member)
   end
 
   @impl true
@@ -19,14 +20,17 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Discussions.Crea
     %{
       project_id: Paths.project_id(ctx.project),
       title: "Updated Title",
-      message: rich_text_string("Updated content"),
-      subscriber_ids: [Paths.person_id(ctx.member)]
+      message: rich_text_string("Updated content")
     }
   end
 
   @impl true
   def assert(response, _ctx) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(response.discussion.id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
     assert response.discussion.id
+    assert list.send_to_everyone
     refute Map.has_key?(response, :error)
   end
 
