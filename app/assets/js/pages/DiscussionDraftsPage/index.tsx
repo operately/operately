@@ -7,7 +7,6 @@ import * as Time from "@/utils/time";
 import * as React from "react";
 
 import { Discussion } from "@/models/discussions";
-import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { createTestId } from "@/utils/testid";
 import { DivLink, PrimaryButton, richContentToString } from "turboui";
@@ -117,8 +116,6 @@ function DiscussionList() {
 
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
-  assertPresent(discussion.author, "author must be present in discussion");
-
   const path = paths.discussionEditPath(discussion.id!);
 
   const className = classNames(
@@ -135,9 +132,11 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
 
   return (
     <DivLink to={path} className={className} testId={testId}>
-      <div className="shrink-0">
-        <Avatar person={discussion.author} size="large" />
-      </div>
+      {discussion.author && (
+        <div className="shrink-0">
+          <Avatar person={discussion.author} size="large" />
+        </div>
+      )}
 
       <div className="flex-1 h-full">
         <div className="font-semibold leading-none mb-1">{discussion.title}</div>
