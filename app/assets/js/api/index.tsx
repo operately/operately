@@ -5112,26 +5112,6 @@ class ApiNamespaceInvitations {
   }
 }
 
-class ApiNamespaceFiles {
-  constructor(private client: ApiClient) {}
-
-  async get(input: FilesGetInput): Promise<FilesGetResult> {
-    return this.client.get("/files/get", input);
-  }
-
-  async create(input: FilesCreateInput): Promise<FilesCreateResult> {
-    return this.client.post("/files/create", input);
-  }
-
-  async delete(input: FilesDeleteInput): Promise<FilesDeleteResult> {
-    return this.client.post("/files/delete", input);
-  }
-
-  async update(input: FilesUpdateInput): Promise<FilesUpdateResult> {
-    return this.client.post("/files/update", input);
-  }
-}
-
 class ApiNamespaceAi {
   constructor(private client: ApiClient) {}
 
@@ -5317,6 +5297,26 @@ class ApiNamespaceNotifications {
     input: NotificationsUpdateSubscriptionsListInput,
   ): Promise<NotificationsUpdateSubscriptionsListResult> {
     return this.client.post("/notifications/update_subscriptions_list", input);
+  }
+}
+
+class ApiNamespaceFiles {
+  constructor(private client: ApiClient) {}
+
+  async get(input: FilesGetInput): Promise<FilesGetResult> {
+    return this.client.get("/files/get", input);
+  }
+
+  async create(input: FilesCreateInput): Promise<FilesCreateResult> {
+    return this.client.post("/files/create", input);
+  }
+
+  async delete(input: FilesDeleteInput): Promise<FilesDeleteResult> {
+    return this.client.post("/files/delete", input);
+  }
+
+  async update(input: FilesUpdateInput): Promise<FilesUpdateResult> {
+    return this.client.post("/files/update", input);
   }
 }
 
@@ -6149,10 +6149,10 @@ export class ApiClient {
   public apiNamespaceCliAuth: ApiNamespaceCliAuth;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
-  public apiNamespaceFiles: ApiNamespaceFiles;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceNotifications: ApiNamespaceNotifications;
+  public apiNamespaceFiles: ApiNamespaceFiles;
   public apiNamespaceLinks: ApiNamespaceLinks;
   public apiNamespaceDocuments: ApiNamespaceDocuments;
   public apiNamespaceResourceHubs: ApiNamespaceResourceHubs;
@@ -6170,10 +6170,10 @@ export class ApiClient {
     this.apiNamespaceCliAuth = new ApiNamespaceCliAuth(this);
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
-    this.apiNamespaceFiles = new ApiNamespaceFiles(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
+    this.apiNamespaceFiles = new ApiNamespaceFiles(this);
     this.apiNamespaceLinks = new ApiNamespaceLinks(this);
     this.apiNamespaceDocuments = new ApiNamespaceDocuments(this);
     this.apiNamespaceResourceHubs = new ApiNamespaceResourceHubs(this);
@@ -6679,23 +6679,6 @@ export default {
       ),
   },
 
-  files: {
-    get: (input: FilesGetInput) => defaultApiClient.apiNamespaceFiles.get(input),
-    useGet: (input: FilesGetInput) => useQuery<FilesGetResult>(() => defaultApiClient.apiNamespaceFiles.get(input)),
-
-    delete: (input: FilesDeleteInput) => defaultApiClient.apiNamespaceFiles.delete(input),
-    useDelete: () =>
-      useMutation<FilesDeleteInput, FilesDeleteResult>((input) => defaultApiClient.apiNamespaceFiles.delete(input)),
-
-    update: (input: FilesUpdateInput) => defaultApiClient.apiNamespaceFiles.update(input),
-    useUpdate: () =>
-      useMutation<FilesUpdateInput, FilesUpdateResult>((input) => defaultApiClient.apiNamespaceFiles.update(input)),
-
-    create: (input: FilesCreateInput) => defaultApiClient.apiNamespaceFiles.create(input),
-    useCreate: () =>
-      useMutation<FilesCreateInput, FilesCreateResult>((input) => defaultApiClient.apiNamespaceFiles.create(input)),
-  },
-
   ai: {
     getConversations: (input: AiGetConversationsInput) => defaultApiClient.apiNamespaceAi.getConversations(input),
     useGetConversations: (input: AiGetConversationsInput) =>
@@ -6848,6 +6831,23 @@ export default {
       useMutation<NotificationsUpdateSubscriptionsListInput, NotificationsUpdateSubscriptionsListResult>((input) =>
         defaultApiClient.apiNamespaceNotifications.updateSubscriptionsList(input),
       ),
+  },
+
+  files: {
+    get: (input: FilesGetInput) => defaultApiClient.apiNamespaceFiles.get(input),
+    useGet: (input: FilesGetInput) => useQuery<FilesGetResult>(() => defaultApiClient.apiNamespaceFiles.get(input)),
+
+    delete: (input: FilesDeleteInput) => defaultApiClient.apiNamespaceFiles.delete(input),
+    useDelete: () =>
+      useMutation<FilesDeleteInput, FilesDeleteResult>((input) => defaultApiClient.apiNamespaceFiles.delete(input)),
+
+    update: (input: FilesUpdateInput) => defaultApiClient.apiNamespaceFiles.update(input),
+    useUpdate: () =>
+      useMutation<FilesUpdateInput, FilesUpdateResult>((input) => defaultApiClient.apiNamespaceFiles.update(input)),
+
+    create: (input: FilesCreateInput) => defaultApiClient.apiNamespaceFiles.create(input),
+    useCreate: () =>
+      useMutation<FilesCreateInput, FilesCreateResult>((input) => defaultApiClient.apiNamespaceFiles.create(input)),
   },
 
   links: {

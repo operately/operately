@@ -96,6 +96,21 @@ test("prints custom CLI help for people update_picture", () => {
   assert.ok(!output.includes("--avatar-url"));
 });
 
+test("prints custom CLI help for files create", () => {
+  const output = captureHelpOutput(() => {
+    printEndpointHelp(findEndpoint("files/create"), "files create", fixtureCatalog.types);
+  });
+
+  assert.ok(output.includes("Command: files create"));
+  assert.ok(output.includes("--resource-hub-id <id> (required)"));
+  assert.ok(output.includes("--file <path> (required)"));
+  assert.ok(output.includes("--description <markdown> (optional)"));
+  assert.ok(output.includes("--description-file <path> (optional, alternative to --description)"));
+  assert.ok(output.includes("operately files create --resource-hub-id rh_123 --file ./report.png"));
+  assert.ok(!output.includes("--files.0.blob-id"));
+  assert.ok(!output.includes("--files.0.preview-blob-id"));
+});
+
 test("prints hybrid signup help with flag-driven guidance", () => {
   const output = captureHelpOutput(() => {
     printAuthCommandHelp("signup");

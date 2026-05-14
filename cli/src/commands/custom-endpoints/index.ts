@@ -1,16 +1,94 @@
 import fs from "node:fs";
 import { callExternalMutation } from "../../core/external-http";
 import { callEndpoint } from "../../core/http";
+import { inferMimeType } from "../../core/uploads/file-metadata";
 import { uploadToSignedUrl } from "../../core/uploads/signed-url";
 import type { CatalogEndpoint } from "../../types/catalog";
-import { executePeopleUpdatePicture, inferMimeType } from "./people/update-picture";
+import { executeFilesCreate } from "./files/create";
+import { executePeopleUpdatePicture } from "./people/update-picture";
 import type { CustomEndpointDeps, CustomEndpointExecutionInput, CustomEndpointExecutor } from "./types";
 
 const CUSTOM_ENDPOINT_EXECUTORS: Record<string, CustomEndpointExecutor> = {
+  "files/create": executeFilesCreate,
   "people/update_picture": executePeopleUpdatePicture,
 };
 
 const CUSTOM_ENDPOINTS: CatalogEndpoint[] = [
+  {
+    full_name: "files/create",
+    namespace: "files",
+    name: "create",
+    type: "mutation",
+    method: "POST",
+    path: "/api/external/v1/files/create",
+    handler: "OperatelyWeb.Api.Files.Create",
+    inputs: [
+      {
+        name: "resource_hub_id",
+        type: { kind: "named", name: "id" },
+        optional: false,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "file",
+        type: { kind: "named", name: "path" },
+        optional: false,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "folder_id",
+        type: { kind: "named", name: "id" },
+        optional: true,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "name",
+        type: { kind: "named", name: "string" },
+        optional: true,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "description",
+        type: { kind: "named", name: "json" },
+        optional: true,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "send_notifications_to_everyone",
+        type: { kind: "named", name: "boolean" },
+        optional: true,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "subscriber_ids",
+        type: { kind: "list", item: { kind: "named", name: "id" } },
+        optional: true,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+    ],
+    outputs: [],
+    docstring: "Uploads one local file into a resource hub and creates the corresponding file record.",
+    execution_mode: "custom",
+    example_mode: "cli",
+    cli_examples: [
+      "operately files create --resource-hub-id rh_123 --file ./report.png",
+      "operately files create --resource-hub-id rh_123 --file ./report.png --name Q2-report --description-file ./notes.md",
+    ],
+  },
   {
     full_name: "people/update_picture",
     namespace: "people",

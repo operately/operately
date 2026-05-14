@@ -1,5 +1,6 @@
 import path from "node:path";
 import { UsageError } from "../../../core/parser-types";
+import { inferMimeType } from "../../../core/uploads/file-metadata";
 import type { CustomEndpointDeps, CustomEndpointExecutor } from "../types";
 
 const CREATE_AVATAR_BLOB_PATH = "/create_avatar_blob";
@@ -114,23 +115,6 @@ export const executePeopleUpdatePicture: CustomEndpointExecutor = async (input, 
     verbose: input.globalFlags.verbose,
   });
 };
-
-export function inferMimeType(filePath: string): string {
-  const extension = path.extname(filePath).toLowerCase();
-
-  return (
-    {
-      ".avif": "image/avif",
-      ".gif": "image/gif",
-      ".heic": "image/heic",
-      ".jpeg": "image/jpeg",
-      ".jpg": "image/jpeg",
-      ".png": "image/png",
-      ".svg": "image/svg+xml",
-      ".webp": "image/webp",
-    }[extension] || "application/octet-stream"
-  );
-}
 
 function readOptionalString(value: unknown, fieldName: string): string | null {
   if (value === undefined) return null;
