@@ -123,8 +123,8 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
       field :project_id, :id
       field :title, :string
       field :message, :json
-      field? :send_notifications_to_everyone, :boolean, default: false
-      field? :subscriber_ids, list_of(:id), default: []
+      field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+      field? :subscriber_ids, list_of(:id), null: false, default: []
     end
 
     outputs do

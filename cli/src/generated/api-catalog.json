@@ -628,18 +628,7 @@
           },
           {
             "default": null,
-            "name": "json_blob_id",
-            "type": {
-              "name": "id",
-              "kind": "named"
-            },
-            "optional": true,
-            "has_default": false,
-            "nullable": false
-          },
-          {
-            "default": null,
-            "name": "zip_blob_id",
+            "name": "package_blob_id",
             "type": {
               "name": "id",
               "kind": "named"
@@ -662,6 +651,17 @@
           {
             "default": null,
             "name": "validation_errors",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "manifest_summary",
             "type": {
               "name": "json",
               "kind": "named"
@@ -1656,17 +1656,6 @@
           },
           {
             "default": null,
-            "name": "name",
-            "type": {
-              "name": "string",
-              "kind": "named"
-            },
-            "optional": false,
-            "has_default": false,
-            "nullable": false
-          },
-          {
-            "default": null,
             "name": "inserted_at",
             "type": {
               "name": "date",
@@ -1705,9 +1694,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -1727,9 +1716,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -10885,7 +10874,7 @@
           },
           {
             "default": null,
-            "name": "json_blob_id",
+            "name": "package_blob_id",
             "type": {
               "name": "id",
               "kind": "named"
@@ -10896,18 +10885,7 @@
           },
           {
             "default": null,
-            "name": "zip_blob_id",
-            "type": {
-              "name": "id",
-              "kind": "named"
-            },
-            "optional": true,
-            "has_default": false,
-            "nullable": false
-          },
-          {
-            "default": null,
-            "name": "json_download_url",
+            "name": "package_download_url",
             "type": {
               "name": "string",
               "kind": "named"
@@ -10918,29 +10896,7 @@
           },
           {
             "default": null,
-            "name": "zip_download_url",
-            "type": {
-              "name": "string",
-              "kind": "named"
-            },
-            "optional": true,
-            "has_default": false,
-            "nullable": false
-          },
-          {
-            "default": null,
-            "name": "json_size_bytes",
-            "type": {
-              "name": "integer",
-              "kind": "named"
-            },
-            "optional": true,
-            "has_default": false,
-            "nullable": false
-          },
-          {
-            "default": null,
-            "name": "zip_size_bytes",
+            "name": "package_size_bytes",
             "type": {
               "name": "integer",
               "kind": "named"
@@ -16716,29 +16672,29 @@
           "nullable": false
         },
         {
-          "default": null,
+          "default": "false",
           "name": "post_as_draft",
           "type": {
             "name": "boolean",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
+          "has_default": true,
           "nullable": true
         },
         {
-          "default": null,
+          "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
             "name": "boolean",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
-          "default": null,
+          "default": [],
           "name": "subscriber_ids",
           "type": {
             "item": {
@@ -16748,8 +16704,8 @@
             "kind": "list"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
           "default": null,
@@ -17639,18 +17595,18 @@
           "nullable": false
         },
         {
-          "default": null,
+          "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
             "name": "boolean",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
-          "default": null,
+          "default": [],
           "name": "subscriber_ids",
           "type": {
             "item": {
@@ -17660,8 +17616,8 @@
             "kind": "list"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": "Creates a new check-in for a goal.",
@@ -17733,18 +17689,18 @@
           "nullable": false
         },
         {
-          "default": null,
+          "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
             "name": "boolean",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
-          "default": null,
+          "default": [],
           "name": "subscriber_ids",
           "type": {
             "item": {
@@ -17754,8 +17710,8 @@
             "kind": "list"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": "Creates a new discussion for a goal.",
@@ -19882,18 +19838,18 @@
           "nullable": false
         },
         {
-          "default": null,
+          "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
             "name": "boolean",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
-          "default": null,
+          "default": [],
           "name": "subscriber_ids",
           "type": {
             "item": {
@@ -19903,8 +19859,8 @@
             "kind": "list"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": "Creates a new link in a resource hub.",
@@ -21570,18 +21526,18 @@
           "nullable": false
         },
         {
-          "default": null,
+          "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
             "name": "boolean",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
-          "default": null,
+          "default": [],
           "name": "subscriber_ids",
           "type": {
             "item": {
@@ -21591,8 +21547,8 @@
             "kind": "list"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": "Creates a new project check-in.",
@@ -21783,7 +21739,7 @@
           "nullable": false
         },
         {
-          "default": "false",
+          "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
             "name": "boolean",
@@ -25803,29 +25759,29 @@
           "nullable": false
         },
         {
-          "default": null,
+          "default": "false",
           "name": "post_as_draft",
           "type": {
             "name": "boolean",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
+          "has_default": true,
           "nullable": false
         },
         {
-          "default": null,
+          "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
             "name": "boolean",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
+          "has_default": true,
           "nullable": false
         },
         {
-          "default": null,
+          "default": [],
           "name": "subscriber_ids",
           "type": {
             "item": {
@@ -25835,7 +25791,7 @@
             "kind": "list"
           },
           "optional": true,
-          "has_default": false,
+          "has_default": true,
           "nullable": false
         }
       ],
@@ -27921,6 +27877,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-05-07T15:09:51Z",
+  "generated_at": "2026-05-14T14:14:23Z",
   "schema_version": 1
 }

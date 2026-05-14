@@ -13,10 +13,11 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
     inputs = conn.assigns.turbo_req_handler.__inputs__()
     types = conn.assigns.turbo_api.__types__()
+    api_module = conn.assigns.turbo_api
     strict_parsing = conn.assigns.turbo_req_type == :mutation
     specs = {inputs, types}
 
-    with {:ok, inputs} <- parse_inputs(specs, params, strict_parsing) do
+    with {:ok, inputs} <- parse_inputs(specs, params, strict_parsing, api_module) do
       Plug.Conn.assign(conn, :turbo_inputs, inputs)
     else
       {:error, 404, message} ->
@@ -34,9 +35,9 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
-  def parse_inputs({inputs, types}, values, strict) do
+  def parse_inputs({inputs, types}, values, strict, api_module \\ nil) do
     values
-    |> apply_defaults(inputs.fields)
+    |> apply_defaults(inputs.fields, api_module)
     |> Enum.reduce({:ok, %{}}, fn {name, value}, res ->
       with {:ok, res} <- res,
            {:ok, {field_name, type, opts}} <- find_field(inputs.fields, name),
@@ -47,12 +48,15 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end)
   end
 
-  def apply_defaults(values, fields) do
+  def apply_defaults(values, fields, api_module) do
     Enum.reduce(fields, values, fn {name, _type, opts}, acc ->
-      if Keyword.get(opts, :default) != nil && Map.get(acc, name) == nil do
-        Map.put(acc, name, Keyword.get(opts, :default))
-      else
+      if Map.has_key?(acc, name) do
         acc
+      else
+        case TurboConnect.InputDefaults.effective_default(opts, api_module) do
+          {:ok, default} -> Map.put(acc, name, default)
+          :error -> acc
+        end
       end
     end)
   end

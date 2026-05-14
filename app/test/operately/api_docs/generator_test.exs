@@ -1,7 +1,7 @@
 defmodule Operately.ApiDocs.GeneratorTest do
   use ExUnit.Case
 
-  alias Operately.ApiDocs.Generator
+  alias Operately.ApiDocs.{Catalog, Generator}
 
   setup do
     out_dir = Path.join(System.tmp_dir!(), "operately_api_docs_#{System.unique_integer([:positive])}")
@@ -119,5 +119,38 @@ defmodule Operately.ApiDocs.GeneratorTest do
 
     assert docs_catalog == cli_catalog
     assert docs_catalog["endpoint_count"] == result.endpoint_count
+  end
+
+  test "build_catalog uses the effective default for the selected api module" do
+    external_catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
+    internal_catalog = Generator.build_catalog(OperatelyWeb.Api.Internal, "/api/v2")
+
+    external_field = find_input_field(external_catalog, "spaces/create_discussion", :send_notifications_to_everyone)
+    internal_field = find_input_field(internal_catalog, "spaces/create_discussion", :send_notifications_to_everyone)
+
+    assert external_field == {:send_notifications_to_everyone, :boolean, [default: true, optional: true, null: false]}
+    assert internal_field == {:send_notifications_to_everyone, :boolean, [default: false, optional: true, null: false]}
+  end
+
+  test "catalog payload keeps the existing field shape while exposing the effective external default" do
+    catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
+    payload = Catalog.payload(catalog, "/api/external/v1")
+
+    field =
+      payload.endpoints
+      |> Enum.find(&(&1.full_name == "spaces/create_discussion"))
+      |> Map.fetch!(:inputs)
+      |> Enum.find(&(&1.name == "send_notifications_to_everyone"))
+
+    assert field.default == "true"
+    assert field.has_default == true
+    assert Enum.sort(Map.keys(field)) == [:default, :has_default, :name, :nullable, :optional, :type]
+  end
+
+  defp find_input_field(catalog, full_name, field_name) do
+    catalog.endpoints
+    |> Enum.find(&(&1.full_name == full_name))
+    |> Map.fetch!(:inputs)
+    |> Enum.find(fn {name, _, _} -> name == field_name end)
   end
 end

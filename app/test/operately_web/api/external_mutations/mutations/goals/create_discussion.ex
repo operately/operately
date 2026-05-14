@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.CreateDiscussion do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
+  alias Operately.Notifications.SubscriptionList
+
   @impl true
   def mutation_name, do: "goals/create_discussion"
 
@@ -24,8 +26,12 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.CreateDiscussion do
 
   @impl true
   def assert(response, _ctx) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(response.discussion.id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
     assert response.activity_id
     assert response.discussion
+    assert list.send_to_everyone
     refute Map.has_key?(response, :error)
   end
 

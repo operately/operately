@@ -14,9 +14,9 @@ defmodule OperatelyWeb.Api.Documents.Create do
     field? :folder_id, :id, null: true
     field :name, :string, null: false
     field :content, :json, null: false
-    field? :post_as_draft, :boolean, null: true
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:id), null: true
+    field? :post_as_draft, :boolean, null: true, default: false
+    field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+    field? :subscriber_ids, list_of(:id), null: false, default: []
     field? :copied_document_id, :id, null: true
   end
 
@@ -51,10 +51,10 @@ defmodule OperatelyWeb.Api.Documents.Create do
   defp parse_inputs(ctx, inputs) do
     {:ok, Map.merge(inputs, %{
       content: inputs.content,
-      post_as_draft: inputs[:post_as_draft] || false,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      post_as_draft: inputs[:post_as_draft],
+      send_to_everyone: inputs[:send_notifications_to_everyone],
       subscription_parent_type: :resource_hub_document,
-      subscriber_ids: inputs[:subscriber_ids] || [],
+      subscriber_ids: inputs[:subscriber_ids],
       copied_document: ctx.copied_document
     })}
   end

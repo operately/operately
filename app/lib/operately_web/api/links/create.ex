@@ -16,8 +16,8 @@ defmodule OperatelyWeb.Api.Links.Create do
     field :url, :string, null: false
     field? :description, :json, null: false
     field :type, :resource_hub_link_type, null: false
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:id), null: true
+    field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+    field? :subscriber_ids, list_of(:id), null: false, default: []
   end
 
   outputs do
@@ -49,9 +49,9 @@ defmodule OperatelyWeb.Api.Links.Create do
   defp parse_inputs(inputs) do
     {:ok, Map.merge(inputs, %{
       content: inputs[:description] || Operately.RichContent.Builder.empty_content(),
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      send_to_everyone: inputs[:send_notifications_to_everyone],
       subscription_parent_type: :resource_hub_link,
-      subscriber_ids: inputs[:subscriber_ids] || []
+      subscriber_ids: inputs[:subscriber_ids]
     })}
   end
 end

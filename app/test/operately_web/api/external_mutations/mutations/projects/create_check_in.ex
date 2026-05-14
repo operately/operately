@@ -2,6 +2,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.CreateCheckIn do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
+  alias Operately.Notifications.SubscriptionList
+
   @impl true
   def mutation_name, do: "projects/create_check_in"
 
@@ -11,7 +13,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.CreateCheckIn do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
-    |> Factory.add_company_member(:member)
   end
 
   @impl true
@@ -19,15 +20,17 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.CreateCheckIn do
     %{
       project_id: Paths.project_id(ctx.project),
       status: "on_track",
-      description: rich_text_string("Updated content"),
-      send_notifications_to_everyone: false,
-      subscriber_ids: [Paths.person_id(ctx.member)]
+      description: rich_text_string("Updated content")
     }
   end
 
   @impl true
   def assert(response, _ctx) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(response.check_in.id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
     assert response.check_in.id
+    assert list.send_to_everyone
     refute Map.has_key?(response, :error)
   end
 

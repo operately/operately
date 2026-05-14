@@ -105,7 +105,7 @@ defmodule TurboConnect.Fields do
   def validate_field_opts(scope, opts) do
     valid_opts =
       if scope == :inputs do
-        [:null, :default]
+        [:null, :default, :external_default]
       else
         [:null]
       end

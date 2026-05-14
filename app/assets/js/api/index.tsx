@@ -3663,8 +3663,8 @@ export interface DocumentsCreateInput {
   name: string;
   content: Json;
   postAsDraft?: boolean | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
   copiedDocumentId?: Id | null;
 }
 
@@ -3708,8 +3708,8 @@ export interface FilesCreateInput {
   resourceHubId: Id;
   folderId?: Id | null;
   files: ResourceHubUploadedFile[];
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
 }
 
 export interface FilesCreateResult {
@@ -3808,8 +3808,8 @@ export interface GoalsCreateCheckInInput {
   checklist?: GoalCheckUpdate[];
   content: Json;
   newTargetValues?: string;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
 }
 
 export interface GoalsCreateCheckInResult {
@@ -3820,8 +3820,8 @@ export interface GoalsCreateDiscussionInput {
   goalId: Id;
   title: string;
   message: Json;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
 }
 
 export interface GoalsCreateDiscussionResult {
@@ -4116,8 +4116,8 @@ export interface LinksCreateInput {
   url: string;
   description?: Json;
   type: ResourceHubLinkType;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
 }
 
 export interface LinksCreateResult {
@@ -4266,8 +4266,8 @@ export interface ProjectsCreateCheckInInput {
   projectId: Id;
   status: ProjectCheckInStatus;
   description: Json;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
 }
 
 export interface ProjectsCreateCheckInResult {

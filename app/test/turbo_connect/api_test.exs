@@ -82,6 +82,39 @@ defmodule TurboConnect.ApiTest do
     end
   end
 
+  defmodule ExampleDefaultedMutation do
+    use TurboConnect.Mutation
+
+    inputs do
+      field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+      field? :subscriber_ids, list_of(:string), null: false, default: ["internal"], external_default: ["external"]
+    end
+
+    outputs do
+      field? :echoed_send_notifications_to_everyone, :boolean
+      field? :echoed_subscriber_ids, list_of(:string)
+    end
+
+    def call(_, inputs) do
+      {:ok, %{
+        echoed_send_notifications_to_everyone: inputs[:send_notifications_to_everyone],
+        echoed_subscriber_ids: inputs[:subscriber_ids]
+      }}
+    end
+  end
+
+  defmodule InternalDefaultsApi do
+    use TurboConnect.Api
+
+    mutation(:test_defaults, ExampleDefaultedMutation)
+  end
+
+  defmodule ExternalDefaultsApi do
+    use TurboConnect.Api, default_source: :external
+
+    mutation(:test_defaults, ExampleDefaultedMutation)
+  end
+
   test "__types__ returns the types defined in the module" do
     assert ExampleApi.__types__() == %{
              primitives: %{
@@ -271,21 +304,50 @@ defmodule TurboConnect.ApiTest do
     end
   end
 
-  # describe "default values" do
-  #   test "default values are applied correctly" do
-  #     conn = conn(:get, "/get_user", %{})
-  #     conn = ExampleApi.call(conn, [])
+  describe "default values" do
+    test "uses the internal default when the field is omitted" do
+      conn = conn(:post, "/test_defaults", %{})
+      conn = InternalDefaultsApi.call(conn, [])
 
-  #     resp = Jason.decode!(conn.resp_body)
-  #     assert resp["echod_include_address"] == true
-  #   end
+      assert conn.status == 200
 
-  #   test "if the value is provided, it overrides the default" do
-  #     conn = conn(:get, "/get_user", %{"include_address" => false})
-  #     conn = ExampleApi.call(conn, [])
+      resp = Jason.decode!(conn.resp_body)
+      assert resp["echoed_send_notifications_to_everyone"] == false
+      assert resp["echoed_subscriber_ids"] == ["internal"]
+    end
 
-  #     resp = Jason.decode!(conn.resp_body)
-  #     assert resp["echod_include_address"] == false
-  #   end
-  # end
+    test "uses the external default when the field is omitted" do
+      conn = conn(:post, "/test_defaults", %{})
+      conn = ExternalDefaultsApi.call(conn, [])
+
+      assert conn.status == 200
+
+      resp = Jason.decode!(conn.resp_body)
+      assert resp["echoed_send_notifications_to_everyone"] == true
+      assert resp["echoed_subscriber_ids"] == ["external"]
+    end
+
+    test "explicit values override both defaults" do
+      conn = conn(:post, "/test_defaults", %{
+        send_notifications_to_everyone: false,
+        subscriber_ids: []
+      })
+
+      conn = ExternalDefaultsApi.call(conn, [])
+
+      assert conn.status == 200
+
+      resp = Jason.decode!(conn.resp_body)
+      assert resp["echoed_send_notifications_to_everyone"] == false
+      assert resp["echoed_subscriber_ids"] == []
+    end
+
+    test "explicit null does not trigger defaults" do
+      conn = conn(:post, "/test_defaults", %{send_notifications_to_everyone: nil})
+      conn = ExternalDefaultsApi.call(conn, [])
+
+      assert conn.status == 400
+      assert conn.resp_body == ~s({"error":"Bad request","message":"Field 'send_notifications_to_everyone' cannot be null"})
+    end
+  end
 end
