@@ -15,10 +15,9 @@ defmodule Operately.ApiDocs.GeneratorTest do
 
   test "generates one page per external endpoint plus namespace indexes", %{out_dir: out_dir} do
     result = Generator.generate(out_dir: out_dir)
+    catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
 
-    expected_count =
-      map_size(OperatelyWeb.Api.External.__queries__()) +
-        map_size(OperatelyWeb.Api.External.__mutations__())
+    expected_count = length(catalog.endpoints)
 
     endpoint_files =
       Path.wildcard(Path.join(out_dir, "help/api/**/*.mdx"))
@@ -32,6 +31,8 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert File.exists?(Path.join(out_dir, "help/api/goals/index.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/root/index.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/external/index.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/people/update_picture.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/create_avatar_blob.mdx"))
   end
 
   test "renders method and path for root and namespaced endpoints", %{out_dir: out_dir} do
@@ -145,6 +146,22 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert field.default == "true"
     assert field.has_default == true
     assert Enum.sort(Map.keys(field)) == [:default, :has_default, :name, :nullable, :optional, :type]
+  end
+
+  test "hidden external endpoints are routable but excluded from catalog and docs", %{out_dir: out_dir} do
+    external_mutations = OperatelyWeb.Api.External.__mutations__()
+    assert Map.has_key?(external_mutations, "create_avatar_blob")
+    assert Map.has_key?(external_mutations, "people/update_picture")
+
+    catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "create_avatar_blob"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "people/update_picture"))
+
+    Generator.generate(out_dir: out_dir)
+    refute File.exists?(Path.join(out_dir, "help/api/create_avatar_blob.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/people/update_picture.mdx"))
+    refute Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "create_avatar_blob"))
+    refute Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "people/update_picture"))
   end
 
   defp find_input_field(catalog, full_name, field_name) do

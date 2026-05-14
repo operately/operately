@@ -1,11 +1,12 @@
 import { test } from "node:test";
 import * as assert from "node:assert";
 import { printAuthCommandHelp, printEndpointHelp } from "../../commands/help";
+import { createRegistry } from "../../commands/registry";
 import type { CatalogEndpoint } from "../../types/catalog";
 import { fixtureCatalog } from "./fixture-catalog";
 
 function findEndpoint(fullName: string): CatalogEndpoint {
-  const endpoint = fixtureCatalog.endpoints.find((candidate) => candidate.full_name === fullName);
+  const endpoint = createRegistry(fixtureCatalog).endpoints.find((candidate) => candidate.full_name === fullName);
 
   assert.ok(endpoint, `Expected fixture endpoint '${fullName}' to exist.`);
   return endpoint;
@@ -77,6 +78,22 @@ test("prints companion file flags for markdown input fields", () => {
   assert.ok(output.includes("--description <markdown> (required)"));
   assert.ok(output.includes("--description-file <path> (optional, alternative to --description)"));
   assert.ok(output.includes("File input: use --<field>-file <path> to load markdown from a file"));
+});
+
+test("prints custom CLI help for people update_picture", () => {
+  const output = captureHelpOutput(() => {
+    printEndpointHelp(findEndpoint("people/update_picture"), "people update_picture", fixtureCatalog.types);
+  });
+
+  assert.ok(output.includes("Command: people update_picture"));
+  assert.ok(output.includes("--avatar-file <path> (optional)"));
+  assert.ok(output.includes("--clear <boolean> (optional)"));
+  assert.ok(output.includes("Examples:"));
+  assert.ok(output.includes("operately people update_picture --avatar-file ./avatar.png"));
+  assert.ok(output.includes("operately people update_picture --clear"));
+  assert.ok(!output.includes("--person-id"));
+  assert.ok(!output.includes("--avatar-blob-id"));
+  assert.ok(!output.includes("--avatar-url"));
 });
 
 test("prints hybrid signup help with flag-driven guidance", () => {

@@ -57,11 +57,13 @@ defmodule Operately.ApiDocs.Generator do
     queries =
       api_module.__queries__()
       |> Enum.map(fn {full_name, spec} -> build_endpoint(spec, full_name, :query, api_base_path, api_module) end)
+      |> Enum.reject(&is_nil/1)
       |> Enum.sort_by(& &1.full_name)
 
     mutations =
       api_module.__mutations__()
       |> Enum.map(fn {full_name, spec} -> build_endpoint(spec, full_name, :mutation, api_base_path, api_module) end)
+      |> Enum.reject(&is_nil/1)
       |> Enum.sort_by(& &1.full_name)
 
     endpoints = Enum.sort_by(queries ++ mutations, &{&1.namespace_segment, &1.name, &1.type})
@@ -95,26 +97,28 @@ defmodule Operately.ApiDocs.Generator do
   end
 
   defp build_endpoint(spec, full_name, type, api_base_path, api_module) do
-    namespace_segment = if spec.namespace == nil, do: "root", else: Atom.to_string(spec.namespace)
-    endpoint_name = spec.name |> to_string()
-    method = if type == :query, do: "GET", else: "POST"
-    path = "#{api_base_path}/#{full_name}"
-    docstring = extract_module_docstring(spec.handler)
-    inputs = TurboConnect.InputDefaults.normalize_fields_for_api(spec.inputs.fields, api_module)
+    if Map.get(spec, :catalog, true) == false do
+      nil
+    else
+      namespace_segment = if spec.namespace == nil, do: "root", else: Atom.to_string(spec.namespace)
+      endpoint_name = spec.name |> to_string()
+      method = if type == :query, do: "GET", else: "POST"
+      path = "#{api_base_path}/#{full_name}"
 
-    %{
-      full_name: full_name,
-      namespace: spec.namespace,
-      namespace_segment: namespace_segment,
-      name: endpoint_name,
-      type: type,
-      method: method,
-      path: path,
-      handler: inspect(spec.handler),
-      inputs: inputs,
-      outputs: spec.outputs.fields,
-      docstring: docstring
-    }
+      %{
+        full_name: full_name,
+        namespace: spec.namespace,
+        namespace_segment: namespace_segment,
+        name: endpoint_name,
+        type: type,
+        method: method,
+        path: path,
+        handler: inspect(spec.handler),
+        inputs: TurboConnect.InputDefaults.normalize_fields_for_api(spec.inputs.fields, api_module),
+        outputs: spec.outputs.fields,
+        docstring: extract_module_docstring(spec.handler)
+      }
+    end
   end
 
   defp extract_module_docstring(module) do

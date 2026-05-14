@@ -36,6 +36,8 @@ export interface CatalogTypes {
 }
 
 export type EndpointKind = "query" | "mutation";
+export type EndpointExecutionMode = "generic" | "custom";
+export type EndpointExampleMode = "curl" | "cli" | "none";
 
 export interface CatalogEndpoint {
   full_name: string;
@@ -48,6 +50,9 @@ export interface CatalogEndpoint {
   inputs: CatalogField[];
   outputs: CatalogField[];
   docstring: string | null;
+  execution_mode?: EndpointExecutionMode;
+  example_mode?: EndpointExampleMode;
+  cli_examples?: string[];
 }
 
 export interface Catalog {

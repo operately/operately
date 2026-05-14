@@ -1,3 +1,4 @@
+import { getCustomCatalogEndpoints } from "./custom-endpoints";
 import type { Catalog, CatalogEndpoint } from "../types/catalog";
 
 export interface EndpointRegistry {
@@ -14,8 +15,9 @@ function endpointKey(endpoint: CatalogEndpoint): string {
 
 export function createRegistry(catalog: Catalog): EndpointRegistry {
   const byKey = new Map<string, CatalogEndpoint>();
+  const endpoints = [...catalog.endpoints, ...getCustomCatalogEndpoints()];
 
-  for (const endpoint of catalog.endpoints) {
+  for (const endpoint of endpoints) {
     const key = endpointKey(endpoint);
 
     if (byKey.has(key)) {
@@ -25,7 +27,7 @@ export function createRegistry(catalog: Catalog): EndpointRegistry {
     byKey.set(key, endpoint);
   }
 
-  const endpoints = [...catalog.endpoints].sort((left, right) => {
+  const sortedEndpoints = [...endpoints].sort((left, right) => {
     const leftKey = endpointKey(left);
     const rightKey = endpointKey(right);
     return leftKey.localeCompare(rightKey);
@@ -33,7 +35,7 @@ export function createRegistry(catalog: Catalog): EndpointRegistry {
 
   return {
     byKey,
-    endpoints,
+    endpoints: sortedEndpoints,
     find(commandParts: string[]) {
       if (commandParts.length === 1) {
         return byKey.get(commandParts[0]) ?? null;
