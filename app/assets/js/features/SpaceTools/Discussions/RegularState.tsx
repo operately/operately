@@ -35,12 +35,12 @@ function DiscussionList({ discussions }: { discussions: Discussion[] }) {
 }
 
 function DiscussionItem({ discussion }: { discussion: Discussion }) {
-  assertPresent(discussion.author, "author must be present in discussion");
   assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 
+  const hasAuthor = !!discussion.author;
+  const hasComments = discussion.commentsCount > 0;
   const className = classNames(
-    // 2rem is the size of <Avatar size="normal" />
-    discussion.commentsCount > 0 ? "grid-cols-[2rem_1fr_20px]" : "grid-cols-[2rem_1fr]",
+    discussionItemGridColsClass(hasAuthor, hasComments),
     "grid items-center gap-1",
     "py-2 px-2",
     "border-b border-stroke-base last:border-b-0",
@@ -48,7 +48,7 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
 
   return (
     <div className={className}>
-      <Avatar person={discussion.author} size={30} />
+      {discussion.author && <Avatar person={discussion.author} size={30} />}
       <DiscussionTitle title={discussion.title!} body={discussion.body!} />
       <CommentsCountIndicator count={discussion.commentsCount} size={16} />
     </div>
@@ -62,4 +62,12 @@ function DiscussionTitle({ title, body }: { title: string; body: string }) {
       <div className="font-normal truncate pr-2">{richContentToString(JSON.parse(body))}</div>
     </div>
   );
+}
+
+function discussionItemGridColsClass(hasAuthor: boolean, hasComments: boolean) {
+  if (hasAuthor && hasComments) return "grid-cols-[2rem_1fr_20px]";
+  if (hasAuthor) return "grid-cols-[2rem_1fr]";
+  if (hasComments) return "grid-cols-[1fr_20px]";
+
+  return "grid-cols-[1fr]";
 }

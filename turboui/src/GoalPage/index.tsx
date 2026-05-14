@@ -76,7 +76,7 @@ export namespace GoalPage {
 
   export interface CheckIn {
     id: string;
-    author: Person;
+    author: Person | null;
     date: Date;
     content: string;
     link: string;

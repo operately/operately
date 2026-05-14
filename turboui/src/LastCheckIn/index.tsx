@@ -1,7 +1,7 @@
 import React from "react";
 import FormattedTime from "../FormattedTime";
 import classNames from "../utils/classnames";
-import { Avatar } from "../Avatar";
+import { Avatar, AvatarPerson } from "../Avatar";
 import { DivLink } from "../Link";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
@@ -16,11 +16,7 @@ export interface LastCheckInProps {
 
 export interface CheckIn {
   id: string;
-  author: {
-    id: string;
-    fullName: string;
-    avatarUrl: string | null;
-  };
+  author: AvatarPerson | null;
   date: Date;
   content: string;
   link: string;
@@ -68,8 +64,12 @@ export function LastCheckIn({ checkIns, state, mentionedPersonLookup }: LastChec
 
         <div className="mt-1.5 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Avatar person={checkIn.author} size={20} />
-            {checkIn.author.fullName.split(" ")[0]}
+            {checkIn.author && (
+              <>
+                <Avatar person={checkIn.author} size={20} />
+                {checkIn.author.fullName?.split(" ")[0]}
+              </>
+            )}
           </div>
           <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0 align-[5px]" />
         </div>

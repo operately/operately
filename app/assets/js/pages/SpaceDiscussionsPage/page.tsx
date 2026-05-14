@@ -7,7 +7,6 @@ import { Discussion } from "@/models/discussions";
 import { usePaths } from "@/routes/paths";
 import { DivLink, Link, PrimaryButton } from "turboui";
 
-import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -44,7 +43,7 @@ function NewDiscussionButton() {
   const { space } = useLoadedData();
   const paths = usePaths();
 
- if (!space.permissions?.canEdit) return null;
+  if (!space.permissions?.canEdit) return null;
 
   return (
     <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
@@ -104,9 +103,6 @@ function DiscussionList() {
 
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
-  assertPresent(discussion.author, "author must be present in discussion");
-  assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
-
   const path = paths.discussionPath(discussion.id!);
   const { mentionedPersonLookup } = useRichEditorHandlers();
 
@@ -120,9 +116,11 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
 
   return (
     <DivLink to={path} className={className}>
-      <div className="shrink-0">
-        <Avatar person={discussion.author} size="large" />
-      </div>
+      {discussion.author && (
+        <div className="shrink-0">
+          <Avatar person={discussion.author} size="large" />
+        </div>
+      )}
 
       <div className="flex-1 h-full">
         <div className="font-semibold leading-none mb-1">{discussion.title}</div>
@@ -131,8 +129,12 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
         </div>
 
         <div className="flex gap-1 mt-1 text-xs">
-          <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
-          <div className="text-sm text-content-dimmed">·</div>
+          {discussion.author && (
+            <>
+              <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
+              <div className="text-sm text-content-dimmed">·</div>
+            </>
+          )}
           <div className="text-sm text-content-dimmed">
             <FormattedTime time={discussion.publishedAt!} format="relative-weekday-or-date" />
           </div>
@@ -140,7 +142,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
       </div>
 
       <div className="mt-8">
-        <CommentsCountIndicator count={discussion.commentsCount} size={28} />
+        <CommentsCountIndicator count={discussion.commentsCount || 0} size={28} />
       </div>
     </DivLink>
   );
