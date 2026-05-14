@@ -63,6 +63,7 @@ export interface Task {
   milestone: Milestone | null;
   points?: number;
   dueDate: DateField.ContextualDate | null;
+  closedAt?: Date | null;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;

@@ -474,6 +474,29 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert res.task.status.id == status.id
     end
 
+    test "it sets completion timestamp when creating a task with closed status", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      closed_status = Enum.find(ctx.project.task_statuses, & &1.closed)
+      status = Map.from_struct(closed_status) |> Map.put(:color, Atom.to_string(closed_status.color))
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.project_id(ctx.project),
+        type: "project",
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Already completed task",
+        assignee_id: nil,
+        due_date: nil,
+        status: status
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+
+      assert task.closed_at
+      assert res.task.closed_at
+    end
+
     test "it rejects invalid status", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -866,6 +889,15 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       closed: true
     }
 
+    @pending_status %{
+      id: "pending",
+      label: "Pending",
+      color: "gray",
+      index: 1,
+      value: "pending",
+      closed: false
+    }
+
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:tasks, :update_status], %{})
     end
@@ -911,6 +943,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       updated_task = Operately.Repo.reload(ctx.task)
       assert updated_task.status == "done"
+      assert updated_task.closed_at
+      assert res.task.closed_at
+    end
+
+    test "it clears completion timestamp when a task is reopened", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: @done_status,
+        type: "project"
+      })
+
+      closed_task = Operately.Repo.reload(ctx.task)
+      assert closed_task.closed_at
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: @pending_status,
+        type: "project"
+      })
+
+      assert res.task.status.value == "pending"
+
+      reopened_task = Operately.Repo.reload(ctx.task)
+      refute reopened_task.closed_at
+      assert reopened_task.reopened_at
     end
 
     test "it creates an activity when status is updated", ctx do
