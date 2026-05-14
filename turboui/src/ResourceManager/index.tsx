@@ -92,6 +92,14 @@ function AddResourceModal({
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string[]>([]);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      setName("");
+      setUrl("");
+      setError([]);
+    }
+  }, [isOpen]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const tmpErrors: string[] = [];
