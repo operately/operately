@@ -19,8 +19,8 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
 
     field :content, :json, null: false
     field? :new_target_values, :string, null: false
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:id), null: true
+    field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+    field? :subscriber_ids, list_of(:id), null: false, default: []
   end
 
   outputs do
@@ -78,9 +78,9 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
        status: inputs.status,
        due_date: inputs.due_date,
        checklist: inputs[:checklist],
-       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+       send_to_everyone: inputs[:send_notifications_to_everyone],
        subscription_parent_type: :goal_update,
-       subscriber_ids: inputs[:subscriber_ids] || []
+       subscriber_ids: inputs[:subscriber_ids]
      }}
   end
 end
