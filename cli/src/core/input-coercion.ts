@@ -5,7 +5,7 @@ import { isGlobalFlag } from "./flags";
 import { parseContextualDateString } from "./contextual-date-parser";
 import { convertMarkdownToTiptap } from "./markdown-to-tiptap";
 
-const BUILTIN_TYPES = new Set(["string", "integer", "float", "boolean", "date", "time", "datetime", "id", "json"]);
+const BUILTIN_TYPES = new Set(["string", "integer", "float", "boolean", "date", "time", "datetime", "id", "json", "path"]);
 
 export function parseEndpointInputs(
   endpoint: CatalogEndpoint,
@@ -284,7 +284,7 @@ function coerceFieldValue(
 }
 
 function coerceBuiltinType(typeName: string, value: unknown, path: string): unknown {
-  if (typeName === "string") {
+  if (typeName === "string" || typeName === "path") {
     if (typeof value !== "string") {
       throw new UsageError(`Expected string for '${path}', got ${typeof value}.`);
     }

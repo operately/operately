@@ -475,6 +475,14 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
     }
   }
 
+  if (endpoint.cli_examples && endpoint.cli_examples.length > 0) {
+    additionalSections.push("");
+    additionalSections.push("Examples:");
+    for (const example of endpoint.cli_examples) {
+      additionalSections.push(`  ${example}`);
+    }
+  }
+
   console.log([...header, ...flagRows, ...additionalSections].join("\n"));
 }
 

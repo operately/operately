@@ -99,6 +99,28 @@ test("resolves endpoint help", () => {
   }
 });
 
+test("resolves custom endpoint help from help command", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const request = resolveHelpRequest(["help", "people", "update_picture"], registry);
+
+  assert.ok(request);
+  assert.equal(request.kind, "endpoint");
+  if (request.kind === "endpoint") {
+    assert.equal(request.endpoint.full_name, "people/update_picture");
+  }
+});
+
+test("resolves custom endpoint help from trailing help", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const request = resolveHelpRequest(["people", "update_picture", "help"], registry);
+
+  assert.ok(request);
+  assert.equal(request.kind, "endpoint");
+  if (request.kind === "endpoint") {
+    assert.equal(request.endpoint.full_name, "people/update_picture");
+  }
+});
+
 test("returns null for executable commands", () => {
   const registry = createRegistry(fixtureCatalog);
   const request = resolveHelpRequest(["auth", "whoami"], registry);

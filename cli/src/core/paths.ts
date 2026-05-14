@@ -13,3 +13,14 @@ export function internalApiUrl(baseUrl: string, path: string): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   return `${normalizedBase}${INTERNAL_API_BASE_PATH}${normalizedPath}`;
 }
+
+export function externalApiUrl(baseUrl: string, path: string): string {
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  if (normalizedPath === EXTERNAL_API_BASE_PATH || normalizedPath.startsWith(`${EXTERNAL_API_BASE_PATH}/`)) {
+    return `${normalizedBase}${normalizedPath}`;
+  }
+
+  return `${normalizedBase}${EXTERNAL_API_BASE_PATH}${normalizedPath}`;
+}
