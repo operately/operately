@@ -201,6 +201,22 @@ defmodule OperatelyWeb.Api.Documents.CreateTest do
         assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
       end)
     end
+
+    test "uses defaults for omitted optional inputs", ctx do
+      assert {200, res} = mutation(ctx.conn, [:documents, :create], %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        name: "My document",
+        content: RichText.rich_text("content", :as_string),
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.document.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      assert res.document.state == "published"
+      refute list.send_to_everyone
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.creator.id
+    end
   end
 
   #

@@ -14,8 +14,8 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussion do
     field :goal_id, :id, null: false
     field :title, :string, null: false
     field :message, :json, null: false
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:id), null: true
+    field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+    field? :subscriber_ids, list_of(:id), null: false, default: []
   end
 
   outputs do
@@ -53,8 +53,8 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussion do
       title: inputs.title,
       content: inputs.message,
       subscription_parent_type: :comment_thread,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: inputs[:subscriber_ids] || []
+      send_to_everyone: inputs[:send_notifications_to_everyone],
+      subscriber_ids: inputs[:subscriber_ids]
     }}
   end
 end

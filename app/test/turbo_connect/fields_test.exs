@@ -4,6 +4,9 @@ defmodule TurboConnect.FieldsTest do
   defmodule Example do
     use TurboConnect.Fields
 
+    @field_scope :inputs
+    field? :send_notifications_to_everyone, :boolean, default: false, external_default: true
+
     @field_scope :user
     field? :name, :string
     field? :age, :integer
@@ -16,6 +19,11 @@ defmodule TurboConnect.FieldsTest do
 
   test "defining fields" do
     assert Example.__fields__() == %{
+             inputs: %{
+               fields: [
+                 {:send_notifications_to_everyone, :boolean, [null: false, optional: true, default: false, external_default: true]}
+               ]
+             },
              user: %{
                fields: [
                  {:name, :string, [null: false, optional: true]},

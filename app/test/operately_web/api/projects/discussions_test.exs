@@ -204,6 +204,26 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
       refute notifications == []
       assert Enum.any?(notifications, &(&1.person_id == ctx.subscriber.id))
     end
+
+    test "uses defaults for omitted optional inputs", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        project_id: Paths.project_id(ctx.project),
+        title: "Default Discussion",
+        message: RichText.rich_text("Hello", :as_string)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_discussion], inputs)
+      assert res.discussion.title == "Default Discussion"
+
+      discussion = Operately.Repo.get(Operately.Comments.CommentThread, res.discussion.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: discussion.id, opts: [preload: :subscriptions])
+
+      refute list.send_to_everyone
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.creator.id
+    end
   end
 
   describe "update project discussion" do

@@ -156,6 +156,21 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckInTest do
         assert Enum.filter(subscriptions, &(&1.person_id == p.id))
       end)
     end
+
+    test "uses defaults for omitted optional inputs", ctx do
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_check_in], %{
+        project_id: Paths.project_id(ctx.project),
+        status: "on_track",
+        description: RichText.rich_text("Description", :as_string),
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      refute list.send_to_everyone
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.person.id
+    end
   end
 
   #

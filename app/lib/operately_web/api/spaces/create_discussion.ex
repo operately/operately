@@ -14,10 +14,10 @@ defmodule OperatelyWeb.Api.Spaces.CreateDiscussion do
     field :space_id, :id, null: false
     field :title, :string, null: false
     field? :body, :json, null: false
-    field? :post_as_draft, :boolean, null: false
+    field? :post_as_draft, :boolean, null: false, default: false
 
-    field? :send_notifications_to_everyone, :boolean, null: false
-    field? :subscriber_ids, list_of(:id), null: false
+    field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+    field? :subscriber_ids, list_of(:id), null: false, default: []
   end
 
   outputs do
@@ -54,10 +54,10 @@ defmodule OperatelyWeb.Api.Spaces.CreateDiscussion do
       space_id: inputs.space_id,
       title: inputs.title,
       content: inputs.body,
-      post_as_draft: inputs[:post_as_draft] || false,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      post_as_draft: inputs[:post_as_draft],
+      send_to_everyone: inputs[:send_notifications_to_everyone],
       subscription_parent_type: :message,
-      subscriber_ids: inputs[:subscriber_ids] || []
+      subscriber_ids: inputs[:subscriber_ids]
     }}
   end
 

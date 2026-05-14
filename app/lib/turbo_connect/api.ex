@@ -1,5 +1,7 @@
 defmodule TurboConnect.Api do
-  defmacro __using__(_) do
+  defmacro __using__(opts \\ []) do
+    default_source = Keyword.get(opts, :default_source, :internal)
+
     quote do
       import TurboConnect.Api
       require TurboConnect.Api
@@ -12,11 +14,15 @@ defmodule TurboConnect.Api do
 
       @before_compile unquote(__MODULE__)
 
+      @turbo_connect_default_source unquote(default_source)
+
       use Plug.Builder
 
       plug Plug.Parsers, parsers: [:urlencoded, :json], json_decoder: Jason
       plug TurboConnect.Plugs.Match, __MODULE__
       plug TurboConnect.Plugs.ParseInputs
+
+      def __default_source__, do: @turbo_connect_default_source
     end
   end
 
@@ -145,4 +151,12 @@ defmodule TurboConnect.Api do
 
   def full_name(nil, name), do: "#{name}"
   def full_name(namespace, name), do: "#{namespace}/#{name}"
+
+  def default_source(api_module) do
+    if function_exported?(api_module, :__default_source__, 0) do
+      api_module.__default_source__()
+    else
+      :internal
+    end
+  end
 end

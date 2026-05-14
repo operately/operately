@@ -143,6 +143,17 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussionTest do
         assert Enum.filter(subscriptions, &(&1.person_id == p.id))
       end)
     end
+
+    test "uses defaults for omitted optional inputs", ctx do
+      assert {200, res} = request(ctx.conn, ctx.goal)
+
+      discussion = fetch_discussion(res.discussion.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: discussion.id, opts: [preload: :subscriptions])
+
+      refute list.send_to_everyone
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.person.id
+    end
   end
 
   #

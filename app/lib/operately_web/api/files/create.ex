@@ -13,8 +13,8 @@ defmodule OperatelyWeb.Api.Files.Create do
     field :resource_hub_id, :id, null: false
     field? :folder_id, :id, null: true
     field :files, list_of(:resource_hub_uploaded_file), null: false
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:id), null: true
+    field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+    field? :subscriber_ids, list_of(:id), null: false, default: []
   end
 
   outputs do
@@ -51,8 +51,8 @@ defmodule OperatelyWeb.Api.Files.Create do
 
     {:ok, Map.merge(inputs, %{
       files: files,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: inputs[:subscriber_ids] || []
+      send_to_everyone: inputs[:send_notifications_to_everyone],
+      subscriber_ids: inputs[:subscriber_ids]
     })}
   end
 end

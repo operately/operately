@@ -14,8 +14,8 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckIn do
     field :project_id, :id, null: false
     field :status, :project_check_in_status, null: false
     field :description, :json, null: false
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:id), null: true
+    field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
+    field? :subscriber_ids, list_of(:id), null: false, default: []
   end
 
   outputs do
@@ -49,9 +49,9 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckIn do
       project_id: inputs.project_id,
       status: inputs.status,
       content: inputs.description,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      send_to_everyone: inputs[:send_notifications_to_everyone],
       subscription_parent_type: :project_check_in,
-      subscriber_ids: inputs[:subscriber_ids] || []
+      subscriber_ids: inputs[:subscriber_ids]
     }}
   end
 end

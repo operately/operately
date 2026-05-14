@@ -199,6 +199,25 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
         assert Enum.filter(subscriptions, &(&1.person_id == p.id))
       end)
     end
+
+    test "uses defaults for omitted optional inputs", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 due_date: nil,
+                 checklist: []
+               })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.update.id)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+      refute list.send_to_everyone
+      assert length(list.subscriptions) == 1
+      assert hd(list.subscriptions).person_id == ctx.person.id
+    end
   end
 
   describe "checklist functionality" do
@@ -381,7 +400,6 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
 
     test "updates only specified targets", ctx do
       first_target = hd(ctx.targets)
-      original_values = Enum.map(ctx.targets, & &1.value)
 
       partial_update = [%{id: first_target.id, value: first_target.value + 100}]
       |> Jason.encode!()
