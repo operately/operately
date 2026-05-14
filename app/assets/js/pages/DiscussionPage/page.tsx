@@ -120,9 +120,9 @@ function DiscussionTitle() {
 
   return (
     <DocumentTitle
-      title={discussion.title!}
-      author={discussion.author!}
-      state={discussion.state!}
+      title={discussion.title}
+      author={discussion.author || null}
+      state={discussion.state}
       publishedAt={discussion.publishedAt!}
     />
   );
@@ -142,7 +142,7 @@ function Navigation({ space }) {
 
 function Options() {
   const paths = usePaths();
-  const me = useMe()!;
+  const me = useMe();
   const navigate = useNavigate();
   const { discussion } = useLoadedData();
   const [archive] = Discussions.useArchiveMessage();
@@ -152,7 +152,7 @@ function Options() {
     navigate(paths.spaceDiscussionsPath(discussion.space!.id!));
   };
 
-  if (!compareIds(me.id, discussion.author!.id)) return null;
+  if (!discussion.author || !me || !compareIds(me.id, discussion.author.id)) return null;
 
   return (
     <PageOptions.Root testId="options-button">
