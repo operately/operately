@@ -252,6 +252,15 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.Links.Update)
       end
 
+      @doc "Get, create and manage files in resource hubs"
+      namespace(:files) do
+        query(:get, OperatelyWeb.Api.Files.Get)
+
+        mutation(:create, OperatelyWeb.Api.Files.Create, catalog: false)
+        mutation(:delete, OperatelyWeb.Api.Files.Delete)
+        mutation(:update, OperatelyWeb.Api.Files.Update)
+      end
+
       @doc "List and manage notifications and subscriptions"
       namespace(:notifications) do
         query(:list, OperatelyWeb.Api.Notifications.List)
@@ -267,6 +276,8 @@ defmodule OperatelyWeb.Api do
       end
 
       mutation(:create_avatar_blob, OperatelyWeb.Api.Mutations.CreateAvatarBlob, catalog: false)
+      mutation(:create_blob, OperatelyWeb.Api.Mutations.CreateBlob, catalog: false)
+      mutation(:mark_blob_uploaded, OperatelyWeb.Api.Mutations.MarkBlobUploaded, catalog: false)
 
       subscription(:assignments_count, S.AssignmentsCount)
       subscription(:reload_comments, S.ReloadComments)
@@ -280,8 +291,6 @@ defmodule OperatelyWeb.Api do
     quote do
       common_endpoints()
 
-      mutation(:create_blob, OperatelyWeb.Api.Mutations.CreateBlob)
-      mutation(:mark_blob_uploaded, OperatelyWeb.Api.Mutations.MarkBlobUploaded)
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)
       mutation(:add_company_owners, OperatelyWeb.Api.Mutations.AddCompanyOwners)
       mutation(:add_company_trusted_email_domain, OperatelyWeb.Api.Mutations.AddCompanyTrustedEmailDomain)
@@ -328,14 +337,6 @@ defmodule OperatelyWeb.Api do
 
       namespace(:projects) do
         mutation(:update_kanban, OperatelyWeb.Api.Projects.UpdateKanban)
-      end
-
-      namespace(:files) do
-        query(:get, OperatelyWeb.Api.Files.Get)
-
-        mutation(:create, OperatelyWeb.Api.Files.Create)
-        mutation(:delete, OperatelyWeb.Api.Files.Delete)
-        mutation(:update, OperatelyWeb.Api.Files.Update)
       end
 
       namespace(:invitations) do

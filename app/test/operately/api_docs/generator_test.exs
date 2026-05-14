@@ -33,6 +33,12 @@ defmodule Operately.ApiDocs.GeneratorTest do
     refute File.exists?(Path.join(out_dir, "help/api/external/index.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/people/update_picture.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/create_avatar_blob.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/create_blob.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/mark_blob_uploaded.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/files/create.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/files/get.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/files/update.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/files/delete.mdx"))
   end
 
   test "renders method and path for root and namespaced endpoints", %{out_dir: out_dir} do
@@ -151,17 +157,41 @@ defmodule Operately.ApiDocs.GeneratorTest do
   test "hidden external endpoints are routable but excluded from catalog and docs", %{out_dir: out_dir} do
     external_mutations = OperatelyWeb.Api.External.__mutations__()
     assert Map.has_key?(external_mutations, "create_avatar_blob")
+    assert Map.has_key?(external_mutations, "create_blob")
+    assert Map.has_key?(external_mutations, "mark_blob_uploaded")
     assert Map.has_key?(external_mutations, "people/update_picture")
+    assert Map.has_key?(external_mutations, "files/create")
+    assert Map.has_key?(external_mutations, "files/update")
+    assert Map.has_key?(external_mutations, "files/delete")
+    assert Map.has_key?(OperatelyWeb.Api.External.__queries__(), "files/get")
 
     catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
     refute Enum.any?(catalog.endpoints, &(&1.full_name == "create_avatar_blob"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "create_blob"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "mark_blob_uploaded"))
     refute Enum.any?(catalog.endpoints, &(&1.full_name == "people/update_picture"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "files/create"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "files/get"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "files/update"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "files/delete"))
 
     Generator.generate(out_dir: out_dir)
     refute File.exists?(Path.join(out_dir, "help/api/create_avatar_blob.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/create_blob.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/mark_blob_uploaded.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/people/update_picture.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/files/create.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/files/get.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/files/update.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/files/delete.mdx"))
     refute Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "create_avatar_blob"))
+    refute Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "create_blob"))
+    refute Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "mark_blob_uploaded"))
     refute Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "people/update_picture"))
+    refute Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "files/create"))
+    assert Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "files/get"))
+    assert Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "files/update"))
+    assert Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "files/delete"))
   end
 
   defp find_input_field(catalog, full_name, field_name) do
