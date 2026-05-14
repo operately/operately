@@ -1201,13 +1201,12 @@ export interface DeletedStatusReplacement {
 
 export interface Discussion {
   id: string;
-  name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
   publishedAt?: string | null;
-  state?: string | null;
+  state: string;
   author?: Person | null;
-  title?: string | null;
+  title: string;
   body?: string | null;
   space?: Space | null;
   reactions?: Reaction[] | null;

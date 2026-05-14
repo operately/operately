@@ -585,13 +585,12 @@ defmodule OperatelyWeb.Api.Types do
 
   object :discussion do
     field :id, :string, null: false
-    field :name, :string, null: false
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
     field? :published_at, :date, null: true
-    field? :state, :string, null: true
+    field :state, :string, null: false
     field? :author, :person, null: true
-    field? :title, :string, null: true
+    field :title, :string, null: false
     field? :body, :string, null: true
     field? :space, :space, null: true
     field? :reactions, list_of(:reaction), null: true
