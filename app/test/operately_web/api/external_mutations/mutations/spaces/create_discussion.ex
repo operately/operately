@@ -2,6 +2,9 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.CreateDiscussion d
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
+  alias Operately.Messages.Message
+  alias Operately.Notifications.SubscriptionList
+
   @impl true
   def mutation_name, do: "spaces/create_discussion"
 
@@ -10,7 +13,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.CreateDiscussion d
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
-
   end
 
   @impl true
@@ -24,7 +26,13 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.CreateDiscussion d
 
   @impl true
   def assert(response, _ctx) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(response.discussion.id)
+    {:ok, message} = Message.get(:system, id: id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
     assert response.discussion.id
+    assert message.subscription_list_id
+    assert list.send_to_everyone
     refute Map.has_key?(response, :error)
   end
 
