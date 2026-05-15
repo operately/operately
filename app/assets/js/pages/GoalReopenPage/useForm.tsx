@@ -20,7 +20,8 @@ export function useForm(goal: Goals.Goal, subscriptionsState: SubscriptionsState
   const messageEditor = useEditor({
     placeholder: "Write here...",
     className: "min-h-[200px] py-2 font-medium",
-    handlers
+    handlers,
+    localDraft: { key: `goal:${goal.id}:reopen-message` },
   });
 
   const goalPath = paths.goalPath(goal.id!);
@@ -34,6 +35,7 @@ export function useForm(goal: Goals.Goal, subscriptionsState: SubscriptionsState
       sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
       subscriberIds: subscriptionsState.currentSubscribersList,
     });
+    messageEditor.clearLocalDraft();
     navigate(goalPath);
   };
 

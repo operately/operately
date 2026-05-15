@@ -4,7 +4,7 @@ import type { AvatarPerson } from "../Avatar";
 import { shortName } from "../Avatar/AvatarWithName";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { CommentInputProps, CommentNotificationInfo, Person } from "./types";
-import { Editor, useEditor } from "../RichEditor";
+import { Editor, hasLocalDraft, useEditor } from "../RichEditor";
 
 interface CommentInputActiveProps extends CommentInputProps {
   currentUser: Person;
@@ -23,10 +23,17 @@ export function CommentInput({
   richTextHandlers,
   notificationInfo,
 }: CommentInputProps & { currentUser: Person }) {
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(() => hasLocalDraft({ key: form.commentDraftKey }, undefined));
 
   const handleActivate = () => setActive(true);
   const handleDeactivate = () => setActive(false);
+
+  React.useEffect(() => {
+    if (active) return;
+    if (!hasLocalDraft({ key: form.commentDraftKey }, undefined)) return;
+
+    setActive(true);
+  }, [active, form.commentDraftKey]);
 
   if (active) {
     return (
@@ -73,6 +80,7 @@ function CommentInputActive({
     handlers: richTextHandlers,
     autoFocus: true,
     className: "min-h-[200px] px-4 py-3",
+    localDraft: { key: form.commentDraftKey },
   });
 
   const handlePost = async () => {
@@ -82,11 +90,17 @@ function CommentInputActive({
 
     try {
       form.postComment(content);
+      editor.clearLocalDraft();
       editor.setContent("");
       onPost();
     } catch (error) {
       console.error("Failed to post comment:", error);
     }
+  };
+
+  const handleCancel = () => {
+    editor.clearLocalDraft();
+    onBlur();
   };
 
   React.useEffect(() => {
@@ -120,7 +134,7 @@ function CommentInputActive({
                 {uploading ? "Uploading..." : "Post"}
               </PrimaryButton>
 
-              <SecondaryButton size="xs" onClick={onBlur}>
+              <SecondaryButton size="xs" onClick={handleCancel}>
                 Cancel
               </SecondaryButton>
             </div>

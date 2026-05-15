@@ -16,6 +16,7 @@ interface Props {
   zeroStatePlaceholder?: string;
   testId?: string;
   emptyTestId?: string;
+  localDraftKey?: string;
 }
 
 export function PageDescription({
@@ -28,6 +29,7 @@ export function PageDescription({
   zeroStatePlaceholder = "Add notes...",
   testId,
   emptyTestId,
+  localDraftKey,
 }: Props) {
   const initialMode = isContentEmpty(description) ? "zero" : "view";
   const [mode, setMode] = useState<"view" | "edit" | "zero">(initialMode);
@@ -54,6 +56,7 @@ export function PageDescription({
           onDescriptionChange={onDescriptionChange}
           setMode={setMode}
           placeholder={placeholder}
+          localDraftKey={localDraftKey}
         />
       )}
     </div>
@@ -106,15 +109,17 @@ interface EditModeProps {
   onDescriptionChange: (newDescription: any) => Promise<boolean>;
   setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
   placeholder: string;
+  localDraftKey?: string;
 }
 
-function EditMode({ description, richTextHandlers, onDescriptionChange, setMode, placeholder }: EditModeProps) {
+function EditMode({ description, richTextHandlers, onDescriptionChange, setMode, placeholder, localDraftKey }: EditModeProps) {
   const editor = useEditor({
     content: description,
     editable: true,
     placeholder,
     handlers: richTextHandlers,
     autoFocus: true,
+    localDraft: { key: localDraftKey },
   });
 
   const save = useCallback(async () => {
@@ -122,6 +127,8 @@ function EditMode({ description, richTextHandlers, onDescriptionChange, setMode,
     const success = await onDescriptionChange(content);
 
     if (success) {
+      editor.clearLocalDraft();
+
       if (isContentEmpty(content)) {
         setMode("zero");
       } else {
@@ -131,8 +138,9 @@ function EditMode({ description, richTextHandlers, onDescriptionChange, setMode,
   }, [editor, setMode, onDescriptionChange]);
 
   const cancel = useCallback(() => {
+    editor.clearLocalDraft();
     setMode(isContentEmpty(description) ? "zero" : "view");
-  }, [setMode]);
+  }, [editor, setMode, description]);
 
   return (
     <div className="mt-2">
