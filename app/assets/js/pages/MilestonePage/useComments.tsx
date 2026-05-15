@@ -72,10 +72,13 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
             });
           });
           invalidateCache();
+          return true;
         }
+        return false;
       } catch (error) {
         setComments((prev) => prev.filter((c) => c.id !== tempId));
         showErrorToast("Error", "Failed to add comment.");
+        return false;
       }
     },
     [paths, me, milestone.id],

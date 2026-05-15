@@ -38,9 +38,11 @@ export interface CommentFormState {
   items: CommentItem[];
   submitting: boolean;
   mentionSearchScope?: any;
-  postComment: (content: any) => void;
-  editComment: (id: string, content: any) => void;
-  deleteComment?: (id: string) => void;
+  postComment: (content: any) => Promise<boolean | void> | boolean | void;
+  editComment: (id: string, content: any) => Promise<boolean | void> | boolean | void;
+  deleteComment?: (id: string) => Promise<void> | void;
+  commentDraftKey?: string;
+  editCommentDraftKey?: (id: string) => string | undefined;
 }
 
 export interface CommentItemProps {

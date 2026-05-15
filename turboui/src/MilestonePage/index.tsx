@@ -116,6 +116,7 @@ export namespace MilestonePage {
 
     // Rich editor support for description and comments
     richTextHandlers: RichEditorHandlers;
+    localDraftKeyBase?: string;
   };
 
   export type State = Props & {
@@ -231,6 +232,7 @@ export function MilestonePage(props: MilestonePage.Props) {
               placeholder="Describe the milestone..."
               zeroStatePlaceholder="Add details about this milestone..."
               emptyTestId="description-section-empty"
+              localDraftKey={state.localDraftKeyBase ? `${state.localDraftKeyBase}:description` : undefined}
             />
 
             <TasksSection {...state} />
@@ -346,6 +348,7 @@ function TimelineSection(props: MilestonePage.State) {
         onAddReaction={props.onAddReaction}
         onRemoveReaction={props.onRemoveReaction}
         richTextHandlers={props.richTextHandlers}
+        commentDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:new-comment` : undefined}
         commentNotificationInfo={{
           entityLabel: "milestone",
           subscribedPeople: props.subscriptions.subscribedPeople ?? [],
