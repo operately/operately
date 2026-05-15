@@ -30,6 +30,7 @@ function MainContent(props: GoalPage.State) {
         label="Goal description"
         placeholder="Describe the goal..."
         zeroStatePlaceholder="Describe the goal to provide context and clarity."
+        localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
       />
       <Targets {...props} />
       <Checklists {...props} />

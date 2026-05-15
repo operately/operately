@@ -44,10 +44,12 @@ export function useCreateComment({ setComments, entityId, entityType }: UseCreat
           }
         });
       });
+      return true;
     } catch (error) {
       setComments((comments) => {
         return comments.filter((c) => c.value.id !== tempId);
       });
+      return false;
     }
   };
 

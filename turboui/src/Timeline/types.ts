@@ -163,14 +163,15 @@ export interface TimelineProps {
   currentUser: Person;
   canComment: boolean;
   commentParentType: string;
-  onAddComment: (content: any) => void;
-  onEditComment: (id: string, content: any) => void;
-  onDeleteComment: (id: string) => void;
+  onAddComment: (content: any) => Promise<boolean | void> | boolean | void;
+  onEditComment: (id: string, content: any) => Promise<boolean | void> | boolean | void;
+  onDeleteComment: (id: string) => Promise<void> | void;
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
   filters?: TimelineFilters;
   richTextHandlers: RichEditorHandlers;
   commentNotificationInfo?: CommentNotificationInfo;
+  commentDraftKey?: string;
 }
 
 export interface TimelineFilters {
@@ -188,9 +189,10 @@ export interface TimelineItemProps {
   currentUser: Person;
   canComment: boolean;
   commentParentType: string;
-  onEditComment: (id: string, content: any) => void;
-  onDeleteComment: (id: string) => void;
+  onEditComment: (id: string, content: any) => Promise<boolean | void> | boolean | void;
+  onDeleteComment: (id: string) => Promise<void> | void;
   richTextHandlers: RichEditorHandlers;
+  commentDraftKey?: string;
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
 }

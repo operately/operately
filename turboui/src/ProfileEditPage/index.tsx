@@ -59,6 +59,7 @@ export namespace ProfileEditPage {
 
     // Rich text handlers
     richTextHandlers: RichEditorHandlers;
+    localDraftKeyBase?: string;
 
     // Options
     timezones: Timezone[];
@@ -125,6 +126,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
                   value={props.aboutMe}
                   onChange={props.onAboutMeChange}
                   handlers={props.richTextHandlers}
+                  localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:about-me` : undefined}
                 />
               </div>
             )}
@@ -198,22 +200,32 @@ function AboutMeEditor({
   value,
   onChange,
   handlers,
+  localDraftKey,
 }: {
   value: any;
   onChange: (value: any) => void;
   handlers: RichEditorHandlers;
+  localDraftKey?: string;
 }) {
   const editor = useEditor({
     handlers,
     placeholder: "Share a short bio, what you work on, or anything you'd like others to know.",
     onUpdate: ({ json }) => onChange(json),
+    content: value,
+    localDraft: { key: localDraftKey },
   });
 
   React.useEffect(() => {
-    if (editor.editor) {
+    if (editor.editor && !editor.localDraftRestored) {
       editor.editor.commands.setContent(value);
     }
-  }, [editor.editor]);
+  }, [editor.editor, editor.localDraftRestored]);
+
+  React.useEffect(() => {
+    if (!editor.editor || !editor.localDraftRestored) return;
+
+    onChange(editor.editor.getJSON());
+  }, [editor.editor, editor.localDraftRestored]);
 
   return <Editor editor={editor} />;
 }
