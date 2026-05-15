@@ -425,7 +425,7 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: assignee,
-      action: "changed the assignee for #{ctx.task.name}",
+      action: "assigned you the task #{ctx.task.name}",
       author: ctx.creator
     })
   end

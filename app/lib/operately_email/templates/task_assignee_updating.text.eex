@@ -1,3 +1,9 @@
+<%= if @assigned_to_recipient do %>
+<%= short_name(@author) %> assigned you the task <%= @name %>.
+
+You are now assigned to this task.
+<% else %>
 <%= short_name(@author) %> changed the assignee for <%= @name %>.
+<% end %>
 
 Link: <%= @cta_url %>
