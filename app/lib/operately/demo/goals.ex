@@ -68,7 +68,7 @@ defmodule Operately.Demo.Goals do
 
     {:ok, _} =
       Operately.Operations.GoalCheckIn.run(goal.champion, goal, %{
-        status: data[:status] || "on_track",
+        status: normalize_status(data[:status]),
         content: Operately.Demo.RichText.from_string(data.content),
         target_values: target_values,
         checklist: data[:checklist] || [],
@@ -76,6 +76,13 @@ defmodule Operately.Demo.Goals do
         subscriber_ids: [],
         due_date: goal.timeframe.contextual_end_date
       })
+  end
+
+  defp normalize_status(nil), do: :on_track
+  defp normalize_status(status) when status in [:on_track, :caution, :off_track], do: status
+
+  defp normalize_status(status) when status in ["on_track", "caution", "off_track"] do
+    String.to_existing_atom(status)
   end
 
   defp create_timeframe(:current_year) do

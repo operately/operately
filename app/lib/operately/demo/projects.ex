@@ -74,8 +74,14 @@ defmodule Operately.Demo.Projects do
     case check_ins do
       [] -> create_project_check_in(champion, project, nil)
       check_ins ->
-        Enum.reduce(check_ins, {:ok, project}, fn check_in, _ ->
-          create_project_check_in(champion, project, check_in)
+        Enum.reduce_while(check_ins, {:ok, project}, fn check_in, {:ok, current_project} ->
+          case create_project_check_in(champion, current_project, check_in) do
+            {:ok, _check_in} ->
+              {:cont, {:ok, Operately.Repo.reload(current_project)}}
+
+            {:error, _} = error ->
+              {:halt, error}
+          end
         end)
     end
   end
@@ -92,7 +98,7 @@ defmodule Operately.Demo.Projects do
              Map.merge(
                %{
                  content: Operately.Demo.RichText.from_string(data.content),
-                 status: data.status
+                 status: normalize_status(data[:status])
                },
                %{
                  subscription_parent_type: :project_check_in,
@@ -102,6 +108,13 @@ defmodule Operately.Demo.Projects do
            ) do
       backdate_check_in(check_in, data)
     end
+  end
+
+  defp normalize_status(nil), do: :on_track
+  defp normalize_status(status) when status in [:on_track, :caution, :off_track], do: status
+
+  defp normalize_status(status) when status in ["on_track", "caution", "off_track"] do
+    String.to_existing_atom(status)
   end
 
   defp backdate_check_in(check_in, data) do
