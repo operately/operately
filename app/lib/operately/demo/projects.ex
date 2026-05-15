@@ -34,10 +34,10 @@ defmodule Operately.Demo.Projects do
 
     {:ok, project} = Operately.Operations.ProjectCreation.run(params)
     {:ok, project} = set_description(project, data[:description])
-    {:ok, project} = set_project_timeline(champion, project)
+    {:ok, project} = set_project_timeline(champion, project, data)
 
     {:ok, _} = create_project_milestones(resources, champion, project, data)
-    {:ok, _} = create_project_check_in(champion, project, data.check_in)
+    {:ok, _} = create_project_check_ins(champion, project, data)
 
     add_project_contributors(resources, project, data)
 
@@ -48,9 +48,13 @@ defmodule Operately.Demo.Projects do
     Operately.Projects.update_project(project, %{description: Operately.Demo.RichText.from_string(value || "")})
   end
 
-  def set_project_timeline(champion, project) do
-    start = Date.utc_today() |> Date.add(:rand.uniform(20)) |> Date.add(-:rand.uniform(20))
-    deadline = start |> Date.add(10 + :rand.uniform(20))
+  def set_project_timeline(champion, project, data \\ %{}) do
+    today = Date.utc_today()
+    start = data[:start_offset_days] && Date.add(today, data.start_offset_days)
+    deadline = data[:due_in_days] && Date.add(today, data.due_in_days)
+
+    start = start || (today |> Date.add(:rand.uniform(20)) |> Date.add(-:rand.uniform(20)))
+    deadline = deadline || Date.add(start, 10 + :rand.uniform(20))
 
     Operately.Projects.EditTimelineOperation.run(champion, project, %{
       project_start_date: ContextualDate.create_day_date(start),
@@ -60,25 +64,74 @@ defmodule Operately.Demo.Projects do
     })
   end
 
+  def create_project_check_ins(champion, project, data) do
+    check_ins =
+      case data[:check_ins] do
+        nil -> List.wrap(data[:check_in])
+        check_ins -> check_ins
+      end
+
+    case check_ins do
+      [] -> create_project_check_in(champion, project, nil)
+      check_ins ->
+        Enum.reduce_while(check_ins, {:ok, project}, fn check_in, {:ok, current_project} ->
+          case create_project_check_in(champion, current_project, check_in) do
+            {:ok, _check_in} ->
+              {:cont, {:ok, Operately.Repo.reload(current_project)}}
+
+            {:error, _} = error ->
+              {:halt, error}
+          end
+        end)
+    end
+  end
+
   def create_project_check_in(_champion, project, nil) do
     Operately.Projects.update_project(project, %{next_check_in_scheduled_at: yesterday()})
   end
 
   def create_project_check_in(champion, project, data) do
-    Operately.Operations.ProjectCheckIn.run(
-      champion,
-      project,
-      Map.merge(
-        %{
-          content: Operately.Demo.RichText.from_string(data.content),
-          status: data.status
-        },
-        %{
-          subscription_parent_type: :project_check_in,
-          subscriber_ids: []
-        }
-      )
-    )
+    with {:ok, check_in} <-
+           Operately.Operations.ProjectCheckIn.run(
+             champion,
+             project,
+             Map.merge(
+               %{
+                 content: Operately.Demo.RichText.from_string(data.content),
+                 status: normalize_status(data[:status])
+               },
+               %{
+                 subscription_parent_type: :project_check_in,
+                 subscriber_ids: []
+               }
+             )
+           ) do
+      backdate_check_in(check_in, data)
+    end
+  end
+
+  defp normalize_status(nil), do: :on_track
+  defp normalize_status(status) when status in [:on_track, :caution, :off_track], do: status
+
+  defp normalize_status(status) when status in ["on_track", "caution", "off_track"] do
+    String.to_existing_atom(status)
+  end
+
+  defp backdate_check_in(check_in, data) do
+    case data[:days_ago] do
+      nil ->
+        {:ok, check_in}
+
+      days_ago ->
+        timestamp =
+          Date.utc_today()
+          |> Date.add(-days_ago)
+          |> NaiveDateTime.new!(~T[09:00:00])
+
+        check_in
+        |> Ecto.Changeset.change(inserted_at: timestamp, updated_at: timestamp)
+        |> Operately.Repo.update()
+    end
   end
 
   def yesterday do
@@ -170,17 +223,20 @@ defmodule Operately.Demo.Projects do
     champion_id = champion.id
     reviewer_id = data[:reviewer] && Resources.get(context, data.reviewer).id
 
-    contribs = Enum.map(data.contributors, fn c -> Resources.get(context, c.person) end)
+    contribs =
+      Enum.map(data.contributors, fn c ->
+        {Resources.get(context, c.person), c[:responsibility] || "Contributor"}
+      end)
 
     contribs
-    |> Enum.filter(fn c -> c.id != champion_id && c.id != reviewer_id end)
-    |> Enum.each(fn c ->
+    |> Enum.filter(fn {person, _responsibility} -> person.id != champion_id && person.id != reviewer_id end)
+    |> Enum.each(fn {person, responsibility} ->
       {:ok, _} =
         Operately.Operations.ProjectContributorAddition.run(champion, %{
-          person_id: c.id,
+          person_id: person.id,
           project_id: project.id,
           permissions: 70,
-          responsibility: "Build and Launch the Website",
+          responsibility: responsibility,
           role: :contributor
         })
     end)
