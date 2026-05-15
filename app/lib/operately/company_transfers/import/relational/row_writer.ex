@@ -77,7 +77,7 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriter do
   defp validate_update_row(table, _row), do: {:error, {:invalid_update_row, table}}
 
   defp fetch_update_record(schema, table, id) do
-    case Repo.get(schema, id) do
+    case Repo.get(schema, id, with_deleted: true) do
       nil -> {:error, {:missing_update_row, table, id}}
       record -> {:ok, record}
     end

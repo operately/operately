@@ -208,6 +208,33 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
                RowWriter.update_row("companies", %{"id" => fake_id, "name" => "Should Not Exist"})
     end
 
+    test "updates soft-deleted rows", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+
+      {:ok, deleted_project} = Repo.soft_delete(ctx.project)
+
+      refute Repo.get(Project, deleted_project.id)
+
+      assert :ok =
+               RowWriter.update_row(
+                 "projects",
+                 %{
+                   "id" => deleted_project.id,
+                   "name" => "Updated Archived Project"
+                 }
+               )
+
+      refute Repo.get(Project, deleted_project.id)
+
+      project = Repo.get!(Project, deleted_project.id, with_deleted: true)
+
+      assert project.name == "Updated Archived Project"
+      assert project.deleted_at == deleted_project.deleted_at
+    end
+
     test "casts maps and embeds", ctx do
       ctx =
         ctx
