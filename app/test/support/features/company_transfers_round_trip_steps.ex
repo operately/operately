@@ -9,12 +9,14 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
   alias Operately.Access.{Binding, Context, Group, GroupMembership}
   alias Operately.Companies.Company
   alias Operately.Demo
+  alias Operately.Operations.ResourceHubFileDeleting
   alias Operately.People.Person
   alias Operately.Projects.Project
   alias Operately.Repo
   alias Operately.RichContent
   alias Operately.ResourceHubs.Document, as: ResourceHubDocument
   alias Operately.ResourceHubs.File, as: ResourceHubFile
+  alias Operately.ResourceHubs.Node, as: ResourceHubNode
   alias Operately.Support.CompanyTransfer.Helpers, as: Transfers
   alias Operately.Support.Factory
   alias Operately.Support.RichText
@@ -421,40 +423,132 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
   end
 
   step :given_company_with_file_slice_resources, ctx do
-    ctx =
-      ctx
-      |> Factory.add_blob(:avatar_blob)
-      |> Factory.add_blob(:embedded_blob)
-      |> Factory.add_blob(:preview_blob)
-      |> Factory.add_space(:space)
-      |> Factory.add_resource_hub(:hub, :space, :creator)
+    build_company_with_file_slice_resources(ctx)
+  end
 
-    ctx =
-      ctx
-      |> Factory.add_document(:document, :hub, content: blob_document(ctx.embedded_blob))
-      |> Factory.add_file(:resource_file, :hub)
+  step :given_company_with_soft_deleted_file_slice_resources, ctx do
+    ctx = build_company_with_file_slice_resources(ctx)
 
-    {:ok, creator} =
-      Operately.People.update_person(ctx.creator, %{
-        avatar_blob_id: ctx.avatar_blob.id
-      })
-
-    {:ok, resource_file} =
+    resource_file =
       ctx.resource_file
-      |> ResourceHubFile.changeset(%{preview_blob_id: ctx.preview_blob.id})
-      |> Repo.update()
+      |> Repo.preload([:node, :resource_hub])
 
-    file_blob = Blobs.get_blob!(resource_file.blob_id)
-
-    upload_blob_payload!(ctx.avatar_blob, "avatar payload")
-    upload_blob_payload!(ctx.embedded_blob, "embedded payload")
-    upload_blob_payload!(ctx.preview_blob, "preview payload")
-    upload_blob_payload!(file_blob, "resource file payload")
+    {:ok, resource_file} = ResourceHubFileDeleting.run(ctx.creator, resource_file)
+    resource_file_node = Repo.get!(ResourceHubNode, resource_file.node_id, with_deleted: true)
 
     ctx
-    |> Map.put(:creator, creator)
     |> Map.put(:resource_file, resource_file)
-    |> Map.put(:file_blob, file_blob)
+    |> Map.put(:resource_file_node, resource_file_node)
+  end
+
+  step :then_soft_deleted_file_slice_survives_under_local_storage, ctx do
+    imported_company = ctx.round_trip.imported_company
+
+    source_manifest = ctx.round_trip.source.package["manifest"]
+    reexported_manifest = ctx.round_trip.reexported.package["manifest"]
+
+    assert source_manifest["files_count"] == 4
+    assert reexported_manifest["files_count"] == 4
+    assert length(ctx.round_trip.source.package["files"]) == 4
+    assert length(ctx.round_trip.reexported.package["files"]) == 4
+
+    [source_resource_file] = table_rows(ctx.round_trip.source.package, "resource_files")
+    [reexported_resource_file] = table_rows(ctx.round_trip.reexported.package, "resource_files")
+
+    source_resource_file_node =
+      ctx.round_trip.source.package
+      |> table_rows("resource_nodes")
+      |> Enum.find(&(&1["type"] == "file"))
+
+    reexported_resource_file_node =
+      ctx.round_trip.reexported.package
+      |> table_rows("resource_nodes")
+      |> Enum.find(&(&1["type"] == "file"))
+
+    refute is_nil(source_resource_file["deleted_at"])
+    refute is_nil(source_resource_file_node["deleted_at"])
+    assert source_resource_file["deleted_at"] == reexported_resource_file["deleted_at"]
+    assert source_resource_file_node["deleted_at"] == reexported_resource_file_node["deleted_at"]
+
+    imported_creator =
+      Repo.get_by!(Person,
+        company_id: imported_company.id,
+        email: ctx.creator.email
+      )
+
+    imported_resource_file_query =
+      from f in ResourceHubFile,
+        join: n in assoc(f, :node),
+        join: h in assoc(n, :resource_hub),
+        join: s in assoc(h, :space),
+        where: s.company_id == ^imported_company.id,
+        select: f
+
+    assert Repo.one(imported_resource_file_query) == nil
+
+    imported_resource_file = Repo.one!(imported_resource_file_query, with_deleted: true)
+
+    imported_resource_file_node_query =
+      from n in ResourceHubNode,
+        join: h in assoc(n, :resource_hub),
+        join: s in assoc(h, :space),
+        where: s.company_id == ^imported_company.id,
+        where: n.type == :file,
+        select: n
+
+    assert Repo.one(imported_resource_file_node_query) == nil
+
+    imported_resource_file_node = Repo.one!(imported_resource_file_node_query, with_deleted: true)
+
+    imported_document =
+      Repo.one!(
+        from d in ResourceHubDocument,
+          join: n in assoc(d, :node),
+          join: h in assoc(n, :resource_hub),
+          join: s in assoc(h, :space),
+          where: s.company_id == ^imported_company.id,
+          select: d
+      )
+
+    assert imported_resource_file.node_id == imported_resource_file_node.id
+    assert imported_resource_file.deleted_at == ctx.resource_file.deleted_at
+    assert imported_resource_file_node.deleted_at == ctx.resource_file_node.deleted_at
+    refute is_nil(imported_resource_file.blob_id)
+    refute is_nil(imported_resource_file.preview_blob_id)
+    refute is_nil(imported_resource_file.subscription_list_id)
+
+    imported_avatar_blob = Blobs.get_blob!(imported_creator.avatar_blob_id)
+    imported_file_blob = Blobs.get_blob!(imported_resource_file.blob_id)
+    imported_preview_blob = Blobs.get_blob!(imported_resource_file.preview_blob_id)
+    [imported_embedded_blob_id] = RichContent.Blob.find_ids(imported_document.content)
+    imported_embedded_blob = Blobs.get_blob!(imported_embedded_blob_id)
+
+    refute imported_avatar_blob.id == ctx.avatar_blob.id
+    refute imported_file_blob.id == ctx.file_blob.id
+    refute imported_preview_blob.id == ctx.preview_blob.id
+    refute imported_embedded_blob.id == ctx.embedded_blob.id
+
+    assert File.read!(storage_path(imported_avatar_blob)) == "avatar payload"
+    assert File.read!(storage_path(imported_file_blob)) == "resource file payload"
+    assert File.read!(storage_path(imported_preview_blob)) == "preview payload"
+    assert File.read!(storage_path(imported_embedded_blob)) == "embedded payload"
+
+    [blob_node] = imported_document.content["content"]
+    assert blob_node["attrs"]["id"] == WebPaths.blob_id(imported_embedded_blob)
+    assert blob_node["attrs"]["src"] == Blob.url(imported_embedded_blob)
+
+    cleanup_blob_storage([
+      ctx.avatar_blob,
+      ctx.file_blob,
+      ctx.preview_blob,
+      ctx.embedded_blob,
+      imported_avatar_blob,
+      imported_file_blob,
+      imported_preview_blob,
+      imported_embedded_blob
+    ])
+
+    ctx
   end
 
   step :then_file_slice_survives_under_local_storage, ctx do
@@ -526,6 +620,43 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
     ])
 
     ctx
+  end
+
+  defp build_company_with_file_slice_resources(ctx) do
+    ctx =
+      ctx
+      |> Factory.add_blob(:avatar_blob)
+      |> Factory.add_blob(:embedded_blob)
+      |> Factory.add_blob(:preview_blob)
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+
+    ctx =
+      ctx
+      |> Factory.add_document(:document, :hub, content: blob_document(ctx.embedded_blob))
+      |> Factory.add_file(:resource_file, :hub)
+
+    {:ok, creator} =
+      Operately.People.update_person(ctx.creator, %{
+        avatar_blob_id: ctx.avatar_blob.id
+      })
+
+    {:ok, resource_file} =
+      ctx.resource_file
+      |> ResourceHubFile.changeset(%{preview_blob_id: ctx.preview_blob.id})
+      |> Repo.update()
+
+    file_blob = Blobs.get_blob!(resource_file.blob_id)
+
+    upload_blob_payload!(ctx.avatar_blob, "avatar payload")
+    upload_blob_payload!(ctx.embedded_blob, "embedded payload")
+    upload_blob_payload!(ctx.preview_blob, "preview payload")
+    upload_blob_payload!(file_blob, "resource file payload")
+
+    ctx
+    |> Map.put(:creator, creator)
+    |> Map.put(:resource_file, resource_file)
+    |> Map.put(:file_blob, file_blob)
   end
 
   defp round_trip_company!(company, export_account, opts \\ []) do

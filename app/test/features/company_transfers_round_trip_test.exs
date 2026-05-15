@@ -75,6 +75,21 @@ defmodule Operately.Features.CompanyTransfersRoundTripTest do
   end
 
   @tag ownership_timeout: 180_000
+  test "soft-deleted resource files survive a round trip under local storage", ctx do
+    previous_storage_type = Application.get_env(:operately, :storage_type)
+    Application.put_env(:operately, :storage_type, "local")
+
+    on_exit(fn ->
+      Application.put_env(:operately, :storage_type, previous_storage_type)
+    end)
+
+    ctx
+    |> Steps.given_company_with_soft_deleted_file_slice_resources()
+    |> Steps.when_company_round_trips()
+    |> Steps.then_soft_deleted_file_slice_survives_under_local_storage()
+  end
+
+  @tag ownership_timeout: 180_000
   test "a demo-built company can round-trip across the minimal slice", ctx do
     previous_demo_setting = Application.get_env(:operately, :demo_builder_allowed)
     Application.put_env(:operately, :demo_builder_allowed, true)
