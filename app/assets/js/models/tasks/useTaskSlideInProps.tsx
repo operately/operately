@@ -328,6 +328,7 @@ export function useTaskSlideInProps(opts: {
 
         assigneePersonSearch: ctx.assigneePersonSearch,
         richTextHandlers: ctx.richTextHandlers,
+        localDraftKeyBase: `task:${taskId}`,
 
         canEdit,
 
@@ -337,12 +338,12 @@ export function useTaskSlideInProps(opts: {
         canComment: canComment,
 
         onAddComment: (content) => {
-          if (activeTaskId !== taskId) return;
-          addComment(content);
+          if (activeTaskId !== taskId) return false;
+          return addComment(content);
         },
         onEditComment: (commentId, content) => {
-          if (activeTaskId !== taskId) return;
-          editComment(commentId, content);
+          if (activeTaskId !== taskId) return false;
+          return editComment(commentId, content);
         },
         onDeleteComment: (commentId) => {
           if (activeTaskId !== taskId) return;

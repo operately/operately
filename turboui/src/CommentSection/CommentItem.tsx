@@ -57,9 +57,11 @@ export function CommentItem({
 
   const canAddReaction = Boolean(canComment && onAddReaction);
 
-  const handleSaveEdit = (content: any) => {
+  const handleSaveEdit = async (content: any) => {
     if (form && form.editComment) {
-      form.editComment(comment.id, content);
+      const success = await form.editComment(comment.id, content);
+      if (success === false) return;
+
       setIsEditing(false);
     }
   };
@@ -128,6 +130,7 @@ export function CommentItem({
             onSave={handleSaveEdit}
             onCancel={() => setIsEditing(false)}
             richTextHandlers={richTextHandlers}
+            localDraftKey={form.editCommentDraftKey?.(comment.id)}
           />
         ) : (
           <CommentViewMode
@@ -240,23 +243,33 @@ function CommentViewMode({
 
 interface CommentEditModeProps {
   content: any;
-  onSave: (content: any) => void;
+  onSave: (content: any) => Promise<boolean | void> | boolean | void;
   onCancel: () => void;
   richTextHandlers: RichEditorHandlers;
+  localDraftKey?: string;
 }
 
-function CommentEditMode({ content, onSave, onCancel, richTextHandlers }: CommentEditModeProps) {
+function CommentEditMode({ content, onSave, onCancel, richTextHandlers, localDraftKey }: CommentEditModeProps) {
   const editor = useEditor({
     content: content,
     editable: true,
     placeholder: "Edit your comment...",
     handlers: richTextHandlers,
+    localDraft: { key: localDraftKey },
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const updatedContent = editor.getJson();
     if (!updatedContent || editor.empty) return;
-    onSave(updatedContent);
+    const success = await onSave(updatedContent);
+    if (success === false) return;
+
+    editor.clearLocalDraft();
+  };
+
+  const handleCancel = () => {
+    editor.clearLocalDraft();
+    onCancel();
   };
 
   return (
@@ -266,7 +279,7 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers }: Commen
         <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty}>
           Save
         </PrimaryButton>
-        <SecondaryButton size="xs" onClick={onCancel}>
+        <SecondaryButton size="xs" onClick={handleCancel}>
           Cancel
         </SecondaryButton>
       </div>

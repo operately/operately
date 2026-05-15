@@ -274,6 +274,7 @@ function Page() {
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
 
     richTextHandlers: richEditorHandlers,
+    localDraftKeyBase: `goal:${goal.id}`,
 
     addTarget,
     deleteTarget,

@@ -8,6 +8,13 @@ import StarterKit from "@tiptap/starter-kit";
 import Blob, { isUploadInProgress } from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
 import Highlight from "./extensions/Highlight";
+import {
+  clearLocalDraft,
+  isRichTextEmpty,
+  LocalDraftOptions,
+  readLocalDraft,
+  writeLocalDraft,
+} from "./localDrafts";
 import MentionPeople, { SearchFn } from "./extensions/MentionPeople";
 
 export interface Person {
@@ -48,6 +55,7 @@ interface UseEditorProps {
   editable?: boolean;
   autoFocus?: boolean;
   tabindex?: string;
+  localDraft?: LocalDraftOptions;
 
   handlers: RichEditorHandlers;
 }
@@ -65,6 +73,8 @@ export interface EditorState {
   setContent: (content: any) => void;
   setFocused: (focused: boolean) => void;
   getJson: () => any;
+  localDraftRestored: boolean;
+  clearLocalDraft: () => void;
 }
 
 const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
@@ -85,8 +95,11 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [linkEditActive, setLinkEditActive] = React.useState(false);
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
-  const [empty, setEmpty] = React.useState(props.content === undefined || props.content === "");
   const [uploading, setUploading] = React.useState(false);
+  const baseContent = React.useRef(props.content);
+  const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent.current));
+  const initialContent = restoredDraft ?? props.content;
+  const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
   const mentionPeople = React.useMemo(() => {
     return MentionPeople.configure(props.handlers.peopleSearch);
@@ -94,7 +107,7 @@ export function useEditor(props: UseEditorProps): EditorState {
 
   const editor = TipTap.useEditor({
     editable: props.editable,
-    content: props.content,
+    content: initialContent,
     autofocus: props.autoFocus,
     injectCSS: false,
     editorProps: {
@@ -150,11 +163,17 @@ export function useEditor(props: UseEditorProps): EditorState {
       setUploading(isUploading);
       setSubmittable(!isUploading);
 
+      const json = editor.getJSON();
+
       setEmpty(editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0);
+
+      if (props.editable && !isUploading) {
+        writeLocalDraft(props.localDraft, json, baseContent.current);
+      }
 
       if (props.onUpdate) {
         props.onUpdate({
-          json: editor.getJSON(),
+          json,
           html: editor.getHTML(),
         });
       }
@@ -173,6 +192,10 @@ export function useEditor(props: UseEditorProps): EditorState {
     if (!editor) return null;
     return editor.getJSON();
   }, [editor]);
+
+  const clearDraft = React.useCallback(() => {
+    clearLocalDraft(props.localDraft);
+  }, [props.localDraft?.key, props.localDraft?.enabled, props.localDraft?.ttlMs]);
 
   React.useEffect(() => {
     if (!editor) return;
@@ -195,5 +218,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     setContent,
     setFocused,
     getJson,
+    localDraftRestored: Boolean(restoredDraft),
+    clearLocalDraft: clearDraft,
   };
 }

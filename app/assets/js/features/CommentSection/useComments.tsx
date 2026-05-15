@@ -37,6 +37,8 @@ export function useComments(props: Comments.CommentableResource): FormState {
       deleteComment: async (_commentID: string) => {},
       submitting: false,
       mentionSearchScope: { type: "none" },
+      commentDraftKey: undefined,
+      editCommentDraftKey: undefined,
     };
 
   if (error) throw error;
@@ -48,6 +50,8 @@ export function useComments(props: Comments.CommentableResource): FormState {
     deleteComment,
     submitting: creating || editing || deleting,
     mentionSearchScope: findMentionedScope(props),
+    commentDraftKey: `${props.parentType}:${parent.id}:new-comment`,
+    editCommentDraftKey: (commentID: string) => `${props.parentType}:${parent.id}:edit-comment:${commentID}`,
   };
 }
 

@@ -29,6 +29,7 @@ export function useEditComment({ comments, setComments, parentType }: UseEditCom
         content: Comments.stringifyCommentContent(content),
         parentType,
       });
+      return true;
     } catch {
       const comment = comments.find((c) => c.value.id === commentID)!;
 
@@ -41,6 +42,7 @@ export function useEditComment({ comments, setComments, parentType }: UseEditCom
           }
         }),
       );
+      return false;
     }
   };
 

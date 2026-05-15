@@ -27,11 +27,13 @@ export function useEditComment<T extends { id?: string | null; content?: any }>(
         });
 
         invalidateCache();
+        return true;
       } catch (error) {
         if (comment) {
           setComments((prev) => prev.map((c) => (compareIds(c.id, commentId) ? { ...comment } : c)));
         }
         showErrorToast("Error", "Failed to edit comment.");
+        return false;
       }
     },
     [comments, parentType, invalidateCache, setComments],

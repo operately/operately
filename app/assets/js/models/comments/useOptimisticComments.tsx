@@ -25,7 +25,7 @@ export function useOptimisticComments(opts: {
     async (content: any) => {
       if (!taskId || !me) {
         showErrorToast("Error", "Failed to add comment.");
-        return;
+        return false;
       }
 
       const tempId = `temp-comment-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -52,15 +52,17 @@ export function useOptimisticComments(opts: {
         if (!realId) {
           setComments((prev) => prev.filter((c) => c.id !== tempId));
           showErrorToast("Error", "Failed to add comment.");
-          return;
+          return false;
         }
 
         setComments((prev) => prev.map((c) => (c.id === tempId ? { ...c, id: realId, insertedAt: realInsertedAt ?? c.insertedAt } : c)));
 
         onAfterMutation?.();
+        return true;
       } catch {
         setComments((prev) => prev.filter((c) => c.id !== tempId));
         showErrorToast("Error", "Failed to add comment.");
+        return false;
       }
     },
     [parentType, me, onAfterMutation, taskId],
@@ -73,7 +75,7 @@ export function useOptimisticComments(opts: {
 
       if (!taskId || !prevComment) {
         showErrorToast("Error", "Failed to edit comment.");
-        return;
+        return false;
       }
 
       setComments((prev) => prev.map((c) => (c.id === commentId ? { ...c, content: nextContent } : c)));
@@ -86,9 +88,11 @@ export function useOptimisticComments(opts: {
         });
 
         onAfterMutation?.();
+        return true;
       } catch {
         setComments((prev) => prev.map((c) => (c.id === commentId ? prevComment : c)));
         showErrorToast("Error", "Failed to edit comment.");
+        return false;
       }
     },
     [comments, onAfterMutation, parentType, taskId],
