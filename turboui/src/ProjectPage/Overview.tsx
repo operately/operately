@@ -52,6 +52,7 @@ function OverviewSection(props: ProjectPage.State) {
         label="Description"
         placeholder="Add a project description..."
         zeroStatePlaceholder="Add a project description..."
+        localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
       />
     </div>
   );

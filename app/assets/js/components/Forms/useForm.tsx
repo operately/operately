@@ -22,6 +22,7 @@ export interface FormState<T extends FieldObject> {
   values: T;
   state: State;
   trigger: string | undefined;
+  lastSubmitSucceededAt: number | undefined;
   errors: ErrorMap;
   hasErrors: boolean;
   hasCancel: boolean;
@@ -45,6 +46,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
   const hasCancel = !!props.cancel;
 
   const [errors, setErrors] = React.useState<ErrorMap>({});
+  const [lastSubmitSucceededAt, setLastSubmitSucceededAt] = React.useState<number | undefined>(undefined);
   const clearErrors = () => setErrors({});
   const hasErrors = Object.keys(errors).length > 0;
 
@@ -57,6 +59,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
     values,
     state,
     trigger,
+    lastSubmitSucceededAt,
     errors,
     hasErrors,
     hasCancel,
@@ -93,6 +96,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
           setState("submitting");
           await props.submit(attrs);
           form.actions.clearErrors();
+          setLastSubmitSucceededAt(Date.now());
 
           setState("idle");
         } catch (e) {
