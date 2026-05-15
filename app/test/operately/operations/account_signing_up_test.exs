@@ -2,6 +2,7 @@ defmodule Operately.Operations.AccountSigningUpTest do
   use Operately.DataCase, async: true
 
   alias Operately.Operations.AccountSigningUp
+  alias Operately.Activities.Activity
   alias Operately.People
   alias Operately.People.EmailActivationCode
   alias Operately.Support.Factory
@@ -70,6 +71,11 @@ defmodule Operately.Operations.AccountSigningUpTest do
       assert invite_context.company.id == ctx.company.id
       assert invite_context.person.email == @email
       assert invite_context.error == nil
+
+      activity = from(a in Activity, where: a.action == "company_member_joined" and a.author_id == ^invite_context.person.id) |> Repo.one()
+
+      assert activity.content["company_id"] == ctx.company.id
+      assert activity.content["person_id"] == invite_context.person.id
     end
 
     test "succeeds but sets invite error when invite token is invalid" do

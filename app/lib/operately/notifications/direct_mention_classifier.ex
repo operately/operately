@@ -53,6 +53,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "company_invitation_token_created",
     "company_member_added",
     "company_member_converted_to_guest",
+    "company_member_joined",
     "company_member_removed",
     "company_member_restoring",
     "company_members_permissions_edited",

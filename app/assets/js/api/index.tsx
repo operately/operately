@@ -184,6 +184,11 @@ export interface ActivityContentCompanyMemberAdded {
   name: string;
 }
 
+export interface ActivityContentCompanyMemberJoined {
+  company: Company;
+  person: Person;
+}
+
 export interface ActivityContentCompanyMemberConvertedToGuest {
   company: Company;
   person: Person | null;
@@ -2030,6 +2035,7 @@ export type ActivityContent =
   | ActivityContentCompanyAdminAdded
   | ActivityContentCompanyMembersPermissionsEdited
   | ActivityContentCompanyMemberAdded
+  | ActivityContentCompanyMemberJoined
   | ActivityContentCompanyMemberConvertedToGuest
   | ActivityContentGuestInvited
   | ActivityContentCompanyEditing
