@@ -54,6 +54,38 @@ defmodule Operately.DemoTest do
     assert m2.status == :pending
   end
 
+  test "project check-in history" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    data = %{
+      people: [],
+      spaces: [],
+      goals: [],
+      projects: [
+        %{
+          key: :alpha,
+          name: "Alpha",
+          space: :company_space,
+          champion: :owner,
+          contributors: [],
+          check_ins: [
+            %{status: :caution, content: "First check-in", days_ago: 14},
+            %{status: :on_track, content: "Second check-in", days_ago: 7},
+          ],
+          milestones: []
+        },
+      ]
+    }
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO", data)
+    assert {:ok, project} = Operately.Projects.Project.get(:system, company_id: company.id, name: "Alpha", opts: [preload: :check_ins])
+
+    assert length(project.check_ins) == 2
+    assert Enum.any?(project.check_ins, &(&1.status == :caution))
+    assert Enum.any?(project.check_ins, &(&1.status == :on_track))
+    assert Enum.any?(project.check_ins, &(Date.diff(Date.utc_today(), NaiveDateTime.to_date(&1.inserted_at)) == 14))
+  end
+
   test "goal creation" do
     account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
 
@@ -99,5 +131,38 @@ defmodule Operately.DemoTest do
 
     assert goal2.timeframe.contextual_start_date.date_type == :quarter
     assert goal2.timeframe.contextual_end_date.date_type == :quarter
+  end
+
+  test "goal update status" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    data = %{
+      people: [],
+      spaces: [],
+      goals: [
+        %{
+          key: :quarterly_goal,
+          name: "Quarterly Goal",
+          space: :company_space,
+          champion: :owner,
+          reviewer: :owner,
+          targets: [
+            %{name: "A", from: 0, to: 5, unit: "units"},
+            %{name: "B", from: 0, to: 5, unit: "units"},
+          ],
+          update: %{
+            status: :caution,
+            content: "Progress needs attention.",
+            target_values: [1, 2],
+          },
+        }
+      ],
+      projects: []
+    }
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO", data)
+    assert {:ok, goal} = Operately.Goals.Goal.get(:system, company_id: company.id, name: "Quarterly Goal")
+
+    assert goal.last_update_status == :caution
   end
 end
