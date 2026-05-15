@@ -93,3 +93,16 @@ docker compose up --wait --detach
 
 Operately should now be running on your server. You can access it by navigating to the domain you
 configured earlier (e.g. `https://operately.example.com`).
+
+### Optional database timeout tuning
+
+If you need to allow longer-running database operations, add `DB_TIMEOUT` to your
+environment and restart Operately:
+
+```bash
+# operately.env
+DB_TIMEOUT=60000
+```
+
+This value is in milliseconds. If `DB_TIMEOUT` is not set, Operately keeps its
+current default database timeout behavior.
