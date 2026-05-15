@@ -19,6 +19,7 @@ export function TimelineItem({
   onEditComment,
   onDeleteComment,
   richTextHandlers,
+  commentDraftKey,
   onAddReaction,
   onRemoveReaction,
 }: TimelineItemProps) {
@@ -33,6 +34,8 @@ export function TimelineItem({
             postComment: () => {},
             editComment: onEditComment,
             deleteComment: onDeleteComment,
+            editCommentDraftKey: (commentId: string) =>
+              commentDraftKey ? `${commentDraftKey}:edit-comment:${commentId}` : undefined,
           }}
           commentParentType={commentParentType}
           canComment={canComment}

@@ -5,6 +5,7 @@ import { shortName } from "../Avatar/AvatarWithName";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { CommentInputProps, CommentNotificationInfo, Person } from "./types";
 import { Editor, useEditor } from "../RichEditor";
+import { useDraftActivatedInput } from "./useDraftActivatedInput";
 
 interface CommentInputActiveProps extends CommentInputProps {
   currentUser: Person;
@@ -23,25 +24,22 @@ export function CommentInput({
   richTextHandlers,
   notificationInfo,
 }: CommentInputProps & { currentUser: Person }) {
-  const [active, setActive] = useState(false);
-
-  const handleActivate = () => setActive(true);
-  const handleDeactivate = () => setActive(false);
+  const { active, activate, deactivate } = useDraftActivatedInput(form.commentDraftKey);
 
   if (active) {
     return (
       <CommentInputActive
         form={form}
         currentUser={currentUser}
-        onBlur={handleDeactivate}
-        onPost={handleDeactivate}
+        onBlur={deactivate}
+        onPost={deactivate}
         richTextHandlers={richTextHandlers}
         notificationInfo={notificationInfo}
       />
     );
   }
 
-  return <CommentInputInactive currentUser={currentUser} onClick={handleActivate} />;
+  return <CommentInputInactive currentUser={currentUser} onClick={activate} />;
 }
 
 function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProps) {
@@ -73,6 +71,7 @@ function CommentInputActive({
     handlers: richTextHandlers,
     autoFocus: true,
     className: "min-h-[200px] px-4 py-3",
+    localDraft: { key: form.commentDraftKey },
   });
 
   const handlePost = async () => {
@@ -81,7 +80,8 @@ function CommentInputActive({
     if (uploading) return;
 
     try {
-      form.postComment(content);
+      await form.postComment(content);
+      editor.clearLocalDraft();
       editor.setContent("");
       onPost();
     } catch (error) {
@@ -89,10 +89,15 @@ function CommentInputActive({
     }
   };
 
+  const handleCancel = () => {
+    editor.clearLocalDraft();
+    onBlur();
+  };
+
   React.useEffect(() => {
     const handleEscapeKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onBlur();
+        handleCancel();
       }
     };
 
@@ -100,7 +105,7 @@ function CommentInputActive({
     return () => {
       document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, [onBlur]);
+  }, [handleCancel]);
 
   return (
     <div className="py-6 not-first:border-t border-stroke-base flex items-start gap-3" data-test-id="new-comment-form">
@@ -120,7 +125,7 @@ function CommentInputActive({
                 {uploading ? "Uploading..." : "Post"}
               </PrimaryButton>
 
-              <SecondaryButton size="xs" onClick={onBlur}>
+              <SecondaryButton size="xs" onClick={handleCancel}>
                 Cancel
               </SecondaryButton>
             </div>

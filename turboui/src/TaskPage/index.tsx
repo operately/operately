@@ -111,6 +111,7 @@ export namespace TaskPage {
     // Assignee selection
     assigneePersonSearch: PersonField.SearchData;
     richTextHandlers: RichEditorHandlers;
+    localDraftKeyBase?: string;
 
     // Permissions
     permissions: ProjectPermissions;
@@ -159,6 +160,7 @@ export namespace TaskPage {
     | "projectSearch"
     | "assigneePersonSearch"
     | "richTextHandlers"
+    | "localDraftKeyBase"
     | "canEdit"
     | "timelineItems"
     | "timelineIsLoading"
@@ -234,6 +236,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     spaceSearch: props.spaceSearch,
     assigneePersonSearch: props.assigneePersonSearch,
     richTextHandlers: props.richTextHandlers,
+    localDraftKeyBase: props.localDraftKeyBase,
     canEdit: props.canEdit,
     timelineItems: props.timelineItems,
     timelineIsLoading: props.timelineIsLoading,

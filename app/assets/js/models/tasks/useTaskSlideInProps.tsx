@@ -328,6 +328,7 @@ export function useTaskSlideInProps(opts: {
 
         assigneePersonSearch: ctx.assigneePersonSearch,
         richTextHandlers: ctx.richTextHandlers,
+        localDraftKeyBase: `task:${taskId}`,
 
         canEdit,
 
