@@ -2419,6 +2419,7 @@ export interface CompaniesGlobalSearchInput {
 }
 
 export interface CompaniesGlobalSearchResult {
+  spaces: Space[];
   projects: Project[];
   goals: Goal[];
   milestones: Milestone[];

@@ -2,10 +2,16 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 
 import { Avatar } from "../Avatar";
-import { IconGoal, IconMilestone, IconProject, IconSearch, IconTask, IconX } from "../icons";
+import { IconGoal, IconMilestone, IconProject, IconSearch, IconTask, IconTent, IconX } from "../icons";
 import { createTestId } from "../TestableElement";
 
 export namespace GlobalSearch {
+  export interface Space {
+    id: string;
+    name: string;
+    link: string;
+  }
+
   export interface Project {
     id: string;
     name: string;
@@ -47,6 +53,7 @@ export namespace GlobalSearch {
   }
 
   export interface SearchResult {
+    spaces?: Space[] | null;
     projects?: Project[] | null;
     goals?: Goal[] | null;
     milestones?: Milestone[] | null;
@@ -191,8 +198,9 @@ export function SearchResults({
   flatResults: { type: string; item: any; link: string }[];
 }) {
   const hasResults = React.useMemo(() => {
-    const { projects, goals, milestones, tasks, people } = state.results;
+    const { spaces, projects, goals, milestones, tasks, people } = state.results;
     return (
+      (spaces && spaces.length > 0) ||
       (projects && projects.length > 0) ||
       (goals && goals.length > 0) ||
       (milestones && milestones.length > 0) ||
@@ -227,6 +235,31 @@ export function SearchResults({
 
   return (
     <div className="py-1">
+      {/* Spaces */}
+      {state.results.spaces && state.results.spaces.length > 0 && (
+        <div className="mb-2">
+          <SearchResultGroupHeader title="SPACES" />
+
+          {state.results.spaces.map((space) => {
+            const currentIndex = getCurrentIndex("space", space.id);
+            const isSelected = currentIndex === state.selectedIndex;
+
+            return (
+              <SearchResultItem
+                key={space.id}
+                id={space.id}
+                name={space.name}
+                link={space.link}
+                icon={<IconTent size={24} />}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "space", space.name)}
+              />
+            );
+          })}
+        </div>
+      )}
+
       {/* Goals */}
       {state.results.goals && state.results.goals.length > 0 && (
         <div className="mb-2">
@@ -378,15 +411,21 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   const flatResults = React.useMemo(() => {
     const items: { type: string; item: any; link: string }[] = [];
 
-    if (state.results.projects) {
-      state.results.projects.forEach((project) => {
-        items.push({ type: "project", item: project, link: project.link });
+    if (state.results.spaces) {
+      state.results.spaces.forEach((space) => {
+        items.push({ type: "space", item: space, link: space.link });
       });
     }
 
     if (state.results.goals) {
       state.results.goals.forEach((goal) => {
         items.push({ type: "goal", item: goal, link: goal.link });
+      });
+    }
+
+    if (state.results.projects) {
+      state.results.projects.forEach((project) => {
+        items.push({ type: "project", item: project, link: project.link });
       });
     }
 
@@ -412,8 +451,9 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   }, [state.results]);
 
   const hasResults = React.useMemo(() => {
-    const { projects, goals, milestones, tasks, people } = state.results;
+    const { spaces, projects, goals, milestones, tasks, people } = state.results;
     return (
+      (spaces && spaces.length > 0) ||
       (projects && projects.length > 0) ||
       (goals && goals.length > 0) ||
       (milestones && milestones.length > 0) ||
@@ -505,7 +545,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={handleInputKeyDown}
-              placeholder="Search for projects, goals, milestones, tasks, or people..."
+              placeholder="Search for spaces, projects, goals, milestones, tasks, or people..."
               className="w-full pl-10 pr-12 py-2.5 text-base bg-surface-base border-b border-surface-outline focus:outline-none rounded-b-lg"
               data-test-id={testId}
             />

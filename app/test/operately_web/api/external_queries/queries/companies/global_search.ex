@@ -20,6 +20,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.GlobalSearch do
 
   @impl true
   def assert(response, _ctx) do
+    assert is_list(response.spaces)
     assert is_list(response.projects)
     assert is_list(response.goals)
     assert is_list(response.milestones)

@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   @moduledoc """
-  Performs a global search across projects, goals, milestones, tasks, and people.
+  Performs a global search across spaces, projects, goals, milestones, tasks, and people.
   """
 
   use TurboConnect.Query
@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   import Operately.Access.Filters, only: [filter_by_view_access: 2, filter_by_view_access: 3]
 
   alias Operately.Repo
+  alias Operately.Groups.Group, as: Space
   alias Operately.Projects.Project
   alias Operately.Projects.Milestone
   alias Operately.Goals.Goal
@@ -21,6 +22,7 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   end
 
   outputs do
+    field :spaces, list_of(:space), null: false
     field :projects, list_of(:project), null: false
     field :goals, list_of(:goal), null: false
     field :milestones, list_of(:milestone), null: false
@@ -52,14 +54,15 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
     query = String.trim(inputs.query)
 
     if String.length(query) < 2 do
-      {:ok, %{projects: [], goals: [], milestones: [], tasks: [], people: []}}
+      {:ok, %{spaces: [], projects: [], goals: [], milestones: [], tasks: [], people: []}}
     else
       normalized = normalize_search_term(query)
       if normalized == "" do
-        {:ok, %{projects: [], goals: [], milestones: [], tasks: [], people: []}}
+        {:ok, %{spaces: [], projects: [], goals: [], milestones: [], tasks: [], people: []}}
       else
-        [projects, goals, milestones, tasks, people] =
+        [spaces, projects, goals, milestones, tasks, people] =
           [
+            Task.async(fn -> search_spaces(person, normalized) end),
             Task.async(fn -> search_projects(person, normalized) end),
             Task.async(fn -> search_goals(person, normalized) end),
             Task.async(fn -> search_milestones(person, normalized) end),
@@ -69,6 +72,7 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
           |> Task.await_many()
 
         output = %{
+          spaces: Serializer.serialize(spaces, level: :essential),
           projects: Serializer.serialize(projects, level: :full),
           goals: Serializer.serialize(goals, level: :essential),
           milestones: Serializer.serialize(milestones, level: :essential),
@@ -79,6 +83,29 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
         {:ok, output}
       end
     end
+  end
+
+  defp search_spaces(person, search_term) do
+    pattern = "%" <> String.downcase(search_term) <> "%"
+
+    ranked_spaces_query =
+      from(s in Space, as: :space)
+      |> Space.scope_company(person.company_id)
+      |> where([s], fragment(norm_col_like(), s.name, ^pattern))
+      |> filter_by_view_access(person.id)
+      |> select([s], %{
+        id: s.id,
+        search_rank: fragment(norm_col_position(), ^search_term, s.name)
+      })
+
+    limited_spaces =
+      from(r in subquery(ranked_spaces_query),
+        order_by: [asc: r.search_rank, asc: r.id],
+        limit: @limit
+      )
+
+    from(s in Space, join: r in subquery(limited_spaces), on: s.id == r.id, order_by: [asc: r.search_rank, asc: s.id], select: s)
+    |> Repo.all()
   end
 
   defp search_projects(person, search_term) do

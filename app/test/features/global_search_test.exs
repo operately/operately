@@ -5,6 +5,15 @@ defmodule Operately.Features.GlobalSearchTest do
 
   setup ctx, do: Steps.setup(ctx)
 
+  feature "searching for spaces", ctx do
+    ctx
+    |> Steps.open_global_search()
+    |> Steps.search_for("Product")
+    |> Steps.assert_space_result_visible("Product")
+    |> Steps.click_space_result("Product")
+    |> Steps.assert_navigated_to_space("Product")
+  end
+
   feature "searching for projects", ctx do
     ctx
     |> Steps.open_global_search()
@@ -147,6 +156,7 @@ defmodule Operately.Features.GlobalSearchTest do
     |> Steps.given_all_resource_types_exist()
     |> Steps.open_global_search()
     |> Steps.search_for("Test")
+    |> Steps.assert_category_header_visible("SPACES")
     |> Steps.assert_category_header_visible("GOALS")
     |> Steps.assert_category_header_visible("PROJECTS")
     |> Steps.assert_category_header_visible("MILESTONES")
