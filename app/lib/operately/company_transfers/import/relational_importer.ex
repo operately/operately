@@ -3,6 +3,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   Imports the minimal relational slice of a company package into the current database.
   """
 
+  alias Operately.Blobs.Blob
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
 
   alias Operately.CompanyTransfers.Import.{
@@ -232,9 +233,20 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
             translated_id ->
               if defer_foreign_key?(table, fk, nullable_columns, order_index) do
                 deferred_row = %{"id" => acc_row["id"], fk.column => translated_id}
-                {:cont, {:ok, Map.put(acc_row, fk.column, nil), [deferred_update(table, deferred_row) | deferred_updates]}}
+
+                updated_row =
+                  acc_row
+                  |> Map.put(fk.column, nil)
+                  |> rewrite_blob_backed_urls(table, fk.column, translated_id)
+
+                {:cont, {:ok, updated_row, [deferred_update(table, deferred_row) | deferred_updates]}}
               else
-                {:cont, {:ok, Map.put(acc_row, fk.column, translated_id), deferred_updates}}
+                updated_row =
+                  acc_row
+                  |> Map.put(fk.column, translated_id)
+                  |> rewrite_blob_backed_urls(table, fk.column, translated_id)
+
+                {:cont, {:ok, updated_row, deferred_updates}}
               end
           end
       end
@@ -279,6 +291,12 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
       row: row
     }
   end
+
+  defp rewrite_blob_backed_urls(row, "people", "avatar_blob_id", blob_id) when is_binary(blob_id) do
+    Map.put(row, "avatar_url", Blob.url(%Blob{id: blob_id}))
+  end
+
+  defp rewrite_blob_backed_urls(row, _table, _column, _blob_id), do: row
 
   defp apply_deferred_updates(deferred_updates) do
     Enum.reduce_while(deferred_updates, :ok, fn update, :ok ->
