@@ -128,6 +128,7 @@ export function CommentItem({
             onSave={handleSaveEdit}
             onCancel={() => setIsEditing(false)}
             richTextHandlers={richTextHandlers}
+            localDraftKey={form.editCommentDraftKey?.(comment.id)}
           />
         ) : (
           <CommentViewMode
@@ -243,20 +244,28 @@ interface CommentEditModeProps {
   onSave: (content: any) => void;
   onCancel: () => void;
   richTextHandlers: RichEditorHandlers;
+  localDraftKey?: string;
 }
 
-function CommentEditMode({ content, onSave, onCancel, richTextHandlers }: CommentEditModeProps) {
+function CommentEditMode({ content, onSave, onCancel, richTextHandlers, localDraftKey }: CommentEditModeProps) {
   const editor = useEditor({
     content: content,
     editable: true,
     placeholder: "Edit your comment...",
     handlers: richTextHandlers,
+    localDraft: { key: localDraftKey },
   });
 
   const handleSave = () => {
     const updatedContent = editor.getJson();
     if (!updatedContent || editor.empty) return;
     onSave(updatedContent);
+    editor.clearLocalDraft();
+  };
+
+  const handleCancel = () => {
+    editor.clearLocalDraft();
+    onCancel();
   };
 
   return (
@@ -266,7 +275,7 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers }: Commen
         <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty}>
           Save
         </PrimaryButton>
-        <SecondaryButton size="xs" onClick={onCancel}>
+        <SecondaryButton size="xs" onClick={handleCancel}>
           Cancel
         </SecondaryButton>
       </div>

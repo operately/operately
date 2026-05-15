@@ -68,12 +68,15 @@ function ReadonlyContent(props: RichTextAreaProps) {
 function Editor(props: RichTextAreaProps & { error: boolean }) {
   const form = useFormContext();
   const [value, setValue] = useFieldValue(props.field);
+  const formState = React.useRef(form.state);
 
   const handlers = useRichEditorHandlers({ scope: props.mentionSearchScope });
   const editor = useEditor({
+    content: value,
     placeholder: props.placeholder,
     className: contentClassName(props),
     handlers,
+    localDraft: { key: localDraftKey(props.field) },
     onBlur: () => {
       setValue(editor.editor.getJSON());
     },
@@ -90,16 +93,46 @@ function Editor(props: RichTextAreaProps & { error: boolean }) {
   });
 
   React.useEffect(() => {
-    if (editor.editor) {
+    if (editor.editor && !editor.localDraftRestored) {
       editor.editor.commands.setContent(value);
     }
-  }, [editor.editor]);
+  }, [editor.editor, editor.localDraftRestored]);
+
+  React.useEffect(() => {
+    if (!editor.editor || !editor.localDraftRestored) return;
+
+    setValue(editor.editor.getJSON());
+  }, [editor.editor, editor.localDraftRestored]);
+
+  React.useEffect(() => {
+    if (!form.lastSubmitSucceededAt) return;
+
+    editor.clearLocalDraft();
+  }, [form.lastSubmitSucceededAt, editor]);
+
+  React.useEffect(() => {
+    formState.current = form.state;
+  }, [form.state]);
+
+  React.useEffect(() => {
+    return () => {
+      if (formState.current === "submitting") {
+        editor.clearLocalDraft();
+      }
+    };
+  }, [editor]);
 
   return (
     <div className={wrapperClassName(props)}>
       <RichTextEditor editor={editor} hideToolbar={props.hideToolbar} hideBorder padding="p-0" />
     </div>
   );
+}
+
+function localDraftKey(field: string): string | undefined {
+  if (typeof window === "undefined") return undefined;
+
+  return `form:${window.location.pathname}:${field}`;
 }
 
 function contentClassName(props: RichTextAreaProps) {

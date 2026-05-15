@@ -11,6 +11,7 @@ export function Overview(props: TaskPage.ContentState) {
         label="Notes"
         placeholder="Describe the task..."
         zeroStatePlaceholder="Add notes about this task..."
+        localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
       />
       <ActivitySection {...props} />
     </div>
@@ -34,6 +35,7 @@ function ActivitySection(props: TaskPage.ContentState) {
           onAddReaction={props.onAddReaction}
           onRemoveReaction={props.onRemoveReaction}
           richTextHandlers={props.richTextHandlers}
+          commentDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:new-comment` : undefined}
           filters={props.timelineFilters}
           commentNotificationInfo={{
             entityLabel: "task",

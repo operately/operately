@@ -171,6 +171,7 @@ export interface TimelineProps {
   filters?: TimelineFilters;
   richTextHandlers: RichEditorHandlers;
   commentNotificationInfo?: CommentNotificationInfo;
+  commentDraftKey?: string;
 }
 
 export interface TimelineFilters {
@@ -191,6 +192,7 @@ export interface TimelineItemProps {
   onEditComment: (id: string, content: any) => void;
   onDeleteComment: (id: string) => void;
   richTextHandlers: RichEditorHandlers;
+  commentDraftKey?: string;
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
 }

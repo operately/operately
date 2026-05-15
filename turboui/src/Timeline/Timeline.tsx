@@ -26,6 +26,7 @@ export function Timeline({
   richTextHandlers,
   filters,
   commentNotificationInfo,
+  commentDraftKey,
 }: Timeline.Props) {
   if (isLoading) {
     return <TimelineSkeleton />;
@@ -72,8 +73,11 @@ export function Timeline({
       editComment: onEditComment || (() => {}),
       addReaction: onAddReaction,
       removeReaction: onRemoveReaction,
+      commentDraftKey,
+      editCommentDraftKey: (commentId: string) =>
+        commentDraftKey ? `${commentDraftKey}:edit-comment:${commentId}` : undefined,
     }),
-    [onAddComment, onEditComment, onAddReaction, onRemoveReaction],
+    [onAddComment, onEditComment, onAddReaction, onRemoveReaction, commentDraftKey],
   );
 
   return (
@@ -91,6 +95,7 @@ export function Timeline({
             onEditComment={onEditComment}
             onDeleteComment={onDeleteComment}
             richTextHandlers={richTextHandlers}
+            commentDraftKey={commentDraftKey}
             onAddReaction={onAddReaction}
             onRemoveReaction={onRemoveReaction}
           />
