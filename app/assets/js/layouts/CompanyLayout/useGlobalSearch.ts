@@ -15,6 +15,7 @@ export function useGlobalSearchHandler(): (params: SearchParams) => Promise<Glob
         const result = await Api.companies.globalSearch({ query });
 
         return {
+          spaces: prepareSpaces(paths, result),
           projects: prepareProjects(paths, result),
           goals: prepareGoals(paths, result),
           milestones: prepareMilestones(paths, result),
@@ -27,6 +28,16 @@ export function useGlobalSearchHandler(): (params: SearchParams) => Promise<Glob
       }
     },
     [paths],
+  );
+}
+
+function prepareSpaces(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Space[] {
+  return (
+    result.spaces?.map((space) => ({
+      id: space.id,
+      name: space.name,
+      link: paths.spacePath(space.id),
+    })) || []
   );
 }
 

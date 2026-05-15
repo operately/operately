@@ -14,6 +14,18 @@ export default meta;
 type Story = StoryObj<typeof GlobalSearch>;
 
 const mockSearchResults: GlobalSearch.SearchResult = {
+  spaces: [
+    {
+      id: "1",
+      name: "Product",
+      link: "/spaces/1",
+    },
+    {
+      id: "2",
+      name: "Marketing",
+      link: "/spaces/2",
+    },
+  ],
   projects: [
     {
       id: "1",
@@ -79,6 +91,7 @@ const mockSearchResults: GlobalSearch.SearchResult = {
 };
 
 const mockEmptyResults: GlobalSearch.SearchResult = {
+  spaces: [],
   projects: [],
   goals: [],
   tasks: [],
@@ -104,6 +117,10 @@ const mockSearch: GlobalSearch.SearchFn = async ({ query }) => {
     filteredResults.projects = mockSearchResults.projects;
   }
 
+  if (query.toLowerCase().includes("space")) {
+    filteredResults.spaces = mockSearchResults.spaces;
+  }
+
   if (query.toLowerCase().includes("goal")) {
     filteredResults.goals = mockSearchResults.goals;
   }
@@ -119,6 +136,7 @@ const mockSearch: GlobalSearch.SearchFn = async ({ query }) => {
   // Default: return a mix of results
   if (Object.keys(filteredResults).length === 0) {
     return {
+      spaces: mockSearchResults.spaces?.slice(0, 1),
       projects: mockSearchResults.projects?.slice(0, 2),
       goals: mockSearchResults.goals?.slice(0, 1),
       people: mockSearchResults.people?.slice(0, 1),
@@ -144,6 +162,7 @@ export const Default: Story = {
           <ul className="list-disc list-inside mt-2 space-y-1">
             <li>"design" or "dev" - Full results</li>
             <li>"project" - Projects only</li>
+            <li>"space" - Spaces only</li>
             <li>"goal" - Goals only</li>
             <li>"task" - Tasks only</li>
             <li>"people" - People only</li>
