@@ -16,19 +16,24 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
     new_assignee = get_person(activity.content["new_assignee_id"])
 
     where = get_location(task)
+    assigned_to_recipient = new_assignee && new_assignee.id == person.id
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: where, who: author, action: "changed the assignee for #{task.name}")
+    |> subject(where: where, who: author, action: subject_action(task, assigned_to_recipient))
     |> assign(:author, author)
     |> assign(:name, task.name)
     |> assign(:old_assignee, old_assignee)
     |> assign(:new_assignee, new_assignee)
+    |> assign(:assigned_to_recipient, assigned_to_recipient)
     |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
     |> render("task_assignee_updating")
   end
+
+  defp subject_action(task, true), do: "assigned you the task #{task.name}"
+  defp subject_action(task, _), do: "changed the assignee for #{task.name}"
 
   defp get_person(nil), do: nil
   defp get_person(id) do
