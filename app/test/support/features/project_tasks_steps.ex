@@ -813,7 +813,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
       where: ctx.project.name,
       to: ctx.champion,
       author: ctx.contributor,
-      action: "changed the assignee for #{ctx.task.name}"
+      action: "assigned you the task #{ctx.task.name}"
     })
   end
 

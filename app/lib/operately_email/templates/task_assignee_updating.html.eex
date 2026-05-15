@@ -1,24 +1,34 @@
-<%= if @new_assignee do %>
-  <%= title("#{short_name(@author)} changed the assignee for #{@name}") %>
+<%= if @assigned_to_recipient do %>
+  <%= title("#{short_name(@author)} assigned you the task #{@name}") %>
 <% else %>
-  <%= title("#{short_name(@author)} removed the assignee for #{@name}") %>
+  <%= if @new_assignee do %>
+  <%= title("#{short_name(@author)} changed the assignee for #{@name}") %>
+  <% else %>
+    <%= title("#{short_name(@author)} removed the assignee for #{@name}") %>
+  <% end %>
 <% end %>
 
 <%= spacer() %>
 
-<%= if @new_assignee do %>
-  <%= if @old_assignee do %>
-    <%= row do %>
-      The assignee was changed from <%= short_name(@old_assignee) %> to <%= short_name(@new_assignee) %>
+<%= if @assigned_to_recipient do %>
+  <%= row do %>
+    You are now assigned to this task.
+  <% end %>
+<% else %>
+  <%= if @new_assignee do %>
+    <%= if @old_assignee do %>
+      <%= row do %>
+        The assignee was changed from <%= short_name(@old_assignee) %> to <%= short_name(@new_assignee) %>
+      <% end %>
+    <% else %>
+      <%= row do %>
+        The assignee is now <%= short_name(@new_assignee) %>
+      <% end %>
     <% end %>
   <% else %>
     <%= row do %>
-      The assignee is now <%= short_name(@new_assignee) %>
+      The assignee was removed. Previously it was <%= short_name(@old_assignee) %>
     <% end %>
-  <% end %>
-<% else %>
-  <%= row do %>
-    The assignee was removed. Previously it was <%= short_name(@old_assignee) %>
   <% end %>
 <% end %>
 
