@@ -271,6 +271,7 @@ function Page() {
     subscriptions,
 
     richTextHandlers: richEditorHandlers,
+    localDraftKeyBase: `task:${task.id}`,
   };
 
   return <TaskPage key={task.id} {...props} />;

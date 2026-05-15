@@ -194,6 +194,7 @@ function Page() {
     onDeleteComment: handleDeleteComment,
     onAddReaction: handleAddReaction,
     onRemoveReaction: handleRemoveReaction,
+    localDraftKeyBase: `milestone:${milestone.id}`,
 
     // Core milestone data
     title,

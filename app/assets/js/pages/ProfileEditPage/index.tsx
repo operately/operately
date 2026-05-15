@@ -156,6 +156,7 @@ function Page() {
       canChangeAvatar={true}
       managerSearch={managerSearch}
       richTextHandlers={richTextHandlers}
+      localDraftKeyBase={`profile:${person.id}`}
       timezones={Timezones}
       isCurrentUser={isCurrentUser}
       fromLocation={from}

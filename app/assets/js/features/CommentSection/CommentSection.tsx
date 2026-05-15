@@ -26,6 +26,7 @@ import {
   IconLink,
   useEditor,
   Editor,
+  useDraftActivatedInput,
   showSuccessToast,
   showErrorToast,
   emptyContent,
@@ -95,13 +96,20 @@ function EditComment({ comment, onCancel, form }) {
     className: "min-h-[200px] p-4",
     content: parseCommentContent(comment.content) ?? emptyContent(),
     handlers,
+    localDraft: { key: form.editCommentDraftKey?.(comment.id) },
   });
 
   const handlePost = async () => {
     if (!editor) return;
     if (editor.uploading) return;
 
-    form.editComment(comment.id, editor.editor.getJSON());
+    await form.editComment(comment.id, editor.editor.getJSON());
+    editor.clearLocalDraft();
+    onCancel();
+  };
+
+  const handleCancel = () => {
+    editor.clearLocalDraft();
     onCancel();
   };
 
@@ -118,7 +126,7 @@ function EditComment({ comment, onCancel, form }) {
                 {editor.uploading ? "Uploading..." : "Save Changes"}
               </PrimaryButton>
 
-              <SecondaryButton onClick={onCancel} size="xs">
+              <SecondaryButton onClick={handleCancel} size="xs">
                 Cancel
               </SecondaryButton>
             </div>
@@ -288,7 +296,7 @@ function AckComment({ person, ackAt }) {
 }
 
 function CommentBox({ form }) {
-  const [active, _, activate, deactivate] = useBoolState(false);
+  const { active, activate, deactivate } = useDraftActivatedInput(form.commentDraftKey);
 
   if (active) {
     return <AddCommentActive onBlur={deactivate} onPost={deactivate} form={form} />;
@@ -321,14 +329,21 @@ function AddCommentActive({ onBlur, onPost, form }) {
     className: "min-h-[200px] px-4 py-3",
     autoFocus: true,
     handlers,
+    localDraft: { key: form.commentDraftKey },
   });
 
   const handlePost = async () => {
     if (!editor) return;
     if (editor.uploading) return;
 
-    form.postComment(editor.editor.getJSON());
+    await form.postComment(editor.editor.getJSON());
+    editor.clearLocalDraft();
     onPost();
+  };
+
+  const handleCancel = () => {
+    editor.clearLocalDraft();
+    onBlur();
   };
 
   React.useEffect(() => {
@@ -350,7 +365,7 @@ function AddCommentActive({ onBlur, onPost, form }) {
                 {editor.uploading ? "Uploading..." : "Post"}
               </PrimaryButton>
 
-              <SecondaryButton onClick={onBlur} size="xs">
+              <SecondaryButton onClick={handleCancel} size="xs">
                 Cancel
               </SecondaryButton>
             </div>
