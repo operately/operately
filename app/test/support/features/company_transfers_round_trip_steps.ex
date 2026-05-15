@@ -528,6 +528,8 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
     refute imported_preview_blob.id == ctx.preview_blob.id
     refute imported_embedded_blob.id == ctx.embedded_blob.id
 
+    assert imported_creator.avatar_url == Blob.url(imported_avatar_blob)
+    refute imported_creator.avatar_url == ctx.creator.avatar_url
     assert File.read!(storage_path(imported_avatar_blob)) == "avatar payload"
     assert File.read!(storage_path(imported_file_blob)) == "resource file payload"
     assert File.read!(storage_path(imported_preview_blob)) == "preview payload"
@@ -599,6 +601,8 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
     refute imported_preview_blob.id == ctx.preview_blob.id
     refute imported_embedded_blob.id == ctx.embedded_blob.id
 
+    assert imported_creator.avatar_url == Blob.url(imported_avatar_blob)
+    refute imported_creator.avatar_url == ctx.creator.avatar_url
     assert File.read!(storage_path(imported_avatar_blob)) == "avatar payload"
     assert File.read!(storage_path(imported_file_blob)) == "resource file payload"
     assert File.read!(storage_path(imported_preview_blob)) == "preview payload"
@@ -638,7 +642,8 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
 
     {:ok, creator} =
       Operately.People.update_person(ctx.creator, %{
-        avatar_blob_id: ctx.avatar_blob.id
+        avatar_blob_id: ctx.avatar_blob.id,
+        avatar_url: Blob.url(ctx.avatar_blob)
       })
 
     {:ok, resource_file} =
