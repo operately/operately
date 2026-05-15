@@ -171,6 +171,7 @@ export interface TimelineProps {
   filters?: TimelineFilters;
   richTextHandlers: RichEditorHandlers;
   commentNotificationInfo?: CommentNotificationInfo;
+  commentDraftKey?: string;
 }
 
 export interface TimelineFilters {

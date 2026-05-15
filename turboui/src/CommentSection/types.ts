@@ -41,6 +41,8 @@ export interface CommentFormState {
   postComment: (content: any) => void;
   editComment: (id: string, content: any) => void;
   deleteComment?: (id: string) => void;
+  commentDraftKey?: string;
+  editCommentDraftKey?: (id: string) => string | undefined;
 }
 
 export interface CommentItemProps {

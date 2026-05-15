@@ -8,6 +8,7 @@ import classNames from "../utils/classnames";
 
 export { useEditor } from "./useEditor";
 export type { MentionedPersonLookupFn } from "./useEditor";
+export { hasLocalDraft } from "./localDrafts";
 
 interface EditorProps {
   editor: EditorState;
