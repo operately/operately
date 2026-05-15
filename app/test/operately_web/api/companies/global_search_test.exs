@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearchTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Support.Factory
+  alias Operately.Access.Binding
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -21,7 +22,33 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearchTest do
       ctx = log_in(ctx)
 
       assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "a")
-      assert res == %{projects: [], goals: [], milestones: [], tasks: [], people: []}
+      assert res == %{spaces: [], projects: [], goals: [], milestones: [], tasks: [], people: []}
+    end
+
+    test "searches spaces by name", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:support, name: "Support Space", company_permissions: Binding.view_access())
+        |> log_in()
+
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Support")
+
+      assert length(res.spaces) == 1
+      assert List.first(res.spaces).name == "Support Space"
+    end
+
+    test "returns only spaces that the user can see", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:product, name: "Product Space", company_permissions: Binding.view_access())
+        |> Factory.add_space(:secret, name: "Secret Product Space", company_permissions: Binding.no_access())
+        |> Factory.log_in_person(:member)
+
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Product")
+
+      assert length(res.spaces) == 1
+      assert List.first(res.spaces).name == "Product Space"
     end
 
     test "searches projects by name", ctx do

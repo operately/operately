@@ -2,12 +2,13 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
   use Operately.FeatureCase
   alias Operately.Support.Features.UI
   alias OperatelyWeb.Paths
+  alias Operately.Access.Binding
 
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.add_space(:marketing, name: "Marketing")
-    |> Factory.add_space(:product, name: "Product")
+    |> Factory.add_space(:marketing, name: "Marketing", company_permissions: Binding.view_access())
+    |> Factory.add_space(:product, name: "Product", company_permissions: Binding.view_access())
     |> Factory.add_space_member(:champion, :product, name: "John Champion")
     |> Factory.add_space_member(:alice, :marketing, name: "Alice Smith")
     |> Factory.add_goal(:support_goal, :product,
@@ -63,6 +64,12 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     |> UI.assert_has(testid: UI.testid(["header-global-search-project", project_name]))
   end
 
+  step :assert_space_result_visible, ctx, space_name do
+    ctx
+    |> UI.assert_text(space_name)
+    |> UI.assert_has(testid: UI.testid(["header-global-search-space", space_name]))
+  end
+
   step :assert_goal_result_visible, ctx, goal_name do
     ctx
     |> UI.assert_text(goal_name)
@@ -102,6 +109,12 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     |> UI.sleep(300)
   end
 
+  step :click_space_result, ctx, space_name do
+    ctx
+    |> UI.click(testid: UI.testid(["header-global-search-space", space_name]))
+    |> UI.sleep(300)
+  end
+
   step :click_goal_result, ctx, goal_name do
     ctx
     |> UI.click(testid: UI.testid(["header-global-search-goal", goal_name]))
@@ -133,6 +146,11 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
   step :assert_navigated_to_project, ctx, project_name do
     project = Operately.Repo.get_by(Operately.Projects.Project, name: project_name)
     ctx |> UI.assert_page(Paths.project_path(ctx.company, project))
+  end
+
+  step :assert_navigated_to_space, ctx, space_name do
+    space = Operately.Repo.get_by(Operately.Groups.Group, name: space_name)
+    ctx |> UI.assert_page(Paths.space_path(ctx.company, space))
   end
 
   step :assert_navigated_to_goal, ctx, goal_name do
@@ -177,6 +195,7 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
   step :assert_search_not_triggered, ctx do
     ctx
     |> UI.refute_text("PROJECTS")
+    |> UI.refute_text("SPACES")
     |> UI.refute_text("GOALS")
     |> UI.refute_text("MILESTONES")
     |> UI.refute_text("TASKS")
@@ -249,7 +268,7 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
 
   step :given_all_resource_types_exist, ctx do
     ctx
-    |> Factory.add_space(:test_space, name: "Test Space")
+    |> Factory.add_space(:test_space, name: "Test Space", company_permissions: Binding.view_access())
     |> Factory.add_space_member(:test_person, :test_space, name: "Test Person")
     |> Factory.add_goal(:test_goal, :test_space,
       name: "Test Goal",
