@@ -328,6 +328,7 @@ function Page() {
     onSaveCustomStatuses: handleSaveStatuses,
 
     richTextHandlers: richEditorHandlers,
+    localDraftKeyBase: `project:${project.id}`,
 
     resources,
     onResourceAdd: createResource,

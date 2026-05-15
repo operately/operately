@@ -4,6 +4,7 @@ export * from "./Avatar";
 export * from "./Button";
 export * from "./Chronometer";
 export * from "./CommentSection";
+export { useDraftActivatedInput } from "./CommentSection/useDraftActivatedInput";
 export * from "./CopyToClipboard";
 export * from "./ConfirmDialog";
 export * from "./FormattedTime";
@@ -73,7 +74,7 @@ export { SubscribersSelector, CurrentSubscriptions } from "./Subscriptions";
 export { SpaceKanbanPage } from "./SpaceKanbanPage";
 
 export { Summary } from "./RichContent";
-export { Editor, useEditor } from "./RichEditor";
+export { Editor, hasLocalDraft, useEditor } from "./RichEditor";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
 export { RichContent };
 

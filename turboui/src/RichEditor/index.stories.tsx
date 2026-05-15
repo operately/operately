@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { Editor, useEditor } from "./index";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { PrimaryButton } from "../Button";
 
 const meta: Meta<typeof Editor> = {
   title: "Components/RichEditor",
@@ -51,5 +52,39 @@ export const WithContent: Story = {
     });
 
     return <Editor editor={editor} />;
+  },
+};
+
+export const WithLocalDraft: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Direct useEditor consumers should pass a stable localDraft key and clear it only after confirmed save success.",
+      },
+    },
+  },
+  render: () => {
+    const [savedContent, setSavedContent] = React.useState<any>(null);
+    const editor = useEditor({
+      placeholder: "Type something, refresh Storybook, and reopen this story...",
+      handlers: createMockRichEditorHandlers(),
+      localDraft: { key: "storybook:rich-editor:local-draft" },
+    });
+
+    const save = async () => {
+      setSavedContent(editor.getJson());
+      editor.clearLocalDraft();
+    };
+
+    return (
+      <div className="space-y-3">
+        <Editor editor={editor} />
+        <PrimaryButton size="sm" onClick={save}>
+          Save
+        </PrimaryButton>
+        {savedContent && <div className="text-xs text-content-dimmed">Saved in story state</div>}
+      </div>
+    );
   },
 };

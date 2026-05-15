@@ -166,6 +166,7 @@ export namespace GoalPage {
 
     // Rich text support
     richTextHandlers: RichEditorHandlers;
+    localDraftKeyBase?: string;
   }
 
   export type Props = CommonProps & SpaceProps;
