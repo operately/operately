@@ -68,7 +68,7 @@ defmodule Operately.Demo.Goals do
 
     {:ok, _} =
       Operately.Operations.GoalCheckIn.run(goal.champion, goal, %{
-        status: "on_track",
+        status: data[:status] || "on_track",
         content: Operately.Demo.RichText.from_string(data.content),
         target_values: target_values,
         checklist: data[:checklist] || [],

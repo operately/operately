@@ -285,7 +285,7 @@ defmodule Operately.Demo.Data do
                 },
                 %{
                   author: :owner,
-                  content: "Not yet, Martin is finalizing them this week. Use placeholders for now."
+                  content: "Not yet, Martin is finalizing them this week. Use the current forecast range for now."
                 }
               ]
             },
@@ -408,7 +408,7 @@ defmodule Operately.Demo.Data do
               ]
             },
             %{
-              name: "Schedule Q1 skill-sharing sessions",
+              name: "Schedule quarterly skill-sharing sessions",
               description: "Plan monthly sessions and confirm speakers across departments.",
               assignee: :karen_martinez,
               status: :pending,
@@ -545,8 +545,8 @@ defmodule Operately.Demo.Data do
               comments: []
             },
             %{
-              name: "Finalize Q1 campaign calendar",
-              description: "Confirm key launch dates, channels, and owners for Q1 campaigns.",
+              name: "Finalize quarterly campaign calendar",
+              description: "Confirm key launch dates, channels, and owners for this quarter's campaigns.",
               assignee: :rachel_king,
               status: :done,
               due_in_days: -2,
@@ -564,8 +564,8 @@ defmodule Operately.Demo.Data do
               ]
             },
             %{
-              name: "Draft International market launch messaging",
-              description: "Write messaging for landing pages, ads, and onboarding for International markets.",
+              name: "Draft international market launch messaging",
+              description: "Write messaging for landing pages, ads, and onboarding for international markets.",
               assignee: :rachel_king,
               status: :in_progress,
               due_in_days: 7,
@@ -791,85 +791,56 @@ defmodule Operately.Demo.Data do
       goals: [
         %{
           key: :accelerate_user_growth,
-          name: "Accelerate User Growth",
+          name: "Grow self-serve revenue",
           space: :marketing_space,
           champion: :emily_davis,
           reviewer: :frank_miller,
           timeframe: :current_year,
           targets: [
-            %{name: "Increase total active users", from: 10000, to: 25000, unit: "users"},
-            %{name: "Achieve presence in new markets", from: 0, to: 5, unit: "markets"}
+            %{name: "Add new paying customers", from: 0, to: 60, unit: "customers"},
+            %{name: "Grow qualified pipeline", from: 250, to: 500, unit: "leads"}
           ],
           update: %{
-            content: "We're seeing positive traction in user acquisition, but our expansion into new markets is slower than anticipated. We may need to reassess our localization strategy.",
-            target_values: [14500, 1]
+            content: "Self-serve revenue is moving in the right direction. Paid acquisition and referrals are both contributing, and the enterprise pipeline is starting to convert into qualified opportunities.",
+            target_values: [34, 390]
           }
         },
         %{
           key: :increase_user_acquisition,
-          name: "Increase User Acquisition",
+          name: "Convert more visitors into customers",
           space: :marketing_space,
           champion: :rachel_king,
           reviewer: :emily_davis,
           parent: :accelerate_user_growth,
           targets: [
-            %{name: "Achieve month-over-month growth in new user signups", from: 10, to: 20, unit: "%"},
-            %{name: "Increase percentage of new users acquired through referrals", from: 10, to: 30, unit: "%"}
+            %{name: "Add new customers", from: 0, to: 20, unit: "customers"},
+            %{name: "Lift trial-to-paid conversion", from: 8, to: 14, unit: "%"}
           ],
           update: %{
-            content: "Our user acquisition efforts are showing promising results with a 15% month-over-month growth in new signups. Our referral program is gaining traction, with 18% of new users now coming from referrals.",
-            target_values: [15, 18]
-          }
-        },
-        %{
-          key: :optimize_roi_of_ads,
-          name: "Optimize ROI of ads",
-          space: :marketing_space,
-          champion: :noah_lewis,
-          reviewer: :rachel_king,
-          parent: :increase_user_acquisition,
-          targets: [
-            %{name: "Increase conversion rate from ads to signups", from: 2, to: 5, unit: "%"}
-          ],
-          update: %{
-            content: "AB testing is yielding promising results. We've identified key demographics that respond well to our ads. On track to meet our conversion rate goal.",
-            target_values: [3.5]
-          }
-        },
-        %{
-          key: :get_more_users_through_word_of_mouth,
-          name: "Get more users through word of mouth",
-          space: :marketing_space,
-          champion: :olivia_hall,
-          reviewer: :rachel_king,
-          parent: :increase_user_acquisition,
-          targets: [
-            %{name: "Percentage of new users acquired through referrals", from: 5, to: 15, unit: "%"}
-          ],
-          update: %{
-            content: "Our new in-app referral program is showing early signs of success. We've seen an uptick in user-to-user invitations.",
-            target_values: [8]
+            content: "The acquisition goal is on track: 12 of 20 new customers are in, and the trial conversion rate has moved from 8% to 11% after the latest onboarding and ad tests.",
+            target_values: [12, 11]
           }
         },
         %{
           key: :expand_into_new_markets,
-          name: "Expand into New Markets",
+          name: "Open two repeatable market segments",
           space: :marketing_space,
           champion: :paul_young,
           reviewer: :emily_davis,
           parent: :accelerate_user_growth,
           targets: [
-            %{name: "Achieve 1000+ active users in new countries", from: 0, to: 1000, unit: "users"},
-            %{name: "Expand to new countries", from: 0, to: 2, unit: "countries"}
+            %{name: "Validate enterprise pipeline", from: 0, to: 30, unit: "qualified accounts"},
+            %{name: "Launch first international segment", from: 0, to: 2, unit: "markets"}
           ],
           update: %{
-              content: "Market research for Enterprise market is progressing well, but we're facing challenges in adapting our product for International markets. We may need to reassess our timeline.",
-              target_values: [0, 0]
-            }
+            status: :caution,
+            content: "Enterprise research is producing qualified accounts, and the international launch is narrowed to one region. We still need sharper localization before scaling the second segment.",
+            target_values: [12, 1]
+          }
         },
         %{
           key: :improve_product,
-          name: "Improve Product",
+          name: "Improve activation and retention",
           space: :product_space,
           champion: :frank_miller,
           reviewer: :owner,
@@ -884,7 +855,7 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :enhance_product_functionality,
-          name: "Enhance product functionality",
+          name: "Ship collaboration workflows customers adopt",
           space: :product_space,
           champion: :liam_harris,
           reviewer: :frank_miller,
@@ -899,29 +870,30 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :scale_up_company,
-          name: "Scale up company",
+          name: "Make company operations repeatable",
           space: :company_space,
           champion: :bob_williams,
           reviewer: :owner,
           timeframe: :current_year,
           targets: [
-            %{name: "Increase team size", from: 15, to: 25, unit: "employees"},
-            %{name: "Achieve Annual Recurring Revenue (ARR)", from: 1.2, to: 2, unit: "M$"}
+            %{name: "Fill approved roles", from: 15, to: 25, unit: "employees"},
+            %{name: "Reach ARR target", from: 1.2, to: 2, unit: "M$"}
           ],
           update: %{
+            status: :caution,
             content: "We're making good progress on documenting processes and expanding the team. However, we're slightly behind on our financial goals and may need to adjust our strategy.",
             target_values: [18, 1.44]
           }
         },
         %{
           key: :document_core_business_processes,
-          name: "Document core business processes in company playbook",
+          name: "Standardize the company playbook",
           space: :company_space,
           champion: :bob_williams,
           reviewer: :owner,
           parent: :scale_up_company,
           targets: [
-            %{name: "Percentage of core processes documented", from: 40, to: 80, unit: "%"}
+            %{name: "Document priority workflows", from: 40, to: 80, unit: "%"}
           ],
           update: %{
             content: "We've made significant progress in documenting our core processes. The team has completed 60% of the documentation, and we're on track to meet our goal.",
@@ -930,13 +902,13 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :expand_team_capabilities,
-          name: "Expand team capabilities",
+          name: "Build the next hiring bench",
           space: :people_space,
           champion: :karen_martinez,
           reviewer: :bob_williams,
           parent: :scale_up_company,
           targets: [
-            %{name: "Hire and onboard key roles identified in growth plan", from: 1, to: 5, unit: "roles"},
+            %{name: "Onboard approved roles", from: 1, to: 5, unit: "roles"},
             %{name: "Team members complete individual development plans", from: 60, to: 90, unit: "%"}
           ],
           update: %{
@@ -946,17 +918,18 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :ensure_financial_stability,
-          name: "Ensure Financial Stability",
+          name: "Extend runway for Series A",
           space: :finance_space,
           champion: :martin_smith,
           reviewer: :owner,
           parent: :scale_up_company,
           targets: [
-            %{name: "Extend runway at current burn rate", from: 3, to: 18, unit: "months"},
+            %{name: "Reach 18 months runway", from: 3, to: 18, unit: "months"},
             %{name: "Increase monthly recurring revenue (MRR)", from: 100, to: 150, unit: "K$"}
           ],
           update: %{
-            content: "We've successfully extended our runway to 5 months and increased our MRR to $120K. We're making progress, but we need to accelerate our efforts to meet our targets.",
+            status: :off_track,
+            content: "Runway is only at 5 months and MRR is at $120K, so we need to tighten spend and accelerate expansion revenue before the Series A process starts.",
             target_values: [5, 120]
           }
         }
@@ -964,7 +937,7 @@ defmodule Operately.Demo.Data do
       projects: [
         %{
           key: :refine_ad_targeting,
-          name: "Refine ad targeting on social media platforms",
+          name: "Improve paid acquisition conversion",
           space: :marketing_space,
           champion: :noah_lewis,
           reviewer: :emily_davis,
@@ -972,12 +945,27 @@ defmodule Operately.Demo.Data do
             %{person: :noah_lewis, responsibility: "Growth Marketer"},
             %{person: :sasha_park, responsibility: "Brand Strategy Consultant"}
           ],
-          goal: :optimize_roi_of_ads,
-          description: "This project aims to improve our ad targeting strategies on major social media platforms. By analyzing user behavior and creating an ideal customer profile, we'll develop more effective ad creatives. The project includes A/B testing different ad placements and content to maximize our return on investment. Success will be measured by increased click-through rates and improved conversion from ads to signups.",
-          check_in: %{
-            status: "on_track",
-            content: "A/B testing is yielding promising results. We've identified key demographics that respond well to our ads. On track to meet our conversion rate goal."
-          },
+          start_offset_days: -18,
+          due_in_days: 31,
+          goal: :increase_user_acquisition,
+          description: "This project improves the paid acquisition path from first ad click to paid account. The team is tightening targeting, testing clearer creative, and using conversion data to move budget toward the audiences most likely to become customers.",
+          check_ins: [
+            %{
+              status: :caution,
+              content: "Initial campaigns are live, but conversion quality is uneven. We're narrowing the audience and separating founder-led teams from broader productivity traffic.",
+              days_ago: 14
+            },
+            %{
+              status: :on_track,
+              content: "The performance dashboard is in place and early tests show better lead quality from operations and product leadership audiences. Next step is choosing the winning creative set.",
+              days_ago: 7
+            },
+            %{
+              status: :on_track,
+              content: "Ad-to-signup conversion moved from 2.8% to 3.5% this week. We're ready to shift budget to the two best-performing audiences and finish the analysis milestone.",
+              days_ago: 1
+            }
+          ],
           milestones: [
             %{
               title: "Ideal customer profile created",
@@ -1165,11 +1153,11 @@ defmodule Operately.Demo.Data do
             },
 
             %{
-              title: "1000 click-throughs achieved from Stack Overflow",
+              title: "Developer community campaign tested",
               status: :pending,
               tasks: [
                 %{
-                  name: "Draft Stack Overflow ad copy variants",
+                  name: "Draft developer community ad variants",
                   description: "Write and score copy variants for developer audiences.",
                   assignee: :noah_lewis,
                   status: :in_progress,
@@ -1179,17 +1167,17 @@ defmodule Operately.Demo.Data do
                   comments: [
                     %{
                       author: :noah_lewis,
-                      content: "Focusing on the 'Solve complex problems faster' angle."
+                      content: "Focusing on teams that need clearer operating rhythm, not generic productivity."
                     },
                     %{
                       author: :paul_young,
-                      content: "Make sure to mention the API integration capabilities."
+                      content: "Make sure the copy connects the operating cadence pain to measurable team outcomes."
                     }
                   ]
                 },
                 %{
-                  name: "Target top programming tags",
-                  description: "Select tags and audiences for initial campaigns.",
+                  name: "Select community sponsorship slots",
+                  description: "Choose newsletters and communities where operators and technical founders spend time.",
                   assignee: :paul_young,
                   status: :pending,
                   due_offset_days: -5,
@@ -1198,7 +1186,7 @@ defmodule Operately.Demo.Data do
                   comments: [
                     %{
                       author: :paul_young,
-                      content: "Prioritizing #elixir, #ruby, and #react tags."
+                      content: "Prioritizing founder newsletters and product-led growth communities."
                     }
                   ]
                 },
@@ -1218,22 +1206,32 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :implement_in_app_referral_program,
-          name: "Implement in-app referral program with rewards",
+          name: "Launch customer referral program",
           space: :marketing_space,
           champion: :olivia_hall,
           reviewer: :emily_davis,
           contributors: [
             %{person: :olivia_hall, responsibility: "Product Manager"}
           ],
-          goal: :get_more_users_through_word_of_mouth,
-          description: "This project aims to improve our ad targeting strategies on major social media platforms. By analyzing user behavior and creating an ideal customer profile, we'll develop more effective ad creatives. The project includes A/B testing different ad placements and content to maximize our return on investment. Success will be measured by increased click-through rates and improved conversion from ads to signups.",
-          check_in: %{
-            status: :off_track,
-            content: "Referral program UI is complete, but we're facing delays in implementing the reward system. May need an additional week to resolve technical issues."
-          },
+          start_offset_days: -8,
+          due_in_days: 45,
+          goal: :increase_user_acquisition,
+          description: "This project gives happy customers a simple way to invite peers and tracks the full referral loop from invitation through paid conversion. The team is focusing on a clear invite flow, practical account credits, and support-ready rollout materials.",
+          check_ins: [
+            %{
+              status: :caution,
+              content: "The invitation flow is usable, but the reward rules need one more pass with finance and support before we widen the pilot.",
+              days_ago: 10
+            },
+            %{
+              status: :caution,
+              content: "Reward rules are approved, but the support macros are still behind. We're keeping the pilot small until support has the final guidance.",
+              days_ago: 3
+            }
+          ],
           milestones: [
             %{
-              title: "\"Golden Ticket\" referral UI implemented",
+              title: "Referral invitation flow implemented",
               status: :done,
               tasks: [
                 %{
@@ -1247,7 +1245,7 @@ defmodule Operately.Demo.Data do
                   comments: [
                     %{
                       author: :olivia_hall,
-                      content: "Wireframes are attached. Please review the 'Invite Friends' modal."
+                      content: "Wireframes are attached. Please review the invite modal and confirmation state."
                     },
                     %{
                       author: :emily_davis,
@@ -1266,7 +1264,7 @@ defmodule Operately.Demo.Data do
                   comments: [
                     %{
                       author: :rachel_king,
-                      content: "Using the gold coin icon for credits."
+                      content: "Using a simple account credit badge instead of anything too playful."
                     }
                   ]
                 },
@@ -1283,12 +1281,12 @@ defmodule Operately.Demo.Data do
               ]
             },
             %{
-              title: "Blockchain-based reward system deployed",
+              title: "Reward ledger and controls implemented",
               status: :pending,
               tasks: [
                 %{
-                  name: "Validate wallet provider options",
-                  description: "Compare wallet providers for cost, security, and user experience.",
+                  name: "Validate account credit rules",
+                  description: "Confirm credit amounts, eligibility windows, and abuse safeguards with finance.",
                   assignee: :owner,
                   status: :in_progress,
                   due_offset_days: -10,
@@ -1297,20 +1295,20 @@ defmodule Operately.Demo.Data do
                   comments: [
                     %{
                       author: :owner,
-                      content: "Metamask seems too complex for our target user."
+                      content: "Let's keep the first version to account credits and avoid cash payouts."
                     },
                     %{
                       author: :paul_young,
-                      content: "Agreed. Let's look at custodial options like Magic or Privy."
+                      content: "Agreed. Simpler for customers and easier for support to explain."
                     },
                     %{
                       author: :owner,
-                      content: "Good call. Investigating Magic.link pricing."
+                      content: "Good call. Updating the rollout doc with the final credit rules."
                     }
                   ]
                 },
                 %{
-                  name: "Implement reward ledger schema",
+                  name: "Implement reward ledger",
                   description: "Define data structures for reward credits and redemptions.",
                   assignee: :paul_young,
                   status: :pending,
@@ -1449,18 +1447,20 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :conduct_market_research_enterprise,
-          name: "Conduct market research for expansion into Enterprise",
+          name: "Validate enterprise sales motion",
           space: :marketing_space,
           champion: :paul_young,
           reviewer: :emily_davis,
           contributors: [
-            %{person: :paul_young, responsibility: "Market Research Analyst"}
+            %{person: :paul_young, responsibility: "Enterprise GTM Lead"}
           ],
+          start_offset_days: -21,
+          due_in_days: 58,
           goal: :expand_into_new_markets,
-          description: "This project is crucial for our expansion into the Enterprise market. We'll conduct comprehensive market research, including hiring a specialist consultant, attending relevant conferences, and conducting focus groups with potential users. The research will cover competitor analysis, local work habits, and cultural preferences. The insights gained will inform our product localization strategy and go-to-market approach for Enterprise.",
+          description: "This project validates whether larger accounts can be sold through a repeatable motion. The team is interviewing qualified accounts, testing conference outreach, and turning sales feedback into packaging and onboarding changes.",
           check_in: %{
             status: :on_track,
-            content: "Research is progressing well. We've identified key competitors and potential partners. On track to present findings next week."
+            content: "Enterprise interviews are producing a consistent buying pattern. We have 12 qualified accounts and are using the next two weeks to test pricing and onboarding assumptions."
           },
           milestones: [
             %{
@@ -1514,11 +1514,11 @@ defmodule Operately.Demo.Data do
               ]
             },
             %{
-              title: "\"Bits & Pretzels\" conference attended",
+              title: "Enterprise founder event meetings booked",
               status: :pending,
               tasks: [
                 %{
-                  name: "Prepare conference networking goals",
+                  name: "Prepare event meeting goals",
                   description: "Define target outcomes and meeting priorities.",
                   assignee: :paul_young,
                   status: :in_progress,
@@ -1667,26 +1667,28 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :develop_international_expansion,
-          name: "Develop localization strategy for International markets",
+          name: "Localize onboarding for EU launch",
           space: :marketing_space,
           champion: :rachel_king,
           reviewer: :emily_davis,
           contributors: [
-            %{person: :rachel_king, responsibility: "Localization Specialist"}
+            %{person: :rachel_king, responsibility: "Lifecycle Marketing Lead"}
           ],
+          start_offset_days: -28,
+          due_in_days: 25,
           goal: :expand_into_new_markets,
-          description: "Let's focus on adapting our product for International markets. We'll develop culturally relevant features like a 'Timezone-Smart' scheduling option and a 'Cultural-Theme' UI theme. The project includes localizing product copy and establishing partnerships with local coworking spaces for beta testing. Success will be measured by user adoption and engagement rates in International regions.",
+          description: "This project prepares the first EU onboarding experience by localizing core lifecycle messages, support docs, and customer proof. The team is keeping scope narrow so the launch can move without a full product localization effort.",
           check_in: %{
             status: :caution,
-            content: "Facing challenges in adapting our UI for cultural preferences. May need to bring in a local UX consultant to assist."
+            content: "German and French onboarding copy is drafted, but legal review is slower than expected. We're holding the launch date until the compliance notes are resolved."
           },
           milestones: [
             %{
-              title: "\"Timezone-Smart\" feature conceptualized",
+              title: "EU onboarding requirements confirmed",
               status: :done,
               tasks: [
                 %{
-                  name: "Interview International users",
+                  name: "Interview EU prospects",
                   description: "Run interviews to capture local scheduling needs.",
                   assignee: :rachel_king,
                   status: :done,
@@ -1696,7 +1698,7 @@ defmodule Operately.Demo.Data do
                   comments: [
                     %{
                       author: :rachel_king,
-                      content: "Spoke with users in Tokyo and London. The overlap window is the main pain point."
+                      content: "Spoke with prospects in Berlin, Paris, and Dublin. Local proof points matter more than we expected."
                     },
                     %{
                       author: :emily_davis,
@@ -1832,7 +1834,7 @@ defmodule Operately.Demo.Data do
               ]
             },
             %{
-              title: "\"Cultural-Theme\" UI theme developed",
+              title: "Localized onboarding experience approved",
               status: :pending,
               tasks: [
                 %{
@@ -1885,7 +1887,7 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :develop_collaborative_features,
-          name: "Develop and launch new collaborative features",
+          name: "Ship collaborative docs beta",
           space: :product_space,
           champion: :walter_baker,
           reviewer: :frank_miller,
@@ -1893,8 +1895,10 @@ defmodule Operately.Demo.Data do
             %{person: :walter_baker, responsibility: "Senior Developer"},
             %{person: :diego_ramirez, responsibility: "Product Designer"}
           ],
+          start_offset_days: -34,
+          due_in_days: 40,
           goal: :enhance_product_functionality,
-          description: "This project aims to enhance our product's collaborative capabilities. We'll identify and develop the top requested collaborative features, with a focus on real-time document collaboration. The project includes creating detailed wireframes, developing an MVP, and conducting extensive beta testing with power users. Success will be measured by user adoption of new features and improvement in team productivity metrics.",
+          description: "This project ships the collaborative docs beta to power users. The team is closing feedback loops on presence, comments, and release notes before rolling the workflow into the wider product.",
           check_in: %{
             status: :on_track,
             content: "Beta testing of the real-time document collaboration feature is going well. We're on track for the full release next month."
@@ -2154,7 +2158,7 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :create_process_templates,
-          name: "Create templates for common business processes",
+          name: "Publish operating playbook templates",
           space: :company_space,
           champion: :quinn_walker,
           reviewer: :bob_williams,
@@ -2162,8 +2166,10 @@ defmodule Operately.Demo.Data do
             %{person: :quinn_walker, responsibility: "Operations Manager"},
             %{person: :maya_singh, responsibility: "Systems Consultant"}
           ],
+          start_offset_days: -12,
+          due_in_days: 21,
           goal: :document_core_business_processes,
-          description: "This project focuses on standardizing and documenting core business processes to improve operational efficiency. We'll identify the top 10 most critical processes, create detailed workflow maps, and develop standardized templates. These templates will serve as a company-wide resource, ensuring consistency and facilitating onboarding of new team members. Success will be measured by the number of processes documented and the reduction in time spent on routine tasks.",
+          description: "This project turns the most repeated company workflows into reusable playbook templates. The team is focusing on onboarding, escalations, and quarterly planning first so managers have something practical to use immediately.",
           check_in: %{
             status: :on_track,
             content: "Template creation is on schedule. We've completed drafts for 3 out of 5 top processes and are gathering feedback."
@@ -2345,6 +2351,8 @@ defmodule Operately.Demo.Data do
           contributors: [
             %{person: :karen_martinez, responsibility: "HR Manager"}
           ],
+          start_offset_days: -16,
+          due_in_days: 29,
           goal: :expand_team_capabilities,
           description: "This project aims to strengthen our product team by hiring a Senior UX Designer. We'll define comprehensive job requirements, conduct a thorough recruitment process, and assess candidates through portfolio reviews and practical design challenges. The new hire will play a crucial role in enhancing our product's user experience and driving user satisfaction. Success will be measured by the successful onboarding of a high-quality candidate who can make immediate contributions to our product development.",
           check_in: %{
@@ -2528,11 +2536,13 @@ defmodule Operately.Demo.Data do
           contributors: [
             %{person: :karen_martinez, responsibility: "HR Manager"}
           ],
+          start_offset_days: -20,
+          due_in_days: 11,
           goal: :expand_team_capabilities,
           description: "We need to expand our customer support team by hiring a specialist with both technical knowledge and strong customer service skills. We'll create a comprehensive job description, conduct targeted recruitment, and assess candidates through role-playing exercises. The new hire will play a crucial role in improving customer satisfaction and retention. Success will be measured by the successful onboarding of a candidate who can effectively address complex customer issues and contribute to product improvement based on customer feedback.",
           check_in: %{
-            status: :caution,
-            content: "Struggling to find candidates with the right mix of technical knowledge and customer service skills. May need to expand our search or consider internal training options."
+            status: :off_track,
+            content: "The candidate pool is thinner than expected and phone screens are slipping. We need to widen sourcing this week or adjust the start date."
           },
           milestones: [
             %{
@@ -2704,15 +2714,17 @@ defmodule Operately.Demo.Data do
         },
         %{
           key: :prepare_series_a,
-          name: "Prepare pitch deck and financial projections for Series A funding",
+          name: "Prepare Series A investor materials",
           space: :finance_space,
           champion: :martin_smith,
           reviewer: :owner,
           contributors: [
             %{person: :martin_smith, responsibility: "CFO"}
           ],
+          start_offset_days: -24,
+          due_in_days: 52,
           goal: :ensure_financial_stability,
-          description: "This project is critical for securing our Series A funding. We'll gather key metrics and growth data from all departments to develop a comprehensive financial model with 3-year projections. The project includes creating a compelling narrative and designing an impactful pitch deck. We'll also prepare for investor meetings by rehearsing with mentors and advisors. Success will be measured by securing the desired funding amount and establishing valuable relationships with investors.",
+          description: "This project prepares the investor narrative, financial model, and meeting materials for the Series A process. The team is consolidating operating metrics and testing the story with advisors before outreach starts.",
           check_in: %{
             status: :caution,
             content: "Financial model is taking longer than expected due to complexities in our expansion plans. May need an extra week to finalize projections."
@@ -2891,16 +2903,16 @@ defmodule Operately.Demo.Data do
           key: :market_expansion_update,
           space: :marketing_space,
           author: :emily_davis,
-          title: "Market Expansion Update: Enterprise & International Progress",
+          title: "Market expansion update: enterprise and EU launch",
           content: """
-          Quick update on our market expansion efforts! Our research in Enterprise market is progressing well, with some valuable insights from our specialist consultant. Key findings suggest strong demand for our collaborative features among Enterprise clients.
+          Quick update on our market expansion efforts. Enterprise interviews are showing a consistent pain around operating cadence, and we now have a clearer shortlist of qualified accounts.
 
-          For International markets, we're adapting our approach based on recent user feedback. The "Timezone-Smart" scheduling feature concept has received positive initial responses, though we're still working through some UX challenges.
+          For the EU launch, we're keeping scope narrow: localized onboarding, support docs, and two customer proof points before we expand beyond the first region.
 
           Next steps:
-          - Finalizing Enterprise market entry strategy
-          - Recruiting local partners in Global hubs
-          - Adapting our UI for International users
+          - Finalize the enterprise discovery summary
+          - Complete legal review for EU onboarding copy
+          - Pick the first two customer stories for regional launch
           """,
           comments: [
             %{
