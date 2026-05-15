@@ -173,6 +173,7 @@ export namespace ProjectPage {
     currentUser?: Person | null;
 
     richTextHandlers: RichEditorHandlers;
+    localDraftKeyBase?: string;
 
     onTaskDescriptionChange: (taskId: string, description: any) => Promise<boolean>;
     getTaskPageProps: KanbanBoardProps["getTaskPageProps"];
