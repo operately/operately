@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
 import { PageModule } from "@/routes/types";
+import { Link } from "turboui";
 
 export default { name: "NewCompanyPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -59,6 +60,13 @@ function Page() {
 
             <Forms.Submit saveText="Create Company" buttonSize="sm" />
           </Forms.Form>
+
+          <div className="mt-4 text-center text-sm text-content-dimmed">
+            Do you have an existing company?{" "}
+            <Link to={Paths.companyImportPath()} underline="hover">
+              Import it here
+            </Link>
+          </div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

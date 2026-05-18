@@ -31,6 +31,10 @@ export class Paths {
     return "/new";
   }
 
+  static companyImportPath() {
+    return "/company-import";
+  }
+
   static companyHomePath(companyId: string) {
     return "/" + companyId;
   }

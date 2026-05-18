@@ -13,7 +13,7 @@ import { DangerZone } from "./DangerZone";
 
 import { usePaths } from "@/routes/paths";
 import { hasFeature } from "../../models/companies";
-import * as CompanyExports from "@/models/companyExports";
+
 export function Page() {
   const paths = usePaths();
   const { company } = useLoadedData();
@@ -87,11 +87,10 @@ function AdminsMenu() {
 
 function OwnersMenu() {
   const paths = usePaths();
-  const { ownerIds, company } = useLoadedData();
+  const { ownerIds } = useLoadedData();
 
   const me = useMe();
   const amIOwner = includesId(ownerIds, me!.id);
-  const canExportCompany = hasFeature(company, CompanyExports.FEATURE_NAME);
 
   // Don't show the menu at all if user is not an owner
   if (!amIOwner) {
@@ -107,7 +106,7 @@ function OwnersMenu() {
       <div>
         <OptionsMenuItem linkTo={manageAdmins} icon={IconShieldLock} title="Manage administrators and owners" />
         <OptionsMenuItem linkTo={manageTrustedDomains} icon={IconLock} title="Manage trusted email domains" />
-        {canExportCompany && <OptionsMenuItem linkTo={exportCompany} icon={IconFileExport} title="Export company data" />}
+        <OptionsMenuItem linkTo={exportCompany} icon={IconFileExport} title="Export company data" />
       </div>
     </Paper.Section>
   );
