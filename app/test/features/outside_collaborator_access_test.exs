@@ -185,12 +185,12 @@ defmodule Operately.Features.OutsideCollaboratorAccessTest do
     feature "outside collaborator can toggle assignments email", ctx do
       ctx
       |> Steps.log_in_as_collaborator()
-      |> Steps.visit_profile_edit_page()
+      |> Steps.visit_notification_settings_page()
       |> Steps.assert_assignments_email_enabled()
       |> Steps.assert_person_in_assignments_cron()
       |> Steps.disable_assignments_email()
       |> Steps.assert_person_not_in_assignments_cron()
-      |> Steps.visit_profile_edit_page()
+      |> Steps.visit_notification_settings_page()
       |> Steps.enable_assignments_email()
       |> Steps.assert_person_in_assignments_cron()
     end

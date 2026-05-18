@@ -4,7 +4,7 @@ import { Dropdown } from "../forms/Dropdown";
 import { Page } from "../Page";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { SwitchToggle } from "../SwitchToggle";
-import { IconClockPlay, IconMail, IconMailFast } from "../icons";
+import { IconChecklist, IconClockPlay, IconMail, IconMailFast } from "../icons";
 import classNames from "../utils/classnames";
 
 export namespace AccountNotificationSettingsPage {
@@ -20,6 +20,8 @@ export namespace AccountNotificationSettingsPage {
     onEmailWindowMinutesChange: (value: EmailWindowMinutes) => void;
     onSendDailySummaryChange: (value: boolean) => void;
     onDailySummaryDeliveryTimeChange: (value: DailySummaryDeliveryTime) => void;
+    notifyAboutAssignments: boolean;
+    onNotifyAboutAssignmentsChange: (value: boolean) => void;
     onSubmit: () => Promise<void>;
     onCancel: () => void;
     isSubmitting?: boolean;
@@ -136,6 +138,11 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
             onDailySummaryDeliveryTimeChange={props.onDailySummaryDeliveryTimeChange}
           />
 
+          <AssignmentsEmailSection
+            notifyAboutAssignments={props.notifyAboutAssignments}
+            onNotifyAboutAssignmentsChange={props.onNotifyAboutAssignmentsChange}
+          />
+
           <div className="flex justify-end gap-2">
             <SecondaryButton type="button" onClick={props.onCancel} disabled={props.isSubmitting}>
               Cancel
@@ -203,6 +210,38 @@ function DailySummarySection({
           />
         </div>
       )}
+    </section>
+  );
+}
+
+function AssignmentsEmailSection({
+  notifyAboutAssignments,
+  onNotifyAboutAssignmentsChange,
+}: {
+  notifyAboutAssignments: boolean;
+  onNotifyAboutAssignmentsChange: (value: boolean) => void;
+}) {
+  return (
+    <section className="rounded-lg border border-surface-outline bg-surface-dimmed p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="pr-6">
+          <div className="font-bold text-sm flex items-center gap-2">
+            <IconChecklist size={18} />
+            Assignments email
+          </div>
+          <div className="text-sm text-content-dimmed mt-1">
+            Receive a daily email with your upcoming check-ins, reviews, and other work that needs your attention.
+          </div>
+        </div>
+
+        <SwitchToggle
+          label="Send assignments email"
+          value={notifyAboutAssignments}
+          setValue={onNotifyAboutAssignmentsChange}
+          testId={notifyAboutAssignments ? "disable-assignments-email-toggle" : "enable-assignments-email-toggle"}
+          labelHidden
+        />
+      </div>
     </section>
   );
 }

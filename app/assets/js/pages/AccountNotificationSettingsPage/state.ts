@@ -5,19 +5,21 @@ interface NotificationSettingsFormState {
   emailWindowMinutes: EmailWindowMinutes;
   sendDailySummary: boolean;
   dailySummaryDeliveryTime: string;
+  notifyAboutAssignments: boolean;
 }
 
 const DEFAULT_EMAIL_WINDOW_MINUTES: EmailWindowMinutes = 5;
 const DEFAULT_DAILY_SUMMARY_DELIVERY_TIME = "18:00";
 
 export function getNotificationSettingsFormState(
-  person: Pick<Person, "notifyOnMention" | "emailWindowMinutes" | "sendDailySummary" | "dailySummaryDeliveryTime">,
+  person: Pick<Person, "notifyOnMention" | "emailWindowMinutes" | "sendDailySummary" | "dailySummaryDeliveryTime" | "notifyAboutAssignments">,
 ): NotificationSettingsFormState {
   return {
     notifyOnMention: person.notifyOnMention ?? false,
     emailWindowMinutes: person.emailWindowMinutes ?? DEFAULT_EMAIL_WINDOW_MINUTES,
     sendDailySummary: person.sendDailySummary ?? true,
     dailySummaryDeliveryTime: person.dailySummaryDeliveryTime ?? DEFAULT_DAILY_SUMMARY_DELIVERY_TIME,
+    notifyAboutAssignments: person.notifyAboutAssignments ?? true,
   };
 }
 
@@ -31,5 +33,6 @@ export function buildNotificationSettingsUpdateInput(
     emailWindowMinutes: values.emailWindowMinutes,
     sendDailySummary: values.sendDailySummary,
     dailySummaryDeliveryTime: values.dailySummaryDeliveryTime,
+    notifyAboutAssignments: values.notifyAboutAssignments,
   };
 }

@@ -30,14 +30,16 @@ function Page() {
         emailWindowMinutes: me.emailWindowMinutes,
         sendDailySummary: me.sendDailySummary,
         dailySummaryDeliveryTime: me.dailySummaryDeliveryTime,
+        notifyAboutAssignments: me.notifyAboutAssignments,
       }),
-    [me.notifyOnMention, me.emailWindowMinutes, me.sendDailySummary, me.dailySummaryDeliveryTime],
+    [me.notifyOnMention, me.emailWindowMinutes, me.sendDailySummary, me.dailySummaryDeliveryTime, me.notifyAboutAssignments],
   );
 
   const [notifyOnMention, setNotifyOnMention] = React.useState(initialState.notifyOnMention);
   const [emailWindowMinutes, setEmailWindowMinutes] = React.useState(initialState.emailWindowMinutes);
   const [sendDailySummary, setSendDailySummary] = React.useState(initialState.sendDailySummary);
   const [dailySummaryDeliveryTime, setDailySummaryDeliveryTime] = React.useState(initialState.dailySummaryDeliveryTime);
+  const [notifyAboutAssignments, setNotifyAboutAssignments] = React.useState(initialState.notifyAboutAssignments);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   React.useEffect(() => {
@@ -45,6 +47,7 @@ function Page() {
     setEmailWindowMinutes(initialState.emailWindowMinutes);
     setSendDailySummary(initialState.sendDailySummary);
     setDailySummaryDeliveryTime(initialState.dailySummaryDeliveryTime);
+    setNotifyAboutAssignments(initialState.notifyAboutAssignments);
   }, [initialState]);
 
   const handleSubmit = React.useCallback(async () => {
@@ -57,6 +60,7 @@ function Page() {
           emailWindowMinutes,
           sendDailySummary,
           dailySummaryDeliveryTime,
+          notifyAboutAssignments,
         }),
       );
 
@@ -66,7 +70,7 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [notifyOnMention, emailWindowMinutes, me.id, navigate, paths, sendDailySummary, dailySummaryDeliveryTime]);
+  }, [notifyOnMention, emailWindowMinutes, me.id, navigate, paths, sendDailySummary, dailySummaryDeliveryTime, notifyAboutAssignments]);
 
   return (
     <NotificationSettingsPage
@@ -78,6 +82,8 @@ function Page() {
       onEmailWindowMinutesChange={setEmailWindowMinutes}
       onSendDailySummaryChange={setSendDailySummary}
       onDailySummaryDeliveryTimeChange={setDailySummaryDeliveryTime}
+      notifyAboutAssignments={notifyAboutAssignments}
+      onNotifyAboutAssignmentsChange={setNotifyAboutAssignments}
       onSubmit={handleSubmit}
       onCancel={() => navigate(paths.accountSettingsPath())}
       isSubmitting={isSubmitting}
