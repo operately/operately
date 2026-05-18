@@ -792,6 +792,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :accelerate_user_growth,
           name: "Grow self-serve revenue",
+          description: "Grow self-serve revenue by improving trial quality, referral loops, and the handoff from high-intent leads to sales.",
           space: :marketing_space,
           champion: :emily_davis,
           reviewer: :frank_miller,
@@ -808,6 +809,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :increase_user_acquisition,
           name: "Convert more visitors into customers",
+          description: "Increase the share of qualified visitors who start a trial, understand the product quickly, and become paying customers.",
           space: :marketing_space,
           champion: :rachel_king,
           reviewer: :emily_davis,
@@ -824,6 +826,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :expand_into_new_markets,
           name: "Open two repeatable market segments",
+          description: "Validate two segments where positioning, sales motion, and onboarding can be repeated without custom work for every account.",
           space: :marketing_space,
           champion: :paul_young,
           reviewer: :emily_davis,
@@ -841,6 +844,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :improve_product,
           name: "Improve activation and retention",
+          description: "Make the product easier to adopt and harder to leave by improving core workflows, collaboration, and early customer outcomes.",
           space: :product_space,
           champion: :frank_miller,
           reviewer: :owner,
@@ -856,6 +860,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :enhance_product_functionality,
           name: "Ship collaboration workflows customers adopt",
+          description: "Deliver collaboration improvements that customers use in real work, with clear adoption signals from beta through rollout.",
           space: :product_space,
           champion: :liam_harris,
           reviewer: :frank_miller,
@@ -871,6 +876,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :scale_up_company,
           name: "Make company operations repeatable",
+          description: "Turn the company operating rhythm into repeatable workflows for hiring, planning, finance, and cross-functional execution.",
           space: :company_space,
           champion: :bob_williams,
           reviewer: :owner,
@@ -888,6 +894,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :document_core_business_processes,
           name: "Standardize the company playbook",
+          description: "Document the workflows managers rely on most so onboarding, escalations, and planning happen consistently across teams.",
           space: :company_space,
           champion: :bob_williams,
           reviewer: :owner,
@@ -903,6 +910,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :expand_team_capabilities,
           name: "Build the next hiring bench",
+          description: "Fill the next wave of approved roles while helping current team members grow into the responsibilities the company needs.",
           space: :people_space,
           champion: :karen_martinez,
           reviewer: :bob_williams,
@@ -919,6 +927,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :ensure_financial_stability,
           name: "Extend runway for Series A",
+          description: "Create enough runway and revenue momentum to enter the Series A process with credible options and fewer financing risks.",
           space: :finance_space,
           champion: :martin_smith,
           reviewer: :owner,

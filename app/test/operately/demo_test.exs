@@ -22,6 +22,24 @@ defmodule Operately.DemoTest do
     assert described_count > div(length(people), 2)
   end
 
+  test "all demo goals have descriptions" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
+
+    goals = Operately.Goals.list_goals(%{company_id: company.id, space_id: nil})
+
+    assert length(goals) > 0
+    assert Enum.all?(goals, fn goal ->
+             description =
+               goal.description
+               |> Operately.MD.RichText.render()
+               |> String.trim()
+
+             description != ""
+           end)
+  end
+
   test "milestone creation" do
     account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
 
@@ -131,6 +149,9 @@ defmodule Operately.DemoTest do
 
     assert goal2.timeframe.contextual_start_date.date_type == :quarter
     assert goal2.timeframe.contextual_end_date.date_type == :quarter
+
+    assert Operately.MD.RichText.render(goal1.description) =~ "yearly goal"
+    assert Operately.MD.RichText.render(goal2.description) =~ "quarterly goal"
   end
 
   test "goal update status" do
