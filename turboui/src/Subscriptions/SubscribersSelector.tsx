@@ -16,15 +16,18 @@ export function SubscribersSelector({
 }: SubscribersSelector.Props) {
   const [showModal, setShowModal] = useState(false);
 
-  // If all notifiable people must be notified, the widget is not displayed
-  if (alwaysNotify.length >= subscribers.length) return null;
-
   // Automatically open modal when switching to SELECTED option
   useEffect(() => {
     if (subscriptionType === SubscribersSelector.SubscriptionOption.SELECTED) {
       setShowModal(true);
     }
   }, [subscriptionType]);
+
+  if (subscribers.length === 0) return null;
+
+  if (alwaysNotify.length >= subscribers.length) {
+    return <AlwaysNotifyOnly subscribers={subscribers} allSubscribersLabel={allSubscribersLabel} />;
+  }
 
   const handleSaveSelection = (selected: SubscribersSelector.Subscriber[]) => {
     onSelectedSubscribersChange(selected);
@@ -78,6 +81,24 @@ export function SubscribersSelector({
   );
 }
 
+function AlwaysNotifyOnly({
+  subscribers,
+  allSubscribersLabel,
+}: {
+  subscribers: SubscribersSelector.Subscriber[];
+  allSubscribersLabel: string;
+}) {
+  return (
+    <div>
+      <p className="font-bold mb-1.5">When I post this, notify:</p>
+      <div className="my-1">
+        <p className="text-content-accent">{allSubscribersLabel}</p>
+        <SelectedPeople subscribers={subscribers} hide={false} indent={false} />
+      </div>
+    </div>
+  );
+}
+
 interface SubscriptionOptionItemProps {
   label: string;
   value: SubscribersSelector.SubscriptionOption;
@@ -95,13 +116,21 @@ function SubscriptionOptionItem({ label, value, subscribers, isSelected, testId 
   );
 }
 
-function SelectedPeople({ subscribers, hide }: { subscribers: SubscribersSelector.Subscriber[]; hide: boolean }) {
+function SelectedPeople({
+  subscribers,
+  hide,
+  indent = true,
+}: {
+  subscribers: SubscribersSelector.Subscriber[];
+  hide: boolean;
+  indent?: boolean;
+}) {
   if (subscribers.length === 0 || hide) return null;
 
   const sortedSubscribers = sortSubscribersByName(subscribers);
 
   return (
-    <div className="flex flex-wrap gap-2 ml-6">
+    <div className={["flex flex-wrap gap-2", indent ? "ml-6" : ""].join(" ")}>
       {sortedSubscribers.map((subscriber) => {
         if (!subscriber.person) return null;
         return <Avatar person={subscriber.person} size="tiny" key={subscriber.person.id} />;

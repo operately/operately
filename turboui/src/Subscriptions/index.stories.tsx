@@ -40,6 +40,11 @@ const mockPrioritySubscribers: SubscribersSelector.Subscriber[] = [
   { person: mockPeople[0], isSubscribed: true, priority: true, role: "owner" },
 ];
 
+const mockAllPrioritySubscribers: SubscribersSelector.Subscriber[] = [
+  { person: mockPeople[0], isSubscribed: true, priority: true, role: "Champion" },
+  { person: mockPeople[1], isSubscribed: true, priority: true, role: "Reviewer" },
+];
+
 // SubscribersSelector Stories
 type SubscribersSelectorStory = StoryObj<typeof SubscribersSelector>;
 
@@ -88,6 +93,26 @@ export const SubscribersSelectorWithPrioritySubscribers: SubscribersSelectorStor
           }}
           alwaysNotify={mockPrioritySubscribers}
           allSubscribersLabel="All 6 people contributing to Project Alpha"
+        />
+    );
+  },
+};
+
+export const SubscribersSelectorAllPrioritySubscribers: SubscribersSelectorStory = {
+  render: () => {
+    return (
+      <SubscribersSelector
+          subscribers={mockAllPrioritySubscribers}
+          selectedSubscribers={mockAllPrioritySubscribers}
+          onSelectedSubscribersChange={(subs) => {
+            console.log("Selected subscribers changed:", subs);
+          }}
+          subscriptionType={SubscribersSelector.SubscriptionOption.NONE}
+          onSubscriptionTypeChange={(type) => {
+            console.log("Subscription type changed:", type);
+          }}
+          alwaysNotify={mockAllPrioritySubscribers}
+          allSubscribersLabel="All 2 people contributing to Launch customer referral program"
         />
     );
   },
