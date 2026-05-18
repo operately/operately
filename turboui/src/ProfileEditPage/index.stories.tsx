@@ -39,7 +39,6 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
   const [title, setTitle] = useState(currentPerson.title || "");
   const [aboutMe, setAboutMe] = useState(asRichText("I like setting teams up for success and pairing on tricky problems."));
   const [timezone, setTimezone] = useState("America/New_York");
-  const [notifyAboutAssignments, setNotifyAboutAssignments] = useState<boolean>(true);
 
   const [manager, setManager] = useState<ProfileEditPage.Person | null>(() => {
     if ("manager" in args) {
@@ -105,13 +104,11 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       aboutMe={aboutMe}
       timezone={timezone}
       manager={manager}
-      notifyAboutAssignments={notifyAboutAssignments}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
       onAboutMeChange={setAboutMe}
       onTimezoneChange={setTimezone}
       onManagerChange={setManager}
-      onNotifyAboutAssignmentsChange={setNotifyAboutAssignments}
       onSubmit={handleSubmit}
       onAvatarUpload={args.canChangeAvatar !== false ? handleAvatarUpload : undefined}
       onAvatarRemove={args.canChangeAvatar !== false ? handleAvatarRemove : undefined}

@@ -64,9 +64,6 @@ function Page() {
     return parseContent(person.description);
   });
   const [timezone, setTimezone] = React.useState(person.timezone || "");
-  const [notifyAboutAssignments, setNotifyAboutAssignments] = React.useState<boolean>(
-    person.notifyAboutAssignments ?? false,
-  );
   const [manager, setManager] = React.useState<ProfileEditPage.Person | null>(
     person.manager ? People.parsePersonForTurboUi(paths, person.manager) : null,
   );
@@ -103,7 +100,6 @@ function Page() {
         title: title.trim(),
         timezone: timezone,
         managerId: manager?.id || null,
-        notifyAboutAssignments,
       };
 
       if (isCurrentUser) {
@@ -122,7 +118,7 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [fullName, title, aboutMe, timezone, manager, notifyAboutAssignments, person.id, isCurrentUser, navigate, paths]);
+  }, [fullName, title, aboutMe, timezone, manager, person.id, isCurrentUser, navigate, paths]);
 
   const displayPerson: ProfileEditPage.Person = {
     id: person.id,
@@ -140,13 +136,11 @@ function Page() {
       aboutMe={aboutMe}
       timezone={timezone}
       manager={manager}
-      notifyAboutAssignments={notifyAboutAssignments}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
       onAboutMeChange={setAboutMe}
       onTimezoneChange={setTimezone}
       onManagerChange={setManager}
-      onNotifyAboutAssignmentsChange={setNotifyAboutAssignments}
       onSubmit={handleSubmit}
       onAvatarUpload={avatar.handleAvatarUpload}
       onAvatarRemove={avatar.handleAvatarRemove}

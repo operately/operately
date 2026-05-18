@@ -55,6 +55,10 @@ defmodule Operately.Support.Features.ProfileSteps do
     UI.visit(ctx, Paths.profile_path(ctx.company, ctx.person) <> "/profile/edit")
   end
 
+  step :visit_notification_settings_page, ctx do
+    UI.visit(ctx, Paths.account_notification_settings_path(ctx.company))
+  end
+
   step :assert_contact_email_visible, ctx do
     UI.assert_text(ctx, ctx.person.email)
   end
@@ -288,16 +292,16 @@ defmodule Operately.Support.Features.ProfileSteps do
     ctx
     |> UI.click(testid: "disable-assignments-email-toggle")
     |> UI.sleep(100)
-    |> UI.click(testid: "submit")
-    |> UI.assert_page(Paths.account_path(ctx.company))
+    |> UI.click(testid: "save-notification-settings")
+    |> UI.assert_has(testid: "account-settings-page")
   end
 
   step :enable_assignments_email, ctx do
     ctx
     |> UI.click(testid: "enable-assignments-email-toggle")
     |> UI.sleep(100)
-    |> UI.click(testid: "submit")
-    |> UI.assert_page(Paths.account_path(ctx.company))
+    |> UI.click(testid: "save-notification-settings")
+    |> UI.assert_has(testid: "account-settings-page")
   end
 
   step :assert_person_not_in_assignments_cron, ctx do

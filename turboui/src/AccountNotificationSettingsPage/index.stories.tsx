@@ -21,6 +21,8 @@ const defaultArgs = {
   onEmailWindowMinutesChange: () => undefined,
   onSendDailySummaryChange: () => undefined,
   onDailySummaryDeliveryTimeChange: () => undefined,
+  notifyAboutAssignments: true,
+  onNotifyAboutAssignmentsChange: () => undefined,
   onSubmit: async () => undefined,
   onCancel: () => undefined,
   homePath: "#",
