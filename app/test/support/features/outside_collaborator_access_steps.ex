@@ -260,6 +260,10 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     ctx |> UI.visit(Paths.profile_edit_path(ctx.company, ctx.collaborator))
   end
 
+  step :visit_notification_settings_page, ctx do
+    ctx |> UI.visit(Paths.account_notification_settings_path(ctx.company))
+  end
+
   step :fill_about_me, ctx, text: text do
     UI.fill_rich_text(ctx, testid: "about-me", with: text)
   end
@@ -287,16 +291,16 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     ctx
     |> UI.click(testid: "disable-assignments-email-toggle")
     |> UI.sleep(100)
-    |> UI.click(testid: "submit")
-    |> UI.assert_page(Paths.account_path(ctx.company))
+    |> UI.click(testid: "save-notification-settings")
+    |> UI.assert_has(testid: "account-settings-page")
   end
 
   step :enable_assignments_email, ctx do
     ctx
     |> UI.click(testid: "enable-assignments-email-toggle")
     |> UI.sleep(100)
-    |> UI.click(testid: "submit")
-    |> UI.assert_page(Paths.account_path(ctx.company))
+    |> UI.click(testid: "save-notification-settings")
+    |> UI.assert_has(testid: "account-settings-page")
   end
 
   step :assert_person_not_in_assignments_cron, ctx do
