@@ -1,5 +1,5 @@
 defmodule Operately.Demo.Goals do
-  alias Operately.Demo.Resources
+  alias Operately.Demo.{Resources, RichText}
 
   def create_goals(resources, data) do
     Resources.create(resources, data, fn {resources, data, _index} ->
@@ -34,6 +34,7 @@ defmodule Operately.Demo.Goals do
       Operately.Operations.GoalCreation.run(owner, %{
         space_id: space.id,
         name: data.name,
+        description: RichText.from_string(goal_description(data)),
         champion_id: champion.id,
         reviewer_id: reviewer.id,
         timeframe: create_timeframe(data[:timeframe] || :current_quarter),
@@ -83,6 +84,20 @@ defmodule Operately.Demo.Goals do
 
   defp normalize_status(status) when status in ["on_track", "caution", "off_track"] do
     String.to_existing_atom(status)
+  end
+
+  defp goal_description(%{description: description} = data) when is_binary(description) do
+    if String.trim(description) == "" do
+      default_goal_description(data)
+    else
+      description
+    end
+  end
+
+  defp goal_description(data), do: default_goal_description(data)
+
+  defp default_goal_description(data) do
+    "Focus the team on #{String.downcase(data.name)} and review progress against the defined targets throughout the period."
   end
 
   defp create_timeframe(:current_year) do
