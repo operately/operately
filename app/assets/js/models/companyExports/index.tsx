@@ -1,8 +1,6 @@
 import { CompanyImportRun } from "@/api";
 import { Paths } from "@/routes/paths";
 
-export const FEATURE_NAME = "company_transfers";
-
 type SortableRun = {
   insertedAt: string;
 };
