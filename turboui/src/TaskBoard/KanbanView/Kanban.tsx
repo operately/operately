@@ -11,6 +11,7 @@ import { StatusSelector } from "../../StatusSelector";
 import { useHorizontalAutoScroll, useSortableItem, DropIndicator } from "../../utils/PragmaticDragAndDrop";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import classNames from "../../utils/classnames";
+import { useTaskKeyboardNavigation } from "../hooks/useTaskKeyboardNavigation";
 
 interface Props {
   milestone: TaskBoard.Milestone | null;
@@ -52,9 +53,24 @@ export function Kanban({
     [milestone],
   );
   const scrollContainerRef = useHorizontalAutoScroll();
+  const {
+    containerRef: keyboardContainerRef,
+    selectedTaskId: keyboardSelectedTaskId,
+    scopeBind,
+  } = useTaskKeyboardNavigation<HTMLDivElement>({
+    fieldShortcuts: { status: false },
+  });
 
   const unknownStatus = statuses.find((status) => status.value === "unknown-status");
   const regularStatuses = statuses.filter((status) => status.value !== "unknown-status");
+
+  const setScrollContainerRefs = React.useCallback(
+    (element: HTMLDivElement | null) => {
+      (scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = element;
+      (keyboardContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = element;
+    },
+    [keyboardContainerRef, scrollContainerRef],
+  );
 
   const handleTaskCreate = (title: string, statusValue: string) => {
     if (!onTaskCreate) return;
@@ -72,7 +88,7 @@ export function Kanban({
 
   return (
     <section className="bg-surface-base min-h-[80vh]" data-test-id={testId}>
-      <div ref={scrollContainerRef} className="px-3 pt-3 pb-6 overflow-x-auto h-[80vh]">
+      <div ref={setScrollContainerRefs} className="px-3 pt-3 pb-6 overflow-x-auto h-[80vh]" {...scopeBind}>
         <div className="flex gap-3 min-w-max items-start">
           {unknownStatus && (
             <Column
@@ -93,6 +109,7 @@ export function Kanban({
               onDeleteStatus={undefined}
               onTaskClick={onTaskClick}
               canCreateTask={canEdit}
+              selectedTaskId={keyboardSelectedTaskId}
               hideStatusIcon
               disableDnD
             />
@@ -124,6 +141,7 @@ export function Kanban({
                   onEditStatus={onEditStatus}
                   onDeleteStatus={onDeleteStatus}
                   onTaskClick={onTaskClick}
+                  selectedTaskId={keyboardSelectedTaskId}
                 />
               )}
             </SortableStatusColumn>

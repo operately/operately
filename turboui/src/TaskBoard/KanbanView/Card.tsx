@@ -7,6 +7,11 @@ import { DropIndicator, useSortableItem } from "../../utils/PragmaticDragAndDrop
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
 import { createTestId } from "../../TestableElement";
+import {
+  OPEN_TASK_ASSIGNEE_EVENT,
+  OPEN_TASK_DUE_DATE_EVENT,
+} from "../hooks/useTaskKeyboardNavigation";
+import { useShortcutFieldFocusRestore } from "../hooks/useShortcutFieldFocusRestore";
 
 interface CardProps {
   task: TaskBoard.Task;
@@ -18,6 +23,7 @@ interface CardProps {
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   showDropIndicator?: boolean;
   onTaskClick?: (taskId: string) => void;
+  selected?: boolean;
 }
 
 export function Card({
@@ -30,14 +36,45 @@ export function Card({
   assigneePersonSearch,
   showDropIndicator = true,
   onTaskClick,
+  selected = false,
 }: CardProps) {
   const [currentAssignee, setCurrentAssignee] = useState<TaskBoard.Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
+  const [assigneeFieldOpen, setAssigneeFieldOpen] = useState(false);
+  const [dueDateFieldOpen, setDueDateFieldOpen] = useState(false);
   const { ref, isDragging, closestEdge } = useSortableItem({
     itemId: task.id,
     index,
     containerId,
   });
+  const { prepareFocusRestore, restoreFocusAfterOpenChange, restoreFocusOnCloseAutoFocus } =
+    useShortcutFieldFocusRestore(ref);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const openAssigneeField = () => {
+      if (!assigneePersonSearch) return;
+
+      prepareFocusRestore();
+      setAssigneeFieldOpen(true);
+    };
+
+    const openDueDateField = () => {
+      if (!onTaskDueDateChange) return;
+
+      prepareFocusRestore();
+      setDueDateFieldOpen(true);
+    };
+
+    element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
+    element.addEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+    return () => {
+      element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
+      element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+    };
+  }, [assigneePersonSearch, onTaskDueDateChange, prepareFocusRestore, ref]);
 
   useEffect(() => {
     setCurrentAssignee(task.assignees?.[0] || null);
@@ -78,17 +115,40 @@ export function Card({
     event.stopPropagation();
   };
 
+  const handleAssigneeFieldOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setAssigneeFieldOpen(isOpen);
+      restoreFocusAfterOpenChange(isOpen);
+    },
+    [restoreFocusAfterOpenChange],
+  );
+
+  const handleDueDateFieldOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setDueDateFieldOpen(isOpen);
+      restoreFocusAfterOpenChange(isOpen);
+    },
+    [restoreFocusAfterOpenChange],
+  );
+
   return (
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
       className={classNames(
-        "relative rounded-md border border-surface-subtle dark:border-stroke-base bg-surface-base px-4 py-2 shadow-xs group w-full cursor-grab",
+        "relative rounded-md border bg-surface-base px-4 py-2 shadow-xs group w-full cursor-grab focus-visible:outline-none transition-colors",
+        selected
+          ? "border-brand-1 bg-[rgba(224,242,254,0.75)] shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:bg-[rgba(37,99,235,0.20)]"
+          : "border-surface-subtle dark:border-stroke-base",
         {
           "opacity-60": isDimmed,
           "cursor-grabbing": isDragging,
         },
       )}
       data-test-id={createTestId("kanban-card", task.id)}
+      data-task-row-id={task.id}
+      data-selected={selected ? "true" : "false"}
+      tabIndex={-1}
+      aria-selected={selected}
     >
       {dropIndicatorEdge && <DropIndicator edge={dropIndicatorEdge} />}
       <div className="flex items-start">
@@ -137,6 +197,9 @@ export function Card({
                   calendarOnly
                   className={dateFieldClassName}
                   testId={createTestId("kanban-card-due-date", task.id)}
+                  isOpen={dueDateFieldOpen}
+                  onOpenChange={handleDueDateFieldOpenChange}
+                  onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
                 />
               </div>
 
@@ -148,6 +211,9 @@ export function Card({
                   avatarOnly={true}
                   {...(assigneePersonSearch ? { searchData: assigneePersonSearch } : { readonly: true as const })}
                   testId={createTestId("kanban-card-assignee", task.id)}
+                  isOpen={assigneeFieldOpen}
+                  onOpenChange={handleAssigneeFieldOpenChange}
+                  onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
                 />
                 {currentAssignee && (
                   <span className="sr-only" data-test-id={createTestId("kanban-card-assignee-name", task.id)}>

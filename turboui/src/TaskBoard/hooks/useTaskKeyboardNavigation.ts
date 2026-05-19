@@ -8,14 +8,25 @@ export const OPEN_TASK_DUE_DATE_EVENT = "taskboard:open-due-date";
 
 type Direction = "down" | "up";
 
+interface UseTaskKeyboardNavigationOptions {
+  fieldShortcuts?: {
+    assignee?: boolean;
+    status?: boolean;
+    dueDate?: boolean;
+  };
+}
+
 let nextNavigationScopeId = 0;
 let activeNavigationScopeId: number | null = null;
 
-export function useTaskKeyboardNavigation<TElement extends HTMLElement>() {
+export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options: UseTaskKeyboardNavigationOptions = {}) {
   const containerRef = React.useRef<TElement | null>(null);
   const scopeIdRef = React.useRef<number | null>(null);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
   const selectedTaskIdRef = React.useRef<string | null>(null);
+  const enableAssigneeShortcut = options.fieldShortcuts?.assignee ?? true;
+  const enableStatusShortcut = options.fieldShortcuts?.status ?? true;
+  const enableDueDateShortcut = options.fieldShortcuts?.dueDate ?? true;
 
   if (scopeIdRef.current === null) {
     scopeIdRef.current = ++nextNavigationScopeId;
@@ -138,19 +149,26 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>() {
 
     hotkeys("j", selectNextTask);
     hotkeys("k", selectPreviousTask);
-    hotkeys("a", openAssigneeSelector);
-    hotkeys("s", openStatusSelector);
-    hotkeys("d", openDueDateSelector);
+    if (enableAssigneeShortcut) hotkeys("a", openAssigneeSelector);
+    if (enableStatusShortcut) hotkeys("s", openStatusSelector);
+    if (enableDueDateShortcut) hotkeys("d", openDueDateSelector);
     hotkeys("esc", clearSelectionWithEscape);
     return () => {
       hotkeys.unbind("j", selectNextTask);
       hotkeys.unbind("k", selectPreviousTask);
-      hotkeys.unbind("a", openAssigneeSelector);
-      hotkeys.unbind("s", openStatusSelector);
-      hotkeys.unbind("d", openDueDateSelector);
+      if (enableAssigneeShortcut) hotkeys.unbind("a", openAssigneeSelector);
+      if (enableStatusShortcut) hotkeys.unbind("s", openStatusSelector);
+      if (enableDueDateShortcut) hotkeys.unbind("d", openDueDateSelector);
       hotkeys.unbind("esc", clearSelectionWithEscape);
     };
-  }, [activateScope, clearSelection, selectTask]);
+  }, [
+    activateScope,
+    clearSelection,
+    enableAssigneeShortcut,
+    enableDueDateShortcut,
+    enableStatusShortcut,
+    selectTask,
+  ]);
 
   return { containerRef, selectedTaskId, clearSelection, scopeBind } as const;
 }
