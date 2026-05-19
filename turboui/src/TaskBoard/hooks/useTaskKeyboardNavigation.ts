@@ -2,6 +2,9 @@ import React from "react";
 import hotkeys from "hotkeys-js";
 
 export const TASK_ROW_SELECTOR = "[data-task-row-id]";
+export const OPEN_TASK_ASSIGNEE_EVENT = "taskboard:open-assignee";
+export const OPEN_TASK_STATUS_EVENT = "taskboard:open-status";
+export const OPEN_TASK_DUE_DATE_EVENT = "taskboard:open-due-date";
 
 type Direction = "down" | "up";
 
@@ -112,13 +115,39 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>() {
     };
     const selectNextTask = (event: KeyboardEvent) => handleKey(event, "down");
     const selectPreviousTask = (event: KeyboardEvent) => handleKey(event, "up");
+    const openSelectedTaskField = (event: KeyboardEvent, fieldEventName: string) => {
+      if (event.defaultPrevented || shouldIgnoreKeyboardEvent(event)) return;
+      if (!isInNavigationScope(event, containerRef.current, scopeIdRef.current)) return;
+
+      const row = getSelectedTaskRow(containerRef.current, selectedTaskIdRef.current);
+      if (!row) return;
+
+      activateScope();
+      row.dispatchEvent(new Event(fieldEventName, { bubbles: true, cancelable: true }));
+
+      event.preventDefault();
+      try {
+        (event as Event).stopImmediatePropagation();
+      } catch {
+        event.stopPropagation();
+      }
+    };
+    const openAssigneeSelector = (event: KeyboardEvent) => openSelectedTaskField(event, OPEN_TASK_ASSIGNEE_EVENT);
+    const openStatusSelector = (event: KeyboardEvent) => openSelectedTaskField(event, OPEN_TASK_STATUS_EVENT);
+    const openDueDateSelector = (event: KeyboardEvent) => openSelectedTaskField(event, OPEN_TASK_DUE_DATE_EVENT);
 
     hotkeys("j", selectNextTask);
     hotkeys("k", selectPreviousTask);
+    hotkeys("a", openAssigneeSelector);
+    hotkeys("s", openStatusSelector);
+    hotkeys("d", openDueDateSelector);
     hotkeys("esc", clearSelectionWithEscape);
     return () => {
       hotkeys.unbind("j", selectNextTask);
       hotkeys.unbind("k", selectPreviousTask);
+      hotkeys.unbind("a", openAssigneeSelector);
+      hotkeys.unbind("s", openStatusSelector);
+      hotkeys.unbind("d", openDueDateSelector);
       hotkeys.unbind("esc", clearSelectionWithEscape);
     };
   }, [activateScope, clearSelection, selectTask]);
@@ -130,6 +159,12 @@ function getTaskRows(container: HTMLElement | null): HTMLElement[] {
   if (!container) return [];
 
   return Array.from(container.querySelectorAll<HTMLElement>(TASK_ROW_SELECTOR));
+}
+
+function getSelectedTaskRow(container: HTMLElement | null, selectedTaskId: string | null): HTMLElement | null {
+  if (!selectedTaskId) return null;
+
+  return getTaskRows(container).find((row) => row.dataset.taskRowId === selectedTaskId) ?? null;
 }
 
 function getNextIndex(currentIndex: number, rowsCount: number, direction: Direction): number {
@@ -150,6 +185,7 @@ function shouldIgnoreKeyboardEvent(event: KeyboardEvent): boolean {
 
   const tag = target.tagName;
   if (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (target.closest(TASK_ROW_SELECTOR)) return false;
 
   return Boolean(target.closest("button, a, [role='button'], [role='menuitem'], [aria-haspopup='menu']"));
 }
