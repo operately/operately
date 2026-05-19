@@ -6,6 +6,7 @@ import { useCurrentCompany, useMe } from "@/contexts/CurrentCompanyContext";
 
 import { Conversations, FloatingActionButton, IconRobotFace } from "turboui";
 import { useNewAgentMessageSignal } from "../../signals";
+import { getAiAvailability } from "./availability";
 import { useAiSidebarContext } from "./context";
 
 const AI_CONFIGURED = window.appConfig.aiConfigured;
@@ -28,8 +29,9 @@ export function useAiSidebar(props: AiSidebarProps) {
 
 export function AiSidebar() {
   const ctx = useAiSidebarContext();
+  const { displayed } = useAiAvailability();
 
-  if (ctx.conversationContext) {
+  if (ctx.conversationContext && displayed) {
     return <AiSidebarElements />;
   } else {
     return null;
@@ -39,9 +41,6 @@ export function AiSidebar() {
 function AiSidebarElements() {
   const state = useSidebarState();
   const me = useMe();
-  const disabledMessage = AI_CONFIGURED
-    ? undefined
-    : "Ask Alfred isn't available because the AI integration hasn't been configured.";
 
   return (
     <>
@@ -63,7 +62,7 @@ function AiSidebarElements() {
         onCreateConversation={state.createConvo}
         onSendMessage={state.sendMessage}
         contextActions={state.actions}
-        disabledMessage={disabledMessage}
+        disabledMessage={state.disabledMessage}
         contextAttachment={state.conversationContext!}
         me={me!}
         maxWidth={1000}
@@ -96,10 +95,14 @@ function prepareMessage(message: AgentMessage): Conversations.Message {
   };
 }
 
-function useAvailableActions(conversationContext: Conversations.ContextAttachment | null) {
-  const company = useCurrentCompany();
-
+function useAvailableActions(
+  conversationContext: Conversations.ContextAttachment | null,
+  company: ReturnType<typeof useCurrentCompany>,
+  aiEnabled: boolean,
+) {
   return React.useMemo(() => {
+    if (!aiEnabled) return [];
+
     const allActions = window.appConfig.aiActions.filter((a) => a.context === conversationContext?.type);
 
     // Filter out experimental actions if the experimental AI feature is not enabled
@@ -110,14 +113,16 @@ function useAvailableActions(conversationContext: Conversations.ContextAttachmen
 
       return company.enabledExperimentalFeatures.includes("experimental-ai");
     });
-  }, [conversationContext?.type, company?.enabledExperimentalFeatures]);
+  }, [aiEnabled, conversationContext?.type, company?.enabledExperimentalFeatures]);
 }
 
 function useSidebarState() {
   const ctx = useAiSidebarContext();
+  const company = useCurrentCompany();
   const conversationContext = ctx.conversationContext;
+  const { enabled: aiEnabled, disabledMessage } = useAiAvailability();
 
-  const actions = useAvailableActions(conversationContext);
+  const actions = useAvailableActions(conversationContext, company, aiEnabled);
   const [isOpen, setIsOpen] = React.useState(false);
   const [activeConversationId, setActiveConversationId] = React.useState<string | undefined>(undefined);
   const [conversations, setConversations] = React.useState<Conversations.Conversation[]>([]);
@@ -132,8 +137,7 @@ function useSidebarState() {
   }, []);
 
   const refreshConversations = React.useCallback(() => {
-    // Don't fetch conversations if AI is not configured
-    if (!AI_CONFIGURED) {
+    if (!aiEnabled) {
       return;
     }
 
@@ -146,14 +150,16 @@ function useSidebarState() {
     Api.ai.getConversations(params).then((data) => {
       const convos = prepareConvos(data.conversations);
       setConversations(convos);
+    }).catch((error) => {
+      console.error("Failed to load AI conversations:", error);
     });
-  }, [conversationContext]);
+  }, [aiEnabled, conversationContext]);
 
   const createConvo = React.useCallback(
     (action: Conversations.ContextAction | null) => {
       if (!action) return;
       if (!conversationContext) return;
-      if (!AI_CONFIGURED) return;
+      if (!aiEnabled) return;
 
       Api.ai
         .createConversation({
@@ -165,15 +171,18 @@ function useSidebarState() {
           const newConvo = prepareConvo(data.conversation);
           setConversations((prev) => [newConvo, ...prev]);
           setActiveConversationId(newConvo.id);
+        })
+        .catch((error) => {
+          console.error("Failed to create AI conversation:", error);
         });
     },
-    [conversationContext],
+    [aiEnabled, conversationContext],
   );
 
   const sendMessage = React.useCallback(
     async (message: string) => {
       if (!activeConversationId) return;
-      if (!AI_CONFIGURED) return;
+      if (!aiEnabled) return;
 
       try {
         const resp = await Api.ai.sendMessage({
@@ -200,7 +209,7 @@ function useSidebarState() {
         console.error("Failed to send message:", error);
       }
     },
-    [activeConversationId],
+    [activeConversationId, aiEnabled],
   );
 
   // On component mount, load conversations
@@ -223,6 +232,13 @@ function useSidebarState() {
     createConvo,
     conversationContext,
     actions,
+    disabledMessage,
     sendMessage,
   };
+}
+
+function useAiAvailability() {
+  const company = useCurrentCompany();
+
+  return React.useMemo(() => getAiAvailability(company, AI_CONFIGURED), [company]);
 }
