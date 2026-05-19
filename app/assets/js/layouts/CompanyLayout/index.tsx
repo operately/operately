@@ -24,6 +24,7 @@ import { DivLink } from "turboui";
 import { Bell } from "./Bell";
 import { CompanyDropdown } from "./CompanyDropdown";
 import { HelpDropdown } from "./HelpDropdown";
+import { KeyboardShortcutsModal, useKeyboardShortcutsModal } from "./KeyboardShortcutsModal";
 import { NewDropdown } from "./NewDropdown";
 import { Review } from "./Review";
 import { SupportSessionBanner } from "./SupportSessionBanner";
@@ -42,6 +43,7 @@ interface NavigationProps {
   company: Api.Company;
   canAddProject: boolean;
   canAddGoal: boolean;
+  onOpenKeyboardShortcuts: () => void;
 }
 
 function Navigation(props: NavigationProps) {
@@ -54,7 +56,7 @@ function Navigation(props: NavigationProps) {
   }
 }
 
-function MobileNavigation({ company }: { company: Api.Company }) {
+function MobileNavigation({ company }: NavigationProps) {
   const me = useMe()!;
   const paths = usePaths();
   const [open, setOpen] = React.useState(false);
@@ -158,7 +160,7 @@ function MobileSectionAction({ onClick, children, icon }) {
   );
 }
 
-function DesktopNavigation({ company, canAddProject, canAddGoal }: NavigationProps) {
+function DesktopNavigation({ company, canAddProject, canAddGoal, onOpenKeyboardShortcuts }: NavigationProps) {
   const me = useMe()!;
   const paths = usePaths();
 
@@ -201,7 +203,7 @@ function DesktopNavigation({ company, canAddProject, canAddGoal }: NavigationPro
             canAddSpace={company.permissions?.canCreateSpace || false}
             canInvitePeople={company.permissions?.canInviteMembers || false}
           />
-          <HelpDropdown company={company} />
+          <HelpDropdown company={company} onOpenKeyboardShortcuts={onOpenKeyboardShortcuts} />
           <Bell />
           <User />
         </div>
@@ -233,12 +235,13 @@ function SectionLink({ to, children, icon: Icon, testId }: SectionLinkProps) {
 export default function CompanyLayout() {
   const data = useCompanyLoaderData();
   const outletDiv = React.useRef<HTMLDivElement>(null);
+  const keyboardShortcutsModal = useKeyboardShortcutsModal();
 
   useScrollToTopOnNavigationChange({ outletDiv });
 
   return (
     <div className="flex flex-col h-screen">
-      <Navigation {...data} />
+      <Navigation {...data} onOpenKeyboardShortcuts={keyboardShortcutsModal.open} />
       <SupportSessionBanner />
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
@@ -246,6 +249,7 @@ export default function CompanyLayout() {
 
       <DevBar />
       <AiSidebar />
+      <KeyboardShortcutsModal isOpen={keyboardShortcutsModal.isOpen} onClose={keyboardShortcutsModal.close} />
     </div>
   );
 }

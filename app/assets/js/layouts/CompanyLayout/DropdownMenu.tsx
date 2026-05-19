@@ -92,6 +92,30 @@ interface DropdownLinkItemProps {
   hidden?: boolean;
 }
 
+interface DropdownActionItemProps {
+  onClick: () => void;
+  icon: React.ElementType;
+  title: string;
+  testId?: string;
+  hidden?: boolean;
+}
+
+export function DropdownActionItem({ onClick, icon, title, testId, hidden }: DropdownActionItemProps) {
+  if (hidden) return null;
+
+  return (
+    <button
+      type="button"
+      className={classNames(itemClassName, "w-full text-left")}
+      onClick={onClick}
+      data-test-id={testId}
+    >
+      {React.createElement(icon, { size: 18, strokeWidth: 2 })}
+      <div className="font-medium">{title}</div>
+    </button>
+  );
+}
+
 export function DropdownLinkItem({ path, icon, title, testId, target, hidden }: DropdownLinkItemProps) {
   if (hidden) return null;
 
