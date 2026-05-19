@@ -7,6 +7,7 @@ import { useSortableItem } from "../../utils/PragmaticDragAndDrop";
 import classNames from "../../utils/classnames";
 import { StatusSelector } from "../../StatusSelector";
 import { createTestId } from "../../TestableElement";
+import { OPEN_TASK_ASSIGNEE_EVENT } from "../hooks/useTaskKeyboardNavigation";
 
 // Using shared types
 import { Person, TaskWithIndex, Status } from "../types";
@@ -39,6 +40,8 @@ export function TaskItem({
   const [currentStatus, setCurrentStatus] = useState<StatusSelector.StatusOption | null>(
     task.status ?? statusOptions[0] ?? null,
   );
+  const [assigneeFieldOpen, setAssigneeFieldOpen] = useState(false);
+  const restoreTaskFocusAfterAssigneeCloseRef = React.useRef(false);
 
   // Set up draggable behavior
   const { ref, isDragging } = useSortableItem({
@@ -47,6 +50,19 @@ export function TaskItem({
     containerId: milestoneId,
     disabled: draggingDisabled,
   });
+
+  React.useEffect(() => {
+    const element = ref.current;
+    if (!element || !assigneePersonSearch) return;
+
+    const openAssigneeField = () => {
+      restoreTaskFocusAfterAssigneeCloseRef.current = true;
+      setAssigneeFieldOpen(true);
+    };
+
+    element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
+    return () => element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
+  }, [assigneePersonSearch, ref]);
 
   const itemClasses = classNames(isDragging ? "bg-surface-accent" : "", {
     "cursor-grab": !draggingDisabled && !isDragging,
@@ -91,18 +107,64 @@ export function TaskItem({
     event.stopPropagation();
   };
 
+  const focusSelectedRow = useCallback(() => {
+    const focusRow = () => {
+      const row = ref.current;
+      if (!row) return;
+
+      const activeElement = document.activeElement;
+      if (activeElement instanceof HTMLElement && activeElement !== row && row.contains(activeElement)) {
+        activeElement.blur();
+      }
+
+      row.focus({ preventScroll: true });
+    };
+
+    requestAnimationFrame(() => {
+      focusRow();
+    });
+    window.setTimeout(focusRow, 0);
+    window.setTimeout(() => {
+      restoreTaskFocusAfterAssigneeCloseRef.current = false;
+    }, 200);
+  }, [ref]);
+
+  const refocusSelectedRow = useCallback(
+    (event: Event) => {
+      if (!restoreTaskFocusAfterAssigneeCloseRef.current) return;
+
+      event.preventDefault();
+      focusSelectedRow();
+    },
+    [focusSelectedRow],
+  );
+
+  const handleAssigneeFieldOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setAssigneeFieldOpen(isOpen);
+
+      if (!isOpen && restoreTaskFocusAfterAssigneeCloseRef.current) {
+        focusSelectedRow();
+      }
+    },
+    [focusSelectedRow],
+  );
+
   return (
     <li
       ref={ref as React.RefObject<HTMLLIElement>}
-      className={classNames("group/task-row focus:outline-none", itemClasses)}
+      className={classNames("group/task-row focus-visible:outline-none", itemClasses)}
       data-task-row-id={task.id}
+      data-selected={selected ? "true" : "false"}
       tabIndex={-1}
       aria-selected={selected}
     >
       <div
         className={classNames(
-          "flex items-center px-4 py-2.5 bg-surface-base hover:bg-surface-highlight",
-          selected ? "bg-surface-highlight ring-2 ring-inset ring-brand-1" : undefined,
+          "flex items-center px-4 py-2.5 transition-colors",
+          selected
+            ? "bg-[rgba(224,242,254,0.75)] shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:bg-[rgba(37,99,235,0.20)]"
+            : "bg-surface-base hover:bg-surface-highlight group-focus-visible/task-row:bg-[rgba(224,242,254,0.75)] group-focus-visible/task-row:shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:group-focus-visible/task-row:bg-[rgba(37,99,235,0.20)]",
         )}
         data-test-id={createTestId("task", task.id)}
       >
@@ -212,6 +274,9 @@ export function TaskItem({
                 avatarSize={24}
                 avatarOnly={true}
                 searchData={assigneePersonSearch}
+                isOpen={assigneeFieldOpen}
+                onOpenChange={handleAssigneeFieldOpenChange}
+                onCloseAutoFocus={refocusSelectedRow}
               />
             ) : (
               <PersonField

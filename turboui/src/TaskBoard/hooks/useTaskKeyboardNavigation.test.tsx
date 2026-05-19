@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { useTaskKeyboardNavigation } from "./useTaskKeyboardNavigation";
+import { OPEN_TASK_ASSIGNEE_EVENT, useTaskKeyboardNavigation } from "./useTaskKeyboardNavigation";
 
 describe("useTaskKeyboardNavigation", () => {
   beforeEach(() => {
@@ -29,6 +29,16 @@ describe("useTaskKeyboardNavigation", () => {
 
     expect(getByTestId("task-one")).toHaveAttribute("data-selected", "false");
     expect(getByTestId("task-two")).toHaveAttribute("data-selected", "false");
+  });
+
+  it("keeps task shortcuts active from controls inside the selected task row", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("j", 74);
+    getByTestId("task-one-control").focus();
+    fireEvent.keyDown(getByTestId("task-one-control"), { key: "j", keyCode: 74, which: 74 });
+
+    expect(getByTestId("task-two")).toHaveAttribute("data-selected", "true");
   });
 
   it("ignores shortcuts from editable fields", () => {
@@ -89,6 +99,25 @@ describe("useTaskKeyboardNavigation", () => {
     expect(getByTestId("first-task-one")).toHaveAttribute("data-selected", "true");
     expect(getByTestId("second-task-one")).toHaveAttribute("data-selected", "false");
   });
+
+  it("opens the selected task assignee control with a", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("j", 74);
+    fireTaskKey("a", 65);
+
+    expect(getByTestId("task-one-assignee")).toHaveAttribute("data-open-count", "1");
+    expect(getByTestId("task-two-assignee")).toHaveAttribute("data-open-count", "0");
+  });
+
+  it("does not open assignee controls when no task is selected", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("a", 65);
+
+    expect(getByTestId("task-one-assignee")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-two-assignee")).toHaveAttribute("data-open-count", "0");
+  });
 });
 
 function KeyboardNavigationHarness({ idPrefix = "" }: { idPrefix?: string }) {
@@ -103,22 +132,48 @@ function KeyboardNavigationHarness({ idPrefix = "" }: { idPrefix?: string }) {
           Clear
         </button>
         {["one", "two"].map((id) => (
-          <div
+          <TaskRow
             key={id}
-            data-task-row-id={id}
-            data-testid={`${idPrefix}task-${id}`}
-            data-selected={selectedTaskId === id ? "true" : "false"}
-            tabIndex={-1}
-          >
-            {id}
-          </div>
+            id={id}
+            testIdPrefix={idPrefix}
+            selected={selectedTaskId === id}
+          />
         ))}
       </div>
     </>
   );
 }
 
-function fireTaskKey(key: "j" | "k" | "Escape", keyCode: number) {
+function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: string; selected: boolean }) {
+  const rowRef = React.useRef<HTMLDivElement>(null);
+  const [openCount, setOpenCount] = React.useState(0);
+
+  React.useEffect(() => {
+    const element = rowRef.current;
+    if (!element) return;
+
+    const handleOpenAssignee = () => setOpenCount((count) => count + 1);
+    element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
+
+    return () => element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
+  }, []);
+
+  return (
+    <div
+      ref={rowRef}
+      data-task-row-id={id}
+      data-testid={`${testIdPrefix}task-${id}`}
+      data-selected={selected ? "true" : "false"}
+      tabIndex={-1}
+    >
+      {id}
+      <button data-testid={`${testIdPrefix}task-${id}-control`}>Row control</button>
+      <span data-testid={`${testIdPrefix}task-${id}-assignee`} data-open-count={openCount} />
+    </div>
+  );
+}
+
+function fireTaskKey(key: "j" | "k" | "a" | "Escape", keyCode: number) {
   fireEvent.keyDown(document, { key, keyCode, which: keyCode });
   fireEvent.keyUp(document, { key, keyCode, which: keyCode });
 }

@@ -42,6 +42,8 @@ export namespace PersonField {
     extraDialogMenuOptions?: DialogMenuOptionProps[];
     variant?: "inline" | "form-field";
     testId?: string;
+    onOpenChange?: (isOpen: boolean) => void;
+    onCloseAutoFocus?: (event: Event) => void;
   }
 
   interface ReadonlyProps extends BaseProps {
@@ -84,6 +86,7 @@ export namespace PersonField {
     setSearchQuery: (query: string) => void;
     searchResults: Person[];
     testId: string;
+    onCloseAutoFocus?: (event: Event) => void;
   }
 }
 
@@ -99,7 +102,8 @@ export function PersonField(props: PersonField.Props) {
 }
 
 export function useState(props: PersonField.Props): PersonField.State {
-  const [isOpen, changeOpen] = React.useState(!!props.isOpen);
+  const isOpenControlled = props.isOpen !== undefined;
+  const [internalIsOpen, changeOpen] = React.useState(!!props.isOpen);
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -114,6 +118,7 @@ export function useState(props: PersonField.Props): PersonField.State {
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
   const variant = props.variant ?? "inline";
+  const isOpen = isOpenControlled ? !!props.isOpen : internalIsOpen;
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -136,11 +141,13 @@ export function useState(props: PersonField.Props): PersonField.State {
   }, [searchQuery, isOpen]);
 
   const setIsOpen = (open: boolean) => {
-    if (readonly) {
-      changeOpen(false);
-    } else {
-      changeOpen(open);
+    const nextOpen = readonly ? false : open;
+
+    if (!isOpenControlled) {
+      changeOpen(nextOpen);
     }
+
+    props.onOpenChange?.(nextOpen);
   };
 
   return {
@@ -165,6 +172,7 @@ export function useState(props: PersonField.Props): PersonField.State {
     searchResults: props.searchData?.people || [],
 
     testId: props.testId || "person-field",
+    onCloseAutoFocus: props.onCloseAutoFocus,
   };
 }
 
@@ -305,6 +313,7 @@ function Dialog({ state }: { state: PersonField.State }) {
         sideOffset={4}
         alignOffset={2}
         align="start"
+        onCloseAutoFocus={state.onCloseAutoFocus}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
             e.preventDefault();
