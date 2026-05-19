@@ -5,10 +5,12 @@ import { InlineTaskCreatorHandle } from "../components/InlineTaskCreator";
 export interface UseInlineTaskCreatorOptions {
   hotkey?: string; // default: 'c'
   requireHover?: boolean; // default: true
+  onOpen?: () => void;
+  isActive?: () => boolean;
 }
 
 export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) {
-  const { hotkey = "c", requireHover = true } = options;
+  const { hotkey = "c", requireHover = true, onOpen, isActive } = options;
 
   const [open, setOpen] = React.useState(false);
   const creatorRef = React.useRef<InlineTaskCreatorHandle | null>(null);
@@ -29,9 +31,10 @@ export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) 
   }, []);
 
   const openCreator = React.useCallback(() => {
+    onOpen?.();
     setOpen(true);
     setTimeout(() => focusCreator(), 0);
-  }, [focusCreator]);
+  }, [focusCreator, onOpen]);
 
   const closeCreator = React.useCallback(() => setOpen(false), []);
 
@@ -53,7 +56,7 @@ export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) 
       const tag = target?.tagName;
       const isEditable = !!target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT");
       if (isEditable) return;
-      if (requireHoverRef.current && !isHoveredRef.current) return;
+      if (requireHoverRef.current && !isHoveredRef.current && !isActive?.()) return;
 
       evt.preventDefault();
       // Stop other handlers from also reacting to this key
@@ -69,7 +72,7 @@ export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) 
 
     hotkeys(hotkey, handler);
     return () => hotkeys.unbind(hotkey, handler);
-  }, [hotkey, openCreator, requireHover]);
+  }, [hotkey, isActive, openCreator, requireHover]);
 
   return { open, openCreator, closeCreator, focusCreator, creatorRef, hoverBind } as const;
 }
