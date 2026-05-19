@@ -15,6 +15,7 @@ import { FilterBadges } from "../../TaskBoard/components/TaskFilter";
 import TaskList from "../../TaskBoard/components/TaskList";
 import { InlineTaskCreator } from "../../TaskBoard/components/InlineTaskCreator";
 import { useInlineTaskCreator } from "../../TaskBoard/hooks/useInlineTaskCreator";
+import { useTaskKeyboardNavigation } from "../../TaskBoard/hooks/useTaskKeyboardNavigation";
 import { sortTasks } from "../../TaskBoard/utils/sortTasks";
 
 export function TasksSection({
@@ -32,6 +33,11 @@ export function TasksSection({
   statusOptions,
 }: MilestonePage.State) {
   const {
+    containerRef: keyboardNavigationRef,
+    selectedTaskId,
+    clearSelection: clearTaskSelection,
+  } = useTaskKeyboardNavigation<HTMLDivElement>();
+  const {
     open: creatorOpen,
     openCreator,
     closeCreator,
@@ -39,6 +45,7 @@ export function TasksSection({
     hoverBind,
   } = useInlineTaskCreator({
     requireHover: false,
+    onOpen: clearTaskSelection,
   });
   const stats = calculateMilestoneStats(tasks);
   const completionPercentage = calculateCompletionPercentage(stats);
@@ -91,7 +98,7 @@ export function TasksSection({
 
   const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
 
-  // Hotkey handled by useInlineTaskCreator
+  // Inline creation hotkey handled by useInlineTaskCreator
 
   return (
     <div className="space-y-4 pt-6" data-test-id="tasks-section" {...hoverBind}>
@@ -142,7 +149,10 @@ export function TasksSection({
         )}
 
         {/* Task list content */}
-        <div className="bg-surface-base rounded-b-lg overflow-hidden">
+        <div
+          ref={keyboardNavigationRef}
+          className="bg-surface-base rounded-b-lg overflow-hidden"
+        >
           {baseFilteredTasks.length === 0 ? (
             /* Empty state with inline creation */
             <div className="px-4 py-6">
@@ -184,6 +194,7 @@ export function TasksSection({
               draggedItemId={draggedItemId}
               targetLocation={destination}
               placeholderHeight={draggedItemDimensions?.height ?? null}
+              selectedTaskId={selectedTaskId}
               inlineCreateRow={
                 creatorOpen ? (
                   <InlineTaskCreator
