@@ -49,7 +49,6 @@ export function TaskItem({
   const [assigneeFieldOpen, setAssigneeFieldOpen] = useState(false);
   const [statusFieldOpen, setStatusFieldOpen] = useState(false);
   const [dueDateFieldTarget, setDueDateFieldTarget] = useState<DueDateFieldTarget>(null);
-  const restoreTaskFocusAfterFieldCloseRef = React.useRef(false);
 
   // Set up draggable behavior
   const { ref, isDragging } = useSortableItem({
@@ -59,32 +58,31 @@ export function TaskItem({
     disabled: draggingDisabled,
   });
 
+  const { prepareFocusRestore, restoreFocusAfterOpenChange, restoreFocusOnCloseAutoFocus } =
+    useShortcutFieldFocusRestore(ref);
+
   React.useEffect(() => {
     const element = ref.current;
     if (!element) return;
 
-    const prepareTaskFocusRestore = () => {
-      restoreTaskFocusAfterFieldCloseRef.current = true;
-    };
-
     const openAssigneeField = () => {
       if (!assigneePersonSearch) return;
 
-      prepareTaskFocusRestore();
+      prepareFocusRestore();
       setAssigneeFieldOpen(true);
     };
 
     const openStatusField = () => {
       if (!onTaskStatusChange) return;
 
-      prepareTaskFocusRestore();
+      prepareFocusRestore();
       setStatusFieldOpen(true);
     };
 
     const openDueDateField = () => {
       if (!onTaskDueDateChange) return;
 
-      prepareTaskFocusRestore();
+      prepareFocusRestore();
       setDueDateFieldTarget(isMobileViewport() ? "mobile" : "desktop");
     };
 
@@ -96,7 +94,7 @@ export function TaskItem({
       element.removeEventListener(OPEN_TASK_STATUS_EVENT, openStatusField);
       element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
     };
-  }, [assigneePersonSearch, onTaskDueDateChange, onTaskStatusChange, ref]);
+  }, [assigneePersonSearch, onTaskDueDateChange, onTaskStatusChange, prepareFocusRestore, ref]);
 
   const itemClasses = classNames(isDragging ? "bg-surface-accent" : "", {
     "cursor-grab": !draggingDisabled && !isDragging,
@@ -141,69 +139,28 @@ export function TaskItem({
     event.stopPropagation();
   };
 
-  const focusSelectedRow = useCallback(() => {
-    const focusRow = () => {
-      const row = ref.current;
-      if (!row) return;
-
-      const activeElement = document.activeElement;
-      if (activeElement instanceof HTMLElement && activeElement !== row && row.contains(activeElement)) {
-        activeElement.blur();
-      }
-
-      row.focus({ preventScroll: true });
-    };
-
-    requestAnimationFrame(() => {
-      focusRow();
-    });
-    window.setTimeout(focusRow, 0);
-    window.setTimeout(() => {
-      restoreTaskFocusAfterFieldCloseRef.current = false;
-    }, 200);
-  }, [ref]);
-
-  const refocusSelectedRowAfterShortcutFieldClose = useCallback(
-    (event: Event) => {
-      if (!restoreTaskFocusAfterFieldCloseRef.current) return;
-
-      event.preventDefault();
-      focusSelectedRow();
-    },
-    [focusSelectedRow],
-  );
-
   const handleAssigneeFieldOpenChange = useCallback(
     (isOpen: boolean) => {
       setAssigneeFieldOpen(isOpen);
-
-      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
-        focusSelectedRow();
-      }
+      restoreFocusAfterOpenChange(isOpen);
     },
-    [focusSelectedRow],
+    [restoreFocusAfterOpenChange],
   );
 
   const handleStatusFieldOpenChange = useCallback(
     (isOpen: boolean) => {
       setStatusFieldOpen(isOpen);
-
-      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
-        focusSelectedRow();
-      }
+      restoreFocusAfterOpenChange(isOpen);
     },
-    [focusSelectedRow],
+    [restoreFocusAfterOpenChange],
   );
 
   const handleDueDateFieldOpenChange = useCallback(
     (target: Exclude<DueDateFieldTarget, null>, isOpen: boolean) => {
       setDueDateFieldTarget(isOpen ? target : null);
-
-      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
-        focusSelectedRow();
-      }
+      restoreFocusAfterOpenChange(isOpen);
     },
-    [focusSelectedRow],
+    [restoreFocusAfterOpenChange],
   );
 
   return (
@@ -238,7 +195,7 @@ export function TaskItem({
                   readonly={!onTaskStatusChange}
                   isOpen={statusFieldOpen}
                   onOpenChange={handleStatusFieldOpenChange}
-                  onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
+                  onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
                 />
               )}
             </div>
@@ -303,7 +260,7 @@ export function TaskItem({
               }
               isOpen={dueDateFieldTarget === "mobile"}
               onOpenChange={(isOpen) => handleDueDateFieldOpenChange("mobile", isOpen)}
-              onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
+              onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
             />
           </div>
 
@@ -327,7 +284,7 @@ export function TaskItem({
               }
               isOpen={dueDateFieldTarget === "desktop"}
               onOpenChange={(isOpen) => handleDueDateFieldOpenChange("desktop", isOpen)}
-              onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
+              onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
             />
           </div>
 
@@ -341,7 +298,7 @@ export function TaskItem({
                 searchData={assigneePersonSearch}
                 isOpen={assigneeFieldOpen}
                 onOpenChange={handleAssigneeFieldOpenChange}
-                onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
+                onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
               />
             ) : (
               <PersonField
@@ -363,4 +320,59 @@ function isMobileViewport() {
   return typeof window !== "undefined" && typeof window.matchMedia === "function"
     ? !window.matchMedia("(min-width: 640px)").matches
     : false;
+}
+
+function useShortcutFieldFocusRestore(rowRef: React.RefObject<HTMLElement>) {
+  const shouldRestoreFocusRef = React.useRef(false);
+
+  const prepareFocusRestore = useCallback(() => {
+    shouldRestoreFocusRef.current = true;
+  }, []);
+
+  const focusRowAfterFieldClose = useCallback(() => {
+    const focusRow = () => {
+      const row = rowRef.current;
+      if (!row) return;
+
+      const activeElement = document.activeElement;
+      if (activeElement instanceof HTMLElement && activeElement !== row && row.contains(activeElement)) {
+        activeElement.blur();
+      }
+
+      row.focus({ preventScroll: true });
+    };
+
+    requestAnimationFrame(() => {
+      focusRow();
+    });
+    window.setTimeout(focusRow, 0);
+    window.setTimeout(() => {
+      shouldRestoreFocusRef.current = false;
+    }, 200);
+  }, [rowRef]);
+
+  const restoreFocusOnCloseAutoFocus = useCallback(
+    (event: Event) => {
+      if (!shouldRestoreFocusRef.current) return;
+
+      event.preventDefault();
+      focusRowAfterFieldClose();
+    },
+    [focusRowAfterFieldClose],
+  );
+
+  const restoreFocusAfterOpenChange = useCallback(
+    (isOpen: boolean) => {
+      if (!isOpen && shouldRestoreFocusRef.current) {
+        focusRowAfterFieldClose();
+      }
+    },
+    [focusRowAfterFieldClose],
+  );
+
+  return {
+    prepareFocusRestore,
+    restoreFocusAfterOpenChange,
+    restoreFocusOnCloseAutoFocus,
+  };
 }

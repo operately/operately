@@ -123,7 +123,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>() {
       if (!row) return;
 
       activateScope();
-      row.dispatchEvent(new Event(fieldEventName));
+      row.dispatchEvent(new Event(fieldEventName, { bubbles: true, cancelable: true }));
 
       event.preventDefault();
       try {
