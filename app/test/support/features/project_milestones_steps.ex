@@ -434,7 +434,18 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :refute_milestone_visible_in_tasks_board, ctx, name: name do
-    UI.refute_text(ctx, name)
+    UI.refute_text(ctx, name, testid: "tasks-board")
+  end
+
+  step :assert_milestone_visible_in_completed_tasks_board, ctx, name: name do
+    ctx
+    |> UI.find(UI.query(testid: "completed-milestones-board"), fn el ->
+      UI.assert_text(el, name)
+    end)
+  end
+
+  step :refute_milestone_visible_in_completed_tasks_board, ctx, name: name do
+    UI.refute_text(ctx, name, testid: "completed-milestones-board")
   end
 
   step :assert_milestone_updated, ctx, name: name, due_date: due_date do
