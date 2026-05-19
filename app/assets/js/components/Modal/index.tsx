@@ -32,7 +32,14 @@ export default function Modal({ isOpen, hideModal, title, children, height, size
   const showHeader = Boolean(title && hideModal);
 
   return (
-    <ReactModal isOpen={isOpen} contentLabel={title} ref={ref} onAfterOpen={autoFocusOnOpen} style={modalStyle}>
+    <ReactModal
+      isOpen={isOpen}
+      contentLabel={title}
+      ref={ref}
+      onAfterOpen={autoFocusOnOpen}
+      onRequestClose={hideModal}
+      style={modalStyle}
+    >
       {showHeader && <Header title={title} hideModal={hideModal} />}
       <div className="flex-1">{children}</div>
     </ReactModal>
