@@ -367,6 +367,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_activity_added_to_feed("completed the milestone")
       |> Steps.navigate_to_tasks_board()
       |> Steps.refute_milestone_visible_in_tasks_board(name: ctx.milestone.title)
+      |> Steps.assert_milestone_visible_in_completed_tasks_board(name: ctx.milestone.title)
     end
 
     feature "reopen milestone", ctx do
@@ -390,12 +391,14 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.given_that_milestone_is_completed()
       |> Steps.visit_tasks_tab_on_project_page()
       |> Steps.refute_milestone_visible_in_tasks_board(name: ctx.milestone.title)
+      |> Steps.assert_milestone_visible_in_completed_tasks_board(name: ctx.milestone.title)
       |> Steps.visit_milestone_page()
       |> Steps.reopen_milestone()
       |> Steps.assert_milestone_status("Active")
       |> Steps.assert_activity_added_to_feed("re-opened the milestone")
       |> Steps.navigate_to_tasks_board()
       |> Steps.assert_milestone_visible_in_tasks_board(name: ctx.milestone.title)
+      |> Steps.refute_milestone_visible_in_completed_tasks_board(name: ctx.milestone.title)
     end
 
     feature "add a task", ctx do
