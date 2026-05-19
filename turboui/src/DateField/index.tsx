@@ -45,6 +45,9 @@ export namespace DateField {
     calendarOnly?: boolean;
     ariaLabel?: string;
     className?: string;
+    isOpen?: boolean;
+    onOpenChange?: (isOpen: boolean) => void;
+    onCloseAutoFocus?: (event: Event) => void;
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -93,14 +96,19 @@ export function DateField({
   calendarOnly = false,
   ariaLabel,
   className = "",
+  isOpen: controlledOpen,
+  onOpenChange,
+  onCloseAutoFocus,
 }: DateField.Props) {
-  const [open, setOpen] = useState(false);
+  const isOpenControlled = controlledOpen !== undefined;
+  const [internalOpen, setInternalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
   const [previousSelectedDate, setPreviousSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
 
   // If calendarOnly is true, we only show the calendar and only "day" is accepted
   const [dateType, setDateType] = useState<DateField.DateType>(calendarOnly ? "day" : date?.dateType || "day");
 
+  const open = isOpenControlled ? !!controlledOpen : internalOpen;
   const { useSidePositioning, triggerRef, side } = usePopoverPositioning({ open });
 
   useEffect(() => {
@@ -111,8 +119,18 @@ export function DateField({
 
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
+  const changeOpen = (isOpen: boolean) => {
+    const nextOpen = readonly ? false : isOpen;
+
+    if (!isOpenControlled) {
+      setInternalOpen(nextOpen);
+    }
+
+    onOpenChange?.(nextOpen);
+  };
+
   const handleOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
+    changeOpen(isOpen);
 
     if (isOpen && selectedDate) {
       setPreviousSelectedDate(selectedDate);
@@ -125,7 +143,7 @@ export function DateField({
   const handleTriggerClick = () => {
     if (readonly) return;
 
-    setOpen(!open);
+    changeOpen(!open);
 
     if (!open) {
       setPreviousSelectedDate(selectedDate);
@@ -134,12 +152,12 @@ export function DateField({
 
   const handleCancel = () => {
     setSelectedDate(previousSelectedDate);
-    setOpen(false);
+    changeOpen(false);
     onCancel?.();
   };
 
   const handleDateSelect = () => {
-    setOpen(false);
+    changeOpen(false);
 
     if (selectedDate) {
       onDateSelect?.(selectedDate);
@@ -153,7 +171,7 @@ export function DateField({
     setPreviousSelectedDate(null);
     onDateSelect?.(null);
     setDateType("day");
-    setOpen(false);
+    changeOpen(false);
   };
 
   return (
@@ -187,6 +205,7 @@ export function DateField({
           avoidCollisions={true}
           side={side}
           sticky="always"
+          onCloseAutoFocus={onCloseAutoFocus}
         >
           <DatePickerContent
             dateType={dateType}

@@ -7,9 +7,16 @@ import { useSortableItem } from "../../utils/PragmaticDragAndDrop";
 import classNames from "../../utils/classnames";
 import { StatusSelector } from "../../StatusSelector";
 import { createTestId } from "../../TestableElement";
+import {
+  OPEN_TASK_ASSIGNEE_EVENT,
+  OPEN_TASK_DUE_DATE_EVENT,
+  OPEN_TASK_STATUS_EVENT,
+} from "../hooks/useTaskKeyboardNavigation";
 
 // Using shared types
 import { Person, TaskWithIndex, Status } from "../types";
+
+type DueDateFieldTarget = "mobile" | "desktop" | null;
 
 interface TaskItemProps {
   task: TaskWithIndex;
@@ -39,6 +46,10 @@ export function TaskItem({
   const [currentStatus, setCurrentStatus] = useState<StatusSelector.StatusOption | null>(
     task.status ?? statusOptions[0] ?? null,
   );
+  const [assigneeFieldOpen, setAssigneeFieldOpen] = useState(false);
+  const [statusFieldOpen, setStatusFieldOpen] = useState(false);
+  const [dueDateFieldTarget, setDueDateFieldTarget] = useState<DueDateFieldTarget>(null);
+  const restoreTaskFocusAfterFieldCloseRef = React.useRef(false);
 
   // Set up draggable behavior
   const { ref, isDragging } = useSortableItem({
@@ -47,6 +58,45 @@ export function TaskItem({
     containerId: milestoneId,
     disabled: draggingDisabled,
   });
+
+  React.useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const prepareTaskFocusRestore = () => {
+      restoreTaskFocusAfterFieldCloseRef.current = true;
+    };
+
+    const openAssigneeField = () => {
+      if (!assigneePersonSearch) return;
+
+      prepareTaskFocusRestore();
+      setAssigneeFieldOpen(true);
+    };
+
+    const openStatusField = () => {
+      if (!onTaskStatusChange) return;
+
+      prepareTaskFocusRestore();
+      setStatusFieldOpen(true);
+    };
+
+    const openDueDateField = () => {
+      if (!onTaskDueDateChange) return;
+
+      prepareTaskFocusRestore();
+      setDueDateFieldTarget(isMobileViewport() ? "mobile" : "desktop");
+    };
+
+    element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
+    element.addEventListener(OPEN_TASK_STATUS_EVENT, openStatusField);
+    element.addEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+    return () => {
+      element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
+      element.removeEventListener(OPEN_TASK_STATUS_EVENT, openStatusField);
+      element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+    };
+  }, [assigneePersonSearch, onTaskDueDateChange, onTaskStatusChange, ref]);
 
   const itemClasses = classNames(isDragging ? "bg-surface-accent" : "", {
     "cursor-grab": !draggingDisabled && !isDragging,
@@ -91,18 +141,86 @@ export function TaskItem({
     event.stopPropagation();
   };
 
+  const focusSelectedRow = useCallback(() => {
+    const focusRow = () => {
+      const row = ref.current;
+      if (!row) return;
+
+      const activeElement = document.activeElement;
+      if (activeElement instanceof HTMLElement && activeElement !== row && row.contains(activeElement)) {
+        activeElement.blur();
+      }
+
+      row.focus({ preventScroll: true });
+    };
+
+    requestAnimationFrame(() => {
+      focusRow();
+    });
+    window.setTimeout(focusRow, 0);
+    window.setTimeout(() => {
+      restoreTaskFocusAfterFieldCloseRef.current = false;
+    }, 200);
+  }, [ref]);
+
+  const refocusSelectedRowAfterShortcutFieldClose = useCallback(
+    (event: Event) => {
+      if (!restoreTaskFocusAfterFieldCloseRef.current) return;
+
+      event.preventDefault();
+      focusSelectedRow();
+    },
+    [focusSelectedRow],
+  );
+
+  const handleAssigneeFieldOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setAssigneeFieldOpen(isOpen);
+
+      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
+        focusSelectedRow();
+      }
+    },
+    [focusSelectedRow],
+  );
+
+  const handleStatusFieldOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setStatusFieldOpen(isOpen);
+
+      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
+        focusSelectedRow();
+      }
+    },
+    [focusSelectedRow],
+  );
+
+  const handleDueDateFieldOpenChange = useCallback(
+    (target: Exclude<DueDateFieldTarget, null>, isOpen: boolean) => {
+      setDueDateFieldTarget(isOpen ? target : null);
+
+      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
+        focusSelectedRow();
+      }
+    },
+    [focusSelectedRow],
+  );
+
   return (
     <li
       ref={ref as React.RefObject<HTMLLIElement>}
-      className={classNames("group/task-row focus:outline-none", itemClasses)}
+      className={classNames("group/task-row focus-visible:outline-none", itemClasses)}
       data-task-row-id={task.id}
+      data-selected={selected ? "true" : "false"}
       tabIndex={-1}
       aria-selected={selected}
     >
       <div
         className={classNames(
-          "flex items-center px-4 py-2.5 bg-surface-base hover:bg-surface-highlight",
-          selected ? "bg-surface-highlight ring-2 ring-inset ring-brand-1" : undefined,
+          "flex items-center px-4 py-2.5 transition-colors",
+          selected
+            ? "bg-[rgba(224,242,254,0.75)] shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:bg-[rgba(37,99,235,0.20)]"
+            : "bg-surface-base hover:bg-surface-highlight group-focus-visible/task-row:bg-[rgba(224,242,254,0.75)] group-focus-visible/task-row:shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:group-focus-visible/task-row:bg-[rgba(37,99,235,0.20)]",
         )}
         data-test-id={createTestId("task", task.id)}
       >
@@ -118,6 +236,9 @@ export function TaskItem({
                   onChange={handleStatusChange}
                   size="md"
                   readonly={!onTaskStatusChange}
+                  isOpen={statusFieldOpen}
+                  onOpenChange={handleStatusFieldOpenChange}
+                  onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
                 />
               )}
             </div>
@@ -180,6 +301,9 @@ export function TaskItem({
                   ? ""
                   : "text-content-subtle [&>span]:text-content-subtle [&>span_svg]:text-content-subtle"
               }
+              isOpen={dueDateFieldTarget === "mobile"}
+              onOpenChange={(isOpen) => handleDueDateFieldOpenChange("mobile", isOpen)}
+              onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
             />
           </div>
 
@@ -201,6 +325,9 @@ export function TaskItem({
                   ? ""
                   : "[&>span]:text-transparent group-hover/task-row:[&>span]:text-content-dimmed group-focus-within/task-row:[&>span]:text-content-dimmed"
               }
+              isOpen={dueDateFieldTarget === "desktop"}
+              onOpenChange={(isOpen) => handleDueDateFieldOpenChange("desktop", isOpen)}
+              onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
             />
           </div>
 
@@ -212,6 +339,9 @@ export function TaskItem({
                 avatarSize={24}
                 avatarOnly={true}
                 searchData={assigneePersonSearch}
+                isOpen={assigneeFieldOpen}
+                onOpenChange={handleAssigneeFieldOpenChange}
+                onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
               />
             ) : (
               <PersonField
@@ -227,4 +357,10 @@ export function TaskItem({
       </div>
     </li>
   );
+}
+
+function isMobileViewport() {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function"
+    ? !window.matchMedia("(min-width: 640px)").matches
+    : false;
 }
