@@ -100,15 +100,20 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   readonly = false,
   showFullBadge = false,
   testId,
+  isOpen: controlledIsOpen,
+  onOpenChange,
+  onCloseAutoFocus,
 }: StatusSelector.Props<T>) {
   if (statusOptions.length === 0) return null;
 
   const { iconSize, containerSize } = SIZE_CONFIG[size];
-  const [isOpen, setIsOpen] = React.useState(false);
+  const isOpenControlled = controlledIsOpen !== undefined;
+  const [internalIsOpen, setInternalIsOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+  const isOpen = isOpenControlled ? !!controlledIsOpen : internalIsOpen;
 
   const currentOption = React.useMemo(() => {
     return status ?? null;
@@ -133,14 +138,23 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
     }
   }, [selectedIndex]);
 
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    if (open) {
+  React.useEffect(() => {
+    if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
     } else {
       setSearchTerm("");
       setSelectedIndex(0);
     }
+  }, [isOpen]);
+
+  const handleOpenChange = (open: boolean) => {
+    const nextOpen = readonly ? false : open;
+
+    if (!isOpenControlled) {
+      setInternalIsOpen(nextOpen);
+    }
+
+    onOpenChange?.(nextOpen);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -159,20 +173,20 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
           const selectedOption = filteredStatusOptions[selectedIndex];
           if (selectedOption) {
             onChange(selectedOption as T);
-            setIsOpen(false);
+            handleOpenChange(false);
           }
         }
         break;
       case "Escape":
         e.preventDefault();
-        setIsOpen(false);
+        handleOpenChange(false);
         break;
     }
   };
 
   const handleItemClick = (option: T) => {
     onChange(option);
-    setIsOpen(false);
+    handleOpenChange(false);
     setSearchTerm("");
   };
 
@@ -223,6 +237,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
           sideOffset={4}
           alignOffset={2}
           align="start"
+          onCloseAutoFocus={onCloseAutoFocus}
         >
           <div className="p-1">
             <div className="p-1 pb-0.5">
@@ -339,5 +354,8 @@ export namespace StatusSelector {
     readonly?: boolean;
     showFullBadge?: boolean;
     testId?: string;
+    isOpen?: boolean;
+    onOpenChange?: (isOpen: boolean) => void;
+    onCloseAutoFocus?: (event: Event) => void;
   }
 }
