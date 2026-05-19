@@ -7,10 +7,16 @@ import { useSortableItem } from "../../utils/PragmaticDragAndDrop";
 import classNames from "../../utils/classnames";
 import { StatusSelector } from "../../StatusSelector";
 import { createTestId } from "../../TestableElement";
-import { OPEN_TASK_ASSIGNEE_EVENT } from "../hooks/useTaskKeyboardNavigation";
+import {
+  OPEN_TASK_ASSIGNEE_EVENT,
+  OPEN_TASK_DUE_DATE_EVENT,
+  OPEN_TASK_STATUS_EVENT,
+} from "../hooks/useTaskKeyboardNavigation";
 
 // Using shared types
 import { Person, TaskWithIndex, Status } from "../types";
+
+type DueDateFieldTarget = "mobile" | "desktop" | null;
 
 interface TaskItemProps {
   task: TaskWithIndex;
@@ -41,7 +47,9 @@ export function TaskItem({
     task.status ?? statusOptions[0] ?? null,
   );
   const [assigneeFieldOpen, setAssigneeFieldOpen] = useState(false);
-  const restoreTaskFocusAfterAssigneeCloseRef = React.useRef(false);
+  const [statusFieldOpen, setStatusFieldOpen] = useState(false);
+  const [dueDateFieldTarget, setDueDateFieldTarget] = useState<DueDateFieldTarget>(null);
+  const restoreTaskFocusAfterFieldCloseRef = React.useRef(false);
 
   // Set up draggable behavior
   const { ref, isDragging } = useSortableItem({
@@ -53,16 +61,42 @@ export function TaskItem({
 
   React.useEffect(() => {
     const element = ref.current;
-    if (!element || !assigneePersonSearch) return;
+    if (!element) return;
+
+    const prepareTaskFocusRestore = () => {
+      restoreTaskFocusAfterFieldCloseRef.current = true;
+    };
 
     const openAssigneeField = () => {
-      restoreTaskFocusAfterAssigneeCloseRef.current = true;
+      if (!assigneePersonSearch) return;
+
+      prepareTaskFocusRestore();
       setAssigneeFieldOpen(true);
     };
 
+    const openStatusField = () => {
+      if (!onTaskStatusChange) return;
+
+      prepareTaskFocusRestore();
+      setStatusFieldOpen(true);
+    };
+
+    const openDueDateField = () => {
+      if (!onTaskDueDateChange) return;
+
+      prepareTaskFocusRestore();
+      setDueDateFieldTarget(isMobileViewport() ? "mobile" : "desktop");
+    };
+
     element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
-    return () => element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
-  }, [assigneePersonSearch, ref]);
+    element.addEventListener(OPEN_TASK_STATUS_EVENT, openStatusField);
+    element.addEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+    return () => {
+      element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
+      element.removeEventListener(OPEN_TASK_STATUS_EVENT, openStatusField);
+      element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+    };
+  }, [assigneePersonSearch, onTaskDueDateChange, onTaskStatusChange, ref]);
 
   const itemClasses = classNames(isDragging ? "bg-surface-accent" : "", {
     "cursor-grab": !draggingDisabled && !isDragging,
@@ -125,13 +159,13 @@ export function TaskItem({
     });
     window.setTimeout(focusRow, 0);
     window.setTimeout(() => {
-      restoreTaskFocusAfterAssigneeCloseRef.current = false;
+      restoreTaskFocusAfterFieldCloseRef.current = false;
     }, 200);
   }, [ref]);
 
-  const refocusSelectedRow = useCallback(
+  const refocusSelectedRowAfterShortcutFieldClose = useCallback(
     (event: Event) => {
-      if (!restoreTaskFocusAfterAssigneeCloseRef.current) return;
+      if (!restoreTaskFocusAfterFieldCloseRef.current) return;
 
       event.preventDefault();
       focusSelectedRow();
@@ -143,7 +177,29 @@ export function TaskItem({
     (isOpen: boolean) => {
       setAssigneeFieldOpen(isOpen);
 
-      if (!isOpen && restoreTaskFocusAfterAssigneeCloseRef.current) {
+      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
+        focusSelectedRow();
+      }
+    },
+    [focusSelectedRow],
+  );
+
+  const handleStatusFieldOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setStatusFieldOpen(isOpen);
+
+      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
+        focusSelectedRow();
+      }
+    },
+    [focusSelectedRow],
+  );
+
+  const handleDueDateFieldOpenChange = useCallback(
+    (target: Exclude<DueDateFieldTarget, null>, isOpen: boolean) => {
+      setDueDateFieldTarget(isOpen ? target : null);
+
+      if (!isOpen && restoreTaskFocusAfterFieldCloseRef.current) {
         focusSelectedRow();
       }
     },
@@ -180,6 +236,9 @@ export function TaskItem({
                   onChange={handleStatusChange}
                   size="md"
                   readonly={!onTaskStatusChange}
+                  isOpen={statusFieldOpen}
+                  onOpenChange={handleStatusFieldOpenChange}
+                  onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
                 />
               )}
             </div>
@@ -242,6 +301,9 @@ export function TaskItem({
                   ? ""
                   : "text-content-subtle [&>span]:text-content-subtle [&>span_svg]:text-content-subtle"
               }
+              isOpen={dueDateFieldTarget === "mobile"}
+              onOpenChange={(isOpen) => handleDueDateFieldOpenChange("mobile", isOpen)}
+              onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
             />
           </div>
 
@@ -263,6 +325,9 @@ export function TaskItem({
                   ? ""
                   : "[&>span]:text-transparent group-hover/task-row:[&>span]:text-content-dimmed group-focus-within/task-row:[&>span]:text-content-dimmed"
               }
+              isOpen={dueDateFieldTarget === "desktop"}
+              onOpenChange={(isOpen) => handleDueDateFieldOpenChange("desktop", isOpen)}
+              onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
             />
           </div>
 
@@ -276,7 +341,7 @@ export function TaskItem({
                 searchData={assigneePersonSearch}
                 isOpen={assigneeFieldOpen}
                 onOpenChange={handleAssigneeFieldOpenChange}
-                onCloseAutoFocus={refocusSelectedRow}
+                onCloseAutoFocus={refocusSelectedRowAfterShortcutFieldClose}
               />
             ) : (
               <PersonField
@@ -292,4 +357,10 @@ export function TaskItem({
       </div>
     </li>
   );
+}
+
+function isMobileViewport() {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function"
+    ? !window.matchMedia("(min-width: 640px)").matches
+    : false;
 }

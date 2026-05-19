@@ -2,7 +2,12 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { OPEN_TASK_ASSIGNEE_EVENT, useTaskKeyboardNavigation } from "./useTaskKeyboardNavigation";
+import {
+  OPEN_TASK_ASSIGNEE_EVENT,
+  OPEN_TASK_DUE_DATE_EVENT,
+  OPEN_TASK_STATUS_EVENT,
+  useTaskKeyboardNavigation,
+} from "./useTaskKeyboardNavigation";
 
 describe("useTaskKeyboardNavigation", () => {
   beforeEach(() => {
@@ -110,13 +115,39 @@ describe("useTaskKeyboardNavigation", () => {
     expect(getByTestId("task-two-assignee")).toHaveAttribute("data-open-count", "0");
   });
 
-  it("does not open assignee controls when no task is selected", () => {
+  it("opens the selected task status control with s", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("j", 74);
+    fireTaskKey("s", 83);
+
+    expect(getByTestId("task-one-status")).toHaveAttribute("data-open-count", "1");
+    expect(getByTestId("task-two-status")).toHaveAttribute("data-open-count", "0");
+  });
+
+  it("opens the selected task due date control with d", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("j", 74);
+    fireTaskKey("d", 68);
+
+    expect(getByTestId("task-one-due-date")).toHaveAttribute("data-open-count", "1");
+    expect(getByTestId("task-two-due-date")).toHaveAttribute("data-open-count", "0");
+  });
+
+  it("does not open task field controls when no task is selected", () => {
     const { getByTestId } = render(<KeyboardNavigationHarness />);
 
     fireTaskKey("a", 65);
+    fireTaskKey("s", 83);
+    fireTaskKey("d", 68);
 
     expect(getByTestId("task-one-assignee")).toHaveAttribute("data-open-count", "0");
     expect(getByTestId("task-two-assignee")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-one-status")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-two-status")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-one-due-date")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-two-due-date")).toHaveAttribute("data-open-count", "0");
   });
 });
 
@@ -147,15 +178,25 @@ function KeyboardNavigationHarness({ idPrefix = "" }: { idPrefix?: string }) {
 function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: string; selected: boolean }) {
   const rowRef = React.useRef<HTMLDivElement>(null);
   const [openCount, setOpenCount] = React.useState(0);
+  const [statusOpenCount, setStatusOpenCount] = React.useState(0);
+  const [dueDateOpenCount, setDueDateOpenCount] = React.useState(0);
 
   React.useEffect(() => {
     const element = rowRef.current;
     if (!element) return;
 
     const handleOpenAssignee = () => setOpenCount((count) => count + 1);
+    const handleOpenStatus = () => setStatusOpenCount((count) => count + 1);
+    const handleOpenDueDate = () => setDueDateOpenCount((count) => count + 1);
     element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
+    element.addEventListener(OPEN_TASK_STATUS_EVENT, handleOpenStatus);
+    element.addEventListener(OPEN_TASK_DUE_DATE_EVENT, handleOpenDueDate);
 
-    return () => element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
+    return () => {
+      element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
+      element.removeEventListener(OPEN_TASK_STATUS_EVENT, handleOpenStatus);
+      element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, handleOpenDueDate);
+    };
   }, []);
 
   return (
@@ -169,11 +210,13 @@ function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: str
       {id}
       <button data-testid={`${testIdPrefix}task-${id}-control`}>Row control</button>
       <span data-testid={`${testIdPrefix}task-${id}-assignee`} data-open-count={openCount} />
+      <span data-testid={`${testIdPrefix}task-${id}-status`} data-open-count={statusOpenCount} />
+      <span data-testid={`${testIdPrefix}task-${id}-due-date`} data-open-count={dueDateOpenCount} />
     </div>
   );
 }
 
-function fireTaskKey(key: "j" | "k" | "a" | "Escape", keyCode: number) {
+function fireTaskKey(key: "j" | "k" | "a" | "s" | "d" | "Escape", keyCode: number) {
   fireEvent.keyDown(document, { key, keyCode, which: keyCode });
   fireEvent.keyUp(document, { key, keyCode, which: keyCode });
 }

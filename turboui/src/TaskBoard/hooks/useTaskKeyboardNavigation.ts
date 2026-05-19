@@ -3,6 +3,8 @@ import hotkeys from "hotkeys-js";
 
 export const TASK_ROW_SELECTOR = "[data-task-row-id]";
 export const OPEN_TASK_ASSIGNEE_EVENT = "taskboard:open-assignee";
+export const OPEN_TASK_STATUS_EVENT = "taskboard:open-status";
+export const OPEN_TASK_DUE_DATE_EVENT = "taskboard:open-due-date";
 
 type Direction = "down" | "up";
 
@@ -113,7 +115,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>() {
     };
     const selectNextTask = (event: KeyboardEvent) => handleKey(event, "down");
     const selectPreviousTask = (event: KeyboardEvent) => handleKey(event, "up");
-    const openAssigneeSelector = (event: KeyboardEvent) => {
+    const openSelectedTaskField = (event: KeyboardEvent, fieldEventName: string) => {
       if (event.defaultPrevented || shouldIgnoreKeyboardEvent(event)) return;
       if (!isInNavigationScope(event, containerRef.current, scopeIdRef.current)) return;
 
@@ -121,7 +123,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>() {
       if (!row) return;
 
       activateScope();
-      row.dispatchEvent(new Event(OPEN_TASK_ASSIGNEE_EVENT));
+      row.dispatchEvent(new Event(fieldEventName));
 
       event.preventDefault();
       try {
@@ -130,15 +132,22 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>() {
         event.stopPropagation();
       }
     };
+    const openAssigneeSelector = (event: KeyboardEvent) => openSelectedTaskField(event, OPEN_TASK_ASSIGNEE_EVENT);
+    const openStatusSelector = (event: KeyboardEvent) => openSelectedTaskField(event, OPEN_TASK_STATUS_EVENT);
+    const openDueDateSelector = (event: KeyboardEvent) => openSelectedTaskField(event, OPEN_TASK_DUE_DATE_EVENT);
 
     hotkeys("j", selectNextTask);
     hotkeys("k", selectPreviousTask);
     hotkeys("a", openAssigneeSelector);
+    hotkeys("s", openStatusSelector);
+    hotkeys("d", openDueDateSelector);
     hotkeys("esc", clearSelectionWithEscape);
     return () => {
       hotkeys.unbind("j", selectNextTask);
       hotkeys.unbind("k", selectPreviousTask);
       hotkeys.unbind("a", openAssigneeSelector);
+      hotkeys.unbind("s", openStatusSelector);
+      hotkeys.unbind("d", openDueDateSelector);
       hotkeys.unbind("esc", clearSelectionWithEscape);
     };
   }, [activateScope, clearSelection, selectTask]);
