@@ -92,12 +92,17 @@ export function TaskBoard({
   }, [externalMilestones]);
 
   // Apply filters to tasks
-  const { filteredTasks, showHiddenTasksToggle } = useFilteredTasks(internalTasks, internalMilestones, filters);
+  const { filteredTasks, showHiddenTasksToggle } = useFilteredTasks(internalTasks, filters);
 
   const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
   const milestones = useMemo(
     () => getMilestonesWithStats(internalMilestones, internalTasks),
     [internalMilestones, internalTasks],
+  );
+  const { openMilestones, completedMilestones } = useMemo(() => partitionMilestones(milestones), [milestones]);
+  const allMilestones = useMemo(
+    () => [...openMilestones, ...completedMilestones].map((milestoneData) => milestoneData.milestone),
+    [completedMilestones, openMilestones],
   );
 
   const openTaskModal = useCallback((milestoneId: string | undefined) => {
@@ -134,9 +139,6 @@ export function TaskBoard({
         return;
       }
 
-      // Get all milestone objects for the utility function
-      const allMilestones = milestones.map((m) => m.milestone);
-
       // Use the utility function to handle reordering
       const updatedTasks = reorderTasks(
         internalTasks,
@@ -150,7 +152,7 @@ export function TaskBoard({
       // Update state with the reordered tasks
       setInternalTasks(updatedTasks);
     },
-    [internalTasks, milestones, onTaskMilestoneChange],
+    [allMilestones, internalTasks, onTaskMilestoneChange],
   );
 
   const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
@@ -215,8 +217,8 @@ export function TaskBoard({
                 </li>
               )}
 
-              {/* Milestones */}
-              {milestones.map((milestoneData) => (
+              {/* Open milestones */}
+              {openMilestones.map((milestoneData) => (
                 <MilestoneCard
                   key={milestoneData.milestone.id}
                   milestone={milestoneData.milestone}
@@ -231,7 +233,7 @@ export function TaskBoard({
                   onMilestoneUpdate={onMilestoneUpdate}
                   assigneePersonSearch={assigneePersonSearch}
                   statusOptions={statuses}
-                  availableMilestones={milestones.map((m) => m.milestone)}
+                  availableMilestones={allMilestones}
                   draggedItemId={draggedItemId}
                   targetLocation={destination}
                   placeholderHeight={draggedItemDimensions?.height ?? null}
@@ -293,10 +295,50 @@ export function TaskBoard({
                   />
                 </li>
               )}
+
             </ul>
           </div>
         </div>
       </div>
+
+      {completedMilestones.length > 0 && (
+        <div
+          className="mt-6 flex flex-col bg-surface-base border border-surface-outline rounded-md overflow-hidden"
+          data-test-id="completed-milestones-board"
+        >
+          <div
+            className="px-4 py-2 text-xs font-medium uppercase tracking-wide text-content-dimmed bg-surface-base border-b border-surface-outline"
+            data-test-id="completed-milestones-section"
+          >
+            Completed milestones
+          </div>
+          <div className="overflow-x-auto">
+            <ul className="w-full list-none m-0 p-0">
+              {completedMilestones.map((milestoneData) => (
+                <MilestoneCard
+                  key={milestoneData.milestone.id}
+                  milestone={milestoneData.milestone}
+                  tasks={groupedTasks[milestoneData.milestone.id] || []}
+                  showHiddenTasksToggle={showHiddenTasksToggle}
+                  showKanbanLink={showMilestoneKanbanLink}
+                  stats={milestoneData.stats}
+                  onTaskCreate={onTaskCreate}
+                  onTaskAssigneeChange={onTaskAssigneeChange}
+                  onTaskDueDateChange={onTaskDueDateChange}
+                  onTaskStatusChange={onTaskStatusChange}
+                  onMilestoneUpdate={onMilestoneUpdate}
+                  assigneePersonSearch={assigneePersonSearch}
+                  statusOptions={statuses}
+                  availableMilestones={allMilestones}
+                  draggedItemId={draggedItemId}
+                  targetLocation={destination}
+                  placeholderHeight={draggedItemDimensions?.height ?? null}
+                />
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -393,7 +435,6 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
   }
 
   return milestonesToProcess
-    .filter((milestone) => milestone.status !== "done")
     .map((milestone) => {
       const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
       let hasTasks = false;
@@ -427,6 +468,24 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
         hasTasks,
       };
     });
+};
+
+const partitionMilestones = (milestones: Types.MilestoneWithStats[]) => {
+  return milestones.reduce<{
+    openMilestones: Types.MilestoneWithStats[];
+    completedMilestones: Types.MilestoneWithStats[];
+  }>(
+    (acc, milestoneData) => {
+      if (milestoneData.milestone.status === "done") {
+        acc.completedMilestones.push(milestoneData);
+      } else {
+        acc.openMilestones.push(milestoneData);
+      }
+
+      return acc;
+    },
+    { openMilestones: [], completedMilestones: [] },
+  );
 };
 
 const groupTasksByMilestone = (tasks: Types.Task[]) => {

@@ -1,4 +1,4 @@
-import { IconFileText, IconLayoutKanban, IconMessageCircle, IconPlus } from "../../icons";
+import { IconFileText, IconFlagFilled, IconLayoutKanban, IconMessageCircle, IconPlus } from "../../icons";
 import React, { useState } from "react";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
@@ -69,6 +69,8 @@ export function MilestoneCard({
 }: MilestoneCardProps) {
   const cardRef = React.useRef<HTMLLIElement>(null);
   const sortedTasks = React.useMemo(() => sortTasks(tasks, milestone), [tasks, milestone.tasksOrderingState]);
+  const isCompleted = milestone.status === "done";
+  const showOverdueWarning = !isCompleted;
 
   // Generate default stats if not provided
   const milestoneStats = stats || calculateMilestoneStats(sortedTasks);
@@ -111,18 +113,23 @@ export function MilestoneCard({
           data-test-id={createTestId("milestone", milestone.id)}
         >
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            {/* Progress pie chart */}
-            <PieChart
-              size={16}
-              ariaLabel={`Milestone progress: ${completionLabel}`}
-              title={`Milestone progress: ${completionLabel}`}
-              slices={[
-                {
-                  percentage: completionPercentage,
-                  color: "var(--color-callout-success-content)",
-                },
-              ]}
-            />
+            {isCompleted ? (
+              <div className="flex items-center gap-1.5 flex-shrink-0 text-accent-1">
+                <IconFlagFilled size={16} className="flex-shrink-0" />
+              </div>
+            ) : (
+              <PieChart
+                size={16}
+                ariaLabel={`Milestone progress: ${completionLabel}`}
+                title={`Milestone progress: ${completionLabel}`}
+                slices={[
+                  {
+                    percentage: completionPercentage,
+                    color: "var(--color-callout-success-content)",
+                  },
+                ]}
+              />
+            )}
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <BlackLink
                 to={milestone.link || ""}
@@ -159,7 +166,7 @@ export function MilestoneCard({
                     date={milestone.dueDate || null}
                     onDateSelect={handleMilestoneDueDateChange}
                     variant="inline"
-                    showOverdueWarning={true}
+                    showOverdueWarning={showOverdueWarning}
                     placeholder="Set due date"
                     readonly={!onMilestoneUpdate}
                     size="small"
@@ -171,7 +178,7 @@ export function MilestoneCard({
                       date={null}
                       onDateSelect={handleMilestoneDueDateChange}
                       variant="inline"
-                      showOverdueWarning={true}
+                      showOverdueWarning={showOverdueWarning}
                       placeholder="Set due date"
                       readonly={false}
                       size="small"
@@ -223,6 +230,7 @@ export function MilestoneCard({
             targetLocation={targetLocation}
             placeholderHeight={placeholderHeight}
             selectedTaskId={selectedTaskId}
+            suppressEmptyStateWhenOnlyHiddenTasks={isCompleted}
             inlineCreateRow={
               creatorOpen ? (
                 <InlineTaskCreator
