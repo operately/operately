@@ -20,6 +20,7 @@ interface TaskItemProps {
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
   draggingDisabled?: boolean;
+  selected?: boolean;
 }
 
 export function TaskItem({
@@ -31,6 +32,7 @@ export function TaskItem({
   assigneePersonSearch,
   statusOptions,
   draggingDisabled = false,
+  selected = false,
 }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
@@ -90,9 +92,18 @@ export function TaskItem({
   };
 
   return (
-    <li ref={ref as React.RefObject<HTMLLIElement>} className={classNames("group/task-row", itemClasses)}>
+    <li
+      ref={ref as React.RefObject<HTMLLIElement>}
+      className={classNames("group/task-row focus:outline-none", itemClasses)}
+      data-task-row-id={task.id}
+      tabIndex={-1}
+      aria-selected={selected}
+    >
       <div
-        className="flex items-center px-4 py-2.5 bg-surface-base hover:bg-surface-highlight"
+        className={classNames(
+          "flex items-center px-4 py-2.5 bg-surface-base hover:bg-surface-highlight",
+          selected ? "bg-surface-highlight ring-2 ring-inset ring-brand-1" : undefined,
+        )}
         data-test-id={createTestId("task", task.id)}
       >
         {/* Left side: Status and task info */}
