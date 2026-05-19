@@ -34,6 +34,8 @@ export interface MilestoneCardProps {
   draggedItemId?: string | null;
   targetLocation?: BoardLocation | null;
   placeholderHeight?: number | null;
+  selectedTaskId?: string | null;
+  onInlineCreateOpen?: () => void;
 
   /**
    * Milestone statistics - if not provided, will be calculated from tasks
@@ -62,7 +64,10 @@ export function MilestoneCard({
   draggedItemId = null,
   targetLocation = null,
   placeholderHeight = null,
+  selectedTaskId = null,
+  onInlineCreateOpen,
 }: MilestoneCardProps) {
+  const cardRef = React.useRef<HTMLLIElement>(null);
   const sortedTasks = React.useMemo(() => sortTasks(tasks, milestone), [tasks, milestone.tasksOrderingState]);
 
   // Generate default stats if not provided
@@ -70,7 +75,13 @@ export function MilestoneCard({
   const completionPercentage = calculateCompletionPercentage(milestoneStats);
   const completionLabel = `${Math.round(completionPercentage)}% complete`;
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator();
+  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator({
+    onOpen: onInlineCreateOpen,
+    isActive: () => {
+      const activeElement = document.activeElement;
+      return activeElement instanceof HTMLElement && Boolean(cardRef.current?.contains(activeElement));
+    },
+  });
 
   const handleCreateTask = (newTask: Types.NewTaskPayload) => {
     if (onTaskCreate) {
@@ -90,7 +101,7 @@ export function MilestoneCard({
 
   return (
     <>
-      <li {...hoverBind}>
+      <li ref={cardRef} {...hoverBind}>
         {/* Milestone header */}
         <div
           className={classNames(
@@ -211,6 +222,7 @@ export function MilestoneCard({
             draggedItemId={draggedItemId}
             targetLocation={targetLocation}
             placeholderHeight={placeholderHeight}
+            selectedTaskId={selectedTaskId}
             inlineCreateRow={
               creatorOpen ? (
                 <InlineTaskCreator
