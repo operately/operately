@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 import * as Types from "../types";
 import { TaskBoard } from "../components";
-import { mockTasks, mockMilestones } from "../tests/mockData";
+import { createContextualDate } from "../../DateField/mockData";
+import { DONE_STATUS, mockMilestones, mockTasks, PENDING_STATUS } from "../tests/mockData";
 import { Page } from "../../Page";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
@@ -148,6 +149,113 @@ export const Default: Story = {
         }}
         canManageStatuses={true}
         canCreateMilestone={true}
+        canCreateTask={true}
+        displayMode={displayMode}
+        onDisplayModeChange={setDisplayMode}
+      />
+    );
+  },
+};
+
+export const CompletedMilestonesAtEnd: Story = {
+  render: () => {
+    const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    const [displayMode, setDisplayMode] = useState<Types.TaskDisplayMode>("list");
+    const openMilestone: Types.Milestone = {
+      ...mockMilestones.q2Release!,
+      id: "open-milestone",
+      name: "Launch prep",
+      status: "pending",
+    };
+    const completedMilestone: Types.Milestone = {
+      ...mockMilestones.completedMilestone1!,
+      id: "completed-milestone",
+      name: "Discovery wrapped",
+      status: "done",
+      dueDate: createContextualDate("2025-03-15", "day"),
+    };
+
+    const [milestones] = useState<Types.Milestone[]>([openMilestone, completedMilestone]);
+    const [searchableMilestones, setSearchableMilestones] = useState<Types.Milestone[]>([openMilestone, completedMilestone]);
+    const [tasks, setTasks] = useState<Types.Task[]>([
+      {
+        id: "open-task",
+        title: "Ship the release checklist",
+        status: PENDING_STATUS,
+        description: null,
+        link: "#",
+        milestone: openMilestone,
+        dueDate: createContextualDate("2025-08-10", "day"),
+        type: "project",
+      },
+      {
+        id: "no-milestone-task",
+        title: "Coordinate stakeholder review",
+        status: PENDING_STATUS,
+        description: null,
+        link: "#",
+        milestone: null,
+        dueDate: null,
+        type: "project",
+      },
+      {
+        id: "completed-task",
+        title: "Wrap discovery interviews",
+        status: DONE_STATUS,
+        description: null,
+        link: "#",
+        milestone: completedMilestone,
+        dueDate: null,
+        closedAt: new Date("2025-03-18T00:00:00Z"),
+        type: "project",
+      },
+    ]);
+    const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
+    const [statuses, setStatuses] = useState<Types.Status[]>(DEFAULT_STATUSES);
+
+    const handleMilestoneSearch = async (query: string) => {
+      const normalizedQuery = query.toLowerCase();
+      setSearchableMilestones(
+        milestones.filter((milestone) => milestone.name.toLowerCase().includes(normalizedQuery)),
+      );
+    };
+
+    return (
+      <TaskBoard
+        tasks={tasks}
+        milestones={milestones}
+        searchableMilestones={searchableMilestones}
+        onTaskCreate={(task) => {
+          const nextTask: Types.Task = {
+            id: `task-${Date.now()}`,
+            title: task.title,
+            status: task.status ?? null,
+            description: null,
+            link: "#",
+            milestone: task.milestone,
+            dueDate: task.dueDate,
+            assignees: [],
+            type: "project",
+          };
+
+          setTasks((prev) => [...prev, nextTask]);
+        }}
+        onMilestoneCreate={() => {}}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
+        onTaskStatusChange={(taskId, status) => {
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status } : task)));
+        }}
+        onMilestoneSearch={handleMilestoneSearch}
+        assigneePersonSearch={assigneePersonSearch}
+        filters={filters}
+        onFiltersChange={setFilters}
+        statuses={statuses}
+        onSaveCustomStatuses={(data) => {
+          setStatuses(data.nextStatuses);
+        }}
+        canManageStatuses={true}
+        canCreateMilestone={false}
         canCreateTask={true}
         displayMode={displayMode}
         onDisplayModeChange={setDisplayMode}

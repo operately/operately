@@ -24,6 +24,8 @@ export interface TaskListProps {
   showHiddenTasksToggle?: boolean;
   /** Optional inline row to render below active tasks (e.g., inline creator) */
   inlineCreateRow?: React.ReactNode;
+  /** Hide the generic empty-task prompt when only completed tasks are present */
+  suppressEmptyStateWhenOnlyHiddenTasks?: boolean;
   draggedItemId?: string | null;
   targetLocation?: BoardLocation | null;
   placeholderHeight?: number | null;
@@ -45,6 +47,7 @@ export function TaskList({
   assigneePersonSearch,
   statusOptions,
   inlineCreateRow,
+  suppressEmptyStateWhenOnlyHiddenTasks = false,
   draggedItemId = null,
   targetLocation = null,
   placeholderHeight = null,
@@ -160,7 +163,10 @@ export function TaskList({
         {inlineCreateRow}
 
         {/* Empty state message when no visible tasks but there are hidden tasks */}
-        {visibleTasks.length === 0 && totalHiddenCount > 0 && showHiddenTasksToggle && (
+        {visibleTasks.length === 0 &&
+          totalHiddenCount > 0 &&
+          showHiddenTasksToggle &&
+          !suppressEmptyStateWhenOnlyHiddenTasks && (
           <div className="py-3 px-4 text-left text-content-subtle text-sm bg-surface-base sm:text-center">
             <span className="sm:hidden">Tap + to add a task.</span>
             <span className="hidden sm:inline">Click + or press c to add a task, or drag a task here.</span>
