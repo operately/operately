@@ -27,6 +27,7 @@ export interface TaskListProps {
   draggedItemId?: string | null;
   targetLocation?: BoardLocation | null;
   placeholderHeight?: number | null;
+  selectedTaskId?: string | null;
 }
 
 /**
@@ -47,6 +48,7 @@ export function TaskList({
   draggedItemId = null,
   targetLocation = null,
   placeholderHeight = null,
+  selectedTaskId = null,
 }: TaskListProps) {
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -139,6 +141,7 @@ export function TaskList({
                 assigneePersonSearch={assigneePersonSearch}
                 statusOptions={statusOptions}
                 draggingDisabled={false}
+                selected={task.id === selectedTaskId}
               />
             </React.Fragment>
           ))}
@@ -215,6 +218,7 @@ export function TaskList({
               assigneePersonSearch={assigneePersonSearch}
               statusOptions={statusOptions}
               draggingDisabled={true}
+              selected={task.id === selectedTaskId}
             />
           </ul>
         ))}

@@ -13,6 +13,7 @@ import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
+import { useTaskKeyboardNavigation } from "../hooks/useTaskKeyboardNavigation";
 import { TasksMenu } from "./TasksMenu";
 import { TaskDisplayMenu } from "./TaskDisplayMenu";
 import { StatusSelector } from "../../StatusSelector";
@@ -55,18 +56,31 @@ export function TaskBoard({
   displayMode = "list",
   onDisplayModeChange,
 }: Types.TaskBoardProps) {
+  const {
+    containerRef: keyboardNavigationRef,
+    selectedTaskId,
+    clearSelection: clearTaskSelection,
+    scopeBind: keyboardNavigationScopeBind,
+  } = useTaskKeyboardNavigation<HTMLDivElement>();
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
+  const noMilestoneRef = React.useRef<HTMLLIElement>(null);
   const {
     open: noMilestoneCreatorOpen,
     openCreator: openNoMilestoneCreator,
     closeCreator: closeNoMilestoneCreator,
     creatorRef: noMilestoneCreatorRef,
     hoverBind: noMilestoneHoverBind,
-  } = useInlineTaskCreator();
+  } = useInlineTaskCreator({
+    onOpen: clearTaskSelection,
+    isActive: () => {
+      const activeElement = document.activeElement;
+      return activeElement instanceof HTMLElement && Boolean(noMilestoneRef.current?.contains(activeElement));
+    },
+  });
 
   // Keep internal tasks in sync with external tasks
   useLayoutEffect(() => {
@@ -186,6 +200,8 @@ export function TaskBoard({
       />
 
       <div
+        ref={keyboardNavigationRef}
+        {...keyboardNavigationScopeBind}
         className="flex flex-col flex-1 bg-surface-base border border-surface-outline rounded-md overflow-hidden"
         data-test-id="tasks-board"
       >
@@ -219,12 +235,14 @@ export function TaskBoard({
                   draggedItemId={draggedItemId}
                   targetLocation={destination}
                   placeholderHeight={draggedItemDimensions?.height ?? null}
+                  selectedTaskId={selectedTaskId}
+                  onInlineCreateOpen={clearTaskSelection}
                 />
               ))}
 
               {/* Tasks with no milestone */}
               {hasTasksWithoutMilestone && (
-                <li {...noMilestoneHoverBind}>
+                <li ref={noMilestoneRef} {...noMilestoneHoverBind}>
                   {/* No milestone header */}
                   <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
                     <div className="flex items-center gap-2">
@@ -256,6 +274,7 @@ export function TaskBoard({
                     draggedItemId={draggedItemId}
                     targetLocation={destination}
                     placeholderHeight={draggedItemDimensions?.height ?? null}
+                    selectedTaskId={selectedTaskId}
                     inlineCreateRow={
                       noMilestoneCreatorOpen ? (
                         <InlineTaskCreator
