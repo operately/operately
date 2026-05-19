@@ -31,6 +31,7 @@ interface Props {
   disableDnD?: boolean;
   onTaskClick?: (taskId: string) => void;
   canCreateTask: boolean;
+  selectedTaskId?: string | null;
 }
 
 export function Column({
@@ -53,6 +54,7 @@ export function Column({
   disableDnD,
   onTaskClick,
   canCreateTask,
+  selectedTaskId,
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -148,6 +150,7 @@ export function Column({
                     assigneePersonSearch={assigneePersonSearch}
                     showDropIndicator={shouldShowDropIndicator}
                     onTaskClick={onTaskClick}
+                    selected={selectedTaskId === task.id}
                   />
                 </React.Fragment>
               ))

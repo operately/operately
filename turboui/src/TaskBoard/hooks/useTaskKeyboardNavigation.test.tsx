@@ -135,6 +135,16 @@ describe("useTaskKeyboardNavigation", () => {
     expect(getByTestId("task-two-due-date")).toHaveAttribute("data-open-count", "0");
   });
 
+  it("can disable the status field shortcut", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness fieldShortcuts={{ status: false }} />);
+
+    fireTaskKey("j", 74);
+    fireTaskKey("s", 83);
+
+    expect(getByTestId("task-one-status")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-two-status")).toHaveAttribute("data-open-count", "0");
+  });
+
   it("does not open task field controls when no task is selected", () => {
     const { getByTestId } = render(<KeyboardNavigationHarness />);
 
@@ -151,8 +161,16 @@ describe("useTaskKeyboardNavigation", () => {
   });
 });
 
-function KeyboardNavigationHarness({ idPrefix = "" }: { idPrefix?: string }) {
-  const { containerRef, selectedTaskId, clearSelection, scopeBind } = useTaskKeyboardNavigation<HTMLDivElement>();
+function KeyboardNavigationHarness({
+  idPrefix = "",
+  fieldShortcuts,
+}: {
+  idPrefix?: string;
+  fieldShortcuts?: { assignee?: boolean; status?: boolean; dueDate?: boolean };
+}) {
+  const { containerRef, selectedTaskId, clearSelection, scopeBind } = useTaskKeyboardNavigation<HTMLDivElement>({
+    fieldShortcuts,
+  });
 
   return (
     <>
