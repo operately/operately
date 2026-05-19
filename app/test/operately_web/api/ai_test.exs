@@ -230,6 +230,28 @@ defmodule OperatelyWeb.Api.AiTest do
       assert res.conversations == []
     end
 
+    test "returns error if feature is not enabled", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.disable_feature(ctx, "ai")
+
+      assert {404, _} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: Ecto.UUID.generate() |> OperatelyWeb.Paths.goal_id()
+               })
+    end
+
+    test "returns error if ai is not configured", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      set_ai_configured(false)
+
+      assert {404, _} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: Ecto.UUID.generate() |> OperatelyWeb.Paths.goal_id()
+               })
+    end
+
     test "filters conversations by goal context", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       ctx = Factory.add_goal(ctx, :goal1, :marketing)

@@ -230,6 +230,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.click(css: "button[title*=\"Ask Alfred\"]")
   end
 
+  step :assert_ai_sidebar_not_displayed, ctx do
+    ctx |> UI.refute_has(css: "button[title*=\"Ask Alfred\"]")
+  end
+
   step :assert_logged_in_contributor_has_edit_access, ctx do
     {:ok, project} = Operately.Projects.Project.get(ctx.contributor, id: ctx.project.id)
 
