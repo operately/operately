@@ -6,7 +6,7 @@ import { ActivityProps, AcknowledgmentProps } from "./types";
 
 export function MilestoneCompletedActivity({ activity }: ActivityProps) {
   return (
-    <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
+    <div className="flex items-center justify-between gap-3 py-3 px-4 not-first:border-t border-stroke-base text-content-accent relative">
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -34,7 +34,7 @@ export function MilestoneCompletedActivity({ activity }: ActivityProps) {
 
 export function MilestoneReopenedActivity({ activity }: ActivityProps) {
   return (
-    <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
+    <div className="flex items-center justify-between gap-3 py-3 px-4 not-first:border-t border-stroke-base text-content-accent relative">
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export function MilestoneReopenedActivity({ activity }: ActivityProps) {
 
 export function MilestoneCreatedActivity({ activity }: ActivityProps) {
   return (
-    <div className="flex gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
+    <div className="flex gap-3 py-1.5 px-4 text-content-subtle text-sm relative">
       <div className="shrink-0 mt-0.5">
         <IconFlag size={16} className="text-blue-500" />
       </div>
@@ -93,7 +93,7 @@ export function MilestoneCreatedActivity({ activity }: ActivityProps) {
 
 export function MilestoneDescriptionActivity({ activity }: ActivityProps) {
   return (
-    <div className="flex gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
+    <div className="flex gap-3 py-1.5 px-4 text-content-subtle text-sm relative">
       <div className="shrink-0 mt-0.5">
         <IconFileText size={16} className="text-content-dimmed" />
       </div>
@@ -124,7 +124,7 @@ export function MilestoneDescriptionActivity({ activity }: ActivityProps) {
 
 export function MilestoneUpdateActivity({ activity }: ActivityProps) {
   return (
-    <div className="flex gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
+    <div className="flex gap-3 py-1.5 px-4 text-content-subtle text-sm relative">
       <div className="shrink-0 mt-0.5">
         <IconFlag size={16} className="text-content-dimmed" />
       </div>
@@ -155,7 +155,7 @@ export function MilestoneUpdateActivity({ activity }: ActivityProps) {
 
 export function AcknowledgmentActivity({ person, ackAt }: AcknowledgmentProps) {
   return (
-    <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
+    <div className="flex items-center justify-between gap-3 py-6 px-4 not-first:border-t border-stroke-base text-content-accent">
       <div className="flex items-center justify-between flex-1">
         <div className="flex items-center gap-2 font-bold flex-1">
           <AvatarWithName

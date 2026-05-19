@@ -23,7 +23,7 @@ import { capitalizeFirstLetter } from "../utils/strings";
 
 export function TaskActivityItem({ activity }: TaskActivityProps) {
   return (
-    <div className="flex gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
+    <div className="flex gap-3 py-1.5 px-4 text-content-subtle text-sm relative">
       <div className="shrink-0 mt-0.5">
         <ActivityIcon activity={activity} />
       </div>
