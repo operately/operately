@@ -16,31 +16,11 @@ import {
   getMarkerPosition,
   type TimelineColumn as Column,
 } from "../utils/timeline";
+import { flattenTimelineItems, normalizeTimelineDate, toTimelineItem, type TimelineItem, type TimelineMilestone } from "../utils/timelineItem";
 
 interface Props {
   items: WorkMap.Item[];
   tab: WorkMap.Filter;
-}
-
-interface TimelineItem {
-  id: string;
-  name: string;
-  type: WorkMap.Item["type"];
-  status: WorkMap.Item["status"];
-  owner: WorkMap.Item["owner"];
-  space: WorkMap.Item["space"];
-  itemPath: string;
-  startDate: Date | null;
-  endDate: Date | null;
-  milestones: TimelineMilestone[];
-}
-
-interface TimelineMilestone {
-  id: string;
-  name: string;
-  status: WorkMap.Milestone["status"];
-  link: string;
-  dueDate: Date;
 }
 
 interface MonthGroup {
@@ -50,8 +30,17 @@ interface MonthGroup {
   span: number;
 }
 
+const TIMELINE_LAYOUT = {
+  rowHeight: 58,
+  bottomPadding: 24,
+  barTop: 8,
+  barHeight: 40,
+  milestoneTop: 31,
+  milestoneIconSize: 16,
+};
+
 export function WorkMapTimeline({ items, tab }: Props) {
-  const flattenedItems = React.useMemo(() => flattenItems(items), [items]);
+  const flattenedItems = React.useMemo(() => flattenTimelineItems(items), [items]);
   const timelineItems = React.useMemo(() => flattenedItems.map(toTimelineItem), [flattenedItems]);
   const hiddenUndatedCount = timelineItems.filter((item) => !item.startDate && !item.endDate).length;
 
@@ -77,9 +66,11 @@ export function WorkMapTimeline({ items, tab }: Props) {
   const rangeEnd = range.end.getTime();
   const rangeMs = Math.max(rangeEnd - rangeStart, 1);
   const timelineMinWidth = Math.max(columns.length * 96, 820);
-  const todayLeft = getMarkerPosition(new Date(), rangeStart, rangeEnd);
-  const todayLabel = todayLeft === null ? null : formatMarkerDate(new Date());
+  const today = new Date();
+  const todayLeft = getMarkerPosition(today, rangeStart, rangeEnd);
+  const todayLabel = todayLeft === null ? null : formatMarkerDate(today);
   const monthGroups = buildMonthGroups(columns);
+  const highlightedColumnKey = columns.find((column) => columnContainsDate(column, today))?.key ?? null;
 
   return (
     <div className="bg-surface-base rounded-b-lg">
@@ -91,13 +82,13 @@ export function WorkMapTimeline({ items, tab }: Props) {
 
       <div className="overflow-x-auto">
         <div
-          className="relative min-w-full px-4 pb-6"
-          style={{ minWidth: `${timelineMinWidth}px` }}
+          className="relative min-w-full px-4"
+          style={{ minWidth: `${timelineMinWidth}px`, paddingBottom: TIMELINE_LAYOUT.bottomPadding }}
         >
           <TodayBadge left={todayLeft} label={todayLabel} />
           <TimelineMarker left={todayLeft} className="bg-brand-1/90 dark:bg-blue-300/90" />
 
-          <TimelineHeader columns={columns} monthGroups={monthGroups} />
+          <TimelineHeader columns={columns} monthGroups={monthGroups} highlightedColumnKey={highlightedColumnKey} />
 
           {visibleItems.map((item) => (
             <TimelineRow
@@ -106,6 +97,7 @@ export function WorkMapTimeline({ items, tab }: Props) {
               columns={columns}
               rangeStart={rangeStart}
               rangeMs={rangeMs}
+              highlightedColumnKey={highlightedColumnKey}
             />
           ))}
         </div>
@@ -119,11 +111,13 @@ function TimelineRow({
   columns,
   rangeStart,
   rangeMs,
+  highlightedColumnKey,
 }: {
   item: TimelineItem;
   columns: Column[];
   rangeStart: number;
   rangeMs: number;
+  highlightedColumnKey: string | null;
 }) {
   const barStartDate = getBarStartDate(item);
   const left = barStartDate ? clampPercent(((barStartDate.getTime() - rangeStart) / rangeMs) * 100) : null;
@@ -134,20 +128,20 @@ function TimelineRow({
 
   return (
     <div className="border-b border-surface-outline/70 dark:border-gray-700/70">
-      <div className="relative h-[58px] bg-surface-base">
-        <TimelineGrid columns={columns} />
+      <div className="relative bg-surface-base" style={{ height: TIMELINE_LAYOUT.rowHeight }}>
+        <TimelineGrid columns={columns} highlightedColumnKey={highlightedColumnKey} />
 
         <div className="absolute inset-y-0 left-0 right-0">
           {barWidth !== null && left !== null && (
             <BarLabel
-                to={item.itemPath}
-                name={item.name}
-                rangeLabel={rangeLabel}
-                status={item.status}
-                openEnded={false}
-                style={{ left: `${left}%`, width: `${barWidth}%` }}
-              />
-            )}
+              to={item.itemPath}
+              name={item.name}
+              rangeLabel={rangeLabel}
+              status={item.status}
+              openEnded={false}
+              style={{ left: `${left}%`, width: `${barWidth}%` }}
+            />
+          )}
 
           {hasInfiniteBar && left !== null && (
             <BarLabel
@@ -177,9 +171,11 @@ function TimelineRow({
 function TimelineHeader({
   columns,
   monthGroups,
+  highlightedColumnKey,
 }: {
   columns: Column[];
   monthGroups: MonthGroup[];
+  highlightedColumnKey: string | null;
 }) {
   return (
     <div className="sticky left-0 z-10 border-b border-surface-outline bg-surface-base dark:border-gray-700">
@@ -207,7 +203,7 @@ function TimelineHeader({
             key={column.key}
             className={classNames("border-l border-surface-outline/70 px-3 py-2 dark:border-gray-700", {
               "border-l-0": index === 0,
-              "bg-surface-dimmed/70 dark:bg-gray-800/60": columnContainsDate(column, new Date()),
+              "bg-surface-dimmed/70 dark:bg-gray-800/60": column.key === highlightedColumnKey,
             })}
           >
             {formatWeekCellLabel(column.start)}
@@ -218,7 +214,7 @@ function TimelineHeader({
   );
 }
 
-function TimelineGrid({ columns }: { columns: Column[] }) {
+function TimelineGrid({ columns, highlightedColumnKey }: { columns: Column[]; highlightedColumnKey: string | null }) {
   return (
     <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(96px, 1fr))` }}>
       {columns.map((column, index) => (
@@ -226,7 +222,7 @@ function TimelineGrid({ columns }: { columns: Column[] }) {
           key={column.key}
           className={classNames("border-l border-surface-outline/70 dark:border-gray-700/70", {
             "border-l-0": index === 0,
-            "bg-surface-dimmed/40 dark:bg-gray-800/40": columnContainsDate(column, new Date()),
+            "bg-surface-dimmed/40 dark:bg-gray-800/40": column.key === highlightedColumnKey,
           })}
         />
       ))}
@@ -237,7 +233,12 @@ function TimelineGrid({ columns }: { columns: Column[] }) {
 function TimelineMarker({ left, className }: { left: number | null; className: string }) {
   if (left === null) return null;
 
-  return <div className={classNames("pointer-events-none absolute bottom-6 top-0 z-20 w-px", className)} style={{ left: `${left}%` }} />;
+  return (
+    <div
+      className={classNames("pointer-events-none absolute top-0 z-20 w-px", className)}
+      style={{ left: `${left}%`, bottom: TIMELINE_LAYOUT.bottomPadding }}
+    />
+  );
 }
 
 function TodayBadge({ left, label }: { left: number | null; label: string | null }) {
@@ -272,11 +273,11 @@ function BarLabel({
   return (
     <div
       className={classNames(
-        "absolute top-2 flex h-10 min-w-0 items-start rounded-lg border bg-surface-dimmed text-content-accent shadow-sm transition-colors hover:border-content-subtle dark:bg-gray-800/90 dark:text-gray-100 dark:shadow-none dark:hover:border-gray-500",
+        "absolute flex min-w-0 items-start rounded-lg border bg-surface-dimmed text-content-accent shadow-sm transition-colors hover:border-content-subtle dark:bg-gray-800/90 dark:text-gray-100 dark:shadow-none dark:hover:border-gray-500",
         tone.border,
         { "rounded-r-none border-r-0": openEnded },
       )}
-      style={style}
+      style={{ ...style, top: TIMELINE_LAYOUT.barTop, height: TIMELINE_LAYOUT.barHeight }}
       title={rangeLabel ? `${name} · ${rangeLabel}` : name}
     >
       <span className={classNames("h-full w-1 shrink-0 rounded-l-lg", tone.accent)} />
@@ -307,8 +308,8 @@ function MilestoneMarker({
   return (
     <BlackLink
       to={milestone.link}
-      className="group absolute top-[31px] z-30 -translate-x-1/2"
-      style={{ left: `${left}%` }}
+      className="group absolute z-30 -translate-x-1/2"
+      style={{ left: `${left}%`, top: TIMELINE_LAYOUT.milestoneTop }}
       title={title}
       underline="never"
     >
@@ -328,52 +329,14 @@ function MilestoneMarker({
           />
         )}
       </span>
-      <span className="pointer-events-none absolute left-1/2 top-4 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-surface-outline bg-surface-base px-2 py-1 text-[11px] font-medium text-content-accent shadow-lg group-hover:block dark:border-gray-700 dark:bg-gray-900 dark:text-gray-50">
+      <span
+        className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-surface-outline bg-surface-base px-2 py-1 text-[11px] font-medium text-content-accent shadow-lg group-hover:block dark:border-gray-700 dark:bg-gray-900 dark:text-gray-50"
+        style={{ top: TIMELINE_LAYOUT.milestoneIconSize }}
+      >
         {title}
       </span>
     </BlackLink>
   );
-}
-
-function flattenItems(items: WorkMap.Item[]): WorkMap.Item[] {
-  return items.flatMap((item) => [item, ...flattenItems(item.children)]);
-}
-
-function toTimelineItem(item: WorkMap.Item): TimelineItem {
-  return {
-    id: item.id,
-    name: item.name,
-    type: item.type,
-    status: item.status,
-    owner: item.owner,
-    space: item.space,
-    itemPath: item.itemPath,
-    startDate: normalizeDate(item.timeframe?.startDate?.date),
-    endDate: normalizeDate(item.timeframe?.endDate?.date),
-    milestones: item.milestones
-      .map((milestone) => {
-        const dueDate = normalizeDate(milestone.dueDate?.date);
-        if (!dueDate) return null;
-
-        return {
-          id: milestone.id,
-          name: milestone.name,
-          status: milestone.status,
-          link: milestone.link,
-          dueDate,
-        };
-      })
-      .filter((milestone): milestone is TimelineMilestone => Boolean(milestone))
-      .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime()),
-  };
-}
-
-function normalizeDate(date: Date | null | undefined) {
-  if (!date) return null;
-
-  const value = new Date(date);
-  value.setHours(0, 0, 0, 0);
-  return value;
 }
 
 function buildMonthGroups(columns: Column[]): MonthGroup[] {
@@ -400,9 +363,10 @@ function buildMonthGroups(columns: Column[]): MonthGroup[] {
 }
 
 function columnContainsDate(column: Column, date: Date) {
-  const value = normalizeDate(date)?.getTime();
-  if (!value) return false;
+  const normalized = normalizeTimelineDate(date);
+  if (!normalized) return false;
 
+  const value = normalized.getTime();
   return value >= column.start.getTime() && value <= column.end.getTime();
 }
 
