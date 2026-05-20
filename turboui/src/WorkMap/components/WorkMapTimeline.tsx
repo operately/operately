@@ -39,7 +39,11 @@ const TIMELINE_LAYOUT = {
   milestoneIconSize: 16,
 };
 
+type MilestonePlacement = "start" | "middle" | "end";
+
 export function WorkMapTimeline({ items, tab }: Props) {
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const centeredRangeRef = React.useRef<string | null>(null);
   const flattenedItems = React.useMemo(() => flattenTimelineItems(items), [items]);
   const timelineItems = React.useMemo(() => flattenedItems.map(toTimelineItem), [flattenedItems]);
   const hiddenUndatedCount = timelineItems.filter((item) => !item.startDate && !item.endDate).length;
@@ -52,6 +56,37 @@ export function WorkMapTimeline({ items, tab }: Props) {
     [timelineItems],
   );
 
+  const range = visibleItems.length > 0 ? calculateRange(visibleItems) : null;
+  const columns = range ? buildColumns(range.start, range.end, "week") : [];
+  const rangeStart = range?.start.getTime() ?? 0;
+  const rangeEnd = range?.end.getTime() ?? 0;
+  const rangeMs = Math.max(rangeEnd - rangeStart, 1);
+  const timelineMinWidth = Math.max(columns.length * 96, 820);
+  const today = new Date();
+  const todayLeft = range ? getMarkerPosition(today, rangeStart, rangeEnd) : null;
+  const todayLabel = todayLeft === null ? null : formatMarkerDate(today);
+  const monthGroups = buildMonthGroups(columns);
+  const highlightedColumnKey = columns.find((column) => columnContainsDate(column, today))?.key ?? null;
+  const centeredRangeKey = todayLeft === null ? null : `${rangeStart}:${rangeEnd}:${timelineMinWidth}`;
+
+  React.useEffect(() => {
+    if (!centeredRangeKey || todayLeft === null || centeredRangeRef.current === centeredRangeKey) return;
+
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const markerLeft = scrollContainer.scrollWidth * (todayLeft / 100);
+      const targetLeft = markerLeft - scrollContainer.clientWidth / 2;
+      const maxLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+
+      scrollContainer.scrollLeft = Math.max(0, Math.min(targetLeft, maxLeft));
+      centeredRangeRef.current = centeredRangeKey;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [centeredRangeKey, todayLeft]);
+
   if (items.length === 0) {
     return <TimelineEmptyState message={emptyStateMessage(tab)} />;
   }
@@ -59,18 +94,6 @@ export function WorkMapTimeline({ items, tab }: Props) {
   if (visibleItems.length === 0) {
     return <TimelineEmptyState message="Nothing in this view has dates yet." hiddenUndatedCount={hiddenUndatedCount} />;
   }
-
-  const range = calculateRange(visibleItems);
-  const columns = buildColumns(range.start, range.end, "week");
-  const rangeStart = range.start.getTime();
-  const rangeEnd = range.end.getTime();
-  const rangeMs = Math.max(rangeEnd - rangeStart, 1);
-  const timelineMinWidth = Math.max(columns.length * 96, 820);
-  const today = new Date();
-  const todayLeft = getMarkerPosition(today, rangeStart, rangeEnd);
-  const todayLabel = todayLeft === null ? null : formatMarkerDate(today);
-  const monthGroups = buildMonthGroups(columns);
-  const highlightedColumnKey = columns.find((column) => columnContainsDate(column, today))?.key ?? null;
 
   return (
     <div className="bg-surface-base rounded-b-lg">
@@ -80,7 +103,7 @@ export function WorkMapTimeline({ items, tab }: Props) {
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      <div ref={scrollContainerRef} className="overflow-x-auto">
         <div
           className="relative min-w-full px-4"
           style={{ minWidth: `${timelineMinWidth}px`, paddingBottom: TIMELINE_LAYOUT.bottomPadding }}
@@ -160,6 +183,7 @@ function TimelineRow({
               milestone={milestone}
               left={getMarkerPosition(milestone.dueDate, rangeStart, rangeStart + rangeMs)}
               outsideBar={isOutsideBar(milestone.dueDate, barStartDate, item.endDate)}
+              placement={milestonePlacement(milestone.dueDate, barStartDate, item.endDate)}
             />
           ))}
         </div>
@@ -295,10 +319,12 @@ function MilestoneMarker({
   milestone,
   left,
   outsideBar,
+  placement,
 }: {
   milestone: TimelineMilestone;
   left: number | null;
   outsideBar: boolean;
+  placement: MilestonePlacement;
 }) {
   if (left === null) return null;
 
@@ -308,15 +334,17 @@ function MilestoneMarker({
   return (
     <BlackLink
       to={milestone.link}
-      className="group absolute z-30 -translate-x-1/2"
+      className={classNames("group absolute z-30", milestoneTranslateClass(placement))}
       style={{ left: `${left}%`, top: TIMELINE_LAYOUT.milestoneTop }}
       title={title}
       underline="never"
     >
       <span
         className={classNames(
-          "flex h-4 w-4 items-center justify-center rounded-sm opacity-85 transition group-hover:scale-110 group-hover:opacity-100",
-          { "bg-amber-50 ring-1 ring-amber-300/80 dark:bg-amber-950 dark:ring-amber-500/80": outsideBar },
+          "flex h-4 w-4 items-center justify-center rounded-sm transition group-hover:scale-110",
+          outsideBar
+            ? "bg-amber-50 text-amber-700 opacity-95 ring-1 ring-amber-300/90 dark:bg-amber-900/40 dark:text-amber-300 dark:ring-amber-400/70"
+            : "opacity-85 group-hover:opacity-100",
         )}
       >
         {done ? (
@@ -324,7 +352,11 @@ function MilestoneMarker({
         ) : (
           <IconFlag
             size={12}
-            className="text-content-dimmed drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] dark:text-gray-300 dark:drop-shadow-none"
+            className={classNames({
+              "text-amber-700 dark:text-amber-300": outsideBar,
+              "text-content-dimmed drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] dark:text-gray-300 dark:drop-shadow-none":
+                !outsideBar,
+            })}
             stroke={2.5}
           />
         )}
@@ -374,6 +406,27 @@ function isOutsideBar(date: Date, startDate: Date | null, endDate: Date | null) 
   if (startDate && date < startDate) return true;
   if (endDate && date > endDate) return true;
   return false;
+}
+
+function milestonePlacement(date: Date, startDate: Date | null, endDate: Date | null): MilestonePlacement {
+  if (startDate && sameDay(date, startDate)) return "start";
+  if (endDate && sameDay(date, endDate)) return "end";
+  return "middle";
+}
+
+function milestoneTranslateClass(placement: MilestonePlacement) {
+  switch (placement) {
+    case "start":
+      return "translate-x-0";
+    case "end":
+      return "-translate-x-full";
+    default:
+      return "-translate-x-1/2";
+  }
+}
+
+function sameDay(a: Date, b: Date) {
+  return normalizeTimelineDate(a)?.getTime() === normalizeTimelineDate(b)?.getTime();
 }
 
 function barTone(status: WorkMap.Item["status"]) {
