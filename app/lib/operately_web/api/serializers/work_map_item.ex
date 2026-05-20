@@ -24,11 +24,25 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       is_new: item.is_new,
       completed_on: OperatelyWeb.Api.Serializer.serialize(item.completed_on),
       timeframe: OperatelyWeb.Api.Serializer.serialize(item.timeframe),
+      milestones: serialize_milestones(item),
       children: OperatelyWeb.Api.Serializer.serialize(item.children),
       privacy: OperatelyWeb.Api.Serializer.serialize(item.privacy),
       assignees: OperatelyWeb.Api.Serializer.serialize(item.assignees)
     }
   end
+
+  defp serialize_milestones(%{type: :project, resource: %{milestones: milestones}}) when is_list(milestones) do
+    Enum.map(milestones, fn milestone ->
+      %{
+        id: Paths.milestone_id(milestone),
+        title: milestone.title,
+        status: OperatelyWeb.Api.Serializer.serialize(milestone.status),
+        timeframe: OperatelyWeb.Api.Serializer.serialize(milestone.timeframe)
+      }
+    end)
+  end
+
+  defp serialize_milestones(_item), do: []
 
   defp item_id(item) do
     case item.type do

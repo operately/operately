@@ -45,7 +45,7 @@ export function WorkMap({
   const location = useLocation();
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
   const searchParams = new URLSearchParams(location.search);
-  const timelineAvailable = type === "company" && tab === "projects";
+  const timelineAvailable = type !== "personal" && tab === "projects";
   const view = timelineAvailable && searchParams.get("view") === "timeline" ? "timeline" : "table";
 
   return (
@@ -137,6 +137,14 @@ export namespace WorkMap {
     endDate: DateField.ContextualDate | null;
   }
 
+  export interface Milestone {
+    id: string;
+    name: string;
+    status: "pending" | "done" | string;
+    dueDate: DateField.ContextualDate | null;
+    link: string;
+  }
+
   export interface Item {
     id: string;
     parentId: string | null;
@@ -157,6 +165,7 @@ export namespace WorkMap {
     children: Item[];
     completedOn: string | null;
     timeframe: Timeframe | null;
+    milestones: Milestone[];
     type: ItemType;
     itemPath: string;
     privacy: PrivacyIndicator.PrivacyLevels;

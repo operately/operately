@@ -1,42 +1,46 @@
 import React from "react";
 import { WorkMap } from ".";
 import { BlackLink } from "../../Link";
-import { IconInfinity } from "../../icons";
+import { IconFlag, IconFlagFilled } from "../../icons";
 import classNames from "../../utils/classnames";
 import {
   buildColumns,
   calculateRange,
   clampPercent,
-  chooseScale,
   compareTimelineItems,
   formatMarkerDate,
+  formatMonthLabel,
   formatRangeLabel,
+  formatWeekCellLabel,
   getBarStartDate,
-  getDateAtPosition,
   getMarkerPosition,
   type TimelineColumn as Column,
 } from "../utils/timeline";
+import { flattenTimelineItems, normalizeTimelineDate, toTimelineItem, type TimelineItem, type TimelineMilestone } from "../utils/timelineItem";
 
 interface Props {
   items: WorkMap.Item[];
   tab: WorkMap.Filter;
 }
 
-interface TimelineItem {
-  id: string;
-  name: string;
-  type: WorkMap.Item["type"];
-  status: WorkMap.Item["status"];
-  owner: WorkMap.Item["owner"];
-  space: WorkMap.Item["space"];
-  itemPath: string;
-  startDate: Date | null;
-  endDate: Date | null;
+interface MonthGroup {
+  key: string;
+  label: string;
+  startColumn: number;
+  span: number;
 }
 
+const TIMELINE_LAYOUT = {
+  rowHeight: 58,
+  bottomPadding: 24,
+  barTop: 8,
+  barHeight: 40,
+  milestoneTop: 31,
+  milestoneIconSize: 16,
+};
+
 export function WorkMapTimeline({ items, tab }: Props) {
-  const [hoverLeft, setHoverLeft] = React.useState<number | null>(null);
-  const flattenedItems = React.useMemo(() => flattenItems(items), [items]);
+  const flattenedItems = React.useMemo(() => flattenTimelineItems(items), [items]);
   const timelineItems = React.useMemo(() => flattenedItems.map(toTimelineItem), [flattenedItems]);
   const hiddenUndatedCount = timelineItems.filter((item) => !item.startDate && !item.endDate).length;
 
@@ -57,65 +61,34 @@ export function WorkMapTimeline({ items, tab }: Props) {
   }
 
   const range = calculateRange(visibleItems);
-  const scale = chooseScale(range.start, range.end);
-  const columns = buildColumns(range.start, range.end, scale);
+  const columns = buildColumns(range.start, range.end, "week");
   const rangeStart = range.start.getTime();
   const rangeEnd = range.end.getTime();
   const rangeMs = Math.max(rangeEnd - rangeStart, 1);
-  const timelineMinWidth = Math.max(columns.length * 72, 720);
-  const todayLeft = getMarkerPosition(new Date(), rangeStart, rangeEnd);
-  const hoverDate = hoverLeft === null ? null : getDateAtPosition(hoverLeft, rangeStart, rangeEnd);
-  const todayDate = getDateAtPosition(todayLeft, rangeStart, rangeEnd);
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const relativeX = event.clientX - rect.left;
-    const nextLeft = clampPercent((relativeX / rect.width) * 100);
-    setHoverLeft(nextLeft);
-  };
+  const timelineMinWidth = Math.max(columns.length * 96, 820);
+  const today = new Date();
+  const todayLeft = getMarkerPosition(today, rangeStart, rangeEnd);
+  const todayLabel = todayLeft === null ? null : formatMarkerDate(today);
+  const monthGroups = buildMonthGroups(columns);
+  const highlightedColumnKey = columns.find((column) => columnContainsDate(column, today))?.key ?? null;
 
   return (
     <div className="bg-surface-base rounded-b-lg">
       {hiddenUndatedCount > 0 && (
-        <div className="px-4 py-3 border-b border-surface-outline text-xs text-content-dimmed">
+        <div className="px-4 py-3 border-b border-surface-outline dark:border-gray-700 text-xs text-content-dimmed">
           {hiddenUndatedCount} hidden without dates
         </div>
       )}
 
       <div className="overflow-x-auto">
         <div
-          className="relative min-w-full px-4 pb-4"
-          style={{ minWidth: `${timelineMinWidth}px` }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => setHoverLeft(null)}
+          className="relative min-w-full px-4"
+          style={{ minWidth: `${timelineMinWidth}px`, paddingBottom: TIMELINE_LAYOUT.bottomPadding }}
         >
-          <MarkerBadge
-            left={todayLeft}
-            label={todayDate ? formatMarkerDate(todayDate) : null}
-            className="border border-red-200 bg-red-50 text-red-700"
-          />
-          <MarkerBadge
-            left={hoverLeft}
-            label={hoverDate ? formatMarkerDate(hoverDate) : null}
-            className="border border-sky-200 bg-sky-50 text-sky-800"
-          />
-          <TimelineMarker left={todayLeft} className="bg-red-500/90" />
-          <TimelineMarker left={hoverLeft} className="bg-red-400/60" />
+          <TodayBadge left={todayLeft} label={todayLabel} />
+          <TimelineMarker left={todayLeft} className="bg-brand-1/90 dark:bg-blue-300/90" />
 
-          <div
-            className="grid border-b border-surface-outline bg-surface-base text-xs font-semibold text-content-dimmed"
-            style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(72px, 1fr))` }}
-          >
-            {columns.map((column, index) => (
-              <div
-                key={column.key}
-                className={classNames("px-3 py-3 border-l border-surface-outline/70", { "border-l-0": index === 0 })}
-              >
-                <div>{column.label}</div>
-                <div className="mt-1 text-[11px] text-content-subtle">{column.shortLabel}</div>
-              </div>
-            ))}
-          </div>
+          <TimelineHeader columns={columns} monthGroups={monthGroups} highlightedColumnKey={highlightedColumnKey} />
 
           {visibleItems.map((item) => (
             <TimelineRow
@@ -124,6 +97,7 @@ export function WorkMapTimeline({ items, tab }: Props) {
               columns={columns}
               rangeStart={rangeStart}
               rangeMs={rangeMs}
+              highlightedColumnKey={highlightedColumnKey}
             />
           ))}
         </div>
@@ -137,73 +111,121 @@ function TimelineRow({
   columns,
   rangeStart,
   rangeMs,
+  highlightedColumnKey,
 }: {
   item: TimelineItem;
   columns: Column[];
   rangeStart: number;
   rangeMs: number;
+  highlightedColumnKey: string | null;
 }) {
   const barStartDate = getBarStartDate(item);
   const left = barStartDate ? clampPercent(((barStartDate.getTime() - rangeStart) / rangeMs) * 100) : null;
   const finiteEnd = item.endDate ? clampPercent(((item.endDate.getTime() - rangeStart) / rangeMs) * 100) : null;
   const hasInfiniteBar = item.startDate && !item.endDate;
   const barWidth = left !== null && finiteEnd !== null ? Math.max(finiteEnd - left, 8) : null;
+  const rangeLabel = formatRangeLabel(item);
 
   return (
-    <div className="border-b border-surface-outline/70 py-2">
-      <div className="relative h-[64px] bg-surface-base">
-        <TimelineGrid columns={columns} />
+    <div className="border-b border-surface-outline/70 dark:border-gray-700/70">
+      <div className="relative bg-surface-base" style={{ height: TIMELINE_LAYOUT.rowHeight }}>
+        <TimelineGrid columns={columns} highlightedColumnKey={highlightedColumnKey} />
 
         <div className="absolute inset-y-0 left-0 right-0">
           {barWidth !== null && left !== null && (
             <BarLabel
               to={item.itemPath}
               name={item.name}
-              className="border-[#d9e2f1] bg-[#f7f9fc] text-content-accent"
+              rangeLabel={rangeLabel}
+              status={item.status}
+              openEnded={false}
               style={{ left: `${left}%`, width: `${barWidth}%` }}
             />
           )}
 
           {hasInfiniteBar && left !== null && (
-            <>
-              <BarLabel
-                to={item.itemPath}
-                name={item.name}
-                className="border-[#d9e2f1] bg-gradient-to-r from-[#f7f9fc] to-[#eef5ff]/80 text-content-accent"
-                style={{ left: `${left}%`, width: `${Math.max(100 - left, 12)}%` }}
-              />
-              <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full border border-surface-outline bg-surface-base/90 px-2 py-1 text-[11px] text-content-dimmed">
-                <IconInfinity size={12} />
-                <span>No end</span>
-              </div>
-            </>
+            <BarLabel
+              to={item.itemPath}
+              name={item.name}
+              rangeLabel={rangeLabel}
+              status={item.status}
+              openEnded
+              style={{ left: `${left}%`, width: `${Math.max(100 - left, 12)}%` }}
+            />
           )}
 
-          <TimelineRangeLabel item={item} />
+          {item.milestones.map((milestone) => (
+            <MilestoneMarker
+              key={milestone.id}
+              milestone={milestone}
+              left={getMarkerPosition(milestone.dueDate, rangeStart, rangeStart + rangeMs)}
+              outsideBar={isOutsideBar(milestone.dueDate, barStartDate, item.endDate)}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-function TimelineGrid({ columns }: { columns: Column[] }) {
+function TimelineHeader({
+  columns,
+  monthGroups,
+  highlightedColumnKey,
+}: {
+  columns: Column[];
+  monthGroups: MonthGroup[];
+  highlightedColumnKey: string | null;
+}) {
   return (
-    <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(72px, 1fr))` }}>
-      {columns.map((column, index) => (
-        <div key={column.key} className={classNames("border-l border-surface-outline/70", { "border-l-0": index === 0 })} />
-      ))}
+    <div className="sticky left-0 z-10 border-b border-surface-outline bg-surface-base dark:border-gray-700">
+      <div
+        className="grid border-t border-surface-outline/70 text-xs font-semibold text-content-accent dark:border-gray-700"
+        style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(96px, 1fr))` }}
+      >
+        {monthGroups.map((group) => (
+          <div
+            key={group.key}
+            className="border-l border-surface-outline/70 px-3 py-2 first:border-l-0 dark:border-gray-700"
+            style={{ gridColumn: `${group.startColumn + 1} / span ${group.span}` }}
+          >
+            {group.label}
+          </div>
+        ))}
+      </div>
+
+      <div
+        className="grid text-[11px] font-medium text-content-dimmed"
+        style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(96px, 1fr))` }}
+      >
+        {columns.map((column, index) => (
+          <div
+            key={column.key}
+            className={classNames("border-l border-surface-outline/70 px-3 py-2 dark:border-gray-700", {
+              "border-l-0": index === 0,
+              "bg-surface-dimmed/70 dark:bg-gray-800/60": column.key === highlightedColumnKey,
+            })}
+          >
+            {formatWeekCellLabel(column.start)}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-function TimelineRangeLabel({ item }: { item: TimelineItem }) {
-  const label = formatRangeLabel(item);
-
-  if (!label) return null;
-
+function TimelineGrid({ columns, highlightedColumnKey }: { columns: Column[]; highlightedColumnKey: string | null }) {
   return (
-    <div className="absolute right-2 bottom-1 text-[11px] text-content-dimmed">
-      {label}
+    <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(96px, 1fr))` }}>
+      {columns.map((column, index) => (
+        <div
+          key={column.key}
+          className={classNames("border-l border-surface-outline/70 dark:border-gray-700/70", {
+            "border-l-0": index === 0,
+            "bg-surface-dimmed/40 dark:bg-gray-800/40": column.key === highlightedColumnKey,
+          })}
+        />
+      ))}
     </div>
   );
 }
@@ -211,27 +233,21 @@ function TimelineRangeLabel({ item }: { item: TimelineItem }) {
 function TimelineMarker({ left, className }: { left: number | null; className: string }) {
   if (left === null) return null;
 
-  return <div className={classNames("pointer-events-none absolute bottom-4 top-0 z-20 w-px", className)} style={{ left: `${left}%` }} />;
+  return (
+    <div
+      className={classNames("pointer-events-none absolute top-0 z-20 w-px", className)}
+      style={{ left: `${left}%`, bottom: TIMELINE_LAYOUT.bottomPadding }}
+    />
+  );
 }
 
-function MarkerBadge({
-  left,
-  label,
-  className,
-}: {
-  left: number | null;
-  label: string | null;
-  className: string;
-}) {
+function TodayBadge({ left, label }: { left: number | null; label: string | null }) {
   if (left === null || !label) return null;
 
   return (
-    <div
-      className="pointer-events-none absolute top-2 z-30 -translate-x-1/2"
-      style={{ left: `${clampPercent(left)}%` }}
-    >
-      <div className={classNames("rounded-full px-2 py-1 text-[10px] font-semibold tracking-wide shadow-sm", className)}>
-        {label}
+    <div className="pointer-events-none absolute top-1 z-30 -translate-x-1/2" style={{ left: `${left}%` }}>
+      <div className="rounded-full border border-blue-200 bg-blue-50 px-2 py-1 text-[10px] font-semibold leading-none text-blue-700 shadow-sm dark:border-blue-700 dark:bg-blue-900 dark:text-blue-100 dark:shadow-none">
+        Today · {label}
       </div>
     </div>
   );
@@ -240,53 +256,141 @@ function MarkerBadge({
 function BarLabel({
   to,
   name,
+  rangeLabel,
+  status,
+  openEnded,
   style,
-  className,
 }: {
   to: string;
   name: string;
+  rangeLabel: string | null;
+  status: WorkMap.Item["status"];
+  openEnded: boolean;
   style: React.CSSProperties;
-  className: string;
 }) {
+  const tone = barTone(status);
+
   return (
     <div
       className={classNames(
-        "absolute top-2 flex h-9 min-w-0 items-center rounded-xl border px-3 shadow-sm",
-        className,
+        "absolute flex min-w-0 items-start rounded-lg border bg-surface-dimmed text-content-accent shadow-sm transition-colors hover:border-content-subtle dark:bg-gray-800/90 dark:text-gray-100 dark:shadow-none dark:hover:border-gray-500",
+        tone.border,
+        { "rounded-r-none border-r-0": openEnded },
       )}
-      style={style}
+      style={{ ...style, top: TIMELINE_LAYOUT.barTop, height: TIMELINE_LAYOUT.barHeight }}
+      title={rangeLabel ? `${name} · ${rangeLabel}` : name}
     >
-      <BlackLink to={to} className="truncate text-sm font-medium leading-none" underline="hover">
+      <span className={classNames("h-full w-1 shrink-0 rounded-l-lg", tone.accent)} />
+      <BlackLink to={to} className="min-w-0 truncate px-3 pt-2 text-sm font-medium leading-none" underline="hover">
         {name}
       </BlackLink>
+      {openEnded && (
+        <span className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-r from-transparent to-surface-base dark:to-[#1f1e24]" />
+      )}
     </div>
   );
 }
 
-function flattenItems(items: WorkMap.Item[]): WorkMap.Item[] {
-  return items.flatMap((item) => [item, ...flattenItems(item.children)]);
+function MilestoneMarker({
+  milestone,
+  left,
+  outsideBar,
+}: {
+  milestone: TimelineMilestone;
+  left: number | null;
+  outsideBar: boolean;
+}) {
+  if (left === null) return null;
+
+  const done = milestone.status === "done";
+  const title = `${milestone.name} · ${formatMilestoneDate(milestone.dueDate)}${done ? " · Done" : ""}`;
+
+  return (
+    <BlackLink
+      to={milestone.link}
+      className="group absolute z-30 -translate-x-1/2"
+      style={{ left: `${left}%`, top: TIMELINE_LAYOUT.milestoneTop }}
+      title={title}
+      underline="never"
+    >
+      <span
+        className={classNames(
+          "flex h-4 w-4 items-center justify-center rounded-sm opacity-85 transition group-hover:scale-110 group-hover:opacity-100",
+          { "bg-amber-50 ring-1 ring-amber-300/80 dark:bg-amber-950 dark:ring-amber-500/80": outsideBar },
+        )}
+      >
+        {done ? (
+          <IconFlagFilled size={12} className="text-emerald-600 dark:text-emerald-400" />
+        ) : (
+          <IconFlag
+            size={12}
+            className="text-content-dimmed drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] dark:text-gray-300 dark:drop-shadow-none"
+            stroke={2.5}
+          />
+        )}
+      </span>
+      <span
+        className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-surface-outline bg-surface-base px-2 py-1 text-[11px] font-medium text-content-accent shadow-lg group-hover:block dark:border-gray-700 dark:bg-gray-900 dark:text-gray-50"
+        style={{ top: TIMELINE_LAYOUT.milestoneIconSize }}
+      >
+        {title}
+      </span>
+    </BlackLink>
+  );
 }
 
-function toTimelineItem(item: WorkMap.Item): TimelineItem {
-  return {
-    id: item.id,
-    name: item.name,
-    type: item.type,
-    status: item.status,
-    owner: item.owner,
-    space: item.space,
-    itemPath: item.itemPath,
-    startDate: normalizeDate(item.timeframe?.startDate?.date),
-    endDate: normalizeDate(item.timeframe?.endDate?.date),
-  };
+function buildMonthGroups(columns: Column[]): MonthGroup[] {
+  const groups: MonthGroup[] = [];
+
+  columns.forEach((column, index) => {
+    const key = `${column.start.getFullYear()}-${column.start.getMonth()}`;
+    const previous = groups[groups.length - 1];
+
+    if (previous && previous.key === key) {
+      previous.span += 1;
+      return;
+    }
+
+    groups.push({
+      key,
+      label: formatMonthLabel(column.start),
+      startColumn: index,
+      span: 1,
+    });
+  });
+
+  return groups;
 }
 
-function normalizeDate(date: Date | null | undefined) {
-  if (!date) return null;
+function columnContainsDate(column: Column, date: Date) {
+  const normalized = normalizeTimelineDate(date);
+  if (!normalized) return false;
 
-  const value = new Date(date);
-  value.setHours(0, 0, 0, 0);
-  return value;
+  const value = normalized.getTime();
+  return value >= column.start.getTime() && value <= column.end.getTime();
+}
+
+function isOutsideBar(date: Date, startDate: Date | null, endDate: Date | null) {
+  if (startDate && date < startDate) return true;
+  if (endDate && date > endDate) return true;
+  return false;
+}
+
+function barTone(status: WorkMap.Item["status"]) {
+  switch (status) {
+    case "off_track":
+      return { border: "border-red-200 dark:border-red-700/70", accent: "bg-red-400 dark:bg-red-400" };
+    case "caution":
+      return { border: "border-amber-200 dark:border-amber-600/80", accent: "bg-amber-400 dark:bg-amber-400" };
+    case "on_track":
+      return { border: "border-emerald-200 dark:border-emerald-700/80", accent: "bg-emerald-400 dark:bg-emerald-400" };
+    default:
+      return { border: "border-surface-outline dark:border-gray-600", accent: "bg-surface-outline dark:bg-gray-500" };
+  }
+}
+
+function formatMilestoneDate(date: Date) {
+  return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
 }
 
 function TimelineEmptyState({ message, hiddenUndatedCount }: { message: string; hiddenUndatedCount?: number }) {

@@ -95,7 +95,7 @@ export function formatRangeLabel(item: TimelineDatedItem) {
   }
 
   if (item.startDate && !item.endDate) {
-    return `${compactDateLabel.format(item.startDate)} - forever`;
+    return `${compactDateLabel.format(item.startDate)} - no deadline`;
   }
 
   if (!item.startDate && item.endDate) {
@@ -107,6 +107,22 @@ export function formatRangeLabel(item: TimelineDatedItem) {
 
 export function formatMarkerDate(date: Date) {
   return markerDateLabel.format(date).toUpperCase();
+}
+
+export function formatWeekCellLabel(date: Date) {
+  const end = addDays(date, 6);
+  return `${dayLabel.format(date)}-${dayLabel.format(end)}`;
+}
+
+export function formatMonthLabel(date: Date) {
+  return monthLabel.format(date);
+}
+
+export function formatTimelineYearRange(start: Date, end: Date) {
+  const startYear = yearLabel.format(start);
+  const endYear = yearLabel.format(end);
+
+  return startYear === endYear ? startYear : `${startYear}-${endYear}`;
 }
 
 export function getBarStartDate(item: TimelineDatedItem) {
@@ -196,4 +212,5 @@ const monthDayLabel = new Intl.DateTimeFormat(undefined, { month: "short", day: 
 const compactDateLabel = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
 const markerDateLabel = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
 const monthLabel = new Intl.DateTimeFormat(undefined, { month: "short" });
+const dayLabel = new Intl.DateTimeFormat(undefined, { day: "numeric" });
 const yearLabel = new Intl.DateTimeFormat(undefined, { year: "numeric" });
