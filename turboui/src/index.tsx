@@ -19,6 +19,7 @@ export * from "./RichContent";
 export * from "./StatusBadge";
 export * from "./TimeframeSelector";
 export * from "./Timeline";
+export * from "./ViewToggle";
 export * from "./WorkMap";
 
 import RichContent from "./RichContent";

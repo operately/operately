@@ -2023,11 +2023,19 @@ export interface WorkMapItem {
   isNew: boolean;
   completedOn: string | null;
   timeframe: Timeframe | null;
+  milestones: WorkMapItemMilestone[];
   children: WorkMapItem[];
   type: WorkMapItemType;
   itemPath: string;
   privacy: WorkMapItemPrivacy;
   assignees?: Person[] | null;
+}
+
+export interface WorkMapItemMilestone {
+  id: string;
+  title: string;
+  status: MilestoneStatus;
+  timeframe: Timeframe | null;
 }
 
 export type ActivityContent =
