@@ -259,12 +259,12 @@ Suggested fields:
 
 Expected behavior:
 
-- products are created and managed in Polar
-- Operately syncs them into `billing_products`
+- products can be created, updated, and archived directly from the Operately site-admin billing catalog page
+- a `Sync from Polar` action is also available to pull existing Polar products into `billing_products`; this is useful for initial setup or when products were created in Polar before the admin panel was used
 - Operately operators choose which product is the active product for a given `plan_family + billing_interval`
 - checkout resolution uses the active local catalog entry, not a hardcoded ID
 
-This allows future products or product versions to be added in Polar first, then surfaced and activated from the Operately admin panel.
+This allows future products or product versions to be added either in Polar and synced, or created directly in the Operately admin panel.
 
 ## Pricing Changes and Product Versioning
 
@@ -659,6 +659,7 @@ Add runtime configuration for:
 - `POLAR_ACCESS_TOKEN`
 - `POLAR_WEBHOOK_SECRET`
 - `APP_URL` or equivalent canonical Operately app base URL used for return URLs
+- `OPERATELY_BILLING_ENABLED` — instance-level gate that defaults to `false`. When `false`, the entire billing subsystem is disabled regardless of company feature flags. This keeps self-hosted installations unaffected until billing is explicitly turned on.
 
 Product IDs should come from the synchronized local billing catalog, not from env vars.
 
@@ -861,16 +862,19 @@ This flow should optimize for clarity, not friction. Owners should understand th
 
 ### Site-admin billing catalog page
 
-Add a site-admin-only billing catalog screen for Operately operators.
+Add a site-admin-only billing catalog screen for Operately operators. This page is only visible when `OPERATELY_BILLING_ENABLED` is `true`.
 
 Suggested contents:
 
-- all synchronized Polar products
+- all local billing products (whether created in Operately or synced from Polar)
 - active versus archived state
 - plan family and billing interval mapping
 - current price and currency
 - product version
-- `Sync from Polar` action
+- `Create product` action — creates a new product locally (and optionally in Polar if the API supports it)
+- `Edit product` action — updates product details
+- `Archive product` action — marks a product as archived
+- `Sync from Polar` action — pulls products from Polar into the local catalog; displays a message explaining that this is for syncing existing Polar products and that ongoing management can be done directly in the panel
 - `Set active product` action per `plan_family + billing_interval`
 
 This screen is the operator-facing control plane for future product additions and product-version cutovers.
@@ -1069,7 +1073,7 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 
 Implementation should land in vertical slices that keep the app usable throughout.
 
-### PR 1: Billing foundation
+### PR 1: Billing foundation (COMPLETED ✅)
 
 - Add `company_billing_accounts`
 - Add `billing_products`
@@ -1091,12 +1095,17 @@ Outcome:
   - `billing/catalog/list`
   - `billing/catalog/sync`
   - `billing/catalog/set_active`
+  - `billing/catalog/create`
+  - `billing/catalog/update`
+  - `billing/catalog/archive`
 - Add site-admin billing catalog page
 - Add product-version visibility and active-product selection
+- Add product CRUD UI (create, edit, archive)
+- Add explanatory message for the `Sync from Polar` action
 
 Outcome:
 
-- Operately operators can create products in Polar, sync them into the app, and choose which product version is active for checkout
+- Operately operators can manage products directly from the admin panel or sync them from Polar, and choose which product version is active for checkout
 
 ### PR 3: Website-intent routing, auth plumbing, and company-creation remembered-plan plumbing
 
