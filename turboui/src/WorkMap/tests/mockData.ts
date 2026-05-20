@@ -51,6 +51,7 @@ function withDefaults(item: any): WorkMap.Item {
     completedOn: null,
     nextStep: "",
     taskStatus: null,
+    milestones: [],
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     ...item,
     children: (item.children || []).map(withDefaults),
