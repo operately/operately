@@ -4,7 +4,7 @@ import type { ActivityContentProjectMilestoneCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
+import { feedTitle, milestoneCommentLink, milestoneLink, projectLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
@@ -37,14 +37,14 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const { milestone, project } = content(activity);
+    const { comment, commentAction, milestone, project } = content(activity);
     const milestoneName = milestone ? milestoneLink(milestone) : "a milestone";
-    const what = didWhat(content(activity).commentAction);
+    const action = activityAction(commentAction, milestone, comment);
 
     if (page === "project") {
-      return feedTitle(activity, what, "the", milestoneName, "milestone");
+      return feedTitle(activity, action.verb, action.objectPrefix, milestoneName, "milestone");
     } else {
-      return feedTitle(activity, what, "the", milestoneName, "milestone in the", projectLink(project), "project");
+      return feedTitle(activity, action.verb, action.objectPrefix, milestoneName, "milestone in the", projectLink(project), "project");
     }
   },
 
@@ -112,14 +112,18 @@ function content(activity: Activity): ActivityContentProjectMilestoneCommented {
 
 export default ProjectMilestoneCommented;
 
-function didWhat(action: string): string {
+function activityAction(
+  action: string,
+  milestone: ActivityContentProjectMilestoneCommented["milestone"],
+  comment: ActivityContentProjectMilestoneCommented["comment"],
+): { verb: string | JSX.Element; objectPrefix: string } {
   switch (action) {
     case "none":
-      return "commented on";
+      return { verb: milestoneCommentLink(milestone, comment), objectPrefix: "on the" };
     case "complete":
-      return "completed";
+      return { verb: "completed", objectPrefix: "the" };
     case "reopen":
-      return "re-opened";
+      return { verb: "re-opened", objectPrefix: "the" };
     default:
       throw new Error("Unknown action: " + action);
   }
