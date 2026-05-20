@@ -27,6 +27,13 @@ function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
     spacePath: item.spacePath,
     taskStatus: parseTaskStatusForTurboUi(item.taskStatus),
     timeframe: convertTimeframe(item.timeframe),
+    milestones: (item.milestones || []).map((milestone) => ({
+      id: milestone.id,
+      name: milestone.title,
+      status: milestone.status,
+      dueDate: parseContextualDate(milestone.timeframe?.contextualEndDate),
+      link: paths.projectMilestonePath(milestone.id),
+    })),
     children: item.children.map((c) => convertToWorkMapItem(paths, c)),
   };
 }
@@ -85,6 +92,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       reviewerPath: null,
       nextStep: "",
       timeframe: null,
+      milestones: [],
       children: [],
       isNew: true,
       completedOn: null,
@@ -129,6 +137,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       reviewerPath: null,
       nextStep: "",
       timeframe: null,
+      milestones: [],
       children: [],
       isNew: true,
       completedOn: null,
