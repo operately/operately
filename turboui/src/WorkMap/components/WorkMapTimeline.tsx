@@ -1,6 +1,7 @@
 import React from "react";
 import { WorkMap } from ".";
 import { BlackLink } from "../../Link";
+import { IconFlag, IconFlagFilled } from "../../icons";
 import classNames from "../../utils/classnames";
 import {
   buildColumns,
@@ -81,9 +82,9 @@ export function WorkMapTimeline({ items, tab }: Props) {
   const monthGroups = buildMonthGroups(columns);
 
   return (
-    <div className="bg-surface-base rounded-b-lg border-t border-surface-outline">
+    <div className="bg-surface-base rounded-b-lg border-t border-surface-outline dark:border-gray-700">
       {hiddenUndatedCount > 0 && (
-        <div className="px-4 py-3 border-b border-surface-outline text-xs text-content-dimmed">
+        <div className="px-4 py-3 border-b border-surface-outline dark:border-gray-700 text-xs text-content-dimmed">
           {hiddenUndatedCount} hidden without dates
         </div>
       )}
@@ -94,7 +95,7 @@ export function WorkMapTimeline({ items, tab }: Props) {
           style={{ minWidth: `${timelineMinWidth}px` }}
         >
           <TodayBadge left={todayLeft} label={todayLabel} />
-          <TimelineMarker left={todayLeft} className="bg-red-500/90" />
+          <TimelineMarker left={todayLeft} className="bg-brand-1/90 dark:bg-blue-300/90" />
 
           <TimelineHeader columns={columns} monthGroups={monthGroups} />
 
@@ -132,7 +133,7 @@ function TimelineRow({
   const rangeLabel = formatRangeLabel(item);
 
   return (
-    <div className="border-b border-surface-outline/70">
+    <div className="border-b border-surface-outline/70 dark:border-gray-700/70">
       <div className="relative h-[58px] bg-surface-base">
         <TimelineGrid columns={columns} />
 
@@ -181,15 +182,15 @@ function TimelineHeader({
   monthGroups: MonthGroup[];
 }) {
   return (
-    <div className="sticky left-0 z-10 border-b border-surface-outline bg-surface-base">
+    <div className="sticky left-0 z-10 border-b border-surface-outline bg-surface-base dark:border-gray-700">
       <div
-        className="grid border-t border-surface-outline/70 text-xs font-semibold text-content-accent"
+        className="grid border-t border-surface-outline/70 text-xs font-semibold text-content-accent dark:border-gray-700"
         style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(96px, 1fr))` }}
       >
         {monthGroups.map((group) => (
           <div
             key={group.key}
-            className="border-l border-surface-outline/70 px-3 py-2 first:border-l-0"
+            className="border-l border-surface-outline/70 px-3 py-2 first:border-l-0 dark:border-gray-700"
             style={{ gridColumn: `${group.startColumn + 1} / span ${group.span}` }}
           >
             {group.label}
@@ -204,9 +205,9 @@ function TimelineHeader({
         {columns.map((column, index) => (
           <div
             key={column.key}
-            className={classNames("border-l border-surface-outline/70 px-3 py-2", {
+            className={classNames("border-l border-surface-outline/70 px-3 py-2 dark:border-gray-700", {
               "border-l-0": index === 0,
-              "bg-surface-dimmed/70": columnContainsDate(column, new Date()),
+              "bg-surface-dimmed/70 dark:bg-gray-800/60": columnContainsDate(column, new Date()),
             })}
           >
             {formatWeekCellLabel(column.start)}
@@ -223,9 +224,9 @@ function TimelineGrid({ columns }: { columns: Column[] }) {
       {columns.map((column, index) => (
         <div
           key={column.key}
-          className={classNames("border-l border-surface-outline/70", {
+          className={classNames("border-l border-surface-outline/70 dark:border-gray-700/70", {
             "border-l-0": index === 0,
-            "bg-surface-dimmed/40": columnContainsDate(column, new Date()),
+            "bg-surface-dimmed/40 dark:bg-gray-800/40": columnContainsDate(column, new Date()),
           })}
         />
       ))}
@@ -244,7 +245,7 @@ function TodayBadge({ left, label }: { left: number | null; label: string | null
 
   return (
     <div className="pointer-events-none absolute top-1 z-30 -translate-x-1/2" style={{ left: `${left}%` }}>
-      <div className="rounded-full border border-red-200 bg-red-50 px-2 py-1 text-[10px] font-semibold leading-none text-red-700 shadow-sm">
+      <div className="rounded-full border border-blue-200 bg-blue-50 px-2 py-1 text-[10px] font-semibold leading-none text-blue-700 shadow-sm dark:border-blue-700 dark:bg-blue-900 dark:text-blue-100 dark:shadow-none">
         Today · {label}
       </div>
     </div>
@@ -271,7 +272,7 @@ function BarLabel({
   return (
     <div
       className={classNames(
-        "absolute top-3 flex h-8 min-w-0 items-center rounded-lg border bg-surface-dimmed text-content-accent shadow-sm transition-colors hover:border-content-subtle",
+        "absolute top-2 flex h-10 min-w-0 items-start rounded-lg border bg-surface-dimmed text-content-accent shadow-sm transition-colors hover:border-content-subtle dark:bg-gray-800/90 dark:text-gray-100 dark:shadow-none dark:hover:border-gray-500",
         tone.border,
         { "rounded-r-none border-r-0": openEnded },
       )}
@@ -279,11 +280,11 @@ function BarLabel({
       title={rangeLabel ? `${name} · ${rangeLabel}` : name}
     >
       <span className={classNames("h-full w-1 shrink-0 rounded-l-lg", tone.accent)} />
-      <BlackLink to={to} className="min-w-0 truncate px-3 text-sm font-medium leading-none" underline="hover">
+      <BlackLink to={to} className="min-w-0 truncate px-3 pt-2 text-sm font-medium leading-none" underline="hover">
         {name}
       </BlackLink>
       {openEnded && (
-        <span className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-r from-transparent to-surface-base" />
+        <span className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-r from-transparent to-surface-base dark:to-[#1f1e24]" />
       )}
     </div>
   );
@@ -306,19 +307,28 @@ function MilestoneMarker({
   return (
     <BlackLink
       to={milestone.link}
-      className="group absolute top-[35px] z-30 -translate-x-1/2"
+      className="group absolute top-[31px] z-30 -translate-x-1/2"
       style={{ left: `${left}%` }}
       title={title}
       underline="never"
     >
       <span
         className={classNames(
-          "block h-2 w-2 rounded-full border border-surface-base shadow-sm transition-transform group-hover:scale-125",
-          done ? "bg-surface-outline" : "bg-blue-500",
-          { "ring-2 ring-amber-300/70": outsideBar },
+          "flex h-4 w-4 items-center justify-center rounded-sm opacity-85 transition group-hover:scale-110 group-hover:opacity-100",
+          { "bg-amber-50 ring-1 ring-amber-300/80 dark:bg-amber-950 dark:ring-amber-500/80": outsideBar },
         )}
-      />
-      <span className="pointer-events-none absolute left-1/2 top-4 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-surface-outline bg-surface-base px-2 py-1 text-[11px] text-content-base shadow-lg group-hover:block">
+      >
+        {done ? (
+          <IconFlagFilled size={12} className="text-emerald-600 dark:text-emerald-400" />
+        ) : (
+          <IconFlag
+            size={12}
+            className="text-content-dimmed drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] dark:text-gray-300 dark:drop-shadow-none"
+            stroke={2.5}
+          />
+        )}
+      </span>
+      <span className="pointer-events-none absolute left-1/2 top-4 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-surface-outline bg-surface-base px-2 py-1 text-[11px] font-medium text-content-accent shadow-lg group-hover:block dark:border-gray-700 dark:bg-gray-900 dark:text-gray-50">
         {title}
       </span>
     </BlackLink>
@@ -405,13 +415,13 @@ function isOutsideBar(date: Date, startDate: Date | null, endDate: Date | null) 
 function barTone(status: WorkMap.Item["status"]) {
   switch (status) {
     case "off_track":
-      return { border: "border-red-200", accent: "bg-red-400" };
+      return { border: "border-red-200 dark:border-red-700/70", accent: "bg-red-400 dark:bg-red-400" };
     case "caution":
-      return { border: "border-amber-200", accent: "bg-amber-400" };
+      return { border: "border-amber-200 dark:border-amber-600/80", accent: "bg-amber-400 dark:bg-amber-400" };
     case "on_track":
-      return { border: "border-emerald-200", accent: "bg-emerald-400" };
+      return { border: "border-emerald-200 dark:border-emerald-700/80", accent: "bg-emerald-400 dark:bg-emerald-400" };
     default:
-      return { border: "border-surface-outline", accent: "bg-surface-outline" };
+      return { border: "border-surface-outline dark:border-gray-600", accent: "bg-surface-outline dark:bg-gray-500" };
   }
 }
 
