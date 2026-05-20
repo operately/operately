@@ -320,6 +320,7 @@ function Page() {
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     newCheckInLink: paths.projectCheckInNewPath(project.id),
+    nextCheckInScheduledAt: Time.parse(project.nextCheckInScheduledAt),
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
     assigneePersonSearch: assigneePersonSearch,

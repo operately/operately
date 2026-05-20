@@ -103,6 +103,7 @@ export namespace ProjectPage {
     };
     newCheckInLink: string;
     newDiscussionLink: string;
+    nextCheckInScheduledAt?: Date | null;
 
     childrenCount: ProjectPageLayout.ChildrenCount;
     permissions: ProjectPermissions;
