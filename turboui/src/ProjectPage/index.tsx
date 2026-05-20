@@ -19,6 +19,7 @@ import { Overview } from "./Overview";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection } from "../SidebarSection";
 import { TasksSection } from "./TasksSection";
+import { getTaskCompletionStats } from "./taskCompletion";
 import { ProjectPermissions } from "./types";
 
 export namespace ProjectPage {
@@ -220,6 +221,7 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
 
 export function ProjectPage(props: ProjectPage.Props) {
   const state = useProjectPageState(props);
+  const taskCompletion = React.useMemo(() => getTaskCompletionStats(state.tasks), [state.tasks]);
 
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
@@ -243,6 +245,7 @@ export function ProjectPage(props: ProjectPage.Props) {
     <ProjectPageLayout
       title={[state.project.name]}
       projectName={state.project.name}
+      taskCompletion={taskCompletion}
       testId="project-page"
       tabs={tabs}
       {...state}

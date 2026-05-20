@@ -28,11 +28,18 @@ export namespace ProjectPageLayout {
     checkInsCount: number;
   }
 
+  export interface TaskCompletionStats {
+    completedCount: number;
+    totalCount: number;
+    percentage: number;
+  }
+
   export type Props = SpaceProps & {
     title: string[];
     testId?: string;
 
     projectName: string;
+    taskCompletion?: TaskCompletionStats | null;
     status: BadgeStatus;
     updateProjectName: (name: string) => Promise<boolean>;
     permissions: ProjectPermissions;
@@ -46,7 +53,7 @@ export namespace ProjectPageLayout {
     tabs: TabsState;
 
     children: ReactNode;
-  }
+  };
 }
 
 export function ProjectPageLayout(props: ProjectPageLayout.Props) {
@@ -55,7 +62,12 @@ export function ProjectPageLayout(props: ProjectPageLayout.Props) {
       <PageHeader {...props} />
 
       {(props.state === "paused" || props.state === "closed") && (
-        <StatusBanner state={props.state} closedAt={props.closedAt} reopenLink={props.reopenLink} retrospectiveLink={props.retrospectiveLink} />
+        <StatusBanner
+          state={props.state}
+          closedAt={props.closedAt}
+          reopenLink={props.reopenLink}
+          retrospectiveLink={props.retrospectiveLink}
+        />
       )}
       <Tabs tabs={props.tabs} />
 
