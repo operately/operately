@@ -102,6 +102,16 @@ export const milestoneLink = (milestone: api.Milestone, milestoneName?: string) 
   return <Link to={path}>{name}</Link>;
 };
 
+export const milestoneCommentLink = (milestone: api.Milestone | null | undefined, comment: api.Comment | null | undefined) => {
+  const paths = usePaths();
+
+  if (!milestone?.id || !comment?.id) return <span>commented</span>;
+
+  const path = `${paths.projectMilestonePath(milestone.id)}#${comment.id}`;
+
+  return <Link to={path}>commented</Link>;
+};
+
 export const taskLink = (task: api.Task, attrs?: { taskName?: string; spaceId?: string }) => {
   const { taskName, spaceId } = attrs || {};
   const paths = usePaths();
