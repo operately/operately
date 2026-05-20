@@ -44,7 +44,6 @@ type FlowDefinition = {
   summary: string;
   trigger: string;
   steps: FlowStep[];
-  footer: string;
 };
 
 type BillingFlowsWireframeProps = {
@@ -104,7 +103,6 @@ const TONE_STYLES: Record<
   },
 };
 
-const PAPER_TILTS = ["-rotate-1", "rotate-1", "-rotate-2", "rotate-2"];
 const PREVIEW_SOURCE_WIDTH = 620;
 
 const flowLibrary: FlowDefinition[] = [
@@ -146,7 +144,6 @@ const flowLibrary: FlowDefinition[] = [
         icon: IconSparkles,
       },
     ],
-    footer: "This keeps signup clean while still preserving what the user meant to buy.",
   },
   {
     title: "Website plan pick, logged-in owner with one company",
@@ -178,7 +175,6 @@ const flowLibrary: FlowDefinition[] = [
         icon: IconChecks,
       },
     ],
-    footer: "The user sees the shortest possible path: intent, confirmation, hosted checkout, done.",
   },
   {
     title: "Website plan pick, logged-in owner with multiple companies",
@@ -219,7 +215,6 @@ const flowLibrary: FlowDefinition[] = [
         icon: IconChecks,
       },
     ],
-    footer: "The company choice should feel like a brief routing decision, not a second signup flow.",
   },
   {
     title: "Upgrade starts from a plan limit",
@@ -251,7 +246,6 @@ const flowLibrary: FlowDefinition[] = [
         icon: IconCircleCheck,
       },
     ],
-    footer: "This is the moment where remembered website intent pays off most clearly.",
   },
   {
     title: "Change plan or billing period",
@@ -283,7 +277,6 @@ const flowLibrary: FlowDefinition[] = [
         icon: IconChecks,
       },
     ],
-    footer: "The provider should handle money mechanics; Operately should handle orientation and decision-making.",
   },
   {
     title: "Update credit card",
@@ -315,7 +308,6 @@ const flowLibrary: FlowDefinition[] = [
         icon: IconRefresh,
       },
     ],
-    footer: "This is the cleanest split of responsibilities: Operately explains, Polar secures, Operately confirms.",
   },
   {
     title: "Cancel, then reactivate before the end date",
@@ -356,7 +348,6 @@ const flowLibrary: FlowDefinition[] = [
         icon: IconCircleCheck,
       },
     ],
-    footer: "Cancellation should feel clear and honest. Reactivation should feel immediate and low-drama.",
   },
 ];
 
@@ -410,16 +401,7 @@ function BillingFlowsWireframe({ title, subtitle, flows }: BillingFlowsWireframe
       }}
     >
       <div className="mx-auto max-w-7xl space-y-8">
-        <header className="relative overflow-hidden rounded-[28px] border-2 border-stone-900 bg-[#fffaf1] px-6 py-8 shadow-[10px_10px_0_0_rgba(68,53,33,0.15)] sm:px-8">
-          <div className="absolute right-6 top-5 rotate-6 rounded-full border-2 border-dashed border-amber-500 bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-amber-950">
-            sketch mode
-          </div>
-
-          <div className="mb-4 inline-flex rotate-[-2deg] items-center gap-2 rounded-full border-2 border-stone-900 bg-lime-200 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-stone-900">
-            <IconSparkles size={16} />
-            Wireframes
-          </div>
-
+        <header className="relative overflow-hidden rounded-[28px] border-2 border-stone-900 bg-[#fffaf1] px-6 py-8 sm:px-8">
           <h1 className="max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-5xl">{title}</h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-stone-700 sm:text-lg">{subtitle}</p>
 
@@ -443,28 +425,19 @@ function BillingFlowsWireframe({ title, subtitle, flows }: BillingFlowsWireframe
 
 function FlowSection({ flow, index }: { flow: FlowDefinition; index: number }) {
   return (
-    <section className="rounded-[30px] border-2 border-stone-900 bg-white/80 p-4 shadow-[8px_8px_0_0_rgba(68,53,33,0.12)] backdrop-blur-sm sm:p-6">
+    <section className="rounded-[30px] border-2 border-stone-900 bg-white/80 p-4 backdrop-blur-sm sm:p-6">
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl">
-          <div className="mb-3 inline-flex rotate-[-1deg] rounded-full border-2 border-dashed border-stone-900 bg-rose-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-stone-900">
+          <div className="mb-3 inline-flex rounded-full border-2 border-dashed border-stone-900 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-stone-900">
             Flow {index + 1}
           </div>
           <h2 className="text-2xl font-black tracking-tight text-stone-950 sm:text-3xl">{flow.title}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-700 sm:text-base">{flow.summary}</p>
         </div>
 
-        <div className="max-w-sm rotate-[1deg] rounded-[22px] border-2 border-dashed border-amber-400 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+        <div className="max-w-sm rounded-[22px] border-2 border-dashed border-amber-400 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
           <div className="mb-1 text-[10px] font-black uppercase tracking-[0.22em] text-amber-700">Trigger</div>
           {flow.trigger}
-        </div>
-      </div>
-
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">
-          follow the steps left to right
-        </div>
-        <div className="rounded-full border border-stone-300 bg-stone-50 px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-stone-500">
-          horizontal scroll
         </div>
       </div>
 
@@ -478,13 +451,6 @@ function FlowSection({ flow, index }: { flow: FlowDefinition; index: number }) {
           ))}
         </div>
       </div>
-
-      <div className="mt-5 rotate-[-1deg] rounded-[22px] border-2 border-dashed border-emerald-300 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-950">
-        <span className="mr-2 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700">
-          Why this flow works
-        </span>
-        {flow.footer}
-      </div>
     </section>
   );
 }
@@ -492,11 +458,10 @@ function FlowSection({ flow, index }: { flow: FlowDefinition; index: number }) {
 function FlowCard({ step, index }: { step: FlowStep; index: number }) {
   const style = TONE_STYLES[step.tone];
   const TiltIcon = step.icon;
-  const tilt = PAPER_TILTS[index % PAPER_TILTS.length]!;
 
   return (
     <article
-      className={`${tilt} ${style.frame} ${style.ink} flex w-[360px] shrink-0 flex-col rounded-[26px] border-2 border-dashed p-4 shadow-[6px_6px_0_0_rgba(68,53,33,0.12)] sm:w-[420px] xl:w-[460px]`}
+      className={`${style.frame} ${style.ink} flex w-[360px] shrink-0 flex-col rounded-[26px] border-2 border-dashed p-4 sm:w-[420px] xl:w-[460px]`}
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div
@@ -534,7 +499,7 @@ function FlowCard({ step, index }: { step: FlowStep; index: number }) {
 function ArrowBridge() {
   return (
     <div className="flex shrink-0 items-center justify-center py-1 xl:w-12 xl:py-0">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-dashed border-stone-900 bg-[#fffaf1] text-stone-900 shadow-[3px_3px_0_0_rgba(68,53,33,0.12)]">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-dashed border-stone-900 bg-[#fffaf1] text-stone-900">
         <IconArrowRight className="h-5 w-5" />
       </div>
     </div>
@@ -680,7 +645,7 @@ function AuthSketch() {
           </div>
         </div>
 
-        <div className="rounded-[18px] border-2 border-stone-900 bg-white p-4 shadow-[3px_3px_0_0_rgba(68,53,33,0.08)]">
+        <div className="rounded-[18px] border-2 border-stone-900 bg-white p-4">
           <SectionEyebrow>create account</SectionEyebrow>
           <div className="mt-3 space-y-2">
             <InputRow label="Work email" />
@@ -894,7 +859,7 @@ function PolarSketch() {
           </div>
         </div>
 
-        <div className="rounded-[18px] border-2 border-stone-900 bg-white p-4 shadow-[3px_3px_0_0_rgba(68,53,33,0.08)]">
+        <div className="rounded-[18px] border-2 border-stone-900 bg-white p-4">
           <SectionEyebrow>secure payment</SectionEyebrow>
           <div className="mt-3 space-y-2">
             <InputRow label="Card number" />
@@ -920,7 +885,7 @@ function WarningSketch() {
       <div className="space-y-4 bg-stone-100/70 p-4 pb-6">
         <PageHeader title="Billing" />
 
-        <div className="rounded-[22px] border-2 border-stone-900 bg-white p-4 shadow-[6px_6px_0_0_rgba(68,53,33,0.12)]">
+        <div className="rounded-[22px] border-2 border-stone-900 bg-white p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <SectionEyebrow>before you continue</SectionEyebrow>
@@ -973,7 +938,7 @@ function LimitWarningSketch() {
       <div className="space-y-4 bg-stone-100/70 p-4 pb-6">
         <PageHeader title="Invite teammates" actionLabel="Send invite" />
 
-        <div className="rounded-[22px] border-2 border-stone-900 bg-white p-4 shadow-[6px_6px_0_0_rgba(68,53,33,0.12)]">
+        <div className="rounded-[22px] border-2 border-stone-900 bg-white p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <SectionEyebrow>free limit reached</SectionEyebrow>
@@ -1062,7 +1027,7 @@ function BrowserFrame({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[18px] border-2 border-stone-900 bg-white shadow-[4px_4px_0_0_rgba(68,53,33,0.1)]">
+    <div className="rounded-[18px] border-2 border-stone-900 bg-white overflow-hidden">
       <div className="flex items-center gap-2 border-b-2 border-stone-900/80 bg-stone-100 px-3 py-2">
         <div className="flex gap-1.5">
           <div className="h-2.5 w-2.5 rounded-full border border-stone-900 bg-rose-200" />
@@ -1115,7 +1080,7 @@ function InfoPanel({
   return (
     <div
       className={`rounded-[18px] border-2 p-3 ${
-        highlighted ? "border-stone-900 shadow-[3px_3px_0_0_rgba(68,53,33,0.08)]" : "border-dashed"
+        highlighted ? "border-stone-900" : "border-dashed"
       } ${accentClasses}`}
     >
       <SectionEyebrow>{title}</SectionEyebrow>
@@ -1129,7 +1094,7 @@ function CompanyOptionCard({ name, subtitle, selected }: { name: string; subtitl
     <div
       className={`rounded-[18px] p-3 ${
         selected
-          ? "border-2 border-stone-900 bg-white shadow-[3px_3px_0_0_rgba(68,53,33,0.08)]"
+          ? "border-2 border-stone-900 bg-white"
           : "border-2 border-dashed border-stone-300 bg-white"
       }`}
     >
@@ -1152,7 +1117,7 @@ function PlanSummaryCard({ title, subtitle, selected }: { title: string; subtitl
     <div
       className={`rounded-[18px] p-3 ${
         selected
-          ? "border-2 border-stone-900 bg-white shadow-[3px_3px_0_0_rgba(68,53,33,0.08)]"
+          ? "border-2 border-stone-900 bg-white"
           : "border-2 border-dashed border-stone-300 bg-white"
       }`}
     >
@@ -1183,7 +1148,7 @@ function PlanDetailCard({
     <div
       className={`rounded-[18px] p-3 ${
         selected
-          ? "border-2 border-stone-900 bg-white shadow-[3px_3px_0_0_rgba(68,53,33,0.08)]"
+          ? "border-2 border-stone-900 bg-white"
           : "border-2 border-dashed border-stone-300 bg-white"
       }`}
     >
