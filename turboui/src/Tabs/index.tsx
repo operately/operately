@@ -56,9 +56,13 @@ function useTabPath(tabId: string, urlPath?: string) {
   return `${pathname}?${searchParams.toString()}`;
 }
 
-export function Tabs({ tabs }: { tabs: TabsState }) {
+export function Tabs({ tabs, showBorder = true }: { tabs: TabsState; showBorder?: boolean }) {
   return (
-    <div className="border-stroke-base border-b shadow-b-xs pl-1 mt-2 overflow-x-auto sm:pl-4">
+    <div
+      className={classNames("pl-1 mt-2 overflow-x-auto sm:pl-4", {
+        "border-stroke-base border-b shadow-b-xs": showBorder,
+      })}
+    >
       <nav className="flex gap-2 px-1 whitespace-nowrap sm:gap-4 sm:px-0">
         {tabs.tabs.map((tab) => (
           <TabItem key={tab.id} tab={tab} activeTab={tabs.active} urlPath={tabs.urlPath} />

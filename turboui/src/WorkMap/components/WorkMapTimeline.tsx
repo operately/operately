@@ -82,7 +82,7 @@ export function WorkMapTimeline({ items, tab }: Props) {
   const monthGroups = buildMonthGroups(columns);
 
   return (
-    <div className="bg-surface-base rounded-b-lg border-t border-surface-outline dark:border-gray-700">
+    <div className="bg-surface-base rounded-b-lg">
       {hiddenUndatedCount > 0 && (
         <div className="px-4 py-3 border-b border-surface-outline dark:border-gray-700 text-xs text-content-dimmed">
           {hiddenUndatedCount} hidden without dates
