@@ -1,26 +1,28 @@
 import React from "react";
 import { IconChevronRight, IconProject } from "../icons";
 import { BlackLink } from "../Link";
+import { PieChart } from "../PieChart";
 import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
 import { ProjectPageLayout } from ".";
 
 export function PageHeader(props: ProjectPageLayout.Props) {
-  const navigation = "space" in props ? [
-    { to: props.space.link, label: props.space.name },
-    { to: props.workmapLink, label: "Projects" },
-  ] : [
-    { to: props.homeLink, label: "Home" },
-  ];
+  const navigation =
+    "space" in props
+      ? [
+          { to: props.space.link, label: props.space.name },
+          { to: props.workmapLink, label: "Projects" },
+        ]
+      : [{ to: props.homeLink, label: "Home" }];
 
   return (
     <div className="mt-4 px-4 flex items-center gap-3">
       <IconProject size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900" />
 
-      <div>
+      <div className="min-w-0">
         <Breadcrumbs navigation={navigation} />
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <TextField
             className="font-semibold text-lg"
             text={props.projectName}
@@ -31,8 +33,32 @@ export function PageHeader(props: ProjectPageLayout.Props) {
           />
 
           <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />
+
+          {props.taskCompletion && <TaskCompletionIndicator stats={props.taskCompletion} />}
         </div>
       </div>
+    </div>
+  );
+}
+
+function TaskCompletionIndicator({ stats }: { stats: ProjectPageLayout.TaskCompletionStats }) {
+  const title = `${stats.completedCount}/${stats.totalCount} tasks completed`;
+  const ariaLabel = `${stats.percentage}% tasks completed, ${title}`;
+
+  return (
+    <div
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand-1/20 bg-brand-2 px-2 py-0.5 text-xs font-medium text-content-accent"
+      title={ariaLabel}
+    >
+      <PieChart
+        size={14}
+        slices={[{ percentage: stats.percentage, color: "var(--color-brand-1)" }]}
+        ariaLabel={ariaLabel}
+      />
+      <span>{stats.percentage}% tasks completed</span>
+      <span className="text-content-subtle">
+        {stats.completedCount}/{stats.totalCount}
+      </span>
     </div>
   );
 }
