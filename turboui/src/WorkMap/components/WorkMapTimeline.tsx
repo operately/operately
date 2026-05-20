@@ -1,7 +1,7 @@
 import React from "react";
 import { WorkMap } from ".";
 import { BlackLink } from "../../Link";
-import { IconFlag, IconFlagFilled } from "../../icons";
+import { IconArrowLeft, IconArrowRight, IconFlag, IconFlagFilled } from "../../icons";
 import classNames from "../../utils/classnames";
 import {
   buildColumns,
@@ -37,13 +37,20 @@ const TIMELINE_LAYOUT = {
   barHeight: 40,
   milestoneTop: 31,
   milestoneIconSize: 16,
+  continuationInset: 14,
 };
 
 type MilestonePlacement = "start" | "middle" | "end";
 
+interface TimelineViewport {
+  left: number;
+  right: number;
+}
+
 export function WorkMapTimeline({ items, tab }: Props) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const centeredRangeRef = React.useRef<string | null>(null);
+  const [viewport, setViewport] = React.useState<TimelineViewport | null>(null);
   const flattenedItems = React.useMemo(() => flattenTimelineItems(items), [items]);
   const timelineItems = React.useMemo(() => flattenedItems.map(toTimelineItem), [flattenedItems]);
   const hiddenUndatedCount = timelineItems.filter((item) => !item.startDate && !item.endDate).length;
@@ -69,6 +76,13 @@ export function WorkMapTimeline({ items, tab }: Props) {
   const highlightedColumnKey = columns.find((column) => columnContainsDate(column, today))?.key ?? null;
   const centeredRangeKey = todayLeft === null ? null : `${rangeStart}:${rangeEnd}:${timelineMinWidth}`;
 
+  const updateViewport = React.useCallback(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    setViewport(calculateTimelineViewport(scrollContainer));
+  }, []);
+
   React.useEffect(() => {
     if (!centeredRangeKey || todayLeft === null || centeredRangeRef.current === centeredRangeKey) return;
 
@@ -82,10 +96,15 @@ export function WorkMapTimeline({ items, tab }: Props) {
 
       scrollContainer.scrollLeft = Math.max(0, Math.min(targetLeft, maxLeft));
       centeredRangeRef.current = centeredRangeKey;
+      setViewport(calculateTimelineViewport(scrollContainer));
     });
 
     return () => window.cancelAnimationFrame(frame);
   }, [centeredRangeKey, todayLeft]);
+
+  React.useEffect(() => {
+    updateViewport();
+  }, [timelineMinWidth, updateViewport]);
 
   if (items.length === 0) {
     return <TimelineEmptyState message={emptyStateMessage(tab)} />;
@@ -103,7 +122,7 @@ export function WorkMapTimeline({ items, tab }: Props) {
         </div>
       )}
 
-      <div ref={scrollContainerRef} className="overflow-x-auto">
+      <div ref={scrollContainerRef} className="overflow-x-auto" onScroll={updateViewport}>
         <div
           className="relative min-w-full px-4"
           style={{ minWidth: `${timelineMinWidth}px`, paddingBottom: TIMELINE_LAYOUT.bottomPadding }}
@@ -121,6 +140,7 @@ export function WorkMapTimeline({ items, tab }: Props) {
               rangeStart={rangeStart}
               rangeMs={rangeMs}
               highlightedColumnKey={highlightedColumnKey}
+              viewport={viewport}
             />
           ))}
         </div>
@@ -135,18 +155,21 @@ function TimelineRow({
   rangeStart,
   rangeMs,
   highlightedColumnKey,
+  viewport,
 }: {
   item: TimelineItem;
   columns: Column[];
   rangeStart: number;
   rangeMs: number;
   highlightedColumnKey: string | null;
+  viewport: TimelineViewport | null;
 }) {
   const barStartDate = getBarStartDate(item);
   const left = barStartDate ? clampPercent(((barStartDate.getTime() - rangeStart) / rangeMs) * 100) : null;
   const finiteEnd = item.endDate ? clampPercent(((item.endDate.getTime() - rangeStart) / rangeMs) * 100) : null;
   const hasInfiniteBar = item.startDate && !item.endDate;
   const barWidth = left !== null && finiteEnd !== null ? Math.max(finiteEnd - left, 8) : null;
+  const visualBarEnd = left === null ? null : hasInfiniteBar ? Math.max(100, left + 12) : barWidth === null ? null : left + barWidth;
   const rangeLabel = formatRangeLabel(item);
 
   return (
@@ -177,6 +200,10 @@ function TimelineRow({
             />
           )}
 
+          {left !== null && visualBarEnd !== null && (
+            <BarContinuationIndicators barStart={left} barEnd={visualBarEnd} viewport={viewport} />
+          )}
+
           {item.milestones.map((milestone) => (
             <MilestoneMarker
               key={milestone.id}
@@ -188,6 +215,52 @@ function TimelineRow({
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function BarContinuationIndicators({
+  barStart,
+  barEnd,
+  viewport,
+}: {
+  barStart: number;
+  barEnd: number;
+  viewport: TimelineViewport | null;
+}) {
+  if (!viewport) return null;
+
+  const showLeft = viewport.left > 0 && barStart < viewport.left && barEnd > viewport.left;
+  const showRight = viewport.right < 100 && barStart < viewport.right && barEnd > viewport.right;
+
+  if (!showLeft && !showRight) return null;
+
+  return (
+    <>
+      {showLeft && <BarContinuationIndicator direction="left" left={viewport.left} />}
+      {showRight && <BarContinuationIndicator direction="right" left={viewport.right} />}
+    </>
+  );
+}
+
+function BarContinuationIndicator({ direction, left }: { direction: "left" | "right"; left: number }) {
+  const Icon = direction === "left" ? IconArrowLeft : IconArrowRight;
+
+  return (
+    <div
+      className={classNames(
+        "pointer-events-none absolute z-40 flex size-5 items-center justify-center rounded-md border border-surface-outline bg-surface-base/90 text-content-dimmed shadow-sm backdrop-blur-sm dark:border-gray-600 dark:bg-gray-800/90 dark:text-gray-200",
+        { "-translate-x-full": direction === "right" },
+      )}
+      style={{
+        left:
+          direction === "left"
+            ? `calc(${left}% + ${TIMELINE_LAYOUT.continuationInset}px)`
+            : `calc(${left}% - ${TIMELINE_LAYOUT.continuationInset}px)`,
+        top: TIMELINE_LAYOUT.barTop + 10,
+      }}
+    >
+      <Icon size={14} stroke={2.5} />
     </div>
   );
 }
@@ -427,6 +500,15 @@ function milestoneTranslateClass(placement: MilestonePlacement) {
 
 function sameDay(a: Date, b: Date) {
   return normalizeTimelineDate(a)?.getTime() === normalizeTimelineDate(b)?.getTime();
+}
+
+function calculateTimelineViewport(scrollContainer: HTMLDivElement): TimelineViewport {
+  const scrollWidth = Math.max(scrollContainer.scrollWidth, 1);
+
+  return {
+    left: clampPercent((scrollContainer.scrollLeft / scrollWidth) * 100),
+    right: clampPercent(((scrollContainer.scrollLeft + scrollContainer.clientWidth) / scrollWidth) * 100),
+  };
 }
 
 function barTone(status: WorkMap.Item["status"]) {
