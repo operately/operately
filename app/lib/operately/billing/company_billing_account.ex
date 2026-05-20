@@ -2,6 +2,8 @@ defmodule Operately.Billing.CompanyBillingAccount do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  @valid_billing_intervals [:monthly, :yearly]
+
   schema "company_billing_accounts" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
 
@@ -10,12 +12,12 @@ defmodule Operately.Billing.CompanyBillingAccount do
     field :billing_interval, :string
     field :status, Ecto.Enum, values: [:free, :active, :past_due, :canceled], default: :free
     field :suggested_plan_key, :string
-    field :suggested_billing_interval, :string
+    field :suggested_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :suggested_plan_source, :string
     field :current_period_end, :utc_datetime
     field :cancel_at_period_end, :boolean, default: false
     field :pending_plan_key, :string
-    field :pending_billing_interval, :string
+    field :pending_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :pending_checkout_started_at, :utc_datetime
     field :last_synced_at, :utc_datetime
 

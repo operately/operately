@@ -7,7 +7,6 @@ defmodule Operately.BillingTest do
   alias Operately.Billing.Plans
 
   import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
 
   describe "billing_enabled?/0" do
     test "returns false by default" do
@@ -94,7 +93,7 @@ defmodule Operately.BillingTest do
 
       assert {:ok, updated} = Billing.remember_plan(account, :team, "monthly", "website-pricing")
       assert updated.suggested_plan_key == "team"
-      assert updated.suggested_billing_interval == "monthly"
+      assert updated.suggested_billing_interval == :monthly
       assert updated.suggested_plan_source == "website-pricing"
     end
 
@@ -103,7 +102,7 @@ defmodule Operately.BillingTest do
 
       assert {:ok, pending} = Billing.set_pending_checkout(account, :business, "yearly")
       assert pending.pending_plan_key == "business"
-      assert pending.pending_billing_interval == "yearly"
+      assert pending.pending_billing_interval == :yearly
       assert pending.pending_checkout_started_at != nil
 
       assert {:ok, cleared} = Billing.clear_pending_checkout(pending)

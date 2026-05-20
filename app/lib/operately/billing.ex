@@ -164,6 +164,7 @@ defmodule Operately.Billing do
       :deactivate_others,
       fn _changes ->
         ProductCatalogEntry
+        |> where([e], e.provider == ^entry.provider)
         |> where([e], e.plan_family == ^entry.plan_family)
         |> where([e], e.billing_interval == ^entry.billing_interval)
         |> where([e], e.id != ^entry.id)
