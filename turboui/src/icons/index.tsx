@@ -144,6 +144,7 @@ import IconTable from "@tabler/icons-react/dist/esm/icons/IconTable.mjs";
 import IconTarget from "@tabler/icons-react/dist/esm/icons/IconTarget.mjs";
 import IconTargetArrow from "@tabler/icons-react/dist/esm/icons/IconTargetArrow.mjs";
 import IconTent from "@tabler/icons-react/dist/esm/icons/IconTent.mjs";
+import IconTimeline from "@tabler/icons-react/dist/esm/icons/IconTimeline.mjs";
 import IconTrash from "@tabler/icons-react/dist/esm/icons/IconTrash.mjs";
 import IconTrophy from "@tabler/icons-react/dist/esm/icons/IconTrophy.mjs";
 import IconUpload from "@tabler/icons-react/dist/esm/icons/IconUpload.mjs";
@@ -305,6 +306,7 @@ export {
   IconTarget,
   IconTargetArrow,
   IconTent,
+  IconTimeline,
   IconTrash,
   IconTrophy,
   IconUpload,
