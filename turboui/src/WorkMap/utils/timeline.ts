@@ -95,7 +95,7 @@ export function formatRangeLabel(item: TimelineDatedItem) {
   }
 
   if (item.startDate && !item.endDate) {
-    return `${compactDateLabel.format(item.startDate)} - forever`;
+    return `${compactDateLabel.format(item.startDate)} - no deadline`;
   }
 
   if (!item.startDate && item.endDate) {

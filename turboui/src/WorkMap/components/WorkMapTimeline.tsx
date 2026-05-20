@@ -1,16 +1,15 @@
 import React from "react";
 import { WorkMap } from ".";
 import { BlackLink } from "../../Link";
-import { IconInfinity } from "../../icons";
 import classNames from "../../utils/classnames";
 import {
   buildColumns,
   calculateRange,
   clampPercent,
   compareTimelineItems,
+  formatMarkerDate,
   formatMonthLabel,
   formatRangeLabel,
-  formatTimelineYearRange,
   formatWeekCellLabel,
   getBarStartDate,
   getMarkerPosition,
@@ -78,8 +77,8 @@ export function WorkMapTimeline({ items, tab }: Props) {
   const rangeMs = Math.max(rangeEnd - rangeStart, 1);
   const timelineMinWidth = Math.max(columns.length * 96, 820);
   const todayLeft = getMarkerPosition(new Date(), rangeStart, rangeEnd);
+  const todayLabel = todayLeft === null ? null : formatMarkerDate(new Date());
   const monthGroups = buildMonthGroups(columns);
-  const yearLabel = formatTimelineYearRange(range.start, range.end);
 
   return (
     <div className="bg-surface-base rounded-b-lg border-t border-surface-outline">
@@ -94,9 +93,10 @@ export function WorkMapTimeline({ items, tab }: Props) {
           className="relative min-w-full px-4 pb-6"
           style={{ minWidth: `${timelineMinWidth}px` }}
         >
+          <TodayBadge left={todayLeft} label={todayLabel} />
           <TimelineMarker left={todayLeft} className="bg-red-500/90" />
 
-          <TimelineHeader columns={columns} monthGroups={monthGroups} yearLabel={yearLabel} />
+          <TimelineHeader columns={columns} monthGroups={monthGroups} />
 
           {visibleItems.map((item) => (
             <TimelineRow
@@ -139,28 +139,24 @@ function TimelineRow({
         <div className="absolute inset-y-0 left-0 right-0">
           {barWidth !== null && left !== null && (
             <BarLabel
-              to={item.itemPath}
-              name={item.name}
-              rangeLabel={rangeLabel}
-              status={item.status}
-              style={{ left: `${left}%`, width: `${barWidth}%` }}
-            />
-          )}
-
-          {hasInfiniteBar && left !== null && (
-            <>
-              <BarLabel
                 to={item.itemPath}
                 name={item.name}
                 rangeLabel={rangeLabel}
                 status={item.status}
-                style={{ left: `${left}%`, width: `${Math.max(100 - left, 12)}%` }}
+                openEnded={false}
+                style={{ left: `${left}%`, width: `${barWidth}%` }}
               />
-              <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full border border-surface-outline bg-surface-base/90 px-2 py-1 text-[11px] text-content-dimmed">
-                <IconInfinity size={12} />
-                <span>No end</span>
-              </div>
-            </>
+            )}
+
+          {hasInfiniteBar && left !== null && (
+            <BarLabel
+              to={item.itemPath}
+              name={item.name}
+              rangeLabel={rangeLabel}
+              status={item.status}
+              openEnded
+              style={{ left: `${left}%`, width: `${Math.max(100 - left, 12)}%` }}
+            />
           )}
 
           {item.milestones.map((milestone) => (
@@ -180,18 +176,12 @@ function TimelineRow({
 function TimelineHeader({
   columns,
   monthGroups,
-  yearLabel,
 }: {
   columns: Column[];
   monthGroups: MonthGroup[];
-  yearLabel: string;
 }) {
   return (
     <div className="sticky left-0 z-10 border-b border-surface-outline bg-surface-base">
-      <div className="px-1 pb-2 pt-3 text-[11px] font-medium uppercase tracking-wide text-content-subtle">
-        Timeline · {yearLabel}
-      </div>
-
       <div
         className="grid border-t border-surface-outline/70 text-xs font-semibold text-content-accent"
         style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(96px, 1fr))` }}
@@ -249,17 +239,31 @@ function TimelineMarker({ left, className }: { left: number | null; className: s
   return <div className={classNames("pointer-events-none absolute bottom-6 top-0 z-20 w-px", className)} style={{ left: `${left}%` }} />;
 }
 
+function TodayBadge({ left, label }: { left: number | null; label: string | null }) {
+  if (left === null || !label) return null;
+
+  return (
+    <div className="pointer-events-none absolute top-1 z-30 -translate-x-1/2" style={{ left: `${left}%` }}>
+      <div className="rounded-full border border-red-200 bg-red-50 px-2 py-1 text-[10px] font-semibold leading-none text-red-700 shadow-sm">
+        Today · {label}
+      </div>
+    </div>
+  );
+}
+
 function BarLabel({
   to,
   name,
   rangeLabel,
   status,
+  openEnded,
   style,
 }: {
   to: string;
   name: string;
   rangeLabel: string | null;
   status: WorkMap.Item["status"];
+  openEnded: boolean;
   style: React.CSSProperties;
 }) {
   const tone = barTone(status);
@@ -269,6 +273,7 @@ function BarLabel({
       className={classNames(
         "absolute top-3 flex h-8 min-w-0 items-center rounded-lg border bg-surface-dimmed text-content-accent shadow-sm transition-colors hover:border-content-subtle",
         tone.border,
+        { "rounded-r-none border-r-0": openEnded },
       )}
       style={style}
       title={rangeLabel ? `${name} · ${rangeLabel}` : name}
@@ -277,6 +282,9 @@ function BarLabel({
       <BlackLink to={to} className="min-w-0 truncate px-3 text-sm font-medium leading-none" underline="hover">
         {name}
       </BlackLink>
+      {openEnded && (
+        <span className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-r from-transparent to-surface-base" />
+      )}
     </div>
   );
 }
