@@ -104,10 +104,13 @@ Suggested flow:
 - the website sends paid traffic to an app-owned billing-intent route, for example:
   - `/billing/intent?plan=team&billing_period=monthly`
 - if the visitor is not authenticated, that route redirects to signup or login with a `redirect_to` back to the same billing-intent route
-- if the visitor is already authenticated and has a current company context, that route redirects directly to that company's billing page with the selected plan and interval preloaded
-- if the visitor is authenticated but does not yet have a company, that route redirects to `/new?plan=team&billing_period=monthly`
+- if the visitor is authenticated and has no company yet, that route redirects to `/new?plan=team&billing_period=monthly`
+- if the visitor is authenticated and can manage billing for exactly one company, that route redirects directly to that company's billing page with the selected plan and interval preloaded
+- if the visitor is authenticated and can manage billing for more than one company, that route redirects to a company-picker screen that carries the selected plan and interval forward
 
 `redirect_to` is still the correct mechanism for the unauthenticated continuation path, but it should no longer be the website's only entrypoint.
+
+The company-picker screen should show only companies where the user can manage billing, and once a company is chosen it should redirect to that company's billing page with the original `plan` and `billing_period` preserved.
 
 This allows:
 
@@ -144,6 +147,8 @@ Instead:
   - confirming a paid subscription through checkout
   - updating a payment method through a hosted card-management flow
 - a generic provider-managed portal may still exist as an operational fallback, but it is not the primary UX
+
+This does not require an extra explanatory screen before every provider redirect. In particular, payment-method updates may launch directly from the Billing page into a Polar-hosted card-management flow.
 
 ### 12. The billing rollout should be feature-flagged end to end
 
@@ -341,16 +346,27 @@ All user flows below assume the `billing` experimental feature is enabled for th
 3. The app redirects directly to `/new?plan=...&billing_period=...`.
 4. Company creation stores the remembered upgrade preference and starts the company on `free`.
 
-### 3. Logged-in owner clicks a paid CTA on the website
+### 3. Logged-in owner with one company clicks a paid CTA on the website
 
 1. User clicks a paid CTA on the website while already logged in to Operately.
-2. The billing-intent route resolves the user's current company context.
-3. The app redirects directly to `/:companyId/admin/billing` with the selected `plan` and `billing_period`.
+2. The billing-intent route determines that the user can manage billing for exactly one company.
+3. The app auto-selects that company and redirects directly to `/:companyId/admin/billing` with the selected `plan` and `billing_period`.
 4. The billing page opens with that plan and billing interval preselected in the in-app plan-selection flow.
 5. No checkout session is created yet.
 6. The owner can confirm the selection, change it, or leave without any billing mutation.
 
-### 4. Owner upgrades from inside the app
+### 4. Logged-in owner with multiple companies clicks a paid CTA on the website
+
+1. User clicks a paid CTA on the website while already logged in to Operately.
+2. The billing-intent route determines that the user can manage billing for more than one company.
+3. The app redirects to a company-picker page instead of guessing which company should be billed.
+4. The company-picker page lists only companies where the user can manage billing and keeps the selected `plan` and `billing_period` visible.
+5. The user chooses a company.
+6. The app redirects to the chosen company's billing page with the same selected `plan` and `billing_period`.
+7. The billing page opens with that plan and billing interval preselected in the in-app plan-selection flow.
+8. No checkout session is created yet.
+
+### 5. Owner upgrades from inside the app
 
 1. Owner opens `Company Admin -> Billing`.
 2. The billing page highlights the remembered plan and interval if one exists, but still allows the owner to choose another plan.
@@ -368,7 +384,7 @@ All user flows below assume the `billing` experimental feature is enabled for th
 8. User is redirected to Polar checkout.
 9. After return and webhook sync, the billing page reflects the new paid state.
 
-### 5. Owner manages an active subscription from the billing page
+### 6. Owner manages an active subscription from the billing page
 
 1. Owner opens `Company Admin -> Billing`.
 2. The page exposes explicit actions for:
@@ -377,20 +393,19 @@ All user flows below assume the `billing` experimental feature is enabled for th
    - reactivating a pending cancellation
    - updating the payment method
    - reviewing billing status and renewal timing
-3. Each action begins with an in-app Operately-owned flow that explains the consequence of the action before any provider redirect or API mutation occurs.
+3. Upgrade/change-plan and cancellation actions begin with explicit Operately-owned flows before any provider redirect or API mutation occurs.
 4. Where Polar supports direct API-driven changes, Operately executes them from named in-app actions.
-5. Where Polar requires a hosted payment-management flow, the in-app action launches that secure provider-managed flow and returns the user to the billing page.
+5. Where Polar requires a hosted payment-management flow, the billing-page action launches that secure provider-managed flow and returns the user to the billing page.
 6. Polar webhooks synchronize resulting state changes back into Operately.
 
-### 6. Owner manages payment method
+### 7. Owner manages payment method
 
 1. Owner clicks `Update credit card` or equivalent from the billing page.
-2. Operately shows a lightweight in-app handoff state explaining that card details are handled securely by Polar.
-3. Backend creates the appropriate secure Polar-hosted payment-method management session.
-4. User completes the update flow.
-5. App returns the user to the billing page and refreshes billing state.
+2. Backend creates the appropriate secure Polar-hosted payment-method management session.
+3. User completes the update flow.
+4. App returns the user to the billing page and refreshes billing state.
 
-### 7. Upgrade is attempted later and checkout is abandoned or fails
+### 8. Upgrade is attempted later and checkout is abandoned or fails
 
 1. Company is already active on `free` or on an existing paid plan.
 2. Owner explicitly starts an upgrade or plan-change checkout from the billing page.
@@ -402,14 +417,15 @@ All user flows below assume the `billing` experimental feature is enabled for th
 
 If the company had not yet upgraded successfully, it remains on `free`.
 
-### 7. Company hits member limit
+### 9. Company hits member limit
 
 1. An operation tries to add, restore, or create an active company member beyond the plan limit.
 2. Backend rejects the operation with a billing-limit error.
-3. UI surfaces a message directing owners to upgrade in Company Admin.
-4. If the company has a remembered website-selected plan, that plan should be the default recommendation in the upgrade prompt.
+3. UI surfaces an in-context limit-warning step that explains the current usage versus the free limit and recommends the appropriate upgrade path.
+4. If the owner continues, the app may open the in-app plan-selection flow directly instead of stopping first on the billing overview page.
+5. If the company has a remembered website-selected plan, that plan should be the default recommendation in the upgrade prompt and preselected plan-selection flow.
 
-### 8. Owner cancels a subscription
+### 10. Owner cancels a subscription
 
 1. Owner opens the billing page and clicks `Cancel plan`.
 2. Operately opens an in-app cancellation confirmation flow.
@@ -424,7 +440,7 @@ If the company had not yet upgraded successfully, it remains on `free`.
 7. The billing page reflects `cancel_at_period_end` or equivalent canceled state after sync.
 8. The company keeps access through the current billing period and then returns to the appropriate downgraded state.
 
-### 9. Owner reactivates a subscription scheduled for cancellation
+### 11. Owner reactivates a subscription scheduled for cancellation
 
 1. Owner opens the billing page while `cancel_at_period_end` is true.
 2. Owner clicks `Keep plan` or `Reactivate`.
@@ -666,11 +682,18 @@ Add an app-owned route that receives paid-plan intent from the website, for exam
 Suggested behavior:
 
 - if the visitor is not authenticated, redirect to signup or login with `redirect_to` pointing back to the same billing-intent route
-- if the visitor is authenticated and has a current company context with the `billing` feature enabled, redirect to `/:companyId/admin/billing` and preload the selected plan and interval
-- if the visitor is authenticated but does not yet have a company, redirect to `/new?plan=...&billing_period=...`
+- if the visitor is authenticated and has no company yet, redirect to `/new?plan=...&billing_period=...`
+- if the visitor is authenticated and can manage billing for exactly one company with the `billing` feature enabled, redirect to `/:companyId/admin/billing` and preload the selected plan and interval
+- if the visitor is authenticated and can manage billing for more than one company with the `billing` feature enabled, redirect to a company-picker route and preserve the selected plan and interval there
 - if the relevant company does not have the `billing` feature enabled, ignore the billing intent and fall back to the existing non-billing destination
 
 This route centralizes the auth-aware decision instead of forcing the website to guess user state.
+
+The company-picker route should be a lightweight app-owned page that:
+
+- lists only companies where the current user can manage billing
+- keeps the selected `plan` and `billing_period` visible
+- redirects to the chosen company's billing page with the same preselected plan state
 
 ### App auth changes
 
@@ -797,6 +820,7 @@ Suggested UX:
 
 - open from `Upgrade` or `Change plan`
 - also support opening immediately from the website billing-intent route for logged-in owners
+- also support opening directly from an over-limit upgrade prompt without first landing on the billing overview page
 - present only the relevant plans for Operately Cloud:
   - `Team`
   - `Business`
@@ -804,6 +828,7 @@ Suggested UX:
 - show the current plan as a non-primary state
 - show the remembered suggested plan as the default highlighted option when the company is still on `free`
 - if `plan` and `billing_period` were provided by the billing-intent route, use those as the initial preselected values
+- if the flow was opened from a limit-warning prompt, preselect the recommended upgrade immediately
 - show concise limit-oriented copy for each plan
 - include a small pre-checkout summary:
   - selected plan
@@ -1010,7 +1035,9 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - signup buttons preserve `redirect_to`
 - paid website CTAs land on the billing-intent route, not directly on signup
 - billing-intent route redirects unauthenticated users into auth and back again
-- billing-intent route redirects authenticated users with a company directly to Billing with preselected plan state
+- billing-intent route redirects authenticated users with exactly one billable company directly to Billing with preselected plan state
+- billing-intent route redirects authenticated users with multiple billable companies to a company-picker page
+- company-picker page preserves the selected plan and billing interval when continuing to Billing
 - billing-intent route redirects authenticated users without a company to `NewCompanyPage`
 - `NewCompanyPage` stores remembered upgrade preference when paid billing params are present
 - `NewCompanyPage` ignores billing params when the `billing` feature is disabled
@@ -1075,6 +1102,7 @@ Outcome:
 
 - Update website paid CTAs to hit the app billing-intent route
 - Add the app-owned billing-intent route and auth-aware branching logic
+- Add the company-picker page for authenticated users who can manage billing in multiple companies
 - Update app auth buttons to preserve `redirect_to`
 - Update email signup completion to honor `redirect_to`
 - Update `NewCompanyPage` to read `plan` and `billing_period`
@@ -1083,7 +1111,7 @@ Outcome:
 
 Outcome:
 
-- paid website intent reaches the correct in-app destination for both authenticated and unauthenticated users, and company creation still stores remembered upgrade preference without immediate checkout
+- paid website intent reaches the correct in-app destination for unauthenticated users, authenticated users with one billable company, authenticated users with multiple billable companies, and authenticated users without a company, while company creation still stores remembered upgrade preference without immediate checkout
 
 ### PR 4: Polar client and owner-scoped billing API
 
