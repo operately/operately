@@ -19,6 +19,8 @@ import { Tooltip } from "../Tooltip";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { showSuccessToast, showErrorToast } from "../Toasts";
 import { ProjectPage } from ".";
+import { CheckInOverdueCallout } from "./CheckInOverdueCallout";
+import { viewerCanPostCheckIn } from "./checkInPermissions";
 
 export function OverviewSidebar(props: ProjectPage.State) {
   return (
@@ -48,15 +50,14 @@ function CheckInsSection(props: ProjectPage.State) {
   const checkIns = props.checkIns || [];
   const isClosed = props.state === "closed";
   const lastCheckInState: "active" | "closed" | undefined = isClosed ? "closed" : "active";
-  const viewerCanCheckIn = props.permissions.canEdit && !isClosed;
-  const isChampion = !!props.currentUser?.id && !!props.champion?.id && props.currentUser.id === props.champion.id;
+  const viewerCanCheckIn = viewerCanPostCheckIn(props);
   const championFirstName = props.champion?.fullName?.split(" ")[0];
 
   let zeroStateCopy = "Weekly check-ins keep everyone in the loop. Updates will appear here.";
 
   if (isClosed) {
     zeroStateCopy = "This project is closed. Earlier check-ins stay available for reference.";
-  } else if (viewerCanCheckIn && isChampion) {
+  } else if (viewerCanCheckIn) {
     zeroStateCopy = "Share the first update to set the project status and start the weekly cadence.";
   } else if (championFirstName) {
     zeroStateCopy = `${championFirstName} hasn't shared a check-in yet. Updates will land here soon.`;
@@ -78,6 +79,7 @@ function CheckInsSection(props: ProjectPage.State) {
   return (
     <SidebarSection title={header} className="pt-4 sm:pt-0">
       <div className="space-y-3">
+        <CheckInOverdueCallout {...props} variant="compact" />
         {checkIns.length > 0 ? (
           <LastCheckIn
             checkIns={checkIns}

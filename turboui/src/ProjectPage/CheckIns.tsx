@@ -2,9 +2,11 @@ import React from "react";
 import { ProjectPage } from ".";
 import { PrimaryButton } from "../Button";
 import { CheckInCard } from "../CheckInCard";
+import { CheckInOverdueCallout } from "./CheckInOverdueCallout";
+import { viewerCanPostCheckIn } from "./checkInPermissions";
 
 export function CheckIns(props: ProjectPage.State) {
-  const showCheckInButton = props.permissions.canEdit && props.state !== "closed";
+  const showCheckInButton = viewerCanPostCheckIn(props);
 
   return (
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
@@ -22,6 +24,8 @@ export function CheckIns(props: ProjectPage.State) {
           </PrimaryButton>
         )}
       </div>
+
+      <CheckInOverdueCallout {...props} className="mt-6" />
 
       <div className="mt-8">
         {props.checkIns.map((checkIn) => (

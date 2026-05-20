@@ -136,6 +136,31 @@ const mockCheckIns: ProjectPage.CheckIn[] = [
   },
 ];
 
+const mockOverdueCheckIns: ProjectPage.CheckIn[] = [
+  {
+    id: "checkin-overdue-1",
+    author: people[4]!,
+    date: daysAgo(10),
+    content: asRichText(
+      "Referral tracking is live in staging, but we still need to resolve attribution reporting before the next rollout milestone.",
+    ),
+    link: "/projects/1/check-ins/overdue-1",
+    commentCount: 3,
+    status: "caution",
+  },
+  {
+    id: "checkin-overdue-2",
+    author: people[1]!,
+    date: daysAgo(17),
+    content: asRichText(
+      "Program mechanics are approved. Engineering started implementation and marketing is preparing the partner announcement.",
+    ),
+    link: "/projects/1/check-ins/overdue-2",
+    commentCount: 4,
+    status: "on_track",
+  },
+];
+
 const mockDiscussions: ProjectPage.Discussion[] = [
   {
     id: "discussion-1",
@@ -405,6 +430,130 @@ export const Default: Story = {
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
         checkIns={mockCheckIns}
+        newDiscussionLink="#"
+        currentUser={currentViewer}
+        discussions={mockDiscussions}
+        onProjectDelete={() => {}}
+        subscriptions={subscriptions}
+      />
+    );
+  },
+};
+
+export const OverdueCheckIn: Story = {
+  render: () => {
+    const championSearch = usePersonFieldSearch(people);
+    const reviewerSearch = usePersonFieldSearch(people);
+    const [tasks, setTasks] = useState([...mockTasks("project")]);
+    const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
+    const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
+    const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
+    const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
+      id: "2",
+      name: "Increase Product Adoption",
+      link: "/goals/2",
+    });
+    const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[2] || null);
+    const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(() =>
+      createContextualDate(daysAgo(28), "day"),
+    );
+    const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() =>
+      createContextualDate(addDays(new Date(), 14), "day"),
+    );
+    const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
+    const [space, setSpace] = useState(defaultSpace);
+    const subscriptions = useMockSubscriptions({ entityType: "project" });
+
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses,
+      subscriptions,
+    });
+
+    return (
+      <ProjectPage
+        workmapLink="#"
+        closeLink="#"
+        reopenLink="#"
+        pauseLink="#"
+        project={{ id: "project-overdue-check-in", name: "Launch customer referral program" }}
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: mockDiscussions.length,
+          checkInsCount: mockOverdueCheckIns.length,
+        }}
+        description={
+          asRichText(
+            "Launch a referral program for active customers, covering referral tracking, rewards, lifecycle messaging, and reporting for the first campaign cohort.",
+          ) as any
+        }
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
+        champion={people[4] || null}
+        setChampion={() => {}}
+        reviewer={reviewer}
+        setReviewer={setReviewer}
+        status="caution"
+        state="active"
+        nextCheckInScheduledAt={daysAgo(2)}
+        closedAt={null}
+        permissions={generatePermissions(true)}
+        updateProjectName={async () => true}
+        onDescriptionChange={async () => true}
+        activityFeed={<div>Activity feed content</div>}
+        tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
+        milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
+        onTaskCreate={taskActions.onTaskCreate}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
+        onMilestoneCreate={() => {}}
+        onMilestoneUpdate={() => {}}
+        onMilestoneReorder={async () => {}}
+        richTextHandlers={createMockRichEditorHandlers()}
+        filters={filters}
+        onFiltersChange={setFilters}
+        statuses={statuses}
+        onSaveCustomStatuses={(data) => {
+          setStatuses(data.nextStatuses);
+        }}
+        parentGoal={parentGoal}
+        setParentGoal={setParentGoal}
+        parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={setStartedAt}
+        dueAt={dueAt}
+        setDueAt={setDueAt}
+        resources={resources}
+        onResourceAdd={(resource) => {
+          const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+          setResources([...resources, { id: resourceId, ...resource }]);
+        }}
+        onResourceEdit={(updates) => {
+          setResources(
+            resources.map((resource) => (resource.id === updates.id ? { ...resource, ...updates } : resource)),
+          );
+        }}
+        onResourceRemove={(id) => {
+          setResources(resources.filter((resource) => resource.id !== id));
+        }}
+        contributors={mockContributors}
+        manageTeamLink="/projects/1/team"
+        championSearch={championSearch}
+        reviewerSearch={reviewerSearch}
+        newCheckInLink="#"
+        checkIns={mockOverdueCheckIns}
         newDiscussionLink="#"
         currentUser={currentViewer}
         discussions={mockDiscussions}
