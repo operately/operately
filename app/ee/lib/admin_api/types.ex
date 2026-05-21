@@ -64,4 +64,21 @@ defmodule OperatelyEE.AdminApi.Types do
     field? :smtp, :smtp_settings, null: false
     field? :sendgrid_api_key_set, :boolean, null: false
   end
+
+  object :billing_product do
+    field :id, :string
+    field :provider, :string
+    field :plan_family, :string
+    field :billing_interval, :string
+    field :polar_product_id, :string
+    field :polar_product_name, :string
+    field :price_amount, :integer
+    field :price_currency, :string
+    field :version, :integer
+    field :active, :boolean
+    field :archived_at, :datetime
+    field :last_synced_at, :datetime
+    field :inserted_at, :datetime
+    field :updated_at, :datetime
+  end
 end
