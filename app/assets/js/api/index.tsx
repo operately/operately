@@ -2443,6 +2443,7 @@ export interface CompaniesGlobalSearchResult {
 
 export interface CompaniesListInput {
   includeMemberCount?: boolean | null;
+  isCompanyOwner?: boolean;
 }
 
 export interface CompaniesListResult {
