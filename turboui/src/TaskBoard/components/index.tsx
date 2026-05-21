@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useLayoutEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
 import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
@@ -17,6 +18,8 @@ import { useTaskKeyboardNavigation } from "../hooks/useTaskKeyboardNavigation";
 import { TasksMenu } from "./TasksMenu";
 import { TaskDisplayMenu } from "./TaskDisplayMenu";
 import { StatusSelector } from "../../StatusSelector";
+import { TaskSlideIn } from "../KanbanView/TaskSlideIn";
+import { compareIds } from "../../utils/ids";
 
 export { TaskDisplayMenu, TasksMenu };
 
@@ -43,9 +46,17 @@ export function TaskBoard({
   onTaskDueDateChange,
   onTaskStatusChange,
   onTaskMilestoneChange,
+  onTaskNameChange,
+  onTaskDescriptionChange,
+  onTaskDelete,
+  onMoveTask,
   onMilestoneUpdate,
   onMilestoneSearch,
   assigneePersonSearch,
+  projectSearch,
+  spaceSearch,
+  richTextHandlers,
+  getTaskPageProps,
   filters = [],
   onFiltersChange,
   onSaveCustomStatuses,
@@ -64,6 +75,12 @@ export function TaskBoard({
   } = useTaskKeyboardNavigation<HTMLDivElement>();
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const taskIdFromUrl = useMemo(() => {
+    const value = searchParams.get("taskId");
+    return value && value.length > 0 ? value : null;
+  }, [searchParams]);
+  const [selectedSlideInTaskId, setSelectedSlideInTaskIdState] = useState<string | null>(null);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
@@ -104,6 +121,91 @@ export function TaskBoard({
     () => [...openMilestones, ...completedMilestones].map((milestoneData) => milestoneData.milestone),
     [completedMilestones, openMilestones],
   );
+  const slideInEnabled = Boolean(getTaskPageProps);
+
+  useLayoutEffect(() => {
+    if (!slideInEnabled) return;
+
+    if (!taskIdFromUrl) {
+      setSelectedSlideInTaskIdState(null);
+      return;
+    }
+
+    if (internalTasks.some((task) => compareIds(task.id, taskIdFromUrl))) {
+      setSelectedSlideInTaskIdState(taskIdFromUrl);
+      return;
+    }
+
+    const next = new URLSearchParams(searchParams);
+    next.delete("taskId");
+    setSearchParams(next, { replace: true });
+    setSelectedSlideInTaskIdState(null);
+  }, [internalTasks, searchParams, setSearchParams, slideInEnabled, taskIdFromUrl]);
+
+  const setSelectedSlideInTaskId = useCallback(
+    (taskId: string | null) => {
+      if (!slideInEnabled) return;
+
+      const next = new URLSearchParams(searchParams);
+
+      if (taskId) {
+        next.set("taskId", taskId);
+      } else {
+        next.delete("taskId");
+      }
+
+      setSearchParams(next, { replace: true });
+      setSelectedSlideInTaskIdState(taskId);
+    },
+    [searchParams, setSearchParams, slideInEnabled],
+  );
+
+  const taskSlideInContext = useMemo<Types.TaskListSlideInContext>(
+    () => ({
+      tasks: internalTasks,
+      statuses,
+      onTaskCreate,
+      onTaskAssigneeChange,
+      onTaskDueDateChange,
+      onTaskStatusChange,
+      onTaskMilestoneChange: (taskId, milestone) => {
+        const indexInMilestone = 1000;
+        const milestoneId = milestone?.id ?? "no-milestone";
+        onTaskMilestoneChange?.(taskId, milestoneId, indexInMilestone);
+      },
+      onTaskDescriptionChange,
+      onTaskNameChange,
+      onTaskDelete,
+      onMoveTask,
+      projectSearch,
+      spaceSearch,
+      milestones: allMilestones,
+      onMilestoneSearch,
+      assigneePersonSearch,
+      richTextHandlers,
+    }),
+    [
+      allMilestones,
+      assigneePersonSearch,
+      internalTasks,
+      onMilestoneSearch,
+      onMoveTask,
+      onTaskAssigneeChange,
+      onTaskCreate,
+      onTaskDelete,
+      onTaskDescriptionChange,
+      onTaskDueDateChange,
+      onTaskMilestoneChange,
+      onTaskNameChange,
+      onTaskStatusChange,
+      projectSearch,
+      richTextHandlers,
+      spaceSearch,
+      statuses,
+    ],
+  );
+  const taskPageProps =
+    selectedSlideInTaskId && getTaskPageProps ? getTaskPageProps(selectedSlideInTaskId, taskSlideInContext) : null;
 
   const openTaskModal = useCallback((milestoneId: string | undefined) => {
     setActiveTaskMilestoneId(milestoneId);
@@ -186,6 +288,12 @@ export function TaskBoard({
         }}
       />
 
+      <TaskSlideIn
+        isOpen={Boolean(selectedSlideInTaskId)}
+        onClose={() => setSelectedSlideInTaskId(null)}
+        taskPageProps={taskPageProps}
+      />
+
       <StickyActionBar
         openTaskModal={openTaskModal}
         openMilestoneModal={openMilestoneModal}
@@ -238,6 +346,7 @@ export function TaskBoard({
                   targetLocation={destination}
                   placeholderHeight={draggedItemDimensions?.height ?? null}
                   selectedTaskId={selectedTaskId}
+                  onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
                   onInlineCreateOpen={clearTaskSelection}
                 />
               ))}
@@ -277,6 +386,7 @@ export function TaskBoard({
                     targetLocation={destination}
                     placeholderHeight={draggedItemDimensions?.height ?? null}
                     selectedTaskId={selectedTaskId}
+                    onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
                     inlineCreateRow={
                       noMilestoneCreatorOpen ? (
                         <InlineTaskCreator
@@ -333,6 +443,7 @@ export function TaskBoard({
                   draggedItemId={draggedItemId}
                   targetLocation={destination}
                   placeholderHeight={draggedItemDimensions?.height ?? null}
+                  onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
                 />
               ))}
             </ul>

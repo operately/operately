@@ -118,9 +118,14 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         onTaskDueDateChange={state.onTaskDueDateChange}
         onTaskStatusChange={state.onTaskStatusChange}
         onTaskMilestoneChange={state.onTaskMilestoneChange}
+        onTaskNameChange={state.onTaskNameChange}
+        onTaskDescriptionChange={state.onTaskDescriptionChange}
+        onTaskDelete={state.onTaskDelete}
         onMilestoneUpdate={state.onMilestoneUpdate}
         onMilestoneSearch={state.onMilestoneSearch}
         assigneePersonSearch={state.assigneePersonSearch}
+        richTextHandlers={state.richTextHandlers}
+        getTaskPageProps={state.getTaskPageProps}
         filters={state.filters}
         onFiltersChange={state.onFiltersChange}
         statuses={state.statuses}
