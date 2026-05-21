@@ -5,11 +5,17 @@ import { GoogleLogo } from "@/components/Brands";
 import classNames from "classnames";
 import { DivLink } from "turboui";
 
-export function SignUpWithEmail({ inviteToken }: { inviteToken?: string | null }) {
+export function SignUpWithEmail({
+  inviteToken,
+  redirectTo,
+}: {
+  inviteToken?: string | null;
+  redirectTo?: string | null;
+}) {
   return (
     <SignUpButton
       title="Sign up with email"
-      link={signupEmailPath(inviteToken)}
+      link={signupEmailPath(inviteToken, redirectTo)}
       icon={<IconMail size={24} className="text-content-dimmed" />}
       testId="sign-up-with-email"
     />
@@ -40,9 +46,21 @@ export function SignUpWithGoogleButton() {
   );
 }
 
-function signupEmailPath(inviteToken?: string | null): string {
+function signupEmailPath(inviteToken?: string | null, redirectTo?: string | null): string {
+  const params = new URLSearchParams();
+
   if (inviteToken) {
-    return `/sign_up/email?invite_token=${inviteToken}`;
+    params.set("invite_token", inviteToken);
+  }
+
+  if (redirectTo) {
+    params.set("redirect_to", redirectTo);
+  }
+
+  const query = params.toString();
+
+  if (query) {
+    return `/sign_up/email?${query}`;
   } else {
     return "/sign_up/email";
   }

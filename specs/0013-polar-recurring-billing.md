@@ -1088,7 +1088,7 @@ Outcome:
 
 - the app can persist company billing state, remembered suggested plans, synchronized provider products, plan-family-to-product mappings, and safely keep all new behavior hidden behind a feature flag
 
-### PR 2: Polar catalog sync and site-admin catalog controls
+### PR 2: Polar catalog sync and site-admin catalog controls (COMPLETED ✅)
 
 - Add `Operately.Billing.Polar.ProductSync`
 - Add site-admin billing catalog API endpoints:
@@ -1107,20 +1107,52 @@ Outcome:
 
 - Operately operators can manage products directly from the admin panel or sync them from Polar, and choose which product version is active for checkout
 
-### PR 3: Website-intent routing, auth plumbing, and company-creation remembered-plan plumbing
+### PR 3a: Auth `redirect_to` preservation (COMPLETED ✅)
+
+- Update app auth buttons to preserve `redirect_to`
+  - Google OAuth button forwards `redirect_to` into `/accounts/auth/google`
+  - Email signup button preserves `redirect_to` when navigating to `/sign_up/email`
+- Update email login to honor `redirect_to` after successful authentication
+- Update email signup completion to honor `redirect_to` after account creation and auto-login
+- Update Google OAuth callback to restore and use `redirect_to` from session
+- Ensure `AccountAuth.log_in_account/3` prefers explicit `redirect_to` param over session fallbacks
+
+Outcome:
+
+- All auth entry points (email login, email signup, Google OAuth) correctly preserve and honor a `redirect_to` parameter, enabling any external or in-app flow to redirect users back to a specific post-auth destination
+
+### PR 3b: Website-intent routing, billing-intent route, and company picker (COMPLETED ✅)
 
 - Update website paid CTAs to hit the app billing-intent route
-- Add the app-owned billing-intent route and auth-aware branching logic
+  - Team and Business plan links on the pricing page point to `/billing/intent?plan=team|business&billing_period=monthly|yearly`
+- Add the app-owned `GET /billing/intent` route with auth-aware branching logic
+  - Not authenticated → redirect to `/log_in?redirect_to=/billing/intent?plan=...&billing_period=...`
+  - Authenticated, no companies → redirect to `/new?plan=...&billing_period=...`
+  - Authenticated, exactly one company where user is owner → redirect to `/:companyId/admin/billing?plan=...&billing_period=...`
+  - Authenticated, multiple owner companies → redirect to `/billing/pick-company?plan=...&billing_period=...`
 - Add the company-picker page for authenticated users who can manage billing in multiple companies
-- Update app auth buttons to preserve `redirect_to`
-- Update email signup completion to honor `redirect_to`
-- Update `NewCompanyPage` to read `plan` and `billing_period`
-- Persist paid-plan website selection into `suggested_plan_key` and `suggested_billing_interval` when the company is created
+  - Lists only companies where the current user is an owner
+  - Preserves and displays the selected `plan` and `billing_period`
+  - Redirects to `/:companyId/admin/billing?plan=...&billing_period=...` on selection
+
+Outcome:
+
+- Paid website intent reaches the correct in-app destination for unauthenticated users, authenticated users with one billable company, authenticated users with multiple billable companies, and authenticated users without a company
+
+### PR 3c: Company-creation remembered-plan plumbing
+
+- Update `NewCompanyPage` to read `plan` and `billing_period` from the URL query string and include them in the create-company API call
+- Update the create-company API mutation to accept optional `plan` and `billing_period` inputs
+- Update `Operately.Operations.CompanyAdding` to accept billing-plan params
+- After company creation, if a paid plan was passed and billing is enabled for the instance:
+  - Create or fetch the company's billing account
+  - Persist the selected plan and interval as `suggested_plan_key` and `suggested_billing_interval` with source `"website"`
+- Ensure the company starts on `free` with no immediate checkout requirement
 - Do not launch checkout automatically after company creation
 
 Outcome:
 
-- paid website intent reaches the correct in-app destination for unauthenticated users, authenticated users with one billable company, authenticated users with multiple billable companies, and authenticated users without a company, while company creation still stores remembered upgrade preference without immediate checkout
+- Company creation stores the remembered upgrade preference from the website without immediate checkout, and the company remains on the free plan until an explicit upgrade action is taken later
 
 ### PR 4: Polar client and owner-scoped billing API
 

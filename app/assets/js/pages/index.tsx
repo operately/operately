@@ -13,6 +13,7 @@ import AccountSecurityPage from "./AccountSecurityPage";
 import AccountSettingsPage from "./AccountSettingsPage";
 import AgentPage from "./AgentPage";
 import AiPlaygroundPage from "./AiPlaygroundPage";
+import BillingPickCompanyPage from "./BillingPickCompanyPage";
 import CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
 import CompanyAdminManagePeoplePage from "./CompanyAdminManagePeoplePage";
@@ -122,6 +123,7 @@ export default {
   AccountSettingsPage,
   AgentPage,
   AiPlaygroundPage,
+  BillingPickCompanyPage,
   CompanyAdminAddPeoplePage,
   CompanyAdminManageAdminsPage,
   CompanyAdminManagePeoplePage,
