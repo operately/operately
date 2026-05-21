@@ -135,6 +135,8 @@ Plan limits cannot live only in the UI. The app has multiple write paths for mem
 
 Company owners should be allowed to start checkout, change plans, cancel subscriptions, reactivate pending cancellation, update payment method, and trigger a sync refresh. Non-owners should not mutate billing state.
 
+Owners and company admins should still be able to see upgrade-oriented limit warnings and approaching-limit banners. Those prompts may invite an upgrade, but any action that actually starts checkout or mutates billing must still require owner authorization.
+
 ### 11. Operately owns decision flows; Polar owns secure payment flows
 
 The app should not dump users into a generic provider portal as the primary experience.
@@ -193,6 +195,19 @@ This sequencing applies to:
 - any future plan-governed limits
 
 The system should not start blocking user actions until the billing and subscription flows are complete and the launch is ready.
+
+### 14. Approaching-limit warnings should appear before blocking
+
+Before a company actually hits a member or storage limit, owners and company admins should see a non-blocking upgrade invitation once usage reaches `90%` of the current plan limit.
+
+Requirements:
+
+- the warning should be rendered as a dismissible banner in company pages rather than only as Billing-page copy
+- the copy should feel like an invitation to upgrade before work is blocked, similar in tone to consumer storage-quota warnings
+- the banner should allow an `X` dismiss action
+- the dismissal state may live in local storage, keyed by company and warning type
+- a dismissed banner should reappear after a cooldown period so the reminder is temporary, not permanent
+- no user action is blocked at this stage
 
 ## Plan Catalog and Entitlements
 
@@ -419,13 +434,34 @@ If the company had not yet upgraded successfully, it remains on `free`.
 
 ### 9. Company hits member limit
 
-1. An operation tries to add, restore, or create an active company member beyond the plan limit.
+1. An operation tries to add, restore, invite, or create an active company member beyond the plan limit.
 2. Backend rejects the operation with a billing-limit error.
-3. UI surfaces an in-context limit-warning step that explains the current usage versus the free limit and recommends the appropriate upgrade path.
-4. If the owner continues, the app may open the in-app plan-selection flow directly instead of stopping first on the billing overview page.
-5. If the company has a remembered website-selected plan, that plan should be the default recommendation in the upgrade prompt and preselected plan-selection flow.
+3. For blocked in-app actions such as member adds, restores, or invite creation, UI surfaces an in-context limit-warning step that explains current usage versus the plan limit.
+4. If the acting user is an owner or company admin, the warning should invite an upgrade and recommend the appropriate upgrade path for that user's permissions.
+5. If the acting user is a regular member, the warning should state that the company has reached its member limit and that they should contact a company owner or admin.
+6. If the company has a remembered website-selected plan, that plan should be the default recommendation in the upgrade prompt and preselected plan-selection flow.
+7. If the blocked actor is an owner and they continue, the app may open the in-app plan-selection flow directly instead of stopping first on the billing overview page.
+8. If someone tries to join the company from an invite while the company is already at its member limit, the join must not proceed. Instead, redirect that person to a dedicated page explaining that the company has reached its user limit and that an owner or admin must upgrade the plan before they can join.
 
-### 10. Owner cancels a subscription
+### 10. Company hits storage limit during upload
+
+1. An upload or attachment creation would push company-owned storage beyond the plan limit.
+2. Backend rejects the operation with a billing-limit error before the new bytes are accepted.
+3. UI explains the current storage usage versus the plan limit.
+4. If the acting user is an owner or company admin, the warning should invite an upgrade and recommend the appropriate upgrade path for that user's permissions.
+5. If the acting user is a regular member, the warning should state that the company has reached its storage limit and that they should contact a company owner or admin.
+
+### 11. Company approaches a member or storage limit
+
+1. The company reaches `90%` of either its member limit or storage limit.
+2. Owners and company admins should see a non-blocking banner somewhere in the company UI, not only on the Billing page.
+3. The banner should read like an invitation to upgrade before work is blocked.
+4. The banner should be dismissible with an `X`.
+5. The dismissed state should be stored in local storage, scoped by company and warning type, and the banner should reappear after a cooldown period.
+6. If the company has a remembered website-selected plan, that plan should be the default recommendation for the banner CTA.
+7. No membership or upload action is blocked yet at this stage.
+
+### 12. Owner cancels a subscription
 
 1. Owner opens the billing page and clicks `Cancel plan`.
 2. Operately opens an in-app cancellation confirmation flow.
@@ -440,7 +476,7 @@ If the company had not yet upgraded successfully, it remains on `free`.
 7. The billing page reflects `cancel_at_period_end` or equivalent canceled state after sync.
 8. The company keeps access through the current billing period and then returns to the appropriate downgraded state.
 
-### 11. Owner reactivates a subscription scheduled for cancellation
+### 13. Owner reactivates a subscription scheduled for cancellation
 
 1. Owner opens the billing page while `cancel_at_period_end` is true.
 2. Owner clicks `Keep plan` or `Reactivate`.
@@ -758,6 +794,7 @@ Suggested contents:
 - current plan
 - billing status
 - remembered suggested plan, if any
+- approaching-limit banner state, when the company is near member or storage limits
 - member limit
 - current active member count
 - next renewal / current period end
@@ -812,6 +849,23 @@ The page should also support incomplete checkout recovery by:
 - offering a `Complete upgrade` action that creates a fresh checkout session
 
 The page should be the primary user-facing control surface for subscription management. Users should not need to leave the app to discover how to upgrade, cancel, or update payment method, even if some actions ultimately redirect into secure Polar-hosted flows for completion.
+
+### Approaching-limit banner
+
+Add a shared company-scoped warning banner for near-limit states.
+
+Suggested behavior:
+
+- show it to owners and company admins when member usage or storage usage reaches at least `90%` of the current plan limit
+- do not show it to regular members
+- use inviting copy that encourages an early upgrade before work is blocked
+- include a clear CTA appropriate to the viewer's permissions:
+  - owners can go directly to the Billing page or plan-selection flow
+  - company admins can be shown owner-contact guidance if checkout remains owner-only
+- if the company has a remembered suggested plan, use that as the default recommendation
+- allow dismissal with an `X`
+- persist dismissal in local storage with a cooldown so the banner reappears later
+- keep the banner behind the `billing` feature flag until launch
 
 ### Plan-selection flow
 
@@ -925,6 +979,7 @@ Responsibilities:
 - read current company entitlements from `Operately.Billing.Plans`
 - evaluate requested actions against plan limits
 - return stable domain errors that UI and API layers can map to user-facing billing messages
+- expose near-limit warning state when usage reaches `90%` of a plan threshold
 - support member-count limits, storage limits, and future plan-governed limits from the same framework
 
 ### Member-count enforcement
@@ -943,6 +998,8 @@ Member-limit rules:
 - `free`: reject when active member count would exceed `20`
 - `team`: reject when active member count would exceed `50`
 - `business`: reject when active member count would exceed `200`
+- when an in-app add, restore, or invite action is blocked, owners and company admins should see upgrade-oriented messaging while regular members should be told to contact a company owner or admin
+- when invite-link acceptance is blocked, redirect the joining person to a dedicated member-limit page instead of allowing a partial join
 
 Member-count enforcement should not ship earlier as a standalone blocker. It should land together with the rest of the final entitlement-enforcement work.
 
@@ -964,6 +1021,8 @@ Storage-limit rules:
 - `free`: reject or block uploads beyond `1 GB`
 - `team`: reject or block uploads beyond `100 GB`
 - `business`: reject or block uploads beyond `1 TB`
+- when an upload is blocked, owners and company admins should see upgrade-oriented messaging while regular members should be told to contact a company owner or admin
+- rejected uploads should not leave behind partial blob usage or partially-created attachment records
 
 The exact accounting implementation may require a dedicated usage aggregator, but that accounting work should not delay the earlier billing and subscription-flow PRs.
 
@@ -1025,6 +1084,8 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - limit-enforcement tests across all guarded operations, including:
   - member-count limits
   - storage limits
+  - invite-link acceptance blocked at member limit
+  - role-aware messaging payloads for privileged versus regular users
   - feature-flag-disabled no-op behavior until launch
 
 ### API/controller tests
@@ -1055,6 +1116,11 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - plan-selection flow hands off to Polar only after explicit confirmation
 - cancellation-confirmation flow shows downgrade consequences before submit
 - billing page offers restart for expired or failed checkout attempts
+- blocked member/storage limit warnings render upgrade-oriented copy for owners/admins and contact-owner/admin copy for regular members
+- approaching-limit banner appears for owners/admins at `90%` usage and can be dismissed temporarily
+- approaching-limit banner dismissal is restored from local storage and reappears after the cooldown
+- regular members do not see the approaching-limit upgrade banner
+- invite-limit landing page renders the correct contact-owner/admin message
 - Company Admin navigation hides Billing when the `billing` feature is disabled
 - site-admin billing catalog page renders synchronized products and active mappings
 - non-flagged companies render the existing Company Admin experience with no billing entry points
@@ -1065,8 +1131,11 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - paid website intent -> logged-in owner -> billing page with preselected plan and no immediate checkout
 - existing owner upgrades from Company Admin billing page
 - owner resumes an abandoned upgrade from the billing page
-- user at free limit sees upgrade guidance when trying to add another member
-- user at free storage limit sees upgrade guidance when trying to upload another file
+- owner or company admin at free member limit sees upgrade guidance when trying to add another member or create an invite
+- joining from an invite is blocked with a member-limit page when the company is already full
+- owner or company admin at free storage limit sees upgrade guidance when trying to upload another file
+- regular member at free storage limit is told to contact a company owner or admin
+- owner or company admin at `90%` member/storage usage sees a dismissible upgrade banner before any hard block
 - non-flagged company experiences no visible billing UI or new blocking behavior
 
 ## Implementation Plan
@@ -1229,16 +1298,19 @@ Outcome:
 ### PR 8: Final limit enforcement
 
 - Add reusable `Operately.Billing.EnforceLimits`
-- Integrate member-count enforcement into company member creation and restore paths
+- Integrate member-count enforcement into company member creation, invite creation, invite-join, and restore paths
 - Integrate storage-limit enforcement into company-owned upload flows
 - Ensure future limit keys can reuse the same entitlement-based enforcement path
 - Show upgrade guidance that defaults to the remembered suggested plan when a blocked action hits a plan limit
+- Add role-aware limit messaging for owners/admins versus regular members
+- Block invite-based joins with a dedicated member-limit page when the company is already full
+- Add non-blocking `90%`-usage upgrade banners for owners and company admins, with local-storage-based dismissal cooldown
 - Keep all enforcement behind the `billing` feature flag until launch
 - Map domain errors to stable UI/API messages
 
 Outcome:
 
-- all hard plan limits are enforced, but only after the billing and subscription flows are complete
+- all hard plan limits are enforced, and owners/company admins receive proactive upgrade nudges before limits block work
 
 ### PR 9: Launch enablement
 
