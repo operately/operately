@@ -135,6 +135,36 @@ describe("useTaskKeyboardNavigation", () => {
     expect(getByTestId("task-two-due-date")).toHaveAttribute("data-open-count", "0");
   });
 
+  it("opens the selected task with enter", () => {
+    const onOpenSelectedTask = jest.fn();
+    const { getByTestId } = render(<KeyboardNavigationHarness onOpenSelectedTask={onOpenSelectedTask} />);
+
+    fireTaskKey("j", 74);
+    fireTaskKey("Enter", 13);
+
+    expect(onOpenSelectedTask).toHaveBeenCalledWith("one", getByTestId("task-one"));
+  });
+
+  it("does not open a task with enter from an interactive control", () => {
+    const onOpenSelectedTask = jest.fn();
+    const { getByTestId } = render(<KeyboardNavigationHarness onOpenSelectedTask={onOpenSelectedTask} />);
+
+    fireTaskKey("j", 74);
+    getByTestId("task-one-control").focus();
+    fireEvent.keyDown(getByTestId("task-one-control"), { key: "Enter", keyCode: 13, which: 13 });
+
+    expect(onOpenSelectedTask).not.toHaveBeenCalled();
+  });
+
+  it("does not open a task with enter when no task is selected", () => {
+    const onOpenSelectedTask = jest.fn();
+    render(<KeyboardNavigationHarness onOpenSelectedTask={onOpenSelectedTask} />);
+
+    fireTaskKey("Enter", 13);
+
+    expect(onOpenSelectedTask).not.toHaveBeenCalled();
+  });
+
   it("can disable the status field shortcut", () => {
     const { getByTestId } = render(<KeyboardNavigationHarness fieldShortcuts={{ status: false }} />);
 
@@ -164,12 +194,15 @@ describe("useTaskKeyboardNavigation", () => {
 function KeyboardNavigationHarness({
   idPrefix = "",
   fieldShortcuts,
+  onOpenSelectedTask,
 }: {
   idPrefix?: string;
   fieldShortcuts?: { assignee?: boolean; status?: boolean; dueDate?: boolean };
+  onOpenSelectedTask?: (taskId: string, row: HTMLElement) => void;
 }) {
   const { containerRef, selectedTaskId, clearSelection, scopeBind } = useTaskKeyboardNavigation<HTMLDivElement>({
     fieldShortcuts,
+    onOpenSelectedTask,
   });
 
   return (
@@ -234,7 +267,7 @@ function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: str
   );
 }
 
-function fireTaskKey(key: "j" | "k" | "a" | "s" | "d" | "Escape", keyCode: number) {
+function fireTaskKey(key: "j" | "k" | "a" | "s" | "d" | "Enter" | "Escape", keyCode: number) {
   fireEvent.keyDown(document, { key, keyCode, which: keyCode });
   fireEvent.keyUp(document, { key, keyCode, which: keyCode });
 }

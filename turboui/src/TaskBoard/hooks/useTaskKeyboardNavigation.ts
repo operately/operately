@@ -14,6 +14,7 @@ interface UseTaskKeyboardNavigationOptions {
     status?: boolean;
     dueDate?: boolean;
   };
+  onOpenSelectedTask?: (taskId: string, row: HTMLElement) => void;
 }
 
 let nextNavigationScopeId = 0;
@@ -27,6 +28,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
   const enableAssigneeShortcut = options.fieldShortcuts?.assignee ?? true;
   const enableStatusShortcut = options.fieldShortcuts?.status ?? true;
   const enableDueDateShortcut = options.fieldShortcuts?.dueDate ?? true;
+  const onOpenSelectedTask = options.onOpenSelectedTask;
 
   if (scopeIdRef.current === null) {
     scopeIdRef.current = ++nextNavigationScopeId;
@@ -126,6 +128,22 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
     };
     const selectNextTask = (event: KeyboardEvent) => handleKey(event, "down");
     const selectPreviousTask = (event: KeyboardEvent) => handleKey(event, "up");
+    const openSelectedTask = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || shouldIgnoreOpenSelectedTaskEvent(event)) return;
+      if (!isInNavigationScope(event, containerRef.current, scopeIdRef.current)) return;
+      const row = getSelectedTaskRow(containerRef.current, selectedTaskIdRef.current);
+      if (!selectedTaskIdRef.current || !row || !onOpenSelectedTask) return;
+
+      activateScope();
+      onOpenSelectedTask(selectedTaskIdRef.current, row);
+
+      event.preventDefault();
+      try {
+        (event as Event).stopImmediatePropagation();
+      } catch {
+        event.stopPropagation();
+      }
+    };
     const openSelectedTaskField = (event: KeyboardEvent, fieldEventName: string) => {
       if (event.defaultPrevented || shouldIgnoreKeyboardEvent(event)) return;
       if (!isInNavigationScope(event, containerRef.current, scopeIdRef.current)) return;
@@ -149,6 +167,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
 
     hotkeys("j", selectNextTask);
     hotkeys("k", selectPreviousTask);
+    hotkeys("enter", openSelectedTask);
     if (enableAssigneeShortcut) hotkeys("a", openAssigneeSelector);
     if (enableStatusShortcut) hotkeys("s", openStatusSelector);
     if (enableDueDateShortcut) hotkeys("d", openDueDateSelector);
@@ -156,6 +175,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
     return () => {
       hotkeys.unbind("j", selectNextTask);
       hotkeys.unbind("k", selectPreviousTask);
+      hotkeys.unbind("enter", openSelectedTask);
       if (enableAssigneeShortcut) hotkeys.unbind("a", openAssigneeSelector);
       if (enableStatusShortcut) hotkeys.unbind("s", openStatusSelector);
       if (enableDueDateShortcut) hotkeys.unbind("d", openDueDateSelector);
@@ -167,6 +187,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
     enableAssigneeShortcut,
     enableDueDateShortcut,
     enableStatusShortcut,
+    onOpenSelectedTask,
     selectTask,
   ]);
 
@@ -204,6 +225,15 @@ function shouldIgnoreKeyboardEvent(event: KeyboardEvent): boolean {
   const tag = target.tagName;
   if (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
   if (target.closest(TASK_ROW_SELECTOR)) return false;
+
+  return Boolean(target.closest("button, a, [role='button'], [role='menuitem'], [aria-haspopup='menu']"));
+}
+
+function shouldIgnoreOpenSelectedTaskEvent(event: KeyboardEvent): boolean {
+  if (shouldIgnoreKeyboardEvent(event)) return true;
+
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return false;
 
   return Boolean(target.closest("button, a, [role='button'], [role='menuitem'], [aria-haspopup='menu']"));
 }
