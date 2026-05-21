@@ -34,6 +34,7 @@ type PageState = "form" | "code-verification";
 
 function Page() {
   const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
+  const redirectToParam = new URLSearchParams(window.location.search).get("redirect_to");
   const [pageState, setPageState] = React.useState<PageState>("form");
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
@@ -67,7 +68,7 @@ function Page() {
         });
 
         const companyId = result.company?.id;
-        const redirectTo = companyId ? `/${companyId}` : "/";
+        const redirectTo = companyId ? `/${companyId}` : redirectToParam || "/";
 
         if (result.error) {
           console.warn("createAccount invite join warning", result.error);
