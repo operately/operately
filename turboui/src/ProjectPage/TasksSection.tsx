@@ -42,7 +42,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
   const handleTaskMilestoneChange = React.useCallback(
     (taskId: string, milestone: TaskBoardTypes.Milestone | null) => {
       const indexInMilestone = 1000;
-      const milestoneId = milestone?.id ?? "no-milestone";
+      const milestoneId = milestone?.id ?? null;
 
       state.onTaskMilestoneChange?.(taskId, milestoneId, indexInMilestone);
     },

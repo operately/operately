@@ -333,7 +333,7 @@ export function useProjectTasksForTurboUi({ backendTasks, projectId, cacheKey, m
     }
   };
 
-  const updateTaskMilestone = async (taskId: string, milestoneId: string, indexInMilestone: number) => {
+  const updateTaskMilestone = async (taskId: string, milestoneId: string | null, indexInMilestone: number) => {
     const snapshot = createSnapshot();
 
     try {

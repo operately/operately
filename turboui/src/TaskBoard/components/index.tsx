@@ -136,28 +136,38 @@ export function TaskBoard({
       return;
     }
 
-    const next = new URLSearchParams(searchParams);
-    next.delete("taskId");
-    setSearchParams(next, { replace: true });
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.delete("taskId");
+        return next;
+      },
+      { replace: true },
+    );
     setSelectedSlideInTaskIdState(null);
-  }, [internalTasks, searchParams, setSearchParams, slideInEnabled, taskIdFromUrl]);
+  }, [internalTasks, setSearchParams, slideInEnabled, taskIdFromUrl]);
 
   const setSelectedSlideInTaskId = useCallback(
     (taskId: string | null) => {
       if (!slideInEnabled) return;
 
-      const next = new URLSearchParams(searchParams);
+      setSearchParams(
+        (current) => {
+          const next = new URLSearchParams(current);
 
-      if (taskId) {
-        next.set("taskId", taskId);
-      } else {
-        next.delete("taskId");
-      }
+          if (taskId) {
+            next.set("taskId", taskId);
+          } else {
+            next.delete("taskId");
+          }
 
-      setSearchParams(next, { replace: true });
+          return next;
+        },
+        { replace: true },
+      );
       setSelectedSlideInTaskIdState(taskId);
     },
-    [searchParams, setSearchParams, slideInEnabled],
+    [setSearchParams, slideInEnabled],
   );
 
   const taskSlideInContext = useMemo<Types.TaskListSlideInContext>(
@@ -170,7 +180,7 @@ export function TaskBoard({
       onTaskStatusChange,
       onTaskMilestoneChange: (taskId, milestone) => {
         const indexInMilestone = 1000;
-        const milestoneId = milestone?.id ?? "no-milestone";
+        const milestoneId = milestone?.id ?? null;
         onTaskMilestoneChange?.(taskId, milestoneId, indexInMilestone);
       },
       onTaskDescriptionChange,

@@ -101,15 +101,9 @@ export function TaskItem({
 
   React.useEffect(() => {
     setCurrentAssignee(task.assignees?.[0] || null);
-  }, [task.assignees, task.id]);
-
-  React.useEffect(() => {
     setCurrentDueDate(task.dueDate || null);
-  }, [task.dueDate, task.id]);
-
-  React.useEffect(() => {
     setCurrentStatus(task.status ?? statusOptions[0] ?? null);
-  }, [task.status, statusOptions, task.id]);
+  }, [task.assignees, task.dueDate, task.id, task.status, statusOptions]);
 
   const itemClasses = classNames(isDragging ? "bg-surface-accent" : "", {
     "cursor-grab": !draggingDisabled && !isDragging,
