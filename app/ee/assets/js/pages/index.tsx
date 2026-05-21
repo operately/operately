@@ -1,3 +1,4 @@
+import * as SaasAdminBillingCatalogPage from "./SaasAdminBillingCatalogPage";
 import * as SaasAdminCompanyPage from "./SaasAdminCompanyPage";
 import * as SaasAdminEmailSettingsPage from "./SaasAdminEmailSettingsPage";
 import * as SaasAdminPage from "./SaasAdminPage";
@@ -19,5 +20,11 @@ export default {
     name: "SaasAdminEmailSettingsPage",
     loader: SaasAdminEmailSettingsPage.loader,
     Page: SaasAdminEmailSettingsPage.Page,
+  },
+
+  SaasAdminBillingCatalogPage: {
+    name: "SaasAdminBillingCatalogPage",
+    loader: SaasAdminBillingCatalogPage.loader,
+    Page: SaasAdminBillingCatalogPage.Page,
   },
 };
