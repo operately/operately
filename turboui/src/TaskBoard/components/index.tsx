@@ -17,6 +17,7 @@ import { useTaskKeyboardNavigation } from "../hooks/useTaskKeyboardNavigation";
 import { TasksMenu } from "./TasksMenu";
 import { TaskDisplayMenu } from "./TaskDisplayMenu";
 import { StatusSelector } from "../../StatusSelector";
+import { useNavigate } from "react-router-dom";
 
 export { TaskDisplayMenu, TasksMenu };
 
@@ -56,14 +57,25 @@ export function TaskBoard({
   displayMode = "list",
   onDisplayModeChange,
 }: Types.TaskBoardProps) {
+  const navigate = useNavigate();
+  const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
+  const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
+  const openSelectedTask = useCallback(
+    (taskId: string, row: HTMLElement) => {
+      const task = internalTasks.find((candidate) => candidate.id === taskId);
+      const link = task?.link ?? row.querySelector<HTMLAnchorElement>("a[href]")?.getAttribute("href");
+      if (link) {
+        navigate(link);
+      }
+    },
+    [internalTasks, navigate],
+  );
   const {
     containerRef: keyboardNavigationRef,
     selectedTaskId,
     clearSelection: clearTaskSelection,
     scopeBind: keyboardNavigationScopeBind,
-  } = useTaskKeyboardNavigation<HTMLDivElement>();
-  const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
-  const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
+  } = useTaskKeyboardNavigation<HTMLDivElement>({ onOpenSelectedTask: openSelectedTask });
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
