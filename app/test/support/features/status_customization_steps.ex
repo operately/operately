@@ -101,8 +101,8 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
     task = Map.fetch!(ctx, task_key)
 
     ctx
-    |> UI.click_link(task.name)
-    |> UI.assert_page(Paths.project_task_path(ctx.company, task))
+    |> UI.click_text(task.name)
+    |> UI.assert_text(task.name)
   end
 
   step :change_task_status_on_task_page, ctx, opts do
