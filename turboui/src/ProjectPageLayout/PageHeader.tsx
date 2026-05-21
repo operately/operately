@@ -47,7 +47,7 @@ function TaskCompletionIndicator({ stats }: { stats: ProjectPageLayout.TaskCompl
 
   return (
     <div
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand-1/20 bg-brand-2 px-2 py-0.5 text-xs font-medium text-content-accent"
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand-1/20 bg-brand-2 px-2 py-0.5 text-xs font-medium text-content-accent dark:border-surface-outline dark:bg-surface-base dark:text-content-base"
       title={ariaLabel}
     >
       <PieChart
@@ -56,7 +56,7 @@ function TaskCompletionIndicator({ stats }: { stats: ProjectPageLayout.TaskCompl
         ariaLabel={ariaLabel}
       />
       <span>{stats.percentage}% tasks completed</span>
-      <span className="text-content-subtle">
+      <span className="text-content-subtle dark:text-content-dimmed">
         {stats.completedCount}/{stats.totalCount}
       </span>
     </div>
