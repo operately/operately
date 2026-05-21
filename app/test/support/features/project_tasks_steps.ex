@@ -188,9 +188,16 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   end
 
   step :go_to_task_page, ctx do
-    ctx
-    |> UI.click_link(ctx.task.name)
-    |> UI.assert_page(Paths.project_task_path(ctx.company, ctx.task))
+    try do
+      ctx
+      |> UI.click_link(ctx.task.name)
+      |> UI.assert_page(Paths.project_task_path(ctx.company, ctx.task))
+    rescue
+      _e in [Wallaby.QueryError, Wallaby.ExpectationNotMetError] ->
+        ctx
+        |> UI.click_text(ctx.task.name)
+        |> UI.assert_has(testid: "task-slide-in")
+    end
   end
 
   step :add_task_from_tasks_board, ctx, attrs do

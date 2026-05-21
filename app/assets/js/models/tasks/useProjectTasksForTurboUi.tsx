@@ -7,6 +7,7 @@ import * as Tasks from "./index";
 import { compareIds, usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { serializeContextualDate } from "../contextualDates";
+import * as Signals from "@/signals";
 
 import { DateField, showErrorToast, TaskBoard } from "turboui";
 import { buildMilestonesOrderingState, normalizeMilestonesOrderingState } from "./milestoneOrdering";
@@ -439,6 +440,7 @@ export function useProjectTasksForTurboUi({ backendTasks, projectId, cacheKey, m
       updateMilestonesFromServer(response.updatedMilestone ?? null, null);
 
       await invalidateAndRefresh();
+      Signals.publish(Signals.LocalSignal.RefreshReviewCount);
 
       return { success: true };
     } catch (e) {

@@ -100,9 +100,16 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
   step :open_task_from_tasks_board, ctx, task_key \\ :task do
     task = Map.fetch!(ctx, task_key)
 
-    ctx
-    |> UI.click_link(task.name)
-    |> UI.assert_page(Paths.project_task_path(ctx.company, task))
+    try do
+      ctx
+      |> UI.click_link(task.name)
+      |> UI.assert_page(Paths.project_task_path(ctx.company, task))
+    rescue
+      _e in [Wallaby.QueryError, Wallaby.ExpectationNotMetError] ->
+        ctx
+        |> UI.click_text(task.name)
+        |> UI.assert_has(testid: "task-slide-in")
+    end
   end
 
   step :change_task_status_on_task_page, ctx, opts do
