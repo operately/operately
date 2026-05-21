@@ -23,7 +23,9 @@ type SketchType =
   | "workspace"
   | "billingFree"
   | "billing"
+  | "limitBanner"
   | "limitWarning"
+  | "joinBlocked"
   | "selection"
   | "companyPicker"
   | "polar"
@@ -218,20 +220,36 @@ const flowLibrary: FlowDefinition[] = [
   },
   {
     title: "Upgrade starts from a plan limit",
-    summary: "A blocked action becomes a clear upgrade ramp instead of a dead end.",
+    summary: "A blocked action becomes a clear upgrade ramp instead of a dead end, with copy that shifts by role.",
     trigger: "A free company hits the member or storage cap.",
     steps: [
       {
         title: "Limit block explains why",
         caption: "The interruption should feel informative, not punitive.",
-        notes: ["Show current usage versus free limit", "Use the remembered plan if one exists"],
+        notes: [
+          "Show current usage versus the current plan limit",
+          "Reuse the same block pattern for invite creation and uploads",
+          "Use the remembered plan if one exists",
+        ],
         tone: "system",
         sketch: "limitWarning",
         icon: IconAlertTriangle,
       },
       {
-        title: "Plan selection stays in-app",
-        caption: "The owner lands directly in plan selection with context already attached before any provider handoff.",
+        title: "Message adapts to permissions",
+        caption: "The blocked state should make the next step obvious for owners, company admins, and regular members.",
+        notes: [
+          "Owners can jump directly to Billing",
+          "Company admins see upgrade guidance without checkout authority",
+          "Members are told to contact an owner or admin",
+        ],
+        tone: "app",
+        sketch: "limitWarning",
+        icon: IconShieldLock,
+      },
+      {
+        title: "Plan selection stays in-app for owners",
+        caption: "Owners land directly in plan selection with context already attached before any provider handoff.",
         notes: ["Pre-highlight the suggested paid plan", "Monthly vs Yearly", "Tiny summary of what changes next"],
         tone: "app",
         sketch: "selection",
@@ -244,6 +262,83 @@ const flowLibrary: FlowDefinition[] = [
         tone: "polar",
         sketch: "polar",
         icon: IconCircleCheck,
+      },
+    ],
+  },
+  {
+    title: "Approaching a limit before work is blocked",
+    summary: "A soft warning should invite an upgrade before uploads or invites start failing.",
+    trigger: "An owner or company admin crosses 90% of the member or storage limit.",
+    steps: [
+      {
+        title: "Banner appears in normal workspace pages",
+        caption: "The warning should live in the everyday product UI, not only on the Billing page.",
+        notes: [
+          "Show current usage and the suggested upgrade",
+          "Keep the tone invitational rather than error-like",
+          "Do not block uploads or invites yet",
+        ],
+        tone: "app",
+        sketch: "limitBanner",
+        icon: IconSparkles,
+      },
+      {
+        title: "Dismissal only buys time",
+        caption: "People can hide the banner for a while, but it should come back after a cooldown.",
+        notes: [
+          "Persist dismissal in local storage",
+          "Scope it by company and warning type",
+          "Bring the banner back later instead of hiding it forever",
+        ],
+        tone: "system",
+        sketch: "limitBanner",
+        icon: IconRefresh,
+      },
+      {
+        title: "Upgrade CTA respects permissions",
+        caption:
+          "Owners can continue toward checkout, while company admins still get the nudge without becoming billing owners.",
+        notes: [
+          "Owners can open Billing or plan selection",
+          "Company admins can be pointed toward the workspace owner",
+          "Regular members do not see this banner at all",
+        ],
+        tone: "app",
+        sketch: "limitBanner",
+        icon: IconShieldLock,
+      },
+    ],
+  },
+  {
+    title: "Invite join blocked when the company is full",
+    summary: "Invite acceptance should fail cleanly and explain that only a plan upgrade can reopen the door.",
+    trigger: "Someone accepts an invite after the company already reached its member limit.",
+    steps: [
+      {
+        title: "Join is stopped before workspace access is granted",
+        caption:
+          "The company-join operation rechecks capacity instead of assuming that an older invite is still valid.",
+        notes: [
+          "Do not partially create the company membership",
+          "Do not drop the person inside the workspace and error later",
+          "Redirect to a dedicated limit page instead of a generic failure",
+        ],
+        tone: "system",
+        sketch: "joinBlocked",
+        icon: IconShieldLock,
+      },
+      {
+        title: "Dedicated page explains who can fix it",
+        caption:
+          "The invitee should land on a calm page that says the company is full and an owner or admin must upgrade it.",
+        notes: [
+          "Keep the company name visible",
+          "Do not show a checkout CTA to the invitee",
+          "Make it clear that retrying can work after an upgrade",
+        ],
+        tone: "app",
+        sketch: "joinBlocked",
+        icon: IconAlertTriangle,
       },
     ],
   },
@@ -352,8 +447,8 @@ const flowLibrary: FlowDefinition[] = [
 ];
 
 const entryFlows = flowLibrary.slice(0, 3);
-const upgradeFlows = flowLibrary.slice(3, 6);
-const lifecycleFlows = flowLibrary.slice(6);
+const upgradeFlows = flowLibrary.slice(3, 8);
+const lifecycleFlows = flowLibrary.slice(8);
 
 export const Overview: Story = {
   args: {
@@ -589,7 +684,9 @@ function SketchFrame({ sketch, tone }: { sketch: SketchType; tone: StepTone }) {
       {sketch === "workspace" ? <WorkspaceSketch /> : null}
       {sketch === "billingFree" ? <BillingFreeSketch /> : null}
       {sketch === "billing" ? <BillingSketch /> : null}
+      {sketch === "limitBanner" ? <LimitBannerSketch /> : null}
       {sketch === "limitWarning" ? <LimitWarningSketch /> : null}
+      {sketch === "joinBlocked" ? <JoinBlockedSketch /> : null}
       {sketch === "selection" ? <SelectionSketch /> : null}
       {sketch === "companyPicker" ? <CompanyPickerSketch /> : null}
       {sketch === "polar" ? <PolarSketch /> : null}
@@ -889,7 +986,9 @@ function WarningSketch() {
           <div className="flex items-start justify-between gap-3">
             <div>
               <SectionEyebrow>before you continue</SectionEyebrow>
-              <div className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-stone-900">Cancellation at period end</div>
+              <div className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-stone-900">
+                Cancellation at period end
+              </div>
               <p className="mt-2 max-w-[26rem] text-[11px] leading-5 text-stone-700">
                 Paid access continues until May 31. After that, this workspace returns to the free plan limits.
               </p>
@@ -932,6 +1031,75 @@ function WarningSketch() {
   );
 }
 
+function LimitBannerSketch() {
+  return (
+    <BrowserFrame url="app.operately.com/acme/projects" sectionLabel="usage warning">
+      <div className="space-y-4 bg-stone-100/70 p-4 pb-6">
+        <PageHeader title="Projects" actionLabel="New project" />
+
+        <div className="rounded-[22px] border-2 border-stone-900 bg-amber-50 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="max-w-[29rem]">
+              <SectionEyebrow>almost at your plan limit</SectionEyebrow>
+              <div className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-stone-900">
+                You are getting close to the storage cap
+              </div>
+              <p className="mt-2 text-[11px] leading-5 text-stone-700">
+                Upgrade soon to keep uploads and invites moving without interruptions for the team.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <SketchBadge>90%</SketchBadge>
+              <div className="flex h-8 w-8 items-center justify-center rounded-[12px] border-2 border-dashed border-stone-300 bg-white text-[10px] font-black uppercase tracking-[0.14em] text-stone-500">
+                X
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-[1.05fr_0.95fr] gap-3">
+            <div className="rounded-[16px] border-2 border-dashed border-stone-300 bg-white p-3">
+              <SketchLabel>current usage</SketchLabel>
+              <div className="mt-2 space-y-2">
+                <SummaryRow left="Members" right="18 / 20" />
+                <SummaryRow left="Storage" right="0.91 / 1 GB" bold />
+                <SummaryRow left="Suggested plan" right="Team yearly" />
+              </div>
+            </div>
+
+            <div className="rounded-[16px] border-2 border-dashed border-emerald-300 bg-emerald-50 p-3">
+              <SketchLabel>next step</SketchLabel>
+              <div className="mt-2 space-y-2">
+                <SummaryRow left="State" right="Nothing blocked yet" bold />
+                <SummaryRow left="CTA" right="Review plans" />
+                <SummaryRow left="Audience" right="Owner or admin" />
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <SketchButton label="Dismiss" />
+                <SketchButton label="Review plans" primary />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-[16px] border-2 border-dashed border-stone-300 bg-white p-3">
+            <SketchLabel>temporary dismissal</SketchLabel>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              <MiniMetric label="storage" value="warning state" />
+              <MiniMetric label="local" value="saved per company" />
+              <MiniMetric label="return" value="after cooldown" />
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 opacity-40">
+          <MutedPanel />
+          <MutedPanel />
+        </div>
+      </div>
+    </BrowserFrame>
+  );
+}
+
 function LimitWarningSketch() {
   return (
     <BrowserFrame url="app.operately.com/acme/admin/billing" sectionLabel="limit block">
@@ -941,10 +1109,12 @@ function LimitWarningSketch() {
         <div className="rounded-[22px] border-2 border-stone-900 bg-white p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <SectionEyebrow>free limit reached</SectionEyebrow>
-              <div className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-stone-900">You&apos;ve hit the free cap</div>
+              <SectionEyebrow>plan limit reached</SectionEyebrow>
+              <div className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-stone-900">
+                This workspace is full for its current plan
+              </div>
               <p className="mt-2 max-w-[26rem] text-[11px] leading-5 text-stone-700">
-                Upgrade this workspace to keep adding teammates and storage without blocking the team.
+                Upgrade this workspace to keep adding teammates or storage without blocking the team.
               </p>
             </div>
             <SketchBadge>Team yearly</SketchBadge>
@@ -954,8 +1124,8 @@ function LimitWarningSketch() {
             <div className="rounded-[16px] border-2 border-dashed border-rose-300 bg-rose-50 p-3">
               <SketchLabel>current usage</SketchLabel>
               <div className="mt-2 space-y-2">
-                <SummaryRow left="Members" right="26 / 20" bold />
-                <SummaryRow left="Storage" right="1.2 / 1 GB" />
+                <SummaryRow left="Members" right="20 / 20" bold />
+                <SummaryRow left="Storage" right="0.98 / 1 GB" />
                 <SummaryRow left="Blocked action" right="Invite teammate" />
               </div>
             </div>
@@ -970,6 +1140,15 @@ function LimitWarningSketch() {
             </div>
           </div>
 
+          <div className="mt-4 rounded-[16px] border-2 border-dashed border-stone-300 bg-stone-50 p-3">
+            <SketchLabel>next step changes by role</SketchLabel>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              <RoleOutcomeCard title="Owner" action="Open billing" detail="Can continue to checkout" primary />
+              <RoleOutcomeCard title="Company admin" action="Review limits" detail="Sees upgrade guidance only" />
+              <RoleOutcomeCard title="Member" action="Contact owner" detail="No upgrade CTA in this state" />
+            </div>
+          </div>
+
           <div className="mt-4 grid grid-cols-2 gap-2">
             <SketchButton label="Back" />
             <SketchButton label="Open billing" primary />
@@ -979,6 +1158,50 @@ function LimitWarningSketch() {
         <div className="grid grid-cols-2 gap-3 opacity-40">
           <MutedPanel />
           <MutedPanel />
+        </div>
+      </div>
+    </BrowserFrame>
+  );
+}
+
+function JoinBlockedSketch() {
+  return (
+    <BrowserFrame url="app.operately.com/join/acme/limit" sectionLabel="join blocked">
+      <div className="space-y-4 bg-stone-100/70 p-6 pb-8">
+        <div className="mx-auto max-w-[28rem] rounded-[24px] border-2 border-stone-900 bg-white p-5">
+          <SectionEyebrow>invite paused</SectionEyebrow>
+          <div className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-stone-900">
+            This company has reached its member limit
+          </div>
+          <p className="mt-2 text-[11px] leading-5 text-stone-700">
+            You cannot join Acme Inc yet. A company owner or admin needs to upgrade the workspace plan before this
+            invite can be completed.
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-[16px] border-2 border-dashed border-rose-300 bg-rose-50 p-3">
+              <SketchLabel>workspace</SketchLabel>
+              <div className="mt-2 space-y-2">
+                <SummaryRow left="Company" right="Acme Inc" bold />
+                <SummaryRow left="Members" right="20 / 20" />
+                <SummaryRow left="Invite" right="On hold" />
+              </div>
+            </div>
+
+            <div className="rounded-[16px] border-2 border-dashed border-amber-300 bg-amber-50 p-3">
+              <SketchLabel>what to do next</SketchLabel>
+              <div className="mt-2 space-y-2">
+                <SummaryRow left="Contact" right="Owner or admin" bold />
+                <SummaryRow left="Upgrade" right="Required first" />
+                <SummaryRow left="Retry" right="After the plan changes" />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <SketchButton label="Back" />
+            <SketchButton label="Try again later" primary />
+          </div>
         </div>
       </div>
     </BrowserFrame>
@@ -1079,9 +1302,7 @@ function InfoPanel({
 
   return (
     <div
-      className={`rounded-[18px] border-2 p-3 ${
-        highlighted ? "border-stone-900" : "border-dashed"
-      } ${accentClasses}`}
+      className={`rounded-[18px] border-2 p-3 ${highlighted ? "border-stone-900" : "border-dashed"} ${accentClasses}`}
     >
       <SectionEyebrow>{title}</SectionEyebrow>
       <div className="mt-3">{children}</div>
@@ -1093,9 +1314,7 @@ function CompanyOptionCard({ name, subtitle, selected }: { name: string; subtitl
   return (
     <div
       className={`rounded-[18px] p-3 ${
-        selected
-          ? "border-2 border-stone-900 bg-white"
-          : "border-2 border-dashed border-stone-300 bg-white"
+        selected ? "border-2 border-stone-900 bg-white" : "border-2 border-dashed border-stone-300 bg-white"
       }`}
     >
       <div className="flex items-center justify-between gap-3">
@@ -1116,9 +1335,7 @@ function PlanSummaryCard({ title, subtitle, selected }: { title: string; subtitl
   return (
     <div
       className={`rounded-[18px] p-3 ${
-        selected
-          ? "border-2 border-stone-900 bg-white"
-          : "border-2 border-dashed border-stone-300 bg-white"
+        selected ? "border-2 border-stone-900 bg-white" : "border-2 border-dashed border-stone-300 bg-white"
       }`}
     >
       <div className="flex items-center justify-between gap-2">
@@ -1147,9 +1364,7 @@ function PlanDetailCard({
   return (
     <div
       className={`rounded-[18px] p-3 ${
-        selected
-          ? "border-2 border-stone-900 bg-white"
-          : "border-2 border-dashed border-stone-300 bg-white"
+        selected ? "border-2 border-stone-900 bg-white" : "border-2 border-dashed border-stone-300 bg-white"
       }`}
     >
       <div className="flex items-center justify-between gap-2">
@@ -1170,6 +1385,29 @@ function PlanDetailCard({
       <div className="mt-3">
         <SketchButton label={selected ? "Selected" : "Pick plan"} primary={selected} compact />
       </div>
+    </div>
+  );
+}
+
+function RoleOutcomeCard({
+  title,
+  action,
+  detail,
+  primary,
+}: {
+  title: string;
+  action: string;
+  detail: string;
+  primary?: boolean;
+}) {
+  return (
+    <div className="rounded-[14px] border-2 border-dashed border-stone-300 bg-white p-3">
+      <div className="flex items-center justify-between gap-2">
+        <SketchLabel>{title}</SketchLabel>
+        {primary ? <SketchBadge>checkout path</SketchBadge> : null}
+      </div>
+      <div className="mt-2 text-[11px] font-black uppercase tracking-[0.08em] text-stone-900">{action}</div>
+      <div className="mt-2 text-[11px] leading-5 text-stone-600">{detail}</div>
     </div>
   );
 }
