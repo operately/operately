@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.CompaniesSteps do
   use Operately.FeatureCase
 
-  alias Operately.{Companies, Repo}
+  alias Operately.{Billing, Companies, Repo}
   alias Operately.Groups.Group
   alias Operately.Support.Features.UI
   alias Wallaby.{Browser, Element}
@@ -21,6 +21,10 @@ defmodule Operately.Support.Features.CompaniesSteps do
 
   step :navigate_to_the_loby, ctx do
     ctx |> UI.visit("/")
+  end
+
+  step :navigate_to_new_company_page_with_billing_intent, ctx do
+    ctx |> UI.visit("/new?plan=team&billing_period=monthly")
   end
 
   step :click_on_the_add_company_button, ctx do
@@ -118,5 +122,17 @@ defmodule Operately.Support.Features.CompaniesSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.person, "created this company")
+  end
+
+  step :assert_billing_intent_is_saved, ctx do
+    billing_account = Billing.get_billing_account_by_company(ctx.company)
+
+    assert billing_account.suggested_plan_key == "team"
+    assert billing_account.suggested_billing_interval == :monthly
+    assert billing_account.suggested_plan_source == "website"
+    assert billing_account.status == :free
+    assert billing_account.plan_key == nil
+
+    ctx
   end
 end

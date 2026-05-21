@@ -1,6 +1,7 @@
 defmodule Operately.Operations.CompanyAddingTest do
   use Operately.DataCase
 
+  alias Operately.Billing
   alias Operately.Companies
   alias Operately.Groups
   alias Operately.People
@@ -112,5 +113,51 @@ defmodule Operately.Operations.CompanyAddingTest do
 
     assert length(members) == 1
     assert hd(members).full_name == @company_attrs.full_name
+  end
+
+  test "CompanyAdding operation remembers billing intent when present and billing is enabled" do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    attrs =
+      Map.merge(@company_attrs, %{
+        plan: "team",
+        billing_period: "monthly"
+      })
+
+    {:ok, company} = Operately.Operations.CompanyAdding.run(attrs)
+    billing_account = Billing.get_billing_account_by_company(company)
+
+    assert billing_account.suggested_plan_key == "team"
+    assert billing_account.suggested_billing_interval == :monthly
+    assert billing_account.suggested_plan_source == "website"
+  end
+
+  test "CompanyAdding operation does not remember billing intent for demo companies" do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    attrs =
+      Map.merge(@company_attrs, %{
+        is_demo: true,
+        plan: "team",
+        billing_period: "monthly"
+      })
+
+    {:ok, company} = Operately.Operations.CompanyAdding.run(attrs)
+
+    assert Billing.get_billing_account_by_company(company) == nil
+  end
+
+  test "CompanyAdding operation keeps previous behavior when no billing info is present" do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
+    person = People.get_person_by_email(company, @email)
+
+    assert company.name == "Acme Co."
+    assert person.title == "CEO"
+    assert Billing.get_billing_account_by_company(company) == nil
   end
 end

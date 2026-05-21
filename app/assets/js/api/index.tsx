@@ -3505,6 +3505,8 @@ export interface CompaniesConvertMemberToGuestResult {
 export interface CompaniesCreateInput {
   companyName: string;
   title: string;
+  plan?: string;
+  billingPeriod?: string;
   isDemo?: boolean;
 }
 
