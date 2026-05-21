@@ -10,6 +10,7 @@ import type { TaskBoardProps } from "../types";
 import { DropPlaceholder, projectItemsWithPlaceholder } from "../../utils/PragmaticDragAndDrop";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import { createTestId } from "../../TestableElement";
+import { OPEN_TASK_CREATE_EVENT } from "../hooks/useTaskKeyboardNavigation";
 
 interface Props {
   status: StatusSelector.StatusOption;
@@ -96,7 +97,20 @@ export function Column({
     });
   }, [disableDnD, containerId, visibleTasks.length]);
 
+  useEffect(() => {
+    const element = columnRef.current;
+    if (!element || !onCreateTask || !canCreateTask) return;
 
+    const openTaskCreator = () => {
+      setIsCreating(true);
+    };
+
+    element.addEventListener(OPEN_TASK_CREATE_EVENT, openTaskCreator);
+
+    return () => {
+      element.removeEventListener(OPEN_TASK_CREATE_EVENT, openTaskCreator);
+    };
+  }, [canCreateTask, onCreateTask]);
 
   return (
     <div
@@ -170,7 +184,13 @@ export function Column({
           )}
         </div>
 
-        <TaskCreationForm onCreateTask={onCreateTask} statusValue={status.value} onModeChange={setIsCreating} canCreateTask={canCreateTask} />
+        <TaskCreationForm
+          onCreateTask={onCreateTask}
+          statusValue={status.value}
+          isCreating={isCreating}
+          onModeChange={setIsCreating}
+          canCreateTask={canCreateTask}
+        />
       </div>
     </div>
   );
@@ -178,17 +198,22 @@ export function Column({
 interface TaskCreationFormProps {
   onCreateTask?: (title: string) => void;
   statusValue: string;
+  isCreating: boolean;
   onModeChange: (isCreating: boolean) => void;
   canCreateTask: boolean;
 }
 
-function TaskCreationForm({ onCreateTask, statusValue, onModeChange, canCreateTask = true }: TaskCreationFormProps) {
-  const [isCreating, setIsCreating] = React.useState(false);
+function TaskCreationForm({
+  onCreateTask,
+  statusValue,
+  isCreating,
+  onModeChange,
+  canCreateTask = true,
+}: TaskCreationFormProps) {
   const [title, setTitle] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const handleModeChange = (creating: boolean) => {
-    setIsCreating(creating);
     onModeChange(creating);
   };
 
