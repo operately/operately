@@ -61,14 +61,13 @@ export function TaskBoard({
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
   const openSelectedTask = useCallback(
-    (taskId: string, row: HTMLElement) => {
-      const task = internalTasks.find((candidate) => candidate.id === taskId);
-      const link = task?.link ?? row.querySelector<HTMLAnchorElement>("a[href]")?.getAttribute("href");
+    (_taskId: string, row: HTMLElement) => {
+      const link = row.querySelector<HTMLAnchorElement>("a[href]")?.getAttribute("href");
       if (link) {
         navigate(link);
       }
     },
-    [internalTasks, navigate],
+    [navigate],
   );
   const {
     containerRef: keyboardNavigationRef,
