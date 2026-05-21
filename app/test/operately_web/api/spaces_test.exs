@@ -258,6 +258,37 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert hd(res.tasks).name == ctx.task.name
     end
 
+    test "it returns descriptions for space tasks created and updated through the external API", ctx do
+      ctx =
+        ctx
+        |> Factory.add_api_token(:api_token, :creator, read_only: false)
+        |> Factory.log_in_person(:creator)
+
+      description = Operately.Support.RichText.rich_text("Hello world", :as_string)
+
+      assert {200, create_res} = external_mutation(ctx.conn, ctx.api_token, "tasks/create", %{
+        assignee_id: nil,
+        due_date: nil,
+        id: Paths.space_id(ctx.engineering),
+        name: "External API task",
+        type: "space"
+      })
+
+      assert {200, _} = external_mutation(ctx.conn, ctx.api_token, "tasks/update_description", %{
+        task_id: create_res.task.id,
+        description: description,
+        type: "space"
+      })
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tasks], %{
+        space_id: Paths.space_id(ctx.engineering)
+      })
+
+      task = Enum.find(res.tasks, &(&1.id == create_res.task.id))
+
+      assert task.description == description
+    end
+
     test "it returns tasks for space members with view access", ctx do
       ctx =
         ctx
