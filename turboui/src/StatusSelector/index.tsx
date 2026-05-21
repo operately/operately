@@ -264,9 +264,10 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
                     key={option.value}
                     ref={(el) => (itemRefs.current[index] = el)}
                     data-test-id={createTestId("status-option", option.value)}
-                    className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
-                      "bg-surface-dimmed": isSelected,
-                      "hover:bg-surface-dimmed": !isSelected,
+                    className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer text-content-base", {
+                      "bg-brand-1/10 text-content-accent ring-1 ring-inset ring-brand-1/20 dark:bg-brand-1/25 dark:ring-brand-1/40":
+                        isSelected,
+                      "hover:bg-surface-dimmed hover:text-content-accent": !isSelected,
                     })}
                     onClick={() => handleItemClick(option as T)}
                     onMouseEnter={() => setSelectedIndex(index)}
