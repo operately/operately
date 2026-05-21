@@ -81,7 +81,7 @@ defmodule OperatelyWeb.Api.Companies.CreateTest do
       company = Operately.Companies.get_company_by_name("Acme Co.")
       billing_account = Billing.get_billing_account_by_company(company)
 
-      assert billing_account.suggested_plan_key == "team"
+      assert billing_account.suggested_plan_key == :team
       assert billing_account.suggested_billing_interval == :monthly
       assert billing_account.suggested_plan_source == "website"
       assert billing_account.status == :free
@@ -128,46 +128,34 @@ defmodule OperatelyWeb.Api.Companies.CreateTest do
       assert Billing.get_billing_account_by_company(company) == nil
     end
 
-    test "ignores invalid billing plan params", ctx do
-      Application.put_env(:operately, :billing_enabled, true)
-      on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
-
+    test "rejects unsupported billing plan params", ctx do
       account = Operately.PeopleFixtures.account_fixture()
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, _res} =
+      assert {400, _res} =
                mutation(conn, [:companies, :create], Map.merge(@input, %{plan: "enterprise", billing_period: "monthly"}))
 
-      company = Operately.Companies.get_company_by_name("Acme Co.")
-      assert Billing.get_billing_account_by_company(company) == nil
+      assert Operately.Companies.get_company_by_name("Acme Co.") == nil
     end
 
-    test "ignores invalid billing period params", ctx do
-      Application.put_env(:operately, :billing_enabled, true)
-      on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
-
+    test "rejects unsupported billing period params", ctx do
       account = Operately.PeopleFixtures.account_fixture()
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, _res} =
+      assert {400, _res} =
                mutation(conn, [:companies, :create], Map.merge(@input, %{plan: "team", billing_period: "weekly"}))
 
-      company = Operately.Companies.get_company_by_name("Acme Co.")
-      assert Billing.get_billing_account_by_company(company) == nil
+      assert Operately.Companies.get_company_by_name("Acme Co.") == nil
     end
 
-    test "ignores free billing plan params", ctx do
-      Application.put_env(:operately, :billing_enabled, true)
-      on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
-
+    test "rejects free billing plan params", ctx do
       account = Operately.PeopleFixtures.account_fixture()
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, _res} =
+      assert {400, _res} =
                mutation(conn, [:companies, :create], Map.merge(@input, %{plan: "free", billing_period: "monthly"}))
 
-      company = Operately.Companies.get_company_by_name("Acme Co.")
-      assert Billing.get_billing_account_by_company(company) == nil
+      assert Operately.Companies.get_company_by_name("Acme Co.") == nil
     end
   end
 end

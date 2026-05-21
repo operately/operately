@@ -32,6 +32,9 @@ defmodule OperatelyWeb.Api.Types do
 
   enum :account_theme, values: Operately.People.Account.valid_themes()
 
+  enum :billing_plan, values: Operately.Billing.CompanyBillingAccount.valid_plan_keys()
+  enum :billing_interval, values: Operately.Billing.CompanyBillingAccount.valid_billing_intervals()
+
   object :account do
     field :full_name, :string, null: false
     field :site_admin, :boolean, null: false

@@ -201,13 +201,26 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
       types.enums[type] != nil ->
         enum_values = types.enums[type]
-        value = String.to_existing_atom(value)
 
-        if value in enum_values do
-          {:ok, value}
-        else
-          allowed_values = enum_values |> Enum.join(", ")
-          {:error, 400, "Invalid value for enum #{type}: #{value}. Allowed values: #{allowed_values}"}
+        atom_value =
+          try do
+            {:ok, String.to_existing_atom(value)}
+          rescue
+            ArgumentError -> :error
+          end
+
+        case atom_value do
+          {:ok, v} ->
+            if Enum.member?(enum_values, v) do
+              {:ok, v}
+            else
+              allowed_values = enum_values |> Enum.join(", ")
+              {:error, 400, "Invalid value for enum #{type}: #{value}. Allowed values: #{allowed_values}"}
+            end
+
+          :error ->
+            allowed_values = enum_values |> Enum.join(", ")
+            {:error, 400, "Invalid value for enum #{type}: #{value}. Allowed values: #{allowed_values}"}
         end
 
       types.int_enums[type] != nil ->

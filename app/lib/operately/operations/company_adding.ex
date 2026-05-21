@@ -200,15 +200,15 @@ defmodule Operately.Operations.CompanyAdding do
   end
 
   defp extract_billing_intent(attrs) do
-    plan = Map.get(attrs, :plan)
-    billing_period = Map.get(attrs, :billing_period)
-
-    case {plan, billing_period} do
-      {plan, billing_period} when plan in ["team", "business"] and billing_period in ["monthly", "yearly"] ->
-        {:ok, plan, billing_period}
-
-      _ ->
+    case {Map.get(attrs, :plan), Map.get(attrs, :billing_period)} do
+      {nil, _} ->
         :ignore
+
+      {_, nil} ->
+        :ignore
+
+      {plan, billing_period} ->
+        {:ok, plan, billing_period}
     end
   end
 

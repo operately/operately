@@ -2,27 +2,31 @@ defmodule Operately.Billing.CompanyBillingAccount do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  @valid_plan_keys [:team, :business]
   @valid_billing_intervals [:monthly, :yearly]
 
   schema "company_billing_accounts" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
 
     field :provider, :string, default: "polar"
-    field :plan_key, :string
-    field :billing_interval, :string
+    field :plan_key, Ecto.Enum, values: @valid_plan_keys
+    field :billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :status, Ecto.Enum, values: [:free, :active, :past_due, :canceled], default: :free
-    field :suggested_plan_key, :string
+    field :suggested_plan_key, Ecto.Enum, values: @valid_plan_keys
     field :suggested_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :suggested_plan_source, :string
     field :current_period_end, :utc_datetime
     field :cancel_at_period_end, :boolean, default: false
-    field :pending_plan_key, :string
+    field :pending_plan_key, Ecto.Enum, values: @valid_plan_keys
     field :pending_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :pending_checkout_started_at, :utc_datetime
     field :last_synced_at, :utc_datetime
 
     timestamps()
   end
+
+  def valid_plan_keys, do: @valid_plan_keys
+  def valid_billing_intervals, do: @valid_billing_intervals
 
   def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
