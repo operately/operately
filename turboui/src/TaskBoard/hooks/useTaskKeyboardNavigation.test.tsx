@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 
 import {
   OPEN_TASK_ASSIGNEE_EVENT,
+  OPEN_TASK_CREATE_EVENT,
   OPEN_TASK_DUE_DATE_EVENT,
   OPEN_TASK_STATUS_EVENT,
   useTaskKeyboardNavigation,
@@ -145,12 +146,33 @@ describe("useTaskKeyboardNavigation", () => {
     expect(getByTestId("task-two-status")).toHaveAttribute("data-open-count", "0");
   });
 
+  it("can enable the selected task create shortcut with c", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness fieldShortcuts={{ create: true }} />);
+
+    fireTaskKey("j", 74);
+    fireTaskKey("c", 67);
+
+    expect(getByTestId("task-one-create")).toHaveAttribute("data-open-count", "1");
+    expect(getByTestId("task-two-create")).toHaveAttribute("data-open-count", "0");
+  });
+
+  it("does not open the selected task create shortcut by default", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("j", 74);
+    fireTaskKey("c", 67);
+
+    expect(getByTestId("task-one-create")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-two-create")).toHaveAttribute("data-open-count", "0");
+  });
+
   it("does not open task field controls when no task is selected", () => {
     const { getByTestId } = render(<KeyboardNavigationHarness />);
 
     fireTaskKey("a", 65);
     fireTaskKey("s", 83);
     fireTaskKey("d", 68);
+    fireTaskKey("c", 67);
 
     expect(getByTestId("task-one-assignee")).toHaveAttribute("data-open-count", "0");
     expect(getByTestId("task-two-assignee")).toHaveAttribute("data-open-count", "0");
@@ -158,6 +180,8 @@ describe("useTaskKeyboardNavigation", () => {
     expect(getByTestId("task-two-status")).toHaveAttribute("data-open-count", "0");
     expect(getByTestId("task-one-due-date")).toHaveAttribute("data-open-count", "0");
     expect(getByTestId("task-two-due-date")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-one-create")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-two-create")).toHaveAttribute("data-open-count", "0");
   });
 });
 
@@ -198,6 +222,7 @@ function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: str
   const [openCount, setOpenCount] = React.useState(0);
   const [statusOpenCount, setStatusOpenCount] = React.useState(0);
   const [dueDateOpenCount, setDueDateOpenCount] = React.useState(0);
+  const [createOpenCount, setCreateOpenCount] = React.useState(0);
 
   React.useEffect(() => {
     const element = rowRef.current;
@@ -206,14 +231,17 @@ function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: str
     const handleOpenAssignee = () => setOpenCount((count) => count + 1);
     const handleOpenStatus = () => setStatusOpenCount((count) => count + 1);
     const handleOpenDueDate = () => setDueDateOpenCount((count) => count + 1);
+    const handleOpenCreate = () => setCreateOpenCount((count) => count + 1);
     element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
     element.addEventListener(OPEN_TASK_STATUS_EVENT, handleOpenStatus);
     element.addEventListener(OPEN_TASK_DUE_DATE_EVENT, handleOpenDueDate);
+    element.addEventListener(OPEN_TASK_CREATE_EVENT, handleOpenCreate);
 
     return () => {
       element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
       element.removeEventListener(OPEN_TASK_STATUS_EVENT, handleOpenStatus);
       element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, handleOpenDueDate);
+      element.removeEventListener(OPEN_TASK_CREATE_EVENT, handleOpenCreate);
     };
   }, []);
 
@@ -230,11 +258,12 @@ function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: str
       <span data-testid={`${testIdPrefix}task-${id}-assignee`} data-open-count={openCount} />
       <span data-testid={`${testIdPrefix}task-${id}-status`} data-open-count={statusOpenCount} />
       <span data-testid={`${testIdPrefix}task-${id}-due-date`} data-open-count={dueDateOpenCount} />
+      <span data-testid={`${testIdPrefix}task-${id}-create`} data-open-count={createOpenCount} />
     </div>
   );
 }
 
-function fireTaskKey(key: "j" | "k" | "a" | "s" | "d" | "Escape", keyCode: number) {
+function fireTaskKey(key: "j" | "k" | "a" | "s" | "d" | "c" | "Escape", keyCode: number) {
   fireEvent.keyDown(document, { key, keyCode, which: keyCode });
   fireEvent.keyUp(document, { key, keyCode, which: keyCode });
 }
