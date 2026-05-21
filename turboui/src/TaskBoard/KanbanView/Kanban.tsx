@@ -59,6 +59,7 @@ export function Kanban({
     scopeBind,
   } = useTaskKeyboardNavigation<HTMLDivElement>({
     fieldShortcuts: { status: false, create: Boolean(canEdit && onTaskCreate) },
+    onOpenSelectedTask: onTaskClick,
   });
 
   const unknownStatus = statuses.find((status) => status.value === "unknown-status");
