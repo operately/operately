@@ -129,6 +129,13 @@ defmodule Operately.Billing do
 
   def get_product!(id), do: Repo.get!(ProductCatalogEntry, id)
 
+  def get_product(id) do
+    case Repo.get(ProductCatalogEntry, id) do
+      nil -> {:error, :not_found}
+      product -> {:ok, product}
+    end
+  end
+
   def find_active_product(plan_family, billing_interval) do
     ProductCatalogEntry
     |> where([e], e.plan_family == ^plan_family)

@@ -573,6 +573,14 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(token.id)
   end
 
+  def billing_product_id(product_id) when is_binary(product_id) do
+    Operately.ShortUuid.encode!(product_id)
+  end
+
+  def billing_product_id(product) do
+    Operately.ShortUuid.encode!(product.id)
+  end
+
   #
   # Path Construction Helpers
   #
