@@ -99,6 +99,18 @@ export function TaskItem({
     };
   }, [assigneePersonSearch, onTaskDueDateChange, onTaskStatusChange, prepareFocusRestore, ref]);
 
+  React.useEffect(() => {
+    setCurrentAssignee(task.assignees?.[0] || null);
+  }, [task.assignees, task.id]);
+
+  React.useEffect(() => {
+    setCurrentDueDate(task.dueDate || null);
+  }, [task.dueDate, task.id]);
+
+  React.useEffect(() => {
+    setCurrentStatus(task.status ?? statusOptions[0] ?? null);
+  }, [task.status, statusOptions, task.id]);
+
   const itemClasses = classNames(isDragging ? "bg-surface-accent" : "", {
     "cursor-grab": !draggingDisabled && !isDragging,
     "cursor-grabbing": !draggingDisabled && isDragging,
