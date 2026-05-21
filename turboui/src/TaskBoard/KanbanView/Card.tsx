@@ -10,6 +10,7 @@ import { createTestId } from "../../TestableElement";
 import {
   OPEN_TASK_ASSIGNEE_EVENT,
   OPEN_TASK_DUE_DATE_EVENT,
+  OPEN_TASK_EVENT,
 } from "../hooks/useTaskKeyboardNavigation";
 import { useShortcutFieldFocusRestore } from "../hooks/useShortcutFieldFocusRestore";
 
@@ -68,13 +69,19 @@ export function Card({
       setDueDateFieldOpen(true);
     };
 
+    const openTask = () => {
+      onTaskClick?.(task.id);
+    };
+
     element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
     element.addEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+    element.addEventListener(OPEN_TASK_EVENT, openTask);
     return () => {
       element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
       element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+      element.removeEventListener(OPEN_TASK_EVENT, openTask);
     };
-  }, [assigneePersonSearch, onTaskDueDateChange, prepareFocusRestore, ref]);
+  }, [assigneePersonSearch, onTaskClick, onTaskDueDateChange, prepareFocusRestore, ref, task.id]);
 
   useEffect(() => {
     setCurrentAssignee(task.assignees?.[0] || null);

@@ -10,6 +10,7 @@ import { createTestId } from "../../TestableElement";
 import {
   OPEN_TASK_ASSIGNEE_EVENT,
   OPEN_TASK_DUE_DATE_EVENT,
+  OPEN_TASK_EVENT,
   OPEN_TASK_STATUS_EVENT,
 } from "../hooks/useTaskKeyboardNavigation";
 import { useShortcutFieldFocusRestore } from "../hooks/useShortcutFieldFocusRestore";
@@ -89,15 +90,21 @@ export function TaskItem({
       setDueDateFieldTarget(isMobileViewport() ? "mobile" : "desktop");
     };
 
+    const openTask = () => {
+      onTaskClick?.(task.id);
+    };
+
     element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
     element.addEventListener(OPEN_TASK_STATUS_EVENT, openStatusField);
     element.addEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+    element.addEventListener(OPEN_TASK_EVENT, openTask);
     return () => {
       element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
       element.removeEventListener(OPEN_TASK_STATUS_EVENT, openStatusField);
       element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
+      element.removeEventListener(OPEN_TASK_EVENT, openTask);
     };
-  }, [assigneePersonSearch, onTaskDueDateChange, onTaskStatusChange, prepareFocusRestore, ref]);
+  }, [assigneePersonSearch, onTaskClick, onTaskDueDateChange, onTaskStatusChange, prepareFocusRestore, ref, task.id]);
 
   React.useEffect(() => {
     setCurrentAssignee(task.assignees?.[0] || null);

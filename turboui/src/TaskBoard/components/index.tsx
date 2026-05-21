@@ -67,12 +67,6 @@ export function TaskBoard({
   displayMode = "list",
   onDisplayModeChange,
 }: Types.TaskBoardProps) {
-  const {
-    containerRef: keyboardNavigationRef,
-    selectedTaskId,
-    clearSelection: clearTaskSelection,
-    scopeBind: keyboardNavigationScopeBind,
-  } = useTaskKeyboardNavigation<HTMLDivElement>();
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -81,6 +75,14 @@ export function TaskBoard({
     return value && value.length > 0 ? value : null;
   }, [searchParams]);
   const [selectedSlideInTaskId, setSelectedSlideInTaskIdState] = useState<string | null>(null);
+  const {
+    containerRef: keyboardNavigationRef,
+    selectedTaskId,
+    clearSelection: clearTaskSelection,
+    scopeBind: keyboardNavigationScopeBind,
+  } = useTaskKeyboardNavigation<HTMLDivElement>({
+    clearSelectionWithEscape: !selectedSlideInTaskId,
+  });
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);

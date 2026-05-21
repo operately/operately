@@ -23,6 +23,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
     shortcuts: [
       { label: "Select next task", keys: [["j"]] },
       { label: "Select previous task", keys: [["k"]] },
+      { label: "Open selected task", keys: [["Return"]] },
       { label: "Open assignee picker for the selected task", keys: [["a"]] },
       { label: "Open status picker for the selected task where supported", keys: [["s"]] },
       { label: "Open due date picker for the selected task", keys: [["d"]] },

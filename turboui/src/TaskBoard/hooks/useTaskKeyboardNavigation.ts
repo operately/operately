@@ -6,6 +6,8 @@ export const OPEN_TASK_ASSIGNEE_EVENT = "taskboard:open-assignee";
 export const OPEN_TASK_STATUS_EVENT = "taskboard:open-status";
 export const OPEN_TASK_DUE_DATE_EVENT = "taskboard:open-due-date";
 export const OPEN_TASK_CREATE_EVENT = "taskboard:open-create";
+export const OPEN_TASK_EVENT = "taskboard:open-task";
+const TASK_SLIDE_IN_SELECTOR = "[data-test-id='task-slide-in']";
 
 type Direction = "down" | "up";
 
@@ -16,6 +18,7 @@ interface UseTaskKeyboardNavigationOptions {
     dueDate?: boolean;
     create?: boolean;
   };
+  clearSelectionWithEscape?: boolean;
 }
 
 let nextNavigationScopeId = 0;
@@ -30,6 +33,9 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
   const enableStatusShortcut = options.fieldShortcuts?.status ?? true;
   const enableDueDateShortcut = options.fieldShortcuts?.dueDate ?? true;
   const enableCreateShortcut = options.fieldShortcuts?.create ?? false;
+  const enableEscapeClear = options.clearSelectionWithEscape ?? true;
+  const enableEscapeClearRef = React.useRef(enableEscapeClear);
+  enableEscapeClearRef.current = enableEscapeClear;
 
   if (scopeIdRef.current === null) {
     scopeIdRef.current = ++nextNavigationScopeId;
@@ -112,6 +118,8 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
       }
     };
     const clearSelectionWithEscape = (event: KeyboardEvent) => {
+      if (!enableEscapeClearRef.current) return;
+      if (isTaskSlideInMounted()) return;
       if (event.defaultPrevented || shouldIgnoreKeyboardEvent(event)) return;
       if (!selectedTaskIdRef.current) return;
       if (!isInNavigationScope(event, containerRef.current, scopeIdRef.current)) return;
@@ -146,6 +154,10 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
         event.stopPropagation();
       }
     };
+    const openSelectedTask = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || shouldIgnoreKeyboardEvent(event, { allowTaskRowInteractive: false })) return;
+      dispatchSelectedTaskEvent(event, OPEN_TASK_EVENT);
+    };
     const openAssigneeSelector = (event: KeyboardEvent) => dispatchSelectedTaskEvent(event, OPEN_TASK_ASSIGNEE_EVENT);
     const openStatusSelector = (event: KeyboardEvent) => dispatchSelectedTaskEvent(event, OPEN_TASK_STATUS_EVENT);
     const openDueDateSelector = (event: KeyboardEvent) => dispatchSelectedTaskEvent(event, OPEN_TASK_DUE_DATE_EVENT);
@@ -153,6 +165,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
 
     hotkeys("j", selectNextTask);
     hotkeys("k", selectPreviousTask);
+    hotkeys("enter", openSelectedTask);
     if (enableAssigneeShortcut) hotkeys("a", openAssigneeSelector);
     if (enableStatusShortcut) hotkeys("s", openStatusSelector);
     if (enableDueDateShortcut) hotkeys("d", openDueDateSelector);
@@ -161,6 +174,7 @@ export function useTaskKeyboardNavigation<TElement extends HTMLElement>(options:
     return () => {
       hotkeys.unbind("j", selectNextTask);
       hotkeys.unbind("k", selectPreviousTask);
+      hotkeys.unbind("enter", openSelectedTask);
       if (enableAssigneeShortcut) hotkeys.unbind("a", openAssigneeSelector);
       if (enableStatusShortcut) hotkeys.unbind("s", openStatusSelector);
       if (enableDueDateShortcut) hotkeys.unbind("d", openDueDateSelector);
@@ -202,7 +216,10 @@ function getNextIndex(currentIndex: number, rowsCount: number, direction: Direct
   }
 }
 
-function shouldIgnoreKeyboardEvent(event: KeyboardEvent): boolean {
+function shouldIgnoreKeyboardEvent(
+  event: KeyboardEvent,
+  options: { allowTaskRowInteractive?: boolean } = {},
+): boolean {
   if (event.altKey || event.ctrlKey || event.metaKey) return true;
 
   const target = event.target;
@@ -210,7 +227,7 @@ function shouldIgnoreKeyboardEvent(event: KeyboardEvent): boolean {
 
   const tag = target.tagName;
   if (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
-  if (target.closest(TASK_ROW_SELECTOR)) return false;
+  if (options.allowTaskRowInteractive !== false && target.closest(TASK_ROW_SELECTOR)) return false;
 
   return Boolean(target.closest("button, a, [role='button'], [role='menuitem'], [aria-haspopup='menu']"));
 }
@@ -238,4 +255,8 @@ function isNeutralDocumentTarget(target: EventTarget | null): boolean {
 
 function isNeutralActiveElement(activeElement: Element | null): boolean {
   return !activeElement || activeElement === document.body || activeElement === document.documentElement;
+}
+
+function isTaskSlideInMounted(): boolean {
+  return Boolean(document.querySelector(TASK_SLIDE_IN_SELECTOR));
 }
