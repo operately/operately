@@ -35,6 +35,7 @@ export interface MilestoneCardProps {
   targetLocation?: BoardLocation | null;
   placeholderHeight?: number | null;
   selectedTaskId?: string | null;
+  onTaskClick?: (taskId: string) => void;
   onInlineCreateOpen?: () => void;
 
   /**
@@ -65,6 +66,7 @@ export function MilestoneCard({
   targetLocation = null,
   placeholderHeight = null,
   selectedTaskId = null,
+  onTaskClick,
   onInlineCreateOpen,
 }: MilestoneCardProps) {
   const cardRef = React.useRef<HTMLLIElement>(null);
@@ -230,6 +232,7 @@ export function MilestoneCard({
             targetLocation={targetLocation}
             placeholderHeight={placeholderHeight}
             selectedTaskId={selectedTaskId}
+            onTaskClick={onTaskClick}
             suppressEmptyStateWhenOnlyHiddenTasks={isCompleted}
             inlineCreateRow={
               creatorOpen ? (
