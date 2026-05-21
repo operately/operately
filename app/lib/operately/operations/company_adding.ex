@@ -1,4 +1,5 @@
 defmodule Operately.Operations.CompanyAdding do
+  alias Operately.Billing
   alias Operately.Companies.ShortId
   alias Ecto.Multi
   alias Operately.Repo
@@ -16,6 +17,7 @@ defmodule Operately.Operations.CompanyAdding do
     |> insert_access_groups()
     |> insert_access_bindings()
     |> insert_space()
+    |> maybe_remember_billing_intent(attrs)
     |> insert_account_if_doesnt_exists(attrs, account)
     |> insert_person(attrs)
     |> insert_activity()
@@ -171,6 +173,43 @@ defmodule Operately.Operations.CompanyAdding do
         }
       end)
     end)
+  end
+
+  defp maybe_remember_billing_intent(multi, attrs) do
+    Multi.run(multi, :billing_intent, fn _, changes ->
+      if Map.get(attrs, :is_demo) do
+        {:ok, :skipped}
+      else
+        with true <- Billing.billing_enabled?(),
+             {:ok, plan, billing_period} <- extract_billing_intent(attrs),
+             {:ok, billing_account} <- Billing.get_or_create_billing_account(changes.updated_company),
+             {:ok, _updated_account} <- Billing.remember_plan(billing_account, plan, billing_period, "website") do
+          {:ok, :remembered}
+        else
+          false ->
+            {:ok, :skipped}
+
+          :ignore ->
+            {:ok, :skipped}
+
+          {:error, reason} ->
+            {:error, reason}
+        end
+      end
+    end)
+  end
+
+  defp extract_billing_intent(attrs) do
+    plan = Map.get(attrs, :plan)
+    billing_period = Map.get(attrs, :billing_period)
+
+    case {plan, billing_period} do
+      {plan, billing_period} when plan in ["team", "business"] and billing_period in ["monthly", "yearly"] ->
+        {:ok, plan, billing_period}
+
+      _ ->
+        :ignore
+    end
   end
 
   defp send_discord_notification(multi) do

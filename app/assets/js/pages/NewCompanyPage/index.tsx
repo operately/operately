@@ -16,6 +16,14 @@ export default { name: "NewCompanyPage", loader: Pages.emptyLoader, Page } as Pa
 function Page() {
   const navigate = useNavigate();
   const [add] = Api.companies.useCreate();
+  const billingIntent = React.useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    return {
+      plan: params.get("plan") ?? undefined,
+      billingPeriod: params.get("billing_period") ?? undefined,
+    };
+  }, []);
 
   const form = Forms.useForm({
     fields: {
@@ -28,6 +36,8 @@ function Page() {
         companyName: form.values.companyName,
         title: form.values.title,
         isDemo: form.values.isDemo == "true",
+        plan: billingIntent.plan,
+        billingPeriod: billingIntent.billingPeriod,
       });
 
       navigate(Paths.companyHomePath(res.company.id));
