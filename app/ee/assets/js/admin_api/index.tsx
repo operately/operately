@@ -135,6 +135,23 @@ export interface Activity {
   insertedAt?: string;
 }
 
+export interface BillingProduct {
+  id: string;
+  provider: string;
+  planFamily: string;
+  billingInterval: string;
+  polarProductId: string;
+  polarProductName: string;
+  priceAmount: number;
+  priceCurrency: string;
+  version: number;
+  active: boolean;
+  archivedAt: string;
+  lastSyncedAt: string;
+  insertedAt: string;
+  updatedAt: string;
+}
+
 export interface Company {
   id?: string;
   name?: string;
@@ -216,6 +233,34 @@ export interface GetEmailSettingsResult {
   emailSettings: EmailSettings;
 }
 
+export interface ListBillingProductsInput {}
+
+export interface ListBillingProductsResult {
+  products: BillingProduct[];
+}
+
+export interface ArchiveBillingProductInput {
+  id: string;
+}
+
+export interface ArchiveBillingProductResult {
+  product: BillingProduct;
+}
+
+export interface CreateBillingProductInput {
+  provider: string;
+  planFamily: string;
+  billingInterval: string;
+  polarProductId: string;
+  polarProductName: string;
+  priceAmount: number;
+  priceCurrency: string;
+}
+
+export interface CreateBillingProductResult {
+  product: BillingProduct;
+}
+
 export interface DeleteAccountInput {
   accountId: string;
 }
@@ -264,6 +309,35 @@ export interface SendTestEmailResult {
   error?: string;
 }
 
+export interface SetActiveBillingProductInput {
+  id: string;
+}
+
+export interface SetActiveBillingProductResult {
+  product: BillingProduct;
+}
+
+export interface SyncBillingProductsFromPolarInput {}
+
+export interface SyncBillingProductsFromPolarResult {
+  success: boolean;
+  syncedCount: number;
+}
+
+export interface UpdateBillingProductInput {
+  id: string;
+  planFamily?: string;
+  billingInterval?: string;
+  polarProductId?: string;
+  polarProductName?: string;
+  priceAmount?: number;
+  priceCurrency?: string;
+}
+
+export interface UpdateBillingProductResult {
+  product: BillingProduct;
+}
+
 export interface UpdateEmailSettingsInput {
   provider: EmailProvider;
   notificationEmail?: string;
@@ -309,6 +383,18 @@ class ApiNamespaceRoot {
     return this.client.get("/get_email_settings", input);
   }
 
+  async listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
+    return this.client.get("/list_billing_products", input);
+  }
+
+  async archiveBillingProduct(input: ArchiveBillingProductInput): Promise<ArchiveBillingProductResult> {
+    return this.client.post("/archive_billing_product", input);
+  }
+
+  async createBillingProduct(input: CreateBillingProductInput): Promise<CreateBillingProductResult> {
+    return this.client.post("/create_billing_product", input);
+  }
+
   async deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
     return this.client.post("/delete_account", input);
   }
@@ -327,6 +413,20 @@ class ApiNamespaceRoot {
 
   async sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
     return this.client.post("/send_test_email", input);
+  }
+
+  async setActiveBillingProduct(input: SetActiveBillingProductInput): Promise<SetActiveBillingProductResult> {
+    return this.client.post("/set_active_billing_product", input);
+  }
+
+  async syncBillingProductsFromPolar(
+    input: SyncBillingProductsFromPolarInput,
+  ): Promise<SyncBillingProductsFromPolarResult> {
+    return this.client.post("/sync_billing_products_from_polar", input);
+  }
+
+  async updateBillingProduct(input: UpdateBillingProductInput): Promise<UpdateBillingProductResult> {
+    return this.client.post("/update_billing_product", input);
   }
 
   async updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
@@ -409,6 +509,18 @@ export class ApiClient {
     return this.apiNamespaceRoot.getEmailSettings(input);
   }
 
+  listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
+    return this.apiNamespaceRoot.listBillingProducts(input);
+  }
+
+  archiveBillingProduct(input: ArchiveBillingProductInput): Promise<ArchiveBillingProductResult> {
+    return this.apiNamespaceRoot.archiveBillingProduct(input);
+  }
+
+  createBillingProduct(input: CreateBillingProductInput): Promise<CreateBillingProductResult> {
+    return this.apiNamespaceRoot.createBillingProduct(input);
+  }
+
   deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
     return this.apiNamespaceRoot.deleteAccount(input);
   }
@@ -427,6 +539,18 @@ export class ApiClient {
 
   sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
     return this.apiNamespaceRoot.sendTestEmail(input);
+  }
+
+  setActiveBillingProduct(input: SetActiveBillingProductInput): Promise<SetActiveBillingProductResult> {
+    return this.apiNamespaceRoot.setActiveBillingProduct(input);
+  }
+
+  syncBillingProductsFromPolar(input: SyncBillingProductsFromPolarInput): Promise<SyncBillingProductsFromPolarResult> {
+    return this.apiNamespaceRoot.syncBillingProductsFromPolar(input);
+  }
+
+  updateBillingProduct(input: UpdateBillingProductInput): Promise<UpdateBillingProductResult> {
+    return this.apiNamespaceRoot.updateBillingProduct(input);
   }
 
   updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
@@ -454,6 +578,15 @@ export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResu
 export async function getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
   return defaultApiClient.getEmailSettings(input);
 }
+export async function listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
+  return defaultApiClient.listBillingProducts(input);
+}
+export async function archiveBillingProduct(input: ArchiveBillingProductInput): Promise<ArchiveBillingProductResult> {
+  return defaultApiClient.archiveBillingProduct(input);
+}
+export async function createBillingProduct(input: CreateBillingProductInput): Promise<CreateBillingProductResult> {
+  return defaultApiClient.createBillingProduct(input);
+}
 export async function deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
   return defaultApiClient.deleteAccount(input);
 }
@@ -472,6 +605,19 @@ export async function promoteAccountToSiteAdmin(
 }
 export async function sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
   return defaultApiClient.sendTestEmail(input);
+}
+export async function setActiveBillingProduct(
+  input: SetActiveBillingProductInput,
+): Promise<SetActiveBillingProductResult> {
+  return defaultApiClient.setActiveBillingProduct(input);
+}
+export async function syncBillingProductsFromPolar(
+  input: SyncBillingProductsFromPolarInput,
+): Promise<SyncBillingProductsFromPolarResult> {
+  return defaultApiClient.syncBillingProductsFromPolar(input);
+}
+export async function updateBillingProduct(input: UpdateBillingProductInput): Promise<UpdateBillingProductResult> {
+  return defaultApiClient.updateBillingProduct(input);
 }
 export async function updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
   return defaultApiClient.updateEmailSettings(input);
@@ -499,6 +645,28 @@ export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCom
 
 export function useGetEmailSettings(input: GetEmailSettingsInput): UseQueryHookResult<GetEmailSettingsResult> {
   return useQuery<GetEmailSettingsResult>(() => defaultApiClient.getEmailSettings(input));
+}
+
+export function useListBillingProducts(input: ListBillingProductsInput): UseQueryHookResult<ListBillingProductsResult> {
+  return useQuery<ListBillingProductsResult>(() => defaultApiClient.listBillingProducts(input));
+}
+
+export function useArchiveBillingProduct(): UseMutationHookResult<
+  ArchiveBillingProductInput,
+  ArchiveBillingProductResult
+> {
+  return useMutation<ArchiveBillingProductInput, ArchiveBillingProductResult>((input) =>
+    defaultApiClient.archiveBillingProduct(input),
+  );
+}
+
+export function useCreateBillingProduct(): UseMutationHookResult<
+  CreateBillingProductInput,
+  CreateBillingProductResult
+> {
+  return useMutation<CreateBillingProductInput, CreateBillingProductResult>((input) =>
+    defaultApiClient.createBillingProduct(input),
+  );
 }
 
 export function useDeleteAccount(): UseMutationHookResult<DeleteAccountInput, DeleteAccountResult> {
@@ -531,6 +699,33 @@ export function useSendTestEmail(): UseMutationHookResult<SendTestEmailInput, Se
   return useMutation<SendTestEmailInput, SendTestEmailResult>((input) => defaultApiClient.sendTestEmail(input));
 }
 
+export function useSetActiveBillingProduct(): UseMutationHookResult<
+  SetActiveBillingProductInput,
+  SetActiveBillingProductResult
+> {
+  return useMutation<SetActiveBillingProductInput, SetActiveBillingProductResult>((input) =>
+    defaultApiClient.setActiveBillingProduct(input),
+  );
+}
+
+export function useSyncBillingProductsFromPolar(): UseMutationHookResult<
+  SyncBillingProductsFromPolarInput,
+  SyncBillingProductsFromPolarResult
+> {
+  return useMutation<SyncBillingProductsFromPolarInput, SyncBillingProductsFromPolarResult>((input) =>
+    defaultApiClient.syncBillingProductsFromPolar(input),
+  );
+}
+
+export function useUpdateBillingProduct(): UseMutationHookResult<
+  UpdateBillingProductInput,
+  UpdateBillingProductResult
+> {
+  return useMutation<UpdateBillingProductInput, UpdateBillingProductResult>((input) =>
+    defaultApiClient.updateBillingProduct(input),
+  );
+}
+
 export function useUpdateEmailSettings(): UseMutationHookResult<UpdateEmailSettingsInput, UpdateEmailSettingsResult> {
   return useMutation<UpdateEmailSettingsInput, UpdateEmailSettingsResult>((input) =>
     defaultApiClient.updateEmailSettings(input),
@@ -552,6 +747,12 @@ export default {
   useGetCompany,
   getEmailSettings,
   useGetEmailSettings,
+  listBillingProducts,
+  useListBillingProducts,
+  archiveBillingProduct,
+  useArchiveBillingProduct,
+  createBillingProduct,
+  useCreateBillingProduct,
   deleteAccount,
   useDeleteAccount,
   demoteAccountFromSiteAdmin,
@@ -562,6 +763,12 @@ export default {
   usePromoteAccountToSiteAdmin,
   sendTestEmail,
   useSendTestEmail,
+  setActiveBillingProduct,
+  useSetActiveBillingProduct,
+  syncBillingProductsFromPolar,
+  useSyncBillingProductsFromPolar,
+  updateBillingProduct,
+  useUpdateBillingProduct,
   updateEmailSettings,
   useUpdateEmailSettings,
 };

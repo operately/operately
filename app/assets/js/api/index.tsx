@@ -184,14 +184,14 @@ export interface ActivityContentCompanyMemberAdded {
   name: string;
 }
 
-export interface ActivityContentCompanyMemberJoined {
-  company: Company;
-  person: Person;
-}
-
 export interface ActivityContentCompanyMemberConvertedToGuest {
   company: Company;
   person: Person | null;
+}
+
+export interface ActivityContentCompanyMemberJoined {
+  company: Company;
+  person: Person;
 }
 
 export interface ActivityContentCompanyMemberRestoring {
