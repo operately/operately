@@ -28,6 +28,7 @@ interface Props {
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
   onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
   onTaskClick: (taskId: string) => void;
+  isTaskSlideInOpen: boolean;
   canEdit: boolean;
 }
 
@@ -46,6 +47,7 @@ export function Kanban({
   onEditStatus,
   onDeleteStatus,
   onTaskClick,
+  isTaskSlideInOpen,
   canEdit,
 }: Props) {
   const testId = useMemo(
@@ -59,6 +61,7 @@ export function Kanban({
     scopeBind,
   } = useTaskKeyboardNavigation<HTMLDivElement>({
     fieldShortcuts: { status: false, create: Boolean(canEdit && onTaskCreate) },
+    clearSelectionWithEscape: !isTaskSlideInOpen,
   });
 
   const unknownStatus = statuses.find((status) => status.value === "unknown-status");

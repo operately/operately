@@ -6,6 +6,7 @@ import {
   OPEN_TASK_ASSIGNEE_EVENT,
   OPEN_TASK_CREATE_EVENT,
   OPEN_TASK_DUE_DATE_EVENT,
+  OPEN_TASK_EVENT,
   OPEN_TASK_STATUS_EVENT,
   useTaskKeyboardNavigation,
 } from "./useTaskKeyboardNavigation";
@@ -67,6 +68,36 @@ describe("useTaskKeyboardNavigation", () => {
     expect(getByTestId("task-two")).toHaveAttribute("data-selected", "false");
   });
 
+  it("can keep the selected task when escape clearing is disabled", () => {
+    const { getByTestId, rerender } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("j", 74);
+    expect(getByTestId("task-one")).toHaveAttribute("data-selected", "true");
+
+    rerender(<KeyboardNavigationHarness clearSelectionWithEscape={false} />);
+    fireTaskKey("Escape", 27);
+
+    expect(getByTestId("task-one")).toHaveAttribute("data-selected", "true");
+  });
+
+  it("keeps the selected task when the task slide-in is mounted", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+    const slideIn = document.createElement("div");
+    slideIn.setAttribute("data-test-id", "task-slide-in");
+    document.body.appendChild(slideIn);
+
+    try {
+      fireTaskKey("j", 74);
+      expect(getByTestId("task-one")).toHaveAttribute("data-selected", "true");
+
+      fireTaskKey("Escape", 27);
+
+      expect(getByTestId("task-one")).toHaveAttribute("data-selected", "true");
+    } finally {
+      slideIn.remove();
+    }
+  });
+
   it("exposes clearSelection for transitions like opening the inline creator", () => {
     const { getByTestId } = render(<KeyboardNavigationHarness />);
 
@@ -114,6 +145,25 @@ describe("useTaskKeyboardNavigation", () => {
 
     expect(getByTestId("task-one-assignee")).toHaveAttribute("data-open-count", "1");
     expect(getByTestId("task-two-assignee")).toHaveAttribute("data-open-count", "0");
+  });
+
+  it("opens the selected task with enter", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("j", 74);
+    fireTaskKey("Enter", 13);
+
+    expect(getByTestId("task-one-open")).toHaveAttribute("data-open-count", "1");
+    expect(getByTestId("task-two-open")).toHaveAttribute("data-open-count", "0");
+  });
+
+  it("lets interactive task controls handle enter themselves", () => {
+    const { getByTestId } = render(<KeyboardNavigationHarness />);
+
+    fireTaskKey("j", 74);
+    fireEvent.keyDown(getByTestId("task-one-control"), { key: "Enter", keyCode: 13, which: 13 });
+
+    expect(getByTestId("task-one-open")).toHaveAttribute("data-open-count", "0");
   });
 
   it("opens the selected task status control with s", () => {
@@ -173,6 +223,7 @@ describe("useTaskKeyboardNavigation", () => {
     fireTaskKey("s", 83);
     fireTaskKey("d", 68);
     fireTaskKey("c", 67);
+    fireTaskKey("Enter", 13);
 
     expect(getByTestId("task-one-assignee")).toHaveAttribute("data-open-count", "0");
     expect(getByTestId("task-two-assignee")).toHaveAttribute("data-open-count", "0");
@@ -182,18 +233,23 @@ describe("useTaskKeyboardNavigation", () => {
     expect(getByTestId("task-two-due-date")).toHaveAttribute("data-open-count", "0");
     expect(getByTestId("task-one-create")).toHaveAttribute("data-open-count", "0");
     expect(getByTestId("task-two-create")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-one-open")).toHaveAttribute("data-open-count", "0");
+    expect(getByTestId("task-two-open")).toHaveAttribute("data-open-count", "0");
   });
 });
 
 function KeyboardNavigationHarness({
   idPrefix = "",
   fieldShortcuts,
+  clearSelectionWithEscape,
 }: {
   idPrefix?: string;
-  fieldShortcuts?: { assignee?: boolean; status?: boolean; dueDate?: boolean };
+  fieldShortcuts?: { assignee?: boolean; status?: boolean; dueDate?: boolean; create?: boolean };
+  clearSelectionWithEscape?: boolean;
 }) {
   const { containerRef, selectedTaskId, clearSelection, scopeBind } = useTaskKeyboardNavigation<HTMLDivElement>({
     fieldShortcuts,
+    clearSelectionWithEscape,
   });
 
   return (
@@ -223,6 +279,7 @@ function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: str
   const [statusOpenCount, setStatusOpenCount] = React.useState(0);
   const [dueDateOpenCount, setDueDateOpenCount] = React.useState(0);
   const [createOpenCount, setCreateOpenCount] = React.useState(0);
+  const [openTaskCount, setOpenTaskCount] = React.useState(0);
 
   React.useEffect(() => {
     const element = rowRef.current;
@@ -232,16 +289,19 @@ function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: str
     const handleOpenStatus = () => setStatusOpenCount((count) => count + 1);
     const handleOpenDueDate = () => setDueDateOpenCount((count) => count + 1);
     const handleOpenCreate = () => setCreateOpenCount((count) => count + 1);
+    const handleOpenTask = () => setOpenTaskCount((count) => count + 1);
     element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
     element.addEventListener(OPEN_TASK_STATUS_EVENT, handleOpenStatus);
     element.addEventListener(OPEN_TASK_DUE_DATE_EVENT, handleOpenDueDate);
     element.addEventListener(OPEN_TASK_CREATE_EVENT, handleOpenCreate);
+    element.addEventListener(OPEN_TASK_EVENT, handleOpenTask);
 
     return () => {
       element.removeEventListener(OPEN_TASK_ASSIGNEE_EVENT, handleOpenAssignee);
       element.removeEventListener(OPEN_TASK_STATUS_EVENT, handleOpenStatus);
       element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, handleOpenDueDate);
       element.removeEventListener(OPEN_TASK_CREATE_EVENT, handleOpenCreate);
+      element.removeEventListener(OPEN_TASK_EVENT, handleOpenTask);
     };
   }, []);
 
@@ -259,11 +319,12 @@ function TaskRow({ id, testIdPrefix, selected }: { id: string; testIdPrefix: str
       <span data-testid={`${testIdPrefix}task-${id}-status`} data-open-count={statusOpenCount} />
       <span data-testid={`${testIdPrefix}task-${id}-due-date`} data-open-count={dueDateOpenCount} />
       <span data-testid={`${testIdPrefix}task-${id}-create`} data-open-count={createOpenCount} />
+      <span data-testid={`${testIdPrefix}task-${id}-open`} data-open-count={openTaskCount} />
     </div>
   );
 }
 
-function fireTaskKey(key: "j" | "k" | "a" | "s" | "d" | "c" | "Escape", keyCode: number) {
+function fireTaskKey(key: "j" | "k" | "a" | "s" | "d" | "c" | "Enter" | "Escape", keyCode: number) {
   fireEvent.keyDown(document, { key, keyCode, which: keyCode });
   fireEvent.keyUp(document, { key, keyCode, which: keyCode });
 }
