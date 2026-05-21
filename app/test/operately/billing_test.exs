@@ -74,7 +74,7 @@ defmodule Operately.BillingTest do
       attrs = %{plan_key: "team", billing_interval: "monthly", status: :active}
       assert {:ok, account} = Billing.sync_billing_account(ctx.company, attrs)
 
-      assert account.plan_key == "team"
+      assert account.plan_key == :team
       assert account.status == :active
     end
 
@@ -84,15 +84,15 @@ defmodule Operately.BillingTest do
       attrs = %{plan_key: "business", billing_interval: "yearly", status: :active}
       assert {:ok, account} = Billing.sync_billing_account(ctx.company, attrs)
 
-      assert account.plan_key == "business"
-      assert account.billing_interval == "yearly"
+      assert account.plan_key == :business
+      assert account.billing_interval == :yearly
     end
 
     test "remember_plan/4 stores suggested plan on account", ctx do
       {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
 
       assert {:ok, updated} = Billing.remember_plan(account, :team, "monthly", "website-pricing")
-      assert updated.suggested_plan_key == "team"
+      assert updated.suggested_plan_key == :team
       assert updated.suggested_billing_interval == :monthly
       assert updated.suggested_plan_source == "website-pricing"
     end
@@ -101,7 +101,7 @@ defmodule Operately.BillingTest do
       {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
 
       assert {:ok, pending} = Billing.set_pending_checkout(account, :business, "yearly")
-      assert pending.pending_plan_key == "business"
+      assert pending.pending_plan_key == :business
       assert pending.pending_billing_interval == :yearly
       assert pending.pending_checkout_started_at != nil
 
@@ -125,8 +125,8 @@ defmodule Operately.BillingTest do
       }
 
       assert {:ok, %ProductCatalogEntry{} = entry} = Billing.create_product(attrs)
-      assert entry.plan_family == "team"
-      assert entry.billing_interval == "monthly"
+      assert entry.plan_family == :team
+      assert entry.billing_interval == :monthly
       assert entry.polar_product_id == "prod_123"
       assert entry.active == false
       assert entry.version == 1

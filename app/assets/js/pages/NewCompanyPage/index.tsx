@@ -1,4 +1,5 @@
 import Api from "@/api";
+import type { BillingInterval, BillingPlan } from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -13,6 +14,9 @@ import { Link } from "turboui";
 
 export default { name: "NewCompanyPage", loader: Pages.emptyLoader, Page } as PageModule;
 
+const BILLING_PLANS: BillingPlan[] = ["team", "business"];
+const BILLING_INTERVALS: BillingInterval[] = ["monthly", "yearly"];
+
 function Page() {
   const navigate = useNavigate();
   const [add] = Api.companies.useCreate();
@@ -20,8 +24,8 @@ function Page() {
     const params = new URLSearchParams(window.location.search);
 
     return {
-      plan: params.get("plan") ?? undefined,
-      billingPeriod: params.get("billing_period") ?? undefined,
+      plan: parseBillingPlan(params.get("plan")),
+      billingPeriod: parseBillingInterval(params.get("billing_period")),
     };
   }, []);
 
@@ -81,6 +85,14 @@ function Page() {
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function parseBillingPlan(value: string | null): BillingPlan | undefined {
+  return BILLING_PLANS.find((plan) => plan === value);
+}
+
+function parseBillingInterval(value: string | null): BillingInterval | undefined {
+  return BILLING_INTERVALS.find((billingInterval) => billingInterval === value);
 }
 
 function PageTitle() {

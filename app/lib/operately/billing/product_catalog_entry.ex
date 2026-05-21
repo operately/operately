@@ -2,10 +2,12 @@ defmodule Operately.Billing.ProductCatalogEntry do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Billing.CompanyBillingAccount
+
   schema "billing_products" do
     field :provider, :string, default: "polar"
-    field :plan_family, :string
-    field :billing_interval, :string
+    field :plan_family, Ecto.Enum, values: CompanyBillingAccount.valid_plan_keys()
+    field :billing_interval, Ecto.Enum, values: CompanyBillingAccount.valid_billing_intervals()
     field :polar_product_id, :string
     field :polar_product_name, :string
     field :price_amount, :integer
@@ -40,7 +42,5 @@ defmodule Operately.Billing.ProductCatalogEntry do
       :last_synced_at
     ])
     |> validate_required([:provider, :plan_family, :billing_interval, :polar_product_id])
-    |> validate_inclusion(:billing_interval, ["monthly", "yearly"])
-    |> validate_inclusion(:plan_family, ["team", "business"])
   end
 end

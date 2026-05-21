@@ -2153,6 +2153,10 @@ export type AgentMessageSender = "user" | "ai";
 
 export type AgentMessageStatus = "pending" | "done";
 
+export type BillingInterval = "monthly" | "yearly";
+
+export type BillingPlan = "team" | "business";
+
 export type CliAuthStatus = "pending" | "authenticated" | "failed" | "no_companies" | "expired";
 
 export type CommentParentType =
@@ -3505,8 +3509,8 @@ export interface CompaniesConvertMemberToGuestResult {
 export interface CompaniesCreateInput {
   companyName: string;
   title: string;
-  plan?: string;
-  billingPeriod?: string;
+  plan?: BillingPlan;
+  billingPeriod?: BillingInterval;
   isDemo?: boolean;
 }
 

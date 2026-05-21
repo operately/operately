@@ -85,7 +85,7 @@ defmodule Operately.Billing do
   """
   def remember_plan(%CompanyBillingAccount{} = account, plan_key, billing_interval, source) do
     update_billing_account(account, %{
-      suggested_plan_key: to_string(plan_key),
+      suggested_plan_key: plan_key,
       suggested_billing_interval: billing_interval,
       suggested_plan_source: source
     })
@@ -107,7 +107,7 @@ defmodule Operately.Billing do
   """
   def set_pending_checkout(%CompanyBillingAccount{} = account, plan_key, billing_interval) do
     update_billing_account(account, %{
-      pending_plan_key: to_string(plan_key),
+      pending_plan_key: plan_key,
       pending_billing_interval: billing_interval,
       pending_checkout_started_at: DateTime.utc_now()
     })
