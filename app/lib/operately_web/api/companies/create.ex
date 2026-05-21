@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Companies.Create do
   inputs do
     field :company_name, :string, null: false
     field :title, :string, null: false
+    field? :plan, :string, null: false
+    field? :billing_period, :string, null: false
     field? :is_demo, :boolean, null: false
   end
 

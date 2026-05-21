@@ -1208,7 +1208,7 @@ Outcome:
 
 - Paid website intent reaches the correct in-app destination for unauthenticated users, authenticated users with one billable company, authenticated users with multiple billable companies, and authenticated users without a company
 
-### PR 3c: Company-creation remembered-plan plumbing
+### PR 3c: Company-creation remembered-plan plumbing (COMPLETED ✅)
 
 - Update `NewCompanyPage` to read `plan` and `billing_period` from the URL query string and include them in the create-company API call
 - Update the create-company API mutation to accept optional `plan` and `billing_period` inputs
