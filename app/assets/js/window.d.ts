@@ -41,6 +41,7 @@ declare global {
 
     discordUrl: string;
     bookDemoUrl: string;
+    billingEnabled: boolean;
   }
 
   interface Window {

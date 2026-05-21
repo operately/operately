@@ -375,6 +375,9 @@ function Options() {
   return (
     <PageOptions.Root testId="options-button">
       <PageOptions.Link icon={IconMail} title="Email Configuration" to="/admin/email-settings" />
+      {window.appConfig.billingEnabled && (
+        <PageOptions.Link icon={IconBuilding} title="Billing Catalog" to="/admin/billing-catalog" />
+      )}
     </PageOptions.Root>
   );
 }
