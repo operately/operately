@@ -15,6 +15,41 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.assert_has(testid: page_testid(ctx.space))
   end
 
+  step :visit_kanban_page, ctx, task_id: task_id do
+    path = Paths.space_kanban_path(ctx.company, ctx.space) <> "?taskId=#{task_id}"
+
+    ctx
+    |> UI.visit(path)
+    |> UI.assert_has(testid: page_testid(ctx.space))
+    |> UI.assert_has(testid: "task-slide-in")
+  end
+
+  step :create_space_task_through_external_api, ctx, name: name do
+    conn = api_conn()
+
+    assert {200, res} = OperatelyWeb.TurboCase.external_mutation(conn, ctx.api_token, "tasks/create", %{
+      assignee_id: nil,
+      due_date: nil,
+      id: Paths.space_id(ctx.space),
+      name: name,
+      type: "space"
+    })
+
+    Map.put(ctx, :external_api_task_id, res.task.id)
+  end
+
+  step :update_task_description_through_external_api, ctx, description: description do
+    conn = api_conn()
+
+    assert {200, _res} = OperatelyWeb.TurboCase.external_mutation(conn, ctx.api_token, "tasks/update_description", %{
+      task_id: ctx.external_api_task_id,
+      description: description,
+      type: "space"
+    })
+
+    ctx
+  end
+
   step :add_status, ctx, opts do
     label = Keyword.fetch!(opts, :label)
     appearance = Keyword.get(opts, :appearance, "blue")
@@ -523,4 +558,9 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
   defp card_testid(task), do: UI.testid(["kanban-card", Paths.task_id(task)])
   defp card_title_testid(task), do: UI.testid(["kanban-card-title", Paths.task_id(task)])
   defp project_task_testid(task), do: UI.testid(["task", Paths.task_id(task)])
+
+  defp api_conn do
+    Phoenix.ConnTest.build_conn()
+    |> Plug.Conn.put_req_header("content-type", "application/json")
+  end
 end

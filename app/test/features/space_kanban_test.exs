@@ -86,6 +86,20 @@ defmodule Operately.Features.SpaceKanbanTest do
     |> Steps.assert_description(content: "Updated description for kanban flow.")
   end
 
+  feature "task description set through external API is visible in the slide-in", ctx do
+    description = Operately.Support.RichText.rich_text("Hello world from API", :as_string)
+
+    ctx =
+      ctx
+      |> Factory.add_api_token(:api_token, :creator, read_only: false)
+      |> Steps.create_space_task_through_external_api(name: "External API task")
+      |> Steps.update_task_description_through_external_api(description: description)
+
+    ctx
+    |> Steps.visit_kanban_page(task_id: ctx.external_api_task_id)
+    |> Steps.assert_description(content: "Hello world from API")
+  end
+
   feature "delete a task from the slide-in", ctx do
     [_primary_status | rest] = ctx.status_values
     new_status = hd(rest)

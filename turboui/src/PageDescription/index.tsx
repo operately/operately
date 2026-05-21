@@ -31,8 +31,19 @@ export function PageDescription({
   emptyTestId,
   localDraftKey,
 }: Props) {
-  const initialMode = isContentEmpty(description) ? "zero" : "view";
+  const descriptionIsEmpty = isContentEmpty(description);
+  const initialMode = descriptionIsEmpty ? "zero" : "view";
   const [mode, setMode] = useState<"view" | "edit" | "zero">(initialMode);
+
+  React.useEffect(() => {
+    if (mode === "edit") return;
+
+    if (descriptionIsEmpty && mode === "view") {
+      setMode("zero");
+    } else if (!descriptionIsEmpty && mode === "zero") {
+      setMode("view");
+    }
+  }, [descriptionIsEmpty, mode]);
 
   const startEdit = () => setMode("edit");
 
