@@ -1,6 +1,10 @@
 import { DateField } from "../DateField";
 import { PersonField } from "../PersonField";
 import { StatusSelector } from "../StatusSelector";
+import type { ProjectField } from "../ProjectField";
+import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { SpaceField } from "../SpaceField";
+import type { TaskPage } from "../TaskPage";
 
 /**
  * TaskBoard component types
@@ -150,6 +154,26 @@ export type StatusCustomizationStatus = StatusSelector.StatusOption;
 
 export type TaskDisplayMode = "list" | "board";
 
+export interface TaskListSlideInContext {
+  tasks: Task[];
+  statuses: StatusSelector.StatusOption[];
+  onTaskCreate?: TaskBoardProps["onTaskCreate"];
+  onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
+  onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
+  onTaskStatusChange?: TaskBoardProps["onTaskStatusChange"];
+  onTaskMilestoneChange?: (taskId: string, milestone: Milestone | null) => void;
+  onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
+  onTaskNameChange?: (taskId: string, name: string) => void;
+  onTaskDelete?: (taskId: string) => void | Promise<unknown>;
+  onMoveTask?: TaskPage.ContentProps["onMoveTask"];
+  projectSearch?: ProjectField.SearchProjectFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
+  milestones?: Milestone[];
+  onMilestoneSearch?: (query: string) => Promise<void>;
+  assigneePersonSearch?: PersonField.SearchData;
+  richTextHandlers?: RichEditorHandlers;
+}
+
 export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
@@ -161,9 +185,17 @@ export interface TaskBoardProps {
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: Status | null) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
+  onTaskNameChange?: (taskId: string, name: string) => void;
+  onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
+  onTaskDelete?: (taskId: string) => void | Promise<unknown>;
+  onMoveTask?: TaskPage.ContentProps["onMoveTask"];
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   onMilestoneSearch: (query: string) => Promise<void>;
   assigneePersonSearch?: PersonField.SearchData;
+  projectSearch?: ProjectField.SearchProjectFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
+  richTextHandlers?: RichEditorHandlers;
+  getTaskPageProps?: (taskId: string, ctx: TaskListSlideInContext) => TaskPage.ContentProps | null;
 
   // Filter functionality
   filters?: FilterCondition[];

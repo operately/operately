@@ -189,8 +189,8 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   step :go_to_task_page, ctx do
     ctx
-    |> UI.click_link(ctx.task.name)
-    |> UI.assert_page(Paths.project_task_path(ctx.company, ctx.task))
+    |> UI.click_text(ctx.task.name)
+    |> UI.assert_text(ctx.task.name)
   end
 
   step :add_task_from_tasks_board, ctx, attrs do

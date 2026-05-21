@@ -29,6 +29,7 @@ interface TaskItemProps {
   statusOptions: StatusSelector.StatusOption[];
   draggingDisabled?: boolean;
   selected?: boolean;
+  onTaskClick?: (taskId: string) => void;
 }
 
 export function TaskItem({
@@ -41,6 +42,7 @@ export function TaskItem({
   statusOptions,
   draggingDisabled = false,
   selected = false,
+  onTaskClick,
 }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
@@ -96,6 +98,12 @@ export function TaskItem({
       element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
     };
   }, [assigneePersonSearch, onTaskDueDateChange, onTaskStatusChange, prepareFocusRestore, ref]);
+
+  React.useEffect(() => {
+    setCurrentAssignee(task.assignees?.[0] || null);
+    setCurrentDueDate(task.dueDate || null);
+    setCurrentStatus(task.status ?? statusOptions[0] ?? null);
+  }, [task.assignees, task.dueDate, task.id, task.status, statusOptions]);
 
   const itemClasses = classNames(isDragging ? "bg-surface-accent" : "", {
     "cursor-grab": !draggingDisabled && !isDragging,
@@ -204,37 +212,26 @@ export function TaskItem({
             {/* Task title with inline meta indicators */}
             <div className="flex items-center gap-1.5 flex-1 min-w-0">
               <div className="flex-1 min-w-0 cursor-pointer" onMouseDown={stopDragFromInteractive}>
-                <BlackLink
-                  to={task.link}
-                  className="flex-1 min-w-0 max-w-full text-sm font-medium hover:text-link-hover transition-colors"
-                  underline="hover"
-                  title={task.title}
-                >
-                  <span className="inline-flex items-center gap-1.5 truncate max-w-full h-6 relative top-[-1px]">
-                    <span className="truncate">{task.title}</span>
-
-                    {task.hasDescription && (
-                      <span
-                        className="text-content-dimmed flex-shrink-0"
-                        title="Has description"
-                        data-test-id="description-indicator"
-                      >
-                        <IconFileText size={14} />
-                      </span>
-                    )}
-
-                    {task.hasComments && (
-                      <span
-                        className="text-content-dimmed flex items-center flex-shrink-0"
-                        title={`${task.commentCount} comment${task.commentCount === 1 ? "" : "s"}`}
-                        data-test-id="comments-indicator"
-                      >
-                        <IconMessageCircle size={14} />
-                        <span className="ml-0.5 text-xs text-content-dimmed">{task.commentCount}</span>
-                      </span>
-                    )}
-                  </span>
-                </BlackLink>
+                {onTaskClick ? (
+                  <button
+                    type="button"
+                    className="flex-1 min-w-0 max-w-full text-sm font-medium text-content-base hover:text-link-hover hover:underline underline-offset-2 transition-colors text-left"
+                    title={task.title}
+                    onClick={() => onTaskClick(task.id)}
+                    data-test-id={createTestId("task-title", task.id)}
+                  >
+                    <TaskTitleContent task={task} />
+                  </button>
+                ) : (
+                  <BlackLink
+                    to={task.link}
+                    className="flex-1 min-w-0 max-w-full text-sm font-medium hover:text-link-hover transition-colors"
+                    underline="hover"
+                    title={task.title}
+                  >
+                    <TaskTitleContent task={task} />
+                  </BlackLink>
+                )}
               </div>
             </div>
           </div>
@@ -314,6 +311,31 @@ export function TaskItem({
         </div>
       </div>
     </li>
+  );
+}
+
+function TaskTitleContent({ task }: { task: TaskWithIndex }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 truncate max-w-full h-6 relative top-[-1px]">
+      <span className="truncate">{task.title}</span>
+
+      {task.hasDescription && (
+        <span className="text-content-dimmed flex-shrink-0" title="Has description" data-test-id="description-indicator">
+          <IconFileText size={14} />
+        </span>
+      )}
+
+      {task.hasComments && (
+        <span
+          className="text-content-dimmed flex items-center flex-shrink-0"
+          title={`${task.commentCount} comment${task.commentCount === 1 ? "" : "s"}`}
+          data-test-id="comments-indicator"
+        >
+          <IconMessageCircle size={14} />
+          <span className="ml-0.5 text-xs text-content-dimmed">{task.commentCount}</span>
+        </span>
+      )}
+    </span>
   );
 }
 
