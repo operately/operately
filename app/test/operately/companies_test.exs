@@ -7,7 +7,7 @@ defmodule Operately.CompaniesTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  setup do 
+  setup do
     account = account_fixture()
 
     {:ok, %{account: account}}
@@ -17,6 +17,22 @@ defmodule Operately.CompaniesTest do
     test "list_companies/0 returns all companies", ctx do
       company = company_fixture(%{}, ctx.account)
       assert Companies.list_companies() == [company]
+    end
+
+    test "list_companies_by_owner/1 returns only owned companies", _ctx do
+      owner_account = account_fixture()
+      member_account = account_fixture()
+
+      owned_company = company_fixture(%{company_name: "Owned Corp"}, owner_account)
+      other_company = company_fixture(%{company_name: "Other Corp"})
+
+      # Add member_account as a regular member in other_company (but not owner)
+      person_fixture(%{company_id: other_company.id, account_id: member_account.id, full_name: "Member", email: "member@example.com"})
+
+      assert length(Companies.list_companies_by_owner(owner_account)) == 1
+      assert hd(Companies.list_companies_by_owner(owner_account)).id == owned_company.id
+
+      assert Companies.list_companies_by_owner(member_account) == []
     end
 
     test "get_company!/1 returns the company with given id", ctx do

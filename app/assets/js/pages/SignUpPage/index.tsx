@@ -13,6 +13,7 @@ export default { name: "SignUpPage", loader: Pages.emptyLoader, Page } as PageMo
 
 function Page() {
   const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
+  const redirectTo = new URLSearchParams(window.location.search).get("redirect_to");
 
   return (
     <Pages.Page title={["Sign Up"]} testId="sign-up-page">
@@ -23,7 +24,7 @@ function Page() {
 
             <div className="flex flex-col gap-3 mb-8">
               {window.appConfig.allowSignupWithGoogle && <SignUpWithGoogleButton />}
-              {window.appConfig.allowSignupWithEmail && <SignUpWithEmail inviteToken={inviteToken} />}
+              {window.appConfig.allowSignupWithEmail && <SignUpWithEmail inviteToken={inviteToken} redirectTo={redirectTo} />}
             </div>
 
             <TosAndPrivacyPolicy />
