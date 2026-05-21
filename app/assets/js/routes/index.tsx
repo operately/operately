@@ -46,6 +46,7 @@ export function createAppRoutes() {
 
         pageRoute("", pages.LobbyPage),
         pageRoute("/company-import", pages.CompanyImportPage),
+        pageRoute("/billing/pick-company", pages.BillingPickCompanyPage),
         pageRoute("/new", pages.NewCompanyPage),
         pageRoute("/setup", pages.SetupPage, { auth: false }),
         pageRoute("/join", pages.JoinPage, { auth: false }),

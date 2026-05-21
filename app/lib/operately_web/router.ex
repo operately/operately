@@ -78,6 +78,18 @@ defmodule OperatelyWeb.Router do
     get("/accounts/auth/:provider/callback", AccountOauthController, :callback)
   end
 
+  scope "/billing", OperatelyWeb do
+    pipe_through([:browser, :require_authenticated_account])
+
+    get("/pick-company", PageController, :index)
+  end
+
+  scope "/billing", OperatelyWeb do
+    pipe_through([:browser])
+
+    get("/intent", BillingIntentController, :index)
+  end
+
   forward("/media", OperatelyLocalMediaStorage.Plug)
 
   scope "/admin/api" do

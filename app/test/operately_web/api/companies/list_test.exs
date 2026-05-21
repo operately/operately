@@ -42,6 +42,42 @@ defmodule OperatelyWeb.Api.Companies.ListTest do
 
       assert hd(res.companies).member_count == 3
     end
+
+    test "is_company_owner filters to only owned companies", ctx do
+      # ctx.company is created by register_and_log_in_account with ctx.person as member (not owner)
+      # Create another company where the logged-in user is a member but not owner
+      other_company = company_fixture(name: "Other Corp")
+      add_as_admin(ctx.person, other_company)
+
+      # Add an owner to ctx.company
+      owner = person_fixture_with_account(%{company_id: ctx.company.id})
+      group = Operately.Access.get_group!(company_id: ctx.company.id, tag: :full_access)
+      {:ok, _} = Operately.Access.add_to_group(group, person_id: owner.id)
+
+      # Without filter, both companies are returned
+      assert {200, res} = query(ctx.conn, [:companies, :list], %{})
+      assert length(res.companies) == 2
+
+      # With is_company_owner: true, only owned companies are returned
+      # The logged-in user (ctx.person) is not an owner of any company
+      assert {200, res} = query(ctx.conn, [:companies, :list], %{is_company_owner: true})
+      assert length(res.companies) == 0
+    end
+
+    test "is_company_owner returns owned companies for company creator", ctx do
+      # The company creator from register_and_log_in_account is an owner
+      assert {200, res} = query(ctx.conn, [:companies, :list], %{is_company_owner: true})
+      # ctx.person is not owner, so 0 results
+      assert length(res.companies) == 0
+
+      # Make ctx.person an owner of ctx.company
+      group = Operately.Access.get_group!(company_id: ctx.company.id, tag: :full_access)
+      {:ok, _} = Operately.Access.add_to_group(group, person_id: ctx.person.id)
+
+      assert {200, res} = query(ctx.conn, [:companies, :list], %{is_company_owner: true})
+      assert length(res.companies) == 1
+      assert hd(res.companies).id == OperatelyWeb.Paths.company_id(ctx.company)
+    end
   end
 
   defp find_in_response(res, company) do
