@@ -71,7 +71,7 @@ function CompanyList({
   if (companies.length === 0) {
     return (
       <div className="text-center text-content-dimmed py-8">
-        You are not a member of any companies.
+        You don't own any companies yet.
       </div>
     );
   }
