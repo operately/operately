@@ -439,9 +439,10 @@ function DialogMenu({ state }: { state: PersonField.State }) {
         <div
           key={option.key || option.testId}
           ref={(el) => (itemRefs.current[index] = el)}
-          className={classNames("flex items-center gap-2 px-1 py-1 rounded cursor-pointer", {
-            "bg-surface-dimmed": index === selectedIndex,
-            "hover:bg-surface-dimmed": index !== selectedIndex,
+          className={classNames("flex items-center gap-2 px-1 py-1 rounded cursor-pointer text-content-base", {
+            "bg-brand-1/10 text-content-accent ring-1 ring-inset ring-brand-1/20 dark:bg-brand-1/25 dark:ring-brand-1/40":
+              index === selectedIndex,
+            "hover:bg-surface-dimmed hover:text-content-accent": index !== selectedIndex,
           })}
           data-test-id={option.testId}
           onClick={() => {
@@ -527,9 +528,10 @@ function DialogSearch({ state }: { state: PersonField.State }) {
           <div
             key={person.id}
             ref={(el) => (itemRefs.current[index] = el)}
-            className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
-              "bg-surface-dimmed": index === selectedIndex,
-              "hover:bg-surface-dimmed": index !== selectedIndex,
+            className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer text-content-base", {
+              "bg-brand-1/10 text-content-accent ring-1 ring-inset ring-brand-1/20 dark:bg-brand-1/25 dark:ring-brand-1/40":
+                index === selectedIndex,
+              "hover:bg-surface-dimmed hover:text-content-accent": index !== selectedIndex,
             })}
             onClick={() => {
               state?.setPerson?.(person);
