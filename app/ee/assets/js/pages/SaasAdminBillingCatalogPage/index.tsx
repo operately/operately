@@ -32,6 +32,7 @@ export const loader = async () => {
 
 export function Page() {
   const { products } = Pages.useLoadedData() as { products: AdminApi.BillingProduct[] };
+  const refresh = Pages.useRefresh();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editingProduct, setEditingProduct] = React.useState<AdminApi.BillingProduct | undefined>(undefined);
 
@@ -56,7 +57,7 @@ export function Page() {
         <Paper.Body>
           <PageHeader onCreate={openCreate} />
           <ProductTable products={products} onEdit={openEdit} />
-          <ProductModal isOpen={isModalOpen} onClose={closeModal} product={editingProduct} />
+          <ProductModal key={editingProduct?.id ?? "new"} isOpen={isModalOpen} onClose={closeModal} onSuccess={refresh} product={editingProduct} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -90,7 +91,10 @@ function SyncButton() {
   };
 
   return (
-    <Tooltip content="Fetches products from Polar and updates the local catalog" size="sm">
+    <Tooltip
+      content="Imports and reconciles Operately-managed Polar products. Unrelated manual Polar products are ignored."
+      size="sm"
+    >
       <button
         onClick={handleSync}
         disabled={loading}
@@ -215,14 +219,16 @@ function ProductActionsMenu({
       <MenuActionItem icon={IconEdit} onClick={() => onEdit(product)}>
         Edit
       </MenuActionItem>
-      {!isActive && (
+      {!isActive && !product.archivedAt && (
         <MenuActionItem icon={IconCheck} onClick={onSetActive}>
           Set as Active
         </MenuActionItem>
       )}
-      <MenuActionItem icon={IconTrash} danger onClick={onArchive}>
-        Archive
-      </MenuActionItem>
+      {!product.archivedAt && (
+        <MenuActionItem icon={IconTrash} danger onClick={onArchive}>
+          Archive
+        </MenuActionItem>
+      )}
     </Menu>
   );
 }

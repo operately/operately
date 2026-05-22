@@ -34,6 +34,55 @@ defmodule OperatelyWeb.Api.Types do
 
   enum :billing_plan, values: Operately.Billing.CompanyBillingAccount.valid_plan_keys()
   enum :billing_interval, values: Operately.Billing.CompanyBillingAccount.valid_billing_intervals()
+  enum :billing_status, values: Operately.Billing.CompanyBillingAccount.valid_statuses()
+
+  object :billing_account do
+    field :provider, :string, null: false
+    field? :plan_key, :billing_plan, null: true
+    field? :billing_interval, :billing_interval, null: true
+    field :status, :billing_status, null: false
+    field? :suggested_plan_key, :billing_plan, null: true
+    field? :suggested_billing_interval, :billing_interval, null: true
+    field? :suggested_plan_source, :string, null: true
+    field? :current_period_end, :datetime, null: true
+    field :cancel_at_period_end, :boolean, null: false
+    field? :pending_plan_key, :billing_plan, null: true
+    field? :pending_billing_interval, :billing_interval, null: true
+    field? :pending_checkout_started_at, :datetime, null: true
+    field? :last_synced_at, :datetime, null: true
+  end
+
+  object :billing_plan_definition do
+    field :key, :string, null: false
+    field :display_name, :string, null: false
+    field :member_limit, :integer, null: false
+    field :storage_limit_bytes, :integer, null: false
+  end
+
+  object :billing_catalog_product do
+    field :id, :string, null: false
+    field :provider, :string, null: false
+    field :plan_family, :billing_plan, null: false
+    field :billing_interval, :billing_interval, null: false
+    field :polar_product_id, :string, null: false
+    field? :polar_product_name, :string, null: true
+    field? :price_amount, :integer, null: true
+    field? :price_currency, :string, null: true
+    field :version, :integer, null: false
+    field :active, :boolean, null: false
+    field? :archived_at, :datetime, null: true
+    field? :last_synced_at, :datetime, null: true
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
+  object :billing_overview do
+    field :account, :billing_account, null: false
+    field :plans, list_of(:billing_plan_definition), null: false
+    field :catalog_products, list_of(:billing_catalog_product), null: false
+    field :member_count, :integer, null: false
+    field :stale, :boolean, null: false
+  end
 
   object :account do
     field :full_name, :string, null: false

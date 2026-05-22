@@ -1,5 +1,6 @@
 defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProductTest do
   use OperatelyWeb.TurboCase
+  import Mock
 
   alias Operately.People.Account
   alias Operately.Billing
@@ -25,6 +26,9 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProductTest do
 
   describe "functionality" do
     setup ctx do
+      Application.put_env(:operately, :billing_enabled, true)
+      on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
       ctx = Factory.setup(ctx)
       {:ok, _} = Account.promote_to_admin(ctx.account)
 
@@ -34,24 +38,46 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProductTest do
     end
 
     test "updates a billing product", ctx do
-      {:ok, product} = Billing.create_product(%{
-        provider: "polar",
-        plan_family: "team",
-        billing_interval: "monthly",
-        polar_product_id: "prod_original",
-        polar_product_name: "Original",
-        price_amount: 2900,
-        price_currency: "usd",
-      })
+      {:ok, product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_original",
+          polar_product_name: "Original",
+          price_amount: 2900,
+          price_currency: "usd"
+        })
 
-      assert {200, %{product: updated}} = admin_mutation(ctx.conn, :update_billing_product, %{
-        id: Operately.ShortUuid.encode!(product.id),
-        polar_product_name: "Updated Name",
-        price_amount: 3900,
-      })
+      {200, %{product: updated}} =
+        with_mock Operately.Billing.Polar.Client,
+          update_product: fn "prod_original", _attrs ->
+            {:ok,
+             %{
+               "id" => "prod_original",
+               "name" => "Updated Name",
+               "recurring_interval" => "monthly",
+               "prices" => [%{"amount_type" => "fixed", "price_amount" => 3900, "price_currency" => "usd"}],
+               "metadata" => %{
+                 "operately_managed" => "true",
+                 "operately_plan_family" => "team",
+                 "operately_billing_interval" => "monthly",
+                 "operately_version" => 1
+               },
+               "is_archived" => false
+             }}
+          end do
+          admin_mutation(ctx.conn, :update_billing_product, %{
+            id: Operately.ShortUuid.encode!(product.id),
+            polar_product_name: "Updated Name",
+            price_amount: 3900
+          })
+        end
 
       assert updated.polar_product_name == "Updated Name"
       assert updated.price_amount == 3900
+      assert updated.plan_family == "team"
+      assert updated.billing_interval == "monthly"
     end
 
     test "returns error for non-existent product", ctx do

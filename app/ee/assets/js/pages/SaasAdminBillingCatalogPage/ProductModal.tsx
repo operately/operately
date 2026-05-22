@@ -7,10 +7,11 @@ import Modal from "@/components/Modal";
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: () => void;
   product?: AdminApi.BillingProduct;
 }
 
-export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
+export function ProductModal({ isOpen, onClose, onSuccess, product }: ProductModalProps) {
   const [create] = AdminApi.useCreateBillingProduct();
   const [update] = AdminApi.useUpdateBillingProduct();
   const isEdit = product !== undefined;
@@ -28,30 +29,28 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
         const result = await update({
           id: product.id,
           polarProductName: form.values.displayName,
-          planFamily: form.values.planFamily,
-          billingInterval: form.values.billingInterval,
           priceAmount: parseInt(form.values.unitAmount, 10),
           priceCurrency: "usd",
         });
 
         if (result && result.product) {
+          form.actions.reset();
           onClose();
-          window.location.reload();
+          onSuccess();
         }
       } else {
         const result = await create({
-          provider: "polar",
           planFamily: form.values.planFamily,
           billingInterval: form.values.billingInterval,
-          polarProductId: "",
           polarProductName: form.values.displayName,
           priceAmount: parseInt(form.values.unitAmount, 10),
           priceCurrency: "usd",
         });
 
-        if (result && result.success) {
+        if (result && result.product) {
+          form.actions.reset();
           onClose();
-          window.location.reload();
+          onSuccess();
         }
       }
     },
@@ -62,28 +61,55 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
       <Forms.Form form={form}>
         <Forms.FieldGroup layout="vertical">
           <Forms.TextInput label="Display Name" field="displayName" required autoFocus />
-          <Forms.SelectBox
-            label="Plan Family"
-            field="planFamily"
-            options={[
-              { value: "team", label: "Team" },
-              { value: "business", label: "Business" },
-            ]}
-            required
-          />
-          <Forms.SelectBox
-            label="Billing Interval"
-            field="billingInterval"
-            options={[
-              { value: "monthly", label: "Monthly" },
-              { value: "yearly", label: "Yearly" },
-            ]}
-            required
-          />
+          {isEdit ? (
+            <>
+              <ReadOnlyField label="Plan Family" value={planFamilyLabel(form.values.planFamily)} />
+              <ReadOnlyField label="Billing Interval" value={billingIntervalLabel(form.values.billingInterval)} />
+            </>
+          ) : (
+            <>
+              <Forms.SelectBox
+                label="Plan Family"
+                field="planFamily"
+                options={[
+                  { value: "team", label: "Team" },
+                  { value: "business", label: "Business" },
+                ]}
+                required
+              />
+              <Forms.SelectBox
+                label="Billing Interval"
+                field="billingInterval"
+                options={[
+                  { value: "monthly", label: "Monthly" },
+                  { value: "yearly", label: "Yearly" },
+                ]}
+                required
+              />
+            </>
+          )}
           <Forms.NumberInput label="Price (in cents)" field="unitAmount" required />
         </Forms.FieldGroup>
         <Forms.Submit saveText={isEdit ? "Save Changes" : "Create Product"} cancelText="Cancel" />
       </Forms.Form>
     </Modal>
   );
+}
+
+function ReadOnlyField({ label, value }: { label: string; value: string }) {
+  return (
+    <Forms.InputField field={label.toLowerCase().replace(/\s+/g, "-")} label={label}>
+      <div className="w-full rounded-lg border border-surface-outline bg-surface-dimmed px-3 py-2 text-content-accent">
+        {value}
+      </div>
+    </Forms.InputField>
+  );
+}
+
+function planFamilyLabel(value: string) {
+  return value === "business" ? "Business" : "Team";
+}
+
+function billingIntervalLabel(value: string) {
+  return value === "yearly" ? "Yearly" : "Monthly";
 }
