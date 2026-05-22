@@ -300,6 +300,16 @@ defmodule Operately.Billing do
     end
   end
 
+  @doc """
+  Creates a hosted Polar session for payment-method management.
+  """
+  defdelegate create_payment_method_session(company, opts \\ []), to: Operately.Billing.Polar.CustomerSessionCreating, as: :run_payment_method
+
+  @doc """
+  Creates a hosted Polar customer-portal session.
+  """
+  defdelegate create_customer_portal_session(company, opts \\ []), to: Operately.Billing.Polar.CustomerSessionCreating, as: :run_portal
+
   defp normalize_provider_product(provider_product) do
     case ProductMapper.normalize_provider_product(provider_product) do
       {:ok, product} -> {:ok, product}
