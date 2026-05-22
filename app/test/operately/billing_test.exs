@@ -1,5 +1,6 @@
 defmodule Operately.BillingTest do
   use Operately.DataCase
+  import Mock
 
   alias Operately.Billing
   alias Operately.Billing.CompanyBillingAccount
@@ -10,6 +11,7 @@ defmodule Operately.BillingTest do
 
   describe "billing_enabled?/0" do
     test "returns false by default" do
+      Application.delete_env(:operately, :billing_enabled)
       refute Billing.billing_enabled?()
     end
 
@@ -55,8 +57,7 @@ defmodule Operately.BillingTest do
     test "get_or_create_billing_account/1 creates an account when none exists", ctx do
       assert nil == Billing.get_billing_account_by_company(ctx.company)
 
-      assert {:ok, %CompanyBillingAccount{} = account} =
-               Billing.get_or_create_billing_account(ctx.company)
+      assert {:ok, %CompanyBillingAccount{} = account} = Billing.get_or_create_billing_account(ctx.company)
 
       assert account.company_id == ctx.company.id
       assert account.status == :free
@@ -189,6 +190,52 @@ defmodule Operately.BillingTest do
       assert old.active == false
     end
 
+    test "next_product_version/2 increments within a plan family and interval" do
+      {:ok, _} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_team_monthly_v1",
+          version: 1
+        })
+
+      {:ok, _} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_team_monthly_v2",
+          version: 2
+        })
+
+      {:ok, _} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "yearly",
+          polar_product_id: "prod_team_yearly_v1",
+          version: 1
+        })
+
+      assert Billing.next_product_version("team", "monthly") == 3
+      assert Billing.next_product_version("team", "yearly") == 2
+      assert Billing.next_product_version("business", "monthly") == 1
+    end
+
+    test "set_active_product/1 rejects archived products" do
+      {:ok, product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_archived",
+          archived_at: DateTime.utc_now()
+        })
+
+      assert {:error, :archived} = Billing.set_active_product(product)
+    end
+
     test "update_product/2 updates fields" do
       {:ok, entry} =
         Billing.create_product(%{
@@ -213,6 +260,222 @@ defmodule Operately.BillingTest do
 
       assert {:ok, _} = Billing.delete_product(entry)
       assert nil == Repo.get(ProductCatalogEntry, entry.id)
+    end
+
+    test "managed product sync imports only Operately-managed products, paginates, preserves local active mappings, and deactivates archived products" do
+      {:ok, active_product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_team_monthly",
+          polar_product_name: "Team Monthly",
+          price_amount: 1900,
+          price_currency: "usd",
+          version: 1,
+          active: true
+        })
+
+      {:ok, archived_product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "business",
+          billing_interval: "yearly",
+          polar_product_id: "prod_business_yearly",
+          polar_product_name: "Business Yearly",
+          price_amount: 99000,
+          price_currency: "usd",
+          version: 1,
+          active: true
+        })
+
+      with_mock Operately.Billing.Polar.Client,
+        list_products: fn
+          [cursor: nil] ->
+            {:ok,
+             %{
+               items: [
+                 managed_product_payload(%{
+                   "id" => "prod_team_monthly",
+                   "name" => "Team Monthly Updated",
+                   "price_amount" => 2900,
+                   "metadata" => managed_metadata("team", "monthly", 1)
+                 }),
+                 unmanaged_product_payload(),
+                 managed_product_payload(%{
+                   "id" => "prod_team_yearly",
+                   "name" => "Team Yearly",
+                   "recurring_interval" => "yearly",
+                   "price_amount" => 29900,
+                   "metadata" => managed_metadata("team", "yearly", 1)
+                 })
+               ],
+               next_cursor: "page-2"
+             }}
+
+          [cursor: "page-2"] ->
+            {:ok,
+             %{
+               items: [
+                 managed_product_payload(%{
+                   "id" => "prod_business_yearly",
+                   "name" => "Business Yearly Archived",
+                   "recurring_interval" => "yearly",
+                   "price_amount" => 109_000,
+                   "is_archived" => true,
+                   "metadata" => managed_metadata("business", "yearly", 2)
+                 })
+               ],
+               next_cursor: nil
+             }}
+        end do
+        assert {:ok, 3} = Operately.Billing.Polar.ProductSync.run()
+      end
+
+      synced_active = Billing.get_product!(active_product.id)
+      assert synced_active.active == true
+      assert synced_active.polar_product_name == "Team Monthly Updated"
+      assert synced_active.price_amount == 2900
+
+      imported = Billing.get_product_by_polar_product_id("prod_team_yearly")
+      assert imported.plan_family == :team
+      assert imported.billing_interval == :yearly
+      assert imported.active == false
+      assert imported.version == 1
+
+      synced_archived = Billing.get_product!(archived_product.id)
+      assert synced_archived.active == false
+      assert synced_archived.archived_at
+      assert synced_archived.version == 2
+    end
+  end
+
+  describe "customer state sync" do
+    setup do
+      company = company_fixture()
+      {:ok, company: company}
+    end
+
+    test "404 from Polar normalizes to the free plan", ctx do
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end do
+        assert {:ok, account} = Billing.refresh_company_billing_state(ctx.company)
+
+        assert account.status == :free
+        assert account.plan_key == nil
+        assert account.billing_interval == nil
+        assert account.cancel_at_period_end == false
+        assert account.current_period_end == nil
+        assert account.last_synced_at
+      end
+    end
+
+    test "active subscription is normalized from the matching local catalog product", ctx do
+      {:ok, _product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_team_monthly",
+          active: true
+        })
+
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok,
+           %{
+             "subscriptions" => [
+               %{
+                 "status" => "active",
+                 "product_id" => "prod_team_monthly",
+                 "current_period_end" => "2026-06-30T00:00:00Z",
+                 "cancel_at_period_end" => false
+               }
+             ]
+           }}
+        end do
+        assert {:ok, account} = Billing.refresh_company_billing_state(ctx.company)
+
+        assert account.status == :active
+        assert account.plan_key == :team
+        assert account.billing_interval == :monthly
+        assert account.current_period_end == ~U[2026-06-30 00:00:00Z]
+        assert account.cancel_at_period_end == false
+      end
+    end
+
+    test "cancel-at-period-end subscriptions preserve paid state and the cancellation flag", ctx do
+      {:ok, _product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "business",
+          billing_interval: "yearly",
+          polar_product_id: "prod_business_yearly"
+        })
+
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok,
+           %{
+             "subscriptions" => [
+               %{
+                 "status" => "active",
+                 "product_id" => "prod_business_yearly",
+                 "current_period_end" => "2026-12-31T00:00:00Z",
+                 "cancel_at_period_end" => true
+               }
+             ]
+           }}
+        end do
+        assert {:ok, account} = Billing.refresh_company_billing_state(ctx.company)
+
+        assert account.status == :active
+        assert account.plan_key == :business
+        assert account.billing_interval == :yearly
+        assert account.cancel_at_period_end == true
+      end
+    end
+
+    test "unknown provider products keep the paid status but clear the local plan mapping", ctx do
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok,
+           %{
+             "subscriptions" => [
+               %{
+                 "status" => "active",
+                 "product_id" => "prod_unknown",
+                 "current_period_end" => "2026-06-30T00:00:00Z",
+                 "cancel_at_period_end" => false
+               }
+             ]
+           }}
+        end do
+        assert {:ok, account} = Billing.refresh_company_billing_state(ctx.company)
+
+        assert account.status == :active
+        assert account.plan_key == nil
+        assert account.billing_interval == nil
+      end
+    end
+
+    test "billing overview falls back to the local projection when Polar is unavailable", ctx do
+      {:ok, account} =
+        Billing.sync_billing_account(ctx.company, %{
+          provider: "polar",
+          plan_key: :team,
+          billing_interval: :monthly,
+          status: :active
+        })
+
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id -> {:error, :internal_server_error} end do
+        assert {:ok, overview} = Billing.get_company_billing_overview(ctx.company)
+
+        assert overview.stale == true
+        assert overview.account.id == account.id
+        assert overview.account.status == :active
+      end
     end
   end
 
@@ -262,6 +525,51 @@ defmodule Operately.BillingTest do
       assert :free in keys
       assert :team in keys
       assert :business in keys
+    end
+  end
+
+  defp managed_metadata(plan_family, billing_interval, version) do
+    %{
+      "operately_managed" => "true",
+      "operately_plan_family" => plan_family,
+      "operately_billing_interval" => billing_interval,
+      "operately_version" => version
+    }
+  end
+
+  defp managed_product_payload(overrides) do
+    base = %{
+      "id" => "prod_test",
+      "name" => "Managed Product",
+      "recurring_interval" => "monthly",
+      "prices" => [%{"amount_type" => "fixed", "price_amount" => 2900, "price_currency" => "usd"}],
+      "metadata" => managed_metadata("team", "monthly", 1),
+      "is_archived" => false
+    }
+
+    base
+    |> Map.merge(overrides)
+    |> maybe_override_price(overrides)
+  end
+
+  defp unmanaged_product_payload do
+    %{
+      "id" => "prod_manual",
+      "name" => "Manual Product",
+      "recurring_interval" => "monthly",
+      "prices" => [%{"amount_type" => "fixed", "price_amount" => 1900, "price_currency" => "usd"}],
+      "metadata" => %{},
+      "is_archived" => false
+    }
+  end
+
+  defp maybe_override_price(product, overrides) do
+    case Map.fetch(overrides, "price_amount") do
+      {:ok, amount} ->
+        Map.put(product, "prices", [%{"amount_type" => "fixed", "price_amount" => amount, "price_currency" => "usd"}])
+
+      :error ->
+        product
     end
   end
 end

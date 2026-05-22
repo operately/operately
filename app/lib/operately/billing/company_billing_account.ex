@@ -4,6 +4,7 @@ defmodule Operately.Billing.CompanyBillingAccount do
 
   @valid_plan_keys [:team, :business]
   @valid_billing_intervals [:monthly, :yearly]
+  @valid_statuses [:free, :active, :past_due, :canceled]
 
   schema "company_billing_accounts" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
@@ -11,7 +12,7 @@ defmodule Operately.Billing.CompanyBillingAccount do
     field :provider, :string, default: "polar"
     field :plan_key, Ecto.Enum, values: @valid_plan_keys
     field :billing_interval, Ecto.Enum, values: @valid_billing_intervals
-    field :status, Ecto.Enum, values: [:free, :active, :past_due, :canceled], default: :free
+    field :status, Ecto.Enum, values: @valid_statuses, default: :free
     field :suggested_plan_key, Ecto.Enum, values: @valid_plan_keys
     field :suggested_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :suggested_plan_source, :string
@@ -27,6 +28,7 @@ defmodule Operately.Billing.CompanyBillingAccount do
 
   def valid_plan_keys, do: @valid_plan_keys
   def valid_billing_intervals, do: @valid_billing_intervals
+  def valid_statuses, do: @valid_statuses
 
   def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)

@@ -274,12 +274,13 @@ Suggested fields:
 
 Expected behavior:
 
-- products can be created, updated, and archived directly from the Operately site-admin billing catalog page
-- a `Sync from Polar` action is also available to pull existing Polar products into `billing_products`; this is useful for initial setup or when products were created in Polar before the admin panel was used
+- products can be created directly from the Operately site-admin billing catalog page, and that create flow should create the product in Polar first and then persist the corresponding local catalog row with the returned provider ID
+- products can be updated and archived directly from the Operately site-admin billing catalog page
+- a `Sync from Polar` action is also available to pull existing Polar products into `billing_products`; this is useful for initial setup, importing products that were created manually in Polar, or reconciling out-of-band provider changes
 - Operately operators choose which product is the active product for a given `plan_family + billing_interval`
 - checkout resolution uses the active local catalog entry, not a hardcoded ID
 
-This allows future products or product versions to be added either in Polar and synced, or created directly in the Operately admin panel.
+The normal operator workflow should be to add future products or product versions from the Operately admin panel. `Sync from Polar` remains available for import and reconciliation when needed.
 
 ## Pricing Changes and Product Versioning
 
@@ -925,10 +926,10 @@ Suggested contents:
 - plan family and billing interval mapping
 - current price and currency
 - product version
-- `Create product` action — creates a new product locally (and optionally in Polar if the API supports it)
+- `Create product` action — creates a new product in Polar from the admin panel and then stores or synchronizes the corresponding local catalog entry
 - `Edit product` action — updates product details
 - `Archive product` action — marks a product as archived
-- `Sync from Polar` action — pulls products from Polar into the local catalog; displays a message explaining that this is for syncing existing Polar products and that ongoing management can be done directly in the panel
+- `Sync from Polar` action — pulls products from Polar into the local catalog; displays a message explaining that this is for importing pre-existing Polar products or reconciling out-of-band provider changes
 - `Set active product` action per `plan_family + billing_interval`
 
 This screen is the operator-facing control plane for future product additions and product-version cutovers.
@@ -1174,7 +1175,7 @@ Outcome:
 
 Outcome:
 
-- Operately operators can manage products directly from the admin panel or sync them from Polar, and choose which product version is active for checkout
+- Operately operators have the billing catalog UI, local catalog controls, and active-product selection in place; the real Polar-backed create/sync wiring lands in PR 4a
 
 ### PR 3a: Auth `redirect_to` preservation (COMPLETED ✅)
 
@@ -1223,32 +1224,64 @@ Outcome:
 
 - Company creation stores the remembered upgrade preference from the website without immediate checkout, and the company remains on the free plan until an explicit upgrade action is taken later
 
-### PR 4: Polar client and owner-scoped billing API
+### PR 4a: Polar client foundation and read-only billing state
 
 - Add `Operately.Billing.Polar.Client` using `Req`
-- Add plan-preview flow helpers
-- Add checkout-session creation
-- Add cancellation-preview flow helpers
-- Add change-plan actions
-- Add cancel and reactivate actions
-- Add payment-method session creation
-- Add customer-portal fallback session creation
+- Add Polar runtime configuration and shared request/error handling
+- Wire the existing product-sync path to the real Polar client
+- Wire site-admin catalog create actions to the real Polar client so creating a product in the admin panel creates it in Polar and then persists the resulting local catalog entry
+- Add shared owner authorization and billing-feature gate checks for company-scoped billing actions
 - Add internal billing API endpoints:
   - `billing/get`
-  - `billing/preview_plan_change`
-  - `billing/create_checkout_session`
-  - `billing/change_plan`
-  - `billing/preview_cancellation`
-  - `billing/cancel`
-  - `billing/reactivate`
-  - `billing/create_payment_method_session`
-  - `billing/create_customer_portal_session`
   - `billing/refresh`
-- Add owner authorization checks
+- Fetch normalized customer state from Polar by external customer ID and return it through `billing/get`
 
 Outcome:
 
-- an authenticated owner can start checkout, change plans, cancel, reactivate, update payment method, and inspect billing state
+- the app can talk to Polar, create provider-backed catalog products from the admin panel, refresh company billing state on demand, and return a normalized owner-visible billing snapshot
+
+### PR 4b: Billing previews and provider-managed sessions
+
+- Add plan-preview flow helpers
+- Add cancellation-preview flow helpers
+- Add payment-method session creation
+- Add customer-portal fallback session creation
+- Add internal billing API endpoints:
+  - `billing/preview_plan_change`
+  - `billing/preview_cancellation`
+  - `billing/create_payment_method_session`
+  - `billing/create_customer_portal_session`
+
+Outcome:
+
+- an authenticated owner can inspect plan-change and cancellation consequences and launch secure Polar-hosted management flows when needed
+
+### PR 4c: Checkout-session creation and pending-upgrade tracking
+
+- Add checkout-session creation
+- Resolve the active local billing product for the requested `plan + billing_interval`
+- Create Polar checkout sessions with company external ID and Operately return URLs
+- Persist pending checkout state so abandoned or expired checkouts can be resumed later
+- Add internal billing API endpoint:
+  - `billing/create_checkout_session`
+
+Outcome:
+
+- an authenticated owner can explicitly start or retry a paid checkout from Operately without changing local entitlements before Polar confirms success
+
+### PR 4d: Direct subscription mutation actions
+
+- Add change-plan actions
+- Add cancel and reactivate actions
+- Use the latest Polar customer/subscription state before sensitive mutations when required
+- Add internal billing API endpoints:
+  - `billing/change_plan`
+  - `billing/cancel`
+  - `billing/reactivate`
+
+Outcome:
+
+- an authenticated owner can change plans when checkout is not required, schedule cancellation, and reactivate a pending cancellation from the app
 
 ### PR 5: Company Admin billing page
 
@@ -1333,7 +1366,7 @@ Outcome:
 - Companies created during a paid website-plan selection remain usable on `free` until Polar confirms an active paid subscription.
 - Website-selected paid plans are stored only as remembered upgrade preferences until the owner explicitly starts checkout from the app.
 - Checkout URLs are treated as disposable; abandoned or expired checkout attempts should be resumed by creating a fresh checkout session.
-- Polar product creation and price editing happen in Polar first; Operately consumes those products through a synchronized local catalog and operator-selected active mappings.
+- Polar product creation should normally happen through the Operately admin panel, which creates the provider-side product and then records it in the synchronized local catalog. `Sync from Polar` remains available for importing or reconciling products created directly in Polar when needed.
 - Product price changes for existing subscribers require explicit subscription migration and should not be assumed to happen automatically as part of catalog edits.
 - The billing page is the primary management surface. Provider-hosted flows may still be used for secure payment-method capture or unsupported edge cases, but those flows must be launched from explicit actions in the app.
 - Upgrades and paid interval changes should use an Operately-owned plan-selection step before redirecting to Polar checkout.
