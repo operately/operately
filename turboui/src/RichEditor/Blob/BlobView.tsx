@@ -1,9 +1,10 @@
 import React from "react";
+import { createPortal } from "react-dom";
 
 import { NodeViewContent, NodeViewWrapper } from "@tiptap/react";
 import classnames from "classnames";
 
-import { IconFileFilled, IconFileZip, IconPdf, IconTrash } from "../../icons";
+import { IconFileFilled, IconFileZip, IconPdf, IconTrash, IconX } from "../../icons";
 import classNames from "../../utils/classnames";
 
 //
@@ -77,6 +78,8 @@ function VideoView({ node, deleteNode, view, updateAttributes }) {
 }
 
 function ImageView({ node, deleteNode, updateAttributes, view }) {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   const disableEnter = (e: React.KeyboardEvent<HTMLSpanElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -98,7 +101,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
       title={node.attrs.title}
       className={classnames({
         "group-hover:border-stroke-base transition-colors": view.editable,
-        "cursor-pointer": !view.editable,
+        "cursor-zoom-in": !view.editable,
       })}
       data-drag-handle
     />
@@ -107,9 +110,14 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
   const imgNode = view.editable ? (
     image
   ) : (
-    <a href={node.attrs.src} target="_blank">
+    <button
+      type="button"
+      className="block max-w-full appearance-none bg-transparent border-0 p-0"
+      onClick={() => setIsModalOpen(true)}
+      aria-label={`Open ${node.attrs.alt || node.attrs.title || "image"} preview`}
+    >
       {image}
-    </a>
+    </button>
   );
 
   return (
@@ -142,11 +150,21 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
           <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
             <div className="text-content-dimmed text-sm">•</div>
             <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
-              View
+              View original
             </a>
           </span>
         )}
       </div>
+
+      {!view.editable && (
+        <ImagePreviewModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          src={node.attrs.src}
+          title={node.attrs.title}
+          alt={node.attrs.alt}
+        />
+      )}
 
       {view.editable && node.attrs.status === "uploading" && (
         <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
@@ -160,6 +178,74 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
         </div>
       )}
     </NodeViewWrapper>
+  );
+}
+
+function ImagePreviewModal({
+  isOpen,
+  onClose,
+  src,
+  title,
+  alt,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  src: string;
+  title?: string;
+  alt?: string;
+}) {
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !event.defaultPrevented) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={title || alt || "Image preview"}
+      onClick={onClose}
+    >
+      <div
+        className="relative flex h-[90vh] w-[90vw] flex-col overflow-hidden rounded-lg bg-surface-base shadow-xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex min-h-12 items-center justify-between border-b border-surface-outline px-4">
+          <div className="min-w-0 truncate text-sm font-medium text-content-accent">{title || alt}</div>
+          <button
+            type="button"
+            className="rounded-full p-1 text-content-subtle transition-colors hover:bg-surface-highlight hover:text-content-base"
+            onClick={onClose}
+            aria-label="Close image preview"
+          >
+            <IconX size={20} />
+          </button>
+        </div>
+
+        <div className="flex min-h-0 flex-1 items-center justify-center bg-surface-dimmed p-4">
+          <img src={src} alt={alt || ""} title={title} className="max-h-full max-w-full object-contain" />
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }
 
