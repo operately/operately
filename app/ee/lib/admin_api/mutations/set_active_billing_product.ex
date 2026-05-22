@@ -12,10 +12,23 @@ defmodule OperatelyEE.AdminApi.Mutations.SetActiveBillingProduct do
   end
 
   def call(_conn, inputs) do
-    with {:ok, id} <- decode_id(inputs.id),
-         {:ok, product} <- find_product(id),
-         {:ok, activated} <- Billing.set_active_product(product) do
-      {:ok, %{product: OperatelyWeb.Api.Serializer.serialize(activated, level: :essential)}}
+    if not Billing.billing_enabled?() do
+      {:error, :bad_request, "Billing is not enabled on this instance"}
+    else
+      with {:ok, id} <- decode_id(inputs.id),
+           {:ok, product} <- find_product(id),
+           {:ok, activated} <- Billing.set_active_product(product) do
+        {:ok, %{product: OperatelyWeb.Api.Serializer.serialize(activated, level: :essential)}}
+      else
+        {:error, :archived} ->
+          {:error, :bad_request, "Archived products cannot be activated"}
+
+        {:error, error, message} ->
+          {:error, error, message}
+
+        {:error, _changeset} ->
+          {:error, :bad_request, "Invalid product parameters"}
+      end
     end
   end
 

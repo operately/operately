@@ -5,9 +5,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProduct do
 
   inputs do
     field :id, :string
-    field? :plan_family, :string
-    field? :billing_interval, :string
-    field? :polar_product_id, :string
     field? :polar_product_name, :string
     field? :price_amount, :integer
     field? :price_currency, :string
@@ -18,11 +15,24 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProduct do
   end
 
   def call(_conn, inputs) do
-    with {:ok, id} <- decode_id(inputs.id),
-         {:ok, product} <- find_product(id),
-         attrs <- build_attrs(inputs),
-         {:ok, updated} <- Billing.update_product(product, attrs) do
-      {:ok, %{product: OperatelyWeb.Api.Serializer.serialize(updated, level: :essential)}}
+    if not Billing.billing_enabled?() do
+      {:error, :bad_request, "Billing is not enabled on this instance"}
+    else
+      with {:ok, id} <- decode_id(inputs.id),
+           {:ok, product} <- find_product(id),
+           attrs <- build_attrs(inputs),
+           {:ok, updated} <- Billing.update_managed_product(product, attrs) do
+        {:ok, %{product: OperatelyWeb.Api.Serializer.serialize(updated, level: :essential)}}
+      else
+        {:error, :internal_server_error} ->
+          {:error, :internal_server_error, "Failed to update product in Polar"}
+
+        {:error, error, message} ->
+          {:error, error, message}
+
+        {:error, _changeset} ->
+          {:error, :bad_request, "Invalid product parameters"}
+      end
     end
   end
 
@@ -41,7 +51,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProduct do
   end
 
   defp build_attrs(inputs) do
-    Map.take(inputs, [:plan_family, :billing_interval, :polar_product_id, :polar_product_name, :price_amount, :price_currency])
+    Map.take(inputs, [:polar_product_name, :price_amount, :price_currency])
     |> Enum.reject(fn {_k, v} -> is_nil(v) end)
     |> Map.new()
   end

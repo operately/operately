@@ -248,13 +248,11 @@ export interface ArchiveBillingProductResult {
 }
 
 export interface CreateBillingProductInput {
-  provider: string;
   planFamily: string;
   billingInterval: string;
-  polarProductId: string;
   polarProductName: string;
   priceAmount: number;
-  priceCurrency: string;
+  priceCurrency?: string;
 }
 
 export interface CreateBillingProductResult {
@@ -326,9 +324,6 @@ export interface SyncBillingProductsFromPolarResult {
 
 export interface UpdateBillingProductInput {
   id: string;
-  planFamily?: string;
-  billingInterval?: string;
-  polarProductId?: string;
   polarProductName?: string;
   priceAmount?: number;
   priceCurrency?: string;

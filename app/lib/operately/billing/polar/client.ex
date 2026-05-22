@@ -56,7 +56,7 @@ defmodule Operately.Billing.Polar.Client do
       name: attrs.polar_product_name,
       is_public: false,
       is_recurring: true,
-      recurring_interval: Atom.to_string(attrs.billing_interval),
+      recurring_interval: billing_interval_to_polar(attrs.billing_interval),
       metadata: metadata,
       prices: [
         %{
@@ -79,7 +79,6 @@ defmodule Operately.Billing.Polar.Client do
     %{
       name: attrs.polar_product_name,
       is_public: false,
-      recurring_interval: Atom.to_string(attrs.billing_interval),
       metadata: metadata,
       prices: [
         %{
@@ -152,6 +151,9 @@ defmodule Operately.Billing.Polar.Client do
   defp extract_next_cursor(%{"next_cursor" => cursor}), do: blank_to_nil(cursor)
   defp extract_next_cursor(%{"nextCursor" => cursor}), do: blank_to_nil(cursor)
   defp extract_next_cursor(_), do: nil
+
+  defp billing_interval_to_polar(:monthly), do: "month"
+  defp billing_interval_to_polar(:yearly), do: "year"
 
   defp normalize_currency(nil), do: "usd"
   defp normalize_currency(currency) when is_binary(currency), do: String.downcase(currency)
