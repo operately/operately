@@ -1249,7 +1249,7 @@ Outcome:
 
 - an authenticated owner can load billing state through `billing/get` and launch secure Polar-hosted management flows when needed
 
-### PR 4c: Checkout-session creation and pending-upgrade tracking
+### PR 4c: Checkout-session creation and pending-upgrade tracking (COMPLETED ✅)
 
 - Add checkout-session creation
 - Resolve the active local billing product for the requested `plan + billing_interval`

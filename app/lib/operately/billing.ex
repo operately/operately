@@ -78,12 +78,7 @@ defmodule Operately.Billing do
   Upserts a billing account with normalized state fetched from Polar.
   Called by webhook processing and manual refresh.
   """
-  def sync_billing_account(%Operately.Companies.Company{} = company, attrs) do
-    case get_billing_account_by_company(company) do
-      nil -> create_billing_account(Map.put(attrs, :company_id, company.id))
-      account -> update_billing_account(account, attrs)
-    end
-  end
+  defdelegate sync_billing_account(company, attrs), to: Operately.Billing.AccountSyncing, as: :run
 
   @doc """
   Records a remembered upgrade preference from the website or other sources.
@@ -309,6 +304,14 @@ defmodule Operately.Billing do
   Creates a hosted Polar customer-portal session.
   """
   defdelegate create_customer_portal_session(company, opts \\ []), to: Operately.Billing.Polar.CustomerSessionCreating, as: :run_portal
+
+  @doc """
+  Creates a Polar checkout session for a paid plan and stores the target as
+  pending local checkout state.
+  """
+  defdelegate create_checkout_session(company, plan_key, billing_interval, opts \\ []),
+    to: Operately.Billing.Polar.CheckoutSessionCreating,
+    as: :run
 
   defp normalize_provider_product(provider_product) do
     case ProductMapper.normalize_provider_product(provider_product) do

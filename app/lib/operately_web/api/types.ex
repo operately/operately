@@ -91,6 +91,15 @@ defmodule OperatelyWeb.Api.Types do
     field? :expires_at, :datetime, null: true
   end
 
+  object :billing_checkout_session do
+    field :provider, :string, null: false
+    field :id, :string, null: false
+    field :url, :string, null: false
+    field :return_url, :string, null: false
+    field :success_url, :string, null: false
+    field :expires_at, :datetime, null: false
+  end
+
   object :account do
     field :full_name, :string, null: false
     field :site_admin, :boolean, null: false
