@@ -12,10 +12,20 @@ defmodule OperatelyEE.AdminApi.Mutations.ArchiveBillingProduct do
   end
 
   def call(_conn, inputs) do
-    with {:ok, id} <- decode_id(inputs.id),
-         {:ok, product} <- find_product(id),
-         {:ok, updated} <- Billing.update_product(product, %{archived_at: DateTime.utc_now()}) do
-      {:ok, %{product: OperatelyWeb.Api.Serializer.serialize(updated, level: :essential)}}
+    if not Billing.billing_enabled?() do
+      {:error, :bad_request, "Billing is not enabled on this instance"}
+    else
+      with {:ok, id} <- decode_id(inputs.id),
+           {:ok, product} <- find_product(id),
+           {:ok, updated} <- Billing.archive_managed_product(product) do
+        {:ok, %{product: OperatelyWeb.Api.Serializer.serialize(updated, level: :essential)}}
+      else
+        {:error, :internal_server_error} ->
+          {:error, :internal_server_error, "Failed to archive product in Polar"}
+
+        {:error, error, message} ->
+          {:error, error, message}
+      end
     end
   end
 

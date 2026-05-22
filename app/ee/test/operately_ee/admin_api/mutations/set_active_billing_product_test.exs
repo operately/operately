@@ -23,6 +23,9 @@ defmodule OperatelyEE.AdminApi.Mutations.SetActiveBillingProductTest do
 
   describe "functionality" do
     setup ctx do
+      Application.put_env(:operately, :billing_enabled, true)
+      on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
       ctx = Factory.setup(ctx)
       {:ok, _} = Account.promote_to_admin(ctx.account)
 
@@ -32,25 +35,43 @@ defmodule OperatelyEE.AdminApi.Mutations.SetActiveBillingProductTest do
     end
 
     test "activates a billing product", ctx do
-      {:ok, product} = Billing.create_product(%{
-        provider: "polar",
-        plan_family: "team",
-        billing_interval: "monthly",
-        polar_product_id: "prod_inactive",
-        polar_product_name: "Inactive",
-        price_amount: 2900,
-        price_currency: "usd",
-        active: false,
-      })
+      {:ok, product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_inactive",
+          polar_product_name: "Inactive",
+          price_amount: 2900,
+          price_currency: "usd",
+          active: false
+        })
 
       refute product.active
 
-      assert {200, %{product: _}} = admin_mutation(ctx.conn, :set_active_billing_product, %{
-        id: Operately.ShortUuid.encode!(product.id),
-      })
+      assert {200, %{product: _}} =
+               admin_mutation(ctx.conn, :set_active_billing_product, %{
+                 id: Operately.ShortUuid.encode!(product.id)
+               })
 
       activated = Repo.get!(Operately.Billing.ProductCatalogEntry, product.id)
       assert activated.active
+    end
+
+    test "returns an error when the product is archived", ctx do
+      {:ok, product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_archived",
+          archived_at: DateTime.utc_now()
+        })
+
+      assert {400, _} =
+               admin_mutation(ctx.conn, :set_active_billing_product, %{
+                 id: Operately.ShortUuid.encode!(product.id)
+               })
     end
   end
 end

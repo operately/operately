@@ -16,11 +16,10 @@ defmodule Operately.Billing do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Billing.CompanyBillingAccount
-  alias Operately.Billing.Plans
+  alias Operately.Billing.Overview
   alias Operately.Billing.Polar.CustomerStateSync
   alias Operately.Billing.Polar.ProductMapper
   alias Operately.Billing.ProductCatalogEntry
-  alias Operately.Companies.Company
 
   @valid_plan_keys CompanyBillingAccount.valid_plan_keys()
   @valid_billing_intervals CompanyBillingAccount.valid_billing_intervals()
@@ -286,30 +285,15 @@ defmodule Operately.Billing do
   """
   def get_company_billing_overview(%Operately.Companies.Company{} = company, opts \\ []) do
     account = get_billing_account_by_company(company)
-    active_products = list_active_products()
-    member_count = [company] |> Company.load_member_count() |> hd() |> Map.get(:member_count, 0)
+    catalog_products = list_active_products()
 
     case refresh_company_billing_state(company, opts) do
       {:ok, synced_account} ->
-        {:ok,
-         %{
-           account: synced_account,
-           plans: Plans.all(),
-           catalog_products: active_products,
-           member_count: member_count,
-           stale: false
-         }}
+        {:ok, Overview.build(company, synced_account, catalog_products)}
 
       {:error, _reason} = error ->
         if account do
-          {:ok,
-           %{
-             account: account,
-             plans: Plans.all(),
-             catalog_products: active_products,
-             member_count: member_count,
-             stale: true
-           }}
+          {:ok, Overview.build(company, account, catalog_products, stale: true)}
         else
           error
         end

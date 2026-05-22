@@ -331,6 +331,11 @@ defmodule OperatelyWeb.Api do
         mutation(:create, OperatelyWeb.Api.Companies.Create)
       end
 
+      namespace(:billing) do
+        query(:get, OperatelyWeb.Api.Billing.Get)
+        mutation(:refresh, OperatelyWeb.Api.Billing.Refresh)
+      end
+
       namespace(:spaces) do
         mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
       end

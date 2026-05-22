@@ -1068,6 +1068,54 @@ export interface Assignments {
   assignments?: Assignment[] | null;
 }
 
+export interface BillingAccount {
+  provider: string;
+  planKey?: BillingPlan | null;
+  billingInterval?: BillingInterval | null;
+  status: BillingStatus;
+  suggestedPlanKey?: BillingPlan | null;
+  suggestedBillingInterval?: BillingInterval | null;
+  suggestedPlanSource?: string | null;
+  currentPeriodEnd?: string | null;
+  cancelAtPeriodEnd: boolean;
+  pendingPlanKey?: BillingPlan | null;
+  pendingBillingInterval?: BillingInterval | null;
+  pendingCheckoutStartedAt?: string | null;
+  lastSyncedAt?: string | null;
+}
+
+export interface BillingCatalogProduct {
+  id: string;
+  provider: string;
+  planFamily: BillingPlan;
+  billingInterval: BillingInterval;
+  polarProductId: string;
+  polarProductName?: string | null;
+  priceAmount?: number | null;
+  priceCurrency?: string | null;
+  version: number;
+  active: boolean;
+  archivedAt?: string | null;
+  lastSyncedAt?: string | null;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface BillingOverview {
+  account: BillingAccount;
+  plans: BillingPlanDefinition[];
+  catalogProducts: BillingCatalogProduct[];
+  memberCount: number;
+  stale: boolean;
+}
+
+export interface BillingPlanDefinition {
+  key: string;
+  displayName: string;
+  memberLimit: number;
+  storageLimitBytes: number;
+}
+
 export interface Blob {
   id?: string | null;
   status?: string | null;
@@ -2157,6 +2205,8 @@ export type BillingInterval = "monthly" | "yearly";
 
 export type BillingPlan = "team" | "business";
 
+export type BillingStatus = "free" | "active" | "past_due" | "canceled";
+
 export type CliAuthStatus = "pending" | "authenticated" | "failed" | "no_companies" | "expired";
 
 export type CommentParentType =
@@ -2350,6 +2400,12 @@ export interface ApiTokensListInput {}
 
 export interface ApiTokensListResult {
   apiTokens: ApiToken[];
+}
+
+export interface BillingGetInput {}
+
+export interface BillingGetResult {
+  billing: BillingOverview;
 }
 
 export interface CliAuthCompanyCreationStatusInput {}
@@ -3330,6 +3386,12 @@ export interface ApiTokensUpdateNameInput {
 
 export interface ApiTokensUpdateNameResult {
   apiToken: ApiToken;
+}
+
+export interface BillingRefreshInput {}
+
+export interface BillingRefreshResult {
+  billing: BillingOverview;
 }
 
 export interface ChangePasswordInput {
@@ -5134,6 +5196,18 @@ class ApiNamespaceInvitations {
   }
 }
 
+class ApiNamespaceBilling {
+  constructor(private client: ApiClient) {}
+
+  async get(input: BillingGetInput): Promise<BillingGetResult> {
+    return this.client.get("/billing/get", input);
+  }
+
+  async refresh(input: BillingRefreshInput): Promise<BillingRefreshResult> {
+    return this.client.post("/billing/refresh", input);
+  }
+}
+
 class ApiNamespaceAi {
   constructor(private client: ApiClient) {}
 
@@ -6171,6 +6245,7 @@ export class ApiClient {
   public apiNamespaceCliAuth: ApiNamespaceCliAuth;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
+  public apiNamespaceBilling: ApiNamespaceBilling;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceNotifications: ApiNamespaceNotifications;
@@ -6192,6 +6267,7 @@ export class ApiClient {
     this.apiNamespaceCliAuth = new ApiNamespaceCliAuth(this);
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
+    this.apiNamespaceBilling = new ApiNamespaceBilling(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
@@ -6698,6 +6774,18 @@ export default {
     useJoinCompanyViaInviteLink: () =>
       useMutation<InvitationsJoinCompanyViaInviteLinkInput, InvitationsJoinCompanyViaInviteLinkResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
+      ),
+  },
+
+  billing: {
+    get: (input: BillingGetInput) => defaultApiClient.apiNamespaceBilling.get(input),
+    useGet: (input: BillingGetInput) =>
+      useQuery<BillingGetResult>(() => defaultApiClient.apiNamespaceBilling.get(input)),
+
+    refresh: (input: BillingRefreshInput) => defaultApiClient.apiNamespaceBilling.refresh(input),
+    useRefresh: () =>
+      useMutation<BillingRefreshInput, BillingRefreshResult>((input) =>
+        defaultApiClient.apiNamespaceBilling.refresh(input),
       ),
   },
 

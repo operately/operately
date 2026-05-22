@@ -1,5 +1,6 @@
 defmodule OperatelyEE.AdminApi.Mutations.SyncBillingProductsFromPolarTest do
   use OperatelyWeb.TurboCase
+  import Mock
 
   alias Operately.People.Account
 
@@ -29,8 +30,45 @@ defmodule OperatelyEE.AdminApi.Mutations.SyncBillingProductsFromPolarTest do
       |> Factory.log_in_account(:account)
     end
 
-    test "returns success with count from stub sync", ctx do
-      assert {200, %{success: true, synced_count: 0}} = admin_mutation(ctx.conn, :sync_billing_products_from_polar, %{})
+    test "synchronizes managed Polar products and returns the imported count", ctx do
+      with_mock Operately.Billing.Polar.Client,
+        list_products: fn
+          [cursor: nil] ->
+            {:ok,
+             %{
+               items: [
+                 %{
+                   "id" => "prod_team_monthly",
+                   "name" => "Team Monthly",
+                   "recurring_interval" => "monthly",
+                   "prices" => [%{"amount_type" => "fixed", "price_amount" => 2900, "price_currency" => "usd"}],
+                   "metadata" => %{
+                     "operately_managed" => "true",
+                     "operately_plan_family" => "team",
+                     "operately_billing_interval" => "monthly",
+                     "operately_version" => 1
+                   },
+                   "is_archived" => false
+                 },
+                 %{
+                   "id" => "prod_manual",
+                   "name" => "Manual Product",
+                   "recurring_interval" => "monthly",
+                   "prices" => [%{"amount_type" => "fixed", "price_amount" => 1900, "price_currency" => "usd"}],
+                   "metadata" => %{},
+                   "is_archived" => false
+                 }
+               ],
+               next_cursor: nil
+             }}
+        end do
+        assert {200, %{success: true, synced_count: 1}} = admin_mutation(ctx.conn, :sync_billing_products_from_polar, %{})
+      end
+
+      product = Operately.Billing.get_product_by_polar_product_id("prod_team_monthly")
+      assert product.plan_family == :team
+      assert product.billing_interval == :monthly
+      assert product.price_amount == 2900
     end
   end
 end
