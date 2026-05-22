@@ -1101,6 +1101,13 @@ export interface BillingCatalogProduct {
   updatedAt: string;
 }
 
+export interface BillingHostedSession {
+  provider: string;
+  url: string;
+  returnUrl: string;
+  expiresAt?: string | null;
+}
+
 export interface BillingOverview {
   account: BillingAccount;
   plans: BillingPlanDefinition[];
@@ -3388,6 +3395,22 @@ export interface ApiTokensUpdateNameResult {
   apiToken: ApiToken;
 }
 
+export interface BillingCreateCustomerPortalSessionInput {
+  returnTo?: string | null;
+}
+
+export interface BillingCreateCustomerPortalSessionResult {
+  session: BillingHostedSession;
+}
+
+export interface BillingCreatePaymentMethodSessionInput {
+  returnTo?: string | null;
+}
+
+export interface BillingCreatePaymentMethodSessionResult {
+  session: BillingHostedSession;
+}
+
 export interface BillingRefreshInput {}
 
 export interface BillingRefreshResult {
@@ -5203,6 +5226,18 @@ class ApiNamespaceBilling {
     return this.client.get("/billing/get", input);
   }
 
+  async createCustomerPortalSession(
+    input: BillingCreateCustomerPortalSessionInput,
+  ): Promise<BillingCreateCustomerPortalSessionResult> {
+    return this.client.post("/billing/create_customer_portal_session", input);
+  }
+
+  async createPaymentMethodSession(
+    input: BillingCreatePaymentMethodSessionInput,
+  ): Promise<BillingCreatePaymentMethodSessionResult> {
+    return this.client.post("/billing/create_payment_method_session", input);
+  }
+
   async refresh(input: BillingRefreshInput): Promise<BillingRefreshResult> {
     return this.client.post("/billing/refresh", input);
   }
@@ -6781,6 +6816,20 @@ export default {
     get: (input: BillingGetInput) => defaultApiClient.apiNamespaceBilling.get(input),
     useGet: (input: BillingGetInput) =>
       useQuery<BillingGetResult>(() => defaultApiClient.apiNamespaceBilling.get(input)),
+
+    createPaymentMethodSession: (input: BillingCreatePaymentMethodSessionInput) =>
+      defaultApiClient.apiNamespaceBilling.createPaymentMethodSession(input),
+    useCreatePaymentMethodSession: () =>
+      useMutation<BillingCreatePaymentMethodSessionInput, BillingCreatePaymentMethodSessionResult>((input) =>
+        defaultApiClient.apiNamespaceBilling.createPaymentMethodSession(input),
+      ),
+
+    createCustomerPortalSession: (input: BillingCreateCustomerPortalSessionInput) =>
+      defaultApiClient.apiNamespaceBilling.createCustomerPortalSession(input),
+    useCreateCustomerPortalSession: () =>
+      useMutation<BillingCreateCustomerPortalSessionInput, BillingCreateCustomerPortalSessionResult>((input) =>
+        defaultApiClient.apiNamespaceBilling.createCustomerPortalSession(input),
+      ),
 
     refresh: (input: BillingRefreshInput) => defaultApiClient.apiNamespaceBilling.refresh(input),
     useRefresh: () =>
