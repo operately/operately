@@ -32,6 +32,7 @@ config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABL
 config :operately, :js_sentry_dsn, System.get_env("OPERATELY_JS_SENTRY_DSN")
 config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE", "local")
 config :operately, :billing_enabled, System.get_env("OPERATELY_BILLING_ENABLED", "false") == "true"
+config :operately, :polar_access_token, System.get_env("POLAR_ACCESS_TOKEN")
 
 config :operately, :beacon_enabled, System.get_env("OPERATELY_BEACON_ENABLED", "false") == "true"
 config :operately, :beacon_collector_enabled, System.get_env("OPERATELY_BEACON_COLLECTOR_ENABLED", "false") == "true"

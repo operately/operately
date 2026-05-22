@@ -16,7 +16,14 @@ defmodule Operately.Billing do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Billing.CompanyBillingAccount
+  alias Operately.Billing.Plans
+  alias Operately.Billing.Polar.CustomerStateSync
+  alias Operately.Billing.Polar.ProductMapper
   alias Operately.Billing.ProductCatalogEntry
+  alias Operately.Companies.Company
+
+  @valid_plan_keys CompanyBillingAccount.valid_plan_keys()
+  @valid_billing_intervals CompanyBillingAccount.valid_billing_intervals()
 
   def billing_enabled? do
     Application.get_env(:operately, :billing_enabled, false)
@@ -124,6 +131,7 @@ defmodule Operately.Billing do
   def list_active_products do
     ProductCatalogEntry
     |> where([e], e.active == true)
+    |> where([e], is_nil(e.archived_at))
     |> Repo.all()
   end
 
@@ -137,11 +145,40 @@ defmodule Operately.Billing do
   end
 
   def find_active_product(plan_family, billing_interval) do
+    with {:ok, plan_family} <- cast_plan_family(plan_family),
+         {:ok, billing_interval} <- cast_billing_interval(billing_interval) do
+      ProductCatalogEntry
+      |> where([e], e.plan_family == ^plan_family)
+      |> where([e], e.billing_interval == ^billing_interval)
+      |> where([e], e.active == true)
+      |> where([e], is_nil(e.archived_at))
+      |> Repo.one()
+    else
+      _ -> nil
+    end
+  end
+
+  def get_product_by_polar_product_id(polar_product_id) when is_binary(polar_product_id) do
     ProductCatalogEntry
-    |> where([e], e.plan_family == ^plan_family)
-    |> where([e], e.billing_interval == ^billing_interval)
-    |> where([e], e.active == true)
+    |> where([e], e.polar_product_id == ^polar_product_id)
     |> Repo.one()
+  end
+
+  def next_product_version(plan_family, billing_interval) do
+    with {:ok, plan_family} <- cast_plan_family(plan_family),
+         {:ok, billing_interval} <- cast_billing_interval(billing_interval) do
+      ProductCatalogEntry
+      |> where([e], e.plan_family == ^plan_family)
+      |> where([e], e.billing_interval == ^billing_interval)
+      |> select([e], max(e.version))
+      |> Repo.one()
+      |> case do
+        nil -> 1
+        version -> version + 1
+      end
+    else
+      _ -> 1
+    end
   end
 
   def create_product(attrs \\ %{}) do
@@ -160,29 +197,157 @@ defmodule Operately.Billing do
     Repo.delete(entry)
   end
 
+  @doc """
+  Creates a managed Polar product and syncs the returned provider state locally.
+  """
+  defdelegate create_managed_product(attrs, opts \\ []), to: Operately.Billing.Polar.ManagedProductCreating, as: :run
+
+  @doc """
+  Updates a managed Polar product and syncs the returned provider state locally.
+  """
+  defdelegate update_managed_product(entry, attrs, opts \\ []), to: Operately.Billing.Polar.ManagedProductUpdating, as: :run
+
+  @doc """
+  Archives a managed Polar product in Polar and syncs the archived state locally.
+  """
+  def archive_managed_product(%ProductCatalogEntry{} = entry, opts \\ []) do
+    client = provider_client(opts)
+
+    with {:ok, provider_product} <- client.archive_product(entry.polar_product_id),
+         {:ok, normalized_product} <- normalize_provider_product(provider_product),
+         {:ok, product} <- upsert_product_from_provider(normalized_product) do
+      {:ok, product}
+    end
+  end
+
+  @doc """
+  Upserts a local catalog row from normalized provider attrs.
+
+  Existing active mappings are preserved unless the provider product is archived.
+  """
+  def upsert_product_from_provider(attrs) do
+    case get_product_by_polar_product_id(attrs.polar_product_id) do
+      nil ->
+        attrs
+        |> Map.put(:active, false)
+        |> create_product()
+
+      entry ->
+        attrs
+        |> Map.put(:active, if(is_nil(attrs.archived_at), do: entry.active, else: false))
+        |> then(&update_product(entry, &1))
+    end
+  end
+
+  @doc """
+  Activates a catalog product for its plan family and interval.
+
+  Any sibling versions are deactivated, and archived products are rejected.
+  """
   def set_active_product(entry_id) when is_binary(entry_id) do
     entry = get_product!(entry_id)
     set_active_product(entry)
   end
 
   def set_active_product(%ProductCatalogEntry{} = entry) do
-    Multi.new()
-    |> Multi.update_all(
-      :deactivate_others,
-      fn _changes ->
-        ProductCatalogEntry
-        |> where([e], e.provider == ^entry.provider)
-        |> where([e], e.plan_family == ^entry.plan_family)
-        |> where([e], e.billing_interval == ^entry.billing_interval)
-        |> where([e], e.id != ^entry.id)
-      end,
-      set: [active: false]
-    )
-    |> Multi.update(:activate, ProductCatalogEntry.changeset(entry, %{active: true}))
-    |> Repo.transaction()
-    |> case do
-      {:ok, %{activate: activated}} -> {:ok, activated}
-      {:error, _step, changeset, _changes} -> {:error, changeset}
+    if entry.archived_at do
+      {:error, :archived}
+    else
+      Multi.new()
+      |> Multi.update_all(
+        :deactivate_others,
+        fn _changes ->
+          ProductCatalogEntry
+          |> where([e], e.provider == ^entry.provider)
+          |> where([e], e.plan_family == ^entry.plan_family)
+          |> where([e], e.billing_interval == ^entry.billing_interval)
+          |> where([e], e.id != ^entry.id)
+        end,
+        set: [active: false]
+      )
+      |> Multi.update(:activate, ProductCatalogEntry.changeset(entry, %{active: true}))
+      |> Repo.transaction()
+      |> case do
+        {:ok, %{activate: activated}} -> {:ok, activated}
+        {:error, _step, changeset, _changes} -> {:error, changeset}
+      end
     end
   end
+
+  def refresh_company_billing_state(%Operately.Companies.Company{} = company, opts \\ []) do
+    CustomerStateSync.run(company, opts)
+  end
+
+  @doc """
+  Returns the current billing overview for a company.
+
+  It prefers a live Polar sync and falls back to the last local projection with
+  `stale: true` when provider sync fails.
+  """
+  def get_company_billing_overview(%Operately.Companies.Company{} = company, opts \\ []) do
+    account = get_billing_account_by_company(company)
+    active_products = list_active_products()
+    member_count = [company] |> Company.load_member_count() |> hd() |> Map.get(:member_count, 0)
+
+    case refresh_company_billing_state(company, opts) do
+      {:ok, synced_account} ->
+        {:ok,
+         %{
+           account: synced_account,
+           plans: Plans.all(),
+           catalog_products: active_products,
+           member_count: member_count,
+           stale: false
+         }}
+
+      {:error, _reason} = error ->
+        if account do
+          {:ok,
+           %{
+             account: account,
+             plans: Plans.all(),
+             catalog_products: active_products,
+             member_count: member_count,
+             stale: true
+           }}
+        else
+          error
+        end
+    end
+  end
+
+  defp normalize_provider_product(provider_product) do
+    case ProductMapper.normalize_provider_product(provider_product) do
+      {:ok, product} -> {:ok, product}
+      :ignore -> {:error, :internal_server_error}
+    end
+  end
+
+  defp provider_client(opts) do
+    Keyword.get(opts, :client, Operately.Billing.Polar.Client)
+  end
+
+  defp cast_plan_family(plan_family) when plan_family in @valid_plan_keys, do: {:ok, plan_family}
+
+  defp cast_plan_family(plan_family) when is_binary(plan_family) do
+    case String.downcase(plan_family) do
+      "team" -> {:ok, :team}
+      "business" -> {:ok, :business}
+      _ -> {:error, :invalid_plan_family}
+    end
+  end
+
+  defp cast_plan_family(_), do: {:error, :invalid_plan_family}
+
+  defp cast_billing_interval(interval) when interval in @valid_billing_intervals, do: {:ok, interval}
+
+  defp cast_billing_interval(interval) when is_binary(interval) do
+    case String.downcase(interval) do
+      "monthly" -> {:ok, :monthly}
+      "yearly" -> {:ok, :yearly}
+      _ -> {:error, :invalid_billing_interval}
+    end
+  end
+
+  defp cast_billing_interval(_), do: {:error, :invalid_billing_interval}
 end
