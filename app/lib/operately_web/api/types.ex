@@ -84,6 +84,13 @@ defmodule OperatelyWeb.Api.Types do
     field :stale, :boolean, null: false
   end
 
+  object :billing_hosted_session do
+    field :provider, :string, null: false
+    field :url, :string, null: false
+    field :return_url, :string, null: false
+    field? :expires_at, :datetime, null: true
+  end
+
   object :account do
     field :full_name, :string, null: false
     field :site_admin, :boolean, null: false

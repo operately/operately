@@ -40,6 +40,13 @@ defmodule Operately.Billing.Polar.Client do
     get("/v1/customers/external/#{URI.encode_www_form(external_id)}/state")
   end
 
+  def create_customer_session(external_customer_id, return_url) when is_binary(external_customer_id) do
+    post("/v1/customer-sessions", %{
+      external_customer_id: external_customer_id,
+      return_url: return_url
+    })
+  end
+
   def app_base_url do
     Endpoint.url()
   end

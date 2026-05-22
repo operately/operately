@@ -479,6 +479,86 @@ defmodule Operately.BillingTest do
     end
   end
 
+  describe "hosted sessions" do
+    setup do
+      company = company_fixture()
+      {:ok, company: company}
+    end
+
+    test "create_payment_method_session/2 builds a default return URL and hosted session", ctx do
+      {:ok, _product} = create_product("prod_team_monthly", "team", "monthly")
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok, active_subscription_payload("prod_team_monthly")}
+        end,
+        create_customer_session: fn external_customer_id, return_url ->
+          assert external_customer_id == ctx.company.id
+          assert return_url == Operately.Billing.Polar.Client.app_base_url() <> OperatelyWeb.Paths.company_admin_path(ctx.company)
+
+          {:ok,
+           %{
+             "customer_portal_url" => "https://polar.sh/example/portal/session-1",
+             "return_url" => return_url,
+             "expires_at" => "2026-06-30T00:00:00Z"
+           }}
+        end do
+        assert {:ok, session} = Billing.create_payment_method_session(ctx.company)
+
+        assert session.provider == "polar"
+        assert session.url == "https://polar.sh/example/portal/session-1"
+        assert session.return_url == Operately.Billing.Polar.Client.app_base_url() <> OperatelyWeb.Paths.company_admin_path(ctx.company)
+        assert session.expires_at == ~U[2026-06-30 00:00:00Z]
+      end
+    end
+
+    test "create_customer_portal_session/2 accepts a custom relative return path", ctx do
+      {:ok, _product} = create_product("prod_business_yearly", "business", "yearly")
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok, active_subscription_payload("prod_business_yearly")}
+        end,
+        create_customer_session: fn external_customer_id, return_url ->
+          assert external_customer_id == ctx.company.id
+          assert return_url == Operately.Billing.Polar.Client.app_base_url() <> "/custom/path?from=billing"
+
+          {:ok,
+           %{
+             "customer_portal_url" => "https://polar.sh/example/portal/session-2",
+             "expires_at" => "2026-07-31T00:00:00Z"
+           }}
+        end do
+        assert {:ok, session} = Billing.create_customer_portal_session(ctx.company, return_to: "/custom/path?from=billing")
+
+        assert session.url == "https://polar.sh/example/portal/session-2"
+        assert session.return_url == Operately.Billing.Polar.Client.app_base_url() <> "/custom/path?from=billing"
+      end
+    end
+
+    test "hosted session creation rejects invalid return paths", ctx do
+      assert {:error, :bad_request} = Billing.create_customer_portal_session(ctx.company, return_to: "https://example.com")
+      assert {:error, :bad_request} = Billing.create_customer_portal_session(ctx.company, return_to: "//example.com")
+      assert {:error, :bad_request} = Billing.create_customer_portal_session(ctx.company, return_to: "billing")
+    end
+
+    test "hosted session creation returns not found for free companies", ctx do
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
+        create_customer_session: fn _external_customer_id, _return_url -> flunk("unexpected customer session call") end do
+        assert {:error, :not_found} = Billing.create_payment_method_session(ctx.company)
+      end
+    end
+
+    test "hosted session creation returns provider failures from the strict refresh", ctx do
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> {:error, :internal_server_error} end,
+        create_customer_session: fn _external_customer_id, _return_url -> flunk("unexpected customer session call") end do
+        assert {:error, :internal_server_error} = Billing.create_payment_method_session(ctx.company)
+      end
+    end
+  end
+
   describe "plans" do
     test "get/1 returns plan for atom key" do
       plan = Plans.get(:free)
@@ -571,5 +651,27 @@ defmodule Operately.BillingTest do
       :error ->
         product
     end
+  end
+
+  defp create_product(polar_product_id, plan_family, billing_interval) do
+    Billing.create_product(%{
+      provider: "polar",
+      plan_family: plan_family,
+      billing_interval: billing_interval,
+      polar_product_id: polar_product_id
+    })
+  end
+
+  defp active_subscription_payload(product_id, overrides \\ %{}) do
+    subscription =
+      %{
+        "status" => "active",
+        "product_id" => product_id,
+        "current_period_end" => "2026-06-30T00:00:00Z",
+        "cancel_at_period_end" => false
+      }
+      |> Map.merge(overrides)
+
+    %{"subscriptions" => [subscription]}
   end
 end

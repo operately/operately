@@ -659,9 +659,7 @@ Suggested operations:
 
 - `billing/get`
 - `billing/create_checkout_session`
-- `billing/preview_plan_change`
 - `billing/change_plan`
-- `billing/preview_cancellation`
 - `billing/cancel`
 - `billing/reactivate`
 - `billing/create_payment_method_session`
@@ -673,11 +671,9 @@ Suggested operations:
 
 Expected behavior:
 
-- `get`: returns normalized company billing state plus plan metadata and current member count
-- `preview_plan_change`: returns the Operately-owned pre-checkout summary for a requested target plan and interval, including the current plan, target plan, remembered recommendation, effective timing, and expected handoff copy
+- `get`: returns normalized company billing state plus plan metadata, active catalog products, remembered recommendation data, and current member count so the frontend can derive plan-selection and cancellation-confirmation previews locally
 - `create_checkout_session`: validates ownership, resolves the active local catalog entry for the selected plan and interval, and creates a Polar-hosted checkout for plan transitions that require secure payment confirmation
 - `change_plan`: applies or schedules plan changes that do not require a new checkout, such as downgrade-at-period-end flows when supported by the provider integration
-- `preview_cancellation`: returns the effective cancellation date, post-cancellation free-plan limits, and warnings if the company is above the future free-plan limit
 - `cancel`: cancels the active subscription, typically at period end unless implementation explicitly supports immediate cancellation
 - `reactivate`: clears pending cancellation when allowed by Polar
 - `create_payment_method_session`: validates ownership and returns a redirect URL for secure payment-method updates
@@ -895,6 +891,8 @@ Suggested UX:
 
 This flow should not ask for payment details directly. Its purpose is only to let the owner make the plan decision inside Operately before the Polar handoff.
 
+The pre-checkout summary in this flow should be derived from `billing/get` plus the selected local plan/product, not from a dedicated backend preview endpoint.
+
 ### Cancellation-confirmation flow
 
 Add an explicit in-app cancellation confirmation flow.
@@ -914,6 +912,8 @@ Suggested UX:
   - `Keep current plan`
 
 This flow should optimize for clarity, not friction. Owners should understand the consequences before canceling, but should not have to fight the UI.
+
+The confirmation copy and warnings in this flow should be derived from `billing/get`, current plan entitlements, and the current member count, not from a dedicated backend preview endpoint.
 
 ### Site-admin billing catalog page
 
@@ -1057,19 +1057,16 @@ Any future plan-governed limit should plug into the same entitlement enforcement
   - non-owner rejection
   - invalid plan / interval rejection
   - free-plan rejection
-- plan-preview tests for:
-  - current plan badge and recommended plan state
-  - monthly/yearly selection handling
-  - in-app pre-checkout summary generation
 - subscription-management tests for:
   - plan change
   - cancellation
   - reactivation
   - payment-method session creation
-- cancellation-preview tests for:
-  - access-end date copy
-  - free-plan consequence warnings
-  - over-limit-after-downgrade warnings
+- billing-page state-derivation tests for:
+  - current plan badge and recommended plan state
+  - monthly/yearly selection handling
+  - in-app pre-checkout summary generation from `billing/get`
+  - cancellation consequences and over-limit warnings derived from current billing state
 - webhook signature verification tests
 - webhook idempotency tests
 - customer-state sync tests for:
@@ -1224,7 +1221,7 @@ Outcome:
 
 - Company creation stores the remembered upgrade preference from the website without immediate checkout, and the company remains on the free plan until an explicit upgrade action is taken later
 
-### PR 4a: Polar client foundation and read-only billing state
+### PR 4a: Polar client foundation and read-only billing state (COMPLETED ✅)
 
 - Add `Operately.Billing.Polar.Client` using `Req`
 - Add Polar runtime configuration and shared request/error handling
@@ -1240,21 +1237,17 @@ Outcome:
 
 - the app can talk to Polar, create provider-backed catalog products from the admin panel, refresh company billing state on demand, and return a normalized owner-visible billing snapshot
 
-### PR 4b: Billing previews and provider-managed sessions
+### PR 4b: Provider-managed sessions (COMPLETED ✅)
 
-- Add plan-preview flow helpers
-- Add cancellation-preview flow helpers
 - Add payment-method session creation
 - Add customer-portal fallback session creation
 - Add internal billing API endpoints:
-  - `billing/preview_plan_change`
-  - `billing/preview_cancellation`
   - `billing/create_payment_method_session`
   - `billing/create_customer_portal_session`
 
 Outcome:
 
-- an authenticated owner can inspect plan-change and cancellation consequences and launch secure Polar-hosted management flows when needed
+- an authenticated owner can load billing state through `billing/get` and launch secure Polar-hosted management flows when needed
 
 ### PR 4c: Checkout-session creation and pending-upgrade tracking
 
