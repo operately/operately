@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
-import { IconFileExport, IconLetterCase, IconLock, IconRobotFace, IconShieldLock, IconUser, IconUsers, OptionsMenuItem } from "turboui";
+import { IconFileExport, IconFileText, IconLetterCase, IconLock, IconRobotFace, IconShieldLock, IconUser, IconUsers, OptionsMenuItem } from "turboui";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { includesId } from "@/routes/paths";
@@ -87,7 +87,7 @@ function AdminsMenu() {
 
 function OwnersMenu() {
   const paths = usePaths();
-  const { ownerIds } = useLoadedData();
+  const { company, ownerIds } = useLoadedData();
 
   const me = useMe();
   const amIOwner = includesId(ownerIds, me!.id);
@@ -99,12 +99,15 @@ function OwnersMenu() {
 
   const manageTrustedDomains = paths.companyAdminManageTrustedDomainsPath();
   const manageAdmins = paths.companyManageAdminsPath();
+  const manageBilling = paths.companyBillingPath();
   const exportCompany = paths.companyExportPath();
+  const billingEnabled = hasFeature(company, "billing");
 
   return (
     <Paper.Section title="As an owner, you can:">
       <div>
         <OptionsMenuItem linkTo={manageAdmins} icon={IconShieldLock} title="Manage administrators and owners" />
+        {billingEnabled && <OptionsMenuItem linkTo={manageBilling} icon={IconFileText} title="Billing" />}
         <OptionsMenuItem linkTo={manageTrustedDomains} icon={IconLock} title="Manage trusted email domains" />
         <OptionsMenuItem linkTo={exportCompany} icon={IconFileExport} title="Export company data" />
       </div>

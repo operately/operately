@@ -117,6 +117,18 @@ export class Paths {
     return this.createCompanyPath(["admin"]);
   }
 
+  companyBillingPath(opts?: { plan?: string | null; billingPeriod?: string | null; checkoutId?: string | null }) {
+    const path = this.createCompanyPath(["admin", "billing"]);
+
+    const query = new URLSearchParams();
+    if (opts?.plan) query.set("plan", opts.plan);
+    if (opts?.billingPeriod) query.set("billing_period", opts.billingPeriod);
+    if (opts?.checkoutId) query.set("checkout_id", opts.checkoutId);
+
+    const queryString = query.toString();
+    return queryString ? `${path}?${queryString}` : path;
+  }
+
   companyExportPath() {
     return this.createCompanyPath(["admin", "export-company"]);
   }
