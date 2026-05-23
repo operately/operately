@@ -7,12 +7,14 @@ defmodule OperatelyWeb.Api.People.Update do
   use OperatelyWeb.Api.Helpers
 
   @notification_preference_fields [:notify_about_assignments, :notify_on_mention, :send_daily_summary, :email_window_minutes, :daily_summary_delivery_time]
+  @display_preference_fields [:time_format]
   @updatable_fields_for_oneself [
     :full_name,
     :title,
     :timezone,
     :manager_id,
     :theme,
+    :time_format,
     :notify_about_assignments,
     :notify_on_mention,
     :send_daily_summary,
@@ -27,6 +29,7 @@ defmodule OperatelyWeb.Api.People.Update do
     field? :full_name, :string, null: false
     field? :title, :string, null: false
     field? :timezone, :string, null: false
+    field? :time_format, :time_format, null: false
     field? :manager_id, :id, null: true
     field? :theme, :string, null: false
     field? :notify_about_assignments, :boolean, null: false
@@ -64,12 +67,14 @@ defmodule OperatelyWeb.Api.People.Update do
   end
 
   defp update_profile(person, inputs, requester_id) do
-    inputs = if person.id == requester_id do
-      Map.take(inputs, @updatable_fields_for_oneself)
-      |> normalize_notification_preferences()
-    else
-      Map.take(inputs, @updatable_fields_for_others)
-    end
+    inputs =
+      if person.id == requester_id do
+        Map.take(inputs, @updatable_fields_for_oneself)
+        |> normalize_display_preferences()
+        |> normalize_notification_preferences()
+      else
+        Map.take(inputs, @updatable_fields_for_others)
+      end
 
     with {:ok, person} <- Operately.People.update_person(person, inputs) do
       OperatelyWeb.ApiSocket.broadcast!("api:profile_updated:#{person.id}")
@@ -85,7 +90,27 @@ defmodule OperatelyWeb.Api.People.Update do
     else
       inputs
       |> Map.drop(@notification_preference_fields)
-      |> Map.put(:preferences, %{notifications: notifications})
+      |> put_preference(:notifications, notifications)
     end
+  end
+
+  defp normalize_display_preferences(inputs) do
+    display_preferences = Map.take(inputs, @display_preference_fields)
+
+    if map_size(display_preferences) == 0 do
+      inputs
+    else
+      inputs
+      |> Map.drop(@display_preference_fields)
+      |> put_preferences(display_preferences)
+    end
+  end
+
+  defp put_preferences(inputs, preferences) do
+    Map.update(inputs, :preferences, preferences, &Map.merge(&1, preferences))
+  end
+
+  defp put_preference(inputs, key, value) do
+    put_preferences(inputs, %{key => value})
   end
 end

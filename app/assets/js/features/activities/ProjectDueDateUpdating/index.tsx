@@ -1,7 +1,7 @@
 import type { ActivityContentProjectDueDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import React from "react";
-import { FormattedTime } from "turboui";
+import FormattedTime from "@/components/FormattedTime";
 import { feedTitle, projectLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
