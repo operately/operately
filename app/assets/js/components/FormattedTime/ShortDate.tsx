@@ -1,23 +1,24 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { formatDate } from "@/utils/formatting";
 
 import * as Time from "@/utils/time";
 
-export default function ShortDate({ time, weekday }: { time: Date; weekday: boolean }): JSX.Element {
-  const { t } = useTranslation();
-
-  let params = {
-    val: time,
-    formatParams: {
-      val: {},
-    },
+export default function ShortDate({
+  time,
+  weekday,
+  locale,
+}: {
+  time: Date;
+  weekday: boolean;
+  locale: string;
+}): JSX.Element {
+  let options: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "short",
   };
 
-  params["formatParams"]["val"]["day"] = "numeric";
-  params["formatParams"]["val"]["month"] = "short";
-
   if (!Time.isCurrentYear(time)) {
-    params["formatParams"]["val"]["year"] = "numeric";
+    options.year = "numeric";
   }
 
   let prefix = "";
@@ -28,11 +29,11 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
     } else if (isYesterday(time)) {
       prefix = "Yesterday, ";
     } else {
-      params["formatParams"]["val"]["weekday"] = "long";
+      options.weekday = "long";
     }
   }
 
-  return <>{prefix + t("intlDateTime", params)}</>;
+  return <>{prefix + formatDate(time, locale, options)}</>;
 }
 
 function isSameDay(date: Date, other: Date) {

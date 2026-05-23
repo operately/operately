@@ -1504,6 +1504,7 @@ export interface Person {
   type: string;
   description?: string | null;
   timezone?: string | null;
+  timeFormat?: TimeFormat;
   emailPreference?: EmailPreferenceValues;
   emailWindowMinutes?: EmailWindowMinutes;
   sendDailySummary?: boolean;
@@ -2327,6 +2328,8 @@ export type SubscriptionParentType =
 export type SuccessStatus = "achieved" | "missed";
 
 export type TaskType = "space" | "project";
+
+export type TimeFormat = "automatic" | "hour_12" | "hour_24";
 
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
 
@@ -4303,6 +4306,7 @@ export interface PeopleUpdateInput {
   fullName?: string;
   title?: string;
   timezone?: string;
+  timeFormat?: TimeFormat;
   managerId?: Id | null;
   theme?: string;
   notifyAboutAssignments?: boolean;

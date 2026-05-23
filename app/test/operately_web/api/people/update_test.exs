@@ -146,6 +146,26 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       assert Operately.People.Person.daily_summary_delivery_time(person) == "09:00"
     end
 
+    test "it updates display preferences", ctx do
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 time_format: "hour_24"
+               })
+
+      person = Operately.People.get_person!(ctx.person.id)
+
+      assert Operately.People.Person.time_format(person) == :hour_24
+    end
+
+    test "it rejects invalid display preferences", ctx do
+      assert {400, %{}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 time_format: "military"
+               })
+    end
+
     test "it rejects invalid notification preferences", ctx do
       assert {400, %{}} =
                mutation(ctx.conn, [:people, :update], %{

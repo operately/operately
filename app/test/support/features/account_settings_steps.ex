@@ -81,6 +81,19 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     |> UI.assert_text(props[:label])
   end
 
+  step :change_time_format, ctx, option do
+    ctx
+    |> UI.select(testid: "time-format", option: option)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "my-account-page")
+  end
+
+  step :assert_person_time_format_changed, ctx, time_format do
+    assert Operately.People.Person.time_format(Operately.People.get_person!(ctx.person.id)) == time_format
+
+    ctx
+  end
+
   step :given_a_person_exists_in_company, ctx, manager_name do
     {:ok, _} =
       ctx.person

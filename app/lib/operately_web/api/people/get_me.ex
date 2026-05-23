@@ -36,6 +36,7 @@ defmodule OperatelyWeb.Api.People.GetMe do
         title: me.title,
         avatar_url: me.avatar_url,
         timezone: me.timezone,
+        time_format: me |> Operately.People.Person.time_format() |> Atom.to_string(),
         avatar_blob_id: me.avatar_blob_id,
         email_preference: me |> Operately.People.Person.email_preference() |> Atom.to_string(),
         email_window_minutes: Operately.People.Person.email_window_minutes(me),

@@ -37,8 +37,11 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
   const currentPerson = args.person || genPerson();
   const [fullName, setFullName] = useState(currentPerson.fullName);
   const [title, setTitle] = useState(currentPerson.title || "");
-  const [aboutMe, setAboutMe] = useState(asRichText("I like setting teams up for success and pairing on tricky problems."));
+  const [aboutMe, setAboutMe] = useState(
+    asRichText("I like setting teams up for success and pairing on tricky problems."),
+  );
   const [timezone, setTimezone] = useState("America/New_York");
+  const [timeFormat, setTimeFormat] = useState<ProfileEditPage.TimeFormat>("automatic");
 
   const [manager, setManager] = useState<ProfileEditPage.Person | null>(() => {
     if ("manager" in args) {
@@ -59,7 +62,7 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    console.log("Submitting profile:", { fullName, title, timezone, manager });
+    console.log("Submitting profile:", { fullName, title, timezone, timeFormat, manager });
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
     alert("Profile updated successfully!");
@@ -103,11 +106,13 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       title={title}
       aboutMe={aboutMe}
       timezone={timezone}
+      timeFormat={timeFormat}
       manager={manager}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
       onAboutMeChange={setAboutMe}
       onTimezoneChange={setTimezone}
+      onTimeFormatChange={setTimeFormat}
       onManagerChange={setManager}
       onSubmit={handleSubmit}
       onAvatarUpload={args.canChangeAvatar !== false ? handleAvatarUpload : undefined}
