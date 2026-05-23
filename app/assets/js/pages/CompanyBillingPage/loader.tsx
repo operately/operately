@@ -6,7 +6,7 @@ import axios from "axios";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 
-export interface LoaderResult {
+interface LoaderResult {
   billing: Billing.BillingOverview;
 }
 

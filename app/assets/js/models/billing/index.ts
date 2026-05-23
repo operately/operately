@@ -2,9 +2,9 @@ import Api from "@/api";
 import * as api from "@/api";
 
 export type BillingAccount = api.BillingAccount;
-export type BillingInterval = api.BillingInterval;
+type BillingInterval = api.BillingInterval;
 export type BillingOverview = api.BillingOverview;
-export type BillingPlanDefinition = api.BillingPlanDefinition;
+type BillingPlanDefinition = api.BillingPlanDefinition;
 export type BillingStatus = api.BillingStatus;
 
 const PLAN_NAMES: Record<string, string> = {
@@ -26,10 +26,6 @@ const SUGGESTED_PLAN_SOURCE_LABELS: Record<string, string> = {
 
 export async function getBilling(input: api.BillingGetInput = {}): Promise<BillingOverview> {
   return Api.billing.get(input).then((data) => data.billing);
-}
-
-export async function refreshBilling(input: api.BillingRefreshInput = {}): Promise<BillingOverview> {
-  return Api.billing.refresh(input).then((data) => data.billing);
 }
 
 export function findPlanDefinition(plans: BillingPlanDefinition[], key?: string | null): BillingPlanDefinition | null {

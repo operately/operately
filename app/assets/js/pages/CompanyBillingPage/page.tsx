@@ -40,7 +40,7 @@ export function Page() {
   );
 }
 
-export function BillingOverviewContent({ billing }: BillingOverviewContentProps) {
+function BillingOverviewContent({ billing }: BillingOverviewContentProps) {
   const currentPlan = Billing.getCurrentPlanDefinition(billing);
   const currentPlanName =
     currentPlan?.displayName || Billing.formatPlanName(billing.account.planKey, billing.account.status === "free" ? "Free" : "Unknown plan");
@@ -126,7 +126,7 @@ export function BillingOverviewContent({ billing }: BillingOverviewContentProps)
 
 type NoticeTone = "info" | "warning";
 
-export interface Notice {
+interface Notice {
   tone: NoticeTone;
   message: string;
   description: string;
