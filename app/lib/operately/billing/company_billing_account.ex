@@ -21,6 +21,9 @@ defmodule Operately.Billing.CompanyBillingAccount do
     field :pending_plan_key, Ecto.Enum, values: @valid_plan_keys
     field :pending_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :pending_checkout_started_at, :utc_datetime
+    field :scheduled_plan_key, Ecto.Enum, values: @valid_plan_keys
+    field :scheduled_billing_interval, Ecto.Enum, values: @valid_billing_intervals
+    field :scheduled_change_effective_at, :utc_datetime
     field :last_synced_at, :utc_datetime
 
     timestamps()
@@ -50,6 +53,9 @@ defmodule Operately.Billing.CompanyBillingAccount do
       :pending_plan_key,
       :pending_billing_interval,
       :pending_checkout_started_at,
+      :scheduled_plan_key,
+      :scheduled_billing_interval,
+      :scheduled_change_effective_at,
       :last_synced_at
     ])
     |> validate_required([:company_id, :provider, :status])

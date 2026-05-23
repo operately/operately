@@ -1,4 +1,4 @@
-defmodule Operately.Billing.Polar.ProductSyncTest.MockClient do
+defmodule Operately.Billing.Polar.Operations.ProductSyncTest.MockClient do
   def list_products(opts) do
     send(self(), {:mock_client_called, opts})
 
@@ -9,12 +9,12 @@ defmodule Operately.Billing.Polar.ProductSyncTest.MockClient do
   end
 end
 
-defmodule Operately.Billing.Polar.ProductSyncTest do
+defmodule Operately.Billing.Polar.Operations.ProductSyncTest do
   use Operately.DataCase, async: true
 
   alias Operately.Billing
   alias Operately.Billing.Polar.ProductMapper
-  alias Operately.Billing.Polar.ProductSync
+  alias Operately.Billing.Polar.Operations.ProductSync
   alias __MODULE__.MockClient
 
   describe "run/1" do

@@ -1,4 +1,4 @@
-defmodule Operately.Billing.Polar.ProductSync do
+defmodule Operately.Billing.Polar.Operations.ProductSync do
   alias Operately.Billing
   alias Operately.Billing.Polar.ProductMapper
 
