@@ -40,6 +40,13 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.assert_person_timezone_changed(props)
   end
 
+  feature "changing the time format in account settings", ctx do
+    ctx
+    |> Steps.open_account_settings()
+    |> Steps.change_time_format("24-hour clock")
+    |> Steps.assert_person_time_format_changed(:hour_24)
+  end
+
   feature "setting my manager in account settings", ctx do
     ctx
     |> Steps.open_account_settings()

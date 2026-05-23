@@ -6,6 +6,8 @@ import { createTestId } from "@/utils/testid";
 import { isPresent } from "@/utils/isPresent";
 import { isCheckInTarget, Target } from "../types";
 import { TargetNumericField } from "./TargetNumericField";
+import { useLocale } from "@/contexts/TimezoneContext";
+import { formatNumber } from "@/utils/formatting";
 
 interface Props {
   readonly: boolean;
@@ -28,10 +30,12 @@ export function TargetValue(props: Props) {
 }
 
 function ValueDisplay({ target }: { target: Target }) {
+  const locale = useLocale();
+
   return (
     <div className="flex items-center">
       <div className="py-1 text-right text-sm">
-        <span className="font-extrabold">{target.value}</span>
+        <span className="font-extrabold">{isPresent(target.value) ? formatNumber(target.value, locale) : ""}</span>
         {target.unit === "%" ? "%" : ` ${target.unit}`}
       </div>
       <ValueDifference target={target} />
@@ -40,6 +44,8 @@ function ValueDisplay({ target }: { target: Target }) {
 }
 
 function ValueDifference({ target }: { target: Target }) {
+  const locale = useLocale();
+
   if (!isPresent(target.value) || !isCheckInTarget(target) || !isPresent(target.previousValue)) {
     return null;
   }
@@ -48,7 +54,7 @@ function ValueDifference({ target }: { target: Target }) {
   if (diff === 0) return null;
 
   const sentiment = GoalCheckIns.targetChangeSentiment(target);
-  const diffText = formatNumber(Math.abs(diff));
+  const diffText = formatNumber(Math.abs(diff), locale, { maximumFractionDigits: 2 });
   const diffSign = diff > 0 ? "+" : "-";
   const color = sentiment === "positive" ? "text-green-600" : "text-content-error";
 
@@ -58,20 +64,4 @@ function ValueDifference({ target }: { target: Target }) {
       {diffText}
     </div>
   );
-}
-
-//
-// If the value is an integer, return it as is.
-// If it has decimal places, return it with up to 2 decimal places. Always return trailing zeros.
-//
-function formatNumber(num: number) {
-  if (Number.isInteger(num)) {
-    return num.toString();
-  } else {
-    // Convert to number with up to 2 decimal places
-    const fixed = num.toFixed(2);
-
-    // Parse it back to a number (removes trailing zeros) and convert to string
-    return parseFloat(fixed).toString();
-  }
 }

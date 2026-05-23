@@ -8,7 +8,7 @@ import RelativeTime from "./RelativeTime";
 import ShortDateWithWeekday from "./ShortDateWithWeekday";
 import RelativeWeekdayOrDate from "./RelativeWeekdayOrDate";
 import RelativeTimeOrDate from "./RelativeTimeOrDate";
-import { useTimezone } from "@/contexts/TimezoneContext";
+import { useLocale, useTimeFormat, useTimezone } from "@/contexts/TimezoneContext";
 import { match } from "ts-pattern";
 
 type Format =
@@ -39,6 +39,8 @@ interface FormattedTimeProps {
 
 export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
   const timezone = useTimezone();
+  const locale = useLocale();
+  const timeFormat = useTimeFormat();
 
   const parsedTime = match(props.format)
     .with("relative", () => Time.parse(props.time))
@@ -54,17 +56,17 @@ export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
     case "relative":
       return <RelativeTime time={time} />;
     case "relative-weekday-or-date":
-      return <RelativeWeekdayOrDate time={time} />;
+      return <RelativeWeekdayOrDate time={time} locale={locale} />;
     case "relative-time-or-date":
-      return <RelativeTimeOrDate time={time} />;
+      return <RelativeTimeOrDate time={time} locale={locale} />;
     case "short-date":
-      return <ShortDate time={time} weekday={false} />;
+      return <ShortDate time={time} weekday={false} locale={locale} />;
     case "short-date-with-weekday":
-      return <ShortDateWithWeekday time={time} />;
+      return <ShortDateWithWeekday time={time} locale={locale} />;
     case "time-only":
-      return <TimeOnly time={time} />;
+      return <TimeOnly time={time} locale={locale} timeFormat={timeFormat} />;
     case "long-date":
-      return <LongDate time={time} />;
+      return <LongDate time={time} locale={locale} />;
     default:
       throw "Unknown format " + props.format;
   }
