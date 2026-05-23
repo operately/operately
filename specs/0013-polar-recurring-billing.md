@@ -834,8 +834,11 @@ The page should also support direct arrival from the website billing-intent rout
 The page should remain readable even when webhook sync is still catching up by:
 
 - showing the last known local status
-- allowing an owner-triggered `billing/refresh`
-- polling briefly after a `checkout_id={CHECKOUT_ID}` return state
+- listening for a company-scoped `billing_updated` subscription and refreshing when the backend reports a billing-state change
+- treating `checkout_id={CHECKOUT_ID}` as a return hint rather than a source of truth
+- showing the normal billing surface while waiting for webhook-driven confirmation when the paid state is not reflected yet
+
+The subscription-driven refresh path should be the only automatic confirmation path after checkout return. The billing page should not poll Polar directly after `checkout_id={CHECKOUT_ID}`.
 
 If a live Polar enrichment fails, the page should still render from the local projection and keep the main actions available.
 
@@ -945,7 +948,8 @@ This screen is the operator-facing control plane for future product additions an
 5. Job fetches the latest customer state from Polar.
 6. Resolve the company by external customer ID.
 7. Upsert the company billing row with normalized state.
-8. Mark the webhook event as processed.
+8. Broadcast a company-scoped `billing_updated` event so open billing pages can refetch.
+9. Mark the webhook event as processed.
 
 ### Relevant events
 
@@ -1105,7 +1109,7 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - `NewCompanyPage` stores remembered upgrade preference when paid billing params are present
 - `NewCompanyPage` ignores billing params when the `billing` feature is disabled
 - billing page renders free, active, canceled, and pending states
-- billing page handles `checkout_id={CHECKOUT_ID}` and invokes refresh/polling path
+- billing page handles `checkout_id={CHECKOUT_ID}` and waits for webhook-driven subscription refresh when confirmation is still pending
 - billing page highlights remembered suggested plan when present
 - billing page preselects website-requested plan and interval when opened from the billing-intent route
 - billing page still renders from local state when optional Polar detail fetches fail
@@ -1289,12 +1293,12 @@ Outcome:
 
 - owners can load billing state and reach the billing surface from Company Admin
 
-### PR 5b: Upgrade and checkout UX
+### PR 5b: Upgrade and checkout UX (COMPLETED ✅)
 
 - Add in-app plan-selection flow with Team/Business cards and monthly/yearly toggle
 - Support direct website-entry preselection of target plan and billing interval for logged-in owners
 - Add upgrade buttons and `billing/create_checkout_session`
-- Add post-checkout success handling via `checkout_id={CHECKOUT_ID}`
+- Add post-checkout return handling via `checkout_id={CHECKOUT_ID}` using current billing state plus future subscription-driven refresh
 - Add pending-checkout, expired-checkout, and failed-checkout recovery UI
 
 Outcome:
@@ -1327,10 +1331,11 @@ Outcome:
 - Add webhook event persistence and idempotency
 - Add Oban worker for processing billing webhooks
 - Add customer-state synchronization from Polar into `company_billing_accounts`
+- Broadcast `billing_updated` to subscribed company-owner clients after successful sync so the billing page can confirm checkout returns and refresh without polling
 
 Outcome:
 
-- local company billing state stays synchronized with Polar
+- local company billing state stays synchronized with Polar, and open billing pages are notified promptly after webhook-driven changes
 
 ### PR 7: Verification and rollout hardening
 
