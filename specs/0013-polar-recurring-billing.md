@@ -1262,7 +1262,7 @@ Outcome:
 
 - an authenticated owner can explicitly start or retry a paid checkout from Operately without changing local entitlements before Polar confirms success
 
-### PR 4d: Direct subscription mutation actions
+### PR 4d: Direct subscription mutation actions (COMPLETED ✅)
 
 - Add change-plan actions
 - Add cancel and reactivate actions

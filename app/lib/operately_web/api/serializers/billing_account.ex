@@ -13,6 +13,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Billing.CompanyBillingAcco
       pending_plan_key: account.pending_plan_key,
       pending_billing_interval: account.pending_billing_interval,
       pending_checkout_started_at: account.pending_checkout_started_at,
+      scheduled_plan_key: account.scheduled_plan_key,
+      scheduled_billing_interval: account.scheduled_billing_interval,
+      scheduled_change_effective_at: account.scheduled_change_effective_at,
       last_synced_at: account.last_synced_at
     }
   end

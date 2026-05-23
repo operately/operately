@@ -49,6 +49,9 @@ defmodule OperatelyWeb.Api.Types do
     field? :pending_plan_key, :billing_plan, null: true
     field? :pending_billing_interval, :billing_interval, null: true
     field? :pending_checkout_started_at, :datetime, null: true
+    field? :scheduled_plan_key, :billing_plan, null: true
+    field? :scheduled_billing_interval, :billing_interval, null: true
+    field? :scheduled_change_effective_at, :datetime, null: true
     field? :last_synced_at, :datetime, null: true
   end
 
