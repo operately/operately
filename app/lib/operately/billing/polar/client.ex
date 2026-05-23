@@ -47,6 +47,15 @@ defmodule Operately.Billing.Polar.Client do
     })
   end
 
+  def create_checkout_session(attrs) do
+    post("/v1/checkouts", %{
+      products: attrs[:products],
+      external_customer_id: attrs[:external_customer_id],
+      success_url: attrs[:success_url],
+      return_url: attrs[:return_url]
+    })
+  end
+
   def app_base_url do
     Endpoint.url()
   end

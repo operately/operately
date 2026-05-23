@@ -1101,6 +1101,15 @@ export interface BillingCatalogProduct {
   updatedAt: string;
 }
 
+export interface BillingCheckoutSession {
+  provider: string;
+  id: string;
+  url: string;
+  returnUrl: string;
+  successUrl: string;
+  expiresAt: string;
+}
+
 export interface BillingHostedSession {
   provider: string;
   url: string;
@@ -3398,6 +3407,15 @@ export interface ApiTokensUpdateNameResult {
   apiToken: ApiToken;
 }
 
+export interface BillingCreateCheckoutSessionInput {
+  plan: BillingPlan;
+  billingInterval: BillingInterval;
+}
+
+export interface BillingCreateCheckoutSessionResult {
+  session: BillingCheckoutSession;
+}
+
 export interface BillingCreateCustomerPortalSessionInput {
   returnTo?: string | null;
 }
@@ -5230,6 +5248,10 @@ class ApiNamespaceBilling {
     return this.client.get("/billing/get", input);
   }
 
+  async createCheckoutSession(input: BillingCreateCheckoutSessionInput): Promise<BillingCreateCheckoutSessionResult> {
+    return this.client.post("/billing/create_checkout_session", input);
+  }
+
   async createCustomerPortalSession(
     input: BillingCreateCustomerPortalSessionInput,
   ): Promise<BillingCreateCustomerPortalSessionResult> {
@@ -6833,6 +6855,13 @@ export default {
     useCreateCustomerPortalSession: () =>
       useMutation<BillingCreateCustomerPortalSessionInput, BillingCreateCustomerPortalSessionResult>((input) =>
         defaultApiClient.apiNamespaceBilling.createCustomerPortalSession(input),
+      ),
+
+    createCheckoutSession: (input: BillingCreateCheckoutSessionInput) =>
+      defaultApiClient.apiNamespaceBilling.createCheckoutSession(input),
+    useCreateCheckoutSession: () =>
+      useMutation<BillingCreateCheckoutSessionInput, BillingCreateCheckoutSessionResult>((input) =>
+        defaultApiClient.apiNamespaceBilling.createCheckoutSession(input),
       ),
 
     refresh: (input: BillingRefreshInput) => defaultApiClient.apiNamespaceBilling.refresh(input),
