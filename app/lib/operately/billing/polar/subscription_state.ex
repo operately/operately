@@ -1,96 +1,81 @@
-defmodule Operately.Billing.Polar.CustomerStateSync do
+defmodule Operately.Billing.Polar.SubscriptionState do
   @moduledoc false
 
-  require Logger
-
   alias Operately.Billing
+  alias Operately.Companies.Company
 
-  @doc """
-  Fetches a company's billing state from Polar and syncs it locally.
+  @enforce_keys [
+    :subscription_id,
+    :raw_status,
+    :status,
+    :product_id,
+    :product,
+    :cancel_at_period_end,
+    :current_period_end,
+    :pending_update_product_id,
+    :pending_update_product
+  ]
+  defstruct [
+    :subscription_id,
+    :raw_status,
+    :status,
+    :product_id,
+    :product,
+    :cancel_at_period_end,
+    :current_period_end,
+    :pending_update_product_id,
+    :pending_update_product
+  ]
 
-  A missing Polar customer is normalized to Operately's local free state.
-  """
-  def run(%Operately.Companies.Company{} = company, opts \\ []) do
+  def fetch(%Company{} = company, opts \\ []) do
     client = Keyword.get(opts, :client, Operately.Billing.Polar.Client)
 
     case client.get_customer_state_by_external_id(company.id) do
       {:ok, customer_state} ->
-        customer_state
-        |> normalize_customer_state(company)
-        |> then(&Billing.sync_billing_account(company, &1))
-
-      {:error, :not_found} ->
-        company
-        |> normalize_free_state()
-        |> then(&Billing.sync_billing_account(company, &1))
+        case find_relevant_subscription(customer_state) do
+          nil -> {:ok, nil}
+          subscription -> {:ok, build(subscription)}
+        end
 
       {:error, _reason} = error ->
         error
     end
   end
 
-  defp normalize_customer_state(customer_state, company) do
-    case find_relevant_subscription(customer_state) do
-      nil ->
-        normalize_free_state(company)
+  def build(subscription) when is_map(subscription) do
+    product_id = extract_product_id(subscription)
+    pending_update_product_id = extract_pending_update_product_id(subscription)
 
-      subscription ->
-        product = find_local_product(subscription)
-
-        if is_nil(product) do
-          Logger.warning(
-            "Polar subscription product is missing from local billing catalog: " <>
-              inspect(%{company_id: company.id, product_id: extract_product_id(subscription)})
-          )
-        end
-
-        %{
-          provider: "polar",
-          plan_key: product && product.plan_family,
-          billing_interval: product && product.billing_interval,
-          status: normalize_subscription_status(subscription),
-          cancel_at_period_end: extract_cancel_at_period_end(subscription),
-          current_period_end: extract_current_period_end(subscription),
-          last_synced_at: DateTime.utc_now()
-        }
-    end
-  end
-
-  defp normalize_free_state(_company) do
-    %{
-      provider: "polar",
-      plan_key: nil,
-      billing_interval: nil,
-      status: :free,
-      cancel_at_period_end: false,
-      current_period_end: nil,
-      last_synced_at: DateTime.utc_now()
+    %__MODULE__{
+      subscription_id: extract_subscription_id(subscription),
+      raw_status: extract_subscription_status(subscription),
+      status: normalize_subscription_status(subscription),
+      product_id: product_id,
+      product: find_local_product(product_id),
+      cancel_at_period_end: extract_cancel_at_period_end(subscription),
+      current_period_end: extract_current_period_end(subscription),
+      pending_update_product_id: pending_update_product_id,
+      pending_update_product: find_local_product(pending_update_product_id)
     }
   end
 
-  defp find_local_product(subscription) do
-    case extract_product_id(subscription) do
-      nil -> nil
-      product_id -> Billing.get_product_by_polar_product_id(product_id)
-    end
-  end
+  def paid?(%__MODULE__{status: status}), do: status in [:active, :past_due, :canceled]
+  def live?(%__MODULE__{status: status}), do: status in [:active, :past_due]
+  def raw_trialing?(%__MODULE__{raw_status: status}) when is_binary(status), do: String.downcase(status) == "trialing"
+  def raw_trialing?(%__MODULE__{}), do: false
 
-  defp extract_product_id(subscription) do
-    Map.get(subscription, "product_id") ||
-      Map.get(subscription, "productId") ||
-      get_in(subscription, ["product", "id"])
-  end
-
-  defp find_relevant_subscription(customer_state) do
+  def find_relevant_subscription(customer_state) do
     active_subscription(customer_state) ||
-      subscriptions(customer_state)
+      customer_state
+      |> subscriptions()
       |> Enum.find(&paid_status?/1)
   end
 
   defp active_subscription(customer_state) do
     Map.get(customer_state, "active_subscription") ||
       Map.get(customer_state, "activeSubscription") ||
-      subscriptions(customer_state)
+      customer_state
+      |> subscriptions()
       |> Enum.find(&active_status?/1)
   end
 
@@ -108,6 +93,12 @@ defmodule Operately.Billing.Polar.CustomerStateSync do
       true ->
         []
     end
+  end
+
+  defp find_local_product(nil), do: nil
+
+  defp find_local_product(product_id) when is_binary(product_id) do
+    Billing.get_product_by_polar_product_id(product_id)
   end
 
   defp normalize_subscription_status(subscription) do
@@ -136,10 +127,38 @@ defmodule Operately.Billing.Polar.CustomerStateSync do
     end
   end
 
+  defp extract_subscription_id(subscription) do
+    Map.get(subscription, "id") ||
+      Map.get(subscription, "subscription_id") ||
+      Map.get(subscription, "subscriptionId")
+  end
+
   defp extract_subscription_status(subscription) do
     Map.get(subscription, "status") ||
       Map.get(subscription, "subscription_status") ||
       Map.get(subscription, "subscriptionStatus")
+  end
+
+  defp extract_product_id(subscription) do
+    Map.get(subscription, "product_id") ||
+      Map.get(subscription, "productId") ||
+      get_in(subscription, ["product", "id"])
+  end
+
+  defp extract_pending_update_product_id(subscription) do
+    pending_update =
+      Map.get(subscription, "pending_update") ||
+        Map.get(subscription, "pendingUpdate")
+
+    case pending_update do
+      %{} = pending_update ->
+        Map.get(pending_update, "product_id") ||
+          Map.get(pending_update, "productId") ||
+          get_in(pending_update, ["product", "id"])
+
+      _ ->
+        nil
+    end
   end
 
   defp extract_cancel_at_period_end(subscription) do

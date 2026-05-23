@@ -15,7 +15,7 @@ defmodule OperatelyEE.AdminApi.Mutations.SyncBillingProductsFromPolar do
     if not Billing.billing_enabled?() do
       {:error, :bad_request, "Billing is not enabled on this instance"}
     else
-      case Operately.Billing.Polar.ProductSync.run() do
+      case Operately.Billing.Polar.Operations.ProductSync.run() do
         {:ok, count} ->
           {:ok, %{success: true, synced_count: count}}
 
