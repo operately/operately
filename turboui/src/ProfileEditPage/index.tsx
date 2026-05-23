@@ -23,6 +23,8 @@ export namespace ProfileEditPage {
     label: string;
   }
 
+  export type TimeFormat = "automatic" | "hour_12" | "hour_24";
+
   export interface Props {
     // Person data
     person: Person;
@@ -32,6 +34,7 @@ export namespace ProfileEditPage {
     title: string;
     aboutMe: any;
     timezone: string;
+    timeFormat: TimeFormat;
     manager: Person | null;
 
     // Form handlers
@@ -39,6 +42,7 @@ export namespace ProfileEditPage {
     onTitleChange: (value: string) => void;
     onAboutMeChange: (value: any) => void;
     onTimezoneChange: (value: string) => void;
+    onTimeFormatChange: (value: TimeFormat) => void;
     onManagerChange: (person: Person | null) => void;
     onSubmit: () => Promise<void>;
     onCancel?: () => void;
@@ -143,6 +147,22 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
                 ))}
               </select>
             </div>
+
+            {props.isCurrentUser && (
+              <div>
+                <label className="font-bold text-sm mb-1 block">Time format</label>
+                <select
+                  value={props.timeFormat}
+                  onChange={(e) => props.onTimeFormatChange(e.target.value as ProfileEditPage.TimeFormat)}
+                  className="w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base"
+                  data-test-id="time-format"
+                >
+                  <option value="automatic">Automatic</option>
+                  <option value="hour_12">12-hour clock</option>
+                  <option value="hour_24">24-hour clock</option>
+                </select>
+              </div>
+            )}
 
             {/* Manager Section */}
             <div>

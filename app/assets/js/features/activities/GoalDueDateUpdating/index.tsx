@@ -2,7 +2,7 @@ import type { ActivityContentGoalDueDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import { FormattedTime } from "turboui";
+import FormattedTime from "@/components/FormattedTime";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 

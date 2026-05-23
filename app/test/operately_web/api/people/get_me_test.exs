@@ -24,6 +24,7 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         avatar_url: ctx.person.avatar_url,
         avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: ctx.person.timezone,
+        time_format: "automatic",
         email_preference: "buffered",
         email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(ctx.person),
@@ -51,6 +52,7 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         avatar_url: ctx.person.avatar_url,
         avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: me.timezone,
+        time_format: "automatic",
         email_preference: "buffered",
         email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(me),
@@ -82,6 +84,7 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         avatar_url: ctx.person.avatar_url,
         avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: ctx.person.timezone,
+        time_format: "automatic",
         email_preference: "buffered",
         email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(ctx.person),
@@ -115,6 +118,20 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
       refute data.send_daily_summary
       assert data.daily_summary_delivery_time == "09:00"
       assert Operately.People.Person.email_preference(person) == :buffered
+    end
+
+    test "it returns custom display preference settings", ctx do
+      {:ok, person} =
+        Operately.People.update_person(ctx.person, %{
+          preferences: %{
+            time_format: "hour_24"
+          }
+        })
+
+      assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
+
+      assert data.time_format == "hour_24"
+      assert Operately.People.Person.time_format(person) == :hour_24
     end
   end
 end
