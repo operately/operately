@@ -6,6 +6,7 @@ import * as React from "react";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { IconBuildingEstate } from "turboui";
 import { PageModule } from "@/routes/types";
+import { Paths } from "@/routes/paths";
 import classnames from "classnames";
 import plurarize from "@/utils/plurarize";
 import { useNavigate } from "react-router-dom";
@@ -97,12 +98,16 @@ function CompanyRow({
   const navigate = useNavigate();
 
   const handleClick = () => {
-    const query = new URLSearchParams();
-    if (plan) query.set("plan", plan);
-    if (billingPeriod) query.set("billing_period", billingPeriod);
+    const companyId = company.id;
+    if (!companyId) {
+      return;
+    }
 
-    const queryString = query.toString();
-    const billingPath = `/${company.id}/admin/billing${queryString ? "?" + queryString : ""}`;
+    const billingPath = new Paths({ companyId }).companyBillingPath({
+      plan,
+      billingPeriod,
+    });
+
     navigate(billingPath);
   };
 
