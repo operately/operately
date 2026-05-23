@@ -835,7 +835,7 @@ The page should remain readable even when webhook sync is still catching up by:
 
 - showing the last known local status
 - allowing an owner-triggered `billing/refresh`
-- polling briefly after a `checkout=success` return state
+- polling briefly after a `checkout_id={CHECKOUT_ID}` return state
 
 If a live Polar enrichment fails, the page should still render from the local projection and keep the main actions available.
 
@@ -1105,7 +1105,7 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - `NewCompanyPage` stores remembered upgrade preference when paid billing params are present
 - `NewCompanyPage` ignores billing params when the `billing` feature is disabled
 - billing page renders free, active, canceled, and pending states
-- billing page handles `checkout=success` and invokes refresh/polling path
+- billing page handles `checkout_id={CHECKOUT_ID}` and invokes refresh/polling path
 - billing page highlights remembered suggested plan when present
 - billing page preselects website-requested plan and interval when opened from the billing-intent route
 - billing page still renders from local state when optional Polar detail fetches fail
@@ -1276,21 +1276,45 @@ Outcome:
 
 - an authenticated owner can change plans when checkout is not required, schedule cancellation, and reactivate a pending cancellation from the app
 
-### PR 5: Company Admin billing page
+### PR 5a: Company Admin billing page foundation (COMPLETED ✅)
 
 - Add `/:companyId/admin/billing`
 - Add Company Admin navigation entry
 - Add `CompanyBillingPage`
-- Render free and paid states from `billing/get`
+- Render free, paid, canceled, and pending states from `billing/get`
 - Render remembered suggested plan and interval when present
+- Keep all company-facing billing navigation and actions hidden unless the `billing` feature is enabled
+
+Outcome:
+
+- owners can load billing state and reach the billing surface from Company Admin
+
+### PR 5b: Upgrade and checkout UX
+
 - Add in-app plan-selection flow with Team/Business cards and monthly/yearly toggle
 - Support direct website-entry preselection of target plan and billing interval for logged-in owners
-- Add upgrade buttons, change-plan actions, cancel, reactivate, and update-credit-card actions
-- Add in-app cancellation-confirmation flow with downgrade consequences
-- Add fallback `Manage billing` entry when provider-hosted management is needed
-- Add post-checkout success handling via `checkout=success`
+- Add upgrade buttons and `billing/create_checkout_session`
+- Add post-checkout success handling via `checkout_id={CHECKOUT_ID}`
 - Add pending-checkout, expired-checkout, and failed-checkout recovery UI
-- Keep all company-facing billing navigation and actions hidden unless the `billing` feature is enabled
+
+Outcome:
+
+- owners can start and recover checkout from Company Admin
+
+### PR 5c: Active subscription management
+
+- Add change-plan actions for already-paid companies
+- Add update-credit-card action
+- Add fallback `Manage billing` entry when provider-hosted management is needed
+
+Outcome:
+
+- owners can manage active paid subscriptions from Company Admin without leaving Operately for the primary flows
+
+### PR 5d: Cancellation and reactivation UX
+
+- Add in-app cancellation-confirmation flow with downgrade consequences
+- Add cancel and reactivate actions
 
 Outcome:
 
