@@ -1,4 +1,4 @@
-defmodule Operately.Billing.Polar.CustomerSessionCreating do
+defmodule Operately.Billing.Polar.Operations.CustomerSessionCreating do
   alias Operately.Billing
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.HostedSession

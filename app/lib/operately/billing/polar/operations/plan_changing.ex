@@ -1,4 +1,4 @@
-defmodule Operately.Billing.Polar.PlanChanging do
+defmodule Operately.Billing.Polar.Operations.PlanChanging do
   require Logger
 
   alias Operately.Billing

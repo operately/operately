@@ -1,4 +1,4 @@
-defmodule Operately.Billing.Polar.ManagedProductCreating do
+defmodule Operately.Billing.Polar.Operations.ManagedProductCreating do
   alias Operately.Billing
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.Polar.ProductMapper

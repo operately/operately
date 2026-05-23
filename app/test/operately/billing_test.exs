@@ -329,7 +329,7 @@ defmodule Operately.BillingTest do
                next_cursor: nil
              }}
         end do
-        assert {:ok, 3} = Operately.Billing.Polar.ProductSync.run()
+        assert {:ok, 3} = Operately.Billing.Polar.Operations.ProductSync.run()
       end
 
       synced_active = Billing.get_product!(active_product.id)

@@ -1,4 +1,4 @@
-defmodule Operately.Billing.Polar.CustomerStateSync do
+defmodule Operately.Billing.Polar.Operations.CustomerStateSync do
   @moduledoc false
 
   require Logger

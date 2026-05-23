@@ -1,4 +1,4 @@
-defmodule Operately.Billing.Polar.SubscriptionCanceling do
+defmodule Operately.Billing.Polar.Operations.SubscriptionCanceling do
   alias Operately.Billing
   alias Operately.Billing.Overview
   alias Operately.Billing.Polar.SubscriptionState

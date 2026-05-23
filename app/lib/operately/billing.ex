@@ -17,7 +17,7 @@ defmodule Operately.Billing do
   alias Operately.Repo
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.Overview
-  alias Operately.Billing.Polar.CustomerStateSync
+  alias Operately.Billing.Polar.Operations.CustomerStateSync
   alias Operately.Billing.Polar.ProductMapper
   alias Operately.Billing.ProductCatalogEntry
 
@@ -194,12 +194,12 @@ defmodule Operately.Billing do
   @doc """
   Creates a managed Polar product and syncs the returned provider state locally.
   """
-  defdelegate create_managed_product(attrs, opts \\ []), to: Operately.Billing.Polar.ManagedProductCreating, as: :run
+  defdelegate create_managed_product(attrs, opts \\ []), to: Operately.Billing.Polar.Operations.ManagedProductCreating, as: :run
 
   @doc """
   Updates a managed Polar product and syncs the returned provider state locally.
   """
-  defdelegate update_managed_product(entry, attrs, opts \\ []), to: Operately.Billing.Polar.ManagedProductUpdating, as: :run
+  defdelegate update_managed_product(entry, attrs, opts \\ []), to: Operately.Billing.Polar.Operations.ManagedProductUpdating, as: :run
 
   @doc """
   Archives a managed Polar product in Polar and syncs the archived state locally.
@@ -298,31 +298,31 @@ defmodule Operately.Billing do
   @doc """
   Creates a hosted Polar session for payment-method management.
   """
-  defdelegate create_payment_method_session(company, opts \\ []), to: Operately.Billing.Polar.CustomerSessionCreating, as: :run_payment_method
+  defdelegate create_payment_method_session(company, opts \\ []), to: Operately.Billing.Polar.Operations.CustomerSessionCreating, as: :run_payment_method
 
   @doc """
   Creates a hosted Polar customer-portal session.
   """
-  defdelegate create_customer_portal_session(company, opts \\ []), to: Operately.Billing.Polar.CustomerSessionCreating, as: :run_portal
+  defdelegate create_customer_portal_session(company, opts \\ []), to: Operately.Billing.Polar.Operations.CustomerSessionCreating, as: :run_portal
 
   @doc """
   Creates a Polar checkout session for a paid plan and stores the target as
   pending local checkout state.
   """
   defdelegate create_checkout_session(company, plan_key, billing_interval, opts \\ []),
-    to: Operately.Billing.Polar.CheckoutSessionCreating,
+    to: Operately.Billing.Polar.Operations.CheckoutSessionCreating,
     as: :run
 
   defdelegate change_plan(company, plan_key, billing_interval, opts \\ []),
-    to: Operately.Billing.Polar.PlanChanging,
+    to: Operately.Billing.Polar.Operations.PlanChanging,
     as: :run
 
   defdelegate cancel_subscription(company, opts \\ []),
-    to: Operately.Billing.Polar.SubscriptionCanceling,
+    to: Operately.Billing.Polar.Operations.SubscriptionCanceling,
     as: :run
 
   defdelegate reactivate_subscription(company, opts \\ []),
-    to: Operately.Billing.Polar.SubscriptionReactivating,
+    to: Operately.Billing.Polar.Operations.SubscriptionReactivating,
     as: :run
 
   defp normalize_provider_product(provider_product) do

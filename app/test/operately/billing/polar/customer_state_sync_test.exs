@@ -1,4 +1,4 @@
-defmodule Operately.Billing.Polar.CustomerStateSyncTest.StubClient do
+defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest.StubClient do
   def get_customer_state_by_external_id(company_id) do
     send(self(), {:stub_client_called, company_id})
 
@@ -9,13 +9,13 @@ defmodule Operately.Billing.Polar.CustomerStateSyncTest.StubClient do
   end
 end
 
-defmodule Operately.Billing.Polar.CustomerStateSyncTest do
+defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
   use Operately.DataCase, async: true
 
   import ExUnit.CaptureLog
 
   alias Operately.Billing
-  alias Operately.Billing.Polar.CustomerStateSync
+  alias Operately.Billing.Polar.Operations.CustomerStateSync
   alias __MODULE__.StubClient
 
   setup do
