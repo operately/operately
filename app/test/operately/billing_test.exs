@@ -559,6 +559,156 @@ defmodule Operately.BillingTest do
     end
   end
 
+  describe "checkout sessions" do
+    setup do
+      company = company_fixture()
+      {:ok, company: company}
+    end
+
+    test "create_checkout_session/4 creates checkout for a free company and persists pending state", ctx do
+      {:ok, _product} = create_active_product("prod_team_monthly", "team", "monthly")
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
+        create_checkout_session: fn attrs ->
+          assert attrs[:products] == ["prod_team_monthly"]
+          assert attrs[:external_customer_id] == ctx.company.id
+          assert attrs[:return_url] == Operately.Billing.Polar.Client.app_base_url() <> OperatelyWeb.Paths.company_billing_path(ctx.company)
+          assert attrs[:success_url] == Operately.Billing.Polar.Client.app_base_url() <> OperatelyWeb.Paths.company_billing_path(ctx.company) <> "?checkout_id={CHECKOUT_ID}"
+
+          {:ok,
+           checkout_session_payload(%{
+             "id" => "chk_free",
+             "return_url" => attrs[:return_url],
+             "success_url" => attrs[:success_url]
+           })}
+        end do
+        assert {:ok, session} = Billing.create_checkout_session(ctx.company, :team, :monthly)
+
+        assert session.provider == "polar"
+        assert session.id == "chk_free"
+        assert session.url == "https://polar.sh/example/checkout"
+        assert session.return_url == Operately.Billing.Polar.Client.app_base_url() <> OperatelyWeb.Paths.company_billing_path(ctx.company)
+        assert session.success_url == Operately.Billing.Polar.Client.app_base_url() <> OperatelyWeb.Paths.company_billing_path(ctx.company) <> "?checkout_id={CHECKOUT_ID}"
+        assert session.expires_at == ~U[2026-08-31 00:00:00Z]
+
+        account = Billing.get_billing_account_by_company(ctx.company)
+        assert account.status == :free
+        assert account.pending_plan_key == :team
+        assert account.pending_billing_interval == :monthly
+        assert account.pending_checkout_started_at != nil
+      end
+    end
+
+    test "create_checkout_session/4 allows a canceled company to start a new checkout", ctx do
+      {:ok, _old_product} = create_active_product("prod_old_team_monthly", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok, active_subscription_payload("prod_old_team_monthly", %{"status" => "canceled"})}
+        end,
+        create_checkout_session: fn _attrs ->
+          {:ok, checkout_session_payload(%{"id" => "chk_canceled"})}
+        end do
+        assert {:ok, session} = Billing.create_checkout_session(ctx.company, :business, :yearly)
+
+        assert session.id == "chk_canceled"
+
+        account = Billing.get_billing_account_by_company(ctx.company)
+        assert account.status == :canceled
+        assert account.pending_plan_key == :business
+        assert account.pending_billing_interval == :yearly
+      end
+    end
+
+    test "create_checkout_session/4 rejects active paid companies", ctx do
+      {:ok, _current_product} = create_active_product("prod_current_team_monthly", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok, active_subscription_payload("prod_current_team_monthly")}
+        end,
+        create_checkout_session: fn _attrs -> flunk("unexpected checkout session call") end do
+        assert {:error, :bad_request} = Billing.create_checkout_session(ctx.company, :business, :yearly)
+      end
+    end
+
+    test "create_checkout_session/4 rejects past-due paid companies", ctx do
+      {:ok, _current_product} = create_active_product("prod_current_team_monthly", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok, active_subscription_payload("prod_current_team_monthly", %{"status" => "past_due"})}
+        end,
+        create_checkout_session: fn _attrs -> flunk("unexpected checkout session call") end do
+        assert {:error, :bad_request} = Billing.create_checkout_session(ctx.company, :business, :yearly)
+      end
+    end
+
+    test "create_checkout_session/4 rejects invalid plan and billing interval values", ctx do
+      assert {:error, :bad_request} = Billing.create_checkout_session(ctx.company, :free, :monthly)
+      assert {:error, :bad_request} = Billing.create_checkout_session(ctx.company, :team, "weekly")
+    end
+
+    test "create_checkout_session/4 returns not found when the requested target is not sellable", ctx do
+      assert {:error, :not_found} = Billing.create_checkout_session(ctx.company, :team, :monthly)
+    end
+
+    test "create_checkout_session/4 does not persist pending state when Polar checkout creation fails", ctx do
+      {:ok, _product} = create_active_product("prod_team_monthly", "team", "monthly")
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
+        create_checkout_session: fn _attrs -> {:error, :internal_server_error} end do
+        assert {:error, :internal_server_error} = Billing.create_checkout_session(ctx.company, :team, :monthly)
+
+        account = Billing.get_billing_account_by_company(ctx.company)
+        assert account.status == :free
+        assert account.pending_plan_key == nil
+        assert account.pending_billing_interval == nil
+        assert account.pending_checkout_started_at == nil
+      end
+    end
+
+    test "live sync clears pending checkout when the company reaches the pending target", ctx do
+      {:ok, _product} = create_active_product("prod_business_yearly", "business", "yearly")
+      {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
+      {:ok, _pending_account} = Billing.set_pending_checkout(account, :business, :yearly)
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id ->
+          {:ok, active_subscription_payload("prod_business_yearly")}
+        end do
+        assert {:ok, refreshed} = Billing.refresh_company_billing_state(ctx.company)
+
+        assert refreshed.status == :active
+        assert refreshed.plan_key == :business
+        assert refreshed.billing_interval == :yearly
+        assert refreshed.pending_plan_key == nil
+        assert refreshed.pending_billing_interval == nil
+        assert refreshed.pending_checkout_started_at == nil
+      end
+    end
+
+    test "live sync preserves pending checkout when the purchase is still not completed", ctx do
+      {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
+      {:ok, _pending_account} = Billing.set_pending_checkout(account, :business, :yearly)
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end do
+        assert {:ok, refreshed} = Billing.refresh_company_billing_state(ctx.company)
+
+        assert refreshed.status == :free
+        assert refreshed.pending_plan_key == :business
+        assert refreshed.pending_billing_interval == :yearly
+        assert refreshed.pending_checkout_started_at != nil
+      end
+    end
+  end
+
   describe "plans" do
     test "get/1 returns plan for atom key" do
       plan = Plans.get(:free)
@@ -662,6 +812,13 @@ defmodule Operately.BillingTest do
     })
   end
 
+  defp create_active_product(polar_product_id, plan_family, billing_interval) do
+    with {:ok, product} <- create_product(polar_product_id, plan_family, billing_interval),
+         {:ok, product} <- Billing.set_active_product(product) do
+      {:ok, product}
+    end
+  end
+
   defp active_subscription_payload(product_id, overrides \\ %{}) do
     subscription =
       %{
@@ -673,5 +830,16 @@ defmodule Operately.BillingTest do
       |> Map.merge(overrides)
 
     %{"subscriptions" => [subscription]}
+  end
+
+  defp checkout_session_payload(overrides) do
+    %{
+      "id" => "chk_test",
+      "url" => "https://polar.sh/example/checkout",
+      "return_url" => "https://app.operately.test/company/admin/billing",
+      "success_url" => "https://app.operately.test/company/admin/billing?checkout_id={CHECKOUT_ID}",
+      "expires_at" => "2026-08-31T00:00:00Z"
+    }
+    |> Map.merge(overrides)
   end
 end
