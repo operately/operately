@@ -64,6 +64,7 @@ function Page() {
     return parseContent(person.description);
   });
   const [timezone, setTimezone] = React.useState(person.timezone || "");
+  const [timeFormat, setTimeFormat] = React.useState<ProfileEditPage.TimeFormat>(person.timeFormat || "automatic");
   const [manager, setManager] = React.useState<ProfileEditPage.Person | null>(
     person.manager ? People.parsePersonForTurboUi(paths, person.manager) : null,
   );
@@ -104,6 +105,7 @@ function Page() {
 
       if (isCurrentUser) {
         updateParams.description = JSON.stringify(aboutMe);
+        updateParams.timeFormat = timeFormat;
       }
 
       await People.updateProfile(updateParams);
@@ -118,7 +120,7 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [fullName, title, aboutMe, timezone, manager, person.id, isCurrentUser, navigate, paths]);
+  }, [fullName, title, aboutMe, timezone, timeFormat, manager, person.id, isCurrentUser, navigate, paths]);
 
   const displayPerson: ProfileEditPage.Person = {
     id: person.id,
@@ -135,11 +137,13 @@ function Page() {
       title={title}
       aboutMe={aboutMe}
       timezone={timezone}
+      timeFormat={timeFormat}
       manager={manager}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
       onAboutMeChange={setAboutMe}
       onTimezoneChange={setTimezone}
+      onTimeFormatChange={setTimeFormat}
       onManagerChange={setManager}
       onSubmit={handleSubmit}
       onAvatarUpload={avatar.handleAvatarUpload}

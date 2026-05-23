@@ -5,7 +5,7 @@ import RelativeTime from "./RelativeTime";
 import { hoursBetween } from "@/utils/time";
 import { useRenderInterval } from "./useRenderInterval";
 
-export default function RelativeTimeOrDate({ time }) {
+export default function RelativeTimeOrDate({ time, locale }: { time: Date; locale: string }) {
   const lastRender = useRenderInterval(time);
 
   const now = new Date();
@@ -13,7 +13,7 @@ export default function RelativeTimeOrDate({ time }) {
 
   return (
     <Fragment key={lastRender}>
-      {delta < 24 ? <RelativeTime time={time} /> : <RelativeWeekdayOrDate time={time} />}
+      {delta < 24 ? <RelativeTime time={time} /> : <RelativeWeekdayOrDate time={time} locale={locale} />}
     </Fragment>
   );
 }
