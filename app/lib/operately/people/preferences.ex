@@ -2,6 +2,7 @@ defmodule Operately.People.Preferences do
   use Operately.Schema
 
   @primary_key false
+  @time_format_values [:automatic, :hour_12, :hour_24]
 
   defmodule Notifications do
     use Operately.Schema
@@ -60,12 +61,17 @@ defmodule Operately.People.Preferences do
   end
 
   embedded_schema do
+    field :time_format, Ecto.Enum, values: @time_format_values, default: :automatic
     embeds_one :notifications, Notifications, on_replace: :update, defaults_to_struct: true
   end
 
   def changeset(preferences, attrs) do
     preferences
-    |> cast(attrs, [])
+    |> cast(attrs, [:time_format])
+    |> validate_inclusion(:time_format, @time_format_values)
     |> cast_embed(:notifications, with: &Notifications.changeset/2)
   end
+
+  def time_format_values, do: @time_format_values
+  def default_time_format, do: :automatic
 end

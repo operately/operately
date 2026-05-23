@@ -27,6 +27,7 @@
 - Agents should not format Elixir code beyond the scope of the requested change or bug fix; only format the lines directly related to the current work.
 - TypeScript/JS: Prettier (`printWidth: 120`, `trailingComma: all`). Check: `npm --prefix app run prettier:check`; fix: `make js.fmt.fix`.
 - When TypeScript warns that a value may be `null` or `undefined` (common in activity handlers under `app/assets/js/features/activities`), do not silence the warning with the non-null assertion operator (`!`) or with helpers like `assertPresent`. Add the guards or type refinements needed so the compiler is satisfied without risking runtime errors.
+- Locale-aware formatting: do not hard-code `"en-US"` or manually format user-facing dates, times, or numbers. Use shared formatting helpers and keep timezone, locale, and explicit display preferences as separate concerns. Timezone controls which local time is shown; locale/preferences control how dates, times, and numbers are displayed.
 - Components and pages: PascalCase for React components; filenames `ComponentName.tsx`. Tests: `*.spec.ts(x)`.
 - TurboUI component architecture and patterns: `turboui/AGENTS.md`.
 

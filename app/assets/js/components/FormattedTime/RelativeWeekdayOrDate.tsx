@@ -2,8 +2,9 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import * as Time from "@/utils/time";
 import ShortDateWithWeekday from "./ShortDateWithWeekday";
+import { formatDate } from "@/utils/formatting";
 
-export default function ({ time }: { time: Date }): JSX.Element {
+export default function ({ time, locale }: { time: Date; locale: string }): JSX.Element {
   const { t } = useTranslation();
 
   if (Time.isToday(time)) {
@@ -19,17 +20,12 @@ export default function ({ time }: { time: Date }): JSX.Element {
   }
 
   if (Time.isFuture(time) && Time.isThisWeek(time)) {
-    const params = {
-      val: time,
-      formatParams: {
-        val: {
-          weekday: "long",
-        },
-      },
+    const params: Intl.DateTimeFormatOptions = {
+      weekday: "long",
     };
 
-    return <>this {t("intlDateTime", params)}</>;
+    return <>this {formatDate(time, locale, params)}</>;
   }
 
-  return <ShortDateWithWeekday time={time} />;
+  return <ShortDateWithWeekday time={time} locale={locale} />;
 }

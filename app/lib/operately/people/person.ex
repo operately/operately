@@ -82,6 +82,9 @@ defmodule Operately.People.Person do
   def send_daily_summary?(person), do: notification_preferences(person).send_daily_summary
   def daily_summary_delivery_time(person), do: notification_preferences(person).daily_summary_delivery_time || NotificationPreferences.default_daily_summary_delivery_time()
 
+  def time_format(%__MODULE__{preferences: %Preferences{time_format: time_format}}) when not is_nil(time_format), do: time_format
+  def time_format(_), do: Preferences.default_time_format()
+
   def short_name(person) do
     parts = String.split(person.full_name, " ")
 
