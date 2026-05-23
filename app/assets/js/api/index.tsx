@@ -1081,6 +1081,9 @@ export interface BillingAccount {
   pendingPlanKey?: BillingPlan | null;
   pendingBillingInterval?: BillingInterval | null;
   pendingCheckoutStartedAt?: string | null;
+  scheduledPlanKey?: BillingPlan | null;
+  scheduledBillingInterval?: BillingInterval | null;
+  scheduledChangeEffectiveAt?: string | null;
   lastSyncedAt?: string | null;
 }
 
@@ -3407,6 +3410,21 @@ export interface ApiTokensUpdateNameResult {
   apiToken: ApiToken;
 }
 
+export interface BillingCancelInput {}
+
+export interface BillingCancelResult {
+  billing: BillingOverview;
+}
+
+export interface BillingChangePlanInput {
+  plan: BillingPlan;
+  billingInterval: BillingInterval;
+}
+
+export interface BillingChangePlanResult {
+  billing: BillingOverview;
+}
+
 export interface BillingCreateCheckoutSessionInput {
   plan: BillingPlan;
   billingInterval: BillingInterval;
@@ -3430,6 +3448,12 @@ export interface BillingCreatePaymentMethodSessionInput {
 
 export interface BillingCreatePaymentMethodSessionResult {
   session: BillingHostedSession;
+}
+
+export interface BillingReactivateInput {}
+
+export interface BillingReactivateResult {
+  billing: BillingOverview;
 }
 
 export interface BillingRefreshInput {}
@@ -5248,6 +5272,14 @@ class ApiNamespaceBilling {
     return this.client.get("/billing/get", input);
   }
 
+  async cancel(input: BillingCancelInput): Promise<BillingCancelResult> {
+    return this.client.post("/billing/cancel", input);
+  }
+
+  async changePlan(input: BillingChangePlanInput): Promise<BillingChangePlanResult> {
+    return this.client.post("/billing/change_plan", input);
+  }
+
   async createCheckoutSession(input: BillingCreateCheckoutSessionInput): Promise<BillingCreateCheckoutSessionResult> {
     return this.client.post("/billing/create_checkout_session", input);
   }
@@ -5262,6 +5294,10 @@ class ApiNamespaceBilling {
     input: BillingCreatePaymentMethodSessionInput,
   ): Promise<BillingCreatePaymentMethodSessionResult> {
     return this.client.post("/billing/create_payment_method_session", input);
+  }
+
+  async reactivate(input: BillingReactivateInput): Promise<BillingReactivateResult> {
+    return this.client.post("/billing/reactivate", input);
   }
 
   async refresh(input: BillingRefreshInput): Promise<BillingRefreshResult> {
@@ -6843,11 +6879,23 @@ export default {
     useGet: (input: BillingGetInput) =>
       useQuery<BillingGetResult>(() => defaultApiClient.apiNamespaceBilling.get(input)),
 
+    cancel: (input: BillingCancelInput) => defaultApiClient.apiNamespaceBilling.cancel(input),
+    useCancel: () =>
+      useMutation<BillingCancelInput, BillingCancelResult>((input) =>
+        defaultApiClient.apiNamespaceBilling.cancel(input),
+      ),
+
     createPaymentMethodSession: (input: BillingCreatePaymentMethodSessionInput) =>
       defaultApiClient.apiNamespaceBilling.createPaymentMethodSession(input),
     useCreatePaymentMethodSession: () =>
       useMutation<BillingCreatePaymentMethodSessionInput, BillingCreatePaymentMethodSessionResult>((input) =>
         defaultApiClient.apiNamespaceBilling.createPaymentMethodSession(input),
+      ),
+
+    changePlan: (input: BillingChangePlanInput) => defaultApiClient.apiNamespaceBilling.changePlan(input),
+    useChangePlan: () =>
+      useMutation<BillingChangePlanInput, BillingChangePlanResult>((input) =>
+        defaultApiClient.apiNamespaceBilling.changePlan(input),
       ),
 
     createCustomerPortalSession: (input: BillingCreateCustomerPortalSessionInput) =>
@@ -6862,6 +6910,12 @@ export default {
     useCreateCheckoutSession: () =>
       useMutation<BillingCreateCheckoutSessionInput, BillingCreateCheckoutSessionResult>((input) =>
         defaultApiClient.apiNamespaceBilling.createCheckoutSession(input),
+      ),
+
+    reactivate: (input: BillingReactivateInput) => defaultApiClient.apiNamespaceBilling.reactivate(input),
+    useReactivate: () =>
+      useMutation<BillingReactivateInput, BillingReactivateResult>((input) =>
+        defaultApiClient.apiNamespaceBilling.reactivate(input),
       ),
 
     refresh: (input: BillingRefreshInput) => defaultApiClient.apiNamespaceBilling.refresh(input),
