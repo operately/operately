@@ -155,6 +155,127 @@ defmodule Operately.Billing.Polar.CustomerStateSyncTest do
       assert log =~ "prod_unknown"
     end
 
+    test "maps provider pending updates into scheduled local billing fields", ctx do
+      {:ok, _current_product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "business",
+          billing_interval: "yearly",
+          polar_product_id: "prod_business_yearly"
+        })
+
+      {:ok, _scheduled_product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "yearly",
+          polar_product_id: "prod_team_yearly"
+        })
+
+      put_client_response(fn _company_id ->
+        {:ok,
+         %{
+           "subscriptions" => [
+             %{
+               "id" => "sub_scheduled",
+               "status" => "active",
+               "product_id" => "prod_business_yearly",
+               "current_period_end" => "2026-12-31T00:00:00Z",
+               "cancel_at_period_end" => false,
+               "pending_update" => %{"product_id" => "prod_team_yearly"}
+             }
+           ]
+         }}
+      end)
+
+      assert {:ok, account} = CustomerStateSync.run(ctx.company, client: StubClient)
+
+      assert account.plan_key == :business
+      assert account.billing_interval == :yearly
+      assert account.scheduled_plan_key == :team
+      assert account.scheduled_billing_interval == :yearly
+      assert account.scheduled_change_effective_at == ~U[2026-12-31 00:00:00Z]
+    end
+
+    test "clears scheduled local fields when no provider pending update exists", ctx do
+      {:ok, _current_product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_team_monthly"
+        })
+
+      {:ok, _account} =
+        Billing.sync_billing_account(ctx.company, %{
+          provider: "polar",
+          plan_key: :team,
+          billing_interval: :monthly,
+          status: :active,
+          scheduled_plan_key: :business,
+          scheduled_billing_interval: :yearly,
+          scheduled_change_effective_at: ~U[2026-12-31 00:00:00Z]
+        })
+
+      put_client_response(fn _company_id ->
+        {:ok,
+         %{
+           "subscriptions" => [
+             %{
+               "id" => "sub_current",
+               "status" => "active",
+               "product_id" => "prod_team_monthly",
+               "current_period_end" => "2026-06-30T00:00:00Z",
+               "cancel_at_period_end" => false
+             }
+           ]
+         }}
+      end)
+
+      assert {:ok, account} = CustomerStateSync.run(ctx.company, client: StubClient)
+      assert account.scheduled_plan_key == nil
+      assert account.scheduled_billing_interval == nil
+      assert account.scheduled_change_effective_at == nil
+    end
+
+    test "leaves scheduled fields nil and logs when the pending update product is unknown locally", ctx do
+      {:ok, _current_product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "team",
+          billing_interval: "monthly",
+          polar_product_id: "prod_team_monthly"
+        })
+
+      put_client_response(fn _company_id ->
+        {:ok,
+         %{
+           "subscriptions" => [
+             %{
+               "id" => "sub_unknown_pending",
+               "status" => "active",
+               "product_id" => "prod_team_monthly",
+               "current_period_end" => "2026-06-30T00:00:00Z",
+               "cancel_at_period_end" => false,
+               "pending_update" => %{"product_id" => "prod_business_yearly"}
+             }
+           ]
+         }}
+      end)
+
+      log =
+        capture_log(fn ->
+          assert {:ok, account} = CustomerStateSync.run(ctx.company, client: StubClient)
+          assert account.scheduled_plan_key == nil
+          assert account.scheduled_billing_interval == nil
+          assert account.scheduled_change_effective_at == nil
+        end)
+
+      assert log =~ "Polar pending subscription update product is missing from local billing catalog"
+      assert log =~ ctx.company.id
+      assert log =~ "prod_business_yearly"
+    end
+
     test "returns provider errors without persisting local state", ctx do
       company_id = ctx.company.id
 

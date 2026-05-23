@@ -56,6 +56,10 @@ defmodule Operately.Billing.Polar.Client do
     })
   end
 
+  def update_subscription(subscription_id, attrs) when is_binary(subscription_id) and is_map(attrs) do
+    patch("/v1/subscriptions/#{subscription_id}", attrs)
+  end
+
   def app_base_url do
     Endpoint.url()
   end

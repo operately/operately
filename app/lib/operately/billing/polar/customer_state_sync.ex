@@ -4,6 +4,7 @@ defmodule Operately.Billing.Polar.CustomerStateSync do
   require Logger
 
   alias Operately.Billing
+  alias Operately.Billing.Polar.SubscriptionState
 
   @doc """
   Fetches a company's billing state from Polar and syncs it locally.
@@ -11,12 +12,15 @@ defmodule Operately.Billing.Polar.CustomerStateSync do
   A missing Polar customer is normalized to Operately's local free state.
   """
   def run(%Operately.Companies.Company{} = company, opts \\ []) do
-    client = Keyword.get(opts, :client, Operately.Billing.Polar.Client)
+    case SubscriptionState.fetch(company, opts) do
+      {:ok, %SubscriptionState{} = subscription_state} ->
+        subscription_state
+        |> normalize_subscription_state(company)
+        |> then(&Billing.sync_billing_account(company, &1))
 
-    case client.get_customer_state_by_external_id(company.id) do
-      {:ok, customer_state} ->
-        customer_state
-        |> normalize_customer_state(company)
+      {:ok, nil} ->
+        company
+        |> normalize_free_state()
         |> then(&Billing.sync_billing_account(company, &1))
 
       {:error, :not_found} ->
@@ -29,31 +33,22 @@ defmodule Operately.Billing.Polar.CustomerStateSync do
     end
   end
 
-  defp normalize_customer_state(customer_state, company) do
-    case find_relevant_subscription(customer_state) do
-      nil ->
-        normalize_free_state(company)
+  defp normalize_subscription_state(%SubscriptionState{} = subscription_state, company) do
+    maybe_log_missing_current_product(subscription_state, company)
+    maybe_log_missing_scheduled_product(subscription_state, company)
 
-      subscription ->
-        product = find_local_product(subscription)
-
-        if is_nil(product) do
-          Logger.warning(
-            "Polar subscription product is missing from local billing catalog: " <>
-              inspect(%{company_id: company.id, product_id: extract_product_id(subscription)})
-          )
-        end
-
-        %{
-          provider: "polar",
-          plan_key: product && product.plan_family,
-          billing_interval: product && product.billing_interval,
-          status: normalize_subscription_status(subscription),
-          cancel_at_period_end: extract_cancel_at_period_end(subscription),
-          current_period_end: extract_current_period_end(subscription),
-          last_synced_at: DateTime.utc_now()
-        }
-    end
+    %{
+      provider: "polar",
+      plan_key: subscription_state.product && subscription_state.product.plan_family,
+      billing_interval: subscription_state.product && subscription_state.product.billing_interval,
+      status: subscription_state.status,
+      cancel_at_period_end: subscription_state.cancel_at_period_end,
+      current_period_end: subscription_state.current_period_end,
+      scheduled_plan_key: subscription_state.pending_update_product && subscription_state.pending_update_product.plan_family,
+      scheduled_billing_interval: subscription_state.pending_update_product && subscription_state.pending_update_product.billing_interval,
+      scheduled_change_effective_at: scheduled_change_effective_at(subscription_state),
+      last_synced_at: DateTime.utc_now()
+    }
   end
 
   defp normalize_free_state(_company) do
@@ -64,117 +59,33 @@ defmodule Operately.Billing.Polar.CustomerStateSync do
       status: :free,
       cancel_at_period_end: false,
       current_period_end: nil,
+      scheduled_plan_key: nil,
+      scheduled_billing_interval: nil,
+      scheduled_change_effective_at: nil,
       last_synced_at: DateTime.utc_now()
     }
   end
 
-  defp find_local_product(subscription) do
-    case extract_product_id(subscription) do
-      nil -> nil
-      product_id -> Billing.get_product_by_polar_product_id(product_id)
-    end
+  defp scheduled_change_effective_at(%SubscriptionState{pending_update_product: nil}), do: nil
+  defp scheduled_change_effective_at(%SubscriptionState{} = subscription_state), do: subscription_state.current_period_end
+
+  defp maybe_log_missing_current_product(%SubscriptionState{product_id: nil}, _company), do: :ok
+  defp maybe_log_missing_current_product(%SubscriptionState{product: %_{}}, _company), do: :ok
+
+  defp maybe_log_missing_current_product(%SubscriptionState{} = subscription_state, company) do
+    Logger.warning(
+      "Polar subscription product is missing from local billing catalog: " <>
+        inspect(%{company_id: company.id, product_id: subscription_state.product_id})
+    )
   end
 
-  defp extract_product_id(subscription) do
-    Map.get(subscription, "product_id") ||
-      Map.get(subscription, "productId") ||
-      get_in(subscription, ["product", "id"])
+  defp maybe_log_missing_scheduled_product(%SubscriptionState{pending_update_product_id: nil}, _company), do: :ok
+  defp maybe_log_missing_scheduled_product(%SubscriptionState{pending_update_product: %_{}}, _company), do: :ok
+
+  defp maybe_log_missing_scheduled_product(%SubscriptionState{} = subscription_state, company) do
+    Logger.warning(
+      "Polar pending subscription update product is missing from local billing catalog: " <>
+        inspect(%{company_id: company.id, product_id: subscription_state.pending_update_product_id})
+    )
   end
-
-  defp find_relevant_subscription(customer_state) do
-    active_subscription(customer_state) ||
-      subscriptions(customer_state)
-      |> Enum.find(&paid_status?/1)
-  end
-
-  defp active_subscription(customer_state) do
-    Map.get(customer_state, "active_subscription") ||
-      Map.get(customer_state, "activeSubscription") ||
-      subscriptions(customer_state)
-      |> Enum.find(&active_status?/1)
-  end
-
-  defp subscriptions(customer_state) do
-    cond do
-      is_list(Map.get(customer_state, "active_subscriptions")) ->
-        Map.get(customer_state, "active_subscriptions")
-
-      is_list(Map.get(customer_state, "activeSubscriptions")) ->
-        Map.get(customer_state, "activeSubscriptions")
-
-      is_list(Map.get(customer_state, "subscriptions")) ->
-        Map.get(customer_state, "subscriptions")
-
-      true ->
-        []
-    end
-  end
-
-  defp normalize_subscription_status(subscription) do
-    case String.downcase(extract_subscription_status(subscription) || "active") do
-      "active" -> :active
-      "trialing" -> :active
-      "past_due" -> :past_due
-      "canceled" -> :canceled
-      _ -> :active
-    end
-  end
-
-  defp active_status?(subscription) do
-    extract_subscription_status(subscription)
-    |> case do
-      nil -> false
-      status -> String.downcase(status) in ["active", "trialing", "past_due"]
-    end
-  end
-
-  defp paid_status?(subscription) do
-    extract_subscription_status(subscription)
-    |> case do
-      nil -> false
-      status -> String.downcase(status) in ["active", "trialing", "past_due", "canceled"]
-    end
-  end
-
-  defp extract_subscription_status(subscription) do
-    Map.get(subscription, "status") ||
-      Map.get(subscription, "subscription_status") ||
-      Map.get(subscription, "subscriptionStatus")
-  end
-
-  defp extract_cancel_at_period_end(subscription) do
-    value =
-      Map.get(subscription, "cancel_at_period_end") ||
-        Map.get(subscription, "cancelAtPeriodEnd")
-
-    value in [true, "true", 1, "1"]
-  end
-
-  defp extract_current_period_end(subscription) do
-    subscription
-    |> then(fn subscription ->
-      Map.get(subscription, "current_period_end") ||
-        Map.get(subscription, "currentPeriodEnd") ||
-        Map.get(subscription, "current_period_end_at")
-    end)
-    |> parse_datetime()
-  end
-
-  defp parse_datetime(nil), do: nil
-  defp parse_datetime(%DateTime{} = datetime), do: datetime
-
-  defp parse_datetime(value) when is_binary(value) do
-    case DateTime.from_iso8601(value) do
-      {:ok, datetime, _offset} ->
-        datetime
-
-      _ ->
-        case NaiveDateTime.from_iso8601(value) do
-          {:ok, naive_datetime} -> DateTime.from_naive!(naive_datetime, "Etc/UTC")
-          _ -> nil
-        end
-    end
-  end
-
-  defp parse_datetime(_), do: nil
 end

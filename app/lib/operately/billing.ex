@@ -313,6 +313,18 @@ defmodule Operately.Billing do
     to: Operately.Billing.Polar.CheckoutSessionCreating,
     as: :run
 
+  defdelegate change_plan(company, plan_key, billing_interval, opts \\ []),
+    to: Operately.Billing.Polar.PlanChanging,
+    as: :run
+
+  defdelegate cancel_subscription(company, opts \\ []),
+    to: Operately.Billing.Polar.SubscriptionCanceling,
+    as: :run
+
+  defdelegate reactivate_subscription(company, opts \\ []),
+    to: Operately.Billing.Polar.SubscriptionReactivating,
+    as: :run
+
   defp normalize_provider_product(provider_product) do
     case ProductMapper.normalize_provider_product(provider_product) do
       {:ok, product} -> {:ok, product}
