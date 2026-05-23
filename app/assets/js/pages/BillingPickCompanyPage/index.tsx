@@ -103,10 +103,13 @@ function CompanyRow({
       return;
     }
 
-    const billingPath = new Paths({ companyId }).companyBillingPath({
-      plan,
-      billingPeriod,
-    });
+    const billingPath =
+      plan || billingPeriod
+        ? new Paths({ companyId }).companyBillingPlansPath({
+            plan,
+            billingPeriod,
+          })
+        : new Paths({ companyId }).companyBillingPath();
 
     navigate(billingPath);
   };

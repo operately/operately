@@ -107,7 +107,7 @@ function OwnersMenu() {
     <Paper.Section title="As an owner, you can:">
       <div>
         <OptionsMenuItem linkTo={manageAdmins} icon={IconShieldLock} title="Manage administrators and owners" />
-        {billingEnabled && <OptionsMenuItem linkTo={manageBilling} icon={IconFileText} title="Billing" />}
+        {billingEnabled && <OptionsMenuItem linkTo={manageBilling} icon={IconFileText} title="Manage plan" />}
         <OptionsMenuItem linkTo={manageTrustedDomains} icon={IconLock} title="Manage trusted email domains" />
         <OptionsMenuItem linkTo={exportCompany} icon={IconFileExport} title="Export company data" />
       </div>

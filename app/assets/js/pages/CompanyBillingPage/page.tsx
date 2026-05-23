@@ -1,12 +1,19 @@
 import * as Billing from "@/models/billing";
-import * as Callouts from "@/components/Callouts";
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
+import {
+  canCreateCompanyBillingCheckout,
+  buildCompanyBillingSuccessFeedback,
+  CompanyBillingPage as TurboCompanyBillingPage,
+  getCompanyBillingPendingTarget,
+  isCompanyBillingCheckoutReturnSuccessful,
+  parseCompanyBillingSearch,
+  selectCompanyBillingTarget,
+  showErrorToast,
+} from "turboui";
 import { useLoadedData } from "./loader";
+import { useLocation, useNavigate, useRouteLoaderData } from "react-router-dom";
 import { usePaths } from "@/routes/paths";
-import { useRouteLoaderData } from "react-router-dom";
 
 interface CompanyRootData {
   company?: {
@@ -14,263 +21,141 @@ interface CompanyRootData {
   } | null;
 }
 
-interface BillingOverviewContentProps {
-  billing: Billing.BillingOverview;
-}
+type CheckoutFeedback = TurboCompanyBillingPage.CheckoutFeedback;
 
 export function Page() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const paths = usePaths();
-  const { billing } = useLoadedData();
+  const { billing: loadedBilling } = useLoadedData();
   const companyRootData = useRouteLoaderData("companyRoot") as CompanyRootData | undefined;
 
+  const [billing, setBilling] = React.useState(loadedBilling);
+  const [actionError, setActionError] = React.useState<string | null>(null);
+  const [checkoutFeedback, setCheckoutFeedback] = React.useState<CheckoutFeedback | null>(null);
+  const [, setIsStartingCheckout] = React.useState(false);
+
+  React.useEffect(() => {
+    setBilling(loadedBilling);
+  }, [loadedBilling]);
+
+  const search = React.useMemo(() => parseCompanyBillingSearch(location.search), [location.search]);
+  const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search]);
+  const pendingTarget = React.useMemo(() => getCompanyBillingPendingTarget(billing), [billing]);
+  const canUseCheckout = canCreateCompanyBillingCheckout(billing.account.status);
   const companyName = companyRootData?.company?.name || "Billing";
 
-  return (
-    <Pages.Page title={[companyName, "Billing"]} testId="company-billing-page">
-      <Paper.Root size="small">
-        <Paper.NavigateBack to={paths.companyAdminPath()} title="Back to Company Admin" />
+  const clearBillingSearch = React.useCallback(() => {
+    navigate(paths.companyBillingPath(), { replace: true });
+  }, [navigate, paths]);
 
-        <Paper.Body>
-          <Paper.Header title="Billing" subtitle="Review the current subscription state for this workspace." />
+  const openPlanSelection = React.useCallback(
+    (target?: TurboCompanyBillingPage.BillingTarget | null) => {
+      setActionError(null);
+      setCheckoutFeedback(null);
+      const nextTarget = target || selection.target;
+      if (!nextTarget) return;
 
-          <BillingOverviewContent billing={billing} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+      navigate(
+        paths.companyBillingPlansPath({
+          plan: nextTarget.plan,
+          billingPeriod: nextTarget.billingInterval,
+        }),
+      );
+    },
+    [navigate, paths, selection.target],
   );
-}
 
-function BillingOverviewContent({ billing }: BillingOverviewContentProps) {
-  const currentPlan = Billing.getCurrentPlanDefinition(billing);
-  const currentPlanName =
-    currentPlan?.displayName || Billing.formatPlanName(billing.account.planKey, billing.account.status === "free" ? "Free" : "Unknown plan");
-
-  const currentInterval = Billing.formatIntervalLabel(billing.account.billingInterval);
-  const suggestedPlan = billing.account.suggestedPlanKey ? Billing.findPlanDefinition(billing.plans, billing.account.suggestedPlanKey) : null;
-  const suggestedPlanLabel = Billing.formatPlanLabel(billing.account.suggestedPlanKey, billing.account.suggestedBillingInterval);
-  const suggestedSource = Billing.formatSuggestedPlanSource(billing.account.suggestedPlanSource);
-  const memberLimit = currentPlan?.memberLimit;
-  const statusNotices = buildStatusNotices(billing);
-
-  return (
-    <div className="space-y-10">
-      {billing.stale && (
-        <Callouts.WarningCallout
-          message="Billing data may be out of date"
-          description="We could not reach Polar on the last sync. Reload the page to try again."
-          testId="billing-stale-callout"
-        />
-      )}
-
-      <Paper.Section title="Current plan">
-        <SectionCard>
-          <div className="flex flex-col gap-3 border-b border-stroke-base pb-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <div className="text-content-accent text-2xl font-extrabold">{currentPlanName}</div>
-              {currentInterval && <div className="mt-1 text-content-dimmed">{currentInterval} billing</div>}
-            </div>
-
-            <BillingStatusBadge status={billing.account.status} />
-          </div>
-
-          <DetailRows
-            rows={[
-              currentInterval ? { label: "Billing interval", value: currentInterval } : null,
-              formatPeriodEndRow(billing.account),
-            ]}
-          />
-        </SectionCard>
-      </Paper.Section>
-
-      <Paper.Section title="Usage and limits">
-        <SectionCard>
-          <DetailRows
-            rows={[
-              { label: "Active members", value: `${billing.memberCount}` },
-              { label: "Member limit", value: memberLimit ? `${memberLimit}` : "Unavailable" },
-            ]}
-          />
-        </SectionCard>
-      </Paper.Section>
-
-      {billing.account.suggestedPlanKey && (
-        <Paper.Section title="Recommended next plan">
-          <SectionCard>
-            <DetailRows
-              rows={[
-                { label: "Suggested plan", value: suggestedPlan?.displayName || suggestedPlanLabel },
-                billing.account.suggestedBillingInterval
-                  ? { label: "Billing interval", value: Billing.formatIntervalLabel(billing.account.suggestedBillingInterval) || "Unavailable" }
-                  : null,
-                suggestedSource ? { label: "Source", value: suggestedSource } : null,
-              ]}
-            />
-          </SectionCard>
-        </Paper.Section>
-      )}
-
-      <Paper.Section title="Status details">
-        <div className="space-y-3">
-          {statusNotices.length === 0 ? (
-            <div className="rounded-lg border border-stroke-base bg-surface-dimmed px-4 py-3 text-content-dimmed">
-              No pending billing changes.
-            </div>
-          ) : (
-            statusNotices.map((notice) => <NoticeCallout key={notice.message} notice={notice} />)
-          )}
-        </div>
-      </Paper.Section>
-    </div>
+  const finishCheckoutConfirmation = React.useCallback(
+    (nextBilling: Billing.BillingOverview, feedback: CheckoutFeedback) => {
+      setBilling(nextBilling);
+      setCheckoutFeedback(feedback);
+      setActionError(null);
+      clearBillingSearch();
+    },
+    [clearBillingSearch],
   );
-}
 
-type NoticeTone = "info" | "warning";
+  const applyRefreshedBilling = React.useCallback(
+    (nextBilling: Billing.BillingOverview) => {
+      const expectedTarget = getCompanyBillingPendingTarget(nextBilling);
 
-interface Notice {
-  tone: NoticeTone;
-  message: string;
-  description: string;
-}
+      if (search.checkoutId && isCompanyBillingCheckoutReturnSuccessful(nextBilling, expectedTarget)) {
+        finishCheckoutConfirmation(nextBilling, buildCompanyBillingSuccessFeedback(nextBilling));
+        return { checkoutResolved: true };
+      }
 
-export function buildStatusNotices(billing: Billing.BillingOverview): Notice[] {
-  const notices: Notice[] = [];
+      setBilling(nextBilling);
+      return { checkoutResolved: false };
+    },
+    [finishCheckoutConfirmation, search],
+  );
 
-  if (billing.account.pendingPlanKey) {
-    notices.push({
-      tone: "info",
-      message: "Checkout in progress",
-      description: [
-        `We're waiting for checkout completion for ${Billing.formatPlanLabel(billing.account.pendingPlanKey, billing.account.pendingBillingInterval)}.`,
-        formatRelativeDateLine("Checkout started", billing.account.pendingCheckoutStartedAt),
-      ]
-        .filter(Boolean)
-        .join(" "),
-    });
-  }
+  const startCheckout = React.useCallback(
+    async (target: TurboCompanyBillingPage.BillingTarget | null) => {
+      setActionError(null);
+      setCheckoutFeedback(null);
+      setIsStartingCheckout(true);
 
-  if (billing.account.scheduledPlanKey) {
-    notices.push({
-      tone: "info",
-      message: "Scheduled plan change",
-      description: [
-        `${Billing.formatPlanLabel(billing.account.scheduledPlanKey, billing.account.scheduledBillingInterval)} will take effect at the next renewal.`,
-        formatRelativeDateLine("Effective on", billing.account.scheduledChangeEffectiveAt),
-      ]
-        .filter(Boolean)
-        .join(" "),
-    });
-  }
+      const result = await Billing.beginCheckout(target);
 
-  if (billing.account.cancelAtPeriodEnd) {
-    notices.push({
-      tone: "warning",
-      message: "Cancellation scheduled",
-      description:
-        formatRelativeDateLine("The current subscription remains active until", billing.account.currentPeriodEnd) ||
-        "The current subscription will end at the close of the current billing period.",
-    });
-  }
+      if (result.outcome === "missing_target") {
+        setIsStartingCheckout(false);
+        return;
+      }
 
-  if (billing.account.status === "past_due") {
-    notices.push({
-      tone: "warning",
-      message: "Payment issue detected",
-      description: "Polar reports this subscription as past due. Billing access may be affected until payment is resolved.",
-    });
-  }
+      if (result.outcome === "target_unavailable") {
+        setIsStartingCheckout(false);
+        setActionError("That billing option is no longer sellable. Please choose another plan.");
+        showErrorToast("Checkout unavailable", "That billing option is no longer available. Please choose another plan.");
+        return;
+      }
 
-  if (billing.account.status === "canceled") {
-    notices.push({
-      tone: "warning",
-      message: "Subscription ended",
-      description: "This workspace is no longer on an active paid subscription.",
-    });
-  }
+      if (result.outcome === "session_created") {
+        window.location.assign(result.session.url);
+        return;
+      }
 
-  if (billing.account.status === "free" && notices.length === 0) {
-    notices.push({
-      tone: "info",
-      message: "Free plan",
-      description: "This workspace is currently using the free plan.",
-    });
-  }
+      if (result.billing) {
+        setBilling(result.billing);
+      }
 
-  return notices;
-}
+      setActionError("We couldn't start checkout right now. Please try again.");
+      showErrorToast("Failed to start checkout", "We couldn't start Polar checkout. Please try again.");
+      setIsStartingCheckout(false);
+    },
+    [],
+  );
 
-function SectionCard({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-lg border border-stroke-base bg-surface-base px-5 py-4">{children}</div>;
-}
+  const refreshFromBillingUpdate = React.useCallback(() => {
+    void Billing.refreshBilling({})
+      .then((refreshed) => {
+        applyRefreshedBilling(refreshed);
+      });
+  }, [applyRefreshedBilling]);
 
-export function BillingStatusBadge({ status }: { status: Billing.BillingStatus }) {
-  const className = {
-    free: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    active: "border-blue-200 bg-blue-50 text-blue-700",
-    past_due: "border-amber-200 bg-amber-50 text-amber-800",
-    canceled: "border-stone-200 bg-stone-100 text-stone-700",
-  }[status];
+  Billing.useBillingUpdatedSignal(refreshFromBillingUpdate);
+
+  React.useEffect(() => {
+    if (!search.checkoutId) return;
+
+    const expectedTarget = getCompanyBillingPendingTarget(billing);
+
+    if (isCompanyBillingCheckoutReturnSuccessful(billing, expectedTarget)) {
+      finishCheckoutConfirmation(billing, buildCompanyBillingSuccessFeedback(billing));
+    }
+  }, [billing, finishCheckoutConfirmation, search.checkoutId]);
 
   return (
-    <span className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${className}`}>
-      {Billing.formatStatusLabel(status)}
-    </span>
+    <TurboCompanyBillingPage
+      title={[companyName, "Billing"]}
+      navigation={[{ label: "Company Administration", to: paths.companyAdminPath() }]}
+      billing={billing}
+      checkoutFeedback={checkoutFeedback}
+      actionError={actionError}
+      onOpenSelection={canUseCheckout && selection.target ? () => openPlanSelection() : null}
+      onCompleteUpgrade={canUseCheckout && pendingTarget ? () => void startCheckout(pendingTarget) : null}
+      testId="company-billing-page"
+    />
   );
-}
-
-function DetailRows({ rows }: { rows: Array<{ label: string; value: string } | null> }) {
-  const presentRows = rows.filter((row): row is { label: string; value: string } => row !== null);
-
-  if (presentRows.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="mt-4 divide-y divide-stroke-base">
-      {presentRows.map((row) => (
-        <div key={row.label} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
-          <div className="text-content-dimmed">{row.label}</div>
-          <div className="text-right font-medium text-content-accent">{row.value}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function NoticeCallout({ notice }: { notice: Notice }) {
-  if (notice.tone === "warning") {
-    return <Callouts.WarningCallout message={notice.message} description={notice.description} />;
-  }
-
-  return <Callouts.InfoCallout message={notice.message} description={notice.description} />;
-}
-
-function formatPeriodEndRow(account: Billing.BillingAccount): { label: string; value: string } | null {
-  const formattedDate = formatDate(account.currentPeriodEnd);
-  if (!formattedDate) return null;
-
-  if (account.cancelAtPeriodEnd || account.status === "canceled") {
-    return { label: "Current period ends", value: formattedDate };
-  }
-
-  return { label: "Renews", value: formattedDate };
-}
-
-function formatRelativeDateLine(prefix: string, value?: string | null): string | null {
-  const formattedDate = formatDate(value);
-  if (!formattedDate) return null;
-
-  return `${prefix} ${formattedDate}.`;
-}
-
-function formatDate(value?: string | null): string | null {
-  if (!value) return null;
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
 }

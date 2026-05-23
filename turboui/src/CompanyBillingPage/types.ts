@@ -1,0 +1,149 @@
+import { Navigation } from "../Page/Navigation";
+
+export namespace CompanyBillingPage {
+  export type Mode = "overview" | "confirming";
+  export type Status = "free" | "active" | "past_due" | "canceled";
+  export type Interval = "monthly" | "yearly";
+  export type Plan = "team" | "business";
+  export type BillingTargetSource = "query" | "pending" | "suggested" | "catalog";
+  export type NoticeTone = "info" | "warning";
+  export type ActionTone = "primary" | "secondary";
+  export type CheckoutFeedbackKind = "success" | "pending" | "incomplete";
+
+  export interface BillingAccount {
+    planKey?: Plan | null;
+    billingInterval?: Interval | null;
+    status: Status;
+    suggestedPlanKey?: Plan | null;
+    suggestedBillingInterval?: Interval | null;
+    suggestedPlanSource?: string | null;
+    currentPeriodEnd?: string | null;
+    cancelAtPeriodEnd: boolean;
+    pendingPlanKey?: Plan | null;
+    pendingBillingInterval?: Interval | null;
+    pendingCheckoutStartedAt?: string | null;
+    scheduledPlanKey?: Plan | null;
+    scheduledBillingInterval?: Interval | null;
+    scheduledChangeEffectiveAt?: string | null;
+  }
+
+  export interface BillingPlanDefinition {
+    key: string;
+    displayName: string;
+    memberLimit: number;
+    storageLimitBytes: number;
+  }
+
+  export interface BillingCatalogProduct {
+    planFamily: Plan;
+    billingInterval: Interval;
+    polarProductName?: string | null;
+    priceAmount?: number | null;
+    priceCurrency?: string | null;
+    active: boolean;
+  }
+
+  export interface BillingOverview {
+    account: BillingAccount;
+    plans: BillingPlanDefinition[];
+    catalogProducts: BillingCatalogProduct[];
+    memberCount: number;
+    stale: boolean;
+  }
+
+  export interface BillingTarget {
+    plan: Plan;
+    billingInterval: Interval;
+    product?: BillingCatalogProduct | null;
+  }
+
+  export interface BillingSearchParams {
+    rawPlan: string | null;
+    rawBillingPeriod: string | null;
+    plan: Plan | null;
+    billingInterval: Interval | null;
+    checkoutId: string | null;
+    hasSelectionIntent: boolean;
+  }
+
+  export interface BillingTargetSelection {
+    target: BillingTarget | null;
+    source: BillingTargetSource | null;
+    warning: string | null;
+  }
+
+  export interface DetailRow {
+    label: string;
+    value: string;
+  }
+
+  export interface Notice {
+    tone: NoticeTone;
+    message: string;
+    description: string;
+  }
+
+  export interface Action {
+    label: string;
+    tone: ActionTone;
+    onClick: () => void;
+    disabled?: boolean;
+    loading?: boolean;
+  }
+
+  export interface HeaderAction {
+    label: string;
+    onClick: () => void;
+  }
+
+  export interface CheckoutFeedback {
+    kind: CheckoutFeedbackKind;
+    message: string;
+    description: string;
+  }
+
+  export interface CurrentPlan {
+    name: string;
+    intervalLabel?: string | null;
+    status: Status;
+    rows: DetailRow[];
+  }
+
+  export interface OverviewModeView {
+    stale: boolean;
+    currentPlan: CurrentPlan;
+    usageRows: DetailRow[];
+    statusNotices: Notice[];
+    emptyStatusMessage?: string;
+    footerAction?: Action | null;
+    checkoutFeedback?: CheckoutFeedback | null;
+    errorMessage?: string | null;
+  }
+
+  export interface ConfirmingModeView {
+    notice: Notice;
+    rows: DetailRow[];
+  }
+
+  export interface PageViewModel {
+    pageTitle: string;
+    pageSubtitle: string;
+    headerAction?: HeaderAction | null;
+    mode: Mode;
+    overview?: OverviewModeView;
+    confirming?: ConfirmingModeView;
+  }
+
+  export interface Props {
+    title: string | string[];
+    billing: BillingOverview;
+    navigation?: Navigation.Item[];
+    checkoutFeedback?: CheckoutFeedback | null;
+    actionError?: string | null;
+    isConfirmingCheckout?: boolean;
+    confirmingTarget?: BillingTarget | null;
+    onOpenSelection?: (() => void) | null;
+    onCompleteUpgrade?: (() => void) | null;
+    testId?: string;
+  }
+}

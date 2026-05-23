@@ -1,37 +1,108 @@
 import * as Billing from "./index";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
+  const { account, ...rest } = params;
+
   return {
     account: {
       provider: "polar",
-      planKey: "team",
-      billingInterval: "monthly",
-      status: "active",
+      planKey: null,
+      billingInterval: null,
+      status: "free",
+      suggestedPlanKey: null,
+      suggestedBillingInterval: null,
+      suggestedPlanSource: null,
+      currentPeriodEnd: null,
       cancelAtPeriodEnd: false,
-      ...(params.account || {}),
+      pendingPlanKey: null,
+      pendingBillingInterval: null,
+      pendingCheckoutStartedAt: null,
+      scheduledPlanKey: null,
+      scheduledBillingInterval: null,
+      scheduledChangeEffectiveAt: null,
+      lastSyncedAt: "2026-05-23T00:00:00Z",
+      ...(account || {}),
     },
     plans: [
       { key: "free", displayName: "Free", memberLimit: 20, storageLimitBytes: 1_073_741_824 },
       { key: "team", displayName: "Team", memberLimit: 50, storageLimitBytes: 107_374_182_400 },
+      { key: "business", displayName: "Business", memberLimit: 200, storageLimitBytes: 1_099_511_627_776 },
     ],
-    catalogProducts: [],
+    catalogProducts: [
+      {
+        id: "team-monthly",
+        provider: "polar",
+        planFamily: "team",
+        billingInterval: "monthly",
+        polarProductId: "pol_team_monthly",
+        polarProductName: "Team Monthly",
+        priceAmount: 7900,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+      {
+        id: "team-yearly",
+        provider: "polar",
+        planFamily: "team",
+        billingInterval: "yearly",
+        polarProductId: "pol_team_yearly",
+        polarProductName: "Team Yearly",
+        priceAmount: 79000,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+      {
+        id: "business-monthly",
+        provider: "polar",
+        planFamily: "business",
+        billingInterval: "monthly",
+        polarProductId: "pol_business_monthly",
+        polarProductName: "Business Monthly",
+        priceAmount: 19900,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+      {
+        id: "business-yearly",
+        provider: "polar",
+        planFamily: "business",
+        billingInterval: "yearly",
+        polarProductId: "pol_business_yearly",
+        polarProductName: "Business Yearly",
+        priceAmount: 199000,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+    ],
     memberCount: 10,
     stale: false,
-    ...params,
+    ...rest,
   } as Billing.BillingOverview;
 }
 
 describe("billing model helpers", () => {
   it("returns the free plan definition when the account is free and plan_key is absent", () => {
-    const plan = Billing.getCurrentPlanDefinition(
-      billingOverviewMock({
-        account: {
-          planKey: null,
-          billingInterval: null,
-          status: "free",
-        } as any,
-      }),
-    );
+    const plan = Billing.getCurrentPlanDefinition(billingOverviewMock());
 
     expect(plan?.displayName).toBe("Free");
     expect(plan?.memberLimit).toBe(20);
@@ -45,5 +116,104 @@ describe("billing model helpers", () => {
   it("formats suggested plan sources", () => {
     expect(Billing.formatSuggestedPlanSource("website")).toBe("Selected on the website");
     expect(Billing.formatSuggestedPlanSource("member_count")).toBe("Member Count");
+  });
+
+  it("parses billing search params", () => {
+    expect(Billing.parseBillingSearch("?plan=team&billing_period=yearly&checkout_id=chk_123")).toEqual({
+      rawPlan: "team",
+      rawBillingPeriod: "yearly",
+      plan: "team",
+      billingInterval: "yearly",
+      checkoutId: "chk_123",
+      hasSelectionIntent: true,
+    });
+  });
+
+  it("selects the query target before any other fallback", () => {
+    const billing = billingOverviewMock({
+      account: {
+        pendingPlanKey: "team",
+        pendingBillingInterval: "monthly",
+        suggestedPlanKey: "business",
+        suggestedBillingInterval: "yearly",
+      } as any,
+    });
+
+    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=business&billing_period=yearly"));
+
+    expect(selection.source).toBe("query");
+    expect(selection.warning).toBeNull();
+    expect(selection.target).toMatchObject({ plan: "business", billingInterval: "yearly" });
+  });
+
+  it("falls back to the pending target when there is no query selection", () => {
+    const billing = billingOverviewMock({
+      account: {
+        pendingPlanKey: "business",
+        pendingBillingInterval: "monthly",
+      } as any,
+    });
+
+    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch(""));
+
+    expect(selection.source).toBe("pending");
+    expect(selection.target).toMatchObject({ plan: "business", billingInterval: "monthly" });
+  });
+
+  it("falls back to the suggested target for free companies", () => {
+    const billing = billingOverviewMock({
+      account: {
+        suggestedPlanKey: "business",
+        suggestedBillingInterval: "yearly",
+      } as any,
+    });
+
+    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch(""));
+
+    expect(selection.source).toBe("suggested");
+    expect(selection.target).toMatchObject({ plan: "business", billingInterval: "yearly" });
+  });
+
+  it("falls back gracefully when the query target is invalid or unsellable", () => {
+    const billing = billingOverviewMock({
+      catalogProducts: billingOverviewMock().catalogProducts.filter((product) => product.planFamily !== "business"),
+    });
+
+    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=business&billing_period=yearly"));
+
+    expect(selection.source).toBe("catalog");
+    expect(selection.warning).toContain("not currently available");
+    expect(selection.target).toMatchObject({ plan: "team", billingInterval: "monthly" });
+  });
+
+  it("resolves sellable products and sorts targets predictably", () => {
+    const billing = billingOverviewMock();
+
+    expect(Billing.findSellableProduct(billing.catalogProducts, "business", "yearly")?.polarProductId).toBe("pol_business_yearly");
+    expect(Billing.listSellableTargets(billing).map((target) => `${target.plan}:${target.billingInterval}`)).toEqual([
+      "team:monthly",
+      "team:yearly",
+      "business:monthly",
+      "business:yearly",
+    ]);
+  });
+
+  it("formats prices from minor units", () => {
+    expect(Billing.formatPriceFromMinorUnits(7900, "usd")).toContain("79");
+    expect(Billing.formatPriceFromMinorUnits(null, "usd")).toBe("Unavailable");
+  });
+
+  it("detects successful checkout returns once the paid plan is live", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "yearly",
+        status: "active",
+        pendingPlanKey: "team",
+        pendingBillingInterval: "yearly",
+      } as any,
+    });
+
+    expect(Billing.isCheckoutReturnSuccessful(billing, { plan: "team", billingInterval: "yearly", product: null })).toBe(true);
   });
 });
