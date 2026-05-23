@@ -17,6 +17,32 @@ defmodule Operately.People.PreferencesTest do
       assert person.preferences.notifications.notify_on_mention
       refute person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
+      assert person.preferences.time_format == :automatic
+    end
+
+    test "updates time format preference" do
+      changeset =
+        Person.changeset(%Person{}, %{
+          preferences: %{
+            time_format: "hour_24"
+          }
+        })
+
+      person = Ecto.Changeset.apply_changes(changeset)
+
+      assert person.preferences.time_format == :hour_24
+    end
+
+    test "rejects invalid time format preference" do
+      changeset =
+        Person.changeset(%Person{}, %{
+          preferences: %{
+            time_format: "military"
+          }
+        })
+
+      refute changeset.valid?
+      assert Enum.any?(changeset.changes.preferences.errors, fn {field, _} -> field == :time_format end)
     end
 
     test "merges provided notification preferences into defaults for new people" do
@@ -127,6 +153,7 @@ defmodule Operately.People.PreferencesTest do
       assert Person.notify_on_mention?(%Person{})
       refute Person.send_daily_summary?(%Person{})
       assert Person.daily_summary_delivery_time(%Person{}) == "18:00"
+      assert Person.time_format(%Person{}) == :automatic
     end
 
     test "use embedded notification settings when present" do
@@ -149,6 +176,16 @@ defmodule Operately.People.PreferencesTest do
       refute Person.notify_on_mention?(person)
       refute Person.send_daily_summary?(person)
       assert Person.daily_summary_delivery_time(person) == "21:00"
+    end
+
+    test "uses embedded time format when present" do
+      person = %Person{
+        preferences: %Preferences{
+          time_format: :hour_24
+        }
+      }
+
+      assert Person.time_format(person) == :hour_24
     end
 
     test "falls back to default daily summary delivery time when value is nil" do

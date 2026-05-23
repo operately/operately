@@ -1,26 +1,32 @@
 import React from "react";
 import * as Time from "@/utils/time";
-import { useTranslation } from "react-i18next";
 import { findOrdinalNumberSuffix } from "@/utils/numbers";
+import { formatDate } from "@/utils/formatting";
 
-export default function LongDate({ time }: { time: Date }): JSX.Element {
-  const { t } = useTranslation();
+export default function LongDate({ time, locale }: { time: Date; locale: string }): JSX.Element {
+  if (!locale.startsWith("en")) {
+    const options: Intl.DateTimeFormatOptions = {
+      day: "numeric",
+      month: "long",
+    };
 
-  let options = {
-    val: time,
-    formatParams: {
-      val: {
-        day: "numeric",
-        month: "long",
-      },
-    },
-  };
+    if (!Time.isCurrentYear(time)) {
+      options.year = "numeric";
+    }
+
+    return <>{formatDate(time, locale, options)}</>;
+  }
+
+  const formattedDate = formatDate(time, locale, {
+    day: "numeric",
+    month: "long",
+  });
   const day = time.getDate();
   const suffix = findOrdinalNumberSuffix(day);
 
   return (
     <>
-      {t("intlDateTime", options)}
+      {formattedDate}
       {suffix}
       {Time.isCurrentYear(time) ? "" : ", " + time.getFullYear()}
     </>
