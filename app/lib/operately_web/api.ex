@@ -334,6 +334,9 @@ defmodule OperatelyWeb.Api do
       namespace(:billing) do
         query(:get, OperatelyWeb.Api.Billing.Get)
 
+        mutation(:change_plan, OperatelyWeb.Api.Billing.ChangePlan)
+        mutation(:cancel, OperatelyWeb.Api.Billing.Cancel)
+        mutation(:reactivate, OperatelyWeb.Api.Billing.Reactivate)
         mutation(:create_checkout_session, OperatelyWeb.Api.Billing.CreateCheckoutSession)
         mutation(:create_payment_method_session, OperatelyWeb.Api.Billing.CreatePaymentMethodSession)
         mutation(:create_customer_portal_session, OperatelyWeb.Api.Billing.CreateCustomerPortalSession)
