@@ -54,6 +54,42 @@ export function getCompanyBillingPendingTarget(
   };
 }
 
+export function getCompanyBillingScheduledTarget(
+  billing: CompanyBillingPage.BillingOverview,
+): CompanyBillingPage.BillingTarget | null {
+  if (!billing.account.scheduledPlanKey || !billing.account.scheduledBillingInterval) {
+    return null;
+  }
+
+  return {
+    plan: billing.account.scheduledPlanKey,
+    billingInterval: billing.account.scheduledBillingInterval,
+    product: findCompanyBillingSellableProduct(
+      billing.catalogProducts,
+      billing.account.scheduledPlanKey,
+      billing.account.scheduledBillingInterval,
+    ),
+  };
+}
+
+export function getCompanyBillingCurrentTarget(
+  billing: CompanyBillingPage.BillingOverview,
+): CompanyBillingPage.BillingTarget | null {
+  if (!billing.account.planKey || !billing.account.billingInterval) {
+    return null;
+  }
+
+  return {
+    plan: billing.account.planKey,
+    billingInterval: billing.account.billingInterval,
+    product: findCompanyBillingSellableProduct(
+      billing.catalogProducts,
+      billing.account.planKey,
+      billing.account.billingInterval,
+    ),
+  };
+}
+
 export function getCompanyBillingSuggestedTarget(
   billing: CompanyBillingPage.BillingOverview,
 ): CompanyBillingPage.BillingTarget | null {
@@ -135,6 +171,18 @@ function selectFallbackTarget(
   const pendingTarget = getCompanyBillingPendingTarget(billing);
   if (pendingTarget?.product) {
     return { target: pendingTarget, source: "pending" };
+  }
+
+  if (isCompanyBillingPaidStatus(billing.account.status)) {
+    const scheduledTarget = getCompanyBillingScheduledTarget(billing);
+    if (scheduledTarget) {
+      return { target: scheduledTarget, source: "scheduled" };
+    }
+
+    const currentTarget = getCompanyBillingCurrentTarget(billing);
+    if (currentTarget) {
+      return { target: currentTarget, source: "current" };
+    }
   }
 
   if (billing.account.status === "free") {

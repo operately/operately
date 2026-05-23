@@ -90,7 +90,7 @@ const meta: Meta<typeof CompanyBillingPlanSelectionPage> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const FreeCheckout: Story = {
   render: () => {
     const [selectedInterval, setSelectedInterval] = React.useState<CompanyBillingPlanSelectionPage.Interval>("yearly");
     const [selectedPlan, setSelectedPlan] = React.useState<CompanyBillingPlanSelectionPage.Plan>("team");
@@ -112,8 +112,78 @@ export const Default: Story = {
         }}
         onSelectPlan={setSelectedPlan}
         onSelectInterval={setSelectedInterval}
-        onContinueToCheckout={() => console.log("checkout")}
+        onSubmit={() => console.log("checkout")}
         testId="billing-plan-selection-page"
+      />
+    );
+  },
+};
+
+export const PaidChangePlan: Story = {
+  render: () => {
+    const [selectedInterval, setSelectedInterval] = React.useState<CompanyBillingPlanSelectionPage.Interval>("monthly");
+    const [selectedPlan, setSelectedPlan] = React.useState<CompanyBillingPlanSelectionPage.Plan>("business");
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+      },
+    });
+
+    return (
+      <CompanyBillingPlanSelectionPage
+        title={["Acme", "Choose a plan"]}
+        navigation={navigation}
+        billing={billing}
+        selection={{
+          target: {
+            plan: selectedPlan,
+            billingInterval: selectedInterval,
+            product: findCompanyBillingSellableProduct(billing.catalogProducts, selectedPlan, selectedInterval),
+          },
+          source: "current",
+          warning: null,
+        }}
+        onSelectPlan={setSelectedPlan}
+        onSelectInterval={setSelectedInterval}
+        onSubmit={() => console.log("change plan")}
+        testId="billing-plan-selection-page-paid"
+      />
+    );
+  },
+};
+
+export const ScheduledChangePreselected: Story = {
+  render: () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "monthly",
+        status: "active",
+        scheduledPlanKey: "business",
+        scheduledBillingInterval: "yearly",
+      },
+    });
+
+    return (
+      <CompanyBillingPlanSelectionPage
+        title={["Acme", "Choose a plan"]}
+        navigation={navigation}
+        billing={billing}
+        selection={{
+          target: {
+            plan: "business",
+            billingInterval: "yearly",
+            product: findCompanyBillingSellableProduct(billing.catalogProducts, "business", "yearly"),
+          },
+          source: "scheduled",
+          warning: null,
+        }}
+        onSelectPlan={() => console.log("select plan")}
+        onSelectInterval={() => console.log("select interval")}
+        onSubmit={() => console.log("change plan")}
+        testId="billing-plan-selection-page-scheduled"
       />
     );
   },
@@ -143,7 +213,7 @@ export const MissingYearlyOption: Story = {
         }}
         onSelectPlan={() => console.log("select plan")}
         onSelectInterval={() => console.log("select interval")}
-        onContinueToCheckout={() => console.log("checkout")}
+        onSubmit={() => console.log("checkout")}
         testId="billing-plan-selection-page-missing-option"
       />
     );

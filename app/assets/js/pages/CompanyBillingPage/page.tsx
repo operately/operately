@@ -2,7 +2,6 @@ import * as Billing from "@/models/billing";
 import * as React from "react";
 
 import {
-  canCreateCompanyBillingCheckout,
   buildCompanyBillingSuccessFeedback,
   CompanyBillingPage as TurboCompanyBillingPage,
   getCompanyBillingPendingTarget,
@@ -21,7 +20,10 @@ interface CompanyRootData {
   } | null;
 }
 
-type CheckoutFeedback = TurboCompanyBillingPage.CheckoutFeedback;
+interface BillingPageLocationState {
+  billing?: Billing.BillingOverview;
+  feedback?: Billing.BillingFeedback;
+}
 
 export function Page() {
   const location = useLocation();
@@ -29,20 +31,32 @@ export function Page() {
   const paths = usePaths();
   const { billing: loadedBilling } = useLoadedData();
   const companyRootData = useRouteLoaderData("companyRoot") as CompanyRootData | undefined;
+  const locationState = (location.state as BillingPageLocationState | null) || null;
 
-  const [billing, setBilling] = React.useState(loadedBilling);
+  const [billing, setBilling] = React.useState(locationState?.billing || loadedBilling);
   const [actionError, setActionError] = React.useState<string | null>(null);
-  const [checkoutFeedback, setCheckoutFeedback] = React.useState<CheckoutFeedback | null>(null);
+  const [feedback, setFeedback] = React.useState<Billing.BillingFeedback | null>(locationState?.feedback || null);
   const [, setIsStartingCheckout] = React.useState(false);
 
   React.useEffect(() => {
     setBilling(loadedBilling);
   }, [loadedBilling]);
 
+  React.useEffect(() => {
+    if (locationState?.billing) {
+      setBilling(locationState.billing);
+    }
+
+    if (locationState?.feedback) {
+      setFeedback(locationState.feedback);
+    }
+  }, [locationState]);
+
   const search = React.useMemo(() => parseCompanyBillingSearch(location.search), [location.search]);
   const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search]);
   const pendingTarget = React.useMemo(() => getCompanyBillingPendingTarget(billing), [billing]);
-  const canUseCheckout = canCreateCompanyBillingCheckout(billing.account.status);
+  const canUseCheckout = Billing.canCreateCheckout(billing.account.status);
+  const canManagePaidSubscription = Billing.canManagePaidSubscription(billing.account.status);
   const companyName = companyRootData?.company?.name || "Billing";
 
   const clearBillingSearch = React.useCallback(() => {
@@ -52,7 +66,7 @@ export function Page() {
   const openPlanSelection = React.useCallback(
     (target?: TurboCompanyBillingPage.BillingTarget | null) => {
       setActionError(null);
-      setCheckoutFeedback(null);
+      setFeedback(null);
       const nextTarget = target || selection.target;
       if (!nextTarget) return;
 
@@ -67,9 +81,9 @@ export function Page() {
   );
 
   const finishCheckoutConfirmation = React.useCallback(
-    (nextBilling: Billing.BillingOverview, feedback: CheckoutFeedback) => {
+    (nextBilling: Billing.BillingOverview, nextFeedback: Billing.BillingFeedback) => {
       setBilling(nextBilling);
-      setCheckoutFeedback(feedback);
+      setFeedback(nextFeedback);
       setActionError(null);
       clearBillingSearch();
     },
@@ -94,7 +108,7 @@ export function Page() {
   const startCheckout = React.useCallback(
     async (target: TurboCompanyBillingPage.BillingTarget | null) => {
       setActionError(null);
-      setCheckoutFeedback(null);
+      setFeedback(null);
       setIsStartingCheckout(true);
 
       const result = await Billing.beginCheckout(target);
@@ -127,11 +141,46 @@ export function Page() {
     [],
   );
 
+  const openPaymentMethodSession = React.useCallback(async () => {
+    setActionError(null);
+
+    const result = await Billing.beginPaymentMethodSession(paths.companyBillingPath());
+
+    if (result.outcome === "session_created") {
+      window.location.assign(result.session.url);
+      return;
+    }
+
+    if (result.billing) {
+      setBilling(result.billing);
+    }
+
+    setActionError("We couldn't open payment method management right now. Please try again.");
+    showErrorToast("Payment method unavailable", "We couldn't open payment method management in Polar. Please try again.");
+  }, [paths]);
+
+  const openCustomerPortalSession = React.useCallback(async () => {
+    setActionError(null);
+
+    const result = await Billing.beginCustomerPortalSession(paths.companyBillingPath());
+
+    if (result.outcome === "session_created") {
+      window.location.assign(result.session.url);
+      return;
+    }
+
+    if (result.billing) {
+      setBilling(result.billing);
+    }
+
+    setActionError("We couldn't open billing management right now. Please try again.");
+    showErrorToast("Billing management unavailable", "We couldn't open the Polar billing portal. Please try again.");
+  }, [paths]);
+
   const refreshFromBillingUpdate = React.useCallback(() => {
-    void Billing.refreshBilling({})
-      .then((refreshed) => {
-        applyRefreshedBilling(refreshed);
-      });
+    void Billing.refreshBilling({}).then((refreshed) => {
+      applyRefreshedBilling(refreshed);
+    });
   }, [applyRefreshedBilling]);
 
   Billing.useBillingUpdatedSignal(refreshFromBillingUpdate);
@@ -151,10 +200,12 @@ export function Page() {
       title={[companyName, "Billing"]}
       navigation={[{ label: "Company Administration", to: paths.companyAdminPath() }]}
       billing={billing}
-      checkoutFeedback={checkoutFeedback}
+      feedback={feedback}
       actionError={actionError}
-      onOpenSelection={canUseCheckout && selection.target ? () => openPlanSelection() : null}
+      onOpenSelection={selection.target ? () => openPlanSelection() : null}
       onCompleteUpgrade={canUseCheckout && pendingTarget ? () => void startCheckout(pendingTarget) : null}
+      onUpdatePaymentMethod={canManagePaidSubscription ? () => void openPaymentMethodSession() : null}
+      onManageBilling={canManagePaidSubscription ? () => void openCustomerPortalSession() : null}
       testId="company-billing-page"
     />
   );

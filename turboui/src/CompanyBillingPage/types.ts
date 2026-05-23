@@ -5,10 +5,10 @@ export namespace CompanyBillingPage {
   export type Status = "free" | "active" | "past_due" | "canceled";
   export type Interval = "monthly" | "yearly";
   export type Plan = "team" | "business";
-  export type BillingTargetSource = "query" | "pending" | "suggested" | "catalog";
+  export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
   export type NoticeTone = "info" | "warning";
   export type ActionTone = "primary" | "secondary";
-  export type CheckoutFeedbackKind = "success" | "pending" | "incomplete";
+  export type FeedbackKind = "success" | "pending" | "incomplete";
 
   export interface BillingAccount {
     planKey?: Plan | null;
@@ -96,8 +96,8 @@ export namespace CompanyBillingPage {
     onClick: () => void;
   }
 
-  export interface CheckoutFeedback {
-    kind: CheckoutFeedbackKind;
+  export interface Feedback {
+    kind: FeedbackKind;
     message: string;
     description: string;
   }
@@ -114,9 +114,9 @@ export namespace CompanyBillingPage {
     currentPlan: CurrentPlan;
     usageRows: DetailRow[];
     statusNotices: Notice[];
+    actions: Action[];
     emptyStatusMessage?: string;
-    footerAction?: Action | null;
-    checkoutFeedback?: CheckoutFeedback | null;
+    feedback?: Feedback | null;
     errorMessage?: string | null;
   }
 
@@ -138,12 +138,14 @@ export namespace CompanyBillingPage {
     title: string | string[];
     billing: BillingOverview;
     navigation?: Navigation.Item[];
-    checkoutFeedback?: CheckoutFeedback | null;
+    feedback?: Feedback | null;
     actionError?: string | null;
     isConfirmingCheckout?: boolean;
     confirmingTarget?: BillingTarget | null;
     onOpenSelection?: (() => void) | null;
     onCompleteUpgrade?: (() => void) | null;
+    onUpdatePaymentMethod?: (() => void) | null;
+    onManageBilling?: (() => void) | null;
     testId?: string;
   }
 }

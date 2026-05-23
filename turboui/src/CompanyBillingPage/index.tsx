@@ -9,6 +9,7 @@ import { buildCompanyBillingPageViewModel } from "./viewModel";
 export {
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
+  buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingPageViewModel,
   buildCompanyBillingRecoveryFeedback,
   buildCompanyBillingStatusNotices,
@@ -17,10 +18,14 @@ export {
 export {
   canCreateCompanyBillingCheckout,
   findCompanyBillingSellableProduct,
+  getCompanyBillingCurrentTarget,
   getCompanyBillingPendingTarget,
+  getCompanyBillingScheduledTarget,
   getCompanyBillingSuggestedTarget,
   isCompanyBillingCheckoutReturnSuccessful,
+  isCompanyBillingPaidStatus,
   listCompanyBillingSellableTargets,
+  matchesCompanyBillingTarget,
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
 } from "./state";
@@ -33,7 +38,7 @@ export namespace CompanyBillingPage {
   export type BillingTargetSource = CompanyBillingPageTypes.BillingTargetSource;
   export type NoticeTone = CompanyBillingPageTypes.NoticeTone;
   export type ActionTone = CompanyBillingPageTypes.ActionTone;
-  export type CheckoutFeedbackKind = CompanyBillingPageTypes.CheckoutFeedbackKind;
+  export type FeedbackKind = CompanyBillingPageTypes.FeedbackKind;
 
   export type BillingAccount = CompanyBillingPageTypes.BillingAccount;
   export type BillingPlanDefinition = CompanyBillingPageTypes.BillingPlanDefinition;
@@ -47,7 +52,7 @@ export namespace CompanyBillingPage {
   export type Notice = CompanyBillingPageTypes.Notice;
   export type Action = CompanyBillingPageTypes.Action;
   export type HeaderAction = CompanyBillingPageTypes.HeaderAction;
-  export type CheckoutFeedback = CompanyBillingPageTypes.CheckoutFeedback;
+  export type Feedback = CompanyBillingPageTypes.Feedback;
   export type CurrentPlan = CompanyBillingPageTypes.CurrentPlan;
   export type OverviewModeView = CompanyBillingPageTypes.OverviewModeView;
   export type ConfirmingModeView = CompanyBillingPageTypes.ConfirmingModeView;
@@ -98,9 +103,9 @@ function Header({
 function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewModeView }) {
   return (
     <div className="space-y-10">
-      {overview.checkoutFeedback && <CheckoutFeedbackBlock feedback={overview.checkoutFeedback} />}
+      {overview.feedback && <FeedbackBlock feedback={overview.feedback} />}
 
-      {overview.errorMessage && <WarningCallout message="Checkout unavailable" description={overview.errorMessage} />}
+      {overview.errorMessage && <WarningCallout message="Billing action unavailable" description={overview.errorMessage} />}
 
       {overview.stale && (
         <WarningCallout
@@ -139,14 +144,20 @@ function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewM
           ) : (
             overview.statusNotices.map((notice) => <StatusDetailNotice key={notice.message} notice={notice} />)
           )}
-
-          {overview.footerAction && (
-            <div className="pt-1">
-              <ActionButton action={overview.footerAction} size="xs" />
-            </div>
-          )}
         </div>
       </Section>
+
+      {overview.actions.length > 0 && (
+        <Section title="Actions">
+          <SectionCard>
+            <div className="flex flex-wrap gap-3">
+              {overview.actions.map((action) => (
+                <ActionButton key={action.label} action={action} size="xs" />
+              ))}
+            </div>
+          </SectionCard>
+        </Section>
+      )}
     </div>
   );
 }
@@ -258,7 +269,7 @@ function StatusDetailNotice({ notice }: { notice: CompanyBillingPage.Notice }) {
   );
 }
 
-function CheckoutFeedbackBlock({ feedback }: { feedback: CompanyBillingPage.CheckoutFeedback }) {
+function FeedbackBlock({ feedback }: { feedback: CompanyBillingPage.Feedback }) {
   if (feedback.kind === "success") {
     return <SuccessCallout message={feedback.message} description={feedback.description} />;
   }

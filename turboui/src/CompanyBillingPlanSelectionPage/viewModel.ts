@@ -1,21 +1,32 @@
-import { findCompanyBillingSellableProduct } from "../CompanyBillingPage/state";
+import {
+  findCompanyBillingSellableProduct,
+  getCompanyBillingCurrentTarget,
+  getCompanyBillingScheduledTarget,
+  isCompanyBillingPaidStatus,
+  matchesCompanyBillingTarget,
+} from "../CompanyBillingPage/state";
 import { CompanyBillingPlanSelectionPage } from "./types";
 
 export function buildCompanyBillingPlanSelectionPageViewModel(
   props: CompanyBillingPlanSelectionPage.Props,
 ): CompanyBillingPlanSelectionPage.PageViewModel {
+  const selection = buildCompanyBillingPlanSelectionMode({
+    billing: props.billing,
+    selection: props.selection,
+    actionError: props.actionError || null,
+    isSubmitting: props.isSubmitting || false,
+    onSelectPlan: props.onSelectPlan || noop,
+    onSelectInterval: props.onSelectInterval || noop,
+    onSubmit: props.onSubmit || noop,
+  });
+
   return {
     pageTitle: "Choose a plan",
-    pageSubtitle: "Select a paid plan. Card and payment confirmation happen in Polar.",
-    selection: buildCompanyBillingPlanSelectionMode({
-      billing: props.billing,
-      selection: props.selection,
-      actionError: props.actionError || null,
-      isStartingCheckout: props.isStartingCheckout || false,
-      onSelectPlan: props.onSelectPlan || noop,
-      onSelectInterval: props.onSelectInterval || noop,
-      onContinueToCheckout: props.onContinueToCheckout || noop,
-    }),
+    pageSubtitle:
+      selection.mode === "change_plan"
+        ? "Choose a new plan for this workspace."
+        : "Select a paid plan. Card and payment confirmation happen in Polar.",
+    selection,
   };
 }
 
@@ -23,19 +34,21 @@ interface BuildSelectionModeArgs {
   billing: CompanyBillingPlanSelectionPage.BillingOverview;
   selection: CompanyBillingPlanSelectionPage.BillingTargetSelection;
   actionError: string | null;
-  isStartingCheckout: boolean;
+  isSubmitting: boolean;
   onSelectPlan: (plan: CompanyBillingPlanSelectionPage.Plan) => void;
   onSelectInterval: (interval: CompanyBillingPlanSelectionPage.Interval) => void;
-  onContinueToCheckout: () => void;
+  onSubmit: () => void;
 }
 
 export function buildCompanyBillingPlanSelectionMode(
   args: BuildSelectionModeArgs,
 ): CompanyBillingPlanSelectionPage.SelectionModeView {
-  const selectedTarget = args.selection.target || findSuggestedSelectionTarget(args.billing);
+  const mode: CompanyBillingPlanSelectionPage.Mode = isCompanyBillingPaidStatus(args.billing.account.status) ? "change_plan" : "checkout";
+  const selectedTarget = args.selection.target || findFallbackSelectionTarget(args.billing, mode);
   const selectedInterval = selectedTarget?.billingInterval || "monthly";
 
   return {
+    mode,
     errorMessage: args.actionError,
     selectedInterval,
     onSelectInterval: args.onSelectInterval,
@@ -59,13 +72,44 @@ export function buildCompanyBillingPlanSelectionMode(
       };
     }),
     continueAction: {
-      label: "Continue to checkout",
+      label: mode === "change_plan" ? "Change plan" : "Continue to checkout",
       tone: "primary",
-      onClick: args.onContinueToCheckout,
-      disabled: !selectedTarget?.product,
-      loading: args.isStartingCheckout,
+      onClick: args.onSubmit,
+      disabled: !selectedTarget?.product || (mode === "change_plan" && isCurrentOrScheduledSelection(args.billing, selectedTarget)),
+      loading: args.isSubmitting,
     },
   };
+}
+
+function findFallbackSelectionTarget(
+  billing: CompanyBillingPlanSelectionPage.BillingOverview,
+  mode: CompanyBillingPlanSelectionPage.Mode,
+): CompanyBillingPlanSelectionPage.BillingTarget | null {
+  if (mode === "change_plan") {
+    return getCompanyBillingScheduledTarget(billing) || getCompanyBillingCurrentTarget(billing);
+  }
+
+  return findSuggestedSelectionTarget(billing);
+}
+
+function isCurrentOrScheduledSelection(
+  billing: CompanyBillingPlanSelectionPage.BillingOverview,
+  target: CompanyBillingPlanSelectionPage.BillingTarget,
+): boolean {
+  const currentTarget = getCompanyBillingCurrentTarget(billing);
+  if (matchesCompanyBillingTarget(billing.account, target) || (currentTarget && matchesTarget(target, currentTarget))) {
+    return true;
+  }
+
+  const scheduledTarget = getCompanyBillingScheduledTarget(billing);
+  return scheduledTarget ? matchesTarget(target, scheduledTarget) : false;
+}
+
+function matchesTarget(
+  left: CompanyBillingPlanSelectionPage.BillingTarget,
+  right: CompanyBillingPlanSelectionPage.BillingTarget,
+): boolean {
+  return left.plan === right.plan && left.billingInterval === right.billingInterval;
 }
 
 function findSuggestedSelectionTarget(
