@@ -1,0 +1,293 @@
+import React from "react";
+
+import { InfoCallout, SuccessCallout, WarningCallout } from "../Callouts";
+import { Page } from "../Page";
+import { PrimaryButton, SecondaryButton } from "../Button";
+import type { CompanyBillingPage as CompanyBillingPageTypes } from "./types";
+import { buildCompanyBillingPageViewModel } from "./viewModel";
+
+export {
+  buildCompanyBillingConfirmingMode,
+  buildCompanyBillingOverviewMode,
+  buildCompanyBillingPageViewModel,
+  buildCompanyBillingRecoveryFeedback,
+  buildCompanyBillingStatusNotices,
+  buildCompanyBillingSuccessFeedback,
+} from "./viewModel";
+export {
+  canCreateCompanyBillingCheckout,
+  findCompanyBillingSellableProduct,
+  getCompanyBillingPendingTarget,
+  getCompanyBillingSuggestedTarget,
+  isCompanyBillingCheckoutReturnSuccessful,
+  listCompanyBillingSellableTargets,
+  parseCompanyBillingSearch,
+  selectCompanyBillingTarget,
+} from "./state";
+
+export namespace CompanyBillingPage {
+  export type Mode = CompanyBillingPageTypes.Mode;
+  export type Status = CompanyBillingPageTypes.Status;
+  export type Interval = CompanyBillingPageTypes.Interval;
+  export type Plan = CompanyBillingPageTypes.Plan;
+  export type BillingTargetSource = CompanyBillingPageTypes.BillingTargetSource;
+  export type NoticeTone = CompanyBillingPageTypes.NoticeTone;
+  export type ActionTone = CompanyBillingPageTypes.ActionTone;
+  export type CheckoutFeedbackKind = CompanyBillingPageTypes.CheckoutFeedbackKind;
+
+  export type BillingAccount = CompanyBillingPageTypes.BillingAccount;
+  export type BillingPlanDefinition = CompanyBillingPageTypes.BillingPlanDefinition;
+  export type BillingCatalogProduct = CompanyBillingPageTypes.BillingCatalogProduct;
+  export type BillingOverview = CompanyBillingPageTypes.BillingOverview;
+  export type BillingTarget = CompanyBillingPageTypes.BillingTarget;
+  export type BillingSearchParams = CompanyBillingPageTypes.BillingSearchParams;
+  export type BillingTargetSelection = CompanyBillingPageTypes.BillingTargetSelection;
+
+  export type DetailRow = CompanyBillingPageTypes.DetailRow;
+  export type Notice = CompanyBillingPageTypes.Notice;
+  export type Action = CompanyBillingPageTypes.Action;
+  export type HeaderAction = CompanyBillingPageTypes.HeaderAction;
+  export type CheckoutFeedback = CompanyBillingPageTypes.CheckoutFeedback;
+  export type CurrentPlan = CompanyBillingPageTypes.CurrentPlan;
+  export type OverviewModeView = CompanyBillingPageTypes.OverviewModeView;
+  export type ConfirmingModeView = CompanyBillingPageTypes.ConfirmingModeView;
+  export type PageViewModel = CompanyBillingPageTypes.PageViewModel;
+  export type Props = CompanyBillingPageTypes.Props;
+}
+
+export function CompanyBillingPage(props: CompanyBillingPage.Props) {
+  const viewModel = buildCompanyBillingPageViewModel(props);
+
+  return (
+    <Page title={props.title} size="small" navigation={props.navigation} testId={props.testId}>
+      <div className="p-8">
+        <Header title={viewModel.pageTitle} subtitle={viewModel.pageSubtitle} action={viewModel.headerAction} />
+
+        {viewModel.mode === "overview" && viewModel.overview && <OverviewModeView overview={viewModel.overview} />}
+        {viewModel.mode === "confirming" && viewModel.confirming && <ConfirmingModeView confirming={viewModel.confirming} />}
+      </div>
+    </Page>
+  );
+}
+
+function Header({
+  title,
+  subtitle,
+  action,
+}: {
+  title: string;
+  subtitle: string;
+  action?: CompanyBillingPage.HeaderAction | null;
+}) {
+  return (
+    <div className="mb-8 flex items-start justify-between gap-4">
+      <div>
+        <div className="text-content-accent text-3xl font-extrabold">{title}</div>
+        <div className="mt-2">{subtitle}</div>
+      </div>
+
+      {action && (
+        <SecondaryButton size="xs" onClick={action.onClick}>
+          {action.label}
+        </SecondaryButton>
+      )}
+    </div>
+  );
+}
+
+function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewModeView }) {
+  return (
+    <div className="space-y-10">
+      {overview.checkoutFeedback && <CheckoutFeedbackBlock feedback={overview.checkoutFeedback} />}
+
+      {overview.errorMessage && <WarningCallout message="Checkout unavailable" description={overview.errorMessage} />}
+
+      {overview.stale && (
+        <WarningCallout
+          message="Billing data may be out of date"
+          description="We could not reach Polar on the last sync. Reload the page to try again."
+        />
+      )}
+
+      <Section title="Current plan">
+        <SectionCard>
+          <div className="flex flex-col gap-3 border-b border-stroke-base pb-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div className="text-content-accent text-2xl font-extrabold">{overview.currentPlan.name}</div>
+              {overview.currentPlan.intervalLabel && <div className="mt-1 text-content-dimmed">{overview.currentPlan.intervalLabel} billing</div>}
+            </div>
+
+            <BillingStatusBadge status={overview.currentPlan.status} />
+          </div>
+
+          <DetailRows rows={overview.currentPlan.rows} />
+        </SectionCard>
+      </Section>
+
+      <Section title="Usage and limits">
+        <SectionCard>
+          <DetailRows rows={overview.usageRows} />
+        </SectionCard>
+      </Section>
+
+      <Section title="Status details">
+        <div className="space-y-3">
+          {overview.statusNotices.length === 0 ? (
+            <div className="rounded-lg border border-stroke-base bg-surface-dimmed px-4 py-3 text-content-dimmed">
+              {overview.emptyStatusMessage || "No pending billing changes."}
+            </div>
+          ) : (
+            overview.statusNotices.map((notice) => <StatusDetailNotice key={notice.message} notice={notice} />)
+          )}
+
+          {overview.footerAction && (
+            <div className="pt-1">
+              <ActionButton action={overview.footerAction} size="xs" />
+            </div>
+          )}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function ConfirmingModeView({ confirming }: { confirming: CompanyBillingPage.ConfirmingModeView }) {
+  return (
+    <div className="space-y-6">
+      <NoticeCallout notice={confirming.notice} />
+
+      <Section title="Checkout status">
+        <SectionCard>
+          <DetailRows rows={confirming.rows} />
+        </SectionCard>
+      </Section>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="mt-10">
+      <div className="mb-2">
+        <h2 className="font-bold">{title}</h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function SectionCard({ children }: { children: React.ReactNode }) {
+  return <div className="rounded-lg border border-stroke-base bg-surface-base px-5 py-4">{children}</div>;
+}
+
+function DetailRows({ rows }: { rows: CompanyBillingPage.DetailRow[] }) {
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-4 divide-y divide-stroke-base">
+      {rows.map((row) => (
+        <div key={row.label} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+          <div className="text-content-dimmed">{row.label}</div>
+          <div className="text-right font-medium text-content-accent">{row.value}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+function BillingStatusBadge({ status }: { status: CompanyBillingPage.Status }) {
+  const className = {
+    free: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    active: "border-blue-200 bg-blue-50 text-blue-700",
+    past_due: "border-amber-200 bg-amber-50 text-amber-800",
+    canceled: "border-stone-200 bg-stone-100 text-stone-700",
+  }[status];
+
+  const label = {
+    free: "Free",
+    active: "Active",
+    past_due: "Past due",
+    canceled: "Canceled",
+  }[status];
+
+  return (
+    <span className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${className}`}>
+      {label}
+    </span>
+  );
+}
+
+function NoticeCallout({ notice }: { notice: CompanyBillingPage.Notice }) {
+  if (notice.tone === "warning") {
+    return <WarningCallout message={notice.message} description={notice.description} />;
+  }
+
+  return <InfoCallout message={notice.message} description={notice.description} />;
+}
+
+function StatusDetailNotice({ notice }: { notice: CompanyBillingPage.Notice }) {
+  const toneClasses = {
+    info: {
+      wrapper: "border-sky-200 bg-sky-50/70",
+      badge: "bg-sky-100 text-sky-800",
+      title: "text-sky-950",
+    },
+    warning: {
+      wrapper: "border-amber-200 bg-amber-50/80",
+      badge: "bg-amber-100 text-amber-900",
+      title: "text-amber-950",
+    },
+  }[notice.tone];
+
+  return (
+    <div className={`rounded-lg border px-4 py-3 ${toneClasses.wrapper}`}>
+      <div className="flex items-start gap-3">
+        <span className={`mt-0.5 rounded-full px-2 py-1 text-xs font-semibold ${toneClasses.badge}`}>
+          {notice.tone === "warning" ? "Warning" : "Info"}
+        </span>
+
+        <div className="min-w-0">
+          <div className={`font-semibold ${toneClasses.title}`}>{notice.message}</div>
+          <div className="mt-1 text-sm text-content-dimmed">{notice.description}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CheckoutFeedbackBlock({ feedback }: { feedback: CompanyBillingPage.CheckoutFeedback }) {
+  if (feedback.kind === "success") {
+    return <SuccessCallout message={feedback.message} description={feedback.description} />;
+  }
+
+  if (feedback.kind === "pending") {
+    return <InfoCallout message={feedback.message} description={feedback.description} />;
+  }
+
+  return <WarningCallout message={feedback.message} description={feedback.description} />;
+}
+
+function ActionButton({
+  action,
+  size,
+}: {
+  action: CompanyBillingPage.Action;
+  size: "xs" | "sm";
+}) {
+  if (action.tone === "secondary") {
+    return (
+      <SecondaryButton size={size} onClick={action.onClick} disabled={action.disabled} loading={action.loading}>
+        {action.label}
+      </SecondaryButton>
+    );
+  }
+
+  return (
+    <PrimaryButton size={size} onClick={action.onClick} disabled={action.disabled} loading={action.loading}>
+      {action.label}
+    </PrimaryButton>
+  );
+}

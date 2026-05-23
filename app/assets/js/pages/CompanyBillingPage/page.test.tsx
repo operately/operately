@@ -1,10 +1,16 @@
 import * as Billing from "@/models/billing";
-import React from "react";
 
-import { BillingStatusBadge, buildStatusNotices } from "./page";
-import { renderToStaticMarkup } from "react-dom/server";
+import {
+  buildCompanyBillingConfirmingMode,
+  buildCompanyBillingOverviewMode,
+  buildCompanyBillingRecoveryFeedback,
+  buildCompanyBillingStatusNotices,
+  buildCompanyBillingSuccessFeedback,
+} from "turboui";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
+  const { account, ...rest } = params;
+
   return {
     account: {
       provider: "polar",
@@ -23,34 +29,88 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
       scheduledBillingInterval: null,
       scheduledChangeEffectiveAt: null,
       lastSyncedAt: "2026-05-23T00:00:00Z",
-      ...(params.account || {}),
+      ...(account || {}),
     },
     plans: [
       { key: "free", displayName: "Free", memberLimit: 20, storageLimitBytes: 1_073_741_824 },
       { key: "team", displayName: "Team", memberLimit: 50, storageLimitBytes: 107_374_182_400 },
       { key: "business", displayName: "Business", memberLimit: 200, storageLimitBytes: 1_099_511_627_776 },
     ],
-    catalogProducts: [],
+    catalogProducts: [
+      {
+        id: "team-monthly",
+        provider: "polar",
+        planFamily: "team",
+        billingInterval: "monthly",
+        polarProductId: "pol_team_monthly",
+        polarProductName: "Team Monthly",
+        priceAmount: 7900,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+      {
+        id: "team-yearly",
+        provider: "polar",
+        planFamily: "team",
+        billingInterval: "yearly",
+        polarProductId: "pol_team_yearly",
+        polarProductName: "Team Yearly",
+        priceAmount: 79000,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+      {
+        id: "business-monthly",
+        provider: "polar",
+        planFamily: "business",
+        billingInterval: "monthly",
+        polarProductId: "pol_business_monthly",
+        polarProductName: "Business Monthly",
+        priceAmount: 19900,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+      {
+        id: "business-yearly",
+        provider: "polar",
+        planFamily: "business",
+        billingInterval: "yearly",
+        polarProductId: "pol_business_yearly",
+        polarProductName: "Business Yearly",
+        priceAmount: 199000,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+    ],
     memberCount: 18,
     stale: false,
-    ...params,
+    ...rest,
   } as Billing.BillingOverview;
 }
 
-describe("CompanyBillingPage helpers", () => {
-  it.each([
-    ["free", "Free"],
-    ["active", "Active"],
-    ["past_due", "Past due"],
-    ["canceled", "Canceled"],
-  ] as const)("renders the %s status badge", (status, label) => {
-    const html = renderToStaticMarkup(<BillingStatusBadge status={status} />);
-
-    expect(html).toContain(label);
-  });
-
+describe("CompanyBillingPage bridge helpers", () => {
   it("builds a free-plan notice when there are no pending billing changes", () => {
-    const notices = buildStatusNotices(
+    const notices = buildCompanyBillingStatusNotices(
       billingOverviewMock({
         account: {
           planKey: null,
@@ -70,7 +130,7 @@ describe("CompanyBillingPage helpers", () => {
   });
 
   it("includes pending checkout details", () => {
-    const notices = buildStatusNotices(
+    const notices = buildCompanyBillingStatusNotices(
       billingOverviewMock({
         account: {
           pendingPlanKey: "business",
@@ -89,7 +149,7 @@ describe("CompanyBillingPage helpers", () => {
   });
 
   it("includes scheduled-change and cancellation notices", () => {
-    const notices = buildStatusNotices(
+    const notices = buildCompanyBillingStatusNotices(
       billingOverviewMock({
         account: {
           cancelAtPeriodEnd: true,
@@ -108,11 +168,61 @@ describe("CompanyBillingPage helpers", () => {
     );
   });
 
-  it("includes past-due and canceled warnings", () => {
-    const pastDueNotices = buildStatusNotices(billingOverviewMock({ account: { status: "past_due" } as any }));
-    const canceledNotices = buildStatusNotices(billingOverviewMock({ account: { status: "canceled" } as any }));
+  it("keeps pending actions in overview props", () => {
+    const overview = buildCompanyBillingOverviewMode({
+      billing: billingOverviewMock({
+        account: {
+          planKey: null,
+          billingInterval: null,
+          status: "free",
+          suggestedPlanKey: "team",
+          suggestedBillingInterval: "yearly",
+          pendingPlanKey: "team",
+          pendingBillingInterval: "yearly",
+        } as any,
+      }),
+      checkoutFeedback: null,
+      actionError: null,
+      onSeePlans: jest.fn(),
+      onCompleteUpgrade: jest.fn(),
+    });
 
-    expect(pastDueNotices).toEqual(expect.arrayContaining([expect.objectContaining({ message: "Payment issue detected" })]));
-    expect(canceledNotices).toEqual(expect.arrayContaining([expect.objectContaining({ message: "Subscription ended" })]));
+    expect(overview.footerAction?.label).toBe("Complete upgrade");
+  });
+
+  it("builds confirming mode details", () => {
+    const confirming = buildCompanyBillingConfirmingMode({ plan: "team", billingInterval: "yearly", product: null });
+
+    expect(confirming.notice.message).toBe("Confirming your upgrade");
+    expect(confirming.rows).toEqual(
+      expect.arrayContaining([expect.objectContaining({ label: "Requested plan", value: "Team Yearly" })]),
+    );
+  });
+
+  it("builds success and recovery feedback", () => {
+    const success = buildCompanyBillingSuccessFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "business",
+          billingInterval: "monthly",
+          status: "active",
+        } as any,
+      }),
+    );
+
+    const recovery = buildCompanyBillingRecoveryFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: null,
+          billingInterval: null,
+          status: "free",
+          pendingPlanKey: "team",
+          pendingBillingInterval: "monthly",
+        } as any,
+      }),
+    );
+
+    expect(success).toMatchObject({ kind: "success", message: "Upgrade confirmed" });
+    expect(recovery).toMatchObject({ kind: "pending", message: "Checkout not completed yet" });
   });
 });
