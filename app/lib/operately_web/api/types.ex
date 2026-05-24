@@ -1087,6 +1087,8 @@ defmodule OperatelyWeb.Api.Types do
     field :task, :task, null: true
     field :old_assignee, :person
     field :new_assignee, :person
+    field :added_assignees, list_of(:person), null: false
+    field :removed_assignees, list_of(:person), null: false
   end
 
   object :activity_content_task_moving do

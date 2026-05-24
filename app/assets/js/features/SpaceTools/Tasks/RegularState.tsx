@@ -5,7 +5,7 @@ import * as Tasks from "@/models/tasks";
 import { Space } from "@/models/spaces";
 import { Title } from "../components";
 
-import { PersonField, StatusSelector } from "turboui";
+import { AssigneesField, StatusSelector } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 
@@ -49,7 +49,10 @@ interface TaskItemProps {
 function TaskItem({ task, space, paths }: TaskItemProps) {
   const statusOptions = Tasks.parseTaskStatusesForTurboUi(space.taskStatuses);
   const status = Tasks.parseTaskStatusForTurboUi(task.status);
-  const assignee = People.parsePersonForTurboUi(paths, task.assignees?.[0]);
+  const assignees = (task.assignees || []).flatMap((assignee) => {
+    const parsed = People.parsePersonForTurboUi(paths, assignee);
+    return parsed ? [parsed] : [];
+  });
 
   return (
     <div className="flex items-center justify-between gap-2 py-2 px-2 border-b border-stroke-base last:border-b-0">
@@ -63,16 +66,9 @@ function TaskItem({ task, space, paths }: TaskItemProps) {
         <div className="font-bold truncate">{task.name}</div>
       </div>
 
-      {assignee && (
+      {assignees.length > 0 && (
         <div className="flex items-center flex-shrink-0">
-          <PersonField
-            person={assignee}
-            setPerson={() => {}}
-            avatarSize={26}
-            avatarOnly={true}
-            readonly={true}
-            emptyStateReadOnlyMessage=""
-          />
+          <AssigneesField people={assignees} setPeople={() => {}} avatarSize={26} avatarOnly={true} readonly={true} />
         </div>
       )}
     </div>

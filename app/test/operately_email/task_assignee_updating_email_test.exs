@@ -13,6 +13,7 @@ defmodule OperatelyEmail.TaskAssigneeUpdatingEmailTest do
       |> Factory.setup()
       |> Factory.add_company_member(:author, name: "Michael Scott")
       |> Factory.add_company_member(:assignee, name: "Dwight Schrute")
+      |> Factory.add_company_member(:other_assignee, name: "Jim Halpert")
       |> Factory.add_space(:space, name: "Sales")
       |> Factory.add_project(:project, :space, name: "Paper Expansion")
       |> Factory.add_project_milestone(:milestone, :project, title: "Launch")
@@ -47,6 +48,38 @@ defmodule OperatelyEmail.TaskAssigneeUpdatingEmailTest do
       assert email.text_body =~ "You are now assigned to this task."
       refute email.subject =~ "changed the assignee"
       refute email.html_body =~ "The assignee is now Dwight S."
+      true
+    end)
+  end
+
+  test "tells each new assignee they were assigned when multiple people are added", ctx do
+    activity =
+      activity_fixture(%{
+        author_id: ctx.author.id,
+        action: "task_assignee_updating",
+        content: %{
+          "company_id" => ctx.company.id,
+          "space_id" => ctx.space.id,
+          "project_id" => ctx.project.id,
+          "milestone_id" => ctx.milestone.id,
+          "task_id" => ctx.task.id,
+          "old_assignee_id" => nil,
+          "new_assignee_id" => nil,
+          "added_assignee_ids" => [ctx.assignee.id, ctx.other_assignee.id],
+          "removed_assignee_ids" => []
+        }
+      })
+
+    flush_emails()
+    TaskAssigneeUpdatingEmail.send(ctx.other_assignee, activity)
+
+    assert_email_sent(fn email ->
+      assert email.subject =~ "Michael S. assigned you the task Call leads"
+      assert email.html_body =~ "Michael S. assigned you the task Call leads"
+      assert email.html_body =~ "You are now assigned to this task."
+      assert email.text_body =~ "Michael S. assigned you the task Call leads."
+      assert email.text_body =~ "You are now assigned to this task."
+      refute email.html_body =~ "Dwight S."
       true
     end)
   end

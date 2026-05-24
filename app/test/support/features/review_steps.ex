@@ -234,16 +234,16 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :change_task_assignee, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
-    |> UI.click(testid: "person-field")
-    |> UI.click(testid: UI.testid(["person-field-search-result", ctx.me.full_name]))
+    |> UI.click(testid: "assignees-field")
+    |> UI.click(testid: UI.testid(["assignees-field-search-result", ctx.me.full_name]))
     |> UI.sleep(300)
   end
 
   step :clear_task_assignee, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
-    |> UI.click(testid: "person-field")
-    |> UI.click(testid: "person-field-clear-assignment")
+    |> UI.click(testid: "assignees-field")
+    |> UI.click(testid: "assignees-field-clear")
     |> UI.sleep(300)
   end
 

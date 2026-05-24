@@ -2,18 +2,18 @@ import { IconArchive, IconCalendar, IconCircleArrowRight, IconLink, IconTrash } 
 import React from "react";
 import { TaskPage } from ".";
 import { AvatarWithName } from "../Avatar";
+import { AssigneesField } from "../AssigneesField";
 import { WarningCallout } from "../Callouts";
 import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
 import { MilestoneField } from "../MilestoneField";
-import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { showSuccessToast, showErrorToast } from "../Toasts";
 
 export function Sidebar(props: TaskPage.ContentState) {
   return (
-    <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8" data-test-id="task-sidebar"> 
+    <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8" data-test-id="task-sidebar">
       <DueDate {...props} />
       <Assignees {...props} />
       <Milestone {...props} />
@@ -62,14 +62,14 @@ function DueDate(props: TaskPage.ContentState) {
 
 function Assignees(props: TaskPage.ContentState) {
   return (
-    <SidebarSection title="Assignee">
-      <PersonField
-        person={props.assignee}
-        setPerson={props.onAssigneeChange}
+    <SidebarSection title="Assignees">
+      <AssigneesField
+        people={props.assignees}
+        setPeople={props.onAssigneesChange}
         readonly={!props.canEdit}
         searchData={props.assigneePersonSearch}
         emptyStateMessage="Assign task"
-        emptyStateReadOnlyMessage="No assignee"
+        emptyStateReadOnlyMessage="No assignees"
         testId="assignee"
       />
     </SidebarSection>
@@ -94,14 +94,14 @@ function DueDateMobile(props: TaskPage.ContentState) {
 
 function AssigneeMobile(props: TaskPage.ContentState) {
   return (
-    <SidebarSection title="Assignee">
-      <PersonField
-        person={props.assignee}
-        setPerson={props.onAssigneeChange}
+    <SidebarSection title="Assignees">
+      <AssigneesField
+        people={props.assignees}
+        setPeople={props.onAssigneesChange}
         readonly={!props.canEdit}
         searchData={props.assigneePersonSearch}
         emptyStateMessage="Assign task"
-        emptyStateReadOnlyMessage="No assignee"
+        emptyStateReadOnlyMessage="No assignees"
         size="small"
         showTitle={false}
       />

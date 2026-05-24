@@ -3,7 +3,13 @@
 
 You are now assigned to this task.
 <% else %>
-<%= short_name(@author) %> changed the assignee for <%= @name %>.
+<%= if @removed_from_recipient do %>
+<%= short_name(@author) %> removed you from the task <%= @name %>.
+
+You are no longer assigned to this task.
+<% else %>
+<%= short_name(@author) %> changed the assignees for <%= @name %>.
+<% end %>
 <% end %>
 
 Link: <%= @cta_url %>

@@ -43,7 +43,7 @@ export namespace SpaceKanbanPage {
     onTaskKanbanChange: KanbanBoardProps["onTaskKanbanChange"];
     onTaskCreate: (task: Types.NewTaskPayload) => void;
     onTaskNameChange: (taskId: string, name: string) => void;
-    onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
+    onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
     onTaskDelete: (taskId: string) => void | Promise<any>;
