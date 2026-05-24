@@ -303,7 +303,8 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.find(UI.query(testid: "task-sidebar"), fn el ->
       UI.click(el, testid: "assignee")
     end)
-    |> UI.click(testid: "assignee-clear-assignment")
+    |> UI.click(testid: "assignee-clear")
+    |> UI.sleep(500)
   end
 
   step :edit_task_due_date, ctx, date do
@@ -823,7 +824,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
       where: ctx.project.name,
       to: ctx.champion,
       author: ctx.contributor,
-      action: "changed the assignee for #{ctx.task.name}"
+      action: "removed you from the task #{ctx.task.name}"
     })
   end
 
@@ -916,7 +917,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.contributor,
-      action: "Task \"#{ctx.task.name}\" was unassigned"
+      action: "Task \"#{ctx.task.name}\" was no longer assigned to #{ctx.champion.full_name}"
     })
   end
 

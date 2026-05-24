@@ -88,7 +88,7 @@ export namespace MilestonePage {
     // Optional callbacks
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
     onTaskReorder?: (taskId: string, milestoneId: string | null, index: number) => void;
-    onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
+    onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
 

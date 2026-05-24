@@ -89,8 +89,8 @@ export namespace TaskPage {
     dueDate?: DateField.ContextualDate;
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
 
-    assignee: Person | null;
-    onAssigneeChange: (newAssignee: Person | null) => void;
+    assignees: Person[];
+    onAssigneesChange: (newAssignees: Person[]) => void;
 
     // Metadata (read-only)
     createdAt: Date;
@@ -148,8 +148,8 @@ export namespace TaskPage {
     | "statusOptions"
     | "dueDate"
     | "onDueDateChange"
-    | "assignee"
-    | "onAssigneeChange"
+    | "assignees"
+    | "onAssigneesChange"
     | "createdAt"
     | "createdBy"
     | "subscriptions"
@@ -224,8 +224,8 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     statusOptions: props.statusOptions,
     dueDate: props.dueDate,
     onDueDateChange: props.onDueDateChange,
-    assignee: props.assignee,
-    onAssigneeChange: props.onAssigneeChange,
+    assignees: props.assignees,
+    onAssigneesChange: props.onAssigneesChange,
     createdAt: props.createdAt,
     createdBy: props.createdBy,
     subscriptions: props.subscriptions,

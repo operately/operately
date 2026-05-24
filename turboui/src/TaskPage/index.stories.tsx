@@ -60,7 +60,7 @@ function Component(props: Partial<TaskPage.Props>) {
 
   const [status, setStatus] = React.useState<typeof initialStatusOption | null>(initialStatusOption);
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
-  const [assignee, setAssignee] = React.useState(props.assignee || null);
+  const [assignees, setAssignees] = React.useState(props.assignees || []);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
   const [milestones, setMilestones] = React.useState<TaskPage.Milestone[]>(mockMilestones);
   const searchData = usePersonFieldSearch(mockTaskPeople);
@@ -71,7 +71,7 @@ function Component(props: Partial<TaskPage.Props>) {
 
   const handleMilestoneSearch = React.useCallback(async (query: string) => {
     await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-    
+
     const filtered = mockMilestones.filter((m) => m.name.toLowerCase().includes(query.toLowerCase()));
     setMilestones(filtered);
   }, []);
@@ -91,7 +91,7 @@ function Component(props: Partial<TaskPage.Props>) {
     space: {
       id: "space-123",
       name: "Product",
-      link: "#"
+      link: "#",
     },
 
     childrenCount: {
@@ -133,9 +133,9 @@ function Component(props: Partial<TaskPage.Props>) {
       setDueDate(newDate ?? undefined);
     },
 
-    assignee,
-    onAssigneeChange: (newAssignee) => {
-      setAssignee(newAssignee);
+    assignees,
+    onAssigneesChange: (newAssignees) => {
+      setAssignees(newAssignees);
     },
 
     // Milestone - use local state only
@@ -219,7 +219,7 @@ export const Default: Story = {
     ),
     status: "in_progress",
     dueDate: createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
-    assignee: mockTaskPeople[0]!,
+    assignees: [mockTaskPeople[0]!],
     milestone: mockMilestones[1], // Beta Release
     timelineItems: createActiveTaskTimeline(),
   },
@@ -235,7 +235,7 @@ export const MinimalTask: Story = {
     status: "pending",
     milestone: undefined,
     dueDate: undefined,
-    assignee: null,
+    assignees: [],
     timelineItems: createMinimalTaskTimeline(),
   },
 };
@@ -257,7 +257,7 @@ export const CompletedTask: Story = {
     ),
     status: "done",
     dueDate: createContextualDate(new Date(2024, 0, 10), "day"),
-    assignee: mockTaskPeople[3]!,
+    assignees: [mockTaskPeople[3]!],
     milestone: mockMilestones[0], // MVP Launch (completed)
     timelineItems: createCompletedTaskTimeline(),
   },
@@ -272,7 +272,7 @@ export const OverdueTask: Story = {
     description: asRichText("Critical security issue found in authentication module. Needs immediate attention. 🚨"),
     status: "in_progress",
     dueDate: createContextualDate(new Date(2024, 0, 5), "day"),
-    assignee: mockTaskPeople[0]!,
+    assignees: [mockTaskPeople[0]!],
     timelineItems: createOverdueTaskTimeline(),
   },
 };
@@ -296,7 +296,7 @@ export const LongContent: Story = {
     ),
     status: "pending",
     dueDate: createContextualDate(new Date(2024, 3, 1), "day"),
-    assignee: mockTaskPeople[1]!,
+    assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[3], // Performance Optimization
     timelineItems: createLongContentTimeline(),
   },

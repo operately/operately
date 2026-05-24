@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { IconFileText, IconMessageCircle } from "../../icons";
 import { DateField } from "../../DateField";
-import { PersonField } from "../../PersonField";
+import { AssigneesField } from "../../AssigneesField";
 import classNames from "../../utils/classnames";
 import { DropIndicator, useSortableItem } from "../../utils/PragmaticDragAndDrop";
 import type { TaskBoard } from "../components";
@@ -39,7 +39,7 @@ export function Card({
   onTaskClick,
   selected = false,
 }: CardProps) {
-  const [currentAssignee, setCurrentAssignee] = useState<TaskBoard.Person | null>(task.assignees?.[0] || null);
+  const [currentAssignees, setCurrentAssignees] = useState<TaskBoard.Person[]>(task.assignees || []);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
   const [assigneeFieldOpen, setAssigneeFieldOpen] = useState(false);
   const [dueDateFieldOpen, setDueDateFieldOpen] = useState(false);
@@ -84,17 +84,17 @@ export function Card({
   }, [assigneePersonSearch, onTaskClick, onTaskDueDateChange, prepareFocusRestore, ref, task.id]);
 
   useEffect(() => {
-    setCurrentAssignee(task.assignees?.[0] || null);
+    setCurrentAssignees(task.assignees || []);
   }, [task.assignees, task.id]);
 
   useEffect(() => {
     setCurrentDueDate(task.dueDate || null);
   }, [task.dueDate, task.id]);
 
-  const handleAssigneeChange = useCallback(
-    (newAssignee: TaskBoard.Person | null) => {
-      setCurrentAssignee(newAssignee);
-      onTaskAssigneeChange?.(task.id, newAssignee);
+  const handleAssigneesChange = useCallback(
+    (newAssignees: TaskBoard.Person[]) => {
+      setCurrentAssignees(newAssignees);
+      onTaskAssigneeChange?.(task.id, newAssignees);
     },
     [onTaskAssigneeChange, task.id],
   );
@@ -211,9 +211,9 @@ export function Card({
               </div>
 
               <div onMouseDown={stopDragFromInteractive}>
-                <PersonField
-                  person={currentAssignee}
-                  setPerson={handleAssigneeChange}
+                <AssigneesField
+                  people={currentAssignees}
+                  setPeople={handleAssigneesChange}
                   avatarSize={22}
                   avatarOnly={true}
                   {...(assigneePersonSearch ? { searchData: assigneePersonSearch } : { readonly: true as const })}
@@ -222,11 +222,15 @@ export function Card({
                   onOpenChange={handleAssigneeFieldOpenChange}
                   onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
                 />
-                {currentAssignee && (
-                  <span className="sr-only" data-test-id={createTestId("kanban-card-assignee-name", task.id)}>
-                    {currentAssignee.fullName}
+                {currentAssignees.map((assignee) => (
+                  <span
+                    key={assignee.id}
+                    className="sr-only"
+                    data-test-id={createTestId("kanban-card-assignee-name", task.id)}
+                  >
+                    {assignee.fullName}
                   </span>
-                )}
+                ))}
               </div>
             </div>
           </div>
