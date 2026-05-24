@@ -84,7 +84,7 @@ export function Kanban({
       title,
       milestone,
       dueDate: null,
-      assignee: null,
+      assignees: [],
       status: status,
     });
   };
@@ -119,12 +119,7 @@ export function Kanban({
           )}
 
           {regularStatuses.map((status, index) => (
-            <SortableStatusColumn
-              key={status.value}
-              status={status}
-              index={index}
-              canReorder={Boolean(canEdit)}
-            >
+            <SortableStatusColumn key={status.value} status={status} index={index} canReorder={Boolean(canEdit)}>
               {(dragHandleRef) => (
                 <Column
                   status={status}

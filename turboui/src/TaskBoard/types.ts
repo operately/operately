@@ -50,7 +50,7 @@ export interface NewTaskPayload {
   title: string;
   milestone: Milestone | null;
   dueDate: DateField.ContextualDate | null;
-  assignee: string | null;
+  assignees: Person[];
   status?: Status;
 }
 
@@ -181,7 +181,7 @@ export interface TaskBoardProps {
   showMilestoneKanbanLink?: boolean;
   onTaskCreate: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
-  onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
+  onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: Status | null) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;

@@ -122,6 +122,16 @@ end
 
 Read the testing guide at app/test/AGENTS.md.
 
+### Feature Test Notes
+
+- The default targeted command is still `make test FILE=app/test/features/some_test.exs`, but for CI-equivalent feature-test debugging in an agent environment, first run `make test.build`, then run the test inside devenv with `CI=true` in the inner command, for example:
+  `./devenv bash -c 'cd app && CI=true mix test test/features/space_kanban_test.exs'`
+  `./devenv bash -c 'cd app && CI=true mix test test/features/project_tasks_test.exs:425'`
+- This matters because local non-CI feature tests expect Vite dev assets from `localhost:4005`. If that server is not running, Wallaby can load a mostly blank page and fail before reaching the app behavior under test. `CI=true` makes Phoenix serve the built static assets, matching CI more closely.
+- If `make test.build` or `./devenv` cannot reach the Docker socket from a sandboxed agent session, rerun the same command with the tool's elevated-permission mechanism. The root `.env` may contain an empty `CI=` value; that is not enough, so pass `CI=true` explicitly in the inner command.
+- Feature-test screenshots are written to `screenshots/` on the host, mounted as `/tmp/screenshots` in the container.
+- If a killed feature-test run leaves port 4002 busy, find and stop the leftover BEAM process inside the container with `./devenv bash -c "ps -ef | grep 'beam\\|mix test' | grep -v grep"` and then `./devenv bash -c "kill <pid>"`.
+
 ## Commit & Pull Request Guidelines
 
 - DCO required: sign off every commit. Example: `git commit -s -m "feat: add goal editor"` (see `docs/commit_sign-off.md`).

@@ -877,8 +877,10 @@ export interface ActivityContentTaskAssigneeUpdating {
   space: Space;
   project: Project | null;
   task: Task | null;
-  oldAssignee: Person;
-  newAssignee: Person;
+  oldAssignee?: Person | null;
+  newAssignee?: Person | null;
+  addedAssignees?: Person[] | null;
+  removedAssignees?: Person[] | null;
 }
 
 export interface ActivityContentTaskClosing {
@@ -5001,7 +5003,8 @@ export interface TasksCreateInput {
   id: Id;
   milestoneId?: Id | null;
   name: string;
-  assigneeId: Id | null;
+  assigneeId?: Id | null;
+  assigneeIds?: Id[] | null;
   dueDate: ContextualDate | null;
   status?: TaskStatus;
 }
@@ -5036,7 +5039,8 @@ export interface TasksMoveResult {
 
 export interface TasksUpdateAssigneeInput {
   taskId: Id;
-  assigneeId: Id | null;
+  assigneeId?: Id | null;
+  assigneeIds?: Id[] | null;
   type: TaskType;
 }
 

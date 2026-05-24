@@ -84,6 +84,8 @@ defmodule Operately.Activities.Preloader do
   #
   #   {activity_id, ["subcontent", "project"], Operately.Projects.Project, "9b3160cd-2ec9-4d85-9ad5-713bfe2c8c86"}
   #
+  defp references(_activity_id, content, _schema) when not is_map(content), do: []
+
   defp references(activity_id, content, schema) do
     content
     |> Map.from_struct()
