@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { AssigneesField } from "../../AssigneesField";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DateField } from "../../DateField";
 import { MilestoneField } from "../../MilestoneField";
@@ -32,7 +33,7 @@ export function TaskCreationModal({
   // Form state
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
-  const [assignee, setAssignee] = useState<Types.Person | null>(null);
+  const [assignees, setAssignees] = useState<Types.Person[]>([]);
   const [milestone, setMilestone] = useState<Types.Milestone | null>(null);
   const [createMore, setCreateMore] = useState(false);
 
@@ -58,7 +59,7 @@ export function TaskCreationModal({
   const resetForm = () => {
     setTitle("");
     setDueDate(null);
-    setAssignee(null);
+    setAssignees([]);
     // Keep the milestone selected for creating multiple tasks in same milestone
     // Keep the createMore toggle state
   };
@@ -81,7 +82,7 @@ export function TaskCreationModal({
       title: title.trim(),
       milestone: milestone,
       dueDate: dueDate || null,
-      assignee: assignee?.id || null,
+      assignees,
     };
 
     onCreateTask(newTask);
@@ -120,22 +121,24 @@ export function TaskCreationModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-content-base mb-1">Assignee</label>
+            <label className="block text-sm font-medium text-content-base mb-1">Assignees</label>
             {assigneePersonSearch ? (
-              <PersonField
-                person={assignee}
-                setPerson={setAssignee}
+              <AssigneesField
+                people={assignees}
+                setPeople={setAssignees}
                 searchData={assigneePersonSearch}
-                emptyStateMessage="Select assignee"
+                emptyStateMessage="Select assignees"
                 testId="assignee"
+                variant="form-field"
               />
             ) : (
-              <PersonField
-                person={assignee}
-                setPerson={setAssignee}
+              <AssigneesField
+                people={assignees}
+                setPeople={setAssignees}
                 readonly={true}
-                emptyStateMessage="Select assignee"
+                emptyStateMessage="Select assignees"
                 testId="assignee"
+                variant="form-field"
               />
             )}
           </div>

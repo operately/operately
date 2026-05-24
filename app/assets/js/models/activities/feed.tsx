@@ -179,14 +179,24 @@ function parseTaskAssigneeUpdatingActivity(
   activity: Activity,
   content: ActivityContentTaskAssigneeUpdating,
   pageContext: PageContext,
-): TaskAssignmentActivity {
+): TaskAssignmentActivity | null {
+  const addedAssignee = content.addedAssignees?.[0] || content.newAssignee;
+  const removedAssignee = content.removedAssignees?.[0] || content.oldAssignee;
+  const changedAssigneeCount = (content.addedAssignees?.length || 0) + (content.removedAssignees?.length || 0);
+
+  if (changedAssigneeCount > 1) return null;
+
+  const assignee = parsePersonForTurboUi(paths, addedAssignee || removedAssignee);
+
+  if (!assignee) return null;
+
   return {
     id: activity.id,
     type: "task_assignee_updating",
     author,
     insertedAt: activity.insertedAt,
-    assignee: parsePersonForTurboUi(paths, content.newAssignee || content.oldAssignee)!,
-    action: content.newAssignee ? "assigned" : "unassigned",
+    assignee,
+    action: addedAssignee ? "assigned" : "unassigned",
     taskName: content.task?.name || "a task",
     page: pageContext,
   };

@@ -30,7 +30,7 @@ const meta: Meta<typeof TaskList> = {
       }: {
         initialTasks: Types.Task[];
         showHiddenTasksToggle?: boolean;
-        onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
+        onTaskAssigneeChange?: (taskId: string, assignees: Types.Person[]) => void;
         onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
         onTaskStatusChange?: (taskId: string, status: Types.Status | null) => void;
       }) => {
@@ -146,7 +146,6 @@ const DEFAULT_STATUS_OPTIONS: Types.Status[] = [
 ];
 
 const [PENDING_STATUS, IN_PROGRESS_STATUS, DONE_STATUS, CANCELED_STATUS] = DEFAULT_STATUS_OPTIONS;
-
 
 const longTitleOne =
   "Coordinate cross-functional launch strategy across marketing, sales, support, and product to keep messaging aligned through release";
