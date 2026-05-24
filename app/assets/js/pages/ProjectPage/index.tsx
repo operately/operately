@@ -148,7 +148,6 @@ function Page() {
     updateTaskName,
     updateTaskDueDate,
     updateTaskAssignee,
-    updateTaskStatus,
     updateTaskDescription,
     updateTaskMilestone,
     deleteTask,
@@ -201,7 +200,7 @@ function Page() {
     [project.id, refresh],
   );
 
-  const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
+  const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({
     initialRawState: project.tasksKanbanState,
     statuses,
     projectId: project.id,
@@ -228,7 +227,7 @@ function Page() {
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
-    onTaskStatusChange: updateTaskStatus,
+    onTaskStatusChange: handleTaskStatusChange,
     onTaskDescriptionChange: updateTaskDescription,
     onMoveTaskSuccess: handleMoveTaskSuccess,
     projectSearch: taskProjectSearch,

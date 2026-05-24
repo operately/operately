@@ -71,7 +71,6 @@ function Page() {
     updateTaskName,
     updateTaskDueDate,
     updateTaskAssignee,
-    updateTaskStatus,
     deleteTask,
     updateTaskDescription,
   } = Tasks.useSpaceTasksForTurboUi({
@@ -83,7 +82,7 @@ function Page() {
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "space", id: space.id } });
 
-  const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
+  const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({
     initialRawState: space.tasksKanbanState,
     statuses,
     spaceId: space.id,
@@ -140,7 +139,7 @@ function Page() {
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
-    onTaskStatusChange: updateTaskStatus,
+    onTaskStatusChange: handleTaskStatusChange,
     onTaskDescriptionChange: updateTaskDescription,
     onMoveTaskSuccess: handleMoveTaskSuccess,
     projectSearch,
