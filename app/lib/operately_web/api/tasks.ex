@@ -283,7 +283,8 @@ defmodule OperatelyWeb.Api.Tasks do
 
     inputs do
       field :task_id, :id, null: false
-      field :assignee_id, :id, null: true
+      field? :assignee_id, :id, null: true
+      field? :assignee_ids, list_of(:id), null: true
       field :type, :task_type, null: false
     end
 
@@ -292,11 +293,13 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def call(conn, inputs) do
+      assignee_ids = Steps.assignee_ids(inputs)
+
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit)
-      |> Steps.update_task_assignee(inputs.assignee_id)
+      |> Steps.update_task_assignees(assignee_ids)
       |> Steps.save_activity(:task_assignee_updating, &build_activity_content(inputs, &1))
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
@@ -306,11 +309,18 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     defp build_activity_content(inputs, changes) do
+      old_assignee_ids = Enum.map(changes.task.assigned_people || [], & &1.id)
+      new_assignee_ids = Steps.assignee_ids(inputs)
+      added_assignee_ids = new_assignee_ids -- old_assignee_ids
+      removed_assignee_ids = old_assignee_ids -- new_assignee_ids
+
       base = %{
         milestone_id: changes.task.milestone_id,
         task_id: changes.task.id,
-        old_assignee_id: get_old_assignee_id(changes.task),
-        new_assignee_id: inputs.assignee_id
+        old_assignee_id: Enum.at(removed_assignee_ids, 0) || Enum.at(old_assignee_ids, 0),
+        new_assignee_id: Enum.at(added_assignee_ids, 0) || Enum.at(new_assignee_ids, 0),
+        old_assignee_ids: old_assignee_ids,
+        new_assignee_ids: new_assignee_ids
       }
 
       cond do
@@ -327,13 +337,6 @@ defmodule OperatelyWeb.Api.Tasks do
             space_id: changes.space.id,
             project_id: nil
           }, base)
-      end
-    end
-
-    defp get_old_assignee_id(task) do
-      case task.assigned_people do
-        [assignee | _] -> assignee.id
-        _ -> nil
       end
     end
   end
@@ -429,7 +432,8 @@ defmodule OperatelyWeb.Api.Tasks do
       field :id, :id, null: false
       field? :milestone_id, :id, null: true
       field :name, :string, null: false
-      field :assignee_id, :id, null: true
+      field? :assignee_id, :id, null: true
+      field? :assignee_ids, list_of(:id), null: true
       field :due_date, :contextual_date, null: true
       field? :status, :task_status, null: false
     end
@@ -726,32 +730,51 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
+    def assignee_ids(inputs) do
+      ids =
+        case Map.fetch(inputs, :assignee_ids) do
+          {:ok, nil} -> []
+          {:ok, ids} when is_list(ids) -> ids
+          :error -> Elixir.List.wrap(inputs[:assignee_id])
+        end
+
+      ids
+      |> Enum.reject(&is_nil/1)
+      |> Enum.uniq()
+    end
+
     def update_task_assignee(multi, new_assignee_id) do
+      update_task_assignees(multi, Elixir.List.wrap(new_assignee_id) |> Enum.reject(&is_nil/1))
+    end
+
+    def update_task_assignees(multi, new_assignee_ids) do
+      new_assignee_ids = new_assignee_ids |> Enum.reject(&is_nil/1) |> Enum.uniq()
+
       multi
       |> Ecto.Multi.run(:clear_existing_assignees, fn _repo, %{task: task} ->
-        # Remove existing assignees
         Operately.Tasks.list_task_assignees(task)
         |> Enum.each(&Operately.Repo.delete!/1)
 
         {:ok, :cleared}
       end)
       |> Ecto.Multi.run(:updated_task, fn _repo, %{task: task} ->
-        if new_assignee_id do
-          {:ok, _} = Operately.Tasks.Assignee.changeset(%{
-            task_id: task.id,
-            person_id: new_assignee_id
-          }) |> Operately.Repo.insert()
-        end
+        Enum.each(new_assignee_ids, fn assignee_id ->
+          {:ok, _} =
+            Operately.Tasks.Assignee.changeset(%{
+              task_id: task.id,
+              person_id: assignee_id
+            })
+            |> Operately.Repo.insert()
+        end)
 
-        # Return the updated task with preloaded assignees
         updated_task = Operately.Repo.preload(task, :assigned_people, force: true)
 
         {:ok, updated_task}
       end)
       |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{task: task} ->
-        ensure_subscription(task.subscription_list_id, new_assignee_id, :invited)
+        ensure_subscriptions(task.subscription_list_id, new_assignee_ids, :invited)
       end)
-      |> maybe_add_assignee_contributor(new_assignee_id)
+      |> maybe_add_assignee_contributors(new_assignee_ids)
     end
 
     def delete_task(multi) do
@@ -825,6 +848,8 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def create_task(multi, inputs) do
+      assignee_ids = assignee_ids(inputs)
+
       multi
       |> Notifications.SubscriptionList.insert(%{send_to_everyone: false, subscription_parent_type: :project_task})
       |> Ecto.Multi.run(:creator_subscription, fn _repo, %{me: me, subscription_list: subscription_list} ->
@@ -853,20 +878,19 @@ defmodule OperatelyWeb.Api.Tasks do
         end
       end)
       |> Notifications.SubscriptionList.update(:new_task)
-      |> Ecto.Multi.run(:assignee, fn _repo, %{new_task: new_task} ->
-        case inputs.assignee_id do
-          nil ->
-            {:ok, nil}
-
-          assignee_id ->
+      |> Ecto.Multi.run(:assignees, fn _repo, %{new_task: new_task} ->
+        assignees =
+          Enum.map(assignee_ids, fn assignee_id ->
             Operately.Tasks.Assignee.changeset(%{task_id: new_task.id, person_id: assignee_id})
-            |> Repo.insert()
-        end
+            |> Repo.insert!()
+          end)
+
+        {:ok, assignees}
       end)
       |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{subscription_list: subscription_list} ->
-        ensure_subscription(subscription_list.id, inputs.assignee_id, :invited)
+        ensure_subscriptions(subscription_list.id, assignee_ids, :invited)
       end)
-      |> maybe_add_assignee_contributor(inputs.assignee_id)
+      |> maybe_add_assignee_contributors(assignee_ids)
       |> Ecto.Multi.run(:task, fn _repo, changes ->
         task = Repo.preload(changes.new_task, :assigned_people)
         task = maybe_attach_milestone(task, changes)
@@ -893,22 +917,30 @@ defmodule OperatelyWeb.Api.Tasks do
       end
     end
 
-    defp maybe_add_assignee_contributor(multi, nil), do: multi
+    defp maybe_add_assignee_contributors(multi, assignee_ids) when assignee_ids == [] or is_nil(assignee_ids), do: multi
 
-    defp maybe_add_assignee_contributor(multi, assignee_id) do
+    defp maybe_add_assignee_contributors(multi, assignee_ids) do
       Ecto.Multi.run(multi, :assignee_contributor, fn _repo, changes ->
         cond do
           Map.has_key?(changes, :project) and changes.project ->
-            ensure_project_contributor(changes.project, assignee_id)
+            assignee_ids
+            |> Enum.map(&ensure_project_contributor(changes.project, &1))
+            |> collect_results()
 
           Map.has_key?(changes, :space) and changes.space ->
-            # Space tasks don't need contributor management
             {:ok, :skipped}
 
           true ->
             {:ok, :skipped}
         end
       end)
+    end
+
+    defp collect_results(results) do
+      case Enum.find(results, fn result -> match?({:error, _}, result) end) do
+        nil -> {:ok, Enum.map(results, fn {:ok, value} -> value end)}
+        {:error, error} -> {:error, error}
+      end
     end
 
     defp ensure_project_contributor(project, assignee_id) do
@@ -938,6 +970,12 @@ defmodule OperatelyWeb.Api.Tasks do
         contributor ->
           {:ok, contributor}
       end
+    end
+
+    defp ensure_subscriptions(subscription_list_id, person_ids, type) do
+      person_ids
+      |> Enum.map(&ensure_subscription(subscription_list_id, &1, type))
+      |> collect_results()
     end
 
     defp ensure_subscription(nil, _person_id, _type), do: {:ok, nil}

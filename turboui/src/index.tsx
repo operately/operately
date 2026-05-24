@@ -1,5 +1,6 @@
 export * from "./TestableElement";
 
+export { AssigneesField } from "./AssigneesField";
 export * from "./Avatar";
 export * from "./Button";
 export * from "./Chronometer";

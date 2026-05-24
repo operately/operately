@@ -246,6 +246,27 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert hd(task.assigned_people).id == ctx.creator.id
     end
 
+    test "it creates a task with multiple assignees", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.project_id(ctx.project),
+        type: "project",
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with multiple assignees",
+        assignee_ids: [Paths.person_id(ctx.creator), Paths.person_id(ctx.space_member)],
+        due_date: nil
+      })
+
+      assignee_ids = Enum.map(res.task.assignees, & &1.id)
+
+      assert Paths.person_id(ctx.creator) in assignee_ids
+      assert Paths.person_id(ctx.space_member) in assignee_ids
+    end
+
     test "it adds a contributor when creating a task with a new assignee", ctx do
       ctx =
         ctx
@@ -1219,6 +1240,30 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       updated_task = Operately.Repo.preload(updated_task, :assigned_people)
       assert length(updated_task.assigned_people) == 1
       assert hd(updated_task.assigned_people).id == ctx.creator.id
+    end
+
+    test "it assigns multiple people to a task", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_ids: [Paths.person_id(ctx.creator), Paths.person_id(ctx.space_member)],
+        type: "project"
+      })
+
+      assignee_ids = Enum.map(res.task.assignees, & &1.id)
+
+      assert Paths.person_id(ctx.creator) in assignee_ids
+      assert Paths.person_id(ctx.space_member) in assignee_ids
+
+      updated_task = Operately.Repo.reload(ctx.task) |> Operately.Repo.preload(:assigned_people)
+      db_assignee_ids = Enum.map(updated_task.assigned_people, & &1.id)
+
+      assert ctx.creator.id in db_assignee_ids
+      assert ctx.space_member.id in db_assignee_ids
     end
 
     test "it can remove an assignee", ctx do

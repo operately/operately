@@ -24,7 +24,7 @@ export function useTaskSlideInProps(opts: {
   hideMilestone?: boolean;
 
   onTaskNameChange: (taskId: string, newName: string) => Promise<boolean> | boolean;
-  onTaskAssigneeChange: (taskId: string, assignee: TaskBoard.Person | null) => Promise<boolean> | boolean;
+  onTaskAssigneeChange: (taskId: string, assignees: TaskBoard.Person[]) => Promise<boolean> | boolean;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => Promise<boolean> | boolean;
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => Promise<boolean> | boolean;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
@@ -39,10 +39,11 @@ export function useTaskSlideInProps(opts: {
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
   const lastSeenTaskIdRef = React.useRef<string | null>(null);
 
-  const { activities, comments: fetchedComments, isLoading: isTimelineLoading } = useTaskTimelineItems(
-    activeTaskId,
-    commentEntityType,
-  );
+  const {
+    activities,
+    comments: fetchedComments,
+    isLoading: isTimelineLoading,
+  } = useTaskTimelineItems(activeTaskId, commentEntityType);
 
   const { comments, addComment, editComment, deleteComment, addReaction, removeReaction } = useOptimisticComments({
     taskId: activeTaskId,
@@ -101,18 +102,26 @@ export function useTaskSlideInProps(opts: {
   );
 
   const wrapAssigneeChange = React.useCallback(
-    async (taskId: string, assignee: TaskBoard.Person | null) => {
+    async (taskId: string, assignees: TaskBoard.Person[]) => {
       const prevTask = findTask(taskId);
-      const prevAssignee = prevTask?.assignees?.[0] ? toTimelinePerson(paths, prevTask.assignees[0]) : null;
+      const prevAssignees = prevTask?.assignees || [];
+      const newAssigneeIds = new Set(assignees.map((assignee) => assignee.id));
+      const prevAssigneeIds = new Set(prevAssignees.map((assignee) => assignee.id));
 
-      const res = await Promise.resolve(opts.onTaskAssigneeChange(taskId, assignee));
+      const res = await Promise.resolve(opts.onTaskAssigneeChange(taskId, assignees));
 
       if (!res) return false;
 
       if (activeTaskId !== taskId) return res;
       if (!parsedCurrentUser) return res;
 
-      const activityAssignee = assignee ? toTimelinePerson(paths, assignee) : prevAssignee;
+      const addedAssignee = assignees.find((assignee) => !prevAssigneeIds.has(assignee.id));
+      const removedAssignee = prevAssignees.find((assignee) => !newAssigneeIds.has(assignee.id));
+      const activityAssignee = addedAssignee
+        ? toTimelinePerson(paths, addedAssignee)
+        : removedAssignee
+          ? toTimelinePerson(paths, removedAssignee)
+          : null;
       if (!activityAssignee) return res;
 
       appendTimelineItem(taskId, {
@@ -123,7 +132,7 @@ export function useTaskSlideInProps(opts: {
           author: parsedCurrentUser,
           insertedAt: new Date().toISOString(),
           assignee: activityAssignee,
-          action: assignee ? "assigned" : "unassigned",
+          action: addedAssignee ? "assigned" : "unassigned",
           taskName: prevTask?.title ?? "a task",
           page: "task",
         },
@@ -256,12 +265,9 @@ export function useTaskSlideInProps(opts: {
         }
       })();
 
-      const assignee = (() => {
-        const first = task.assignees?.[0];
-        if (!first) return null;
-
-        return People.parsePersonForTurboUi(paths, first);
-      })();
+      const assignees = (task.assignees || [])
+        .map((assignee) => People.parsePersonForTurboUi(paths, assignee))
+        .filter((assignee): assignee is TaskPage.Person => Boolean(assignee));
 
       const createdBy = backendTask?.creator ? People.parsePersonForTurboUi(paths, backendTask.creator) : null;
 
@@ -293,8 +299,8 @@ export function useTaskSlideInProps(opts: {
         dueDate: task.dueDate || undefined,
         onDueDateChange: (newDate) => ctx.onTaskDueDateChange?.(taskId, newDate),
 
-        assignee,
-        onAssigneeChange: (newAssignee) => ctx.onTaskAssigneeChange?.(taskId, newAssignee),
+        assignees,
+        onAssigneesChange: (newAssignees) => ctx.onTaskAssigneeChange?.(taskId, newAssignees),
 
         createdAt: new Date(backendTask?.insertedAt ?? Date.now()),
         createdBy,

@@ -8,10 +8,10 @@ defmodule Operately.Activities.Notifications.TaskAssigneeUpdating do
   """
 
   def dispatch(activity) do
-    old_assignee_id = activity.content["old_assignee_id"]
-    new_assignee_id = activity.content["new_assignee_id"]
+    old_assignee_ids = activity.content["old_assignee_ids"] || [activity.content["old_assignee_id"]]
+    new_assignee_ids = activity.content["new_assignee_ids"] || [activity.content["new_assignee_id"]]
 
-    [old_assignee_id, new_assignee_id]
+    (old_assignee_ids ++ new_assignee_ids)
     |> Enum.uniq_by(& &1)
     |> Enum.filter(fn id -> id != nil end)
     |> Enum.filter(fn id -> id != activity.author_id end)
@@ -19,7 +19,7 @@ defmodule Operately.Activities.Notifications.TaskAssigneeUpdating do
       %{
         person_id: id,
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       }
     end)
     |> Operately.Notifications.bulk_create()
