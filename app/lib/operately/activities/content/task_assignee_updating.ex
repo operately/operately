@@ -12,11 +12,13 @@ defmodule Operately.Activities.Content.TaskAssigneeUpdating do
 
     field :old_assignee_ids, {:array, :binary_id}
     field :new_assignee_ids, {:array, :binary_id}
+    field :added_assignee_ids, {:array, :binary_id}
+    field :removed_assignee_ids, {:array, :binary_id}
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:company_id, :space_id, :project_id, :milestone_id, :task_id, :old_assignee_id, :new_assignee_id, :old_assignee_ids, :new_assignee_ids])
+    |> cast(attrs, [:company_id, :space_id, :project_id, :milestone_id, :task_id, :old_assignee_id, :new_assignee_id, :old_assignee_ids, :new_assignee_ids, :added_assignee_ids, :removed_assignee_ids])
     |> validate_required([:company_id, :space_id, :task_id])
   end
 

@@ -1311,6 +1311,104 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert after_count == before_count + 1
     end
 
+    test "it records only added assignees in legacy activity content", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      {:ok, _} =
+        Operately.Tasks.Assignee.changeset(%{
+          task_id: ctx.task.id,
+          person_id: ctx.creator.id
+        })
+        |> Operately.Repo.insert()
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_ids: [Paths.person_id(ctx.creator), Paths.person_id(ctx.space_member)],
+        type: "project"
+      })
+
+      activity = get_activity(ctx.task.id, "task_assignee_updating")
+
+      assert activity.content["old_assignee_id"] == nil
+      assert activity.content["new_assignee_id"] == ctx.space_member.id
+      assert activity.content["added_assignee_ids"] == [ctx.space_member.id]
+      assert activity.content["removed_assignee_ids"] == []
+      assert MapSet.new(activity.content["old_assignee_ids"]) == MapSet.new([ctx.creator.id])
+      assert MapSet.new(activity.content["new_assignee_ids"]) == MapSet.new([ctx.creator.id, ctx.space_member.id])
+    end
+
+    test "it records only removed assignees in legacy activity content", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      {:ok, _} =
+        Operately.Tasks.Assignee.changeset(%{
+          task_id: ctx.task.id,
+          person_id: ctx.creator.id
+        })
+        |> Operately.Repo.insert()
+
+      {:ok, _} =
+        Operately.Tasks.Assignee.changeset(%{
+          task_id: ctx.task.id,
+          person_id: ctx.space_member.id
+        })
+        |> Operately.Repo.insert()
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_ids: [Paths.person_id(ctx.creator)],
+        type: "project"
+      })
+
+      activity = get_activity(ctx.task.id, "task_assignee_updating")
+
+      assert activity.content["old_assignee_id"] == ctx.space_member.id
+      assert activity.content["new_assignee_id"] == nil
+      assert activity.content["added_assignee_ids"] == []
+      assert activity.content["removed_assignee_ids"] == [ctx.space_member.id]
+      assert MapSet.new(activity.content["old_assignee_ids"]) == MapSet.new([ctx.creator.id, ctx.space_member.id])
+      assert MapSet.new(activity.content["new_assignee_ids"]) == MapSet.new([ctx.creator.id])
+    end
+
+    test "it notifies only changed assignees", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.add_space_member(:unchanged_assignee, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      {:ok, _} =
+        Operately.Tasks.Assignee.changeset(%{
+          task_id: ctx.task.id,
+          person_id: ctx.unchanged_assignee.id
+        })
+        |> Operately.Repo.insert()
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_assignee], %{
+          task_id: Paths.task_id(ctx.task),
+          assignee_ids: [Paths.person_id(ctx.unchanged_assignee), Paths.person_id(ctx.space_member)],
+          type: "project"
+        })
+      end)
+
+      activity = get_activity(ctx.task.id, "task_assignee_updating")
+
+      assert 0 == notifications_count(action: "task_assignee_updating")
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: "task_assignee_updating")
+
+      assert 1 == notifications_count(action: "task_assignee_updating")
+      assert hd(notifications).person_id == ctx.space_member.id
+    end
+
     test "it adds a contributor when assigning a space member", ctx do
       ctx =
         ctx

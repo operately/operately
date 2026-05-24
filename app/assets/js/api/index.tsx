@@ -877,8 +877,10 @@ export interface ActivityContentTaskAssigneeUpdating {
   space: Space;
   project: Project | null;
   task: Task | null;
-  oldAssignee: Person;
-  newAssignee: Person;
+  oldAssignee?: Person | null;
+  newAssignee?: Person | null;
+  addedAssignees?: Person[] | null;
+  removedAssignees?: Person[] | null;
 }
 
 export interface ActivityContentTaskClosing {

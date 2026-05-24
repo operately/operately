@@ -317,10 +317,12 @@ defmodule OperatelyWeb.Api.Tasks do
       base = %{
         milestone_id: changes.task.milestone_id,
         task_id: changes.task.id,
-        old_assignee_id: Enum.at(removed_assignee_ids, 0) || Enum.at(old_assignee_ids, 0),
-        new_assignee_id: Enum.at(added_assignee_ids, 0) || Enum.at(new_assignee_ids, 0),
+        old_assignee_id: only_changed_assignee_id(removed_assignee_ids),
+        new_assignee_id: only_changed_assignee_id(added_assignee_ids),
         old_assignee_ids: old_assignee_ids,
-        new_assignee_ids: new_assignee_ids
+        new_assignee_ids: new_assignee_ids,
+        added_assignee_ids: added_assignee_ids,
+        removed_assignee_ids: removed_assignee_ids
       }
 
       cond do
@@ -339,6 +341,9 @@ defmodule OperatelyWeb.Api.Tasks do
           }, base)
       end
     end
+
+    defp only_changed_assignee_id([id]), do: id
+    defp only_changed_assignee_id(_), do: nil
   end
 
   defmodule UpdateMilestoneAndOrdering do

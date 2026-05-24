@@ -8,10 +8,10 @@ defmodule Operately.Activities.Notifications.TaskAssigneeUpdating do
   """
 
   def dispatch(activity) do
-    old_assignee_ids = activity.content["old_assignee_ids"] || [activity.content["old_assignee_id"]]
-    new_assignee_ids = activity.content["new_assignee_ids"] || [activity.content["new_assignee_id"]]
+    removed_assignee_ids = activity.content["removed_assignee_ids"] || [activity.content["old_assignee_id"]]
+    added_assignee_ids = activity.content["added_assignee_ids"] || [activity.content["new_assignee_id"]]
 
-    (old_assignee_ids ++ new_assignee_ids)
+    (removed_assignee_ids ++ added_assignee_ids)
     |> Enum.uniq_by(& &1)
     |> Enum.filter(fn id -> id != nil end)
     |> Enum.filter(fn id -> id != activity.author_id end)
