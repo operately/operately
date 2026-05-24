@@ -164,10 +164,8 @@ export const BasicKanban: Story = {
             };
           });
         }}
-        onTaskAssigneeChange={(taskId, assignee) =>
-          setTasks((prev) =>
-            prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
-          )
+        onTaskAssigneeChange={(taskId, assignees) =>
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, assignees } : task)))
         }
         onTaskDueDateChange={(taskId, dueDate) =>
           setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
@@ -227,10 +225,8 @@ export const SixStatusBoard: Story = {
             };
           });
         }}
-        onTaskAssigneeChange={(taskId, assignee) =>
-          setTasks((prev) =>
-            prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
-          )
+        onTaskAssigneeChange={(taskId, assignees) =>
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, assignees } : task)))
         }
         onTaskDueDateChange={(taskId, dueDate) =>
           setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
@@ -287,10 +283,8 @@ export const AutoScrollEdgeColumns: Story = {
             };
           });
         }}
-        onTaskAssigneeChange={(taskId, assignee) =>
-          setTasks((prev) =>
-            prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
-          )
+        onTaskAssigneeChange={(taskId, assignees) =>
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, assignees } : task)))
         }
         onTaskDueDateChange={(taskId, dueDate) =>
           setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
@@ -346,10 +340,8 @@ export const EmptyStates: Story = {
             };
           });
         }}
-        onTaskAssigneeChange={(taskId, assignee) =>
-          setTasks((prev) =>
-            prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
-          )
+        onTaskAssigneeChange={(taskId, assignees) =>
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, assignees } : task)))
         }
         onTaskDueDateChange={(taskId, dueDate) =>
           setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
@@ -416,10 +408,8 @@ export const WithStatusManagement: Story = {
             };
           });
         }}
-        onTaskAssigneeChange={(taskId, assignee) =>
-          setTasks((prev) =>
-            prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
-          )
+        onTaskAssigneeChange={(taskId, assignees) =>
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, assignees } : task)))
         }
         onTaskDueDateChange={(taskId, dueDate) =>
           setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))

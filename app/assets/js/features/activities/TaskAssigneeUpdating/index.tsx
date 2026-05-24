@@ -43,15 +43,8 @@ const TaskAssigneeUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const { project, space, task, newAssignee, oldAssignee } = content(activity);
-
-    const assigneeText = (() => {
-      if (newAssignee) return `assigned to ${newAssignee.fullName}`;
-      if (oldAssignee) return `unassigned ${oldAssignee.fullName} from`;
-      return "unassigned";
-    })();
-
-    const message = `${assigneeText} the task`;
+    const { project, space, task } = content(activity);
+    const message = feedMessage(content(activity));
     const taskName = task ? taskLink(task, { spaceId: !project ? space.id : undefined }) : "a task";
     const location = project ? projectLink(project) : spaceLink(space);
 
@@ -65,13 +58,17 @@ const TaskAssigneeUpdating: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
-    const { oldAssignee, newAssignee } = content(activity);
+    const { oldAssignee, newAssignee, addedAssignees, removedAssignees } = content(activity);
+    const added = addedAssignees || [];
+    const removed = removedAssignees || [];
 
-    if (!newAssignee) return null;
+    if (!newAssignee && added.length !== 1) return null;
 
     return (
       <div className="flex items-center gap-2">
-        {oldAssignee ? (
+        {removed.length > 1 ? (
+          <span>Previously assigned to {removed.length} people</span>
+        ) : oldAssignee ? (
           <>
             <span>Previously assigned to:</span>
             <div className="flex items-center gap-1">
@@ -98,11 +95,10 @@ const TaskAssigneeUpdating: ActivityHandler = {
   },
 
   NotificationTitle(props: { activity: Activity }) {
-    const { task, newAssignee } = content(props.activity);
-    const assigneeText = newAssignee ? `assigned to ${newAssignee.fullName}` : "unassigned";
+    const { task } = content(props.activity);
     const taskName = task ? `Task "${task.name}"` : "A task";
 
-    return `${taskName} was ${assigneeText}`;
+    return `${taskName} was ${notificationMessage(content(props.activity))}`;
   },
 
   NotificationLocation(props: { activity: Activity }) {
@@ -118,6 +114,42 @@ const TaskAssigneeUpdating: ActivityHandler = {
 
 function content(activity: Activity): ActivityContentTaskAssigneeUpdating {
   return activity.content as ActivityContentTaskAssigneeUpdating;
+}
+
+function feedMessage(content: ActivityContentTaskAssigneeUpdating): string {
+  const added = content.addedAssignees || [];
+  const removed = content.removedAssignees || [];
+  const [addedAssignee] = added;
+  const [removedAssignee] = removed;
+
+  if (addedAssignee && added.length === 1 && removed.length === 0)
+    return `assigned to ${addedAssignee.fullName} the task`;
+  if (removedAssignee && removed.length === 1 && added.length === 0)
+    return `unassigned ${removedAssignee.fullName} from the task`;
+  if (added.length > 0 && removed.length > 0) return "changed assignees on the task";
+  if (added.length > 1) return `assigned ${added.length} people to the task`;
+  if (removed.length > 1) return `unassigned ${removed.length} people from the task`;
+
+  if (content.newAssignee) return `assigned to ${content.newAssignee.fullName} the task`;
+  if (content.oldAssignee) return `unassigned ${content.oldAssignee.fullName} from the task`;
+
+  return "updated assignees on the task";
+}
+
+function notificationMessage(content: ActivityContentTaskAssigneeUpdating): string {
+  const added = content.addedAssignees || [];
+  const removed = content.removedAssignees || [];
+  const [addedAssignee] = added;
+  const [removedAssignee] = removed;
+
+  if (addedAssignee && added.length === 1 && removed.length === 0) return `assigned to ${addedAssignee.fullName}`;
+  if (removedAssignee && removed.length === 1 && added.length === 0)
+    return `no longer assigned to ${removedAssignee.fullName}`;
+  if (added.length > 0 || removed.length > 0) return "updated with new assignees";
+
+  if (content.newAssignee) return `assigned to ${content.newAssignee.fullName}`;
+
+  return "unassigned";
 }
 
 export default TaskAssigneeUpdating;

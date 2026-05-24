@@ -24,7 +24,7 @@ export interface MilestoneCardProps {
   showHiddenTasksToggle?: boolean;
   showKanbanLink?: boolean;
   onTaskCreate: (task: Types.NewTaskPayload) => void;
-  onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
+  onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
@@ -79,7 +79,13 @@ export function MilestoneCard({
   const completionPercentage = calculateCompletionPercentage(milestoneStats);
   const completionLabel = `${Math.round(completionPercentage)}% complete`;
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator({
+  const {
+    open: creatorOpen,
+    openCreator,
+    closeCreator,
+    creatorRef,
+    hoverBind,
+  } = useInlineTaskCreator({
     onOpen: onInlineCreateOpen,
     isActive: () => {
       const activeElement = document.activeElement;
@@ -135,7 +141,7 @@ export function MilestoneCard({
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <BlackLink
                 to={milestone.link || ""}
-                // Hover color change on medium+ screens (hover disabled on small screens to prevent double-tap on mobile) 
+                // Hover color change on medium+ screens (hover disabled on small screens to prevent double-tap on mobile)
                 className="min-w-0 text-sm font-semibold text-content-base transition-colors md:hover:text-link-hover"
                 underline="hover"
                 title={milestone.name}
