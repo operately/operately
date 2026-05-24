@@ -49,7 +49,7 @@ export interface KanbanBoardProps {
     from: { status: KanbanStatus; index: number };
     to: { status: KanbanStatus; index: number };
     updatedKanbanState: KanbanState;
-  }) => void | Promise<void>;
+  }) => void | boolean | Promise<void | boolean>;
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
