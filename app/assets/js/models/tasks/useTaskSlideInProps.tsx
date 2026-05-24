@@ -37,13 +37,14 @@ export function useTaskSlideInProps(opts: {
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
+  const [timelineRefreshVersion, setTimelineRefreshVersion] = React.useState(0);
   const lastSeenTaskIdRef = React.useRef<string | null>(null);
 
   const {
     activities,
     comments: fetchedComments,
     isLoading: isTimelineLoading,
-  } = useTaskTimelineItems(activeTaskId, commentEntityType);
+  } = useTaskTimelineItems(activeTaskId, commentEntityType, timelineRefreshVersion);
 
   const { comments, addComment, editComment, deleteComment, addReaction, removeReaction } = useOptimisticComments({
     taskId: activeTaskId,
@@ -71,6 +72,10 @@ export function useTaskSlideInProps(opts: {
 
   const findTask = React.useCallback((taskId: string) => tasks.find((t) => compareIds(t.id, taskId)) ?? null, [tasks]);
 
+  const refreshTimelineAfterInactiveChange = React.useCallback(() => {
+    setTimelineRefreshVersion((version) => version + 1);
+  }, []);
+
   const wrapNameChange = React.useCallback(
     async (taskId: string, newName: string) => {
       const prevTask = findTask(taskId);
@@ -80,7 +85,10 @@ export function useTaskSlideInProps(opts: {
 
       if (!res) return false;
 
-      if (activeTaskId !== taskId) return res;
+      if (activeTaskId !== taskId) {
+        refreshTimelineAfterInactiveChange();
+        return res;
+      }
       if (!parsedCurrentUser) return res;
 
       appendTimelineItem(taskId, {
@@ -98,7 +106,7 @@ export function useTaskSlideInProps(opts: {
 
       return res;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser],
+    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
   );
 
   const wrapAssigneeChange = React.useCallback(
@@ -112,7 +120,10 @@ export function useTaskSlideInProps(opts: {
 
       if (!res) return false;
 
-      if (activeTaskId !== taskId) return res;
+      if (activeTaskId !== taskId) {
+        refreshTimelineAfterInactiveChange();
+        return res;
+      }
       if (!parsedCurrentUser) return res;
 
       const addedAssignee = assignees.find((assignee) => !prevAssigneeIds.has(assignee.id));
@@ -140,7 +151,7 @@ export function useTaskSlideInProps(opts: {
 
       return res;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, paths],
+    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, paths, refreshTimelineAfterInactiveChange],
   );
 
   const wrapDueDateChange = React.useCallback(
@@ -152,7 +163,10 @@ export function useTaskSlideInProps(opts: {
 
       if (!res) return false;
 
-      if (activeTaskId !== taskId) return res;
+      if (activeTaskId !== taskId) {
+        refreshTimelineAfterInactiveChange();
+        return res;
+      }
       if (!parsedCurrentUser) return res;
 
       appendTimelineItem(taskId, {
@@ -171,7 +185,7 @@ export function useTaskSlideInProps(opts: {
 
       return res;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser],
+    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
   );
 
   const wrapStatusChange = React.useCallback(
@@ -183,7 +197,10 @@ export function useTaskSlideInProps(opts: {
 
       if (!res) return false;
 
-      if (activeTaskId !== taskId) return res;
+      if (activeTaskId !== taskId) {
+        refreshTimelineAfterInactiveChange();
+        return res;
+      }
       if (!parsedCurrentUser) return res;
 
       appendTimelineItem(taskId, {
@@ -202,7 +219,7 @@ export function useTaskSlideInProps(opts: {
 
       return res;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser],
+    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
   );
 
   const wrapDescriptionChange = React.useCallback(
@@ -212,7 +229,10 @@ export function useTaskSlideInProps(opts: {
       const res = await opts.onTaskDescriptionChange(taskId, content);
 
       if (!res) return res;
-      if (activeTaskId !== taskId) return res;
+      if (activeTaskId !== taskId) {
+        refreshTimelineAfterInactiveChange();
+        return res;
+      }
       if (!parsedCurrentUser) return res;
 
       appendTimelineItem(taskId, {
@@ -230,7 +250,7 @@ export function useTaskSlideInProps(opts: {
 
       return res;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser],
+    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
   );
 
   const getTaskPageProps = React.useCallback(

@@ -5,7 +5,11 @@ import { TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
 import * as Activities from "@/models/activities";
 import * as Comments from "@/models/comments";
 
-export function useTaskTimelineItems(taskId: string | null, commentEntityType: Comments.CommentParentType) {
+export function useTaskTimelineItems(
+  taskId: string | null,
+  commentEntityType: Comments.CommentParentType,
+  refreshVersion = 0,
+) {
   const [activities, setActivities] = React.useState<Activities.Activity[]>([]);
   const [comments, setComments] = React.useState<Comments.Comment[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -22,15 +26,19 @@ export function useTaskTimelineItems(taskId: string | null, commentEntityType: C
     setIsLoading(true);
 
     Promise.all([
-      Api.companies.listActivities({
-        scopeId: taskId,
-        scopeType: "task",
-        actions: TASK_ACTIVITY_TYPES,
-      }).then((d) => d.activities ?? []),
-      Api.comments.list({
-        entityId: taskId,
-        entityType: commentEntityType,
-      }).then((d) => d.comments ?? []),
+      Api.companies
+        .listActivities({
+          scopeId: taskId,
+          scopeType: "task",
+          actions: TASK_ACTIVITY_TYPES,
+        })
+        .then((d) => d.activities ?? []),
+      Api.comments
+        .list({
+          entityId: taskId,
+          entityType: commentEntityType,
+        })
+        .then((d) => d.comments ?? []),
     ])
       .then(([nextActivities, nextComments]) => {
         if (canceled) return;
@@ -50,7 +58,7 @@ export function useTaskTimelineItems(taskId: string | null, commentEntityType: C
     return () => {
       canceled = true;
     };
-  }, [taskId, commentEntityType]);
+  }, [taskId, commentEntityType, refreshVersion]);
 
   return { activities, comments, isLoading };
 }

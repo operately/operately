@@ -122,10 +122,11 @@ function useAssigneesFieldState(props: AssigneesField.Props): State {
     props.onOpenChange?.(nextOpen);
   };
 
-  const selectedIds = React.useMemo(() => new Set(props.people.map((person) => person.id)), [props.people]);
+  const people = React.useMemo(() => sortPeopleByName(props.people), [props.people]);
+  const selectedIds = React.useMemo(() => new Set(people.map((person) => person.id)), [people]);
 
   return {
-    people: props.people,
+    people,
     selectedIds,
     setPeople: props.setPeople,
     searchResults: (props.searchData?.people || []).filter((person) => !selectedIds.has(person.id)),
@@ -258,12 +259,13 @@ function DialogContent({ state }: { state: State }) {
   }, [state.searchResults]);
 
   const addPerson = (person: AssigneesField.Person) => {
-    state.setPeople?.([...state.people, person]);
+    state.setPeople?.(sortPeopleByName([...state.people, person]));
     state.setSearchQuery("");
+    state.setIsOpen(false);
   };
 
   const removePerson = (person: AssigneesField.Person) => {
-    state.setPeople?.(state.people.filter((selected) => selected.id !== person.id));
+    state.setPeople?.(sortPeopleByName(state.people.filter((selected) => selected.id !== person.id)));
   };
 
   const clearPeople = () => {
@@ -361,4 +363,8 @@ function DialogContent({ state }: { state: State }) {
       )}
     </div>
   );
+}
+
+function sortPeopleByName(people: AssigneesField.Person[]): AssigneesField.Person[] {
+  return [...people].sort((a, b) => a.fullName.localeCompare(b.fullName));
 }

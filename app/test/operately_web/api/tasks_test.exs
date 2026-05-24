@@ -1497,6 +1497,29 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert length(updated_task.assigned_people) == 1
       assert hd(updated_task.assigned_people).id == ctx.creator.id
     end
+
+    test "it creates an activity when assignee is updated on a space task", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      before_count = count_space_activities(ctx.engineering.id, "task_assignee_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.space_task),
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "space"
+      })
+
+      after_count = count_space_activities(ctx.engineering.id, "task_assignee_updating")
+      activity = get_activity(task: ctx.space_task, action: "task_assignee_updating")
+
+      assert after_count == before_count + 1
+      assert activity.content["space_id"] == ctx.engineering.id
+      assert activity.content["project_id"] == nil
+      assert activity.content["new_assignee_id"] == ctx.creator.id
+    end
   end
 
   describe "update task milestone" do
