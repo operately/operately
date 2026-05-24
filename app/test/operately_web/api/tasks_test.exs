@@ -1409,6 +1409,38 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert hd(notifications).person_id == ctx.space_member.id
     end
 
+    test "it notifies removed assignees", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      {:ok, _} =
+        Operately.Tasks.Assignee.changeset(%{
+          task_id: ctx.task.id,
+          person_id: ctx.space_member.id
+        })
+        |> Operately.Repo.insert()
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_assignee], %{
+          task_id: Paths.task_id(ctx.task),
+          assignee_ids: [],
+          type: "project"
+        })
+      end)
+
+      activity = get_activity(ctx.task.id, "task_assignee_updating")
+
+      assert 0 == notifications_count(action: "task_assignee_updating")
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: "task_assignee_updating")
+
+      assert 1 == notifications_count(action: "task_assignee_updating")
+      assert hd(notifications).person_id == ctx.space_member.id
+    end
+
     test "it adds a contributor when assigning a space member", ctx do
       ctx =
         ctx
