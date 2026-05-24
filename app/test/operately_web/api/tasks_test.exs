@@ -1162,6 +1162,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert notification.person_id == ctx.new_champion.id
     end
 
+    test "it notifies every assignee", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:first_assignee, :engineering)
+        |> Factory.add_space_member(:second_assignee, :engineering)
+        |> Factory.add_task_assignee(:first_task_assignee, :task, :first_assignee)
+        |> Factory.add_task_assignee(:second_task_assignee, :task, :second_assignee)
+        |> Factory.log_in_person(:creator)
+
+      action = "task_due_date_updating"
+
+      assert notifications_count(action: action) == 0
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: %{ date: "2026-06-01", date_type: "day", value: "Jun 1, 2026" },
+        type: "project"
+      })
+
+      activity = get_activity(task: ctx.task, action: action)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 2
+      assert Enum.all?(notifications, & &1.should_send_email)
+      assert MapSet.new(Enum.map(notifications, & &1.person_id)) == MapSet.new([ctx.first_assignee.id, ctx.second_assignee.id])
+    end
+
     test "it updates a space task due date", ctx do
       ctx =
         ctx
@@ -1407,6 +1434,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 1 == notifications_count(action: "task_assignee_updating")
       assert hd(notifications).person_id == ctx.space_member.id
+    end
+
+    test "it notifies every added assignee", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:first_assignee, :engineering)
+        |> Factory.add_space_member(:second_assignee, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_assignee], %{
+          task_id: Paths.task_id(ctx.task),
+          assignee_ids: [Paths.person_id(ctx.first_assignee), Paths.person_id(ctx.second_assignee)],
+          type: "project"
+        })
+      end)
+
+      activity = get_activity(ctx.task.id, "task_assignee_updating")
+
+      assert 0 == notifications_count(action: "task_assignee_updating")
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: "task_assignee_updating")
+
+      assert 2 == notifications_count(action: "task_assignee_updating")
+      assert Enum.all?(notifications, & &1.should_send_email)
+      assert MapSet.new(Enum.map(notifications, & &1.person_id)) == MapSet.new([ctx.first_assignee.id, ctx.second_assignee.id])
     end
 
     test "it notifies removed assignees", ctx do

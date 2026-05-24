@@ -371,6 +371,32 @@ defmodule Operately.Assignments.LoaderTest do
       assert t2.origin.name == ctx.project.name
     end
 
+    test "returns the same task assignment to every assignee", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:second_assignee, :space)
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+
+      pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task, nil,
+          project_id: ctx.project.id,
+          name: "Shared Task",
+          task_status: pending,
+          due_date: ContextualDate.create_day_date(today())
+        )
+        |> Factory.add_task_assignee(:first_task_assignee, :task, :champion)
+        |> Factory.add_task_assignee(:second_task_assignee, :task, :second_assignee)
+
+      champion_assignments = Loader.load(ctx.champion, ctx.company)
+      second_assignee_assignments = Loader.load(ctx.second_assignee, ctx.company)
+
+      assert Enum.any?(champion_assignments, &(&1.resource_id == Paths.task_id(ctx.task)))
+      assert Enum.any?(second_assignee_assignments, &(&1.resource_id == Paths.task_id(ctx.task)))
+    end
+
     test "ignores tasks from deleted projects", ctx do
       ctx = Factory.add_project(ctx, :project, :space, champion: :champion, reviewer: :reviewer)
       pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
