@@ -52,18 +52,15 @@ const mockPeople: Types.Person[] = [
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
 ];
 
-
 export const Default: Story = {
   tags: ["autodocs"],
   render: () => {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
     const [displayMode, setDisplayMode] = useState<Types.TaskDisplayMode>("list");
-    
+
     // Create state for tasks and task creation
     const [tasks, setTasks] = useState([...mockTasks("project")]);
-    const [milestones, setMilestones] = useState<Types.Milestone[]>([
-      ...Object.values(mockMilestones),
-    ]);
+    const [milestones, setMilestones] = useState<Types.Milestone[]>([...Object.values(mockMilestones)]);
     const [searchableMilestones, setSearchableMilestones] = useState<Types.Milestone[]>([
       ...Object.values(mockMilestones),
     ]);
@@ -118,9 +115,7 @@ export const Default: Story = {
     };
 
     const handleTaskStatusChange = (taskId: string, status: Types.Status | null) => {
-      setTasks((prevTasks) =>
-        prevTasks.map((task) => (task.id === taskId ? { ...task, status } : task))
-      );
+      setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? { ...task, status } : task)));
     };
 
     return (
@@ -130,11 +125,11 @@ export const Default: Story = {
         searchableMilestones={searchableMilestones}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskAssigneeChange={(taskId, assignee) => {
-          console.log('Task assignee updated:', taskId, assignee);
+        onTaskAssigneeChange={(taskId, assignees) => {
+          console.log("Task assignees updated:", taskId, assignees);
         }}
         onTaskDueDateChange={(taskId, dueDate) => {
-          console.log('Task due date updated:', taskId, dueDate);
+          console.log("Task due date updated:", taskId, dueDate);
         }}
         onTaskStatusChange={handleTaskStatusChange}
         onMilestoneSearch={handleMilestoneSearch}
@@ -143,8 +138,8 @@ export const Default: Story = {
         onFiltersChange={setFilters}
         statuses={statuses}
         onSaveCustomStatuses={(data) => {
-          console.log('Statuses updated:', data.nextStatuses);
-          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          console.log("Statuses updated:", data.nextStatuses);
+          console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
@@ -176,7 +171,10 @@ export const CompletedMilestonesAtEnd: Story = {
     };
 
     const [milestones] = useState<Types.Milestone[]>([openMilestone, completedMilestone]);
-    const [searchableMilestones, setSearchableMilestones] = useState<Types.Milestone[]>([openMilestone, completedMilestone]);
+    const [searchableMilestones, setSearchableMilestones] = useState<Types.Milestone[]>([
+      openMilestone,
+      completedMilestone,
+    ]);
     const [tasks, setTasks] = useState<Types.Task[]>([
       {
         id: "open-task",
@@ -215,9 +213,7 @@ export const CompletedMilestonesAtEnd: Story = {
 
     const handleMilestoneSearch = async (query: string) => {
       const normalizedQuery = query.toLowerCase();
-      setSearchableMilestones(
-        milestones.filter((milestone) => milestone.name.toLowerCase().includes(normalizedQuery)),
-      );
+      setSearchableMilestones(milestones.filter((milestone) => milestone.name.toLowerCase().includes(normalizedQuery)));
     };
 
     return (

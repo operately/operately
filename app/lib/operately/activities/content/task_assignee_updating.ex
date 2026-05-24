@@ -9,11 +9,14 @@ defmodule Operately.Activities.Content.TaskAssigneeUpdating do
     belongs_to :task, Operately.Tasks.Task
     belongs_to :old_assignee, Operately.People.Person
     belongs_to :new_assignee, Operately.People.Person
+
+    field :old_assignee_ids, {:array, :binary_id}
+    field :new_assignee_ids, {:array, :binary_id}
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:company_id, :space_id, :project_id, :milestone_id, :task_id, :old_assignee_id, :new_assignee_id])
+    |> cast(attrs, [:company_id, :space_id, :project_id, :milestone_id, :task_id, :old_assignee_id, :new_assignee_id, :old_assignee_ids, :new_assignee_ids])
     |> validate_required([:company_id, :space_id, :task_id])
   end
 
