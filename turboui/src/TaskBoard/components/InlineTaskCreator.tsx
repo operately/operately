@@ -46,7 +46,7 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
         title: trimmed,
         milestone,
         dueDate: null,
-        assignee: null,
+        assignees: [],
       };
 
       onCreate(payload);
