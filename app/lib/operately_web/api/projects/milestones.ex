@@ -434,7 +434,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
         tasks =
           from(t in Operately.Tasks.Task,
             where: t.milestone_id == ^milestone.id,
-            preload: [:assigned_people, :milestone]
+            preload: [:assigned_people, :milestone, subscription_list: [subscriptions: :person]]
           )
           |> Operately.Repo.all()
 

@@ -433,7 +433,7 @@ defmodule OperatelyWeb.Api.Spaces do
         tasks =
           from(t in Operately.Tasks.Task,
             where: t.space_id == ^space.id,
-            preload: [:assigned_people]
+            preload: [:assigned_people, subscription_list: [subscriptions: :person]]
           )
           |> Repo.all()
           |> Operately.Tasks.Task.load_comments_count()

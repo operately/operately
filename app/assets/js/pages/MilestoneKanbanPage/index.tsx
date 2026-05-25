@@ -168,6 +168,8 @@ function Page() {
     currentUser,
     tasks,
     commentEntityType: "project_task",
+    cacheKey: pageCacheKey(milestone.id),
+    onRefresh: refresh,
     canEdit: milestone.permissions.canEdit,
     canComment: milestone.permissions.canComment,
     onTaskNameChange: updateTaskName,

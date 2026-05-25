@@ -2346,7 +2346,8 @@ export type SubscriptionParentType =
   | "comment_thread"
   | "project"
   | "milestone"
-  | "project_task";
+  | "project_task"
+  | "space_task";
 
 export type SuccessStatus = "achieved" | "missed";
 

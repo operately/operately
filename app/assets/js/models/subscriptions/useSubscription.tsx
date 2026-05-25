@@ -7,7 +7,7 @@ import { PageCache } from "@/routes/PageCache";
 interface UseSubscriptionOptions {
   subscriptionList?: SubscriptionList | null;
   entityId: string;
-  entityType: "project" | "milestone" | "project_task";
+  entityType: "project" | "milestone" | "project_task" | "space_task";
   cacheKey: string;
   onRefresh?: () => Promise<void>;
 }
@@ -34,15 +34,28 @@ export function useSubscription({
     );
   });
 
+  React.useEffect(() => {
+    if (!subscriptionList?.subscriptions || !currentUser) {
+      setIsSubscribed(false);
+      return;
+    }
+
+    setIsSubscribed(
+      subscriptionList.subscriptions.some(
+        (subscription) => subscription.person?.id === currentUser.id && subscription.canceled !== true,
+      ),
+    );
+  }, [currentUser, subscriptionList?.subscriptions]);
+
   const onToggle = React.useCallback(
-    async (notSubscribed: boolean) => {
+    async (nextIsSubscribed: boolean) => {
       if (!subscriptionList?.id) return;
 
-      const prevValue = notSubscribed;
-      setIsSubscribed(notSubscribed);
+      const prevValue = isSubscribed;
+      setIsSubscribed(nextIsSubscribed);
 
       try {
-        if (notSubscribed) {
+        if (nextIsSubscribed) {
           await Api.notifications.subscribe({ subscriptionListId: subscriptionList.id, type: entityType });
         } else {
           await Api.notifications.unsubscribe({ subscriptionListId: subscriptionList.id });
@@ -57,7 +70,7 @@ export function useSubscription({
         console.error(`Failed to toggle ${entityType} subscription`, error);
         showErrorToast(
           "Error",
-          prevValue
+          nextIsSubscribed
             ? `Failed to subscribe to ${entityType} notifications.`
             : `Failed to unsubscribe from ${entityType} notifications.`,
         );

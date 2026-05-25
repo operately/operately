@@ -8,6 +8,7 @@ import { compareIds, Paths } from "@/routes/paths";
 import { useTaskTimelineItems } from "./useTaskTimelineItems";
 import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 import Api, { type Person as ApiPerson, type Task as BackendTask } from "@/api";
+import { useSubscription } from "@/models/subscriptions";
 
 type TimelinePerson = NonNullable<TaskPage.ContentProps["currentUser"]>;
 
@@ -18,6 +19,8 @@ export function useTaskSlideInProps(opts: {
   tasks: TaskBoard.Task[];
 
   commentEntityType: "project_task" | "space_task";
+  cacheKey: string;
+  onRefresh?: () => Promise<void>;
 
   canEdit: boolean;
   canComment: boolean;
@@ -39,6 +42,18 @@ export function useTaskSlideInProps(opts: {
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
   const [timelineRefreshVersion, setTimelineRefreshVersion] = React.useState(0);
   const lastSeenTaskIdRef = React.useRef<string | null>(null);
+  const activeBackendTask = React.useMemo(
+    () => backendTasks.find((task) => activeTaskId && compareIds(task.id, activeTaskId)) ?? null,
+    [activeTaskId, backendTasks],
+  );
+
+  const subscriptions = useSubscription({
+    subscriptionList: activeBackendTask?.subscriptionList,
+    entityId: activeBackendTask?.id ?? "",
+    entityType: commentEntityType,
+    cacheKey: opts.cacheKey,
+    onRefresh: opts.onRefresh,
+  });
 
   const {
     activities,
@@ -324,7 +339,7 @@ export function useTaskSlideInProps(opts: {
 
         createdAt: new Date(backendTask?.insertedAt ?? Date.now()),
         createdBy,
-        subscriptions: { isSubscribed: false, onToggle: () => {}, hidden: true, entityType: "project_task" },
+        subscriptions,
 
         onDelete: async () => {
           await ctx.onTaskDelete?.(taskId);
@@ -403,6 +418,7 @@ export function useTaskSlideInProps(opts: {
       activities,
       comments,
       opts.onMoveTaskSuccess,
+      subscriptions,
       opts.projectSearch,
       opts.spaceSearch,
     ],
