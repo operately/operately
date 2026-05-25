@@ -82,6 +82,7 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
 
       %{
         parent_name: hd(items).parent_name,
+        parent_url: Map.get(hd(items), :parent_url),
         author_groups: author_groups,
         earliest_occurred_at: earliest_occurred_at
       }

@@ -7,6 +7,9 @@ No new updates.
 <%= for group <- @parent_groups do %>
 <% group_total = Enum.reduce(group.author_groups, 0, fn ag, acc -> acc + length(ag.items) end) %>
 <%= group.parent_name %> (<%= group_total %> <%= if group_total == 1, do: "update", else: "updates" %>)
+<%= if group.parent_url do %>
+<%= group.parent_url %>
+<% end %>
 <%= for author_group <- group.author_groups do %>
 <%= if length(author_group.items) == 1 do %>
 <%= for item <- author_group.items do %>

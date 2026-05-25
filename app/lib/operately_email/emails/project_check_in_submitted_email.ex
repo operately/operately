@@ -119,10 +119,11 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
+      parent_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
       headline: "submitted a check-in with status \"#{status_label(check_in.status)}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
-      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      item_url: OperatelyWeb.Paths.project_check_in_path(company, check_in) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil
