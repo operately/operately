@@ -4,13 +4,7 @@ import { createContextualDate } from "../DateField/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { TaskPage } from "./index";
-import {
-  asRichText,
-  createActiveTaskTimeline,
-  mockMilestones,
-  mockTaskPeople,
-  timelinePeople,
-} from "./mockData";
+import { asRichText, createActiveTaskTimeline, mockMilestones, mockTaskPeople, timelinePeople } from "./mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
@@ -41,7 +35,7 @@ export function InProjectContextStory() {
   const [taskDueDate, setTaskDueDate] = useState<DateField.ContextualDate | undefined>(
     createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
   );
-  const [taskAssignee, setTaskAssignee] = useState<TaskPage.Person | null>(mockTaskPeople[1]!);
+  const [taskAssignees, setTaskAssignees] = useState<TaskPage.Person[]>([mockTaskPeople[1]!]);
   const [taskMilestone, setTaskMilestone] = useState<TaskPage.Milestone | null>(mockMilestones[1]!); // Beta Release
   const [milestones, setMilestones] = useState<TaskPage.Milestone[]>(mockMilestones);
   const subscriptions = useMockSubscriptions({ entityType: "project_task", initial: false });
@@ -91,9 +85,9 @@ export function InProjectContextStory() {
         console.log("Updating due date:", newDate);
         setTaskDueDate(newDate ?? undefined);
       }}
-      assignee={taskAssignee}
-      onAssigneeChange={(newAssignee) => {
-        setTaskAssignee(newAssignee);
+      assignees={taskAssignees}
+      onAssigneesChange={(newAssignees) => {
+        setTaskAssignees(newAssignees);
       }}
       // Milestone
       milestone={taskMilestone}

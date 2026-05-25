@@ -55,15 +55,19 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeAvailableStatuses: true,
         }).then((d) => d.task!),
         childrenCount: Api.projects.countChildren({ id: params.id, useTaskId: true }).then((d) => d.childrenCount),
-        activities: Api.companies.listActivities({
-          scopeId: params.id,
-          scopeType: "task",
-          actions: TASK_ACTIVITY_TYPES,
-        }).then((d) => d.activities!),
-        comments: Api.comments.list({
-          entityId: params.id,
-          entityType: "project_task",
-        }).then((d) => d.comments!),
+        activities: Api.companies
+          .listActivities({
+            scopeId: params.id,
+            scopeType: "task",
+            actions: TASK_ACTIVITY_TYPES,
+          })
+          .then((d) => d.activities!),
+        comments: Api.comments
+          .list({
+            entityId: params.id,
+            entityType: "project_task",
+          })
+          .then((d) => d.comments!),
       }),
   });
 }
@@ -82,7 +86,6 @@ function Page() {
   const pageData = PageCache.useData(loader);
   const { data, refresh: refreshPageData } = pageData;
   const { task, childrenCount, activities } = data;
-
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.permissions, "Task must have permissions");
@@ -137,9 +140,14 @@ function Page() {
     refreshPageData,
   });
 
-  const [assignee, setAssignee] = usePageField({
-    value: ({ task }) => People.parsePersonForTurboUi(paths, task.assignees?.[0] || null),
-    update: (v) => Api.tasks.updateAssignee({ taskId: task.id, assigneeId: v?.id ?? null, type: "project" }),
+  const [assignees, setAssignees] = usePageField<TaskPage.Person[]>({
+    value: ({ task }) =>
+      (task.assignees || []).flatMap((assignee) => {
+        const parsed = People.parsePersonForTurboUi(paths, assignee);
+        return parsed ? [parsed] : [];
+      }),
+    update: (v) =>
+      Api.tasks.updateAssignee({ taskId: task.id, assigneeIds: v.map((assignee) => assignee.id), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update assignees."),
     pageData,
     refreshPageData,
@@ -254,8 +262,8 @@ function Page() {
     statusOptions,
     dueDate: dueDate || undefined,
     onDueDateChange: setDueDate,
-    assignee,
-    onAssigneeChange: setAssignee,
+    assignees,
+    onAssigneesChange: setAssignees,
 
     onDelete: handleDelete,
     onMoveTask: moveTask,

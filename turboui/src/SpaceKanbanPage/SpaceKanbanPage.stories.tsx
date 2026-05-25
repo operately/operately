@@ -19,7 +19,12 @@ import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import type { TimelineItem as TimelineItemType } from "../Timeline/types";
 import { Reactions } from "../Reactions";
-import { asRichText, createActiveTaskTimeline, createComment, currentUser as mockCurrentUser } from "../TaskPage/mockData";
+import {
+  asRichText,
+  createActiveTaskTimeline,
+  createComment,
+  currentUser as mockCurrentUser,
+} from "../TaskPage/mockData";
 
 import type { KanbanStatus, TaskSlideInContext } from "../TaskBoard/KanbanView/types";
 
@@ -102,13 +107,13 @@ const buildTaskPageProps = (
   const task = ctx.tasks.find((t) => t.id === taskId);
   if (!task) return null;
 
-  const assignee = task.assignees?.[0] ? toTaskPagePerson(task.assignees[0]) : null;
+  const assignees = (task.assignees || []).map(toTaskPagePerson);
   const milestone = task.milestone ? toTaskPageMilestone(task.milestone) : null;
 
   return {
     milestone,
     onMilestoneChange: (next) => {
-      const resolved = next ? (ctx.milestones ?? []).find((m) => m.id === next.id) ?? null : null;
+      const resolved = next ? ((ctx.milestones ?? []).find((m) => m.id === next.id) ?? null) : null;
       ctx.onTaskMilestoneChange?.(taskId, resolved);
     },
     milestones: (ctx.milestones ?? []).map(toTaskPageMilestone),
@@ -129,8 +134,8 @@ const buildTaskPageProps = (
     onStatusChange: (newStatus) => ctx.onTaskStatusChange?.(taskId, newStatus),
     statusOptions: ctx.statuses as Types.Status[],
     onDueDateChange: (newDueDate) => ctx.onTaskDueDateChange?.(taskId, newDueDate),
-    assignee,
-    onAssigneeChange: (newAssignee) => ctx.onTaskAssigneeChange?.(taskId, newAssignee),
+    assignees,
+    onAssigneesChange: (newAssignees) => ctx.onTaskAssigneeChange?.(taskId, newAssignees),
 
     createdAt: new Date(),
     createdBy: toTaskPagePerson(Object.values(mockPeople)[0]!),
@@ -188,9 +193,7 @@ export const Default: Story = {
           const nextItems = updater(prev[taskId] ?? []);
           setTasks((prevTasks) => {
             const count = commentCountFromTimeline(nextItems);
-            return prevTasks.map((t) =>
-              t.id === taskId ? { ...t, hasComments: count > 0, commentCount: count } : t,
-            );
+            return prevTasks.map((t) => (t.id === taskId ? { ...t, hasComments: count > 0, commentCount: count } : t));
           });
           return { ...prev, [taskId]: nextItems };
         });
@@ -282,9 +285,7 @@ export const Default: Story = {
         <SpaceKanbanPage
           canEdit={false}
           space={space}
-          navigation={[
-            { to: "/spaces/demo-space", label: "Demo Space" },
-          ]}
+          navigation={[{ to: "/spaces/demo-space", label: "Demo Space" }]}
           tasks={tasks}
           statuses={STATUSES}
           kanbanState={taskActions.kanbanState}
@@ -388,9 +389,7 @@ export const WithStatusManagement: Story = {
           const nextItems = updater(prev[taskId] ?? []);
           setTasks((prevTasks) => {
             const count = commentCountFromTimeline(nextItems);
-            return prevTasks.map((t) =>
-              t.id === taskId ? { ...t, hasComments: count > 0, commentCount: count } : t,
-            );
+            return prevTasks.map((t) => (t.id === taskId ? { ...t, hasComments: count > 0, commentCount: count } : t));
           });
           return { ...prev, [taskId]: nextItems };
         });
@@ -481,9 +480,7 @@ export const WithStatusManagement: Story = {
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
         <SpaceKanbanPage
           space={space}
-          navigation={[
-            { to: "/spaces/demo-space", label: "Demo Space" },
-          ]}
+          navigation={[{ to: "/spaces/demo-space", label: "Demo Space" }]}
           tasks={tasks}
           statuses={statuses}
           kanbanState={taskActions.kanbanState}

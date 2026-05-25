@@ -24,14 +24,14 @@ const meta: Meta<typeof MilestoneCard> = {
       const MilestoneCardWithDragAndDrop = () => {
         const [tasks, setTasks] = React.useState<Types.Task[]>([]);
         const [milestone, setMilestone] = React.useState<Types.Milestone>(context.args.milestone);
-        
+
         // Initialize state from story args
         React.useEffect(() => {
           const { args } = context;
           if (args.tasks) setTasks([...args.tasks]);
-          if (args.milestone) setMilestone({...args.milestone});
+          if (args.milestone) setMilestone({ ...args.milestone });
         }, [context.args]);
-        
+
         // Handle drop events to update task order
         const handleTaskMove = React.useCallback(
           (move: BoardMove) => {
@@ -49,7 +49,7 @@ const meta: Meta<typeof MilestoneCard> = {
         );
 
         const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
-        
+
         // Handle task creation
         const handleTaskCreate = (newTask: Types.NewTaskPayload) => {
           // Skip if milestone is not loaded
@@ -74,8 +74,8 @@ const meta: Meta<typeof MilestoneCard> = {
         // Handle milestone updates (including due date changes)
         const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
           console.log(`Updating milestone ${milestoneId}:`, updates);
-          
-          setMilestone(prev => ({ ...prev, ...updates }));
+
+          setMilestone((prev) => ({ ...prev, ...updates }));
         };
 
         // Mock people data
@@ -85,28 +85,28 @@ const meta: Meta<typeof MilestoneCard> = {
           { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
           { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
         ];
-        
+
         const assigneePersonSearch = usePersonFieldSearch(mockPeople);
-        
+
         // Return early with loading state if milestone is not yet loaded
         if (!milestone) {
           return <div>Loading milestone...</div>;
         }
-        
+
         return (
           <MilestoneCard
-            milestone={milestone} 
+            milestone={milestone}
             tasks={tasks}
             showHiddenTasksToggle={context.args.showHiddenTasksToggle ?? true}
             onTaskCreate={handleTaskCreate}
-            onTaskAssigneeChange={(taskId, assignee) => {
-              console.log('Task assignee updated:', taskId, assignee);
+            onTaskAssigneeChange={(taskId, assignees) => {
+              console.log("Task assignees updated:", taskId, assignees);
             }}
             onTaskDueDateChange={(taskId, dueDate) => {
-              console.log('Task due date updated:', taskId, dueDate);
+              console.log("Task due date updated:", taskId, dueDate);
             }}
             onTaskStatusChange={(taskId, status) => {
-              console.log('Task status updated:', taskId, status);
+              console.log("Task status updated:", taskId, status);
             }}
             onMilestoneUpdate={handleMilestoneUpdate}
             assigneePersonSearch={assigneePersonSearch}
@@ -118,7 +118,7 @@ const meta: Meta<typeof MilestoneCard> = {
           />
         );
       };
-      
+
       return (
         <div className="m-4 w-[600px]">
           <ul className="list-none p-0 m-0 border border-surface-outline rounded-md">
@@ -211,9 +211,7 @@ const sampleTasks: Types.Task[] = [
     title: "Design user profile page",
     status: IN_PROGRESS_STATUS,
     description: "Create wireframes and design mockups for user profile",
-    assignees: [
-      { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-    ],
+    assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
     milestone: sampleMilestone,
     link: "#",
     dueDate: createContextualDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), "day"), // 2 days ago (overdue)
@@ -225,9 +223,7 @@ const sampleTasks: Types.Task[] = [
     title: "Fix navigation bug in sidebar",
     status: DONE_STATUS,
     description: "Resolve sidebar navigation issues and improve UX",
-    assignees: [
-      { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-    ],
+    assignees: [{ id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" }],
     link: "#",
     hasComments: true,
     commentCount: 2,
@@ -342,13 +338,11 @@ export const MilestoneWithoutDueDate: Story = {
         id: "task-research-1",
         title: "Market research analysis",
         status: IN_PROGRESS_STATUS,
-        assignees: [
-          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-        ],
+        assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
         hasDescription: true,
       },
       {
-        id: "task-research-2", 
+        id: "task-research-2",
         title: "Competitor analysis",
         status: PENDING_STATUS,
         hasComments: false,
@@ -390,9 +384,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
         title: "Final testing phase",
         status: PENDING_STATUS,
         milestone: sampleMilestone,
-        assignees: [
-          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-        ],
+        assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
         dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
         hasDescription: true,
       },
@@ -401,9 +393,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
         title: "User acceptance testing",
         status: IN_PROGRESS_STATUS,
         milestone: sampleMilestone,
-        assignees: [
-          { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-        ],
+        assignees: [{ id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" }],
         hasComments: true,
         commentCount: 1,
       },
@@ -414,9 +404,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
         title: "Implement core functionality",
         status: DONE_STATUS,
         milestone: sampleMilestone,
-        assignees: [
-          { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
-        ],
+        assignees: [{ id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" }],
         dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
         hasDescription: true,
         hasComments: true,
@@ -427,9 +415,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
         title: "Set up CI/CD pipeline",
         status: DONE_STATUS,
         milestone: sampleMilestone,
-        assignees: [
-          { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
-        ],
+        assignees: [{ id: "user-4", fullName: "Diana Prince", avatarUrl: null }],
         dueDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
       },
       {
@@ -437,9 +423,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
         title: "Create user documentation",
         status: DONE_STATUS,
         milestone: sampleMilestone,
-        assignees: [
-          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-        ],
+        assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
         hasDescription: true,
       },
       {

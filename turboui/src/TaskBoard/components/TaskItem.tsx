@@ -2,6 +2,7 @@ import { IconFileText, IconMessageCircle } from "../../icons";
 import React, { useCallback, useState } from "react";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
+import { AssigneesField } from "../../AssigneesField";
 import { PersonField } from "../../PersonField";
 import { useSortableItem } from "../../utils/PragmaticDragAndDrop";
 import classNames from "../../utils/classnames";
@@ -24,7 +25,7 @@ interface TaskItemProps {
   task: TaskWithIndex;
   milestoneId: string;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
+  onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
   onTaskStatusChange: (taskId: string, status: Status | null) => void;
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
@@ -45,7 +46,7 @@ export function TaskItem({
   selected = false,
   onTaskClick,
 }: TaskItemProps) {
-  const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
+  const [currentAssignees, setCurrentAssignees] = useState<Person[]>(task.assignees || []);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
   const [currentStatus, setCurrentStatus] = useState<StatusSelector.StatusOption | null>(
     task.status ?? statusOptions[0] ?? null,
@@ -107,7 +108,7 @@ export function TaskItem({
   }, [assigneePersonSearch, onTaskClick, onTaskDueDateChange, onTaskStatusChange, prepareFocusRestore, ref, task.id]);
 
   React.useEffect(() => {
-    setCurrentAssignee(task.assignees?.[0] || null);
+    setCurrentAssignees(task.assignees || []);
     setCurrentDueDate(task.dueDate || null);
     setCurrentStatus(task.status ?? statusOptions[0] ?? null);
   }, [task.assignees, task.dueDate, task.id, task.status, statusOptions]);
@@ -118,12 +119,12 @@ export function TaskItem({
     "cursor-default": draggingDisabled,
   });
 
-  const handleAssigneeChange = useCallback(
-    (newAssignee: Person | null) => {
-      setCurrentAssignee(newAssignee);
+  const handleAssigneesChange = useCallback(
+    (newAssignees: Person[]) => {
+      setCurrentAssignees(newAssignees);
 
       if (onTaskAssigneeChange && task.id) {
-        onTaskAssigneeChange(task.id, newAssignee);
+        onTaskAssigneeChange(task.id, newAssignees);
       }
     },
     [task.id, onTaskAssigneeChange],
@@ -293,24 +294,29 @@ export function TaskItem({
             />
           </div>
 
-          <div className="flex items-center flex-shrink-0 w-6 h-6 cursor-pointer" onMouseDown={stopDragFromInteractive}>
+          <div
+            className="flex items-center justify-end flex-shrink-0 min-w-6 max-w-[7rem] h-6 cursor-pointer"
+            onMouseDown={stopDragFromInteractive}
+          >
             {assigneePersonSearch ? (
-              <PersonField
-                person={currentAssignee}
-                setPerson={handleAssigneeChange}
+              <AssigneesField
+                people={currentAssignees}
+                setPeople={handleAssigneesChange}
                 avatarSize={24}
                 avatarOnly={true}
+                maxAvatars={4}
                 searchData={assigneePersonSearch}
                 isOpen={assigneeFieldOpen}
                 onOpenChange={handleAssigneeFieldOpenChange}
                 onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
               />
             ) : (
-              <PersonField
-                person={currentAssignee}
-                setPerson={handleAssigneeChange}
+              <AssigneesField
+                people={currentAssignees}
+                setPeople={handleAssigneesChange}
                 avatarSize={24}
                 avatarOnly={true}
+                maxAvatars={4}
                 readonly={true}
               />
             )}
@@ -327,7 +333,11 @@ function TaskTitleContent({ task }: { task: TaskWithIndex }) {
       <span className="truncate">{task.title}</span>
 
       {task.hasDescription && (
-        <span className="text-content-dimmed flex-shrink-0" title="Has description" data-test-id="description-indicator">
+        <span
+          className="text-content-dimmed flex-shrink-0"
+          title="Has description"
+          data-test-id="description-indicator"
+        >
           <IconFileText size={14} />
         </span>
       )}

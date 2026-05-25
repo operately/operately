@@ -40,6 +40,8 @@ const mockPeople: Types.Person[] = [
   { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
   { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+  { id: "user-5", fullName: "Ethan Wright", avatarUrl: "https://i.pravatar.cc/150?u=ethan" },
+  { id: "user-6", fullName: "Fatima Khan", avatarUrl: "https://i.pravatar.cc/150?u=fatima" },
 ];
 
 // Default status options used in TaskItem stories.
@@ -97,31 +99,33 @@ export const BasicTask: Story = {
   },
   render: (args) => {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
-    
+
     // Set up state to track task updates
     const [task, setTask] = React.useState(args.task);
-    
+
     // Update task when args change
     React.useEffect(() => {
       setTask(args.task);
     }, [args.task]);
-    
+
     // Make sure all required props are passed
-    return <TaskItem 
-      task={task} // Use the state-managed task instead of args.task
-      milestoneId={args.milestoneId} 
-      onTaskAssigneeChange={(taskId, assignee) => {
-        console.log('Task assignee updated:', taskId, assignee);
-      }}
-      onTaskDueDateChange={(taskId, dueDate) => {
-        console.log('Task due date updated:', taskId, dueDate);
-      }}
-      onTaskStatusChange={(taskId, status) => {
-        console.log('Task status updated:', taskId, status);
-      }}
-      assigneePersonSearch={assigneePersonSearch}
-      statusOptions={DEFAULT_STATUS_OPTIONS}
-    />;
+    return (
+      <TaskItem
+        task={task} // Use the state-managed task instead of args.task
+        milestoneId={args.milestoneId}
+        onTaskAssigneeChange={(taskId, assignees) => {
+          console.log("Task assignees updated:", taskId, assignees);
+        }}
+        onTaskDueDateChange={(taskId, dueDate) => {
+          console.log("Task due date updated:", taskId, dueDate);
+        }}
+        onTaskStatusChange={(taskId, status) => {
+          console.log("Task status updated:", taskId, status);
+        }}
+        assigneePersonSearch={assigneePersonSearch}
+        statusOptions={DEFAULT_STATUS_OPTIONS}
+      />
+    );
   },
 };
 
@@ -134,9 +138,25 @@ export const TaskWithAssignee: Story = {
       id: "task-2",
       title: "Design user profile page",
       status: IN_PROGRESS_STATUS,
-      assignees: [
-        { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-      ],
+      assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
+      index: 0,
+    },
+    ...sharedProps,
+  },
+  render: BasicTask.render,
+};
+
+/**
+ * Task with enough assignees to exercise the list row avatar cap
+ */
+export const TaskWithMultipleAssignees: Story = {
+  args: {
+    task: {
+      id: "task-multiple-assignees",
+      title: "Coordinate launch checklist across product and engineering",
+      status: IN_PROGRESS_STATUS,
+      dueDate: new Date(new Date().setDate(new Date().getDate() + 2)),
+      assignees: mockPeople,
       index: 0,
     },
     ...sharedProps,
@@ -242,9 +262,7 @@ export const FullFeaturedTask: Story = {
       hasComments: true,
       commentCount: 5,
       dueDate: new Date(new Date().setDate(new Date().getDate() + 1)), // Due tomorrow
-      assignees: [
-        { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-      ],
+      assignees: [{ id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" }],
       index: 0,
     },
     ...sharedProps,

@@ -58,7 +58,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
       description: "",
       link: "#",
       status: task.status ?? null,
-      assignees: task.assignee ? [{ id: task.assignee, fullName: "Loading...", avatarUrl: "" }] : [],
+      assignees: task.assignees,
       dueDate: task.dueDate || null,
       milestone: null,
       type: "space",
@@ -71,7 +71,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
 
       const input: TasksCreateInput = {
         name: task.title,
-        assigneeId: task.assignee,
+        assigneeIds: task.assignees.map((assignee) => assignee.id),
         dueDate: serializeContextualDate(task.dueDate),
         milestoneId: null,
         id: space.id,
@@ -148,20 +148,20 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     }
   };
 
-  const updateTaskAssignee = async (taskId: string, assignee: TaskBoard.Person | null) => {
+  const updateTaskAssignee = async (taskId: string, assignees: TaskBoard.Person[]) => {
     const snapshot = createSnapshot();
 
     setTasks((prev) =>
       prev.map((t) => {
         if (t.id === taskId) {
-          return { ...t, assignees: assignee ? [assignee] : [] };
+          return { ...t, assignees };
         }
         return t;
       }),
     );
 
     try {
-      await Api.tasks.updateAssignee({ taskId, assigneeId: assignee?.id || null, type: "space" });
+      await Api.tasks.updateAssignee({ taskId, assigneeIds: assignees.map((assignee) => assignee.id), type: "space" });
       await invalidateAndRefresh();
 
       return true;
