@@ -177,6 +177,29 @@ defmodule OperatelyWeb.Api.Notifications.SubscribeTest do
     end
   end
 
+  describe "space task subscriptions" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:person, :space)
+      |> Factory.create_space_task(:task, :space)
+      |> Factory.log_in_person(:person)
+    end
+
+    test "subscribes to space task notifications", ctx do
+      refute Notifications.is_subscriber?(ctx.person.id, ctx.task.subscription_list_id)
+
+      assert {200, _} =
+               mutation(ctx.conn, [:notifications, :subscribe], %{
+                 subscription_list_id: Paths.subscription_list_id(%{id: ctx.task.subscription_list_id}),
+                 type: "space_task"
+               })
+
+      assert Notifications.is_subscriber?(ctx.person.id, ctx.task.subscription_list_id)
+    end
+  end
+
   #
   # Helpers
   #

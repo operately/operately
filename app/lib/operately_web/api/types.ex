@@ -2204,6 +2204,7 @@ defmodule OperatelyWeb.Api.Types do
     :project,
     :milestone,
     :project_task,
+    :space_task,
   ])
 
   object :subscription_list do

@@ -49,6 +49,7 @@ defmodule OperatelyWeb.Api.Notifications.IsSubscribedTest do
       |> Factory.add_project_check_in(:check_in1, :project1, :creator)
       |> Factory.add_messages_board(:board1, :default_space)
       |> Factory.add_message(:message1, :board1)
+      |> Factory.create_space_task(:space_task1, :default_space)
       |> Factory.add_space_member(:person, :default_space)
       |> Factory.log_in_person(:person)
     end
@@ -119,6 +120,17 @@ defmodule OperatelyWeb.Api.Notifications.IsSubscribedTest do
       assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.message_id(ctx.message1),
         resource_type: "message"
+      })
+
+      assert res.subscribed == true
+    end
+
+    test "returns true when user is subscribed to a space task", ctx do
+      Factory.add_subscription(ctx, :sub1, :space_task1, person: ctx.person, type: :joined)
+
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
+        resource_id: Paths.task_id(ctx.space_task1),
+        resource_type: "space_task"
       })
 
       assert res.subscribed == true

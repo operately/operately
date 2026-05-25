@@ -673,6 +673,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
       task = Operately.Tasks.Task.get!(:system, id: id)
+      {:ok, subscription_list} = Operately.Notifications.SubscriptionList.get(:system, id: task.subscription_list_id)
 
       assert {:ok, subscription} =
                Operately.Notifications.Subscription.get(:system,
@@ -680,6 +681,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
                  person_id: ctx.creator.id
                )
 
+      assert subscription_list.parent_type == :space_task
       assert subscription.type == :joined
       assert subscription.canceled == false
     end

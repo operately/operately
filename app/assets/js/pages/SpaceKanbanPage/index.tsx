@@ -133,6 +133,8 @@ function Page() {
     currentUser,
     tasks,
     commentEntityType: "space_task",
+    cacheKey: pageCacheKey(space.id),
+    onRefresh: pageData.refresh,
     canEdit: Boolean(space.permissions?.canEdit),
     canComment: Boolean(space.permissions?.canComment),
     hideMilestone: true,

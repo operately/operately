@@ -14,6 +14,7 @@ defmodule Operately.Notifications.SubscriptionList do
       :resource_hub_link,
       :comment_thread,
       :project_task,
+      :space_task,
       :project_milestone,
       :project,
     ]
