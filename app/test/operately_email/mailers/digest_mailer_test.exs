@@ -90,6 +90,50 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
     assert email.html_body =~ "Activity 3"
   end
 
+  test "links parent group title when parent url is available", ctx do
+    digest_items = [
+      %{
+        parent_id: "project-1",
+        parent_type: :project,
+        parent_name: "Project Alpha",
+        parent_url: "https://example.com/project-1",
+        headline: "Activity 1",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://example.com/project-1/activity-1",
+        actor_name: "John D.",
+        occurred_at: ~N[2026-04-02 10:01:00],
+        coalesce_key: nil
+      }
+    ]
+
+    email = DigestMailer.build_digest_email(ctx.person, ctx.batch, digest_items)
+
+    assert email.html_body =~ ~s(<a href="https://example.com/project-1")
+    assert email.text_body =~ "https://example.com/project-1"
+  end
+
+  test "renders parent group title without a link when parent url is unavailable", ctx do
+    digest_items = [
+      %{
+        parent_id: "goal-1",
+        parent_type: :goal,
+        parent_name: "Goal 1",
+        headline: "Activity 1",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://example.com/goal-1/activity-1",
+        actor_name: "John D.",
+        occurred_at: ~N[2026-04-02 10:01:00],
+        coalesce_key: nil
+      }
+    ]
+
+    email = DigestMailer.build_digest_email(ctx.person, ctx.batch, digest_items)
+
+    assert email.html_body =~ "Goal 1"
+  end
+
   test "orders items chronologically within parent groups", ctx do
     digest_items = [
       %{

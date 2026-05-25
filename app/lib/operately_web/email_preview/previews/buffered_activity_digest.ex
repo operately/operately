@@ -247,8 +247,15 @@ defmodule OperatelyWeb.EmailPreview.Previews.BufferedActivityDigest do
   end
 
   defp digest_item(attrs) do
-    Map.put(attrs, :coalesce_key, nil)
+    attrs
+    |> Map.put_new(:parent_url, parent_url(attrs))
+    |> Map.put(:coalesce_key, nil)
   end
+
+  defp parent_url(%{parent_type: :project, parent_id: "project-001"}), do: "https://app.operately.dev/projects/launch-website"
+  defp parent_url(%{parent_type: :goal, parent_id: "goal-002"}), do: "https://app.operately.dev/goals/q2-growth-plan"
+  defp parent_url(%{parent_type: :space, parent_id: "space-003"}), do: "https://app.operately.dev/spaces/marketing-team"
+  defp parent_url(_), do: nil
 
   defp group_by_parent(digest_items) do
     digest_items
@@ -259,6 +266,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.BufferedActivityDigest do
 
       %{
         parent_name: hd(items).parent_name,
+        parent_url: Map.get(hd(items), :parent_url),
         author_groups: author_groups,
         earliest_occurred_at: earliest_occurred_at
       }

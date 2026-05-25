@@ -5,7 +5,11 @@
       <%= Phoenix.Naming.humanize(to_string(hd(hd(@group.author_groups).items).parent_type)) %>
     </div>
     <div style="font-weight: 600; font-size: 16px;">
-      <%= @group.parent_name %>
+      <%= if @group.parent_url do %>
+        <%= link(@group.parent_url, @group.parent_name) %>
+      <% else %>
+        <%= @group.parent_name %>
+      <% end %>
     </div>
   </div>
 <% end %>
