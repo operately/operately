@@ -4,7 +4,8 @@ import type { ActivityContentResourceHubLinkCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, linkLink, spaceLink } from "../feedItemLinks";
+import { usePaths } from "@/routes/paths";
+import { commentPath, commentedLink, feedTitle, linkLink, spaceLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
@@ -15,10 +16,10 @@ const ResourceHubLinkCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { link, space } = content(activity);
+    const { link, space, comment } = content(activity);
 
     if (link) {
-      return paths.resourceHubLinkPath(link.id);
+      return commentPath(paths.resourceHubLinkPath(link.id), comment);
     }
 
     return paths.resourceHubPath(space.id);
@@ -37,18 +38,24 @@ const ResourceHubLinkCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const data = content(activity);
     const space = spaceLink(data.space);
-    let link: any = "a link"
+    let action: any = "commented";
+    let link: any = "a link";
 
     if (data.link) {
       link = linkLink(data.link);
     }
 
+    if (data.link?.id) {
+      action = commentedLink(paths.resourceHubLinkPath(data.link.id), data.comment);
+    }
+
     if (page === "space") {
-      return feedTitle(activity, "commented on", link);
+      return feedTitle(activity, action, "on", link);
     } else {
-      return feedTitle(activity, "commented on", link, "in the", space, "space");
+      return feedTitle(activity, action, "on", link, "in the", space, "space");
     }
   },
 

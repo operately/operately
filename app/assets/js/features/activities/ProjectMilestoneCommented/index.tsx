@@ -4,7 +4,7 @@ import type { ActivityContentProjectMilestoneCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, milestoneCommentLink, milestoneLink, projectLink } from "../feedItemLinks";
+import { commentPath, feedTitle, milestoneCommentLink, milestoneLink, projectLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
@@ -15,10 +15,10 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { milestone, project } = content(activity);
+    const { comment, milestone, project } = content(activity);
 
     if (milestone) {
-      return paths.projectMilestonePath(milestone.id);
+      return commentPath(paths.projectMilestonePath(milestone.id), comment);
     } else {
       return paths.projectPath(project.id);
     }
@@ -44,7 +44,15 @@ const ProjectMilestoneCommented: ActivityHandler = {
     if (page === "project") {
       return feedTitle(activity, action.verb, action.objectPrefix, milestoneName, "milestone");
     } else {
-      return feedTitle(activity, action.verb, action.objectPrefix, milestoneName, "milestone in the", projectLink(project), "project");
+      return feedTitle(
+        activity,
+        action.verb,
+        action.objectPrefix,
+        milestoneName,
+        "milestone in the",
+        projectLink(project),
+        "project",
+      );
     }
   },
 

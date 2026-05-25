@@ -5,7 +5,7 @@ import type { ActivityHandler } from "../interfaces";
 import { usePaths } from "@/routes/paths";
 import React from "react";
 import { Link, Summary } from "turboui";
-import { feedTitle } from "../feedItemLinks";
+import { commentPath, commentedLink, feedTitle } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -15,13 +15,13 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { discussion, space } = content(activity);
+    const { comment, discussion, space } = content(activity);
 
     if (!discussion) {
       return paths.spacePath(space.id);
     }
 
-    return paths.discussionPath(discussion.id);
+    return commentPath(paths.discussionPath(discussion.id), comment);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -38,14 +38,17 @@ const DiscussionCommentSubmitted: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const { discussion, space } = content(activity);
+    const { comment, discussion, space } = content(activity);
 
-    const activityLink = discussion ? <Link to={paths.discussionPath(discussion.id)}>{discussion.title}</Link> : "a message";
+    const discussionPath = discussion ? paths.discussionPath(discussion.id) : null;
+    const action = discussionPath ? commentedLink(discussionPath, comment) : "commented";
+    const activityLink =
+      discussionPath && discussion ? <Link to={discussionPath}>{discussion.title}</Link> : "a message";
 
     if (page === "space") {
-      return feedTitle(activity, "commented on", activityLink);
+      return feedTitle(activity, action, "on", activityLink);
     } else {
-      return feedTitle(activity, "commented on", activityLink, "in", space.name, "space");
+      return feedTitle(activity, action, "on", activityLink, "in", space.name, "space");
     }
   },
 

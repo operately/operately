@@ -15,7 +15,7 @@ import * as Activities from "@/models/activities";
 import { usePaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { Link, Summary } from "turboui";
-import { feedTitle, goalLink, projectLink } from "../feedItemLinks";
+import { commentPath, commentedLink, feedTitle, goalLink, projectLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -25,19 +25,23 @@ const CommentAdded: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const commentedActivity = content(activity).activity!;
+    const { activity: commentedActivity, comment } = content(activity);
+
+    if (!commentedActivity) {
+      return paths.homePath();
+    }
 
     return match(commentedActivity.action)
-      .with("goal_timeframe_editing", () => paths.goalActivityPath(commentedActivity.id!))
-      .with("goal_closing", () => paths.goalActivityPath(commentedActivity.id!))
-      .with("goal_discussion_creation", () => paths.goalActivityPath(commentedActivity.id!))
-      .with("goal_reopening", () => paths.goalActivityPath(commentedActivity.id!))
+      .with("goal_timeframe_editing", () => commentPath(paths.goalActivityPath(commentedActivity.id), comment))
+      .with("goal_closing", () => commentPath(paths.goalActivityPath(commentedActivity.id), comment))
+      .with("goal_discussion_creation", () => commentPath(paths.goalActivityPath(commentedActivity.id), comment))
+      .with("goal_reopening", () => commentPath(paths.goalActivityPath(commentedActivity.id), comment))
       .with("project_discussion_submitted", () => {
         const projectSubmitted = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
-        return paths.projectDiscussionPath(projectSubmitted.discussion!.id!);
+        return commentPath(paths.projectDiscussionPath(projectSubmitted.discussion!.id!), comment);
       })
       .with("project_resuming", () => {
-        return paths.projectActivityPath(commentedActivity.id);
+        return commentPath(paths.projectActivityPath(commentedActivity.id), comment);
       })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
@@ -58,84 +62,94 @@ const CommentAdded: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const commentedActivity = content(activity).activity!;
+    const { activity: commentedActivity, comment } = content(activity);
+
+    if (!commentedActivity) {
+      return feedTitle(activity, "commented");
+    }
 
     return match(commentedActivity.action)
       .with("goal_timeframe_editing", () => {
         const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
         const goal = c.goal!;
-        const path = paths.goalActivityPath(commentedActivity.id!);
+        const path = paths.goalActivityPath(commentedActivity.id);
+        const action = commentedLink(path, comment);
         const activityLink = <Link to={path}>timeframe change</Link>;
 
         if (page === "goal") {
-          return feedTitle(activity, "commented on the", activityLink);
+          return feedTitle(activity, action, "on the", activityLink);
         } else {
-          return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(goal), "goal");
         }
       })
       .with("goal_closing", () => {
         const c = commentedActivity.content as ActivityContentGoalClosing;
         const goal = c.goal!;
-        const path = paths.goalActivityPath(commentedActivity.id!);
+        const path = paths.goalActivityPath(commentedActivity.id);
+        const action = commentedLink(path, comment);
         const activityLink = <Link to={path}>goal closing</Link>;
 
         if (page === "goal") {
-          return feedTitle(activity, "commented on the", activityLink);
+          return feedTitle(activity, action, "on the", activityLink);
         } else {
-          return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(goal), "goal");
         }
       })
       .with("goal_discussion_creation", () => {
         const { goal } = commentedActivity.content as ActivityContentGoalDiscussionCreation;
+        const path = paths.goalActivityPath(commentedActivity.id);
+        const action = commentedLink(path, comment);
         let activityLink: any = "a discussion";
 
         if (commentedActivity.commentThread) {
-          const path = paths.goalActivityPath(commentedActivity.id);
           activityLink = <Link to={path}>{commentedActivity.commentThread.title}</Link>;
         }
 
         if (page === "goal") {
-          return feedTitle(activity, "commented on", activityLink);
+          return feedTitle(activity, action, "on", activityLink);
         } else {
-          return feedTitle(activity, "commented on", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, action, "on", activityLink, "in the", goalLink(goal), "goal");
         }
       })
       .with("goal_reopening", () => {
         const c = commentedActivity.content as ActivityContentGoalReopening;
         const goal = c.goal!;
-        const path = paths.goalActivityPath(commentedActivity.id!);
+        const path = paths.goalActivityPath(commentedActivity.id);
+        const action = commentedLink(path, comment);
         const activityLink = <Link to={path}>goal reopening</Link>;
 
         if (page === "goal") {
-          return feedTitle(activity, "commented on the", activityLink);
+          return feedTitle(activity, action, "on the", activityLink);
         } else {
-          return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(goal), "goal");
         }
       })
       .with("project_discussion_submitted", () => {
         const { discussion, title, project } = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
+        const path = discussion?.id ? paths.projectDiscussionPath(discussion.id) : null;
+        const action = path ? commentedLink(path, comment) : "commented";
         let activityLink: any = "a discussion";
 
-        if (discussion?.id && (title || discussion.title)) {
-          const path = paths.projectDiscussionPath(discussion.id);
-          activityLink = <Link to={path}>{title || discussion.title}</Link>;
+        if (path && (title || discussion?.title)) {
+          activityLink = <Link to={path}>{title || discussion?.title}</Link>;
         }
 
         if (page === "project") {
-          return feedTitle(activity, "commented on", activityLink);
+          return feedTitle(activity, action, "on", activityLink);
         } else {
-          return feedTitle(activity, "commented on", activityLink, "in the", projectLink(project), "project");
+          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(project), "project");
         }
       })
       .with("project_resuming", () => {
         const path = paths.projectActivityPath(commentedActivity.id);
+        const action = commentedLink(path, comment);
         const activityLink = <Link to={path}>project resuming</Link>;
         const project = Activities.getProject(commentedActivity);
 
         if (page === "project") {
-          return feedTitle(activity, "commented on", activityLink);
+          return feedTitle(activity, action, "on", activityLink);
         } else {
-          return feedTitle(activity, "commented on", activityLink, "in the", projectLink(project), "project");
+          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(project), "project");
         }
       })
       .otherwise(() => {
