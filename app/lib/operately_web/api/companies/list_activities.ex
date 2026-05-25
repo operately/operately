@@ -14,6 +14,18 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
   import Operately.Access.Filters, only: [filter_by_view_access: 2]
   import Ecto.Query, only: [from: 2, limit: 2, preload: 2]
 
+  @resource_hub_resource_actions [
+    "resource_hub_document_commented",
+    "resource_hub_document_created",
+    "resource_hub_document_edited",
+    "resource_hub_file_commented",
+    "resource_hub_file_edited",
+    "resource_hub_link_commented",
+    "resource_hub_link_created",
+    "resource_hub_link_edited",
+    "resource_hub_parent_folder_edited"
+  ]
+
   inputs do
     field :scope_id, :string, null: false
     field :scope_type, :activity_scope_type, null: false
@@ -56,6 +68,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
     |> limit_search_to_current_company(person.company_id)
     |> scope_query(scope_type, scope_id)
     |> filter_by_action(actions)
+    |> filter_deleted_resource_hub_resources()
     |> filter_by_view_access(person.id)
     |> order_desc()
     |> limit(100)
@@ -87,5 +100,21 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
 
   def filter_by_action(query, actions) do
     from a in query, where: a.action in ^actions and a.action not in ^Activity.deprecated_actions()
+  end
+
+  def filter_deleted_resource_hub_resources(query) do
+    from a in query,
+      where:
+        a.action not in ^@resource_hub_resource_actions or
+          fragment(
+            "NOT EXISTS (SELECT 1 FROM resource_nodes n WHERE n.id = ((? ->> 'node_id')::uuid) AND n.deleted_at IS NOT NULL)",
+            a.content
+          ),
+      where:
+        a.action != "resource_hub_file_created" or
+          fragment(
+            "NOT EXISTS (SELECT 1 FROM jsonb_array_elements(? -> 'files') file_ref JOIN resource_nodes n ON n.id = ((file_ref ->> 'node_id')::uuid) WHERE n.deleted_at IS NOT NULL)",
+            a.content
+          )
   end
 end
