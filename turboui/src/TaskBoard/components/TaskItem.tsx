@@ -294,13 +294,17 @@ export function TaskItem({
             />
           </div>
 
-          <div className="flex items-center flex-shrink-0 w-6 h-6 cursor-pointer" onMouseDown={stopDragFromInteractive}>
+          <div
+            className="flex items-center justify-end flex-shrink-0 min-w-6 max-w-[7rem] h-6 cursor-pointer"
+            onMouseDown={stopDragFromInteractive}
+          >
             {assigneePersonSearch ? (
               <AssigneesField
                 people={currentAssignees}
                 setPeople={handleAssigneesChange}
                 avatarSize={24}
                 avatarOnly={true}
+                maxAvatars={4}
                 searchData={assigneePersonSearch}
                 isOpen={assigneeFieldOpen}
                 onOpenChange={handleAssigneeFieldOpenChange}
@@ -312,6 +316,7 @@ export function TaskItem({
                 setPeople={handleAssigneesChange}
                 avatarSize={24}
                 avatarOnly={true}
+                maxAvatars={4}
                 readonly={true}
               />
             )}

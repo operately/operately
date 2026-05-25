@@ -40,6 +40,8 @@ const mockPeople: Types.Person[] = [
   { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
   { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+  { id: "user-5", fullName: "Ethan Wright", avatarUrl: "https://i.pravatar.cc/150?u=ethan" },
+  { id: "user-6", fullName: "Fatima Khan", avatarUrl: "https://i.pravatar.cc/150?u=fatima" },
 ];
 
 // Default status options used in TaskItem stories.
@@ -137,6 +139,24 @@ export const TaskWithAssignee: Story = {
       title: "Design user profile page",
       status: IN_PROGRESS_STATUS,
       assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
+      index: 0,
+    },
+    ...sharedProps,
+  },
+  render: BasicTask.render,
+};
+
+/**
+ * Task with enough assignees to exercise the list row avatar cap
+ */
+export const TaskWithMultipleAssignees: Story = {
+  args: {
+    task: {
+      id: "task-multiple-assignees",
+      title: "Coordinate launch checklist across product and engineering",
+      status: IN_PROGRESS_STATUS,
+      dueDate: new Date(new Date().setDate(new Date().getDate() + 2)),
+      assignees: mockPeople,
       index: 0,
     },
     ...sharedProps,

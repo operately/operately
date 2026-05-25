@@ -20,6 +20,7 @@ export namespace AssigneesField {
     avatarOnly?: boolean;
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
+    maxAvatars?: number;
     variant?: "inline" | "form-field";
     testId?: string;
     onOpenChange?: (isOpen: boolean) => void;
@@ -81,6 +82,7 @@ interface State {
   avatarOnly: boolean;
   emptyStateMessage: string;
   emptyStateReadOnlyMessage: string;
+  maxAvatars: number;
   variant: "inline" | "form-field";
   testId: string;
   onCloseAutoFocus?: (event: Event) => void;
@@ -141,6 +143,7 @@ function useAssigneesFieldState(props: AssigneesField.Props): State {
     avatarOnly: props.avatarOnly ?? false,
     emptyStateMessage: props.emptyStateMessage ?? "Assign task",
     emptyStateReadOnlyMessage: props.emptyStateReadOnlyMessage ?? "No assignees",
+    maxAvatars: props.maxAvatars ?? 3,
     variant: props.variant ?? "inline",
     testId: props.testId || "assignees-field",
     onCloseAutoFocus: props.onCloseAutoFocus,
@@ -180,7 +183,16 @@ function calcTriggerClass(state: State) {
 
 function TriggerIcon({ state }: { state: State }) {
   if (state.people.length > 0) {
-    return <AvatarList people={state.people} size={state.avatarSize} stacked maxElements={3} showCutOff wrap={false} />;
+    return (
+      <AvatarList
+        people={state.people}
+        size={state.avatarSize}
+        stacked
+        maxElements={state.maxAvatars}
+        showCutOff
+        wrap={false}
+      />
+    );
   }
 
   const Icon = state.readonly ? IconUser : IconUserPlus;
