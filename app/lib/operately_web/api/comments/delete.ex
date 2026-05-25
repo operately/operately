@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Comments.Delete do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Updates
+  alias Operately.{Operations.CommentDeleting, Updates}
 
   inputs do
     field(:comment_id, :id, null: false)
@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Comments.Delete do
       Updates.get_comment_with_access_level(inputs.comment_id, ctx.me.id, inputs.parent_type)
     end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.me, ctx.comment) end)
-    |> run(:operation, fn ctx -> delete_comment(ctx.comment) end)
+    |> run(:operation, fn ctx -> delete_comment(ctx.me, ctx.comment, inputs.parent_type) end)
     |> run(:broadcast, fn ctx -> broadcast_deletion(ctx.comment) end)
     |> run(:serialized, fn ctx ->
       {:ok, %{comment: Serializer.serialize(ctx.operation, level: :essential)}}
@@ -50,8 +50,8 @@ defmodule OperatelyWeb.Api.Comments.Delete do
     end
   end
 
-  defp delete_comment(comment) do
-    Updates.delete_comment(comment)
+  defp delete_comment(author, comment, parent_type) do
+    CommentDeleting.run(author, comment, parent_type)
   end
 
   defp broadcast_deletion(comment) do

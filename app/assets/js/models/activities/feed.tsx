@@ -2,6 +2,7 @@ import {
   Activity,
   ActivityContentTaskAdding,
   ActivityContentTaskAssigneeUpdating,
+  ActivityContentTaskCommentDeleting,
   ActivityContentTaskDescriptionChange,
   ActivityContentTaskDueDateUpdating,
   ActivityContentTaskMilestoneUpdating,
@@ -29,6 +30,7 @@ export const TASK_ACTIVITY_TYPES = [
   "task_name_updating",
   "task_description_change",
   "task_assignee_updating",
+  "task_comment_deleting",
   "task_due_date_updating",
   "task_milestone_updating",
   "task_status_updating",
@@ -63,19 +65,21 @@ export function parseActivitiesForTurboUi(paths: Paths, activities: Activity[], 
 function parseActivityForTurboUi(paths: Paths, activity: Activity, pageContext: PageContext) {
   const author = parsePersonForTurboUi(paths, activity.author);
 
+  if (!author) return null;
+
   switch (activity.action) {
     case "task_adding":
-      return parseTaskCreationActivity(author!, activity, pageContext);
+      return parseTaskCreationActivity(author, activity, pageContext);
     case "task_name_updating":
       return parseTaskNameUpdatingActivity(
-        author!,
+        author,
         activity,
         activity.content as ActivityContentTaskNameUpdating,
         pageContext,
       );
     case "task_description_change":
       return parseTaskDescriptionChangeActivity(
-        author!,
+        author,
         activity,
         activity.content as ActivityContentTaskDescriptionChange,
         pageContext,
@@ -83,14 +87,21 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity, pageContext: 
     case "task_assignee_updating":
       return parseTaskAssigneeUpdatingActivity(
         paths,
-        author!,
+        author,
         activity,
         activity.content as ActivityContentTaskAssigneeUpdating,
         pageContext,
       );
+    case "task_comment_deleting":
+      return parseTaskCommentDeletingActivity(
+        author,
+        activity,
+        activity.content as ActivityContentTaskCommentDeleting,
+        pageContext,
+      );
     case "task_due_date_updating":
       return parseTaskDueDateUpdatingActivity(
-        author!,
+        author,
         activity,
         activity.content as ActivityContentTaskDueDateUpdating,
         pageContext,
@@ -98,14 +109,14 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity, pageContext: 
     case "task_milestone_updating":
       return parseTaskMilestoneUpdatingActivity(
         paths,
-        author!,
+        author,
         activity,
         activity.content as ActivityContentTaskMilestoneUpdating,
         pageContext,
       );
     case "task_status_updating":
       return parseTaskStatusUpdatingActivity(
-        author!,
+        author,
         activity,
         activity.content as ActivityContentTaskStatusUpdating,
         pageContext,
@@ -115,11 +126,27 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity, pageContext: 
     case "milestone_description_updating":
     case "milestone_title_updating":
     case "milestone_due_date_updating":
-      return parseMilestoneActivity(author!, activity);
+      return parseMilestoneActivity(author, activity);
 
     default:
       return null;
   }
+}
+
+function parseTaskCommentDeletingActivity(
+  author: TurboUiPerson,
+  activity: Activity,
+  content: ActivityContentTaskCommentDeleting,
+  pageContext: PageContext,
+) {
+  return {
+    id: activity.id,
+    type: "task_comment_deleting" as const,
+    author,
+    insertedAt: activity.insertedAt,
+    taskName: content.task?.name || content.taskName || "a task",
+    page: pageContext,
+  };
 }
 
 function parseTaskCreationActivity(

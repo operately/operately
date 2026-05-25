@@ -131,6 +131,7 @@ export const DISPLAYED_IN_FEED = [
   "project_retrospective_commented",
   "project_task_commented",
   "space_task_commented",
+  "task_comment_deleting",
   "project_discussion_submitted",
   "task_adding",
   "task_name_updating",
@@ -225,6 +226,7 @@ import TaskStatusUpdating from "@/features/activities/TaskStatusUpdating";
 import TaskDescriptionChange from "@/features/activities/TaskDescriptionChange";
 import TaskDueDateUpdating from "@/features/activities/TaskDueDateUpdating";
 import TaskDeleting from "@/features/activities/TaskDeleting";
+import TaskCommentDeleting from "@/features/activities/TaskCommentDeleting";
 import TaskAssigneeUpdating from "@/features/activities/TaskAssigneeUpdating";
 import TaskMilestoneUpdating from "@/features/activities/TaskMilestoneUpdating";
 import TaskMoving from "@/features/activities/TaskMoving";
@@ -339,6 +341,7 @@ function handler(activity: Activity) {
     .with("project_retrospective_commented", () => ProjectRetrospectiveCommented)
     .with("project_task_commented", () => ProjectTaskCommented)
     .with("space_task_commented", () => SpaceTaskCommented)
+    .with("task_comment_deleting", () => TaskCommentDeleting)
     .with("project_timeline_edited", () => ProjectTimelineEdited)
     .with("resource_hub_document_created", () => ResourceHubDocumentCreated)
     .with("resource_hub_document_edited", () => ResourceHubDocumentEdited)
