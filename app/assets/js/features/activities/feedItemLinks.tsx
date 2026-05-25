@@ -70,9 +70,27 @@ export const documentLink = (document: api.ResourceHubDocument) => {
   return <Link to={path}>{name}</Link>;
 };
 
+export const documentCommentLink = (document: api.ResourceHubDocument, comment?: api.Comment | null) => {
+  const paths = usePaths();
+  const documentPath = paths.resourceHubDocumentPath(document.id!);
+  const path = comment?.id ? `${documentPath}#${comment.id}` : documentPath;
+  const name = document.name;
+
+  return <Link to={path}>{name}</Link>;
+};
+
 export const fileLink = (file: api.ResourceHubFile) => {
   const paths = usePaths();
   const path = paths.resourceHubFilePath(file.id!);
+  const name = file.name!;
+
+  return <Link to={path}>{name}</Link>;
+};
+
+export const fileCommentLink = (file: api.ResourceHubFile, comment?: api.Comment | null) => {
+  const paths = usePaths();
+  const filePath = paths.resourceHubFilePath(file.id!);
+  const path = comment?.id ? `${filePath}#${comment.id}` : filePath;
   const name = file.name!;
 
   return <Link to={path}>{name}</Link>;
@@ -94,6 +112,15 @@ export const linkLink = (link: api.ResourceHubLink) => {
   return <Link to={path}>{name}</Link>;
 };
 
+export const linkCommentLink = (link: api.ResourceHubLink, comment?: api.Comment | null) => {
+  const paths = usePaths();
+  const linkPath = paths.resourceHubLinkPath(link.id!);
+  const path = comment?.id ? `${linkPath}#${comment.id}` : linkPath;
+  const name = link.name!;
+
+  return <Link to={path}>{name}</Link>;
+};
+
 export const milestoneLink = (milestone: api.Milestone, milestoneName?: string) => {
   const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id!);
@@ -102,7 +129,10 @@ export const milestoneLink = (milestone: api.Milestone, milestoneName?: string) 
   return <Link to={path}>{name}</Link>;
 };
 
-export const milestoneCommentLink = (milestone: api.Milestone | null | undefined, comment: api.Comment | null | undefined) => {
+export const milestoneCommentLink = (
+  milestone: api.Milestone | null | undefined,
+  comment: api.Comment | null | undefined,
+) => {
   const paths = usePaths();
 
   if (!milestone?.id || !comment?.id) return <span>commented</span>;
@@ -126,4 +156,4 @@ export const personLink = (person: api.Person) => {
   const path = paths.profilePath(person.id);
 
   return <Link to={path}>{person.fullName}</Link>;
-}
+};
