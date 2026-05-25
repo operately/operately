@@ -18,13 +18,12 @@ export default function LongDate({ time, locale }: { time: Date; locale: string 
   }
 
   const month = formatDate(time, locale, { month: "long" });
-  const formattedDay = formatDate(time, locale, { day: "numeric" });
   const day = time.getDate();
   const suffix = findOrdinalNumberSuffix(day);
 
   return (
     <>
-      {month} {formattedDay}
+      {month} {day}
       {suffix}
       {Time.isCurrentYear(time) ? "" : ", " + time.getFullYear()}
     </>
