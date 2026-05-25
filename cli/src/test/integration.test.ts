@@ -169,6 +169,13 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("--resource-hub-id <id> (required)"));
     });
 
+    it("shows plural task assignee flags in command help", async () => {
+      const result = await runCLI(["tasks", "update_assignee", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--assignee-id <id> (optional, nullable)"));
+      assert.ok(result.stdout.includes("--assignee-ids <[id]> (optional, nullable)"));
+    });
+
     it("shows command help with trailing help", async () => {
       const result = await runCLI(["projects", "update_due_date", "help"]);
       assert.strictEqual(result.exitCode, 0);
