@@ -26,7 +26,11 @@ function buildKanbanStateFromTasks(tasks: TaskBoard.Task[], statuses: TaskBoard.
   return state;
 }
 
-function updateTask(tasks: TaskBoard.Task[], taskId: string, updater: (task: TaskBoard.Task) => TaskBoard.Task): TaskBoard.Task[] {
+function updateTask(
+  tasks: TaskBoard.Task[],
+  taskId: string,
+  updater: (task: TaskBoard.Task) => TaskBoard.Task,
+): TaskBoard.Task[] {
   return tasks.map((t) => (t.id === taskId ? updater(t) : t));
 }
 
@@ -60,7 +64,7 @@ export function useMockTaskBoardActions(opts: {
   onTaskKanbanChange: NonNullable<KanbanBoardProps["onTaskKanbanChange"]>;
   onTaskCreate: (task: TaskBoard.NewTaskPayload) => void;
   onTaskNameChange: (taskId: string, name: string) => void;
-  onTaskAssigneeChange: (taskId: string, assignee: TaskBoard.Person | null) => void;
+  onTaskAssigneeChange: (taskId: string, assignees: TaskBoard.Person[]) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: TaskBoard.Status | null) => void;
   onTaskDelete: (taskId: string) => Promise<{ success: boolean }>;
@@ -82,7 +86,7 @@ export function useMockTaskBoardActions(opts: {
           status: statuses[0] ?? null,
           dueDate: payload.dueDate,
           description: null,
-          assignees: [],
+          assignees: payload.assignees,
           link: "#",
           milestone: payload.milestone,
           type: "project",
@@ -102,11 +106,11 @@ export function useMockTaskBoardActions(opts: {
   );
 
   const onTaskAssigneeChange = React.useCallback(
-    (taskId: string, assignee: TaskBoard.Person | null) => {
+    (taskId: string, assignees: TaskBoard.Person[]) => {
       setTasks((prev) =>
         updateTask(prev, taskId, (t) => ({
           ...t,
-          assignees: assignee ? [assignee] : [],
+          assignees,
         })),
       );
     },
@@ -145,10 +149,13 @@ export function useMockTaskBoardActions(opts: {
     [setTasks, statuses],
   );
 
-  const onTaskDelete = React.useCallback(async (taskId: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== taskId));
-    return { success: true };
-  }, [setTasks]);
+  const onTaskDelete = React.useCallback(
+    async (taskId: string) => {
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+      return { success: true };
+    },
+    [setTasks],
+  );
 
   const onTaskDescriptionChange = React.useCallback(
     async (taskId: string, description: any) => {
@@ -169,7 +176,7 @@ export function useMockTaskBoardActions(opts: {
       return {
         milestone: task.milestone ? toTaskPageMilestone(task.milestone) : null,
         onMilestoneChange: (next) => {
-          const resolved = next ? (ctx.milestones ?? []).find((m) => m.id === next.id) ?? null : null;
+          const resolved = next ? ((ctx.milestones ?? []).find((m) => m.id === next.id) ?? null) : null;
           ctx.onTaskMilestoneChange?.(taskId, resolved);
         },
         milestones: (ctx.milestones ?? []).map(toTaskPageMilestone),
@@ -195,8 +202,8 @@ export function useMockTaskBoardActions(opts: {
         dueDate: task.dueDate ?? undefined,
         onDueDateChange: (newDueDate) => ctx.onTaskDueDateChange?.(taskId, newDueDate),
 
-        assignee: task.assignees?.[0] ? toTaskPagePerson(task.assignees[0]) : null,
-        onAssigneeChange: (newAssignee) => ctx.onTaskAssigneeChange?.(taskId, newAssignee),
+        assignees: (task.assignees || []).map(toTaskPagePerson),
+        onAssigneesChange: (newAssignees) => ctx.onTaskAssigneeChange?.(taskId, newAssignees),
 
         createdAt: new Date(),
         createdBy: null,

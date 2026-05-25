@@ -26,7 +26,14 @@ interface Attrs {
   refresh?: () => Promise<void>;
 }
 
-export function useProjectTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones, refresh }: Attrs) {
+export function useProjectTasksForTurboUi({
+  backendTasks,
+  projectId,
+  cacheKey,
+  milestones,
+  setMilestones,
+  refresh,
+}: Attrs) {
   const paths = usePaths();
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "project" }));
 
@@ -112,7 +119,7 @@ export function useProjectTasksForTurboUi({ backendTasks, projectId, cacheKey, m
       description: "",
       link: "#",
       status: task.status ?? null,
-      assignees: task.assignee ? [{ id: task.assignee, fullName: "Loading...", avatarUrl: "" }] : [],
+      assignees: task.assignees,
       dueDate: task.dueDate || null,
       milestone: task.milestone,
       type: "project",
@@ -140,7 +147,7 @@ export function useProjectTasksForTurboUi({ backendTasks, projectId, cacheKey, m
 
       const input: TasksCreateInput = {
         name: task.title,
-        assigneeId: task.assignee,
+        assigneeIds: task.assignees.map((assignee) => assignee.id),
         dueDate: serializeContextualDate(task.dueDate),
         milestoneId: task.milestone?.id || null,
         id: projectId,
@@ -212,16 +219,16 @@ export function useProjectTasksForTurboUi({ backendTasks, projectId, cacheKey, m
       });
   };
 
-  const updateTaskAssignee = async (taskId: string, assignee: TaskBoard.Person | null) => {
+  const updateTaskAssignee = async (taskId: string, assignees: TaskBoard.Person[]) => {
     return Api.tasks
-      .updateAssignee({ taskId, assigneeId: assignee?.id || null, type: "project" })
+      .updateAssignee({ taskId, assigneeIds: assignees.map((assignee) => assignee.id), type: "project" })
       .then(() => {
         invalidateAndRefresh();
 
         setTasks((prev) =>
           prev.map((t) => {
             if (t.id === taskId) {
-              return { ...t, assignee };
+              return { ...t, assignees };
             }
             return t;
           }),

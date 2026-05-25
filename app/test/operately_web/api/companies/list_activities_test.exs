@@ -224,6 +224,37 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
       refute Enum.find(res.activities, fn act -> act.action == "project_milestone_creation" end)
       assert Enum.find(res.activities, fn act -> act.action == "task_adding" end)
     end
+
+    test "task assignee activity with assignee id arrays can be listed", ctx do
+      attrs = %{
+        action: "task_assignee_updating",
+        author_id: ctx.creator.id,
+        access_context_id: ctx.project.access_context.id,
+        content: %{
+          "company_id" => ctx.company.id,
+          "space_id" => ctx.space.id,
+          "project_id" => ctx.project.id,
+          "milestone_id" => ctx.milestone.id,
+          "task_id" => ctx.task.id,
+          "old_assignee_id" => nil,
+          "new_assignee_id" => ctx.creator.id,
+          "old_assignee_ids" => [],
+          "new_assignee_ids" => [ctx.creator.id],
+          "added_assignee_ids" => [ctx.creator.id],
+          "removed_assignee_ids" => []
+        }
+      }
+
+      {:ok, _} = Repo.insert(struct(Activity, attrs))
+
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
+        scope_type: :company,
+        scope_id: Paths.company_id(ctx.company),
+        actions: ["task_assignee_updating"]
+      })
+
+      assert [%{action: "task_assignee_updating"}] = res.activities
+    end
   end
 
   defp create_milestone(ctx) do

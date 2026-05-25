@@ -15,7 +15,7 @@ import { TaskWithIndex } from "../types";
 export interface TaskListProps {
   tasks: Types.Task[];
   milestoneId: string;
-  onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
+  onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
   assigneePersonSearch?: PersonField.SearchData;
@@ -130,11 +130,7 @@ export function TaskList({
             <React.Fragment key={task.id}>
               {placeholderIndex === index && (
                 <li>
-                  <SubtleDropPlaceholder
-                    containerId={milestoneId}
-                    index={index}
-                    height={placeholderHeight}
-                  />
+                  <SubtleDropPlaceholder containerId={milestoneId} index={index} height={placeholderHeight} />
                 </li>
               )}
               <TaskItem
@@ -170,11 +166,11 @@ export function TaskList({
           totalHiddenCount > 0 &&
           showHiddenTasksToggle &&
           !suppressEmptyStateWhenOnlyHiddenTasks && (
-          <div className="py-3 px-4 text-left text-content-subtle text-sm bg-surface-base sm:text-center">
-            <span className="sm:hidden">Tap + to add a task.</span>
-            <span className="hidden sm:inline">Click + or press c to add a task, or drag a task here.</span>
-          </div>
-        )}
+            <div className="py-3 px-4 text-left text-content-subtle text-sm bg-surface-base sm:text-center">
+              <span className="sm:hidden">Tap + to add a task.</span>
+              <span className="hidden sm:inline">Click + or press c to add a task, or drag a task here.</span>
+            </div>
+          )}
       </div>
 
       {/* Ghost row for hidden tasks */}
