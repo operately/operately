@@ -1,8 +1,10 @@
 import * as Goals from "@/models/goals";
+import { parseCheckInsForTurboUi } from "@/models/goalCheckIns";
 import * as People from "@/models/people";
 import * as React from "react";
 
 import { SubscriptionsState } from "@/models/subscriptions";
+import { usePaths } from "@/routes/paths";
 
 import { InfoCallout } from "@/components/Callouts";
 import Forms, { FormState } from "@/components/Forms";
@@ -10,7 +12,7 @@ import { useFieldValue } from "@/components/Forms/FormContext";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import { Checklist, DateField, IconInfoCircle, RichContent, Tooltip, SubscribersSelector } from "turboui";
+import { Checklist, DateField, IconInfoCircle, LastCheckIn, RichContent, Tooltip, SubscribersSelector } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -28,21 +30,32 @@ interface Props {
 }
 
 export function Form(props: Props) {
+  const paths = usePaths();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
+  const lastCheckIns =
+    props.mode === "new" && props.goal.lastCheckIn ? parseCheckInsForTurboUi(paths, [props.goal.lastCheckIn]) : [];
+
   return (
     <Forms.Form form={props.form} preventSubmitOnEnter>
-      <div className="space-y-8 mt-8">
-        <FullEditDisabledMessage {...props} />
-        <StatusAndDueDate {...props} />
-        <Targets {...props} />
-        <Checks {...props} />
-        <Description {...props} />
+      <div className={lastCheckIns.length > 0 ? "grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]" : ""}>
+        <div>
+          <div className="space-y-8 mt-8">
+            <FullEditDisabledMessage {...props} />
+            <StatusAndDueDate {...props} />
+            <Targets {...props} />
+            <Checks {...props} />
+            <Description {...props} />
+          </div>
+
+          <Subscribers {...props} />
+
+          <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
+
+          <SubmitSection {...props} />
+        </div>
+
+        <LastCheckInReference checkIns={lastCheckIns} mentionedPersonLookup={mentionedPersonLookup} />
       </div>
-
-      <Subscribers {...props} />
-
-      <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
-
-      <SubmitSection {...props} />
     </Forms.Form>
   );
 }
@@ -226,6 +239,23 @@ function Label({ text, info, className = "" }: { text: string; className?: strin
     <div className={"font-bold mb-1.5 " + className}>
       {text} {infoPopup}
     </div>
+  );
+}
+
+function LastCheckInReference({
+  checkIns,
+  mentionedPersonLookup,
+}: {
+  checkIns: ReturnType<typeof parseCheckInsForTurboUi>;
+  mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
+}) {
+  if (checkIns.length === 0) return null;
+
+  return (
+    <aside className="mt-8 lg:border-l lg:border-surface-outline lg:pl-6">
+      <Label text="Last check-in" />
+      <LastCheckIn checkIns={checkIns} state="active" mentionedPersonLookup={mentionedPersonLookup} />
+    </aside>
   );
 }
 
