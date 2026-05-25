@@ -858,6 +858,14 @@ export interface ActivityContentSpaceTaskCommented {
   comment: Comment | null;
 }
 
+export interface ActivityContentTaskCommentDeleting {
+  space: Space;
+  project?: Project | null;
+  task: Task | null;
+  taskName: string;
+  commentId: string;
+}
+
 export interface ActivityContentTaskAdding {
   space: Space;
   project: Project | null;
@@ -2170,6 +2178,7 @@ export type ActivityContent =
   | ActivityContentTaskAdding
   | ActivityContentTaskAssigneeAssignment
   | ActivityContentTaskClosing
+  | ActivityContentTaskCommentDeleting
   | ActivityContentTaskDescriptionChange
   | ActivityContentTaskNameEditing
   | ActivityContentTaskMoving

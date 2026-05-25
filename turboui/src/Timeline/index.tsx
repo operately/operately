@@ -10,6 +10,7 @@ export type {
   TaskPriorityActivity,
   TaskDueDateActivity,
   TaskDescriptionActivity,
+  TaskCommentDeletionActivity,
   TaskTitleActivity,
   TaskCreationActivity,
   TaskPriority,

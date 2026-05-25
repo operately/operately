@@ -90,6 +90,15 @@ export interface TaskDescriptionActivity {
   page: ActivityPageContext;
 }
 
+export interface TaskCommentDeletionActivity {
+  id: string;
+  type: "task_comment_deleting";
+  author: Person;
+  insertedAt: string;
+  taskName: string;
+  page: ActivityPageContext;
+}
+
 export interface TaskTitleActivity {
   id: string;
   type: "task_name_updating";
@@ -133,6 +142,7 @@ export type TaskActivity =
   | TaskPriorityActivity
   | TaskDueDateActivity
   | TaskDescriptionActivity
+  | TaskCommentDeletionActivity
   | TaskTitleActivity
   | TaskCreationActivity;
 
