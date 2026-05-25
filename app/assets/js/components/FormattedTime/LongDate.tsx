@@ -4,7 +4,7 @@ import { findOrdinalNumberSuffix } from "@/utils/numbers";
 import { formatDate } from "@/utils/formatting";
 
 export default function LongDate({ time, locale }: { time: Date; locale: string }): JSX.Element {
-  if (!locale.startsWith("en")) {
+  if (!locale.toLowerCase().startsWith("en")) {
     const options: Intl.DateTimeFormatOptions = {
       day: "numeric",
       month: "long",
@@ -17,16 +17,14 @@ export default function LongDate({ time, locale }: { time: Date; locale: string 
     return <>{formatDate(time, locale, options)}</>;
   }
 
-  const formattedDate = formatDate(time, locale, {
-    day: "numeric",
-    month: "long",
-  });
+  const month = formatDate(time, locale, { month: "long" });
+  const formattedDay = formatDate(time, locale, { day: "numeric" });
   const day = time.getDate();
   const suffix = findOrdinalNumberSuffix(day);
 
   return (
     <>
-      {formattedDate}
+      {month} {formattedDay}
       {suffix}
       {Time.isCurrentYear(time) ? "" : ", " + time.getFullYear()}
     </>
