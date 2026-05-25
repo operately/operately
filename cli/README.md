@@ -58,7 +58,7 @@ operately companies get_work_map
 
 ## Current CLI Shape
 
-The current bundled API catalog exposes **196 endpoint commands** across **12 namespaces**:
+The current bundled API catalog exposes **198 endpoint commands** across **12 namespaces**:
 
 - `comments`
 - `companies`
@@ -263,7 +263,8 @@ operately tasks create \
   --type project \
   --id p1 \
   --name "Design mockups" \
-  --assignee-id null \
+  --assignee-ids person1 \
+  --assignee-ids person2 \
   --due-date 2026-06-30
 ```
 
@@ -323,7 +324,8 @@ operately tasks create \
   --type project \
   --id p1 \
   --name "Design mockups" \
-  --assignee-id null \
+  --assignee-ids person1 \
+  --assignee-ids person2 \
   --due-date 2026-06-30
 
 # Resource hubs and documents

@@ -2426,6 +2426,20 @@
           },
           {
             "default": null,
+            "name": "milestones",
+            "type": {
+              "item": {
+                "name": "work_map_item_milestone",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "children",
             "type": {
               "item": {
@@ -3694,6 +3708,71 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "billing_overview": {
+        "fields": [
+          {
+            "default": null,
+            "name": "account",
+            "type": {
+              "name": "billing_account",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "plans",
+            "type": {
+              "item": {
+                "name": "billing_plan_definition",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "catalog_products",
+            "type": {
+              "item": {
+                "name": "billing_catalog_product",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "member_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "stale",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -5818,6 +5897,76 @@
           }
         ]
       },
+      "billing_checkout_session": {
+        "fields": [
+          {
+            "default": null,
+            "name": "provider",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "return_url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "success_url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "expires_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_task_assignee_updating": {
         "fields": [
           {
@@ -5870,6 +6019,34 @@
             "type": {
               "name": "person",
               "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "added_assignees",
+            "type": {
+              "item": {
+                "name": "person",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "removed_assignees",
+            "type": {
+              "item": {
+                "name": "person",
+                "kind": "named"
+              },
+              "kind": "list"
             },
             "optional": false,
             "has_default": false,
@@ -6875,6 +7052,65 @@
           }
         ]
       },
+      "activity_content_task_comment_deleting": {
+        "fields": [
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "task",
+            "type": {
+              "name": "task",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "task_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "comment_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_space_members_added": {
         "fields": [
           {
@@ -7119,6 +7355,164 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "billing_catalog_product": {
+        "fields": [
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "provider",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "plan_family",
+            "type": {
+              "name": "billing_plan",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "billing_interval",
+            "type": {
+              "name": "billing_interval",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "polar_product_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "polar_product_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "price_amount",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "price_currency",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "version",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "active",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "archived_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "last_synced_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -8059,6 +8453,54 @@
           }
         ]
       },
+      "billing_hosted_session": {
+        "fields": [
+          {
+            "default": null,
+            "name": "provider",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "return_url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "expires_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "activity_content_goal_description_changed": {
         "fields": [
           {
@@ -8221,6 +8663,32 @@
             "name": "name",
             "type": {
               "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
+      "activity_content_company_member_joined": {
+        "fields": [
+          {
+            "default": null,
+            "name": "company",
+            "type": {
+              "name": "company",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "person",
+            "type": {
+              "name": "person",
               "kind": "named"
             },
             "optional": false,
@@ -8558,6 +9026,54 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "billing_plan_definition": {
+        "fields": [
+          {
+            "default": null,
+            "name": "key",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "display_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "member_limit",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "storage_limit_bytes",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -9067,6 +9583,17 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          },
+          {
+            "default": null,
+            "name": "time_format",
+            "type": {
+              "name": "time_format",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
           },
           {
             "default": null,
@@ -11349,6 +11876,54 @@
           }
         ]
       },
+      "work_map_item_milestone": {
+        "fields": [
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "status",
+            "type": {
+              "name": "milestone_status",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "timeframe",
+            "type": {
+              "name": "timeframe",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "activity_content_goal_created": {
         "fields": [
           {
@@ -11918,6 +12493,186 @@
             "name": "milestone",
             "type": {
               "name": "milestone",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
+      "billing_account": {
+        "fields": [
+          {
+            "default": null,
+            "name": "provider",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "plan_key",
+            "type": {
+              "name": "billing_plan",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "billing_interval",
+            "type": {
+              "name": "billing_interval",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "status",
+            "type": {
+              "name": "billing_status",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "suggested_plan_key",
+            "type": {
+              "name": "billing_plan",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "suggested_billing_interval",
+            "type": {
+              "name": "billing_interval",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "suggested_plan_source",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "current_period_end",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "cancel_at_period_end",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "pending_plan_key",
+            "type": {
+              "name": "billing_plan",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "pending_billing_interval",
+            "type": {
+              "name": "billing_interval",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "pending_checkout_started_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "scheduled_plan_key",
+            "type": {
+              "name": "billing_plan",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "scheduled_billing_interval",
+            "type": {
+              "name": "billing_interval",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "scheduled_change_effective_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "last_synced_at",
+            "type": {
+              "name": "datetime",
               "kind": "named"
             },
             "optional": true,
@@ -14647,6 +15402,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_company_member_joined",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_company_member_converted_to_guest",
           "kind": "named"
         },
@@ -14871,6 +15630,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_task_comment_deleting",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_task_description_change",
           "kind": "named"
         },
@@ -15063,6 +15826,10 @@
         "caution",
         "off_track"
       ],
+      "billing_plan": [
+        "team",
+        "business"
+      ],
       "discussion_state": [
         "draft",
         "published"
@@ -15099,7 +15866,8 @@
         "comment_thread",
         "project",
         "milestone",
-        "project_task"
+        "project_task",
+        "space_task"
       ],
       "reaction_entity_type": [
         "project_check_in",
@@ -15156,6 +15924,11 @@
         "admin_access",
         "full_access"
       ],
+      "time_format": [
+        "automatic",
+        "hour_12",
+        "hour_24"
+      ],
       "review_assignment_origin_types": [
         "project",
         "goal",
@@ -15193,6 +15966,12 @@
         "internal",
         "confidential",
         "secret"
+      ],
+      "billing_status": [
+        "free",
+        "active",
+        "past_due",
+        "canceled"
       ],
       "reaction_parent_type": [
         "project_check_in",
@@ -15240,6 +16019,10 @@
       ],
       "email_preference_values": [
         "buffered"
+      ],
+      "billing_interval": [
+        "monthly",
+        "yearly"
       ],
       "milestone_status": [
         "pending",
@@ -16199,6 +16982,20 @@
       "outputs": [
         {
           "default": null,
+          "name": "spaces",
+          "type": {
+            "item": {
+              "name": "space",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
           "name": "projects",
           "type": {
             "item": {
@@ -16282,7 +17079,7 @@
           "nullable": false
         }
       ],
-      "docstring": "Performs a global search across projects, goals, milestones, tasks, and people.",
+      "docstring": "Performs a global search across spaces, projects, goals, milestones, tasks, and people.",
       "full_name": "companies/global_search",
       "method": "GET"
     },
@@ -16449,6 +17246,17 @@
           "optional": true,
           "has_default": false,
           "nullable": true
+        },
+        {
+          "default": null,
+          "name": "is_company_owner",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
         }
       ],
       "docstring": "Lists all companies for the current account.",
@@ -21229,6 +22037,17 @@
           "name": "timezone",
           "type": {
             "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "time_format",
+          "type": {
+            "name": "time_format",
             "kind": "named"
           },
           "optional": true,
@@ -27213,7 +28032,21 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "assignee_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
           "has_default": false,
           "nullable": true
         },
@@ -27658,7 +28491,21 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "assignee_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
           "has_default": false,
           "nullable": true
         },
@@ -28060,6 +28907,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-05-14T22:01:11Z",
+  "generated_at": "2026-05-25T15:12:14Z",
   "schema_version": 1
 }

@@ -147,6 +147,35 @@ test("parses scalar arrays from repeated flags", () => {
   }
 });
 
+test("parses repeated task assignee ids", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(
+    [
+      "tasks",
+      "update_assignee",
+      "--task-id",
+      "t1",
+      "--type",
+      "project",
+      "--assignee-ids",
+      "p1",
+      "--assignee-ids",
+      "p2",
+    ],
+    registry,
+    fixtureCatalog.types,
+  );
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      task_id: "t1",
+      type: "project",
+      assignee_ids: ["p1", "p2"],
+    });
+  }
+});
+
 test("rejects unknown flag names", () => {
   const registry = createRegistry(fixtureCatalog);
 
