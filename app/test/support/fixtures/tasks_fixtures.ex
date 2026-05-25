@@ -26,13 +26,17 @@ defmodule Operately.TasksFixtures do
       })
       |> Operately.Tasks.create_task()
 
-    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
-      parent_type: :project_task,
-      parent_id: task.id,
-    })
+    {:ok, _} =
+      Operately.Notifications.update_subscription_list(subscription_list, %{
+        parent_type: task_subscription_parent_type(task),
+        parent_id: task.id
+      })
 
     task
   end
+
+  defp task_subscription_parent_type(%Operately.Tasks.Task{space_id: space_id}) when not is_nil(space_id), do: :space_task
+  defp task_subscription_parent_type(%Operately.Tasks.Task{}), do: :project_task
 
   @doc """
   Generate a assignee.

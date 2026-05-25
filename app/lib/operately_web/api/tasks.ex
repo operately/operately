@@ -644,7 +644,7 @@ defmodule OperatelyWeb.Api.Tasks do
         tasks =
           from(t in Operately.Tasks.Task,
             where: t.project_id == ^project.id,
-            preload: [:assigned_people, :milestone]
+            preload: [:assigned_people, :milestone, subscription_list: [subscriptions: :person]]
           )
           |> Repo.all()
           |> Operately.Tasks.Task.load_comments_count()
@@ -856,7 +856,7 @@ defmodule OperatelyWeb.Api.Tasks do
       assignee_ids = assignee_ids(inputs)
 
       multi
-      |> Notifications.SubscriptionList.insert(%{send_to_everyone: false, subscription_parent_type: :project_task})
+      |> Notifications.SubscriptionList.insert(%{send_to_everyone: false, subscription_parent_type: subscription_parent_type(inputs.type)})
       |> Ecto.Multi.run(:creator_subscription, fn _repo, %{me: me, subscription_list: subscription_list} ->
         ensure_subscription(subscription_list.id, me.id, :joined)
       end)
@@ -914,6 +914,9 @@ defmodule OperatelyWeb.Api.Tasks do
     defp now_truncated do
       NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     end
+
+    defp subscription_parent_type(:space), do: :space_task
+    defp subscription_parent_type(:project), do: :project_task
 
     defp maybe_attach_milestone(task, changes) do
       case Map.get(changes, :validate_milestone) do

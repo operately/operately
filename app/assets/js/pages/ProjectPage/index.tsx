@@ -222,6 +222,8 @@ function Page() {
     currentUser,
     tasks: baseTasks,
     commentEntityType: "project_task",
+    cacheKey: pageCacheKey(project.id),
+    onRefresh: refresh,
     canEdit: Boolean(project.permissions?.canEdit),
     canComment: Boolean(project.permissions?.canComment),
     onTaskNameChange: updateTaskName,

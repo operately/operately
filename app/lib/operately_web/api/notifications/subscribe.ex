@@ -45,6 +45,7 @@ defmodule OperatelyWeb.Api.Notifications.Subscribe do
       :comment_thread -> Activities.Permissions.check(access_level, :can_view)
       :project -> Projects.Permissions.check(access_level, :can_view)
       :project_task -> Projects.Permissions.check(access_level, :can_view)
+      :space_task -> Groups.Permissions.check(access_level, :can_view)
       :milestone -> Projects.Permissions.check(access_level, :can_view)
     end
   end
