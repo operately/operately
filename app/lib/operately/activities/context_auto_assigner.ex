@@ -99,6 +99,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_adding",
     "task_assignee_assignment",
     "task_assignee_updating",
+    "task_comment_deleting",
     "task_deleting",
     "task_description_change",
     "task_due_date_updating",

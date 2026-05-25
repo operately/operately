@@ -16,6 +16,7 @@ import {
   IconCircleCheck,
   IconClockPlay,
   IconCircleXCustom,
+  IconTrash,
 } from "../icons";
 import { TaskActivityProps, TaskActivity, TaskStatus } from "./types";
 import { DateField } from "../DateField";
@@ -80,6 +81,8 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
       );
     case "task_description_change":
       return <IconFileText {...iconProps} className="text-purple-500" />;
+    case "task_comment_deleting":
+      return <IconTrash {...iconProps} className="text-orange-500" />;
     case "task_name_updating":
       return <IconEdit {...iconProps} className="text-gray-500" />;
     case "task_adding":
@@ -211,6 +214,9 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
             : `removed the description ${activity.page === "task" ? "" : "from " + taskName}`}
         </span>
       );
+
+    case "task_comment_deleting":
+      return <span className="text-content-dimmed">deleted a comment on {taskName}</span>;
 
     case "task_name_updating":
       return (

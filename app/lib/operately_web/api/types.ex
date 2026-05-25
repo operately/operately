@@ -581,6 +581,14 @@ defmodule OperatelyWeb.Api.Types do
     field :comment, :comment, null: true
   end
 
+  object :activity_content_task_comment_deleting do
+    field :space, :space, null: false
+    field? :project, :project, null: true
+    field :task, :task, null: true
+    field :task_name, :string, null: false
+    field :comment_id, :string, null: false
+  end
+
   object :goal_editing_updated_target do
     field? :id, :string, null: true
     field? :old_name, :string, null: true
@@ -833,6 +841,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_task_adding,
       :activity_content_task_assignee_assignment,
       :activity_content_task_closing,
+      :activity_content_task_comment_deleting,
       :activity_content_task_description_change,
       :activity_content_task_name_editing,
       :activity_content_task_moving,
