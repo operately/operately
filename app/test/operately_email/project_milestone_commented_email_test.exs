@@ -34,6 +34,8 @@ defmodule OperatelyEmail.ProjectMilestoneCommentedEmailTest do
 
   test "status changes skip rich text rendering when the stored comment content is empty", ctx do
     comment = comment_fixture(ctx.author, %{content: %{}})
+    milestone_fixture(%{project_id: ctx.project.id, title: "Customer launch"})
+    milestone_fixture(%{project_id: ctx.project.id, title: "Post-launch review"})
 
     activity =
       activity_fixture(%{
@@ -55,7 +57,13 @@ defmodule OperatelyEmail.ProjectMilestoneCommentedEmailTest do
     assert_email_sent(fn email ->
       assert email.subject =~ "completed the Important Work milestone"
       assert email.html_body =~ "View Milestone"
+      assert email.html_body =~ "Next milestones"
+      assert email.html_body =~ "Customer launch"
+      assert email.html_body =~ "Post-launch review"
       assert email.text_body =~ "Link:"
+      assert email.text_body =~ "Next milestones:"
+      assert email.text_body =~ "Customer launch"
+      assert email.text_body =~ "Post-launch review"
       true
     end)
   end
