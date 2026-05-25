@@ -8,6 +8,19 @@
   <% end %>
 <% end %>
 
+<%= if @remaining_milestones != [] do %>
+  <%= spacer() %>
+
+  <%= row do %>
+    <div style="font-weight: 700; margin-bottom: 8px;">Next milestones</div>
+    <ul style="margin-top: 0; padding-left: 20px;">
+      <%= for milestone <- @remaining_milestones do %>
+        <li><%= milestone.title %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
+
 <%= spacer() %>
 
 <%= row do %>
