@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
   alias Operately.Access.Binding
   alias OperatelyWeb.Paths
   alias Operately.Activities.Activity
+  alias Operately.ResourceHubs.Node
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -254,6 +255,40 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
       })
 
       assert [%{action: "task_assignee_updating"}] = res.activities
+    end
+
+    test "resource hub activities for deleted resources are not listed", ctx do
+      ctx =
+        ctx
+        |> Factory.preload(:space, :access_context)
+        |> Factory.add_resource_hub(:resource_hub, :space, :creator)
+        |> Factory.add_document(:document, :resource_hub)
+
+      attrs = %{
+        action: "resource_hub_document_created",
+        author_id: ctx.creator.id,
+        access_context_id: ctx.space.access_context.id,
+        content: %{
+          "company_id" => ctx.company.id,
+          "space_id" => ctx.space.id,
+          "resource_hub_id" => ctx.resource_hub.id,
+          "node_id" => ctx.document.node_id,
+          "document_id" => ctx.document.id,
+          "name" => "Deleted document"
+        }
+      }
+
+      {:ok, _} = Repo.insert(struct(Activity, attrs))
+      {:ok, _} = Repo.soft_delete(ctx.document)
+      {:ok, _} = Repo.soft_delete(Repo.get!(Node, ctx.document.node_id))
+
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
+        scope_type: :company,
+        scope_id: Paths.company_id(ctx.company),
+        actions: ["resource_hub_document_created"]
+      })
+
+      assert res.activities == []
     end
   end
 
