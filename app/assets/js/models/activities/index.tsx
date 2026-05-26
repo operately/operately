@@ -5,6 +5,12 @@ import * as api from "@/api";
 import * as Time from "@/utils/time";
 import { match } from "ts-pattern";
 
+export type FeedActivity = Activity & {
+  aggregatedActivities?: Activity[];
+};
+
+const AGGREGATABLE_ACTIONS = ["resource_hub_document_edited"];
+
 export const getActivity = async (input: CompaniesGetActivityInput) => {
   const response = await Api.companies.getActivity(input);
   return response.activity!;
@@ -36,6 +42,62 @@ export function groupByDate(activities: Activity[]): ActivityGroup[] {
   }
 
   return groups;
+}
+
+export function aggregateConsecutiveFeedActivities(activities: Activity[]): FeedActivity[] {
+  const result: FeedActivity[] = [];
+
+  for (const activity of activities) {
+    const last = result[result.length - 1];
+
+    if (last && canAggregate(last, activity)) {
+      const aggregatedActivities = [...getAggregatedActivities(last), activity];
+      const insertedAt = earliestInsertedAt(aggregatedActivities);
+
+      result[result.length - 1] = {
+        ...last,
+        ...(insertedAt ? { insertedAt } : {}),
+        aggregatedActivities,
+      };
+    } else {
+      result.push(activity);
+    }
+  }
+
+  return result;
+}
+
+export function getAggregatedActivities(activity: FeedActivity): Activity[] {
+  return activity.aggregatedActivities || [activity];
+}
+
+function canAggregate(left: FeedActivity, right: Activity): boolean {
+  return (
+    aggregatableAction(left.action) &&
+    left.action === right.action &&
+    left.author?.id === right.author?.id &&
+    sameActivityLocation(left, right)
+  );
+}
+
+function aggregatableAction(action?: string | null): boolean {
+  return Boolean(action && AGGREGATABLE_ACTIONS.includes(action));
+}
+
+function sameActivityLocation(left: Activity, right: Activity): boolean {
+  const leftContent = left.content as api.ActivityContentResourceHubDocumentEdited | null | undefined;
+  const rightContent = right.content as api.ActivityContentResourceHubDocumentEdited | null | undefined;
+
+  return leftContent?.space?.id === rightContent?.space?.id;
+}
+
+function earliestInsertedAt(activities: Activity[]): string | undefined {
+  return activities.reduce<string | undefined>((earliest, activity) => {
+    if (!activity.insertedAt) return earliest;
+    if (!earliest) return activity.insertedAt;
+
+    return activity.insertedAt < earliest ? activity.insertedAt : earliest;
+  }, undefined);
 }
 
 export function getGoal(activity: Activity) {
