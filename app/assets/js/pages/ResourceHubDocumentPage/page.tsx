@@ -76,6 +76,7 @@ function Title() {
       title={document.name!}
       author={document.author}
       publishedAt={document.insertedAt!}
+      modifiedAt={document.updatedAt}
       state="published"
     />
   );
