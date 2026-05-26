@@ -42,7 +42,8 @@ const FEED_PROP_DEFAULTS = {
 
 export function Feed(props: FeedProps) {
   props = { ...FEED_PROP_DEFAULTS, ...props };
-  const groupedActivities = Activities.groupByDate(props.items);
+  const items = Activities.aggregateConsecutiveFeedActivities(props.items);
+  const groupedActivities = Activities.groupByDate(items);
 
   return (
     <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
