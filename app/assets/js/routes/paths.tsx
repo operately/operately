@@ -52,7 +52,7 @@ export class Paths {
   }
 
   feedPath() {
-    return this.createCompanyPath(["feed"]);
+    return this.homePath();
   }
 
   homePath() {
