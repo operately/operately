@@ -42,6 +42,9 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
           }
         })
 
+      topic = "api:billing_updated:#{ctx.company.id}"
+      OperatelyWeb.Endpoint.subscribe(topic)
+
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn company_id ->
           assert company_id == ctx.company.id
@@ -67,6 +70,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
       assert webhook_event.status == :processed
       assert %DateTime{} = webhook_event.processed_at
       assert webhook_event.error == nil
+      assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
 
       account = Billing.get_billing_account_by_company(ctx.company)
       assert account.status == :active
@@ -129,6 +133,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
       assert webhook_event.status == :processed
       assert %DateTime{} = webhook_event.processed_at
       assert webhook_event.error == nil
+      refute_receive %Phoenix.Socket.Broadcast{topic: "api:billing_updated:" <> _}
     end
 
     test "marks the webhook failed and discards it when external_id is missing" do
@@ -185,6 +190,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
       assert webhook_event.status == :failed
       assert webhook_event.processed_at == nil
       assert webhook_event.error == "internal_server_error"
+      refute_receive %Phoenix.Socket.Broadcast{topic: "api:billing_updated:" <> _}
     end
 
     test "reprocesses previously failed rows on a later successful retry", ctx do

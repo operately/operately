@@ -6,8 +6,6 @@ defmodule Operately.Billing.Polar.Client do
   alias Operately.Billing.Polar.ProductMapper
   alias OperatelyWeb.Endpoint
 
-  @default_base_url "https://api.polar.sh"
-
   def create_product(attrs) do
     post("/v1/products", create_product_payload(attrs))
   end
@@ -62,6 +60,14 @@ defmodule Operately.Billing.Polar.Client do
 
   def app_base_url do
     Endpoint.url()
+  end
+
+  def base_url do
+    if Mix.env() == :prod do
+      "https://api.polar.sh"
+    else
+      "https://sandbox-api.polar.sh"
+    end
   end
 
   defp create_product_payload(attrs) do
@@ -155,7 +161,7 @@ defmodule Operately.Billing.Polar.Client do
     access_token = Application.get_env(:operately, :polar_access_token)
 
     if is_binary(access_token) and String.trim(access_token) != "" do
-      {:ok, %{access_token: access_token, base_url: @default_base_url}}
+      {:ok, %{access_token: access_token, base_url: base_url()}}
     else
       Logger.error("Polar access token is not configured")
       {:error, :internal_server_error}
