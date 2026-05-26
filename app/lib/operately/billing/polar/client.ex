@@ -62,13 +62,7 @@ defmodule Operately.Billing.Polar.Client do
     Endpoint.url()
   end
 
-  def base_url do
-    if Mix.env() == :prod do
-      "https://api.polar.sh"
-    else
-      "https://sandbox-api.polar.sh"
-    end
-  end
+  def base_url, do: Application.fetch_env!(:operately, :polar_base_url)
 
   defp create_product_payload(attrs) do
     metadata =
@@ -141,6 +135,10 @@ defmodule Operately.Billing.Polar.Client do
 
         {:ok, %{status: 404}} ->
           {:error, :not_found}
+
+        {:ok, %{status: status, body: body}} when status in [401, 403] ->
+          Logger.error("Polar request failed with auth response: #{inspect(%{status: status, body: body})}")
+          {:error, :internal_server_error}
 
         {:ok, %{status: status, body: body}} when status in 400..499 ->
           Logger.warning("Polar request failed with 4xx response: #{inspect(%{status: status, body: body})}")

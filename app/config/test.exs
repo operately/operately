@@ -42,6 +42,7 @@ config :phoenix, :plug_init_mode, :runtime
 
 config :operately, :start_query_counter, true
 config :operately, :restrict_entry, false
+config :operately, :polar_base_url, "https://sandbox-api.polar.sh"
 
 config :operately, Oban, testing: :inline
 
