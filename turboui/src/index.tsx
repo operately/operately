@@ -39,6 +39,7 @@ export { FormattedTime } from "./FormattedTime";
 export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
+export { LastCheckIn } from "./LastCheckIn";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
 export { InviteMemberForm } from "./InviteMemberForm";
 export { InvitePeoplePage } from "./InvitePeoplePage";
