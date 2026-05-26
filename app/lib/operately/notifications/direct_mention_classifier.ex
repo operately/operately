@@ -4,6 +4,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
   alias Operately.Notifications.Notification
   alias Operately.Repo
   alias Operately.Comments.CommentThread
+  alias Operately.Goals.Goal
   alias Operately.Goals.Update
   alias Operately.Messages.Message
   alias Operately.Projects.CheckIn
@@ -25,6 +26,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     {"project_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"goal_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"project_retrospective_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"goal_created", %{resource: :goal, resource_id: {:content, "goal_id"}}},
     {"project_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"space_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"discussion_comment_submitted", %{resource: :comment, resource_id: {:content, "comment_id"}}},
@@ -76,7 +78,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "goal_check_in_edit",
     "goal_check_removing",
     "goal_check_toggled",
-    "goal_created",
     "goal_discussion_editing",
     "goal_due_date_changed",
     "goal_due_date_updating",
@@ -264,6 +265,12 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
   defp load_preloaded_resource(:goal_update, ids) do
     from(u in Update, where: u.id in ^ids, select: {u.id, u.message})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  defp load_preloaded_resource(:goal, ids) do
+    from(g in Goal, where: g.id in ^ids, select: {g.id, g.description})
     |> Repo.all()
     |> Enum.into(%{})
   end
