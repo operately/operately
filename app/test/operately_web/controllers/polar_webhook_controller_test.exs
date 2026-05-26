@@ -1,0 +1,178 @@
+defmodule OperatelyWeb.PolarWebhookControllerTest do
+  use OperatelyWeb.ConnCase
+
+  @secret "polar_test_webhook_secret"
+
+  setup do
+    previous_secret = Application.get_env(:operately, :polar_webhook_secret)
+    Application.put_env(:operately, :polar_webhook_secret, @secret)
+
+    on_exit(fn ->
+      if previous_secret do
+        Application.put_env(:operately, :polar_webhook_secret, previous_secret)
+      else
+        Application.delete_env(:operately, :polar_webhook_secret)
+      end
+    end)
+
+    :ok
+  end
+
+  describe "POST /webhooks/polar" do
+    test "returns 202 for a valid signed request", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+
+      conn =
+        conn
+        |> signed_webhook_request(payload)
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 202) == ""
+    end
+
+    test "verifies the exact raw request body", %{conn: conn} do
+      payload = """
+      {
+        "type": "customer.state_changed",
+        "data": { "z": 1, "a": [1, 2, 3] }
+      }
+      """
+
+      conn =
+        conn
+        |> signed_webhook_request(payload)
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 202) == ""
+    end
+
+    test "returns 403 for an invalid signature", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> put_req_header("webhook-id", "msg_invalid")
+        |> put_req_header("webhook-timestamp", "#{System.system_time(:second)}")
+        |> put_req_header("webhook-signature", "v1,#{Base.encode64("not_a_valid_signature")}")
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 403) == ""
+    end
+
+    test "returns 403 when webhook-id is missing", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+      timestamp = "#{System.system_time(:second)}"
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> put_req_header("webhook-timestamp", timestamp)
+        |> put_req_header("webhook-signature", signature_header("msg_missing", timestamp, payload))
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 403) == ""
+    end
+
+    test "returns 403 when webhook-timestamp is missing", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> put_req_header("webhook-id", "msg_missing")
+        |> put_req_header("webhook-signature", signature_header("msg_missing", "#{System.system_time(:second)}", payload))
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 403) == ""
+    end
+
+    test "returns 403 when webhook-signature is missing", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> put_req_header("webhook-id", "msg_missing")
+        |> put_req_header("webhook-timestamp", "#{System.system_time(:second)}")
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 403) == ""
+    end
+
+    test "returns 403 for a stale timestamp", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+      timestamp = "#{System.system_time(:second) - 301}"
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> put_req_header("webhook-id", "msg_stale")
+        |> put_req_header("webhook-timestamp", timestamp)
+        |> put_req_header("webhook-signature", signature_header("msg_stale", timestamp, payload))
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 403) == ""
+    end
+
+    test "accepts multiple signatures when one valid v1 signature matches", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+      webhook_id = "msg_rotated"
+      timestamp = "#{System.system_time(:second)}"
+      valid_signature = signature_header(webhook_id, timestamp, payload)
+      invalid_signature = "v1,#{Base.encode64("old_signature_that_does_not_match")}"
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> put_req_header("webhook-id", webhook_id)
+        |> put_req_header("webhook-timestamp", timestamp)
+        |> put_req_header("webhook-signature", invalid_signature <> " " <> valid_signature)
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 202) == ""
+    end
+
+    test "returns 503 when the webhook secret is not configured", %{conn: conn} do
+      Application.delete_env(:operately, :polar_webhook_secret)
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+
+      conn =
+        conn
+        |> signed_webhook_request(payload, secret: @secret)
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 503) == ""
+    end
+
+    test "returns 400 for invalid json payloads", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":)
+
+      assert_error_sent 400, fn ->
+        conn
+        |> signed_webhook_request(payload)
+        |> post("/webhooks/polar", payload)
+      end
+    end
+  end
+
+  defp signed_webhook_request(conn, payload, opts \\ []) do
+    webhook_id = Keyword.get(opts, :webhook_id, "msg_123")
+    timestamp = Keyword.get(opts, :timestamp, "#{System.system_time(:second)}")
+    secret = Keyword.get(opts, :secret, @secret)
+
+    conn
+    |> put_req_header("content-type", "application/json")
+    |> put_req_header("webhook-id", webhook_id)
+    |> put_req_header("webhook-timestamp", timestamp)
+    |> put_req_header("webhook-signature", signature_header(webhook_id, timestamp, payload, secret))
+  end
+
+  defp signature_header(webhook_id, timestamp, payload, secret \\ @secret) do
+    signature =
+      :crypto.mac(:hmac, :sha256, secret, webhook_id <> "." <> timestamp <> "." <> payload)
+      |> Base.encode64()
+
+    "v1," <> signature
+  end
+end

@@ -108,6 +108,12 @@ defmodule OperatelyWeb.Router do
     forward("/v1", OperatelyWeb.Api.External)
   end
 
+  scope "/webhooks", OperatelyWeb do
+    pipe_through([:api_external])
+
+    post("/polar", PolarWebhookController, :create)
+  end
+
   scope "/api" do
     pipe_through([:api])
 
