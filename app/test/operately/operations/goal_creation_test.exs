@@ -5,6 +5,7 @@ defmodule Operately.Operations.GoalCreationTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
+  alias Operately.Support.RichText
 
   alias Operately.Access
   alias Operately.Access.Binding
@@ -180,5 +181,28 @@ defmodule Operately.Operations.GoalCreationTest do
 
     assert 2 == notifications_count() # 1 reviewer + 1 champion = 2
     assert fetch_notifications(activity.id)
+  end
+
+  test "GoalCreation operation notifies people mentioned in the description", ctx do
+    mentioned = person_fixture_with_account(%{company_id: ctx.company.id})
+    description = RichText.rich_text(mentioned_people: [mentioned]) |> Jason.decode!()
+    attrs = Map.put(ctx.attrs, :description, description)
+
+    {:ok, goal} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.GoalCreation.run(ctx.creator, attrs)
+      end)
+
+    activity = from(a in Activity, where: a.action == "goal_created" and a.content["goal_id"] == ^goal.id) |> Repo.one()
+
+    goal
+    |> Operately.Goals.Goal.changeset(%{description: RichText.rich_text("Mention removed before dispatch")})
+    |> Repo.update!()
+
+    perform_job(activity.id)
+
+    notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
+
+    assert mentioned.id in notified_ids
   end
 end
