@@ -1,4 +1,5 @@
 import { CompanyBillingPage } from "./types";
+
 export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props): CompanyBillingPage.PageViewModel {
   if (props.isConfirmingCheckout) {
     return {
@@ -15,20 +16,24 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
     mode: "overview",
     overview: buildCompanyBillingOverviewMode({
       billing: props.billing,
-      checkoutFeedback: props.checkoutFeedback || null,
+      feedback: props.feedback || null,
       actionError: props.actionError || null,
       onSeePlans: props.onOpenSelection || null,
       onCompleteUpgrade: props.onCompleteUpgrade || null,
+      onUpdatePaymentMethod: props.onUpdatePaymentMethod || null,
+      onManageBilling: props.onManageBilling || null,
     }),
   };
 }
 
 interface BuildOverviewModeArgs {
   billing: CompanyBillingPage.BillingOverview;
-  checkoutFeedback: CompanyBillingPage.CheckoutFeedback | null;
+  feedback: CompanyBillingPage.Feedback | null;
   actionError: string | null;
   onSeePlans: (() => void) | null;
   onCompleteUpgrade: (() => void) | null;
+  onUpdatePaymentMethod: (() => void) | null;
+  onManageBilling: (() => void) | null;
 }
 
 export function buildCompanyBillingOverviewMode(args: BuildOverviewModeArgs): CompanyBillingPage.OverviewModeView {
@@ -38,7 +43,7 @@ export function buildCompanyBillingOverviewMode(args: BuildOverviewModeArgs): Co
 
   return {
     stale: args.billing.stale,
-    checkoutFeedback: args.checkoutFeedback,
+    feedback: args.feedback,
     errorMessage: args.actionError,
     currentPlan: {
       name: currentPlanName,
@@ -56,12 +61,8 @@ export function buildCompanyBillingOverviewMode(args: BuildOverviewModeArgs): Co
       { label: "Member limit", value: currentPlan?.memberLimit ? `${currentPlan.memberLimit}` : "Unavailable" },
     ],
     statusNotices: buildCompanyBillingStatusNotices(args.billing),
+    actions: buildOverviewActions(args),
     emptyStatusMessage: "No pending billing changes.",
-    footerAction: args.onCompleteUpgrade
-      ? { label: "Complete upgrade", tone: "primary", onClick: args.onCompleteUpgrade }
-      : args.onSeePlans
-        ? { label: "Switch Plan", tone: "primary", onClick: args.onSeePlans }
-        : null,
   };
 }
 
@@ -151,7 +152,7 @@ export function buildCompanyBillingStatusNotices(
 
 export function buildCompanyBillingSuccessFeedback(
   billing: CompanyBillingPage.BillingOverview,
-): CompanyBillingPage.CheckoutFeedback {
+): CompanyBillingPage.Feedback {
   return {
     kind: "success",
     message: "Upgrade confirmed",
@@ -161,7 +162,7 @@ export function buildCompanyBillingSuccessFeedback(
 
 export function buildCompanyBillingRecoveryFeedback(
   billing: CompanyBillingPage.BillingOverview,
-): CompanyBillingPage.CheckoutFeedback {
+): CompanyBillingPage.Feedback {
   if (billing.account.pendingPlanKey) {
     return {
       kind: "pending",
@@ -175,6 +176,60 @@ export function buildCompanyBillingRecoveryFeedback(
     message: "Checkout not completed",
     description: "We couldn't confirm a completed checkout. You can safely return to plan selection and try again.",
   };
+}
+
+export function buildCompanyBillingPlanChangeFeedback(
+  billing: CompanyBillingPage.BillingOverview,
+): CompanyBillingPage.Feedback {
+  if (billing.account.scheduledPlanKey) {
+    const planLabel = formatPlanLabel(
+      billing.account.scheduledPlanKey,
+      billing.account.scheduledBillingInterval,
+      "the new plan",
+    );
+    const effectiveDate = formatDate(billing.account.scheduledChangeEffectiveAt);
+
+    return {
+      kind: "success",
+      message: "Plan change scheduled",
+      description: effectiveDate
+        ? `${planLabel} will take effect at the next renewal on ${effectiveDate}.`
+        : `${planLabel} will take effect at the next renewal.`,
+    };
+  }
+
+  return {
+    kind: "success",
+    message: "Plan updated",
+    description: `This workspace is now on ${formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "its new plan")}.`,
+  };
+}
+
+function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.Action[] {
+  const actions: CompanyBillingPage.Action[] = [];
+  const isPaidCompany = args.billing.account.status === "active" || args.billing.account.status === "past_due";
+
+  if (args.onCompleteUpgrade) {
+    actions.push({ label: "Complete upgrade", tone: "primary", onClick: args.onCompleteUpgrade });
+  }
+
+  if (args.onSeePlans) {
+    actions.push({
+      label: "Switch Plan",
+      tone: args.onCompleteUpgrade ? "secondary" : "primary",
+      onClick: args.onSeePlans,
+    });
+  }
+
+  if (isPaidCompany && args.onUpdatePaymentMethod) {
+    actions.push({ label: "Update credit card", tone: "secondary", onClick: args.onUpdatePaymentMethod });
+  }
+
+  if (isPaidCompany && args.onManageBilling) {
+    actions.push({ label: "Manage billing", tone: "secondary", onClick: args.onManageBilling });
+  }
+
+  return actions;
 }
 
 function findCurrentPlanDefinition(

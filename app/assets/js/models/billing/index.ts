@@ -3,10 +3,12 @@ import * as api from "@/api";
 export { useBillingUpdatedSignal } from "@/signals";
 import { browserLocale } from "@/utils/formatting";
 import {
+  buildCompanyBillingPlanChangeFeedback,
   canCreateCompanyBillingCheckout,
   CompanyBillingPage,
   findCompanyBillingSellableProduct,
   isCompanyBillingCheckoutReturnSuccessful,
+  isCompanyBillingPaidStatus,
   listCompanyBillingSellableTargets,
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
@@ -14,19 +16,32 @@ import {
 
 type BillingCatalogProduct = api.BillingCatalogProduct;
 type BillingCheckoutSession = api.BillingCheckoutSession;
+type BillingHostedSession = api.BillingHostedSession;
 type BillingInterval = api.BillingInterval;
 export type BillingOverview = api.BillingOverview;
 type BillingPlan = api.BillingPlan;
 type BillingPlanDefinition = api.BillingPlanDefinition;
 type BillingStatus = api.BillingStatus;
 
+export type BillingFeedback = CompanyBillingPage.Feedback;
 type BillingSearchParams = CompanyBillingPage.BillingSearchParams;
 type BillingTarget = CompanyBillingPage.BillingTarget;
 type BillingTargetSelection = CompanyBillingPage.BillingTargetSelection;
+
 type BeginCheckoutResult =
   | { outcome: "missing_target" }
   | { outcome: "target_unavailable" }
   | { outcome: "session_created"; session: BillingCheckoutSession }
+  | { outcome: "provider_error"; billing?: BillingOverview };
+
+type ChangePlanResult =
+  | { outcome: "missing_target" }
+  | { outcome: "target_unavailable" }
+  | { outcome: "billing_updated"; billing: BillingOverview }
+  | { outcome: "provider_error"; billing?: BillingOverview };
+
+type BeginHostedSessionResult =
+  | { outcome: "session_created"; session: BillingHostedSession }
   | { outcome: "provider_error"; billing?: BillingOverview };
 
 const PLAN_NAMES: Record<string, string> = {
@@ -51,6 +66,18 @@ async function createCheckoutSession(input: api.BillingCreateCheckoutSessionInpu
   return Api.billing.createCheckoutSession(input).then((data) => data.session);
 }
 
+async function createPaymentMethodSession(
+  input: api.BillingCreatePaymentMethodSessionInput,
+): Promise<BillingHostedSession> {
+  return Api.billing.createPaymentMethodSession(input).then((data) => data.session);
+}
+
+async function createCustomerPortalSession(
+  input: api.BillingCreateCustomerPortalSessionInput,
+): Promise<BillingHostedSession> {
+  return Api.billing.createCustomerPortalSession(input).then((data) => data.session);
+}
+
 export async function beginCheckout(target: BillingTarget | null): Promise<BeginCheckoutResult> {
   if (!target) {
     return { outcome: "missing_target" };
@@ -60,13 +87,54 @@ export async function beginCheckout(target: BillingTarget | null): Promise<Begin
     return { outcome: "target_unavailable" };
   }
 
-  try {
+  return withBillingRefreshFallback(async () => {
     const session = await createCheckoutSession({
       plan: target.plan,
       billingInterval: target.billingInterval,
     });
 
     return { outcome: "session_created", session };
+  });
+}
+
+export async function changePlan(target: BillingTarget | null): Promise<ChangePlanResult> {
+  if (!target) {
+    return { outcome: "missing_target" };
+  }
+
+  if (!target.product) {
+    return { outcome: "target_unavailable" };
+  }
+
+  return withBillingRefreshFallback(async () => {
+    const result = await Api.billing.changePlan({
+      plan: target.plan,
+      billingInterval: target.billingInterval,
+    });
+
+    return { outcome: "billing_updated", billing: result.billing };
+  });
+}
+
+export async function beginPaymentMethodSession(returnTo: string): Promise<BeginHostedSessionResult> {
+  return withBillingRefreshFallback(async () => {
+    const session = await createPaymentMethodSession({ returnTo });
+    return { outcome: "session_created", session };
+  });
+}
+
+export async function beginCustomerPortalSession(returnTo: string): Promise<BeginHostedSessionResult> {
+  return withBillingRefreshFallback(async () => {
+    const session = await createCustomerPortalSession({ returnTo });
+    return { outcome: "session_created", session };
+  });
+}
+
+async function withBillingRefreshFallback<T extends { outcome: string }>(
+  operation: () => Promise<T>,
+): Promise<T | { outcome: "provider_error"; billing?: BillingOverview }> {
+  try {
+    return await operation();
   } catch {
     try {
       const billing = await refreshBilling({});
@@ -153,8 +221,16 @@ export function canCreateCheckout(status: BillingStatus): boolean {
   return canCreateCompanyBillingCheckout(status);
 }
 
+export function canManagePaidSubscription(status: BillingStatus): boolean {
+  return isCompanyBillingPaidStatus(status);
+}
+
 export function isCheckoutReturnSuccessful(billing: BillingOverview, requestedTarget: BillingTarget | null): boolean {
   return isCompanyBillingCheckoutReturnSuccessful(billing, requestedTarget);
+}
+
+export function buildPlanChangeFeedback(billing: BillingOverview): BillingFeedback {
+  return buildCompanyBillingPlanChangeFeedback(billing);
 }
 
 export function formatPriceFromMinorUnits(amount?: number | null, currency?: string | null): string {

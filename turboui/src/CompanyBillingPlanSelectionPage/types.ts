@@ -2,6 +2,7 @@ import { Navigation } from "../Page/Navigation";
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
 
 export namespace CompanyBillingPlanSelectionPage {
+  export type Mode = "checkout" | "change_plan";
   export type Interval = CompanyBillingPageTypes.Interval;
   export type Plan = CompanyBillingPageTypes.Plan;
   export type BillingOverview = CompanyBillingPageTypes.BillingOverview;
@@ -30,6 +31,7 @@ export namespace CompanyBillingPlanSelectionPage {
   }
 
   export interface SelectionModeView {
+    mode: Mode;
     errorMessage?: string | null;
     selectedInterval: Interval;
     onSelectInterval: (interval: Interval) => void;
@@ -49,10 +51,10 @@ export namespace CompanyBillingPlanSelectionPage {
     selection: BillingTargetSelection;
     navigation?: Navigation.Item[];
     actionError?: string | null;
-    isStartingCheckout?: boolean;
+    isSubmitting?: boolean;
     onSelectPlan?: ((plan: Plan) => void) | null;
     onSelectInterval?: ((interval: Interval) => void) | null;
-    onContinueToCheckout?: (() => void) | null;
+    onSubmit?: (() => void) | null;
     testId?: string;
   }
 }
