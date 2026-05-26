@@ -9,6 +9,7 @@ import { buildCompanyBillingPlanSelectionPageViewModel } from "./viewModel";
 export { buildCompanyBillingPlanSelectionMode, buildCompanyBillingPlanSelectionPageViewModel } from "./viewModel";
 
 export namespace CompanyBillingPlanSelectionPage {
+  export type Mode = CompanyBillingPlanSelectionPageTypes.Mode;
   export type Interval = CompanyBillingPlanSelectionPageTypes.Interval;
   export type Plan = CompanyBillingPlanSelectionPageTypes.Plan;
   export type BillingOverview = CompanyBillingPlanSelectionPageTypes.BillingOverview;
@@ -55,7 +56,7 @@ function Header({
 function SelectionModeView({ selection }: { selection: CompanyBillingPlanSelectionPage.SelectionModeView }) {
   return (
     <div className="space-y-10">
-      {selection.errorMessage && <WarningCallout message="Checkout unavailable" description={selection.errorMessage} />}
+      {selection.errorMessage && <WarningCallout message="Plan action unavailable" description={selection.errorMessage} />}
 
       <BillingCycleSelector selection={selection} />
 

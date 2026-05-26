@@ -94,7 +94,7 @@ export const FreeOverview: Story = {
         title={["Acme", "Billing"]}
         navigation={navigation}
         billing={billing}
-        onOpenSelection={() => console.log("see plans")}
+        onOpenSelection={() => console.log("switch plan")}
         testId="billing-page-free-overview"
       />
     );
@@ -116,12 +116,12 @@ export const PendingCheckoutOverview: Story = {
         title={["Acme", "Billing"]}
         navigation={navigation}
         billing={billing}
-        checkoutFeedback={{
+        feedback={{
           kind: "pending",
           message: "Checkout not completed yet",
           description: "You can start a fresh Polar checkout for Team Yearly.",
         }}
-        onOpenSelection={() => console.log("see plans")}
+        onOpenSelection={() => console.log("switch plan")}
         onCompleteUpgrade={() => console.log("complete")}
         testId="billing-page-pending-overview"
       />
@@ -148,7 +148,7 @@ export const ConfirmingUpgrade: Story = {
   },
 };
 
-export const PaidReadOnly: Story = {
+export const PaidActiveOverview: Story = {
   render: () => (
     <CompanyBillingPage
       title={["Acme", "Billing"]}
@@ -162,7 +162,31 @@ export const PaidReadOnly: Story = {
         },
         memberCount: 42,
       })}
-      testId="billing-page-paid-overview"
+      onOpenSelection={() => console.log("switch plan")}
+      onUpdatePaymentMethod={() => console.log("update card")}
+      onManageBilling={() => console.log("manage billing")}
+      testId="billing-page-paid-active"
+    />
+  ),
+};
+
+export const PastDueOverview: Story = {
+  render: () => (
+    <CompanyBillingPage
+      title={["Acme", "Billing"]}
+      navigation={navigation}
+      billing={billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "yearly",
+          status: "past_due",
+          currentPeriodEnd: "2026-06-14T00:00:00Z",
+        },
+      })}
+      onOpenSelection={() => console.log("switch plan")}
+      onUpdatePaymentMethod={() => console.log("update card")}
+      onManageBilling={() => console.log("manage billing")}
+      testId="billing-page-past-due"
     />
   ),
 };

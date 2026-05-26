@@ -21,7 +21,7 @@ export function Page() {
 
   const [billing, setBilling] = React.useState(loadedBilling);
   const [actionError, setActionError] = React.useState<string | null>(null);
-  const [isStartingCheckout, setIsStartingCheckout] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   React.useEffect(() => {
     setBilling(loadedBilling);
@@ -30,13 +30,8 @@ export function Page() {
   const search = React.useMemo(() => Billing.parseBillingSearch(location.search), [location.search]);
   const selection = React.useMemo(() => Billing.selectTarget(billing, search), [billing, search]);
   const canUseCheckout = Billing.canCreateCheckout(billing.account.status);
+  const canManagePaidSubscription = Billing.canManagePaidSubscription(billing.account.status);
   const companyName = companyRootData?.company?.name || "Billing";
-
-  React.useEffect(() => {
-    if (!canUseCheckout) {
-      navigate(paths.companyBillingPath(), { replace: true });
-    }
-  }, [canUseCheckout, navigate, paths]);
 
   const navigateToSelection = React.useCallback(
     (target: TurboCompanyBillingPlanSelectionPage.BillingTarget | null, replace = false) => {
@@ -69,44 +64,85 @@ export function Page() {
     [navigateToSelection, search.plan, selection.target],
   );
 
-  const startCheckout = React.useCallback(
-    async (target: TurboCompanyBillingPlanSelectionPage.BillingTarget | null) => {
-      setActionError(null);
-      setIsStartingCheckout(true);
+  const startCheckout = React.useCallback(async () => {
+    setActionError(null);
+    setIsSubmitting(true);
 
-      const result = await Billing.beginCheckout(target);
+    const result = await Billing.beginCheckout(selection.target);
 
-      if (result.outcome === "missing_target") {
-        setIsStartingCheckout(false);
-        return;
-      }
+    if (result.outcome === "missing_target") {
+      setIsSubmitting(false);
+      return;
+    }
 
-      if (result.outcome === "target_unavailable") {
-        setIsStartingCheckout(false);
-        setActionError("That billing option is no longer sellable. Please choose another plan.");
-        showErrorToast("Checkout unavailable", "That billing option is no longer available. Please choose another plan.");
-        return;
-      }
+    if (result.outcome === "target_unavailable") {
+      setIsSubmitting(false);
+      setActionError("That billing option is no longer sellable. Please choose another plan.");
+      showErrorToast("Checkout unavailable", "That billing option is no longer available. Please choose another plan.");
+      return;
+    }
 
-      if (result.outcome === "session_created") {
-        window.location.assign(result.session.url);
-        return;
-      }
+    if (result.outcome === "session_created") {
+      window.location.assign(result.session.url);
+      return;
+    }
 
-      if (result.billing) {
-        setBilling(result.billing);
-      }
+    if (result.billing) {
+      setBilling(result.billing);
+    }
 
-      setActionError("We couldn't start checkout right now. Please try again.");
-      showErrorToast("Failed to start checkout", "We couldn't start Polar checkout. Please try again.");
-      setIsStartingCheckout(false);
-    },
-    [],
-  );
+    setActionError("We couldn't start checkout right now. Please try again.");
+    showErrorToast("Failed to start checkout", "We couldn't start Polar checkout. Please try again.");
+    setIsSubmitting(false);
+  }, [selection.target]);
 
-  if (!canUseCheckout) {
-    return null;
-  }
+  const submitPlanChange = React.useCallback(async () => {
+    setActionError(null);
+    setIsSubmitting(true);
+
+    const result = await Billing.changePlan(selection.target);
+
+    if (result.outcome === "missing_target") {
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (result.outcome === "target_unavailable") {
+      setIsSubmitting(false);
+      setActionError("That billing option is no longer sellable. Please choose another plan.");
+      showErrorToast("Plan unavailable", "That billing option is no longer available. Please choose another plan.");
+      return;
+    }
+
+    if (result.outcome === "billing_updated") {
+      navigate(paths.companyBillingPath(), {
+        state: {
+          billing: result.billing,
+          feedback: Billing.buildPlanChangeFeedback(result.billing),
+        },
+      });
+      return;
+    }
+
+    if (result.billing) {
+      setBilling(result.billing);
+    }
+
+    setActionError("We couldn't change the plan right now. Please try again.");
+    showErrorToast("Failed to change plan", "We couldn't update the subscription in Polar. Please try again.");
+    setIsSubmitting(false);
+  }, [navigate, paths, selection.target]);
+
+  const handleSubmit = React.useCallback(() => {
+    if (canManagePaidSubscription) {
+      void submitPlanChange();
+      return;
+    }
+
+    if (canUseCheckout) {
+      void startCheckout();
+    }
+  }, [canManagePaidSubscription, canUseCheckout, startCheckout, submitPlanChange]);
 
   return (
     <TurboCompanyBillingPlanSelectionPage
@@ -118,10 +154,10 @@ export function Page() {
       billing={billing}
       selection={selection}
       actionError={actionError}
-      isStartingCheckout={isStartingCheckout}
+      isSubmitting={isSubmitting}
       onSelectPlan={handleSelectPlan}
       onSelectInterval={handleSelectInterval}
-      onContinueToCheckout={() => void startCheckout(selection.target)}
+      onSubmit={handleSubmit}
       testId="company-billing-plan-selection-page"
     />
   );

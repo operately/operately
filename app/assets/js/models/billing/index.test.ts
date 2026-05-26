@@ -1,3 +1,4 @@
+import Api from "@/api";
 import * as Billing from "./index";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
@@ -100,6 +101,19 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
   } as Billing.BillingOverview;
 }
 
+function hostedSessionMock() {
+  return {
+    provider: "polar",
+    url: "https://polar.sh/session",
+    returnUrl: "https://app.example.com/acme/admin/billing",
+    expiresAt: "2026-05-23T00:10:00Z",
+  };
+}
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("billing model helpers", () => {
   it("returns the free plan definition when the account is free and plan_key is absent", () => {
     const plan = Billing.getCurrentPlanDefinition(billingOverviewMock());
@@ -146,17 +160,35 @@ describe("billing model helpers", () => {
     expect(selection.target).toMatchObject({ plan: "business", billingInterval: "yearly" });
   });
 
-  it("falls back to the pending target when there is no query selection", () => {
+  it("falls back to the scheduled target for paid companies", () => {
     const billing = billingOverviewMock({
       account: {
-        pendingPlanKey: "business",
-        pendingBillingInterval: "monthly",
+        planKey: "team",
+        billingInterval: "monthly",
+        status: "active",
+        scheduledPlanKey: "business",
+        scheduledBillingInterval: "yearly",
       } as any,
     });
 
     const selection = Billing.selectTarget(billing, Billing.parseBillingSearch(""));
 
-    expect(selection.source).toBe("pending");
+    expect(selection.source).toBe("scheduled");
+    expect(selection.target).toMatchObject({ plan: "business", billingInterval: "yearly" });
+  });
+
+  it("falls back to the current target for paid companies without a scheduled change", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "past_due",
+      } as any,
+    });
+
+    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch(""));
+
+    expect(selection.source).toBe("current");
     expect(selection.target).toMatchObject({ plan: "business", billingInterval: "monthly" });
   });
 
@@ -215,5 +247,65 @@ describe("billing model helpers", () => {
     });
 
     expect(Billing.isCheckoutReturnSuccessful(billing, { plan: "team", billingInterval: "yearly", product: null })).toBe(true);
+  });
+
+  it("builds scheduled and immediate plan-change feedback", () => {
+    const scheduledFeedback = Billing.buildPlanChangeFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "monthly",
+          status: "active",
+          scheduledPlanKey: "business",
+          scheduledBillingInterval: "yearly",
+          scheduledChangeEffectiveAt: "2026-06-14T00:00:00Z",
+        } as any,
+      }),
+    );
+
+    const immediateFeedback = Billing.buildPlanChangeFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "business",
+          billingInterval: "monthly",
+          status: "active",
+        } as any,
+      }),
+    );
+
+    expect(scheduledFeedback.message).toBe("Plan change scheduled");
+    expect(scheduledFeedback.description).toContain("Business Yearly");
+    expect(immediateFeedback.message).toBe("Plan updated");
+    expect(immediateFeedback.description).toContain("Business Monthly");
+  });
+
+  it("changes the plan through the billing api", async () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+      } as any,
+    });
+
+    jest.spyOn(Api.billing, "changePlan").mockResolvedValue({ billing } as any);
+
+    const result = await Billing.changePlan({ plan: "business", billingInterval: "monthly", product: billing.catalogProducts[2] });
+
+    expect(Api.billing.changePlan).toHaveBeenCalledWith({ plan: "business", billingInterval: "monthly" });
+    expect(result).toEqual({ outcome: "billing_updated", billing });
+  });
+
+  it("opens payment-method and portal sessions through the billing api", async () => {
+    jest.spyOn(Api.billing, "createPaymentMethodSession").mockResolvedValue({ session: hostedSessionMock() } as any);
+    jest.spyOn(Api.billing, "createCustomerPortalSession").mockResolvedValue({ session: hostedSessionMock() } as any);
+
+    const paymentMethodResult = await Billing.beginPaymentMethodSession("/acme/admin/billing");
+    const portalResult = await Billing.beginCustomerPortalSession("/acme/admin/billing");
+
+    expect(Api.billing.createPaymentMethodSession).toHaveBeenCalledWith({ returnTo: "/acme/admin/billing" });
+    expect(Api.billing.createCustomerPortalSession).toHaveBeenCalledWith({ returnTo: "/acme/admin/billing" });
+    expect(paymentMethodResult).toEqual({ outcome: "session_created", session: hostedSessionMock() });
+    expect(portalResult).toEqual({ outcome: "session_created", session: hostedSessionMock() });
   });
 });

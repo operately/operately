@@ -103,27 +103,84 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
 }
 
 describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
-  it("builds selection props from the catalog data", () => {
+  it("builds checkout mode props from the catalog data", () => {
     const billing = billingOverviewMock();
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
       selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=yearly")),
       actionError: null,
-      isStartingCheckout: false,
+      isSubmitting: false,
       onSelectPlan: jest.fn(),
       onSelectInterval: jest.fn(),
-      onContinueToCheckout: jest.fn(),
+      onSubmit: jest.fn(),
     });
 
+    expect(selection.mode).toBe("checkout");
     expect(selection.selectedInterval).toBe("yearly");
     expect(selection.cards.map((card) => card.title)).toEqual(["Team", "Business"]);
     expect(selection.cards[0]?.priceLabel).toBe("$66 / month");
     expect(selection.cards[0]?.detailLines).toContain("Billed yearly at $790");
     expect(selection.continueAction.label).toBe("Continue to checkout");
+    expect(selection.continueAction.disabled).toBe(false);
   });
 
-  it("preselects the suggested plan when no target is provided", () => {
+  it("preselects the current paid plan and disables same-plan changes", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+        suggestedPlanKey: null,
+        suggestedBillingInterval: null,
+      } as any,
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("")),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.mode).toBe("change_plan");
+    expect(selection.selectedInterval).toBe("monthly");
+    expect(selection.cards.find((card) => card.title === "Business")?.selected).toBe(true);
+    expect(selection.continueAction.label).toBe("Change plan");
+    expect(selection.continueAction.disabled).toBe(true);
+  });
+
+  it("preselects the scheduled target for paid companies", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "monthly",
+        status: "active",
+        scheduledPlanKey: "business",
+        scheduledBillingInterval: "yearly",
+      } as any,
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("")),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.mode).toBe("change_plan");
+    expect(selection.selectedInterval).toBe("yearly");
+    expect(selection.cards.find((card) => card.title === "Business")?.selected).toBe(true);
+    expect(selection.continueAction.disabled).toBe(true);
+  });
+
+  it("preselects the suggested plan when no free-company target is provided", () => {
     const billing = billingOverviewMock({
       account: {
         suggestedPlanKey: "business",
@@ -135,10 +192,10 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
       billing,
       selection: { target: null, source: null, warning: null },
       actionError: null,
-      isStartingCheckout: false,
+      isSubmitting: false,
       onSelectPlan: jest.fn(),
       onSelectInterval: jest.fn(),
-      onContinueToCheckout: jest.fn(),
+      onSubmit: jest.fn(),
     });
 
     expect(selection.selectedInterval).toBe("yearly");
