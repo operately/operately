@@ -1,4 +1,5 @@
 import * as Billing from "@/models/billing";
+import { isAwaitingCheckoutConfirmation } from "./page";
 
 import {
   buildCompanyBillingCancellationFeedback,
@@ -256,9 +257,38 @@ describe("CompanyBillingPage bridge helpers", () => {
     const confirming = buildCompanyBillingConfirmingMode({ plan: "team", billingInterval: "yearly", product: null });
 
     expect(confirming.notice.message).toBe("Confirming your upgrade");
+    expect(confirming.notice.description).toContain("update automatically");
     expect(confirming.rows).toEqual(
       expect.arrayContaining([expect.objectContaining({ label: "Requested plan", value: "Team Yearly" })]),
     );
+  });
+
+  it("waits for webhook-driven confirmation only while checkout has not been confirmed", () => {
+    const pendingBilling = billingOverviewMock({
+      account: {
+        planKey: null,
+        billingInterval: null,
+        status: "free",
+        pendingPlanKey: "team",
+        pendingBillingInterval: "yearly",
+      } as any,
+    });
+
+    const paidBilling = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "yearly",
+        status: "active",
+        pendingPlanKey: null,
+        pendingBillingInterval: null,
+      } as any,
+    });
+
+    const target = { plan: "team" as const, billingInterval: "yearly" as const, product: null };
+
+    expect(isAwaitingCheckoutConfirmation(pendingBilling, "chk_123", target)).toBe(true);
+    expect(isAwaitingCheckoutConfirmation(paidBilling, "chk_123", target)).toBe(false);
+    expect(isAwaitingCheckoutConfirmation(pendingBilling, null, target)).toBe(false);
   });
 
   it("builds checkout success and recovery feedback", () => {
