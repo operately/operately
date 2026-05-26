@@ -32,7 +32,6 @@ import DiscussionDraftsPage from "./DiscussionDraftsPage";
 import DiscussionEditPage from "./DiscussionEditPage";
 import DiscussionNewPage from "./DiscussionNewPage";
 import DiscussionPage from "./DiscussionPage";
-import FeedPage from "./FeedPage";
 import ForgotPasswordPage from "./ForgotPasswordPage";
 import GoalAccessAddPage from "./GoalAccessAddPage";
 import GoalAccessManagementPage from "./GoalAccessManagementPage";
@@ -144,7 +143,6 @@ export default {
   DiscussionEditPage,
   DiscussionNewPage,
   DiscussionPage,
-  FeedPage,
   ForgotPasswordPage,
   GoalAccessAddPage,
   GoalAccessManagementPage,
