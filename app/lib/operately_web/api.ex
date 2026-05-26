@@ -196,6 +196,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_admins, OperatelyWeb.Api.Companies.CreateAdmins)
         mutation(:create_member, OperatelyWeb.Api.Companies.CreateMember)
         mutation(:update_members_permissions, OperatelyWeb.Api.Companies.UpdateMembersPermissions)
+        mutation(:delete_activity, OperatelyWeb.Api.Companies.DeleteActivity)
         mutation(:delete_admin, OperatelyWeb.Api.Companies.DeleteAdmin)
         mutation(:delete_member, OperatelyWeb.Api.Companies.DeleteMember)
         mutation(:delete_trusted_email_domain, OperatelyWeb.Api.Companies.DeleteTrustedEmailDomain)

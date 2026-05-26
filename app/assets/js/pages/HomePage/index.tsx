@@ -1,5 +1,6 @@
 import React from "react";
 
+import Api, { Activity } from "@/api";
 import { PageModule } from "@/routes/types";
 
 import * as Pages from "@/components/Pages";
@@ -15,7 +16,7 @@ import { SpaceCardGrid, SpaceCardLink } from "@/features/spaces/SpaceCards";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
-import { GhostButton, PrimaryButton } from "turboui";
+import { GhostButton, PrimaryButton, showErrorToast } from "turboui";
 import { Onboarding } from "./Onboarding";
 import { SpacesZeroState } from "./SpacesZeroState";
 
@@ -104,11 +105,39 @@ function FeedSection() {
 function ActivityFeed() {
   const { company } = useLoadedData();
   const { data, loading, error } = useItemsQuery("company", company.id!);
+  const canDeleteFeedItems = useCanDeleteFeedItems();
+  const [deleteActivity] = Api.companies.useDeleteActivity();
+  const [activities, setActivities] = React.useState(data?.activities || []);
+
+  React.useEffect(() => {
+    setActivities(data?.activities || []);
+  }, [data?.activities]);
+
+  const handleDeleteActivity = async (activity: Activity) => {
+    if (!activity.id) return;
+
+    try {
+      await deleteActivity({ activityId: activity.id });
+      setActivities((activities) => activities.filter((item) => item.id !== activity.id));
+    } catch {
+      showErrorToast("Could not delete feed item", "Please try again.");
+    }
+  };
 
   if (loading) return <ActivityFeedSkeleton />;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data?.activities || []} testId="company-feed" page="company" hideTopBorder paddedGroups />;
+  return (
+    <Feed
+      items={activities}
+      testId="company-feed"
+      page="company"
+      hideTopBorder
+      paddedGroups
+      canDeleteItems={canDeleteFeedItems}
+      onDeleteItem={handleDeleteActivity}
+    />
+  );
 }
 
 function ActivityFeedSkeleton() {
@@ -231,4 +260,11 @@ function useIsOwner() {
 
   const me = useMe();
   return includesId(ownerIds, me!.id);
+}
+
+function useCanDeleteFeedItems() {
+  const { adminIds, ownerIds } = useLoadedData();
+
+  const me = useMe();
+  return includesId(adminIds, me!.id) || includesId(ownerIds, me!.id);
 }
