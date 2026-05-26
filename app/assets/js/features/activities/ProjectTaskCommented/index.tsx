@@ -6,7 +6,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
-import { feedTitle, projectLink } from "./../feedItemLinks";
+import { commentPath, commentedLink, feedTitle, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -16,10 +16,9 @@ const ProjectTaskCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { task, project } = content(activity);
-    const path = task ? paths.taskPath(task.id) : paths.projectPath(project.id);
+    const { comment, task, project } = content(activity);
 
-    return path;
+    return task ? commentPath(paths.taskPath(task.id), comment) : paths.projectPath(project.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -36,22 +35,23 @@ const ProjectTaskCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const { project, task } = content(activity);
+    const { comment, project, task } = content(activity);
 
     const taskPath = task ? paths.taskPath(task.id) : null;
-    const taskLink = (taskPath && task) ? <Link to={taskPath}>{task.name}</Link> : "a task";
+    const action = taskPath ? commentedLink(taskPath, comment) : "commented";
+    const taskLink = taskPath && task ? <Link to={taskPath}>{task.name}</Link> : "a task";
 
     if (page === "project") {
-      return feedTitle(activity, "commented on", taskLink);
+      return feedTitle(activity, action, "on", taskLink);
     } else {
-      return feedTitle(activity, "commented on", taskLink, "in the", projectLink(project), "project");
+      return feedTitle(activity, action, "on", taskLink, "in the", projectLink(project), "project");
     }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { mentionedPersonLookup } = useRichEditorHandlers();
     const { comment } = content(activity);
-    
+
     if (!comment?.content) {
       return null;
     }

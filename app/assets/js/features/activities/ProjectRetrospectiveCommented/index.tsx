@@ -6,7 +6,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
-import { feedTitle, projectLink } from "./../feedItemLinks";
+import { commentPath, commentedLink, feedTitle, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -16,7 +16,9 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    return paths.projectRetrospectivePath(content(activity).project.id);
+    const { comment, project } = content(activity);
+
+    return commentPath(paths.projectRetrospectivePath(project.id), comment);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -33,15 +35,16 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const { project}  = content(activity);
+    const { comment, project } = content(activity);
 
     const retrospectivePath = paths.projectRetrospectivePath(project.id);
+    const action = commentedLink(retrospectivePath, comment);
     const retrospectiveLink = <Link to={retrospectivePath}>Retrospective</Link>;
 
     if (page === "project") {
-      return feedTitle(activity, "commented on ", retrospectiveLink);
+      return feedTitle(activity, action, "on", retrospectiveLink);
     } else {
-      return feedTitle(activity, "commented on ", retrospectiveLink, " in the ", projectLink(project), "project");
+      return feedTitle(activity, action, "on", retrospectiveLink, "in the", projectLink(project), "project");
     }
   },
 

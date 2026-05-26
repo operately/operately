@@ -7,6 +7,16 @@ import * as api from "@/api";
 
 import { usePaths } from "@/routes/paths";
 
+export const commentPath = (path: string, comment?: Pick<api.Comment, "id"> | null) => {
+  return comment?.id ? `${path}#${comment.id}` : path;
+};
+
+export const commentedLink = (path: string, comment?: api.Comment | null) => {
+  if (!comment?.id) return "commented";
+
+  return <Link to={commentPath(path, comment)}>commented</Link>;
+};
+
 export const feedTitle = (activity: api.Activity, ...rest: (string | JSX.Element)[]) => {
   return (
     <>
@@ -102,12 +112,15 @@ export const milestoneLink = (milestone: api.Milestone, milestoneName?: string) 
   return <Link to={path}>{name}</Link>;
 };
 
-export const milestoneCommentLink = (milestone: api.Milestone | null | undefined, comment: api.Comment | null | undefined) => {
+export const milestoneCommentLink = (
+  milestone: api.Milestone | null | undefined,
+  comment: api.Comment | null | undefined,
+) => {
   const paths = usePaths();
 
   if (!milestone?.id || !comment?.id) return <span>commented</span>;
 
-  const path = `${paths.projectMilestonePath(milestone.id)}#${comment.id}`;
+  const path = commentPath(paths.projectMilestonePath(milestone.id), comment);
 
   return <Link to={path}>commented</Link>;
 };
@@ -126,4 +139,4 @@ export const personLink = (person: api.Person) => {
   const path = paths.profilePath(person.id);
 
   return <Link to={path}>{person.fullName}</Link>;
-}
+};

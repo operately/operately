@@ -6,7 +6,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
-import { feedTitle, spaceLink } from "./../feedItemLinks";
+import { commentPath, commentedLink, feedTitle, spaceLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -16,10 +16,10 @@ const SpaceTaskCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { task, space } = content(activity);
+    const { comment, task, space } = content(activity);
 
     if (task) {
-      return paths.spaceKanbanPath(space.id, { taskId: task.id });
+      return commentPath(paths.spaceKanbanPath(space.id, { taskId: task.id }), comment);
     }
     return paths.spaceKanbanPath(space.id);
   },
@@ -38,15 +38,16 @@ const SpaceTaskCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const { space, task } = content(activity);
+    const { comment, space, task } = content(activity);
 
     const taskPath = task ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.spaceKanbanPath(space.id);
+    const action = task ? commentedLink(taskPath, comment) : "commented";
     const taskLink = task ? <Link to={taskPath}>{task.name}</Link> : "a task";
 
     if (page === "space") {
-      return feedTitle(activity, "commented on", taskLink);
+      return feedTitle(activity, action, "on", taskLink);
     } else {
-      return feedTitle(activity, "commented on", taskLink, "in the", spaceLink(space), "space");
+      return feedTitle(activity, action, "on", taskLink, "in the", spaceLink(space), "space");
     }
   },
 
