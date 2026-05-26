@@ -187,7 +187,7 @@ defmodule OperatelyWeb.Paths do
   end
 
   def feed_path(company = %Company{}) do
-    create_path([company_id(company), "feed"])
+    home_path(company)
   end
 
   def notifications_path(company = %Company{}) do
