@@ -16,6 +16,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.ResourceHubs.CreateFolder,
       Mutations.Links.Create,
       Mutations.Comments.Delete,
+      Mutations.Companies.DeleteActivity,
       Mutations.Documents.Delete,
       Mutations.Files.Delete,
       Mutations.ResourceHubs.DeleteFolder,
