@@ -50,7 +50,7 @@ type BeginHostedSessionResult =
   | { outcome: "session_created"; session: BillingHostedSession }
   | { outcome: "provider_error"; billing?: BillingOverview };
 
-export interface BillingCancellationSummary {
+interface BillingCancellationSummary {
   currentPlanLabel: string;
   currentPeriodEnd: string | null;
   freePlanMemberLimit: number | null;
