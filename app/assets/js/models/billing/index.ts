@@ -7,12 +7,9 @@ import {
   canCreateCompanyBillingCheckout,
   CompanyBillingPage,
   findCompanyBillingSellableProduct,
-  getCompanyBillingCurrentTarget,
-  getCompanyBillingScheduledTarget,
   isCompanyBillingCheckoutReturnSuccessful,
   isCompanyBillingPaidStatus,
   listCompanyBillingSellableTargets,
-  matchesCompanyBillingTarget,
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
 } from "turboui";
@@ -226,21 +223,6 @@ export function canCreateCheckout(status: BillingStatus): boolean {
 
 export function canManagePaidSubscription(status: BillingStatus): boolean {
   return isCompanyBillingPaidStatus(status);
-}
-
-export function getCurrentTarget(billing: BillingOverview): BillingTarget | null {
-  return getCompanyBillingCurrentTarget(billing) as BillingTarget | null;
-}
-
-export function getScheduledTarget(billing: BillingOverview): BillingTarget | null {
-  return getCompanyBillingScheduledTarget(billing) as BillingTarget | null;
-}
-
-export function matchesTarget(
-  account: BillingOverview["account"],
-  target: BillingTarget | null,
-): boolean {
-  return matchesCompanyBillingTarget(account as CompanyBillingPage.BillingAccount, target) as boolean;
 }
 
 export function isCheckoutReturnSuccessful(billing: BillingOverview, requestedTarget: BillingTarget | null): boolean {
