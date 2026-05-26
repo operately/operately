@@ -186,6 +186,10 @@ defmodule OperatelyWeb.Paths do
     end
   end
 
+  @doc """
+  Deprecated: the standalone feed page was replaced by Home.
+  Use `home_path/1` for new callers.
+  """
   def feed_path(company = %Company{}) do
     home_path(company)
   end

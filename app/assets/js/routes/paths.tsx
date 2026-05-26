@@ -51,6 +51,9 @@ export class Paths {
     return this.createCompanyPath(["admin", "restore-suspended-people"]);
   }
 
+  /**
+   * @deprecated The standalone feed page was replaced by Home. Use homePath() for new callers.
+   */
   feedPath() {
     return this.homePath();
   }
