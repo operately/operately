@@ -81,6 +81,11 @@ defmodule Operately.Billing do
   defdelegate sync_billing_account(company, attrs), to: Operately.Billing.AccountSyncing, as: :run
 
   @doc """
+  Persists a verified Polar webhook event and enqueues async processing.
+  """
+  defdelegate ingest_polar_webhook(payload, headers), to: Operately.Billing.Polar.Operations.WebhookIngesting, as: :run
+
+  @doc """
   Records a remembered upgrade preference from the website or other sources.
   Does not change plan entitlements.
   """

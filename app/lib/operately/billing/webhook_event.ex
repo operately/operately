@@ -31,6 +31,6 @@ defmodule Operately.Billing.WebhookEvent do
       :error
     ])
     |> validate_required([:provider, :event_id, :event_type, :payload, :received_at, :status])
-    |> unique_constraint([:provider, :event_id], name: :billing_webhook_events_provider_event_id_index)
+    |> unique_constraint(:event_id, name: :billing_webhook_events_provider_event_id_index)
   end
 end

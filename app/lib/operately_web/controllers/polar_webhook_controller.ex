@@ -1,15 +1,20 @@
 defmodule OperatelyWeb.PolarWebhookController do
   use OperatelyWeb, :controller
 
+  alias Operately.Billing
   alias Operately.Billing.Polar.WebhookVerifier
 
   def create(conn, _params) do
     with :ok <- verify_json_request(conn),
          {:ok, raw_body} <- fetch_raw_body(conn),
-         :ok <- verify_signature(conn, raw_body) do
+         {:ok, headers} <- fetch_signature_headers(conn),
+         :ok <- verify_signature(raw_body, headers),
+         :ok <- Billing.ingest_polar_webhook(conn.body_params, headers) do
       send_resp(conn, :accepted, "")
     else
+      {:error, :internal_server_error} -> send_resp(conn, :internal_server_error, "")
       {:error, :missing_secret} -> send_resp(conn, :service_unavailable, "")
+      {:error, :invalid_payload} -> send_resp(conn, :bad_request, "")
       {:error, :invalid_json} -> send_resp(conn, :bad_request, "")
       {:error, :invalid_signature} -> send_resp(conn, :forbidden, "")
     end
@@ -33,7 +38,7 @@ defmodule OperatelyWeb.PolarWebhookController do
     end
   end
 
-  defp verify_signature(conn, raw_body) do
+  defp fetch_signature_headers(conn) do
     headers =
       ["webhook-id", "webhook-timestamp", "webhook-signature"]
       |> Enum.reduce(%{}, fn header_name, acc ->
@@ -43,6 +48,14 @@ defmodule OperatelyWeb.PolarWebhookController do
         end
       end)
 
+    if map_size(headers) == 3 do
+      {:ok, headers}
+    else
+      {:error, :invalid_signature}
+    end
+  end
+
+  defp verify_signature(raw_body, headers) do
     WebhookVerifier.verify(raw_body, headers)
   end
 end

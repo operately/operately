@@ -1341,7 +1341,7 @@ Outcome:
 
 - Polar can securely reach Operately, and invalid webhook requests are rejected at the edge
 
-### PR 6b: Webhook event persistence and enqueue
+### PR 6b: Webhook event persistence and enqueue (COMPLETED ✅)
 
 - Persist accepted webhook events in `billing_webhook_events`
 - Add idempotency by provider event ID
