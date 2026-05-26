@@ -1331,18 +1331,45 @@ Outcome:
 
 - owners can manage billing entirely from Company Admin without being forced to upgrade during signup
 
-### PR 6: Webhook endpoint and async sync
+### PR 6a: Webhook ingress and signature verification (COMPLETED ✅)
 
 - Add `POST /webhooks/polar`
-- Add raw-body signature verification
-- Add webhook event persistence and idempotency
-- Add Oban worker for processing billing webhooks
-- Add customer-state synchronization from Polar into `company_billing_accounts`
-- Broadcast `billing_updated` to subscribed company-owner clients after successful sync so the billing page can confirm checkout returns and refresh without polling
+- Add raw-body capture for signature verification
+- Verify Polar webhook signatures before accepting events
 
 Outcome:
 
-- local company billing state stays synchronized with Polar, and open billing pages are notified promptly after webhook-driven changes
+- Polar can securely reach Operately, and invalid webhook requests are rejected at the edge
+
+### PR 6b: Webhook event persistence and enqueue
+
+- Persist accepted webhook events in `billing_webhook_events`
+- Add idempotency by provider event ID
+- Enqueue an Oban job for async processing
+
+Outcome:
+
+- accepted webhook deliveries are stored safely, deduplicated, and handed off for background processing
+
+### PR 6c: Async processing and billing sync
+
+- Add the Oban worker for processing billing webhooks
+- Fetch fresh customer state from Polar during processing
+- Synchronize `company_billing_accounts` from current provider state
+- Mark persisted webhook events as processed or failed
+
+Outcome:
+
+- local company billing state stays synchronized with Polar through an idempotent async processing path
+
+### PR 6d: Billing broadcasts and page refresh integration
+
+- Broadcast `billing_updated` to subscribed company-owner clients after successful sync
+- Update the billing page checkout-return behavior to rely on webhook-driven refresh rather than polling
+
+Outcome:
+
+- open billing pages are notified promptly after webhook-driven changes and can refresh without polling
 
 ### PR 7: Verification and rollout hardening
 

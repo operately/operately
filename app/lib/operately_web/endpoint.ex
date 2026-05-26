@@ -47,6 +47,7 @@ defmodule OperatelyWeb.Endpoint do
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
     json_decoder: Phoenix.json_library(),
+    body_reader: {OperatelyWeb.RawBodyReader, :read_body, []},
     length: 256_000_000 # 256MB limit for file uploads (only affects local storage; S3 uploads bypass the server)
 
   plug Plug.MethodOverride
