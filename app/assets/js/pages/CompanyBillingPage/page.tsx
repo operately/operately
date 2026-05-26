@@ -80,6 +80,12 @@ export function Page() {
     [navigate, paths, selection.target],
   );
 
+  const openCancellationPage = React.useCallback(() => {
+    setActionError(null);
+    setFeedback(null);
+    navigate(paths.companyBillingCancelPath());
+  }, [navigate, paths]);
+
   const finishCheckoutConfirmation = React.useCallback(
     (nextBilling: Billing.BillingOverview, nextFeedback: Billing.BillingFeedback) => {
       setBilling(nextBilling);
@@ -177,6 +183,26 @@ export function Page() {
     showErrorToast("Billing management unavailable", "We couldn't open the Polar billing portal. Please try again.");
   }, [paths]);
 
+  const reactivatePlan = React.useCallback(async () => {
+    setActionError(null);
+    setFeedback(null);
+
+    const result = await Billing.reactivateSubscription();
+
+    if (result.outcome === "billing_updated") {
+      setBilling(result.billing);
+      setFeedback(Billing.buildReactivationFeedback(result.billing));
+      return;
+    }
+
+    if (result.billing) {
+      setBilling(result.billing);
+    }
+
+    setActionError("We couldn't reactivate the plan right now. Please try again.");
+    showErrorToast("Reactivation unavailable", "We couldn't update the subscription in Polar. Please try again.");
+  }, []);
+
   const refreshFromBillingUpdate = React.useCallback(() => {
     void Billing.refreshBilling({}).then((refreshed) => {
       applyRefreshedBilling(refreshed);
@@ -204,6 +230,8 @@ export function Page() {
       actionError={actionError}
       onOpenSelection={selection.target ? () => openPlanSelection() : null}
       onCompleteUpgrade={canUseCheckout && pendingTarget ? () => void startCheckout(pendingTarget) : null}
+      onCancelPlan={canManagePaidSubscription && !billing.account.cancelAtPeriodEnd ? openCancellationPage : null}
+      onReactivatePlan={canManagePaidSubscription && billing.account.cancelAtPeriodEnd ? () => void reactivatePlan() : null}
       onUpdatePaymentMethod={canManagePaidSubscription ? () => void openPaymentMethodSession() : null}
       onManageBilling={canManagePaidSubscription ? () => void openCustomerPortalSession() : null}
       testId="company-billing-page"

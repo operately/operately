@@ -2,15 +2,17 @@ import React from "react";
 
 import { InfoCallout, SuccessCallout, WarningCallout } from "../Callouts";
 import { Page } from "../Page";
-import { PrimaryButton, SecondaryButton } from "../Button";
+import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "./types";
 import { buildCompanyBillingPageViewModel } from "./viewModel";
 
 export {
   buildCompanyBillingConfirmingMode,
+  buildCompanyBillingCancellationFeedback,
   buildCompanyBillingOverviewMode,
   buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingPageViewModel,
+  buildCompanyBillingReactivationFeedback,
   buildCompanyBillingRecoveryFeedback,
   buildCompanyBillingStatusNotices,
   buildCompanyBillingSuccessFeedback,
@@ -288,6 +290,14 @@ function ActionButton({
   action: CompanyBillingPage.Action;
   size: "xs" | "sm";
 }) {
+  if (action.tone === "danger") {
+    return (
+      <DangerButton size={size} onClick={action.onClick} disabled={action.disabled} loading={action.loading}>
+        {action.label}
+      </DangerButton>
+    );
+  }
+
   if (action.tone === "secondary") {
     return (
       <SecondaryButton size={size} onClick={action.onClick} disabled={action.disabled} loading={action.loading}>

@@ -7,7 +7,7 @@ export namespace CompanyBillingPage {
   export type Plan = "team" | "business";
   export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
   export type NoticeTone = "info" | "warning";
-  export type ActionTone = "primary" | "secondary";
+  export type ActionTone = "primary" | "secondary" | "danger";
   export type FeedbackKind = "success" | "pending" | "incomplete";
 
   export interface BillingAccount {
@@ -144,6 +144,8 @@ export namespace CompanyBillingPage {
     confirmingTarget?: BillingTarget | null;
     onOpenSelection?: (() => void) | null;
     onCompleteUpgrade?: (() => void) | null;
+    onCancelPlan?: (() => void) | null;
+    onReactivatePlan?: (() => void) | null;
     onUpdatePaymentMethod?: (() => void) | null;
     onManageBilling?: (() => void) | null;
     testId?: string;
