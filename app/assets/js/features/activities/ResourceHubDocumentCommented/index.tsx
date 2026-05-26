@@ -5,7 +5,7 @@ import type { ActivityContentResourceHubDocumentCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
+import { documentCommentLink, feedTitle, spaceLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { Summary } from "turboui";
 import { parseCommentContent } from "@/models/comments";
@@ -16,12 +16,14 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { document, space } = content(activity);
+    const { document, space, comment } = content(activity);
 
     if (!document) {
       return paths.resourceHubPath(space.id);
     }
-    return paths.resourceHubDocumentPath(document.id);
+
+    const documentPath = paths.resourceHubDocumentPath(document.id);
+    return comment?.id ? `${documentPath}#${comment.id}` : documentPath;
   },
 
   PageTitle(_props: { activity: any }) {
@@ -42,7 +44,7 @@ const ResourceHubDocumentCommented: ActivityHandler = {
     let document: any = "a document";
 
     if (data.document) {
-      document = documentLink(data.document);
+      document = documentCommentLink(data.document, data.comment);
     }
 
     if (page === "space") {

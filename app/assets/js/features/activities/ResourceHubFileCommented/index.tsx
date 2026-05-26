@@ -5,7 +5,7 @@ import type { ActivityContentResourceHubFileCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, fileCommentLink, spaceLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
@@ -16,10 +16,11 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { file, space } = content(activity);
+    const { file, space, comment } = content(activity);
 
     if (file) {
-      return paths.resourceHubFilePath(file.id);
+      const filePath = paths.resourceHubFilePath(file.id);
+      return comment?.id ? `${filePath}#${comment.id}` : filePath;
     }
 
     return paths.resourceHubPath(space.id);
@@ -43,7 +44,7 @@ const ResourceHubFileCommented: ActivityHandler = {
     let file: any = "a file";
 
     if (data.file) {
-      file = fileLink(data.file);
+      file = fileCommentLink(data.file, data.comment);
     }
 
     if (page === "space") {
