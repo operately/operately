@@ -166,7 +166,7 @@ function SubscribersList({
   }, [sortedSubscribers, searchTerm]);
 
   return (
-    <div className="max-h-[380px] overflow-y-auto">
+    <div className="h-[380px] overflow-y-auto">
       <div className="flex flex-col">
         {filteredSubscribers.map((subscriber) => {
           if (!subscriber.person) return null;
