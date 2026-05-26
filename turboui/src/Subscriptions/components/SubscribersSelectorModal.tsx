@@ -160,9 +160,12 @@ function SubscribersList({
     const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase();
     if (!normalizedSearchTerm) return sortedSubscribers;
 
-    return sortedSubscribers.filter((subscriber) =>
-      subscriber.person?.fullName.toLocaleLowerCase().includes(normalizedSearchTerm),
-    );
+    return sortedSubscribers.filter((subscriber) => {
+      const fullName = subscriber.person?.fullName;
+      if (!fullName) return false;
+
+      return fullName.toLocaleLowerCase().includes(normalizedSearchTerm);
+    });
   }, [sortedSubscribers, searchTerm]);
 
   return (
