@@ -1,3 +1,10 @@
 <%= "#{short_name(@author)} #{@action_text}" %>
 
+<%= if @remaining_milestones != [] do %>
+Next milestones:
+<%= for milestone <- @remaining_milestones do %>
+- <%= milestone.title %>
+<% end %>
+
+<% end %>
 Link: <%= @link %>
