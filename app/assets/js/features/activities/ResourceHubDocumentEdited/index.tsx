@@ -1,8 +1,12 @@
-import type { ActivityContentResourceHubDocumentEdited } from "@/api";
+import type { ActivityContentResourceHubDocumentEdited, ResourceHubDocument } from "@/api";
 import type { Activity } from "@/models/activities";
+import * as Activities from "@/models/activities";
+import * as React from "react";
+import { Link } from "turboui";
 
 import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { usePaths } from "@/routes/paths";
 
 const ResourceHubDocumentEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,7 +32,8 @@ const ResourceHubDocumentEdited: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const document = documentLink(data.document!);
+    const documents = documentsForFeed(activity);
+    const document = documents.length > 1 ? <DocumentLinkList documents={documents} /> : documentLink(data.document!);
     const space = spaceLink(data.space!);
 
     if (page === "space") {
@@ -65,6 +70,44 @@ const ResourceHubDocumentEdited: ActivityHandler = {
 
 function content(activity: Activity): ActivityContentResourceHubDocumentEdited {
   return activity.content as ActivityContentResourceHubDocumentEdited;
+}
+
+function documentsForFeed(activity: Activity): ResourceHubDocument[] {
+  const seen = new Set<string>();
+
+  return Activities.getAggregatedActivities(activity)
+    .slice()
+    .sort((a, b) => (a.insertedAt || "").localeCompare(b.insertedAt || ""))
+    .map((activity) => content(activity).document)
+    .filter((document): document is ResourceHubDocument => Boolean(document?.id))
+    .filter((document) => {
+      if (seen.has(document.id)) return false;
+
+      seen.add(document.id);
+      return true;
+    });
+}
+
+function DocumentLinkList({ documents }: { documents: ResourceHubDocument[] }) {
+  const paths = usePaths();
+
+  return (
+    <>
+      {documents.map((document, index) => (
+        <React.Fragment key={document.id}>
+          {documentListSeparator(index, documents.length)}
+          <Link to={paths.resourceHubDocumentPath(document.id)}>{document.name}</Link>
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
+
+function documentListSeparator(index: number, count: number) {
+  if (index === 0) return "";
+  if (index === count - 1) return count === 2 ? " and " : ", and ";
+
+  return ", ";
 }
 
 export default ResourceHubDocumentEdited;
