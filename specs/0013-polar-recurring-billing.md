@@ -1351,7 +1351,7 @@ Outcome:
 
 - accepted webhook deliveries are stored safely, deduplicated, and handed off for background processing
 
-### PR 6c: Async processing and billing sync
+### PR 6c: Async processing and billing sync (COMPLETED ✅)
 
 - Add the Oban worker for processing billing webhooks
 - Fetch fresh customer state from Polar during processing
