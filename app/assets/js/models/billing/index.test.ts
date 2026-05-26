@@ -279,6 +279,43 @@ describe("billing model helpers", () => {
     expect(immediateFeedback.description).toContain("Business Monthly");
   });
 
+  it("builds cancellation summary and success feedback", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "monthly",
+        status: "active",
+        currentPeriodEnd: "2026-06-14T00:00:00Z",
+        cancelAtPeriodEnd: true,
+      } as any,
+      memberCount: 25,
+    });
+
+    const summary = Billing.buildCancellationSummary(billing);
+    const feedback = Billing.buildCancellationFeedback(billing);
+
+    expect(summary.freePlanMemberLimit).toBe(20);
+    expect(summary.willExceedFreeMemberLimit).toBe(true);
+    expect(summary.memberOverage).toBe(5);
+    expect(feedback.message).toBe("Cancellation scheduled");
+  });
+
+  it("builds reactivation feedback", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "yearly",
+        status: "active",
+        cancelAtPeriodEnd: false,
+      } as any,
+    });
+
+    const feedback = Billing.buildReactivationFeedback(billing);
+
+    expect(feedback.message).toBe("Plan reactivated");
+    expect(feedback.description).toContain("Business Yearly");
+  });
+
   it("changes the plan through the billing api", async () => {
     const billing = billingOverviewMock({
       account: {
@@ -294,6 +331,36 @@ describe("billing model helpers", () => {
 
     expect(Api.billing.changePlan).toHaveBeenCalledWith({ plan: "business", billingInterval: "monthly" });
     expect(result).toEqual({ outcome: "billing_updated", billing });
+  });
+
+  it("cancels and reactivates subscriptions through the billing api", async () => {
+    const pendingCancelBilling = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "monthly",
+        status: "active",
+        cancelAtPeriodEnd: true,
+      } as any,
+    });
+    const reactivatedBilling = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "monthly",
+        status: "active",
+        cancelAtPeriodEnd: false,
+      } as any,
+    });
+
+    jest.spyOn(Api.billing, "cancel").mockResolvedValue({ billing: pendingCancelBilling } as any);
+    jest.spyOn(Api.billing, "reactivate").mockResolvedValue({ billing: reactivatedBilling } as any);
+
+    const cancelResult = await Billing.cancelSubscription();
+    const reactivateResult = await Billing.reactivateSubscription();
+
+    expect(Api.billing.cancel).toHaveBeenCalledWith({});
+    expect(Api.billing.reactivate).toHaveBeenCalledWith({});
+    expect(cancelResult).toEqual({ outcome: "billing_updated", billing: pendingCancelBilling });
+    expect(reactivateResult).toEqual({ outcome: "billing_updated", billing: reactivatedBilling });
   });
 
   it("opens payment-method and portal sessions through the billing api", async () => {

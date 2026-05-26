@@ -141,6 +141,10 @@ export class Paths {
     return queryString ? `${path}?${queryString}` : path;
   }
 
+  companyBillingCancelPath() {
+    return this.createCompanyPath(["admin", "billing", "cancel"]);
+  }
+
   companyExportPath() {
     return this.createCompanyPath(["admin", "export-company"]);
   }

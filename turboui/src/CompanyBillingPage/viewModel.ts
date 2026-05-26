@@ -20,6 +20,8 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
       actionError: props.actionError || null,
       onSeePlans: props.onOpenSelection || null,
       onCompleteUpgrade: props.onCompleteUpgrade || null,
+      onCancelPlan: props.onCancelPlan || null,
+      onReactivatePlan: props.onReactivatePlan || null,
       onUpdatePaymentMethod: props.onUpdatePaymentMethod || null,
       onManageBilling: props.onManageBilling || null,
     }),
@@ -32,6 +34,8 @@ interface BuildOverviewModeArgs {
   actionError: string | null;
   onSeePlans: (() => void) | null;
   onCompleteUpgrade: (() => void) | null;
+  onCancelPlan: (() => void) | null;
+  onReactivatePlan: (() => void) | null;
   onUpdatePaymentMethod: (() => void) | null;
   onManageBilling: (() => void) | null;
 }
@@ -205,6 +209,30 @@ export function buildCompanyBillingPlanChangeFeedback(
   };
 }
 
+export function buildCompanyBillingCancellationFeedback(
+  billing: CompanyBillingPage.BillingOverview,
+): CompanyBillingPage.Feedback {
+  const endDate = formatDate(billing.account.currentPeriodEnd);
+
+  return {
+    kind: "success",
+    message: "Cancellation scheduled",
+    description: endDate
+      ? `This workspace will stay on its current paid plan until ${endDate}.`
+      : "This workspace will stay on its current paid plan until the end of the current billing period.",
+  };
+}
+
+export function buildCompanyBillingReactivationFeedback(
+  billing: CompanyBillingPage.BillingOverview,
+): CompanyBillingPage.Feedback {
+  return {
+    kind: "success",
+    message: "Plan reactivated",
+    description: `This workspace will remain on ${formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "its current paid plan")}.`,
+  };
+}
+
 function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.Action[] {
   const actions: CompanyBillingPage.Action[] = [];
   const isPaidCompany = args.billing.account.status === "active" || args.billing.account.status === "past_due";
@@ -221,12 +249,20 @@ function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.A
     });
   }
 
+  if (isPaidCompany && args.billing.account.cancelAtPeriodEnd && args.onReactivatePlan) {
+    actions.push({ label: "Reactivate plan", tone: "secondary", onClick: args.onReactivatePlan });
+  }
+
   if (isPaidCompany && args.onUpdatePaymentMethod) {
     actions.push({ label: "Update credit card", tone: "secondary", onClick: args.onUpdatePaymentMethod });
   }
 
   if (isPaidCompany && args.onManageBilling) {
     actions.push({ label: "Manage billing", tone: "secondary", onClick: args.onManageBilling });
+  }
+
+  if (isPaidCompany && !args.billing.account.cancelAtPeriodEnd && args.onCancelPlan) {
+    actions.push({ label: "Cancel plan", tone: "danger", onClick: args.onCancelPlan });
   }
 
   return actions;

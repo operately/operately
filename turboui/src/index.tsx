@@ -45,11 +45,13 @@ export { InvitePeoplePage } from "./InvitePeoplePage";
 export { MemberTypeSelectionPage } from "./MemberTypeSelectionPage";
 export { CompanyAdminAddPeoplePage } from "./CompanyAdminAddPeoplePage";
 export {
+  buildCompanyBillingCancellationFeedback,
   canCreateCompanyBillingCheckout,
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
   buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingPageViewModel,
+  buildCompanyBillingReactivationFeedback,
   buildCompanyBillingRecoveryFeedback,
   buildCompanyBillingStatusNotices,
   buildCompanyBillingSuccessFeedback,
@@ -66,6 +68,11 @@ export {
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
 } from "./CompanyBillingPage";
+export {
+  buildCompanyBillingCancellationPageViewModel,
+  buildCompanyBillingCancellationSummary,
+  CompanyBillingCancellationPage,
+} from "./CompanyBillingCancellationPage";
 export {
   buildCompanyBillingPlanSelectionMode,
   buildCompanyBillingPlanSelectionPageViewModel,

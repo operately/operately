@@ -3,7 +3,9 @@ import * as api from "@/api";
 export { useBillingUpdatedSignal } from "@/signals";
 import { browserLocale } from "@/utils/formatting";
 import {
+  buildCompanyBillingCancellationFeedback,
   buildCompanyBillingPlanChangeFeedback,
+  buildCompanyBillingReactivationFeedback,
   canCreateCompanyBillingCheckout,
   CompanyBillingPage,
   findCompanyBillingSellableProduct,
@@ -40,9 +42,22 @@ type ChangePlanResult =
   | { outcome: "billing_updated"; billing: BillingOverview }
   | { outcome: "provider_error"; billing?: BillingOverview };
 
+type BillingMutationResult =
+  | { outcome: "billing_updated"; billing: BillingOverview }
+  | { outcome: "provider_error"; billing?: BillingOverview };
+
 type BeginHostedSessionResult =
   | { outcome: "session_created"; session: BillingHostedSession }
   | { outcome: "provider_error"; billing?: BillingOverview };
+
+interface BillingCancellationSummary {
+  currentPlanLabel: string;
+  currentPeriodEnd: string | null;
+  freePlanMemberLimit: number | null;
+  memberCount: number;
+  willExceedFreeMemberLimit: boolean;
+  memberOverage: number;
+}
 
 const PLAN_NAMES: Record<string, string> = {
   free: "Free",
@@ -112,6 +127,20 @@ export async function changePlan(target: BillingTarget | null): Promise<ChangePl
       billingInterval: target.billingInterval,
     });
 
+    return { outcome: "billing_updated", billing: result.billing };
+  });
+}
+
+export async function cancelSubscription(): Promise<BillingMutationResult> {
+  return withBillingRefreshFallback(async () => {
+    const result = await Api.billing.cancel({});
+    return { outcome: "billing_updated", billing: result.billing };
+  });
+}
+
+export async function reactivateSubscription(): Promise<BillingMutationResult> {
+  return withBillingRefreshFallback(async () => {
+    const result = await Api.billing.reactivate({});
     return { outcome: "billing_updated", billing: result.billing };
   });
 }
@@ -231,6 +260,29 @@ export function isCheckoutReturnSuccessful(billing: BillingOverview, requestedTa
 
 export function buildPlanChangeFeedback(billing: BillingOverview): BillingFeedback {
   return buildCompanyBillingPlanChangeFeedback(billing);
+}
+
+export function buildCancellationFeedback(billing: BillingOverview): BillingFeedback {
+  return buildCompanyBillingCancellationFeedback(billing);
+}
+
+export function buildReactivationFeedback(billing: BillingOverview): BillingFeedback {
+  return buildCompanyBillingReactivationFeedback(billing);
+}
+
+export function buildCancellationSummary(billing: BillingOverview): BillingCancellationSummary {
+  const freePlan = findPlanDefinition(billing.plans, "free");
+  const freePlanMemberLimit = freePlan?.memberLimit || null;
+  const memberOverage = freePlanMemberLimit == null ? 0 : Math.max(billing.memberCount - freePlanMemberLimit, 0);
+
+  return {
+    currentPlanLabel: formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "Current plan"),
+    currentPeriodEnd: billing.account.currentPeriodEnd || null,
+    freePlanMemberLimit,
+    memberCount: billing.memberCount,
+    willExceedFreeMemberLimit: memberOverage > 0,
+    memberOverage,
+  };
 }
 
 export function formatPriceFromMinorUnits(amount?: number | null, currency?: string | null): string {

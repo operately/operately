@@ -163,6 +163,7 @@ export const PaidActiveOverview: Story = {
         memberCount: 42,
       })}
       onOpenSelection={() => console.log("switch plan")}
+      onCancelPlan={() => console.log("cancel plan")}
       onUpdatePaymentMethod={() => console.log("update card")}
       onManageBilling={() => console.log("manage billing")}
       testId="billing-page-paid-active"
@@ -184,9 +185,33 @@ export const PastDueOverview: Story = {
         },
       })}
       onOpenSelection={() => console.log("switch plan")}
+      onCancelPlan={() => console.log("cancel plan")}
       onUpdatePaymentMethod={() => console.log("update card")}
       onManageBilling={() => console.log("manage billing")}
       testId="billing-page-past-due"
+    />
+  ),
+};
+
+export const PendingCancelOverview: Story = {
+  render: () => (
+    <CompanyBillingPage
+      title={["Acme", "Billing"]}
+      navigation={navigation}
+      billing={billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "monthly",
+          status: "active",
+          cancelAtPeriodEnd: true,
+          currentPeriodEnd: "2026-06-14T00:00:00Z",
+        },
+      })}
+      onOpenSelection={() => console.log("switch plan")}
+      onReactivatePlan={() => console.log("reactivate")}
+      onUpdatePaymentMethod={() => console.log("update card")}
+      onManageBilling={() => console.log("manage billing")}
+      testId="billing-page-pending-cancel"
     />
   ),
 };

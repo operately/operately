@@ -910,11 +910,13 @@ Suggested UX:
   - free-plan limits after downgrade
   - current member count vs future free-plan limit
   - plain-language consequences of downgrade
-- allow optional feedback
+- optional feedback remains out of scope for this step
 - provide a clear primary destructive action:
   - `Cancel plan`
 - provide a non-destructive exit:
   - `Keep current plan`
+
+Reactivation should remain a direct action on the billing overview page rather than opening a separate confirmation step.
 
 This flow should optimize for clarity, not friction. Owners should understand the consequences before canceling, but should not have to fight the UI.
 
@@ -1318,10 +1320,12 @@ Outcome:
 
 - owners can manage active paid subscriptions from Company Admin without leaving Operately for the primary flows
 
-### PR 5d: Cancellation and reactivation UX
+### PR 5d: Cancellation and reactivation UX (COMPLETED ✅)
 
-- Add in-app cancellation-confirmation flow with downgrade consequences
-- Add cancel and reactivate actions
+- Add a dedicated in-app cancellation-confirmation page with downgrade consequences
+- Add `Cancel plan` from the overview page for live paid subscriptions
+- Add direct `Reactivate plan` from the overview page when cancellation is already scheduled
+- Keep optional cancellation feedback out of scope for this step
 
 Outcome:
 

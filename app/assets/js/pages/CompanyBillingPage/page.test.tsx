@@ -1,9 +1,11 @@
 import * as Billing from "@/models/billing";
 
 import {
+  buildCompanyBillingCancellationFeedback,
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
   buildCompanyBillingPlanChangeFeedback,
+  buildCompanyBillingReactivationFeedback,
   buildCompanyBillingRecoveryFeedback,
   buildCompanyBillingStatusNotices,
   buildCompanyBillingSuccessFeedback,
@@ -184,6 +186,8 @@ describe("CompanyBillingPage bridge helpers", () => {
       actionError: null,
       onSeePlans: jest.fn(),
       onCompleteUpgrade: jest.fn(),
+      onCancelPlan: null,
+      onReactivatePlan: null,
       onUpdatePaymentMethod: null,
       onManageBilling: null,
     });
@@ -206,12 +210,43 @@ describe("CompanyBillingPage bridge helpers", () => {
       actionError: null,
       onSeePlans: jest.fn(),
       onCompleteUpgrade: null,
+      onCancelPlan: jest.fn(),
+      onReactivatePlan: null,
       onUpdatePaymentMethod: jest.fn(),
       onManageBilling: jest.fn(),
     });
 
     expect(overview.actions.map((action) => action.label)).toEqual([
       "Switch Plan",
+      "Update credit card",
+      "Manage billing",
+      "Cancel plan",
+    ]);
+  });
+
+  it("shows reactivation instead of cancellation when a paid plan is already ending", () => {
+    const overview = buildCompanyBillingOverviewMode({
+      billing: billingOverviewMock({
+        account: {
+          planKey: "business",
+          billingInterval: "monthly",
+          status: "active",
+          cancelAtPeriodEnd: true,
+        } as any,
+      }),
+      feedback: null,
+      actionError: null,
+      onSeePlans: jest.fn(),
+      onCompleteUpgrade: null,
+      onCancelPlan: null,
+      onReactivatePlan: jest.fn(),
+      onUpdatePaymentMethod: jest.fn(),
+      onManageBilling: jest.fn(),
+    });
+
+    expect(overview.actions.map((action) => action.label)).toEqual([
+      "Switch Plan",
+      "Reactivate plan",
       "Update credit card",
       "Manage billing",
     ]);
@@ -280,5 +315,35 @@ describe("CompanyBillingPage bridge helpers", () => {
     expect(immediateFeedback).toMatchObject({ kind: "success", message: "Plan updated" });
     expect(scheduledFeedback).toMatchObject({ kind: "success", message: "Plan change scheduled" });
     expect(scheduledFeedback.description).toContain("Business Yearly");
+  });
+
+  it("builds cancellation and reactivation feedback", () => {
+    const scheduledCancellationFeedback = buildCompanyBillingCancellationFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "monthly",
+          status: "active",
+          cancelAtPeriodEnd: true,
+          currentPeriodEnd: "2026-06-14T00:00:00Z",
+        } as any,
+      }),
+    );
+
+    const reactivationFeedback = buildCompanyBillingReactivationFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "business",
+          billingInterval: "yearly",
+          status: "active",
+          cancelAtPeriodEnd: false,
+        } as any,
+      }),
+    );
+
+    expect(scheduledCancellationFeedback).toMatchObject({ kind: "success", message: "Cancellation scheduled" });
+    expect(scheduledCancellationFeedback.description).toContain("2026");
+    expect(reactivationFeedback).toMatchObject({ kind: "success", message: "Plan reactivated" });
+    expect(reactivationFeedback.description).toContain("Business Yearly");
   });
 });
