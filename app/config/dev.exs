@@ -79,5 +79,6 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :operately, :start_query_counter, true
+config :operately, :polar_base_url, "https://sandbox-api.polar.sh"
 
 config :operately, notification_email: "test@localhost"

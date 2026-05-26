@@ -1362,7 +1362,7 @@ Outcome:
 
 - local company billing state stays synchronized with Polar through an idempotent async processing path
 
-### PR 6d: Billing broadcasts and page refresh integration
+### PR 6d: Billing broadcasts and page refresh integration (COMPLETED ✅)
 
 - Broadcast `billing_updated` to subscribed company-owner clients after successful sync
 - Update the billing page checkout-return behavior to rely on webhook-driven refresh rather than polling

@@ -5,6 +5,7 @@ defmodule Operately.Billing.Polar.Operations.WebhookProcessing do
   alias Operately.Billing.WebhookEvent
   alias Operately.Companies.Company
   alias Operately.Repo
+  alias OperatelyWeb.Api.Subscriptions.BillingUpdated
 
   def run(webhook_event_id, opts \\ [])
 
@@ -36,7 +37,7 @@ defmodule Operately.Billing.Polar.Operations.WebhookProcessing do
     with {:ok, external_id} <- extract_external_id(webhook_event.payload),
          {:ok, %Company{} = company} <- find_company(external_id),
          {:ok, _account} <- CustomerStateSync.run(company, client: client) do
-      {:ok, :synced}
+      {:ok, {:synced, company.id}}
     else
       {:error, :missing_external_id} = error ->
         error
@@ -52,6 +53,22 @@ defmodule Operately.Billing.Polar.Operations.WebhookProcessing do
   defp process_event(%WebhookEvent{} = webhook_event, _client) do
     Logger.info("Ignoring unsupported Polar webhook event type: #{inspect(webhook_event.event_type)}")
     {:ok, :ignored}
+  end
+
+  defp finish(%WebhookEvent{} = webhook_event, {:ok, {:synced, company_id}}) do
+    BillingUpdated.broadcast(company_id: company_id)
+
+    webhook_event
+    |> WebhookEvent.changeset(%{
+      status: :processed,
+      processed_at: DateTime.utc_now() |> DateTime.truncate(:second),
+      error: nil
+    })
+    |> Repo.update()
+    |> case do
+      {:ok, _webhook_event} -> :ok
+      {:error, _changeset} -> {:error, :internal_server_error}
+    end
   end
 
   defp finish(%WebhookEvent{} = webhook_event, {:ok, _result}) do
