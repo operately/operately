@@ -6,7 +6,7 @@ import { Avatar } from "../../Avatar";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { ActionLink } from "../../Link";
 import { Checkbox } from "../../Checkbox";
-import { IconX } from "../../icons";
+import { IconSearch, IconX } from "../../icons";
 
 interface SubscribersSelectorModalProps {
   isOpen: boolean;
@@ -30,6 +30,7 @@ export function SubscribersSelectorModal({
   const [localSelected, setLocalSelected] = useState<Set<string>>(
     new Set(selectedSubscribers.map((s) => s.person?.id || "").filter(Boolean)),
   );
+  const [searchTerm, setSearchTerm] = useState("");
 
   const alwaysNotifyIds = new Set(alwaysNotify.map((s) => s.person?.id || "").filter(Boolean));
 
@@ -60,6 +61,7 @@ export function SubscribersSelectorModal({
   React.useEffect(() => {
     if (isOpen) {
       setLocalSelected(new Set(selectedSubscribers.map((s) => s.person?.id || "").filter(Boolean)));
+      setSearchTerm("");
     }
   }, [isOpen, selectedSubscribers]);
 
@@ -79,8 +81,21 @@ export function SubscribersSelectorModal({
             </ActionLink>
           </div>
 
+          <div className="relative">
+            <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-content-dimmed" />
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Find people"
+              aria-label="Find people"
+              className="w-full rounded-md border border-surface-outline bg-surface-base py-2 pl-9 pr-3 text-sm text-content-accent placeholder:text-content-dimmed focus:outline-none focus:ring-2 focus:ring-brand-1"
+            />
+          </div>
+
           <SubscribersList
             subscribers={subscribers}
+            searchTerm={searchTerm}
             localSelected={localSelected}
             alwaysNotifyIds={alwaysNotifyIds}
             onToggle={handleToggle}
@@ -122,19 +137,41 @@ function ModalHeader({ onClose }: ModalHeaderProps) {
 
 interface SubscribersListProps {
   subscribers: SubscribersSelector.Subscriber[];
+  searchTerm: string;
   localSelected: Set<string>;
   alwaysNotifyIds: Set<string>;
   onToggle: (personId: string) => void;
   alwaysNotifyLabel: string;
 }
 
-function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle, alwaysNotifyLabel }: SubscribersListProps) {
-  const sortedSubscribers = React.useMemo(() => sortSubscribers(subscribers, alwaysNotifyIds), [subscribers, alwaysNotifyIds]);
+function SubscribersList({
+  subscribers,
+  searchTerm,
+  localSelected,
+  alwaysNotifyIds,
+  onToggle,
+  alwaysNotifyLabel,
+}: SubscribersListProps) {
+  const sortedSubscribers = React.useMemo(
+    () => sortSubscribers(subscribers, alwaysNotifyIds),
+    [subscribers, alwaysNotifyIds],
+  );
+  const filteredSubscribers = React.useMemo(() => {
+    const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase();
+    if (!normalizedSearchTerm) return sortedSubscribers;
+
+    return sortedSubscribers.filter((subscriber) => {
+      const fullName = subscriber.person?.fullName;
+      if (!fullName) return false;
+
+      return fullName.toLocaleLowerCase().includes(normalizedSearchTerm);
+    });
+  }, [sortedSubscribers, searchTerm]);
 
   return (
-    <div className="max-h-[380px] overflow-y-auto">
+    <div className="h-[380px] overflow-y-auto">
       <div className="flex flex-col">
-        {sortedSubscribers.map((subscriber) => {
+        {filteredSubscribers.map((subscriber) => {
           if (!subscriber.person) return null;
           const personId = subscriber.person.id;
           const isAlwaysNotify = alwaysNotifyIds.has(personId);
@@ -157,7 +194,11 @@ function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle
                   </div>
                 )}
               </div>
-              <Checkbox checked={isChecked} onChange={() => !isAlwaysNotify && onToggle(personId)} disabled={isAlwaysNotify} />
+              <Checkbox
+                checked={isChecked}
+                onChange={() => !isAlwaysNotify && onToggle(personId)}
+                disabled={isAlwaysNotify}
+              />
             </div>
           );
         })}
