@@ -1,5 +1,10 @@
 defmodule OperatelyWeb.PolarWebhookControllerTest do
   use OperatelyWeb.ConnCase
+  use Oban.Testing, repo: Operately.Repo
+
+  alias Operately.Billing.WebhookEvent
+  alias Operately.Billing.Polar.ProcessWebhookWorker
+  alias Operately.Repo
 
   @secret "polar_test_webhook_secret"
 
@@ -21,13 +26,24 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
   describe "POST /webhooks/polar" do
     test "returns 202 for a valid signed request", %{conn: conn} do
       payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+      expected_payload = Jason.decode!(payload)
 
-      conn =
-        conn
-        |> signed_webhook_request(payload)
-        |> post("/webhooks/polar", payload)
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        conn =
+          conn
+          |> signed_webhook_request(payload)
+          |> post("/webhooks/polar", payload)
 
-      assert response(conn, 202) == ""
+        assert response(conn, 202) == ""
+
+        event = Repo.get_by!(WebhookEvent, provider: "polar", event_id: "msg_123")
+        assert event.event_type == "customer.state_changed"
+        assert event.payload == expected_payload
+        assert event.status == :pending
+        assert event.received_at
+
+        assert_enqueued(worker: ProcessWebhookWorker, args: %{billing_webhook_event_id: event.id})
+      end)
     end
 
     test "verifies the exact raw request body", %{conn: conn} do
@@ -38,12 +54,39 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
       }
       """
 
-      conn =
-        conn
-        |> signed_webhook_request(payload)
-        |> post("/webhooks/polar", payload)
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        conn =
+          conn
+          |> signed_webhook_request(payload)
+          |> post("/webhooks/polar", payload)
 
-      assert response(conn, 202) == ""
+        assert response(conn, 202) == ""
+      end)
+    end
+
+    test "deduplicates webhook deliveries by webhook-id", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        conn =
+          conn
+          |> signed_webhook_request(payload, webhook_id: "msg_duplicate")
+          |> post("/webhooks/polar", payload)
+
+        assert response(conn, 202) == ""
+
+        conn =
+          build_conn()
+          |> signed_webhook_request(payload, webhook_id: "msg_duplicate")
+          |> post("/webhooks/polar", payload)
+
+        assert response(conn, 202) == ""
+
+        assert Repo.aggregate(WebhookEvent, :count, :id) == 1
+
+        jobs = all_enqueued(worker: ProcessWebhookWorker)
+        assert length(jobs) == 1
+      end)
     end
 
     test "returns 403 for an invalid signature", %{conn: conn} do
@@ -58,6 +101,7 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         |> post("/webhooks/polar", payload)
 
       assert response(conn, 403) == ""
+      assert Repo.aggregate(WebhookEvent, :count, :id) == 0
     end
 
     test "returns 403 when webhook-id is missing", %{conn: conn} do
@@ -72,6 +116,7 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         |> post("/webhooks/polar", payload)
 
       assert response(conn, 403) == ""
+      assert Repo.aggregate(WebhookEvent, :count, :id) == 0
     end
 
     test "returns 403 when webhook-timestamp is missing", %{conn: conn} do
@@ -85,6 +130,7 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         |> post("/webhooks/polar", payload)
 
       assert response(conn, 403) == ""
+      assert Repo.aggregate(WebhookEvent, :count, :id) == 0
     end
 
     test "returns 403 when webhook-signature is missing", %{conn: conn} do
@@ -98,6 +144,7 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         |> post("/webhooks/polar", payload)
 
       assert response(conn, 403) == ""
+      assert Repo.aggregate(WebhookEvent, :count, :id) == 0
     end
 
     test "returns 403 for a stale timestamp", %{conn: conn} do
@@ -113,6 +160,7 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         |> post("/webhooks/polar", payload)
 
       assert response(conn, 403) == ""
+      assert Repo.aggregate(WebhookEvent, :count, :id) == 0
     end
 
     test "accepts multiple signatures when one valid v1 signature matches", %{conn: conn} do
@@ -122,15 +170,17 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
       valid_signature = signature_header(webhook_id, timestamp, payload)
       invalid_signature = "v1,#{Base.encode64("old_signature_that_does_not_match")}"
 
-      conn =
-        conn
-        |> put_req_header("content-type", "application/json")
-        |> put_req_header("webhook-id", webhook_id)
-        |> put_req_header("webhook-timestamp", timestamp)
-        |> put_req_header("webhook-signature", invalid_signature <> " " <> valid_signature)
-        |> post("/webhooks/polar", payload)
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        conn =
+          conn
+          |> put_req_header("content-type", "application/json")
+          |> put_req_header("webhook-id", webhook_id)
+          |> put_req_header("webhook-timestamp", timestamp)
+          |> put_req_header("webhook-signature", invalid_signature <> " " <> valid_signature)
+          |> post("/webhooks/polar", payload)
 
-      assert response(conn, 202) == ""
+        assert response(conn, 202) == ""
+      end)
     end
 
     test "returns 503 when the webhook secret is not configured", %{conn: conn} do
@@ -143,6 +193,19 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         |> post("/webhooks/polar", payload)
 
       assert response(conn, 503) == ""
+      assert Repo.aggregate(WebhookEvent, :count, :id) == 0
+    end
+
+    test "returns 400 when the payload type is missing", %{conn: conn} do
+      payload = ~s({"data":{"id":"evt_123"}})
+
+      conn =
+        conn
+        |> signed_webhook_request(payload)
+        |> post("/webhooks/polar", payload)
+
+      assert response(conn, 400) == ""
+      assert Repo.aggregate(WebhookEvent, :count, :id) == 0
     end
 
     test "returns 400 for invalid json payloads", %{conn: conn} do
@@ -153,6 +216,8 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         |> signed_webhook_request(payload)
         |> post("/webhooks/polar", payload)
       end
+
+      assert Repo.aggregate(WebhookEvent, :count, :id) == 0
     end
   end
 
