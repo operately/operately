@@ -394,7 +394,6 @@ All user flows below assume the `billing` experimental feature is enabled for th
    - current-plan badge
    - remembered recommended plan badge when relevant
    - concise feature and limit summary
-   - a short “what happens next” summary before checkout
 6. Owner chooses the target plan and clicks `Continue to checkout`.
 7. App creates a Polar checkout session for the selected target plan for the existing company.
 8. User is redirected to Polar checkout.
@@ -409,10 +408,13 @@ All user flows below assume the `billing` experimental feature is enabled for th
    - reactivating a pending cancellation
    - updating the payment method
    - reviewing billing status and renewal timing
-3. Upgrade/change-plan and cancellation actions begin with explicit Operately-owned flows before any provider redirect or API mutation occurs.
-4. Where Polar supports direct API-driven changes, Operately executes them from named in-app actions.
-5. Where Polar requires a hosted payment-management flow, the billing-page action launches that secure provider-managed flow and returns the user to the billing page.
-6. Polar webhooks synchronize resulting state changes back into Operately.
+3. Upgrade/change-plan actions begin from Operately-owned surfaces:
+   - `free` and `canceled` companies open the dedicated plan-selection page and continue into checkout
+   - already-paid companies reuse the same plan-selection page, but the submit action calls `billing/change_plan` instead of starting checkout
+4. Cancellation actions remain explicit Operately-owned flows before any provider redirect or API mutation occurs.
+5. Where Polar supports direct API-driven changes, Operately executes them from named in-app actions.
+6. Where Polar requires a hosted payment-management flow, the billing-page action launches that secure provider-managed flow and returns the user to the billing page.
+7. Polar webhooks synchronize resulting state changes back into Operately.
 
 ### 7. Owner manages payment method
 
@@ -814,6 +816,7 @@ The billing home should be organized as a few clear sections:
 - `Usage and limits`
   - active members
   - plan limit
+  - storage usage and storage limit, once canonical company-level storage accounting is exposed to the billing UI
   - free-plan limit warning when relevant
 - `Payment method`
   - optional live masked-card summary when available from Polar
@@ -841,6 +844,8 @@ The page should remain readable even when webhook sync is still catching up by:
 The subscription-driven refresh path should be the only automatic confirmation path after checkout return. The billing page should not poll Polar directly after `checkout_id={CHECKOUT_ID}`.
 
 If a live Polar enrichment fails, the page should still render from the local projection and keep the main actions available.
+
+Until storage accounting is wired through cleanly, the billing overview may temporarily show only member-based limits. A later rollout step must extend the same `Usage and limits` section to show storage usage and the storage allowance for the current plan.
 
 The page should also support incomplete checkout recovery by:
 
@@ -880,21 +885,18 @@ Suggested UX:
   - `Team`
   - `Business`
 - include a monthly/yearly segmented control
+- reuse this same separate plan-selection page for already-paid companies; in that case the primary action should be `Change plan` and should call `billing/change_plan` rather than creating a checkout session
 - show the current plan as a non-primary state
 - show the remembered suggested plan as the default highlighted option when the company is still on `free`
 - if `plan` and `billing_period` were provided by the billing-intent route, use those as the initial preselected values
 - if the flow was opened from a limit-warning prompt, preselect the recommended upgrade immediately
 - show concise limit-oriented copy for each plan
-- include a small pre-checkout summary:
-  - selected plan
-  - billing interval
-  - when the change takes effect
-  - that card entry and payment confirmation happen in Polar
+  - include storage allowance alongside member allowance once storage accounting and storage-copy support are ready
 - CTA: `Continue to checkout`
 
 This flow should not ask for payment details directly. Its purpose is only to let the owner make the plan decision inside Operately before the Polar handoff.
 
-The pre-checkout summary in this flow should be derived from `billing/get` plus the selected local plan/product, not from a dedicated backend preview endpoint.
+If the first shipped version of this flow only shows member-based comparisons, that should be treated as temporary. A later rollout step must update the same plan-selection UI to also show the storage included in each plan.
 
 ### Cancellation-confirmation flow
 
@@ -1069,7 +1071,7 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - billing-page state-derivation tests for:
   - current plan badge and recommended plan state
   - monthly/yearly selection handling
-  - in-app pre-checkout summary generation from `billing/get`
+  - in-app plan-selection state derived from `billing/get`
   - cancellation consequences and over-limit warnings derived from current billing state
 - webhook signature verification tests
 - webhook idempotency tests
@@ -1305,11 +1307,12 @@ Outcome:
 
 - owners can start and recover checkout from Company Admin
 
-### PR 5c: Active subscription management
+### PR 5c: Active subscription management (COMPLETED ✅)
 
-- Add change-plan actions for already-paid companies
-- Add update-credit-card action
-- Add fallback `Manage billing` entry when provider-hosted management is needed
+- Reuse the separate plan-selection page for already-paid companies and submit those changes through `billing/change_plan`
+- Add update-credit-card action that opens a hosted Polar payment-method session and returns to the billing overview page
+- Add fallback `Manage billing` action that opens a hosted Polar customer-portal session and returns to the billing overview page
+- Keep cancel/reactivate UI out of this step; they land in PR 5d
 
 Outcome:
 
@@ -1355,6 +1358,7 @@ Outcome:
 - Add reusable `Operately.Billing.EnforceLimits`
 - Integrate member-count enforcement into company member creation, invite creation, invite-join, and restore paths
 - Integrate storage-limit enforcement into company-owned upload flows
+- Update both the billing overview page and the plan-selection page to surface storage usage and plan storage allowances once storage accounting is available in the billing UI
 - Ensure future limit keys can reuse the same entitlement-based enforcement path
 - Show upgrade guidance that defaults to the remembered suggested plan when a blocked action hits a plan limit
 - Add role-aware limit messaging for owners/admins versus regular members

@@ -3,6 +3,7 @@ import * as Billing from "@/models/billing";
 import {
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
+  buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingRecoveryFeedback,
   buildCompanyBillingStatusNotices,
   buildCompanyBillingSuccessFeedback,
@@ -168,26 +169,52 @@ describe("CompanyBillingPage bridge helpers", () => {
     );
   });
 
-  it("keeps pending actions in overview props", () => {
+  it("keeps checkout recovery and plan switching actions for free companies", () => {
     const overview = buildCompanyBillingOverviewMode({
       billing: billingOverviewMock({
         account: {
           planKey: null,
           billingInterval: null,
           status: "free",
-          suggestedPlanKey: "team",
-          suggestedBillingInterval: "yearly",
           pendingPlanKey: "team",
           pendingBillingInterval: "yearly",
         } as any,
       }),
-      checkoutFeedback: null,
+      feedback: null,
       actionError: null,
       onSeePlans: jest.fn(),
       onCompleteUpgrade: jest.fn(),
+      onUpdatePaymentMethod: null,
+      onManageBilling: null,
     });
 
-    expect(overview.footerAction?.label).toBe("Complete upgrade");
+    expect(overview.actions.map((action) => action.label)).toEqual(["Complete upgrade", "Switch Plan"]);
+    expect(overview.actions[0]?.tone).toBe("primary");
+    expect(overview.actions[1]?.tone).toBe("secondary");
+  });
+
+  it("shows paid subscription actions for active and past-due companies", () => {
+    const overview = buildCompanyBillingOverviewMode({
+      billing: billingOverviewMock({
+        account: {
+          planKey: "business",
+          billingInterval: "monthly",
+          status: "past_due",
+        } as any,
+      }),
+      feedback: null,
+      actionError: null,
+      onSeePlans: jest.fn(),
+      onCompleteUpgrade: null,
+      onUpdatePaymentMethod: jest.fn(),
+      onManageBilling: jest.fn(),
+    });
+
+    expect(overview.actions.map((action) => action.label)).toEqual([
+      "Switch Plan",
+      "Update credit card",
+      "Manage billing",
+    ]);
   });
 
   it("builds confirming mode details", () => {
@@ -199,7 +226,7 @@ describe("CompanyBillingPage bridge helpers", () => {
     );
   });
 
-  it("builds success and recovery feedback", () => {
+  it("builds checkout success and recovery feedback", () => {
     const success = buildCompanyBillingSuccessFeedback(
       billingOverviewMock({
         account: {
@@ -224,5 +251,34 @@ describe("CompanyBillingPage bridge helpers", () => {
 
     expect(success).toMatchObject({ kind: "success", message: "Upgrade confirmed" });
     expect(recovery).toMatchObject({ kind: "pending", message: "Checkout not completed yet" });
+  });
+
+  it("builds plan-change success feedback for immediate and scheduled changes", () => {
+    const immediateFeedback = buildCompanyBillingPlanChangeFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "business",
+          billingInterval: "monthly",
+          status: "active",
+        } as any,
+      }),
+    );
+
+    const scheduledFeedback = buildCompanyBillingPlanChangeFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "monthly",
+          status: "active",
+          scheduledPlanKey: "business",
+          scheduledBillingInterval: "yearly",
+          scheduledChangeEffectiveAt: "2026-06-14T00:00:00Z",
+        } as any,
+      }),
+    );
+
+    expect(immediateFeedback).toMatchObject({ kind: "success", message: "Plan updated" });
+    expect(scheduledFeedback).toMatchObject({ kind: "success", message: "Plan change scheduled" });
+    expect(scheduledFeedback.description).toContain("Business Yearly");
   });
 });
