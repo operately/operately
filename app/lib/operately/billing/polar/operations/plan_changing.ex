@@ -158,6 +158,6 @@ defmodule Operately.Billing.Polar.Operations.PlanChanging do
   defp cast_billing_interval(_), do: {:error, :bad_request}
 
   defp provider_client(opts) do
-    Keyword.get(opts, :client, Operately.Billing.Polar.Client)
+    Billing.provider_client(opts)
   end
 end

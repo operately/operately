@@ -86,6 +86,6 @@ defmodule Operately.Billing.Polar.Operations.CustomerSessionCreating do
   end
 
   defp provider_client(opts) do
-    Keyword.get(opts, :client, Operately.Billing.Polar.Client)
+    Billing.provider_client(opts)
   end
 end

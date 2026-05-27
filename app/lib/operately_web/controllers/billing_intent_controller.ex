@@ -58,6 +58,6 @@ defmodule OperatelyWeb.BillingIntentController do
 
   defp billing_path(company, plan, billing_period) do
     company_id = OperatelyWeb.Paths.company_id(company)
-    "/#{company_id}/admin/billing" <> build_query_params(plan, billing_period)
+    "/#{company_id}/admin/billing/plans" <> build_query_params(plan, billing_period)
   end
 end

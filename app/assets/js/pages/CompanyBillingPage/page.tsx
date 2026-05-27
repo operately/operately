@@ -33,6 +33,24 @@ export function isAwaitingCheckoutConfirmation(
   return Boolean(checkoutId) && !Billing.isCheckoutReturnSuccessful(billing, requestedTarget);
 }
 
+export function resolveCheckoutConfirmation(
+  billing: Billing.BillingOverview,
+  checkoutId: string | null,
+): { checkoutResolved: boolean; feedback: Billing.BillingFeedback | null } {
+  if (!checkoutId) {
+    return { checkoutResolved: false, feedback: null };
+  }
+
+  if (isCompanyBillingCheckoutReturnSuccessful(billing, getCompanyBillingPendingTarget(billing))) {
+    return {
+      checkoutResolved: true,
+      feedback: buildCompanyBillingSuccessFeedback(billing),
+    };
+  }
+
+  return { checkoutResolved: false, feedback: null };
+}
+
 export function Page() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -108,10 +126,10 @@ export function Page() {
 
   const applyRefreshedBilling = React.useCallback(
     (nextBilling: Billing.BillingOverview) => {
-      const expectedTarget = getCompanyBillingPendingTarget(nextBilling);
+      const resolution = resolveCheckoutConfirmation(nextBilling, search.checkoutId);
 
-      if (search.checkoutId && isCompanyBillingCheckoutReturnSuccessful(nextBilling, expectedTarget)) {
-        finishCheckoutConfirmation(nextBilling, buildCompanyBillingSuccessFeedback(nextBilling));
+      if (resolution.checkoutResolved && resolution.feedback) {
+        finishCheckoutConfirmation(nextBilling, resolution.feedback);
         return { checkoutResolved: true };
       }
 
@@ -142,7 +160,7 @@ export function Page() {
       }
 
       if (result.outcome === "session_created") {
-        window.location.assign(result.session.url);
+        Billing.redirectToExternalBillingUrl(result.session.url);
         return;
       }
 
@@ -163,7 +181,7 @@ export function Page() {
     const result = await Billing.beginPaymentMethodSession(paths.companyBillingPath());
 
     if (result.outcome === "session_created") {
-      window.location.assign(result.session.url);
+      Billing.redirectToExternalBillingUrl(result.session.url);
       return;
     }
 
@@ -181,7 +199,7 @@ export function Page() {
     const result = await Billing.beginCustomerPortalSession(paths.companyBillingPath());
 
     if (result.outcome === "session_created") {
-      window.location.assign(result.session.url);
+      Billing.redirectToExternalBillingUrl(result.session.url);
       return;
     }
 
@@ -222,12 +240,10 @@ export function Page() {
   Billing.useBillingUpdatedSignal(refreshFromBillingUpdate);
 
   React.useEffect(() => {
-    if (!search.checkoutId) return;
+    const resolution = resolveCheckoutConfirmation(billing, search.checkoutId);
 
-    const expectedTarget = getCompanyBillingPendingTarget(billing);
-
-    if (isCompanyBillingCheckoutReturnSuccessful(billing, expectedTarget)) {
-      finishCheckoutConfirmation(billing, buildCompanyBillingSuccessFeedback(billing));
+    if (resolution.checkoutResolved && resolution.feedback) {
+      finishCheckoutConfirmation(billing, resolution.feedback);
     }
   }, [billing, finishCheckoutConfirmation, search.checkoutId]);
 

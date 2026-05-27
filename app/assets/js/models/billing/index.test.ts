@@ -115,6 +115,66 @@ afterEach(() => {
 });
 
 describe("billing model helpers", () => {
+  it("captures external billing redirects in test mode instead of leaving the page", () => {
+    const originalWindow = globalThis.window;
+    const assign = jest.fn();
+
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: {
+        location: { assign },
+        __tests: {
+          billing: {
+            captureExternalNavigation: true,
+            externalNavigations: [],
+          },
+        },
+      },
+    });
+
+    try {
+      Billing.redirectToExternalBillingUrl("https://polar.sh/checkout/test");
+
+      expect(assign).not.toHaveBeenCalled();
+      expect(globalThis.window.__tests?.billing?.externalNavigations).toEqual(["https://polar.sh/checkout/test"]);
+    } finally {
+      if (originalWindow) {
+        Object.defineProperty(globalThis, "window", {
+          configurable: true,
+          value: originalWindow,
+        });
+      } else {
+        delete (globalThis as { window?: Window }).window;
+      }
+    }
+  });
+
+  it("uses the browser location when billing redirect capture is disabled", () => {
+    const originalWindow = globalThis.window;
+    const assign = jest.fn();
+
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: {
+        location: { assign },
+      },
+    });
+
+    try {
+      Billing.redirectToExternalBillingUrl("https://polar.sh/checkout/test");
+      expect(assign).toHaveBeenCalledWith("https://polar.sh/checkout/test");
+    } finally {
+      if (originalWindow) {
+        Object.defineProperty(globalThis, "window", {
+          configurable: true,
+          value: originalWindow,
+        });
+      } else {
+        delete (globalThis as { window?: Window }).window;
+      }
+    }
+  });
+
   it("returns the free plan definition when the account is free and plan_key is absent", () => {
     const plan = Billing.getCurrentPlanDefinition(billingOverviewMock());
 
