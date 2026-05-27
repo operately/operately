@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.PolarWebhookController do
   use OperatelyWeb, :controller
 
+  require Logger
+
   alias Operately.Billing
   alias Operately.Billing.Polar.WebhookVerifier
 
@@ -16,7 +18,9 @@ defmodule OperatelyWeb.PolarWebhookController do
       {:error, :missing_secret} -> send_resp(conn, :service_unavailable, "")
       {:error, :invalid_payload} -> send_resp(conn, :bad_request, "")
       {:error, :invalid_json} -> send_resp(conn, :bad_request, "")
-      {:error, :invalid_signature} -> send_resp(conn, :forbidden, "")
+      {:error, reason} ->
+        Logger.warning("Polar webhook rejected: #{inspect(reason)}")
+        send_resp(conn, :forbidden, "")
     end
   end
 

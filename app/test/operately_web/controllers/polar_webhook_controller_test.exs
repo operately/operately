@@ -6,17 +6,25 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
   alias Operately.Billing.Polar.ProcessWebhookWorker
   alias Operately.Repo
 
-  @secret "polar_test_webhook_secret"
+  @secret "polar_whs_" <> Base.encode64("polar_test_webhook_secret")
 
   setup do
     previous_secret = Application.get_env(:operately, :polar_webhook_secret)
+    previous_tolerance = Application.get_env(:operately, :polar_webhook_timestamp_tolerance_seconds)
     Application.put_env(:operately, :polar_webhook_secret, @secret)
+    Application.put_env(:operately, :polar_webhook_timestamp_tolerance_seconds, 5 * 60)
 
     on_exit(fn ->
       if previous_secret do
         Application.put_env(:operately, :polar_webhook_secret, previous_secret)
       else
         Application.delete_env(:operately, :polar_webhook_secret)
+      end
+
+      if previous_tolerance do
+        Application.put_env(:operately, :polar_webhook_timestamp_tolerance_seconds, previous_tolerance)
+      else
+        Application.delete_env(:operately, :polar_webhook_timestamp_tolerance_seconds)
       end
     end)
 
@@ -46,16 +54,12 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
       end)
     end
 
-    test "accepts a valid signed request when the secret uses the polar_whs_ encoded format", %{conn: conn} do
+    test "accepts a valid signed request when the webhook secret is user-defined", %{conn: conn} do
+      custom_secret = "user_defined_webhook_secret"
       payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
-      webhook_id = "msg_encoded_secret"
-      timestamp = "#{System.system_time(:second)}"
-
-      raw_secret = "super_secret_key_bytes"
-      encoded_secret = "polar_whs_" <> Base.encode64(raw_secret)
 
       previous_secret = Application.get_env(:operately, :polar_webhook_secret)
-      Application.put_env(:operately, :polar_webhook_secret, encoded_secret)
+      Application.put_env(:operately, :polar_webhook_secret, custom_secret)
 
       on_exit(fn ->
         if previous_secret do
@@ -65,17 +69,10 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         end
       end)
 
-      signature =
-        :crypto.mac(:hmac, :sha256, raw_secret, webhook_id <> "." <> timestamp <> "." <> payload)
-        |> Base.encode64()
-
       Oban.Testing.with_testing_mode(:manual, fn ->
         conn =
           conn
-          |> put_req_header("content-type", "application/json")
-          |> put_req_header("webhook-id", webhook_id)
-          |> put_req_header("webhook-timestamp", timestamp)
-          |> put_req_header("webhook-signature", "v1," <> signature)
+          |> signed_webhook_request(payload, webhook_id: "msg_custom_secret", secret: custom_secret)
           |> post("/webhooks/polar", payload)
 
         assert response(conn, 202) == ""
