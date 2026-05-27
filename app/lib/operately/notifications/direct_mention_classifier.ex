@@ -16,9 +16,12 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
   @rich_content_actions [
     {"project_description_changed", "description"},
+    {"project_created", "description"},
     {"task_description_change", "description"},
+    {"task_adding", "description"},
     {"milestone_description_updating", "description"},
-    {"goal_description_changed", "new_description"}
+    {"goal_description_changed", "new_description"},
+    {"resource_hub_document_edited", "content"}
   ]
 
   @preloaded_content_actions [
@@ -102,7 +105,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "project_contributor_edited",
     "project_contributor_removed",
     "project_contributors_addition",
-    "project_created",
     "project_due_date_updating",
     "project_goal_connection",
     "project_goal_disconnection",
@@ -118,7 +120,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "project_reviewer_updating",
     "project_start_date_updating",
     "project_timeline_edited",
-    "task_adding",
     "task_assignee_assignment",
     "task_assignee_updating",
     "task_closing",
@@ -136,7 +137,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "task_update",
     "resource_hub_created",
     "resource_hub_document_deleted",
-    "resource_hub_document_edited",
     "resource_hub_file_created",
     "resource_hub_file_deleted",
     "resource_hub_file_edited",

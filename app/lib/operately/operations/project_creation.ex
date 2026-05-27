@@ -3,6 +3,7 @@ defmodule Operately.Operations.ProjectCreation do
   alias Operately.Activities
   alias Operately.Access
   alias Operately.Access.{Binding, Context}
+  alias Operately.Operations.Notifications.Subscription, as: SubscriptionOps
   alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
   alias Operately.Notifications
   alias Operately.Notifications.Subscription
@@ -20,6 +21,7 @@ defmodule Operately.Operations.ProjectCreation do
     :visibility,
     :group_id,
     :goal_id,
+    :description,
     :anonymous_access_level,
     :company_access_level,
     :space_access_level
@@ -28,6 +30,7 @@ defmodule Operately.Operations.ProjectCreation do
   def run(%__MODULE__{} = params) do
     Multi.new()
     |> insert_project(params)
+    |> insert_mentioned_people(params)
     |> insert_access_context(params)
     |> insert_champion_as_contributor(params)
     |> insert_reviewer_as_contributor(params)
@@ -47,6 +50,7 @@ defmodule Operately.Operations.ProjectCreation do
         :group_id => params.group_id,
         :goal_id => params.goal_id,
         :name => params.name,
+        :description => params.description,
         :private => is_private(params.visibility),
         :creator_id => params.creator_id,
         :started_at => DateTime.utc_now(),
@@ -60,6 +64,13 @@ defmodule Operately.Operations.ProjectCreation do
       })
     end)
     |> SubscriptionListOps.update(:project)
+  end
+
+  defp insert_mentioned_people(multi, params) do
+    SubscriptionOps.insert(multi, %{id: params.creator_id}, %{
+      content: params.description,
+      subscriber_ids: []
+    })
   end
 
   defp insert_access_context(multi, _params) do
@@ -171,7 +182,8 @@ defmodule Operately.Operations.ProjectCreation do
       %{
         company_id: changes.project.company_id,
         space_id: changes.project.group_id,
-        project_id: changes.project.id
+        project_id: changes.project.id,
+        description: changes.project.description
       }
     end)
   end

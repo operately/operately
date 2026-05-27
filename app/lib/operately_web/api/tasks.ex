@@ -439,6 +439,7 @@ defmodule OperatelyWeb.Api.Tasks do
       field :name, :string, null: false
       field? :assignee_id, :id, null: true
       field? :assignee_ids, list_of(:id), null: true
+      field? :description, :json, null: true
       field :due_date, :contextual_date, null: true
       field? :status, :task_status, null: false
     end
@@ -463,7 +464,8 @@ defmodule OperatelyWeb.Api.Tasks do
           project_id: changes.project.id,
           milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
-          name: changes.task.name
+          name: changes.task.name,
+          description: changes.task.description
         }
       end)
       |> Steps.commit()
@@ -490,7 +492,8 @@ defmodule OperatelyWeb.Api.Tasks do
           project_id: nil,
           milestone_id: nil,
           task_id: changes.task.id,
-          name: changes.task.name
+          name: changes.task.name,
+          description: changes.task.description
         }
       end)
       |> Steps.commit()
@@ -860,6 +863,10 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Ecto.Multi.run(:creator_subscription, fn _repo, %{me: me, subscription_list: subscription_list} ->
         ensure_subscription(subscription_list.id, me.id, :joined)
       end)
+      |> Ecto.Multi.run(:mentioned_subscriptions, fn _repo, %{subscription_list: subscription_list} ->
+        mentioned_ids = Operately.Activities.Notifications.MentionedPeople.ids(inputs[:description])
+        ensure_subscriptions(subscription_list.id, mentioned_ids, :mentioned)
+      end)
       |> Ecto.Multi.run(:new_task, fn _repo, changes ->
         context = get_context_from_changes(changes)
         {project_id, space_id} = get_ids_from_context(changes)
@@ -868,7 +875,7 @@ defmodule OperatelyWeb.Api.Tasks do
         with {:ok, status} <- validate_or_get_default_status(context, inputs[:status]) do
           Operately.Tasks.Task.changeset(%{
             name: inputs.name,
-            description: %{},
+            description: inputs[:description] || %{},
             milestone_id: milestone_id,
             project_id: project_id,
             space_id: space_id,

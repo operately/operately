@@ -5,12 +5,13 @@ defmodule Operately.Activities.Content.ProjectCreated do
     belongs_to :company, Operately.Companies.Company, type: :string
     belongs_to :space, Operately.Groups.Group, type: :string
     belongs_to :project, Operately.Projects.Project, type: :string
+    field :description, :map
   end
 
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required(__schema__(:fields) -- [:description])
   end
 
   def build(params) do
