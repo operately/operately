@@ -4,7 +4,7 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
   if (props.isConfirmingCheckout) {
     return {
       pageTitle: "Billing",
-      pageSubtitle: "Review the current subscription state for this workspace.",
+      pageSubtitle: "Review the current subscription state for this company.",
       mode: "confirming",
       confirming: buildCompanyBillingConfirmingMode(props.confirmingTarget || null),
     };
@@ -12,7 +12,7 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
 
   return {
     pageTitle: "Billing",
-    pageSubtitle: "Review the current subscription state for this workspace.",
+    pageSubtitle: "Review the current subscription state for this company.",
     mode: "overview",
     overview: buildCompanyBillingOverviewMode({
       billing: props.billing,
@@ -139,7 +139,7 @@ export function buildCompanyBillingStatusNotices(
     notices.push({
       tone: "warning",
       message: "Subscription ended",
-      description: "This workspace is no longer on an active paid subscription.",
+      description: "This company is no longer on an active paid subscription.",
     });
   }
 
@@ -147,7 +147,7 @@ export function buildCompanyBillingStatusNotices(
     notices.push({
       tone: "info",
       message: "Free plan",
-      description: "This workspace is currently using the free plan.",
+      description: "This company is currently using the free plan.",
     });
   }
 
@@ -160,7 +160,7 @@ export function buildCompanyBillingSuccessFeedback(
   return {
     kind: "success",
     message: "Upgrade confirmed",
-    description: `This workspace is now on ${formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "its new paid plan")}.`,
+    description: `This company is now on ${formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "its new paid plan")}.`,
   };
 }
 
@@ -205,7 +205,7 @@ export function buildCompanyBillingPlanChangeFeedback(
   return {
     kind: "success",
     message: "Plan updated",
-    description: `This workspace is now on ${formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "its new plan")}.`,
+    description: `This company is now on ${formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "its new plan")}.`,
   };
 }
 
@@ -218,8 +218,8 @@ export function buildCompanyBillingCancellationFeedback(
     kind: "success",
     message: "Cancellation scheduled",
     description: endDate
-      ? `This workspace will stay on its current paid plan until ${endDate}.`
-      : "This workspace will stay on its current paid plan until the end of the current billing period.",
+      ? `This company will stay on its current paid plan until ${endDate}.`
+      : "This company will stay on its current paid plan until the end of the current billing period.",
   };
 }
 
@@ -229,7 +229,7 @@ export function buildCompanyBillingReactivationFeedback(
   return {
     kind: "success",
     message: "Plan reactivated",
-    description: `This workspace will remain on ${formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "its current paid plan")}.`,
+    description: `This company will remain on ${formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "its current paid plan")}.`,
   };
 }
 
