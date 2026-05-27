@@ -6,17 +6,25 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
   alias Operately.Billing.Polar.ProcessWebhookWorker
   alias Operately.Repo
 
-  @secret "polar_test_webhook_secret"
+  @secret "polar_whs_" <> Base.encode64("polar_test_webhook_secret")
 
   setup do
     previous_secret = Application.get_env(:operately, :polar_webhook_secret)
+    previous_tolerance = Application.get_env(:operately, :polar_webhook_timestamp_tolerance_seconds)
     Application.put_env(:operately, :polar_webhook_secret, @secret)
+    Application.put_env(:operately, :polar_webhook_timestamp_tolerance_seconds, 5 * 60)
 
     on_exit(fn ->
       if previous_secret do
         Application.put_env(:operately, :polar_webhook_secret, previous_secret)
       else
         Application.delete_env(:operately, :polar_webhook_secret)
+      end
+
+      if previous_tolerance do
+        Application.put_env(:operately, :polar_webhook_timestamp_tolerance_seconds, previous_tolerance)
+      else
+        Application.delete_env(:operately, :polar_webhook_timestamp_tolerance_seconds)
       end
     end)
 
@@ -43,6 +51,31 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         assert event.received_at
 
         assert_enqueued(worker: ProcessWebhookWorker, args: %{billing_webhook_event_id: event.id})
+      end)
+    end
+
+    test "accepts a valid signed request when the webhook secret is user-defined", %{conn: conn} do
+      custom_secret = "user_defined_webhook_secret"
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+
+      previous_secret = Application.get_env(:operately, :polar_webhook_secret)
+      Application.put_env(:operately, :polar_webhook_secret, custom_secret)
+
+      on_exit(fn ->
+        if previous_secret do
+          Application.put_env(:operately, :polar_webhook_secret, previous_secret)
+        else
+          Application.delete_env(:operately, :polar_webhook_secret)
+        end
+      end)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        conn =
+          conn
+          |> signed_webhook_request(payload, webhook_id: "msg_custom_secret", secret: custom_secret)
+          |> post("/webhooks/polar", payload)
+
+        assert response(conn, 202) == ""
       end)
     end
 

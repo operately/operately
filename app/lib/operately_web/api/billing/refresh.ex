@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api.Billing.Refresh do
     else
       {:error, :not_found} -> {:error, :not_found}
       {:error, :forbidden} -> {:error, :forbidden}
+      {:error, :bad_request} -> {:error, :internal_server_error}
       {:error, :internal_server_error} -> {:error, :internal_server_error}
     end
   end
