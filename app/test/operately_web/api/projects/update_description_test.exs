@@ -147,7 +147,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
       end)
     end
 
-    test "it continues to notify subscribed people even when not mentioned", ctx do
+    test "it only notifies mentioned people for the current description update", ctx do
       ctx =
         ctx
         |> Factory.setup()
@@ -173,8 +173,8 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
 
       assert 1 == notifications_count(action: action)
       assert hd(notifications).person_id == ctx.mentioned_person.id
+      first_activity_id = activity.id
 
-      :timer.sleep(25)
       description_without_mention = RichText.rich_text("Updated description without mentions", :as_string)
 
       {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
@@ -184,13 +184,12 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
         })
       end)
 
-      activity = get_activity(ctx.project.id, action)
+      activity = get_activity(ctx.project.id, action, except: first_activity_id)
 
       perform_job(activity.id)
-      notifications = fetch_notifications(activity.id, action: action)
 
-      assert 2 == notifications_count(action: action)
-      assert Enum.find(notifications, &(&1.person_id == ctx.mentioned_person.id))
+      assert notifications_count(action: action) == 1
+      assert fetch_notifications(activity.id, action: action) == []
     end
 
     test "Person without permissions is not notified when mentioned", ctx do
@@ -278,12 +277,24 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
     project
   end
 
-  defp get_activity(project_id, action) do
+  defp get_activity(project_id, action, opts \\ []) do
+    project_activity_query(project_id, action, Keyword.get(opts, :except))
+    |> Repo.one()
+  end
+
+  defp project_activity_query(project_id, action, nil) do
     from(a in Operately.Activities.Activity,
       where: a.action == ^action and a.content["project_id"] == ^project_id,
       order_by: [desc: a.inserted_at],
       limit: 1
     )
-    |> Repo.one()
+  end
+
+  defp project_activity_query(project_id, action, except_id) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["project_id"] == ^project_id and a.id != ^except_id,
+      order_by: [desc: a.inserted_at],
+      limit: 1
+    )
   end
 end
