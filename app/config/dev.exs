@@ -80,5 +80,6 @@ config :phoenix, :plug_init_mode, :runtime
 
 config :operately, :start_query_counter, true
 config :operately, :polar_base_url, "https://sandbox-api.polar.sh"
+config :operately, :polar_webhook_timestamp_tolerance_seconds, 60 * 60 * 24
 
 config :operately, notification_email: "test@localhost"

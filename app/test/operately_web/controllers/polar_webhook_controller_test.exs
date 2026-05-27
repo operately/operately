@@ -46,6 +46,42 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
       end)
     end
 
+    test "accepts a valid signed request when the secret uses the polar_whs_ encoded format", %{conn: conn} do
+      payload = ~s({"type":"customer.state_changed","data":{"id":"evt_123"}})
+      webhook_id = "msg_encoded_secret"
+      timestamp = "#{System.system_time(:second)}"
+
+      raw_secret = "super_secret_key_bytes"
+      encoded_secret = "polar_whs_" <> Base.encode64(raw_secret)
+
+      previous_secret = Application.get_env(:operately, :polar_webhook_secret)
+      Application.put_env(:operately, :polar_webhook_secret, encoded_secret)
+
+      on_exit(fn ->
+        if previous_secret do
+          Application.put_env(:operately, :polar_webhook_secret, previous_secret)
+        else
+          Application.delete_env(:operately, :polar_webhook_secret)
+        end
+      end)
+
+      signature =
+        :crypto.mac(:hmac, :sha256, raw_secret, webhook_id <> "." <> timestamp <> "." <> payload)
+        |> Base.encode64()
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        conn =
+          conn
+          |> put_req_header("content-type", "application/json")
+          |> put_req_header("webhook-id", webhook_id)
+          |> put_req_header("webhook-timestamp", timestamp)
+          |> put_req_header("webhook-signature", "v1," <> signature)
+          |> post("/webhooks/polar", payload)
+
+        assert response(conn, 202) == ""
+      end)
+    end
+
     test "verifies the exact raw request body", %{conn: conn} do
       payload = """
       {
