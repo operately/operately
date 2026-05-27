@@ -2,6 +2,8 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
   use OperatelyWeb.ConnCase
   use Oban.Testing, repo: Operately.Repo
 
+  import ExUnit.CaptureLog
+
   alias Operately.Billing.WebhookEvent
   alias Operately.Billing.Polar.ProcessWebhookWorker
   alias Operately.Repo
@@ -11,10 +13,20 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
   setup do
     previous_secret = Application.get_env(:operately, :polar_webhook_secret)
     previous_tolerance = Application.get_env(:operately, :polar_webhook_timestamp_tolerance_seconds)
+    telemetry_handler_id = "polar-webhook-controller-test-#{System.unique_integer([:positive])}"
     Application.put_env(:operately, :polar_webhook_secret, @secret)
     Application.put_env(:operately, :polar_webhook_timestamp_tolerance_seconds, 5 * 60)
 
+    :telemetry.attach(
+      telemetry_handler_id,
+      [:operately, :billing, :webhook, :ingest],
+      &__MODULE__.handle_telemetry_event/4,
+      self()
+    )
+
     on_exit(fn ->
+      :telemetry.detach(telemetry_handler_id)
+
       if previous_secret do
         Application.put_env(:operately, :polar_webhook_secret, previous_secret)
       else
@@ -51,6 +63,12 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
         assert event.received_at
 
         assert_enqueued(worker: ProcessWebhookWorker, args: %{billing_webhook_event_id: event.id})
+        assert_receive {:telemetry_event, [:operately, :billing, :webhook, :ingest], %{count: 1}, metadata}
+        assert metadata.provider == "polar"
+        assert metadata.result == "accepted"
+        assert metadata.event_type == "customer.state_changed"
+        assert metadata.webhook_id == "msg_123"
+        assert metadata.billing_webhook_event_id == event.id
       end)
     end
 
@@ -107,6 +125,7 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
           |> post("/webhooks/polar", payload)
 
         assert response(conn, 202) == ""
+        flush_telemetry_events()
 
         conn =
           build_conn()
@@ -119,6 +138,10 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
 
         jobs = all_enqueued(worker: ProcessWebhookWorker)
         assert length(jobs) == 1
+        assert_receive {:telemetry_event, [:operately, :billing, :webhook, :ingest], %{count: 1}, metadata}
+        assert metadata.result == "duplicate"
+        assert metadata.event_type == "customer.state_changed"
+        assert metadata.webhook_id == "msg_duplicate"
       end)
     end
 
@@ -232,13 +255,22 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
     test "returns 400 when the payload type is missing", %{conn: conn} do
       payload = ~s({"data":{"id":"evt_123"}})
 
-      conn =
-        conn
-        |> signed_webhook_request(payload)
-        |> post("/webhooks/polar", payload)
+      log =
+        capture_log(fn ->
+          conn =
+            conn
+            |> signed_webhook_request(payload)
+            |> post("/webhooks/polar", payload)
 
-      assert response(conn, 400) == ""
+          assert response(conn, 400) == ""
+        end)
+
       assert Repo.aggregate(WebhookEvent, :count, :id) == 0
+      assert_receive {:telemetry_event, [:operately, :billing, :webhook, :ingest], %{count: 1}, metadata}
+      assert metadata.result == "invalid_payload"
+      assert metadata.event_type == "unknown"
+      assert log =~ "Polar webhook ingest rejected"
+      assert log =~ "result: \"invalid_payload\""
     end
 
     test "returns 400 for invalid json payloads", %{conn: conn} do
@@ -251,6 +283,18 @@ defmodule OperatelyWeb.PolarWebhookControllerTest do
       end
 
       assert Repo.aggregate(WebhookEvent, :count, :id) == 0
+    end
+  end
+
+  def handle_telemetry_event(event, measurements, metadata, pid) do
+    send(pid, {:telemetry_event, event, measurements, metadata})
+  end
+
+  defp flush_telemetry_events do
+    receive do
+      {:telemetry_event, _, _, _} -> flush_telemetry_events()
+    after
+      0 -> :ok
     end
   end
 

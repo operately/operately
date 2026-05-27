@@ -2,6 +2,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
   use Operately.DataCase
   use Oban.Testing, repo: Operately.Repo
 
+  import ExUnit.CaptureLog
   import Mock
 
   alias Operately.Billing
@@ -10,6 +11,22 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
   alias Operately.Repo
 
   setup do
+    telemetry_handler_id = "process-webhook-worker-test-#{System.unique_integer([:positive])}"
+
+    :telemetry.attach_many(
+      telemetry_handler_id,
+      [
+        [:operately, :billing, :webhook, :process, :stop],
+        [:operately, :billing, :webhook, :process, :retry]
+      ],
+      &__MODULE__.handle_telemetry_event/4,
+      self()
+    )
+
+    on_exit(fn ->
+      :telemetry.detach(telemetry_handler_id)
+    end)
+
     {:ok, Factory.setup(%{})}
   end
 
@@ -71,6 +88,12 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
       assert %DateTime{} = webhook_event.processed_at
       assert webhook_event.error == nil
       assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
+      assert_receive {:telemetry_event, [:operately, :billing, :webhook, :process, :stop], measurements, metadata}
+      assert metadata.result == "processed"
+      assert metadata.event_type == "customer.state_changed"
+      assert metadata.company_id == ctx.company.id
+      assert measurements.duration >= 0
+      assert measurements.lag_ms >= 0
 
       account = Billing.get_billing_account_by_company(ctx.company)
       assert account.status == :active
@@ -134,6 +157,11 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
       assert %DateTime{} = webhook_event.processed_at
       assert webhook_event.error == nil
       refute_receive %Phoenix.Socket.Broadcast{topic: "api:billing_updated:" <> _}
+      assert_receive {:telemetry_event, [:operately, :billing, :webhook, :process, :stop], measurements, metadata}
+      assert metadata.result == "ignored"
+      assert metadata.event_type == "customer.updated"
+      assert measurements.duration >= 0
+      assert measurements.lag_ms >= 0
     end
 
     test "marks the webhook failed and discards it when external_id is missing" do
@@ -145,12 +173,22 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
           }
         })
 
-      assert {:discard, "missing_external_id"} = perform_job(ProcessWebhookWorker, %{billing_webhook_event_id: webhook_event.id})
+      log =
+        capture_log(fn ->
+          assert {:discard, "missing_external_id"} = perform_job(ProcessWebhookWorker, %{billing_webhook_event_id: webhook_event.id})
+        end)
 
       webhook_event = Repo.reload(webhook_event)
       assert webhook_event.status == :failed
       assert webhook_event.processed_at == nil
       assert webhook_event.error == "missing_external_id"
+      assert_receive {:telemetry_event, [:operately, :billing, :webhook, :process, :stop], measurements, metadata}
+      assert metadata.result == "discarded"
+      assert metadata.reason == "missing_external_id"
+      assert measurements.duration >= 0
+      assert measurements.lag_ms >= 0
+      assert log =~ "Polar webhook processing discarded"
+      assert log =~ "missing_external_id"
     end
 
     test "marks the webhook failed and discards it when the local company does not exist" do
@@ -179,18 +217,28 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
           }
         })
 
-      with_mock Operately.Billing.Polar.Client, [:passthrough],
-        get_customer_state_by_external_id: fn _company_id ->
-          {:error, :internal_server_error}
-        end do
-        assert {:error, "internal_server_error"} = perform_job(ProcessWebhookWorker, %{billing_webhook_event_id: webhook_event.id})
-      end
+      log =
+        capture_log(fn ->
+          with_mock Operately.Billing.Polar.Client, [:passthrough],
+            get_customer_state_by_external_id: fn _company_id ->
+              {:error, :internal_server_error}
+            end do
+            assert {:error, "internal_server_error"} = perform_job(ProcessWebhookWorker, %{billing_webhook_event_id: webhook_event.id})
+          end
+        end)
 
       webhook_event = Repo.reload(webhook_event)
       assert webhook_event.status == :failed
       assert webhook_event.processed_at == nil
       assert webhook_event.error == "internal_server_error"
       refute_receive %Phoenix.Socket.Broadcast{topic: "api:billing_updated:" <> _}
+      assert_receive {:telemetry_event, [:operately, :billing, :webhook, :process, :stop], measurements, metadata}
+      assert metadata.result == "retryable_failed"
+      assert metadata.reason == "internal_server_error"
+      assert measurements.duration >= 0
+      assert measurements.lag_ms >= 0
+      assert log =~ "Polar webhook processing failed"
+      assert log =~ "result: \"retryable_failed\""
     end
 
     test "reprocesses previously failed rows on a later successful retry", ctx do
@@ -212,28 +260,52 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
           }
         })
 
-      with_mock Operately.Billing.Polar.Client, [:passthrough],
-        get_customer_state_by_external_id: fn _company_id ->
-          {:ok,
-           %{
-             "subscriptions" => [
+      job = %Oban.Job{
+        args: %{"billing_webhook_event_id" => webhook_event.id},
+        attempt: 2,
+        max_attempts: 20,
+        queue: "default"
+      }
+
+      log =
+        capture_log(fn ->
+          with_mock Operately.Billing.Polar.Client, [:passthrough],
+            get_customer_state_by_external_id: fn _company_id ->
+              {:ok,
                %{
-                 "id" => "sub_retry",
-                 "status" => "active",
-                 "product_id" => "prod_team_monthly",
-                 "current_period_end" => "2026-06-30T00:00:00Z",
-                 "cancel_at_period_end" => false
-               }
-             ]
-           }}
-        end do
-        assert :ok = perform_job(ProcessWebhookWorker, %{billing_webhook_event_id: webhook_event.id})
-      end
+                 "subscriptions" => [
+                   %{
+                     "id" => "sub_retry",
+                     "status" => "active",
+                     "product_id" => "prod_team_monthly",
+                     "current_period_end" => "2026-06-30T00:00:00Z",
+                     "cancel_at_period_end" => false
+                   }
+                 ]
+               }}
+            end do
+            assert :ok = ProcessWebhookWorker.perform(job)
+          end
+        end)
 
       webhook_event = Repo.reload(webhook_event)
       assert webhook_event.status == :processed
       assert %DateTime{} = webhook_event.processed_at
       assert webhook_event.error == nil
+      assert_receive {:telemetry_event, [:operately, :billing, :webhook, :process, :retry], %{count: 1}, retry_metadata}
+      assert retry_metadata.provider == "polar"
+      assert retry_metadata.event_type == "customer.state_changed"
+      assert retry_metadata.attempt == 2
+      assert retry_metadata.max_attempts == 20
+      assert retry_metadata.queue == "default"
+      assert_receive {:telemetry_event, [:operately, :billing, :webhook, :process, :stop], measurements, metadata}
+      assert metadata.result == "processed"
+      assert metadata.attempt == 2
+      assert metadata.max_attempts == 20
+      assert measurements.duration >= 0
+      assert measurements.lag_ms >= 0
+      assert log =~ "Polar webhook retry"
+      assert log =~ "attempt: 2"
 
       account = Billing.get_billing_account_by_company(ctx.company)
       assert account.status == :active
@@ -265,5 +337,9 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
     %WebhookEvent{}
     |> WebhookEvent.changeset(attrs)
     |> Repo.insert!()
+  end
+
+  def handle_telemetry_event(event, measurements, metadata, pid) do
+    send(pid, {:telemetry_event, event, measurements, metadata})
   end
 end

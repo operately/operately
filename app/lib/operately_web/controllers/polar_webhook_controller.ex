@@ -4,22 +4,38 @@ defmodule OperatelyWeb.PolarWebhookController do
   require Logger
 
   alias Operately.Billing
+  alias Operately.Billing.Polar.WebhookObservability
   alias Operately.Billing.Polar.WebhookVerifier
 
   def create(conn, _params) do
+    context = ingress_context(conn)
+
     with :ok <- verify_json_request(conn),
          {:ok, raw_body} <- fetch_raw_body(conn),
          {:ok, headers} <- fetch_signature_headers(conn),
          :ok <- verify_signature(raw_body, headers),
-         :ok <- Billing.ingest_polar_webhook(conn.body_params, headers) do
+         {:ok, ingest_result} <- Billing.ingest_polar_webhook(conn.body_params, headers) do
+      WebhookObservability.ingest(ingest_result.result, Map.merge(context, Map.delete(ingest_result, :result)))
       send_resp(conn, :accepted, "")
     else
-      {:error, :internal_server_error} -> send_resp(conn, :internal_server_error, "")
-      {:error, :missing_secret} -> send_resp(conn, :service_unavailable, "")
-      {:error, :invalid_payload} -> send_resp(conn, :bad_request, "")
-      {:error, :invalid_json} -> send_resp(conn, :bad_request, "")
+      {:error, :internal_server_error} ->
+        WebhookObservability.ingest(:internal_error, context)
+        send_resp(conn, :internal_server_error, "")
+
+      {:error, :missing_secret} ->
+        WebhookObservability.ingest(:missing_secret, context)
+        send_resp(conn, :service_unavailable, "")
+
+      {:error, :invalid_payload} ->
+        WebhookObservability.ingest(:invalid_payload, context)
+        send_resp(conn, :bad_request, "")
+
+      {:error, :invalid_json} ->
+        WebhookObservability.ingest(:invalid_json, context)
+        send_resp(conn, :bad_request, "")
+
       {:error, reason} ->
-        Logger.warning("Polar webhook rejected: #{inspect(reason)}")
+        WebhookObservability.ingest(:invalid_signature, Map.put(context, :reason, reason))
         send_resp(conn, :forbidden, "")
     end
   end
@@ -61,5 +77,13 @@ defmodule OperatelyWeb.PolarWebhookController do
 
   defp verify_signature(raw_body, headers) do
     WebhookVerifier.verify(raw_body, headers)
+  end
+
+  defp ingress_context(conn) do
+    %{
+      provider: "polar",
+      request_id: Logger.metadata()[:request_id],
+      webhook_id: List.first(get_req_header(conn, "webhook-id"))
+    }
   end
 end
