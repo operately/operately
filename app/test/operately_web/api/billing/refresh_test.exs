@@ -42,6 +42,13 @@ defmodule OperatelyWeb.Api.Billing.RefreshTest do
       end
     end
 
+    test "it returns an error when Polar rejects the request", ctx do
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id -> {:error, :bad_request} end do
+        assert {500, _} = mutation(ctx.conn, [:billing, :refresh], %{})
+      end
+    end
+
     test "it performs a strict live sync", ctx do
       {:ok, _product} =
         Billing.create_product(%{
