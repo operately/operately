@@ -2265,6 +2265,41 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert hd(notifications).person_id == ctx.mentioned_person.id
     end
 
+    test "it notifies mentioned people from the activity snapshot even if their subscription is missing", ctx do
+      use Operately.Support.Notifications
+
+      ctx =
+        ctx
+        |> Factory.add_space_member(:mentioned_person, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_description], %{
+          task_id: Paths.task_id(ctx.task),
+          description: description,
+          type: "project"
+        })
+      end)
+
+      action = "task_description_change"
+      activity = get_activity(ctx.task.id, action)
+
+      from(s in Operately.Notifications.Subscription,
+        where: s.subscription_list_id == ^ctx.task.subscription_list_id and s.person_id == ^ctx.mentioned_person.id
+      )
+      |> Repo.delete_all()
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 1 == notifications_count(action: action)
+      assert hd(notifications).person_id == ctx.mentioned_person.id
+    end
+
     test "it sends notifications to multiple mentioned people", ctx do
       use Operately.Support.Notifications
 
