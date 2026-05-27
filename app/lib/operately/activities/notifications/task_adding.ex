@@ -7,6 +7,8 @@ defmodule Operately.Activities.Notifications.TaskAdding do
   The person who authored the activity is excluded from notifications.
   """
 
+  alias Operately.Activities.Notifications.MentionedPeople
+  alias Operately.Tasks.Notifications
   alias Operately.Tasks.Task
 
   def dispatch(activity) do
@@ -22,10 +24,15 @@ defmodule Operately.Activities.Notifications.TaskAdding do
         _ -> nil
       end
 
+    mentioned_ids =
+      task
+      |> Notifications.get_subscribers(ignore: [activity.author_id])
+      |> MentionedPeople.only_current_mentions(task.description)
+
     recipients =
       task.assignees
       |> Enum.map(& &1.person_id)
-      |> Enum.concat([champion_id])
+      |> Enum.concat([champion_id | mentioned_ids])
       |> Enum.filter(& &1)
       |> Enum.uniq()
       |> Enum.reject(&(&1 == activity.author_id))

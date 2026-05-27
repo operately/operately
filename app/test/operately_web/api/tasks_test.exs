@@ -177,6 +177,41 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task.creator_id == ctx.creator.id
     end
 
+    test "it sends notifications to people mentioned in the description", ctx do
+      use Operately.Support.Notifications
+
+      ctx =
+        ctx
+        |> Factory.add_space_member(:mentioned_person, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      {200, res} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :create], %{
+          id: Paths.project_id(ctx.project),
+          type: "project",
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          name: "Task with mention",
+          description: description,
+          assignee_id: nil,
+          due_date: nil
+        })
+      end)
+
+      {:ok, task_id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      action = "task_adding"
+      activity = get_activity(task_id, action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 1 == notifications_count(action: action)
+      assert hd(notifications).person_id == ctx.mentioned_person.id
+    end
+
     test "it subscribes the creator to the task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -2234,7 +2269,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       end)
     end
 
-    test "it continues to notify subscribed people even when not mentioned", ctx do
+    test "it only notifies mentioned people for the current description update", ctx do
       use Operately.Support.Notifications
 
       ctx = Factory.add_space_member(ctx, :mentioned_person, :engineering)
@@ -2259,9 +2294,9 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 1 == notifications_count(action: action)
       assert hd(notifications).person_id == ctx.mentioned_person.id
+      first_activity_id = activity.id
 
-      # Second update: don't mention the person, but they should still be notified
-      :timer.sleep(25)
+      # Second update: don't mention the person, so they should not be notified again
       description_without_mention = RichText.rich_text("Updated description without mentions", :as_string)
 
       {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
@@ -2272,13 +2307,12 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         })
       end)
 
-      activity = get_activity(ctx.task.id, action)
+      activity = get_activity(ctx.task.id, action, except: first_activity_id)
 
       perform_job(activity.id)
-      notifications = fetch_notifications(activity.id, action: action)
 
-      assert 2 == notifications_count(action: action)
-      assert Enum.find(notifications, &(&1.person_id == ctx.mentioned_person.id))
+      assert notifications_count(action: action) == 1
+      assert fetch_notifications(activity.id, action: action) == []
     end
 
     test "Person without permissions is not notified when mentioned", ctx do
@@ -2581,12 +2615,24 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     |> Repo.one()
   end
 
-  defp get_activity(task_id, action) do
+  defp get_activity(task_id, action, opts \\ []) do
+    task_activity_query(task_id, action, Keyword.get(opts, :except))
+    |> Repo.one()
+  end
+
+  defp task_activity_query(task_id, action, nil) do
     from(a in Operately.Activities.Activity,
       where: a.action == ^action and a.content["task_id"] == ^task_id,
       order_by: [desc: a.inserted_at],
       limit: 1
     )
-    |> Repo.one()
+  end
+
+  defp task_activity_query(task_id, action, except_id) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["task_id"] == ^task_id and a.id != ^except_id,
+      order_by: [desc: a.inserted_at],
+      limit: 1
+    )
   end
 end

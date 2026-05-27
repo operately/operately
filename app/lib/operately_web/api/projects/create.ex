@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Api.Projects.Create do
     field? :champion_id, :id, null: true
     field? :reviewer_id, :id, null: true
     field? :goal_id, :id, null: true
+    field? :description, :json, null: true
     field :anonymous_access_level, :access_options_int, null: false
     field :company_access_level, :access_options_int, null: false
     field :space_access_level, :access_options_int, null: false
@@ -60,6 +61,7 @@ defmodule OperatelyWeb.Api.Projects.Create do
       company_id: person.company_id,
       group_id: inputs[:space_id],
       goal_id: inputs[:goal_id],
+      description: inputs[:description],
       anonymous_access_level: inputs.anonymous_access_level,
       company_access_level: inputs.company_access_level,
       space_access_level: inputs.space_access_level,
