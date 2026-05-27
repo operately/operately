@@ -6,10 +6,10 @@ defmodule Operately.Activities.Notifications.GoalDescriptionChanged do
   The author of the activity is excluded from notifications.
   """
 
-  alias Operately.RichContent
+  alias Operately.Activities.Notifications.MentionedPeople
 
   def dispatch(activity) do
-    people = RichContent.find_mentioned_ids(activity.content["new_description"], :decode_ids)
+    people = MentionedPeople.ids(activity.content["new_description"])
 
     people
     |> Enum.reject(&(&1 == activity.author_id))
