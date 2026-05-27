@@ -1,5 +1,5 @@
 import * as Billing from "@/models/billing";
-import { isAwaitingCheckoutConfirmation } from "./page";
+import { isAwaitingCheckoutConfirmation, resolveCheckoutConfirmation } from "./page";
 
 import {
   buildCompanyBillingCancellationFeedback,
@@ -289,6 +289,56 @@ describe("CompanyBillingPage bridge helpers", () => {
     expect(isAwaitingCheckoutConfirmation(pendingBilling, "chk_123", target)).toBe(true);
     expect(isAwaitingCheckoutConfirmation(paidBilling, "chk_123", target)).toBe(false);
     expect(isAwaitingCheckoutConfirmation(pendingBilling, null, target)).toBe(false);
+  });
+
+  it("resolves checkout confirmation only after the billing update reflects a paid state", () => {
+    const pendingBilling = billingOverviewMock({
+      account: {
+        planKey: null,
+        billingInterval: null,
+        status: "free",
+        pendingPlanKey: "team",
+        pendingBillingInterval: "yearly",
+      } as any,
+    });
+
+    const paidBilling = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "yearly",
+        status: "active",
+        pendingPlanKey: null,
+        pendingBillingInterval: null,
+      } as any,
+    });
+
+    expect(resolveCheckoutConfirmation(pendingBilling, "chk_123")).toEqual({
+      checkoutResolved: false,
+      feedback: null,
+    });
+
+    expect(resolveCheckoutConfirmation(paidBilling, "chk_123")).toMatchObject({
+      checkoutResolved: true,
+      feedback: expect.objectContaining({ kind: "success", message: "Upgrade confirmed" }),
+    });
+  });
+
+  it("keeps the checkout return stable when a billing refresh is still unresolved", () => {
+    const unresolvedBilling = billingOverviewMock({
+      account: {
+        planKey: null,
+        billingInterval: null,
+        status: "free",
+        pendingPlanKey: "business",
+        pendingBillingInterval: "monthly",
+      } as any,
+    });
+
+    expect(() => resolveCheckoutConfirmation(unresolvedBilling, "chk_123")).not.toThrow();
+    expect(resolveCheckoutConfirmation(unresolvedBilling, "chk_123")).toEqual({
+      checkoutResolved: false,
+      feedback: null,
+    });
   });
 
   it("builds checkout success and recovery feedback", () => {

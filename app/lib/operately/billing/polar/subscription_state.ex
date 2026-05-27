@@ -28,7 +28,7 @@ defmodule Operately.Billing.Polar.SubscriptionState do
   ]
 
   def fetch(%Company{} = company, opts \\ []) do
-    client = Keyword.get(opts, :client, Operately.Billing.Polar.Client)
+    client = Billing.provider_client(opts)
 
     case client.get_customer_state_by_external_id(company.id) do
       {:ok, customer_state} ->
