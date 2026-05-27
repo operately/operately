@@ -128,7 +128,7 @@ describe("CompanyBillingPage bridge helpers", () => {
       {
         tone: "info",
         message: "Free plan",
-        description: "This workspace is currently using the free plan.",
+        description: "This company is currently using the free plan.",
       },
     ]);
   });

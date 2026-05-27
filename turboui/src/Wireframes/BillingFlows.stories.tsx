@@ -271,7 +271,7 @@ const flowLibrary: FlowDefinition[] = [
     trigger: "An owner or company admin crosses 90% of the member or storage limit.",
     steps: [
       {
-        title: "Banner appears in normal workspace pages",
+        title: "Banner appears in normal company pages",
         caption: "The warning should live in the everyday product UI, not only on the Billing page.",
         notes: [
           "Show current usage and the suggested upgrade",
@@ -300,7 +300,7 @@ const flowLibrary: FlowDefinition[] = [
           "Owners can continue toward checkout, while company admins still get the nudge without becoming billing owners.",
         notes: [
           "Owners can open Billing or plan selection",
-          "Company admins can be pointed toward the workspace owner",
+          "Company admins can be pointed toward the company owner",
           "Regular members do not see this banner at all",
         ],
         tone: "app",
@@ -315,12 +315,12 @@ const flowLibrary: FlowDefinition[] = [
     trigger: "Someone accepts an invite after the company already reached its member limit.",
     steps: [
       {
-        title: "Join is stopped before workspace access is granted",
+        title: "Join is stopped before company access is granted",
         caption:
           "The company-join operation rechecks capacity instead of assuming that an older invite is still valid.",
         notes: [
           "Do not partially create the company membership",
-          "Do not drop the person inside the workspace and error later",
+          "Do not drop the person inside the company and error later",
           "Redirect to a dedicated limit page instead of a generic failure",
         ],
         tone: "system",
@@ -990,7 +990,7 @@ function WarningSketch() {
                 Cancellation at period end
               </div>
               <p className="mt-2 max-w-[26rem] text-[11px] leading-5 text-stone-700">
-                Paid access continues until May 31. After that, this workspace returns to the free plan limits.
+                Paid access continues until May 31. After that, this company returns to the free plan limits.
               </p>
             </div>
             <SketchBadge>May 31</SketchBadge>
@@ -1111,10 +1111,10 @@ function LimitWarningSketch() {
             <div>
               <SectionEyebrow>plan limit reached</SectionEyebrow>
               <div className="mt-2 text-sm font-black uppercase tracking-[0.08em] text-stone-900">
-                This workspace is full for its current plan
+                This company is full for its current plan
               </div>
               <p className="mt-2 max-w-[26rem] text-[11px] leading-5 text-stone-700">
-                Upgrade this workspace to keep adding teammates or storage without blocking the team.
+                Upgrade this company to keep adding teammates or storage without blocking the team.
               </p>
             </div>
             <SketchBadge>Team yearly</SketchBadge>
@@ -1174,13 +1174,13 @@ function JoinBlockedSketch() {
             This company has reached its member limit
           </div>
           <p className="mt-2 text-[11px] leading-5 text-stone-700">
-            You cannot join Acme Inc yet. A company owner or admin needs to upgrade the workspace plan before this
+            You cannot join Acme Inc yet. A company owner or admin needs to upgrade the company plan before this
             invite can be completed.
           </p>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-[16px] border-2 border-dashed border-rose-300 bg-rose-50 p-3">
-              <SketchLabel>workspace</SketchLabel>
+              <SketchLabel>company</SketchLabel>
               <div className="mt-2 space-y-2">
                 <SummaryRow left="Company" right="Acme Inc" bold />
                 <SummaryRow left="Members" right="20 / 20" />

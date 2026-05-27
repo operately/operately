@@ -40,7 +40,7 @@ export function CompanyBillingCancellationPage(props: CompanyBillingCancellation
 
           {viewModel.summary.overLimitWarning && (
             <WarningCallout
-              message="This workspace is above the free plan limit"
+              message="This company is above the free plan limit"
               description={viewModel.summary.overLimitWarning}
             />
           )}

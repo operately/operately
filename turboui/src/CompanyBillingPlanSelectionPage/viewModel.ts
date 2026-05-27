@@ -24,7 +24,7 @@ export function buildCompanyBillingPlanSelectionPageViewModel(
     pageTitle: "Choose a plan",
     pageSubtitle:
       selection.mode === "change_plan"
-        ? "Choose a new plan for this workspace."
+        ? "Choose a new plan for this company."
         : "Select a paid plan. Card and payment confirmation happen in Polar.",
     selection,
   };
