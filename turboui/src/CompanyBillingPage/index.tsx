@@ -40,6 +40,7 @@ export namespace CompanyBillingPage {
   export type BillingTargetSource = CompanyBillingPageTypes.BillingTargetSource;
   export type NoticeTone = CompanyBillingPageTypes.NoticeTone;
   export type ActionTone = CompanyBillingPageTypes.ActionTone;
+  export type ActionKind = CompanyBillingPageTypes.ActionKind;
   export type FeedbackKind = CompanyBillingPageTypes.FeedbackKind;
 
   export type BillingAccount = CompanyBillingPageTypes.BillingAccount;
@@ -151,13 +152,7 @@ function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewM
 
       {overview.actions.length > 0 && (
         <Section title="Actions">
-          <SectionCard>
-            <div className="flex flex-wrap gap-3">
-              {overview.actions.map((action) => (
-                <ActionButton key={action.label} action={action} size="xs" />
-              ))}
-            </div>
-          </SectionCard>
+          <BillingActionsPanel actions={overview.actions} />
         </Section>
       )}
     </div>
@@ -281,6 +276,94 @@ function FeedbackBlock({ feedback }: { feedback: CompanyBillingPage.Feedback }) 
   }
 
   return <WarningCallout message={feedback.message} description={feedback.description} />;
+}
+
+function BillingActionsPanel({ actions }: { actions: CompanyBillingPage.Action[] }) {
+  const featuredAction = actions.find((action) => action.kind === "featured") || null;
+  const supportActions = actions.filter((action) => action.kind === "support");
+  const recoveryActions = actions.filter((action) => action.kind === "recovery");
+  const dangerActions = actions.filter((action) => action.kind === "danger");
+
+  return (
+    <SectionCard>
+      <div className="space-y-4">
+        {featuredAction && <FeaturedAction action={featuredAction} />}
+
+        {(supportActions.length > 0 || recoveryActions.length > 0) && (
+          <div className="overflow-hidden rounded-xl border border-stroke-base bg-surface-dimmed/40">
+            {supportActions.map((action) => (
+              <ManagementActionRow key={action.label} action={action} />
+            ))}
+
+            {recoveryActions.map((action) => (
+              <RecoveryActionRow key={action.label} action={action} />
+            ))}
+          </div>
+        )}
+
+        {dangerActions.map((action) => (
+          <DangerActionCard key={action.label} action={action} />
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+function FeaturedAction({ action }: { action: CompanyBillingPage.Action }) {
+  return (
+    <div className="rounded-xl border border-sky-200 bg-sky-50/70 p-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <ActionCopy action={action} />
+        <div className="sm:flex-shrink-0">
+          <ActionButton action={action} size="sm" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ManagementActionRow({ action }: { action: CompanyBillingPage.Action }) {
+  return (
+    <div className="flex flex-col gap-4 px-4 py-4 first:border-t-0 sm:flex-row sm:items-center sm:justify-between [&+&]:border-t [&+&]:border-stroke-base">
+      <ActionCopy action={action} />
+      <div className="sm:flex-shrink-0">
+        <ActionButton action={action} size="xs" />
+      </div>
+    </div>
+  );
+}
+
+function RecoveryActionRow({ action }: { action: CompanyBillingPage.Action }) {
+  return (
+    <div className="flex flex-col gap-4 border-t border-emerald-200 bg-emerald-50/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <ActionCopy action={action} />
+      <div className="sm:flex-shrink-0">
+        <ActionButton action={action} size="xs" />
+      </div>
+    </div>
+  );
+}
+
+function DangerActionCard({ action }: { action: CompanyBillingPage.Action }) {
+  return (
+    <div className="rounded-xl border border-rose-200 bg-rose-50/70 p-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <ActionCopy action={action} />
+        <div className="sm:flex-shrink-0">
+          <ActionButton action={action} size="xs" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ActionCopy({ action }: { action: CompanyBillingPage.Action }) {
+  return (
+    <div className="min-w-0">
+      <div className="font-semibold text-content-accent">{action.title}</div>
+      <div className="mt-1 text-sm text-content-dimmed">{action.description}</div>
+    </div>
+  );
 }
 
 function ActionButton({
