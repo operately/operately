@@ -15,7 +15,7 @@ defmodule Operately.Activities.Notifications.TaskDescriptionChange do
     task_subscribers = Notifications.get_subscribers(task, ignore: [activity.author_id])
 
     task_subscribers
-    |> MentionedPeople.only_current_mentions(activity.content["description"])
+    |> MentionedPeople.reject_stale_mentioned_subscribers(task.subscription_list_id, activity.content["description"])
     |> Enum.uniq()
     |> Enum.map(fn person_id ->
       %{

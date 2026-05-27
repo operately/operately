@@ -15,7 +15,7 @@ defmodule Operately.Activities.Notifications.ProjectDescriptionChanged do
     project_subscribers = Notifications.get_project_subscribers(project, ignore: [activity.author_id])
 
     project_subscribers
-    |> MentionedPeople.only_current_mentions(activity.content["description"])
+    |> MentionedPeople.reject_stale_mentioned_subscribers(project.subscription_list_id, activity.content["description"])
     |> Enum.uniq()
     |> Enum.map(fn person_id ->
       %{
