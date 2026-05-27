@@ -25,6 +25,14 @@ interface BillingPageLocationState {
   feedback?: Billing.BillingFeedback;
 }
 
+export function isAwaitingCheckoutConfirmation(
+  billing: Billing.BillingOverview,
+  checkoutId: string | null,
+  requestedTarget: TurboCompanyBillingPage.BillingTarget | null,
+) {
+  return Boolean(checkoutId) && !Billing.isCheckoutReturnSuccessful(billing, requestedTarget);
+}
+
 export function Page() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,9 +63,11 @@ export function Page() {
   const search = React.useMemo(() => parseCompanyBillingSearch(location.search), [location.search]);
   const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search]);
   const pendingTarget = React.useMemo(() => getCompanyBillingPendingTarget(billing), [billing]);
+  const checkoutReturnTarget = pendingTarget || selection.target;
   const canUseCheckout = Billing.canCreateCheckout(billing.account.status);
   const canManagePaidSubscription = Billing.canManagePaidSubscription(billing.account.status);
   const companyName = companyRootData?.company?.name || "Billing";
+  const isConfirmingCheckout = isAwaitingCheckoutConfirmation(billing, search.checkoutId, checkoutReturnTarget);
 
   const clearBillingSearch = React.useCallback(() => {
     navigate(paths.companyBillingPath(), { replace: true });
@@ -226,6 +236,8 @@ export function Page() {
       title={[companyName, "Billing"]}
       navigation={[{ label: "Company Administration", to: paths.companyAdminPath() }]}
       billing={billing}
+      isConfirmingCheckout={isConfirmingCheckout}
+      confirmingTarget={checkoutReturnTarget}
       feedback={feedback}
       actionError={actionError}
       onOpenSelection={selection.target ? () => openPlanSelection() : null}

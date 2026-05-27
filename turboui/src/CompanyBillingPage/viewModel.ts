@@ -77,7 +77,7 @@ export function buildCompanyBillingConfirmingMode(
     notice: {
       tone: "info",
       message: "Confirming your upgrade",
-      description: "We're waiting for your upgrade to finish. This usually takes just a few seconds.",
+      description: "We're waiting for your upgrade to finish. This page will update automatically when your new plan becomes active.",
     },
     rows: compactRows([
       target ? { label: "Requested plan", value: formatPlanLabel(target.plan, target.billingInterval) } : null,

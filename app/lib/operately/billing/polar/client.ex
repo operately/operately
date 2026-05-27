@@ -6,8 +6,6 @@ defmodule Operately.Billing.Polar.Client do
   alias Operately.Billing.Polar.ProductMapper
   alias OperatelyWeb.Endpoint
 
-  @default_base_url "https://api.polar.sh"
-
   def create_product(attrs) do
     post("/v1/products", create_product_payload(attrs))
   end
@@ -63,6 +61,8 @@ defmodule Operately.Billing.Polar.Client do
   def app_base_url do
     Endpoint.url()
   end
+
+  def base_url, do: Application.fetch_env!(:operately, :polar_base_url)
 
   defp create_product_payload(attrs) do
     metadata =
@@ -136,6 +136,10 @@ defmodule Operately.Billing.Polar.Client do
         {:ok, %{status: 404}} ->
           {:error, :not_found}
 
+        {:ok, %{status: status, body: body}} when status in [401, 403] ->
+          Logger.error("Polar request failed with auth response: #{inspect(%{status: status, body: body})}")
+          {:error, :internal_server_error}
+
         {:ok, %{status: status, body: body}} when status in 400..499 ->
           Logger.warning("Polar request failed with 4xx response: #{inspect(%{status: status, body: body})}")
           {:error, :bad_request}
@@ -155,7 +159,7 @@ defmodule Operately.Billing.Polar.Client do
     access_token = Application.get_env(:operately, :polar_access_token)
 
     if is_binary(access_token) and String.trim(access_token) != "" do
-      {:ok, %{access_token: access_token, base_url: @default_base_url}}
+      {:ok, %{access_token: access_token, base_url: base_url()}}
     else
       Logger.error("Polar access token is not configured")
       {:error, :internal_server_error}

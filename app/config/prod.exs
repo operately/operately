@@ -1,6 +1,7 @@
 import Config
 
 config :operately, :app_env, :prod
+config :operately, :polar_base_url, "https://api.polar.sh"
 
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
