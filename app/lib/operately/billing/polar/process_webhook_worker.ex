@@ -5,6 +5,6 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorker do
 
   @impl Oban.Worker
   def perform(job) do
-    WebhookProcessing.run(job.args["billing_webhook_event_id"])
+    WebhookProcessing.run(job.args["billing_webhook_event_id"], job: job)
   end
 end
