@@ -1381,7 +1381,7 @@ Outcome:
 
 - the core billing flow is covered by launch-critical regression tests while still hidden behind the feature flag
 
-### PR 7b: Observability and sync hardening
+### PR 7b: Observability and sync hardening (COMPLETED ✅)
 
 - Add observability around webhook failures and sync health
 - Tighten operator-visible failure logging and retry visibility for webhook processing

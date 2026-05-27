@@ -43,6 +43,29 @@ defmodule OperatelyWeb.Telemetry do
         unit: {:native, :millisecond},
         keep: fn a -> String.starts_with?(a.conn.request_path, "/api/v2") end
       ),
+      counter("operately.billing.webhook.ingest.count",
+        event_name: [:operately, :billing, :webhook, :ingest],
+        tags: [:provider, :result, :event_type]
+      ),
+      counter("operately.billing.webhook.process.count",
+        event_name: [:operately, :billing, :webhook, :process, :stop],
+        tags: [:provider, :result, :event_type]
+      ),
+      summary("operately.billing.webhook.process.duration",
+        event_name: [:operately, :billing, :webhook, :process, :stop],
+        measurement: :duration,
+        unit: {:native, :millisecond},
+        tags: [:provider, :result, :event_type]
+      ),
+      summary("operately.billing.webhook.process.lag",
+        event_name: [:operately, :billing, :webhook, :process, :stop],
+        measurement: :lag_ms,
+        tags: [:provider, :result, :event_type]
+      ),
+      counter("operately.billing.webhook.process.retry.count",
+        event_name: [:operately, :billing, :webhook, :process, :retry],
+        tags: [:provider, :event_type]
+      ),
 
       # Database Metrics
       summary("operately.repo.query.total_time",

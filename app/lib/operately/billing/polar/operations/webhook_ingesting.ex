@@ -13,12 +13,25 @@ defmodule Operately.Billing.Polar.Operations.WebhookIngesting do
       end)
       |> Repo.transaction()
       |> case do
-        {:ok, _changes} ->
-          :ok
+        {:ok, %{webhook_event: webhook_event}} ->
+          {:ok,
+           %{
+             result: :accepted,
+             provider: attrs.provider,
+             event_type: attrs.event_type,
+             webhook_id: attrs.event_id,
+             billing_webhook_event_id: webhook_event.id
+           }}
 
         {:error, :webhook_event, changeset, _changes} ->
           if duplicate_event?(changeset) do
-            :ok
+            {:ok,
+             %{
+               result: :duplicate,
+               provider: attrs.provider,
+               event_type: attrs.event_type,
+               webhook_id: attrs.event_id
+             }}
           else
             {:error, :invalid_payload}
           end
