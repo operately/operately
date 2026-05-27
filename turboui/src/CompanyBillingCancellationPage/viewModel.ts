@@ -5,7 +5,7 @@ export function buildCompanyBillingCancellationPageViewModel(
 ): CompanyBillingCancellationPage.PageViewModel {
   return {
     pageTitle: "Cancel plan",
-    pageSubtitle: "Review what changes before this workspace moves back to the free plan.",
+    pageSubtitle: "Review what changes before this company moves back to the free plan.",
     summary: buildCompanyBillingCancellationSummary(props.billing),
     errorMessage: props.actionError || null,
     cancelAction: {
@@ -40,15 +40,15 @@ export function buildCompanyBillingCancellationSummary(
       freePlanMemberLimit != null ? { label: "Free plan member limit", value: `${freePlanMemberLimit}` } : null,
     ]),
     consequenceMessage: currentPeriodEnd
-      ? `This workspace will stay on its current paid plan until ${currentPeriodEnd}.`
-      : "This workspace will stay on its current paid plan until the end of the current billing period.",
+      ? `This company will stay on its current paid plan until ${currentPeriodEnd}.`
+      : "This company will stay on its current paid plan until the end of the current billing period.",
     consequenceDescription:
       memberOverage > 0
-        ? `It will move to the Free plan after that. Invites and restores may be blocked until the workspace is back within the free member limit.`
-        : "After that, the workspace will move to the Free plan.",
+        ? `It will move to the Free plan after that. Invites and restores may be blocked until the company is back within the free member limit.`
+        : "After that, the company will move to the Free plan.",
     overLimitWarning:
       memberOverage > 0 && freePlanMemberLimit != null
-        ? `This workspace has ${billing.memberCount} active members and the Free plan allows ${freePlanMemberLimit}.`
+        ? `This company has ${billing.memberCount} active members and the Free plan allows ${freePlanMemberLimit}.`
         : null,
   };
 }

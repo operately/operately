@@ -43,7 +43,7 @@ This spec covers the full path from pricing-page intent, through signup and comp
 
 ### 1. Billing belongs to `company`, not `account`
 
-Subscriptions should attach to the workspace/company because pricing is presented as a team plan, ownership is company-level, and enforcement applies to company membership.
+Subscriptions should attach to the company because pricing is presented as a team plan, ownership is company-level, and enforcement applies to company membership.
 
 ### 2. `free` remains internal
 
