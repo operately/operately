@@ -6,16 +6,22 @@ defmodule Operately.Activities.Notifications.TaskDescriptionChange do
   The author of the activity is excluded from notifications.
   """
 
+  import Ecto.Query, only: [from: 2]
+
   require Logger
+  alias Operately.Access.Binding
+  alias Operately.Access.Context
   alias Operately.Activities.Notifications.MentionedPeople
-  alias Operately.Tasks.Notifications
+  alias Operately.Repo
+  alias Operately.Tasks.Notifications, as: TaskNotifications
 
-  def dispatch(activity) do
-    {:ok, task} = fetch_task(activity.content["task_id"])
-    task_subscribers = Notifications.get_subscribers(task, ignore: [activity.author_id])
+  def dispatch(%{content: %{"task_id" => task_id, "description" => description}} = activity) do
+    {:ok, task} = fetch_task(task_id)
+    task_subscribers = TaskNotifications.get_subscribers(task, ignore: [activity.author_id])
+    mentioned_people = mentioned_people_with_access(task, description, activity.author_id)
 
-    task_subscribers
-    |> MentionedPeople.reject_stale_mentioned_subscribers(task.subscription_list_id, activity.content["description"])
+    (task_subscribers ++ mentioned_people)
+    |> MentionedPeople.reject_stale_mentioned_subscribers(task.subscription_list_id, description)
     |> Enum.uniq()
     |> Enum.map(fn person_id ->
       %{
@@ -39,5 +45,36 @@ defmodule Operately.Activities.Notifications.TaskDescriptionChange do
 
         {:error, reason}
     end
+  end
+
+  defp mentioned_people_with_access(task, description, author_id) do
+    description
+    |> MentionedPeople.ids()
+    |> Enum.reject(&(&1 == author_id))
+    |> mentioned_people_with_access(task)
+  end
+
+  defp mentioned_people_with_access([], _task), do: []
+
+  defp mentioned_people_with_access(person_ids, %{project_id: project_id}) when not is_nil(project_id) do
+    mentioned_people_with_access(person_ids, project_id: project_id)
+  end
+
+  defp mentioned_people_with_access(person_ids, %{space_id: space_id}) when not is_nil(space_id) do
+    mentioned_people_with_access(person_ids, group_id: space_id)
+  end
+
+  defp mentioned_people_with_access(person_ids, access_context) do
+    from(c in Context,
+      join: b in assoc(c, :bindings),
+      join: g in assoc(b, :group),
+      join: m in assoc(g, :memberships),
+      join: p in assoc(m, :person),
+      where: ^access_context,
+      where: m.person_id in ^person_ids and is_nil(p.suspended_at) and b.access_level >= ^Binding.view_access(),
+      select: m.person_id,
+      distinct: true
+    )
+    |> Repo.all()
   end
 end
