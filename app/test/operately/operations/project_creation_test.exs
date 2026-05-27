@@ -182,6 +182,29 @@ defmodule Operately.Operations.ProjectCreationTest do
     refute creator_subscription.canceled
   end
 
+  test "ProjectCreation operation keeps mentioned champion and reviewer subscriptions invited", ctx do
+    description = RichText.rich_text(mentioned_people: [ctx.champion, ctx.reviewer]) |> Jason.decode!()
+    attrs = Map.put(ctx.project_attrs, :description, description)
+
+    {:ok, project} = Operately.Operations.ProjectCreation.run(attrs)
+
+    {:ok, champion_subscription} =
+      Subscription.get(:system,
+        subscription_list_id: project.subscription_list_id,
+        person_id: ctx.champion.id
+      )
+
+    assert champion_subscription.type == :invited
+
+    {:ok, reviewer_subscription} =
+      Subscription.get(:system,
+        subscription_list_id: project.subscription_list_id,
+        person_id: ctx.reviewer.id
+      )
+
+    assert reviewer_subscription.type == :invited
+  end
+
   test "ProjectCreation operation always adds creator as contributor", ctx do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 

@@ -30,11 +30,11 @@ defmodule Operately.Operations.ProjectCreation do
   def run(%__MODULE__{} = params) do
     Multi.new()
     |> insert_project(params)
-    |> insert_mentioned_people(params)
     |> insert_access_context(params)
     |> insert_champion_as_contributor(params)
     |> insert_reviewer_as_contributor(params)
     |> insert_creator_as_contributor(params)
+    |> insert_mentioned_people(params)
     |> insert_bindings(params)
     |> insert_activity(params)
     |> Repo.transaction()

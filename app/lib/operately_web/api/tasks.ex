@@ -863,10 +863,6 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Ecto.Multi.run(:creator_subscription, fn _repo, %{me: me, subscription_list: subscription_list} ->
         ensure_subscription(subscription_list.id, me.id, :joined)
       end)
-      |> Ecto.Multi.run(:mentioned_subscriptions, fn _repo, %{subscription_list: subscription_list} ->
-        mentioned_ids = Operately.Activities.Notifications.MentionedPeople.ids(inputs[:description])
-        ensure_subscriptions(subscription_list.id, mentioned_ids, :mentioned)
-      end)
       |> Ecto.Multi.run(:new_task, fn _repo, changes ->
         context = get_context_from_changes(changes)
         {project_id, space_id} = get_ids_from_context(changes)
@@ -901,6 +897,10 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
       |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{subscription_list: subscription_list} ->
         ensure_subscriptions(subscription_list.id, assignee_ids, :invited)
+      end)
+      |> Ecto.Multi.run(:mentioned_subscriptions, fn _repo, %{subscription_list: subscription_list} ->
+        mentioned_ids = Operately.Activities.Notifications.MentionedPeople.ids(inputs[:description])
+        ensure_subscriptions(subscription_list.id, mentioned_ids, :mentioned)
       end)
       |> maybe_add_assignee_contributors(assignee_ids)
       |> Ecto.Multi.run(:task, fn _repo, changes ->
