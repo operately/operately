@@ -8,6 +8,7 @@ export namespace CompanyBillingPage {
   export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
   export type NoticeTone = "info" | "warning";
   export type ActionTone = "primary" | "secondary" | "danger";
+  export type ActionKind = "featured" | "support" | "recovery" | "danger";
   export type FeedbackKind = "success" | "pending" | "incomplete";
 
   export interface BillingAccount {
@@ -85,6 +86,9 @@ export namespace CompanyBillingPage {
 
   export interface Action {
     label: string;
+    title: string;
+    description: string;
+    kind: ActionKind;
     tone: ActionTone;
     onClick: () => void;
     disabled?: boolean;
