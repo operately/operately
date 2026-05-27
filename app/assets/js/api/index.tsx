@@ -4419,6 +4419,7 @@ export interface ProjectsCreateInput {
   championId?: Id | null;
   reviewerId?: Id | null;
   goalId?: Id | null;
+  description?: Json | null;
   anonymousAccessLevel: AccessOptionsInt;
   companyAccessLevel: AccessOptionsInt;
   spaceAccessLevel: AccessOptionsInt;
@@ -5015,6 +5016,7 @@ export interface TasksCreateInput {
   name: string;
   assigneeId?: Id | null;
   assigneeIds?: Id[] | null;
+  description?: Json | null;
   dueDate: ContextualDate | null;
   status?: TaskStatus;
 }

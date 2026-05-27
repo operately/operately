@@ -7,12 +7,13 @@ defmodule Operately.Activities.Content.ResourceHubDocumentEdited do
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
     belongs_to :node, Operately.ResourceHubs.Node
     belongs_to :document, Operately.ResourceHubs.Document
+    field :content, :map
   end
 
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required(__schema__(:fields) -- [:content])
   end
 
   def build(params) do

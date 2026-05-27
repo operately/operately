@@ -7,6 +7,7 @@ defmodule Operately.Activities.Notifications.TaskDescriptionChange do
   """
 
   require Logger
+  alias Operately.Activities.Notifications.MentionedPeople
   alias Operately.Tasks.Notifications
 
   def dispatch(activity) do
@@ -14,6 +15,7 @@ defmodule Operately.Activities.Notifications.TaskDescriptionChange do
     task_subscribers = Notifications.get_subscribers(task, ignore: [activity.author_id])
 
     task_subscribers
+    |> MentionedPeople.reject_stale_mentioned_subscribers(task.subscription_list_id, activity.content["description"])
     |> Enum.uniq()
     |> Enum.map(fn person_id ->
       %{

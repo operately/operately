@@ -95,6 +95,7 @@ defmodule Operately.Operations.GoalCreation do
         space_id: changes.goal.group_id,
         goal_id: changes.goal.id,
         goal_name: changes.goal.name,
+        description: changes.goal.description,
         champion_id: changes.goal.champion_id,
         reviewer_id: changes.goal.reviewer_id,
         creator_id: changes.goal.creator_id,

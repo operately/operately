@@ -9,6 +9,7 @@ defmodule Operately.Activities.Content.TaskAdding do
     belongs_to :task, Operately.Tasks.Task
 
     field :name, :string
+    field :description, :map
   end
 
   def changeset(attrs) do
