@@ -439,6 +439,7 @@ defmodule OperatelyWeb.Api.Tasks do
       field :name, :string, null: false
       field? :assignee_id, :id, null: true
       field? :assignee_ids, list_of(:id), null: true
+      field? :description, :json, null: true
       field :due_date, :contextual_date, null: true
       field? :status, :task_status, null: false
     end
@@ -463,7 +464,8 @@ defmodule OperatelyWeb.Api.Tasks do
           project_id: changes.project.id,
           milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
-          name: changes.task.name
+          name: changes.task.name,
+          description: changes.task.description
         }
       end)
       |> Steps.commit()
@@ -490,7 +492,8 @@ defmodule OperatelyWeb.Api.Tasks do
           project_id: nil,
           milestone_id: nil,
           task_id: changes.task.id,
-          name: changes.task.name
+          name: changes.task.name,
+          description: changes.task.description
         }
       end)
       |> Steps.commit()
@@ -868,7 +871,7 @@ defmodule OperatelyWeb.Api.Tasks do
         with {:ok, status} <- validate_or_get_default_status(context, inputs[:status]) do
           Operately.Tasks.Task.changeset(%{
             name: inputs.name,
-            description: %{},
+            description: inputs[:description] || %{},
             milestone_id: milestone_id,
             project_id: project_id,
             space_id: space_id,
@@ -894,6 +897,10 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
       |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{subscription_list: subscription_list} ->
         ensure_subscriptions(subscription_list.id, assignee_ids, :invited)
+      end)
+      |> Ecto.Multi.run(:mentioned_subscriptions, fn _repo, %{subscription_list: subscription_list} ->
+        mentioned_ids = Operately.Activities.Notifications.MentionedPeople.ids(inputs[:description])
+        ensure_subscriptions(subscription_list.id, mentioned_ids, :mentioned)
       end)
       |> maybe_add_assignee_contributors(assignee_ids)
       |> Ecto.Multi.run(:task, fn _repo, changes ->

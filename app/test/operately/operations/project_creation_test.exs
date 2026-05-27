@@ -9,6 +9,7 @@ defmodule Operately.Operations.ProjectCreationTest do
   import Operately.GroupsFixtures
 
   alias Operately.Repo
+  alias Operately.Support.RichText
   alias Operately.Projects
   alias Operately.Access
   alias Operately.Access.Binding
@@ -181,6 +182,29 @@ defmodule Operately.Operations.ProjectCreationTest do
     refute creator_subscription.canceled
   end
 
+  test "ProjectCreation operation keeps mentioned champion and reviewer subscriptions invited", ctx do
+    description = RichText.rich_text(mentioned_people: [ctx.champion, ctx.reviewer]) |> Jason.decode!()
+    attrs = Map.put(ctx.project_attrs, :description, description)
+
+    {:ok, project} = Operately.Operations.ProjectCreation.run(attrs)
+
+    {:ok, champion_subscription} =
+      Subscription.get(:system,
+        subscription_list_id: project.subscription_list_id,
+        person_id: ctx.champion.id
+      )
+
+    assert champion_subscription.type == :invited
+
+    {:ok, reviewer_subscription} =
+      Subscription.get(:system,
+        subscription_list_id: project.subscription_list_id,
+        person_id: ctx.reviewer.id
+      )
+
+    assert reviewer_subscription.type == :invited
+  end
+
   test "ProjectCreation operation always adds creator as contributor", ctx do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
@@ -248,5 +272,24 @@ defmodule Operately.Operations.ProjectCreationTest do
 
     assert fetch_notifications(activity.id)
     assert 2 == notifications_count()
+  end
+
+  test "ProjectCreation operation notifies people mentioned in the description", ctx do
+    mentioned = person_fixture_with_account(%{company_id: ctx.company.id})
+    description = RichText.rich_text(mentioned_people: [mentioned]) |> Jason.decode!()
+    attrs = Map.put(ctx.project_attrs, :description, description)
+
+    {:ok, project} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectCreation.run(attrs)
+      end)
+
+    activity = from(a in Activity, where: a.action == "project_created" and a.content["project_id"] == ^project.id) |> Repo.one()
+
+    perform_job(activity.id)
+
+    notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
+
+    assert mentioned.id in notified_ids
   end
 end

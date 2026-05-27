@@ -4,6 +4,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
   alias Operately.Notifications.Notification
   alias Operately.Repo
   alias Operately.Comments.CommentThread
+  alias Operately.Goals.Goal
   alias Operately.Goals.Update
   alias Operately.Messages.Message
   alias Operately.Projects.CheckIn
@@ -15,9 +16,13 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
   @rich_content_actions [
     {"project_description_changed", "description"},
+    {"project_created", "description"},
+    {"goal_created", "description"},
     {"task_description_change", "description"},
+    {"task_adding", "description"},
     {"milestone_description_updating", "description"},
-    {"goal_description_changed", "new_description"}
+    {"goal_description_changed", "new_description"},
+    {"resource_hub_document_edited", "content"}
   ]
 
   @preloaded_content_actions [
@@ -76,7 +81,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "goal_check_in_edit",
     "goal_check_removing",
     "goal_check_toggled",
-    "goal_created",
     "goal_discussion_editing",
     "goal_due_date_changed",
     "goal_due_date_updating",
@@ -101,7 +105,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "project_contributor_edited",
     "project_contributor_removed",
     "project_contributors_addition",
-    "project_created",
     "project_due_date_updating",
     "project_goal_connection",
     "project_goal_disconnection",
@@ -117,7 +120,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "project_reviewer_updating",
     "project_start_date_updating",
     "project_timeline_edited",
-    "task_adding",
     "task_assignee_assignment",
     "task_assignee_updating",
     "task_closing",
@@ -135,7 +137,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "task_update",
     "resource_hub_created",
     "resource_hub_document_deleted",
-    "resource_hub_document_edited",
     "resource_hub_file_created",
     "resource_hub_file_deleted",
     "resource_hub_file_edited",
@@ -264,6 +265,12 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
   defp load_preloaded_resource(:goal_update, ids) do
     from(u in Update, where: u.id in ^ids, select: {u.id, u.message})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  defp load_preloaded_resource(:goal, ids) do
+    from(g in Goal, where: g.id in ^ids, select: {g.id, g.description})
     |> Repo.all()
     |> Enum.into(%{})
   end

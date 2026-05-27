@@ -32,7 +32,8 @@ defmodule Operately.Operations.ResourceHubDocumentEditing do
         space_id: document.resource_hub.space_id,
         resource_hub_id: document.resource_hub.id,
         node_id: document.node_id,
-        document_id: document.id
+        document_id: document.id,
+        content: attrs.content
       }
     end)
     |> Repo.transaction()
