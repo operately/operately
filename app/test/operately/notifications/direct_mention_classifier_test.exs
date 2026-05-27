@@ -135,25 +135,25 @@ defmodule Operately.Notifications.DirectMentionClassifierTest do
     refute mentions_recipient?(non_mentioned_notification)
   end
 
-  test "goal_created checks mentions from goal description", ctx do
+  test "goal_created checks mentions from activity description snapshot", ctx do
     mention_description = RichText.rich_text(mentioned_people: [ctx.recipient]) |> Jason.decode!()
     plain_description = RichText.rich_text("No one mentioned here")
 
-    mentioned_goal = goal_fixture(ctx.author, %{space_id: ctx.company.company_space_id, description: mention_description})
-    plain_goal = goal_fixture(ctx.author, %{space_id: ctx.company.company_space_id, description: plain_description})
+    mentioned_goal = goal_fixture(ctx.author, %{space_id: ctx.company.company_space_id, description: plain_description})
+    plain_goal = goal_fixture(ctx.author, %{space_id: ctx.company.company_space_id, description: mention_description})
 
     mentioned_notification =
       notification_struct(
         ctx.recipient,
         "goal_created",
-        %{"goal_id" => mentioned_goal.id}
+        %{"goal_id" => mentioned_goal.id, "description" => mention_description}
       )
 
     non_mentioned_notification =
       notification_struct(
         ctx.recipient,
         "goal_created",
-        %{"goal_id" => plain_goal.id}
+        %{"goal_id" => plain_goal.id, "description" => plain_description}
       )
 
     assert mentions_recipient?(mentioned_notification)

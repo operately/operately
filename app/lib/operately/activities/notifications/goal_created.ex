@@ -4,8 +4,9 @@ defmodule Operately.Activities.Notifications.GoalCreated do
   def dispatch(activity) do
     goal_id = activity.content["goal_id"]
     goal = Operately.Goals.get_goal!(goal_id)
+    description = activity.content["description"] || goal.description
 
-    mentioned_ids = MentionedPeople.ids(goal.description)
+    mentioned_ids = MentionedPeople.ids(description)
     people = [goal.champion_id, goal.reviewer_id | mentioned_ids]
 
     people

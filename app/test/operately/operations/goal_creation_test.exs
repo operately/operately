@@ -195,6 +195,10 @@ defmodule Operately.Operations.GoalCreationTest do
 
     activity = from(a in Activity, where: a.action == "goal_created" and a.content["goal_id"] == ^goal.id) |> Repo.one()
 
+    goal
+    |> Operately.Goals.Goal.changeset(%{description: RichText.rich_text("Mention removed before dispatch")})
+    |> Repo.update!()
+
     perform_job(activity.id)
 
     notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)

@@ -203,6 +203,11 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       action = "task_adding"
       activity = get_activity(task_id, action)
 
+      task_id
+      |> Operately.Tasks.get_task!()
+      |> Operately.Tasks.Task.changeset(%{description: RichText.rich_text("Mention removed before dispatch")})
+      |> Repo.update!()
+
       assert 0 == notifications_count(action: action)
 
       perform_job(activity.id)

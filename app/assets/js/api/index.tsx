@@ -858,14 +858,6 @@ export interface ActivityContentSpaceTaskCommented {
   comment: Comment | null;
 }
 
-export interface ActivityContentTaskCommentDeleting {
-  space: Space;
-  project?: Project | null;
-  task: Task | null;
-  taskName: string;
-  commentId: string;
-}
-
 export interface ActivityContentTaskAdding {
   space: Space;
   project: Project | null;
@@ -885,16 +877,24 @@ export interface ActivityContentTaskAssigneeUpdating {
   space: Space;
   project: Project | null;
   task: Task | null;
-  oldAssignee?: Person | null;
-  newAssignee?: Person | null;
-  addedAssignees?: Person[] | null;
-  removedAssignees?: Person[] | null;
+  oldAssignee: Person;
+  newAssignee: Person;
+  addedAssignees: Person[];
+  removedAssignees: Person[];
 }
 
 export interface ActivityContentTaskClosing {
   companyId?: string | null;
   spaceId?: string | null;
   taskId?: string | null;
+}
+
+export interface ActivityContentTaskCommentDeleting {
+  space: Space;
+  project?: Project | null;
+  task: Task | null;
+  taskName: string;
+  commentId: string;
 }
 
 export interface ActivityContentTaskDeleting {
@@ -4419,6 +4419,7 @@ export interface ProjectsCreateInput {
   championId?: Id | null;
   reviewerId?: Id | null;
   goalId?: Id | null;
+  description?: Json | null;
   anonymousAccessLevel: AccessOptionsInt;
   companyAccessLevel: AccessOptionsInt;
   spaceAccessLevel: AccessOptionsInt;
@@ -5015,6 +5016,7 @@ export interface TasksCreateInput {
   name: string;
   assigneeId?: Id | null;
   assigneeIds?: Id[] | null;
+  description?: Json | null;
   dueDate: ContextualDate | null;
   status?: TaskStatus;
 }

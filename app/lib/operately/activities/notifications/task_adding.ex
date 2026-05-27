@@ -27,7 +27,7 @@ defmodule Operately.Activities.Notifications.TaskAdding do
     mentioned_ids =
       task
       |> Notifications.get_subscribers(ignore: [activity.author_id])
-      |> MentionedPeople.only_current_mentions(task.description)
+      |> MentionedPeople.only_current_mentions(activity.content["description"] || task.description)
 
     recipients =
       task.assignees

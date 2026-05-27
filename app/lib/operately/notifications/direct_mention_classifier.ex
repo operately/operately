@@ -17,6 +17,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
   @rich_content_actions [
     {"project_description_changed", "description"},
     {"project_created", "description"},
+    {"goal_created", "description"},
     {"task_description_change", "description"},
     {"task_adding", "description"},
     {"milestone_description_updating", "description"},
@@ -29,7 +30,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     {"project_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"goal_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"project_retrospective_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
-    {"goal_created", %{resource: :goal, resource_id: {:content, "goal_id"}}},
     {"project_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"space_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"discussion_comment_submitted", %{resource: :comment, resource_id: {:content, "comment_id"}}},
