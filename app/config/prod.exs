@@ -2,6 +2,7 @@ import Config
 
 config :operately, :app_env, :prod
 config :operately, :polar_base_url, "https://api.polar.sh"
+config :operately, :polar_webhook_timestamp_tolerance_seconds, 5 * 60
 
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information

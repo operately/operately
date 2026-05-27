@@ -13,7 +13,7 @@ defmodule Operately.Billing.Polar.WebhookVerifier do
       :ok
     else
       {:error, :missing_secret} -> {:error, :missing_secret}
-      _ -> {:error, :invalid_signature}
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -42,12 +42,17 @@ defmodule Operately.Billing.Polar.WebhookVerifier do
 
   defp verify_timestamp(timestamp) do
     now = System.system_time(:second)
+    tolerance_seconds = timestamp_tolerance_seconds()
 
-    if abs(now - timestamp) <= @timestamp_tolerance_seconds do
+    if abs(now - timestamp) <= tolerance_seconds do
       :ok
     else
       {:error, :stale_timestamp}
     end
+  end
+
+  defp timestamp_tolerance_seconds do
+    Application.get_env(:operately, :polar_webhook_timestamp_tolerance_seconds, @timestamp_tolerance_seconds)
   end
 
   defp parse_signatures(signature_header) do
@@ -57,7 +62,7 @@ defmodule Operately.Billing.Polar.WebhookVerifier do
       |> Enum.flat_map(fn entry ->
         case String.split(entry, ",", parts: 2) do
           ["v1", encoded_signature] ->
-            case Base.decode64(encoded_signature) do
+            case decode_base64(encoded_signature) do
               {:ok, signature} -> [signature]
               :error -> []
             end
@@ -77,8 +82,18 @@ defmodule Operately.Billing.Polar.WebhookVerifier do
     expected_signature =
       :crypto.mac(:hmac, :sha256, secret, webhook_id <> "." <> webhook_timestamp <> "." <> raw_body)
 
-    Enum.any?(signatures, fn signature ->
-      byte_size(signature) == byte_size(expected_signature) && :crypto.hash_equals(expected_signature, signature)
-    end)
+    matched =
+      Enum.any?(signatures, fn signature ->
+        byte_size(signature) == byte_size(expected_signature) && :crypto.hash_equals(expected_signature, signature)
+      end)
+
+    if matched, do: true, else: {:error, :signature_mismatch}
+  end
+
+  defp decode_base64(value) when is_binary(value) do
+    case Base.decode64(value) do
+      {:ok, _} = ok -> ok
+      :error -> Base.url_decode64(value, padding: false)
+    end
   end
 end
