@@ -1371,18 +1371,42 @@ Outcome:
 
 - open billing pages are notified promptly after webhook-driven changes and can refresh without polling
 
-### PR 7: Verification and rollout hardening
+### PR 7a: Flow verification coverage (COMPLETED ✅)
 
-- Add feature coverage for remembered-plan signup flow and billing-page upgrades
-- Add observability around webhook failures and sync health
-- Document operator setup for Polar secrets and billing-catalog sync procedures
-- Document product-version cutover and subscription-migration procedures
+- Add automated coverage for remembered-plan signup flow and billing-page upgrade flows
 - Verify production-safe behavior for delayed webhooks and manual refresh
 - Verify that non-flagged companies still see the pre-billing UX with no new navigation or blockers
 
 Outcome:
 
-- the billing flow is launch-ready and operable in production while still hidden behind the feature flag
+- the core billing flow is covered by launch-critical regression tests while still hidden behind the feature flag
+
+### PR 7b: Observability and sync hardening
+
+- Add observability around webhook failures and sync health
+- Tighten operator-visible failure logging and retry visibility for webhook processing
+
+Outcome:
+
+- billing failures and degraded sync behavior are visible early enough to operate the system safely in production
+
+### PR 7c: Operator docs and procedures
+
+- Document operator setup for Polar secrets and billing-catalog sync procedures
+- Document product-version cutover and subscription-migration procedures
+
+Outcome:
+
+- operators have a clear runbook for maintaining billing configuration and evolving paid products safely
+
+### PR 7d: Rollout rehearsal and launch verification
+
+- Run and document end-to-end launch verification using the flagged billing flow
+- Verify rollout behavior for flagged and non-flagged companies before enabling broader access
+
+Outcome:
+
+- the billing system is launch-ready and operable in production with a validated rollout checklist
 
 ### PR 8: Final limit enforcement
 

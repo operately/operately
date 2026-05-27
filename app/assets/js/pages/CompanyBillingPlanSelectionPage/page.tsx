@@ -83,7 +83,7 @@ export function Page() {
     }
 
     if (result.outcome === "session_created") {
-      window.location.assign(result.session.url);
+      Billing.redirectToExternalBillingUrl(result.session.url);
       return;
     }
 

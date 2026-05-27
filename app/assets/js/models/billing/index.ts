@@ -30,6 +30,11 @@ type BillingSearchParams = CompanyBillingPage.BillingSearchParams;
 type BillingTarget = CompanyBillingPage.BillingTarget;
 type BillingTargetSelection = CompanyBillingPage.BillingTargetSelection;
 
+interface BillingTestHooks {
+  captureExternalNavigation?: boolean;
+  externalNavigations?: string[];
+}
+
 type BeginCheckoutResult =
   | { outcome: "missing_target" }
   | { outcome: "target_unavailable" }
@@ -157,6 +162,17 @@ export async function beginCustomerPortalSession(returnTo: string): Promise<Begi
     const session = await createCustomerPortalSession({ returnTo });
     return { outcome: "session_created", session };
   });
+}
+
+export function redirectToExternalBillingUrl(url: string) {
+  const billingTestHooks = (window.__tests as { billing?: BillingTestHooks } | undefined)?.billing;
+
+  if (billingTestHooks?.captureExternalNavigation) {
+    billingTestHooks.externalNavigations = [...(billingTestHooks.externalNavigations || []), url];
+    return;
+  }
+
+  window.location.assign(url);
 }
 
 async function withBillingRefreshFallback<T extends { outcome: string }>(

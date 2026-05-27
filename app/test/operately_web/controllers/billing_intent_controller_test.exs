@@ -30,14 +30,14 @@ defmodule OperatelyWeb.BillingIntentControllerTest do
       assert redirected_to(conn) == "/new?plan=team"
     end
 
-    test "authenticated user with one owned company is redirected to company billing page", %{conn: conn} do
+    test "authenticated user with one owned company is redirected to company billing plan selection page", %{conn: conn} do
       account = account_fixture()
       company = company_fixture(%{}, account)
 
       conn = log_in_account(conn, account) |> get("/billing/intent?plan=team&billing_period=monthly")
 
       company_id = Paths.company_id(company)
-      assert redirected_to(conn) == "/#{company_id}/admin/billing?plan=team&billing_period=monthly"
+      assert redirected_to(conn) == "/#{company_id}/admin/billing/plans?plan=team&billing_period=monthly"
     end
 
     test "authenticated user with multiple owned companies is redirected to pick-company", %{conn: conn} do

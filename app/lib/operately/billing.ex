@@ -32,6 +32,10 @@ defmodule Operately.Billing do
     billing_enabled?() && Operately.Companies.has_experimental_feature?(company, "billing")
   end
 
+  def provider_client(opts \\ []) do
+    Keyword.get(opts, :client) || Application.get_env(:operately, :billing_polar_client) || Operately.Billing.Polar.Client
+  end
+
   #
   # Billing accounts
   #
@@ -335,10 +339,6 @@ defmodule Operately.Billing do
       {:ok, product} -> {:ok, product}
       :ignore -> {:error, :internal_server_error}
     end
-  end
-
-  defp provider_client(opts) do
-    Keyword.get(opts, :client, Operately.Billing.Polar.Client)
   end
 
   defp cast_plan_family(plan_family) when plan_family in @valid_plan_keys, do: {:ok, plan_family}

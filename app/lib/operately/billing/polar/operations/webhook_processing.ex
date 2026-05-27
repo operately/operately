@@ -1,6 +1,7 @@
 defmodule Operately.Billing.Polar.Operations.WebhookProcessing do
   require Logger
 
+  alias Operately.Billing
   alias Operately.Billing.Polar.Operations.CustomerStateSync
   alias Operately.Billing.WebhookEvent
   alias Operately.Companies.Company
@@ -25,7 +26,7 @@ defmodule Operately.Billing.Polar.Operations.WebhookProcessing do
   end
 
   defp process(%WebhookEvent{} = webhook_event, opts) do
-    client = Keyword.get(opts, :client, Operately.Billing.Polar.Client)
+    client = Billing.provider_client(opts)
 
     with {:ok, webhook_event} <- mark_processing(webhook_event),
          result <- process_event(webhook_event, client) do

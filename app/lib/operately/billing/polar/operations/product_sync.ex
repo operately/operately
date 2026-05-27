@@ -6,7 +6,7 @@ defmodule Operately.Billing.Polar.Operations.ProductSync do
   Syncs Operately-managed Polar products into the local billing catalog.
   """
   def run(opts \\ []) do
-    client = Keyword.get(opts, :client, Operately.Billing.Polar.Client)
+    client = Billing.provider_client(opts)
 
     do_run(client, nil, 0)
   end
