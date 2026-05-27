@@ -236,33 +236,76 @@ export function buildCompanyBillingReactivationFeedback(
 function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.Action[] {
   const actions: CompanyBillingPage.Action[] = [];
   const isPaidCompany = args.billing.account.status === "active" || args.billing.account.status === "past_due";
+  const pendingPlanLabel = args.billing.account.pendingPlanKey
+    ? formatPlanLabel(args.billing.account.pendingPlanKey, args.billing.account.pendingBillingInterval, "the pending plan")
+    : "the pending plan";
 
   if (args.onCompleteUpgrade) {
-    actions.push({ label: "Complete upgrade", tone: "primary", onClick: args.onCompleteUpgrade });
+    actions.push({
+      label: "Complete upgrade",
+      title: "Finish your upgrade",
+      description: `Start a fresh Polar checkout for ${pendingPlanLabel}.`,
+      kind: "featured",
+      tone: "primary",
+      onClick: args.onCompleteUpgrade,
+    });
   }
 
   if (args.onSeePlans) {
     actions.push({
       label: "Switch Plan",
+      title: isPaidCompany ? "Change plan" : "Choose a paid plan",
+      description: isPaidCompany
+        ? "Compare available plans and switch this company to a different subscription."
+        : "Review Team and Business plans and continue to checkout when you're ready.",
+      kind: args.onCompleteUpgrade ? "support" : "featured",
       tone: args.onCompleteUpgrade ? "secondary" : "primary",
       onClick: args.onSeePlans,
     });
   }
 
   if (isPaidCompany && args.billing.account.cancelAtPeriodEnd && args.onReactivatePlan) {
-    actions.push({ label: "Reactivate plan", tone: "secondary", onClick: args.onReactivatePlan });
+    actions.push({
+      label: "Reactivate plan",
+      title: "Keep the current plan",
+      description: "Remove the scheduled cancellation and keep this paid plan active.",
+      kind: "recovery",
+      tone: "secondary",
+      onClick: args.onReactivatePlan,
+    });
   }
 
   if (isPaidCompany && args.onUpdatePaymentMethod) {
-    actions.push({ label: "Update credit card", tone: "secondary", onClick: args.onUpdatePaymentMethod });
+    actions.push({
+      label: "Update credit card",
+      title: "Payment method",
+      description: "Update the card used for renewals and payment recovery.",
+      kind: "support",
+      tone: "secondary",
+      onClick: args.onUpdatePaymentMethod,
+    });
   }
 
   if (isPaidCompany && args.onManageBilling) {
-    actions.push({ label: "Manage billing", tone: "secondary", onClick: args.onManageBilling });
+    actions.push({
+      label: "Manage billing",
+      title: "Invoices and billing history",
+      description: "Open Polar for invoices, receipts, and full billing details.",
+      kind: "support",
+      tone: "secondary",
+      onClick: args.onManageBilling,
+    });
   }
 
   if (isPaidCompany && !args.billing.account.cancelAtPeriodEnd && args.onCancelPlan) {
-    actions.push({ label: "Cancel plan", tone: "danger", onClick: args.onCancelPlan });
+    actions.push({
+      label: "Cancel plan",
+      title: "Cancel subscription",
+      description: "Schedule this subscription to end at the close of the current billing period.",
+      kind: "danger",
+      tone: "danger",
+      onClick: args.onCancelPlan,
+    });
   }
 
   return actions;
