@@ -42,6 +42,7 @@ defmodule OperatelyWeb.Endpoint do
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
+  plug OperatelyWeb.Plugs.HttpsRedirect
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
