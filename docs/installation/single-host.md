@@ -94,6 +94,9 @@ docker compose up --wait --detach
 Operately should now be running on your server. You can access it by navigating to the domain you
 configured earlier (e.g. `https://operately.example.com`).
 
+If you enabled HTTPS during installation, Operately will also redirect normal HTTP requests to HTTPS.
+Port 80 remains available for the Let's Encrypt ACME challenge and the local container health check.
+
 ### Optional database timeout tuning
 
 If you need to allow longer-running database operations, add `DB_TIMEOUT` to your
