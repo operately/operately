@@ -1,6 +1,7 @@
 defmodule Operately.Billing.Usage do
   import Ecto.Query, only: [from: 2]
 
+  alias Operately.Billing.EnforceLimits
   alias Operately.People.Person
   alias Operately.Repo
 
@@ -12,5 +13,9 @@ defmodule Operately.Billing.Usage do
       :count,
       :id
     )
+  end
+
+  def check_member_limit(%Operately.Companies.Company{} = company) do
+    EnforceLimits.check(company, :member_count, requested_delta: 1)
   end
 end

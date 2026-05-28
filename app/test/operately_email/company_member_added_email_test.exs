@@ -26,7 +26,7 @@ defmodule OperatelyEmail.CompanyMemberAddedEmailTest do
 
   describe "with invite link" do
     test "sends email to newly added company member", ctx do
-      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
       person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
 
@@ -47,7 +47,7 @@ defmodule OperatelyEmail.CompanyMemberAddedEmailTest do
     end
 
     test "email includes company name", ctx do
-      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
       person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
 
@@ -65,7 +65,7 @@ defmodule OperatelyEmail.CompanyMemberAddedEmailTest do
     end
 
     test "email includes author name with invite message", ctx do
-      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
       person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
 

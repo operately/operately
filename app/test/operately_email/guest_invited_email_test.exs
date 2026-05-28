@@ -28,7 +28,7 @@ defmodule OperatelyEmail.GuestInvitedEmailTest do
   test "includes invite link when account unused", ctx do
     invite_link =
       Oban.Testing.with_testing_mode(:manual, fn ->
-        {:ok, changes} = Operately.Operations.GuestInviting.run(ctx.admin, @guest_attrs)
+        {:ok, changes} = Operately.Operations.GuestInviting.run(ctx.admin, ctx.company, @guest_attrs)
         changes.invite_link
       end)
 
@@ -55,7 +55,7 @@ defmodule OperatelyEmail.GuestInvitedEmailTest do
 
     attrs = Map.put(@guest_attrs, :email, account.email)
     Oban.Testing.with_testing_mode(:manual, fn ->
-      {:ok, _} = Operately.Operations.GuestInviting.run(ctx.admin, attrs)
+      {:ok, _} = Operately.Operations.GuestInviting.run(ctx.admin, ctx.company, attrs)
     end)
 
     person = People.get_person_by_email(ctx.company, account.email)

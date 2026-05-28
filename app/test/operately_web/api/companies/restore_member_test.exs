@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.RestoreMemberTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Billing
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -55,11 +57,51 @@ defmodule OperatelyWeb.Api.Companies.RestoreMemberTest do
       assert person.suspended_at == nil
       assert person.suspended == false
     end
+
+    test "it returns a billing limit error when restoring would exceed the member limit", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      ctx = Factory.log_in_person(ctx, :admin)
+
+      assert {400, res} = request(ctx, ctx.person)
+
+      assert res == %{
+               :error => "Bad request",
+               :message => "This company has reached its member limit. Upgrade the plan to add more people."
+             }
+
+      person = Operately.Repo.reload(ctx.person)
+      assert person.suspended
+      assert person.suspended_at != nil
+    end
   end
 
   defp request(ctx, person) do
     mutation(ctx.conn, [:companies, :restore_member], %{
       person_id: Paths.person_id(person)
     })
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        Operately.PeopleFixtures.person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Restore Member Limit #{index}",
+          email: "restore-member-limit-#{index}@example.com"
+        })
+      end)
+    end
   end
 end

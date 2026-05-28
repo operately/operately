@@ -100,7 +100,7 @@ defmodule Operately.Support.Factory.Companies do
       email: email
     }
 
-    {:ok, _invite_link} = Operately.Operations.GuestInviting.run(admin, attrs)
+    {:ok, _invite_link} = Operately.Operations.GuestInviting.run(admin, ctx.company, attrs)
 
     person = Operately.People.get_person_by_email(ctx.company, email)
 
