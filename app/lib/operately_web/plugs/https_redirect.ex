@@ -11,9 +11,12 @@ defmodule OperatelyWeb.Plugs.HttpsRedirect do
 
   def call(conn, _opts) do
     cond do
-      conn.scheme != :http -> conn
+      # Respect the original client scheme when a proxy terminates TLS upstream.
+      request_scheme(conn) != :http -> conn
       not https_enabled?() -> conn
+      # ACME HTTP-01 must stay reachable over plain HTTP for certificate issuance.
       acme_challenge?(conn.request_path) -> conn
+      # Docker's local health probe still talks to the app over HTTP.
       localhost_health_check?(conn) -> conn
       true -> redirect_to_https(conn)
     end
@@ -41,6 +44,23 @@ defmodule OperatelyWeb.Plugs.HttpsRedirect do
   defp redirect_status(method) when method in @safe_methods, do: 301
   defp redirect_status(_method), do: 307
 
+  # `x-forwarded-proto` may contain a comma-separated proxy chain.
+  defp request_scheme(conn) do
+    case forwarded_proto(conn) do
+      "https" -> :https
+      "http" -> :http
+      _ -> conn.scheme
+    end
+  end
+
+  defp forwarded_proto(conn) do
+    conn
+    |> get_req_header("x-forwarded-proto")
+    |> List.first()
+    |> first_forwarded_value()
+    |> normalize_forwarded_proto()
+  end
+
   defp redirect_url(conn) do
     endpoint_url = endpoint_url()
 
@@ -54,6 +74,7 @@ defmodule OperatelyWeb.Plugs.HttpsRedirect do
     |> URI.to_string()
   end
 
+  # Build redirects from the app's canonical endpoint URL, not the request host.
   defp endpoint_url do
     config = Application.get_env(:operately, OperatelyWeb.Endpoint, [])
     url_config = Keyword.get(config, :url, [])
@@ -72,6 +93,12 @@ defmodule OperatelyWeb.Plugs.HttpsRedirect do
   defp join_paths(nil, request_path), do: request_path
   defp join_paths("", request_path), do: request_path
   defp join_paths(prefix, request_path), do: String.trim_trailing(prefix, "/") <> request_path
+
+  defp first_forwarded_value(nil), do: nil
+  defp first_forwarded_value(value), do: value |> String.split(",", parts: 2) |> List.first()
+
+  defp normalize_forwarded_proto(nil), do: nil
+  defp normalize_forwarded_proto(value), do: value |> String.trim() |> String.downcase()
 
   defp blank_to_nil(""), do: nil
   defp blank_to_nil(query), do: query

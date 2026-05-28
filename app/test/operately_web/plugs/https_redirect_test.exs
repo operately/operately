@@ -109,4 +109,32 @@ defmodule OperatelyWeb.Plugs.HttpsRedirectTest do
     assert get_resp_header(conn, "location") == []
     refute conn.halted
   end
+
+  test "does not redirect requests already marked as https by a proxy" do
+    System.put_env("OPERATELY_URL_SCHEME", "https")
+    System.put_env("CERT_AUTO_RENEW", "yes")
+
+    conn =
+      Plug.Test.conn("GET", "/projects")
+      |> put_req_header("x-forwarded-proto", "https")
+      |> HttpsRedirect.call([])
+
+    assert conn.status == nil
+    assert get_resp_header(conn, "location") == []
+    refute conn.halted
+  end
+
+  test "uses the first forwarded proto value when a proxy chain is present" do
+    System.put_env("OPERATELY_URL_SCHEME", "https")
+    System.put_env("CERT_AUTO_RENEW", "yes")
+
+    conn =
+      Plug.Test.conn("GET", "/projects")
+      |> put_req_header("x-forwarded-proto", "https, http")
+      |> HttpsRedirect.call([])
+
+    assert conn.status == nil
+    assert get_resp_header(conn, "location") == []
+    refute conn.halted
+  end
 end
