@@ -51,6 +51,7 @@ export function createAppRoutes() {
         pageRoute("/setup", pages.SetupPage, { auth: false }),
         pageRoute("/join", pages.JoinPage, { auth: false }),
         pageRoute("/join/:token", pages.InviteLinkJoinPage, { auth: false }),
+        pageRoute("/join/:token/full", pages.InviteLinkFullPage, { auth: false }),
       ],
     },
     saasAdminRoutes(),

@@ -27,6 +27,7 @@ defmodule OperatelyWeb.Api.Internal do
       # must be public to allow lookup by token
       {:query, "invitations/get_invitation"},
       {:query, "invitations/get_invite_link_by_token"},
+      {:query, "invitations/get_invite_link_availability"},
 
       # get_theme is called when the app loads, including on pages such as /login and /sign-up,
       # so it's public to avoid returning 401. If there isn't an account logged-in, the query

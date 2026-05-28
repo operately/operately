@@ -2740,6 +2740,15 @@ export interface InvitationsGetInviteLinkByTokenResult {
   inviteLink?: InviteLink | null;
 }
 
+export interface InvitationsGetInviteLinkAvailabilityInput {
+  token: string;
+}
+
+export interface InvitationsGetInviteLinkAvailabilityResult {
+  inviteLink?: InviteLink | null;
+  memberLimitExceeded: boolean;
+}
+
 export interface LinksGetInput {
   id: Id;
   includeAuthor?: boolean;
@@ -3792,6 +3801,7 @@ export interface CreateAccountResult {
   company?: Company | null;
   person?: Person | null;
   error?: string | null;
+  joinErrorDetails?: Record<string, any> | null;
 }
 
 export interface CreateAvatarBlobInput {
@@ -5250,6 +5260,12 @@ class ApiNamespaceInvitations {
     input: InvitationsGetInviteLinkByTokenInput,
   ): Promise<InvitationsGetInviteLinkByTokenResult> {
     return this.client.get("/invitations/get_invite_link_by_token", input);
+  }
+
+  async getInviteLinkAvailability(
+    input: InvitationsGetInviteLinkAvailabilityInput,
+  ): Promise<InvitationsGetInviteLinkAvailabilityResult> {
+    return this.client.get("/invitations/get_invite_link_availability", input);
   }
 
   async getCompanyInviteLink(
@@ -6842,6 +6858,13 @@ export default {
   },
 
   invitations: {
+    getInviteLinkAvailability: (input: InvitationsGetInviteLinkAvailabilityInput) =>
+      defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
+    useGetInviteLinkAvailability: (input: InvitationsGetInviteLinkAvailabilityInput) =>
+      useQuery<InvitationsGetInviteLinkAvailabilityResult>(() =>
+        defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
+      ),
+
     getInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>
       defaultApiClient.apiNamespaceInvitations.getInviteLinkByToken(input),
     useGetInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>

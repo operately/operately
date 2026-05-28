@@ -48,6 +48,7 @@ import GoalEditAccessLevelsPage from "./GoalEditAccessLevelsPage";
 import GoalPage from "./GoalPage";
 import GoalReopenPage from "./GoalReopenPage";
 import HomePage from "./HomePage";
+import InviteLinkFullPage from "./InviteLinkFullPage";
 import InviteLinkJoinPage from "./InviteLinkJoinPage";
 import InviteTeamPage from "./InviteTeamPage";
 import JoinPage from "./JoinPage";
@@ -160,6 +161,7 @@ export default {
   GoalPage,
   GoalReopenPage,
   HomePage,
+  InviteLinkFullPage,
   InviteLinkJoinPage,
   InviteTeamPage,
   JoinPage,
