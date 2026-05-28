@@ -403,7 +403,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_a_company_member_was_invited, ctx, params do
-    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, %{
+    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, %{
       full_name: params[:fullName],
       title: params[:title],
       email: params[:email]

@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Companies.CreateMember do
 
   require Logger
   import Operately.Access.Filters, only: [filter_by_edit_access: 2]
+  alias Operately.Billing.EnforceLimits
+  alias Operately.Billing.EnforceLimits.LimitError
   alias Operately.People
 
   inputs do
@@ -24,9 +26,10 @@ defmodule OperatelyWeb.Api.Companies.CreateMember do
 
   def call(conn, inputs) do
     admin = me(conn)
+    current_company = company(conn)
 
     if admin_has_edit_access?(admin) do
-      process_member_creation(admin, inputs)
+      process_member_creation(admin, current_company, inputs)
     else
       {:error, :forbidden}
     end
@@ -38,8 +41,8 @@ defmodule OperatelyWeb.Api.Companies.CreateMember do
     |> Repo.exists?()
   end
 
-  defp process_member_creation(admin, inputs) do
-    case create_person(admin, inputs) do
+  defp process_member_creation(admin, company, inputs) do
+    case create_person(admin, company, inputs) do
       {:ok, changes} ->
         invite_link = changes[:invite_link]
         person = changes[:person]
@@ -57,10 +60,10 @@ defmodule OperatelyWeb.Api.Companies.CreateMember do
     end
   end
 
-  defp create_person(admin, inputs) do
+  defp create_person(admin, company, inputs) do
     skip_invitation = People.account_used?(inputs[:email])
 
-    case Operately.Operations.CompanyMemberAdding.run(admin, inputs, skip_invitation) do
+    case Operately.Operations.CompanyMemberAdding.run(admin, company, inputs, skip_invitation) do
       {:ok, changes} ->
         {:ok, changes}
 
@@ -72,6 +75,9 @@ defmodule OperatelyWeb.Api.Companies.CreateMember do
 
       {:error, [%{message: message}]} ->
         {:error, :bad_request, message}
+
+      {:error, %LimitError{} = error} ->
+        EnforceLimits.to_api_error(error)
 
       {:error, error} ->
         Logger.error("Unexpected error: #{inspect(error)}")

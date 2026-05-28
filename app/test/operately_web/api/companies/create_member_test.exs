@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Billing
   alias Operately.People
 
   @add_company_member_input %{
@@ -70,6 +71,20 @@ defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
       assert res == %{:error => "Bad request", :message => "Email has already been taken"}
     end
 
+    test "returns a billing limit error when the company is already full", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      assert {400, res} = mutation(ctx.conn, [:companies, :create_member], @add_company_member_input)
+
+      assert res == %{
+               :error => "Bad request",
+               :message => "This company has reached its member limit. Upgrade the plan to add more people."
+             }
+
+      refute People.get_person_by_email(company, @add_company_member_input[:email])
+    end
+
     test "email can't be blank", ctx do
       input = put_in(@add_company_member_input, [:email], "")
 
@@ -113,5 +128,27 @@ defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
     person = People.get_person_by_email(ctx.company, @add_company_member_input[:email])
     account = Operately.Repo.preload(person, :account).account
     {:ok, _} = People.mark_account_first_login(account)
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        Operately.PeopleFixtures.person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Create Member Limit #{index}",
+          email: "create-member-limit-#{index}@example.com"
+        })
+      end)
+    end
   end
 end

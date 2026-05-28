@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Billing
   alias Operately.People
 
   @invite_guest_input %{
@@ -65,6 +66,20 @@ defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
       assert res == %{:error => "Bad request", :message => "Email has already been taken"}
     end
 
+    test "returns a billing limit error when the company is already full", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      assert {400, res} = mutation(ctx.conn, [:companies, :invite_guest], @invite_guest_input)
+
+      assert res == %{
+               :error => "Bad request",
+               :message => "This company has reached its member limit. Upgrade the plan to add more people."
+             }
+
+      refute People.get_person_by_email(company, @invite_guest_input[:email])
+    end
+
     test "email can't be blank", ctx do
       input = put_in(@invite_guest_input, [:email], "")
 
@@ -83,5 +98,27 @@ defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
   defp promote_to_owner(ctx) do
     {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
     ctx
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        Operately.PeopleFixtures.person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Invite Guest Limit #{index}",
+          email: "invite-guest-limit-#{index}@example.com"
+        })
+      end)
+    end
   end
 end

@@ -6,7 +6,7 @@ import * as Permissions from "@/models/permissions";
 
 import { PageModule } from "@/routes/types";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { CompanyAdminAddPeoplePage, InviteMemberForm } from "turboui";
+import { CompanyAdminAddPeoplePage, InviteMemberForm, showErrorToast } from "turboui";
 
 import * as Pages from "@/components/Pages";
 import { usePaths } from "@/routes/paths";
@@ -129,6 +129,7 @@ function useInviteSubmit(
       return;
     }
 
+    setErrors({});
     setIsSubmitting(true);
 
     try {
@@ -174,7 +175,12 @@ function useInviteSubmit(
         if (lower.includes("name")) nextErrors.fullName = message;
 
         if (Object.keys(nextErrors).length > 0) {
-          setErrors((prev: InviteMemberForm.Errors) => ({ ...nextErrors, ...prev }));
+          setErrors(nextErrors);
+        } else {
+          showErrorToast(
+            memberType === "outside_collaborator" ? "Unable to invite collaborator" : "Unable to add team member",
+            message,
+          );
         }
       }
     } finally {
