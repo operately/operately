@@ -1,6 +1,7 @@
 defmodule Operately.Billing.Overview do
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.Plans
+  alias Operately.Billing.Usage
   alias Operately.Companies.Company
 
   @enforce_keys [:account, :plans, :catalog_products, :member_count, :stale]
@@ -11,7 +12,7 @@ defmodule Operately.Billing.Overview do
       account: account,
       plans: Plans.all(),
       catalog_products: catalog_products,
-      member_count: [company] |> Company.load_member_count() |> hd() |> Map.get(:member_count, 0),
+      member_count: Usage.active_member_count(company),
       stale: Keyword.get(opts, :stale, false)
     }
   end

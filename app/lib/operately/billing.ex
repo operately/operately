@@ -36,6 +36,8 @@ defmodule Operately.Billing do
     Keyword.get(opts, :client) || Application.get_env(:operately, :billing_polar_client) || Operately.Billing.Polar.Client
   end
 
+  defdelegate active_member_count(company), to: Operately.Billing.Usage
+
   #
   # Billing accounts
   #
