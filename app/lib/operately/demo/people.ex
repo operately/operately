@@ -25,7 +25,7 @@ defmodule Operately.Demo.People do
     email = create_email(company, data)
     invited = data[:invited] == true
 
-    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(owner, %{
+    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(owner, company, %{
       full_name: data.name,
       email: email,
       title: data.title,
@@ -42,7 +42,7 @@ defmodule Operately.Demo.People do
   end
 
   defp create_guest_person(owner, company, data) do
-    {:ok, changes} = Operately.Operations.GuestInviting.run(owner, %{
+    {:ok, changes} = Operately.Operations.GuestInviting.run(owner, company, %{
       full_name: data.name,
       email: create_email(company, data),
       title: data.title,

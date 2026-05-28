@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.Companies.RestoreMember do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Billing.EnforceLimits
+  alias Operately.Billing.EnforceLimits.LimitError
   alias Operately.Operations.CompanyMemberRestoring
   alias Operately.Companies.Company
   alias Operately.Companies.Permissions
@@ -21,10 +23,11 @@ defmodule OperatelyWeb.Api.Companies.RestoreMember do
       {:ok, company} <- get_company(conn),
       {:ok, person} <- find_person(conn, inputs.person_id),
       {:ok, :allowed} <- authorize(company, person),
-      {:ok, _} <- execute(me, person)
+      {:ok, _} <- execute(me, person, company)
     ) do
       {:ok, %{}}
     else
+      {:error, %LimitError{} = error} -> EnforceLimits.to_api_error(error)
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, :not_found} -> {:error, :not_found}
       {:error, _} -> {:error, :internal_server_error}
@@ -47,7 +50,7 @@ defmodule OperatelyWeb.Api.Companies.RestoreMember do
     Person.get(me(conn), id: person_id)
   end
 
-  defp execute(me, person) do
-    CompanyMemberRestoring.run(me, person)
+  defp execute(me, person, company) do
+    CompanyMemberRestoring.run(me, company, person)
   end
 end

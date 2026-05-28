@@ -1,26 +1,30 @@
 defmodule Operately.Operations.GuestInviting do
   alias Ecto.Multi
+  alias Operately.Billing.Usage
   alias Operately.{Access, Repo}
   alias Operately.Access.Binding
   alias Operately.InviteLinks
   alias Operately.People
 
-  def run(admin, attrs) do
-    skip_invitation = People.account_used?(attrs.email)
+  def run(admin, company, attrs) do
+    with :ok <- Usage.check_member_limit(company) do
+      skip_invitation = People.account_used?(attrs.email)
 
-    result = Multi.new()
-    |> insert_account(attrs)
-    |> insert_person(admin, attrs)
-    |> insert_person_access_group(admin)
-    |> insert_invite_link(admin, skip_invitation)
-    |> insert_activity(admin)
-    |> Repo.transaction()
+      result = Multi.new()
+      |> insert_account(attrs)
+      |> insert_person(admin, attrs)
+      |> insert_person_access_group(admin)
+      |> insert_invite_link(admin, skip_invitation)
+      |> insert_activity(admin)
+      |> Repo.transaction()
 
-    case result do
-      {:ok, changes} ->
-        {:ok, changes}
-      {:error, _, changeset, _} ->
-        {:error, format_errors(changeset)}
+      case result do
+        {:ok, changes} ->
+          {:ok, changes}
+
+        {:error, _, changeset, _} ->
+          {:error, format_errors(changeset)}
+      end
     end
   end
 

@@ -1420,7 +1420,7 @@ Outcome:
 
 - the app has a shared, flag-gated foundation for entitlement enforcement without yet turning on broad user-facing blocking behavior
 
-### PR 8b: Member-limit enforcement in mutation paths
+### PR 8b: Member-limit enforcement in mutation paths (COMPLETED ✅)
 
 - Integrate member-count enforcement into company member creation, invite creation, and restore paths
 - Reuse the shared enforcement layer and stable domain errors from PR 8a

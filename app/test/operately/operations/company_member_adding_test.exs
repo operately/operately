@@ -7,6 +7,8 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
 
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Billing
+  alias Operately.Billing.EnforceLimits.LimitError
   alias Operately.People
   alias Operately.People.Person
   alias Operately.Groups
@@ -33,7 +35,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   test "CompanyMemberAdding operation creates person", ctx do
     assert Repo.aggregate(Person, :count, :id) == 2 # company creator + company admin
 
-    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
     assert Repo.aggregate(Person, :count, :id) == 3 # company creator + company admin + new member
     assert People.get_account_by_email(@email)
@@ -46,13 +48,46 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert is_nil(person.account.first_login_at)
   end
 
+  test "CompanyMemberAdding blocks when the company is already at the member limit", ctx do
+    company = enable_billing(ctx.company)
+    fill_company_to_member_limit(company)
+
+    initial_people_count = Repo.aggregate(Person, :count, :id)
+    initial_account_count = Repo.aggregate(Operately.People.Account, :count, :id)
+    initial_invite_link_count = Repo.aggregate(InviteLinks.InviteLink, :count, :id)
+    initial_activity_count = Repo.aggregate(Activity, :count, :id)
+    initial_notification_count = Repo.aggregate(Operately.Notifications.Notification, :count, :id)
+
+    assert {:error, %LimitError{code: :member_count_limit_exceeded}} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, company, @member_attrs)
+
+    assert Repo.aggregate(Person, :count, :id) == initial_people_count
+    assert Repo.aggregate(Operately.People.Account, :count, :id) == initial_account_count
+    assert Repo.aggregate(InviteLinks.InviteLink, :count, :id) == initial_invite_link_count
+    assert Repo.aggregate(Activity, :count, :id) == initial_activity_count
+    assert Repo.aggregate(Operately.Notifications.Notification, :count, :id) == initial_notification_count
+    refute People.get_account_by_email(@email)
+    refute People.get_person_by_email(company, @email)
+  end
+
+  test "CompanyMemberAdding does not block at the free-plan threshold when the company is on a premium plan", ctx do
+    company = enable_billing(ctx.company)
+    fill_company_to_member_limit(company)
+    put_company_on_team_plan(company)
+
+    assert {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, company, @member_attrs)
+
+    assert changes.person.email == @email
+    assert Billing.active_member_count(company) == 21
+    assert People.get_person_by_email(company, @email)
+  end
+
   test "CompanyMemberAdding operation leaves first_login_at nil for new account", ctx do
     email = "new-member@your-company.com"
     attrs = Map.put(@member_attrs, :email, email)
 
     refute People.get_account_by_email(email)
 
-    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, attrs)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, attrs)
 
     account = People.get_account_by_email(email)
     assert account
@@ -66,7 +101,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert People.get_account_by_email(email)
 
     attrs = Map.put(@member_attrs, :email, email)
-    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, attrs)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, attrs)
 
     account = Repo.get!(Operately.People.Account, account.id)
     assert is_nil(account.first_login_at)
@@ -79,14 +114,14 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     first_login_at = account.first_login_at
 
     attrs = Map.put(@member_attrs, :email, account.email)
-    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, attrs)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, attrs)
 
     account = Repo.get!(Operately.People.Account, account.id)
     assert account.first_login_at == first_login_at
   end
 
   test "CompanyMemberAdding operation creates members's access group and membership", ctx do
-    Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
     group = Access.get_group!(person_id: person.id)
@@ -99,7 +134,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates invite link for person", ctx do
-    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
 
@@ -113,7 +148,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
 
     initial_member_count = length(Groups.list_members(company_space))
 
-    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
     assert length(Groups.list_members(company_space)) == initial_member_count + 1
   end
@@ -128,7 +163,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
       |> Company.changeset(%{company_space_id: nil})
       |> Repo.update()
 
-    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
     assert changes[:invite_link]
 
     person = People.get_person_by_email(ctx.company, @email)
@@ -143,7 +178,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates activity", ctx do
-    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
     activity = from(a in Activity, where: a.action == "company_member_added" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
 
@@ -154,7 +189,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates notification for new member", ctx do
-    {:ok, _changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, _changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
     activity = from(a in Activity, where: a.action == "company_member_added" and a.content["email"] == ^person.email) |> Repo.one()
@@ -164,5 +199,37 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert notification
     assert notification.person_id == person.id
     assert notification.should_send_email == true
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Limit Member #{index}",
+          email: "limit-member-#{index}@example.com"
+        })
+      end)
+    end
+  end
+
+  defp put_company_on_team_plan(company) do
+    {:ok, _account} =
+      Billing.sync_billing_account(company, %{
+        provider: "polar",
+        plan_key: :team,
+        billing_interval: :monthly,
+        status: :active
+      })
   end
 end

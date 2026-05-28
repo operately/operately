@@ -1,23 +1,27 @@
 defmodule Operately.Operations.CompanyMemberAdding do
   alias Ecto.Multi
+  alias Operately.Billing.Usage
   alias Operately.{Access, Repo}
   alias Operately.InviteLinks
 
-  def run(admin, attrs, skip_invitation \\ false) do
-    result = Multi.new()
-    |> insert_account(attrs)
-    |> insert_person(admin, attrs)
-    |> insert_membership_with_company_space_group()
-    |> add_person_to_general_space()
-    |> insert_invite_link(admin, skip_invitation)
-    |> insert_activity(admin)
-    |> Repo.transaction()
+  def run(admin, company, attrs, skip_invitation \\ false) do
+    with :ok <- Usage.check_member_limit(company) do
+      result = Multi.new()
+      |> insert_account(attrs)
+      |> insert_person(admin, attrs)
+      |> insert_membership_with_company_space_group()
+      |> add_person_to_general_space()
+      |> insert_invite_link(admin, skip_invitation)
+      |> insert_activity(admin)
+      |> Repo.transaction()
 
-    case result do
-      {:ok, changes} ->
-        {:ok, changes}
-      {:error, _, changeset, _} ->
-        {:error, format_errors(changeset)}
+      case result do
+        {:ok, changes} ->
+          {:ok, changes}
+
+        {:error, _, changeset, _} ->
+          {:error, format_errors(changeset)}
+      end
     end
   end
 

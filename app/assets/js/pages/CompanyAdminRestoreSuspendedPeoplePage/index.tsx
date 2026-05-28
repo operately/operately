@@ -4,7 +4,7 @@ import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { BlackLink, Link, SecondaryButton } from "turboui";
+import { BlackLink, Link, SecondaryButton, showErrorToast } from "turboui";
 
 import { InfoCallout } from "@/components/Callouts";
 import { PageModule } from "@/routes/types";
@@ -120,8 +120,16 @@ function RestoreButton({ person }: { person: People.Person }) {
   const refresh = Pages.useRefresh();
 
   const handler = async () => {
-    await restore({ personId: person.id! });
-    refresh();
+    try {
+      await restore({ personId: person.id! });
+      refresh();
+    } catch (error) {
+      console.error(error);
+
+      const message = (error as any)?.response?.data?.message;
+
+      showErrorToast("Unable to restore member", typeof message === "string" ? message : "Please try again.");
+    }
   };
 
   return (

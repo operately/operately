@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Companies.InviteGuest do
 
   require Logger
   import Operately.Access.Filters, only: [filter_by_edit_access: 2]
+  alias Operately.Billing.EnforceLimits
+  alias Operately.Billing.EnforceLimits.LimitError
 
   inputs do
     field :full_name, :string, null: false
@@ -23,9 +25,10 @@ defmodule OperatelyWeb.Api.Companies.InviteGuest do
 
   def call(conn, inputs) do
     admin = me(conn)
+    current_company = company(conn)
 
     if admin_has_edit_access?(admin) do
-      process_guest_invitation(admin, inputs)
+      process_guest_invitation(admin, current_company, inputs)
     else
       {:error, :forbidden}
     end
@@ -37,8 +40,8 @@ defmodule OperatelyWeb.Api.Companies.InviteGuest do
     |> Repo.exists?()
   end
 
-  defp process_guest_invitation(admin, inputs) do
-    case Operately.Operations.GuestInviting.run(admin, inputs) do
+  defp process_guest_invitation(admin, company, inputs) do
+    case Operately.Operations.GuestInviting.run(admin, company, inputs) do
       {:ok, changes} ->
         invite_link = changes[:invite_link]
         person = changes[:person]
@@ -59,6 +62,9 @@ defmodule OperatelyWeb.Api.Companies.InviteGuest do
 
       {:error, [%{message: message}]} ->
         {:error, :bad_request, message}
+
+      {:error, %LimitError{} = error} ->
+        EnforceLimits.to_api_error(error)
 
       {:error, error} ->
         Logger.error("Unexpected error: #{inspect(error)}")

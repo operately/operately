@@ -1,6 +1,11 @@
 defmodule Operately.Features.CompanyAdminTest do
   use Operately.FeatureCase
+
+  alias Operately.Billing
+  alias Operately.People
   alias Operately.Support.Features.CompanyAdminSteps, as: Steps
+
+  set_app_config(:billing_enabled, true)
 
   setup ctx do
     ctx
@@ -25,6 +30,24 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_new_company_member_is_listed("Michael Scott")
     |> Steps.assert_company_member_details_match_invitations(params)
     |> Steps.assert_expiration_date_is_visible_on_team_page()
+  end
+
+  @tag role: :admin
+  feature "adding a new person is blocked when the company is already full", ctx do
+    params = %{
+      full_name: "Limit Blocked Member",
+      email: "limit.blocked.member@example.com",
+      title: "Designer"
+    }
+
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_to_member_limit()
+    |> Steps.assert_logged_in_user_has_admin_access_level()
+    |> Steps.open_company_team_page()
+    |> Steps.invite_company_member(params)
+    |> Steps.assert_error_message("This company has reached its member limit. Upgrade the plan to add more people.")
+    |> assert_no_person_added(params.email)
   end
 
   @tag role: :member
@@ -177,6 +200,20 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_feed_item_notification_and_email_sent_to_restored_member()
   end
 
+  @tag role: :admin
+  feature "restoring a removed member is blocked when the company is already full", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> Steps.given_a_removed_company_member_exists()
+    |> fill_company_to_member_limit()
+    |> Steps.assert_logged_in_user_has_admin_access_level()
+    |> Steps.open_restore_people_page()
+    |> Steps.assert_removed_person_is_listed()
+    |> Steps.restore_company_member()
+    |> Steps.assert_error_message("This company has reached its member limit. Upgrade the plan to add more people.")
+    |> assert_member_still_suspended(:suspended)
+  end
+
   @tag role: :member
   feature "member can't restore other members", ctx do
     ctx
@@ -325,5 +362,35 @@ defmodule Operately.Features.CompanyAdminTest do
       |> Steps.invite_company_member(params)
       |> Steps.assert_error_message(error)
     end
+  end
+
+  defp enable_billing_for_company(ctx) do
+    Factory.enable_feature(ctx, "billing")
+  end
+
+  defp fill_company_to_member_limit(ctx) do
+    needed_people = max(20 - Billing.active_member_count(ctx.company), 0)
+
+    if needed_people > 0 do
+      Enum.reduce(1..needed_people, ctx, fn index, acc ->
+        Factory.add_company_member(acc, :"limit_member_#{index}", name: "Limit Member #{index}")
+      end)
+    else
+      ctx
+    end
+  end
+
+  defp assert_no_person_added(ctx, email) do
+    refute People.get_person_by_email(ctx.company, email)
+    ctx
+  end
+
+  defp assert_member_still_suspended(ctx, key) do
+    person = Map.fetch!(ctx, key) |> Operately.Repo.reload()
+
+    assert person.suspended
+    assert person.suspended_at != nil
+
+    ctx
   end
 end
