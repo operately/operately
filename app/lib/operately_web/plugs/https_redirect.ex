@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Plugs.HttpsRedirect do
     cond do
       # Respect the original client scheme when a proxy terminates TLS upstream.
       request_scheme(conn) != :http -> conn
-      not https_enabled?() -> conn
+      not single_host_tls_redirect_enabled?() -> conn
       # ACME HTTP-01 must stay reachable over plain HTTP for certificate issuance.
       acme_challenge?(conn.request_path) -> conn
       # Docker's local health probe still talks to the app over HTTP.
@@ -22,8 +22,9 @@ defmodule OperatelyWeb.Plugs.HttpsRedirect do
     end
   end
 
-  defp https_enabled? do
-    System.get_env("OPERATELY_URL_SCHEME") == "https" or System.get_env("CERT_AUTO_RENEW") == "yes"
+  # Only the single-host installer flow with app-managed certs uses this redirect.
+  defp single_host_tls_redirect_enabled? do
+    System.get_env("CERT_AUTO_RENEW") == "yes"
   end
 
   defp acme_challenge?(request_path) do
