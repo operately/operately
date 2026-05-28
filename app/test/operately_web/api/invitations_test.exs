@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.InvitationsTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Billing
   alias Operately.InviteLinks
   alias Operately.Repo
 
@@ -17,6 +18,63 @@ defmodule OperatelyWeb.Api.InvitationsTest do
       invite_link = create_invite_link(ctx)
 
       assert {200, %{invite_link: res}} = query(ctx.conn, [:invitations, :get_invite_link_by_token], %{token: invite_link.token})
+      assert res == Serializer.serialize(invite_link, level: :full)
+    end
+  end
+
+  describe "get_invite_link_availability" do
+    test "returns nil and not full when token is unknown", ctx do
+      assert {200, %{invite_link: nil, member_limit_exceeded: false}} =
+               query(ctx.conn, [:invitations, :get_invite_link_availability], %{token: "missing-token"})
+    end
+
+    test "returns not full for an available company-wide invite", ctx do
+      invite_link = create_invite_link(ctx)
+
+      assert {200, %{invite_link: res, member_limit_exceeded: false}} =
+               query(ctx.conn, [:invitations, :get_invite_link_availability], %{token: invite_link.token})
+
+      assert res == Serializer.serialize(invite_link, level: :full)
+    end
+
+    test "returns full for a company-wide invite when the company is at the member limit", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+      invite_link = create_invite_link(%{ctx | company: company})
+
+      assert {200, %{invite_link: res, member_limit_exceeded: true}} =
+               query(ctx.conn, [:invitations, :get_invite_link_availability], %{token: invite_link.token})
+
+      assert res == Serializer.serialize(invite_link, level: :full)
+    end
+
+    test "returns not full for a personal invite when the company is at the member limit", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+      ctx = Factory.add_company_member(%{ctx | company: company}, :member)
+      invite_link = create_personal_invite_link(ctx)
+
+      assert {200, %{invite_link: res, member_limit_exceeded: false}} =
+               query(ctx.conn, [:invitations, :get_invite_link_availability], %{token: invite_link.token})
+
+      assert res == Serializer.serialize(invite_link, level: :full)
+    end
+
+    test "returns not full for an existing member even when the company is at the member limit", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      ctx =
+        %{ctx | company: company}
+        |> Factory.add_account(:new_account)
+        |> Factory.add_company_member(:member, account: :new_account)
+        |> Factory.log_in_account(:new_account)
+
+      invite_link = create_invite_link(ctx)
+
+      assert {200, %{invite_link: res, member_limit_exceeded: false}} =
+               query(ctx.conn, [:invitations, :get_invite_link_availability], %{token: invite_link.token})
+
       assert res == Serializer.serialize(invite_link, level: :full)
     end
   end
@@ -223,5 +281,41 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     defaults = %{company_id: ctx.company.id, author_id: ctx.creator.id}
     {:ok, invite_link} = InviteLinks.create_invite_link(Map.merge(defaults, attrs))
     Repo.preload(invite_link, [:author, :company])
+  end
+
+  defp create_personal_invite_link(ctx, attrs \\ %{}) do
+    defaults = %{company_id: ctx.company.id, author_id: ctx.creator.id, person_id: ctx.member.id}
+    {:ok, invite_link} = InviteLinks.create_personal_invite_link(Map.merge(defaults, attrs))
+    Repo.preload(invite_link, [:author, :company])
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    Billing.create_product(%{
+      provider: "polar",
+      plan_family: "team",
+      billing_interval: "monthly",
+      polar_product_id: "invite-team-monthly-#{company.id}",
+      active: true
+    })
+
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        Operately.PeopleFixtures.person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Invite Limit #{index}",
+          email: "invite-limit-api-#{index}@example.com"
+        })
+      end)
+    end
   end
 end

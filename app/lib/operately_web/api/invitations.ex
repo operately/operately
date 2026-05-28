@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Invitations do
   alias Operately.Repo
+  alias Operately.Billing.EnforceLimits
   alias Operately.InviteLinks
+  alias Operately.People
 
   defmodule GetInviteLinkByToken do
     use TurboConnect.Query
@@ -19,6 +21,53 @@ defmodule OperatelyWeb.Api.Invitations do
         {:ok, link} -> {:ok, %{invite_link: Serializer.serialize(link, level: :full)}}
         {:error, :not_found} -> {:ok, %{invite_link: nil}}
       end
+    end
+  end
+
+  defmodule GetInviteLinkAvailability do
+    use TurboConnect.Query
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :token, :string
+    end
+
+    outputs do
+      field? :invite_link, :invite_link, null: true
+      field :member_limit_exceeded, :boolean, null: false
+    end
+
+    def call(conn, inputs) do
+      account = conn.assigns[:current_account]
+
+      case InviteLinks.get_invite_link_by_token(inputs[:token]) do
+        {:ok, invite_link} ->
+          {:ok,
+           %{
+             invite_link: Serializer.serialize(invite_link, level: :full),
+             member_limit_exceeded: member_limit_exceeded?(invite_link, account)
+           }}
+
+        {:error, :not_found} ->
+          {:ok, %{invite_link: nil, member_limit_exceeded: false}}
+      end
+    end
+
+    defp member_limit_exceeded?(%{type: :personal}, _account), do: false
+    defp member_limit_exceeded?(%{is_active: false}, _account), do: false
+
+    defp member_limit_exceeded?(invite_link, account) do
+      if already_in_company?(account, invite_link.company) do
+        false
+      else
+        EnforceLimits.status(invite_link.company, :member_count, requested_delta: 1).blocked
+      end
+    end
+
+    defp already_in_company?(nil, _company), do: false
+
+    defp already_in_company?(account, company) do
+      not is_nil(People.get_person(account, company))
     end
   end
 

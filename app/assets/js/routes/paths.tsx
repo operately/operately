@@ -39,6 +39,10 @@ export class Paths {
     return "/" + companyId;
   }
 
+  static inviteJoinPath(token: string) {
+    return `/join/${token}`;
+  }
+
   companyPermissionsPath() {
     return this.createCompanyPath(["admin", "permissions"]);
   }
