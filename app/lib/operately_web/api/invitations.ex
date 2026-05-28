@@ -142,6 +142,9 @@ defmodule OperatelyWeb.Api.Invitations do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
+    alias Operately.Billing.EnforceLimits
+    alias Operately.Billing.EnforceLimits.LimitError
+
     inputs do
       field(:token, :string)
     end
@@ -180,6 +183,9 @@ defmodule OperatelyWeb.Api.Invitations do
 
         {:error, :invite_link_update_failed} ->
           {:error, :bad_request, "Something went wrong while using this invite link."}
+
+        {:error, %LimitError{} = error} ->
+          EnforceLimits.to_api_error(error)
       end
     end
   end
