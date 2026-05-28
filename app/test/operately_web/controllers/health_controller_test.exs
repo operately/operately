@@ -7,7 +7,7 @@ defmodule OperatelyWeb.HealthControllerTest do
     assert conn.resp_body == "HEALTHY"
   end
 
-  test "GET /health redirects external http requests when https is enabled", %{conn: conn} do
+  test "GET /health redirects external http requests in single-host tls mode", %{conn: conn} do
     original_scheme = System.get_env("OPERATELY_URL_SCHEME")
     original_auto_renew = System.get_env("CERT_AUTO_RENEW")
     original_config = Application.get_env(:operately, OperatelyWeb.Endpoint, [])
@@ -18,8 +18,7 @@ defmodule OperatelyWeb.HealthControllerTest do
       Application.put_env(:operately, OperatelyWeb.Endpoint, original_config)
     end)
 
-    System.put_env("OPERATELY_URL_SCHEME", "https")
-    System.put_env("CERT_AUTO_RENEW", "no")
+    System.put_env("CERT_AUTO_RENEW", "yes")
     Application.put_env(:operately, OperatelyWeb.Endpoint, Keyword.put(original_config, :url, host: "app.operately.test"))
 
     conn =
