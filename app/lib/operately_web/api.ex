@@ -355,6 +355,7 @@ defmodule OperatelyWeb.Api do
       namespace(:invitations) do
         # invitation endpoints are internal-only
         query(:get_invite_link_by_token, OperatelyWeb.Api.Invitations.GetInviteLinkByToken)
+        query(:get_invite_link_availability, OperatelyWeb.Api.Invitations.GetInviteLinkAvailability)
         mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
 
         # internal: managing invite links and invitations
