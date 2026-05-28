@@ -5,6 +5,7 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
   import Operately.PeopleFixtures
   import Operately.InviteLinksFixtures
 
+  alias Operately.Billing
   alias OperatelyWeb.Paths
 
   setup do
@@ -119,6 +120,37 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert conn.status == 302
       assert redirected_to(conn) == Paths.home_path(ctx.company)
     end
+
+    test "when a company-wide invite is blocked, redirects to the full company page", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      author = person_fixture_with_account(%{company_id: company.id})
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: company.id,
+          author_id: author.id
+        })
+
+      conn =
+        Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
+          info: %{
+            email: "blocked@example.com",
+            image: "http://example.com/image.png",
+            name: "Blocked User"
+          }
+        })
+
+      conn =
+        get(conn, "/accounts/auth/google/callback", %{
+          "provider" => "google",
+          "invite_token" => invite_link.token
+        })
+
+      assert conn.status == 302
+      assert redirected_to(conn) == Paths.invite_join_full_path(invite_link.token)
+    end
   end
 
   describe "OAuth redirect" do
@@ -179,6 +211,35 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
         |> get("/accounts/auth/google/callback", %{"provider" => "google"})
 
       assert redirected_to(conn) == "/"
+    end
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    Billing.create_product(%{
+      provider: "polar",
+      plan_family: "team",
+      billing_interval: "monthly",
+      polar_product_id: "oauth-team-monthly-#{company.id}",
+      active: true
+    })
+
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        person_fixture_with_account(%{
+          company_id: company.id,
+          email: "oauth-limit-#{index}@example.com"
+        })
+      end)
     end
   end
 end

@@ -2,6 +2,7 @@ import Api from "@/api";
 import * as api from "@/api";
 export { useBillingUpdatedSignal } from "@/signals";
 import { browserLocale } from "@/utils/formatting";
+import { formatPlanLabel } from "./planFormatting";
 import {
   buildCompanyBillingCancellationFeedback,
   buildCompanyBillingPlanChangeFeedback,
@@ -29,6 +30,13 @@ export type BillingFeedback = CompanyBillingPage.Feedback;
 type BillingSearchParams = CompanyBillingPage.BillingSearchParams;
 type BillingTarget = CompanyBillingPage.BillingTarget;
 type BillingTargetSelection = CompanyBillingPage.BillingTargetSelection;
+
+export type { BillingLimitGuidance, BillingLimitGuidanceRoutes, BillingLimitViewerRole } from "./memberLimitGuidance";
+export type { BillingLimitError, BillingUpgradeRecommendation, BillingUpgradeRecommendationSource } from "./limitError";
+
+export { buildMemberLimitGuidance } from "./memberLimitGuidance";
+export { extractLimitError, extractLimitErrorDetails } from "./limitError";
+export { formatPlanLabel, formatPlanName } from "./planFormatting";
 
 interface BillingTestHooks {
   captureExternalNavigation?: boolean;
@@ -63,12 +71,6 @@ interface BillingCancellationSummary {
   willExceedFreeMemberLimit: boolean;
   memberOverage: number;
 }
-
-const PLAN_NAMES: Record<string, string> = {
-  free: "Free",
-  team: "Team",
-  business: "Business",
-};
 
 const SUGGESTED_PLAN_SOURCE_LABELS: Record<string, string> = {
   website: "Selected on the website",
@@ -206,25 +208,6 @@ export function getCurrentPlanDefinition(billing: BillingOverview): BillingPlanD
   }
 
   return null;
-}
-
-export function formatPlanName(planKey?: string | null, fallback = "Unknown plan"): string {
-  if (!planKey) return fallback;
-
-  return PLAN_NAMES[planKey] || fallback;
-}
-
-function formatIntervalLabel(interval?: BillingInterval | null): string | null {
-  if (!interval) return null;
-
-  return interval === "monthly" ? "Monthly" : "Yearly";
-}
-
-export function formatPlanLabel(planKey?: string | null, interval?: BillingInterval | null, fallback = "Unknown plan"): string {
-  const name = formatPlanName(planKey, fallback);
-  const intervalLabel = formatIntervalLabel(interval);
-
-  return intervalLabel ? `${name} ${intervalLabel}` : name;
 }
 
 export function formatSuggestedPlanSource(source?: string | null): string | null {

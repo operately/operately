@@ -1,36 +1,46 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
 import { BlackLink, Link, SecondaryButton, showErrorToast } from "turboui";
 
+import { BillingLimitGuidanceNotice } from "@/components/BillingLimitGuidanceNotice";
 import { InfoCallout } from "@/components/Callouts";
 import { PageModule } from "@/routes/types";
+import { includesId } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { Avatar } from "turboui";
 
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminRestoreSuspendedPeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
   company: Companies.Company;
+  ownerIds: string[];
   suspendedPeople: People.Person[];
 }
 
 async function loader(): Promise<LoaderResult> {
-  const company = await Companies.getCompany({}).then((res) => res.company!);
+  const company = await Companies.getCompany({ includeOwners: true }).then((res) => res.company!);
   const people = await People.getPeople({ onlySuspended: true }).then((res) => res.people!);
 
   return {
     company: company,
+    ownerIds: company.owners?.map((owner) => owner.id) || [],
     suspendedPeople: people,
   };
 }
 
 function Page() {
-  const { company, suspendedPeople } = Pages.useLoadedData() as LoaderResult;
+  const { company, ownerIds, suspendedPeople } = Pages.useLoadedData() as LoaderResult;
+  const me = useMe();
+  const paths = usePaths();
+  const viewerRole: Billing.BillingLimitViewerRole = includesId(ownerIds, me?.id) ? "owner" : "company_admin";
+  const [limitGuidance, setLimitGuidance] = React.useState<Billing.BillingLimitGuidance | null>(null);
 
   return (
     <Pages.Page title={["Restore Deactivated Team Members", company.name!]} testId="restore-suspended-people-page">
@@ -40,7 +50,15 @@ function Page() {
         <Paper.Body>
           <Paper.Header title="Restore Deactivated Team Members" />
 
-          {suspendedPeople.length === 0 ? <NoSuspenedPeopleMessage /> : <SuspendedPeopleList />}
+          {limitGuidance && (
+            <BillingLimitGuidanceNotice guidance={limitGuidance} />
+          )}
+
+          {suspendedPeople.length === 0 ? (
+            <NoSuspenedPeopleMessage />
+          ) : (
+            <SuspendedPeopleList onLimitError={setLimitGuidance} viewerRole={viewerRole} paths={paths} />
+          )}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -71,19 +89,37 @@ function NoSuspenedPeopleMessage() {
   );
 }
 
-function SuspendedPeopleList() {
+function SuspendedPeopleList({
+  onLimitError,
+  viewerRole,
+  paths,
+}: {
+  onLimitError: React.Dispatch<React.SetStateAction<Billing.BillingLimitGuidance | null>>;
+  viewerRole: Billing.BillingLimitViewerRole;
+  paths: ReturnType<typeof usePaths>;
+}) {
   const { suspendedPeople } = Pages.useLoadedData<LoaderResult>();
 
   return (
     <div>
       {suspendedPeople.map((person) => (
-        <PersonRow key={person.id!} person={person} />
+        <PersonRow key={person.id!} person={person} onLimitError={onLimitError} viewerRole={viewerRole} paths={paths} />
       ))}
     </div>
   );
 }
 
-function PersonRow({ person }: { person: People.Person }) {
+function PersonRow({
+  person,
+  onLimitError,
+  viewerRole,
+  paths,
+}: {
+  person: People.Person;
+  onLimitError: React.Dispatch<React.SetStateAction<Billing.BillingLimitGuidance | null>>;
+  viewerRole: Billing.BillingLimitViewerRole;
+  paths: ReturnType<typeof usePaths>;
+}) {
   return (
     <div className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b">
       <div className="flex items-center gap-4">
@@ -92,7 +128,7 @@ function PersonRow({ person }: { person: People.Person }) {
       </div>
 
       <div className="flex gap-2 items-center">
-        <RestoreButton person={person} />
+        <RestoreButton person={person} onLimitError={onLimitError} viewerRole={viewerRole} paths={paths} />
       </div>
     </div>
   );
@@ -115,16 +151,39 @@ function PersonInfo({ person }: { person: People.Person }) {
   );
 }
 
-function RestoreButton({ person }: { person: People.Person }) {
+function RestoreButton({
+  person,
+  onLimitError,
+  viewerRole,
+  paths,
+}: {
+  person: People.Person;
+  onLimitError: React.Dispatch<React.SetStateAction<Billing.BillingLimitGuidance | null>>;
+  viewerRole: Billing.BillingLimitViewerRole;
+  paths: ReturnType<typeof usePaths>;
+}) {
   const [restore, { loading }] = Companies.useRestoreCompanyMember();
   const refresh = Pages.useRefresh();
 
   const handler = async () => {
     try {
+      onLimitError(null);
       await restore({ personId: person.id! });
       refresh();
     } catch (error) {
       console.error(error);
+
+      const limitError = Billing.extractLimitError(error);
+
+      if (limitError?.code === "member_count_limit_exceeded") {
+        onLimitError(
+          Billing.buildMemberLimitGuidance(limitError, viewerRole, {
+            companyBillingPath: () => paths.companyBillingPath(),
+            companyBillingPlansPath: (opts) => paths.companyBillingPlansPath(opts),
+          }),
+        );
+        return;
+      }
 
       const message = (error as any)?.response?.data?.message;
 

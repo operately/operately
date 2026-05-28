@@ -1,4 +1,5 @@
 import * as Api from "@/api";
+import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -13,6 +14,7 @@ import { validatePassword } from "@/features/auth/validatePassword";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { ErrorMessage } from "@/components/Forms/ErrorMessage";
 import { logIn } from "@/routes/auth";
+import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { match } from "ts-pattern";
 
@@ -67,8 +69,12 @@ function Page() {
           password: form.values.password,
         });
 
-        const companyId = result.company?.id;
-        const redirectTo = companyId ? `/${companyId}` : redirectToParam || "/";
+        const redirectTo = buildPostSignupRedirect({
+          inviteToken: form.values.inviteToken,
+          companyId: result.company?.id,
+          joinErrorDetails: result.joinErrorDetails,
+          redirectToParam,
+        });
 
         if (result.error) {
           console.warn("createAccount invite join warning", result.error);
@@ -155,7 +161,10 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
               </Forms.FieldGroup>
 
               <div className="my-6">
-                <Forms.Submit saveText={!validation.isValid ? "Please fill in all fields" : "Continue ->"} className="w-full py-2 px-4" />
+                <Forms.Submit
+                  saveText={!validation.isValid ? "Please fill in all fields" : "Continue ->"}
+                  className="w-full py-2 px-4"
+                />
               </div>
 
               <TosAndPrivacyPolicy />
@@ -247,4 +256,28 @@ function validateForm(form: any): FormValidation {
   const isValid = email && name && password && confirmPassword;
 
   return { email, name, password, confirmPassword, isValid };
+}
+
+function buildPostSignupRedirect({
+  inviteToken,
+  companyId,
+  joinErrorDetails,
+  redirectToParam,
+}: {
+  inviteToken: string | null;
+  companyId?: string | null;
+  joinErrorDetails?: Record<string, any> | null;
+  redirectToParam: string | null;
+}) {
+  const joinLimitError = Billing.extractLimitErrorDetails(joinErrorDetails);
+
+  if (joinLimitError?.code === "member_count_limit_exceeded" && inviteToken) {
+    return Paths.inviteJoinFullPath(inviteToken);
+  }
+
+  if (companyId) {
+    return `/${companyId}`;
+  }
+
+  return redirectToParam || "/";
 }

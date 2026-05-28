@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.InviteLinksSteps do
   use Operately.FeatureCase
 
+  alias Operately.Billing
   alias Operately.Companies
   alias Operately.Groups
   alias Operately.PeopleFixtures
@@ -102,6 +103,11 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.visit("/join/#{ctx.invite_link.token}")
   end
 
+  step :visit_company_full_page, ctx do
+    ctx
+    |> UI.visit("/join/#{ctx.invite_link.token}/full")
+  end
+
   step :assert_on_join_page_with_invitation, ctx do
     ctx
     |> UI.assert_text("#{ctx.creator.full_name} invited you to join")
@@ -182,6 +188,12 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.click(testid: "log-in-and-join")
   end
 
+  step :visit_log_in_page_with_invite_token, ctx do
+    ctx
+    |> UI.visit("/log_in?invite_token=#{ctx.invite_link.token}")
+    |> UI.assert_has(testid: "login-page")
+  end
+
   step :log_in_with_google, ctx do
     account_id = ctx.invited.account_id
 
@@ -201,6 +213,12 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.fill(testid: "password", with: ctx.invited_member_password)
     |> UI.click(testid: "submit")
     |> UI.sleep(500)
+  end
+
+  step :visit_sign_up_page_with_invite_token, ctx do
+    ctx
+    |> UI.visit("/sign_up?invite_token=#{ctx.invite_link.token}")
+    |> UI.assert_has(testid: "sign-up-page")
   end
 
   step :assert_invalid_invite_link_message, ctx do
@@ -346,6 +364,42 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx
     |> UI.assert_text("404")
     |> UI.assert_text("Page Not Found")
+  end
+
+  step :enable_billing_for_company, ctx do
+    Factory.enable_feature(ctx, "billing")
+  end
+
+  step :fill_company_to_member_limit, ctx do
+    needed_people = max(20 - Billing.active_member_count(ctx.company), 0)
+
+    if needed_people > 0 do
+      Enum.reduce(1..needed_people, ctx, fn index, acc ->
+        Factory.add_company_member(acc, :"invite_limit_member_#{index}", name: "Invite Limit Member #{index}")
+      end)
+    else
+      ctx
+    end
+  end
+
+  step :assert_on_company_full_page, ctx do
+    ctx
+    |> UI.assert_has(testid: "invite-link-full-page")
+    |> UI.assert_text("This company is full")
+    |> UI.assert_text(ctx.company.name)
+    |> UI.refute_text("Review upgrade options")
+  end
+
+  step :assert_you_are_not_member_of_the_company, ctx do
+    members = Operately.People.list_people(ctx.company.id)
+    refute Enum.any?(members, fn member -> member.email == ctx.new_member_email end)
+
+    ctx
+  end
+
+  step :assert_account_was_created, ctx do
+    assert Operately.People.get_account_by_email(ctx.new_member_email)
+    ctx
   end
 
   defp wait_for_signup_code(email) do

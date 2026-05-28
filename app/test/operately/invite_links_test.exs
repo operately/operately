@@ -3,6 +3,9 @@ defmodule Operately.InviteLinksTest do
 
   import Mock
 
+  alias Operately.Activities.Activity
+  alias Operately.Billing
+  alias Operately.Billing.EnforceLimits.LimitError
   alias Operately.InviteLinks
   alias Operately.InviteLinks.InviteLink
   alias Operately.People
@@ -277,6 +280,30 @@ defmodule Operately.InviteLinksTest do
       assert reloaded_link.use_count == 1
     end
 
+    test "blocks company-wide invite joins when the company is already at the member limit", ctx do
+      ctx = Factory.add_account(ctx, :new_account)
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: company.id,
+          author_id: ctx.creator.id
+        })
+
+      initial_people_count = Repo.aggregate(Operately.People.Person, :count, :id)
+
+      assert {:error, %LimitError{code: :member_count_limit_exceeded}} =
+               InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token)
+
+      assert Repo.aggregate(Operately.People.Person, :count, :id) == initial_people_count
+
+      reloaded_link = Repo.get!(InviteLink, invite_link.id)
+      assert reloaded_link.use_count == 0
+      refute People.get_person(ctx.new_account, company)
+      refute Repo.exists?(from a in Activity, where: a.action == "company_member_joined" and a.author_id == ^ctx.new_account.id)
+    end
+
     test "joins company via personal invite link for invited account", ctx do
       member =
         PeopleFixtures.person_fixture_with_account(%{
@@ -353,6 +380,60 @@ defmodule Operately.InviteLinksTest do
 
       reloaded_link = Repo.reload(invite_link)
       refute reloaded_link.is_active
+    end
+
+    test "allows personal invite joins even when the company is already at the member limit", ctx do
+      member =
+        PeopleFixtures.person_fixture_with_account(%{
+          company_id: ctx.company.id,
+          has_open_invitation: true
+        })
+
+      invite_link =
+        personal_invite_link_fixture(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          person_id: member.id
+        })
+
+      member = Repo.preload(member, :account)
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company, excluded_ids: [member.id])
+
+      assert {:ok, person} = InviteLinks.join_company_via_invite_link(member.account, invite_link.token)
+      assert person.id == member.id
+
+      reloaded_link = Repo.reload(invite_link)
+      refute reloaded_link.is_active
+    end
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    company
+  end
+
+  defp fill_company_to_member_limit(company, opts \\ []) do
+    excluded_ids = Keyword.get(opts, :excluded_ids, [])
+    current_usage = Billing.active_member_count(company)
+    needed_people = max(20 - current_usage, 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        person =
+          PeopleFixtures.person_fixture_with_account(%{
+            company_id: company.id,
+            full_name: "Invite Limit #{index}",
+            email: "invite-limit-#{index}@example.com"
+          })
+
+        if person.id in excluded_ids do
+          :ok
+        end
+      end)
     end
   end
 end
