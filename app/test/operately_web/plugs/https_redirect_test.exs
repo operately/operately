@@ -27,8 +27,7 @@ defmodule OperatelyWeb.Plugs.HttpsRedirectTest do
   end
 
   test "redirects GET requests to the configured https host and preserves query params" do
-    System.put_env("OPERATELY_URL_SCHEME", "https")
-    System.put_env("CERT_AUTO_RENEW", "no")
+    System.put_env("CERT_AUTO_RENEW", "yes")
 
     conn =
       Plug.Test.conn("GET", "/projects?view=board")
@@ -40,21 +39,8 @@ defmodule OperatelyWeb.Plugs.HttpsRedirectTest do
     assert get_resp_header(conn, "location") == ["https://app.operately.test/projects?view=board"]
   end
 
-  test "redirects when automatic certificate renewal is enabled" do
-    System.delete_env("OPERATELY_URL_SCHEME")
-    System.put_env("CERT_AUTO_RENEW", "yes")
-
-    conn =
-      Plug.Test.conn("GET", "/projects")
-      |> HttpsRedirect.call([])
-
-    assert conn.status == 301
-    assert get_resp_header(conn, "location") == ["https://app.operately.test/projects"]
-  end
-
   test "uses a 307 redirect for non-GET requests" do
-    System.put_env("OPERATELY_URL_SCHEME", "https")
-    System.put_env("CERT_AUTO_RENEW", "no")
+    System.put_env("CERT_AUTO_RENEW", "yes")
 
     conn =
       Plug.Test.conn("POST", "/accounts/log_in")
@@ -64,8 +50,7 @@ defmodule OperatelyWeb.Plugs.HttpsRedirectTest do
     assert get_resp_header(conn, "location") == ["https://app.operately.test/accounts/log_in"]
   end
 
-  test "does not redirect when https is not enabled" do
-    System.put_env("OPERATELY_URL_SCHEME", "http")
+  test "does not redirect when single-host tls redirect is not enabled" do
     System.put_env("CERT_AUTO_RENEW", "no")
 
     conn =
@@ -77,8 +62,20 @@ defmodule OperatelyWeb.Plugs.HttpsRedirectTest do
     refute conn.halted
   end
 
-  test "allows localhost health checks over http" do
+  test "does not redirect when only the canonical url scheme is https" do
     System.put_env("OPERATELY_URL_SCHEME", "https")
+    System.put_env("CERT_AUTO_RENEW", "no")
+
+    conn =
+      Plug.Test.conn("GET", "/projects")
+      |> HttpsRedirect.call([])
+
+    assert conn.status == nil
+    assert get_resp_header(conn, "location") == []
+    refute conn.halted
+  end
+
+  test "allows localhost health checks over http" do
     System.put_env("CERT_AUTO_RENEW", "yes")
 
     localhost_conn =
@@ -98,7 +95,6 @@ defmodule OperatelyWeb.Plugs.HttpsRedirectTest do
   end
 
   test "does not redirect acme challenge requests" do
-    System.put_env("OPERATELY_URL_SCHEME", "https")
     System.put_env("CERT_AUTO_RENEW", "yes")
 
     conn =
@@ -111,7 +107,6 @@ defmodule OperatelyWeb.Plugs.HttpsRedirectTest do
   end
 
   test "does not redirect requests already marked as https by a proxy" do
-    System.put_env("OPERATELY_URL_SCHEME", "https")
     System.put_env("CERT_AUTO_RENEW", "yes")
 
     conn =
@@ -125,7 +120,6 @@ defmodule OperatelyWeb.Plugs.HttpsRedirectTest do
   end
 
   test "uses the first forwarded proto value when a proxy chain is present" do
-    System.put_env("OPERATELY_URL_SCHEME", "https")
     System.put_env("CERT_AUTO_RENEW", "yes")
 
     conn =
