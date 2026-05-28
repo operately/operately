@@ -1408,23 +1408,58 @@ Outcome:
 
 - the billing system is launch-ready and operable in production with a validated rollout checklist
 
-### PR 8: Final limit enforcement
+### PR 8a: Limit enforcement foundation (COMPLETED ✅)
 
 - Add reusable `Operately.Billing.EnforceLimits`
-- Integrate member-count enforcement into company member creation, invite creation, invite-join, and restore paths
-- Integrate storage-limit enforcement into company-owned upload flows
-- Update both the billing overview page and the plan-selection page to surface storage usage and plan storage allowances once storage accounting is available in the billing UI
 - Ensure future limit keys can reuse the same entitlement-based enforcement path
-- Show upgrade guidance that defaults to the remembered suggested plan when a blocked action hits a plan limit
-- Add role-aware limit messaging for owners/admins versus regular members
-- Block invite-based joins with a dedicated member-limit page when the company is already full
-- Add non-blocking `90%`-usage upgrade banners for owners and company admins, with local-storage-based dismissal cooldown
 - Keep all enforcement behind the `billing` feature flag until launch
 - Map domain errors to stable UI/API messages
+- Add upgrade guidance plumbing that defaults to the remembered suggested plan when a blocked action hits a plan limit
 
 Outcome:
 
-- all hard plan limits are enforced, and owners/company admins receive proactive upgrade nudges before limits block work
+- the app has a shared, flag-gated foundation for entitlement enforcement without yet turning on broad user-facing blocking behavior
+
+### PR 8b: Member-limit enforcement in mutation paths
+
+- Integrate member-count enforcement into company member creation, invite creation, and restore paths
+- Reuse the shared enforcement layer and stable domain errors from PR 8a
+- Keep the first-step UI handling minimal while the domain paths start enforcing limits correctly
+
+Outcome:
+
+- member-limit rules are enforced consistently in the main write paths that add or restore company members
+
+### PR 8c: Member-limit blocking UX
+
+- Integrate member-count enforcement into invite-join
+- Block invite-based joins with a dedicated member-limit page when the company is already full
+- Add role-aware limit messaging for owners/admins versus regular members
+- Show upgrade guidance when a blocked member action hits a plan limit
+
+Outcome:
+
+- member-limit enforcement has complete end-user handling, including dedicated blocked-join UX and upgrade messaging
+
+### PR 8d: Storage limits and billing UI surfacing
+
+- Integrate storage-limit enforcement into company-owned upload flows
+- Update both the billing overview page and the plan-selection page to surface storage usage and plan storage allowances once storage accounting is available in the billing UI
+- Reuse the shared entitlement-based enforcement path for storage the same way member limits do
+
+Outcome:
+
+- storage limits are enforced and the billing UI explains current usage plus plan storage allowances
+
+### PR 8e: Proactive upgrade nudges
+
+- Add non-blocking `90%`-usage upgrade banners for owners and company admins
+- Add local-storage-based dismissal cooldown for those banners
+- Keep the banners aligned with the remembered suggested plan and role-aware upgrade guidance
+
+Outcome:
+
+- owners and company admins receive proactive upgrade nudges before member or storage limits start blocking work
 
 ### PR 9: Launch enablement
 
