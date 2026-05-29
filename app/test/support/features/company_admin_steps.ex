@@ -653,6 +653,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :follow_limit_guidance_upgrade_cta, ctx do
     ctx
     |> UI.click(testid: "billing-limit-guidance-cta")
+    |> UI.sleep(500)
     |> UI.assert_has(testid: "company-billing-plan-selection-page")
   end
 end
