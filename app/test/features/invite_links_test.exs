@@ -2,6 +2,8 @@ defmodule Operately.Features.InviteLinksTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.InviteLinksSteps, as: Steps
 
+  set_app_config(:billing_enabled, true)
+
   setup ctx, do: Steps.setup(ctx)
 
   describe "managing invite links" do
@@ -70,6 +72,15 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.assert_you_are_member_of_the_company()
       |> Steps.assert_you_are_redirected_to_company_home_page()
     end
+
+    feature "company-wide invite join is blocked when the company is full", ctx do
+      ctx
+      |> Steps.enable_billing_for_company()
+      |> Steps.fill_company_to_member_limit()
+      |> Steps.follow_invite_link()
+      |> Steps.assert_on_company_full_page()
+      |> Steps.assert_you_are_not_member_of_the_company()
+    end
   end
 
   describe "existing user (not logged in)" do
@@ -88,6 +99,16 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.assert_you_are_member_of_the_company()
       |> Steps.assert_you_are_member_of_the_general_space()
       |> Steps.assert_you_are_redirected_to_company_home_page()
+    end
+
+    feature "logs in via email and is redirected to the blocked page when the company is full", ctx do
+      ctx
+      |> Steps.enable_billing_for_company()
+      |> Steps.fill_company_to_member_limit()
+      |> Steps.visit_log_in_page_with_invite_token()
+      |> Steps.log_in_with_email()
+      |> Steps.assert_on_company_full_page()
+      |> Steps.assert_you_are_not_member_of_the_company()
     end
 
     feature "logs in via google and joins the company via invite link", ctx do
@@ -134,6 +155,25 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.attempt_sign_up_with_email()
       |> Steps.assert_email_delivery_not_configured_error()
     end
+
+    feature "signs up via email and is redirected to the blocked page when the company is full", ctx do
+      ctx
+      |> Steps.enable_billing_for_company()
+      |> Steps.fill_company_to_member_limit()
+      |> Steps.given_that_an_invite_link_exists()
+      |> Steps.visit_sign_up_page_with_invite_token()
+      |> Steps.sign_up_with_email()
+      |> Steps.assert_on_company_full_page()
+      |> Steps.assert_account_was_created()
+      |> Steps.assert_you_are_not_member_of_the_company()
+    end
+  end
+
+  feature "company full page redirects back to the join page when the company has capacity", ctx do
+    ctx
+    |> Steps.given_that_an_invite_link_exists()
+    |> Steps.visit_company_full_page()
+    |> Steps.assert_on_join_page_with_invitation()
   end
 
   feature "attempting to join with non-existent token", ctx do

@@ -1,4 +1,5 @@
 import Api from "@/api";
+import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -50,6 +51,12 @@ function Page() {
           }
         } catch (err) {
           console.error("Failed to join company via invite link after login", err);
+
+          if (Billing.extractLimitError(err)?.code === "member_count_limit_exceeded") {
+            window.location.href = Paths.inviteJoinFullPath(inviteToken);
+            return;
+          }
+
           setError("Something went wrong while joining. Please try again.");
         }
       }

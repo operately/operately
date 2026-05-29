@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Billing
   alias Operately.InviteLinks
   alias Operately.People
   alias Operately.Support.Factory
@@ -82,6 +83,37 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
       # But account should still exist (we can't easily test this without more setup)
     end
 
+    test "returns structured join error details when the company is already full", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: company.id,
+          author_id: ctx.creator.id
+        })
+
+      {:ok, activation} = Operately.People.EmailActivationCode.create("newuser3@test.com")
+
+      inputs = %{
+        invite_token: invite_link.token,
+        code: activation.code,
+        email: "newuser3@test.com",
+        password: "password1234",
+        full_name: "New User 3"
+      }
+
+      assert {200, result} = mutation(ctx.conn, [:create_account], inputs)
+      assert result.company == nil
+      assert result.person == nil
+      assert result.error == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert result.join_error_details.code == "member_count_limit_exceeded"
+      assert result.join_error_details.limit_key == "member_count"
+      assert result.join_error_details.plan_key == "free"
+
+      refute Enum.any?(People.list_people(company.id), fn p -> p.email == "newuser3@test.com" end)
+    end
+
     test "creates account and no person when no invite token is provided", ctx do
       # Create email activation code
       {:ok, activation} = Operately.People.EmailActivationCode.create("newuser4@test.com")
@@ -104,6 +136,36 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
       people = People.list_people(ctx.company.id)
       new_person = Enum.find(people, fn p -> p.email == "newuser4@test.com" end)
       assert new_person == nil
+    end
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    Billing.create_product(%{
+      provider: "polar",
+      plan_family: "team",
+      billing_interval: "monthly",
+      polar_product_id: "create-account-team-monthly-#{company.id}",
+      active: true
+    })
+
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        Operately.PeopleFixtures.person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Create Account Limit #{index}",
+          email: "create-account-limit-#{index}@example.com"
+        })
+      end)
     end
   end
 end
