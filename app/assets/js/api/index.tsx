@@ -1130,6 +1130,26 @@ export interface BillingHostedSession {
   expiresAt?: string | null;
 }
 
+export interface BillingLimitStatus {
+  code: string;
+  limitKey: string;
+  planKey?: BillingLimitPlan | null;
+  currentUsage: number;
+  requestedDelta: number;
+  projectedUsage: number;
+  limit: number;
+  remaining: number;
+  nearLimit: boolean;
+  blocked: boolean;
+  enforced: boolean;
+  recommendedUpgrade?: BillingRecommendedUpgrade | null;
+}
+
+export interface BillingLimitWarnings {
+  memberLimit: BillingLimitStatus;
+  storageLimit: BillingLimitStatus;
+}
+
 export interface BillingOverview {
   account: BillingAccount;
   plans: BillingPlanDefinition[];
@@ -1144,6 +1164,12 @@ export interface BillingPlanDefinition {
   displayName: string;
   memberLimit: number;
   storageLimitBytes: number;
+}
+
+export interface BillingRecommendedUpgrade {
+  planKey?: BillingPlan | null;
+  billingInterval?: BillingInterval | null;
+  source?: string | null;
 }
 
 export interface Blob {
@@ -2235,6 +2261,8 @@ export type AgentMessageStatus = "pending" | "done";
 
 export type BillingInterval = "monthly" | "yearly";
 
+export type BillingLimitPlan = "free" | "team" | "business";
+
 export type BillingPlan = "team" | "business";
 
 export type BillingStatus = "free" | "active" | "past_due" | "canceled";
@@ -2441,6 +2469,12 @@ export interface BillingGetInput {}
 
 export interface BillingGetResult {
   billing: BillingOverview;
+}
+
+export interface BillingGetLimitWarningsInput {}
+
+export interface BillingGetLimitWarningsResult {
+  warnings: BillingLimitWarnings;
 }
 
 export interface CliAuthCompanyCreationStatusInput {}
@@ -2733,14 +2767,6 @@ export interface InvitationsGetInvitationResult {
   member: Person;
 }
 
-export interface InvitationsGetInviteLinkByTokenInput {
-  token: string;
-}
-
-export interface InvitationsGetInviteLinkByTokenResult {
-  inviteLink?: InviteLink | null;
-}
-
 export interface InvitationsGetInviteLinkAvailabilityInput {
   token: string;
 }
@@ -2748,6 +2774,14 @@ export interface InvitationsGetInviteLinkAvailabilityInput {
 export interface InvitationsGetInviteLinkAvailabilityResult {
   inviteLink?: InviteLink | null;
   memberLimitExceeded: boolean;
+}
+
+export interface InvitationsGetInviteLinkByTokenInput {
+  token: string;
+}
+
+export interface InvitationsGetInviteLinkByTokenResult {
+  inviteLink?: InviteLink | null;
 }
 
 export interface LinksGetInput {
@@ -3802,7 +3836,7 @@ export interface CreateAccountResult {
   company?: Company | null;
   person?: Person | null;
   error?: string | null;
-  joinErrorDetails?: Record<string, any> | null;
+  joinErrorDetails?: Json | null;
 }
 
 export interface CreateAvatarBlobInput {
@@ -5257,16 +5291,16 @@ class ApiNamespaceInvitations {
     return this.client.get("/invitations/get_invitation", input);
   }
 
-  async getInviteLinkByToken(
-    input: InvitationsGetInviteLinkByTokenInput,
-  ): Promise<InvitationsGetInviteLinkByTokenResult> {
-    return this.client.get("/invitations/get_invite_link_by_token", input);
-  }
-
   async getInviteLinkAvailability(
     input: InvitationsGetInviteLinkAvailabilityInput,
   ): Promise<InvitationsGetInviteLinkAvailabilityResult> {
     return this.client.get("/invitations/get_invite_link_availability", input);
+  }
+
+  async getInviteLinkByToken(
+    input: InvitationsGetInviteLinkByTokenInput,
+  ): Promise<InvitationsGetInviteLinkByTokenResult> {
+    return this.client.get("/invitations/get_invite_link_by_token", input);
   }
 
   async getCompanyInviteLink(
@@ -5303,6 +5337,10 @@ class ApiNamespaceBilling {
 
   async get(input: BillingGetInput): Promise<BillingGetResult> {
     return this.client.get("/billing/get", input);
+  }
+
+  async getLimitWarnings(input: BillingGetLimitWarningsInput): Promise<BillingGetLimitWarningsResult> {
+    return this.client.get("/billing/get_limit_warnings", input);
   }
 
   async cancel(input: BillingCancelInput): Promise<BillingCancelResult> {
@@ -6859,13 +6897,6 @@ export default {
   },
 
   invitations: {
-    getInviteLinkAvailability: (input: InvitationsGetInviteLinkAvailabilityInput) =>
-      defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
-    useGetInviteLinkAvailability: (input: InvitationsGetInviteLinkAvailabilityInput) =>
-      useQuery<InvitationsGetInviteLinkAvailabilityResult>(() =>
-        defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
-      ),
-
     getInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>
       defaultApiClient.apiNamespaceInvitations.getInviteLinkByToken(input),
     useGetInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>
@@ -6877,6 +6908,13 @@ export default {
       defaultApiClient.apiNamespaceInvitations.getInvitation(input),
     useGetInvitation: (input: InvitationsGetInvitationInput) =>
       useQuery<InvitationsGetInvitationResult>(() => defaultApiClient.apiNamespaceInvitations.getInvitation(input)),
+
+    getInviteLinkAvailability: (input: InvitationsGetInviteLinkAvailabilityInput) =>
+      defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
+    useGetInviteLinkAvailability: (input: InvitationsGetInviteLinkAvailabilityInput) =>
+      useQuery<InvitationsGetInviteLinkAvailabilityResult>(() =>
+        defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
+      ),
 
     newInvitationToken: (input: InvitationsNewInvitationTokenInput) =>
       defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
@@ -6918,6 +6956,11 @@ export default {
     get: (input: BillingGetInput) => defaultApiClient.apiNamespaceBilling.get(input),
     useGet: (input: BillingGetInput) =>
       useQuery<BillingGetResult>(() => defaultApiClient.apiNamespaceBilling.get(input)),
+
+    getLimitWarnings: (input: BillingGetLimitWarningsInput) =>
+      defaultApiClient.apiNamespaceBilling.getLimitWarnings(input),
+    useGetLimitWarnings: (input: BillingGetLimitWarningsInput) =>
+      useQuery<BillingGetLimitWarningsResult>(() => defaultApiClient.apiNamespaceBilling.getLimitWarnings(input)),
 
     cancel: (input: BillingCancelInput) => defaultApiClient.apiNamespaceBilling.cancel(input),
     useCancel: () =>

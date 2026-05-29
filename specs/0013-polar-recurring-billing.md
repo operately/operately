@@ -1451,7 +1451,7 @@ Outcome:
 
 - storage limits are enforced and the billing UI explains current usage plus plan storage allowances
 
-### PR 8e: Proactive upgrade nudges
+### PR 8e: Proactive upgrade nudges (COMPLETED ✅)
 
 - Add non-blocking `90%`-usage upgrade banners for owners and company admins
 - Add local-storage-based dismissal cooldown for those banners
@@ -1460,6 +1460,18 @@ Outcome:
 Outcome:
 
 - owners and company admins receive proactive upgrade nudges before member or storage limits start blocking work
+
+### PR 8f: Over-limit company banner
+
+- Show a shared company-level banner when the company has already exceeded the member or storage limit, even if the overage happened outside the immediate blocked-action flow
+- Reuse the existing company-layout billing banner pattern where practical, but adjust the copy so it clearly communicates that the company is already over the plan limit rather than only approaching it
+- Show only the limit types that are currently over the threshold
+- Keep the banner role-aware for owners versus company admins, with owner upgrade CTA behavior aligned with the existing billing plan-selection flow
+- Keep the banner hidden on dedicated billing-management pages, just like the proactive banner
+
+Outcome:
+
+- owners and company admins receive a persistent company-level warning when the company is already over member or storage limits, even outside the original action that triggered enforcement
 
 ### PR 9: Launch enablement
 

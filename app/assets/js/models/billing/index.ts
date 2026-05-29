@@ -21,6 +21,8 @@ type BillingCatalogProduct = api.BillingCatalogProduct;
 type BillingCheckoutSession = api.BillingCheckoutSession;
 type BillingHostedSession = api.BillingHostedSession;
 type BillingInterval = api.BillingInterval;
+export type BillingLimitStatus = api.BillingLimitStatus;
+export type BillingLimitWarnings = api.BillingLimitWarnings;
 export type BillingOverview = api.BillingOverview;
 type BillingPlan = api.BillingPlan;
 type BillingPlanDefinition = api.BillingPlanDefinition;
@@ -34,6 +36,13 @@ type BillingTargetSelection = CompanyBillingPage.BillingTargetSelection;
 export type { BillingLimitGuidance, BillingLimitViewerRole } from "./memberLimitGuidance";
 export type { BillingLimitError } from "./limitError";
 
+export {
+  APPROACHING_LIMIT_BANNER_COOLDOWN_MS,
+  buildApproachingLimitBanner,
+  dismissApproachingLimitBanner,
+  isApproachingLimitBannerDismissed,
+  isBillingManagementPath,
+} from "./approachingLimitBanner";
 export { buildMemberLimitGuidance } from "./memberLimitGuidance";
 export { extractLimitError, extractLimitErrorDetails } from "./limitError";
 export { formatPlanLabel, formatPlanName } from "./planFormatting";
@@ -78,6 +87,10 @@ const SUGGESTED_PLAN_SOURCE_LABELS: Record<string, string> = {
 
 export async function getBilling(input: api.BillingGetInput = {}): Promise<BillingOverview> {
   return Api.billing.get(input).then((data) => data.billing);
+}
+
+export async function getLimitWarnings(input: api.BillingGetLimitWarningsInput = {}): Promise<BillingLimitWarnings> {
+  return Api.billing.getLimitWarnings(input).then((data) => data.warnings);
 }
 
 export async function refreshBilling(input: api.BillingRefreshInput = {}): Promise<BillingOverview> {

@@ -59,6 +59,23 @@ defmodule Operately.Billing.EnforceLimits do
     {:error, :bad_request, public_message(error), public_details(error)}
   end
 
+  def public_details(%LimitStatus{} = status) do
+    %{
+      code: Atom.to_string(error_code(status.limit_key)),
+      limit_key: Atom.to_string(status.limit_key),
+      plan_key: normalize_optional_atom(status.plan_key),
+      current_usage: status.current_usage,
+      requested_delta: status.requested_delta,
+      projected_usage: status.projected_usage,
+      limit: status.limit,
+      remaining: status.remaining,
+      near_limit: status.near_limit,
+      blocked: status.blocked,
+      enforced: status.enforced,
+      recommended_upgrade: public_recommended_upgrade(status.recommended_upgrade)
+    }
+  end
+
   def public_details(%LimitError{} = error) do
     %{
       code: Atom.to_string(error.code),
