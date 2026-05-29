@@ -34,6 +34,9 @@ defmodule OperatelyWeb.Api.CliAuth do
           Logger.info("CLI password authentication failed for #{inputs.email}")
           {:error, :unauthorized, "Invalid email or password"}
 
+        {:error, {message, details}} ->
+          {:error, :bad_request, message, details}
+
         {:error, reason} when is_binary(reason) ->
           {:error, :bad_request, reason}
       end
@@ -123,6 +126,9 @@ defmodule OperatelyWeb.Api.CliAuth do
 
         {:error, :invalid} ->
           {:error, :bad_request, "Activation code has expired"}
+
+        {:error, {message, details}} ->
+          {:error, :bad_request, message, details}
 
         {:error, reason} when is_binary(reason) ->
           {:error, :bad_request, reason}
@@ -696,6 +702,8 @@ defmodule OperatelyWeb.Api.CliAuth do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
+    alias Operately.Billing.EnforceLimits
+    alias Operately.Billing.EnforceLimits.LimitError
     alias Operately.People.{Account, CliAuthSession}
     alias Operately.Repo
 
@@ -744,11 +752,16 @@ defmodule OperatelyWeb.Api.CliAuth do
 
         {:error, :invite_link_update_failed} ->
           {:error, :bad_request, "Something went wrong while using this invite link."}
+
+        {:error, %LimitError{} = error} ->
+          EnforceLimits.to_api_error(error)
       end
     end
   end
 
   defmodule SharedSteps do
+    alias Operately.Billing.EnforceLimits
+    alias Operately.Billing.EnforceLimits.LimitError
     alias Operately.InviteLinks
     alias Operately.People.{Account, CliAuthSession}
     alias Operately.Repo
@@ -886,6 +899,10 @@ defmodule OperatelyWeb.Api.CliAuth do
 
     defp map_personal_invite_validation_error(:invite_link_inactive), do: {:error, "This invite link is no longer valid"}
     defp map_personal_invite_validation_error(:invite_link_expired), do: {:error, "This invite link is no longer valid"}
+
+    defp map_join_invite_error(%LimitError{} = error) do
+      {:error, {EnforceLimits.public_message(error), EnforceLimits.public_details(error)}}
+    end
 
     defp map_join_invite_error(:invite_token_not_found), do: {:error, "Invalid invite link"}
     defp map_join_invite_error(:invite_token_inactive), do: {:error, "This invite link is no longer valid"}

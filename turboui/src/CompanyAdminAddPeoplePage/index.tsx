@@ -41,6 +41,7 @@ export namespace CompanyAdminAddPeoplePage {
     companyName: string;
     navigationItems: Navigation.Item[];
     state: PageState;
+    notice?: React.ReactNode;
     formValues: InviteMemberForm.Values;
     formErrors?: InviteMemberForm.Errors;
     onFormChange: (field: InviteMemberForm.Field, value: string) => void;
@@ -144,6 +145,7 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
       <Navigation items={props.navigationItems} />
       <div className="relative bg-surface-base min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl">
         <div className={bodyClassName}>
+          {props.notice}
           {match(props.state)
             .with({ state: "form" }, () => (
               <InviteMemberForm

@@ -56,7 +56,24 @@ defmodule Operately.Billing.EnforceLimits do
   end
 
   def to_api_error(%LimitError{} = error) do
-    {:error, :bad_request, public_message(error)}
+    {:error, :bad_request, public_message(error), public_details(error)}
+  end
+
+  def public_details(%LimitError{} = error) do
+    %{
+      code: Atom.to_string(error.code),
+      limit_key: Atom.to_string(error.limit_key),
+      plan_key: normalize_optional_atom(error.plan_key),
+      current_usage: error.current_usage,
+      requested_delta: error.requested_delta,
+      projected_usage: error.projected_usage,
+      limit: error.limit,
+      remaining: error.remaining,
+      near_limit: error.near_limit,
+      blocked: error.blocked,
+      enforced: error.enforced,
+      recommended_upgrade: public_recommended_upgrade(error.recommended_upgrade)
+    }
   end
 
   defp error_from_status(%LimitStatus{} = status) do
@@ -231,4 +248,18 @@ defmodule Operately.Billing.EnforceLimits do
 
   defp error_code(:member_count), do: :member_count_limit_exceeded
   defp error_code(:storage_bytes), do: :storage_limit_exceeded
+
+  defp public_recommended_upgrade(nil), do: nil
+
+  defp public_recommended_upgrade(recommendation) do
+    %{
+      plan_key: normalize_optional_atom(recommendation[:plan_key]),
+      billing_interval: normalize_optional_atom(recommendation[:billing_interval]),
+      source: normalize_optional_atom(recommendation[:source])
+    }
+  end
+
+  defp normalize_optional_atom(nil), do: nil
+  defp normalize_optional_atom(value) when is_atom(value), do: Atom.to_string(value)
+  defp normalize_optional_atom(value), do: value
 end

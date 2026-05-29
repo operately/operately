@@ -72,7 +72,23 @@ defmodule Operately.Billing.EnforceLimitsTest do
       assert error.projected_usage == 21
       assert error.limit == 20
       assert EnforceLimits.public_message(error) == "This company has reached its member limit. Upgrade the plan to add more people."
-      assert EnforceLimits.to_api_error(error) == {:error, :bad_request, "This company has reached its member limit. Upgrade the plan to add more people."}
+
+      assert EnforceLimits.to_api_error(error) ==
+               {:error, :bad_request, "This company has reached its member limit. Upgrade the plan to add more people.",
+                %{
+                  blocked: true,
+                  code: "member_count_limit_exceeded",
+                  current_usage: 20,
+                  enforced: true,
+                  limit: 20,
+                  limit_key: "member_count",
+                  near_limit: true,
+                  plan_key: "free",
+                  projected_usage: 21,
+                  recommended_upgrade: nil,
+                  remaining: 0,
+                  requested_delta: 1
+                }}
     end
 
     test "marks usage as near the limit once it reaches ninety percent", ctx do
