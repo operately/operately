@@ -51,12 +51,10 @@ export namespace CompanyAdminAddPeoplePage {
     cta?: BillingLimitGuidanceCta | null;
   }
 
-  export interface Props {
+  interface BaseProps {
     companyName: string;
     navigationItems: Navigation.Item[];
     state: PageState;
-    limitGuidance?: BillingLimitGuidance | null;
-    onCloseLimitGuidance?: () => void;
     formValues: InviteMemberForm.Values;
     formErrors?: InviteMemberForm.Errors;
     onFormChange: (field: InviteMemberForm.Field, value: string) => void;
@@ -78,6 +76,18 @@ export namespace CompanyAdminAddPeoplePage {
     isGrantingAccess?: boolean;
     permissionOptions?: PermissionOption[];
   }
+
+  type PropsWithoutLimitGuidance = {
+    limitGuidance?: null | undefined;
+    onCloseLimitGuidance?: never;
+  };
+
+  type PropsWithLimitGuidance = {
+    limitGuidance: BillingLimitGuidance;
+    onCloseLimitGuidance: () => void;
+  };
+
+  export type Props = BaseProps & (PropsWithoutLimitGuidance | PropsWithLimitGuidance);
 }
 
 type MemberCopy = {
@@ -230,7 +240,7 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
       {props.limitGuidance && (
         <BillingLimitGuidanceNotice
           isOpen={true}
-          onClose={props.onCloseLimitGuidance || (()=>{})}
+          onClose={props.onCloseLimitGuidance}
           guidance={props.limitGuidance}
         />
       )}
