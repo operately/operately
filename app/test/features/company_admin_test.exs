@@ -32,7 +32,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_expiration_date_is_visible_on_team_page()
   end
 
-  @tag role: :admin
+  @tag role: :owner
   feature "adding a new person is blocked when the company is already full", ctx do
     params = %{
       full_name: "Limit Blocked Member",
@@ -43,10 +43,27 @@ defmodule Operately.Features.CompanyAdminTest do
     ctx
     |> enable_billing_for_company()
     |> fill_company_to_member_limit()
-    |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.open_company_team_page()
     |> Steps.invite_company_member(params)
-    |> Steps.assert_error_message("This company has reached its member limit. Upgrade the plan to add more people.")
+    |> Steps.assert_limit_guidance_has_upgrade_cta()
+    |> Steps.follow_limit_guidance_upgrade_cta()
+    |> assert_no_person_added(params.email)
+  end
+
+  @tag role: :owner
+  feature "inviting an outside collaborator is blocked when the company is already full", ctx do
+    params = %{
+      full_name: "Limit Blocked Collaborator",
+      email: "limit.blocked.collaborator@example.com",
+      title: "Advisor"
+    }
+
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_to_member_limit()
+    |> Steps.open_company_team_page()
+    |> Steps.invite_outside_collaborator(params)
+    |> Steps.assert_limit_guidance_has_upgrade_cta()
     |> assert_no_person_added(params.email)
   end
 
@@ -210,7 +227,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.open_restore_people_page()
     |> Steps.assert_removed_person_is_listed()
     |> Steps.restore_company_member()
-    |> Steps.assert_error_message("This company has reached its member limit. Upgrade the plan to add more people.")
+    |> Steps.assert_limit_guidance_has_no_upgrade_cta()
     |> assert_member_still_suspended(:suspended)
   end
 
@@ -365,6 +382,14 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   defp enable_billing_for_company(ctx) do
+    Billing.create_product(%{
+      provider: "polar",
+      plan_family: "team",
+      billing_interval: "monthly",
+      polar_product_id: "feature-team-monthly-#{ctx.company.id}",
+      active: true
+    })
+
     Factory.enable_feature(ctx, "billing")
   end
 

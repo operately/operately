@@ -66,10 +66,10 @@ defmodule OperatelyWeb.Api.Companies.RestoreMemberTest do
 
       assert {400, res} = request(ctx, ctx.person)
 
-      assert res == %{
-               :error => "Bad request",
-               :message => "This company has reached its member limit. Upgrade the plan to add more people."
-             }
+      assert res.message == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert res.details.code == "member_count_limit_exceeded"
+      assert res.details.limit_key == "member_count"
+      assert res.details.plan_key == "free"
 
       person = Operately.Repo.reload(ctx.person)
       assert person.suspended

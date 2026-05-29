@@ -1,23 +1,27 @@
 import * as React from "react";
 
 import Api from "@/api";
+import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
 import * as Permissions from "@/models/permissions";
 
+import { BillingLimitGuidanceNotice } from "@/components/BillingLimitGuidanceNotice";
 import { PageModule } from "@/routes/types";
+import { includesId, usePaths } from "@/routes/paths";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CompanyAdminAddPeoplePage, InviteMemberForm, showErrorToast } from "turboui";
 
 import * as Pages from "@/components/Pages";
-import { usePaths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 export default { name: "CompanyAdminAddPeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
   company: Companies.Company;
+  ownerIds: string[];
 }
 
 async function loader(): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ includePermissions: true }).then(
+  const company = await Companies.getCompany({ includeOwners: true, includePermissions: true }).then(
     (res) => res.company,
   );
 
@@ -27,21 +31,25 @@ async function loader(): Promise<LoaderResult> {
 
   return {
     company: company,
+    ownerIds: company.owners?.map((owner) => owner.id) || [],
   };
 }
 
 function Page() {
-  const { company } = Pages.useLoadedData<LoaderResult>();
+  const { company, ownerIds } = Pages.useLoadedData<LoaderResult>();
   const navigate = useNavigate();
   const paths = usePaths();
+  const me = useMe();
   const [searchParams] = useSearchParams();
 
   const [state, setState] = React.useState<CompanyAdminAddPeoplePage.PageState>({ state: "form" });
+  const [limitGuidance, setLimitGuidance] = React.useState<Billing.BillingLimitGuidance | null>(null);
   const [values, setValues] = React.useState<InviteMemberForm.Values>({ fullName: "", email: "", title: "" });
   const [errors, setErrors] = React.useState<InviteMemberForm.Errors>({});
   const memberTypeParam = searchParams.get("memberType");
   const memberType: CompanyAdminAddPeoplePage.MemberType =
     memberTypeParam === "outside_collaborator" ? "outside_collaborator" : "team_member";
+  const viewerRole: Billing.BillingLimitViewerRole = includesId(ownerIds, me?.id) ? "owner" : "company_admin";
 
   const [grantAccess, { loading: isGrantingAccess }] = Permissions.useGrantResourceAccess();
 
@@ -64,6 +72,7 @@ function Page() {
 
   const handleInviteAnother = React.useCallback(() => {
     setState({ state: "form" });
+    setLimitGuidance(null);
     resetForm();
   }, [resetForm]);
 
@@ -77,8 +86,11 @@ function Page() {
 
   const { handleSubmit, isSubmitting, spaces, goals, projects } = useInviteSubmit(
     memberType,
+    viewerRole,
+    paths,
     values,
     setErrors,
+    setLimitGuidance,
     setState,
   );
 
@@ -87,6 +99,7 @@ function Page() {
       companyName={company.name || ""}
       navigationItems={navigationItems}
       state={state}
+      notice={limitGuidance ? <LimitGuidanceNotice guidance={limitGuidance} /> : null}
       formValues={values}
       formErrors={errors}
       onFormChange={handleFormChange}
@@ -108,8 +121,11 @@ function Page() {
 
 function useInviteSubmit(
   memberType: CompanyAdminAddPeoplePage.MemberType,
+  viewerRole: Billing.BillingLimitViewerRole,
+  paths: ReturnType<typeof usePaths>,
   values: InviteMemberForm.Values,
   setErrors: React.Dispatch<React.SetStateAction<InviteMemberForm.Errors>>,
+  setLimitGuidance: React.Dispatch<React.SetStateAction<Billing.BillingLimitGuidance | null>>,
   setState: React.Dispatch<React.SetStateAction<CompanyAdminAddPeoplePage.PageState>>,
 ) {
   const [add] = Companies.useAddCompanyMember();
@@ -130,6 +146,7 @@ function useInviteSubmit(
     }
 
     setErrors({});
+    setLimitGuidance(null);
     setIsSubmitting(true);
 
     try {
@@ -165,6 +182,18 @@ function useInviteSubmit(
       setErrors({});
     } catch (e) {
       console.error(e);
+      const limitError = Billing.extractLimitError(e);
+
+      if (limitError?.code === "member_count_limit_exceeded") {
+        setLimitGuidance(
+          Billing.buildMemberLimitGuidance(limitError, viewerRole, {
+            companyBillingPath: () => paths.companyBillingPath(),
+            companyBillingPlansPath: (opts) => paths.companyBillingPlansPath(opts),
+          }),
+        );
+        return;
+      }
+
       const data = (e as any)?.response?.data;
       const message = typeof data?.message === "string" ? data.message : null;
       if (message) {
@@ -186,9 +215,13 @@ function useInviteSubmit(
     } finally {
       setIsSubmitting(false);
     }
-  }, [add, inviteGuest, isSubmitting, memberType, values, setErrors, setState, setSpaces, setGoals, setProjects]);
+  }, [add, inviteGuest, isSubmitting, memberType, paths, setErrors, setLimitGuidance, setState, setSpaces, setGoals, setProjects, values, viewerRole]);
 
   return { spaces, goals, projects, handleSubmit, isSubmitting };
+}
+
+function LimitGuidanceNotice({ guidance }: { guidance: Billing.BillingLimitGuidance }) {
+  return <BillingLimitGuidanceNotice guidance={guidance} />;
 }
 
 function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Errors {
