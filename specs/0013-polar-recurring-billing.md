@@ -1430,7 +1430,7 @@ Outcome:
 
 - member-limit rules are enforced consistently in the main write paths that add or restore company members
 
-### PR 8c: Member-limit blocking UX
+### PR 8c: Member-limit blocking UX (COMPLETED ✅)
 
 - Integrate member-count enforcement into invite-join
 - Block invite-based joins with a dedicated member-limit page when the company is already full

@@ -2,6 +2,7 @@ defmodule OperatelyWeb.AccountOauthController do
   use OperatelyWeb, :controller
   require Logger
 
+  alias Operately.Billing.EnforceLimits.LimitError
   alias Operately.People
   alias Operately.People.CliAuthSession
   alias Operately.InviteLinks
@@ -115,6 +116,9 @@ defmodule OperatelyWeb.AccountOauthController do
         company = Companies.get_company!(person.company_id)
         path = Paths.home_path(company)
         {Map.put(params, "redirect_to", path), conn}
+
+      {:error, %LimitError{}} ->
+        {Map.put(params, "redirect_to", Paths.invite_join_full_path(invite_token)), conn}
 
       {:error, _reason} ->
         {params, conn}

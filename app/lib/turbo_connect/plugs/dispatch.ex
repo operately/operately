@@ -29,6 +29,9 @@ defmodule TurboConnect.Plugs.Dispatch do
       {:error, :bad_request, message} ->
         bad_request(conn, message)
 
+      {:error, :bad_request, message, details} ->
+        bad_request(conn, message, details)
+
       {:error, :forbidden} ->
         forbidden(conn, "You don't have permission to perform this action")
 
@@ -82,6 +85,12 @@ defmodule TurboConnect.Plugs.Dispatch do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(400, Jason.encode!(%{error: "Bad request", message: message}))
+  end
+
+  defp bad_request(conn, message, details) do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(400, Jason.encode!(%{error: "Bad request", message: message, details: details}))
   end
 
   defp forbidden(conn, message) do

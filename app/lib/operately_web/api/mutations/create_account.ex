@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
     field?(:company, :company, null: true)
     field?(:person, :person, null: true)
     field?(:error, :string, null: true)
+    field?(:join_error_details, :json, null: true)
   end
 
   def call(_conn, inputs) do
@@ -32,11 +33,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
     end
   end
 
-  defp build_response(%{company: company, person: person, error: error}) do
+  defp build_response(%{company: company, person: person, error: error, join_error_details: join_error_details}) do
     %{
       company: serialize_optional(company),
       person: serialize_optional(person),
-      error: error
+      error: error,
+      join_error_details: join_error_details
     }
   end
 
