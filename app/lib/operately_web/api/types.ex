@@ -84,6 +84,7 @@ defmodule OperatelyWeb.Api.Types do
     field :plans, list_of(:billing_plan_definition), null: false
     field :catalog_products, list_of(:billing_catalog_product), null: false
     field :member_count, :integer, null: false
+    field :storage_usage_bytes, :integer, null: false
     field :stale, :boolean, null: false
   end
 

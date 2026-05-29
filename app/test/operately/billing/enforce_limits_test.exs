@@ -1,6 +1,7 @@
 defmodule Operately.Billing.EnforceLimitsTest do
   use Operately.DataCase, async: true
 
+  import Operately.BlobsFixtures
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
@@ -9,6 +10,7 @@ defmodule Operately.Billing.EnforceLimitsTest do
   alias Operately.Billing.EnforceLimits.LimitError
   alias Operately.Billing.EnforceLimits.LimitStatus
   alias Operately.Billing.Overview
+  alias Operately.Billing.Plans
 
   setup do
     company = company_fixture()
@@ -163,6 +165,48 @@ defmodule Operately.Billing.EnforceLimitsTest do
 
       assert overview.member_count == 2
       assert Billing.active_member_count(ctx.company) == 2
+    end
+  end
+
+  describe "billing-owned storage usage" do
+    test "sums uploaded company blobs and ignores pending ones", ctx do
+      {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
+      author = person_fixture_with_account(%{company_id: ctx.company.id})
+      blob_fixture(%{company_id: ctx.company.id, author_id: author.id, status: :uploaded, size: 1024})
+      blob_fixture(%{company_id: ctx.company.id, author_id: author.id, status: :uploaded, size: 2048})
+      blob_fixture(%{company_id: ctx.company.id, author_id: author.id, status: :pending, size: 4096})
+
+      overview = Overview.build(ctx.company, account, [])
+
+      assert overview.storage_usage_bytes == 3072
+      assert Billing.company_storage_bytes(ctx.company) == 3072
+    end
+
+    test "blocks free companies at the storage limit and allows paid companies beyond the free limit", ctx do
+      free_company = enable_billing(ctx.company)
+      free_author = person_fixture_with_account(%{company_id: free_company.id})
+      blob_fixture(%{
+        company_id: free_company.id,
+        author_id: free_author.id,
+        status: :uploaded,
+        size: Plans.storage_limit_bytes(:free)
+      })
+
+      assert {:error, %LimitError{code: :storage_limit_exceeded}} = Billing.check_storage_limit(free_company, 1)
+
+      paid_company = company_fixture()
+      paid_company = enable_billing(paid_company)
+      {:ok, _account} = Billing.sync_billing_account(paid_company, %{provider: "polar", plan_key: :team, billing_interval: :monthly, status: :active})
+      paid_author = person_fixture_with_account(%{company_id: paid_company.id})
+
+      blob_fixture(%{
+        company_id: paid_company.id,
+        author_id: paid_author.id,
+        status: :uploaded,
+        size: Plans.storage_limit_bytes(:free)
+      })
+
+      assert :ok = Billing.check_storage_limit(paid_company, 1)
     end
   end
 

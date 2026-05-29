@@ -1441,7 +1441,7 @@ Outcome:
 
 - member-limit enforcement has complete end-user handling, including dedicated blocked-join UX and upgrade messaging
 
-### PR 8d: Storage limits and billing UI surfacing
+### PR 8d: Storage limits and billing UI surfacing (COMPLETED ✅)
 
 - Integrate storage-limit enforcement into company-owned upload flows
 - Update both the billing overview page and the plan-selection page to surface storage usage and plan storage allowances once storage accounting is available in the billing UI

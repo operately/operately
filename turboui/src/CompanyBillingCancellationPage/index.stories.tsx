@@ -39,6 +39,7 @@ function billingOverviewMock(params: BillingOverviewOverrides = {}): CompanyBill
     ],
     catalogProducts: [],
     memberCount: 18,
+    storageUsageBytes: 81 * 1024 ** 3,
     stale: false,
     ...rest,
   };

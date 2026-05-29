@@ -74,6 +74,7 @@ function billingOverviewMock(params: BillingOverviewOverrides = {}): CompanyBill
       },
     ],
     memberCount: 18,
+    storageUsageBytes: 858_993_459,
     stale: false,
     ...rest,
   };

@@ -1,8 +1,10 @@
 import { AxiosRequestConfig } from "axios";
 import csrftoken from "@/utils/csrf_token";
 import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
+import { showErrorToast } from "turboui";
 
 import Api, { BlobCreationInput, BlobCreationOutput, createBlob, createAvatarBlob, markBlobUploaded } from "@/api";
+import { extractLimitError } from "@/models/billing";
 import { findImageDimensions, findVideoDimensions } from "./utils";
 
 export { useDownloadFile } from "./useDownloadFile";
@@ -41,7 +43,20 @@ async function uploadWithCreator(
     dimensions = await findVideoDimensions(file);
   }
 
-  const res = await createFn({ files: [{ ...attrs, ...dimensions }] });
+  let res: { blobs?: BlobCreationOutput[] | null };
+
+  try {
+    res = await createFn({ files: [{ ...attrs, ...dimensions }] });
+  } catch (error) {
+    const limitError = extractLimitError(error);
+    const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
+
+    if (limitError?.code === "storage_limit_exceeded") {
+      showErrorToast("Storage limit reached", message || "This company has reached its storage limit. Upgrade the plan to add more files.");
+    }
+
+    throw error;
+  }
 
   if (!res.blobs || res.blobs!.length === 0) {
     throw Error("Failed to create blobs");

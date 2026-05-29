@@ -97,6 +97,7 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
       },
     ],
     memberCount: 18,
+    storageUsageBytes: 81 * 1024 ** 3,
     stale: false,
     ...rest,
   } as Billing.BillingOverview;
@@ -120,6 +121,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     expect(selection.selectedInterval).toBe("yearly");
     expect(selection.cards.map((card) => card.title)).toEqual(["Team", "Business"]);
     expect(selection.cards[0]?.priceLabel).toBe("$66 / month");
+    expect(selection.cards[0]?.detailLines).toContain("100 GB storage");
     expect(selection.cards[0]?.detailLines).toContain("Billed yearly at $790");
     expect(selection.continueAction.label).toBe("Continue to checkout");
     expect(selection.continueAction.disabled).toBe(false);

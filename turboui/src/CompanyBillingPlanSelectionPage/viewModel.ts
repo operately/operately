@@ -5,6 +5,7 @@ import {
   isCompanyBillingPaidStatus,
   matchesCompanyBillingTarget,
 } from "../CompanyBillingPage/state";
+import { formatStorageBytes } from "../CompanyBillingPage/storageFormatting";
 import { CompanyBillingPlanSelectionPage } from "./types";
 
 export function buildCompanyBillingPlanSelectionPageViewModel(
@@ -62,6 +63,7 @@ export function buildCompanyBillingPlanSelectionMode(
         priceLabel: formatPlanPriceLabel(product, selectedInterval),
         detailLines: [
           definition?.memberLimit ? `${definition.memberLimit} member limit` : "Member limit unavailable",
+          definition?.storageLimitBytes ? `${formatStorageBytes(definition.storageLimitBytes)} storage` : "Storage allowance unavailable",
           formatBillingHint(product, selectedInterval),
         ],
         selected: selectedTarget?.plan === plan,
