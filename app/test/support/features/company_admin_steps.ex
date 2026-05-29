@@ -651,11 +651,9 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :follow_limit_guidance_upgrade_cta, ctx do
-    expected_path = Paths.company_billing_path(ctx.company) <> "/plans"
-
     ctx
     |> UI.click(testid: "billing-limit-guidance-cta")
-    |> UI.assert_page(expected_path)
+    |> UI.assert_page(Paths.company_billing_plan_path(ctx.company))
     |> UI.sleep(500)
     |> UI.assert_text("Choose a plan")
     |> UI.assert_text("Continue to checkout")
