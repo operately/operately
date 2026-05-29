@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Billing.GetTest do
   use OperatelyWeb.TurboCase
   import Mock
+  import Operately.BlobsFixtures
 
   alias Operately.Billing
 
@@ -44,6 +45,7 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.account.plan_key == nil
         assert res.billing.account.billing_interval == nil
         assert res.billing.member_count == 2
+        assert res.billing.storage_usage_bytes == 0
         assert res.billing.stale == false
         assert length(res.billing.plans) == 3
         assert res.billing.catalog_products == []
@@ -77,6 +79,8 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
              ]
            }}
         end do
+        blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id, status: :uploaded, size: 2048})
+
         assert {200, res} = query(ctx.conn, [:billing, :get], %{})
 
         assert res.billing.account.status == "active"
@@ -84,6 +88,7 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.account.billing_interval == "monthly"
         assert res.billing.account.cancel_at_period_end == false
         assert res.billing.member_count == 2
+        assert res.billing.storage_usage_bytes == 2048
         assert res.billing.stale == false
         assert length(res.billing.catalog_products) == 1
         assert hd(res.billing.catalog_products).polar_product_id == "prod_team_monthly"

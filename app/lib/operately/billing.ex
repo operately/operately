@@ -37,6 +37,8 @@ defmodule Operately.Billing do
   end
 
   defdelegate active_member_count(company), to: Operately.Billing.Usage
+  defdelegate company_storage_bytes(company), to: Operately.Billing.Usage
+  defdelegate check_storage_limit(company, requested_delta), to: Operately.Billing.Usage
 
   #
   # Billing accounts

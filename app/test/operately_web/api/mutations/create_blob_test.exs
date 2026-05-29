@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
   use OperatelyWeb.TurboCase
 
+  import Operately.BlobsFixtures
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, :create_blob, %{})
@@ -53,5 +55,55 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
         assert blob.account_id == nil
       end)
     end
+
+    test "it blocks uploads that would exceed the storage limit", ctx do
+      enable_billing(ctx.company)
+      blob_fixture(%{
+        company_id: ctx.company.id,
+        author_id: ctx.person.id,
+        status: :uploaded,
+        size: Operately.Billing.Plans.storage_limit_bytes(:free)
+      })
+
+      initial_blob_count = Repo.aggregate(Operately.Blobs.Blob, :count, :id)
+
+      assert {400, res} =
+               mutation(ctx.conn, :create_blob, %{
+                 files: [
+                   %{filename: "test.txt", size: 1, content_type: "text/plain"}
+                 ]
+               })
+
+      assert res.message == "This company has reached its storage limit. Upgrade the plan to add more files."
+      assert res.details.code == "storage_limit_exceeded"
+      assert res.details.limit_key == "storage_bytes"
+      assert res.details.current_usage == Operately.Billing.Plans.storage_limit_bytes(:free)
+      assert Repo.aggregate(Operately.Blobs.Blob, :count, :id) == initial_blob_count
+    end
+
+    test "it does not block uploads when billing is disabled for the company", ctx do
+      blob_fixture(%{
+        company_id: ctx.company.id,
+        author_id: ctx.person.id,
+        status: :uploaded,
+        size: Operately.Billing.Plans.storage_limit_bytes(:free)
+      })
+
+      assert {200, res} =
+               mutation(ctx.conn, :create_blob, %{
+                 files: [
+                   %{filename: "test.txt", size: 1, content_type: "text/plain"}
+                 ]
+               })
+
+      assert length(res.blobs) == 1
+    end
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

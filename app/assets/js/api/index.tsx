@@ -1135,6 +1135,7 @@ export interface BillingOverview {
   plans: BillingPlanDefinition[];
   catalogProducts: BillingCatalogProduct[];
   memberCount: number;
+  storageUsageBytes: number;
   stale: boolean;
 }
 
