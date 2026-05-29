@@ -100,6 +100,17 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :invite_outside_collaborator, ctx, params do
+    ctx
+    |> UI.click(testid: "add-person")
+    |> UI.click(testid: "select-outside-collaborator")
+    |> UI.assert_has(testid: "fullname")
+    |> UI.fill(testid: "fullname", with: params[:full_name])
+    |> UI.fill(testid: "email", with: params[:email])
+    |> UI.fill(testid: "title", with: params[:title])
+    |> UI.click(testid: "submit")
+  end
+
   step :add_company_admin, ctx do
     ctx
     |> UI.click(testid: "add-admins")
@@ -625,5 +636,27 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :assert_error_message_not_visible, ctx, error do
     UI.refute_text(ctx, error)
+  end
+
+  step :assert_limit_guidance_has_upgrade_cta, ctx do
+    ctx
+    |> UI.assert_has(testid: "billing-limit-guidance")
+    |> UI.assert_has(testid: "billing-limit-guidance-cta")
+  end
+
+  step :assert_limit_guidance_has_no_upgrade_cta, ctx do
+    ctx
+    |> UI.assert_has(testid: "billing-limit-guidance")
+    |> UI.refute_has(testid: "billing-limit-guidance-cta")
+  end
+
+  step :follow_limit_guidance_upgrade_cta, ctx do
+    expected_path = Paths.company_billing_path(ctx.company) <> "/plans"
+
+    ctx
+    |> UI.click(testid: "billing-limit-guidance-cta")
+    |> UI.assert_page(expected_path)
+    |> UI.assert_text("Choose a plan")
+    |> UI.assert_text("Continue to checkout")
   end
 end

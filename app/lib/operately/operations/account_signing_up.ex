@@ -1,4 +1,6 @@
 defmodule Operately.Operations.AccountSigningUp do
+  alias Operately.Billing.EnforceLimits
+  alias Operately.Billing.EnforceLimits.LimitError
   alias Operately.Operations.EmailActivationCodeConsuming
   alias Operately.People.Account
   alias Operately.Repo
@@ -11,7 +13,7 @@ defmodule Operately.Operations.AccountSigningUp do
 
   Returns:
     - `{:ok, account, invite_context}` on success, where `invite_context` is
-      `%{company: company_or_nil, person: person_or_nil, error: error_string_or_nil}`
+      `%{company: company_or_nil, person: person_or_nil, error: error_string_or_nil, join_error_details: map_or_nil}`
     - `{:error, :signup_not_allowed}` when email signup is disabled
     - `{:error, :email_taken}` when the email is already registered
     - `{:error, :invalid_code}` when the activation code format is invalid
@@ -45,16 +47,25 @@ defmodule Operately.Operations.AccountSigningUp do
     end
   end
 
-  defp handle_invite_token(_account, nil), do: {:ok, %{company: nil, person: nil, error: nil}}
+  defp handle_invite_token(_account, nil), do: {:ok, %{company: nil, person: nil, error: nil, join_error_details: nil}}
 
   defp handle_invite_token(account, token) do
     case Operately.InviteLinks.join_company_via_invite_link(account, token) do
       {:ok, person} ->
         person = Repo.preload(person, :company)
-        {:ok, %{company: person.company, person: person, error: nil}}
+        {:ok, %{company: person.company, person: person, error: nil, join_error_details: nil}}
+
+      {:error, %LimitError{} = error} ->
+        {:ok,
+         %{
+           company: nil,
+           person: nil,
+           error: EnforceLimits.public_message(error),
+           join_error_details: EnforceLimits.public_details(error)
+         }}
 
       {:error, reason} ->
-        {:ok, %{company: nil, person: nil, error: normalize_invite_error(reason)}}
+        {:ok, %{company: nil, person: nil, error: normalize_invite_error(reason), join_error_details: nil}}
     end
   end
 
