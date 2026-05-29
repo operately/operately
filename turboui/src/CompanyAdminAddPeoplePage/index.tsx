@@ -1,6 +1,7 @@
 import React from "react";
 
 import { match } from "ts-pattern";
+import { BillingLimitGuidanceNotice } from "../BillingLimitGuidanceNotice";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { InviteMemberForm } from "../InviteMemberForm";
 import { Navigation } from "../Page/Navigation";
@@ -37,11 +38,25 @@ export namespace CompanyAdminAddPeoplePage {
     label: string;
   }
 
+  export interface BillingLimitGuidanceCta {
+    label: string;
+    to: string;
+  }
+
+  export interface BillingLimitGuidance {
+    title: string;
+    description: string;
+    usageSummary: string;
+    recommendedPlanLabel: string | null;
+    cta?: BillingLimitGuidanceCta | null;
+  }
+
   export interface Props {
     companyName: string;
     navigationItems: Navigation.Item[];
     state: PageState;
-    notice?: React.ReactNode;
+    limitGuidance?: BillingLimitGuidance | null;
+    onCloseLimitGuidance?: () => void;
     formValues: InviteMemberForm.Values;
     formErrors?: InviteMemberForm.Errors;
     onFormChange: (field: InviteMemberForm.Field, value: string) => void;
@@ -145,7 +160,6 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
       <Navigation items={props.navigationItems} />
       <div className="relative bg-surface-base min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl">
         <div className={bodyClassName}>
-          {props.notice}
           {match(props.state)
             .with({ state: "form" }, () => (
               <InviteMemberForm
@@ -212,6 +226,14 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
             <GrantAccessButton onClick={handleGrantAccessButtonClick} isLoading={props.isGrantingAccess} />
           ) : null,
         )}
+
+      {props.limitGuidance && (
+        <BillingLimitGuidanceNotice
+          isOpen={true}
+          onClose={props.onCloseLimitGuidance || (()=>{})}
+          guidance={props.limitGuidance}
+        />
+      )}
     </div>
   );
 }

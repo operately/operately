@@ -5,9 +5,7 @@ import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { BlackLink, Link, SecondaryButton, showErrorToast } from "turboui";
-
-import { BillingLimitGuidanceNotice } from "@/components/BillingLimitGuidanceNotice";
+import { BillingLimitGuidanceNotice, BlackLink, Link, SecondaryButton, showErrorToast } from "turboui";
 import { InfoCallout } from "@/components/Callouts";
 import { PageModule } from "@/routes/types";
 import { includesId } from "@/routes/paths";
@@ -44,23 +42,23 @@ function Page() {
 
   return (
     <Pages.Page title={["Restore Deactivated Team Members", company.name!]} testId="restore-suspended-people-page">
-      <Paper.Root size="medium">
-        <Navigation />
+      <>
+        <Paper.Root size="medium">
+          <Navigation />
 
-        <Paper.Body>
-          <Paper.Header title="Restore Deactivated Team Members" />
+          <Paper.Body>
+            <Paper.Header title="Restore Deactivated Team Members" />
 
-          {limitGuidance && (
-            <BillingLimitGuidanceNotice guidance={limitGuidance} />
-          )}
+            {suspendedPeople.length === 0 ? (
+              <NoSuspenedPeopleMessage />
+            ) : (
+              <SuspendedPeopleList onLimitError={setLimitGuidance} viewerRole={viewerRole} paths={paths} />
+            )}
+          </Paper.Body>
+        </Paper.Root>
 
-          {suspendedPeople.length === 0 ? (
-            <NoSuspenedPeopleMessage />
-          ) : (
-            <SuspendedPeopleList onLimitError={setLimitGuidance} viewerRole={viewerRole} paths={paths} />
-          )}
-        </Paper.Body>
-      </Paper.Root>
+        {limitGuidance && <BillingLimitGuidanceNotice isOpen={true} onClose={() => setLimitGuidance(null)} guidance={limitGuidance} />}
+      </>
     </Pages.Page>
   );
 }
