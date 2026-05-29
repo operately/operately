@@ -117,6 +117,62 @@ defmodule OperatelyWeb.Api.Billing.GetLimitWarningsTest do
                requested_delta: 0
              }
     end
+
+    test "it returns blocked member and storage warning details", ctx do
+      create_active_product("team", "monthly")
+
+      ctx =
+        Enum.reduce(1..20, ctx, fn index, acc ->
+          Factory.add_company_member(acc, :"blocked_member_#{index}", name: "Blocked Member #{index}")
+        end)
+
+      blob_fixture(%{
+        company_id: ctx.company.id,
+        author_id: ctx.creator.id,
+        status: :uploaded,
+        size: trunc(Plans.storage_limit_bytes(:free) * 1.05)
+      })
+
+      assert {200, res} = query(ctx.conn, [:billing, :get_limit_warnings], %{})
+
+      assert res.warnings.member_limit == %{
+               blocked: true,
+               code: "member_count_limit_exceeded",
+               current_usage: 21,
+               enforced: true,
+               limit: 20,
+               limit_key: "member_count",
+               near_limit: true,
+               plan_key: "free",
+               projected_usage: 21,
+               recommended_upgrade: %{
+                 billing_interval: "monthly",
+                 plan_key: "team",
+                 source: "next_plan"
+               },
+               remaining: 0,
+               requested_delta: 0
+             }
+
+      assert res.warnings.storage_limit == %{
+               blocked: true,
+               code: "storage_limit_exceeded",
+               current_usage: trunc(Plans.storage_limit_bytes(:free) * 1.05),
+               enforced: true,
+               limit: Plans.storage_limit_bytes(:free),
+               limit_key: "storage_bytes",
+               near_limit: true,
+               plan_key: "free",
+               projected_usage: trunc(Plans.storage_limit_bytes(:free) * 1.05),
+               recommended_upgrade: %{
+                 billing_interval: "monthly",
+                 plan_key: "team",
+                 source: "next_plan"
+               },
+               remaining: 0,
+               requested_delta: 0
+             }
+    end
   end
 
   defp enable_instance_billing(_ctx) do
