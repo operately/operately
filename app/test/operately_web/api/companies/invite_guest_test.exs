@@ -72,10 +72,10 @@ defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
 
       assert {400, res} = mutation(ctx.conn, [:companies, :invite_guest], @invite_guest_input)
 
-      assert res == %{
-               :error => "Bad request",
-               :message => "This company has reached its member limit. Upgrade the plan to add more people."
-             }
+      assert res.message == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert res.details.code == "member_count_limit_exceeded"
+      assert res.details.limit_key == "member_count"
+      assert res.details.plan_key == "free"
 
       refute People.get_person_by_email(company, @invite_guest_input[:email])
     end

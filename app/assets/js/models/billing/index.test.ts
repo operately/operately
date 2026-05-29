@@ -266,6 +266,146 @@ describe("billing model helpers", () => {
     expect(selection.target).toMatchObject({ plan: "business", billingInterval: "yearly" });
   });
 
+  it("extracts limit errors with a structured upgrade recommendation from api responses", () => {
+    const error = {
+      response: {
+        data: {
+          error: "Bad request",
+          message: "This company has reached its member limit. Upgrade the plan to add more people.",
+          details: {
+            code: "member_count_limit_exceeded",
+            limit_key: "member_count",
+            plan_key: "free",
+            current_usage: 20,
+            requested_delta: 1,
+            projected_usage: 21,
+            limit: 20,
+            remaining: 0,
+            near_limit: true,
+            blocked: true,
+            enforced: true,
+            recommended_upgrade: {
+              plan_key: "team",
+              billing_interval: "yearly",
+              source: "suggested",
+            },
+          },
+        },
+      },
+    };
+
+    expect(Billing.extractLimitError(error)).toMatchObject({
+      code: "member_count_limit_exceeded",
+      limitKey: "member_count",
+      planKey: "free",
+      currentUsage: 20,
+      requestedDelta: 1,
+      projectedUsage: 21,
+      limit: 20,
+      remaining: 0,
+      nearLimit: true,
+      blocked: true,
+      enforced: true,
+      recommendedUpgrade: {
+        source: "suggested",
+        target: { plan: "team", billingInterval: "yearly" },
+      },
+    });
+  });
+
+  it("builds owner guidance with a direct billing CTA", () => {
+    const error = Billing.extractLimitErrorDetails({
+      code: "member_count_limit_exceeded",
+      limit_key: "member_count",
+      plan_key: "free",
+      current_usage: 20,
+      requested_delta: 1,
+      projected_usage: 21,
+      limit: 20,
+      remaining: 0,
+      near_limit: true,
+      blocked: true,
+      enforced: true,
+      recommended_upgrade: {
+        plan_key: "team",
+        billing_interval: "monthly",
+        source: "next_plan",
+      },
+    })!;
+
+    expect(
+      Billing.buildMemberLimitGuidance(error, "owner", {
+        companyBillingPath: () => "/acme/admin/billing",
+        companyBillingPlansPath: (opts) =>
+          `/acme/admin/billing/plans?plan=${opts?.plan}&billing_period=${opts?.billingPeriod}`,
+      }),
+    ).toMatchObject({
+      title: "This company has reached its member limit",
+      recommendedPlanLabel: "Team Monthly",
+      cta: {
+        label: "Review upgrade options",
+        to: "/acme/admin/billing/plans?plan=team&billing_period=monthly",
+      },
+    });
+  });
+
+  it("builds company-admin guidance without a billing CTA", () => {
+    const error = Billing.extractLimitErrorDetails({
+      code: "member_count_limit_exceeded",
+      limit_key: "member_count",
+      plan_key: "free",
+      current_usage: 20,
+      requested_delta: 1,
+      projected_usage: 21,
+      limit: 20,
+      remaining: 0,
+      near_limit: true,
+      blocked: true,
+      enforced: true,
+      recommended_upgrade: {
+        plan_key: "team",
+        billing_interval: "monthly",
+        source: "next_plan",
+      },
+    })!;
+
+    expect(
+      Billing.buildMemberLimitGuidance(error, "company_admin", {
+        companyBillingPath: () => "/acme/admin/billing",
+        companyBillingPlansPath: () => "/acme/admin/billing/plans",
+      }),
+    ).toMatchObject({
+      recommendedPlanLabel: "Team Monthly",
+      cta: null,
+    });
+  });
+
+  it("builds regular-member guidance without any billing CTA", () => {
+    const error = Billing.extractLimitErrorDetails({
+      code: "member_count_limit_exceeded",
+      limit_key: "member_count",
+      plan_key: "free",
+      current_usage: 20,
+      requested_delta: 1,
+      projected_usage: 21,
+      limit: 20,
+      remaining: 0,
+      near_limit: true,
+      blocked: true,
+      enforced: true,
+      recommended_upgrade: null,
+    })!;
+
+    expect(
+      Billing.buildMemberLimitGuidance(error, "regular", {
+        companyBillingPath: () => "/acme/admin/billing",
+        companyBillingPlansPath: () => "/acme/admin/billing/plans",
+      }),
+    ).toMatchObject({
+      cta: null,
+    });
+  });
+
   it("falls back gracefully when the query target is invalid or unsellable", () => {
     const billing = billingOverviewMock({
       catalogProducts: billingOverviewMock().catalogProducts.filter((product) => product.planFamily !== "business"),

@@ -1,12 +1,13 @@
 import Api, { InviteLink } from "@/api";
+import * as Billing from "@/models/billing";
 import React from "react";
 
 import * as Pages from "@/components/Pages";
 
+import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { redirect, useNavigate } from "react-router-dom";
 import { InviteLinkJoinPage } from "turboui";
-import { assertPresent } from "../../utils/assertions";
 
 export default { name: "InviteLinkJoinPage", loader, Page } as PageModule;
 
@@ -16,20 +17,27 @@ interface LoaderResult {
   pageState: InviteLinkJoinPage.PageState;
 }
 
-async function loader({ params }): Promise<LoaderResult> {
+interface InviteAvailability {
+  invite: InviteLink | null;
+  memberLimitExceeded: boolean;
+}
+
+async function loader({ params }): Promise<LoaderResult | Response> {
   const token = params.token;
 
   if (!token) {
-    redirect("/");
+    return redirect("/");
   }
 
-  const invite = await loadInviteLink(token);
+  const { invite, memberLimitExceeded } = await loadInviteAvailability(token);
   const loggedIn = !!window.appConfig.account?.id;
 
   if (!invite) {
     return { invite: null, token, pageState: "invalid-token" };
   } else if (!invite.isActive) {
     return { invite, token, pageState: "invalid-token" };
+  } else if (memberLimitExceeded) {
+    return redirect(Paths.inviteJoinFullPath(token));
   } else if (loggedIn) {
     return { invite, token, pageState: "logged-in-user-valid-token" };
   } else {
@@ -69,6 +77,12 @@ function Page() {
       }
     } catch (error) {
       console.error("Error joining company via invite link", error);
+
+      if (Billing.extractLimitError(error)?.code === "member_count_limit_exceeded") {
+        navigate(Paths.inviteJoinFullPath(token));
+        return;
+      }
+
       setJoinError("Something went wrong while joining. Please try again.");
     } finally {
       setJoining(false);
@@ -90,15 +104,12 @@ function Page() {
 }
 
 function prepInvitation(invite: InviteLink | null): InviteLinkJoinPage.Invitation | null {
-  if (!invite) return null;
-
-  assertPresent(invite.company);
-  assertPresent(invite.author);
+  if (!invite?.company || !invite.author) return null;
 
   return {
     company: {
-      id: invite.company!.id!,
-      name: invite.company!.name!,
+      id: invite.company.id!,
+      name: invite.company.name!,
     },
     author: {
       id: invite.author.id,
@@ -108,12 +119,16 @@ function prepInvitation(invite: InviteLink | null): InviteLinkJoinPage.Invitatio
   };
 }
 
-async function loadInviteLink(token: string): Promise<InviteLink | null> {
+async function loadInviteAvailability(token: string): Promise<InviteAvailability> {
   try {
-    const result = await Api.invitations.getInviteLinkByToken({ token });
-    return result.inviteLink || null;
+    const result = await Api.invitations.getInviteLinkAvailability({ token });
+
+    return {
+      invite: result.inviteLink || null,
+      memberLimitExceeded: result.memberLimitExceeded,
+    };
   } catch (error) {
-    console.error("Error loading invite link:", error);
-    return null;
+    console.error("Error loading invite availability:", error);
+    return { invite: null, memberLimitExceeded: false };
   }
 }
