@@ -10,7 +10,7 @@ const STORAGE_CONTEXT = "billing-limit-banner";
 type BillingLimitWarnings = api.BillingLimitWarnings;
 type BillingLimitWarningStatus = api.BillingLimitStatus;
 
-export interface ApproachingLimitBannerViewModel {
+interface ApproachingLimitBannerViewModel {
   mode: "approaching" | "over_limit";
   title: string;
   description: string;
