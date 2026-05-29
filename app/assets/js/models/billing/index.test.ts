@@ -96,6 +96,7 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
       },
     ],
     memberCount: 10,
+    storageUsageBytes: 81 * 1024 ** 3,
     stale: false,
     ...rest,
   } as Billing.BillingOverview;

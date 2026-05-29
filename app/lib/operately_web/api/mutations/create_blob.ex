@@ -2,6 +2,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Billing.EnforceLimits
+  alias Operately.Billing.EnforceLimits.LimitError
+
   inputs do
     field? :files, list_of(:blob_creation_input), null: true
   end
@@ -11,9 +14,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   end
 
   def call(conn, inputs) do
+    current_company = company(conn)
+
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:blobs, fn ctx -> create_blobs(ctx.me, inputs.files) end)
+    |> run(:blobs, fn ctx -> create_blobs(ctx.me, current_company, inputs.files || []) end)
     |> run(:serialized, fn ctx -> serialize(ctx.blobs) end)
     |> respond()
   end
@@ -21,29 +26,38 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   def respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :blobs, %{error: %LimitError{} = error}} -> EnforceLimits.to_api_error(error)
+      {:error, :blobs, %LimitError{} = error} -> EnforceLimits.to_api_error(error)
       {:error, :blobs, _} -> {:error, :bad_request}
       _ -> {:error, :internal_server_error}
     end
   end
 
-  defp create_blobs(person, files) do
-    Repo.transaction(fn ->
-      Enum.map(files, fn file ->
-        {:ok, blob} = Operately.Blobs.create_blob(%{
-          purpose: :company_file,
-          company_id: person.company_id,
-          author_id: person.id,
-          status: :pending,
-          filename: file.filename,
-          size: file.size,
-          content_type: file.content_type,
-          width: file[:width],
-          height: file[:height]
-        })
-
-        blob
+  defp create_blobs(person, company, files) do
+    requested_delta =
+      Enum.reduce(files, 0, fn file, total ->
+        total + if is_integer(file.size), do: file.size, else: 0
       end)
-    end)
+
+    with :ok <- Operately.Billing.check_storage_limit(company, requested_delta) do
+      Repo.transaction(fn ->
+        Enum.map(files, fn file ->
+          {:ok, blob} = Operately.Blobs.create_blob(%{
+            purpose: :company_file,
+            company_id: person.company_id,
+            author_id: person.id,
+            status: :pending,
+            filename: file.filename,
+            size: file.size,
+            content_type: file.content_type,
+            width: file[:width],
+            height: file[:height]
+          })
+
+          blob
+        end)
+      end)
+    end
   end
 
   defp serialize(blobs) do

@@ -1,4 +1,5 @@
 import { CompanyBillingPage } from "./types";
+import { formatStorageBytes } from "./storageFormatting";
 
 export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props): CompanyBillingPage.PageViewModel {
   if (props.isConfirmingCheckout) {
@@ -61,13 +62,29 @@ export function buildCompanyBillingOverviewMode(args: BuildOverviewModeArgs): Co
       ]),
     },
     usageRows: [
-      { label: "Active members", value: `${args.billing.memberCount}` },
-      { label: "Member limit", value: currentPlan?.memberLimit ? `${currentPlan.memberLimit}` : "Unavailable" },
+      { label: "Active members", value: formatCountUsage(args.billing.memberCount, currentPlan?.memberLimit) },
+      { label: "Storage used", value: formatStorageUsage(args.billing.storageUsageBytes, currentPlan?.storageLimitBytes) },
     ],
     statusNotices: buildCompanyBillingStatusNotices(args.billing),
     actions: buildOverviewActions(args),
     emptyStatusMessage: "No pending billing changes.",
   };
+}
+
+function formatCountUsage(current: number, limit?: number | null): string {
+  if (limit == null) {
+    return `${current} / Unavailable`;
+  }
+
+  return `${current} / ${limit}`;
+}
+
+function formatStorageUsage(current: number, limit?: number | null): string {
+  if (limit == null) {
+    return `${formatStorageBytes(current)} / Unavailable`;
+  }
+
+  return `${formatStorageBytes(current)} / ${formatStorageBytes(limit)}`;
 }
 
 export function buildCompanyBillingConfirmingMode(
