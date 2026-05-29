@@ -33,6 +33,7 @@ defmodule OperatelyWeb.Api.Types do
   enum :account_theme, values: Operately.People.Account.valid_themes()
 
   enum :billing_plan, values: Operately.Billing.CompanyBillingAccount.valid_plan_keys()
+  enum :billing_limit_plan, values: [:free | Operately.Billing.CompanyBillingAccount.valid_plan_keys()]
   enum :billing_interval, values: Operately.Billing.CompanyBillingAccount.valid_billing_intervals()
   enum :billing_status, values: Operately.Billing.CompanyBillingAccount.valid_statuses()
 
@@ -77,6 +78,32 @@ defmodule OperatelyWeb.Api.Types do
     field? :last_synced_at, :datetime, null: true
     field :inserted_at, :datetime, null: false
     field :updated_at, :datetime, null: false
+  end
+
+  object :billing_recommended_upgrade do
+    field? :plan_key, :billing_plan, null: true
+    field? :billing_interval, :billing_interval, null: true
+    field? :source, :string, null: true
+  end
+
+  object :billing_limit_status do
+    field :code, :string, null: false
+    field :limit_key, :string, null: false
+    field? :plan_key, :billing_limit_plan, null: true
+    field :current_usage, :integer, null: false
+    field :requested_delta, :integer, null: false
+    field :projected_usage, :integer, null: false
+    field :limit, :integer, null: false
+    field :remaining, :integer, null: false
+    field :near_limit, :boolean, null: false
+    field :blocked, :boolean, null: false
+    field :enforced, :boolean, null: false
+    field? :recommended_upgrade, :billing_recommended_upgrade, null: true
+  end
+
+  object :billing_limit_warnings do
+    field :member_limit, :billing_limit_status, null: false
+    field :storage_limit, :billing_limit_status, null: false
   end
 
   object :billing_overview do

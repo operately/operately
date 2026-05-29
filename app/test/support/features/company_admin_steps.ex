@@ -50,6 +50,12 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.assert_has(testid: "company-admin-page")
   end
 
+  step :visit_company_home_page, ctx do
+    ctx
+    |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.assert_has(testid: "company-home")
+  end
+
   step :visit_company_manage_people_page, ctx do
     UI.visit(ctx, Paths.company_manage_people_path(ctx.company))
   end
@@ -650,9 +656,32 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.refute_has(testid: "billing-limit-guidance-cta")
   end
 
+  step :assert_approaching_limit_banner_has_upgrade_cta, ctx do
+    ctx
+    |> UI.assert_has(testid: "approaching-limit-banner")
+    |> UI.assert_has(testid: "approaching-limit-banner-cta")
+  end
+
+  step :assert_approaching_limit_banner_has_no_upgrade_cta, ctx do
+    ctx
+    |> UI.assert_has(testid: "approaching-limit-banner")
+    |> UI.refute_has(testid: "approaching-limit-banner-cta")
+  end
+
+  step :refute_approaching_limit_banner_visible, ctx do
+    ctx |> UI.refute_has(testid: "approaching-limit-banner")
+  end
+
   step :follow_limit_guidance_upgrade_cta, ctx do
     ctx
     |> UI.click(testid: "billing-limit-guidance-cta")
+    |> UI.sleep(200)
+    |> UI.assert_page(Paths.company_billing_plan_path(ctx.company))
+  end
+
+  step :follow_approaching_limit_banner_upgrade_cta, ctx do
+    ctx
+    |> UI.click(testid: "approaching-limit-banner-cta")
     |> UI.sleep(200)
     |> UI.assert_page(Paths.company_billing_plan_path(ctx.company))
   end
