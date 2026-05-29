@@ -662,10 +662,32 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.assert_has(testid: "approaching-limit-banner-cta")
   end
 
+  step :assert_company_billing_banner_has_upgrade_cta, ctx do
+    ctx
+    |> UI.assert_has(testid: "approaching-limit-banner")
+    |> UI.assert_has(testid: "approaching-limit-banner-cta")
+  end
+
   step :assert_approaching_limit_banner_has_no_upgrade_cta, ctx do
     ctx
     |> UI.assert_has(testid: "approaching-limit-banner")
     |> UI.refute_has(testid: "approaching-limit-banner-cta")
+  end
+
+  step :assert_company_billing_banner_has_no_upgrade_cta, ctx do
+    ctx
+    |> UI.assert_has(testid: "approaching-limit-banner")
+    |> UI.refute_has(testid: "approaching-limit-banner-cta")
+  end
+
+  step :assert_company_billing_banner_has_no_dismiss_action, ctx do
+    ctx
+    |> UI.assert_has(testid: "approaching-limit-banner")
+    |> UI.refute_has(testid: "approaching-limit-banner-dismiss")
+  end
+
+  step :assert_company_billing_banner_text, ctx, text do
+    ctx |> UI.assert_text(text)
   end
 
   step :refute_approaching_limit_banner_visible, ctx do
@@ -680,6 +702,13 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :follow_approaching_limit_banner_upgrade_cta, ctx do
+    ctx
+    |> UI.click(testid: "approaching-limit-banner-cta")
+    |> UI.sleep(200)
+    |> UI.assert_page(Paths.company_billing_plan_path(ctx.company))
+  end
+
+  step :follow_company_billing_banner_upgrade_cta, ctx do
     ctx
     |> UI.click(testid: "approaching-limit-banner-cta")
     |> UI.sleep(200)

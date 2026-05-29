@@ -71,6 +71,7 @@ describe("approaching limit banner helpers", () => {
     });
 
     expect(banner).toMatchObject({
+      mode: "approaching",
       title: "Approaching your plan limits",
       cta: {
         label: "Review plans",
@@ -78,8 +79,8 @@ describe("approaching limit banner helpers", () => {
       },
     });
     expect(banner?.usageRows).toEqual([
-      { label: "Active members", value: "18 / 20" },
-      { label: "Storage used", value: "950 MB / 1 GB" },
+      { label: "Active members", value: "18 / 20", state: "near_limit" },
+      { label: "Storage used", value: "950 MB / 1 GB", state: "near_limit" },
     ]);
   });
 
@@ -90,6 +91,7 @@ describe("approaching limit banner helpers", () => {
     });
 
     expect(banner).toMatchObject({
+      mode: "approaching",
       title: "Approaching your plan limits",
       cta: null,
     });
@@ -121,7 +123,7 @@ describe("approaching limit banner helpers", () => {
     );
 
     expect(banner?.activeLimitKeys).toEqual(["member_count"]);
-    expect(banner?.usageRows).toEqual([{ label: "Active members", value: "18 / 20" }]);
+    expect(banner?.usageRows).toEqual([{ label: "Active members", value: "18 / 20", state: "near_limit" }]);
   });
 
   it("shows one banner when both limit warnings are active", () => {
@@ -131,6 +133,99 @@ describe("approaching limit banner helpers", () => {
     });
 
     expect(banner?.activeLimitKeys).toEqual(["member_count", "storage_bytes"]);
+  });
+
+  it("builds an urgent owner banner when a limit is already blocked", () => {
+    const banner = Billing.buildApproachingLimitBanner(
+      limitWarnings({
+        memberLimit: limitStatus({
+          currentUsage: 21,
+          projectedUsage: 21,
+          limit: 20,
+          remaining: 0,
+          nearLimit: true,
+          blocked: true,
+        }),
+        storageLimit: limitStatus({
+          code: "storage_limit_exceeded",
+          limitKey: "storage_bytes",
+          nearLimit: false,
+        }),
+      }),
+      "owner",
+      {
+        companyBillingPath: () => "/acme/admin/billing",
+        companyBillingPlansPath: (opts) =>
+          `/acme/admin/billing/plans?plan=${opts?.plan}&billing_period=${opts?.billingPeriod}`,
+      },
+    );
+
+    expect(banner).toMatchObject({
+      mode: "over_limit",
+      title: "This company is over its plan limits",
+      cta: {
+        label: "Review plans",
+        to: "/acme/admin/billing/plans?plan=team&billing_period=monthly",
+      },
+    });
+    expect(banner?.usageRows).toEqual([{ label: "Active members", value: "21 / 20", state: "blocked" }]);
+  });
+
+  it("builds an urgent company-admin banner without a billing CTA when storage is blocked", () => {
+    const banner = Billing.buildApproachingLimitBanner(
+      limitWarnings({
+        storageLimit: limitStatus({
+          code: "storage_limit_exceeded",
+          limitKey: "storage_bytes",
+          currentUsage: 1100 * 1024 * 1024,
+          projectedUsage: 1100 * 1024 * 1024,
+          limit: 1024 * 1024 * 1024,
+          remaining: 0,
+          nearLimit: true,
+          blocked: true,
+        }),
+      }),
+      "company_admin",
+      {
+        companyBillingPath: () => "/acme/admin/billing",
+        companyBillingPlansPath: () => "/acme/admin/billing/plans",
+      },
+    );
+
+    expect(banner).toMatchObject({
+      mode: "over_limit",
+      title: "This company is over its plan limits",
+      cta: null,
+    });
+  });
+
+  it("shows one urgent banner with blocked rows first and near-limit rows after them", () => {
+    const banner = Billing.buildApproachingLimitBanner(
+      limitWarnings({
+        memberLimit: limitStatus({
+          currentUsage: 21,
+          projectedUsage: 21,
+          limit: 20,
+          remaining: 0,
+          nearLimit: true,
+          blocked: true,
+        }),
+      }),
+      "owner",
+      {
+        companyBillingPath: () => "/acme/admin/billing",
+        companyBillingPlansPath: () => "/acme/admin/billing/plans",
+      },
+    );
+
+    expect(banner).toMatchObject({
+      mode: "over_limit",
+      activeLimitKeys: ["member_count", "storage_bytes"],
+    });
+    expect(banner?.usageRows).toEqual([
+      { label: "Active members", value: "21 / 20", state: "blocked" },
+      { label: "Storage used", value: "950 MB / 1 GB", state: "near_limit" },
+    ]);
   });
 
   it("stores dismissals per company and active warning type", () => {
