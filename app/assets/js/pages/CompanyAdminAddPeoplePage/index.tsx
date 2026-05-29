@@ -5,7 +5,6 @@ import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
 import * as Permissions from "@/models/permissions";
 
-import { BillingLimitGuidanceNotice } from "@/components/BillingLimitGuidanceNotice";
 import { PageModule } from "@/routes/types";
 import { includesId, usePaths } from "@/routes/paths";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -94,29 +93,38 @@ function Page() {
     setState,
   );
 
-  return (
-    <CompanyAdminAddPeoplePage
-      companyName={company.name || ""}
-      navigationItems={navigationItems}
-      state={state}
-      notice={limitGuidance ? <LimitGuidanceNotice guidance={limitGuidance} /> : null}
-      formValues={values}
-      formErrors={errors}
-      onFormChange={handleFormChange}
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-      onInviteAnother={handleInviteAnother}
-      onGoBack={handleGoBack}
-      goBackLabel="Back"
-      isSubmitting={isSubmitting}
-      memberType={memberType}
-      spaces={spaces}
-      goals={goals}
-      projects={projects}
-      onGrantAccess={grantAccess}
-      isGrantingAccess={isGrantingAccess}
-    />
-  );
+  const commonProps = {
+    companyName: company.name || "",
+    navigationItems,
+    state,
+    formValues: values,
+    formErrors: errors,
+    onFormChange: handleFormChange,
+    onSubmit: handleSubmit,
+    onCancel: handleCancel,
+    onInviteAnother: handleInviteAnother,
+    onGoBack: handleGoBack,
+    goBackLabel: "Back" as const,
+    isSubmitting,
+    memberType,
+    spaces,
+    goals,
+    projects,
+    onGrantAccess: grantAccess,
+    isGrantingAccess,
+  };
+
+  if (limitGuidance) {
+    return (
+      <CompanyAdminAddPeoplePage
+        {...commonProps}
+        limitGuidance={limitGuidance}
+        onCloseLimitGuidance={() => setLimitGuidance(null)}
+      />
+    );
+  }
+
+  return <CompanyAdminAddPeoplePage {...commonProps} />;
 }
 
 function useInviteSubmit(
@@ -219,11 +227,6 @@ function useInviteSubmit(
 
   return { spaces, goals, projects, handleSubmit, isSubmitting };
 }
-
-function LimitGuidanceNotice({ guidance }: { guidance: Billing.BillingLimitGuidance }) {
-  return <BillingLimitGuidanceNotice guidance={guidance} />;
-}
-
 function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Errors {
   const errors: InviteMemberForm.Errors = {};
 

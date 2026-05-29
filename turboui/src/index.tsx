@@ -43,6 +43,7 @@ export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
 export { InviteMemberForm } from "./InviteMemberForm";
 export { InvitePeoplePage } from "./InvitePeoplePage";
 export { MemberTypeSelectionPage } from "./MemberTypeSelectionPage";
+export { BillingLimitGuidanceNotice } from "./BillingLimitGuidanceNotice";
 export { CompanyAdminAddPeoplePage } from "./CompanyAdminAddPeoplePage";
 export {
   buildCompanyBillingCancellationFeedback,
