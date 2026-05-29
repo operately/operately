@@ -1461,7 +1461,7 @@ Outcome:
 
 - owners and company admins receive proactive upgrade nudges before member or storage limits start blocking work
 
-### PR 8f: Over-limit company banner
+### PR 8f: Over-limit company banner (COMPLETED ✅)
 
 - Show a shared company-level banner when the company has already exceeded the member or storage limit, even if the overage happened outside the immediate blocked-action flow
 - Reuse the existing company-layout billing banner pattern where practical, but adjust the copy so it clearly communicates that the company is already over the plan limit rather than only approaching it

@@ -5,7 +5,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useHasSupportSessionCookie } from "@/features/SupportSessions";
 import { includesId, usePaths } from "@/routes/paths";
 import { useLocation } from "react-router-dom";
-import { IconSparkles, IconX, PrimaryButton } from "turboui";
+import { IconAlertTriangleFilled, IconSparkles, IconX, PrimaryButton } from "turboui";
 
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
@@ -26,14 +26,20 @@ export function ApproachingLimitBanner() {
       return null;
     }
 
-    if (Billing.isApproachingLimitBannerDismissed(billingLimitWarnings, company.id, { now: Date.now() })) {
-      return null;
-    }
-
-    return Billing.buildApproachingLimitBanner(billingLimitWarnings, viewerRole, {
+    const builtBanner = Billing.buildApproachingLimitBanner(billingLimitWarnings, viewerRole, {
       companyBillingPath: () => paths.companyBillingPath(),
       companyBillingPlansPath: (opts) => paths.companyBillingPlansPath(opts),
     });
+
+    if (!builtBanner) {
+      return null;
+    }
+
+    if (builtBanner.mode === "approaching" && Billing.isApproachingLimitBannerDismissed(billingLimitWarnings, company.id, { now: Date.now() })) {
+      return null;
+    }
+
+    return builtBanner;
   }, [billingLimitWarnings, company.id, hiddenOnRoute, paths, viewerRole, dismissedVersion]);
 
   const handleDismiss = React.useCallback(() => {
@@ -47,28 +53,39 @@ export function ApproachingLimitBanner() {
     return null;
   }
 
+  const isOverLimit = banner.mode === "over_limit";
+
   return (
     <div
-      className={`fixed left-0 right-0 z-[999] border-t border-surface-outline bg-callout-warning-bg shadow-lg ${hasSupportSession ? "bottom-14 sm:bottom-12" : "bottom-0"}`}
+      className={`fixed left-0 right-0 z-[999] border-t border-surface-outline shadow-lg ${isOverLimit ? "bg-callout-error-bg" : "bg-callout-warning-bg"} ${hasSupportSession ? "bottom-14 sm:bottom-12" : "bottom-0"}`}
       data-test-id="approaching-limit-banner"
     >
       <div className="mx-auto flex max-w-7xl items-start justify-between gap-3 px-4 py-3">
         <div className="min-w-0 flex flex-1 items-start gap-3">
-          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-surface-outline bg-surface-base text-callout-warning-content shadow-sm">
-            <IconSparkles size={16} />
+          <div
+            className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-surface-outline bg-surface-base shadow-sm ${isOverLimit ? "text-callout-error-content" : "text-callout-warning-content"}`}
+          >
+            {isOverLimit ? <IconAlertTriangleFilled size={16} /> : <IconSparkles size={16} />}
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-semibold text-content-accent">{banner.title}</div>
-            <p className="mt-1 text-sm text-content-dimmed">{banner.description}</p>
+            <div className={`text-sm font-semibold ${isOverLimit ? "text-callout-error-content" : "text-content-accent"}`}>{banner.title}</div>
+            <p className={`mt-1 text-sm ${isOverLimit ? "text-callout-error-content" : "text-content-dimmed"}`}>{banner.description}</p>
 
             <div className="mt-2 flex flex-wrap gap-2">
               {banner.usageRows.map((row) => (
                 <div
                   key={row.label}
-                  className="rounded-full border border-surface-outline bg-surface-base px-3 py-1 text-sm text-content-dimmed"
+                  className={`rounded-full border px-3 py-1 text-sm ${
+                    row.state === "blocked"
+                      ? "border-surface-outline bg-surface-base font-semibold text-callout-error-content"
+                      : "border-surface-outline bg-surface-base text-content-dimmed"
+                  }`}
                 >
-                  <span className="font-semibold text-content-accent">{row.label}:</span> {row.value}
+                  <span className={row.state === "blocked" ? "font-semibold text-callout-error-content" : "font-semibold text-content-accent"}>
+                    {row.label}:
+                  </span>{" "}
+                  {row.value}
                 </div>
               ))}
             </div>
@@ -82,15 +99,17 @@ export function ApproachingLimitBanner() {
             </PrimaryButton>
           )}
 
-          <button
-            type="button"
-            className="rounded-full border border-transparent p-2 text-content-dimmed transition hover:border-surface-outline hover:bg-surface-base hover:text-content-accent"
-            data-test-id="approaching-limit-banner-dismiss"
-            aria-label="Dismiss approaching limit banner"
-            onClick={handleDismiss}
-          >
-            <IconX size={18} />
-          </button>
+          {!isOverLimit && (
+            <button
+              type="button"
+              className="rounded-full border border-transparent p-2 text-content-dimmed transition hover:border-surface-outline hover:bg-surface-base hover:text-content-accent"
+              data-test-id="approaching-limit-banner-dismiss"
+              aria-label="Dismiss approaching limit banner"
+              onClick={handleDismiss}
+            >
+              <IconX size={18} />
+            </button>
+          )}
         </div>
       </div>
     </div>

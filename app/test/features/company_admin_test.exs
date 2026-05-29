@@ -286,6 +286,43 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.refute_approaching_limit_banner_visible()
   end
 
+  @tag role: :owner
+  feature "owner sees an urgent over-limit banner when the company is over the member limit", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_beyond_member_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_company_billing_banner_has_upgrade_cta()
+    |> Steps.assert_company_billing_banner_has_no_dismiss_action()
+    |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
+    |> Steps.follow_company_billing_banner_upgrade_cta()
+  end
+
+  @tag role: :admin
+  feature "company admin sees an urgent over-limit banner when storage is over the limit", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_beyond_storage_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_company_billing_banner_has_no_upgrade_cta()
+    |> Steps.assert_company_billing_banner_has_no_dismiss_action()
+    |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
+  end
+
+  @tag role: :owner
+  feature "mixed blocked and near-limit states show one urgent banner with both rows", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_beyond_member_limit()
+    |> fill_company_to_near_storage_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_company_billing_banner_has_upgrade_cta()
+    |> Steps.assert_company_billing_banner_has_no_dismiss_action()
+    |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
+    |> Steps.assert_company_billing_banner_text("Active members:")
+    |> Steps.assert_company_billing_banner_text("Storage used:")
+  end
+
   @tag role: :admin
   feature "rename company", ctx do
     ctx
@@ -464,6 +501,25 @@ defmodule Operately.Features.CompanyAdminTest do
       author_id: author.id,
       status: :uploaded,
       size: trunc(Plans.storage_limit_bytes(:free) * 0.95)
+    })
+
+    ctx
+  end
+
+  defp fill_company_beyond_member_limit(ctx) do
+    ctx
+    |> fill_company_to_member_limit()
+    |> Factory.add_company_member(:over_limit_member, name: "Over Limit Member")
+  end
+
+  defp fill_company_beyond_storage_limit(ctx) do
+    author = ctx[:owner] || ctx[:admin] || ctx[:member] || ctx.creator
+
+    blob_fixture(%{
+      company_id: ctx.company.id,
+      author_id: author.id,
+      status: :uploaded,
+      size: trunc(Plans.storage_limit_bytes(:free) * 1.05)
     })
 
     ctx
