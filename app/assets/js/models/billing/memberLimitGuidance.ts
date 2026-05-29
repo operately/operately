@@ -11,7 +11,7 @@ export interface BillingLimitGuidance {
   cta: { label: string; to: string } | null;
 }
 
-export interface BillingLimitGuidanceRoutes {
+interface BillingLimitGuidanceRoutes {
   companyBillingPath: () => string;
   companyBillingPlansPath: (opts?: { plan?: string | null; billingPeriod?: string | null }) => string;
 }

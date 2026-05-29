@@ -3,9 +3,9 @@ import type * as api from "@/api";
 type BillingPlan = api.BillingPlan;
 type BillingInterval = api.BillingInterval;
 
-export type BillingUpgradeRecommendationSource = "suggested" | "next_plan" | "none";
+type BillingUpgradeRecommendationSource = "suggested" | "next_plan" | "none";
 
-export interface BillingUpgradeRecommendation {
+interface BillingUpgradeRecommendation {
   target: {
     plan: BillingPlan;
     billingInterval: BillingInterval;

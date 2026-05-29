@@ -31,8 +31,8 @@ type BillingSearchParams = CompanyBillingPage.BillingSearchParams;
 type BillingTarget = CompanyBillingPage.BillingTarget;
 type BillingTargetSelection = CompanyBillingPage.BillingTargetSelection;
 
-export type { BillingLimitGuidance, BillingLimitGuidanceRoutes, BillingLimitViewerRole } from "./memberLimitGuidance";
-export type { BillingLimitError, BillingUpgradeRecommendation, BillingUpgradeRecommendationSource } from "./limitError";
+export type { BillingLimitGuidance, BillingLimitViewerRole } from "./memberLimitGuidance";
+export type { BillingLimitError } from "./limitError";
 
 export { buildMemberLimitGuidance } from "./memberLimitGuidance";
 export { extractLimitError, extractLimitErrorDetails } from "./limitError";
