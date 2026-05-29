@@ -49,6 +49,7 @@ export namespace CompanyBillingPage {
     plans: BillingPlanDefinition[];
     catalogProducts: BillingCatalogProduct[];
     memberCount: number;
+    storageUsageBytes: number;
     stale: boolean;
   }
 

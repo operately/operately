@@ -107,6 +107,7 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
       },
     ],
     memberCount: 18,
+    storageUsageBytes: 81 * 1024 ** 3,
     stale: false,
     ...rest,
   } as Billing.BillingOverview;
@@ -196,6 +197,10 @@ describe("CompanyBillingPage bridge helpers", () => {
     expect(overview.actions.map((action) => action.label)).toEqual(["Complete upgrade", "Switch Plan"]);
     expect(overview.actions[0]?.tone).toBe("primary");
     expect(overview.actions[1]?.tone).toBe("secondary");
+    expect(overview.usageRows).toEqual([
+      { label: "Active members", value: "18 / 20" },
+      { label: "Storage used", value: "81 GB / 1 GB" },
+    ]);
   });
 
   it("shows paid subscription actions for active and past-due companies", () => {
