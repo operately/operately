@@ -5,7 +5,6 @@ import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
 import * as Permissions from "@/models/permissions";
 
-import { BillingLimitGuidanceNotice } from "@/components/BillingLimitGuidanceNotice";
 import { PageModule } from "@/routes/types";
 import { includesId, usePaths } from "@/routes/paths";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -99,7 +98,8 @@ function Page() {
       companyName={company.name || ""}
       navigationItems={navigationItems}
       state={state}
-      notice={limitGuidance ? <LimitGuidanceNotice guidance={limitGuidance} /> : null}
+      limitGuidance={limitGuidance}
+      onCloseLimitGuidance={() => setLimitGuidance(null)}
       formValues={values}
       formErrors={errors}
       onFormChange={handleFormChange}
@@ -219,11 +219,6 @@ function useInviteSubmit(
 
   return { spaces, goals, projects, handleSubmit, isSubmitting };
 }
-
-function LimitGuidanceNotice({ guidance }: { guidance: Billing.BillingLimitGuidance }) {
-  return <BillingLimitGuidanceNotice guidance={guidance} />;
-}
-
 function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Errors {
   const errors: InviteMemberForm.Errors = {};
 
