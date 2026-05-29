@@ -349,17 +349,43 @@ defmodule Operately.Support.Features.UI do
   end
 
   def assert_text(state, text) do
-    execute("assert_text", state, fn session ->
-      session |> Browser.assert_text(text)
-    end)
+    assert_text(state, text, attempts: [50, 150, 250, 400, 1000, 2000])
   end
 
   def assert_text(state, text, testid: id) do
+    assert_text(state, text, testid: id, attempts: [50, 150, 250, 400, 1000, 2000])
+  end
+
+  def assert_text(state, text, testid: id, attempts: [delay | attempts]) do
     execute("assert_text", state, fn session ->
+      :timer.sleep(delay)
+
       session
       |> Browser.find(query(testid: id), fn element ->
-        element |> Browser.assert_text(text)
+        visible_text = element |> Element.text()
+        text_found = String.contains?(visible_text, text)
+
+        cond do
+          text_found -> element
+          attempts == [] -> raise Wallaby.ExpectationNotMetError, "Text '#{text}' was not found."
+          true -> assert_text(state, text, testid: id, attempts: attempts)
+        end
       end)
+    end)
+  end
+
+  def assert_text(state, text, attempts: [delay | attempts]) do
+    execute("assert_text", state, fn session ->
+      :timer.sleep(delay)
+
+      visible_text = session |> Browser.text()
+      text_found = String.contains?(visible_text, text)
+
+      cond do
+        text_found -> session
+        attempts == [] -> raise Wallaby.ExpectationNotMetError, "Text '#{text}' was not found."
+        true -> assert_text(state, text, attempts: attempts).session
+      end
     end)
   end
 
