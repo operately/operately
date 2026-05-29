@@ -1,0 +1,64 @@
+import * as Billing from "@/models/billing";
+import * as React from "react";
+
+import { IconAlertTriangleFilled, PrimaryButton } from "turboui";
+
+interface Props {
+  guidance: Billing.BillingLimitGuidance;
+}
+
+export function BillingLimitGuidanceNotice({ guidance }: Props) {
+  return (
+    <div className="mb-6 overflow-hidden rounded-2xl border border-stroke-base bg-surface-base shadow-sm" data-test-id="billing-limit-guidance">
+      <div className="border-b border-stroke-base bg-callout-warning-bg px-5 py-5 sm:px-6">
+        <div className="flex items-start gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-stroke-base bg-surface-base text-callout-warning-content shadow-sm">
+            <IconAlertTriangleFilled size={20} />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="inline-flex rounded-full border border-stroke-base bg-surface-base px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-content-dimmed">
+              Plan limit reached
+            </div>
+            <h3 className="mt-3 text-lg font-semibold leading-7 text-content-accent">{guidance.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-content-dimmed">{guidance.description}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-3 px-5 py-5 sm:grid-cols-2 sm:px-6">
+        <InfoTile label="Usage" value={guidance.usageSummary} />
+        <InfoTile
+          label={guidance.recommendedPlanLabel ? "Recommended plan" : "Next step"}
+          value={guidance.recommendedPlanLabel || "A company owner needs to review the available billing options."}
+          emphasized={!!guidance.recommendedPlanLabel}
+        />
+      </div>
+
+      {guidance.cta && (
+        <div className="border-t border-stroke-base px-5 py-5 sm:px-6">
+          <PrimaryButton linkTo={guidance.cta.to} testId="billing-limit-guidance-cta">
+            {guidance.cta.label}
+          </PrimaryButton>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InfoTile({
+  label,
+  value,
+  emphasized = false,
+}: {
+  label: string;
+  value: string;
+  emphasized?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-stroke-base bg-surface-dimmed px-4 py-4">
+      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-content-dimmed">{label}</div>
+      <div className={`mt-2 text-sm leading-6 ${emphasized ? "font-semibold text-content-accent" : "text-content-dimmed"}`}>{value}</div>
+    </div>
+  );
+}

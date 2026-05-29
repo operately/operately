@@ -1,8 +1,9 @@
 defmodule Operately.Operations.AccountSigningUpTest do
-  use Operately.DataCase, async: true
+  use Operately.DataCase
 
   alias Operately.Operations.AccountSigningUp
   alias Operately.Activities.Activity
+  alias Operately.Billing
   alias Operately.People
   alias Operately.People.EmailActivationCode
   alias Operately.Support.Factory
@@ -31,7 +32,7 @@ defmodule Operately.Operations.AccountSigningUpTest do
       assert account.full_name == @full_name
       assert People.get_account_by_email(@email)
 
-      assert invite_context == %{company: nil, person: nil, error: nil}
+      assert invite_context == %{company: nil, person: nil, error: nil, join_error_details: nil}
     end
 
     test "accepts a hyphenated code (e.g. A1B-2C3)" do
@@ -88,6 +89,30 @@ defmodule Operately.Operations.AccountSigningUpTest do
       assert invite_context.person == nil
       assert invite_context.error =~ "Invalid invite link"
     end
+
+    test "succeeds but returns structured join error details when the company is full" do
+      ctx = Factory.setup(%{}) |> Factory.add_company_member(:creator)
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: company.id,
+          author_id: ctx.creator.id
+        })
+
+      {:ok, activation} = EmailActivationCode.create(@email)
+
+      assert {:ok, _account, invite_context} =
+               AccountSigningUp.run(@full_name, @email, @password, activation.code, invite_link.token)
+
+      assert invite_context.company == nil
+      assert invite_context.person == nil
+      assert invite_context.error == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert invite_context.join_error_details.code == "member_count_limit_exceeded"
+      assert invite_context.join_error_details.limit_key == "member_count"
+      assert invite_context.join_error_details.plan_key == "free"
+    end
   end
 
   describe "failure cases" do
@@ -130,6 +155,36 @@ defmodule Operately.Operations.AccountSigningUpTest do
 
       assert {:error, :invalid} =
                AccountSigningUp.run(@full_name, @email, @password, activation.code)
+    end
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    Billing.create_product(%{
+      provider: "polar",
+      plan_family: "team",
+      billing_interval: "monthly",
+      polar_product_id: "signup-team-monthly-#{company.id}",
+      active: true
+    })
+
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        Operately.PeopleFixtures.person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Signup Limit #{index}",
+          email: "signup-limit-#{index}@example.com"
+        })
+      end)
     end
   end
 end
