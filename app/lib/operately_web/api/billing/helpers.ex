@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
 
   alias Operately.Billing
   alias Operately.Companies.Company
+  alias Operately.Companies.Permissions
 
   def authorize_owner_billing_access(conn) do
     with {:ok, company} <- find_company(conn),
@@ -10,6 +11,19 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
          :ok <- ensure_billing_enabled(company),
          :ok <- ensure_owner(company, person) do
       {:ok, %{company: company, person: person}}
+    end
+  end
+
+  def authorize_admin_billing_read_access(conn) do
+    with {:ok, company} <- find_company(conn),
+         {:ok, person} <- find_me(conn),
+         :ok <- ensure_billing_enabled(company),
+         {:ok, company} <- Company.get(person, id: company.id),
+         {:ok, :allowed} <- Permissions.check(company.request_info.access_level, :is_admin) do
+      {:ok, %{company: company, person: person}}
+    else
+      {:error, :not_found} -> {:error, :not_found}
+      {:error, :forbidden} -> {:error, :forbidden}
     end
   end
 

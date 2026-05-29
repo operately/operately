@@ -69,6 +69,7 @@ export {
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
 } from "./CompanyBillingPage";
+export { formatStorageBytes } from "./CompanyBillingPage/storageFormatting";
 export {
   buildCompanyBillingCancellationPageViewModel,
   buildCompanyBillingCancellationSummary,

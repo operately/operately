@@ -266,7 +266,7 @@ function buildPostSignupRedirect({
 }: {
   inviteToken: string | null;
   companyId?: string | null;
-  joinErrorDetails?: Record<string, any> | null;
+  joinErrorDetails?: unknown;
   redirectToParam: string | null;
 }) {
   const joinLimitError = Billing.extractLimitErrorDetails(joinErrorDetails);

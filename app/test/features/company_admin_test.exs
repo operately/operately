@@ -2,8 +2,11 @@ defmodule Operately.Features.CompanyAdminTest do
   use Operately.FeatureCase
 
   alias Operately.Billing
+  alias Operately.Billing.Plans
   alias Operately.People
   alias Operately.Support.Features.CompanyAdminSteps, as: Steps
+
+  import Operately.BlobsFixtures
 
   set_app_config(:billing_enabled, true)
 
@@ -247,6 +250,42 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_i_dont_see_reach_out_to_admins()
   end
 
+  @tag role: :owner
+  feature "owner sees a proactive upgrade banner near the member limit", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_to_near_member_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_approaching_limit_banner_has_upgrade_cta()
+    |> Steps.follow_approaching_limit_banner_upgrade_cta()
+  end
+
+  @tag role: :admin
+  feature "company admin sees a proactive upgrade banner near the storage limit without a CTA", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_to_near_storage_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_approaching_limit_banner_has_no_upgrade_cta()
+  end
+
+  @tag role: :member
+  feature "regular members do not see the proactive upgrade banner", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_to_near_member_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.refute_approaching_limit_banner_visible()
+  end
+
+  @tag role: :owner
+  feature "non-flagged companies do not show the proactive upgrade banner", ctx do
+    ctx
+    |> fill_company_to_near_member_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.refute_approaching_limit_banner_visible()
+  end
+
   @tag role: :admin
   feature "rename company", ctx do
     ctx
@@ -403,6 +442,31 @@ defmodule Operately.Features.CompanyAdminTest do
     else
       ctx
     end
+  end
+
+  defp fill_company_to_near_member_limit(ctx) do
+    needed_people = max(18 - Billing.active_member_count(ctx.company), 0)
+
+    if needed_people > 0 do
+      Enum.reduce(1..needed_people, ctx, fn index, acc ->
+        Factory.add_company_member(acc, :"near_limit_member_#{index}", name: "Near Limit Member #{index}")
+      end)
+    else
+      ctx
+    end
+  end
+
+  defp fill_company_to_near_storage_limit(ctx) do
+    author = ctx[:owner] || ctx[:admin] || ctx[:member] || ctx.creator
+
+    blob_fixture(%{
+      company_id: ctx.company.id,
+      author_id: author.id,
+      status: :uploaded,
+      size: trunc(Plans.storage_limit_bytes(:free) * 0.95)
+    })
+
+    ctx
   end
 
   defp assert_no_person_added(ctx, email) do

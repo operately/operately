@@ -31,13 +31,16 @@ import { SupportSessionBanner } from "./SupportSessionBanner";
 import { User } from "./User";
 
 import { useWindowSizeBreakpoints } from "@/components/Pages";
+import { useRefresh } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { AiSidebar } from "@/features/AiSidebar";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
+import * as Billing from "@/models/billing";
 import { Paths, usePaths } from "@/routes/paths";
 import { useGlobalSearchHandler } from "./useGlobalSearch";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
+import { ApproachingLimitBanner } from "./ApproachingLimitBanner";
 
 interface NavigationProps {
   company: Api.Company;
@@ -236,13 +239,16 @@ export default function CompanyLayout() {
   const data = useCompanyLoaderData();
   const outletDiv = React.useRef<HTMLDivElement>(null);
   const keyboardShortcutsModal = useKeyboardShortcutsModal();
+  const refresh = useRefresh();
 
   useScrollToTopOnNavigationChange({ outletDiv });
+  Billing.useBillingUpdatedSignal(refresh);
 
   return (
     <div className="flex flex-col h-screen">
       <Navigation {...data} onOpenKeyboardShortcuts={keyboardShortcutsModal.open} />
       <SupportSessionBanner />
+      <ApproachingLimitBanner />
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
