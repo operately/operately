@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Activities.Activity
+  alias Operately.Billing
   alias Operately.People.{CliAuthSession, EmailActivationCode}
   alias Operately.Support.Factory
 
@@ -21,6 +22,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
     end)
 
     if ctx[:empty_instance] do
+      clear_instance_data()
       ctx
     else
       ctx |> Factory.setup()
@@ -227,6 +229,32 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       assert Operately.People.get_person(ctx.lonely_account, ctx.company)
     end
 
+    test "returns structured limit details when a company-wide invite join is blocked", ctx do
+      ctx = Factory.add_account(ctx, :lonely_account)
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: company.id,
+          author_id: ctx.creator.id
+        })
+
+      {:ok, activation} = EmailActivationCode.create(ctx.lonely_account.email)
+
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.lonely_account.email,
+                 code: activation.code,
+                 invite_token: invite_link.token
+               })
+
+      assert res.message == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert res.details.code == "member_count_limit_exceeded"
+      assert res.details.limit_key == "member_count"
+      assert res.details.plan_key == "free"
+    end
+
     test "returns bad_request for an invalid code", ctx do
       assert {400, res} =
                mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
@@ -299,8 +327,38 @@ defmodule OperatelyWeb.Api.CliAuthTest do
 
       assert res.message =~ "first-time invites"
       assert Repo.get(EmailActivationCode, activation.id) != nil
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    Billing.create_product(%{
+      provider: "polar",
+      plan_family: "team",
+      billing_interval: "monthly",
+      polar_product_id: "cli-auth-team-monthly-#{company.id}",
+      active: true
+    })
+
+    company
+  end
+
+  defp fill_company_to_member_limit(company) do
+    needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        Operately.PeopleFixtures.person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Cli Auth Limit #{index}",
+          email: "cli-auth-limit-#{index}@example.com"
+        })
+      end)
     end
   end
+end
 
   describe "google bootstrap flow" do
     test "start_google creates a pending bootstrap session and status remains pending", ctx do
@@ -1027,4 +1085,8 @@ defmodule OperatelyWeb.Api.CliAuthTest do
 
   defp restore_env(key, nil), do: System.delete_env(key)
   defp restore_env(key, value), do: System.put_env(key, value)
+
+  defp clear_instance_data do
+    Repo.query!("TRUNCATE TABLE companies, accounts RESTART IDENTITY CASCADE")
+  end
 end

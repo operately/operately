@@ -162,6 +162,19 @@ defmodule OperatelyWeb.Api.InvitationsTest do
 
       assert res.company == Serializer.serialize(ctx.company, level: :essential)
     end
+
+    test "returns a billing limit error with structured details when the company is full", ctx do
+      company = enable_billing(ctx.company)
+      fill_company_to_member_limit(company)
+      invite_link = create_invite_link(%{ctx | company: company})
+
+      assert {400, res} = execute(ctx, %{token: invite_link.token})
+      assert res.message == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert res.details.code == "member_count_limit_exceeded"
+      assert res.details.limit_key == "member_count"
+      assert res.details.plan_key == "free"
+      assert res.details.recommended_upgrade.plan_key == "team"
+    end
   end
 
   describe "update_invite_link" do

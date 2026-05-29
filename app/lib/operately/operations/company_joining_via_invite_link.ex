@@ -1,6 +1,8 @@
 defmodule Operately.Operations.CompanyJoiningViaInviteLink do
   alias Ecto.Multi
   alias Operately.Activities.Activity
+  alias Operately.Billing.EnforceLimits.LimitError
+  alias Operately.Billing.Usage
   alias Operately.Companies.Company
   alias Operately.Repo
   alias Operately.InviteLinks
@@ -47,6 +49,10 @@ defmodule Operately.Operations.CompanyJoiningViaInviteLink do
         Logger.info("Invite link does not belong to the logged-in account")
         {:error, :invite_token_invalid}
 
+      {:error, :check_member_limit, %LimitError{} = error, _changes} ->
+        Logger.info("Company-wide invite blocked because the company is at its member limit")
+        {:error, error}
+
       {:error, :account_first_login, reason, _changes} ->
         Logger.error("Failed to mark account first login: #{inspect(reason)}")
         {:error, :person_creation_failed}
@@ -74,6 +80,12 @@ defmodule Operately.Operations.CompanyJoiningViaInviteLink do
       case People.get_person(account, company) do
         nil -> {:ok, :no_existing_person}
         person -> {:error, {:person_already_in_company, person}}
+      end
+    end)
+    |> Multi.run(:check_member_limit, fn _, %{company: company} ->
+      case Usage.check_member_limit(company) do
+        :ok -> {:ok, :within_limit}
+        {:error, _reason} = error -> error
       end
     end)
     |> Multi.run(:person, fn _, %{invite_link: invite_link} ->
