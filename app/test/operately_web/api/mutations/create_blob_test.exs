@@ -98,6 +98,20 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
 
       assert length(res.blobs) == 1
     end
+
+    test "it rejects files with invalid sizes instead of treating them as zero", ctx do
+      initial_blob_count = Repo.aggregate(Operately.Blobs.Blob, :count, :id)
+
+      assert {400, res} =
+               mutation(ctx.conn, :create_blob, %{
+                 files: [
+                   %{filename: "test.txt", size: nil, content_type: "text/plain"}
+                 ]
+               })
+
+      assert res.message == "File size must be a non-negative integer"
+      assert Repo.aggregate(Operately.Blobs.Blob, :count, :id) == initial_blob_count
+    end
   end
 
   defp enable_billing(company) do

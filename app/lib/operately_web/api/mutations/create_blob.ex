@@ -26,6 +26,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   def respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :blobs, %{error: :invalid_file_size}} -> {:error, :bad_request, "File size must be a non-negative integer"}
       {:error, :blobs, %{error: %LimitError{} = error}} -> EnforceLimits.to_api_error(error)
       {:error, :blobs, %LimitError{} = error} -> EnforceLimits.to_api_error(error)
       {:error, :blobs, _} -> {:error, :bad_request}
@@ -34,12 +35,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   end
 
   defp create_blobs(person, company, files) do
-    requested_delta =
-      Enum.reduce(files, 0, fn file, total ->
-        total + if is_integer(file.size), do: file.size, else: 0
-      end)
-
-    with :ok <- Operately.Billing.check_storage_limit(company, requested_delta) do
+    with {:ok, requested_delta} <- calculate_requested_delta(files),
+         :ok <- Operately.Billing.check_storage_limit(company, requested_delta) do
       Repo.transaction(fn ->
         Enum.map(files, fn file ->
           {:ok, blob} = Operately.Blobs.create_blob(%{
@@ -59,6 +56,18 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
       end)
     end
   end
+
+  defp calculate_requested_delta(files) do
+    Enum.reduce_while(files, {:ok, 0}, fn file, {:ok, total} ->
+      case normalize_file_size(file.size) do
+        {:ok, size} -> {:cont, {:ok, total + size}}
+        {:error, :invalid_file_size} = error -> {:halt, error}
+      end
+    end)
+  end
+
+  defp normalize_file_size(size) when is_integer(size) and size >= 0, do: {:ok, size}
+  defp normalize_file_size(_size), do: {:error, :invalid_file_size}
 
   defp serialize(blobs) do
     files = Enum.map(blobs, fn blob ->
