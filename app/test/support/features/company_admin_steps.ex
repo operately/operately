@@ -656,6 +656,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx
     |> UI.click(testid: "billing-limit-guidance-cta")
     |> UI.assert_page(expected_path)
-    |> UI.assert_has(testid: "company-billing-plan-selection-page")
+    |> UI.assert_text("Choose a plan")
+    |> UI.assert_text("Continue to checkout")
   end
 end
