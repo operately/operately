@@ -3730,6 +3730,14 @@ export interface CompaniesDeleteAdminResult {
   person: Person;
 }
 
+export interface CompaniesDeleteActivityInput {
+  activityId: Id;
+}
+
+export interface CompaniesDeleteActivityResult {
+  success: boolean;
+}
+
 export interface CompaniesDeleteMemberInput {
   personId: Id;
 }
@@ -5735,6 +5743,10 @@ class ApiNamespaceCompanies {
     return this.client.post("/companies/create_member", input);
   }
 
+  async deleteActivity(input: CompaniesDeleteActivityInput): Promise<CompaniesDeleteActivityResult> {
+    return this.client.post("/companies/delete_activity", input);
+  }
+
   async deleteAdmin(input: CompaniesDeleteAdminInput): Promise<CompaniesDeleteAdminResult> {
     return this.client.post("/companies/delete_admin", input);
   }
@@ -7383,6 +7395,13 @@ export default {
     useConvertMemberToGuest: () =>
       useMutation<CompaniesConvertMemberToGuestInput, CompaniesConvertMemberToGuestResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.convertMemberToGuest(input),
+      ),
+
+    deleteActivity: (input: CompaniesDeleteActivityInput) =>
+      defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
+    useDeleteActivity: () =>
+      useMutation<CompaniesDeleteActivityInput, CompaniesDeleteActivityResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
       ),
 
     deleteAdmin: (input: CompaniesDeleteAdminInput) => defaultApiClient.apiNamespaceCompanies.deleteAdmin(input),
