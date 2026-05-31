@@ -88,9 +88,16 @@ export namespace MilestonePage {
     // Optional callbacks
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
     onTaskReorder?: (taskId: string, milestoneId: string | null, index: number) => void;
+    onTaskMilestoneChange?: (taskId: string, milestone: Types.Milestone | null) => void;
     onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
+    onTaskNameChange?: (taskId: string, name: string) => void;
+    onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
+    onTaskDelete?: (taskId: string) => void | Promise<unknown>;
+    milestones?: Types.Milestone[];
+    onMilestoneSearch?: (query: string) => Promise<void>;
+    getTaskPageProps?: Types.TaskBoardProps["getTaskPageProps"];
 
     assigneePersonSearch: PersonField.SearchData;
 
