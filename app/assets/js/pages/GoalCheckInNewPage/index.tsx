@@ -11,26 +11,11 @@ import { PageModule } from "@/routes/types";
 import FormattedTime from "@/components/FormattedTime";
 
 import { usePaths } from "@/routes/paths";
+import { loader, useLoadedData } from "./loader";
 export default { name: "GoalCheckInNewPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  goal: Goals.Goal;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  return {
-    goal: await Goals.getGoal({
-      id: params.goalId,
-      includeSpace: true,
-      includeReviewer: true,
-      includePotentialSubscribers: true,
-      includeChecklist: true,
-    }).then((data) => data.goal!),
-  };
-}
-
 function Page() {
-  const { goal } = Pages.useLoadedData<LoaderResult>();
+  const { goal } = useLoadedData();
 
   return (
     <Pages.Page title={["Check-in", goal.name!]} testId="goal-check-in-new-page">
