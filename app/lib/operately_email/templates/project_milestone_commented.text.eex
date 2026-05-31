@@ -1,7 +1,3 @@
 <%= "#{short_name(@author)} #{@action_text}" %>
 
-<%= if @next_milestone do %>
-Next milestone: <%= @next_milestone.title %>
-
-<% end %>
 Link: <%= @link %>
