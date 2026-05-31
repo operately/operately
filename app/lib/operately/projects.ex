@@ -130,6 +130,17 @@ defmodule Operately.Projects do
     Repo.all(query)
   end
 
+  def get_next_pending_milestone(project, excluded_milestone) do
+    from(m in Milestone,
+      where: m.project_id == ^project.id,
+      where: m.id != ^excluded_milestone.id,
+      where: m.status == :pending,
+      order_by: [asc: m.inserted_at],
+      limit: 1
+    )
+    |> Repo.one()
+  end
+
   def create_milestone(attrs) do
     Milestone.changeset(attrs)
     |> Repo.insert()

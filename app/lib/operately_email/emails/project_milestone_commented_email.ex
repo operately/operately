@@ -1,5 +1,6 @@
 defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
+
   alias Operately.{Repo, Projects, Updates}
 
   def send(person, activity) do
@@ -10,6 +11,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     comment = Updates.get_comment!(activity.content["comment_id"])
     action = activity.content["comment_action"]
     link = OperatelyWeb.Paths.project_milestone_path(company, milestone, comment) |> OperatelyWeb.Paths.to_url()
+    next_milestone = if action == "complete", do: Projects.get_next_pending_milestone(project, milestone), else: nil
 
     company
     |> new()
@@ -23,6 +25,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     |> assign(:action_text, action_text(milestone, action))
     |> assign(:button_text, button_text(action))
     |> assign(:link, link)
+    |> assign(:next_milestone, next_milestone)
     |> render("project_milestone_commented")
   end
 
