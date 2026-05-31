@@ -8,15 +8,6 @@
   <% end %>
 <% end %>
 
-<%= if @next_milestone do %>
-  <%= spacer() %>
-
-  <%= row do %>
-    <div style="font-weight: 700; margin-bottom: 8px;">Next milestone</div>
-    <div><%= @next_milestone.title %></div>
-  <% end %>
-<% end %>
-
 <%= spacer() %>
 
 <%= row do %>
