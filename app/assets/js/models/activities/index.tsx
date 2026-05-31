@@ -15,6 +15,13 @@ const RESOURCE_HUB_EDIT_ACTIONS = [
   "resource_hub_link_edited",
 ];
 
+const TASK_UPDATE_ACTIONS = [
+  "task_assignee_updating",
+  "task_due_date_updating",
+  "task_name_updating",
+  "task_status_updating",
+];
+
 export const getActivity = async (input: CompaniesGetActivityInput) => {
   const response = await Api.companies.getActivity(input);
   return response.activity!;
@@ -77,18 +84,27 @@ export function getAggregatedActivities(activity: FeedActivity): Activity[] {
 
 function canAggregate(left: FeedActivity, right: Activity): boolean {
   return (
-    resourceHubEditAction(left.action) &&
-    resourceHubEditAction(right.action) &&
     left.author?.id === right.author?.id &&
-    sameActivityLocation(left, right)
+    ((resourceHubEditAction(left.action) &&
+      resourceHubEditAction(right.action) &&
+      sameResourceHubEditLocation(left, right)) ||
+      (sameAction(left, right) && taskUpdateAction(left.action) && sameTaskUpdateLocation(left, right)))
   );
+}
+
+function sameAction(left: Activity, right: Activity): boolean {
+  return Boolean(left.action && left.action === right.action);
 }
 
 function resourceHubEditAction(action?: string | null): boolean {
   return Boolean(action && RESOURCE_HUB_EDIT_ACTIONS.includes(action));
 }
 
-function sameActivityLocation(left: Activity, right: Activity): boolean {
+function taskUpdateAction(action?: string | null): boolean {
+  return Boolean(action && TASK_UPDATE_ACTIONS.includes(action));
+}
+
+function sameResourceHubEditLocation(left: Activity, right: Activity): boolean {
   const leftSpaceId = resourceHubEditSpaceId(left);
   const rightSpaceId = resourceHubEditSpaceId(right);
 
@@ -108,6 +124,39 @@ function resourceHubEditSpaceId(activity: Activity): string | undefined {
     .with("resource_hub_link_edited", () => {
       return (content as api.ActivityContentResourceHubLinkEdited | null | undefined)?.space?.id;
     })
+    .otherwise(() => undefined);
+}
+
+function sameTaskUpdateLocation(left: Activity, right: Activity): boolean {
+  const leftLocation = taskUpdateLocationKey(left);
+  const rightLocation = taskUpdateLocationKey(right);
+
+  return Boolean(leftLocation && leftLocation === rightLocation);
+}
+
+function taskUpdateLocationKey(activity: Activity): string | undefined {
+  const content = taskUpdateContent(activity);
+  const projectId = content?.project?.id;
+  const spaceId = content?.space?.id;
+
+  if (projectId) return `project:${projectId}`;
+  if (spaceId) return `space:${spaceId}`;
+  return undefined;
+}
+
+function taskUpdateContent(
+  activity: Activity,
+):
+  | api.ActivityContentTaskAssigneeUpdating
+  | api.ActivityContentTaskDueDateUpdating
+  | api.ActivityContentTaskNameUpdating
+  | api.ActivityContentTaskStatusUpdating
+  | undefined {
+  return match(activity.action)
+    .with("task_assignee_updating", () => activity.content as api.ActivityContentTaskAssigneeUpdating)
+    .with("task_due_date_updating", () => activity.content as api.ActivityContentTaskDueDateUpdating)
+    .with("task_name_updating", () => activity.content as api.ActivityContentTaskNameUpdating)
+    .with("task_status_updating", () => activity.content as api.ActivityContentTaskStatusUpdating)
     .otherwise(() => undefined);
 }
 

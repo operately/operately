@@ -46,6 +46,23 @@ describe("aggregateConsecutiveFeedActivities", () => {
       ["activity-5"],
     ]);
   });
+
+  test("aggregates consecutive task updates by the same author and action in the same location", () => {
+    const activities = [
+      taskAssigneeActivity("activity-1", "task-1", "2026-05-26T10:04:00Z"),
+      taskAssigneeActivity("activity-2", "task-2", "2026-05-26T10:03:00Z"),
+      taskStatusActivity("activity-3", "task-3", "2026-05-26T10:02:00Z"),
+      taskAssigneeActivity("activity-4", "task-4", "2026-05-26T10:01:00Z"),
+    ];
+
+    const result = aggregateConsecutiveFeedActivities(activities);
+
+    expect(result).toHaveLength(3);
+    expect(result[0]?.insertedAt).toEqual("2026-05-26T10:03:00Z");
+    expect(getAggregatedActivities(result[0]!).map((activity) => activity.id)).toEqual(["activity-1", "activity-2"]);
+    expect(getAggregatedActivities(result[1]!).map((activity) => activity.id)).toEqual(["activity-3"]);
+    expect(getAggregatedActivities(result[2]!).map((activity) => activity.id)).toEqual(["activity-4"]);
+  });
 });
 
 function documentEditedActivity(
@@ -112,6 +129,50 @@ function taskEditedActivity(id: string, insertedAt: string): Activity {
     insertedAt,
     author: author("author-1"),
     content: {},
+  } as Activity;
+}
+
+function taskAssigneeActivity(
+  id: string,
+  taskId: string,
+  insertedAt: string,
+  authorId = "author-1",
+  spaceId = "space-1",
+): Activity {
+  return {
+    id,
+    action: "task_assignee_updating",
+    insertedAt,
+    author: author(authorId),
+    content: {
+      project: null,
+      space: { id: spaceId, name: "General" },
+      task: { id: taskId, name: `Task ${taskId}` },
+      oldAssignee: null,
+      newAssignee: null,
+      addedAssignees: [],
+      removedAssignees: [],
+    },
+  } as Activity;
+}
+
+function taskStatusActivity(
+  id: string,
+  taskId: string,
+  insertedAt: string,
+  authorId = "author-1",
+  spaceId = "space-1",
+): Activity {
+  return {
+    id,
+    action: "task_status_updating",
+    insertedAt,
+    author: author(authorId),
+    content: {
+      project: null,
+      space: { id: spaceId, name: "General" },
+      task: { id: taskId, name: `Task ${taskId}` },
+    },
   } as Activity;
 }
 
