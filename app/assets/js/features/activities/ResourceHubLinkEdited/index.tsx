@@ -2,9 +2,11 @@ import React from "react";
 
 import type { ActivityContentResourceHubLinkEdited } from "@/api";
 import type { Activity } from "@/models/activities";
+import * as Activities from "@/models/activities";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { EditedResourceList } from "../resourceHubEditedResources";
 
 const ResourceHubLinkEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,16 +31,18 @@ const ResourceHubLinkEdited: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const space = spaceLink(content(activity).space!);
-    const link = content(activity).link!.name!;
+    const resources = <EditedResourceList activity={activity} />;
 
     if (page === "space") {
-      return feedTitle(activity, "edited a link:", link);
+      return feedTitle(activity, "edited", resources);
     } else {
-      return feedTitle(activity, "edited a link in the", space, "space:", link);
+      return feedTitle(activity, "edited", resources, "in the", space, "space");
     }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    if (Activities.getAggregatedActivities(activity).length > 1) return null;
+
     const contentObj = content(activity);
     const link = contentObj.link!;
 
