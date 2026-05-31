@@ -1,9 +1,7 @@
 defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
-  require Ecto.Query
 
   alias Operately.{Repo, Projects, Updates}
-  alias Operately.Projects.Milestone
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -13,7 +11,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     comment = Updates.get_comment!(activity.content["comment_id"])
     action = activity.content["comment_action"]
     link = OperatelyWeb.Paths.project_milestone_path(company, milestone, comment) |> OperatelyWeb.Paths.to_url()
-    remaining_milestones = remaining_milestones(project, milestone, action)
+    next_milestone = if action == "complete", do: Projects.get_next_pending_milestone(project, milestone), else: nil
 
     company
     |> new()
@@ -27,25 +25,12 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     |> assign(:action_text, action_text(milestone, action))
     |> assign(:button_text, button_text(action))
     |> assign(:link, link)
-    |> assign(:remaining_milestones, remaining_milestones)
+    |> assign(:next_milestone, next_milestone)
     |> render("project_milestone_commented")
   end
 
   defp comment_content("none", %{} = content) when map_size(content) > 0, do: content
   defp comment_content(_, _), do: nil
-
-  defp remaining_milestones(project, milestone, "complete") do
-    Ecto.Query.from(m in Milestone,
-      where: m.project_id == ^project.id,
-      where: m.id != ^milestone.id,
-      where: m.status == :pending,
-      order_by: [asc: m.inserted_at],
-      limit: 5
-    )
-    |> Repo.all()
-  end
-
-  defp remaining_milestones(_project, _milestone, _action), do: []
 
   def action_text(milestone, action) do
     case action do
