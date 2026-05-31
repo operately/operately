@@ -16,13 +16,16 @@ import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
-import { parseSpaceForTurboUI } from "@/models/spaces";
+import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { projectPageCacheKey } from "../ProjectPage";
+import { milestoneKanbanPageCacheKey } from "../MilestoneKanbanPage";
+import { spaceKanbanPageCacheKey } from "../SpaceKanbanPage";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscription } from "@/models/subscriptions";
+import { useMilestones as useProjectMilestones } from "@/models/milestones/useMilestones";
 
 export default { name: "MilestonePage", loader, Page } as PageModule;
 
@@ -56,11 +59,13 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         }).then((d) => d.milestone),
         tasks: Api.projects.listMilestoneTasks({ milestoneId: params.id }).then((d) => d.tasks),
         childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }).then((d) => d.childrenCount),
-        activities: Api.companies.listActivities({
-          scopeId: params.id,
-          scopeType: "milestone",
-          actions: MILESTONE_ACTIVITY_TYPES,
-        }).then((d) => d.activities!),
+        activities: Api.companies
+          .listActivities({
+            scopeId: params.id,
+            scopeType: "milestone",
+            actions: MILESTONE_ACTIVITY_TYPES,
+          })
+          .then((d) => d.activities!),
       }),
   });
 }
@@ -74,13 +79,13 @@ function Page() {
   const currentUser = useMe();
   const navigate = useNavigate();
 
-
   const pageData = PageCache.useData(loader);
   const { data, refresh } = pageData;
-  const { milestone, childrenCount, activities } = data;
+  const { milestone, childrenCount, activities, tasks: backendTasks } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.permissions, "Milestone must have permissions");
+  const projectId = milestone.project.id;
 
   const spaceProps = milestone.space
     ? {
@@ -112,19 +117,35 @@ function Page() {
 
   const { parsedMilestone, milestones, setMilestones, title, setTitle } = useMilestones(pageData, milestone);
 
-  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus, updateTaskMilestone } =
-    Tasks.useProjectTasksForTurboUi({
-      backendTasks: data.tasks,
-      projectId: milestone.project.id,
-      cacheKey: pageCacheKey(milestone.id),
-      milestones: milestones,
-      setMilestones: setMilestones,
-      refresh,
-    });
-  const { comments, setComments, handleCreateComment, handleEditComment, handleDeleteComment, handleAddReaction, handleRemoveReaction } =
-    useComments(paths, milestone, () => {
-      PageCache.invalidate(pageCacheKey(milestone.id));
-    });
+  const {
+    tasks,
+    createTask,
+    updateTaskAssignee,
+    updateTaskDueDate,
+    updateTaskStatus,
+    updateTaskMilestone,
+    updateTaskName,
+    updateTaskDescription,
+    deleteTask,
+  } = Tasks.useProjectTasksForTurboUi({
+    backendTasks,
+    projectId: milestone.project.id,
+    cacheKey: pageCacheKey(milestone.id),
+    milestones: milestones,
+    setMilestones: setMilestones,
+    refresh,
+  });
+  const {
+    comments,
+    setComments,
+    handleCreateComment,
+    handleEditComment,
+    handleDeleteComment,
+    handleAddReaction,
+    handleRemoveReaction,
+  } = useComments(paths, milestone, () => {
+    PageCache.invalidate(pageCacheKey(milestone.id));
+  });
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
 
   const timelineItems = React.useMemo(
@@ -144,12 +165,16 @@ function Page() {
   }, [milestone.id]);
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
+  const { milestones: searchableMilestones, search: searchMilestones } = useProjectMilestones(milestone.project.id);
+  const taskProjectSearch = Projects.useProjectSearch({
+    accessLevel: "edit_access",
+    ignoredIds: [milestone.project.id],
+    activeOnly: true,
+  });
+  const taskSpaceSearch = useTaskDestinationSpaceSearch({ accessLevel: "edit_access", withTasksEnabledOnly: true });
 
   // Transform function must be memoized to prevent infinite loop in the hook
-  const transformPerson = React.useCallback(
-    (p) => People.parsePersonForTurboUi(paths, p)!,
-    [paths]
-  );
+  const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
 
   const assigneeSearch = Tasks.useTaskAssigneeSearch({
     id: milestone.project.id,
@@ -163,6 +188,80 @@ function Page() {
     entityType: "milestone",
     cacheKey: pageCacheKey(milestone.id),
     onRefresh: refresh,
+  });
+
+  const handleMoveTaskSuccess = React.useCallback(
+    async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
+      PageCache.invalidate(pageCacheKey(milestone.id));
+      PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
+
+      if (milestone.project?.id) {
+        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+      }
+
+      if (destinationType === "project") {
+        PageCache.invalidate(projectPageCacheKey(destinationId));
+      }
+
+      if (destinationType === "space") {
+        PageCache.invalidate(spaceKanbanPageCacheKey(destinationId));
+      }
+
+      if (refresh) {
+        await refresh();
+      }
+    },
+    [milestone.id, milestone.project?.id, refresh],
+  );
+
+  const handleTaskMilestoneChange = React.useCallback(
+    async (taskId: string, nextMilestone: MilestonePage.Milestone | null) => {
+      const result = await updateTaskMilestone(taskId, nextMilestone?.id ?? null, 1000);
+
+      if (!result) return;
+
+      PageCache.invalidate(projectPageCacheKey(projectId));
+      PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
+
+      if (nextMilestone?.id) {
+        PageCache.invalidate(pageCacheKey(nextMilestone.id));
+        PageCache.invalidate(milestoneKanbanPageCacheKey(nextMilestone.id));
+      }
+    },
+    [milestone.id, projectId, updateTaskMilestone],
+  );
+
+  const handleTaskDelete = React.useCallback(
+    async (taskId: string) => {
+      const result = await deleteTask(taskId);
+
+      if (!result?.success) return;
+
+      PageCache.invalidate(pageCacheKey(milestone.id));
+      PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
+      PageCache.invalidate(projectPageCacheKey(projectId));
+    },
+    [deleteTask, milestone.id, projectId],
+  );
+
+  const slideInModel = Tasks.useTaskSlideInProps({
+    backendTasks,
+    paths,
+    currentUser,
+    tasks,
+    commentEntityType: "project_task",
+    cacheKey: pageCacheKey(milestone.id),
+    onRefresh: refresh,
+    canEdit: Boolean(milestone.permissions.canEdit),
+    canComment: Boolean(milestone.permissions.canComment),
+    onTaskNameChange: updateTaskName,
+    onTaskAssigneeChange: updateTaskAssignee,
+    onTaskDueDateChange: updateTaskDueDate,
+    onTaskStatusChange: updateTaskStatus,
+    onTaskDescriptionChange: updateTaskDescription,
+    onMoveTaskSuccess: handleMoveTaskSuccess,
+    projectSearch: taskProjectSearch,
+    spaceSearch: taskSpaceSearch,
   });
 
   const statusOptions = React.useMemo(
@@ -213,9 +312,16 @@ function Page() {
     statusOptions,
     onTaskCreate: createTask,
     onTaskReorder: updateTaskMilestone,
-    onTaskStatusChange: updateTaskStatus,
-    onTaskAssigneeChange: updateTaskAssignee,
-    onTaskDueDateChange: updateTaskDueDate,
+    onTaskMilestoneChange: handleTaskMilestoneChange,
+    onTaskStatusChange: slideInModel.onTaskStatusChange,
+    onTaskAssigneeChange: slideInModel.onTaskAssigneeChange,
+    onTaskDueDateChange: slideInModel.onTaskDueDateChange,
+    onTaskNameChange: slideInModel.onTaskNameChange,
+    onTaskDescriptionChange: slideInModel.onTaskDescriptionChange,
+    onTaskDelete: handleTaskDelete,
+    milestones: searchableMilestones,
+    onMilestoneSearch: searchMilestones,
+    getTaskPageProps: slideInModel.getTaskPageProps,
 
     // Metadata
     createdBy: People.parsePersonForTurboUi(paths, milestone.creator),

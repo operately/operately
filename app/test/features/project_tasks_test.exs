@@ -19,6 +19,8 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.visit_milestone_page()
     |> Steps.add_task_from_milestone_page("Task 1")
     |> Steps.assert_task_added("Task 1")
+    |> Steps.open_task_slide_in("Task 1")
+    |> Steps.assert_task_slide_in_open("Task 1")
   end
 
   @tag login_as: :reviewer

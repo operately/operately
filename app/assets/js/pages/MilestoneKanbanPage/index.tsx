@@ -20,6 +20,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export default { name: "MilestoneKanbanPage", loader, Page } as PageModule;
+export { pageCacheKey as milestoneKanbanPageCacheKey };
 
 type LoaderResult = {
   data: {
