@@ -1,8 +1,10 @@
 import * as Goals from "@/models/goals";
+import { parseCheckInsForTurboUi } from "@/models/goalCheckIns";
 import * as People from "@/models/people";
 import * as React from "react";
 
 import { SubscriptionsState } from "@/models/subscriptions";
+import { usePaths } from "@/routes/paths";
 
 import { InfoCallout } from "@/components/Callouts";
 import Forms, { FormState } from "@/components/Forms";
@@ -10,7 +12,18 @@ import { useFieldValue } from "@/components/Forms/FormContext";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import { Checklist, DateField, IconInfoCircle, RichContent, Tooltip, SubscribersSelector } from "turboui";
+import {
+  ActionLink,
+  Checklist,
+  DateField,
+  FormattedTime,
+  IconInfoCircle,
+  Link,
+  RichContent,
+  StatusBadge,
+  Tooltip,
+  SubscribersSelector,
+} from "turboui";
 import { StatusSelector } from "./StatusSelector";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -27,22 +40,34 @@ interface Props {
   allowFullEdit: boolean;
 }
 
+interface CheckInReferenceProps {
+  lastCheckIns: ReturnType<typeof parseCheckInsForTurboUi>;
+  mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
+}
+
 export function Form(props: Props) {
+  const paths = usePaths();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
+  const lastCheckIns =
+    props.mode === "new" && props.goal.lastCheckIn ? parseCheckInsForTurboUi(paths, [props.goal.lastCheckIn]) : [];
+
   return (
     <Forms.Form form={props.form} preventSubmitOnEnter>
-      <div className="space-y-8 mt-8">
-        <FullEditDisabledMessage {...props} />
-        <StatusAndDueDate {...props} />
-        <Targets {...props} />
-        <Checks {...props} />
-        <Description {...props} />
+      <div>
+        <div className="space-y-8 mt-8">
+          <FullEditDisabledMessage {...props} />
+          <StatusAndDueDate {...props} />
+          <Targets {...props} />
+          <Checks {...props} />
+          <Description {...props} lastCheckIns={lastCheckIns} mentionedPersonLookup={mentionedPersonLookup} />
+        </div>
+
+        <Subscribers {...props} />
+
+        <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
+
+        <SubmitSection {...props} />
       </div>
-
-      <Subscribers {...props} />
-
-      <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
-
-      <SubmitSection {...props} />
     </Forms.Form>
   );
 }
@@ -177,7 +202,7 @@ function GoalStatusSelector({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function Description(props: Props) {
+function Description(props: Props & CheckInReferenceProps) {
   if (props.mode === "view") {
     return <DescriptionView />;
   } else {
@@ -197,12 +222,28 @@ function DescriptionView() {
   );
 }
 
-function DescriptionEdit({ goal }: { goal: Goals.Goal }) {
+function DescriptionEdit({ goal, lastCheckIns, mentionedPersonLookup }: { goal: Goals.Goal } & CheckInReferenceProps) {
   const mentionSearchScope = { type: "goal", id: goal.id! } as const;
+  const [showPrevious, setShowPrevious] = React.useState(false);
 
   return (
     <div>
-      <Label text="Describe key wins, obstacles and needs" />
+      <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <div className="font-bold">Describe key wins, obstacles and needs</div>
+
+        {lastCheckIns.length > 0 && (
+          <ActionLink
+            className="text-sm font-medium"
+            underline="hover"
+            onClick={() => setShowPrevious((show) => !show)}
+          >
+            {showPrevious ? "Hide previous check-in" : "Show previous check-in"}
+          </ActionLink>
+        )}
+      </div>
+
+      {showPrevious && <PreviousCheckIn checkIns={lastCheckIns} mentionedPersonLookup={mentionedPersonLookup} />}
+
       <Forms.FieldGroup>
         <Forms.RichTextArea
           field="description"
@@ -211,6 +252,40 @@ function DescriptionEdit({ goal }: { goal: Goals.Goal }) {
           required
         />
       </Forms.FieldGroup>
+    </div>
+  );
+}
+
+function PreviousCheckIn({
+  checkIns,
+  mentionedPersonLookup,
+}: {
+  checkIns: ReturnType<typeof parseCheckInsForTurboUi>;
+  mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
+}) {
+  const checkIn = checkIns[0];
+  if (!checkIn) return null;
+
+  return (
+    <div className="mb-3 mt-2 rounded border border-stroke-base p-4">
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-content-accent">Previous check-in</div>
+          <div className="mt-0.5 text-sm text-content-dimmed">
+            Posted by {checkIn.author?.fullName || "Unknown"} on{" "}
+            <FormattedTime time={checkIn.date} format="long-date" />
+          </div>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-3">
+          <StatusBadge status={checkIn.status} hideIcon />
+          <Link to={checkIn.link} underline="hover" className="text-sm font-medium">
+            View original
+          </Link>
+        </div>
+      </div>
+
+      <RichContent content={checkIn.content} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }
