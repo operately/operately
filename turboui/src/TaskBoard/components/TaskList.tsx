@@ -31,6 +31,7 @@ export interface TaskListProps {
   placeholderHeight?: number | null;
   selectedTaskId?: string | null;
   onTaskClick?: (taskId: string) => void;
+  onTaskOpen?: (taskId: string) => void;
 }
 
 /**
@@ -54,6 +55,7 @@ export function TaskList({
   placeholderHeight = null,
   selectedTaskId = null,
   onTaskClick,
+  onTaskOpen,
 }: TaskListProps) {
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -144,6 +146,7 @@ export function TaskList({
                 draggingDisabled={false}
                 selected={task.id === selectedTaskId}
                 onTaskClick={onTaskClick}
+                onTaskOpen={onTaskOpen}
               />
             </React.Fragment>
           ))}
@@ -225,6 +228,7 @@ export function TaskList({
               draggingDisabled={true}
               selected={task.id === selectedTaskId}
               onTaskClick={onTaskClick}
+              onTaskOpen={onTaskOpen}
             />
           </ul>
         ))}
