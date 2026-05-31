@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.ProjectMilestoneCommentedEmailTest do
   use Operately.DataCase
 
+  import Ecto.Query, only: [where: 3]
   import Operately.ActivitiesFixtures
   import Operately.CommentsFixtures
   import Operately.CompaniesFixtures
@@ -34,8 +35,16 @@ defmodule OperatelyEmail.ProjectMilestoneCommentedEmailTest do
 
   test "status changes skip rich text rendering when the stored comment content is empty", ctx do
     comment = comment_fixture(ctx.author, %{content: %{}})
-    milestone_fixture(%{project_id: ctx.project.id, title: "Customer launch"})
-    milestone_fixture(%{project_id: ctx.project.id, title: "Post-launch review"})
+
+    Operately.Projects.Milestone
+    |> where([m], m.project_id == ^ctx.project.id and m.id != ^ctx.milestone.id)
+    |> Operately.Repo.delete_all()
+
+    customer_launch = milestone_fixture(%{project_id: ctx.project.id, title: "Customer launch"})
+    post_launch_review = milestone_fixture(%{project_id: ctx.project.id, title: "Post-launch review"})
+
+    set_milestone_inserted_at(customer_launch, ~N[2026-01-01 00:00:00])
+    set_milestone_inserted_at(post_launch_review, ~N[2026-01-02 00:00:00])
 
     activity =
       activity_fixture(%{
@@ -57,13 +66,13 @@ defmodule OperatelyEmail.ProjectMilestoneCommentedEmailTest do
     assert_email_sent(fn email ->
       assert email.subject =~ "completed the Important Work milestone"
       assert email.html_body =~ "View Milestone"
-      assert email.html_body =~ "Next milestones"
+      assert email.html_body =~ "Next milestone"
       assert email.html_body =~ "Customer launch"
-      assert email.html_body =~ "Post-launch review"
+      refute email.html_body =~ "Post-launch review"
       assert email.text_body =~ "Link:"
-      assert email.text_body =~ "Next milestones:"
+      assert email.text_body =~ "Next milestone:"
       assert email.text_body =~ "Customer launch"
-      assert email.text_body =~ "Post-launch review"
+      refute email.text_body =~ "Post-launch review"
       true
     end)
   end
@@ -75,5 +84,11 @@ defmodule OperatelyEmail.ProjectMilestoneCommentedEmailTest do
     after
       0 -> :ok
     end
+  end
+
+  defp set_milestone_inserted_at(milestone, inserted_at) do
+    Operately.Projects.Milestone
+    |> where([m], m.id == ^milestone.id)
+    |> Operately.Repo.update_all(set: [inserted_at: inserted_at])
   end
 end

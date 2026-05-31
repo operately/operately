@@ -5,6 +5,7 @@ defmodule Operately.ProjectsTest do
   alias Operately.Access.Binding
   alias Operately.ContextualDates.ContextualDate
 
+  import Ecto.Query, only: [where: 3]
   import Operately.ProjectsFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
@@ -205,6 +206,23 @@ defmodule Operately.ProjectsTest do
       assert Projects.list_project_milestones(ctx.project) == [ctx.milestone]
     end
 
+    test "get_next_pending_milestone/2 returns the first pending project milestone excluding the given milestone", ctx do
+      completed = milestone_fixture(%{project_id: ctx.project.id, title: "completed", status: :done})
+      pending_1 = milestone_fixture(%{project_id: ctx.project.id, title: "pending 1"})
+      pending_2 = milestone_fixture(%{project_id: ctx.project.id, title: "pending 2"})
+      other_project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.champion.id, group_id: ctx.group.id})
+      _other_project_milestone = milestone_fixture(%{project_id: other_project.id})
+
+      set_milestone_inserted_at(ctx.milestone, ~N[2026-01-01 00:00:00])
+      set_milestone_inserted_at(completed, ~N[2026-01-02 00:00:00])
+      set_milestone_inserted_at(pending_1, ~N[2026-01-03 00:00:00])
+      set_milestone_inserted_at(pending_2, ~N[2026-01-04 00:00:00])
+
+      assert Projects.get_next_pending_milestone(ctx.project, completed).id == ctx.milestone.id
+      assert Projects.get_next_pending_milestone(ctx.project, ctx.milestone).id == pending_1.id
+      assert Projects.get_next_pending_milestone(ctx.project, pending_1).id == ctx.milestone.id
+    end
+
     test "get_milestone!/1 returns the milestone with given id", ctx do
       assert Projects.get_milestone!(ctx.milestone.id) == ctx.milestone
     end
@@ -339,5 +357,11 @@ defmodule Operately.ProjectsTest do
     test "change_key_resource/1 returns a key_resource changeset", ctx do
       assert %Ecto.Changeset{} = Projects.change_key_resource(ctx.key_resource)
     end
+  end
+
+  defp set_milestone_inserted_at(milestone, inserted_at) do
+    Operately.Projects.Milestone
+    |> where([m], m.id == ^milestone.id)
+    |> Operately.Repo.update_all(set: [inserted_at: inserted_at])
   end
 end
