@@ -5,7 +5,7 @@ import * as api from "@/api";
 import * as Time from "@/utils/time";
 import { match } from "ts-pattern";
 
-export type FeedActivity = Activity & {
+type FeedActivity = Activity & {
   aggregatedActivities?: Activity[];
 };
 
