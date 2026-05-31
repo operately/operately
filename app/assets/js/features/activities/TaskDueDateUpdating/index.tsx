@@ -6,6 +6,7 @@ import { DateDisplay } from "turboui";
 import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { parseContextualDate } from "@/models/contextualDates";
+import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
 const TaskDueDateUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -48,12 +49,24 @@ const TaskDueDateUpdating: ActivityHandler = {
     const message = newDueDate ? "changed the due date to " : "cleared the due date";
     const location = project ? projectLink(project) : spaceLink(space);
 
+    if (hasAggregatedTasks(props.activity)) {
+      const tasks = <UpdatedTaskList activity={props.activity} />;
+
+      if (props.page === "project") {
+        return feedTitle(props.activity, "updated due dates on", tasks);
+      } else if (props.page === "space" && !project) {
+        return feedTitle(props.activity, "updated due dates on", tasks);
+      } else {
+        return feedTitle(props.activity, "updated due dates on", tasks, "in", location);
+      }
+    }
+
     const taskElement = (() => {
       if (task) return taskLink(task, { spaceId: !project ? space.id : undefined });
       if (taskName) return taskName;
       return "a task";
     })();
-    
+
     if (newDueDate) {
       // When showing a date, need to include the DateField component after the message
       const dateField = <DateDisplay date={parseContextualDate(newDueDate)} />;
@@ -78,11 +91,15 @@ const TaskDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
+    if (hasAggregatedTasks(props.activity)) return null;
+
     const { oldDueDate } = content(props.activity);
 
     if (oldDueDate) {
       return (
-        <span>Previously the due date was <DateDisplay date={parseContextualDate(oldDueDate)} /></span>
+        <span>
+          Previously the due date was <DateDisplay date={parseContextualDate(oldDueDate)} />
+        </span>
       );
     } else {
       return <>Previously had no due date</>;
@@ -104,10 +121,12 @@ const TaskDueDateUpdating: ActivityHandler = {
   NotificationTitle(props: { activity: Activity }) {
     const { task, taskName, newDueDate } = content(props.activity);
     const name = taskName || task?.name || "a task";
-    
+
     if (newDueDate) {
       return (
-        <span>Updated due date for {name} to <DateDisplay date={parseContextualDate(newDueDate)} /></span>
+        <span>
+          Updated due date for {name} to <DateDisplay date={parseContextualDate(newDueDate)} />
+        </span>
       );
     } else {
       return <span>Cleared due date for {name}</span>;
