@@ -84,11 +84,18 @@ export function getAggregatedActivities(activity: FeedActivity): Activity[] {
 function canAggregate(left: FeedActivity, right: Activity): boolean {
   return (
     left.author?.id === right.author?.id &&
+    sameActivityDay(left, right) &&
     ((resourceHubEditAction(left.action) &&
       resourceHubEditAction(right.action) &&
       sameResourceHubEditLocation(left, right)) ||
       (sameAction(left, right) && taskUpdateAction(left.action) && sameTaskUpdateLocation(left, right)))
   );
+}
+
+function sameActivityDay(left: Activity, right: Activity): boolean {
+  if (!left.insertedAt || !right.insertedAt) return false;
+
+  return Time.isSameDay(Time.parseISO(left.insertedAt), Time.parseISO(right.insertedAt));
 }
 
 function sameAction(left: Activity, right: Activity): boolean {

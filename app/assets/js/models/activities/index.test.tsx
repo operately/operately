@@ -71,6 +71,19 @@ describe("aggregateConsecutiveFeedActivities", () => {
     expect(result[0]?.insertedAt).toEqual("2026-05-26T10:03:00Z");
     expect(getAggregatedActivities(result[0]!).map((activity) => activity.id)).toEqual(["activity-1", "activity-2"]);
   });
+
+  test("does not aggregate activities across date boundaries", () => {
+    const activities = [
+      taskAddingActivity("activity-1", "task-1", "2026-05-27T00:01:00"),
+      taskAddingActivity("activity-2", "task-2", "2026-05-26T23:59:00"),
+    ];
+
+    const result = aggregateConsecutiveFeedActivities(activities);
+
+    expect(result).toHaveLength(2);
+    expect(getAggregatedActivities(result[0]!).map((activity) => activity.id)).toEqual(["activity-1"]);
+    expect(getAggregatedActivities(result[1]!).map((activity) => activity.id)).toEqual(["activity-2"]);
+  });
 });
 
 function documentEditedActivity(
