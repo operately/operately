@@ -1,8 +1,10 @@
 import type { ActivityContentResourceHubDocumentEdited } from "@/api";
 import type { Activity } from "@/models/activities";
+import React from "react";
 
-import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
+import { feedTitle, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { EditedResourceList } from "../resourceHubEditedResources";
 
 const ResourceHubDocumentEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,13 +30,13 @@ const ResourceHubDocumentEdited: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const document = documentLink(data.document!);
+    const resources = <EditedResourceList activity={activity} />;
     const space = spaceLink(data.space!);
 
     if (page === "space") {
-      return feedTitle(activity, "edited", document);
+      return feedTitle(activity, "edited", resources);
     } else {
-      return feedTitle(activity, "edited", document, "in the", space, "space");
+      return feedTitle(activity, "edited", resources, "in the", space, "space");
     }
   },
 
