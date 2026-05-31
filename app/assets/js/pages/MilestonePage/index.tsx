@@ -236,11 +236,11 @@ function Page() {
 
       if (!result?.success) return;
 
-      if (milestone.project?.id) {
-        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
-      }
+      PageCache.invalidate(pageCacheKey(milestone.id));
+      PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
+      PageCache.invalidate(projectPageCacheKey(projectId));
     },
-    [deleteTask, milestone.project?.id],
+    [deleteTask, milestone.id, projectId],
   );
 
   const slideInModel = Tasks.useTaskSlideInProps({
