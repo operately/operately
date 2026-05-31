@@ -1,8 +1,4 @@
-import type {
-  ActivityContentResourceHubDocumentEdited,
-  ActivityContentResourceHubFileEdited,
-  ActivityContentResourceHubLinkEdited,
-} from "@/api";
+import type { ActivityContentResourceHubDocumentEdited, ActivityContentResourceHubLinkEdited } from "@/api";
 import { useLocale } from "@/contexts/TimezoneContext";
 import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
@@ -73,19 +69,6 @@ function editedResource(activity: Activity, paths: ReturnType<typeof usePaths>):
         key: `document:${document.id}`,
         name: document.name,
         path: paths.resourceHubDocumentPath(document.id),
-      };
-    }
-
-    case "resource_hub_file_edited": {
-      const data = activity.content as ActivityContentResourceHubFileEdited | null | undefined;
-      const file = data?.file;
-
-      if (!file?.id || !file.name) return null;
-
-      return {
-        key: `file:${file.id}`,
-        name: file.name,
-        path: paths.resourceHubFilePath(file.id),
       };
     }
 

@@ -1,6 +1,7 @@
 import type {
   ActivityContentTaskAssigneeUpdating,
   ActivityContentTaskDueDateUpdating,
+  ActivityContentTaskAdding,
   ActivityContentTaskNameUpdating,
   ActivityContentTaskStatusUpdating,
 } from "@/api";
@@ -96,10 +97,13 @@ function taskUpdateContent(
 ):
   | ActivityContentTaskAssigneeUpdating
   | ActivityContentTaskDueDateUpdating
+  | ActivityContentTaskAdding
   | ActivityContentTaskNameUpdating
   | ActivityContentTaskStatusUpdating
   | undefined {
   switch (activity.action) {
+    case "task_adding":
+      return activity.content as ActivityContentTaskAdding;
     case "task_assignee_updating":
       return activity.content as ActivityContentTaskAssigneeUpdating;
     case "task_due_date_updating":

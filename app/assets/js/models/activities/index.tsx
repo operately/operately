@@ -9,13 +9,10 @@ export type FeedActivity = Activity & {
   aggregatedActivities?: Activity[];
 };
 
-const RESOURCE_HUB_EDIT_ACTIONS = [
-  "resource_hub_document_edited",
-  "resource_hub_file_edited",
-  "resource_hub_link_edited",
-];
+const RESOURCE_HUB_EDIT_ACTIONS = ["resource_hub_document_edited", "resource_hub_link_edited"];
 
 const TASK_UPDATE_ACTIONS = [
+  "task_adding",
   "task_assignee_updating",
   "task_due_date_updating",
   "task_name_updating",
@@ -118,9 +115,6 @@ function resourceHubEditSpaceId(activity: Activity): string | undefined {
     .with("resource_hub_document_edited", () => {
       return (content as api.ActivityContentResourceHubDocumentEdited | null | undefined)?.space?.id;
     })
-    .with("resource_hub_file_edited", () => {
-      return (content as api.ActivityContentResourceHubFileEdited | null | undefined)?.space?.id;
-    })
     .with("resource_hub_link_edited", () => {
       return (content as api.ActivityContentResourceHubLinkEdited | null | undefined)?.space?.id;
     })
@@ -149,10 +143,12 @@ function taskUpdateContent(
 ):
   | api.ActivityContentTaskAssigneeUpdating
   | api.ActivityContentTaskDueDateUpdating
+  | api.ActivityContentTaskAdding
   | api.ActivityContentTaskNameUpdating
   | api.ActivityContentTaskStatusUpdating
   | undefined {
   return match(activity.action)
+    .with("task_adding", () => activity.content as api.ActivityContentTaskAdding)
     .with("task_assignee_updating", () => activity.content as api.ActivityContentTaskAssigneeUpdating)
     .with("task_due_date_updating", () => activity.content as api.ActivityContentTaskDueDateUpdating)
     .with("task_name_updating", () => activity.content as api.ActivityContentTaskNameUpdating)

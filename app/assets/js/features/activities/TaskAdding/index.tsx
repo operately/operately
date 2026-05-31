@@ -1,8 +1,10 @@
 import type { ActivityContentTaskAdding } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
+import React from "react";
 import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
 const TaskAdding: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -42,8 +44,21 @@ const TaskAdding: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const { project, space, taskName, task } = content(activity);
 
-    const tName = task ? taskLink(task, { spaceId: !project ? space.id : undefined }) : `"${taskName}"`;
     const location = project ? projectLink(project) : spaceLink(space);
+
+    if (hasAggregatedTasks(activity)) {
+      const tasks = <UpdatedTaskList activity={activity} />;
+
+      if (page === "project" || page === "task") {
+        return feedTitle(activity, "added tasks", tasks);
+      } else if (page === "space" && !project) {
+        return feedTitle(activity, "added tasks", tasks);
+      } else {
+        return feedTitle(activity, "added tasks", tasks, "in", location);
+      }
+    }
+
+    const tName = task ? taskLink(task, { spaceId: !project ? space.id : undefined }) : `"${taskName}"`;
 
     if (page === "project" || page === "task") {
       return feedTitle(activity, "added the task", tName);
