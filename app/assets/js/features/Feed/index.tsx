@@ -44,7 +44,8 @@ const FEED_PROP_DEFAULTS = {
 
 export function Feed(props: FeedProps) {
   props = { ...FEED_PROP_DEFAULTS, ...props };
-  const groupedActivities = Activities.groupByDate(props.items);
+  const items = Activities.aggregateConsecutiveFeedActivities(props.items);
+  const groupedActivities = Activities.groupByDate(items);
   const [activityToDelete, setActivityToDelete] = React.useState<Activity | null>(null);
   const [deleting, setDeleting] = React.useState(false);
 
