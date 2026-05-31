@@ -9,7 +9,11 @@ export type FeedActivity = Activity & {
   aggregatedActivities?: Activity[];
 };
 
-const AGGREGATABLE_ACTIONS = ["resource_hub_document_edited"];
+const RESOURCE_HUB_EDIT_ACTIONS = [
+  "resource_hub_document_edited",
+  "resource_hub_file_edited",
+  "resource_hub_link_edited",
+];
 
 export const getActivity = async (input: CompaniesGetActivityInput) => {
   const response = await Api.companies.getActivity(input);
@@ -73,22 +77,38 @@ export function getAggregatedActivities(activity: FeedActivity): Activity[] {
 
 function canAggregate(left: FeedActivity, right: Activity): boolean {
   return (
-    aggregatableAction(left.action) &&
-    left.action === right.action &&
+    resourceHubEditAction(left.action) &&
+    resourceHubEditAction(right.action) &&
     left.author?.id === right.author?.id &&
     sameActivityLocation(left, right)
   );
 }
 
-function aggregatableAction(action?: string | null): boolean {
-  return Boolean(action && AGGREGATABLE_ACTIONS.includes(action));
+function resourceHubEditAction(action?: string | null): boolean {
+  return Boolean(action && RESOURCE_HUB_EDIT_ACTIONS.includes(action));
 }
 
 function sameActivityLocation(left: Activity, right: Activity): boolean {
-  const leftContent = left.content as api.ActivityContentResourceHubDocumentEdited | null | undefined;
-  const rightContent = right.content as api.ActivityContentResourceHubDocumentEdited | null | undefined;
+  const leftSpaceId = resourceHubEditSpaceId(left);
+  const rightSpaceId = resourceHubEditSpaceId(right);
 
-  return leftContent?.space?.id === rightContent?.space?.id;
+  return Boolean(leftSpaceId && leftSpaceId === rightSpaceId);
+}
+
+function resourceHubEditSpaceId(activity: Activity): string | undefined {
+  const content = activity.content;
+
+  return match(activity.action)
+    .with("resource_hub_document_edited", () => {
+      return (content as api.ActivityContentResourceHubDocumentEdited | null | undefined)?.space?.id;
+    })
+    .with("resource_hub_file_edited", () => {
+      return (content as api.ActivityContentResourceHubFileEdited | null | undefined)?.space?.id;
+    })
+    .with("resource_hub_link_edited", () => {
+      return (content as api.ActivityContentResourceHubLinkEdited | null | undefined)?.space?.id;
+    })
+    .otherwise(() => undefined);
 }
 
 function earliestInsertedAt(activities: Activity[]): string | undefined {
