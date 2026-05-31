@@ -5,6 +5,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
 const TaskNameUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -44,8 +45,21 @@ const TaskNameUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const { project, space, newName, task } = content(activity);
 
-    const name = task ? taskLink(task, { taskName: newName, spaceId: !project ? space.id : undefined }) : newName;
     const location = project ? projectLink(project) : spaceLink(space);
+
+    if (hasAggregatedTasks(activity)) {
+      const tasks = <UpdatedTaskList activity={activity} />;
+
+      if (page === "project") {
+        return feedTitle(activity, "renamed", tasks);
+      } else if (page === "space" && !project) {
+        return feedTitle(activity, "renamed", tasks);
+      } else {
+        return feedTitle(activity, "renamed", tasks, "in", location);
+      }
+    }
+
+    const name = task ? taskLink(task, { taskName: newName, spaceId: !project ? space.id : undefined }) : newName;
 
     if (page === "project") {
       return feedTitle(activity, "renamed task to", name);
@@ -57,6 +71,8 @@ const TaskNameUpdating: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    if (hasAggregatedTasks(activity)) return null;
+
     const { oldName } = content(activity);
 
     return <>Previously, the task was named "{oldName}".</>;
