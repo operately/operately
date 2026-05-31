@@ -32,6 +32,7 @@ interface TaskItemProps {
   draggingDisabled?: boolean;
   selected?: boolean;
   onTaskClick?: (taskId: string) => void;
+  onTaskOpen?: (taskId: string) => void;
 }
 
 export function TaskItem({
@@ -45,6 +46,7 @@ export function TaskItem({
   draggingDisabled = false,
   selected = false,
   onTaskClick,
+  onTaskOpen,
 }: TaskItemProps) {
   const [currentAssignees, setCurrentAssignees] = useState<Person[]>(task.assignees || []);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
@@ -92,7 +94,7 @@ export function TaskItem({
     };
 
     const openTask = () => {
-      onTaskClick?.(task.id);
+      (onTaskOpen ?? onTaskClick)?.(task.id);
     };
 
     element.addEventListener(OPEN_TASK_ASSIGNEE_EVENT, openAssigneeField);
@@ -105,7 +107,16 @@ export function TaskItem({
       element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
       element.removeEventListener(OPEN_TASK_EVENT, openTask);
     };
-  }, [assigneePersonSearch, onTaskClick, onTaskDueDateChange, onTaskStatusChange, prepareFocusRestore, ref, task.id]);
+  }, [
+    assigneePersonSearch,
+    onTaskClick,
+    onTaskDueDateChange,
+    onTaskOpen,
+    onTaskStatusChange,
+    prepareFocusRestore,
+    ref,
+    task.id,
+  ]);
 
   React.useEffect(() => {
     setCurrentAssignees(task.assignees || []);

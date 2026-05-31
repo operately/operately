@@ -189,8 +189,21 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   step :go_to_task_page, ctx do
     ctx
-    |> UI.click_text(ctx.task.name)
+    |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
     |> UI.assert_text(ctx.task.name)
+  end
+
+  step :open_task_slide_in, ctx, title do
+    ctx
+    |> UI.click_text(title)
+  end
+
+  step :assert_task_slide_in_open, ctx, title do
+    ctx
+    |> UI.assert_has(testid: "task-slide-in")
+    |> UI.find([testid: "task-slide-in"], fn el ->
+      UI.assert_text(el, title)
+    end)
   end
 
   step :add_task_from_tasks_board, ctx, attrs do

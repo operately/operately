@@ -18,6 +18,7 @@ import { SpaceKanbanPage } from "turboui";
 import { useSpaceTaskStatuses } from "./useSpaceTaskStatuses";
 
 export default { name: "SpaceKanbanPage", loader, Page } as PageModule;
+export { pageCacheKey as spaceKanbanPageCacheKey };
 
 type LoaderResult = {
   data: {
