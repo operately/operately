@@ -9,6 +9,8 @@ export type FeedActivity = Activity & {
   aggregatedActivities?: Activity[];
 };
 
+// Only aggregate feed items that don't preview user-authored content. Rows with snippets
+// like comments, descriptions, check-ins, or discussion bodies should remain separate.
 const RESOURCE_HUB_EDIT_ACTIONS = ["resource_hub_document_edited", "resource_hub_link_edited"];
 
 const TASK_UPDATE_ACTIONS = [
