@@ -1,4 +1,5 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 
 import * as Types from "../../TaskBoard/types";
 import { SecondaryButton } from "../../Button";
@@ -17,6 +18,8 @@ import { InlineTaskCreator } from "../../TaskBoard/components/InlineTaskCreator"
 import { useInlineTaskCreator } from "../../TaskBoard/hooks/useInlineTaskCreator";
 import { useTaskKeyboardNavigation } from "../../TaskBoard/hooks/useTaskKeyboardNavigation";
 import { sortTasks } from "../../TaskBoard/utils/sortTasks";
+import { TaskSlideIn } from "../../TaskBoard/KanbanView/TaskSlideIn";
+import { compareIds } from "../../utils/ids";
 
 export function TasksSection({
   tasks,
@@ -28,16 +31,32 @@ export function TasksSection({
   onTaskAssigneeChange,
   onTaskDueDateChange,
   onTaskStatusChange,
+  onTaskMilestoneChange,
+  onTaskNameChange,
+  onTaskDescriptionChange,
+  onTaskDelete,
+  milestones,
+  onMilestoneSearch,
   assigneePersonSearch,
   setIsTaskModalOpen,
   statusOptions,
+  getTaskPageProps,
+  richTextHandlers,
 }: MilestonePage.State) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const taskIdFromUrl = React.useMemo(() => {
+    const value = searchParams.get("taskId");
+    return value && value.length > 0 ? value : null;
+  }, [searchParams]);
+  const [selectedSlideInTaskId, setSelectedSlideInTaskIdState] = React.useState<string | null>(null);
   const {
     containerRef: keyboardNavigationRef,
     selectedTaskId,
     clearSelection: clearTaskSelection,
     scopeBind: keyboardNavigationScopeBind,
-  } = useTaskKeyboardNavigation<HTMLDivElement>();
+  } = useTaskKeyboardNavigation<HTMLDivElement>({
+    clearSelectionWithEscape: !selectedSlideInTaskId,
+  });
   const {
     open: creatorOpen,
     openCreator,
@@ -81,12 +100,103 @@ export function TasksSection({
 
   // Filter tasks based on current filters
   const baseFilteredTasks = applyFilters(tasks, filters || []);
-  const orderedTasks = React.useMemo(
-    () => sortTasks(baseFilteredTasks, milestone),
-    [baseFilteredTasks, milestone],
-  );
+  const orderedTasks = React.useMemo(() => sortTasks(baseFilteredTasks, milestone), [baseFilteredTasks, milestone]);
 
   const hasHiddenTasks = baseFilteredTasks.some((task) => task.status?.closed === true);
+  const slideInEnabled = Boolean(getTaskPageProps);
+
+  React.useLayoutEffect(() => {
+    if (!slideInEnabled) return;
+
+    if (!taskIdFromUrl) {
+      setSelectedSlideInTaskIdState(null);
+      return;
+    }
+
+    if (tasks.some((task) => compareIds(task.id, taskIdFromUrl))) {
+      setSelectedSlideInTaskIdState(taskIdFromUrl);
+      return;
+    }
+
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.delete("taskId");
+        return next;
+      },
+      { replace: true },
+    );
+    setSelectedSlideInTaskIdState(null);
+  }, [setSearchParams, slideInEnabled, taskIdFromUrl, tasks]);
+
+  const setSelectedSlideInTaskId = React.useCallback(
+    (taskId: string | null) => {
+      if (!slideInEnabled) return;
+
+      setSearchParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+
+          if (taskId) {
+            next.set("taskId", taskId);
+          } else {
+            next.delete("taskId");
+          }
+
+          return next;
+        },
+        { replace: true },
+      );
+      setSelectedSlideInTaskIdState(taskId);
+    },
+    [setSearchParams, slideInEnabled],
+  );
+
+  const taskSlideInContext = React.useMemo<Types.TaskListSlideInContext>(
+    () => ({
+      tasks,
+      statuses: statusOptions,
+      onTaskCreate,
+      onTaskAssigneeChange,
+      onTaskDueDateChange,
+      onTaskStatusChange,
+      onTaskMilestoneChange: (taskId, nextMilestone) => {
+        if (onTaskMilestoneChange) {
+          onTaskMilestoneChange(taskId, nextMilestone);
+          return;
+        }
+
+        const indexInMilestone = 1000;
+        onTaskReorder?.(taskId, nextMilestone?.id ?? null, indexInMilestone);
+      },
+      onTaskDescriptionChange,
+      onTaskNameChange,
+      onTaskDelete,
+      milestones,
+      onMilestoneSearch,
+      assigneePersonSearch,
+      richTextHandlers,
+    }),
+    [
+      assigneePersonSearch,
+      milestones,
+      onMilestoneSearch,
+      onTaskAssigneeChange,
+      onTaskCreate,
+      onTaskDelete,
+      onTaskDescriptionChange,
+      onTaskDueDateChange,
+      onTaskMilestoneChange,
+      onTaskNameChange,
+      onTaskReorder,
+      onTaskStatusChange,
+      richTextHandlers,
+      statusOptions,
+      tasks,
+    ],
+  );
+  const taskPageProps =
+    selectedSlideInTaskId && getTaskPageProps ? getTaskPageProps(selectedSlideInTaskId, taskSlideInContext) : null;
 
   const handleTaskMove = React.useCallback(
     (move: BoardMove) => {
@@ -103,6 +213,12 @@ export function TasksSection({
 
   return (
     <div className="space-y-4 pt-6" data-test-id="tasks-section" {...hoverBind}>
+      <TaskSlideIn
+        isOpen={Boolean(selectedSlideInTaskId)}
+        onClose={() => setSelectedSlideInTaskId(null)}
+        taskPageProps={taskPageProps}
+      />
+
       {/* Task header container - visually groups all task-related controls */}
       <div className="bg-surface-dimmed rounded-lg border border-surface-outline">
         {/* Header bar with title, pie chart, and primary action */}
@@ -197,6 +313,7 @@ export function TasksSection({
               targetLocation={destination}
               placeholderHeight={draggedItemDimensions?.height ?? null}
               selectedTaskId={selectedTaskId}
+              onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
               inlineCreateRow={
                 creatorOpen ? (
                   <InlineTaskCreator
