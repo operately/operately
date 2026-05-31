@@ -2,9 +2,11 @@ import React from "react";
 
 import type { ActivityContentResourceHubFileEdited } from "@/api";
 import type { Activity } from "@/models/activities";
+import * as Activities from "@/models/activities";
 
-import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { EditedResourceList } from "../resourceHubEditedResources";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -34,18 +36,20 @@ const ResourceHubFileEdited: ActivityHandler = {
     const data = content(activity);
 
     const space = spaceLink(data.space!);
-    const file = fileLink(data.file!);
+    const resources = <EditedResourceList activity={activity} />;
 
     if (page === "space") {
-      return feedTitle(activity, "edited a file:", file);
+      return feedTitle(activity, "edited", resources);
     } else {
-      return feedTitle(activity, "edited a file in the", space, "space:", file);
+      return feedTitle(activity, "edited", resources, "in the", space, "space");
     }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const { file } = content(activity);
     const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    if (Activities.getAggregatedActivities(activity).length > 1) return null;
 
     return <Summary content={file?.description} characterCount={160} mentionedPersonLookup={mentionedPersonLookup} />;
   },

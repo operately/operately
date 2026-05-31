@@ -5,6 +5,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
 const TaskStatusUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -43,6 +44,20 @@ const TaskStatusUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const { project, space, task, newStatus, name } = content(activity);
+    const location = project ? projectLink(project) : spaceLink(space);
+
+    if (hasAggregatedTasks(activity)) {
+      const tasks = <UpdatedTaskList activity={activity} />;
+
+      if (page === "project") {
+        return feedTitle(activity, "updated the status of", tasks);
+      } else if (page === "space" && !project) {
+        return feedTitle(activity, "updated the status of", tasks);
+      } else {
+        return feedTitle(activity, "updated the status of", tasks, "in", location);
+      }
+    }
+
     const taskName = (() => {
       if (task && project) return taskLink(task);
       if (task) return taskLink(task, { spaceId: space.id });
@@ -50,7 +65,6 @@ const TaskStatusUpdating: ActivityHandler = {
     })();
 
     const message = ["marked", taskName, "as", newStatus.label];
-    const location = project ? projectLink(project) : spaceLink(space);
 
     if (page === "project") {
       return feedTitle(activity, ...message);
@@ -62,6 +76,8 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    if (hasAggregatedTasks(activity)) return null;
+
     const { oldStatus, newStatus } = content(activity);
 
     return (

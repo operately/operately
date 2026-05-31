@@ -5,6 +5,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 import { AvatarWithName } from "turboui";
 
 const TaskAssigneeUpdating: ActivityHandler = {
@@ -44,9 +45,22 @@ const TaskAssigneeUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const { project, space, task } = content(activity);
+    const location = project ? projectLink(project) : spaceLink(space);
+
+    if (hasAggregatedTasks(activity)) {
+      const tasks = <UpdatedTaskList activity={activity} />;
+
+      if (page === "project") {
+        return feedTitle(activity, "updated assignees on", tasks);
+      } else if (page === "space" && !project) {
+        return feedTitle(activity, "updated assignees on", tasks);
+      } else {
+        return feedTitle(activity, "updated assignees on", tasks, "in", location);
+      }
+    }
+
     const message = feedMessage(content(activity));
     const taskName = task ? taskLink(task, { spaceId: !project ? space.id : undefined }) : "a task";
-    const location = project ? projectLink(project) : spaceLink(space);
 
     if (page === "project") {
       return feedTitle(activity, message, taskName);
@@ -58,6 +72,8 @@ const TaskAssigneeUpdating: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    if (hasAggregatedTasks(activity)) return null;
+
     const { oldAssignee, newAssignee, addedAssignees, removedAssignees } = content(activity);
     const added = addedAssignees || [];
     const removed = removedAssignees || [];
