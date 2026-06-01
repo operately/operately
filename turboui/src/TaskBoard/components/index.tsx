@@ -281,6 +281,7 @@ export function TaskBoard({
         currentMilestoneId={activeTaskMilestoneId}
         assigneePersonSearch={assigneePersonSearch}
         onMilestoneSearch={onMilestoneSearch}
+        richTextHandlers={richTextHandlers}
       />
 
       <MilestoneCreationModal
@@ -360,6 +361,7 @@ export function TaskBoard({
                   selectedTaskId={selectedTaskId}
                   onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
                   onInlineCreateOpen={clearTaskSelection}
+                  richTextHandlers={richTextHandlers}
                 />
               ))}
 
@@ -417,7 +419,6 @@ export function TaskBoard({
                   />
                 </li>
               )}
-
             </ul>
           </div>
         </div>
@@ -456,6 +457,7 @@ export function TaskBoard({
                   targetLocation={destination}
                   placeholderHeight={draggedItemDimensions?.height ?? null}
                   onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
+                  richTextHandlers={richTextHandlers}
                 />
               ))}
             </ul>
@@ -557,40 +559,39 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
     milestonesToProcess = allMilestones;
   }
 
-  return milestonesToProcess
-    .map((milestone) => {
-      const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
-      let hasTasks = false;
+  return milestonesToProcess.map((milestone) => {
+    const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
+    let hasTasks = false;
 
-      // Calculate statistics from ALL original tasks for this milestone
-      originalTasks.forEach((task) => {
-        if (task.milestone?.id === milestone.id && !task._isHelperTask) {
-          hasTasks = true;
-          stats.total++;
+    // Calculate statistics from ALL original tasks for this milestone
+    originalTasks.forEach((task) => {
+      if (task.milestone?.id === milestone.id && !task._isHelperTask) {
+        hasTasks = true;
+        stats.total++;
 
-          switch (task.status?.color) {
-            case "gray":
-              stats.pending++;
-              break;
-            case "blue":
-              stats.inProgress++;
-              break;
-            case "green":
-              stats.done++;
-              break;
-            case "red":
-              stats.canceled++;
-              break;
-          }
+        switch (task.status?.color) {
+          case "gray":
+            stats.pending++;
+            break;
+          case "blue":
+            stats.inProgress++;
+            break;
+          case "green":
+            stats.done++;
+            break;
+          case "red":
+            stats.canceled++;
+            break;
         }
-      });
-
-      return {
-        milestone,
-        stats,
-        hasTasks,
-      };
+      }
     });
+
+    return {
+      milestone,
+      stats,
+      hasTasks,
+    };
+  });
 };
 
 const partitionMilestones = (milestones: Types.MilestoneWithStats[]) => {

@@ -17,6 +17,7 @@ import { StatusSelector } from "../../StatusSelector";
 import classNames from "../../utils/classnames";
 import { createTestId } from "../../TestableElement";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
+import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
@@ -37,6 +38,7 @@ export interface MilestoneCardProps {
   selectedTaskId?: string | null;
   onTaskClick?: (taskId: string) => void;
   onInlineCreateOpen?: () => void;
+  richTextHandlers?: RichEditorHandlers;
 
   /**
    * Milestone statistics - if not provided, will be calculated from tasks
@@ -68,6 +70,7 @@ export function MilestoneCard({
   selectedTaskId = null,
   onTaskClick,
   onInlineCreateOpen,
+  richTextHandlers,
 }: MilestoneCardProps) {
   const cardRef = React.useRef<HTMLLIElement>(null);
   const sortedTasks = React.useMemo(() => sortTasks(tasks, milestone), [tasks, milestone.tasksOrderingState]);
@@ -294,6 +297,7 @@ export function MilestoneCard({
         milestones={availableMilestones.length > 0 ? availableMilestones : [milestone]}
         onMilestoneSearch={async () => {}} // No-op: milestones list is static in this context
         currentMilestoneId={milestone.id}
+        richTextHandlers={richTextHandlers}
       />
     </>
   );

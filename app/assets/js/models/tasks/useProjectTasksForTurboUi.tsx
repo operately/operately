@@ -10,6 +10,7 @@ import { serializeContextualDate } from "../contextualDates";
 import * as Signals from "@/signals";
 
 import { DateField, showErrorToast, TaskBoard } from "turboui";
+import { serializeTaskDescription } from "./descriptionSerialization";
 import { buildMilestonesOrderingState, normalizeMilestonesOrderingState } from "./milestoneOrdering";
 
 interface TasksSnapshot {
@@ -116,7 +117,7 @@ export function useProjectTasksForTurboUi({
     const optimisticTask: TaskBoard.Task = {
       id: tempId,
       title: task.title,
-      description: "",
+      description: serializeTaskDescription(task.description),
       link: "#",
       status: task.status ?? null,
       assignees: task.assignees,
@@ -144,15 +145,7 @@ export function useProjectTasksForTurboUi({
 
     try {
       const backendStatus: TaskStatus | null = Tasks.serializeTaskStatus(task.status ?? null);
-
-      const input: TasksCreateInput = {
-        name: task.title,
-        assigneeIds: task.assignees.map((assignee) => assignee.id),
-        dueDate: serializeContextualDate(task.dueDate),
-        milestoneId: task.milestone?.id || null,
-        id: projectId,
-        type: "project",
-      };
+      const input = buildProjectTaskCreateInput(task, projectId);
 
       if (backendStatus !== null) {
         input.status = backendStatus;
@@ -279,7 +272,7 @@ export function useProjectTasksForTurboUi({
   const updateTaskDescription = React.useCallback(
     async (taskId: string, description: any): Promise<boolean> => {
       const snapshot = createSnapshot();
-      const serialized = description ? JSON.stringify(description) : "";
+      const serialized = serializeTaskDescription(description);
 
       setTasks((prev) =>
         prev.map((t) => {
@@ -470,4 +463,22 @@ export function useProjectTasksForTurboUi({
     updateTaskMilestone,
     deleteTask,
   };
+}
+
+export function buildProjectTaskCreateInput(task: TaskBoard.NewTaskPayload, projectId: string): TasksCreateInput {
+  const input: TasksCreateInput = {
+    name: task.title,
+    assigneeIds: task.assignees.map((assignee) => assignee.id),
+    dueDate: serializeContextualDate(task.dueDate),
+    milestoneId: task.milestone?.id || null,
+    id: projectId,
+    type: "project",
+  };
+
+  const description = serializeTaskDescription(task.description);
+  if (description) {
+    input.description = description;
+  }
+
+  return input;
 }
