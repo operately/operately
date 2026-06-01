@@ -55,7 +55,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     const optimisticTask: TaskBoard.Task = {
       id: tempId,
       title: task.title,
-      description: "",
+      description: task.description ? JSON.stringify(task.description) : "",
       link: "#",
       status: task.status ?? null,
       assignees: task.assignees,
@@ -77,6 +77,10 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
         id: space.id,
         type: "space",
       };
+
+      if (task.description) {
+        input.description = JSON.stringify(task.description);
+      }
 
       if (backendStatus !== null) {
         input.status = backendStatus;
