@@ -71,7 +71,8 @@ config :operately, Oban,
        {"0 8 * * *", OperatelyEmail.Cron.DailySummary},
        {"0 8 * * *", OperatelyEmail.Cron.Assignments},
        {"0 8 * * *", Operately.AI.Cron},
-       {"0 2 * * *", Operately.Beacon.Cron}
+       {"0 2 * * *", Operately.Beacon.Cron},
+       {"0 3 * * *", Operately.Billing.ReconcileAccessStateWorker}
      ]}
   ],
   queues: [
