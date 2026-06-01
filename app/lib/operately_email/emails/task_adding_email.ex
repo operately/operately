@@ -10,27 +10,56 @@ defmodule OperatelyEmail.Emails.TaskAddingEmail do
 
     {:ok, task} =
       Task.get(:system,
-        id: activity.content["task_id"],
+        id: content_value(activity.content, :task_id),
         opts: [preload: [:project, :space]]
       )
+
+    action = get_action(person, activity, task)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: find_where_name(task), who: author, action: "added the task \"#{task.name}\"")
+    |> subject(where: find_where_name(task), who: author, action: action)
     |> assign(:author, author)
+    |> assign(:action, action)
+    |> assign(:mentioned, mentioned?(person, activity))
     |> assign(:task_name, task.name)
     |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
     |> render("task_adding")
   end
 
+  defp get_action(person, activity, task) do
+    if mentioned?(person, activity) do
+      "mentioned you in the description for \"#{task.name}\""
+    else
+      "added the task \"#{task.name}\""
+    end
+  end
+
+  defp mentioned?(person, activity) do
+    mentioned_ids =
+      activity.content
+      |> content_value(:description)
+      |> Operately.RichContent.find_mentioned_ids(:decode_ids)
+
+    person.id in mentioned_ids
+  rescue
+    _ -> false
+  end
+
+  defp content_value(content, key) when is_map(content) do
+    Map.get(content, Atom.to_string(key)) || Map.get(content, key)
+  end
+
+  defp content_value(_content, _key), do: nil
+
   defp find_where_name(task) do
     case task do
-        %{project: %{name: name}} -> name
-        %{space: %{name: name}} -> name
-        _ -> "Unknown"
-      end
+      %{project: %{name: name}} -> name
+      %{space: %{name: name}} -> name
+      _ -> "Unknown"
+    end
   end
 
   def buffered_item(_person, activity) do
