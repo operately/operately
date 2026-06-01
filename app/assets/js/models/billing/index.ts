@@ -23,7 +23,6 @@ export type BillingCompanyAccessState = api.BillingCompanyAccessState;
 type BillingCheckoutSession = api.BillingCheckoutSession;
 type BillingHostedSession = api.BillingHostedSession;
 type BillingInterval = api.BillingInterval;
-export type BillingAccessStateLimit = api.BillingAccessStateLimit;
 export type BillingLimitStatus = api.BillingLimitStatus;
 export type BillingLimitWarnings = api.BillingLimitWarnings;
 export type BillingOverview = api.BillingOverview;
