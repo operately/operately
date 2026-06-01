@@ -10,7 +10,7 @@ import { IconAlertTriangleFilled, IconSparkles, IconX, PrimaryButton } from "tur
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 export function ApproachingLimitBanner() {
-  const { company, billingLimitWarnings } = useCompanyLoaderData();
+  const { company, billingAccessState, billingLimitWarnings } = useCompanyLoaderData();
   const me = useMe();
   const paths = usePaths();
   const location = useLocation();
@@ -22,7 +22,7 @@ export function ApproachingLimitBanner() {
   const hiddenOnRoute = Billing.isBillingManagementPath(location.pathname, paths.companyBillingPath());
 
   const banner = React.useMemo(() => {
-    if (!billingLimitWarnings || hiddenOnRoute) {
+    if (!billingLimitWarnings || hiddenOnRoute || Billing.isPaymentRecoveryAccessState(billingAccessState)) {
       return null;
     }
 
@@ -40,7 +40,7 @@ export function ApproachingLimitBanner() {
     }
 
     return builtBanner;
-  }, [billingLimitWarnings, company.id, hiddenOnRoute, paths, viewerRole, dismissedVersion]);
+  }, [billingAccessState, billingLimitWarnings, company.id, hiddenOnRoute, paths, viewerRole, dismissedVersion]);
 
   const handleDismiss = React.useCallback(() => {
     if (!banner) return;

@@ -14,6 +14,7 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
   return {
     pageTitle: "Billing",
     pageSubtitle: "Review the current subscription state for this company.",
+    headerAction: props.onRefreshBilling ? { label: "Refresh billing", onClick: props.onRefreshBilling } : null,
     mode: "overview",
     overview: buildCompanyBillingOverviewMode({
       billing: props.billing,
@@ -144,12 +145,30 @@ export function buildCompanyBillingStatusNotices(
     });
   }
 
-  if (billing.account.status === "past_due") {
+  if (billing.account.accessStateReason === "past_due" && billing.account.accessState === "payment_grace") {
     notices.push({
-      tone: "warning",
-      message: "Payment issue detected",
-      description: "Polar reports this subscription as past due. Billing access may be affected until payment is resolved.",
+      tone: "danger",
+      message: "Payment issue requires attention",
+      description: paymentGraceDescription(billing.account.accessStateEndsAt),
     });
+  }
+
+  if (billing.account.accessStateReason === "past_due" && billing.account.accessState === "read_only") {
+    notices.push({
+      tone: "danger",
+      message: "This company is read-only",
+      description: "This company is read-only because payment was not resolved in time. Collaborative work is blocked until an admin resolves the payment issue.",
+    });
+  }
+
+  if (billing.account.status === "past_due") {
+    if (billing.account.accessStateReason !== "past_due") {
+      notices.push({
+        tone: "warning",
+        message: "Payment issue detected",
+        description: "Polar reports this subscription as past due. Billing access may be affected until payment is resolved.",
+      });
+    }
   }
 
   if (billing.account.status === "canceled") {
@@ -400,6 +419,16 @@ function formatRelativeDateLine(prefix: string, value?: string | null): string |
   if (!formattedDate) return null;
 
   return `${prefix}: ${formattedDate}.`;
+}
+
+function paymentGraceDescription(value?: string | null): string {
+  const formattedDate = formatDate(value);
+
+  if (!formattedDate) {
+    return "Payment must be resolved soon or this company will switch to read-only mode.";
+  }
+
+  return `Payment must be resolved by ${formattedDate} or this company will switch to read-only mode.`;
 }
 
 function formatDate(value?: string | null): string | null {

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { InfoCallout, SuccessCallout, WarningCallout } from "../Callouts";
+import { ErrorCallout, InfoCallout, SuccessCallout, WarningCallout } from "../Callouts";
 import { Page } from "../Page";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "./types";
@@ -239,6 +239,10 @@ function BillingStatusBadge({ status }: { status: CompanyBillingPage.Status }) {
 }
 
 function NoticeCallout({ notice }: { notice: CompanyBillingPage.Notice }) {
+  if (notice.tone === "danger") {
+    return <ErrorCallout message={notice.message} description={notice.description} />;
+  }
+
   if (notice.tone === "warning") {
     return <WarningCallout message={notice.message} description={notice.description} />;
   }
@@ -258,13 +262,18 @@ function StatusDetailNotice({ notice }: { notice: CompanyBillingPage.Notice }) {
       badge: "bg-amber-100 text-amber-900",
       title: "text-amber-950",
     },
+    danger: {
+      wrapper: "border-rose-200 bg-rose-50/80",
+      badge: "bg-rose-100 text-rose-900",
+      title: "text-rose-950",
+    },
   }[notice.tone];
 
   return (
     <div className={`rounded-lg border px-4 py-3 ${toneClasses.wrapper}`}>
       <div className="flex items-start gap-3">
         <span className={`mt-0.5 rounded-full px-2 py-1 text-xs font-semibold ${toneClasses.badge}`}>
-          {notice.tone === "warning" ? "Warning" : "Info"}
+          {notice.tone === "danger" ? "Danger" : notice.tone === "warning" ? "Warning" : "Info"}
         </span>
 
         <div className="min-w-0">

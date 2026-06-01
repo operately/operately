@@ -1709,16 +1709,16 @@ Outcome:
 
 - Operately can derive, persist, and expose company-wide grace/read-only state without relying on live provider reads during ordinary page loads
 
-### PR 9c: Payment-default danger banner and recovery access
+### PR 9c: Payment-default danger banner and owner-only recovery access (COMPLETED ✅)
 
 - Show a non-dismissible danger banner to every company member when the company enters `past_due` grace, including the exact date when the company will become read-only
 - Keep the danger banner visible after the company becomes read-only due to non-payment, with copy that explains why collaborative work is blocked
-- Expand Billing-page recovery access so company admins can review plans, change plan, update payment method, and refresh billing during recovery states, while owner-only actions such as healthy-state cancellation can remain restricted
+- Keep billing permissions unchanged during payment recovery; owner-only billing actions and entry points remain owner-only even while the payment-default banner is shown to the whole company
 - Keep regular members informed through the banner without granting them billing mutation access
 
 Outcome:
 
-- payment-default risk is visible to the whole company, and the people who can recover the account are able to do so before or after the company becomes read-only
+- payment-default risk is visible to the whole company, while billing control remains consistently owner-only before and after the company becomes read-only
 
 ### PR 9d: Read-only enforcement and post-downgrade remediation
 

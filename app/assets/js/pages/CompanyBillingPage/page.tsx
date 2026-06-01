@@ -11,14 +11,9 @@ import {
   showErrorToast,
 } from "turboui";
 import { useLoadedData } from "./loader";
-import { useLocation, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { usePaths } from "@/routes/paths";
-
-interface CompanyRootData {
-  company?: {
-    name?: string | null;
-  } | null;
-}
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 interface BillingPageLocationState {
   billing?: Billing.BillingOverview;
@@ -56,7 +51,7 @@ export function Page() {
   const navigate = useNavigate();
   const paths = usePaths();
   const { billing: loadedBilling } = useLoadedData();
-  const companyRootData = useRouteLoaderData("companyRoot") as CompanyRootData | undefined;
+  const { company } = useCompanyLoaderData();
   const locationState = (location.state as BillingPageLocationState | null) || null;
 
   const [billing, setBilling] = React.useState(locationState?.billing || loadedBilling);
@@ -84,8 +79,9 @@ export function Page() {
   const checkoutReturnTarget = pendingTarget || selection.target;
   const canUseCheckout = Billing.canCreateCheckout(billing.account.status);
   const canManagePaidSubscription = Billing.canManagePaidSubscription(billing.account.status);
-  const companyName = companyRootData?.company?.name || "Billing";
+  const companyName = company.name || "Billing";
   const isConfirmingCheckout = isAwaitingCheckoutConfirmation(billing, search.checkoutId, checkoutReturnTarget);
+  const canManuallyRefreshBilling = Billing.isPaymentRecoveryAccessState(billing.account);
 
   const clearBillingSearch = React.useCallback(() => {
     navigate(paths.companyBillingPath(), { replace: true });
@@ -237,6 +233,18 @@ export function Page() {
     });
   }, [applyRefreshedBilling]);
 
+  const refreshBillingManually = React.useCallback(async () => {
+    setActionError(null);
+
+    try {
+      const refreshed = await Billing.refreshBilling({});
+      applyRefreshedBilling(refreshed);
+    } catch {
+      setActionError("We couldn't refresh billing right now. Please try again.");
+      showErrorToast("Refresh unavailable", "We couldn't refresh billing from Polar. Please try again.");
+    }
+  }, [applyRefreshedBilling]);
+
   Billing.useBillingUpdatedSignal(refreshFromBillingUpdate);
 
   React.useEffect(() => {
@@ -262,6 +270,7 @@ export function Page() {
       onReactivatePlan={canManagePaidSubscription && billing.account.cancelAtPeriodEnd ? () => void reactivatePlan() : null}
       onUpdatePaymentMethod={canManagePaidSubscription ? () => void openPaymentMethodSession() : null}
       onManageBilling={canManagePaidSubscription ? () => void openCustomerPortalSession() : null}
+      onRefreshBilling={canManuallyRefreshBilling ? () => void refreshBillingManually() : null}
       testId="company-billing-page"
     />
   );

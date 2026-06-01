@@ -45,6 +45,8 @@ export {
   isApproachingLimitBannerDismissed,
   isBillingManagementPath,
 } from "./approachingLimitBanner";
+export { buildPaymentDefaultBanner, isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
+export type { BillingViewerRole } from "./paymentDefaultBanner";
 export { buildMemberLimitGuidance } from "./memberLimitGuidance";
 export { extractLimitError, extractLimitErrorDetails } from "./limitError";
 export { formatPlanLabel, formatPlanName } from "./planFormatting";
