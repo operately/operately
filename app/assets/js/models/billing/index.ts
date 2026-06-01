@@ -16,6 +16,7 @@ import {
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
 } from "turboui";
+import { buildCompanyBillingChangeConsequence } from "turboui/CompanyBillingPage";
 
 type BillingCatalogProduct = api.BillingCatalogProduct;
 type BillingCheckoutSession = api.BillingCheckoutSession;
@@ -76,9 +77,14 @@ interface BillingCancellationSummary {
   currentPlanLabel: string;
   currentPeriodEnd: string | null;
   freePlanMemberLimit: number | null;
+  freePlanStorageLimitBytes: number | null;
   memberCount: number;
+  storageUsageBytes: number;
   willExceedFreeMemberLimit: boolean;
   memberOverage: number;
+  willExceedFreeStorageLimit: boolean;
+  storageOverageBytes: number;
+  overageKind: "none" | "member" | "storage" | "member_and_storage";
 }
 
 const SUGGESTED_PLAN_SOURCE_LABELS: Record<string, string> = {
@@ -283,17 +289,25 @@ export function buildReactivationFeedback(billing: BillingOverview): BillingFeed
 }
 
 export function buildCancellationSummary(billing: BillingOverview): BillingCancellationSummary {
-  const freePlan = findPlanDefinition(billing.plans, "free");
-  const freePlanMemberLimit = freePlan?.memberLimit || null;
-  const memberOverage = freePlanMemberLimit == null ? 0 : Math.max(billing.memberCount - freePlanMemberLimit, 0);
+  const consequence = buildCompanyBillingChangeConsequence({
+    billing,
+    targetPlanKey: "free",
+    timing: "next_renewal",
+    effectiveDate: billing.account.currentPeriodEnd,
+  });
 
   return {
     currentPlanLabel: formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "Current plan"),
     currentPeriodEnd: billing.account.currentPeriodEnd || null,
-    freePlanMemberLimit,
-    memberCount: billing.memberCount,
-    willExceedFreeMemberLimit: memberOverage > 0,
-    memberOverage,
+    freePlanMemberLimit: consequence.memberLimit,
+    freePlanStorageLimitBytes: consequence.storageLimitBytes,
+    memberCount: consequence.memberCount,
+    storageUsageBytes: consequence.storageUsageBytes,
+    willExceedFreeMemberLimit: consequence.memberOverage > 0,
+    memberOverage: consequence.memberOverage,
+    willExceedFreeStorageLimit: consequence.storageOverageBytes > 0,
+    storageOverageBytes: consequence.storageOverageBytes,
+    overageKind: consequence.overageKind,
   };
 }
 

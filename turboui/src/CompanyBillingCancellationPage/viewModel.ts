@@ -1,4 +1,9 @@
 import { CompanyBillingCancellationPage } from "./types";
+import {
+  buildCompanyBillingChangeConsequence,
+  buildCompanyBillingOverageDescription,
+} from "../CompanyBillingPage/changeConsequences";
+import { formatStorageBytes } from "../CompanyBillingPage/storageFormatting";
 
 export function buildCompanyBillingCancellationPageViewModel(
   props: CompanyBillingCancellationPage.Props,
@@ -23,11 +28,14 @@ export function buildCompanyBillingCancellationPageViewModel(
 export function buildCompanyBillingCancellationSummary(
   billing: CompanyBillingCancellationPage.BillingOverview,
 ): CompanyBillingCancellationPage.CancellationSummary {
-  const freePlan = findPlanDefinition(billing, "free");
   const currentPlan = findPlanDefinition(billing, billing.account.planKey);
-  const freePlanMemberLimit = freePlan?.memberLimit || null;
-  const memberOverage = freePlanMemberLimit == null ? 0 : Math.max(billing.memberCount - freePlanMemberLimit, 0);
   const currentPeriodEnd = formatDate(billing.account.currentPeriodEnd);
+  const consequence = buildCompanyBillingChangeConsequence({
+    billing,
+    targetPlanKey: "free",
+    timing: "next_renewal",
+    effectiveDate: billing.account.currentPeriodEnd,
+  });
 
   return {
     rows: compactRows([
@@ -37,18 +45,22 @@ export function buildCompanyBillingCancellationSummary(
       },
       currentPeriodEnd ? { label: "Paid access until", value: currentPeriodEnd } : null,
       { label: "Active members", value: `${billing.memberCount}` },
-      freePlanMemberLimit != null ? { label: "Free plan member limit", value: `${freePlanMemberLimit}` } : null,
+      consequence.memberLimit != null ? { label: "Free plan member limit", value: `${consequence.memberLimit}` } : null,
+      { label: "Storage used", value: formatStorageBytes(consequence.storageUsageBytes) },
+      consequence.storageLimitBytes != null
+        ? { label: "Free plan storage limit", value: formatStorageBytes(consequence.storageLimitBytes) }
+        : null,
     ]),
     consequenceMessage: currentPeriodEnd
       ? `This company will stay on its current paid plan until ${currentPeriodEnd}.`
       : "This company will stay on its current paid plan until the end of the current billing period.",
-    consequenceDescription:
-      memberOverage > 0
-        ? `It will move to the Free plan after that. Invites and restores may be blocked until the company is back within the free member limit.`
-        : "After that, the company will move to the Free plan.",
+    consequenceDescription: "After that, the company will move to the Free plan.",
     overLimitWarning:
-      memberOverage > 0 && freePlanMemberLimit != null
-        ? `This company has ${billing.memberCount} active members and the Free plan allows ${freePlanMemberLimit}.`
+      consequence.overageKind !== "none"
+        ? {
+            message: overLimitWarningMessage(consequence.overageKind),
+            description: buildCompanyBillingOverageDescription(consequence) || "",
+          }
         : null,
   };
 }
@@ -87,6 +99,17 @@ function formatDate(value?: string | null): string | null {
   if (Number.isNaN(date.getTime())) return null;
 
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
+}
+
+function overLimitWarningMessage(overageKind: ReturnType<typeof buildCompanyBillingChangeConsequence>["overageKind"]) {
+  switch (overageKind) {
+    case "member":
+      return "This company is above the free plan member limit";
+    case "storage":
+      return "This company is above the free plan storage limit";
+    default:
+      return "This company is above the free plan limits";
+  }
 }
 
 function noop() {}

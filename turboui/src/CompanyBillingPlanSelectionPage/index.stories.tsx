@@ -190,6 +190,82 @@ export const ScheduledChangePreselected: Story = {
   },
 };
 
+export const OverLimitDowngradePreview: Story = {
+  render: () => {
+    const [selectedInterval, setSelectedInterval] = React.useState<CompanyBillingPlanSelectionPage.Interval>("monthly");
+    const [selectedPlan, setSelectedPlan] = React.useState<CompanyBillingPlanSelectionPage.Plan>("team");
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+        currentPeriodEnd: "2026-06-14T00:00:00Z",
+      },
+      memberCount: 60,
+      storageUsageBytes: 128_849_018_880,
+    });
+
+    return (
+      <CompanyBillingPlanSelectionPage
+        title={["Acme", "Choose a plan"]}
+        navigation={navigation}
+        billing={billing}
+        selection={{
+          target: {
+            plan: selectedPlan,
+            billingInterval: selectedInterval,
+            product: findCompanyBillingSellableProduct(billing.catalogProducts, selectedPlan, selectedInterval),
+          },
+          source: "query",
+          warning: null,
+        }}
+        onSelectPlan={setSelectedPlan}
+        onSelectInterval={setSelectedInterval}
+        onSubmit={() => console.log("change plan")}
+        testId="billing-plan-selection-page-over-limit-downgrade"
+      />
+    );
+  },
+};
+
+export const MemberOverLimitDowngradePreview: Story = {
+  render: () => {
+    const [selectedInterval, setSelectedInterval] = React.useState<CompanyBillingPlanSelectionPage.Interval>("monthly");
+    const [selectedPlan, setSelectedPlan] = React.useState<CompanyBillingPlanSelectionPage.Plan>("team");
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+        currentPeriodEnd: "2026-06-14T00:00:00Z",
+      },
+      memberCount: 60,
+      storageUsageBytes: 85_899_345_920,
+    });
+
+    return (
+      <CompanyBillingPlanSelectionPage
+        title={["Acme", "Choose a plan"]}
+        navigation={navigation}
+        billing={billing}
+        selection={{
+          target: {
+            plan: selectedPlan,
+            billingInterval: selectedInterval,
+            product: findCompanyBillingSellableProduct(billing.catalogProducts, selectedPlan, selectedInterval),
+          },
+          source: "query",
+          warning: null,
+        }}
+        onSelectPlan={setSelectedPlan}
+        onSelectInterval={setSelectedInterval}
+        onSubmit={() => console.log("change plan")}
+        testId="billing-plan-selection-page-member-over-limit-downgrade"
+      />
+    );
+  },
+};
+
 export const MissingYearlyOption: Story = {
   render: () => {
     const billing = billingOverviewMock({

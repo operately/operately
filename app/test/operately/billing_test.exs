@@ -788,30 +788,52 @@ defmodule Operately.BillingTest do
       end
     end
 
-    test "change_plan/4 schedules same-tier interval switches", ctx do
+    test "change_plan/4 applies monthly-to-yearly interval switches immediately", ctx do
       {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_team_yearly", "team", "yearly")
 
       put_sequence(:customer_state_responses, [
         {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_interval"})},
-        {:ok,
-         active_subscription_payload("prod_team_monthly", %{
-           "id" => "sub_interval",
-           "pending_update" => %{"product_id" => "prod_team_yearly"}
-         })}
+        {:ok, active_subscription_payload("prod_team_yearly", %{"id" => "sub_interval"})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
-        update_subscription: fn "sub_interval", %{product_id: "prod_team_yearly", proration_behavior: "next_period"} ->
+        update_subscription: fn "sub_interval", %{product_id: "prod_team_yearly", proration_behavior: "prorate"} ->
           {:ok, %{"id" => "sub_interval"}}
         end do
         assert {:ok, overview} = Billing.change_plan(ctx.company, :team, :yearly)
 
         assert overview.account.plan_key == :team
-        assert overview.account.billing_interval == :monthly
+        assert overview.account.billing_interval == :yearly
+        assert overview.account.scheduled_plan_key == nil
+      end
+    end
+
+    test "change_plan/4 schedules yearly-to-monthly interval switches", ctx do
+      {:ok, _current_product} = create_active_product("prod_team_yearly", "team", "yearly")
+      {:ok, _target_product} = create_active_product("prod_team_monthly", "team", "monthly")
+
+      put_sequence(:customer_state_responses, [
+        {:ok, active_subscription_payload("prod_team_yearly", %{"id" => "sub_interval"})},
+        {:ok,
+         active_subscription_payload("prod_team_yearly", %{
+           "id" => "sub_interval",
+           "pending_update" => %{"product_id" => "prod_team_monthly"}
+         })}
+      ])
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
+        update_subscription: fn "sub_interval", %{product_id: "prod_team_monthly", proration_behavior: "next_period"} ->
+          {:ok, %{"id" => "sub_interval"}}
+        end do
+        assert {:ok, overview} = Billing.change_plan(ctx.company, :team, :monthly)
+
+        assert overview.account.plan_key == :team
+        assert overview.account.billing_interval == :yearly
         assert overview.account.scheduled_plan_key == :team
-        assert overview.account.scheduled_billing_interval == :yearly
+        assert overview.account.scheduled_billing_interval == :monthly
       end
     end
 
