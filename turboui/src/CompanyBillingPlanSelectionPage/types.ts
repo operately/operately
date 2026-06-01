@@ -30,12 +30,20 @@ export namespace CompanyBillingPlanSelectionPage {
     loading?: boolean;
   }
 
+  export interface ConsequenceNotice {
+    tone: "info" | "warning";
+    message: string;
+    description: string;
+    rows: CompanyBillingPageTypes.DetailRow[];
+  }
+
   export interface SelectionModeView {
     mode: Mode;
     errorMessage?: string | null;
     selectedInterval: Interval;
     onSelectInterval: (interval: Interval) => void;
     cards: PlanCard[];
+    consequenceNotice?: ConsequenceNotice | null;
     continueAction: Action;
   }
 

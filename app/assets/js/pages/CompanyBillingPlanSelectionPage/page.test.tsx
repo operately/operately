@@ -153,6 +153,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     expect(selection.cards.find((card) => card.title === "Business")?.selected).toBe(true);
     expect(selection.continueAction.label).toBe("Change plan");
     expect(selection.continueAction.disabled).toBe(true);
+    expect(selection.consequenceNotice).toBeNull();
   });
 
   it("preselects the scheduled target for paid companies", () => {
@@ -180,6 +181,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     expect(selection.selectedInterval).toBe("yearly");
     expect(selection.cards.find((card) => card.title === "Business")?.selected).toBe(true);
     expect(selection.continueAction.disabled).toBe(true);
+    expect(selection.consequenceNotice?.message).toBe("Business Yearly takes effect immediately.");
   });
 
   it("preselects the suggested plan when no free-company target is provided", () => {
@@ -203,5 +205,171 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     expect(selection.selectedInterval).toBe("yearly");
     expect(selection.cards.find((card) => card.title === "Business")?.selected).toBe(true);
     expect(selection.continueAction.disabled).toBe(false);
+    expect(selection.consequenceNotice).toBeNull();
+  });
+
+  it("shows an immediate preview for monthly-to-yearly changes on the same plan", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "monthly",
+        status: "active",
+      } as any,
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=yearly")),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.mode).toBe("change_plan");
+    expect(selection.consequenceNotice).toMatchObject({
+      tone: "info",
+      message: "Team Yearly takes effect immediately.",
+      description: "",
+      rows: [],
+    });
+    expect(selection.continueAction.disabled).toBe(false);
+  });
+
+  it("shows a scheduled preview for yearly-to-monthly changes on the same plan", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "team",
+        billingInterval: "yearly",
+        status: "active",
+        currentPeriodEnd: "2026-06-14T00:00:00Z",
+      } as any,
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.mode).toBe("change_plan");
+    expect(selection.consequenceNotice?.tone).toBe("info");
+    expect(selection.consequenceNotice?.message).toContain("Team Monthly takes effect at the next renewal");
+    expect(selection.consequenceNotice?.description).toBe("");
+    expect(selection.consequenceNotice?.rows).toEqual([]);
+  });
+
+  it("shows downgrade details when the target plan still fits current usage", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+        currentPeriodEnd: "2026-06-14T00:00:00Z",
+      } as any,
+      memberCount: 40,
+      storageUsageBytes: 80 * 1024 ** 3,
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.consequenceNotice).toMatchObject({
+      tone: "info",
+      description: "",
+      rows: [],
+    });
+    expect(selection.consequenceNotice?.message).toContain("Team Monthly takes effect at the next renewal");
+  });
+
+  it("shows downgrade warnings for member overage only", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+      } as any,
+      memberCount: 60,
+      storageUsageBytes: 80 * 1024 ** 3,
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.consequenceNotice?.tone).toBe("warning");
+    expect(selection.consequenceNotice?.description).toContain("invites and restores may be blocked");
+  });
+
+  it("shows downgrade warnings for storage overage only", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+      } as any,
+      memberCount: 40,
+      storageUsageBytes: 120 * 1024 ** 3,
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.consequenceNotice?.tone).toBe("warning");
+    expect(selection.consequenceNotice?.description).toContain("uploads may be blocked");
+    expect(selection.consequenceNotice?.description).toContain("120 GB");
+    expect(selection.consequenceNotice?.description).toContain("100 GB");
+  });
+
+  it("shows downgrade warnings for combined member and storage overage", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "business",
+        billingInterval: "monthly",
+        status: "active",
+      } as any,
+      memberCount: 60,
+      storageUsageBytes: 120 * 1024 ** 3,
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.consequenceNotice?.tone).toBe("warning");
+    expect(selection.consequenceNotice?.description).toContain("invites, restores, and uploads may be blocked");
+    expect(selection.consequenceNotice?.description).toContain("60 active members");
+    expect(selection.consequenceNotice?.description).toContain("120 GB");
   });
 });

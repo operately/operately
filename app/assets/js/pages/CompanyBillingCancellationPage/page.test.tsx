@@ -54,7 +54,10 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
     expect(summary.currentPlanLabel).toBe("Business Yearly");
     expect(summary.currentPeriodEnd).toBe("2026-07-01T00:00:00Z");
     expect(summary.freePlanMemberLimit).toBe(20);
+    expect(summary.freePlanStorageLimitBytes).toBe(1_073_741_824);
     expect(summary.willExceedFreeMemberLimit).toBe(false);
+    expect(summary.willExceedFreeStorageLimit).toBe(true);
+    expect(summary.overageKind).toBe("storage");
   });
 
   it("builds a cancellation confirmation view with downgrade details", () => {
@@ -62,6 +65,7 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
       title: ["Acme", "Cancel plan"],
       billing: billingOverviewMock({
         memberCount: 25,
+        storageUsageBytes: 2 * 1024 ** 3,
       }),
       actionError: null,
       isSubmitting: false,
@@ -74,9 +78,14 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
       expect.arrayContaining([
         expect.objectContaining({ label: "Active members", value: "25" }),
         expect.objectContaining({ label: "Free plan member limit", value: "20" }),
+        expect.objectContaining({ label: "Storage used", value: "2 GB" }),
+        expect.objectContaining({ label: "Free plan storage limit", value: "1 GB" }),
       ]),
     );
-    expect(viewModel.summary.overLimitWarning).toContain("25 active members");
+    expect(viewModel.summary.overLimitWarning).toMatchObject({
+      message: "This company is above the free plan limits",
+    });
+    expect(viewModel.summary.overLimitWarning?.description).toContain("invites, restores, and uploads may be blocked");
     expect(viewModel.keepAction.label).toBe("Keep current plan");
     expect(viewModel.cancelAction.label).toBe("Cancel plan");
   });

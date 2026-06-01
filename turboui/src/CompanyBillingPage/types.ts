@@ -5,11 +5,14 @@ export namespace CompanyBillingPage {
   export type Status = "free" | "active" | "past_due" | "canceled";
   export type Interval = "monthly" | "yearly";
   export type Plan = "team" | "business";
+  export type ChangeTargetPlan = Plan | "free";
   export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
   export type NoticeTone = "info" | "warning";
   export type ActionTone = "primary" | "secondary" | "danger";
   export type ActionKind = "featured" | "support" | "recovery" | "danger";
   export type FeedbackKind = "success" | "pending" | "incomplete";
+  export type ChangeTiming = "immediate" | "next_renewal";
+  export type OverageKind = "none" | "member" | "storage" | "member_and_storage";
 
   export interface BillingAccount {
     planKey?: Plan | null;
@@ -57,6 +60,21 @@ export namespace CompanyBillingPage {
     plan: Plan;
     billingInterval: Interval;
     product?: BillingCatalogProduct | null;
+  }
+
+  export interface ChangeConsequence {
+    targetPlanKey: ChangeTargetPlan;
+    targetPlanLabel: string;
+    timing: ChangeTiming;
+    effectiveDate?: string | null;
+    isLowerEntitlement: boolean;
+    memberCount: number;
+    memberLimit: number | null;
+    memberOverage: number;
+    storageUsageBytes: number;
+    storageLimitBytes: number | null;
+    storageOverageBytes: number;
+    overageKind: OverageKind;
   }
 
   export interface BillingSearchParams {

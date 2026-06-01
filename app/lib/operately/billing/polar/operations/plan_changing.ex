@@ -118,7 +118,8 @@ defmodule Operately.Billing.Polar.Operations.PlanChanging do
     cond do
       plan_tier(target_product.plan_family) > plan_tier(current_product.plan_family) -> "prorate"
       plan_tier(target_product.plan_family) < plan_tier(current_product.plan_family) -> "next_period"
-      target_product.billing_interval != current_product.billing_interval -> "next_period"
+      current_product.billing_interval == :monthly and target_product.billing_interval == :yearly -> "prorate"
+      current_product.billing_interval == :yearly and target_product.billing_interval == :monthly -> "next_period"
       true -> "prorate"
     end
   end

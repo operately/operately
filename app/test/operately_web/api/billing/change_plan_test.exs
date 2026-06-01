@@ -85,6 +85,55 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
       end
     end
 
+    test "it applies monthly-to-yearly interval switches immediately", ctx do
+      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_team_yearly", "team", "yearly")
+
+      put_sequence(:customer_state_responses, [
+        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_interval"})},
+        {:ok, active_subscription_payload("prod_team_yearly", %{"id" => "sub_interval"})}
+      ])
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
+        update_subscription: fn "sub_interval", %{product_id: "prod_team_yearly", proration_behavior: "prorate"} ->
+          {:ok, %{"id" => "sub_interval"}}
+        end do
+        assert {200, res} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "yearly"})
+
+        assert res.billing.account.plan_key == "team"
+        assert res.billing.account.billing_interval == "yearly"
+        assert res.billing.account.scheduled_plan_key == nil
+      end
+    end
+
+    test "it schedules yearly-to-monthly interval switches", ctx do
+      {:ok, _current_product} = create_active_product("prod_team_yearly", "team", "yearly")
+      {:ok, _target_product} = create_active_product("prod_team_monthly", "team", "monthly")
+
+      put_sequence(:customer_state_responses, [
+        {:ok, active_subscription_payload("prod_team_yearly", %{"id" => "sub_interval"})},
+        {:ok,
+         active_subscription_payload("prod_team_yearly", %{
+           "id" => "sub_interval",
+           "pending_update" => %{"product_id" => "prod_team_monthly"}
+         })}
+      ])
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
+        update_subscription: fn "sub_interval", %{product_id: "prod_team_monthly", proration_behavior: "next_period"} ->
+          {:ok, %{"id" => "sub_interval"}}
+        end do
+        assert {200, res} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "monthly"})
+
+        assert res.billing.account.plan_key == "team"
+        assert res.billing.account.billing_interval == "yearly"
+        assert res.billing.account.scheduled_plan_key == "team"
+        assert res.billing.account.scheduled_billing_interval == "monthly"
+      end
+    end
+
     test "it rejects invalid inputs", ctx do
       assert {400, _} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "free", billing_interval: "monthly"})
       assert {400, _} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "weekly"})

@@ -402,6 +402,38 @@ describe("CompanyBillingPage bridge helpers", () => {
     expect(scheduledFeedback.description).toContain("Business Yearly");
   });
 
+  it("treats monthly-to-yearly changes as immediate and yearly-to-monthly changes as scheduled", () => {
+    const immediateFeedback = buildCompanyBillingPlanChangeFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "yearly",
+          status: "active",
+          scheduledPlanKey: null,
+          scheduledBillingInterval: null,
+        } as any,
+      }),
+    );
+
+    const scheduledFeedback = buildCompanyBillingPlanChangeFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "yearly",
+          status: "active",
+          scheduledPlanKey: "team",
+          scheduledBillingInterval: "monthly",
+          scheduledChangeEffectiveAt: "2026-06-14T00:00:00Z",
+        } as any,
+      }),
+    );
+
+    expect(immediateFeedback).toMatchObject({ kind: "success", message: "Plan updated" });
+    expect(immediateFeedback.description).toContain("Team Yearly");
+    expect(scheduledFeedback).toMatchObject({ kind: "success", message: "Plan change scheduled" });
+    expect(scheduledFeedback.description).toContain("Team Monthly");
+  });
+
   it("builds cancellation and reactivation feedback", () => {
     const scheduledCancellationFeedback = buildCompanyBillingCancellationFeedback(
       billingOverviewMock({

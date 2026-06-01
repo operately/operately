@@ -9,7 +9,10 @@ export namespace CompanyBillingCancellationPage {
     rows: DetailRow[];
     consequenceMessage: string;
     consequenceDescription: string;
-    overLimitWarning?: string | null;
+    overLimitWarning?: {
+      message: string;
+      description: string;
+    } | null;
   }
 
   export interface Action {

@@ -5,6 +5,12 @@ import {
   isCompanyBillingPaidStatus,
   matchesCompanyBillingTarget,
 } from "../CompanyBillingPage/state";
+import {
+  buildCompanyBillingChangeConsequence,
+  buildCompanyBillingOverageDescription,
+  formatCompanyBillingChangeTimingDescription,
+  resolveCompanyBillingChangeTiming,
+} from "../CompanyBillingPage/changeConsequences";
 import { formatStorageBytes } from "../CompanyBillingPage/storageFormatting";
 import { CompanyBillingPlanSelectionPage } from "./types";
 
@@ -73,6 +79,7 @@ export function buildCompanyBillingPlanSelectionMode(
         testId: `billing-plan-card-${plan}-${selectedInterval}`,
       };
     }),
+    consequenceNotice: buildSelectionConsequenceNotice(args.billing, mode, selectedTarget),
     continueAction: {
       label: mode === "change_plan" ? "Change plan" : "Continue to checkout",
       tone: "primary",
@@ -105,6 +112,38 @@ function isCurrentOrScheduledSelection(
 
   const scheduledTarget = getCompanyBillingScheduledTarget(billing);
   return scheduledTarget ? matchesTarget(target, scheduledTarget) : false;
+}
+
+function buildSelectionConsequenceNotice(
+  billing: CompanyBillingPlanSelectionPage.BillingOverview,
+  mode: CompanyBillingPlanSelectionPage.Mode,
+  selectedTarget: CompanyBillingPlanSelectionPage.BillingTarget | null,
+): CompanyBillingPlanSelectionPage.ConsequenceNotice | null {
+  if (mode !== "change_plan" || !selectedTarget) return null;
+
+  const currentTarget = getCompanyBillingCurrentTarget(billing);
+  if (currentTarget && matchesTarget(selectedTarget, currentTarget)) return null;
+
+  const timing = resolveCompanyBillingChangeTiming(currentTarget, selectedTarget);
+  if (!timing) return null;
+
+  const consequence = buildCompanyBillingChangeConsequence({
+    billing,
+    targetPlanKey: selectedTarget.plan,
+    targetBillingInterval: selectedTarget.billingInterval,
+    timing,
+    effectiveDate: timing === "next_renewal" ? billing.account.currentPeriodEnd : null,
+  });
+
+  const rows = consequence.overageKind !== "none" ? buildConsequenceRows(consequence) : [];
+  const overageDescription = buildCompanyBillingOverageDescription(consequence);
+
+  return {
+    tone: consequence.overageKind === "none" ? "info" : "warning",
+    message: formatCompanyBillingChangeTimingDescription(consequence),
+    description: overageDescription || "",
+    rows,
+  };
 }
 
 function matchesTarget(
@@ -191,6 +230,24 @@ function formatBillingHint(
   }
 
   return "Billed monthly";
+}
+
+function buildConsequenceRows(
+  consequence: ReturnType<typeof buildCompanyBillingChangeConsequence>,
+): CompanyBillingPlanSelectionPage.ConsequenceNotice["rows"] {
+  const rows = [
+    { label: "Active members", value: `${consequence.memberCount}` },
+    consequence.memberLimit != null ? { label: `${consequence.targetPlanLabel} member limit`, value: `${consequence.memberLimit}` } : null,
+    { label: "Storage used", value: formatStorageBytes(consequence.storageUsageBytes) },
+    consequence.storageLimitBytes != null
+      ? {
+          label: `${consequence.targetPlanLabel} storage limit`,
+          value: formatStorageBytes(consequence.storageLimitBytes),
+        }
+      : null,
+  ];
+
+  return rows.filter((row): row is NonNullable<typeof row> => row !== null);
 }
 
 function noop() {}

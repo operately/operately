@@ -1683,7 +1683,7 @@ Outcome:
 
 - owners and company admins receive a persistent company-level warning when the company is already over member or storage limits, even outside the original action that triggered enforcement
 
-### PR 9a: Asymmetric billing-cycle changes and downgrade previews
+### PR 9a: Asymmetric billing-cycle changes and downgrade previews (COMPLETED ✅)
 
 - Change billing-cycle behavior so `monthly -> yearly` interval changes use immediate provider proration while `yearly -> monthly` interval changes remain next-period changes
 - Keep plan-tier upgrades immediate/prorated and plan-tier downgrades next-period
