@@ -16,6 +16,7 @@ defmodule Operately.Billing do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Billing.CompanyBillingAccount
+  alias Operately.Billing.EnforceLimits
   alias Operately.Billing.Overview
   alias Operately.Billing.Polar.Operations.CustomerStateSync
   alias Operately.Billing.Polar.ProductMapper
@@ -308,6 +309,34 @@ defmodule Operately.Billing do
     end
   end
 
+  def get_company_access_state(%Operately.Companies.Company{} = company) do
+    %{
+      account: get_billing_account_by_company(company),
+      member_limit: company_limit_snapshot(company, :member_count),
+      storage_limit: company_limit_snapshot(company, :storage_bytes, current_usage: company_storage_bytes(company))
+    }
+  end
+
+  def promote_expired_access_states(now \\ DateTime.utc_now()) do
+    expired_accounts =
+      CompanyBillingAccount
+      |> where([account], account.access_state in [:payment_grace, :over_limit_grace])
+      |> where([account], not is_nil(account.access_state_ends_at) and account.access_state_ends_at <= ^now)
+      |> Repo.all()
+
+    Enum.reduce_while(expired_accounts, {:ok, 0}, fn account, {:ok, count} ->
+      case update_billing_account(account, %{
+             access_state: :read_only,
+             access_state_reason: account.access_state_reason,
+             access_state_started_at: account.access_state_ends_at,
+             access_state_ends_at: nil
+           }) do
+        {:ok, _account} -> {:cont, {:ok, count + 1}}
+        {:error, changeset} -> {:halt, {:error, changeset}}
+      end
+    end)
+  end
+
   @doc """
   Creates a hosted Polar session for payment-method management.
   """
@@ -329,6 +358,14 @@ defmodule Operately.Billing do
   defdelegate change_plan(company, plan_key, billing_interval, opts \\ []),
     to: Operately.Billing.Polar.Operations.PlanChanging,
     as: :run
+
+  defp company_limit_snapshot(company, limit_key, opts \\ []) do
+    opts = Keyword.put_new(opts, :requested_delta, 0)
+
+    company
+    |> EnforceLimits.status(limit_key, opts)
+    |> EnforceLimits.public_snapshot()
+  end
 
   defdelegate cancel_subscription(company, opts \\ []),
     to: Operately.Billing.Polar.Operations.SubscriptionCanceling,

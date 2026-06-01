@@ -1,6 +1,15 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Billing.CompanyBillingAccount do
   def serialize(account, level: :essential) do
     %{
+      access_state: account.access_state || :normal,
+      access_state_reason: account.access_state_reason,
+      access_state_started_at: account.access_state_started_at,
+      access_state_ends_at: account.access_state_ends_at
+    }
+  end
+
+  def serialize(account, level: :full) do
+    %{
       provider: account.provider,
       plan_key: account.plan_key,
       billing_interval: account.billing_interval,
@@ -16,7 +25,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Billing.CompanyBillingAcco
       scheduled_plan_key: account.scheduled_plan_key,
       scheduled_billing_interval: account.scheduled_billing_interval,
       scheduled_change_effective_at: account.scheduled_change_effective_at,
-      last_synced_at: account.last_synced_at
+      last_synced_at: account.last_synced_at,
+      access_state: account.access_state || :normal,
+      access_state_reason: account.access_state_reason,
+      access_state_started_at: account.access_state_started_at,
+      access_state_ends_at: account.access_state_ends_at
     }
   end
 end

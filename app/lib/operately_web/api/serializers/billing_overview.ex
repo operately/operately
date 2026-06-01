@@ -3,7 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Billing.Overview do
 
   def serialize(overview, level: :essential) do
     %{
-      account: Serializer.serialize(overview.account, level: :essential),
+      account: Serializer.serialize(overview.account, level: :full),
       plans: Serializer.serialize(overview.plans, level: :essential),
       catalog_products: Serializer.serialize(overview.catalog_products, level: :essential),
       member_count: overview.member_count,

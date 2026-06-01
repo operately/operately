@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Billing
+  alias Operately.Access.Binding
   alias Operately.Companies.Company
   alias Operately.Companies.Permissions
 
@@ -24,6 +25,18 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
     else
       {:error, :not_found} -> {:error, :not_found}
       {:error, :forbidden} -> {:error, :forbidden}
+    end
+  end
+
+  def authorize_member_billing_read_access(conn) do
+    with {:ok, company} <- find_company(conn),
+         {:ok, person} <- find_me(conn),
+         :ok <- ensure_billing_enabled(company),
+         {:ok, company} <- Company.get(person, id: company.id, opts: [required_access_level: Binding.minimal_access()]) do
+      {:ok, %{company: company, person: person}}
+    else
+      {:error, :not_found} -> {:error, :not_found}
+      {:error, :invalid_requester} -> {:error, :not_found}
     end
   end
 

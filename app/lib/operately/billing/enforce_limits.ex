@@ -93,6 +93,12 @@ defmodule Operately.Billing.EnforceLimits do
     }
   end
 
+  def public_snapshot(%LimitStatus{} = status) do
+    status
+    |> public_details()
+    |> Map.delete(:recommended_upgrade)
+  end
+
   defp error_from_status(%LimitStatus{} = status) do
     %LimitError{
       code: error_code(status.limit_key),

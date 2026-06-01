@@ -7,6 +7,7 @@ import { checkAuth } from "@/routes/pageRoute";
 
 export interface CompanyLoadedData {
   company: Companies.Company;
+  billingAccessState: Billing.BillingCompanyAccessState | null;
   billingLimitWarnings: Billing.BillingLimitWarnings | null;
   canAddProject: boolean;
   canAddGoal: boolean;
@@ -24,9 +25,12 @@ export async function companyLoader({ params }): Promise<CompanyLoadedData> {
       Api.spaces.countByAccessLevel({ accessLevel: "edit_access" }).then((d) => d.count || 0),
     ]);
 
-    const billingLimitWarnings = await fetchBillingLimitWarnings(company);
+    const [billingAccessState, billingLimitWarnings] = await Promise.all([
+      fetchBillingAccessState(company),
+      fetchBillingLimitWarnings(company),
+    ]);
 
-    return { company, billingLimitWarnings, canAddProject: spacesCount > 0, canAddGoal: spacesCount > 0 };
+    return { company, billingAccessState, billingLimitWarnings, canAddProject: spacesCount > 0, canAddGoal: spacesCount > 0 };
   } catch (error) {
     // If the company ID is invalid, the API will return a 400 message, but for the rest of the application, we can treat it as 404.
     if (error["status"] === 400) {
@@ -35,6 +39,22 @@ export async function companyLoader({ params }): Promise<CompanyLoadedData> {
     } else {
       throw error;
     }
+  }
+}
+
+async function fetchBillingAccessState(company: Companies.Company): Promise<Billing.BillingCompanyAccessState | null> {
+  if (!window.appConfig.billingEnabled) {
+    return null;
+  }
+
+  if (!company.enabledExperimentalFeatures?.includes("billing")) {
+    return null;
+  }
+
+  try {
+    return await Billing.getAccessState({});
+  } catch {
+    return null;
   }
 }
 

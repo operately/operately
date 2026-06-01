@@ -263,6 +263,8 @@ Requirements:
 - ordinary collaborative write surfaces should become view-only
 - the enforcement should be routed through the existing permission modules by extending helpers such as `calculate/2`
 - the implementation should use a generalized `company_read_only` concept rather than a `company_past_due`-specific flag, because the same view-only mode is used for both payment default and post-downgrade over-limit enforcement
+- the persisted source of truth for this access state should remain `company_billing_accounts`; do not duplicate the same persisted fields onto `companies`
+- when request authentication/loading resolves `conn.assigns.current_company`, it should load the company together with the billing access-state projection in the same query or preload path and expose convenience fields such as `billing_access_state` / `billing_read_only` on the loaded company struct so permission modules can use that information without extra queries
 - when `company_read_only` is true, permission calculators should return only `can_view: true`; edit/comment/create-style capabilities should be false
 - billing recovery actions and company-admin remediation actions should remain available to owners and company admins even while the company is otherwise read-only
 
@@ -1170,6 +1172,8 @@ Requirements:
 
 - use the existing permission modules as the main enforcement point for collaborative content access
 - extend helpers such as `calculate/2` so they can accept a generalized `company_read_only` flag or equivalent access-state context
+- keep `company_billing_accounts` as the persisted source of truth for read-only state, but make that state available on the already-loaded company struct used by endpoints so permission checks do not need an additional billing lookup per request
+- the preferred implementation is to load `current_company` with its billing-access-state projection in the auth/request pipeline and attach convenience fields such as `billing_access_state` / `billing_read_only` to the company struct rather than duplicating persisted read-only columns onto `companies`
 - when `company_read_only` is true, return only `can_view: true`; write-style capabilities such as edit, comment, create, upload, and similar actions should be false
 - apply the same pattern across project, goal, company, group, resource-hub, activity, and similar permission modules that gate ordinary company work
 - keep this restriction out of company-admin recovery actions such as updating payment method, changing plan, removing members, suspending members, and deleting company-owned files needed for storage remediation
@@ -1694,7 +1698,7 @@ Outcome:
 
 - interval switches behave according to the intended asymmetric policy, and downgrade timing/consequences are previewed accurately before the user confirms
 
-### PR 9b: Company-wide billing access-state foundation
+### PR 9b: Company-wide billing access-state foundation (COMPLETED ✅)
 
 - Add a local access-state projection on `company_billing_accounts` for `payment_grace`, `over_limit_grace`, and `read_only`
 - Persist the timestamps needed to render exact grace deadlines and read-only start times
@@ -1719,6 +1723,8 @@ Outcome:
 ### PR 9d: Read-only enforcement and post-downgrade remediation
 
 - Enforce company read-only mode through permission calculators across collaborative content surfaces using a generalized `company_read_only` access-state input
+- Load that access-state input onto `conn.assigns.current_company` during the normal auth/request pipeline so endpoints can pass it into permission calculators without extra queries
+- Keep `company_billing_accounts` as the only persisted source of truth for that state; use association/virtual company fields for convenience rather than duplicating persisted read-only fields onto `companies`
 - Return only `can_view: true` from collaborative permission helpers when the company is read-only
 - Keep remediation actions such as updating payment, changing plan, removing members, suspending members, and deleting company-owned files available to owners and company admins
 - Start a company-wide `14`-day danger banner when a scheduled downgrade or cancellation becomes effective and the company is still above the new member or storage limits
