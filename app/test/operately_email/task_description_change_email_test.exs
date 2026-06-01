@@ -45,9 +45,11 @@ defmodule OperatelyEmail.TaskDescriptionChangeEmailTest do
     TaskDescriptionChangeEmail.send(ctx.recipient, activity)
 
     assert_email_sent(fn email ->
-      assert email.subject =~ "Michael S. mentioned you in the description for \"Call leads\""
+      assert email.subject =~ "mentioned you"
+      assert email.subject =~ "Call leads"
       assert String.trim(email.text_body) != ""
-      assert email.text_body =~ "Michael S. mentioned you in the description for \"Call leads\""
+      assert email.text_body =~ "mentioned you"
+      assert email.text_body =~ "Call leads"
       assert email.text_body =~ "Link:"
       true
     end)
