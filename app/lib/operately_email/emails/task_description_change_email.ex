@@ -19,6 +19,7 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
     |> to(person)
     |> subject(where: find_where_name(task), who: author, action: action)
     |> assign(:author, author)
+    |> assign(:action, action)
     |> assign(:task_name, task.name)
     |> assign(:description, decode_description(activity.content["description"]))
     |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())

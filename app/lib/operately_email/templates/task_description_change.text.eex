@@ -1,0 +1,10 @@
+<%= short_name(@author) %> <%= @action %>.
+
+<%= if @description do %>
+<%= Operately.MD.RichText.render(@description) %>
+
+<% else %>
+The description was cleared.
+
+<% end %>
+Link: <%= @cta_url %>
