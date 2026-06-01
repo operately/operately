@@ -1,5 +1,6 @@
 defmodule Operately.Billing.AccountSyncing do
   alias Operately.Billing
+  alias Operately.Billing.AccessStateReconciling
   alias Operately.Billing.CompanyBillingAccount
 
   @doc """
@@ -9,7 +10,10 @@ defmodule Operately.Billing.AccountSyncing do
   def run(%Operately.Companies.Company{} = company, attrs) do
     case Billing.get_billing_account_by_company(company) do
       nil ->
-        Billing.create_billing_account(Map.put(attrs, :company_id, company.id))
+        company
+        |> AccessStateReconciling.run(nil, attrs)
+        |> Map.put(:company_id, company.id)
+        |> Billing.create_billing_account()
 
       account ->
         attrs =
@@ -21,6 +25,8 @@ defmodule Operately.Billing.AccountSyncing do
           else
             attrs
           end
+
+        attrs = AccessStateReconciling.run(company, account, attrs)
 
         Billing.update_billing_account(account, attrs)
     end

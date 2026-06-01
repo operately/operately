@@ -44,6 +44,8 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.account.status == "free"
         assert res.billing.account.plan_key == nil
         assert res.billing.account.billing_interval == nil
+        assert res.billing.account.access_state == "normal"
+        assert res.billing.account.access_state_reason == nil
         assert res.billing.member_count == 2
         assert res.billing.storage_usage_bytes == 0
         assert res.billing.stale == false
@@ -87,6 +89,8 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.account.plan_key == "team"
         assert res.billing.account.billing_interval == "monthly"
         assert res.billing.account.cancel_at_period_end == false
+        assert res.billing.account.access_state == "normal"
+        assert res.billing.account.access_state_reason == nil
         assert res.billing.member_count == 2
         assert res.billing.storage_usage_bytes == 2048
         assert res.billing.stale == false
@@ -112,6 +116,8 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.account.status == "active"
         assert res.billing.account.plan_key == "business"
         assert res.billing.account.billing_interval == "yearly"
+        assert res.billing.account.access_state == "normal"
+        assert res.billing.account.access_state_reason == nil
       end
     end
   end
