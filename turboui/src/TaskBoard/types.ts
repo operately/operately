@@ -51,6 +51,7 @@ export interface NewTaskPayload {
   milestone: Milestone | null;
   dueDate: DateField.ContextualDate | null;
   assignees: Person[];
+  description?: any;
   status?: Status;
 }
 

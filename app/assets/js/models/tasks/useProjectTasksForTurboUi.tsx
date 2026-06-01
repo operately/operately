@@ -116,7 +116,7 @@ export function useProjectTasksForTurboUi({
     const optimisticTask: TaskBoard.Task = {
       id: tempId,
       title: task.title,
-      description: "",
+      description: task.description ? JSON.stringify(task.description) : "",
       link: "#",
       status: task.status ?? null,
       assignees: task.assignees,
@@ -144,15 +144,7 @@ export function useProjectTasksForTurboUi({
 
     try {
       const backendStatus: TaskStatus | null = Tasks.serializeTaskStatus(task.status ?? null);
-
-      const input: TasksCreateInput = {
-        name: task.title,
-        assigneeIds: task.assignees.map((assignee) => assignee.id),
-        dueDate: serializeContextualDate(task.dueDate),
-        milestoneId: task.milestone?.id || null,
-        id: projectId,
-        type: "project",
-      };
+      const input = buildProjectTaskCreateInput(task, projectId);
 
       if (backendStatus !== null) {
         input.status = backendStatus;
@@ -470,4 +462,21 @@ export function useProjectTasksForTurboUi({
     updateTaskMilestone,
     deleteTask,
   };
+}
+
+export function buildProjectTaskCreateInput(task: TaskBoard.NewTaskPayload, projectId: string): TasksCreateInput {
+  const input: TasksCreateInput = {
+    name: task.title,
+    assigneeIds: task.assignees.map((assignee) => assignee.id),
+    dueDate: serializeContextualDate(task.dueDate),
+    milestoneId: task.milestone?.id || null,
+    id: projectId,
+    type: "project",
+  };
+
+  if (task.description) {
+    input.description = JSON.stringify(task.description);
+  }
+
+  return input;
 }
