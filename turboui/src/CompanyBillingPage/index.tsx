@@ -18,6 +18,12 @@ export {
   buildCompanyBillingSuccessFeedback,
 } from "./viewModel";
 export {
+  buildCompanyBillingChangeConsequence,
+  buildCompanyBillingOverageDescription,
+  formatCompanyBillingChangeTimingDescription,
+  resolveCompanyBillingChangeTiming,
+} from "./changeConsequences";
+export {
   canCreateCompanyBillingCheckout,
   findCompanyBillingSellableProduct,
   getCompanyBillingCurrentTarget,
@@ -37,17 +43,21 @@ export namespace CompanyBillingPage {
   export type Status = CompanyBillingPageTypes.Status;
   export type Interval = CompanyBillingPageTypes.Interval;
   export type Plan = CompanyBillingPageTypes.Plan;
+  export type ChangeTargetPlan = CompanyBillingPageTypes.ChangeTargetPlan;
   export type BillingTargetSource = CompanyBillingPageTypes.BillingTargetSource;
   export type NoticeTone = CompanyBillingPageTypes.NoticeTone;
   export type ActionTone = CompanyBillingPageTypes.ActionTone;
   export type ActionKind = CompanyBillingPageTypes.ActionKind;
   export type FeedbackKind = CompanyBillingPageTypes.FeedbackKind;
+  export type ChangeTiming = CompanyBillingPageTypes.ChangeTiming;
+  export type OverageKind = CompanyBillingPageTypes.OverageKind;
 
   export type BillingAccount = CompanyBillingPageTypes.BillingAccount;
   export type BillingPlanDefinition = CompanyBillingPageTypes.BillingPlanDefinition;
   export type BillingCatalogProduct = CompanyBillingPageTypes.BillingCatalogProduct;
   export type BillingOverview = CompanyBillingPageTypes.BillingOverview;
   export type BillingTarget = CompanyBillingPageTypes.BillingTarget;
+  export type ChangeConsequence = CompanyBillingPageTypes.ChangeConsequence;
   export type BillingSearchParams = CompanyBillingPageTypes.BillingSearchParams;
   export type BillingTargetSelection = CompanyBillingPageTypes.BillingTargetSelection;
 

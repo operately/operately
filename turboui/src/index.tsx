@@ -48,9 +48,11 @@ export { BillingLimitGuidanceNotice } from "./BillingLimitGuidanceNotice";
 export { CompanyAdminAddPeoplePage } from "./CompanyAdminAddPeoplePage";
 export {
   buildCompanyBillingCancellationFeedback,
+  buildCompanyBillingChangeConsequence,
   canCreateCompanyBillingCheckout,
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
+  buildCompanyBillingOverageDescription,
   buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingPageViewModel,
   buildCompanyBillingReactivationFeedback,
@@ -59,6 +61,7 @@ export {
   buildCompanyBillingSuccessFeedback,
   CompanyBillingPage,
   findCompanyBillingSellableProduct,
+  formatCompanyBillingChangeTimingDescription,
   getCompanyBillingCurrentTarget,
   getCompanyBillingPendingTarget,
   getCompanyBillingScheduledTarget,
@@ -68,6 +71,7 @@ export {
   listCompanyBillingSellableTargets,
   matchesCompanyBillingTarget,
   parseCompanyBillingSearch,
+  resolveCompanyBillingChangeTiming,
   selectCompanyBillingTarget,
 } from "./CompanyBillingPage";
 export { formatStorageBytes } from "./CompanyBillingPage/storageFormatting";

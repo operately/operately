@@ -480,6 +480,38 @@ describe("billing model helpers", () => {
     expect(immediateFeedback.description).toContain("Business Monthly");
   });
 
+  it("keeps monthly-to-yearly changes immediate and yearly-to-monthly changes scheduled", () => {
+    const immediateFeedback = Billing.buildPlanChangeFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "yearly",
+          status: "active",
+          scheduledPlanKey: null,
+          scheduledBillingInterval: null,
+        } as any,
+      }),
+    );
+
+    const scheduledFeedback = Billing.buildPlanChangeFeedback(
+      billingOverviewMock({
+        account: {
+          planKey: "team",
+          billingInterval: "yearly",
+          status: "active",
+          scheduledPlanKey: "team",
+          scheduledBillingInterval: "monthly",
+          scheduledChangeEffectiveAt: "2026-06-14T00:00:00Z",
+        } as any,
+      }),
+    );
+
+    expect(immediateFeedback.message).toBe("Plan updated");
+    expect(immediateFeedback.description).toContain("Team Yearly");
+    expect(scheduledFeedback.message).toBe("Plan change scheduled");
+    expect(scheduledFeedback.description).toContain("Team Monthly");
+  });
+
   it("builds cancellation summary and success feedback", () => {
     const billing = billingOverviewMock({
       account: {
@@ -496,8 +528,13 @@ describe("billing model helpers", () => {
     const feedback = Billing.buildCancellationFeedback(billing);
 
     expect(summary.freePlanMemberLimit).toBe(20);
+    expect(summary.freePlanStorageLimitBytes).toBe(1_073_741_824);
     expect(summary.willExceedFreeMemberLimit).toBe(true);
     expect(summary.memberOverage).toBe(5);
+    expect(summary.storageUsageBytes).toBe(81 * 1024 ** 3);
+    expect(summary.willExceedFreeStorageLimit).toBe(true);
+    expect(summary.storageOverageBytes).toBe(80 * 1024 ** 3);
+    expect(summary.overageKind).toBe("member_and_storage");
     expect(feedback.message).toBe("Cancellation scheduled");
   });
 

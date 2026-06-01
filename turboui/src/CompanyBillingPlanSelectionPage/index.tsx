@@ -2,7 +2,7 @@ import React from "react";
 
 import { Page } from "../Page";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { WarningCallout } from "../Callouts";
+import { InfoCallout, WarningCallout } from "../Callouts";
 import type { CompanyBillingPlanSelectionPage as CompanyBillingPlanSelectionPageTypes } from "./types";
 import { buildCompanyBillingPlanSelectionPageViewModel } from "./viewModel";
 
@@ -18,6 +18,7 @@ export namespace CompanyBillingPlanSelectionPage {
   export type ActionTone = CompanyBillingPlanSelectionPageTypes.ActionTone;
   export type PlanCard = CompanyBillingPlanSelectionPageTypes.PlanCard;
   export type Action = CompanyBillingPlanSelectionPageTypes.Action;
+  export type ConsequenceNotice = CompanyBillingPlanSelectionPageTypes.ConsequenceNotice;
   export type SelectionModeView = CompanyBillingPlanSelectionPageTypes.SelectionModeView;
   export type PageViewModel = CompanyBillingPlanSelectionPageTypes.PageViewModel;
   export type Props = CompanyBillingPlanSelectionPageTypes.Props;
@@ -65,6 +66,8 @@ function SelectionModeView({ selection }: { selection: CompanyBillingPlanSelecti
           <PlanCard key={card.key} card={card} />
         ))}
       </div>
+
+      {selection.consequenceNotice && <ConsequenceNotice notice={selection.consequenceNotice} />}
 
       <div className="flex justify-end">
         <ActionButton action={selection.continueAction} size="sm" />
@@ -152,6 +155,41 @@ function PlanCard({ card }: { card: CompanyBillingPlanSelectionPage.PlanCard }) 
         ))}
       </div>
     </button>
+  );
+}
+
+function ConsequenceNotice({
+  notice,
+}: {
+  notice: CompanyBillingPlanSelectionPage.ConsequenceNotice;
+}) {
+  return (
+    <div className="space-y-3">
+      {notice.tone === "warning" ? (
+        <WarningCallout message={notice.message} description={notice.description} />
+      ) : (
+        <InfoCallout message={notice.message} description={notice.description} />
+      )}
+
+      {notice.rows.length > 0 && (
+        <div className="rounded-lg border border-stroke-base bg-surface-base px-5 py-4">
+          <DetailRows rows={notice.rows} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DetailRows({ rows }: { rows: CompanyBillingPlanSelectionPage.ConsequenceNotice["rows"] }) {
+  return (
+    <div className="divide-y divide-stroke-base">
+      {rows.map((row) => (
+        <div key={row.label} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+          <div className="text-content-dimmed">{row.label}</div>
+          <div className="text-right font-medium text-content-accent">{row.value}</div>
+        </div>
+      ))}
+    </div>
   );
 }
 
