@@ -8,7 +8,7 @@ interface PaymentDefaultBannerRoutes {
   companyBillingPath: () => string;
 }
 
-export interface PaymentDefaultBannerViewModel {
+interface PaymentDefaultBannerViewModel {
   mode: "payment_grace" | "read_only";
   title: string;
   deadline: string | null;
