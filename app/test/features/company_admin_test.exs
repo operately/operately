@@ -323,6 +323,59 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_company_billing_banner_text("Storage used:")
   end
 
+  @tag role: :owner
+  feature "payment grace shows a company-wide danger banner instead of limit banners", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_to_near_member_limit()
+    |> put_company_in_payment_recovery(:payment_grace)
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_payment_default_banner_has_upgrade_cta()
+    |> Steps.assert_payment_default_banner_text("Payment issue requires attention")
+    |> Steps.assert_payment_default_banner_text("switch to read-only mode")
+    |> Steps.refute_approaching_limit_banner_visible()
+    |> Steps.follow_payment_default_banner_cta()
+  end
+
+  @tag role: :admin
+  feature "company admins still do not get billing access during payment grace", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> put_company_in_payment_recovery(:payment_grace)
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_payment_default_banner_has_no_upgrade_cta()
+    |> Steps.assert_billing_entry_is_hidden_on_company_admin_page()
+  end
+
+  @tag role: :member
+  feature "regular members see the payment grace banner without a CTA", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> put_company_in_payment_recovery(:payment_grace)
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_payment_default_banner_has_no_upgrade_cta()
+    |> Steps.assert_payment_default_banner_text("switch to read-only mode")
+  end
+
+  @tag role: :member
+  feature "regular members still see the payment banner after the company becomes read-only", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> put_company_in_payment_recovery(:read_only)
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_payment_default_banner_has_no_upgrade_cta()
+    |> Steps.assert_payment_default_banner_text("This company is read-only")
+  end
+
+  @tag role: :admin
+  feature "company admins cannot open the cancellation page during payment recovery", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> put_company_in_payment_recovery(:payment_grace)
+    |> Steps.visit_company_billing_cancel_page()
+    |> Steps.assert_redirected_to_company_admin_page()
+  end
+
   @tag role: :admin
   feature "rename company", ctx do
     ctx
@@ -521,6 +574,23 @@ defmodule Operately.Features.CompanyAdminTest do
       status: :uploaded,
       size: trunc(Plans.storage_limit_bytes(:free) * 1.05)
     })
+
+    ctx
+  end
+
+  defp put_company_in_payment_recovery(ctx, access_state) do
+    {:ok, _account} =
+      Billing.create_billing_account(%{
+        company_id: ctx.company.id,
+        provider: "polar",
+        plan_key: :team,
+        billing_interval: :monthly,
+        status: :past_due,
+        access_state: access_state,
+        access_state_reason: :past_due,
+        access_state_started_at: ~U[2026-06-01 00:00:00Z],
+        access_state_ends_at: if(access_state == :payment_grace, do: ~U[2026-06-15 00:00:00Z], else: nil)
+      })
 
     ctx
   end

@@ -7,7 +7,7 @@ export namespace CompanyBillingPage {
   export type Plan = "team" | "business";
   export type ChangeTargetPlan = Plan | "free";
   export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
-  export type NoticeTone = "info" | "warning";
+  export type NoticeTone = "info" | "warning" | "danger";
   export type ActionTone = "primary" | "secondary" | "danger";
   export type ActionKind = "featured" | "support" | "recovery" | "danger";
   export type FeedbackKind = "success" | "pending" | "incomplete";
@@ -29,6 +29,10 @@ export namespace CompanyBillingPage {
     scheduledPlanKey?: Plan | null;
     scheduledBillingInterval?: Interval | null;
     scheduledChangeEffectiveAt?: string | null;
+    accessState?: "normal" | "payment_grace" | "over_limit_grace" | "read_only";
+    accessStateReason?: "past_due" | "over_limit_after_downgrade" | null;
+    accessStateStartedAt?: string | null;
+    accessStateEndsAt?: string | null;
   }
 
   export interface BillingPlanDefinition {
@@ -171,6 +175,7 @@ export namespace CompanyBillingPage {
     onReactivatePlan?: (() => void) | null;
     onUpdatePaymentMethod?: (() => void) | null;
     onManageBilling?: (() => void) | null;
+    onRefreshBilling?: (() => void) | null;
     testId?: string;
   }
 }
