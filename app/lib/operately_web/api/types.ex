@@ -28,14 +28,16 @@ defmodule OperatelyWeb.Api.Types do
     field? :last_used_at, :datetime, null: true
   end
 
-  enum :cli_auth_status, values: [:pending, :authenticated, :failed, :no_companies, :expired]
+  enum(:cli_auth_status, values: [:pending, :authenticated, :failed, :no_companies, :expired])
 
-  enum :account_theme, values: Operately.People.Account.valid_themes()
+  enum(:account_theme, values: Operately.People.Account.valid_themes())
 
-  enum :billing_plan, values: Operately.Billing.CompanyBillingAccount.valid_plan_keys()
-  enum :billing_limit_plan, values: [:free | Operately.Billing.CompanyBillingAccount.valid_plan_keys()]
-  enum :billing_interval, values: Operately.Billing.CompanyBillingAccount.valid_billing_intervals()
-  enum :billing_status, values: Operately.Billing.CompanyBillingAccount.valid_statuses()
+  enum(:billing_plan, values: Operately.Billing.CompanyBillingAccount.valid_plan_keys())
+  enum(:billing_limit_plan, values: [:free | Operately.Billing.CompanyBillingAccount.valid_plan_keys()])
+  enum(:billing_interval, values: Operately.Billing.CompanyBillingAccount.valid_billing_intervals())
+  enum(:billing_status, values: Operately.Billing.CompanyBillingAccount.valid_statuses())
+  enum(:billing_access_state, values: Operately.Billing.CompanyBillingAccount.valid_access_states())
+  enum(:billing_access_state_reason, values: Operately.Billing.CompanyBillingAccount.valid_access_state_reasons())
 
   object :billing_account do
     field :provider, :string, null: false
@@ -54,6 +56,10 @@ defmodule OperatelyWeb.Api.Types do
     field? :scheduled_billing_interval, :billing_interval, null: true
     field? :scheduled_change_effective_at, :datetime, null: true
     field? :last_synced_at, :datetime, null: true
+    field :access_state, :billing_access_state, null: false
+    field? :access_state_reason, :billing_access_state_reason, null: true
+    field? :access_state_started_at, :datetime, null: true
+    field? :access_state_ends_at, :datetime, null: true
   end
 
   object :billing_plan_definition do
@@ -106,6 +112,29 @@ defmodule OperatelyWeb.Api.Types do
     field :storage_limit, :billing_limit_status, null: false
   end
 
+  object :billing_access_state_limit do
+    field :code, :string, null: false
+    field :limit_key, :string, null: false
+    field? :plan_key, :billing_limit_plan, null: true
+    field :current_usage, :integer, null: false
+    field :requested_delta, :integer, null: false
+    field :projected_usage, :integer, null: false
+    field :limit, :integer, null: false
+    field :remaining, :integer, null: false
+    field :near_limit, :boolean, null: false
+    field :blocked, :boolean, null: false
+    field :enforced, :boolean, null: false
+  end
+
+  object :billing_company_access_state do
+    field :access_state, :billing_access_state, null: false
+    field? :access_state_reason, :billing_access_state_reason, null: true
+    field? :access_state_started_at, :datetime, null: true
+    field? :access_state_ends_at, :datetime, null: true
+    field :member_limit, :billing_access_state_limit, null: false
+    field :storage_limit, :billing_access_state_limit, null: false
+  end
+
   object :billing_overview do
     field :account, :billing_account, null: false
     field :plans, list_of(:billing_plan_definition), null: false
@@ -136,19 +165,21 @@ defmodule OperatelyWeb.Api.Types do
     field :site_admin, :boolean, null: false
   end
 
-  enum :access_options, values: Binding.valid_access_levels(:as_atom)
+  enum(:access_options, values: Binding.valid_access_levels(:as_atom))
 
-  int_enum(:access_options_int, values: [
-    Binding.no_access(),
-    Binding.view_access(),
-    Binding.comment_access(),
-    Binding.edit_access(),
-    Binding.full_access()
-  ])
+  int_enum(:access_options_int,
+    values: [
+      Binding.no_access(),
+      Binding.view_access(),
+      Binding.comment_access(),
+      Binding.edit_access(),
+      Binding.full_access()
+    ]
+  )
 
-  enum :search_scope_options, values: [:company, :project, :space, :goal, :resource_hub, :none]
+  enum(:search_scope_options, values: [:company, :project, :space, :goal, :resource_hub, :none])
 
-  enum :resource_access_types, values: [:space, :goal, :project]
+  enum(:resource_access_types, values: [:space, :goal, :project])
 
   object :resource_access_input do
     field :resource_type, :resource_access_types
@@ -419,9 +450,9 @@ defmodule OperatelyWeb.Api.Types do
     ]
   )
 
-  enum(:review_assignment_roles, values: [ :owner, :reviewer ])
+  enum(:review_assignment_roles, values: [:owner, :reviewer])
 
-  enum(:review_assignment_origin_types, values: [ :project, :goal, :space ])
+  enum(:review_assignment_origin_types, values: [:project, :goal, :space])
 
   object :review_assignment_origin do
     field :id, :string, null: false
@@ -517,33 +548,37 @@ defmodule OperatelyWeb.Api.Types do
     field? :milestone, :milestone, null: true
   end
 
-  enum(:reaction_entity_type, values: [
-    :project_check_in,
-    :project_retrospective,
-    :project_discussion,
-    :goal_update,
-    :goal_discussion,
-    :message,
-    :comment,
-    :resource_hub_document,
-    :resource_hub_file,
-    :resource_hub_link,
-  ])
+  enum(:reaction_entity_type,
+    values: [
+      :project_check_in,
+      :project_retrospective,
+      :project_discussion,
+      :goal_update,
+      :goal_discussion,
+      :message,
+      :comment,
+      :resource_hub_document,
+      :resource_hub_file,
+      :resource_hub_link
+    ]
+  )
 
-  enum(:reaction_parent_type, values: [
-    :project_check_in,
-    :project_retrospective,
-    :project_discussion,
-    :goal_update,
-    :goal_discussion,
-    :message,
-    :milestone,
-    :project_task,
-    :space_task,
-    :resource_hub_document,
-    :resource_hub_file,
-    :resource_hub_link,
-  ])
+  enum(:reaction_parent_type,
+    values: [
+      :project_check_in,
+      :project_retrospective,
+      :project_discussion,
+      :goal_update,
+      :goal_discussion,
+      :message,
+      :milestone,
+      :project_task,
+      :space_task,
+      :resource_hub_document,
+      :resource_hub_file,
+      :resource_hub_link
+    ]
+  )
 
   object :reaction do
     field :id, :string, null: false
@@ -1323,7 +1358,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
   end
 
-  enum :resource_hub_link_type, values: Operately.ResourceHubs.Link.valid_types()
+  enum(:resource_hub_link_type, values: Operately.ResourceHubs.Link.valid_types())
 
   object :resource_hub_link do
     field :id, :string, null: false
@@ -2220,20 +2255,22 @@ defmodule OperatelyWeb.Api.Types do
     field :index, :integer
   end
 
-  enum(:subscription_parent_type, values: [
-    :project_check_in,
-    :project_retrospective,
-    :goal_update,
-    :message,
-    :resource_hub_document,
-    :resource_hub_file,
-    :resource_hub_link,
-    :comment_thread,
-    :project,
-    :milestone,
-    :project_task,
-    :space_task,
-  ])
+  enum(:subscription_parent_type,
+    values: [
+      :project_check_in,
+      :project_retrospective,
+      :goal_update,
+      :message,
+      :resource_hub_document,
+      :resource_hub_file,
+      :resource_hub_link,
+      :comment_thread,
+      :project,
+      :milestone,
+      :project_task,
+      :space_task
+    ]
+  )
 
   object :subscription_list do
     field :id, :string, null: false

@@ -1078,6 +1078,20 @@ export interface Assignments {
   assignments?: Assignment[] | null;
 }
 
+export interface BillingAccessStateLimit {
+  code: string;
+  limitKey: string;
+  planKey?: BillingLimitPlan | null;
+  currentUsage: number;
+  requestedDelta: number;
+  projectedUsage: number;
+  limit: number;
+  remaining: number;
+  nearLimit: boolean;
+  blocked: boolean;
+  enforced: boolean;
+}
+
 export interface BillingAccount {
   provider: string;
   planKey?: BillingPlan | null;
@@ -1095,6 +1109,10 @@ export interface BillingAccount {
   scheduledBillingInterval?: BillingInterval | null;
   scheduledChangeEffectiveAt?: string | null;
   lastSyncedAt?: string | null;
+  accessState: BillingAccessState;
+  accessStateReason?: BillingAccessStateReason | null;
+  accessStateStartedAt?: string | null;
+  accessStateEndsAt?: string | null;
 }
 
 export interface BillingCatalogProduct {
@@ -1121,6 +1139,15 @@ export interface BillingCheckoutSession {
   returnUrl: string;
   successUrl: string;
   expiresAt: string;
+}
+
+export interface BillingCompanyAccessState {
+  accessState: BillingAccessState;
+  accessStateReason?: BillingAccessStateReason | null;
+  accessStateStartedAt?: string | null;
+  accessStateEndsAt?: string | null;
+  memberLimit: BillingAccessStateLimit;
+  storageLimit: BillingAccessStateLimit;
 }
 
 export interface BillingHostedSession {
@@ -2259,6 +2286,10 @@ export type AgentMessageSender = "user" | "ai";
 
 export type AgentMessageStatus = "pending" | "done";
 
+export type BillingAccessState = "normal" | "payment_grace" | "over_limit_grace" | "read_only";
+
+export type BillingAccessStateReason = "past_due" | "over_limit_after_downgrade";
+
 export type BillingInterval = "monthly" | "yearly";
 
 export type BillingLimitPlan = "free" | "team" | "business";
@@ -2469,6 +2500,12 @@ export interface BillingGetInput {}
 
 export interface BillingGetResult {
   billing: BillingOverview;
+}
+
+export interface BillingGetAccessStateInput {}
+
+export interface BillingGetAccessStateResult {
+  accessState: BillingCompanyAccessState;
 }
 
 export interface BillingGetLimitWarningsInput {}
@@ -3722,20 +3759,20 @@ export interface CompaniesCreateMemberResult {
   personId?: string | null;
 }
 
-export interface CompaniesDeleteAdminInput {
-  personId: Id;
-}
-
-export interface CompaniesDeleteAdminResult {
-  person: Person;
-}
-
 export interface CompaniesDeleteActivityInput {
   activityId: Id;
 }
 
 export interface CompaniesDeleteActivityResult {
   success: boolean;
+}
+
+export interface CompaniesDeleteAdminInput {
+  personId: Id;
+}
+
+export interface CompaniesDeleteAdminResult {
+  person: Person;
 }
 
 export interface CompaniesDeleteMemberInput {
@@ -5345,6 +5382,10 @@ class ApiNamespaceBilling {
 
   async get(input: BillingGetInput): Promise<BillingGetResult> {
     return this.client.get("/billing/get", input);
+  }
+
+  async getAccessState(input: BillingGetAccessStateInput): Promise<BillingGetAccessStateResult> {
+    return this.client.get("/billing/get_access_state", input);
   }
 
   async getLimitWarnings(input: BillingGetLimitWarningsInput): Promise<BillingGetLimitWarningsResult> {
@@ -6974,6 +7015,10 @@ export default {
     useGetLimitWarnings: (input: BillingGetLimitWarningsInput) =>
       useQuery<BillingGetLimitWarningsResult>(() => defaultApiClient.apiNamespaceBilling.getLimitWarnings(input)),
 
+    getAccessState: (input: BillingGetAccessStateInput) => defaultApiClient.apiNamespaceBilling.getAccessState(input),
+    useGetAccessState: (input: BillingGetAccessStateInput) =>
+      useQuery<BillingGetAccessStateResult>(() => defaultApiClient.apiNamespaceBilling.getAccessState(input)),
+
     cancel: (input: BillingCancelInput) => defaultApiClient.apiNamespaceBilling.cancel(input),
     useCancel: () =>
       useMutation<BillingCancelInput, BillingCancelResult>((input) =>
@@ -7377,6 +7422,13 @@ export default {
         defaultApiClient.apiNamespaceCompanies.create(input),
       ),
 
+    deleteActivity: (input: CompaniesDeleteActivityInput) =>
+      defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
+    useDeleteActivity: () =>
+      useMutation<CompaniesDeleteActivityInput, CompaniesDeleteActivityResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
+      ),
+
     inviteGuest: (input: CompaniesInviteGuestInput) => defaultApiClient.apiNamespaceCompanies.inviteGuest(input),
     useInviteGuest: () =>
       useMutation<CompaniesInviteGuestInput, CompaniesInviteGuestResult>((input) =>
@@ -7395,13 +7447,6 @@ export default {
     useConvertMemberToGuest: () =>
       useMutation<CompaniesConvertMemberToGuestInput, CompaniesConvertMemberToGuestResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.convertMemberToGuest(input),
-      ),
-
-    deleteActivity: (input: CompaniesDeleteActivityInput) =>
-      defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
-    useDeleteActivity: () =>
-      useMutation<CompaniesDeleteActivityInput, CompaniesDeleteActivityResult>((input) =>
-        defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
       ),
 
     deleteAdmin: (input: CompaniesDeleteAdminInput) => defaultApiClient.apiNamespaceCompanies.deleteAdmin(input),

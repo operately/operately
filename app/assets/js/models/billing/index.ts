@@ -19,9 +19,11 @@ import {
 import { buildCompanyBillingChangeConsequence } from "turboui/CompanyBillingPage";
 
 type BillingCatalogProduct = api.BillingCatalogProduct;
+export type BillingCompanyAccessState = api.BillingCompanyAccessState;
 type BillingCheckoutSession = api.BillingCheckoutSession;
 type BillingHostedSession = api.BillingHostedSession;
 type BillingInterval = api.BillingInterval;
+export type BillingAccessStateLimit = api.BillingAccessStateLimit;
 export type BillingLimitStatus = api.BillingLimitStatus;
 export type BillingLimitWarnings = api.BillingLimitWarnings;
 export type BillingOverview = api.BillingOverview;
@@ -93,6 +95,10 @@ const SUGGESTED_PLAN_SOURCE_LABELS: Record<string, string> = {
 
 export async function getBilling(input: api.BillingGetInput = {}): Promise<BillingOverview> {
   return Api.billing.get(input).then((data) => data.billing);
+}
+
+export async function getAccessState(input: api.BillingGetAccessStateInput = {}): Promise<BillingCompanyAccessState> {
+  return Api.billing.getAccessState(input).then((data) => data.accessState);
 }
 
 export async function getLimitWarnings(input: api.BillingGetLimitWarningsInput = {}): Promise<BillingLimitWarnings> {
