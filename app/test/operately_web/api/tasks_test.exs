@@ -2,10 +2,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
   alias Operately.Support.RichText
   alias Operately.Projects.Contributor
   alias Operately.Access.Binding
+  alias Operately.Notifications.{BufferedEmailWorker, EmailWorker}
 
   import Ecto.Query, only: [from: 2]
+  import Swoosh.TestAssertions
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
+  use Oban.Testing, repo: Operately.Repo
 
   setup ctx do
     ctx
@@ -210,11 +213,27 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert 0 == notifications_count(action: action)
 
-      perform_job(activity.id)
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        perform_job(activity.id)
+      end)
+
       notifications = fetch_notifications(activity.id, action: action)
 
       assert 1 == notifications_count(action: action)
       assert hd(notifications).person_id == ctx.mentioned_person.id
+      assert hd(notifications).should_send_email
+      assert_enqueued worker: EmailWorker, args: %{notification_id: hd(notifications).id}
+      refute_enqueued worker: BufferedEmailWorker
+
+      flush_emails()
+      assert :ok = Oban.Testing.perform_job(EmailWorker, %{notification_id: hd(notifications).id}, [])
+
+      assert_email_sent(fn email ->
+        {_name, email_address} = hd(email.to)
+
+        email_address == ctx.mentioned_person.email &&
+          email.subject =~ "mentioned you in the description for \"Task with mention\""
+      end)
     end
 
     test "it subscribes the creator to the task", ctx do
@@ -2700,5 +2719,14 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       order_by: [desc: a.inserted_at],
       limit: 1
     )
+  end
+
+  defp flush_emails do
+    receive do
+      {:email, _email} -> flush_emails()
+      {:emails, _emails} -> flush_emails()
+    after
+      0 -> :ok
+    end
   end
 end

@@ -1,9 +1,13 @@
-<%= title("#{short_name(@author)} added the task \"#{@task_name}\"") %>
+<%= title("#{short_name(@author)} #{@action}") %>
 
 <%= spacer() %>
 
 <%= row do %>
-  A new task named <%= @task_name %> was created in this project.
+  <%= if @mentioned do %>
+    You were mentioned in the description for <%= @task_name %>.
+  <% else %>
+    A new task named <%= @task_name %> was created in this project.
+  <% end %>
 <% end %>
 
 <%= spacer() %>

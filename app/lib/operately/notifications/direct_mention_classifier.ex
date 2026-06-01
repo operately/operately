@@ -1,6 +1,7 @@
 defmodule Operately.Notifications.DirectMentionClassifier do
   import Ecto.Query, warn: false
 
+  alias Operately.Activities.Notifications.MentionedPeople
   alias Operately.Notifications.Notification
   alias Operately.Repo
   alias Operately.Comments.CommentThread
@@ -350,7 +351,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
   defp has_mention?(_content, nil), do: false
 
   defp has_mention?(content, person_id) do
-    mentioned_ids = Operately.RichContent.find_mentioned_ids(content, :decode_ids)
+    mentioned_ids = MentionedPeople.ids(content)
     Enum.member?(mentioned_ids, person_id)
   rescue
     _ -> false

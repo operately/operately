@@ -139,6 +139,28 @@ defmodule Operately.Notifications.BulkCreateTest do
     assert Repo.all(EmailBatch) == []
   end
 
+  test "notify_on_mention sends encoded rich text task mentions immediately", ctx do
+    {:ok, _person} =
+      Operately.People.update_person(ctx.person, %{
+        preferences: %{notifications: %{notify_on_mention: true}}
+      })
+
+    description = RichText.rich_text(mentioned_people: [ctx.person])
+    activity = activity_fixture(author_id: ctx.person.id, action: "task_adding", content: %{"description" => description})
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, notifications} =
+               Notifications.bulk_create([
+                 %{person_id: ctx.person.id, activity_id: activity.id, should_send_email: true}
+               ])
+
+      assert_enqueued worker: EmailWorker, args: %{notification_id: hd(notifications).id}
+      refute_enqueued worker: BufferedEmailWorker
+    end)
+
+    assert Repo.all(EmailBatch) == []
+  end
+
   test "notify_on_mention keeps non-mentions buffered for mention-capable actions", ctx do
     {:ok, _person} =
       Operately.People.update_person(ctx.person, %{
