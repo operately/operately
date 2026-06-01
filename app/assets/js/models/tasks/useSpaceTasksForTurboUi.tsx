@@ -9,6 +9,7 @@ import { PageCache } from "@/routes/PageCache";
 import { serializeContextualDate } from "../contextualDates";
 
 import { DateField, showErrorToast, TaskBoard } from "turboui";
+import { serializeTaskDescription } from "./descriptionSerialization";
 
 interface Attrs {
   backendTasks: Tasks.Task[];
@@ -55,7 +56,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     const optimisticTask: TaskBoard.Task = {
       id: tempId,
       title: task.title,
-      description: task.description ? JSON.stringify(task.description) : "",
+      description: serializeTaskDescription(task.description),
       link: "#",
       status: task.status ?? null,
       assignees: task.assignees,
@@ -78,8 +79,9 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
         type: "space",
       };
 
-      if (task.description) {
-        input.description = JSON.stringify(task.description);
+      const description = serializeTaskDescription(task.description);
+      if (description) {
+        input.description = description;
       }
 
       if (backendStatus !== null) {
@@ -227,12 +229,12 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
 
   const updateTaskDescription = async (taskId: string, description: any) => {
     try {
-      const serializedDescription = description ? JSON.stringify(description) : "";
+      const serializedDescription = serializeTaskDescription(description);
 
       setTasks((prev) =>
         prev.map((t) => {
           if (t.id === taskId) {
-            return { ...t, description: serializedDescription ?? "" };
+            return { ...t, description: serializedDescription };
           }
           return t;
         }),

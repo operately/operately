@@ -61,10 +61,10 @@ const meta: Meta<typeof MilestoneCard> = {
           const taskWithId: Types.Task = {
             id: `task-${Date.now()}`, // Generate a unique ID
             status: PENDING_STATUS,
-            description: "",
             link: "#",
             type: "project",
             ...newTask,
+            description: newTask.description ? JSON.stringify(newTask.description) : "",
           };
 
           // Add the task to the list

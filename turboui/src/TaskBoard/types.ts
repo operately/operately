@@ -2,6 +2,7 @@ import { DateField } from "../DateField";
 import { PersonField } from "../PersonField";
 import { StatusSelector } from "../StatusSelector";
 import type { ProjectField } from "../ProjectField";
+import type { RichTextJSON } from "../RichContent";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { SpaceField } from "../SpaceField";
 import type { TaskPage } from "../TaskPage";
@@ -51,7 +52,7 @@ export interface NewTaskPayload {
   milestone: Milestone | null;
   dueDate: DateField.ContextualDate | null;
   assignees: Person[];
-  description?: any;
+  description?: RichTextJSON;
   status?: Status;
 }
 

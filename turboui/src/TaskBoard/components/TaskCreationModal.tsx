@@ -9,6 +9,7 @@ import { SwitchToggle } from "../../SwitchToggle";
 import { TextField } from "../../TextField";
 import { Editor, useEditor } from "../../RichEditor";
 import { isContentEmpty } from "../../RichContent";
+import type { RichTextJSON } from "../../RichContent";
 import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 import * as Types from "../types";
 
@@ -40,7 +41,7 @@ export function TaskCreationModal({
   const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
   const [assignees, setAssignees] = useState<Types.Person[]>([]);
   const [milestone, setMilestone] = useState<Types.Milestone | null>(null);
-  const [description, setDescription] = useState<any>(null);
+  const [description, setDescription] = useState<RichTextJSON | null>(null);
   const [descriptionEditorKey, setDescriptionEditorKey] = useState(0);
   const [createMore, setCreateMore] = useState(false);
 
@@ -211,7 +212,7 @@ export function TaskCreationModal({
 
 interface TaskNotesFieldProps {
   richTextHandlers: RichEditorHandlers;
-  onChange: (description: any) => void;
+  onChange: (description: RichTextJSON) => void;
 }
 
 function TaskNotesField({ richTextHandlers, onChange }: TaskNotesFieldProps) {
@@ -220,7 +221,7 @@ function TaskNotesField({ richTextHandlers, onChange }: TaskNotesFieldProps) {
     editable: true,
     placeholder: "Add notes about this task...",
     handlers: richTextHandlers,
-    onUpdate: ({ json }) => onChange(json),
+    onUpdate: ({ json }) => onChange(json as RichTextJSON),
   });
 
   return <Editor editor={editor} />;

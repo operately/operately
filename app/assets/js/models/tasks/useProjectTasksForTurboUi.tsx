@@ -10,6 +10,7 @@ import { serializeContextualDate } from "../contextualDates";
 import * as Signals from "@/signals";
 
 import { DateField, showErrorToast, TaskBoard } from "turboui";
+import { serializeTaskDescription } from "./descriptionSerialization";
 import { buildMilestonesOrderingState, normalizeMilestonesOrderingState } from "./milestoneOrdering";
 
 interface TasksSnapshot {
@@ -116,7 +117,7 @@ export function useProjectTasksForTurboUi({
     const optimisticTask: TaskBoard.Task = {
       id: tempId,
       title: task.title,
-      description: task.description ? JSON.stringify(task.description) : "",
+      description: serializeTaskDescription(task.description),
       link: "#",
       status: task.status ?? null,
       assignees: task.assignees,
@@ -271,7 +272,7 @@ export function useProjectTasksForTurboUi({
   const updateTaskDescription = React.useCallback(
     async (taskId: string, description: any): Promise<boolean> => {
       const snapshot = createSnapshot();
-      const serialized = description ? JSON.stringify(description) : "";
+      const serialized = serializeTaskDescription(description);
 
       setTasks((prev) =>
         prev.map((t) => {
@@ -474,8 +475,9 @@ export function buildProjectTaskCreateInput(task: TaskBoard.NewTaskPayload, proj
     type: "project",
   };
 
-  if (task.description) {
-    input.description = JSON.stringify(task.description);
+  const description = serializeTaskDescription(task.description);
+  if (description) {
+    input.description = description;
   }
 
   return input;
