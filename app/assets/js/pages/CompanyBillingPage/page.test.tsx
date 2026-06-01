@@ -5,6 +5,7 @@ import {
   buildCompanyBillingCancellationFeedback,
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
+  buildCompanyBillingPageViewModel,
   buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingReactivationFeedback,
   buildCompanyBillingRecoveryFeedback,
@@ -33,6 +34,10 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
       scheduledBillingInterval: null,
       scheduledChangeEffectiveAt: null,
       lastSyncedAt: "2026-05-23T00:00:00Z",
+      accessState: "normal",
+      accessStateReason: null,
+      accessStateStartedAt: null,
+      accessStateEndsAt: null,
       ...(account || {}),
     },
     plans: [
@@ -462,5 +467,59 @@ describe("CompanyBillingPage bridge helpers", () => {
     expect(scheduledCancellationFeedback.description).toContain("2026");
     expect(reactivationFeedback).toMatchObject({ kind: "success", message: "Plan reactivated" });
     expect(reactivationFeedback.description).toContain("Business Yearly");
+  });
+
+  it("adds a danger notice for payment grace without duplicating the generic past-due warning", () => {
+    const notices = buildCompanyBillingStatusNotices(
+      billingOverviewMock({
+        account: {
+          status: "past_due",
+          accessState: "payment_grace",
+          accessStateReason: "past_due",
+          accessStateEndsAt: "2026-06-15T00:00:00Z",
+        } as any,
+      }),
+    );
+
+    expect(notices).toEqual([
+      expect.objectContaining({
+        tone: "danger",
+        message: "Payment issue requires attention",
+      }),
+    ]);
+    expect(notices[0]!.description).toContain("read-only mode");
+  });
+
+  it("adds a danger notice when the company is already read-only because of non-payment", () => {
+    const notices = buildCompanyBillingStatusNotices(
+      billingOverviewMock({
+        account: {
+          status: "past_due",
+          accessState: "read_only",
+          accessStateReason: "past_due",
+        } as any,
+      }),
+    );
+
+    expect(notices).toEqual([
+      expect.objectContaining({
+        tone: "danger",
+        message: "This company is read-only",
+      }),
+    ]);
+    expect(notices[0]!.description).toContain("Collaborative work is blocked");
+  });
+
+  it("shows a manual refresh header action when billing refresh is available", () => {
+    const page = buildCompanyBillingPageViewModel({
+      title: ["Acme", "Billing"],
+      billing: billingOverviewMock(),
+      onRefreshBilling: jest.fn(),
+    });
+
+    expect(page.headerAction).toEqual({
+      label: "Refresh billing",
+      onClick: expect.any(Function),
+    });
   });
 });
