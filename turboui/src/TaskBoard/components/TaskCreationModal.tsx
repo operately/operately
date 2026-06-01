@@ -7,6 +7,10 @@ import Modal from "../../Modal";
 import { PersonField } from "../../PersonField";
 import { SwitchToggle } from "../../SwitchToggle";
 import { TextField } from "../../TextField";
+import { Editor, useEditor } from "../../RichEditor";
+import { isContentEmpty } from "../../RichContent";
+import type { RichTextJSON } from "../../RichContent";
+import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 import * as Types from "../types";
 
 interface TaskCreationModalProps {
@@ -18,6 +22,7 @@ interface TaskCreationModalProps {
   assigneePersonSearch?: PersonField.SearchData;
   onMilestoneSearch: (query: string) => Promise<void>;
   milestoneReadOnly?: boolean;
+  richTextHandlers?: RichEditorHandlers;
 }
 
 export function TaskCreationModal({
@@ -29,12 +34,15 @@ export function TaskCreationModal({
   assigneePersonSearch,
   onMilestoneSearch,
   milestoneReadOnly,
+  richTextHandlers,
 }: TaskCreationModalProps) {
   // Form state
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
   const [assignees, setAssignees] = useState<Types.Person[]>([]);
   const [milestone, setMilestone] = useState<Types.Milestone | null>(null);
+  const [description, setDescription] = useState<RichTextJSON | null>(null);
+  const [descriptionEditorKey, setDescriptionEditorKey] = useState(0);
   const [createMore, setCreateMore] = useState(false);
 
   const disabled = !title.trim();
@@ -60,6 +68,8 @@ export function TaskCreationModal({
     setTitle("");
     setDueDate(null);
     setAssignees([]);
+    setDescription(null);
+    setDescriptionEditorKey((key) => key + 1);
     // Keep the milestone selected for creating multiple tasks in same milestone
     // Keep the createMore toggle state
   };
@@ -84,6 +94,10 @@ export function TaskCreationModal({
       dueDate: dueDate || null,
       assignees,
     };
+
+    if (description && !isContentEmpty(description)) {
+      newTask.description = description;
+    }
 
     onCreateTask(newTask);
 
@@ -172,6 +186,13 @@ export function TaskCreationModal({
           </div>
         </div>
 
+        {richTextHandlers && (
+          <div>
+            <label className="block text-sm font-medium text-content-base mb-1">Notes</label>
+            <TaskNotesField key={descriptionEditorKey} richTextHandlers={richTextHandlers} onChange={setDescription} />
+          </div>
+        )}
+
         <div className="flex items-center mt-8">
           <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" testId="add-more-switch" />
           <div className="flex-1"></div>
@@ -187,6 +208,23 @@ export function TaskCreationModal({
       </form>
     </Modal>
   );
+}
+
+interface TaskNotesFieldProps {
+  richTextHandlers: RichEditorHandlers;
+  onChange: (description: RichTextJSON) => void;
+}
+
+function TaskNotesField({ richTextHandlers, onChange }: TaskNotesFieldProps) {
+  const editor = useEditor({
+    content: null,
+    editable: true,
+    placeholder: "Add notes about this task...",
+    handlers: richTextHandlers,
+    onUpdate: ({ json }) => onChange(json as RichTextJSON),
+  });
+
+  return <Editor editor={editor} />;
 }
 
 export default TaskCreationModal;

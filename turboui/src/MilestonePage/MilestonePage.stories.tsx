@@ -179,10 +179,10 @@ export const Default: Story = {
       const newTask: Types.Task = {
         id: taskId,
         status: PENDING_STATUS,
-        description: "",
         link: "#",
         type: "project",
         ...newTaskData,
+        description: newTaskData.description ? JSON.stringify(newTaskData.description) : "",
       };
 
       // Add the new task to the list
