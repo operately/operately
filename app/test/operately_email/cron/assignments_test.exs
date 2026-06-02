@@ -4,6 +4,16 @@ defmodule OperatelyEmail.Cron.AssignmentsTest do
   alias Operately.Support.Factory
   alias OperatelyEmail.Cron.Assignments
 
+  describe "send_mode/1" do
+    test "uses baseline assignment digests on workdays" do
+      assert Assignments.send_mode(~D[2026-06-01]) == :baseline_and_reminders
+    end
+
+    test "uses explicit reminders only on weekends" do
+      assert Assignments.send_mode(~D[2026-06-06]) == :explicit_reminders_only
+    end
+  end
+
   describe "people_who_want_assignment_emails/0" do
     setup do
       ctx =

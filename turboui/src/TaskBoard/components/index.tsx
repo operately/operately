@@ -44,6 +44,7 @@ export function TaskBoard({
   onMilestoneCreate,
   onTaskAssigneeChange,
   onTaskDueDateChange,
+  onTaskRemindersChange,
   onTaskStatusChange,
   onTaskMilestoneChange,
   onTaskNameChange,
@@ -179,6 +180,7 @@ export function TaskBoard({
       onTaskCreate,
       onTaskAssigneeChange,
       onTaskDueDateChange,
+      onTaskRemindersChange,
       onTaskStatusChange,
       onTaskMilestoneChange: (taskId, milestone) => {
         const indexInMilestone = 1000;
@@ -206,6 +208,7 @@ export function TaskBoard({
       onTaskDelete,
       onTaskDescriptionChange,
       onTaskDueDateChange,
+      onTaskRemindersChange,
       onTaskMilestoneChange,
       onTaskNameChange,
       onTaskStatusChange,

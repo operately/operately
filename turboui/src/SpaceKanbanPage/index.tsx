@@ -45,6 +45,7 @@ export namespace SpaceKanbanPage {
     onTaskNameChange: (taskId: string, name: string) => void;
     onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+    onTaskRemindersChange?: KanbanBoardProps["onTaskRemindersChange"];
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
     onTaskDelete: (taskId: string) => void | Promise<any>;
 
@@ -74,6 +75,7 @@ export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
           onTaskNameChange={props.onTaskNameChange}
           onTaskAssigneeChange={props.onTaskAssigneeChange}
           onTaskDueDateChange={props.onTaskDueDateChange}
+          onTaskRemindersChange={props.onTaskRemindersChange}
           onTaskStatusChange={props.onTaskStatusChange}
           onTaskDelete={props.onTaskDelete}
           onTaskDescriptionChange={props.onTaskDescriptionChange}

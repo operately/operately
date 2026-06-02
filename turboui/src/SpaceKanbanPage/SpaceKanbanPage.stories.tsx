@@ -134,6 +134,8 @@ const buildTaskPageProps = (
     onStatusChange: (newStatus) => ctx.onTaskStatusChange?.(taskId, newStatus),
     statusOptions: ctx.statuses as Types.Status[],
     onDueDateChange: (newDueDate) => ctx.onTaskDueDateChange?.(taskId, newDueDate),
+    reminders: task.reminders ?? [],
+    onRemindersChange: (newReminders) => ctx.onTaskRemindersChange?.(taskId, newReminders) ?? false,
     assignees,
     onAssigneesChange: (newAssignees) => ctx.onTaskAssigneeChange?.(taskId, newAssignees),
 
