@@ -1,23 +1,10 @@
 version: v1.0
-name: Deploy
+name: Sync API Docs
 agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu2404
 blocks:
-  - name: Trigger Production Deployment
-    dependencies: []
-    run:
-      when: "branch = 'main'"
-    task:
-      secrets:
-        - name: prod-deployment-vars
-      jobs:
-        - name: "Trigger"
-          commands:
-            - checkout
-            - ruby scripts/deploy.rb
-
   - name: Sync API Docs
     dependencies: []
     run:
