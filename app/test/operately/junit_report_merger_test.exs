@@ -11,7 +11,7 @@ defmodule Operately.JUnitReportMergerTest do
     assert merged =~ ~s{tests="2"}
     assert merged =~ ~s{name="test one"}
     assert merged =~ ~s{name="test two"}
-    refute merged =~ "failure"
+    refute merged =~ "<failure"
   end
 
   test "merge/1 replaces failed tests with retry results" do
@@ -21,7 +21,7 @@ defmodule Operately.JUnitReportMergerTest do
     assert merged =~ ~s{failures="0"}
     assert merged =~ ~s{name="test one"}
     assert merged =~ ~s{name="test two"}
-    refute merged =~ "failure"
+    refute merged =~ "<failure"
   end
 
   test "merge/1 keeps failures when retries still fail" do

@@ -78,15 +78,21 @@ defmodule Operately.JUnitReportMerger do
   defp build_testsuite(%{name: name, properties: properties, testcases: testcases}) do
     cases = testcases |> Map.values() |> Enum.sort_by(&testcase_sort_key/1)
 
-    stats = Enum.reduce(cases, %{tests: 0, failures: 0, errors: 0, skipped: 0, time: 0.0}, fn testcase, acc ->
-      status = testcase_status(testcase)
-      time = testcase |> elem(1) |> attr_value(:time) |> parse_time()
+    stats =
+      Enum.reduce(cases, %{tests: 0, failures: 0, errors: 0, skipped: 0, time: 0.0}, fn testcase, acc ->
+        status = testcase_status(testcase)
+        time = testcase |> elem(1) |> attr_value(:time) |> parse_time()
 
-      acc
-      |> Map.update!(:tests, &(&1 + 1))
-      |> Map.update!(status, &(&1 + 1))
-      |> Map.update!(:time, &(&1 + time))
-    end)
+        acc =
+          acc
+          |> Map.update!(:tests, &(&1 + 1))
+          |> Map.update!(:time, &(&1 + time))
+
+        case status do
+          :pass -> acc
+          key -> Map.update!(acc, key, &(&1 + 1))
+        end
+      end)
 
     attrs = [
       name: to_charlist(name),
@@ -120,7 +126,7 @@ defmodule Operately.JUnitReportMerger do
 
   defp parse_document(path) do
     case :xmerl_scan.file(String.to_charlist(path)) do
-      {:ok, doc, _} -> doc
+      {doc, _} -> doc
       other -> raise "Failed to parse JUnit report #{path}: #{inspect(other)}"
     end
   end
@@ -139,17 +145,17 @@ defmodule Operately.JUnitReportMerger do
     :io_lib.format("~.4f", [time]) |> List.to_string()
   end
 
-  defp element_name({:xmlElement, name, _, _, _, _, _, _, _, _, _, _, _, _}), do: name
+  defp element_name({:xmlElement, name, _, _, _, _, _, _, _, _, _, _}), do: name
 
-  defp element_attrs({:xmlElement, _, _, _, _, _, _, _, attrs, _, _, _, _, _}) do
+  defp element_attrs({:xmlElement, _, _, _, _, _, _, attrs, _, _, _, _}) do
     Enum.map(attrs, fn {:xmlAttribute, name, _, _, _, _, _, _, value, _} ->
       {name, attribute_value(value)}
     end)
   end
 
-  defp element_content({:xmlElement, _, _, _, _, _, _, _, _, content, _, _, _, _}) do
+  defp element_content({:xmlElement, _, _, _, _, _, _, _, content, _, _, _}) do
     Enum.filter(content, fn
-      {:xmlElement, _, _, _, _, _, _, _, _, _, _, _, _, _} -> true
+      {:xmlElement, _, _, _, _, _, _, _, _, _, _, _} -> true
       _ -> false
     end)
   end
@@ -161,9 +167,9 @@ defmodule Operately.JUnitReportMerger do
 
   defp attribute_value(value) when is_list(value), do: value
   defp attribute_value(value) when is_binary(value), do: String.to_charlist(value)
-  defp attribute_value(value), do: value |> to_string() |> String.to_charlist()
+  defp attribute_value(value), do: value |> xml_value_to_string() |> String.to_charlist()
 
-  defp to_export({:xmlElement, name, _, _, _, _, _, _, attrs, _, content, _, _, _, _}) do
+  defp to_export({:xmlElement, name, _, _, _, _, _, attrs, content, _, _, _}) do
     attrs =
       Enum.map(attrs, fn {:xmlAttribute, key, _, _, _, _, _, _, value, _} ->
         {key, attribute_value(value)}
@@ -172,7 +178,7 @@ defmodule Operately.JUnitReportMerger do
     children =
       content
       |> Enum.filter(fn
-        {:xmlElement, _, _, _, _, _, _, _, _, _, _, _, _, _} -> true
+        {:xmlElement, _, _, _, _, _, _, _, _, _, _, _} -> true
         _ -> false
       end)
       |> Enum.map(&to_export/1)
@@ -182,12 +188,12 @@ defmodule Operately.JUnitReportMerger do
 
   defp attr_value(attrs, key) do
     case List.keyfind(attrs, key, 0) do
-      {^key, value} -> to_string(value)
+      {^key, value} -> xml_value_to_string(value)
       nil -> ""
     end
   end
 
-  defp to_string(value) when is_list(value), do: List.to_string(value)
-  defp to_string(value) when is_binary(value), do: value
-  defp to_string(value), do: inspect(value)
+  defp xml_value_to_string(value) when is_list(value), do: List.to_string(value)
+  defp xml_value_to_string(value) when is_binary(value), do: value
+  defp xml_value_to_string(value), do: inspect(value)
 end
