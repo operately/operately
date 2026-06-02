@@ -234,7 +234,7 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
       assert res.goal.permissions == nil
 
       assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_permissions: true})
-      assert res.goal.permissions == Map.from_struct(Operately.Goals.Permissions.calculate(Binding.full_access()))
+      assert res.goal.permissions == Map.from_struct(Operately.Goals.Permissions.calculate(Binding.full_access(), company_read_only: false))
     end
 
     test "include_projects", ctx do

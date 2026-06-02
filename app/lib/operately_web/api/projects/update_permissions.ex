@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Projects.UpdatePermissions do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:project, fn ctx -> Projects.get_project_with_access_level(inputs.project_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :has_full_access) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :has_full_access, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ProjectPermissionsEditing.run(ctx.me, ctx.project, inputs.access_levels) end)
     |> respond()
   end

@@ -53,6 +53,13 @@ defmodule OperatelyWeb.Api.Helpers do
     end
   end
 
+  def company_read_only(conn) do
+    case conn.assigns[:current_company] do
+      %{billing_read_only: value} when is_boolean(value) -> value
+      _ -> false
+    end
+  end
+
   def extend_query(query, nil, _), do: query
   def extend_query(query, false, _), do: query
   def extend_query(query, _, fun), do: fun.(query)

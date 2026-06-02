@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Documents.Create do
     |> run(:copied_document, fn ctx -> load_copied_document(ctx.me, inputs[:copied_document_id]) end)
     |> run(:attrs, fn ctx -> parse_inputs(ctx, inputs) end)
     |> run(:resource_hub, fn ctx -> ResourceHub.get(ctx.me, id: ctx.attrs.resource_hub_id) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.resource_hub.request_info.access_level, :can_create_document) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.resource_hub.request_info.access_level, :can_create_document, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubDocumentCreating.run(ctx.me, ctx.resource_hub, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{document: Serializer.serialize(ctx.operation)}} end)
     |> respond()

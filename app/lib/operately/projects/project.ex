@@ -326,13 +326,15 @@ defmodule Operately.Projects.Project do
     Map.put(project, :contributors, contribs)
   end
 
-  def set_permissions(project = %__MODULE__{}) do
-    perms = Permissions.calculate(project.request_info.access_level)
+  def set_permissions(project, company_read_only \\ false)
+
+  def set_permissions(project = %__MODULE__{}, company_read_only) do
+    perms = Permissions.calculate(project.request_info.access_level, company_read_only: company_read_only)
     Map.put(project, :permissions, perms)
   end
 
-  def set_permissions(%{project: project = %__MODULE__{}} = parent) do
-    perms = Permissions.calculate(parent.request_info.access_level)
+  def set_permissions(%{project: project = %__MODULE__{}} = parent, company_read_only) do
+    perms = Permissions.calculate(parent.request_info.access_level, company_read_only: company_read_only)
     project = Map.put(project, :permissions, perms)
 
     %{parent | project: project}

@@ -115,7 +115,7 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
 
       assert {200, res} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(space), include_permissions: true})
 
-      assert res.space.permissions == Map.from_struct(Operately.Groups.Permissions.calculate_permissions(Binding.full_access()))
+      assert res.space.permissions == Map.from_struct(Operately.Groups.Permissions.calculate_permissions(Binding.full_access(), company_read_only: false))
     end
 
     test "include_unread_notifications", ctx do

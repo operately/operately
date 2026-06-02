@@ -23,13 +23,13 @@ defmodule OperatelyWeb.Api.Projects.GetContributor do
   def call(conn, inputs) do
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
-    |> Action.run(:contrib, fn ctx -> load(ctx, inputs) end)
+    |> Action.run(:contrib, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.contrib, level: :full)}} end)
     |> respond()
   end
 
-  defp load(ctx, inputs) do
-    Contributor.get(ctx.me, id: inputs.id, opts: [preload: preload(inputs), after_load: after_load(inputs)])
+  defp load(ctx, inputs, company_read_only) do
+    Contributor.get(ctx.me, id: inputs.id, opts: [preload: preload(inputs), after_load: after_load(inputs, company_read_only)])
   end
 
   defp preload(inputs) do
@@ -39,9 +39,9 @@ defmodule OperatelyWeb.Api.Projects.GetContributor do
     )
   end
 
-  defp after_load(inputs) do
+  defp after_load(inputs, company_read_only) do
     Inputs.parse_includes(inputs,
-      include_permissions: &Contributor.set_permissions/1,
+      include_permissions: &Contributor.set_permissions(&1, company_read_only),
       include_access_level: &Contributor.load_access_level/1
     )
   end

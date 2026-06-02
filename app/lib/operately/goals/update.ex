@@ -83,18 +83,20 @@ defmodule Operately.Goals.Update do
     %{update | potential_subscribers: subs}
   end
 
-  def preload_permissions(update) do
-    preload_permissions(update, update.request_info.access_level)
+  def preload_permissions(update, access_level \\ nil, user_id \\ nil, company_read_only \\ false)
+
+  def preload_permissions(update, nil, nil, company_read_only) do
+    preload_permissions(update, update.request_info.access_level, update.request_info.requester.id, company_read_only)
   end
 
-  def preload_permissions(update, access_level) do
-    preload_permissions(update, access_level, update.request_info.requester.id)
+  def preload_permissions(update, access_level, nil, company_read_only) do
+    preload_permissions(update, access_level, update.request_info.requester.id, company_read_only)
   end
 
-  def preload_permissions(update, access_level, user_id) do
+  def preload_permissions(update, access_level, user_id, company_read_only) do
     update = Repo.preload(update, :goal)
 
-    permissions = Permissions.calculate(access_level, update, user_id)
+    permissions = Permissions.calculate(access_level, update, user_id, company_read_only: company_read_only)
     Map.put(update, :permissions, permissions)
   end
 

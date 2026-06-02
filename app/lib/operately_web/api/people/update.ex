@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.People.Update do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:person, fn ctx -> Operately.People.get_person_with_access_level(inputs.id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Operately.People.Permissions.check(ctx.person.requester_access_level, :can_edit_profile) end)
+    |> run(:check_permissions, fn ctx -> Operately.People.Permissions.check(ctx.person.requester_access_level, :can_edit_profile, company_read_only: company_read_only(conn)) end)
     |> run(:updated_person, fn ctx -> update_profile(ctx.person, inputs, ctx.me.id) end)
     |> respond()
   end

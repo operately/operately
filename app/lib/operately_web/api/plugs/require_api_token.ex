@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Plugs.RequireApiToken do
   import Plug.Conn
+  alias Operately.Billing
 
   def init(opts), do: opts
 
@@ -34,6 +35,7 @@ defmodule OperatelyWeb.Api.Plugs.RequireApiToken do
     case Operately.People.authenticate_api_token(raw_token) do
       {:ok, %{token: token, person: person, account: account, company: company}} ->
         Operately.People.touch_last_used(token)
+        company = Billing.attach_access_state(company)
 
         conn
         |> assign(:current_person, person)

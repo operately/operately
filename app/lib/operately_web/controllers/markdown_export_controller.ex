@@ -2,6 +2,7 @@ defmodule OperatelyWeb.MarkdownExportController do
   use OperatelyWeb, :controller
 
   alias Operately.Companies
+  alias Operately.Billing
   alias Operately.MD.{Goal, Project}
   alias Operately.People
   alias Operately.Goals.Goal, as: GoalSchema
@@ -110,7 +111,7 @@ defmodule OperatelyWeb.MarkdownExportController do
         with company_slug when is_binary(company_slug) <- conn.path_params["company_id"],
              decoded <- id_without_comments(company_slug),
              {:ok, id} <- Companies.ShortId.decode(decoded),
-             company <- Companies.get_company!(id) do
+             company <- Companies.get_company!(id) |> Billing.attach_access_state() do
           Plug.Conn.assign(conn, :current_company, company)
         else
           _ -> conn

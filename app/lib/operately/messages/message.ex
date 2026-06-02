@@ -90,8 +90,8 @@ defmodule Operately.Messages.Message do
     %{message | potential_subscribers: subs}
   end
 
-  def set_permissions(message = %__MODULE__{}) do
-    perms = Operately.Groups.Permissions.calculate_permissions(message.request_info.access_level)
+  def set_permissions(message = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.Groups.Permissions.calculate_permissions(message.request_info.access_level, company_read_only: company_read_only)
     Map.put(message, :permissions, perms)
   end
 end

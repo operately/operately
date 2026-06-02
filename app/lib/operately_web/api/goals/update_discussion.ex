@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Goals.UpdateDiscussion do
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
     |> Action.run(:activity, fn ctx -> load_activity(ctx.me, inputs.activity_id) end)
-    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.activity.request_info.access_level, :can_edit) end)
+    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.activity.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> Action.run(:operation, fn ctx -> GoalDiscussionEditing.run(ctx.me, ctx.activity, inputs) end)
     |> Action.run(:result, fn -> {:ok, %{}} end)
     |> respond()

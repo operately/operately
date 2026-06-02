@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Spaces.Update do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> Groups.edit_group_name_and_purpose(ctx.me, ctx.space, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{space: Serializer.serialize(ctx.operation)}} end)
     |> respond()

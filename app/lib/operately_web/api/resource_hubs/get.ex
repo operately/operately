@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:hub, fn ctx -> load(ctx, inputs) end)
+    |> run(:hub, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{resource_hub: Serializer.serialize(ctx.hub)}} end)
     |> respond()
   end
@@ -37,10 +37,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
     end
   end
 
-  defp load(ctx, inputs) do
+  defp load(ctx, inputs, company_read_only) do
     ResourceHub.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs),
+      after_load: after_load(inputs, company_read_only),
     ])
   end
 
@@ -53,10 +53,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
     ])
   end
 
-  defp after_load(inputs) do
+  defp after_load(inputs, company_read_only) do
     Inputs.parse_includes(inputs, [
       include_potential_subscribers: &ResourceHub.load_potential_subscribers/1,
-      include_permissions: &ResourceHub.set_permissions/1,
+      include_permissions: &ResourceHub.set_permissions(&1, company_read_only),
     ])
   end
 end

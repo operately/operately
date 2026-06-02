@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Projects.DeleteCheckIn do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:check_in, fn ctx -> CheckIn.get(ctx.me, id: inputs.check_in_id, opts: [preload: [:project]]) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.request_info.access_level, :has_full_access) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.request_info.access_level, :has_full_access, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ProjectCheckInDeleting.run(ctx.check_in) end)
     |> run(:serialized, fn _ -> {:ok, %{success: true}} end)
     |> respond()

@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateContributor do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:contrib, fn ctx -> Contributor.get(ctx.me, id: ctx.attrs[:contrib_id], opts: [preload: :person]) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:contrib_access_level, fn ctx -> get_contributor_current_access_level(ctx.contrib) end)
     |> run(:validate_can_edit_permissions, fn ctx -> validate_can_edit_permissions(ctx.contrib.request_info.access_level, ctx.contrib_access_level, ctx.attrs[:permissions]) end)
     |> run(:validate_permission_level, fn ctx -> validate_permission_level(ctx.contrib.request_info.access_level, ctx.attrs[:permissions]) end)

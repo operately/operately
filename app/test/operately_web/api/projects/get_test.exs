@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
 
   alias Operately.Repo
   alias Operately.Access.Binding
+  alias Operately.Billing
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -309,7 +310,19 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert res.project.permissions == nil
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_permissions: true})
-      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Binding.full_access()))
+      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Binding.full_access(), company_read_only: false))
+    end
+
+    test "include_permissions returns view-only permissions when the company is read-only", ctx do
+      project = create_project(ctx, company_access_level: Binding.view_access())
+      put_company_in_read_only(ctx.company)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
+        id: Paths.project_id(project),
+        include_permissions: true,
+      })
+
+      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Binding.view_access(), company_read_only: true))
     end
 
     test "include_key_resources", ctx do
@@ -525,4 +538,16 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
 
   defp normalize_tasks_kanban_state_key(key) when is_atom(key), do: key
   defp normalize_tasks_kanban_state_key(key) when is_binary(key), do: String.to_atom(key)
+
+  defp put_company_in_read_only(company) do
+    {:ok, account} = Billing.get_or_create_billing_account(company)
+
+    {:ok, _account} =
+      Billing.update_billing_account(account, %{
+        access_state: :read_only,
+        access_state_reason: :past_due,
+        access_state_started_at: DateTime.utc_now(),
+        access_state_ends_at: nil
+      })
+  end
 end

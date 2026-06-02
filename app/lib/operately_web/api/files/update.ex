@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Files.Update do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:file, fn ctx -> find_file(ctx, inputs) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.file.request_info.access_level, :can_edit_file) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.file.request_info.access_level, :can_edit_file, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubFileEditing.run(ctx.me, ctx.file, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{file: Serializer.serialize(ctx.operation)}} end)
     |> respond()

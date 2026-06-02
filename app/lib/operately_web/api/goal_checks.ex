@@ -174,6 +174,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
     def start_transaction(conn) do
       Ecto.Multi.new()
       |> Ecto.Multi.put(:conn, conn)
+      |> Ecto.Multi.put(:company_read_only, OperatelyWeb.Api.Helpers.company_read_only(conn))
       |> Ecto.Multi.run(:me, fn _repo, %{conn: conn} ->
         {:ok, conn.assigns.current_person}
       end)
@@ -189,8 +190,8 @@ defmodule OperatelyWeb.Api.GoalChecks do
     end
 
     def check_permissions(multi, permission) do
-      Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal} ->
-        Operately.Goals.Permissions.check(goal.request_info.access_level, permission)
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal, company_read_only: company_read_only} ->
+        Operately.Goals.Permissions.check(goal.request_info.access_level, permission, company_read_only: company_read_only)
       end)
     end
 

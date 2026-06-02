@@ -3,6 +3,7 @@ defmodule OperatelyWeb.AccountAuth do
   import Phoenix.Controller
 
   alias Operately.People
+  alias Operately.Billing
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
@@ -107,7 +108,7 @@ defmodule OperatelyWeb.AccountAuth do
 
         case Operately.Companies.ShortId.decode(id) do
           {:ok, id} ->
-            company = Operately.Companies.get_company!(id)
+            company = Operately.Companies.get_company!(id) |> Billing.attach_access_state()
             assign(conn, :current_company, company)
 
           {:error, _} ->

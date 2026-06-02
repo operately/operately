@@ -38,8 +38,8 @@ defmodule Operately.Projects.Retrospective do
   # After load hooks
   #
 
-  def set_permissions(retrospective = %__MODULE__{}) do
-    perms = Operately.Projects.Permissions.calculate(retrospective.request_info.access_level)
+  def set_permissions(retrospective = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.Projects.Permissions.calculate(retrospective.request_info.access_level, company_read_only: company_read_only)
     Map.put(retrospective, :permissions, perms)
   end
 

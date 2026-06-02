@@ -20,9 +20,9 @@ defmodule OperatelyWeb.Api.Projects.MoveToSpace do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:project, fn ctx -> Projects.get_project_with_access_level(inputs.project_id, ctx.me.id) end)
-    |> run(:project_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :has_full_access) end)
+    |> run(:project_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :has_full_access, company_read_only: company_read_only(conn)) end)
     |> run(:space_access_level, fn ctx -> {:ok, Groups.get_access_level(inputs.space_id, ctx.me.id)} end)
-    |> run(:space_permissions, fn ctx -> Groups.Permissions.check(ctx.space_access_level, :can_view) end)
+    |> run(:space_permissions, fn ctx -> Groups.Permissions.check(ctx.space_access_level, :can_view, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ProjectSpaceMoving.run(ctx.me, ctx.project, inputs.space_id) end)
     |> respond()
   end

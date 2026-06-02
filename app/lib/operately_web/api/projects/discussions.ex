@@ -55,13 +55,14 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
 
     defp after_load(conn, inputs) do
       {:ok, person} = find_me(conn)
+      company_read_only = company_read_only(conn)
 
       Inputs.parse_includes(inputs,
         include_unread_notifications: fn ct -> CommentThread.load_unread_notifications(ct, person) end,
         include_project: &CommentThread.load_project/1,
         include_space: fn ct -> load_space(person, ct) end,
         include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
-        include_permissions: &CommentThread.load_permissions/1
+        include_permissions: &CommentThread.load_permissions(&1, company_read_only)
       )
     end
 
@@ -186,6 +187,7 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
 
   defmodule SharedMultiSteps do
     require Logger
+    use OperatelyWeb.Api.Helpers
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -215,13 +217,13 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
 
     def check_project_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, changes ->
-        Operately.Projects.Permissions.check(changes.project.request_info.access_level, permission)
+        Operately.Projects.Permissions.check(changes.project.request_info.access_level, permission, company_read_only: company_read_only(changes.conn))
       end)
     end
 
     def check_discussion_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, changes ->
-        Operately.Projects.Permissions.check(changes.discussion.request_info.access_level, permission)
+        Operately.Projects.Permissions.check(changes.discussion.request_info.access_level, permission, company_read_only: company_read_only(changes.conn))
       end)
     end
 

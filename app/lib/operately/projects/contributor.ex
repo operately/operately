@@ -40,8 +40,8 @@ defmodule Operately.Projects.Contributor do
     |> validate_required([:project_id, :person_id])
   end
 
-  def set_permissions(contributor = %__MODULE__{}) do
-    perms = Operately.Projects.Permissions.calculate(contributor.request_info.access_level)
+  def set_permissions(contributor = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.Projects.Permissions.calculate(contributor.request_info.access_level, company_read_only: company_read_only)
     Map.put(contributor, :permissions, perms)
   end
 

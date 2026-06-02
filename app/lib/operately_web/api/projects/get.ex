@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Projects.Get do
 
   def call(conn, inputs) do
     with :ok <- check_inputs(inputs),
-         {:ok, project} <- load(me(conn), inputs.id, inputs) do
+         {:ok, project} <- load(me(conn), inputs.id, inputs, company_read_only(conn)) do
       serialize(project, inputs[:include_markdown])
     end
   end
@@ -57,14 +57,14 @@ defmodule OperatelyWeb.Api.Projects.Get do
     end
   end
 
-  def load(requester, id, inputs) do
+  def load(requester, id, inputs, company_read_only) do
     Project.get(requester,
       id: id,
       opts: [
         with_deleted: true,
         preload: preload(inputs),
         auth_preload: auth_preload(inputs),
-        after_load: after_load(inputs, requester)
+        after_load: after_load(inputs, requester, company_read_only)
       ]
     )
   end
@@ -88,10 +88,10 @@ defmodule OperatelyWeb.Api.Projects.Get do
     )
   end
 
-  def after_load(inputs, person) do
+  def after_load(inputs, person, company_read_only) do
     Inputs.parse_includes(inputs,
       include_milestones: &Project.load_milestones/1,
-      include_permissions: &Project.set_permissions/1,
+      include_permissions: &Project.set_permissions(&1, company_read_only),
       include_contributors_access_levels: &Project.load_contributor_access_levels/1,
       include_access_levels: &Project.load_access_levels/1,
       include_privacy: &Project.load_privacy/1,

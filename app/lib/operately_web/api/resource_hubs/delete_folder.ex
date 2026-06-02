@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.DeleteFolder do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:folder, fn ctx -> find_folder(ctx.me, inputs) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.folder.request_info.access_level, :can_delete_folder) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.folder.request_info.access_level, :can_delete_folder, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubFolderDeleting.run(ctx.me, ctx.folder) end)
     |> run(:result, fn -> {:ok, %{success: true}} end)
     |> respond()

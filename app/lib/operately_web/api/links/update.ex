@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Links.Update do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:link, fn ctx -> find_link(ctx, inputs) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.link.request_info.access_level, :can_edit_link) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.link.request_info.access_level, :can_edit_link, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubLinkEditing.run(ctx.me, ctx.link, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{link: Serializer.serialize(ctx.operation)}} end)
     |> respond()

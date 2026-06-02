@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Files.Create do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:resource_hub, fn ctx -> ResourceHub.get(ctx.me, id: ctx.attrs.resource_hub_id) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.resource_hub.request_info.access_level, :can_create_file) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.resource_hub.request_info.access_level, :can_create_file, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubFileCreating.run(ctx.me, ctx.resource_hub, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{files: Serializer.serialize(ctx.operation)}} end)
     |> respond()

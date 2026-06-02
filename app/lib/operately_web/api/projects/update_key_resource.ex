@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateKeyResource do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:resource, fn ctx -> fetch_key_resource(ctx, inputs) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> Projects.update_key_resource(ctx.resource, inputs) end)
     |> run(:serialized, fn ctx -> serialize(ctx.operation) end)
     |> respond()
