@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Companies.ConvertMemberToGuest do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:company, fn ctx -> Companies.get_company_with_access_level(ctx.me.id, id: ctx.me.company_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.requester_access_level, :can_invite_members) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.requester_access_level, :can_invite_members, company_read_only: company_read_only(conn)) end)
     |> run(:person, fn ctx -> find_person(ctx.company.id, inputs.person_id) end)
     |> run(:operation, fn ctx -> CompanyMemberConvertingToGuest.run(ctx.me, ctx.person) end)
     |> run(:serialized, fn ctx -> {:ok, %{person: Serializer.serialize(ctx.operation)}} end)

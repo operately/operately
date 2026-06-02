@@ -202,13 +202,9 @@ function AddSpaceButton() {
 
 function InvitePeopleButton() {
   const paths = usePaths();
-  const { adminIds, ownerIds } = useLoadedData();
+  const { company } = useLoadedData();
 
-  const me = useMe();
-  const amIAdmin = includesId(adminIds, me!.id);
-  const amIOwner = includesId(ownerIds, me!.id);
-
-  if (!(amIAdmin || amIOwner)) {
+  if (!company.permissions?.canInviteMembers) {
     return null;
   }
 

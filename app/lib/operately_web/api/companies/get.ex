@@ -27,10 +27,12 @@ defmodule OperatelyWeb.Api.Companies.Get do
 
   def call(conn, inputs) do
     with {:ok, company} <- find_company(conn) do
+      company_read_only = company_read_only(conn)
+
       Company.get(me(conn), id: company.id, opts: [
         required_access_level: Binding.minimal_access()
       ])
-      |> apply_hooks(inputs)
+      |> apply_hooks(inputs, company_read_only)
       |> case do
         {:ok, company} -> {:ok, serialize(company)}
         {:error, :not_found} -> {:error, :not_found}
@@ -41,17 +43,17 @@ defmodule OperatelyWeb.Api.Companies.Get do
     end
   end
 
-  defp apply_hooks({:error, _} = error, _inputs), do: error
+  defp apply_hooks({:error, _} = error, _inputs, _company_read_only), do: error
 
-  defp apply_hooks({:ok, company}, inputs) do
+  defp apply_hooks({:ok, company}, inputs, company_read_only) do
     access_level = company.request_info.access_level
 
     cond do
       access_level >= Binding.view_access() ->
-        {:ok, run_after_load_hooks(company, full_hooks(inputs))}
+        {:ok, run_after_load_hooks(company, full_hooks(inputs, company_read_only))}
 
       access_level >= Binding.minimal_access() ->
-        {:ok, run_after_load_hooks(company, minimal_hooks(inputs))}
+        {:ok, run_after_load_hooks(company, minimal_hooks(inputs, company_read_only))}
 
       true ->
         {:error, :not_found}
@@ -62,20 +64,20 @@ defmodule OperatelyWeb.Api.Companies.Get do
     Enum.reduce(hooks, company, fn hook, acc -> hook.(acc) end)
   end
 
-  defp full_hooks(inputs) do
+  defp full_hooks(inputs, company_read_only) do
     Inputs.parse_includes(inputs,
       include_people: &Company.load_people/1,
       include_admins: &Company.load_admins/1,
       include_owners: &Company.load_owners/1,
-      include_permissions: &Company.load_permissions/1,
+      include_permissions: &Company.load_permissions(&1, company_read_only),
       include_general_space: &Company.load_general_space/1,
       include_members_access_levels: &Company.preload_members_access_level/1
     )
   end
 
-  defp minimal_hooks(inputs) do
+  defp minimal_hooks(inputs, company_read_only) do
     Inputs.parse_includes(inputs,
-      include_permissions: &Company.load_permissions/1
+      include_permissions: &Company.load_permissions(&1, company_read_only)
     )
   end
 

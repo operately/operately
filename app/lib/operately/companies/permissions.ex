@@ -15,8 +15,8 @@ defmodule Operately.Companies.Permissions do
     :can_edit_members_access_levels,
   ]
 
-  def calculate(access_level) when is_number(access_level) do
-    %__MODULE__{
+  def calculate(access_level, company_read_only: company_read_only) when is_number(access_level) do
+    permissions = %__MODULE__{
       can_view: access_level >= Binding.view_access(),
       is_admin: access_level >= Binding.admin_access(),
       can_edit_details: access_level >= Binding.admin_access(),
@@ -29,10 +29,12 @@ defmodule Operately.Companies.Permissions do
       can_manage_owners: access_level >= Binding.full_access() || dev_env?(),
       can_edit_trusted_email_domains: access_level >= Binding.full_access(),
     }
+
+    if company_read_only, do: apply_company_read_only(permissions), else: permissions
   end
 
-  def check(access_level, permission) when is_number(access_level) do
-    permissions = calculate(access_level)
+  def check(access_level, permission, company_read_only: company_read_only) when is_number(access_level) do
+    permissions = calculate(access_level, company_read_only: company_read_only)
 
     case Map.get(permissions, permission) do
       true -> {:ok, :allowed}
@@ -43,5 +45,12 @@ defmodule Operately.Companies.Permissions do
 
   def dev_env?() do
     Application.get_env(:operately, :app_env) == :dev
+  end
+
+  defp apply_company_read_only(permissions) do
+    Enum.reduce(Map.keys(Map.from_struct(permissions)), permissions, fn
+      key, acc when key in [:can_view, :is_admin, :can_remove_members] -> acc
+      key, acc -> Map.put(acc, key, false)
+    end)
   end
 end

@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Companies.DeleteOwner do
     with(
       {:ok, me} <- find_me(conn),
       {:ok, company} <- get_company(conn),
-      {:ok, :allowed} <- authorize(company),
+      {:ok, :allowed} <- authorize(company, company_read_only(conn)),
       {:ok, _} <- CompanyOwnerRemoving.run(me, inputs.person_id)
     ) do
       {:ok, %{}}
@@ -29,8 +29,8 @@ defmodule OperatelyWeb.Api.Companies.DeleteOwner do
     end
   end
 
-  defp authorize(company) do
-    Permissions.check(company.request_info.access_level, :can_manage_owners)
+  defp authorize(company, company_read_only) do
+    Permissions.check(company.request_info.access_level, :can_manage_owners, company_read_only: company_read_only)
   end
 
   defp get_company(conn) do

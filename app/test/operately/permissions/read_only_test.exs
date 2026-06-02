@@ -3,6 +3,7 @@ defmodule Operately.Permissions.ReadOnlyTest do
 
   alias Operately.Access.Binding
   alias Operately.Activities.Permissions, as: ActivityPermissions
+  alias Operately.Companies.Permissions, as: CompanyPermissions
   alias Operately.Goals.Permissions, as: GoalPermissions
   alias Operately.Goals.Update.Permissions, as: GoalUpdatePermissions
   alias Operately.Groups.Permissions, as: GroupPermissions
@@ -95,6 +96,22 @@ defmodule Operately.Permissions.ReadOnlyTest do
 
     assert MessagePermissions.calculate(person, message, company_read_only: true) == %MessagePermissions{
              can_archive_message: false
+           }
+  end
+
+  test "company permissions keep admin, invite, and view access in read-only mode" do
+    assert CompanyPermissions.calculate(Binding.admin_access(), company_read_only: true) == %CompanyPermissions{
+             can_view: true,
+             is_admin: true,
+             can_edit_trusted_email_domains: false,
+             can_invite_members: false,
+             can_remove_members: true,
+             can_restore_members: false,
+             can_create_space: false,
+             can_manage_admins: false,
+             can_manage_owners: false,
+             can_edit_details: false,
+             can_edit_members_access_levels: false
            }
   end
 end
