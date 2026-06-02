@@ -1,4 +1,4 @@
-import { formatPlanLabel } from "./planFormatting";
+import { formatCompanyBillingPlanLabel } from "turboui/CompanyBilling";
 import type { BillingLimitError } from "./limitError";
 
 export type BillingLimitViewerRole = "owner" | "company_admin" | "regular";
@@ -22,7 +22,7 @@ export function buildMemberLimitGuidance(
   routes: BillingLimitGuidanceRoutes,
 ): BillingLimitGuidance {
   const recommendedPlanLabel = error.recommendedUpgrade.target
-    ? formatPlanLabel(error.recommendedUpgrade.target.plan, error.recommendedUpgrade.target.billingInterval)
+    ? formatCompanyBillingPlanLabel(error.recommendedUpgrade.target.plan, error.recommendedUpgrade.target.billingInterval)
     : null;
 
   const usageSummary = `This company has ${error.currentUsage} users. The limit is ${error.limit}.`;

@@ -1,6 +1,6 @@
 import * as api from "@/api";
 import { getLocalStorage, safeGetItem, safeSetItem } from "@/utils/safeLocalStorage";
-import { formatStorageBytes } from "turboui";
+import { formatStorageBytes } from "turboui/CompanyBilling";
 
 // 3 days in milliseconds
 export const APPROACHING_LIMIT_BANNER_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;

@@ -1,7 +1,15 @@
 import * as Billing from "@/models/billing";
 import * as React from "react";
 
-import { CompanyBillingPlanSelectionPage as TurboCompanyBillingPlanSelectionPage, showErrorToast } from "turboui";
+import {
+  buildCompanyBillingPlanChangeFeedback,
+  canCreateCompanyBillingCheckout,
+  isCompanyBillingPaidStatus,
+  parseCompanyBillingSearch,
+  selectCompanyBillingTarget,
+} from "turboui/CompanyBilling";
+import { CompanyBillingPlanSelectionPage as TurboCompanyBillingPlanSelectionPage } from "turboui/CompanyBillingPlanSelectionPage";
+import { showErrorToast } from "turboui";
 import { useLoadedData } from "../CompanyBillingPage/loader";
 import { useLocation, useNavigate, useRouteLoaderData } from "react-router-dom";
 import { usePaths } from "@/routes/paths";
@@ -27,10 +35,10 @@ export function Page() {
     setBilling(loadedBilling);
   }, [loadedBilling]);
 
-  const search = React.useMemo(() => Billing.parseBillingSearch(location.search), [location.search]);
-  const selection = React.useMemo(() => Billing.selectTarget(billing, search), [billing, search]);
-  const canUseCheckout = Billing.canCreateCheckout(billing.account.status);
-  const canManagePaidSubscription = Billing.canManagePaidSubscription(billing.account.status);
+  const search = React.useMemo(() => parseCompanyBillingSearch(location.search), [location.search]);
+  const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search]);
+  const canUseCheckout = canCreateCompanyBillingCheckout(billing.account.status);
+  const canManagePaidSubscription = isCompanyBillingPaidStatus(billing.account.status);
   const companyName = companyRootData?.company?.name || "Billing";
 
   const navigateToSelection = React.useCallback(
@@ -118,7 +126,7 @@ export function Page() {
       navigate(paths.companyBillingPath(), {
         state: {
           billing: result.billing,
-          feedback: Billing.buildPlanChangeFeedback(result.billing),
+          feedback: buildCompanyBillingPlanChangeFeedback(result.billing),
         },
       });
       return;

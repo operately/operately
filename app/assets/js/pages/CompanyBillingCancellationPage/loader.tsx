@@ -5,6 +5,7 @@ import * as People from "@/models/people";
 import { includesId, Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { redirect } from "react-router-dom";
+import { isCompanyBillingPaidStatus } from "turboui/CompanyBilling";
 import {
   loader as companyBillingLoader,
   useLoadedData as useCompanyBillingLoadedData,
@@ -37,7 +38,7 @@ export async function loader(args: LoaderArgs): Promise<LoaderResult> {
 
   const data = await companyBillingLoader(args);
 
-  if (!Billing.canManagePaidSubscription(data.billing.account.status) || data.billing.account.cancelAtPeriodEnd) {
+  if (!isCompanyBillingPaidStatus(data.billing.account.status) || data.billing.account.cancelAtPeriodEnd) {
     throw redirect(new Paths({ companyId: args.params.companyId }).companyBillingPath());
   }
 
