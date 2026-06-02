@@ -69,6 +69,7 @@ export interface Task {
   milestone: Milestone | null;
   points?: number;
   dueDate: DateField.ContextualDate | null;
+  reminders?: TaskPage.Reminder[];
   closedAt?: Date | null;
   hasDescription?: boolean;
   hasComments?: boolean;
@@ -162,6 +163,7 @@ export interface TaskListSlideInContext {
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
+  onTaskRemindersChange?: TaskBoardProps["onTaskRemindersChange"];
   onTaskStatusChange?: TaskBoardProps["onTaskStatusChange"];
   onTaskMilestoneChange?: (taskId: string, milestone: Milestone | null) => void;
   onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
@@ -185,6 +187,7 @@ export interface TaskBoardProps {
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskRemindersChange?: (taskId: string, reminders: TaskPage.Reminder[]) => Promise<boolean> | boolean;
   onTaskStatusChange: (taskId: string, status: Status | null) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
   onTaskNameChange?: (taskId: string, name: string) => void;

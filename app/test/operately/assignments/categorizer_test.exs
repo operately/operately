@@ -294,10 +294,11 @@ defmodule Operately.Assignments.CategorizerTest do
 
   # Helper functions
 
-  defp build_assignment(role, due_status, due_date, opts \\ []) do
+  defp build_assignment(role, due_status, due_date, opts) do
     origin_id = Keyword.get(opts, :origin_id, "default-origin")
     origin_name = Keyword.get(opts, :origin_name, "Default Origin")
     name = Keyword.get(opts, :name, "Test Assignment")
+    reminders = Keyword.get(opts, :reminders)
 
     %Assignment{
       resource_id: "assignment-#{:rand.uniform(10000)}",
@@ -314,7 +315,8 @@ defmodule Operately.Assignments.CategorizerTest do
       },
       due_date: due_date,
       due_status: due_status,
-      due_status_label: "Test label"
+      due_status_label: "Test label",
+      reminders: reminders
     }
   end
 end

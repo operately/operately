@@ -2,6 +2,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   import OperatelyEmail.Mailers.NotificationMailer
 
   alias Operately.Assignments.{Loader, Assignment}
+  alias Operately.Tasks.Reminder
   alias Operately.Repo
   alias OperatelyWeb.Paths
 
@@ -16,10 +17,10 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   # The scheduler of this email is located in OperatelyEmail.Cron.Assignments
   #
 
-  def send(person) do
+  def send(person, opts \\ []) do
     company = Repo.preload(person, [:company]).company
 
-    case load_assignments_payload(person, company) do
+    case load_assignments_payload(person, company, opts) do
       {:ok, %{template: template, assigns: assigns}} ->
         email =
           company
@@ -41,15 +42,15 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     end
   end
 
-  defp load_assignments_payload(_person, nil), do: :no_assignments
+  defp load_assignments_payload(_person, nil, _opts), do: :no_assignments
 
-  defp load_assignments_payload(person, company) do
+  defp load_assignments_payload(person, company, opts) do
     assignments = Loader.load(person, company)
 
     if assignments == [] do
       :no_assignments
     else
-      categorized = categorize_assignments(assignments)
+      categorized = categorize_assignments(assignments, Keyword.get(opts, :mode, :baseline_and_reminders))
 
       if Enum.empty?(categorized.urgent_groups) do
         :no_assignments
@@ -65,11 +66,11 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     end
   end
 
-  defp categorize_assignments(assignments) do
+  defp categorize_assignments(assignments, mode) do
     enriched =
       assignments
       |> Enum.map(&enrich_assignment/1)
-      |> Enum.map(&assign_category/1)
+      |> Enum.map(&assign_category(&1, mode))
 
     due_soon_assignments = Enum.filter(enriched, &(&1.category == :due_soon))
     review_assignments = Enum.filter(enriched, &(&1.category == :needs_review))
@@ -97,10 +98,28 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     |> Map.put(:url, Paths.to_url(assignment.path))
   end
 
+  defp assign_category(assignment, :explicit_reminders_only) do
+    category =
+      if explicit_task_reminder_due?(assignment) do
+        :due_soon
+      else
+        :none
+      end
+
+    assignment
+    |> Map.put(:category, category)
+    |> Map.put(:badge_label, assignment.due_status_label)
+  end
+
+  defp assign_category(assignment, _mode) do
+    assign_category(assignment)
+  end
+
   defp assign_category(assignment) do
     category =
       cond do
         assignment.role == :reviewer -> :needs_review
+        task_assignment?(assignment) -> task_assignment_category(assignment)
         due_soon?(assignment.due_status) -> :due_soon
         upcoming?(assignment.due_status) -> :upcoming
         true -> :none
@@ -193,6 +212,30 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   defp due_soon?(:due_today), do: true
   defp due_soon?(:due_soon), do: true
   defp due_soon?(_), do: false
+
+  defp task_assignment?(assignment), do: assignment.type in [:project_task, :space_task]
+
+  defp explicit_task_reminder_due?(assignment) when is_list(assignment.reminders) and assignment.reminders != [] do
+    task_assignment?(assignment) and task_reminder_due?(assignment)
+  end
+
+  defp explicit_task_reminder_due?(_assignment), do: false
+
+  defp task_assignment_category(assignment) when is_list(assignment.reminders) and assignment.reminders != [] do
+    if task_reminder_due?(assignment), do: :due_soon, else: :none
+  end
+
+  defp task_assignment_category(assignment) do
+    cond do
+      due_soon?(assignment.due_status) -> :due_soon
+      upcoming?(assignment.due_status) -> :upcoming
+      true -> :none
+    end
+  end
+
+  defp task_reminder_due?(assignment) do
+    Reminder.due_today?(assignment.due_date, assignment.reminders)
+  end
 
   defp upcoming?(:upcoming), do: true
   defp upcoming?(:none), do: true
