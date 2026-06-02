@@ -43,6 +43,7 @@ export namespace MilestoneKanbanPage {
     onTaskNameChange: (taskId: string, name: string) => void;
     onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+    onTaskRemindersChange?: KanbanBoardProps["onTaskRemindersChange"];
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
     onTaskMilestoneChange: (taskId: string, milestone: Types.Milestone | null) => void;
     onTaskDelete: (taskId: string) => void | Promise<any>;
@@ -80,6 +81,7 @@ export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
           onTaskNameChange={props.onTaskNameChange}
           onTaskAssigneeChange={props.onTaskAssigneeChange}
           onTaskDueDateChange={props.onTaskDueDateChange}
+          onTaskRemindersChange={props.onTaskRemindersChange}
           onTaskStatusChange={props.onTaskStatusChange}
           onTaskMilestoneChange={props.onTaskMilestoneChange}
           onTaskDelete={props.onTaskDelete}

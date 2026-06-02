@@ -9,7 +9,7 @@ import { PageCache } from "@/routes/PageCache";
 import { serializeContextualDate } from "../contextualDates";
 import * as Signals from "@/signals";
 
-import { DateField, showErrorToast, TaskBoard } from "turboui";
+import { DateField, showErrorToast, TaskBoard, TaskPage } from "turboui";
 import { serializeTaskDescription } from "./descriptionSerialization";
 import { buildMilestonesOrderingState, normalizeMilestonesOrderingState } from "./milestoneOrdering";
 
@@ -207,6 +207,31 @@ export function useProjectTasksForTurboUi({
       .catch((e) => {
         console.error("Failed to update task due date", e);
         showErrorToast("Error", "Failed to update task due date");
+
+        return false;
+      });
+  };
+
+  const updateTaskReminders = async (taskId: string, reminders: TaskPage.Reminder[]) => {
+    return Api.tasks
+      .updateReminders({ taskId, reminders, type: "project" })
+      .then(() => {
+        invalidateAndRefresh();
+
+        setTasks((prev) =>
+          prev.map((t) => {
+            if (t.id === taskId) {
+              return { ...t, reminders };
+            }
+            return t;
+          }),
+        );
+
+        return true;
+      })
+      .catch((e) => {
+        console.error("Failed to update task reminders", e);
+        showErrorToast("Error", "Failed to update task reminders");
 
         return false;
       });
@@ -456,6 +481,7 @@ export function useProjectTasksForTurboUi({
     setTasks,
     createTask,
     updateTaskDueDate,
+    updateTaskReminders,
     updateTaskAssignee,
     updateTaskName,
     updateTaskDescription,

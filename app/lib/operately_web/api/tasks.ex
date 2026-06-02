@@ -273,6 +273,37 @@ defmodule OperatelyWeb.Api.Tasks do
     end
   end
 
+  defmodule UpdateReminders do
+    @moduledoc """
+    Updates task due date reminder rules.
+    """
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :task_id, :id, null: false
+      field :reminders, list_of(:task_reminder), null: false
+      field :type, :task_type, null: false
+    end
+
+    outputs do
+      field :task, :task, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_task(inputs.task_id, inputs.type)
+      |> Steps.check_task_permissions(:can_edit)
+      |> Steps.update_task_reminders(inputs.reminders)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
+      end)
+    end
+  end
+
   defmodule UpdateAssignee do
     @moduledoc """
     Updates the assignee of a task.
@@ -716,6 +747,18 @@ defmodule OperatelyWeb.Api.Tasks do
     def update_task_due_date(multi, new_due_date) do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{due_date: new_due_date})
+      end)
+    end
+
+    def update_task_reminders(multi, reminders) do
+      Ecto.Multi.run(multi, :updated_task, fn _repo, %{task: task} ->
+        changeset = Operately.Tasks.Task.changeset(task, %{reminders: reminders})
+
+        if changeset.valid? do
+          Operately.Repo.update(changeset)
+        else
+          {:error, {:bad_request, "Invalid reminders"}}
+        end
       end)
     end
 

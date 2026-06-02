@@ -1992,6 +1992,7 @@ export interface Task {
   updatedAt?: string | null;
   closedAt?: string | null;
   dueDate?: ContextualDate | null;
+  reminders?: TaskReminder[] | null;
   size?: string | null;
   priority?: string | null;
   status?: TaskStatus | null;
@@ -2008,6 +2009,14 @@ export interface Task {
   availableStatuses?: TaskStatus[] | null;
   type: TaskType;
 }
+
+export interface TaskReminder {
+  type: TaskReminderType;
+  days?: number | null;
+  enabled: boolean;
+}
+
+export type TaskReminderType = "before_due" | "due_day" | "overdue";
 
 export interface TaskStatus {
   id: string;
@@ -5170,6 +5179,16 @@ export interface TasksUpdateDueDateResult {
   task: Task;
 }
 
+export interface TasksUpdateRemindersInput {
+  taskId: Id;
+  reminders: TaskReminder[];
+  type: TaskType;
+}
+
+export interface TasksUpdateRemindersResult {
+  task: Task;
+}
+
 export interface TasksUpdateMilestoneInput {
   taskId: Id;
   milestoneId: Id | null;
@@ -6024,6 +6043,10 @@ class ApiNamespaceTasks {
 
   async updateDueDate(input: TasksUpdateDueDateInput): Promise<TasksUpdateDueDateResult> {
     return this.client.post("/tasks/update_due_date", input);
+  }
+
+  async updateReminders(input: TasksUpdateRemindersInput): Promise<TasksUpdateRemindersResult> {
+    return this.client.post("/tasks/update_reminders", input);
   }
 
   async updateMilestone(input: TasksUpdateMilestoneInput): Promise<TasksUpdateMilestoneResult> {
@@ -7733,6 +7756,12 @@ export default {
     useUpdateDueDate: () =>
       useMutation<TasksUpdateDueDateInput, TasksUpdateDueDateResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateDueDate(input),
+      ),
+
+    updateReminders: (input: TasksUpdateRemindersInput) => defaultApiClient.apiNamespaceTasks.updateReminders(input),
+    useUpdateReminders: () =>
+      useMutation<TasksUpdateRemindersInput, TasksUpdateRemindersResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.updateReminders(input),
       ),
 
     updateName: (input: TasksUpdateNameInput) => defaultApiClient.apiNamespaceTasks.updateName(input),

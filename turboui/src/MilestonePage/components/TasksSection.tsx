@@ -30,6 +30,7 @@ export function TasksSection({
   onTaskCreate,
   onTaskAssigneeChange,
   onTaskDueDateChange,
+  onTaskRemindersChange,
   onTaskStatusChange,
   onTaskMilestoneChange,
   onTaskNameChange,
@@ -159,6 +160,7 @@ export function TasksSection({
       onTaskCreate,
       onTaskAssigneeChange,
       onTaskDueDateChange,
+      onTaskRemindersChange,
       onTaskStatusChange,
       onTaskMilestoneChange: (taskId, nextMilestone) => {
         if (onTaskMilestoneChange) {
@@ -186,6 +188,7 @@ export function TasksSection({
       onTaskDelete,
       onTaskDescriptionChange,
       onTaskDueDateChange,
+      onTaskRemindersChange,
       onTaskMilestoneChange,
       onTaskNameChange,
       onTaskReorder,

@@ -60,6 +60,9 @@ function Component(props: Partial<TaskPage.Props>) {
 
   const [status, setStatus] = React.useState<typeof initialStatusOption | null>(initialStatusOption);
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
+  const [reminders, setReminders] = React.useState<TaskPage.Reminder[]>(
+    props.reminders ?? [{ type: "before_due", days: 1, enabled: true }],
+  );
   const [assignees, setAssignees] = React.useState(props.assignees || []);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
   const [milestones, setMilestones] = React.useState<TaskPage.Milestone[]>(mockMilestones);
@@ -131,6 +134,12 @@ function Component(props: Partial<TaskPage.Props>) {
     onDueDateChange: (newDate) => {
       console.log("Updating due date:", newDate);
       setDueDate(newDate ?? undefined);
+    },
+    reminders,
+    onRemindersChange: (newReminders) => {
+      console.log("Updating reminders:", newReminders);
+      setReminders(newReminders);
+      return true;
     },
 
     assignees,

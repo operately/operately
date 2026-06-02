@@ -1,4 +1,4 @@
-import { IconArchive, IconCalendar, IconCircleArrowRight, IconLink, IconTrash } from "../icons";
+import { IconArchive, IconCalendar, IconCircleArrowRight, IconLink, IconPlus, IconTrash } from "../icons";
 import React from "react";
 import { TaskPage } from ".";
 import { AvatarWithName } from "../Avatar";
@@ -15,6 +15,7 @@ export function Sidebar(props: TaskPage.ContentState) {
   return (
     <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8" data-test-id="task-sidebar">
       <DueDate {...props} />
+      <Reminders {...props} />
       <Assignees {...props} />
       <Milestone {...props} />
       <CreatedBy {...props} />
@@ -36,6 +37,11 @@ export function MobileSidebar(props: TaskPage.ContentState) {
           <AssigneeMobile {...props} />
         </div>
       </div>
+      {hasReminderRecipients(props) && (
+        <div className="mt-4">
+          <Reminders {...props} />
+        </div>
+      )}
       <div className="mt-4">
         <Milestone {...props} />
       </div>
@@ -58,6 +64,133 @@ function DueDate(props: TaskPage.ContentState) {
       <OverdueWarning {...props} />
     </SidebarSection>
   );
+}
+
+function Reminders(props: TaskPage.ContentState) {
+  if (!hasReminderRecipients(props)) return null;
+
+  const reminders = (props.reminders ?? []).map(enabledReminder);
+
+  const updateReminder = (index: number, updates: Partial<TaskPage.Reminder>) => {
+    const next = reminders.map((reminder, currentIndex) => {
+      if (currentIndex !== index) return reminder;
+
+      const updated = enabledReminder({ ...reminder, ...updates });
+      if (updated.type !== "before_due") return { ...updated, days: null };
+      return { ...updated, days: normalizeReminderDays(updated.days) };
+    });
+
+    props.onRemindersChange(next);
+  };
+
+  const addReminder = () => {
+    props.onRemindersChange([...reminders, { type: "before_due", days: 1, enabled: true }]);
+  };
+
+  const removeReminder = (index: number) => {
+    props.onRemindersChange(reminders.filter((_reminder, currentIndex) => currentIndex !== index));
+  };
+
+  return (
+    <SidebarSection title="Reminders" testId="task-reminders">
+      <div className="space-y-2">
+        {reminders.map((reminder, index) => (
+          <ReminderRow
+            key={index}
+            reminder={reminder}
+            index={index}
+            readonly={!props.canEdit}
+            onUpdate={updateReminder}
+            onRemove={removeReminder}
+          />
+        ))}
+
+        {props.canEdit && (
+          <button
+            type="button"
+            onClick={addReminder}
+            data-test-id="add-task-reminder"
+            className="inline-flex items-center gap-1 text-xs text-content-dimmed hover:text-content-base"
+          >
+            <IconPlus size={12} />
+            Add reminder
+          </button>
+        )}
+      </div>
+    </SidebarSection>
+  );
+}
+
+function hasReminderRecipients(props: TaskPage.ContentState) {
+  return props.assignees.length > 0;
+}
+
+function ReminderRow({
+  reminder,
+  index,
+  readonly,
+  onUpdate,
+  onRemove,
+}: {
+  reminder: TaskPage.Reminder;
+  index: number;
+  readonly: boolean;
+  onUpdate: (index: number, updates: Partial<TaskPage.Reminder>) => void;
+  onRemove: (index: number) => void;
+}) {
+  const dayLabel = (reminder.days ?? 1) === 1 ? "day" : "days";
+
+  return (
+    <div className="flex items-center gap-2 text-xs" data-test-id={`task-reminder-${index}`}>
+      <select
+        value={reminder.type}
+        disabled={readonly}
+        onChange={(e) => onUpdate(index, { type: e.target.value as TaskPage.ReminderType })}
+        className="min-w-0 flex-1 rounded border border-stroke-base bg-surface-base px-2 py-1"
+        aria-label="Reminder type"
+      >
+        <option value="before_due">Before due date</option>
+        <option value="due_day">Due date</option>
+        <option value="overdue">Overdue</option>
+      </select>
+
+      {reminder.type === "before_due" && (
+        <>
+          <input
+            type="number"
+            min={1}
+            value={reminder.days ?? 1}
+            disabled={readonly}
+            onChange={(e) => onUpdate(index, { days: normalizeReminderDays(e.target.value) })}
+            className="w-14 rounded border border-stroke-base bg-surface-base px-2 py-1"
+            aria-label="Days before due date"
+          />
+          <span className="w-10 text-content-dimmed">{dayLabel}</span>
+        </>
+      )}
+
+      {!readonly && (
+        <button
+          type="button"
+          onClick={() => onRemove(index)}
+          className="p-1 text-content-dimmed hover:text-content-error"
+          aria-label="Remove reminder"
+        >
+          <IconTrash size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function enabledReminder(reminder: TaskPage.Reminder): TaskPage.Reminder {
+  return { ...reminder, enabled: true };
+}
+
+function normalizeReminderDays(value: string | number | null | undefined) {
+  const number = typeof value === "number" ? value : Number.parseInt(value ?? "0", 10);
+  if (!Number.isFinite(number)) return 1;
+  return Math.max(1, number);
 }
 
 function Assignees(props: TaskPage.ContentState) {

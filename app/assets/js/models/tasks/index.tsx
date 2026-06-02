@@ -1,10 +1,10 @@
-import Api, { Task as BackendTask, TaskStatus } from "@/api";
+import Api, { Task as BackendTask, TaskReminder, TaskStatus } from "@/api";
 import { parseContextualDate } from "../contextualDates";
 import * as Time from "@/utils/time";
 import { Paths } from "@/routes/paths";
 import { parseMilestoneForTurboUi } from "../milestones";
 import { parseContent, richContentToString } from "turboui";
-import { StatusSelector, TaskBoard } from "turboui";
+import { StatusSelector, TaskBoard, TaskPage } from "turboui";
 import { parsePeopleForTurboUi } from "../people";
 import { Space } from "../spaces";
 
@@ -13,7 +13,7 @@ export { useProjectTasksForTurboUi } from "./useProjectTasksForTurboUi";
 export { useSpaceTasksForTurboUi } from "./useSpaceTasksForTurboUi";
 export { useTaskAssigneeSearch } from "./useTaskAssigneeSearch";
 export { useKanbanState } from "./useKanbanState";
-export { parseKanbanState, type KanbanState } from "./parseKanbanState"
+export { parseKanbanState, type KanbanState } from "./parseKanbanState";
 export { useTaskTimelineItems } from "./useTaskTimelineItems";
 export { useTaskSlideInProps } from "./useTaskSlideInProps";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
@@ -31,7 +31,7 @@ type ParserOptions = { type: "project" } | { type: "space"; space: Space };
  */
 export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[], opts: ParserOptions): TaskBoard.Task[] {
   return tasks.map((task) => {
-      return parseTaskForTurboUi(paths, task, opts);
+    return parseTaskForTurboUi(paths, task, opts);
   });
 }
 
@@ -49,6 +49,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, opts: Parse
     assignees: parsePeopleForTurboUi(paths, task.assignees || []),
     milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
     dueDate: parseContextualDate(task.dueDate),
+    reminders: parseTaskReminders(task.reminders),
     closedAt: Time.parse(task.closedAt),
     hasDescription: richContentToString(description).trim().length > 0,
     hasComments,
@@ -56,6 +57,14 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, opts: Parse
     comments: undefined,
     type: opts.type,
   };
+}
+
+export function parseTaskReminders(reminders: TaskReminder[] | null | undefined): TaskPage.Reminder[] {
+  return (reminders ?? []).map((reminder) => ({
+    type: reminder.type,
+    days: reminder.days ?? null,
+    enabled: reminder.enabled,
+  }));
 }
 
 export function serializeTaskStatuses(statuses: StatusSelector.StatusOption[] | null | undefined): TaskStatus[] {
@@ -82,9 +91,7 @@ export function serializeTaskStatus(status: StatusSelector.StatusOption | null |
   };
 }
 
-export function parseTaskStatusesForTurboUi(
-  backend: TaskStatus[] | null | undefined,
-): StatusSelector.StatusOption[] {
+export function parseTaskStatusesForTurboUi(backend: TaskStatus[] | null | undefined): StatusSelector.StatusOption[] {
   if (!backend || backend.length === 0) return [];
 
   return backend
@@ -94,9 +101,7 @@ export function parseTaskStatusesForTurboUi(
     .filter((status) => status !== null) as StatusSelector.StatusOption[];
 }
 
-export function parseTaskStatusForTurboUi(
-  status: TaskStatus | null | undefined,
-): StatusSelector.StatusOption | null {
+export function parseTaskStatusForTurboUi(status: TaskStatus | null | undefined): StatusSelector.StatusOption | null {
   if (!status) return null;
 
   return {

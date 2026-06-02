@@ -1431,6 +1431,13 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:task_type, values: [:space, :project])
+  enum(:task_reminder_type, values: [:before_due, :due_day, :overdue])
+
+  object :task_reminder do
+    field :type, :task_reminder_type
+    field? :days, :integer, null: true
+    field :enabled, :boolean
+  end
 
   object :task do
     field :id, :string
@@ -1439,6 +1446,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :updated_at, :date, null: true
     field? :closed_at, :datetime, null: true
     field? :due_date, :contextual_date, null: true
+    field? :reminders, list_of(:task_reminder), null: true
     field? :size, :string, null: true
     field? :priority, :string, null: true
     field? :status, :task_status, null: true

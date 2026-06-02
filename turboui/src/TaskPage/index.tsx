@@ -57,6 +57,14 @@ export namespace TaskPage {
     link?: string;
   }
 
+  export type ReminderType = "before_due" | "due_day" | "overdue";
+
+  export interface Reminder {
+    type: ReminderType;
+    days?: number | null;
+    enabled: boolean;
+  }
+
   export type TimelineItemType = TimelineItem;
 
   export type Props = SpaceProps & {
@@ -88,6 +96,8 @@ export namespace TaskPage {
 
     dueDate?: DateField.ContextualDate;
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
+    reminders: Reminder[];
+    onRemindersChange: (reminders: Reminder[]) => void | boolean | Promise<boolean>;
 
     assignees: Person[];
     onAssigneesChange: (newAssignees: Person[]) => void;
@@ -148,6 +158,8 @@ export namespace TaskPage {
     | "statusOptions"
     | "dueDate"
     | "onDueDateChange"
+    | "reminders"
+    | "onRemindersChange"
     | "assignees"
     | "onAssigneesChange"
     | "createdAt"
@@ -224,6 +236,8 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     statusOptions: props.statusOptions,
     dueDate: props.dueDate,
     onDueDateChange: props.onDueDateChange,
+    reminders: props.reminders,
+    onRemindersChange: props.onRemindersChange,
     assignees: props.assignees,
     onAssigneesChange: props.onAssigneesChange,
     createdAt: props.createdAt,
