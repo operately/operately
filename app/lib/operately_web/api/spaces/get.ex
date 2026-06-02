@@ -26,8 +26,8 @@ defmodule OperatelyWeb.Api.Spaces.Get do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:space, fn ctx -> load(ctx, inputs) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view) end)
+    |> run(:space, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{space: Serializer.serialize(ctx.space, level: :full)}} end)
     |> respond()
   end
@@ -41,13 +41,13 @@ defmodule OperatelyWeb.Api.Spaces.Get do
     end
   end
 
-  defp load(ctx, inputs) do
+  defp load(ctx, inputs, company_read_only) do
     Group.get(ctx.me,
       id: inputs.id,
       company_id: ctx.me.company_id,
       opts: [
         preload: preload(inputs),
-        after_load: after_load(ctx.me, inputs)
+        after_load: after_load(ctx.me, inputs, company_read_only)
       ]
     )
   end
@@ -62,9 +62,9 @@ defmodule OperatelyWeb.Api.Spaces.Get do
     )
   end
 
-  defp after_load(me, inputs) do
+  defp after_load(me, inputs, company_read_only) do
     Inputs.parse_includes(inputs,
-      include_permissions: &Group.preload_permissions/1,
+      include_permissions: &Group.preload_permissions(&1, company_read_only),
       include_access_levels: &Group.preload_access_levels/1,
       include_members_access_levels: &Group.preload_members_access_level/1,
       include_potential_subscribers: &Group.set_potential_subscribers/1,

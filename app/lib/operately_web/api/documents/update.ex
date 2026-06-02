@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Documents.Update do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_attrs(inputs) end)
     |> run(:document, fn ctx -> find_document(ctx.me, ctx.attrs) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.document.request_info.access_level, :can_edit_document) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.document.request_info.access_level, :can_edit_document, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubDocumentEditing.run(ctx.me, ctx.document, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{document: Serializer.serialize(ctx.operation)}} end)
     |> respond()

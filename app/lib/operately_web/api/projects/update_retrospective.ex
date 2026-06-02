@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:retrospective, fn ctx -> load(inputs.retrospective_id, ctx.me) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_edit) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, inputs)  end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.operation)}} end)
     |> respond()

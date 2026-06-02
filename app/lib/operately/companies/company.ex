@@ -25,6 +25,8 @@ defmodule Operately.Companies.Company do
     field :owners, :any, virtual: true
     field :permissions, :any, virtual: true
     field :general_space, :any, virtual: true
+    field :billing_access_state, :any, virtual: true
+    field :billing_read_only, :boolean, virtual: true
 
     field :people_count, :integer, virtual: true
     field :goals_count, :integer, virtual: true

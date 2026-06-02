@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.People.UpdatePicture do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:person, fn ctx -> Operately.People.get_person_with_access_level(inputs.person_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Operately.People.Permissions.check(ctx.person.requester_access_level, :can_edit_profile) end)
+    |> run(:check_permissions, fn ctx -> Operately.People.Permissions.check(ctx.person.requester_access_level, :can_edit_profile, company_read_only: company_read_only(conn)) end)
     |> run(:updated_person, fn ctx -> update_picture(ctx.person, inputs) end)
     |> respond()
   end

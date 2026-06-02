@@ -68,8 +68,8 @@ defmodule Operately.ResourceHubs.Document do
     %{document | potential_subscribers: subs}
   end
 
-  def set_permissions(document = %__MODULE__{}) do
-    perms = Operately.ResourceHubs.Permissions.calculate(document.request_info.access_level)
+  def set_permissions(document = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.ResourceHubs.Permissions.calculate(document.request_info.access_level, company_read_only: company_read_only)
     Map.put(document, :permissions, perms)
   end
 

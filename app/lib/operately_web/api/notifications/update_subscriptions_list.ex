@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:list, fn ctx -> Notifications.get_subscription_list_with_access_level(ctx.attrs.id, ctx.attrs.type, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> check_permissions(ctx.attrs.type, ctx.list.requester_access_level) end)
+    |> run(:check_permissions, fn ctx -> check_permissions(ctx.attrs.type, ctx.list.requester_access_level, company_read_only(conn)) end)
     |> run(:operation, fn ctx -> SubscriptionsListEditing.run(ctx.list, ctx.attrs) end)
     |> respond()
   end
@@ -46,16 +46,16 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
     }}
   end
 
-  defp check_permissions(type, access_level) do
+  defp check_permissions(type, access_level, company_read_only) do
     case type do
-      :project_check_in -> Projects.Permissions.check(access_level, :can_edit)
-      :project_retrospective -> Projects.Permissions.check(access_level, :can_edit)
-      :goal_update -> Goals.Update.Permissions.check_can_edit(access_level)
-      :message -> Groups.Permissions.check(access_level, :can_edit)
-      :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_edit_document)
-      :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_edit_file)
-      :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_edit_link)
-      :comment_thread -> Activities.Permissions.check(access_level, :can_edit_comment_thread)
+      :project_check_in -> Projects.Permissions.check(access_level, :can_edit, company_read_only: company_read_only)
+      :project_retrospective -> Projects.Permissions.check(access_level, :can_edit, company_read_only: company_read_only)
+      :goal_update -> Goals.Update.Permissions.check_can_edit(access_level, company_read_only: company_read_only)
+      :message -> Groups.Permissions.check(access_level, :can_edit, company_read_only: company_read_only)
+      :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_edit_document, company_read_only: company_read_only)
+      :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_edit_file, company_read_only: company_read_only)
+      :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_edit_link, company_read_only: company_read_only)
+      :comment_thread -> Activities.Permissions.check(access_level, :can_edit_comment_thread, company_read_only: company_read_only)
     end
   end
 end

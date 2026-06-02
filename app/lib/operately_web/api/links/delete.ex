@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Links.Delete do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:link, fn ctx -> find_link(ctx.me, inputs) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.link.request_info.access_level, :can_delete_link) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.link.request_info.access_level, :can_delete_link, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubLinkDeleting.run(ctx.me, ctx.link) end)
     |> run(:result, fn -> {:ok, %{success: true}} end)
     |> respond()

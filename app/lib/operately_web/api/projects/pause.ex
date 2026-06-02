@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Projects.Pause do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:project, fn ctx -> Operately.Projects.get_project_with_access_level(inputs.project_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Operately.Projects.Permissions.check(ctx.project.requester_access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Operately.Projects.Permissions.check(ctx.project.requester_access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> Operately.Operations.ProjectPausing.run(ctx.me, ctx.project) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: OperatelyWeb.Api.Serializer.serialize(ctx.operation)}} end)
     |> respond()

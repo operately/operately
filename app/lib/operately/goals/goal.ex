@@ -172,18 +172,20 @@ defmodule Operately.Goals.Goal do
   # Queries
   #
 
-  def set_permissions(%{goal: goal = %__MODULE__{}} = parent) do
-    goal = preload_permissions(goal, parent.request_info.access_level)
+  def set_permissions(%{goal: goal = %__MODULE__{}} = parent, company_read_only \\ false) do
+    goal = preload_permissions(goal, parent.request_info.access_level, company_read_only)
 
     %{parent | goal: goal}
   end
 
-  def preload_permissions(goal) do
-    preload_permissions(goal, goal.request_info.access_level)
+  def preload_permissions(goal, access_level \\ nil, company_read_only \\ false)
+
+  def preload_permissions(goal, nil, company_read_only) do
+    preload_permissions(goal, goal.request_info.access_level, company_read_only)
   end
 
-  def preload_permissions(goal, access_level) do
-    Map.put(goal, :permissions, Permissions.calculate(access_level))
+  def preload_permissions(goal, access_level, company_read_only) do
+    Map.put(goal, :permissions, Permissions.calculate(access_level, company_read_only: company_read_only))
   end
 
   def preload_access_levels(goal) do
@@ -207,11 +209,11 @@ defmodule Operately.Goals.Goal do
     end
   end
 
-  def load_last_check_in_permissions(goal = %__MODULE__{}) do
+  def load_last_check_in_permissions(goal = %__MODULE__{}, company_read_only \\ false) do
     goal = Repo.preload(goal, :last_update)
 
     if goal.last_update do
-      last_update = Update.preload_permissions(goal.last_update, goal.request_info.access_level, goal.request_info.requester.id)
+      last_update = Update.preload_permissions(goal.last_update, goal.request_info.access_level, goal.request_info.requester.id, company_read_only)
       Map.put(goal, :last_update, last_update)
     else
       goal

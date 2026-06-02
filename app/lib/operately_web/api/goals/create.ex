@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.Goals.Create do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
     |> run(:inputs, fn ctx -> {:ok, sanitize_company_access_level(ctx.space, inputs)} end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:champion_validation, fn ctx -> validate_champion_permissions(ctx.me, inputs) end)
     |> run(:reviewer_validation, fn ctx -> validate_reviewer_permissions(ctx.me, inputs) end)
     |> run(:operation, fn ctx -> GoalCreation.run(ctx.me, ctx.inputs) end)

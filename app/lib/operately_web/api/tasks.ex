@@ -580,6 +580,7 @@ defmodule OperatelyWeb.Api.Tasks do
     def start_transaction(conn) do
       Ecto.Multi.new()
       |> Ecto.Multi.put(:conn, conn)
+      |> Ecto.Multi.put(:company_read_only, OperatelyWeb.Api.Helpers.company_read_only(conn))
       |> Ecto.Multi.run(:me, fn _repo, %{conn: conn} ->
         {:ok, conn.assigns.current_person}
       end)
@@ -660,10 +661,10 @@ defmodule OperatelyWeb.Api.Tasks do
       Ecto.Multi.run(multi, :permissions, fn _repo, changes ->
         cond do
           Map.has_key?(changes, :project) and Ecto.assoc_loaded?(changes.project) ->
-            Operately.Projects.Permissions.check(changes.project.request_info.access_level, permission)
+            Operately.Projects.Permissions.check(changes.project.request_info.access_level, permission, company_read_only: changes.company_read_only)
 
           Map.has_key?(changes, :space) and Ecto.assoc_loaded?(changes.space) ->
-            Operately.Groups.Permissions.check(changes.space.request_info.access_level, permission)
+            Operately.Groups.Permissions.check(changes.space.request_info.access_level, permission, company_read_only: changes.company_read_only)
 
           true ->
             {:error, :forbidden}
@@ -672,14 +673,14 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def check_task_permissions(multi, permission) do
-      Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task} ->
-        Operately.Projects.Permissions.check(task.request_info.access_level, permission)
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task, company_read_only: company_read_only} ->
+        Operately.Projects.Permissions.check(task.request_info.access_level, permission, company_read_only: company_read_only)
       end)
     end
 
     def check_milestone_permissions(multi, permission) do
-      Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone} ->
-        Operately.Projects.Permissions.check(milestone.request_info.access_level, permission)
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone, company_read_only: company_read_only} ->
+        Operately.Projects.Permissions.check(milestone.request_info.access_level, permission, company_read_only: company_read_only)
       end)
     end
 

@@ -81,8 +81,8 @@ defmodule Operately.ResourceHubs.Folder do
     Map.put(folder, :potential_subscribers, subscribers)
   end
 
-  def set_permissions(folder = %__MODULE__{}) do
-    perms = Operately.ResourceHubs.Permissions.calculate(folder.request_info.access_level)
+  def set_permissions(folder = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.ResourceHubs.Permissions.calculate(folder.request_info.access_level, company_read_only: company_read_only)
     Map.put(folder, :permissions, perms)
   end
 end

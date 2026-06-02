@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:message, fn ctx -> Message.get(ctx.me, id: inputs.id, opts: [preload: :space]) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> DiscussionEditing.run(ctx.me, ctx.message, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()

@@ -26,8 +26,8 @@ defmodule OperatelyWeb.Api.Tasks.Get do
   end
 
   def call(conn, inputs) do
-    with {:ok, task} <- load(me(conn), inputs),
-      {:ok, :allowed} <- Permissions.check(task.request_info.access_level, :can_view) do
+    with {:ok, task} <- load(me(conn), inputs, company_read_only(conn)),
+      {:ok, :allowed} <- Permissions.check(task.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) do
         {:ok, %{task: Serializer.serialize(task, level: :full)}}
     else
       {:error, :forbidden} -> {:error, :forbidden}
@@ -35,11 +35,11 @@ defmodule OperatelyWeb.Api.Tasks.Get do
     end
   end
 
-  defp load(person, inputs) do
+  defp load(person, inputs, company_read_only) do
     Task.get(person, id: inputs.id, opts: [
       preload: preload(inputs),
       auth_preload: auth_preload(inputs),
-      after_load: after_load(inputs)
+      after_load: after_load(inputs, company_read_only)
     ])
   end
 
@@ -59,9 +59,9 @@ defmodule OperatelyWeb.Api.Tasks.Get do
     )
   end
 
-  defp after_load(inputs) do
+  defp after_load(inputs, company_read_only) do
     Inputs.parse_includes(inputs,
-      include_permissions: &Task.set_permissions/1,
+      include_permissions: &Task.set_permissions(&1, company_read_only),
       include_available_statuses: &Task.preload_available_statuses/1
     )
   end

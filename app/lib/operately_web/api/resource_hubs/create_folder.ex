@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolder do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:hub, fn ctx -> find_resource(ctx) end)
-    |> run(:permissions, fn ctx -> authorize(ctx.hub) end)
+    |> run(:permissions, fn ctx -> authorize(ctx.hub, company_read_only(conn)) end)
     |> run(:operation, fn ctx -> execute(ctx) end)
     |> run(:serialized, fn ctx -> serialize(ctx) end)
     |> respond()
@@ -51,8 +51,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolder do
     ResourceHub.get(ctx.me, id: ctx.attrs.resource_hub_id)
   end
 
-  defp authorize(hub) do
-    Permissions.check(hub.request_info.access_level, :can_create_folder)
+  defp authorize(hub, company_read_only) do
+    Permissions.check(hub.request_info.access_level, :can_create_folder, company_read_only: company_read_only)
   end
 
   defp execute(ctx) do

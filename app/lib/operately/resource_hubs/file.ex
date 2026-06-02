@@ -55,8 +55,8 @@ defmodule Operately.ResourceHubs.File do
     %{file | potential_subscribers: subs}
   end
 
-  def set_permissions(file = %__MODULE__{}) do
-    perms = Operately.ResourceHubs.Permissions.calculate(file.request_info.access_level)
+  def set_permissions(file = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.ResourceHubs.Permissions.calculate(file.request_info.access_level, company_read_only: company_read_only)
     Map.put(file, :permissions, perms)
   end
 

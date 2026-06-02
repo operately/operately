@@ -57,6 +57,20 @@ defmodule Operately.Billing do
     |> Repo.one()
   end
 
+  def attach_access_state(%Operately.Companies.Company{} = company) do
+    case get_billing_account_by_company(company) do
+      nil ->
+        company
+        |> Map.put(:billing_access_state, :normal)
+        |> Map.put(:billing_read_only, false)
+
+      account ->
+        company
+        |> Map.put(:billing_access_state, account.access_state)
+        |> Map.put(:billing_read_only, account.access_state == :read_only)
+    end
+  end
+
   def get_or_create_billing_account(%Operately.Companies.Company{} = company) do
     case get_billing_account_by_company(company) do
       nil ->

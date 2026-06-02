@@ -26,8 +26,8 @@ defmodule OperatelyWeb.Api.Companies.GetActivity do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:activity, fn ctx -> load(ctx, inputs) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.activity.request_info.access_level, :can_view) end)
+    |> run(:activity, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.activity.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{activity: serialize(ctx.activity)}} end)
     |> respond()
   end
@@ -41,10 +41,10 @@ defmodule OperatelyWeb.Api.Companies.GetActivity do
     end
   end
 
-  defp load(ctx, inputs) do
+  defp load(ctx, inputs, company_read_only) do
     Activity.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
+      after_load: after_load(inputs, ctx.me, company_read_only),
     ])
   end
 
@@ -55,13 +55,13 @@ defmodule OperatelyWeb.Api.Companies.GetActivity do
     ])
   end
 
-  defp after_load(inputs, person) do
+  defp after_load(inputs, person, company_read_only) do
     Inputs.parse_includes(inputs, [
       always_include: &Activities.cast_content/1,
       always_include: &Preloader.preload/1,
       include_unread_goal_notifications: load_unread_goal_notifications(person),
       include_unread_project_notifications: load_unread_project_notifications(person),
-      include_permissions: &Activity.set_permissions/1,
+      include_permissions: &Activity.set_permissions(&1, company_read_only),
       include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
     ])
   end

@@ -131,21 +131,13 @@ This is preferred over manually reconstructing local state from multiple raw sub
 
 Plan limits cannot live only in the UI. The app has multiple write paths for membership changes and file creation, so member-count and storage enforcement both need backend/domain enforcement at the relevant operations, even though that enforcement should ship only in the final rollout step.
 
-### 10. Billing management is owner-led, with admin recovery exceptions
+### 10. Billing management remains owner-only
 
 Company owners should be allowed to start checkout, change plans, cancel subscriptions, reactivate pending cancellation, update payment method, and trigger a sync refresh.
 
 Regular members should not mutate billing state.
 
-Company admins should also be allowed to perform the minimum billing and remediation actions required to recover a company from payment default or post-downgrade over-limit states. That includes:
-
-- opening the Billing page
-- reviewing plans
-- starting an upgrade or plan-change flow
-- updating the payment method
-- removing members and deleting company-owned files as part of remediation
-
-Non-recovery subscription lifecycle actions such as canceling a healthy subscription may remain owner-only.
+Non-recovery and recovery billing actions remain owner-only.
 
 ### 11. Operately owns decision flows; Polar owns secure payment flows
 
@@ -238,7 +230,7 @@ Requirements:
 
 - a danger-state company banner should be shown to every company member, not only owners or admins
 - the banner should include the exact date when the company will become read-only if payment is not fixed
-- the banner should explain that an owner or company admin needs to update the payment method
+- the banner should explain that a company owner needs to update the payment method
 - if the grace period expires while the subscription is still `past_due`, the company should switch to read-only mode
 - when payment is fixed and billing sync confirms recovery, the grace state and read-only state should be cleared
 
@@ -254,7 +246,7 @@ Requirements:
 - the banner should explain that the company must either upgrade again or remove members/files until it fits the current plan
 - if the grace period expires while the company is still above its limits, the company should switch to read-only mode
 
-### 18. Read-only mode should be enforced through permission calculators, with admin recovery carve-outs
+### 18. Read-only mode should be enforced through permission calculators
 
 Read-only mode should be an Operately-owned access restriction that is separate from the provider subscription `status`.
 
@@ -265,8 +257,9 @@ Requirements:
 - the implementation should use a generalized `company_read_only` concept rather than a `company_past_due`-specific flag, because the same view-only mode is used for both payment default and post-downgrade over-limit enforcement
 - the persisted source of truth for this access state should remain `company_billing_accounts`; do not duplicate the same persisted fields onto `companies`
 - when request authentication/loading resolves `conn.assigns.current_company`, it should load the company together with the billing access-state projection in the same query or preload path and expose convenience fields such as `billing_access_state` / `billing_read_only` on the loaded company struct so permission modules can use that information without extra queries
-- when `company_read_only` is true, permission calculators should return only `can_view: true`; edit/comment/create-style capabilities should be false
-- billing recovery actions and company-admin remediation actions should remain available to owners and company admins even while the company is otherwise read-only
+- when `company_read_only` is true, non-company permission calculators should return only `can_view: true`; edit/comment/create-style capabilities should be false
+- permission modules without `can_view` should return all-false results when `company_read_only` is true
+- `Operately.Companies.Permissions` should remain unchanged so company-management endpoints keep their current behavior
 
 ## Plan Catalog and Entitlements
 
@@ -477,15 +470,15 @@ All user flows below assume the `billing` experimental feature is enabled for th
 6. Where Polar requires a hosted payment-management flow, the billing-page action launches that secure provider-managed flow and returns the user to the billing page.
 7. Polar webhooks synchronize resulting state changes back into Operately.
 
-### 7. Owner or company admin manages payment method during recovery
+### 7. Owner manages payment method during recovery
 
-1. An owner or company admin opens the Billing page while the company is in a recovery state such as `past_due`, over-limit remediation grace, or read-only mode.
+1. An owner opens the Billing page while the company is in a recovery state such as `past_due`, over-limit remediation grace, or read-only mode.
 2. They click `Update credit card` or equivalent from the billing page.
 3. Backend creates the appropriate secure Polar-hosted payment-method management session.
 4. User completes the update flow.
 5. App returns the user to the billing page and refreshes billing state.
 
-Outside recovery scenarios, payment-method updates may remain owner-only.
+Payment-method updates remain owner-only in all scenarios.
 
 ### 8. Upgrade is attempted later and checkout is abandoned or fails
 
@@ -557,7 +550,7 @@ If the company had not yet upgraded successfully, it remains on `free`.
 2. Billing sync records the `past_due` state and starts a `14`-day grace period.
 3. A danger-state company banner appears for every company member.
 4. The banner includes the exact date when the company will become read-only if payment is not fixed.
-5. Owners and company admins can use the billing recovery actions needed to fix payment. Regular members can only view the warning.
+5. Owners can use the billing recovery actions needed to fix payment. Regular members and company admins can only view the warning.
 6. If payment is fixed before the deadline, billing sync clears the grace state and the company returns to normal.
 
 ### 15. Past-due grace expires and the company becomes read-only
@@ -566,7 +559,7 @@ If the company had not yet upgraded successfully, it remains on `free`.
 2. Operately switches the company into read-only mode.
 3. A danger-state company banner remains visible to every company member and explains why the company is read-only.
 4. Ordinary collaborative work becomes view-only.
-5. Owners and company admins can still use the recovery actions needed to fix billing and restore normal access.
+5. Owners can still use the recovery actions needed to fix billing and restore normal access.
 
 ### 16. Downgrade becomes effective while the company is above the new limits
 
@@ -576,7 +569,7 @@ If the company had not yet upgraded successfully, it remains on `free`.
 4. A danger-state company banner appears for every company member.
 5. The banner includes the exact date when the company will become read-only if the company does not either upgrade again or reduce usage.
 6. Standard member/storage enforcement still blocks new members and new uploads immediately while the company is above the current plan.
-7. Owners and company admins can still use remediation actions during the grace period.
+7. Owners can still use remediation actions during the grace period.
 
 ### 17. Over-limit remediation grace expires and the company becomes read-only
 
@@ -799,15 +792,15 @@ Suggested operations:
 
 Expected behavior:
 
-- `get`: returns normalized company billing state plus plan metadata, active catalog products, remembered recommendation data, current member count, current storage usage, and access-state details so the frontend can derive plan-selection and cancellation-confirmation previews locally; owners can always call it and company admins can call it in documented recovery states
+- `get`: returns normalized company billing state plus plan metadata, active catalog products, remembered recommendation data, current member count, current storage usage, and access-state details so the frontend can derive plan-selection and cancellation-confirmation previews locally
 - `get_access_state`: available to any company member; returns the company-wide danger/read-only access state needed for banners and client-side read-only affordances
-- `create_checkout_session`: validates ownership in normal cases, also allows company-admin recovery access when the company is in a documented recovery state, resolves the active local catalog entry for the selected plan and interval, and creates a Polar-hosted checkout for plan transitions that require secure payment confirmation
-- `change_plan`: validates ownership in normal cases, also allows company-admin recovery access when the company is in a documented recovery state, then applies or schedules plan changes that do not require a new checkout; tier upgrades and `monthly -> yearly` interval changes use provider proration immediately, while tier downgrades and `yearly -> monthly` interval changes remain scheduled for the next billing period
+- `create_checkout_session`: validates ownership, resolves the active local catalog entry for the selected plan and interval, and creates a Polar-hosted checkout for plan transitions that require secure payment confirmation
+- `change_plan`: validates ownership, then applies or schedules plan changes that do not require a new checkout; tier upgrades and `monthly -> yearly` interval changes use provider proration immediately, while tier downgrades and `yearly -> monthly` interval changes remain scheduled for the next billing period
 - `cancel`: cancels the active subscription, typically at period end unless implementation explicitly supports immediate cancellation
 - `reactivate`: clears pending cancellation when allowed by Polar
-- `create_payment_method_session`: validates owner access in normal cases and also allows company-admin recovery access during payment-default or over-limit remediation states, then returns a redirect URL for secure payment-method updates
+- `create_payment_method_session`: validates ownership and returns a redirect URL for secure payment-method updates
 - `create_customer_portal_session`: validates ownership and returns a redirect URL as a fallback provider-managed management entrypoint
-- `refresh`: owner- or recovery-admin-triggered sync path used after checkout success or for manual repair
+- `refresh`: owner-triggered sync path used after checkout success or for manual repair
 - `catalog/list`: site-admin-only list of synchronized Polar products and active mappings
 - `catalog/sync`: site-admin-only sync from Polar into `billing_products`
 - `catalog/set_active`: site-admin-only action to choose the active product for a `plan_family + billing_interval`
@@ -906,7 +899,6 @@ The navigation item and page should be hidden entirely unless `Companies.hasFeat
 Access rules:
 
 - owners can always access the Billing page when the feature is enabled
-- company admins should also be able to access the Billing page when the company is in a recovery state such as `past_due`, over-limit remediation grace, or read-only mode
 - regular members should not see the Billing page in navigation
 
 Update:
@@ -1174,9 +1166,9 @@ Requirements:
 - extend helpers such as `calculate/2` so they can accept a generalized `company_read_only` flag or equivalent access-state context
 - keep `company_billing_accounts` as the persisted source of truth for read-only state, but make that state available on the already-loaded company struct used by endpoints so permission checks do not need an additional billing lookup per request
 - the preferred implementation is to load `current_company` with its billing-access-state projection in the auth/request pipeline and attach convenience fields such as `billing_access_state` / `billing_read_only` to the company struct rather than duplicating persisted read-only columns onto `companies`
-- when `company_read_only` is true, return only `can_view: true`; write-style capabilities such as edit, comment, create, upload, and similar actions should be false
-- apply the same pattern across project, goal, company, group, resource-hub, activity, and similar permission modules that gate ordinary company work
-- keep this restriction out of company-admin recovery actions such as updating payment method, changing plan, removing members, suspending members, and deleting company-owned files needed for storage remediation
+- when `company_read_only` is true, non-company permission helpers should return only `can_view: true`; write-style capabilities such as edit, comment, create, upload, and similar actions should be false
+- permission helpers that do not expose `can_view` should return all-false results when the company is read-only
+- apply the same pattern across project, goal, group, resource-hub, activity, people, message, and similar permission modules that gate ordinary company work, while leaving `Operately.Companies.Permissions` unchanged
 - if the company exits read-only mode because payment is fixed or the over-limit condition is resolved, normal permission calculation should resume immediately
 
 ### Member-count enforcement
@@ -1252,7 +1244,6 @@ Any future plan-governed limit should plug into the same entitlement enforcement
   - archived/legacy product visibility
 - checkout-session tests for:
   - owner access
-  - company-admin recovery access in documented recovery states
   - non-owner rejection
   - invalid plan / interval rejection
   - free-plan rejection
@@ -1261,7 +1252,6 @@ Any future plan-governed limit should plug into the same entitlement enforcement
   - cancellation
   - reactivation
   - payment-method session creation
-  - company-admin recovery access for the allowed recovery mutations
   - `monthly -> yearly` interval changes using provider proration
   - `yearly -> monthly` interval changes remaining next-period changes
 - billing-page state-derivation tests for:
@@ -1291,7 +1281,6 @@ Any future plan-governed limit should plug into the same entitlement enforcement
   - invite-link acceptance blocked at member limit
   - role-aware messaging payloads for privileged versus regular users
   - read-only permission calculation after grace expiry
-  - admin recovery actions staying allowed while ordinary collaborative writes are blocked
   - feature-flag-disabled no-op behavior until launch
 
 ### API/controller tests
@@ -1339,7 +1328,7 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - Company Admin navigation hides Billing when the `billing` feature is disabled
 - site-admin billing catalog page renders synchronized products and active mappings
 - non-flagged companies render the existing Company Admin experience with no billing entry points
-- ordinary collaborative UI becomes read-only when the company access state is `read_only`, while admin recovery affordances remain available
+- ordinary collaborative UI becomes read-only when the company access state is `read_only`, while company-management actions continue to follow `Operately.Companies.Permissions`
 
 ### Feature tests
 
@@ -1355,7 +1344,7 @@ Any future plan-governed limit should plug into the same entitlement enforcement
 - every company member sees the payment-default danger banner with the exact read-only deadline
 - every company member sees the post-downgrade over-limit danger banner with the exact read-only deadline
 - once grace expires, ordinary members can no longer edit/comment/upload because the company is read-only
-- owners and company admins can still update payment method, change plan, remove members, and delete files needed for recovery while the company is read-only
+- owners can still use billing recovery actions while the company is read-only, while company-management actions continue to follow `Operately.Companies.Permissions`
 - non-flagged company experiences no visible billing UI or new blocking behavior
 
 ## Implementation Plan
@@ -1720,19 +1709,20 @@ Outcome:
 
 - payment-default risk is visible to the whole company, while billing control remains consistently owner-only before and after the company becomes read-only
 
-### PR 9d: Read-only enforcement and post-downgrade remediation
+### PR 9d: Read-only enforcement and post-downgrade remediation (COMPLETED ✅)
 
 - Enforce company read-only mode through permission calculators across collaborative content surfaces using a generalized `company_read_only` access-state input
 - Load that access-state input onto `conn.assigns.current_company` during the normal auth/request pipeline so endpoints can pass it into permission calculators without extra queries
 - Keep `company_billing_accounts` as the only persisted source of truth for that state; use association/virtual company fields for convenience rather than duplicating persisted read-only fields onto `companies`
+- Keep `Operately.Companies.Permissions` unchanged while making all other permission helpers read-only-aware
 - Return only `can_view: true` from collaborative permission helpers when the company is read-only
-- Keep remediation actions such as updating payment, changing plan, removing members, suspending members, and deleting company-owned files available to owners and company admins
+- Return all-false permission results from helpers that do not expose `can_view`
 - Start a company-wide `14`-day danger banner when a scheduled downgrade or cancellation becomes effective and the company is still above the new member or storage limits
 - Keep the company in read-only mode until it upgrades again or gets back within its current plan limits
 
 Outcome:
 
-- payment default and post-downgrade overages both converge on a consistent, recoverable read-only mode that protects data integrity without blocking the admin path back to compliance
+- payment default and post-downgrade overages both converge on a consistent, recoverable read-only mode that protects data integrity while leaving company-management actions unchanged
 
 ### PR 10: Launch enablement
 
@@ -1749,7 +1739,7 @@ Outcome:
 
 - Existing companies default to `free` unless a billing row says otherwise.
 - There is no migration of legacy paid subscriptions because the app does not currently bill customers.
-- Company owners remain the default write authority for billing, but company admins may use the limited billing and remediation actions required to recover a company from payment-default or post-downgrade over-limit states.
+- Company owners remain the only write authority for billing, including during payment-default and post-downgrade recovery states.
 - Member limits count active company people and exclude suspended people.
 - Storage limits are enforced at the company level using a canonical company-owned usage source selected during implementation.
 - Companies created during a paid website-plan selection remain usable on `free` until Polar confirms an active paid subscription.

@@ -296,8 +296,8 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
     end
 
     def check_task_permissions(multi, permission) do
-      Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task} ->
-        Operately.Projects.Permissions.check(task.request_info.access_level, permission)
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task, conn: conn} ->
+        Operately.Projects.Permissions.check(task.request_info.access_level, permission, company_read_only: OperatelyWeb.Api.Helpers.company_read_only(conn))
       end)
     end
 
@@ -309,14 +309,14 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
     end
 
     def check_permissions(multi, permission) do
-      Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone} ->
-        Operately.Projects.Permissions.check(milestone.request_info.access_level, permission)
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone, conn: conn} ->
+        Operately.Projects.Permissions.check(milestone.request_info.access_level, permission, company_read_only: OperatelyWeb.Api.Helpers.company_read_only(conn))
       end)
     end
 
     def check_project_permissions(multi, permission) do
-      Ecto.Multi.run(multi, :permissions, fn _repo, %{project: project} ->
-        Operately.Projects.Permissions.check(project.request_info.access_level, permission)
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{project: project, conn: conn} ->
+        Operately.Projects.Permissions.check(project.request_info.access_level, permission, company_read_only: OperatelyWeb.Api.Helpers.company_read_only(conn))
       end)
     end
 

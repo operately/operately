@@ -126,8 +126,8 @@ defmodule Operately.Groups.Group do
     Map.put(space, :potential_subscribers, subscribers)
   end
 
-  def preload_permissions(space = %__MODULE__{}) do
-    Map.put(space, :permissions, Operately.Groups.Permissions.calculate_permissions(space.request_info.access_level))
+  def preload_permissions(space = %__MODULE__{}, company_read_only \\ false) do
+    Map.put(space, :permissions, Operately.Groups.Permissions.calculate_permissions(space.request_info.access_level, company_read_only: company_read_only))
   end
 
   def search(person, query, access_level \\ nil, opts \\ [])

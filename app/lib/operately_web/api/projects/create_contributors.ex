@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributors do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:contribs, fn -> decode_contributors(inputs.contributors) end)
     |> run(:project, fn ctx -> Project.get(ctx.me, id: inputs.project_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:validate_permission_levels, fn ctx -> validate_permission_levels(ctx.project.request_info.access_level, ctx.contribs) end)
     |> run(:operation, fn ctx -> Operation.run(ctx.me, ctx.project, ctx.contribs) end)
     |> run(:serialized, fn -> {:ok, %{success: true}} end)

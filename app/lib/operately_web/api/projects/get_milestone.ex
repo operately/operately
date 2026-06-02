@@ -26,8 +26,8 @@ defmodule OperatelyWeb.Api.Projects.GetMilestone do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:milestone, fn ctx -> load(ctx, inputs) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.milestone.request_info.access_level, :can_view) end)
+    |> run(:milestone, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.milestone.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{milestone: Serializer.serialize(ctx.milestone)}} end)
     |> respond()
   end
@@ -42,11 +42,11 @@ defmodule OperatelyWeb.Api.Projects.GetMilestone do
     end
   end
 
-  defp load(ctx, inputs) do
+  defp load(ctx, inputs, company_read_only) do
     Milestone.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
       auth_preload: auth_preload(inputs),
-      after_load: after_load(inputs, ctx.me),
+      after_load: after_load(inputs, ctx.me, company_read_only),
     ])
   end
 
@@ -65,9 +65,9 @@ defmodule OperatelyWeb.Api.Projects.GetMilestone do
     ])
   end
 
-  def after_load(inputs, person) do
+  def after_load(inputs, person, company_read_only) do
     Inputs.parse_includes(inputs, [
-      include_permissions: &Milestone.set_permissions/1,
+      include_permissions: &Milestone.set_permissions(&1, company_read_only),
       include_comments: Milestone.load_comment_notifications(person),
       include_available_statuses: &Milestone.preload_available_statuses/1,
     ])

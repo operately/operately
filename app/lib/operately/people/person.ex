@@ -123,8 +123,8 @@ defmodule Operately.People.Person do
     Operately.Repo.get_by!(__MODULE__, field_values)
   end
 
-  def load_permissions(person = %__MODULE__{}) do
-    perms = Operately.People.Permissions.calculate(person.request_info.access_level)
+  def load_permissions(person = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.People.Permissions.calculate(person.request_info.access_level, company_read_only: company_read_only)
     Map.put(person, :permissions, perms)
   end
 end

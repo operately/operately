@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:resource, fn ctx -> find_resource(ctx.me, inputs.resource_id, inputs.resource_type) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit_parent_folder) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit_parent_folder, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubParentFolderEditing.run(ctx.me, ctx.resource, inputs.new_folder_id) end)
     |> run(:result, fn -> {:ok, %{success: true}} end)
     |> respond()
