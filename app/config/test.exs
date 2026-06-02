@@ -48,7 +48,8 @@ config :operately, Oban, testing: :inline
 
 config :junit_formatter,
   report_dir: "testreports",
-  report_file: System.get_env("JUNIT_REPORT_FILE", "junit.xml"),
+  report_file: "junit.xml",
+  automatic_create_dir?: true,
   # Adds information about file location when suite finishes
   print_report_file: false,
   # Include filename and file number for more insights

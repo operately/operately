@@ -126,20 +126,17 @@ defmodule Operately.JUnitReportMerger do
 
   defp parse_document(path) do
     case :xmerl_scan.file(String.to_charlist(path)) do
-      {doc, _} -> doc
-      other -> raise "Failed to parse JUnit report #{path}: #{inspect(other)}"
+      {{:xmlElement, _, _, _, _, _, _, _, _, _, _, _} = doc, _} -> doc
+      {other, _} -> raise "Failed to parse JUnit report #{path}: #{inspect(other)}"
     end
   end
 
-  defp parse_time(value) when is_binary(value) do
+  defp parse_time(value) do
     case Float.parse(value) do
       {time, _} -> time
       :error -> 0.0
     end
   end
-
-  defp parse_time(value) when is_list(value), do: value |> List.to_string() |> parse_time()
-  defp parse_time(_), do: 0.0
 
   defp format_time(time) do
     :io_lib.format("~.4f", [time]) |> List.to_string()
