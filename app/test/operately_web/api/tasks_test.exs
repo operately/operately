@@ -1343,9 +1343,10 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       reminders = [
-        %{type: "before_due", days: 3, enabled: true},
-        %{type: "due_day", days: nil, enabled: false},
-        %{type: "overdue", days: nil, enabled: true}
+        %{type: "before_due", days: 3, date: nil},
+        %{type: "due_day", days: nil, date: nil},
+        %{type: "overdue", days: nil, date: nil},
+        %{type: "on_date", days: nil, date: "2026-06-03"}
       ]
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_reminders], %{
@@ -1358,10 +1359,11 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       updated_task = Operately.Repo.reload(ctx.task)
 
-      assert Enum.map(updated_task.reminders, &Map.take(Map.from_struct(&1), [:type, :days, :enabled])) == [
-        %{type: :before_due, days: 3, enabled: true},
-        %{type: :due_day, days: nil, enabled: false},
-        %{type: :overdue, days: nil, enabled: true}
+      assert Enum.map(updated_task.reminders, &Map.take(Map.from_struct(&1), [:type, :days, :date])) == [
+        %{type: :before_due, days: 3, date: nil},
+        %{type: :due_day, days: nil, date: nil},
+        %{type: :overdue, days: nil, date: nil},
+        %{type: :on_date, days: nil, date: ~D[2026-06-03]}
       ]
     end
 
@@ -1371,7 +1373,21 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_reminders], %{
         task_id: Paths.task_id(ctx.task),
         reminders: [
-          %{type: "before_due", days: 0, enabled: true}
+          %{type: "before_due", days: 0}
+        ],
+        type: "project"
+      })
+
+      assert res.message == "Invalid reminders"
+    end
+
+    test "it rejects on-date reminders without a date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_reminders], %{
+        task_id: Paths.task_id(ctx.task),
+        reminders: [
+          %{type: "on_date", date: nil}
         ],
         type: "project"
       })

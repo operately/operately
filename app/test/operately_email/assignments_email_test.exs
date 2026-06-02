@@ -95,7 +95,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
       Operately.Tasks.update_task(ctx.task, %{
         due_date: Date.utc_today() |> Date.add(3) |> ContextualDate.create_day_date() |> Map.from_struct(),
         reminders: [
-          %{type: :before_due, days: 3, enabled: true}
+          %{type: :before_due, days: 3}
         ]
       })
 
@@ -115,7 +115,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
       Operately.Tasks.update_task(ctx.task, %{
         due_date: Date.utc_today() |> Date.add(1) |> ContextualDate.create_day_date() |> Map.from_struct(),
         reminders: [
-          %{type: :before_due, days: 3, enabled: true}
+          %{type: :before_due, days: 3}
         ]
       })
 
@@ -131,7 +131,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
       Operately.Tasks.update_task(ctx.task, %{
         due_date: Date.utc_today() |> ContextualDate.create_day_date() |> Map.from_struct(),
         reminders: [
-          %{type: :due_day, enabled: true}
+          %{type: :due_day}
         ]
       })
 
@@ -144,6 +144,26 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
     end)
   end
 
+  test "sends on-date reminders for tasks without due dates", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: nil,
+        reminders: [
+          %{type: :on_date, date: Date.utc_today()}
+        ]
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "No due date"
+    end)
+  end
+
   test "sends overdue reminders", ctx do
     flush_emails()
 
@@ -151,7 +171,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
       Operately.Tasks.update_task(ctx.task, %{
         due_date: Date.utc_today() |> Date.add(-2) |> ContextualDate.create_day_date() |> Map.from_struct(),
         reminders: [
-          %{type: :overdue, enabled: true}
+          %{type: :overdue}
         ]
       })
 
@@ -164,14 +184,14 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
     end)
   end
 
-  test "does not send disabled reminders", ctx do
+  test "does not send when on-date reminders do not match today", ctx do
     flush_emails()
 
     {:ok, _task} =
       Operately.Tasks.update_task(ctx.task, %{
-        due_date: Date.utc_today() |> Date.add(7) |> ContextualDate.create_day_date() |> Map.from_struct(),
+        due_date: nil,
         reminders: [
-          %{type: :before_due, days: 7, enabled: false}
+          %{type: :on_date, date: Date.add(Date.utc_today(), 1)}
         ]
       })
 

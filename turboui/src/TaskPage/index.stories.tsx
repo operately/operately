@@ -61,7 +61,7 @@ function Component(props: Partial<TaskPage.Props>) {
   const [status, setStatus] = React.useState<typeof initialStatusOption | null>(initialStatusOption);
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
   const [reminders, setReminders] = React.useState<TaskPage.Reminder[]>(
-    props.reminders ?? [{ type: "before_due", days: 1, enabled: true }],
+    props.reminders ?? [{ type: "before_due", days: 1, date: null }],
   );
   const [assignees, setAssignees] = React.useState(props.assignees || []);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);

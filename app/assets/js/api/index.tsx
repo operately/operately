@@ -2013,10 +2013,10 @@ export interface Task {
 export interface TaskReminder {
   type: TaskReminderType;
   days?: number | null;
-  enabled: boolean;
+  date?: string | null;
 }
 
-export type TaskReminderType = "before_due" | "due_day" | "overdue";
+export type TaskReminderType = "before_due" | "due_day" | "overdue" | "on_date";
 
 export interface TaskStatus {
   id: string;

@@ -63,7 +63,7 @@ export function parseTaskReminders(reminders: TaskReminder[] | null | undefined)
   return (reminders ?? []).map((reminder) => ({
     type: reminder.type,
     days: reminder.days ?? null,
-    enabled: reminder.enabled,
+    date: reminder.date ?? null,
   }));
 }
 

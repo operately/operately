@@ -57,12 +57,12 @@ export namespace TaskPage {
     link?: string;
   }
 
-  export type ReminderType = "before_due" | "due_day" | "overdue";
+  export type ReminderType = "before_due" | "due_day" | "overdue" | "on_date";
 
   export interface Reminder {
     type: ReminderType;
     days?: number | null;
-    enabled: boolean;
+    date?: string | null;
   }
 
   export type TimelineItemType = TimelineItem;

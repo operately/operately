@@ -1431,12 +1431,12 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:task_type, values: [:space, :project])
-  enum(:task_reminder_type, values: [:before_due, :due_day, :overdue])
+  enum(:task_reminder_type, values: [:before_due, :due_day, :overdue, :on_date])
 
   object :task_reminder do
     field :type, :task_reminder_type
     field? :days, :integer, null: true
-    field :enabled, :boolean
+    field? :date, :date, null: true
   end
 
   object :task do

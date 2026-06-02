@@ -3,7 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Reminder do
     %{
       type: reminder.type,
       days: reminder.days,
-      enabled: reminder.enabled
+      date: reminder.date
     }
   end
 end
