@@ -81,7 +81,7 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
         <header>
           <h1 className="text-2xl font-bold">Notification settings</h1>
           <p className="text-sm text-content-dimmed mt-2">
-            Activity emails are always buffered. You can choose whether direct mentions should also stay buffered or arrive
+            Activity emails are always batched. You can choose whether direct mentions should also be batched or arrive
             right away.
           </p>
         </header>
@@ -95,8 +95,8 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
 
             <div className="mt-4 grid gap-3">
               <PreferenceCard
-                title="Buffered notifications"
-                description="All activity emails wait for the buffer window, are grouped together, and sent as a single email."
+                title="Batched notifications"
+                description="All activity emails wait for the batch window, are grouped together, and sent as a single email."
                 selected={!props.notifyOnMention}
                 onClick={() => props.onNotifyOnMentionChange(false)}
                 testId="email-preference-buffered"
@@ -105,7 +105,7 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
 
               <PreferenceCard
                 title="Direct mentions are instant"
-                description="Emails for direct mentions are sent right away. All other activity emails wait for the buffer window and are sent as a single email."
+                description="Emails for direct mentions are sent right away. All other activity emails wait for the batch window and are sent as a single email."
                 selected={props.notifyOnMention}
                 onClick={() => props.onNotifyOnMentionChange(true)}
                 testId="email-preference-mentions-only"
@@ -115,9 +115,9 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
           </section>
 
           <section>
-            <div className="font-bold text-sm">Buffer window</div>
+            <div className="font-bold text-sm">Batch window</div>
             <div className="text-sm text-content-dimmed mt-1">
-              Choose how long Operately should wait before sending buffered activity emails. When direct mentions are
+              Choose how long Operately should wait before sending batched activity emails. When direct mentions are
               instant, this still applies to all other activity emails.
             </div>
 
