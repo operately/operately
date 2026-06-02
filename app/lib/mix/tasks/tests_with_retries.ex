@@ -31,7 +31,7 @@ defmodule Mix.Tasks.TestsWithRetries do
   end
 
   defp run_test(mix_args, run_index) do
-    env = [{"JUNIT_REPORT_FILE", report_file(run_index)} | System.get_env()]
+    env = Map.put(System.get_env(), "JUNIT_REPORT_FILE", report_file(run_index))
 
     case System.cmd("mix", mix_args, env: env, into: IO.stream(:stdio, :line)) do
       {_output, 0} ->
