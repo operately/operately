@@ -88,6 +88,20 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
     end)
   end
 
+  test "explicit reminders only mode skips baseline due-status reminders", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: Date.utc_today() |> Date.add(1) |> ContextualDate.create_day_date() |> Map.from_struct(),
+        reminders: []
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee, mode: :explicit_reminders_only)
+
+    refute_email_sent()
+  end
+
   test "sends a custom before-due reminder", ctx do
     flush_emails()
 
@@ -105,6 +119,26 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
       email.to == [{"", ctx.first_assignee.email}] and
         email.html_body =~ "Shared urgent task" and
         email.html_body =~ "Due in 3 days"
+    end)
+  end
+
+  test "explicit reminders only mode sends matching custom reminders", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: nil,
+        reminders: [
+          %{type: :on_date, date: Date.utc_today()}
+        ]
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee, mode: :explicit_reminders_only)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "No due date"
     end)
   end
 
