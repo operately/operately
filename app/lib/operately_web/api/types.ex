@@ -1934,6 +1934,7 @@ defmodule OperatelyWeb.Api.Types do
     field :is_admin, :boolean, null: false
     field :can_edit_trusted_email_domains, :boolean, null: false
     field :can_invite_members, :boolean, null: false
+    field :can_edit_members, :boolean, null: false
     field :can_remove_members, :boolean, null: false
     field :can_create_space, :boolean, null: false
     field :can_manage_admins, :boolean, null: false
