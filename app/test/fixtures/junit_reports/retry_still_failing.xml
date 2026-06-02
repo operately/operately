@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite errors="0" failures="1" name="Elixir.Operately.ExampleTest" tests="1" time="0.0050">
+    <properties>
+      <property name="date" value="2026-01-01T00:00:01Z"/>
+      <property name="seed" value="12345"/>
+    </properties>
+    <testcase classname="Elixir.Operately.ExampleTest" file="test/operately/example_test.exs:2" name="test two" time="0.0050">
+      <failure message="still broken">Assertion failed again</failure>
+    </testcase>
+  </testsuite>
+</testsuites>
