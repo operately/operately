@@ -8,7 +8,7 @@ import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { serializeContextualDate } from "../contextualDates";
 
-import { DateField, showErrorToast, TaskBoard } from "turboui";
+import { DateField, showErrorToast, TaskBoard, TaskPage } from "turboui";
 import { serializeTaskDescription } from "./descriptionSerialization";
 
 interface Attrs {
@@ -154,6 +154,31 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     }
   };
 
+  const updateTaskReminders = async (taskId: string, reminders: TaskPage.Reminder[]) => {
+    const snapshot = createSnapshot();
+
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === taskId) {
+          return { ...t, reminders };
+        }
+        return t;
+      }),
+    );
+
+    try {
+      await Api.tasks.updateReminders({ taskId, reminders, type: "space" });
+      await invalidateAndRefresh();
+
+      return true;
+    } catch (e) {
+      console.error("Failed to update task reminders", e);
+      showErrorToast("Error", "Failed to update task reminders");
+      restoreSnapshot(snapshot);
+      return false;
+    }
+  };
+
   const updateTaskAssignee = async (taskId: string, assignees: TaskBoard.Person[]) => {
     const snapshot = createSnapshot();
 
@@ -257,6 +282,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     createTask,
     updateTaskName,
     updateTaskDueDate,
+    updateTaskReminders,
     updateTaskAssignee,
     updateTaskStatus,
     deleteTask,

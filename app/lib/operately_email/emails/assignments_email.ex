@@ -2,6 +2,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   import OperatelyEmail.Mailers.NotificationMailer
 
   alias Operately.Assignments.{Loader, Assignment}
+  alias Operately.Tasks.Reminder
   alias Operately.Repo
   alias OperatelyWeb.Paths
 
@@ -101,6 +102,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     category =
       cond do
         assignment.role == :reviewer -> :needs_review
+        task_assignment?(assignment) -> task_assignment_category(assignment)
         due_soon?(assignment.due_status) -> :due_soon
         upcoming?(assignment.due_status) -> :upcoming
         true -> :none
@@ -193,6 +195,24 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   defp due_soon?(:due_today), do: true
   defp due_soon?(:due_soon), do: true
   defp due_soon?(_), do: false
+
+  defp task_assignment?(assignment), do: assignment.type in [:project_task, :space_task]
+
+  defp task_assignment_category(assignment) when is_list(assignment.reminders) and assignment.reminders != [] do
+    if task_reminder_due?(assignment), do: :due_soon, else: :none
+  end
+
+  defp task_assignment_category(assignment) do
+    cond do
+      due_soon?(assignment.due_status) -> :due_soon
+      upcoming?(assignment.due_status) -> :upcoming
+      true -> :none
+    end
+  end
+
+  defp task_reminder_due?(assignment) do
+    Reminder.due_today?(assignment.due_date, assignment.reminders)
+  end
 
   defp upcoming?(:upcoming), do: true
   defp upcoming?(:none), do: true

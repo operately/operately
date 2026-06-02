@@ -8,11 +8,7 @@ defmodule OperatelyEmail.Cron.Assignments do
 
   @impl Oban.Worker
   def perform(_) do
-    if is_workday?() do
-      send_assignments()
-    else
-      :ok
-    end
+    send_assignments()
   end
 
   def send_assignments do

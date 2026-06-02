@@ -201,6 +201,8 @@ export function useMockTaskBoardActions(opts: {
 
         dueDate: task.dueDate ?? undefined,
         onDueDateChange: (newDueDate) => ctx.onTaskDueDateChange?.(taskId, newDueDate),
+        reminders: task.reminders ?? [],
+        onRemindersChange: (newReminders) => ctx.onTaskRemindersChange?.(taskId, newReminders) ?? false,
 
         assignees: (task.assignees || []).map(toTaskPagePerson),
         onAssigneesChange: (newAssignees) => ctx.onTaskAssigneeChange?.(taskId, newAssignees),

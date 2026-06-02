@@ -140,6 +140,14 @@ function Page() {
     refreshPageData,
   });
 
+  const [reminders, setReminders] = usePageField<TaskPage.Reminder[]>({
+    value: ({ task }) => Tasks.parseTaskReminders(task.reminders),
+    update: (v) => Api.tasks.updateReminders({ taskId: task.id, reminders: v, type: "project" }),
+    onError: () => showErrorToast("Error", "Failed to update task reminders."),
+    pageData,
+    refreshPageData,
+  });
+
   const [assignees, setAssignees] = usePageField<TaskPage.Person[]>({
     value: ({ task }) =>
       (task.assignees || []).flatMap((assignee) => {
@@ -262,6 +270,8 @@ function Page() {
     statusOptions,
     dueDate: dueDate || undefined,
     onDueDateChange: setDueDate,
+    reminders,
+    onRemindersChange: setReminders,
     assignees,
     onAssigneesChange: setAssignees,
 

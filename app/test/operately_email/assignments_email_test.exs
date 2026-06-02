@@ -24,7 +24,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
         project_id: ctx.project.id,
         name: "Shared urgent task",
         task_status: pending,
-        due_date: ContextualDate.create_day_date(Date.utc_today())
+        due_date: Date.utc_today() |> Date.add(1) |> ContextualDate.create_day_date()
       )
       |> Factory.add_task_assignee(:first_task_assignee, :task, :first_assignee)
       |> Factory.add_task_assignee(:second_task_assignee, :task, :second_assignee)
@@ -49,6 +49,155 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
         email.subject == "#{ctx.company.name}: Your assignments for today" and
         email.html_body =~ "Shared urgent task"
     end)
+  end
+
+  test "sends the baseline assignment reminder one day before a task is due", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: Date.utc_today() |> Date.add(1) |> ContextualDate.create_day_date() |> Map.from_struct()
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.subject == "#{ctx.company.name}: Your assignments for today" and
+        email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "Due tomorrow"
+    end)
+  end
+
+  test "falls back to due-status reminders for existing tasks without reminder rules", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: Date.utc_today() |> Date.add(1) |> ContextualDate.create_day_date() |> Map.from_struct(),
+        reminders: []
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.subject == "#{ctx.company.name}: Your assignments for today" and
+        email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "Due tomorrow"
+    end)
+  end
+
+  test "sends a custom before-due reminder", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: Date.utc_today() |> Date.add(3) |> ContextualDate.create_day_date() |> Map.from_struct(),
+        reminders: [
+          %{type: :before_due, days: 3}
+        ]
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "Due in 3 days"
+    end)
+  end
+
+  test "does not send when task reminders do not match today", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: Date.utc_today() |> Date.add(1) |> ContextualDate.create_day_date() |> Map.from_struct(),
+        reminders: [
+          %{type: :before_due, days: 3}
+        ]
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    refute_email_sent()
+  end
+
+  test "sends due-day reminders", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: Date.utc_today() |> ContextualDate.create_day_date() |> Map.from_struct(),
+        reminders: [
+          %{type: :due_day}
+        ]
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "Due today"
+    end)
+  end
+
+  test "sends on-date reminders for tasks without due dates", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: nil,
+        reminders: [
+          %{type: :on_date, date: Date.utc_today()}
+        ]
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "No due date"
+    end)
+  end
+
+  test "sends overdue reminders", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: Date.utc_today() |> Date.add(-2) |> ContextualDate.create_day_date() |> Map.from_struct(),
+        reminders: [
+          %{type: :overdue}
+        ]
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "Overdue by 2 days"
+    end)
+  end
+
+  test "does not send when on-date reminders do not match today", ctx do
+    flush_emails()
+
+    {:ok, _task} =
+      Operately.Tasks.update_task(ctx.task, %{
+        due_date: nil,
+        reminders: [
+          %{type: :on_date, date: Date.add(Date.utc_today(), 1)}
+        ]
+      })
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    refute_email_sent()
   end
 
   defp flush_emails do

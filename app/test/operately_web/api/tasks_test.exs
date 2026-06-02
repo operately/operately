@@ -171,6 +171,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       })
 
       assert res.task.name == "Implement feature X"
+      assert res.task.reminders == []
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
       task = Operately.Tasks.Task.get!(:system, id: id)
@@ -178,6 +179,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task.name == "Implement feature X"
       assert task.milestone_id == ctx.milestone.id
       assert task.creator_id == ctx.creator.id
+      assert task.reminders == []
     end
 
     test "it sends notifications to people mentioned in the description", ctx do
@@ -303,6 +305,27 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       task = Operately.Tasks.Task.get!(:system, id: id, opts: [preload: [:assigned_people]])
       assert length(task.assigned_people) == 1
       assert hd(task.assigned_people).id == ctx.creator.id
+    end
+
+    test "it does not persist reminder rules by default for assigned tasks with due dates", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.project_id(ctx.project),
+        type: "project",
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Assigned task with due date",
+        assignee_id: Paths.person_id(ctx.creator),
+        due_date: %{date: "2026-06-03", date_type: "day", value: "Jun 3, 2026"}
+      })
+
+      assert res.task.reminders == []
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id, opts: [preload: [:assigned_people]])
+
+      assert task.reminders == []
+      assert length(task.assigned_people) == 1
     end
 
     test "it creates a task with multiple assignees", ctx do
@@ -1308,6 +1331,68 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         "date_type" => due_date.date_type,
         "value" => due_date.value
       }
+    end
+  end
+
+  describe "update task reminders" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_reminders], %{})
+    end
+
+    test "it updates task reminders", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      reminders = [
+        %{type: "before_due", days: 3, date: nil},
+        %{type: "due_day", days: nil, date: nil},
+        %{type: "overdue", days: nil, date: nil},
+        %{type: "on_date", days: nil, date: "2026-06-03"}
+      ]
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_reminders], %{
+        task_id: Paths.task_id(ctx.task),
+        reminders: reminders,
+        type: "project"
+      })
+
+      assert res.task.reminders == reminders
+
+      updated_task = Operately.Repo.reload(ctx.task)
+
+      assert Enum.map(updated_task.reminders, &Map.take(Map.from_struct(&1), [:type, :days, :date])) == [
+        %{type: :before_due, days: 3, date: nil},
+        %{type: :due_day, days: nil, date: nil},
+        %{type: :overdue, days: nil, date: nil},
+        %{type: :on_date, days: nil, date: ~D[2026-06-03]}
+      ]
+    end
+
+    test "it rejects zero day before-due reminders", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_reminders], %{
+        task_id: Paths.task_id(ctx.task),
+        reminders: [
+          %{type: "before_due", days: 0}
+        ],
+        type: "project"
+      })
+
+      assert res.message == "Invalid reminders"
+    end
+
+    test "it rejects on-date reminders without a date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_reminders], %{
+        task_id: Paths.task_id(ctx.task),
+        reminders: [
+          %{type: "on_date", date: nil}
+        ],
+        type: "project"
+      })
+
+      assert res.message == "Invalid reminders"
     end
   end
 

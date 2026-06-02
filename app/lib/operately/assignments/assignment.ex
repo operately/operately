@@ -27,6 +27,7 @@ defmodule Operately.Assignments.Assignment do
     :author_id,
     :author_name,
     :description,
+    :reminders,
     :due_date,
     :due_status,
     :due_status_label
@@ -67,7 +68,8 @@ defmodule Operately.Assignments.Assignment do
       action_label: task.name,
       path: Paths.project_task_path(company, task),
       origin: origin,
-      task_status: String.to_atom(task.task_status.value)
+      task_status: String.to_atom(task.task_status.value),
+      reminders: task.reminders
     })
   end
 
@@ -85,7 +87,8 @@ defmodule Operately.Assignments.Assignment do
       action_label: task.name,
       path: Paths.space_task_path(company, task.space, task),
       origin: origin,
-      task_status: String.to_atom(task.task_status.value)
+      task_status: String.to_atom(task.task_status.value),
+      reminders: task.reminders
     })
   end
 
@@ -181,11 +184,14 @@ defmodule Operately.Assignments.Assignment do
     due_date = safe_parse_date(attrs[:due])
     {status, label} = resolve_due_status(due_date)
 
-    struct!(__MODULE__, Map.merge(attrs, %{
-      due_date: due_date,
-      due_status: status,
-      due_status_label: label
-    }))
+    struct!(
+      __MODULE__,
+      Map.merge(attrs, %{
+        due_date: due_date,
+        due_status: status,
+        due_status_label: label
+      })
+    )
   end
 
   defp safe_parse_date(nil), do: nil
@@ -194,6 +200,7 @@ defmodule Operately.Assignments.Assignment do
   defp safe_parse_date(_), do: nil
 
   defp resolve_due_status(nil), do: {:none, "No due date"}
+
   defp resolve_due_status(due_date) do
     today = Date.utc_today()
     diff = Date.diff(due_date, today)
@@ -252,6 +259,7 @@ defmodule Operately.Assignments.Assignment do
   end
 
   defp extract_timeframe_end_date(nil), do: nil
+
   defp extract_timeframe_end_date(timeframe) do
     case Timeframe.end_date(timeframe) do
       %Date{} = date -> date
