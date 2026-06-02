@@ -1,6 +1,6 @@
 import * as Billing from "@/models/billing";
 
-import { buildCompanyBillingCancellationPageViewModel } from "turboui";
+import { buildCompanyBillingCancellationPageViewModel, buildCompanyBillingCancellationSummary } from "turboui/CompanyBillingCancellationPage";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
   const { account, ...rest } = params;
@@ -40,7 +40,7 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
 
 describe("CompanyBillingCancellationPage bridge helpers", () => {
   it("derives cancellation summary details from billing overview data", () => {
-    const summary = Billing.buildCancellationSummary(
+    const summary = buildCompanyBillingCancellationSummary(
       billingOverviewMock({
         account: {
           planKey: "business",
@@ -51,13 +51,18 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
       }),
     );
 
-    expect(summary.currentPlanLabel).toBe("Business Yearly");
-    expect(summary.currentPeriodEnd).toBe("2026-07-01T00:00:00Z");
-    expect(summary.freePlanMemberLimit).toBe(20);
-    expect(summary.freePlanStorageLimitBytes).toBe(1_073_741_824);
-    expect(summary.willExceedFreeMemberLimit).toBe(false);
-    expect(summary.willExceedFreeStorageLimit).toBe(true);
-    expect(summary.overageKind).toBe("storage");
+    expect(summary.rows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: "Current plan", value: "Business" }),
+        expect.objectContaining({ label: "Paid access until", value: "Jul 1, 2026" }),
+        expect.objectContaining({ label: "Active members", value: "12" }),
+        expect.objectContaining({ label: "Free plan member limit", value: "20" }),
+        expect.objectContaining({ label: "Free plan storage limit", value: "1 GB" }),
+      ]),
+    );
+    expect(summary.overLimitWarning).toMatchObject({
+      message: "This company is above the free plan storage limit",
+    });
   });
 
   it("builds a cancellation confirmation view with downgrade details", () => {
