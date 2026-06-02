@@ -8,6 +8,7 @@ import {
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
   buildCompanyBillingSuccessFeedback,
+  canCreateCompanyBillingCheckout,
   isCompanyBillingPaidStatus,
 } from "turboui/CompanyBilling";
 import { CompanyBillingPage as TurboCompanyBillingPage } from "turboui/CompanyBillingPage";
@@ -79,7 +80,7 @@ export function Page() {
   const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search]);
   const pendingTarget = React.useMemo(() => getCompanyBillingPendingTarget(billing), [billing]);
   const checkoutReturnTarget = pendingTarget || selection.target;
-  const canUseCheckout = billing.account.status === "free" || billing.account.status === "canceled";
+  const canUseCheckout = canCreateCompanyBillingCheckout(billing.account.status);
   const canManagePaidSubscription = isCompanyBillingPaidStatus(billing.account.status);
   const companyName = company.name || "Billing";
   const isConfirmingCheckout = isAwaitingCheckoutConfirmation(billing, search.checkoutId, checkoutReturnTarget);
