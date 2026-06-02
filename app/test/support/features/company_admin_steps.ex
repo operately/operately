@@ -690,22 +690,6 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx |> UI.assert_text(text)
   end
 
-  step :assert_payment_default_banner_has_upgrade_cta, ctx do
-    ctx
-    |> UI.assert_has(testid: "payment-default-banner")
-    |> UI.assert_has(testid: "payment-default-banner-cta")
-  end
-
-  step :assert_payment_default_banner_has_no_upgrade_cta, ctx do
-    ctx
-    |> UI.assert_has(testid: "payment-default-banner")
-    |> UI.refute_has(testid: "payment-default-banner-cta")
-  end
-
-  step :assert_payment_default_banner_text, ctx, text do
-    ctx |> UI.assert_text(text)
-  end
-
   step :refute_payment_default_banner_visible, ctx do
     ctx |> UI.refute_has(testid: "payment-default-banner")
   end
@@ -733,24 +717,6 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.click(testid: "approaching-limit-banner-cta")
     |> UI.sleep(200)
     |> UI.assert_page(Paths.company_billing_plan_path(ctx.company))
-  end
-
-  step :follow_payment_default_banner_cta, ctx do
-    ctx
-    |> UI.click(testid: "payment-default-banner-cta")
-    |> UI.sleep(200)
-    |> UI.assert_page(Paths.company_billing_path(ctx.company))
-  end
-
-  step :assert_billing_entry_is_hidden_on_company_admin_page, ctx do
-    ctx
-    |> UI.visit(Paths.company_admin_path(ctx.company))
-    |> UI.assert_has(testid: "company-admin-page")
-    |> UI.refute_has(testid: "manage-plan")
-  end
-
-  step :visit_company_billing_cancel_page, ctx do
-    UI.visit(ctx, Paths.company_billing_path(ctx.company) <> "/cancel")
   end
 
   step :assert_redirected_to_company_admin_page, ctx do
