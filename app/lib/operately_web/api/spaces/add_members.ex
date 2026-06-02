@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Spaces.AddMembers do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> Operately.Groups.Group.get(ctx.me, id: inputs.space_id) end)
-    |> run(:check_permissions, fn ctx -> Operately.Groups.Permissions.check(ctx.space.request_info.access_level, :has_full_access) end)
+    |> run(:check_permissions, fn ctx -> Operately.Groups.Permissions.check(ctx.space.request_info.access_level, :has_full_access, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> Operately.Operations.GroupMembersAdding.run(ctx.me, ctx.space.id, inputs.members) end)
     |> run(:serialized, fn -> {:ok, %{success: true}} end)
     |> respond()

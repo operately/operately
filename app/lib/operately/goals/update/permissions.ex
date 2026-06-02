@@ -2,6 +2,7 @@ defmodule Operately.Goals.Update.Permissions do
   import Ecto.Query, only: [from: 2]
   alias Operately.Access.Binding
   alias Operately.Goals.Update
+  alias Operately.Permissions.ReadOnly
 
   defstruct [
     :can_view,
@@ -11,14 +12,16 @@ defmodule Operately.Goals.Update.Permissions do
     :can_comment,
   ]
 
-  def calculate(access_level, update, user_id) when is_binary(user_id) do
-    %__MODULE__{
+  def calculate(access_level, update, user_id, company_read_only: company_read_only) when is_binary(user_id) do
+    permissions = %__MODULE__{
       can_view: can_view(access_level),
       can_edit: can_edit(access_level),
       can_delete: can_delete(access_level),
       can_acknowledge: can_acknowledge(update, user_id),
       can_comment: can_comment(access_level)
     }
+
+    if company_read_only, do: ReadOnly.view_only(permissions), else: permissions
   end
 
   def can_view(access_level), do: access_level >= Binding.view_access()
@@ -37,16 +40,16 @@ defmodule Operately.Goals.Update.Permissions do
     end
   end
 
-  def check_can_edit(access_level) do
+  def check_can_edit(access_level, company_read_only: company_read_only) do
     if can_edit(access_level) do
-      {:ok, :allowed}
+      if company_read_only, do: {:error, :unauthorized}, else: {:ok, :allowed}
     else
       {:error, :unauthorized}
     end
   end
 
-  def check(access_level, update, user_id, permission) when is_atom(permission) and is_binary(user_id) do
-    permissions = calculate(access_level, update, user_id)
+  def check(access_level, update, user_id, permission, company_read_only: company_read_only) when is_atom(permission) and is_binary(user_id) do
+    permissions = calculate(access_level, update, user_id, company_read_only: company_read_only)
 
     case Map.get(permissions, permission) do
       true -> {:ok, :allowed}

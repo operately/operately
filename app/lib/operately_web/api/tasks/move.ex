@@ -29,9 +29,9 @@ defmodule OperatelyWeb.Api.Tasks.Move do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:task, fn ctx -> load_task(ctx.me, inputs.task_id) end)
-    |> run(:check_origin_permissions, fn ctx -> check_origin_permissions(ctx.task) end)
+    |> run(:check_origin_permissions, fn ctx -> check_origin_permissions(ctx.task, company_read_only(conn)) end)
     |> run(:destination, fn ctx -> load_destination(ctx.me, inputs.destination_type, inputs.destination_id) end)
-    |> run(:check_destination_permissions, fn ctx -> check_destination_permissions(inputs.destination_type, ctx.destination) end)
+    |> run(:check_destination_permissions, fn ctx -> check_destination_permissions(inputs.destination_type, ctx.destination, company_read_only(conn)) end)
     |> run(:validate_destination, fn ctx -> validate_destination(inputs.destination_type, ctx.destination) end)
     |> run(:operation, fn ctx -> TaskMoving.run(ctx.me, ctx.task, inputs.destination_type, ctx.destination) end)
     |> run(:serialized, fn ctx ->
@@ -93,20 +93,20 @@ defmodule OperatelyWeb.Api.Tasks.Move do
     end
   end
 
-  defp check_origin_permissions(task = %Task{}) do
+  defp check_origin_permissions(task = %Task{}, company_read_only) do
     case Task.task_type(task) do
-      "project" -> ProjectPermissions.check(task.request_info.access_level, :can_edit)
-      "space" -> SpacePermissions.check(task.request_info.access_level, :can_edit)
+      "project" -> ProjectPermissions.check(task.request_info.access_level, :can_edit, company_read_only: company_read_only)
+      "space" -> SpacePermissions.check(task.request_info.access_level, :can_edit, company_read_only: company_read_only)
       _ -> {:error, :forbidden}
     end
   end
 
-  defp check_destination_permissions(:project, destination = %Project{}) do
-    ProjectPermissions.check(destination.request_info.access_level, :can_edit)
+  defp check_destination_permissions(:project, destination = %Project{}, company_read_only) do
+    ProjectPermissions.check(destination.request_info.access_level, :can_edit, company_read_only: company_read_only)
   end
 
-  defp check_destination_permissions(:space, destination = %Group{}) do
-    SpacePermissions.check(destination.request_info.access_level, :can_edit)
+  defp check_destination_permissions(:space, destination = %Group{}, company_read_only) do
+    SpacePermissions.check(destination.request_info.access_level, :can_edit, company_read_only: company_read_only)
   end
 
   defp validate_destination(:project, destination = %Project{}) do

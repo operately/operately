@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckIn do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:check_in, fn ctx -> CheckIn.get(ctx.me, id: inputs.id, opts: [preload: [project: [:champion, :reviewer]]]) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:check_already_acknowledged, fn ctx -> check_already_acknowledged(ctx.check_in) end)
     |> run(:check_not_the_author, fn ctx -> check_not_the_author(ctx.me, ctx.check_in) end)
     |> run(:operation, fn ctx -> Operately.Operations.ProjectCheckInAcknowledgement.run(ctx.me, ctx.check_in) end)

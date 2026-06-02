@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Projects.CreateKeyResource do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_attrs(inputs) end)
     |> run(:project, fn ctx -> load_project(ctx) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ProjectKeyResourceAdding.run(ctx.me, ctx.project, ctx.attrs) end)
     |> run(:serialized, fn ctx -> serialize(ctx) end)
     |> respond()

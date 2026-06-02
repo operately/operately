@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
 
   import Operately.PeopleFixtures
 
+  alias Operately.Billing
   alias Operately.Support.RichText
 
   describe "security" do
@@ -146,6 +147,19 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       assert Operately.People.Person.daily_summary_delivery_time(person) == "09:00"
     end
 
+    test "it rejects updates when the company is read-only", ctx do
+      put_company_in_read_only(ctx.company)
+
+      assert {403, %{}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 full_name: "John Doe"
+               })
+
+      person = Operately.People.get_person!(ctx.person.id)
+      assert person.full_name == ctx.person.full_name
+    end
+
     test "it updates display preferences", ctx do
       assert {200, %{person: %{}}} =
                mutation(ctx.conn, [:people, :update], %{
@@ -187,5 +201,17 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
     group = Operately.Access.get_group!(company_id: ctx.company.id, tag: :full_access)
     cs = Operately.Access.GroupMembership.changeset(%{group_id: group.id, person_id: ctx.person.id})
     Operately.Repo.insert(cs)
+  end
+
+  defp put_company_in_read_only(company) do
+    {:ok, account} = Billing.get_or_create_billing_account(company)
+
+    {:ok, _account} =
+      Billing.update_billing_account(account, %{
+        access_state: :read_only,
+        access_state_reason: :past_due,
+        access_state_started_at: DateTime.utc_now(),
+        access_state_ends_at: nil
+      })
   end
 end

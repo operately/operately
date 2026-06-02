@@ -277,6 +277,7 @@ defmodule OperatelyWeb.Api.Spaces do
     def start_transaction(conn) do
       Multi.new()
       |> Multi.put(:conn, conn)
+      |> Multi.put(:company_read_only, OperatelyWeb.Api.Helpers.company_read_only(conn))
       |> Multi.run(:me, fn _repo, %{conn: conn} ->
         {:ok, conn.assigns.current_person}
       end)
@@ -298,8 +299,8 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     def check_task_permissions(multi, permission) do
-      Multi.run(multi, :permissions, fn _repo, %{task: task} ->
-        Operately.Groups.Permissions.check(task.request_info.access_level, permission)
+      Multi.run(multi, :permissions, fn _repo, %{task: task, company_read_only: company_read_only} ->
+        Operately.Groups.Permissions.check(task.request_info.access_level, permission, company_read_only: company_read_only)
       end)
     end
 
@@ -333,8 +334,8 @@ defmodule OperatelyWeb.Api.Spaces do
     defp broadcast(_), do: :ok
 
     def check_permissions(multi, permission) do
-      Multi.run(multi, :permissions, fn _repo, %{space: space} ->
-        Permissions.check(space.request_info.access_level, permission)
+      Multi.run(multi, :permissions, fn _repo, %{space: space, company_read_only: company_read_only} ->
+        Permissions.check(space.request_info.access_level, permission, company_read_only: company_read_only)
       end)
     end
 

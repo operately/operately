@@ -106,8 +106,8 @@ defmodule Operately.Projects.Milestone do
     end)
   end
 
-  def set_permissions(milestone = %__MODULE__{}) do
-    perms = Operately.Projects.Permissions.calculate(milestone.request_info.access_level)
+  def set_permissions(milestone = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.Projects.Permissions.calculate(milestone.request_info.access_level, company_read_only: company_read_only)
     Map.put(milestone, :permissions, perms)
   end
 

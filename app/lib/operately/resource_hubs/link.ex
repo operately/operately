@@ -59,8 +59,8 @@ def changeset(attrs) do
     %{link | potential_subscribers: subs}
   end
 
-  def set_permissions(link = %__MODULE__{}) do
-    perms = Operately.ResourceHubs.Permissions.calculate(link.request_info.access_level)
+  def set_permissions(link = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.ResourceHubs.Permissions.calculate(link.request_info.access_level, company_read_only: company_read_only)
     Map.put(link, :permissions, perms)
   end
 

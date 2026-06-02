@@ -23,15 +23,15 @@ defmodule OperatelyWeb.Api.People.Get do
 
   def call(conn, inputs) do
     with {:ok, me} <- find_me(conn),
-         {:ok, person} <- load(me, inputs[:id], inputs) do
+         {:ok, person} <- load(me, inputs[:id], inputs, company_read_only(conn)) do
       {:ok, %{person: Serializer.serialize(person, level: :full)}}
     end
   end
 
-  defp load(me, id, inputs) do
+  defp load(me, id, inputs, company_read_only) do
     Person.get(me, id: id, company_id: me.company_id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs),
+      after_load: after_load(inputs, company_read_only),
     ])
   end
 
@@ -43,10 +43,10 @@ defmodule OperatelyWeb.Api.People.Get do
     ])
   end
 
-  def after_load(inputs) do
+  def after_load(inputs, company_read_only) do
     Inputs.parse_includes(inputs, [
       include_peers: &Person.preload_peers/1,
-      include_permissions: &Person.load_permissions/1,
+      include_permissions: &Person.load_permissions(&1, company_read_only),
     ])
   end
 end

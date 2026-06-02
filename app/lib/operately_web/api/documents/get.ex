@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Documents.Get do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:document, fn ctx -> load(ctx, inputs) end)
+    |> run(:document, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{document: Serializer.serialize(ctx.document, level: :full)}} end)
     |> respond()
   end
@@ -43,10 +43,10 @@ defmodule OperatelyWeb.Api.Documents.Get do
     end
   end
 
-  def load(ctx, inputs) do
+  def load(ctx, inputs, company_read_only) do
     Document.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
+      after_load: after_load(inputs, ctx.me, company_read_only),
     ])
   end
 
@@ -62,9 +62,9 @@ defmodule OperatelyWeb.Api.Documents.Get do
     ])
   end
 
-  defp after_load(inputs, me) do
+  defp after_load(inputs, me, company_read_only) do
     Inputs.parse_includes(inputs, [
-      include_permissions: &Document.set_permissions/1,
+      include_permissions: &Document.set_permissions(&1, company_read_only),
       include_unread_notifications: UnreadNotificationsLoader.load(me),
       include_potential_subscribers: &Document.load_potential_subscribers/1,
       include_path_to_document: &Document.find_path_to_document/1,

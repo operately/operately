@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:parent, fn ctx -> fetch_parent(ctx.me, inputs.entity_id, inputs.entity_type) end)
-    |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, inputs.entity_type) end)
+    |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, inputs.entity_type, company_read_only(conn)) end)
     |> run(:operation, fn ctx -> execute(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{comment: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
@@ -70,20 +70,20 @@ defmodule OperatelyWeb.Api.Comments.Create do
     end
   end
 
-  defp check_permissions(parent, type) do
+  defp check_permissions(parent, type, company_read_only) do
     case type do
-      :project_check_in -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
-      :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
-      :project_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
-      :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
-      :goal_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
-      :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment)
-      :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
-      :resource_hub_file -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_file)
-      :resource_hub_link -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_link)
-      :project_task -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
-      :space_task -> Groups.Permissions.check(parent.request_info.access_level, :can_comment)
-      :milestone -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
+      :project_check_in -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
+      :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
+      :project_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread, company_read_only: company_read_only)
+      :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment, company_read_only: company_read_only)
+      :goal_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread, company_read_only: company_read_only)
+      :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
+      :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document, company_read_only: company_read_only)
+      :resource_hub_file -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_file, company_read_only: company_read_only)
+      :resource_hub_link -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_link, company_read_only: company_read_only)
+      :project_task -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
+      :space_task -> Groups.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
+      :milestone -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
     end
   end
 

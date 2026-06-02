@@ -28,8 +28,8 @@ defmodule OperatelyWeb.Api.Projects.GetRetrospective do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:retrospective, fn ctx -> load(ctx, inputs) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_view) end)
+    |> run(:retrospective, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.retrospective)}} end)
     |> respond()
    end
@@ -44,10 +44,10 @@ defmodule OperatelyWeb.Api.Projects.GetRetrospective do
     end
   end
 
-  defp load(ctx, inputs) do
+  defp load(ctx, inputs, company_read_only) do
     Retrospective.get(ctx.me, project_id: inputs.project_id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
+      after_load: after_load(inputs, ctx.me, company_read_only),
     ])
   end
 
@@ -61,9 +61,9 @@ defmodule OperatelyWeb.Api.Projects.GetRetrospective do
     ])
   end
 
-  def after_load(inputs, person) do
+  def after_load(inputs, person, company_read_only) do
     Inputs.parse_includes(inputs, [
-      include_permissions: &Retrospective.set_permissions/1,
+      include_permissions: &Retrospective.set_permissions(&1, company_read_only),
       include_potential_subscribers: &Retrospective.load_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(person),
     ])

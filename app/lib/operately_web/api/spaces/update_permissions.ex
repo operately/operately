@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdatePermissions do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> Groups.get_group_with_access_level(inputs.space_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :has_full_access) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :has_full_access, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> GroupPermissionsEditing.run(ctx.me, ctx.space, inputs.access_levels) end)
     |> run(:serialized, fn -> {:ok, %{success: true}} end)
     |> respond()

@@ -142,9 +142,9 @@ defmodule Operately.Comments.CommentThread do
     end
   end
 
-  def load_permissions(thread) do
+  def load_permissions(thread, company_read_only \\ false) do
     if thread.parent_type == :project do
-      permissions = Operately.Projects.Permissions.calculate(thread.request_info.access_level)
+      permissions = Operately.Projects.Permissions.calculate(thread.request_info.access_level, company_read_only: company_read_only)
       Map.put(thread, :project_permissions, permissions)
     else
       raise ArgumentError, "Permissions can only be loaded for project comment threads"

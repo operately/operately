@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Documents.Delete do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:document, fn ctx -> find_document(ctx.me, inputs) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.document.request_info.access_level, :can_delete_document) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.document.request_info.access_level, :can_delete_document, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubDocumentDeleting.run(ctx.me, ctx.document) end)
     |> run(:serialized, fn ctx -> {:ok, %{document: Serializer.serialize(ctx.operation)}} end)
     |> respond()

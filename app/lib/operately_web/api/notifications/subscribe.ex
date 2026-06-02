@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Notifications.Subscribe do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:access_level, fn ctx -> Notifications.get_subscription_list_access_level(inputs.subscription_list_id, inputs.type, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> check_permissions(inputs.type, ctx.access_level) end)
+    |> run(:check_permissions, fn ctx -> check_permissions(inputs.type, ctx.access_level, company_read_only(conn)) end)
     |> run(:operation, fn ctx -> NotificationsSubscribing.run(ctx.me.id, inputs.subscription_list_id) end)
     |> respond()
   end
@@ -33,20 +33,20 @@ defmodule OperatelyWeb.Api.Notifications.Subscribe do
     end
   end
 
-  defp check_permissions(type, access_level) do
+  defp check_permissions(type, access_level, company_read_only) do
     case type do
-      :project_check_in -> Projects.Permissions.check(access_level, :can_view)
-      :project_retrospective -> Projects.Permissions.check(access_level, :can_view)
-      :goal_update -> Goals.Permissions.check(access_level, :can_view)
-      :message -> Groups.Permissions.check(access_level, :can_view)
-      :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_view)
-      :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_view)
-      :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_view)
-      :comment_thread -> Activities.Permissions.check(access_level, :can_view)
-      :project -> Projects.Permissions.check(access_level, :can_view)
-      :project_task -> Projects.Permissions.check(access_level, :can_view)
-      :space_task -> Groups.Permissions.check(access_level, :can_view)
-      :milestone -> Projects.Permissions.check(access_level, :can_view)
+      :project_check_in -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :project_retrospective -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :goal_update -> Goals.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :message -> Groups.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :resource_hub_document -> ResourceHubs.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :comment_thread -> Activities.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :project -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :project_task -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :space_task -> Groups.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :milestone -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
     end
   end
 end

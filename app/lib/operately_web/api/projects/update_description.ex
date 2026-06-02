@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescription do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:project, fn ctx -> Projects.get_project_with_access_level(inputs.project_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ProjectDescriptionUpdating.run(ctx.me, ctx.project, inputs.description) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation)}} end)
     |> respond()

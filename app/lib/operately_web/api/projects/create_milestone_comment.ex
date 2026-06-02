@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneComment do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:milestone, fn ctx -> Projects.get_milestone_with_access_level(inputs.milestone_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> check_permissions(ctx.milestone, inputs.action) end)
+    |> run(:check_permissions, fn ctx -> check_permissions(ctx.milestone, inputs.action, company_read_only(conn)) end)
     |> run(:operation, fn ctx -> execute(ctx.me, ctx.milestone, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{comment: Serializer.serialize(ctx.operation)}} end)
     |> respond()
@@ -54,11 +54,11 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneComment do
     )
   end
 
-  defp check_permissions(milestone, action) do
+  defp check_permissions(milestone, action, company_read_only) do
     case action do
-      "none" -> Permissions.check(milestone.requester_access_level, :can_comment)
-      "reopen" -> Permissions.check(milestone.requester_access_level, :can_edit)
-      "complete" -> Permissions.check(milestone.requester_access_level, :can_edit)
+      "none" -> Permissions.check(milestone.requester_access_level, :can_comment, company_read_only: company_read_only)
+      "reopen" -> Permissions.check(milestone.requester_access_level, :can_edit, company_read_only: company_read_only)
+      "complete" -> Permissions.check(milestone.requester_access_level, :can_edit, company_read_only: company_read_only)
     end
   end
 end

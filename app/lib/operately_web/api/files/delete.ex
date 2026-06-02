@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Files.Delete do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:file, fn ctx -> find_file(ctx.me, inputs) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.file.request_info.access_level, :can_delete_file) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.file.request_info.access_level, :can_delete_file, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ResourceHubFileDeleting.run(ctx.me, ctx.file) end)
     |> run(:serialized, fn ctx -> {:ok, %{file: Serializer.serialize(ctx.operation)}} end)
     |> respond()

@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolder do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:folder, fn ctx -> load(ctx, inputs) end)
+    |> run(:folder, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{folder: Serializer.serialize(ctx.folder, level: :full)}} end)
     |> respond()
   end
@@ -37,10 +37,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolder do
     end
   end
 
-  def load(ctx, inputs) do
+  def load(ctx, inputs, company_read_only) do
     Folder.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
-      after_load: after_load(inputs),
+      after_load: after_load(inputs, company_read_only),
     ])
   end
 
@@ -54,10 +54,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolder do
     ])
   end
 
-  def after_load(inputs) do
+  def after_load(inputs, company_read_only) do
     Inputs.parse_includes(inputs, [
       include_path_to_folder: &Folder.find_path_to_folder/1,
-      include_permissions: &Folder.set_permissions/1,
+      include_permissions: &Folder.set_permissions(&1, company_read_only),
       include_potential_subscribers: &Folder.load_potential_subscribers/1,
     ])
   end

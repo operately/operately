@@ -1,5 +1,6 @@
 defmodule Operately.ResourceHubs.Permissions do
   alias Operately.Access.Binding
+  alias Operately.Permissions.ReadOnly
 
   defstruct [
     :can_view,
@@ -22,8 +23,8 @@ defmodule Operately.ResourceHubs.Permissions do
     :can_rename_folder,
   ]
 
-  def calculate(access_level) when is_integer(access_level) do
-    %__MODULE__{
+  def calculate(access_level, company_read_only: company_read_only) when is_integer(access_level) do
+    permissions = %__MODULE__{
       can_view: access_level >= Binding.view_access(),
       can_comment_on_document: access_level >= Binding.comment_access(),
       can_comment_on_file: access_level >= Binding.comment_access(),
@@ -43,10 +44,12 @@ defmodule Operately.ResourceHubs.Permissions do
       can_edit_parent_folder: access_level >= Binding.edit_access(),
       can_rename_folder: access_level >= Binding.edit_access(),
     }
+
+    if company_read_only, do: ReadOnly.view_only(permissions), else: permissions
   end
 
-  def check(access_level, permission) do
-    permissions = calculate(access_level)
+  def check(access_level, permission, company_read_only: company_read_only) do
+    permissions = calculate(access_level, company_read_only: company_read_only)
 
     case Map.get(permissions, permission) do
       true -> {:ok, :allowed}

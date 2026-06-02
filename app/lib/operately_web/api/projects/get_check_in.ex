@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Api.Projects.GetCheckIn do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:check_in, fn ctx -> load(ctx, inputs) end)
+    |> run(:check_in, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{project_check_in: Serializer.serialize(ctx.check_in, level: :full)}} end)
     |> respond()
  end
@@ -41,11 +41,11 @@ defmodule OperatelyWeb.Api.Projects.GetCheckIn do
     end
   end
 
-  defp load(ctx, inputs) do
+  defp load(ctx, inputs, company_read_only) do
     CheckIn.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
       auth_preload: auth_preload(inputs),
-      after_load: after_load(inputs, ctx.me),
+      after_load: after_load(inputs, ctx.me, company_read_only),
     ])
   end
 
@@ -65,9 +65,9 @@ defmodule OperatelyWeb.Api.Projects.GetCheckIn do
     ])
   end
 
-  defp after_load(inputs, person) do
+  defp after_load(inputs, person, company_read_only) do
     Inputs.parse_includes(inputs, [
-      include_project: &Project.set_permissions/1,
+      include_project: &Project.set_permissions(&1, company_read_only),
       include_potential_subscribers: &CheckIn.load_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(person),
     ])

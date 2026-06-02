@@ -58,8 +58,8 @@ defmodule Operately.ResourceHubs.ResourceHub do
     Map.put(resource_hub, :nodes, nodes)
   end
 
-  def set_permissions(resource_hub = %__MODULE__{}) do
-    perms = Operately.ResourceHubs.Permissions.calculate(resource_hub.request_info.access_level)
+  def set_permissions(resource_hub = %__MODULE__{}, company_read_only \\ false) do
+    perms = Operately.ResourceHubs.Permissions.calculate(resource_hub.request_info.access_level, company_read_only: company_read_only)
     Map.put(resource_hub, :permissions, perms)
   end
 end

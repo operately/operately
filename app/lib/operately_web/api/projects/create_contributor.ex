@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
     with(
       {:ok, me} <- find_me(conn),
       {:ok, project} <- Project.get(me, id: inputs.project_id),
-      {:ok, :allowed} <- Permissions.check(project.request_info.access_level, :can_edit),
+      {:ok, :allowed} <- Permissions.check(project.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)),
       {:ok, attrs} <- parse_inputs(inputs),
       {:ok, :allowed} <- validate_permission_level(project.request_info.access_level, attrs.permissions),
       {:ok, contributor} <- Operately.Operations.ProjectContributorAddition.run(me, attrs)

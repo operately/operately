@@ -38,8 +38,8 @@ defmodule OperatelyWeb.Api.Goals.Get do
   def call(conn, %{id: _id} = inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:goal, fn ctx -> load(ctx, inputs) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_view) end)
+    |> run(:goal, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> serialize(ctx, inputs.include_markdown) end)
     |> respond()
   end
@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.Goals.Get do
     end
   end
 
-  defp load(ctx, inputs) do
+  defp load(ctx, inputs, company_read_only) do
     Goal.get(ctx.me,
       id: inputs.id,
       company_id: ctx.me.company_id,
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.Goals.Get do
         with_deleted: true,
         preload: preload(inputs),
         auth_preload: auth_preload(inputs),
-        after_load: after_load(inputs, ctx.me)
+        after_load: after_load(inputs, ctx.me, company_read_only)
       ]
     )
   end
@@ -102,14 +102,14 @@ defmodule OperatelyWeb.Api.Goals.Get do
     )
   end
 
-  defp after_load(inputs, me) do
+  defp after_load(inputs, me, company_read_only) do
     Inputs.parse_includes(inputs,
-      include_permissions: &Goal.preload_permissions/1,
+      include_permissions: &Goal.preload_permissions(&1, nil, company_read_only),
       include_access_levels: &Goal.preload_access_levels/1,
       include_privacy: &Goal.load_privacy/1,
       include_potential_subscribers: &Goal.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
-      include_last_check_in: &Goal.load_last_check_in_permissions/1,
+      include_last_check_in: &Goal.load_last_check_in_permissions(&1, company_read_only),
       include_retrospective: &Goal.load_retrospective/1
     )
   end

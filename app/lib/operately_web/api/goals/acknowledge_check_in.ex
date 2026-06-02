@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckIn do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:update, fn ctx -> Update.get(ctx.me, id: inputs.id, opts: [preload: :goal]) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_acknowledge) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_acknowledge, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> GoalUpdateAcknowledging.run(ctx.me, ctx.update) end)
     |> run(:serialized, fn ctx -> {:ok, %{update: Serializer.serialize(ctx.operation, level: :full)}} end)
     |> respond()
