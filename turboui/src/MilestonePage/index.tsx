@@ -91,6 +91,7 @@ export namespace MilestonePage {
     onTaskMilestoneChange?: (taskId: string, milestone: Types.Milestone | null) => void;
     onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+    onTaskRemindersChange?: Types.TaskBoardProps["onTaskRemindersChange"];
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
     onTaskNameChange?: (taskId: string, name: string) => void;
     onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;

@@ -29,6 +29,7 @@ export function useTaskSlideInProps(opts: {
   onTaskNameChange: (taskId: string, newName: string) => Promise<boolean> | boolean;
   onTaskAssigneeChange: (taskId: string, assignees: TaskBoard.Person[]) => Promise<boolean> | boolean;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => Promise<boolean> | boolean;
+  onTaskRemindersChange: (taskId: string, reminders: TaskPage.Reminder[]) => Promise<boolean> | boolean;
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => Promise<boolean> | boolean;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
   onMoveTaskSuccess: (result: { movedTaskId: string; destinationType: string; destinationId: string }) => Promise<void>;
@@ -203,6 +204,19 @@ export function useTaskSlideInProps(opts: {
     [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
   );
 
+  const wrapRemindersChange = React.useCallback(
+    async (taskId: string, reminders: TaskPage.Reminder[]) => {
+      const res = await Promise.resolve(opts.onTaskRemindersChange(taskId, reminders));
+
+      if (res && activeTaskId !== taskId) {
+        refreshTimelineAfterInactiveChange();
+      }
+
+      return res;
+    },
+    [activeTaskId, opts, refreshTimelineAfterInactiveChange],
+  );
+
   const wrapStatusChange = React.useCallback(
     async (taskId: string, newStatus: TaskBoard.Status | null) => {
       const prevTask = findTask(taskId);
@@ -333,6 +347,8 @@ export function useTaskSlideInProps(opts: {
         statusOptions: ctx.statuses,
         dueDate: task.dueDate || undefined,
         onDueDateChange: (newDate) => ctx.onTaskDueDateChange?.(taskId, newDate),
+        reminders: task.reminders ?? [],
+        onRemindersChange: (reminders) => ctx.onTaskRemindersChange?.(taskId, reminders) ?? Promise.resolve(false),
 
         assignees,
         onAssigneesChange: (newAssignees) => ctx.onTaskAssigneeChange?.(taskId, newAssignees),
@@ -430,10 +446,19 @@ export function useTaskSlideInProps(opts: {
       onTaskNameChange: wrapNameChange,
       onTaskAssigneeChange: wrapAssigneeChange,
       onTaskDueDateChange: wrapDueDateChange,
+      onTaskRemindersChange: wrapRemindersChange,
       onTaskStatusChange: wrapStatusChange,
       onTaskDescriptionChange: wrapDescriptionChange,
     }),
-    [getTaskPageProps, wrapAssigneeChange, wrapDescriptionChange, wrapDueDateChange, wrapNameChange, wrapStatusChange],
+    [
+      getTaskPageProps,
+      wrapAssigneeChange,
+      wrapDescriptionChange,
+      wrapDueDateChange,
+      wrapNameChange,
+      wrapRemindersChange,
+      wrapStatusChange,
+    ],
   );
 }
 
