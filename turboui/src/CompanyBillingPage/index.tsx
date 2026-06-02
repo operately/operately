@@ -8,21 +8,30 @@ import { buildCompanyBillingPageViewModel } from "./viewModel";
 
 export {
   buildCompanyBillingConfirmingMode,
-  buildCompanyBillingCancellationFeedback,
   buildCompanyBillingOverviewMode,
-  buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingPageViewModel,
-  buildCompanyBillingReactivationFeedback,
-  buildCompanyBillingRecoveryFeedback,
   buildCompanyBillingStatusNotices,
-  buildCompanyBillingSuccessFeedback,
 } from "./viewModel";
 export {
   buildCompanyBillingChangeConsequence,
   buildCompanyBillingOverageDescription,
+  buildCompanyBillingCancellationFeedback,
+  buildCompanyBillingPlanChangeFeedback,
+  buildCompanyBillingReactivationFeedback,
+  buildCompanyBillingRecoveryFeedback,
+  buildCompanyBillingSuccessFeedback,
+  findCompanyBillingPlanDefinition,
   formatCompanyBillingChangeTimingDescription,
+  formatCompanyBillingDate,
+  formatCompanyBillingIntervalLabel,
+  formatCompanyBillingPlanLabel,
+  formatCompanyBillingPlanName,
+  formatCompanyBillingPriceFromMinorUnits,
+  formatCompanyBillingRelativeDateLine,
+  getCompanyBillingCurrentPlanDefinition,
   resolveCompanyBillingChangeTiming,
-} from "./changeConsequences";
+  formatStorageBytes,
+} from "../CompanyBilling";
 export {
   canCreateCompanyBillingCheckout,
   findCompanyBillingSellableProduct,
@@ -36,7 +45,7 @@ export {
   matchesCompanyBillingTarget,
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
-} from "./state";
+} from "../CompanyBilling";
 
 export namespace CompanyBillingPage {
   export type Mode = CompanyBillingPageTypes.Mode;

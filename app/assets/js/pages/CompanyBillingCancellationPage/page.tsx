@@ -1,7 +1,13 @@
 import * as Billing from "@/models/billing";
 import * as React from "react";
 
-import { CompanyBillingCancellationPage as TurboCompanyBillingCancellationPage, showErrorToast } from "turboui";
+import {
+  buildCompanyBillingCancellationFeedback,
+  isCompanyBillingPaidStatus,
+} from "turboui/CompanyBilling";
+import { CompanyBillingPage as TurboCompanyBillingPage } from "turboui/CompanyBillingPage";
+import { CompanyBillingCancellationPage as TurboCompanyBillingCancellationPage } from "turboui/CompanyBillingCancellationPage";
+import { showErrorToast } from "turboui";
 import { useLoadedData } from "./loader";
 import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import { usePaths } from "@/routes/paths";
@@ -14,7 +20,7 @@ interface CompanyRootData {
 
 interface BillingPageLocationState {
   billing?: Billing.BillingOverview;
-  feedback?: Billing.BillingFeedback;
+  feedback?: TurboCompanyBillingPage.Feedback;
 }
 
 export function Page() {
@@ -47,7 +53,7 @@ export function Page() {
       navigate(paths.companyBillingPath(), {
         state: {
           billing: result.billing,
-          feedback: Billing.buildCancellationFeedback(result.billing),
+          feedback: buildCompanyBillingCancellationFeedback(result.billing),
         } satisfies BillingPageLocationState,
       });
       return;
@@ -56,7 +62,7 @@ export function Page() {
     if (result.billing) {
       setBilling(result.billing);
 
-      if (!Billing.canManagePaidSubscription(result.billing.account.status) || result.billing.account.cancelAtPeriodEnd) {
+      if (!isCompanyBillingPaidStatus(result.billing.account.status) || result.billing.account.cancelAtPeriodEnd) {
         navigate(paths.companyBillingPath(), {
           state: { billing: result.billing } satisfies BillingPageLocationState,
         });

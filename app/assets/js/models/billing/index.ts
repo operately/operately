@@ -1,39 +1,12 @@
 import Api from "@/api";
 import * as api from "@/api";
-export { useBillingUpdatedSignal } from "@/signals";
-import { browserLocale } from "@/utils/formatting";
-import { formatPlanLabel } from "./planFormatting";
-import {
-  buildCompanyBillingCancellationFeedback,
-  buildCompanyBillingPlanChangeFeedback,
-  buildCompanyBillingReactivationFeedback,
-  canCreateCompanyBillingCheckout,
-  CompanyBillingPage,
-  findCompanyBillingSellableProduct,
-  isCompanyBillingCheckoutReturnSuccessful,
-  isCompanyBillingPaidStatus,
-  listCompanyBillingSellableTargets,
-  parseCompanyBillingSearch,
-  selectCompanyBillingTarget,
-} from "turboui";
-import { buildCompanyBillingChangeConsequence } from "turboui/CompanyBillingPage";
+import type { CompanyBillingPage as CompanyBillingPageTypes } from "turboui/CompanyBillingPage";
 
-type BillingCatalogProduct = api.BillingCatalogProduct;
+export { useBillingUpdatedSignal } from "@/signals";
 export type BillingCompanyAccessState = api.BillingCompanyAccessState;
-type BillingCheckoutSession = api.BillingCheckoutSession;
-type BillingHostedSession = api.BillingHostedSession;
-type BillingInterval = api.BillingInterval;
 export type BillingLimitStatus = api.BillingLimitStatus;
 export type BillingLimitWarnings = api.BillingLimitWarnings;
 export type BillingOverview = api.BillingOverview;
-type BillingPlan = api.BillingPlan;
-type BillingPlanDefinition = api.BillingPlanDefinition;
-type BillingStatus = api.BillingStatus;
-
-export type BillingFeedback = CompanyBillingPage.Feedback;
-type BillingSearchParams = CompanyBillingPage.BillingSearchParams;
-type BillingTarget = CompanyBillingPage.BillingTarget;
-type BillingTargetSelection = CompanyBillingPage.BillingTargetSelection;
 
 export type { BillingLimitGuidance, BillingLimitViewerRole } from "./memberLimitGuidance";
 export type { BillingLimitError } from "./limitError";
@@ -49,81 +22,44 @@ export { buildPaymentDefaultBanner, isPaymentRecoveryAccessState } from "./payme
 export type { BillingViewerRole } from "./paymentDefaultBanner";
 export { buildMemberLimitGuidance } from "./memberLimitGuidance";
 export { extractLimitError, extractLimitErrorDetails } from "./limitError";
-export { formatPlanLabel, formatPlanName } from "./planFormatting";
+export * from "./navigation";
 
-interface BillingTestHooks {
-  captureExternalNavigation?: boolean;
-  externalNavigations?: string[];
-}
+type BillingTarget = CompanyBillingPageTypes.BillingTarget;
 
 type BeginCheckoutResult =
   | { outcome: "missing_target" }
   | { outcome: "target_unavailable" }
-  | { outcome: "session_created"; session: BillingCheckoutSession }
-  | { outcome: "provider_error"; billing?: BillingOverview };
+  | { outcome: "session_created"; session: api.BillingCheckoutSession }
+  | { outcome: "provider_error"; billing?: api.BillingOverview };
 
 type ChangePlanResult =
   | { outcome: "missing_target" }
   | { outcome: "target_unavailable" }
-  | { outcome: "billing_updated"; billing: BillingOverview }
-  | { outcome: "provider_error"; billing?: BillingOverview };
+  | { outcome: "billing_updated"; billing: api.BillingOverview }
+  | { outcome: "provider_error"; billing?: api.BillingOverview };
 
 type BillingMutationResult =
-  | { outcome: "billing_updated"; billing: BillingOverview }
-  | { outcome: "provider_error"; billing?: BillingOverview };
+  | { outcome: "billing_updated"; billing: api.BillingOverview }
+  | { outcome: "provider_error"; billing?: api.BillingOverview };
 
 type BeginHostedSessionResult =
-  | { outcome: "session_created"; session: BillingHostedSession }
-  | { outcome: "provider_error"; billing?: BillingOverview };
+  | { outcome: "session_created"; session: api.BillingHostedSession }
+  | { outcome: "provider_error"; billing?: api.BillingOverview };
 
-interface BillingCancellationSummary {
-  currentPlanLabel: string;
-  currentPeriodEnd: string | null;
-  freePlanMemberLimit: number | null;
-  freePlanStorageLimitBytes: number | null;
-  memberCount: number;
-  storageUsageBytes: number;
-  willExceedFreeMemberLimit: boolean;
-  memberOverage: number;
-  willExceedFreeStorageLimit: boolean;
-  storageOverageBytes: number;
-  overageKind: "none" | "member" | "storage" | "member_and_storage";
-}
-
-const SUGGESTED_PLAN_SOURCE_LABELS: Record<string, string> = {
-  website: "Selected on the website",
-};
-
-export async function getBilling(input: api.BillingGetInput = {}): Promise<BillingOverview> {
+export async function getBilling(input: api.BillingGetInput = {}): Promise<api.BillingOverview> {
   return Api.billing.get(input).then((data) => data.billing);
 }
 
-export async function getAccessState(input: api.BillingGetAccessStateInput = {}): Promise<BillingCompanyAccessState> {
+export async function getAccessState(input: api.BillingGetAccessStateInput = {}): Promise<api.BillingCompanyAccessState> {
   return Api.billing.getAccessState(input).then((data) => data.accessState);
 }
 
-export async function getLimitWarnings(input: api.BillingGetLimitWarningsInput = {}): Promise<BillingLimitWarnings> {
+export async function getLimitWarnings(input: api.BillingGetLimitWarningsInput = {}): Promise<api.BillingLimitWarnings> {
   return Api.billing.getLimitWarnings(input).then((data) => data.warnings);
 }
 
-export async function refreshBilling(input: api.BillingRefreshInput = {}): Promise<BillingOverview> {
+export async function refreshBilling(input: api.BillingRefreshInput = {}): Promise<api.BillingOverview> {
   return Api.billing.refresh(input).then((data) => data.billing);
-}
-
-async function createCheckoutSession(input: api.BillingCreateCheckoutSessionInput): Promise<BillingCheckoutSession> {
-  return Api.billing.createCheckoutSession(input).then((data) => data.session);
-}
-
-async function createPaymentMethodSession(
-  input: api.BillingCreatePaymentMethodSessionInput,
-): Promise<BillingHostedSession> {
-  return Api.billing.createPaymentMethodSession(input).then((data) => data.session);
-}
-
-async function createCustomerPortalSession(
-  input: api.BillingCreateCustomerPortalSessionInput,
-): Promise<BillingHostedSession> {
-  return Api.billing.createCustomerPortalSession(input).then((data) => data.session);
 }
 
 export async function beginCheckout(target: BillingTarget | null): Promise<BeginCheckoutResult> {
@@ -192,20 +128,25 @@ export async function beginCustomerPortalSession(returnTo: string): Promise<Begi
   });
 }
 
-export function redirectToExternalBillingUrl(url: string) {
-  const billingTestHooks = (window.__tests as { billing?: BillingTestHooks } | undefined)?.billing;
+async function createCheckoutSession(input: api.BillingCreateCheckoutSessionInput): Promise<api.BillingCheckoutSession> {
+  return Api.billing.createCheckoutSession(input).then((data) => data.session);
+}
 
-  if (billingTestHooks?.captureExternalNavigation) {
-    billingTestHooks.externalNavigations = [...(billingTestHooks.externalNavigations || []), url];
-    return;
-  }
+async function createPaymentMethodSession(
+  input: api.BillingCreatePaymentMethodSessionInput,
+): Promise<api.BillingHostedSession> {
+  return Api.billing.createPaymentMethodSession(input).then((data) => data.session);
+}
 
-  window.location.assign(url);
+async function createCustomerPortalSession(
+  input: api.BillingCreateCustomerPortalSessionInput,
+): Promise<api.BillingHostedSession> {
+  return Api.billing.createCustomerPortalSession(input).then((data) => data.session);
 }
 
 async function withBillingRefreshFallback<T extends { outcome: string }>(
   operation: () => Promise<T>,
-): Promise<T | { outcome: "provider_error"; billing?: BillingOverview }> {
+): Promise<T | { outcome: "provider_error"; billing?: api.BillingOverview }> {
   try {
     return await operation();
   } catch {
@@ -216,115 +157,4 @@ async function withBillingRefreshFallback<T extends { outcome: string }>(
       return { outcome: "provider_error" };
     }
   }
-}
-
-function findPlanDefinition(plans: BillingPlanDefinition[], key?: string | null): BillingPlanDefinition | null {
-  if (!key) return null;
-
-  return plans.find((plan) => plan.key === key) || null;
-}
-
-export function getCurrentPlanDefinition(billing: BillingOverview): BillingPlanDefinition | null {
-  if (billing.account.planKey) {
-    return findPlanDefinition(billing.plans, billing.account.planKey);
-  }
-
-  if (billing.account.status === "free") {
-    return findPlanDefinition(billing.plans, "free");
-  }
-
-  return null;
-}
-
-export function formatSuggestedPlanSource(source?: string | null): string | null {
-  if (!source) return null;
-
-  const knownSource = SUGGESTED_PLAN_SOURCE_LABELS[source];
-  if (knownSource) {
-    return knownSource;
-  }
-
-  return source
-    .split(/[_-]/g)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
-export function parseBillingSearch(search: string): BillingSearchParams {
-  return parseCompanyBillingSearch(search);
-}
-
-export function listSellableTargets(billing: BillingOverview): BillingTarget[] {
-  return listCompanyBillingSellableTargets(billing) as BillingTarget[];
-}
-
-export function findSellableProduct(
-  catalogProducts: BillingCatalogProduct[],
-  plan: BillingPlan,
-  billingInterval: BillingInterval,
-): BillingCatalogProduct | null {
-  return findCompanyBillingSellableProduct(catalogProducts, plan, billingInterval) as BillingCatalogProduct | null;
-}
-
-export function selectTarget(billing: BillingOverview, search: BillingSearchParams): BillingTargetSelection {
-  return selectCompanyBillingTarget(billing, search) as BillingTargetSelection;
-}
-
-export function canCreateCheckout(status: BillingStatus): boolean {
-  return canCreateCompanyBillingCheckout(status);
-}
-
-export function canManagePaidSubscription(status: BillingStatus): boolean {
-  return isCompanyBillingPaidStatus(status);
-}
-
-export function isCheckoutReturnSuccessful(billing: BillingOverview, requestedTarget: BillingTarget | null): boolean {
-  return isCompanyBillingCheckoutReturnSuccessful(billing, requestedTarget);
-}
-
-export function buildPlanChangeFeedback(billing: BillingOverview): BillingFeedback {
-  return buildCompanyBillingPlanChangeFeedback(billing);
-}
-
-export function buildCancellationFeedback(billing: BillingOverview): BillingFeedback {
-  return buildCompanyBillingCancellationFeedback(billing);
-}
-
-export function buildReactivationFeedback(billing: BillingOverview): BillingFeedback {
-  return buildCompanyBillingReactivationFeedback(billing);
-}
-
-export function buildCancellationSummary(billing: BillingOverview): BillingCancellationSummary {
-  const consequence = buildCompanyBillingChangeConsequence({
-    billing,
-    targetPlanKey: "free",
-    timing: "next_renewal",
-    effectiveDate: billing.account.currentPeriodEnd,
-  });
-
-  return {
-    currentPlanLabel: formatPlanLabel(billing.account.planKey, billing.account.billingInterval, "Current plan"),
-    currentPeriodEnd: billing.account.currentPeriodEnd || null,
-    freePlanMemberLimit: consequence.memberLimit,
-    freePlanStorageLimitBytes: consequence.storageLimitBytes,
-    memberCount: consequence.memberCount,
-    storageUsageBytes: consequence.storageUsageBytes,
-    willExceedFreeMemberLimit: consequence.memberOverage > 0,
-    memberOverage: consequence.memberOverage,
-    willExceedFreeStorageLimit: consequence.storageOverageBytes > 0,
-    storageOverageBytes: consequence.storageOverageBytes,
-    overageKind: consequence.overageKind,
-  };
-}
-
-export function formatPriceFromMinorUnits(amount?: number | null, currency?: string | null): string {
-  if (amount == null || !currency) {
-    return "Unavailable";
-  }
-
-  return new Intl.NumberFormat(browserLocale(), {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(amount / 100);
 }
