@@ -45,7 +45,4 @@ defmodule OperatelyEmail.Cron.Assignments do
     |> Repo.preload([:company])
   end
 
-  def is_workday? do
-    Date.day_of_week(Date.utc_today()) in [1, 2, 3, 4, 5]
-  end
 end

@@ -138,6 +138,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Tasks.UpdateMilestone,
       Mutations.Tasks.UpdateMilestoneAndOrdering,
       Mutations.Tasks.UpdateName,
+      Mutations.Tasks.UpdateReminders,
       Mutations.Tasks.UpdateStatus,
       Mutations.Notifications.Unsubscribe,
       Mutations.People.Update,

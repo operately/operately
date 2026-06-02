@@ -746,7 +746,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
     def update_task_due_date(multi, new_due_date) do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
-        Operately.Tasks.Task.changeset(task, %{due_date: new_due_date})
+        Operately.Tasks.Task.changeset(task, update_due_date_attrs(task, new_due_date))
       end)
     end
 
@@ -754,12 +754,39 @@ defmodule OperatelyWeb.Api.Tasks do
       Ecto.Multi.run(multi, :updated_task, fn _repo, %{task: task} ->
         changeset = Operately.Tasks.Task.changeset(task, %{reminders: reminders})
 
-        if changeset.valid? do
-          Operately.Repo.update(changeset)
-        else
-          {:error, {:bad_request, "Invalid reminders"}}
+        cond do
+          due_relative_reminders_without_due_date?(task, reminders) ->
+            {:error, {:bad_request, "Invalid reminders"}}
+
+          changeset.valid? ->
+            Operately.Repo.update(changeset)
+
+          true ->
+            {:error, {:bad_request, "Invalid reminders"}}
         end
       end)
+    end
+
+    defp update_due_date_attrs(task, nil) do
+      %{
+        due_date: nil,
+        reminders:
+          (task.reminders || [])
+          |> Enum.reject(&Operately.Tasks.Reminder.due_relative?/1)
+          |> Enum.map(&reminder_attrs/1)
+      }
+    end
+
+    defp update_due_date_attrs(_task, new_due_date), do: %{due_date: new_due_date}
+
+    defp reminder_attrs(reminder) do
+      reminder
+      |> Map.from_struct()
+      |> Map.take([:type, :days, :date])
+    end
+
+    defp due_relative_reminders_without_due_date?(task, reminders) do
+      is_nil(task.due_date) and Enum.any?(reminders, &Operately.Tasks.Reminder.due_relative?/1)
     end
 
     def update_task_name(multi, new_name) do

@@ -26,6 +26,16 @@ defmodule Operately.Tasks.Reminder do
     |> validate_required_fields_for_type()
   end
 
+  def due_relative?(%__MODULE__{type: type}), do: due_relative_type?(type)
+  def due_relative?(attrs) when is_map(attrs), do: attrs |> reminder_type() |> due_relative_type?()
+
+  defp reminder_type(attrs) do
+    Map.get(attrs, :type) || Map.get(attrs, "type")
+  end
+
+  defp due_relative_type?(type) when type in [:before_due, :due_day, :overdue, "before_due", "due_day", "overdue"], do: true
+  defp due_relative_type?(_type), do: false
+
   def due_today?(_due_date, nil, _today), do: false
   def due_today?(_due_date, [], _today), do: false
 

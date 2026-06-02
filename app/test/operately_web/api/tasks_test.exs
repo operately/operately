@@ -1230,6 +1230,42 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert updated_task.due_date == nil
     end
 
+    test "it removes due-relative reminders when removing a due date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: %{date: "2026-06-01", date_type: "day", value: "Jun 1, 2026"},
+        type: "project"
+      })
+
+      reminders = [
+        %{type: "before_due", days: 3, date: nil},
+        %{type: "due_day", days: nil, date: nil},
+        %{type: "overdue", days: nil, date: nil},
+        %{type: "on_date", days: nil, date: "2026-06-03"}
+      ]
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_reminders], %{
+        task_id: Paths.task_id(ctx.task),
+        reminders: reminders,
+        type: "project"
+      })
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: nil,
+        type: "project"
+      })
+
+      assert res.task.reminders == [%{type: "on_date", days: nil, date: "2026-06-03"}]
+
+      updated_task = Operately.Repo.reload(ctx.task)
+      assert Enum.map(updated_task.reminders, &Map.take(Map.from_struct(&1), [:type, :days, :date])) == [
+        %{type: :on_date, days: nil, date: ~D[2026-06-03]}
+      ]
+    end
+
     test "it creates an activity when due date is updated", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -1342,6 +1378,12 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it updates task reminders", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: %{date: "2026-06-01", date_type: "day", value: "Jun 1, 2026"},
+        type: "project"
+      })
+
       reminders = [
         %{type: "before_due", days: 3, date: nil},
         %{type: "due_day", days: nil, date: nil},
@@ -1374,6 +1416,26 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         task_id: Paths.task_id(ctx.task),
         reminders: [
           %{type: "before_due", days: 0}
+        ],
+        type: "project"
+      })
+
+      assert res.message == "Invalid reminders"
+    end
+
+    test "it rejects due-relative reminders without a task due date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: nil,
+        type: "project"
+      })
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_reminders], %{
+        task_id: Paths.task_id(ctx.task),
+        reminders: [
+          %{type: "before_due", days: 1, date: nil}
         ],
         type: "project"
       })
