@@ -42,9 +42,11 @@ export function PersonOptions({
         View Profile
       </MenuLinkItem>
 
-      <MenuLinkItem icon={IconPencil} testId={createTestId("edit", person.id)} to={person.profileEditPath}>
-        Edit Profile
-      </MenuLinkItem>
+      {permissions?.canEditMembers && (
+        <MenuLinkItem icon={IconPencil} testId={createTestId("edit", person.id)} to={person.profileEditPath}>
+          Edit Profile
+        </MenuLinkItem>
+      )}
 
       {!isInvited && permissions?.canEditMembersAccessLevels && showAccessLevelOptions && (
         <SubMenu icon={IconLock} label="Change access level" hidden={false}>
@@ -79,7 +81,7 @@ export function PersonOptions({
         </MenuActionItem>
       )}
 
-      {person.invitationExpired && (
+      {permissions?.canInviteMembers && person.invitationExpired && (
         <MenuActionItem
           icon={IconRotateDot}
           onClick={() => onOpenRenew(person)}
@@ -99,7 +101,7 @@ export function PersonOptions({
         </MenuActionItem>
       )}
 
-      {person.hasOpenInvitation && !person.invitationExpired && (
+      {permissions?.canInviteMembers && person.hasOpenInvitation && !person.invitationExpired && (
         <MenuActionItem
           icon={IconRefresh}
           onClick={() => onOpenReissue(person)}
@@ -109,7 +111,7 @@ export function PersonOptions({
         </MenuActionItem>
       )}
 
-      {person.canRemove && (
+      {permissions?.canRemoveMembers && person.canRemove && (
         <MenuActionItem
           icon={IconUserX}
           onClick={() => onOpenRemove(person)}

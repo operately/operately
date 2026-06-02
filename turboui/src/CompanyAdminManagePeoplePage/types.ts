@@ -43,6 +43,7 @@ export interface CompanyAdminManagePeoplePageProps {
 export interface Permissions {
   canEditTrustedEmailDomains?: boolean;
   canInviteMembers?: boolean;
+  canEditMembers?: boolean;
   canRemoveMembers?: boolean;
   canCreateSpace?: boolean;
   canManageAdmins?: boolean;
