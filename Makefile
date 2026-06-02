@@ -218,7 +218,7 @@ test.mix: test.init
 	./devenv bash -c "cd app && mix test $(FILE)"
 
 test.ee:
-	./devenv bash -c "cd app && mix test ee/test/**/*_test.exs"
+	./devenv bash -c "./scripts/run_ee_tests.js"
 
 test.mix.unit: test.init
 	./devenv bash -c "./scripts/run_unit_tests.js"

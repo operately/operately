@@ -54,7 +54,7 @@ defmodule Mix.Tasks.TestsWithRetries do
 
   defp finalize_reports(report_files) do
     input_paths = Enum.map(report_files, &Path.join(@report_dir, &1))
-    output_path = Path.join(@report_dir, @final_report)
+    output_path = Path.join(@report_dir, final_report())
 
     :ok = JUnitReportMerger.merge!(input_paths, output_path)
 
@@ -62,6 +62,8 @@ defmodule Mix.Tasks.TestsWithRetries do
       if path != output_path, do: File.rm(path)
     end)
   end
+
+  defp final_report, do: System.get_env("JUNIT_FINAL_REPORT", @final_report)
 
   defp report_file(index), do: "junit-run-#{index}.xml"
 end
