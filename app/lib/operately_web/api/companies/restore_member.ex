@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Companies.RestoreMember do
       {:ok, me} <- find_me(conn),
       {:ok, company} <- get_company(conn),
       {:ok, person} <- find_person(conn, inputs.person_id),
-      {:ok, :allowed} <- authorize(company, person),
+      {:ok, :allowed} <- authorize(company, person, company_read_only(conn)),
       {:ok, _} <- execute(me, person, company)
     ) do
       {:ok, %{}}
@@ -34,9 +34,9 @@ defmodule OperatelyWeb.Api.Companies.RestoreMember do
     end
   end
 
-  defp authorize(company, person) do
+  defp authorize(company, person, company_read_only) do
     if company.id == person.company_id do
-      Permissions.check(company.request_info.access_level, :can_restore_members)
+      Permissions.check(company.request_info.access_level, :can_restore_members, company_read_only: company_read_only)
     else
       {:error, :forbidden}
     end

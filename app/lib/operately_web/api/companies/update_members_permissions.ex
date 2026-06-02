@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Companies.UpdateMembersPermissions do
     me = find_me(conn) |> unwrap()
     company = Company.get(me, id: me.company_id) |> unwrap()
 
-    :ok = authorize(company)
+    :ok = authorize(company, company_read_only(conn))
 
     members = parse_members(inputs.members)
     :ok = validate_access_levels(company, members)
@@ -36,10 +36,10 @@ defmodule OperatelyWeb.Api.Companies.UpdateMembersPermissions do
     {:error, _} -> {:error, :internal_server_error}
   end
 
-  defp authorize(company) do
+  defp authorize(company, company_read_only) do
     access_level = company.request_info.access_level
 
-    case Permissions.check(access_level, :can_edit_members_access_levels) do
+    case Permissions.check(access_level, :can_edit_members_access_levels, company_read_only: company_read_only) do
       {:ok, :allowed} -> :ok
       {:error, _} -> throw {:error, :forbidden}
     end
