@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Companies.Update do
     me = find_me(conn) |> unwrap()
     company = Company.get(me, id: me.company_id) |> unwrap()
 
-    authorize(company, :can_edit_details)
+    authorize(company, :can_edit_details, company_read_only(conn))
 
     company = CompanyEditing.run(me, company, inputs.name) |> unwrap()
     serialized = Serializer.serialize(company, level: :essential)
@@ -34,10 +34,10 @@ defmodule OperatelyWeb.Api.Companies.Update do
     {:error, _} -> {:error, :internal_server_error}
   end
 
-  defp authorize(company, action) do
+  defp authorize(company, action, company_read_only) do
     access_level = company.request_info.access_level
 
-    case Permissions.check(access_level, action) do
+    case Permissions.check(access_level, action, company_read_only: company_read_only) do
       {:ok, :allowed} -> :ok
       {:error, _} -> throw {:error, :forbidden}
     end

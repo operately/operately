@@ -174,8 +174,13 @@ defmodule Operately.Companies.Company do
     Operately.Repo.one(query) > 0
   end
 
-  def load_permissions(company) do
-    permissions = Operately.Companies.Permissions.calculate(company.request_info.access_level)
+  def load_permissions(company, company_read_only \\ false) do
+    permissions =
+      Operately.Companies.Permissions.calculate(
+        company.request_info.access_level,
+        company_read_only: company_read_only
+      )
+
     Map.put(company, :permissions, permissions)
   end
 

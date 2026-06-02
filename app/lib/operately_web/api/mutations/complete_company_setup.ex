@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Mutations.CompleteCompanySetup do
     with(
       {:ok, me} <- find_me(conn),
       {:ok, company} <- get_company(me),
-      {:ok, :allowed} <- authorize(company),
+      {:ok, :allowed} <- authorize(company, company_read_only(conn)),
       :ok <- ensure_not_completed(company),
       :ok <- validate_spaces(inputs.spaces),
       {:ok, _} <- run_setup(me, inputs.spaces)
@@ -56,8 +56,8 @@ defmodule OperatelyWeb.Api.Mutations.CompleteCompanySetup do
     Company.get(me, id: me.company_id)
   end
 
-  defp authorize(company) do
-    Permissions.check(company.request_info.access_level, :can_manage_owners)
+  defp authorize(company, company_read_only) do
+    Permissions.check(company.request_info.access_level, :can_manage_owners, company_read_only: company_read_only)
   end
 
   defp ensure_not_completed(company) do

@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
          {:ok, person} <- find_me(conn),
          :ok <- ensure_billing_enabled(company),
          {:ok, company} <- Company.get(person, id: company.id),
-         {:ok, :allowed} <- Permissions.check(company.request_info.access_level, :is_admin) do
+         {:ok, :allowed} <- Permissions.check(company.request_info.access_level, :is_admin, company_read_only: false) do
       {:ok, %{company: company, person: person}}
     else
       {:error, :not_found} -> {:error, :not_found}

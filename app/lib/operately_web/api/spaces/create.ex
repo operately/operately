@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Spaces.Create do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:company, fn ctx -> Company.get(ctx.me, id: ctx.me.company_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.request_info.access_level, :can_create_space) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.request_info.access_level, :can_create_space, company_read_only: company_read_only(conn)) end)
     |> run(:space, fn ctx -> Operately.Groups.create_group(ctx.me, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{space: Serializer.serialize(ctx.space, level: :essential)}} end)
     |> respond()

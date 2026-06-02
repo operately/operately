@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyOwners do
     with(
       {:ok, me} <- find_me(conn),
       {:ok, company} <- get_company(conn),
-      {:ok, :allowed} <- authorize(company),
+      {:ok, :allowed} <- authorize(company, company_read_only(conn)),
       {:ok, _} <- CompanyOwnersAdding.run(me, inputs.people_ids)
     ) do
       {:ok, %{}}
@@ -29,8 +29,8 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyOwners do
     Company.get(me(conn), id: me(conn).company_id)
   end
 
-  defp authorize(company) do
-    Permissions.check(company.request_info.access_level, :can_manage_owners)
+  defp authorize(company, company_read_only) do
+    Permissions.check(company.request_info.access_level, :can_manage_owners, company_read_only: company_read_only)
   end
 
 end

@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Companies.DeleteTrustedEmailDomain do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_company_id(inputs.company_id) end)
     |> run(:company, fn ctx -> Companies.get_company_with_access_level(ctx.me.id, short_id: ctx.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.requester_access_level, :can_edit_trusted_email_domains) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.requester_access_level, :can_edit_trusted_email_domains, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> Companies.remove_trusted_email_domain(ctx.company, inputs.domain) end)
     |> run(:serialized, fn ctx -> {:ok, %{company: Serializer.serialize(ctx.company)}} end)
     |> respond()

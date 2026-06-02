@@ -88,7 +88,7 @@ defmodule OperatelyWeb.Api.Invitations do
       conn
       |> start_transaction()
       |> load_company(conn)
-      |> check_permissions()
+      |> check_permissions(conn)
       |> fetch_or_create_invite_link()
       |> commit()
       |> respond()
@@ -104,9 +104,9 @@ defmodule OperatelyWeb.Api.Invitations do
       end)
     end
 
-    def check_permissions(multi) do
+    def check_permissions(multi, conn) do
       Ecto.Multi.run(multi, :check_permissions, fn _, %{company: company} ->
-        Permissions.check(company.request_info.access_level, :can_invite_members)
+        Permissions.check(company.request_info.access_level, :can_invite_members, company_read_only: OperatelyWeb.Api.Helpers.company_read_only(conn))
       end)
     end
 
@@ -211,7 +211,7 @@ defmodule OperatelyWeb.Api.Invitations do
       conn
       |> start_transaction()
       |> load_company(conn)
-      |> check_permissions()
+      |> check_permissions(conn)
       |> find_link()
       |> update_link(inputs)
       |> commit()
@@ -228,9 +228,9 @@ defmodule OperatelyWeb.Api.Invitations do
       end)
     end
 
-    def check_permissions(multi) do
+    def check_permissions(multi, conn) do
       Ecto.Multi.run(multi, :check_permissions, fn _, %{company: company} ->
-        Permissions.check(company.request_info.access_level, :can_invite_members)
+        Permissions.check(company.request_info.access_level, :can_invite_members, company_read_only: OperatelyWeb.Api.Helpers.company_read_only(conn))
       end)
     end
 
@@ -276,7 +276,7 @@ defmodule OperatelyWeb.Api.Invitations do
       conn
       |> start_transaction()
       |> load_company(conn)
-      |> check_permissions()
+      |> check_permissions(conn)
       |> find_link()
       |> reset_token()
       |> commit()
@@ -293,9 +293,9 @@ defmodule OperatelyWeb.Api.Invitations do
       end)
     end
 
-    def check_permissions(multi) do
+    def check_permissions(multi, conn) do
       Ecto.Multi.run(multi, :check_permissions, fn _, %{company: company} ->
-        Permissions.check(company.request_info.access_level, :can_invite_members)
+        Permissions.check(company.request_info.access_level, :can_invite_members, company_read_only: OperatelyWeb.Api.Helpers.company_read_only(conn))
       end)
     end
 

@@ -145,9 +145,16 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
             title="Manage Team Members"
             subtitle="Add new team members, update profiles, or remove access as needed."
             actions={
-              <PrimaryButton linkTo={props.addMemberPath} testId="add-person" className="whitespace-nowrap" size={windowSize === "xs" ? "sm" : "base"}>
-                Invite people
-              </PrimaryButton>
+              props.permissions.canInviteMembers && (
+                <PrimaryButton
+                  linkTo={props.addMemberPath}
+                  testId="add-person"
+                  className="whitespace-nowrap"
+                  size={windowSize === "xs" ? "sm" : "base"}
+                >
+                  Invite people
+                </PrimaryButton>
+              )
             }
           />
 
@@ -279,15 +286,7 @@ function Section({
   );
 }
 
-function PageHeader({
-  title,
-  subtitle,
-  actions,
-}: {
-  title: string;
-  subtitle?: string;
-  actions?: React.ReactNode;
-}) {
+function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: React.ReactNode }) {
   return (
     <div className="grid grid-cols-[1fr_auto] sm:flex items-center justify-between mb-6">
       <div>
