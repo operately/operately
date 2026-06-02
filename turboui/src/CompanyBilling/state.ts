@@ -1,6 +1,6 @@
-import { CompanyBillingPage } from "./types";
+import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
 
-export function parseCompanyBillingSearch(search: string): CompanyBillingPage.BillingSearchParams {
+export function parseCompanyBillingSearch(search: string): CompanyBillingPageTypes.BillingSearchParams {
   const params = new URLSearchParams(search);
   const rawPlan = params.get("plan");
   const rawBillingPeriod = params.get("billing_period");
@@ -16,8 +16,8 @@ export function parseCompanyBillingSearch(search: string): CompanyBillingPage.Bi
 }
 
 export function listCompanyBillingSellableTargets(
-  billing: CompanyBillingPage.BillingOverview,
-): CompanyBillingPage.BillingTarget[] {
+  billing: CompanyBillingPageTypes.BillingOverview,
+): CompanyBillingPageTypes.BillingTarget[] {
   return billing.catalogProducts
     .filter((product) => product.active)
     .sort((a, b) => compareTargets(a.planFamily, a.billingInterval, b.planFamily, b.billingInterval))
@@ -29,16 +29,16 @@ export function listCompanyBillingSellableTargets(
 }
 
 export function findCompanyBillingSellableProduct(
-  catalogProducts: CompanyBillingPage.BillingCatalogProduct[],
-  plan: CompanyBillingPage.Plan,
-  billingInterval: CompanyBillingPage.Interval,
-): CompanyBillingPage.BillingCatalogProduct | null {
+  catalogProducts: CompanyBillingPageTypes.BillingCatalogProduct[],
+  plan: CompanyBillingPageTypes.Plan,
+  billingInterval: CompanyBillingPageTypes.Interval,
+): CompanyBillingPageTypes.BillingCatalogProduct | null {
   return catalogProducts.find((product) => product.active && product.planFamily === plan && product.billingInterval === billingInterval) || null;
 }
 
 export function getCompanyBillingPendingTarget(
-  billing: CompanyBillingPage.BillingOverview,
-): CompanyBillingPage.BillingTarget | null {
+  billing: CompanyBillingPageTypes.BillingOverview,
+): CompanyBillingPageTypes.BillingTarget | null {
   if (!billing.account.pendingPlanKey || !billing.account.pendingBillingInterval) {
     return null;
   }
@@ -55,8 +55,8 @@ export function getCompanyBillingPendingTarget(
 }
 
 export function getCompanyBillingScheduledTarget(
-  billing: CompanyBillingPage.BillingOverview,
-): CompanyBillingPage.BillingTarget | null {
+  billing: CompanyBillingPageTypes.BillingOverview,
+): CompanyBillingPageTypes.BillingTarget | null {
   if (!billing.account.scheduledPlanKey || !billing.account.scheduledBillingInterval) {
     return null;
   }
@@ -73,8 +73,8 @@ export function getCompanyBillingScheduledTarget(
 }
 
 export function getCompanyBillingCurrentTarget(
-  billing: CompanyBillingPage.BillingOverview,
-): CompanyBillingPage.BillingTarget | null {
+  billing: CompanyBillingPageTypes.BillingOverview,
+): CompanyBillingPageTypes.BillingTarget | null {
   if (!billing.account.planKey || !billing.account.billingInterval) {
     return null;
   }
@@ -91,8 +91,8 @@ export function getCompanyBillingCurrentTarget(
 }
 
 export function getCompanyBillingSuggestedTarget(
-  billing: CompanyBillingPage.BillingOverview,
-): CompanyBillingPage.BillingTarget | null {
+  billing: CompanyBillingPageTypes.BillingOverview,
+): CompanyBillingPageTypes.BillingTarget | null {
   if (!billing.account.suggestedPlanKey) {
     return null;
   }
@@ -104,9 +104,9 @@ export function getCompanyBillingSuggestedTarget(
 }
 
 export function selectCompanyBillingTarget(
-  billing: CompanyBillingPage.BillingOverview,
-  search: CompanyBillingPage.BillingSearchParams,
-): CompanyBillingPage.BillingTargetSelection {
+  billing: CompanyBillingPageTypes.BillingOverview,
+  search: CompanyBillingPageTypes.BillingSearchParams,
+): CompanyBillingPageTypes.BillingTargetSelection {
   const sellableTargets = listCompanyBillingSellableTargets(billing);
   const queryTarget = resolveRequestedTarget(sellableTargets, search);
   const fallbackTarget = selectFallbackTarget(billing, sellableTargets);
@@ -130,17 +130,17 @@ export function selectCompanyBillingTarget(
   };
 }
 
-export function canCreateCompanyBillingCheckout(status: CompanyBillingPage.Status): boolean {
+export function canCreateCompanyBillingCheckout(status: CompanyBillingPageTypes.Status): boolean {
   return status === "free" || status === "canceled";
 }
 
-export function isCompanyBillingPaidStatus(status: CompanyBillingPage.Status): boolean {
+export function isCompanyBillingPaidStatus(status: CompanyBillingPageTypes.Status): boolean {
   return status === "active" || status === "past_due";
 }
 
 export function matchesCompanyBillingTarget(
-  account: CompanyBillingPage.BillingAccount,
-  target: CompanyBillingPage.BillingTarget | null,
+  account: CompanyBillingPageTypes.BillingAccount,
+  target: CompanyBillingPageTypes.BillingTarget | null,
 ): boolean {
   if (!target) return false;
 
@@ -148,8 +148,8 @@ export function matchesCompanyBillingTarget(
 }
 
 export function isCompanyBillingCheckoutReturnSuccessful(
-  billing: CompanyBillingPage.BillingOverview,
-  requestedTarget: CompanyBillingPage.BillingTarget | null,
+  billing: CompanyBillingPageTypes.BillingOverview,
+  requestedTarget: CompanyBillingPageTypes.BillingTarget | null,
 ): boolean {
   if (!isCompanyBillingPaidStatus(billing.account.status)) {
     return false;
@@ -165,9 +165,9 @@ export function isCompanyBillingCheckoutReturnSuccessful(
 }
 
 function selectFallbackTarget(
-  billing: CompanyBillingPage.BillingOverview,
-  sellableTargets: CompanyBillingPage.BillingTarget[],
-): { target: CompanyBillingPage.BillingTarget; source: CompanyBillingPage.BillingTargetSource } | null {
+  billing: CompanyBillingPageTypes.BillingOverview,
+  sellableTargets: CompanyBillingPageTypes.BillingTarget[],
+): { target: CompanyBillingPageTypes.BillingTarget; source: CompanyBillingPageTypes.BillingTargetSource } | null {
   const pendingTarget = getCompanyBillingPendingTarget(billing);
   if (pendingTarget?.product) {
     return { target: pendingTarget, source: "pending" };
@@ -201,9 +201,9 @@ function selectFallbackTarget(
 }
 
 function resolveRequestedTarget(
-  sellableTargets: CompanyBillingPage.BillingTarget[],
-  search: { plan: CompanyBillingPage.Plan | null; billingInterval: CompanyBillingPage.Interval | null },
-): CompanyBillingPage.BillingTarget | null {
+  sellableTargets: CompanyBillingPageTypes.BillingTarget[],
+  search: { plan: CompanyBillingPageTypes.Plan | null; billingInterval: CompanyBillingPageTypes.Interval | null },
+): CompanyBillingPageTypes.BillingTarget | null {
   if (search.plan && search.billingInterval) {
     return sellableTargets.find((target) => target.plan === search.plan && target.billingInterval === search.billingInterval) || null;
   }
@@ -220,21 +220,21 @@ function resolveRequestedTarget(
 }
 
 function compareTargets(
-  leftPlan: CompanyBillingPage.Plan,
-  leftInterval: CompanyBillingPage.Interval,
-  rightPlan: CompanyBillingPage.Plan,
-  rightInterval: CompanyBillingPage.Interval,
+  leftPlan: CompanyBillingPageTypes.Plan,
+  leftInterval: CompanyBillingPageTypes.Interval,
+  rightPlan: CompanyBillingPageTypes.Plan,
+  rightInterval: CompanyBillingPageTypes.Interval,
 ): number {
-  const planOrder: Record<CompanyBillingPage.Plan, number> = { team: 0, business: 1 };
-  const intervalOrder: Record<CompanyBillingPage.Interval, number> = { monthly: 0, yearly: 1 };
+  const planOrder: Record<CompanyBillingPageTypes.Plan, number> = { team: 0, business: 1 };
+  const intervalOrder: Record<CompanyBillingPageTypes.Interval, number> = { monthly: 0, yearly: 1 };
 
   return planOrder[leftPlan] - planOrder[rightPlan] || intervalOrder[leftInterval] - intervalOrder[rightInterval];
 }
 
-function isBillingPlan(value: string | null): value is CompanyBillingPage.Plan {
+function isBillingPlan(value: string | null): value is CompanyBillingPageTypes.Plan {
   return value === "team" || value === "business";
 }
 
-function isBillingInterval(value: string | null): value is CompanyBillingPage.Interval {
+function isBillingInterval(value: string | null): value is CompanyBillingPageTypes.Interval {
   return value === "monthly" || value === "yearly";
 }

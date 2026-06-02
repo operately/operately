@@ -78,28 +78,84 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
         insertedAt: "2026-05-23T00:00:00Z",
         updatedAt: "2026-05-23T00:00:00Z",
       },
-      {
-        id: "business-yearly",
-        provider: "polar",
-        planFamily: "business",
-        billingInterval: "yearly",
-        polarProductId: "pol_business_yearly",
-        polarProductName: "Business Yearly",
-        priceAmount: 199000,
-        priceCurrency: "usd",
-        version: 1,
-        active: true,
-        archivedAt: null,
-        lastSyncedAt: "2026-05-23T00:00:00Z",
-        insertedAt: "2026-05-23T00:00:00Z",
-        updatedAt: "2026-05-23T00:00:00Z",
-      },
     ],
     memberCount: 10,
     storageUsageBytes: 81 * 1024 ** 3,
     stale: false,
     ...rest,
   } as Billing.BillingOverview;
+}
+
+function accessStateMock(): Billing.BillingCompanyAccessState {
+  const memberLimit = {
+    code: "member_count_limit_status",
+    limitKey: "member_count",
+    planKey: "team" as const,
+    currentUsage: 10,
+    requestedDelta: 0,
+    projectedUsage: 10,
+    limit: 50,
+    remaining: 40,
+    nearLimit: false,
+    blocked: false,
+    enforced: true,
+  };
+
+  const storageLimit = {
+    code: "storage_bytes_limit_status",
+    limitKey: "storage_bytes",
+    planKey: "team" as const,
+    currentUsage: 81 * 1024 ** 3,
+    requestedDelta: 0,
+    projectedUsage: 81 * 1024 ** 3,
+    limit: 107_374_182_400,
+    remaining: 19 * 1024 ** 3,
+    nearLimit: true,
+    blocked: false,
+    enforced: true,
+  };
+
+  return {
+    accessState: "payment_grace",
+    accessStateReason: "past_due",
+    accessStateStartedAt: "2026-05-23T00:00:00Z",
+    accessStateEndsAt: "2026-06-06T00:00:00Z",
+    memberLimit,
+    storageLimit,
+  };
+}
+
+function limitWarningsMock(): Billing.BillingLimitWarnings {
+  return {
+    memberLimit: {
+      code: "member_count_limit_status",
+      limitKey: "member_count",
+      planKey: "free",
+      currentUsage: 18,
+      requestedDelta: 0,
+      projectedUsage: 18,
+      limit: 20,
+      remaining: 2,
+      nearLimit: true,
+      blocked: false,
+      enforced: true,
+      recommendedUpgrade: null,
+    },
+    storageLimit: {
+      code: "storage_bytes_limit_status",
+      limitKey: "storage_bytes",
+      planKey: "free",
+      currentUsage: 81 * 1024 ** 3,
+      requestedDelta: 0,
+      projectedUsage: 81 * 1024 ** 3,
+      limit: 100 * 1024 ** 3,
+      remaining: 19 * 1024 ** 3,
+      nearLimit: true,
+      blocked: false,
+      enforced: true,
+      recommendedUpgrade: null,
+    },
+  };
 }
 
 function hostedSessionMock() {
@@ -176,95 +232,20 @@ describe("billing model helpers", () => {
     }
   });
 
-  it("returns the free plan definition when the account is free and plan_key is absent", () => {
-    const plan = Billing.getCurrentPlanDefinition(billingOverviewMock());
+  it("loads billing overview, access state, limit warnings, and refresh data from the api", async () => {
+    const billing = billingOverviewMock();
+    const accessState = accessStateMock();
+    const warnings = limitWarningsMock();
 
-    expect(plan?.displayName).toBe("Free");
-    expect(plan?.memberLimit).toBe(20);
-  });
+    jest.spyOn(Api.billing, "get").mockResolvedValue({ billing } as any);
+    jest.spyOn(Api.billing, "getAccessState").mockResolvedValue({ accessState } as any);
+    jest.spyOn(Api.billing, "getLimitWarnings").mockResolvedValue({ warnings } as any);
+    jest.spyOn(Api.billing, "refresh").mockResolvedValue({ billing } as any);
 
-  it("formats plan labels and safe plan fallbacks", () => {
-    expect(Billing.formatPlanLabel("team", "yearly")).toBe("Team Yearly");
-    expect(Billing.formatPlanName(null, "Unknown plan")).toBe("Unknown plan");
-  });
-
-  it("formats suggested plan sources", () => {
-    expect(Billing.formatSuggestedPlanSource("website")).toBe("Selected on the website");
-    expect(Billing.formatSuggestedPlanSource("member_count")).toBe("Member Count");
-  });
-
-  it("parses billing search params", () => {
-    expect(Billing.parseBillingSearch("?plan=team&billing_period=yearly&checkout_id=chk_123")).toEqual({
-      rawPlan: "team",
-      rawBillingPeriod: "yearly",
-      plan: "team",
-      billingInterval: "yearly",
-      checkoutId: "chk_123",
-      hasSelectionIntent: true,
-    });
-  });
-
-  it("selects the query target before any other fallback", () => {
-    const billing = billingOverviewMock({
-      account: {
-        pendingPlanKey: "team",
-        pendingBillingInterval: "monthly",
-        suggestedPlanKey: "business",
-        suggestedBillingInterval: "yearly",
-      } as any,
-    });
-
-    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=business&billing_period=yearly"));
-
-    expect(selection.source).toBe("query");
-    expect(selection.warning).toBeNull();
-    expect(selection.target).toMatchObject({ plan: "business", billingInterval: "yearly" });
-  });
-
-  it("falls back to the scheduled target for paid companies", () => {
-    const billing = billingOverviewMock({
-      account: {
-        planKey: "team",
-        billingInterval: "monthly",
-        status: "active",
-        scheduledPlanKey: "business",
-        scheduledBillingInterval: "yearly",
-      } as any,
-    });
-
-    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch(""));
-
-    expect(selection.source).toBe("scheduled");
-    expect(selection.target).toMatchObject({ plan: "business", billingInterval: "yearly" });
-  });
-
-  it("falls back to the current target for paid companies without a scheduled change", () => {
-    const billing = billingOverviewMock({
-      account: {
-        planKey: "business",
-        billingInterval: "monthly",
-        status: "past_due",
-      } as any,
-    });
-
-    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch(""));
-
-    expect(selection.source).toBe("current");
-    expect(selection.target).toMatchObject({ plan: "business", billingInterval: "monthly" });
-  });
-
-  it("falls back to the suggested target for free companies", () => {
-    const billing = billingOverviewMock({
-      account: {
-        suggestedPlanKey: "business",
-        suggestedBillingInterval: "yearly",
-      } as any,
-    });
-
-    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch(""));
-
-    expect(selection.source).toBe("suggested");
-    expect(selection.target).toMatchObject({ plan: "business", billingInterval: "yearly" });
+    await expect(Billing.getBilling({})).resolves.toEqual(billing);
+    await expect(Billing.getAccessState({})).resolves.toEqual(accessState);
+    await expect(Billing.getLimitWarnings({})).resolves.toEqual(warnings);
+    await expect(Billing.refreshBilling({})).resolves.toEqual(billing);
   });
 
   it("extracts limit errors with a structured upgrade recommendation from api responses", () => {
@@ -407,151 +388,27 @@ describe("billing model helpers", () => {
     });
   });
 
-  it("falls back gracefully when the query target is invalid or unsellable", () => {
-    const billing = billingOverviewMock({
-      catalogProducts: billingOverviewMock().catalogProducts.filter((product) => product.planFamily !== "business"),
+  it("starts checkout through the billing api", async () => {
+    const session = {
+      provider: "polar",
+      url: "https://polar.sh/checkout/test",
+      expiresAt: "2026-05-23T00:10:00Z",
+      returnUrl: "https://app.example.com/acme/admin/billing",
+    };
+
+    jest.spyOn(Api.billing, "createCheckoutSession").mockResolvedValue({ session } as any);
+
+    const result = await Billing.beginCheckout({
+      plan: "team",
+      billingInterval: "monthly",
+      product: billingOverviewMock().catalogProducts[0],
     });
 
-    const selection = Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=business&billing_period=yearly"));
-
-    expect(selection.source).toBe("catalog");
-    expect(selection.warning).toContain("not currently available");
-    expect(selection.target).toMatchObject({ plan: "team", billingInterval: "monthly" });
-  });
-
-  it("resolves sellable products and sorts targets predictably", () => {
-    const billing = billingOverviewMock();
-
-    expect(Billing.findSellableProduct(billing.catalogProducts, "business", "yearly")?.polarProductId).toBe("pol_business_yearly");
-    expect(Billing.listSellableTargets(billing).map((target) => `${target.plan}:${target.billingInterval}`)).toEqual([
-      "team:monthly",
-      "team:yearly",
-      "business:monthly",
-      "business:yearly",
-    ]);
-  });
-
-  it("formats prices from minor units", () => {
-    expect(Billing.formatPriceFromMinorUnits(7900, "usd")).toContain("79");
-    expect(Billing.formatPriceFromMinorUnits(null, "usd")).toBe("Unavailable");
-  });
-
-  it("detects successful checkout returns once the paid plan is live", () => {
-    const billing = billingOverviewMock({
-      account: {
-        planKey: "team",
-        billingInterval: "yearly",
-        status: "active",
-        pendingPlanKey: "team",
-        pendingBillingInterval: "yearly",
-      } as any,
+    expect(Api.billing.createCheckoutSession).toHaveBeenCalledWith({
+      plan: "team",
+      billingInterval: "monthly",
     });
-
-    expect(Billing.isCheckoutReturnSuccessful(billing, { plan: "team", billingInterval: "yearly", product: null })).toBe(true);
-  });
-
-  it("builds scheduled and immediate plan-change feedback", () => {
-    const scheduledFeedback = Billing.buildPlanChangeFeedback(
-      billingOverviewMock({
-        account: {
-          planKey: "team",
-          billingInterval: "monthly",
-          status: "active",
-          scheduledPlanKey: "business",
-          scheduledBillingInterval: "yearly",
-          scheduledChangeEffectiveAt: "2026-06-14T00:00:00Z",
-        } as any,
-      }),
-    );
-
-    const immediateFeedback = Billing.buildPlanChangeFeedback(
-      billingOverviewMock({
-        account: {
-          planKey: "business",
-          billingInterval: "monthly",
-          status: "active",
-        } as any,
-      }),
-    );
-
-    expect(scheduledFeedback.message).toBe("Plan change scheduled");
-    expect(scheduledFeedback.description).toContain("Business Yearly");
-    expect(immediateFeedback.message).toBe("Plan updated");
-    expect(immediateFeedback.description).toContain("Business Monthly");
-  });
-
-  it("keeps monthly-to-yearly changes immediate and yearly-to-monthly changes scheduled", () => {
-    const immediateFeedback = Billing.buildPlanChangeFeedback(
-      billingOverviewMock({
-        account: {
-          planKey: "team",
-          billingInterval: "yearly",
-          status: "active",
-          scheduledPlanKey: null,
-          scheduledBillingInterval: null,
-        } as any,
-      }),
-    );
-
-    const scheduledFeedback = Billing.buildPlanChangeFeedback(
-      billingOverviewMock({
-        account: {
-          planKey: "team",
-          billingInterval: "yearly",
-          status: "active",
-          scheduledPlanKey: "team",
-          scheduledBillingInterval: "monthly",
-          scheduledChangeEffectiveAt: "2026-06-14T00:00:00Z",
-        } as any,
-      }),
-    );
-
-    expect(immediateFeedback.message).toBe("Plan updated");
-    expect(immediateFeedback.description).toContain("Team Yearly");
-    expect(scheduledFeedback.message).toBe("Plan change scheduled");
-    expect(scheduledFeedback.description).toContain("Team Monthly");
-  });
-
-  it("builds cancellation summary and success feedback", () => {
-    const billing = billingOverviewMock({
-      account: {
-        planKey: "team",
-        billingInterval: "monthly",
-        status: "active",
-        currentPeriodEnd: "2026-06-14T00:00:00Z",
-        cancelAtPeriodEnd: true,
-      } as any,
-      memberCount: 25,
-    });
-
-    const summary = Billing.buildCancellationSummary(billing);
-    const feedback = Billing.buildCancellationFeedback(billing);
-
-    expect(summary.freePlanMemberLimit).toBe(20);
-    expect(summary.freePlanStorageLimitBytes).toBe(1_073_741_824);
-    expect(summary.willExceedFreeMemberLimit).toBe(true);
-    expect(summary.memberOverage).toBe(5);
-    expect(summary.storageUsageBytes).toBe(81 * 1024 ** 3);
-    expect(summary.willExceedFreeStorageLimit).toBe(true);
-    expect(summary.storageOverageBytes).toBe(80 * 1024 ** 3);
-    expect(summary.overageKind).toBe("member_and_storage");
-    expect(feedback.message).toBe("Cancellation scheduled");
-  });
-
-  it("builds reactivation feedback", () => {
-    const billing = billingOverviewMock({
-      account: {
-        planKey: "business",
-        billingInterval: "yearly",
-        status: "active",
-        cancelAtPeriodEnd: false,
-      } as any,
-    });
-
-    const feedback = Billing.buildReactivationFeedback(billing);
-
-    expect(feedback.message).toBe("Plan reactivated");
-    expect(feedback.description).toContain("Business Yearly");
+    expect(result).toEqual({ outcome: "session_created", session });
   });
 
   it("changes the plan through the billing api", async () => {

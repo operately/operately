@@ -1,6 +1,7 @@
 import * as Billing from "@/models/billing";
 
-import { buildCompanyBillingPlanSelectionMode } from "turboui";
+import { parseCompanyBillingSearch, selectCompanyBillingTarget } from "turboui/CompanyBilling";
+import { buildCompanyBillingPlanSelectionMode } from "turboui/CompanyBillingPlanSelectionPage";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
   const { account, ...rest } = params;
@@ -109,7 +110,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=yearly")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=yearly")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),
@@ -140,7 +141,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),
@@ -169,7 +170,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),
@@ -219,7 +220,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=yearly")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=yearly")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),
@@ -249,7 +250,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),
@@ -278,7 +279,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),
@@ -307,7 +308,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),
@@ -332,7 +333,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),
@@ -359,7 +360,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      selection: Billing.selectTarget(billing, Billing.parseBillingSearch("?plan=team&billing_period=monthly")),
+      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
       onSelectPlan: jest.fn(),

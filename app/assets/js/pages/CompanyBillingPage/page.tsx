@@ -2,14 +2,16 @@ import * as Billing from "@/models/billing";
 import * as React from "react";
 
 import {
-  buildCompanyBillingSuccessFeedback,
-  CompanyBillingPage as TurboCompanyBillingPage,
+  buildCompanyBillingReactivationFeedback,
   getCompanyBillingPendingTarget,
   isCompanyBillingCheckoutReturnSuccessful,
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
-  showErrorToast,
-} from "turboui";
+  buildCompanyBillingSuccessFeedback,
+  isCompanyBillingPaidStatus,
+} from "turboui/CompanyBilling";
+import { CompanyBillingPage as TurboCompanyBillingPage } from "turboui/CompanyBillingPage";
+import { showErrorToast } from "turboui";
 import { useLoadedData } from "./loader";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePaths } from "@/routes/paths";
@@ -17,7 +19,7 @@ import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 interface BillingPageLocationState {
   billing?: Billing.BillingOverview;
-  feedback?: Billing.BillingFeedback;
+  feedback?: TurboCompanyBillingPage.Feedback;
 }
 
 export function isAwaitingCheckoutConfirmation(
@@ -25,13 +27,13 @@ export function isAwaitingCheckoutConfirmation(
   checkoutId: string | null,
   requestedTarget: TurboCompanyBillingPage.BillingTarget | null,
 ) {
-  return Boolean(checkoutId) && !Billing.isCheckoutReturnSuccessful(billing, requestedTarget);
+  return Boolean(checkoutId) && !isCompanyBillingCheckoutReturnSuccessful(billing, requestedTarget);
 }
 
 export function resolveCheckoutConfirmation(
   billing: Billing.BillingOverview,
   checkoutId: string | null,
-): { checkoutResolved: boolean; feedback: Billing.BillingFeedback | null } {
+): { checkoutResolved: boolean; feedback: TurboCompanyBillingPage.Feedback | null } {
   if (!checkoutId) {
     return { checkoutResolved: false, feedback: null };
   }
@@ -56,7 +58,7 @@ export function Page() {
 
   const [billing, setBilling] = React.useState(locationState?.billing || loadedBilling);
   const [actionError, setActionError] = React.useState<string | null>(null);
-  const [feedback, setFeedback] = React.useState<Billing.BillingFeedback | null>(locationState?.feedback || null);
+  const [feedback, setFeedback] = React.useState<TurboCompanyBillingPage.Feedback | null>(locationState?.feedback || null);
   const [, setIsStartingCheckout] = React.useState(false);
 
   React.useEffect(() => {
@@ -77,8 +79,8 @@ export function Page() {
   const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search]);
   const pendingTarget = React.useMemo(() => getCompanyBillingPendingTarget(billing), [billing]);
   const checkoutReturnTarget = pendingTarget || selection.target;
-  const canUseCheckout = Billing.canCreateCheckout(billing.account.status);
-  const canManagePaidSubscription = Billing.canManagePaidSubscription(billing.account.status);
+  const canUseCheckout = billing.account.status === "free" || billing.account.status === "canceled";
+  const canManagePaidSubscription = isCompanyBillingPaidStatus(billing.account.status);
   const companyName = company.name || "Billing";
   const isConfirmingCheckout = isAwaitingCheckoutConfirmation(billing, search.checkoutId, checkoutReturnTarget);
   const canManuallyRefreshBilling = Billing.isPaymentRecoveryAccessState(billing.account);
@@ -111,7 +113,7 @@ export function Page() {
   }, [navigate, paths]);
 
   const finishCheckoutConfirmation = React.useCallback(
-    (nextBilling: Billing.BillingOverview, nextFeedback: Billing.BillingFeedback) => {
+    (nextBilling: Billing.BillingOverview, nextFeedback: TurboCompanyBillingPage.Feedback) => {
       setBilling(nextBilling);
       setFeedback(nextFeedback);
       setActionError(null);
@@ -215,7 +217,7 @@ export function Page() {
 
     if (result.outcome === "billing_updated") {
       setBilling(result.billing);
-      setFeedback(Billing.buildReactivationFeedback(result.billing));
+      setFeedback(buildCompanyBillingReactivationFeedback(result.billing));
       return;
     }
 

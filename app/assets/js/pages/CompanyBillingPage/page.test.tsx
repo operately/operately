@@ -3,15 +3,17 @@ import { isAwaitingCheckoutConfirmation, resolveCheckoutConfirmation } from "./p
 
 import {
   buildCompanyBillingCancellationFeedback,
-  buildCompanyBillingConfirmingMode,
-  buildCompanyBillingOverviewMode,
-  buildCompanyBillingPageViewModel,
   buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingReactivationFeedback,
   buildCompanyBillingRecoveryFeedback,
-  buildCompanyBillingStatusNotices,
   buildCompanyBillingSuccessFeedback,
-} from "turboui";
+} from "turboui/CompanyBilling";
+import {
+  buildCompanyBillingConfirmingMode,
+  buildCompanyBillingOverviewMode,
+  buildCompanyBillingPageViewModel,
+  buildCompanyBillingStatusNotices,
+} from "turboui/CompanyBillingPage";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
   const { account, ...rest } = params;

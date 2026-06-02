@@ -2,8 +2,11 @@ import { CompanyBillingCancellationPage } from "./types";
 import {
   buildCompanyBillingChangeConsequence,
   buildCompanyBillingOverageDescription,
-} from "../CompanyBillingPage/changeConsequences";
-import { formatStorageBytes } from "../CompanyBillingPage/storageFormatting";
+  findCompanyBillingPlanDefinition,
+  formatCompanyBillingDate,
+  formatCompanyBillingPlanName,
+  formatStorageBytes,
+} from "../CompanyBilling";
 
 export function buildCompanyBillingCancellationPageViewModel(
   props: CompanyBillingCancellationPage.Props,
@@ -28,8 +31,8 @@ export function buildCompanyBillingCancellationPageViewModel(
 export function buildCompanyBillingCancellationSummary(
   billing: CompanyBillingCancellationPage.BillingOverview,
 ): CompanyBillingCancellationPage.CancellationSummary {
-  const currentPlan = findPlanDefinition(billing, billing.account.planKey);
-  const currentPeriodEnd = formatDate(billing.account.currentPeriodEnd);
+  const currentPlan = findCompanyBillingPlanDefinition(billing.plans, billing.account.planKey);
+  const currentPeriodEnd = formatCompanyBillingDate(billing.account.currentPeriodEnd);
   const consequence = buildCompanyBillingChangeConsequence({
     billing,
     targetPlanKey: "free",
@@ -41,7 +44,7 @@ export function buildCompanyBillingCancellationSummary(
     rows: compactRows([
       {
         label: "Current plan",
-        value: currentPlan?.displayName || formatPlanName(billing.account.planKey, "Paid plan"),
+        value: currentPlan?.displayName || formatCompanyBillingPlanName(billing.account.planKey, "Paid plan"),
       },
       currentPeriodEnd ? { label: "Paid access until", value: currentPeriodEnd } : null,
       { label: "Active members", value: `${billing.memberCount}` },
@@ -65,40 +68,10 @@ export function buildCompanyBillingCancellationSummary(
   };
 }
 
-function findPlanDefinition(
-  billing: CompanyBillingCancellationPage.BillingOverview,
-  key?: string | null,
-) {
-  if (!key) return null;
-
-  return billing.plans.find((plan) => plan.key === key) || null;
-}
-
 function compactRows(
   rows: Array<CompanyBillingCancellationPage.DetailRow | null>,
 ): CompanyBillingCancellationPage.DetailRow[] {
   return rows.filter((row): row is CompanyBillingCancellationPage.DetailRow => row !== null);
-}
-
-function formatPlanName(planKey?: string | null, fallback = "Unknown plan"): string {
-  if (!planKey) return fallback;
-
-  const planNames: Record<string, string> = {
-    free: "Free",
-    team: "Team",
-    business: "Business",
-  };
-
-  return planNames[planKey] || fallback;
-}
-
-function formatDate(value?: string | null): string | null {
-  if (!value) return null;
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-
-  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 }
 
 function overLimitWarningMessage(overageKind: ReturnType<typeof buildCompanyBillingChangeConsequence>["overageKind"]) {

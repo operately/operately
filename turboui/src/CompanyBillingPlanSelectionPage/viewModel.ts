@@ -4,14 +4,16 @@ import {
   getCompanyBillingScheduledTarget,
   isCompanyBillingPaidStatus,
   matchesCompanyBillingTarget,
-} from "../CompanyBillingPage/state";
+  formatCompanyBillingPlanName,
+  formatCompanyBillingPriceFromMinorUnits,
+} from "../CompanyBilling";
 import {
   buildCompanyBillingChangeConsequence,
   buildCompanyBillingOverageDescription,
   formatCompanyBillingChangeTimingDescription,
   resolveCompanyBillingChangeTiming,
-} from "../CompanyBillingPage/changeConsequences";
-import { formatStorageBytes } from "../CompanyBillingPage/storageFormatting";
+} from "../CompanyBilling";
+import { findCompanyBillingPlanDefinition, formatStorageBytes } from "../CompanyBilling";
 import { CompanyBillingPlanSelectionPage } from "./types";
 
 export function buildCompanyBillingPlanSelectionPageViewModel(
@@ -60,12 +62,12 @@ export function buildCompanyBillingPlanSelectionMode(
     selectedInterval,
     onSelectInterval: args.onSelectInterval,
     cards: (["team", "business"] as CompanyBillingPlanSelectionPage.Plan[]).map((plan) => {
-      const definition = findPlanDefinition(args.billing.plans, plan);
+      const definition = findCompanyBillingPlanDefinition(args.billing.plans, plan);
       const product = findCompanyBillingSellableProduct(args.billing.catalogProducts, plan, selectedInterval);
 
       return {
         key: `${plan}-${selectedInterval}`,
-        title: definition?.displayName || formatPlanName(plan),
+        title: definition?.displayName || formatCompanyBillingPlanName(plan),
         priceLabel: formatPlanPriceLabel(product, selectedInterval),
         detailLines: [
           definition?.memberLimit ? `${definition.memberLimit} member limit` : "Member limit unavailable",
@@ -178,30 +180,6 @@ function findSuggestedSelectionTarget(
   };
 }
 
-function findPlanDefinition(
-  plans: CompanyBillingPlanSelectionPage.BillingOverview["plans"],
-  key: CompanyBillingPlanSelectionPage.Plan,
-) {
-  return plans.find((plan) => plan.key === key) || null;
-}
-
-function formatPlanName(planKey: CompanyBillingPlanSelectionPage.Plan): string {
-  return planKey === "team" ? "Team" : "Business";
-}
-
-function formatPriceFromMinorUnits(amount?: number | null, currency?: string | null): string {
-  if (amount == null || !currency) {
-    return "Unavailable";
-  }
-
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount / 100);
-}
-
 function formatPlanPriceLabel(
   product: CompanyBillingPlanSelectionPage.BillingOverview["catalogProducts"][number] | null,
   interval: CompanyBillingPlanSelectionPage.Interval,
@@ -211,10 +189,10 @@ function formatPlanPriceLabel(
   }
 
   if (interval === "yearly") {
-    return `${formatPriceFromMinorUnits(product.priceAmount ? Math.round(product.priceAmount / 12) : null, product.priceCurrency)} / month`;
+    return `${formatCompanyBillingPriceFromMinorUnits(product.priceAmount ? Math.round(product.priceAmount / 12) : null, product.priceCurrency)} / month`;
   }
 
-  return `${formatPriceFromMinorUnits(product.priceAmount, product.priceCurrency)} / month`;
+  return `${formatCompanyBillingPriceFromMinorUnits(product.priceAmount, product.priceCurrency)} / month`;
 }
 
 function formatBillingHint(
@@ -226,7 +204,7 @@ function formatBillingHint(
   }
 
   if (interval === "yearly") {
-    return `Billed yearly at ${formatPriceFromMinorUnits(product.priceAmount, product.priceCurrency)}`;
+    return `Billed yearly at ${formatCompanyBillingPriceFromMinorUnits(product.priceAmount, product.priceCurrency)}`;
   }
 
   return "Billed monthly";
