@@ -1,7 +1,7 @@
 import { UsageError } from "./parser-types";
 import type { GlobalFlags } from "./parser-types";
 
-const GLOBAL_FLAG_KEYS = new Set(["token", "base-url", "profile", "compact", "output", "verbose"]);
+const GLOBAL_FLAG_KEYS = new Set(["token", "base-url", "profile", "compact", "json", "output", "verbose"]);
 
 export function parseFlags(tokens: string[]): Map<string, unknown[]> {
   const flags = new Map<string, unknown[]>();
@@ -44,6 +44,7 @@ export function parseFlags(tokens: string[]): Map<string, unknown[]> {
 export function parseGlobalFlags(flags: Map<string, unknown[]>): GlobalFlags {
   const globalFlags: GlobalFlags = {
     compact: false,
+    json: false,
     verbose: false,
   };
 
@@ -57,6 +58,7 @@ export function parseGlobalFlags(flags: Map<string, unknown[]>): GlobalFlags {
     if (key === "profile") globalFlags.profile = ensureStringFlag("profile", last);
     if (key === "output") globalFlags.output = ensureStringFlag("output", last);
     if (key === "compact") globalFlags.compact = ensureBooleanFlag("compact", last);
+    if (key === "json") globalFlags.json = ensureBooleanFlag("json", last);
     if (key === "verbose") globalFlags.verbose = ensureBooleanFlag("verbose", last);
   }
 

@@ -173,7 +173,7 @@ describe("CLI Integration Tests", () => {
       const result = await runCLI(["tasks", "update_assignee", "--help"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("--assignee-id <id> (optional, nullable)"));
-      assert.ok(result.stdout.includes("--assignee-ids <[id]> (optional, nullable)"));
+      assert.ok(result.stdout.includes("--assignee-ids <id> (optional, nullable, repeatable)"));
     });
 
     it("shows command help with trailing help", async () => {
@@ -487,7 +487,7 @@ describe("CLI Integration Tests", () => {
     it("shows object type field definitions in help", async () => {
       const result = await runCLI(["help", "spaces", "add_members"]);
       assert.strictEqual(result.exitCode, 0);
-      assert.ok(result.stdout.includes("--members <[add_member_input]>"));
+      assert.ok(result.stdout.includes("--members <add_member_input> (required, repeatable)"));
       assert.ok(result.stdout.includes("Fields for object 'add_member_input':"));
       assert.ok(result.stdout.includes("id: <id>"));
       assert.ok(result.stdout.includes("access_level: <access_options_int>"));
@@ -546,7 +546,7 @@ describe("CLI Integration Tests", () => {
     it("shows object type help only for list item types", async () => {
       const result = await runCLI(["help", "spaces", "add_members"]);
       assert.strictEqual(result.exitCode, 0);
-      assert.ok(result.stdout.includes("--members <[add_member_input]>"));
+      assert.ok(result.stdout.includes("--members <add_member_input> (required, repeatable)"));
       assert.ok(result.stdout.includes("Fields for object 'add_member_input':"));
     });
 

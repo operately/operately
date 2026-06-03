@@ -134,7 +134,7 @@ Read the testing guide at app/test/AGENTS.md.
 
 ## Commit & Pull Request Guidelines
 
-- DCO required: sign off every commit. Example: `git commit -s -m "feat: add goal editor"` (see `docs/commit_sign-off.md`).
+- DCO required: all commits must be signed off. Agents should always use `git commit -s` or `git commit --signoff` when committing. Example: `git commit -s -m "feat: add goal editor"` (see `docs/commit_sign-off.md`).
 - PR title format enforced: `feat: ...`, `fix: ...`, `chore: ...`, or `docs: ...` (checked by `scripts/pr-name-check`).
 - PRs should include: clear description, screenshots for UI changes, migration notes if DB changes, and linked issues.
 
