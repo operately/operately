@@ -261,12 +261,12 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   @tag role: :admin
-  feature "company admin sees a proactive upgrade banner near the storage limit without a CTA", ctx do
+  feature "company admin sees a proactive upgrade banner near the storage limit with a CTA", ctx do
     ctx
     |> enable_billing_for_company()
     |> fill_company_to_near_storage_limit()
     |> Steps.visit_company_home_page()
-    |> Steps.assert_approaching_limit_banner_has_no_upgrade_cta()
+    |> Steps.assert_approaching_limit_banner_has_upgrade_cta()
   end
 
   @tag role: :member
@@ -299,12 +299,12 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   @tag role: :admin
-  feature "company admin sees an urgent over-limit banner when storage is over the limit", ctx do
+  feature "company admin sees an urgent over-limit banner with a CTA when storage is over the limit", ctx do
     ctx
     |> enable_billing_for_company()
     |> fill_company_beyond_storage_limit()
     |> Steps.visit_company_home_page()
-    |> Steps.assert_company_billing_banner_has_no_upgrade_cta()
+    |> Steps.assert_company_billing_banner_has_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
     |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
   end

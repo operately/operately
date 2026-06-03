@@ -18,6 +18,7 @@ export function ApproachingLimitBanner() {
   const hasSupportSession = useHasSupportSessionCookie();
 
   const viewerRole = getViewerRole(company, me);
+  const canManageBilling = Boolean(company.permissions?.canManageBilling);
 
   const hiddenOnRoute = Billing.isBillingManagementPath(location.pathname, paths.companyBillingPath());
 
@@ -26,7 +27,7 @@ export function ApproachingLimitBanner() {
       return null;
     }
 
-    const builtBanner = Billing.buildApproachingLimitBanner(billingLimitWarnings, viewerRole, {
+    const builtBanner = Billing.buildApproachingLimitBanner(billingLimitWarnings, viewerRole, canManageBilling, {
       companyBillingPath: () => paths.companyBillingPath(),
       companyBillingPlansPath: (opts) => paths.companyBillingPlansPath(opts),
     });
@@ -40,7 +41,7 @@ export function ApproachingLimitBanner() {
     }
 
     return builtBanner;
-  }, [billingAccessState, billingLimitWarnings, company.id, hiddenOnRoute, paths, viewerRole, dismissedVersion]);
+  }, [billingAccessState, billingLimitWarnings, canManageBilling, company.id, hiddenOnRoute, paths, viewerRole, dismissedVersion]);
 
   const handleDismiss = React.useCallback(() => {
     if (!banner) return;

@@ -1,7 +1,5 @@
 import * as api from "@/api";
 
-export type BillingViewerRole = "owner" | "company_admin" | "regular";
-
 type BillingCompanyAccessState = api.BillingCompanyAccessState;
 
 interface PaymentDefaultBannerRoutes {
@@ -17,7 +15,7 @@ interface PaymentDefaultBannerViewModel {
 
 export function buildPaymentDefaultBanner(
   accessState: BillingCompanyAccessState | null | undefined,
-  role: BillingViewerRole,
+  canManageBilling: boolean,
   routes: PaymentDefaultBannerRoutes,
 ): PaymentDefaultBannerViewModel | null {
   if (!accessState) {
@@ -34,7 +32,7 @@ export function buildPaymentDefaultBanner(
     mode: checkedAccessState.accessState === "read_only" ? "read_only" : "payment_grace",
     title: checkedAccessState.accessState === "read_only" ? "This company is read-only" : "Payment issue requires attention",
     deadline: checkedAccessState.accessStateEndsAt || null,
-    cta: role === "owner" ? { label: "Review billing", to: routes.companyBillingPath() } : null,
+    cta: canManageBilling ? { label: "Review billing", to: routes.companyBillingPath() } : null,
   };
 }
 

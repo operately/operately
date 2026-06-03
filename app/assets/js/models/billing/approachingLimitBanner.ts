@@ -27,6 +27,7 @@ interface ApproachingLimitBannerRoutes {
 export function buildApproachingLimitBanner(
   warnings: BillingLimitWarnings,
   role: "owner" | "company_admin" | "regular",
+  canManageBilling: boolean,
   routes: ApproachingLimitBannerRoutes,
 ): ApproachingLimitBannerViewModel | null {
   if (role === "regular") {
@@ -43,7 +44,7 @@ export function buildApproachingLimitBanner(
   const recommendedUpgrade = activeStatuses.find((status) => status.recommendedUpgrade?.planKey)?.recommendedUpgrade || null;
   const mode = blockedStatuses.length > 0 ? "over_limit" : "approaching";
 
-  if (role === "owner") {
+  if (canManageBilling) {
     return {
       mode,
       title: mode === "over_limit" ? "This company is over its plan limits" : "Approaching your plan limits",

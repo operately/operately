@@ -66,8 +66,10 @@ function AdminsMenu() {
 
   const managePeople = paths.companyManagePeoplePath();
   const manageAgents = paths.companyManageAiAgentsPath();
+  const manageBilling = paths.companyBillingPath();
   const renameCompanyPath = paths.companyRenamePath();
   const restorePath = paths.companyAdminRestoreSuspendedPeoplePath();
+  const billingEnabled = hasFeature(company, "billing");
 
   return (
     <Paper.Section title="As an admin or owner, you can:">
@@ -79,6 +81,7 @@ function AdminsMenu() {
         )}
 
         <OptionsMenuItem linkTo={restorePath} icon={IconUser} title="Restore access for deactivated team members" />
+        <OptionsMenuItem hidden={!billingEnabled || !company.permissions?.canManageBilling} linkTo={manageBilling} icon={IconFileText} title="Manage plan" />
         <OptionsMenuItem hidden={!company.permissions?.canEditDetails} linkTo={renameCompanyPath} icon={IconLetterCase} title="Rename the company" />
       </div>
     </Paper.Section>
@@ -99,15 +102,12 @@ function OwnersMenu() {
 
   const manageTrustedDomains = paths.companyAdminManageTrustedDomainsPath();
   const manageAdmins = paths.companyManageAdminsPath();
-  const manageBilling = paths.companyBillingPath();
   const exportCompany = paths.companyExportPath();
-  const billingEnabled = hasFeature(company, "billing");
 
   return (
     <Paper.Section title="As an owner, you can:">
       <div>
         <OptionsMenuItem linkTo={manageAdmins} icon={IconShieldLock} title="Manage administrators and owners" />
-        {billingEnabled && <OptionsMenuItem linkTo={manageBilling} icon={IconFileText} title="Manage plan" />}
         <OptionsMenuItem hidden={!company.permissions?.canEditTrustedEmailDomains} linkTo={manageTrustedDomains} icon={IconLock} title="Manage trusted email domains" />
         <OptionsMenuItem linkTo={exportCompany} icon={IconFileExport} title="Export company data" />
       </div>

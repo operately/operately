@@ -2,6 +2,7 @@ defmodule Operately.Features.BillingTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.BillingSteps, as: Steps
+  alias Operately.Support.Features.CompanyAdminSteps
 
   set_app_config(:billing_enabled, true)
   set_app_config(:billing_polar_client, Operately.Support.FakePolarClient)
@@ -128,6 +129,58 @@ defmodule Operately.Features.BillingTest do
     ctx
     |> Steps.given_a_company_exists_without_billing_feature()
     |> Steps.assert_billing_entry_is_hidden_on_company_admin_page()
+  end
+
+  feature "company admin sees Manage plan and can open billing overview and plans", ctx do
+    ctx =
+      ctx
+      |> Steps.given_a_billing_enabled_company_exists_and_i_am_company_admin()
+      |> Steps.given_free_polar_state_agent()
+
+    put_polar_handlers(%{
+      get_customer_state_by_external_id: fn company_id ->
+        assert company_id == ctx.company.id
+        {:ok, Agent.get(ctx.polar_state_agent, & &1)}
+      end
+    })
+
+    ctx
+    |> Steps.assert_billing_entry_is_visible_on_company_admin_page()
+    |> Steps.open_billing_from_company_admin_page()
+    |> Steps.assert_billing_overview_page_is_open()
+    |> Steps.visit_billing_plan_selection_page()
+    |> Steps.assert_billing_plan_selection_page_is_open()
+  end
+
+  feature "company admin can open billing cancellation for a cancelable paid subscription", ctx do
+    ctx =
+      ctx
+      |> Steps.given_a_billing_enabled_company_exists_and_i_am_company_admin()
+      |> Steps.seed_active_billing_catalog()
+      |> Steps.given_paid_polar_state_agent(%{plan: "team", billing_interval: "monthly"})
+
+    put_polar_handlers(%{
+      get_customer_state_by_external_id: fn company_id ->
+        assert company_id == ctx.company.id
+        {:ok, Agent.get(ctx.polar_state_agent, & &1)}
+      end
+    })
+
+    ctx
+    |> Steps.visit_billing_cancel_page()
+    |> Steps.assert_billing_cancellation_page_is_open()
+  end
+
+  feature "regular members are redirected away from billing pages", ctx do
+    ctx
+    |> Steps.given_a_billing_enabled_company_exists_and_i_am_company_member()
+    |> Steps.assert_billing_entry_is_hidden_on_company_admin_page()
+    |> Steps.visit_billing_overview_page()
+    |> CompanyAdminSteps.assert_redirected_to_company_admin_page()
+    |> Steps.visit_billing_plan_selection_page()
+    |> CompanyAdminSteps.assert_redirected_to_company_admin_page()
+    |> Steps.visit_billing_cancel_page()
+    |> CompanyAdminSteps.assert_redirected_to_company_admin_page()
   end
 
   defp put_polar_handlers(handlers) do

@@ -2,9 +2,8 @@ import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
 import * as Billing from "@/models/billing";
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useHasSupportSessionCookie } from "@/features/SupportSessions";
-import { includesId, usePaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { useLocation } from "react-router-dom";
 import { IconAlertTriangleFilled, PrimaryButton } from "turboui";
 
@@ -12,23 +11,22 @@ import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 export function PaymentDefaultBanner() {
   const { company, billingAccessState } = useCompanyLoaderData();
-  const me = useMe();
   const paths = usePaths();
   const location = useLocation();
   const hasSupportSession = useHasSupportSessionCookie();
 
-  const viewerRole = getViewerRole(company, me);
   const hiddenOnRoute = Billing.isBillingManagementPath(location.pathname, paths.companyBillingPath());
+  const canManageBilling = Boolean(company.permissions?.canManageBilling);
 
   const banner = React.useMemo(() => {
     if (hiddenOnRoute) {
       return null;
     }
 
-    return Billing.buildPaymentDefaultBanner(billingAccessState, viewerRole, {
+    return Billing.buildPaymentDefaultBanner(billingAccessState, canManageBilling, {
       companyBillingPath: () => paths.companyBillingPath(),
     });
-  }, [billingAccessState, hiddenOnRoute, paths, viewerRole]);
+  }, [billingAccessState, canManageBilling, hiddenOnRoute, paths]);
 
   if (!banner) {
     return null;
@@ -84,18 +82,4 @@ function renderDescription(banner: ReturnType<typeof Billing.buildPaymentDefault
   }
 
   return "This company is read-only because payment was not resolved in time. Collaborative work is blocked until an admin resolves the payment issue.";
-}
-
-function getViewerRole(
-  company: ReturnType<typeof useCompanyLoaderData>["company"],
-  me: ReturnType<typeof useMe>,
-): Billing.BillingViewerRole {
-  return includesId(
-    company.owners?.map((owner) => owner.id) || [],
-    me?.id,
-  )
-    ? "owner"
-    : company.permissions?.isAdmin
-      ? "company_admin"
-      : "regular";
 }
