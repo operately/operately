@@ -139,103 +139,79 @@ describe("approaching limit banner helpers", () => {
     expect(banner?.activeLimitKeys).toEqual(["member_count", "storage_bytes"]);
   });
 
-  it("builds an urgent owner banner when a limit is already blocked", () => {
-    const banner = Billing.buildApproachingLimitBanner(
-      limitWarnings({
-        memberLimit: limitStatus({
-          currentUsage: 21,
-          projectedUsage: 21,
-          limit: 20,
-          remaining: 0,
-          nearLimit: true,
-          blocked: true,
+  it("returns null when any limit is already blocked", () => {
+    expect(
+      Billing.buildApproachingLimitBanner(
+        limitWarnings({
+          memberLimit: limitStatus({
+            currentUsage: 21,
+            projectedUsage: 21,
+            limit: 20,
+            remaining: 0,
+            nearLimit: true,
+            blocked: true,
+          }),
+          storageLimit: limitStatus({
+            code: "storage_limit_exceeded",
+            limitKey: "storage_bytes",
+            nearLimit: false,
+          }),
         }),
-        storageLimit: limitStatus({
-          code: "storage_limit_exceeded",
-          limitKey: "storage_bytes",
-          nearLimit: false,
-        }),
-      }),
-      "owner",
-      true,
-      {
-        companyBillingPath: () => "/acme/admin/billing",
-        companyBillingPlansPath: (opts) =>
-          `/acme/admin/billing/plans?plan=${opts?.plan}&billing_period=${opts?.billingPeriod}`,
-      },
-    );
+        "owner",
+        true,
+        {
+          companyBillingPath: () => "/acme/admin/billing",
+          companyBillingPlansPath: (opts) =>
+            `/acme/admin/billing/plans?plan=${opts?.plan}&billing_period=${opts?.billingPeriod}`,
+        },
+      ),
+    ).toBeNull();
 
-    expect(banner).toMatchObject({
-      mode: "over_limit",
-      title: "This company is over its plan limits",
-      cta: {
-        label: "Review plans",
-        to: "/acme/admin/billing/plans?plan=team&billing_period=monthly",
-      },
-    });
-    expect(banner?.usageRows).toEqual([{ label: "Active members", value: "21 / 20", state: "blocked" }]);
+    expect(
+      Billing.buildApproachingLimitBanner(
+        limitWarnings({
+          storageLimit: limitStatus({
+            code: "storage_limit_exceeded",
+            limitKey: "storage_bytes",
+            currentUsage: 1100 * 1024 * 1024,
+            projectedUsage: 1100 * 1024 * 1024,
+            limit: 1024 * 1024 * 1024,
+            remaining: 0,
+            nearLimit: true,
+            blocked: true,
+          }),
+        }),
+        "company_admin",
+        true,
+        {
+          companyBillingPath: () => "/acme/admin/billing",
+          companyBillingPlansPath: () => "/acme/admin/billing/plans",
+        },
+      ),
+    ).toBeNull();
   });
 
-  it("builds an urgent company-admin banner with a billing CTA when storage is blocked", () => {
-    const banner = Billing.buildApproachingLimitBanner(
-      limitWarnings({
-        storageLimit: limitStatus({
-          code: "storage_limit_exceeded",
-          limitKey: "storage_bytes",
-          currentUsage: 1100 * 1024 * 1024,
-          projectedUsage: 1100 * 1024 * 1024,
-          limit: 1024 * 1024 * 1024,
-          remaining: 0,
-          nearLimit: true,
-          blocked: true,
+  it("does not include near-limit rows when a blocked limit should be handled by the danger banner", () => {
+    expect(
+      Billing.buildApproachingLimitBanner(
+        limitWarnings({
+          memberLimit: limitStatus({
+            currentUsage: 21,
+            projectedUsage: 21,
+            limit: 20,
+            remaining: 0,
+            nearLimit: true,
+            blocked: true,
+          }),
         }),
-      }),
-      "company_admin",
-      true,
-      {
-        companyBillingPath: () => "/acme/admin/billing",
-        companyBillingPlansPath: () => "/acme/admin/billing/plans",
-      },
-    );
-
-    expect(banner).toMatchObject({
-      mode: "over_limit",
-      title: "This company is over its plan limits",
-      cta: {
-        label: "Review plans",
-        to: "/acme/admin/billing/plans",
-      },
-    });
-  });
-
-  it("shows one urgent banner with blocked rows first and near-limit rows after them", () => {
-    const banner = Billing.buildApproachingLimitBanner(
-      limitWarnings({
-        memberLimit: limitStatus({
-          currentUsage: 21,
-          projectedUsage: 21,
-          limit: 20,
-          remaining: 0,
-          nearLimit: true,
-          blocked: true,
-        }),
-      }),
-      "owner",
-      true,
-      {
-        companyBillingPath: () => "/acme/admin/billing",
-        companyBillingPlansPath: () => "/acme/admin/billing/plans",
-      },
-    );
-
-    expect(banner).toMatchObject({
-      mode: "over_limit",
-      activeLimitKeys: ["member_count", "storage_bytes"],
-    });
-    expect(banner?.usageRows).toEqual([
-      { label: "Active members", value: "21 / 20", state: "blocked" },
-      { label: "Storage used", value: "950 MB / 1 GB", state: "near_limit" },
-    ]);
+        "owner",
+        true,
+        {
+          companyBillingPath: () => "/acme/admin/billing",
+          companyBillingPlansPath: () => "/acme/admin/billing/plans",
+        },
+      ),
+    ).toBeNull();
   });
 
   it("stores dismissals per company and active warning type", () => {
