@@ -1,6 +1,7 @@
 defmodule Operately.Features.BillingTest do
   use Operately.FeatureCase
 
+  alias Operately.Billing
   alias Operately.Support.Features.BillingSteps, as: Steps
   alias Operately.Support.Features.CompanyAdminSteps
 
@@ -183,7 +184,41 @@ defmodule Operately.Features.BillingTest do
     |> CompanyAdminSteps.assert_redirected_to_company_admin_page()
   end
 
+  feature "billing management pages hide the company danger banner", ctx do
+    ctx =
+      ctx
+      |> Steps.given_a_billing_enabled_company_exists()
+      |> Steps.given_free_polar_state_agent()
+      |> fill_company_beyond_member_limit()
+
+    put_polar_handlers(%{
+      get_customer_state_by_external_id: fn company_id ->
+        assert company_id == ctx.company.id
+        {:ok, Agent.get(ctx.polar_state_agent, & &1)}
+      end
+    })
+
+    ctx
+    |> Steps.visit_billing_overview_page()
+    |> CompanyAdminSteps.refute_company_billing_banner_visible()
+  end
+
   defp put_polar_handlers(handlers) do
     Application.put_env(:operately, :billing_polar_test_handlers, handlers)
+  end
+
+  defp fill_company_beyond_member_limit(ctx) do
+    needed_people = max(20 - Billing.active_member_count(ctx.company), 0)
+
+    ctx =
+      if needed_people > 0 do
+        Enum.reduce(1..needed_people, ctx, fn index, acc ->
+          Factory.add_company_member(acc, :"limit_member_#{index}", name: "Limit Member #{index}")
+        end)
+      else
+        ctx
+      end
+
+    Factory.add_company_member(ctx, :over_limit_member, name: "Over Limit Member")
   end
 end

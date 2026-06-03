@@ -278,6 +278,30 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.refute_approaching_limit_banner_visible()
   end
 
+  @tag role: :member
+  feature "regular members see a blocked member-limit danger banner without a CTA", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_beyond_member_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_company_billing_banner_has_no_upgrade_cta()
+    |> Steps.assert_company_billing_banner_has_no_dismiss_action()
+    |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
+    |> Steps.assert_company_billing_banner_text("Contact a company admin or owner.")
+  end
+
+  @tag role: :member
+  feature "regular members see a blocked storage-limit danger banner without a CTA", ctx do
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_beyond_storage_limit()
+    |> Steps.visit_company_home_page()
+    |> Steps.assert_company_billing_banner_has_no_upgrade_cta()
+    |> Steps.assert_company_billing_banner_has_no_dismiss_action()
+    |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
+    |> Steps.assert_company_billing_banner_text("Contact a company admin or owner.")
+  end
+
   @tag role: :owner
   feature "non-flagged companies do not show the proactive upgrade banner", ctx do
     ctx
