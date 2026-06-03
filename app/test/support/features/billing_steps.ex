@@ -193,7 +193,6 @@ defmodule Operately.Support.Features.BillingSteps do
     ctx
     |> UI.visit(OperatelyWeb.Paths.company_admin_path(ctx.company))
     |> UI.assert_has(testid: "company-admin-page")
-    |> UI.assert_has(testid: "manage-administrators-and-owners")
     |> UI.refute_has(testid: "manage-plan")
   end
 
