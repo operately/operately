@@ -41,7 +41,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { useGlobalSearchHandler } from "./useGlobalSearch";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { ApproachingLimitBanner } from "./ApproachingLimitBanner";
-import { PaymentDefaultBanner } from "./PaymentDefaultBanner";
+import { BillingDangerBanner } from "./BillingDangerBanner";
 
 interface NavigationProps {
   company: Api.Company;
@@ -249,8 +249,10 @@ export default function CompanyLayout() {
     <div className="flex flex-col h-screen">
       <Navigation {...data} onOpenKeyboardShortcuts={keyboardShortcutsModal.open} />
       <SupportSessionBanner />
-      <PaymentDefaultBanner />
+
+      <BillingDangerBanner />
       <ApproachingLimitBanner />
+
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
