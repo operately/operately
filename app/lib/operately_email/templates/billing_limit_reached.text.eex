@@ -1,0 +1,7 @@
+Your company has reached its <%= @limit_name %>.
+
+Current usage: <%= @current_usage %> of <%= @limit %>.
+
+<%= @blocked_work %>
+
+Review billing: <%= @cta_url %>

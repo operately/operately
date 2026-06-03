@@ -1,5 +1,6 @@
 defmodule Operately.Operations.GuestInviting do
   alias Ecto.Multi
+  alias Operately.Billing
   alias Operately.Billing.Usage
   alias Operately.{Access, Repo}
   alias Operately.Access.Binding
@@ -8,6 +9,7 @@ defmodule Operately.Operations.GuestInviting do
 
   def run(admin, company, attrs) do
     with :ok <- Usage.check_member_limit(company) do
+      previous_member_count = Billing.active_member_count(company)
       skip_invitation = People.account_used?(attrs.email)
 
       result = Multi.new()
@@ -20,6 +22,7 @@ defmodule Operately.Operations.GuestInviting do
 
       case result do
         {:ok, changes} ->
+          Billing.maybe_enqueue_limit_reached_email(company, :member_count, previous_member_count)
           {:ok, changes}
 
         {:error, _, changeset, _} ->

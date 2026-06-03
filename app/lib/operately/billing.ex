@@ -13,10 +13,12 @@ defmodule Operately.Billing do
   """
 
   import Ecto.Query, warn: false
+  require Logger
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.EnforceLimits
+  alias Operately.Billing.LimitBreachAlerting
   alias Operately.Billing.Overview
   alias Operately.Billing.Polar.Operations.CustomerStateSync
   alias Operately.Billing.Polar.ProductMapper
@@ -26,7 +28,7 @@ defmodule Operately.Billing do
   @valid_billing_intervals CompanyBillingAccount.valid_billing_intervals()
 
   def billing_enabled? do
-    Application.get_env(:operately, :billing_enabled, false)
+    Application.get_env(:operately, :billing_enabled, false) == true
   end
 
   def billing_enabled_for_company?(%Operately.Companies.Company{} = company) do
@@ -68,6 +70,17 @@ defmodule Operately.Billing do
         company
         |> Map.put(:billing_access_state, account.access_state)
         |> Map.put(:billing_read_only, account.access_state == :read_only)
+    end
+  end
+
+  def maybe_enqueue_limit_reached_email(%Operately.Companies.Company{} = company, limit_key, previous_usage, opts \\ []) do
+    case LimitBreachAlerting.maybe_enqueue_limit_reached_email(company, limit_key, previous_usage, opts) do
+      :ok ->
+        :ok
+
+      {:error, reason} ->
+        Logger.error("Failed to enqueue billing limit reached email for company #{company.id} and #{limit_key}: #{inspect(reason)}")
+        :ok
     end
   end
 

@@ -1,5 +1,6 @@
 defmodule Operately.Blobs.UploadDownloadTest do
   use Operately.DataCase
+  use Oban.Testing, repo: Operately.Repo
 
   alias Operately.Blobs
   alias Operately.Support.Factory
@@ -65,6 +66,30 @@ defmodule Operately.Blobs.UploadDownloadTest do
       # Cleanup
       storage_path = "/media/#{Operately.Blobs.Blob.path(blob)}"
       File.rm(storage_path)
+    end
+
+    test "does not enqueue a limit-reached email when the upload hits the storage limit", ctx do
+      enable_billing(ctx.company)
+
+      source_path = Path.join(System.tmp_dir!(), "limit_upload_#{System.unique_integer([:positive])}.txt")
+      File.write!(source_path, "x")
+
+      blob_fixture(%{
+        company_id: ctx.company.id,
+        author_id: ctx.creator.id,
+        status: :uploaded,
+        size: Operately.Billing.Plans.storage_limit_bytes(:free) - 1
+      })
+
+      on_exit(fn ->
+        File.rm(source_path)
+      end)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, blob} = Blobs.upload_file_to_blob(ctx.company, ctx.creator, source_path, "text/plain")
+        refute_enqueued worker: Operately.Billing.LimitBreachAlertEmailWorker
+        File.rm("/media/#{Operately.Blobs.Blob.path(blob)}")
+      end)
     end
   end
 
@@ -148,5 +173,19 @@ defmodule Operately.Blobs.UploadDownloadTest do
 
       assert path1 == path2
     end
+  end
+
+  defp enable_billing(company) do
+    previous_value = Application.get_env(:operately, :billing_enabled)
+    Application.put_env(:operately, :billing_enabled, true)
+
+    on_exit(fn ->
+      case previous_value do
+        nil -> Application.delete_env(:operately, :billing_enabled)
+        value -> Application.put_env(:operately, :billing_enabled, value)
+      end
+    end)
+
+    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

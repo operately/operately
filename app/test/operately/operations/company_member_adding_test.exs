@@ -1,5 +1,6 @@
 defmodule Operately.Operations.CompanyMemberAddingTest do
   use Operately.DataCase
+  use Oban.Testing, repo: Operately.Repo
 
   import Ecto.Query, only: [from: 2]
   import Operately.CompaniesFixtures
@@ -9,6 +10,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   alias Operately.Access
   alias Operately.Billing
   alias Operately.Billing.EnforceLimits.LimitError
+  alias Operately.Billing.LimitBreachAlertEmailWorker
   alias Operately.People
   alias Operately.People.Person
   alias Operately.Groups
@@ -46,6 +48,16 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert person.title == "Developer"
     person = Repo.preload(person, :account)
     assert is_nil(person.account.first_login_at)
+  end
+
+  test "CompanyMemberAdding enqueues a limit-reached email when the company hits the member limit", ctx do
+    company = enable_billing(ctx.company)
+    fill_company_to_one_below_member_limit(company)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, _changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, company, @member_attrs)
+      assert length(all_enqueued(worker: LimitBreachAlertEmailWorker)) == 1
+    end)
   end
 
   test "CompanyMemberAdding blocks when the company is already at the member limit", ctx do
@@ -211,6 +223,20 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
 
   defp fill_company_to_member_limit(company) do
     needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Limit Member #{index}",
+          email: "limit-member-#{index}@example.com"
+        })
+      end)
+    end
+  end
+
+  defp fill_company_to_one_below_member_limit(company) do
+    needed_people = max(19 - Billing.active_member_count(company), 0)
 
     if needed_people > 0 do
       Enum.each(1..needed_people, fn index ->
