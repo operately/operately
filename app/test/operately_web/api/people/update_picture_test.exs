@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.People.UpdatePictureTest do
   use OperatelyWeb.TurboCase
+  use Oban.Testing, repo: Operately.Repo
 
   import Operately.PeopleFixtures
   import Operately.BlobsFixtures
@@ -92,6 +93,28 @@ defmodule OperatelyWeb.Api.People.UpdatePictureTest do
       assert blob.status == :uploaded
     end
 
+    test "does not enqueue a limit email for avatar uploads", ctx do
+      enable_billing(ctx.company)
+
+      blob =
+        blob_fixture(%{
+          company_id: ctx.company.id,
+          author_id: ctx.person.id,
+          size: Operately.Billing.Plans.storage_limit_bytes(:free)
+        })
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {200, _res} =
+                 mutation(ctx.conn, [:people, :update_picture], %{
+                   person_id: Paths.person_id(ctx.person),
+                   avatar_blob_id: Paths.blob_id(blob),
+                   avatar_url: Operately.Blobs.Blob.url(blob)
+                 })
+
+        refute_enqueued worker: Operately.Billing.LimitBreachAlertEmailWorker
+      end)
+    end
+
     test "clears avatar when values are nil", ctx do
       blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.person.id})
 
@@ -116,5 +139,12 @@ defmodule OperatelyWeb.Api.People.UpdatePictureTest do
     group = Operately.Access.get_group!(company_id: ctx.company.id, tag: :full_access)
     changeset = Operately.Access.GroupMembership.changeset(%{group_id: group.id, person_id: ctx.person.id})
     Operately.Repo.insert(changeset)
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

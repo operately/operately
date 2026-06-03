@@ -136,4 +136,5 @@ defmodule Operately.Features.DiscussionsTest do
       |> Steps.assert_new_discussion_button_not_visible()
     end
   end
+
 end

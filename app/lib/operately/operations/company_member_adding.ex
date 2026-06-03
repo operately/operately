@@ -1,11 +1,14 @@
 defmodule Operately.Operations.CompanyMemberAdding do
   alias Ecto.Multi
+  alias Operately.Billing
   alias Operately.Billing.Usage
   alias Operately.{Access, Repo}
   alias Operately.InviteLinks
 
   def run(admin, company, attrs, skip_invitation \\ false) do
     with :ok <- Usage.check_member_limit(company) do
+      previous_member_count = Billing.active_member_count(company)
+
       result = Multi.new()
       |> insert_account(attrs)
       |> insert_person(admin, attrs)
@@ -17,6 +20,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
 
       case result do
         {:ok, changes} ->
+          Billing.maybe_enqueue_limit_reached_email(company, :member_count, previous_member_count)
           {:ok, changes}
 
         {:error, _, changeset, _} ->
