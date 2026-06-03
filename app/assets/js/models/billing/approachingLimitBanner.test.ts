@@ -64,7 +64,7 @@ function limitWarnings(overrides: Partial<Billing.BillingLimitWarnings> = {}): B
 
 describe("approaching limit banner helpers", () => {
   it("builds an owner banner with a direct billing CTA", () => {
-    const banner = Billing.buildApproachingLimitBanner(limitWarnings(), "owner", {
+    const banner = Billing.buildApproachingLimitBanner(limitWarnings(), "owner", true, {
       companyBillingPath: () => "/acme/admin/billing",
       companyBillingPlansPath: (opts) =>
         `/acme/admin/billing/plans?plan=${opts?.plan}&billing_period=${opts?.billingPeriod}`,
@@ -84,8 +84,8 @@ describe("approaching limit banner helpers", () => {
     ]);
   });
 
-  it("builds a company-admin banner without a billing CTA", () => {
-    const banner = Billing.buildApproachingLimitBanner(limitWarnings(), "company_admin", {
+  it("builds a company-admin banner with a billing CTA", () => {
+    const banner = Billing.buildApproachingLimitBanner(limitWarnings(), "company_admin", true, {
       companyBillingPath: () => "/acme/admin/billing",
       companyBillingPlansPath: () => "/acme/admin/billing/plans",
     });
@@ -93,13 +93,16 @@ describe("approaching limit banner helpers", () => {
     expect(banner).toMatchObject({
       mode: "approaching",
       title: "Approaching your plan limits",
-      cta: null,
+      cta: {
+        label: "Review plans",
+        to: "/acme/admin/billing/plans",
+      },
     });
   });
 
   it("never builds a banner for regular members", () => {
     expect(
-      Billing.buildApproachingLimitBanner(limitWarnings(), "regular", {
+      Billing.buildApproachingLimitBanner(limitWarnings(), "regular", false, {
         companyBillingPath: () => "/acme/admin/billing",
         companyBillingPlansPath: () => "/acme/admin/billing/plans",
       }),
@@ -116,6 +119,7 @@ describe("approaching limit banner helpers", () => {
         }),
       }),
       "owner",
+      true,
       {
         companyBillingPath: () => "/acme/admin/billing",
         companyBillingPlansPath: () => "/acme/admin/billing/plans",
@@ -127,7 +131,7 @@ describe("approaching limit banner helpers", () => {
   });
 
   it("shows one banner when both limit warnings are active", () => {
-    const banner = Billing.buildApproachingLimitBanner(limitWarnings(), "owner", {
+    const banner = Billing.buildApproachingLimitBanner(limitWarnings(), "owner", true, {
       companyBillingPath: () => "/acme/admin/billing",
       companyBillingPlansPath: () => "/acme/admin/billing/plans",
     });
@@ -153,6 +157,7 @@ describe("approaching limit banner helpers", () => {
         }),
       }),
       "owner",
+      true,
       {
         companyBillingPath: () => "/acme/admin/billing",
         companyBillingPlansPath: (opts) =>
@@ -171,7 +176,7 @@ describe("approaching limit banner helpers", () => {
     expect(banner?.usageRows).toEqual([{ label: "Active members", value: "21 / 20", state: "blocked" }]);
   });
 
-  it("builds an urgent company-admin banner without a billing CTA when storage is blocked", () => {
+  it("builds an urgent company-admin banner with a billing CTA when storage is blocked", () => {
     const banner = Billing.buildApproachingLimitBanner(
       limitWarnings({
         storageLimit: limitStatus({
@@ -186,6 +191,7 @@ describe("approaching limit banner helpers", () => {
         }),
       }),
       "company_admin",
+      true,
       {
         companyBillingPath: () => "/acme/admin/billing",
         companyBillingPlansPath: () => "/acme/admin/billing/plans",
@@ -195,7 +201,10 @@ describe("approaching limit banner helpers", () => {
     expect(banner).toMatchObject({
       mode: "over_limit",
       title: "This company is over its plan limits",
-      cta: null,
+      cta: {
+        label: "Review plans",
+        to: "/acme/admin/billing/plans",
+      },
     });
   });
 
@@ -212,6 +221,7 @@ describe("approaching limit banner helpers", () => {
         }),
       }),
       "owner",
+      true,
       {
         companyBillingPath: () => "/acme/admin/billing",
         companyBillingPlansPath: () => "/acme/admin/billing/plans",

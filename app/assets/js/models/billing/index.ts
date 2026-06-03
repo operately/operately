@@ -1,6 +1,9 @@
 import Api from "@/api";
 import * as api from "@/api";
+import * as Companies from "@/models/companies";
+import { Paths } from "@/routes/paths";
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "turboui/CompanyBillingPage";
+import { redirect } from "react-router-dom";
 
 export { useBillingUpdatedSignal } from "@/signals";
 export type BillingCompanyAccessState = api.BillingCompanyAccessState;
@@ -19,7 +22,6 @@ export {
   isBillingManagementPath,
 } from "./approachingLimitBanner";
 export { buildPaymentDefaultBanner, isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
-export type { BillingViewerRole } from "./paymentDefaultBanner";
 export { buildMemberLimitGuidance } from "./memberLimitGuidance";
 export { extractLimitError, extractLimitErrorDetails } from "./limitError";
 export * from "./navigation";
@@ -48,6 +50,16 @@ type BeginHostedSessionResult =
 
 export async function getBilling(input: api.BillingGetInput = {}): Promise<api.BillingOverview> {
   return Api.billing.get(input).then((data) => data.billing);
+}
+
+export async function authorizeBillingManagementPageAccess(companyId: string) {
+  const company = await Companies.getCompany({ includePermissions: true }).then((data) => data.company!);
+
+  if (!Companies.hasFeature(company, "billing") || !company.permissions?.canManageBilling) {
+    throw redirect(new Paths({ companyId }).companyAdminPath());
+  }
+
+  return company;
 }
 
 export async function getAccessState(input: api.BillingGetAccessStateInput = {}): Promise<api.BillingCompanyAccessState> {

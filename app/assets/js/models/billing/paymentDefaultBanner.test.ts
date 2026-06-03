@@ -38,7 +38,7 @@ function accessState(overrides: Partial<Billing.BillingCompanyAccessState> = {})
 
 describe("payment default banner helpers", () => {
   it("builds a payment-grace banner with a CTA for owners", () => {
-    const banner = Billing.buildPaymentDefaultBanner(accessState(), "owner", {
+    const banner = Billing.buildPaymentDefaultBanner(accessState(), true, {
       companyBillingPath: () => "/acme/admin/billing",
     });
 
@@ -59,7 +59,7 @@ describe("payment default banner helpers", () => {
         accessState: "read_only",
         accessStateEndsAt: null,
       }),
-      "regular",
+      false,
       {
         companyBillingPath: () => "/acme/admin/billing",
       },
@@ -73,8 +73,8 @@ describe("payment default banner helpers", () => {
     });
   });
 
-  it("does not add a CTA for company admins", () => {
-    const banner = Billing.buildPaymentDefaultBanner(accessState(), "company_admin", {
+  it("adds a CTA for company admins who can manage billing", () => {
+    const banner = Billing.buildPaymentDefaultBanner(accessState(), true, {
       companyBillingPath: () => "/acme/admin/billing",
     });
 
@@ -82,7 +82,10 @@ describe("payment default banner helpers", () => {
       mode: "payment_grace",
       title: "Payment issue requires attention",
       deadline: "2026-06-15T00:00:00Z",
-      cta: null,
+      cta: {
+        label: "Review billing",
+        to: "/acme/admin/billing",
+      },
     });
   });
 
@@ -93,7 +96,7 @@ describe("payment default banner helpers", () => {
           accessState: "normal",
           accessStateReason: null,
         }),
-        "owner",
+        true,
         {
           companyBillingPath: () => "/acme/admin/billing",
         },
@@ -106,7 +109,7 @@ describe("payment default banner helpers", () => {
           accessState: "over_limit_grace",
           accessStateReason: "over_limit_after_downgrade",
         }),
-        "owner",
+        true,
         {
           companyBillingPath: () => "/acme/admin/billing",
         },

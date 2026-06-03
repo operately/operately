@@ -4,17 +4,20 @@ import * as Pages from "@/components/Pages";
 import axios from "axios";
 
 import { Paths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
+import { redirect } from "react-router-dom";
 
 interface LoaderResult {
   billing: Billing.BillingOverview;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "billing",
-    path: new Paths({ companyId: params.companyId }).companyAdminPath(),
-  });
+interface LoaderArgs {
+  params: {
+    companyId: string;
+  };
+}
+
+export async function loader({ params }: LoaderArgs): Promise<LoaderResult> {
+  await Billing.authorizeBillingManagementPageAccess(params.companyId);
 
   try {
     return {
@@ -22,7 +25,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 403) {
-      throw new Response("Not Found", { status: 404 });
+      throw redirect(new Paths({ companyId: params.companyId }).companyAdminPath());
     }
 
     throw error;

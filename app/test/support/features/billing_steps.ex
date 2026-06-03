@@ -22,6 +22,22 @@ defmodule Operately.Support.Features.BillingSteps do
     |> Factory.log_in_person(:creator)
   end
 
+  step :given_a_billing_enabled_company_exists_and_i_am_company_admin, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.enable_feature("billing")
+    |> Factory.add_company_admin(:admin)
+    |> Factory.log_in_person(:admin)
+  end
+
+  step :given_a_billing_enabled_company_exists_and_i_am_company_member, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.enable_feature("billing")
+    |> Factory.add_company_member(:member)
+    |> Factory.log_in_person(:member)
+  end
+
   step :seed_active_billing_catalog, ctx do
     products = %{
       team_monthly: create_active_product("prod_team_monthly", "team", "monthly").polar_product_id,
@@ -60,8 +76,34 @@ defmodule Operately.Support.Features.BillingSteps do
     UI.visit(ctx, OperatelyWeb.Paths.company_billing_path(ctx.company))
   end
 
+  step :visit_billing_plan_selection_page, ctx do
+    UI.visit(ctx, OperatelyWeb.Paths.company_billing_path(ctx.company) <> "/plans")
+  end
+
+  step :visit_billing_cancel_page, ctx do
+    UI.visit(ctx, OperatelyWeb.Paths.company_billing_path(ctx.company) <> "/cancel")
+  end
+
   step :visit_billing_overview_page_with_checkout_id, ctx, checkout_id do
     UI.visit(ctx, OperatelyWeb.Paths.company_billing_path(ctx.company) <> "?checkout_id=#{checkout_id}")
+  end
+
+  step :assert_billing_overview_page_is_open, ctx do
+    ctx
+    |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company))
+    |> UI.assert_has(testid: "company-billing-page")
+  end
+
+  step :assert_billing_plan_selection_page_is_open, ctx do
+    ctx
+    |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company) <> "/plans")
+    |> UI.assert_has(testid: "company-billing-plan-selection-page")
+  end
+
+  step :assert_billing_cancellation_page_is_open, ctx do
+    ctx
+    |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company) <> "/cancel")
+    |> UI.assert_has(testid: "company-billing-cancellation-page")
   end
 
   step :assert_plan_selection_page_is_open, ctx, attrs do
@@ -194,6 +236,20 @@ defmodule Operately.Support.Features.BillingSteps do
     |> UI.visit(OperatelyWeb.Paths.company_admin_path(ctx.company))
     |> UI.assert_has(testid: "company-admin-page")
     |> UI.refute_has(testid: "manage-plan")
+  end
+
+  step :assert_billing_entry_is_visible_on_company_admin_page, ctx do
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
+    |> UI.assert_has(testid: "manage-plan")
+  end
+
+  step :open_billing_from_company_admin_page, ctx do
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.company_admin_path(ctx.company))
+    |> UI.click(testid: "manage-plan")
+    |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company))
   end
 
   defp create_active_product(polar_product_id, plan_family, billing_interval) do
