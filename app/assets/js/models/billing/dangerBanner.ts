@@ -43,7 +43,7 @@ interface OverLimitDangerBannerViewModel {
   cta: { label: string; to: string } | null;
 }
 
-export type BillingDangerBannerViewModel = PaymentDefaultDangerBannerViewModel | OverLimitDangerBannerViewModel;
+type BillingDangerBannerViewModel = PaymentDefaultDangerBannerViewModel | OverLimitDangerBannerViewModel;
 
 export function buildBillingDangerBanner(
   accessState: BillingCompanyAccessState | null | undefined,
