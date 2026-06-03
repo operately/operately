@@ -21,7 +21,8 @@ export {
   isApproachingLimitBannerDismissed,
   isBillingManagementPath,
 } from "./approachingLimitBanner";
-export { buildPaymentDefaultBanner, isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
+export { buildBillingDangerBanner } from "./dangerBanner";
+export { isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
 export { buildMemberLimitGuidance } from "./memberLimitGuidance";
 export { extractLimitError, extractLimitErrorDetails } from "./limitError";
 export * from "./navigation";

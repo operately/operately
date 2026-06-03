@@ -664,8 +664,8 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :assert_company_billing_banner_has_upgrade_cta, ctx do
     ctx
-    |> UI.assert_has(testid: "approaching-limit-banner")
-    |> UI.assert_has(testid: "approaching-limit-banner-cta")
+    |> UI.assert_has(testid: "company-billing-danger-banner")
+    |> UI.assert_has(testid: "company-billing-danger-banner-cta")
   end
 
   step :assert_approaching_limit_banner_has_no_upgrade_cta, ctx do
@@ -676,14 +676,14 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :assert_company_billing_banner_has_no_upgrade_cta, ctx do
     ctx
-    |> UI.assert_has(testid: "approaching-limit-banner")
-    |> UI.refute_has(testid: "approaching-limit-banner-cta")
+    |> UI.assert_has(testid: "company-billing-danger-banner")
+    |> UI.refute_has(testid: "company-billing-danger-banner-cta")
   end
 
   step :assert_company_billing_banner_has_no_dismiss_action, ctx do
     ctx
-    |> UI.assert_has(testid: "approaching-limit-banner")
-    |> UI.refute_has(testid: "approaching-limit-banner-dismiss")
+    |> UI.assert_has(testid: "company-billing-danger-banner")
+    |> UI.refute_has(testid: "company-billing-danger-banner-dismiss")
   end
 
   step :assert_company_billing_banner_text, ctx, text do
@@ -714,9 +714,13 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :follow_company_billing_banner_upgrade_cta, ctx do
     ctx
-    |> UI.click(testid: "approaching-limit-banner-cta")
+    |> UI.click(testid: "company-billing-danger-banner-cta")
     |> UI.sleep(200)
     |> UI.assert_page(Paths.company_billing_plan_path(ctx.company))
+  end
+
+  step :refute_company_billing_banner_visible, ctx do
+    ctx |> UI.refute_has(testid: "company-billing-danger-banner")
   end
 
   step :assert_redirected_to_company_admin_page, ctx do

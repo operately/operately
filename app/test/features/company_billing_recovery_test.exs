@@ -70,6 +70,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
     |> AdminSteps.visit_company_home_page()
     |> RecoverySteps.assert_payment_default_banner_has_no_upgrade_cta()
     |> RecoverySteps.assert_payment_default_banner_text("switch to read-only mode")
+    |> RecoverySteps.assert_payment_default_banner_text("Contact a company admin or owner.")
   end
 
   @tag role: :member
@@ -80,6 +81,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
     |> AdminSteps.visit_company_home_page()
     |> RecoverySteps.assert_payment_default_banner_has_no_upgrade_cta()
     |> RecoverySteps.assert_payment_default_banner_text("This company is read-only")
+    |> RecoverySteps.assert_payment_default_banner_text("company admin or owner")
   end
 
   @tag role: :admin

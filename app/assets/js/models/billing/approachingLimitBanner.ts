@@ -34,24 +34,24 @@ export function buildApproachingLimitBanner(
     return null;
   }
 
-  const blockedStatuses = getBlockedBannerStatuses(warnings);
-  const activeStatuses = blockedStatuses.length > 0 ? [...blockedStatuses, ...getActiveApproachingLimitStatuses(warnings)] : getActiveApproachingLimitStatuses(warnings);
+  if (hasBlockedStatuses(warnings)) {
+    return null;
+  }
+
+  const activeStatuses = getActiveApproachingLimitStatuses(warnings);
 
   if (activeStatuses.length === 0) {
     return null;
   }
 
   const recommendedUpgrade = activeStatuses.find((status) => status.recommendedUpgrade?.planKey)?.recommendedUpgrade || null;
-  const mode = blockedStatuses.length > 0 ? "over_limit" : "approaching";
+  const mode = "approaching";
 
   if (canManageBilling) {
     return {
       mode,
-      title: mode === "over_limit" ? "This company is over its plan limits" : "Approaching your plan limits",
-      description:
-        mode === "over_limit"
-          ? "Upgrade now to restore room for invites and uploads before more work gets blocked."
-          : "Review plans now to keep invites and uploads moving without interruptions.",
+      title: "Approaching your plan limits",
+      description: "Review plans now to keep invites and uploads moving without interruptions.",
       usageRows: usageRows(activeStatuses),
       cta: {
         label: "Review plans",
@@ -69,11 +69,8 @@ export function buildApproachingLimitBanner(
 
   return {
     mode,
-    title: mode === "over_limit" ? "This company is over its plan limits" : "Approaching your plan limits",
-    description:
-      mode === "over_limit"
-        ? "A company owner needs to upgrade the plan. Invites or uploads may already be blocked until the company is back within its limits."
-        : "A company owner should review the company plan before uploads or invites start failing.",
+    title: "Approaching your plan limits",
+    description: "A company admin or owner should review the company plan before uploads or invites start failing.",
     usageRows: usageRows(activeStatuses),
     cta: null,
     activeLimitKeys: activeStatuses.map((status) => status.limitKey),
@@ -84,8 +81,8 @@ function getActiveApproachingLimitStatuses(warnings: BillingLimitWarnings): Bill
   return [warnings.memberLimit, warnings.storageLimit].filter((status) => status.enforced && status.nearLimit && !status.blocked);
 }
 
-function getBlockedBannerStatuses(warnings: BillingLimitWarnings): BillingLimitWarningStatus[] {
-  return [warnings.memberLimit, warnings.storageLimit].filter((status) => status.enforced && status.blocked);
+function hasBlockedStatuses(warnings: BillingLimitWarnings) {
+  return [warnings.memberLimit, warnings.storageLimit].some((status) => status.enforced && status.blocked);
 }
 
 function approachingLimitBannerStorageKey(companyId: string, limitKey: string): string {
