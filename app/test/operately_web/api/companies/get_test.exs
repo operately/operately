@@ -191,5 +191,23 @@ defmodule OperatelyWeb.Api.Companies.GetTest do
       assert res.company.owners
       assert res.company.permissions
     end
+
+    test "include_permissions exposes can_manage_billing based on access level", ctx do
+      ctx = log_in_account(ctx, ctx.admin_susan)
+
+      assert {200, res} = query(ctx.conn, [:companies, :get], %{
+        include_permissions: true
+      })
+
+      assert res.company.permissions.can_manage_billing == true
+
+      ctx = log_in_account(ctx, ctx.member_peter)
+
+      assert {200, res} = query(ctx.conn, [:companies, :get], %{
+        include_permissions: true
+      })
+
+      assert res.company.permissions.can_manage_billing == false
+    end
   end
 end

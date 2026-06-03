@@ -26,17 +26,17 @@ defmodule OperatelyWeb.BillingIntentController do
 
   defp handle_authenticated(conn, account, plan, billing_period) do
     companies = Companies.list_companies(account)
-    owner_companies = Companies.list_companies_by_owner(account)
+    billing_manager_companies = Companies.list_companies_by_billing_manager(account)
 
     cond do
       companies == [] ->
         redirect(conn, to: "/new" <> build_query_params(plan, billing_period))
 
-      owner_companies == [] ->
+      billing_manager_companies == [] ->
         redirect(conn, to: "/")
 
-      length(owner_companies) == 1 ->
-        redirect(conn, to: billing_path(hd(owner_companies), plan, billing_period))
+      length(billing_manager_companies) == 1 ->
+        redirect(conn, to: billing_path(hd(billing_manager_companies), plan, billing_period))
 
       true ->
         redirect(conn, to: "/billing/pick-company" <> build_query_params(plan, billing_period))

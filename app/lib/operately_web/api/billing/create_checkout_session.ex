@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSession do
   end
 
   def call(conn, inputs) do
-    with {:ok, %{company: company}} <- Helpers.authorize_owner_billing_access(conn),
+    with {:ok, %{company: company}} <- Helpers.authorize_billing_management_access(conn),
          {:ok, session} <- Billing.create_checkout_session(company, inputs[:plan], inputs[:billing_interval]) do
       {:ok, %{session: Serializer.serialize(session, level: :essential)}}
     else
