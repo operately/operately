@@ -4,7 +4,7 @@ import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
 import { showErrorToast } from "turboui";
 
 import Api, { BlobCreationInput, BlobCreationOutput, createBlob, createAvatarBlob, markBlobUploaded } from "@/api";
-import { extractLimitError } from "@/models/billing";
+import { extractLimitError } from "@/models/billing/limitError";
 import { findImageDimensions, findVideoDimensions } from "./utils";
 
 export { useDownloadFile } from "./useDownloadFile";
