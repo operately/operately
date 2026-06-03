@@ -31,9 +31,17 @@ defmodule OperatelyWeb.Api.Spaces do
         with_tasks_enabled_only: inputs[:with_tasks_enabled_only]
       ]
 
-      spaces = Space.search(person, inputs.query, inputs[:access_level], opts)
+      spaces = search_spaces(conn, person, inputs.query, inputs[:access_level], opts)
 
       {:ok, %{spaces: Serializer.serialize(spaces, level: :essential)}}
+    end
+
+    defp search_spaces(conn, person, query, access_level, opts) do
+      if company_read_only(conn) && access_level && access_level != :view_access do
+        []
+      else
+        Space.search(person, query, access_level, opts)
+      end
     end
   end
 
@@ -55,11 +63,19 @@ defmodule OperatelyWeb.Api.Spaces do
 
     def call(conn, inputs) do
       with {:ok, person} <- find_me(conn) do
-        count = Space.count_by_access_level(person, inputs.access_level)
+        count = count_spaces(conn, person, inputs.access_level)
 
         {:ok, %{count: count}}
       else
         {:error, :not_found} -> {:ok, %{count: 0}}
+      end
+    end
+
+    defp count_spaces(conn, person, access_level) do
+      if company_read_only(conn) && access_level != :view_access do
+        0
+      else
+        Space.count_by_access_level(person, access_level)
       end
     end
   end

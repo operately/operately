@@ -70,6 +70,62 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert res.spaces |> hd() |> Map.get(:name) == "Full Space"
     end
 
+    test "it returns no spaces for non-view access filters when the company is read-only", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:view_space, name: "View Space", company_permissions: Binding.view_access())
+        |> Factory.add_space(:edit_space, name: "Edit Space", company_permissions: Binding.edit_access())
+        |> Factory.add_space(:full_space, name: "Full Space", company_permissions: Binding.full_access())
+
+      assert {:ok, _} =
+               Operately.Billing.create_billing_account(%{
+                 company_id: ctx.company.id,
+                 provider: "polar",
+                 status: :past_due,
+                 plan_key: :team,
+                 billing_interval: :monthly,
+                 access_state: :read_only,
+                 access_state_reason: :past_due
+               })
+
+      ctx = Factory.log_in_person(ctx, :member)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: "", access_level: :view_access})
+      assert length(res.spaces) == 4
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Edit Space", "Full Space", "General", "View Space"]
+
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: "", access_level: :edit_access})
+      assert res.spaces == []
+
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: "", access_level: :full_access})
+      assert res.spaces == []
+    end
+
+    test "it still searches normally in read-only mode when access_level is not provided", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:view_space, name: "View Space", company_permissions: Binding.view_access())
+        |> Factory.add_space(:edit_space, name: "Edit Space", company_permissions: Binding.edit_access())
+
+      assert {:ok, _} =
+               Operately.Billing.create_billing_account(%{
+                 company_id: ctx.company.id,
+                 provider: "polar",
+                 status: :past_due,
+                 plan_key: :team,
+                 billing_interval: :monthly,
+                 access_state: :read_only,
+                 access_state_reason: :past_due
+               })
+
+      ctx = Factory.log_in_person(ctx, :member)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: ""})
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Edit Space", "General", "View Space"]
+    end
+
     test "it excludes spaces with IDs in ignored_ids", ctx do
       ctx =
         ctx
@@ -214,6 +270,37 @@ defmodule OperatelyWeb.Api.SpacesTest do
 
       assert {200, res} = query(other_ctx.conn, [:spaces, :count_by_access_level], %{access_level: :view_access})
       assert res.count == 2
+    end
+
+    test "it returns only view-access counts when the company is read-only", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:view_space, name: "View Space", company_permissions: Binding.view_access())
+        |> Factory.add_space(:edit_space, name: "Edit Space", company_permissions: Binding.edit_access())
+        |> Factory.add_space(:full_space, name: "Full Space", company_permissions: Binding.full_access())
+
+      assert {:ok, _} =
+               Operately.Billing.create_billing_account(%{
+                 company_id: ctx.company.id,
+                 provider: "polar",
+                 status: :past_due,
+                 plan_key: :team,
+                 billing_interval: :monthly,
+                 access_state: :read_only,
+                 access_state_reason: :past_due
+               })
+
+      ctx = Factory.log_in_person(ctx, :member)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :view_access})
+      assert res.count == 4
+
+      assert {200, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :edit_access})
+      assert res.count == 0
+
+      assert {200, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :full_access})
+      assert res.count == 0
     end
   end
 
