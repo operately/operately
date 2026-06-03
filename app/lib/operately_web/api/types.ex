@@ -1940,6 +1940,7 @@ defmodule OperatelyWeb.Api.Types do
   object :company_permissions do
     field :can_view, :boolean, null: false
     field :is_admin, :boolean, null: false
+    field :can_manage_billing, :boolean, null: false
     field :can_edit_trusted_email_domains, :boolean, null: false
     field :can_invite_members, :boolean, null: false
     field :can_edit_members, :boolean, null: false

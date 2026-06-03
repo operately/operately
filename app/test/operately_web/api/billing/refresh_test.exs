@@ -11,13 +11,28 @@ defmodule OperatelyWeb.Api.Billing.RefreshTest do
       assert {401, "Unauthorized"} = mutation(ctx.conn, [:billing, :refresh], %{})
     end
 
-    test "it requires a company owner", ctx do
+    test "it allows a company admin", ctx do
       ctx =
         ctx
         |> Factory.setup()
         |> Factory.enable_feature("billing")
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
+
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end do
+        assert {200, res} = mutation(ctx.conn, [:billing, :refresh], %{})
+        assert res.billing.account.status == "free"
+      end
+    end
+
+    test "it rejects regular members", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.enable_feature("billing")
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
 
       assert {403, _} = mutation(ctx.conn, [:billing, :refresh], %{})
     end

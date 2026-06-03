@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Billing.ChangePlan do
   end
 
   def call(conn, inputs) do
-    with {:ok, %{company: company}} <- Helpers.authorize_owner_billing_access(conn),
+    with {:ok, %{company: company}} <- Helpers.authorize_billing_management_access(conn),
          {:ok, overview} <- Billing.change_plan(company, inputs[:plan], inputs[:billing_interval]) do
       {:ok, %{billing: Serializer.serialize(overview, level: :essential)}}
     else

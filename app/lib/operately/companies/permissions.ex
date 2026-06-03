@@ -4,6 +4,7 @@ defmodule Operately.Companies.Permissions do
   defstruct [
     :can_view,
     :is_admin,
+    :can_manage_billing,
     :can_edit_trusted_email_domains,
     :can_invite_members,
     :can_edit_members,
@@ -20,6 +21,7 @@ defmodule Operately.Companies.Permissions do
     permissions = %__MODULE__{
       can_view: access_level >= Binding.view_access(),
       is_admin: access_level >= Binding.admin_access(),
+      can_manage_billing: access_level >= Binding.admin_access(),
       can_edit_details: access_level >= Binding.admin_access(),
       can_invite_members: access_level >= Binding.admin_access(),
       can_edit_members: access_level >= Binding.admin_access(),
@@ -51,7 +53,7 @@ defmodule Operately.Companies.Permissions do
 
   defp apply_company_read_only(permissions) do
     Enum.reduce(Map.keys(Map.from_struct(permissions)), permissions, fn
-      key, acc when key in [:can_view, :is_admin, :can_remove_members] -> acc
+      key, acc when key in [:can_view, :is_admin, :can_manage_billing, :can_remove_members] -> acc
       key, acc -> Map.put(acc, key, false)
     end)
   end

@@ -19,7 +19,7 @@ interface LoaderResult {
 
 async function loader(): Promise<LoaderResult> {
   const companies = await Api.companies
-    .list({ includeMemberCount: true, isCompanyOwner: true })
+    .list({ includeMemberCount: true, canManageBilling: true })
     .then((res) => res.companies || []);
 
   return { companies };

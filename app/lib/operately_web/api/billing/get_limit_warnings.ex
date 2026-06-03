@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Billing.GetLimitWarnings do
   end
 
   def call(conn, _inputs) do
-    with {:ok, %{company: company}} <- Helpers.authorize_admin_billing_read_access(conn) do
+    with {:ok, %{company: company}} <- Helpers.authorize_billing_management_access(conn) do
       catalog_products = Billing.list_active_products()
 
       member_limit =
