@@ -105,6 +105,7 @@ defmodule Operately.Permissions.ReadOnlyTest do
              is_admin: true,
              can_edit_trusted_email_domains: false,
              can_invite_members: false,
+             can_edit_members: false,
              can_remove_members: true,
              can_restore_members: false,
              can_create_space: false,

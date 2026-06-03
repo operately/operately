@@ -1311,6 +1311,7 @@ export interface CompanyPermissions {
   canInviteMembers: boolean;
   canEditMembers: boolean;
   canRemoveMembers: boolean;
+  canEditDetails: boolean;
   canCreateSpace: boolean;
   canManageAdmins: boolean;
   canManageOwners: boolean;

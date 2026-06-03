@@ -1936,6 +1936,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_invite_members, :boolean, null: false
     field :can_edit_members, :boolean, null: false
     field :can_remove_members, :boolean, null: false
+    field :can_edit_details, :boolean, null: false
     field :can_create_space, :boolean, null: false
     field :can_manage_admins, :boolean, null: false
     field :can_manage_owners, :boolean, null: false

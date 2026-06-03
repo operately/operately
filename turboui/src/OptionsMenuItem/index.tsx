@@ -10,9 +10,10 @@ interface Props {
   onClick?: () => void;
   danger?: boolean;
   description?: string;
+  hidden?: boolean;
 }
 
-export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, description }: Props) {
+export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, description, hidden }: Props) {
   const testId = createTestId(title);
 
   const className = classNames(
@@ -44,6 +45,10 @@ export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, descript
       </div>
     </div>
   );
+
+  if (hidden) {
+    return null;
+  }
 
   if (onClick) {
     return (
