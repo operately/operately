@@ -7,21 +7,12 @@ import { redirect } from "react-router-dom";
 
 export { useBillingUpdatedSignal } from "@/signals";
 export type BillingCompanyAccessState = api.BillingCompanyAccessState;
-export type BillingLimitStatus = api.BillingLimitStatus;
-export type BillingLimitWarnings = api.BillingLimitWarnings;
 export type BillingOverview = api.BillingOverview;
 
 export type { BillingLimitGuidance, BillingLimitViewerRole } from "./memberLimitGuidance";
 export type { BillingLimitError } from "./limitError";
 
-export {
-  APPROACHING_LIMIT_BANNER_COOLDOWN_MS,
-  buildApproachingLimitBanner,
-  dismissApproachingLimitBanner,
-  isApproachingLimitBannerDismissed,
-  isBillingManagementPath,
-} from "./approachingLimitBanner";
-export { buildBillingDangerBanner } from "./dangerBanner";
+export { buildBillingDangerBanner, isBillingManagementPath } from "./dangerBanner";
 export { isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
 export { buildMemberLimitGuidance } from "./memberLimitGuidance";
 export { extractLimitError, extractLimitErrorDetails } from "./limitError";
@@ -65,10 +56,6 @@ export async function authorizeBillingManagementPageAccess(companyId: string) {
 
 export async function getAccessState(input: api.BillingGetAccessStateInput = {}): Promise<api.BillingCompanyAccessState> {
   return Api.billing.getAccessState(input).then((data) => data.accessState);
-}
-
-export async function getLimitWarnings(input: api.BillingGetLimitWarningsInput = {}): Promise<api.BillingLimitWarnings> {
-  return Api.billing.getLimitWarnings(input).then((data) => data.warnings);
 }
 
 export async function refreshBilling(input: api.BillingRefreshInput = {}): Promise<api.BillingOverview> {

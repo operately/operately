@@ -40,7 +40,6 @@ import * as Billing from "@/models/billing";
 import { Paths, usePaths } from "@/routes/paths";
 import { useGlobalSearchHandler } from "./useGlobalSearch";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
-import { ApproachingLimitBanner } from "./ApproachingLimitBanner";
 import { BillingDangerBanner } from "./BillingDangerBanner";
 
 interface NavigationProps {
@@ -251,7 +250,6 @@ export default function CompanyLayout() {
       <SupportSessionBanner />
 
       <BillingDangerBanner />
-      <ApproachingLimitBanner />
 
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
