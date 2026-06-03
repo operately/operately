@@ -1,6 +1,7 @@
 defmodule Operately.Operations.GuestInvitingTest do
   use Operately.DataCase
   use Operately.Support.Notifications
+  use Oban.Testing, repo: Operately.Repo
 
   import Ecto.Query, only: [from: 2]
   import Operately.CompaniesFixtures
@@ -10,6 +11,7 @@ defmodule Operately.Operations.GuestInvitingTest do
   alias Operately.Access
   alias Operately.Billing
   alias Operately.Billing.EnforceLimits.LimitError
+  alias Operately.Billing.LimitBreachAlertEmailWorker
   alias Operately.Groups
   alias Operately.InviteLinks
   alias Operately.People
@@ -45,6 +47,16 @@ defmodule Operately.Operations.GuestInvitingTest do
     account = People.get_account_by_email(@email)
     assert account
     assert is_nil(account.first_login_at)
+  end
+
+  test "GuestInviting enqueues a limit-reached email when the company hits the member limit", ctx do
+    company = enable_billing(ctx.company)
+    fill_company_to_one_below_member_limit(company)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, _changes} = Operately.Operations.GuestInviting.run(ctx.admin, company, @guest_attrs)
+      assert length(all_enqueued(worker: LimitBreachAlertEmailWorker)) == 1
+    end)
   end
 
   test "GuestInviting blocks when the company is already at the member limit", ctx do
@@ -184,6 +196,20 @@ defmodule Operately.Operations.GuestInvitingTest do
 
   defp fill_company_to_member_limit(company) do
     needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Limit Guest #{index}",
+          email: "limit-guest-#{index}@example.com"
+        })
+      end)
+    end
+  end
+
+  defp fill_company_to_one_below_member_limit(company) do
+    needed_people = max(19 - Billing.active_member_count(company), 0)
 
     if needed_people > 0 do
       Enum.each(1..needed_people, fn index ->

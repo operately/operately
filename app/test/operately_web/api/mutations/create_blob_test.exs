@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
   use OperatelyWeb.TurboCase
+  use Oban.Testing, repo: Operately.Repo
 
   import Operately.BlobsFixtures
 
@@ -30,6 +31,21 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
       assert blob.storage_type != nil
       assert blob.purpose == :company_file
       assert blob.account_id == nil
+    end
+
+    test "it does not enqueue a limit email for pending blobs", ctx do
+      enable_billing(ctx.company)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {200, _res} =
+                 mutation(ctx.conn, :create_blob, %{
+                   files: [
+                     %{filename: "test.txt", size: 1024, content_type: "text/plain"}
+                   ]
+                 })
+
+        refute_enqueued worker: Operately.Billing.LimitBreachAlertEmailWorker
+      end)
     end
 
     test "it creates multiple blob records in the database", ctx do
