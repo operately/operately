@@ -147,6 +147,33 @@ test("parses scalar arrays from repeated flags", () => {
   }
 });
 
+test("parses scalar arrays from JSON array strings", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(
+    [
+      "goals",
+      "update_target_value",
+      "--goal-id",
+      "g1",
+      "--target-value",
+      "10.5",
+      "--subscriber-ids",
+      '["u1","u2"]',
+    ],
+    registry,
+    fixtureCatalog.types,
+  );
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      goal_id: "g1",
+      target_value: 10.5,
+      subscriber_ids: ["u1", "u2"],
+    });
+  }
+});
+
 test("parses repeated task assignee ids", () => {
   const registry = createRegistry(fixtureCatalog);
   const parsed = parseCommand(
@@ -172,6 +199,28 @@ test("parses repeated task assignee ids", () => {
       task_id: "t1",
       type: "project",
       assignee_ids: ["p1", "p2"],
+    });
+  }
+});
+
+test("accepts json as a global output flag", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(
+    ["goals", "update_due_date", "--goal-id", "g1", "--due-date", "2026-03-20", "--json"],
+    registry,
+    fixtureCatalog.types,
+  );
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.equal(parsed.globalFlags.json, true);
+    assert.deepEqual(parsed.endpointInputs, {
+      goal_id: "g1",
+      due_date: {
+        date_type: "day",
+        value: "Mar 20, 2026",
+        date: "2026-03-20",
+      },
     });
   }
 });

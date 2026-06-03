@@ -203,6 +203,12 @@ Arrays:
 operately notifications mark_many_as_read --ids n1 --ids n2
 ```
 
+Repeated flags are the canonical form. For compatibility with scripts and agents, list flags also accept a JSON array string:
+
+```bash
+operately notifications mark_many_as_read --ids '["n1","n2"]'
+```
+
 Nested objects and lists use dot-index notation:
 
 ```bash
@@ -275,6 +281,9 @@ For API endpoint commands:
 ```bash
 # Pretty JSON (default)
 operately people get_me
+
+# Pretty JSON (explicit alias)
+operately people get_me --json
 
 # Compact JSON
 operately people get_me --compact

@@ -221,7 +221,7 @@ function coerceFieldValue(
 
   // Handle list/array types
   if (typeRef.kind === "list") {
-    const list = Array.isArray(value) ? value : [value];
+    const list = normalizeListValue(value);
     return list.map((item, i) =>
       coerceFieldValue(typeRef.item, item, { ...field, nullable: false }, types, `${path}[${i}]`),
     );
@@ -281,6 +281,31 @@ function coerceFieldValue(
   }
 
   throw new UsageError(`Unknown type '${typeName}' for field '${path}'.`);
+}
+
+function normalizeListValue(value: unknown): unknown[] {
+  if (Array.isArray(value)) {
+    return value.flatMap(normalizeListValue);
+  }
+
+  if (typeof value === "string") {
+    const parsed = parseJsonArray(value);
+    if (parsed) return parsed.flatMap(normalizeListValue);
+  }
+
+  return [value];
+}
+
+function parseJsonArray(value: string): unknown[] | null {
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) return null;
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 function coerceBuiltinType(typeName: string, value: unknown, path: string): unknown {

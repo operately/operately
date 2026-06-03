@@ -71,6 +71,7 @@ Global flags:
   --base-url <url>
   --profile <name>
   --compact
+  --json
   --output <file>
   --verbose
   --version
@@ -345,6 +346,19 @@ function formatTypeHint(typeRef: CatalogTypeRef): string {
   return typeRef.name;
 }
 
+function formatFlagTypeHint(typeRef: CatalogTypeRef): string {
+  return typeRef.kind === "list" ? formatTypeHint(typeRef.item) : formatTypeHint(typeRef);
+}
+
+function formatFlagQualifiers(field: CatalogEndpoint["inputs"][number]): string {
+  const qualifiers = [field.optional ? "optional" : "required"];
+
+  if (field.nullable) qualifiers.push("nullable");
+  if (field.type.kind === "list") qualifiers.push("repeatable");
+
+  return qualifiers.join(", ");
+}
+
 export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, types?: CatalogTypes): void {
   const header = [`Command: ${command}`];
 
@@ -372,10 +386,8 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
       ? ["  (none)"]
       : endpoint.inputs.flatMap((field) => {
           const flag = `--${field.name.replace(/_/g, "-")}`;
-          const required = field.optional ? "optional" : "required";
-          const nullable = field.nullable ? ", nullable" : "";
-          const typeHint = formatTypeHint(field.type);
-          const rows = [`  ${flag} <${typeHint}> (${required}${nullable})`];
+          const typeHint = formatFlagTypeHint(field.type);
+          const rows = [`  ${flag} <${typeHint}> (${formatFlagQualifiers(field)})`];
 
           if (field.type.kind === "named" && field.type.name === "contextual_date") {
             hasContextualDate = true;

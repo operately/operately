@@ -34,6 +34,7 @@ function buildInput(
     },
     globalFlags: {
       compact: false,
+      json: false,
       verbose: false,
     },
   };
