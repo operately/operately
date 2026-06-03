@@ -91,6 +91,20 @@ defmodule Operately.Support.Features.CompanyBillingRecoverySteps do
     |> UI.assert_has(testid: UI.testid(["remove-person", person_id]))
   end
 
+  step :assert_rename_company_hidden_on_company_admin_page, ctx do
+    ctx
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
+    |> UI.refute_has(testid: "rename-the-company")
+  end
+
+  step :assert_trusted_email_domains_hidden_on_company_admin_page, ctx do
+    ctx
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
+    |> UI.refute_has(testid: "manage-trusted-email-domains")
+  end
+
   step :assert_reissue_invitation_action_hidden_for, ctx, key do
     person = Map.fetch!(ctx, key)
 

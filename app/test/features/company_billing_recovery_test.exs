@@ -52,6 +52,15 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
     |> BillingSteps.assert_billing_entry_is_hidden_on_company_admin_page()
   end
 
+  @tag role: :owner
+  feature "owners do not see rename or trusted email domain actions after the company becomes read-only", ctx do
+    ctx
+    |> RecoverySteps.enable_billing_for_company()
+    |> RecoverySteps.put_company_in_payment_recovery(:read_only)
+    |> RecoverySteps.assert_rename_company_hidden_on_company_admin_page()
+    |> RecoverySteps.assert_trusted_email_domains_hidden_on_company_admin_page()
+  end
+
   @tag role: :member
   feature "regular members see the payment grace banner without a CTA", ctx do
     ctx
