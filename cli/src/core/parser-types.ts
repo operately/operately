@@ -11,6 +11,7 @@ export interface GlobalFlags {
   baseUrl?: string;
   profile?: string;
   compact: boolean;
+  json: boolean;
   output?: string;
   verbose: boolean;
 }
