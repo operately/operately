@@ -79,7 +79,7 @@ function AdminsMenu() {
         )}
 
         <OptionsMenuItem linkTo={restorePath} icon={IconUser} title="Restore access for deactivated team members" />
-        <OptionsMenuItem linkTo={renameCompanyPath} icon={IconLetterCase} title="Rename the company" />
+        <OptionsMenuItem hidden={!company.permissions?.canEditDetails} linkTo={renameCompanyPath} icon={IconLetterCase} title="Rename the company" />
       </div>
     </Paper.Section>
   );
@@ -108,7 +108,7 @@ function OwnersMenu() {
       <div>
         <OptionsMenuItem linkTo={manageAdmins} icon={IconShieldLock} title="Manage administrators and owners" />
         {billingEnabled && <OptionsMenuItem linkTo={manageBilling} icon={IconFileText} title="Manage plan" />}
-        <OptionsMenuItem linkTo={manageTrustedDomains} icon={IconLock} title="Manage trusted email domains" />
+        <OptionsMenuItem hidden={!company.permissions?.canEditTrustedEmailDomains} linkTo={manageTrustedDomains} icon={IconLock} title="Manage trusted email domains" />
         <OptionsMenuItem linkTo={exportCompany} icon={IconFileExport} title="Export company data" />
       </div>
     </Paper.Section>
