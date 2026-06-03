@@ -125,39 +125,6 @@ function accessStateMock(): Billing.BillingCompanyAccessState {
   };
 }
 
-function limitWarningsMock(): Billing.BillingLimitWarnings {
-  return {
-    memberLimit: {
-      code: "member_count_limit_status",
-      limitKey: "member_count",
-      planKey: "free",
-      currentUsage: 18,
-      requestedDelta: 0,
-      projectedUsage: 18,
-      limit: 20,
-      remaining: 2,
-      nearLimit: true,
-      blocked: false,
-      enforced: true,
-      recommendedUpgrade: null,
-    },
-    storageLimit: {
-      code: "storage_bytes_limit_status",
-      limitKey: "storage_bytes",
-      planKey: "free",
-      currentUsage: 81 * 1024 ** 3,
-      requestedDelta: 0,
-      projectedUsage: 81 * 1024 ** 3,
-      limit: 100 * 1024 ** 3,
-      remaining: 19 * 1024 ** 3,
-      nearLimit: true,
-      blocked: false,
-      enforced: true,
-      recommendedUpgrade: null,
-    },
-  };
-}
-
 function hostedSessionMock() {
   return {
     provider: "polar",
@@ -232,19 +199,16 @@ describe("billing model helpers", () => {
     }
   });
 
-  it("loads billing overview, access state, limit warnings, and refresh data from the api", async () => {
+  it("loads billing overview, access state, and refresh data from the api", async () => {
     const billing = billingOverviewMock();
     const accessState = accessStateMock();
-    const warnings = limitWarningsMock();
 
     jest.spyOn(Api.billing, "get").mockResolvedValue({ billing } as any);
     jest.spyOn(Api.billing, "getAccessState").mockResolvedValue({ accessState } as any);
-    jest.spyOn(Api.billing, "getLimitWarnings").mockResolvedValue({ warnings } as any);
     jest.spyOn(Api.billing, "refresh").mockResolvedValue({ billing } as any);
 
     await expect(Billing.getBilling({})).resolves.toEqual(billing);
     await expect(Billing.getAccessState({})).resolves.toEqual(accessState);
-    await expect(Billing.getLimitWarnings({})).resolves.toEqual(warnings);
     await expect(Billing.refreshBilling({})).resolves.toEqual(billing);
   });
 

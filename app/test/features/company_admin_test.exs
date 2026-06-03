@@ -251,31 +251,12 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   @tag role: :owner
-  feature "owner sees a proactive upgrade banner near the member limit", ctx do
+  feature "near-limit usage does not show a company billing banner", ctx do
     ctx
     |> enable_billing_for_company()
     |> fill_company_to_near_member_limit()
     |> Steps.visit_company_home_page()
-    |> Steps.assert_approaching_limit_banner_has_upgrade_cta()
-    |> Steps.follow_approaching_limit_banner_upgrade_cta()
-  end
-
-  @tag role: :admin
-  feature "company admin sees a proactive upgrade banner near the storage limit with a CTA", ctx do
-    ctx
-    |> enable_billing_for_company()
-    |> fill_company_to_near_storage_limit()
-    |> Steps.visit_company_home_page()
-    |> Steps.assert_approaching_limit_banner_has_upgrade_cta()
-  end
-
-  @tag role: :member
-  feature "regular members do not see the proactive upgrade banner", ctx do
-    ctx
-    |> enable_billing_for_company()
-    |> fill_company_to_near_member_limit()
-    |> Steps.visit_company_home_page()
-    |> Steps.refute_approaching_limit_banner_visible()
+    |> Steps.refute_company_billing_banner_visible()
   end
 
   @tag role: :member
@@ -300,14 +281,6 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
     |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
     |> Steps.assert_company_billing_banner_text("Contact a company admin or owner.")
-  end
-
-  @tag role: :owner
-  feature "non-flagged companies do not show the proactive upgrade banner", ctx do
-    ctx
-    |> fill_company_to_near_member_limit()
-    |> Steps.visit_company_home_page()
-    |> Steps.refute_approaching_limit_banner_visible()
   end
 
   @tag role: :owner

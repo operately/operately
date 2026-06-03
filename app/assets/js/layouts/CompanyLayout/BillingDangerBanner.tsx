@@ -10,7 +10,7 @@ import { IconAlertTriangleFilled, SecondaryButton } from "turboui";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 export function BillingDangerBanner() {
-  const { company, billingAccessState, billingLimitWarnings } = useCompanyLoaderData();
+  const { company, billingAccessState } = useCompanyLoaderData();
   const paths = usePaths();
   const location = useLocation();
   const hasSupportSession = useHasSupportSessionCookie();
@@ -23,11 +23,11 @@ export function BillingDangerBanner() {
       return null;
     }
 
-    return Billing.buildBillingDangerBanner(billingAccessState, billingLimitWarnings, canManageBilling, {
+    return Billing.buildBillingDangerBanner(billingAccessState, canManageBilling, {
       companyBillingPath: () => paths.companyBillingPath(),
       companyBillingPlansPath: (opts) => paths.companyBillingPlansPath(opts),
     });
-  }, [billingAccessState, billingLimitWarnings, canManageBilling, hiddenOnRoute, paths]);
+  }, [billingAccessState, canManageBilling, hiddenOnRoute, paths]);
 
   if (!banner) {
     return null;

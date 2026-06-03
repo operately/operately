@@ -36,48 +36,9 @@ function accessState(overrides: Partial<Billing.BillingCompanyAccessState> = {})
   };
 }
 
-function warningStatus(overrides: Partial<Billing.BillingLimitStatus> = {}): Billing.BillingLimitStatus {
-  return {
-    code: "member_count_limit_exceeded",
-    limitKey: "member_count",
-    planKey: "free",
-    currentUsage: 21,
-    requestedDelta: 0,
-    projectedUsage: 21,
-    limit: 20,
-    remaining: 0,
-    nearLimit: true,
-    blocked: true,
-    enforced: true,
-    recommendedUpgrade: {
-      planKey: "team",
-      billingInterval: "monthly",
-      source: "next_plan",
-    },
-    ...overrides,
-  };
-}
-
-function warnings(overrides: Partial<Billing.BillingLimitWarnings> = {}): Billing.BillingLimitWarnings {
-  return {
-    memberLimit: warningStatus(),
-    storageLimit: warningStatus({
-      code: "storage_limit_exceeded",
-      limitKey: "storage_bytes",
-      currentUsage: 950 * 1024 * 1024,
-      projectedUsage: 950 * 1024 * 1024,
-      limit: 1024 * 1024 * 1024,
-      remaining: 74 * 1024 * 1024,
-      nearLimit: true,
-      blocked: false,
-    }),
-    ...overrides,
-  };
-}
-
 describe("billing danger banner helpers", () => {
   it("builds a payment-grace banner with a CTA for billing managers", () => {
-    const banner = Billing.buildBillingDangerBanner(accessState(), null, true, {
+    const banner = Billing.buildBillingDangerBanner(accessState(), true, {
       companyBillingPath: () => "/acme/admin/billing",
       companyBillingPlansPath: () => "/acme/admin/billing/plans",
     });
@@ -101,7 +62,6 @@ describe("billing danger banner helpers", () => {
         accessState: "read_only",
         accessStateEndsAt: null,
       }),
-      null,
       false,
       {
         companyBillingPath: () => "/acme/admin/billing",
@@ -139,7 +99,6 @@ describe("billing danger banner helpers", () => {
           nearLimit: true,
         },
       }),
-      null,
       false,
       {
         companyBillingPath: () => "/acme/admin/billing",
@@ -161,28 +120,31 @@ describe("billing danger banner helpers", () => {
     });
   });
 
-  it("uses warning data to build a manager over-limit banner with a plan CTA", () => {
+  it("builds a manager over-limit banner with a generic plans CTA", () => {
     const banner = Billing.buildBillingDangerBanner(
       accessState({
         accessState: "normal",
         accessStateReason: null,
-      }),
-      warnings({
-        storageLimit: warningStatus({
-          code: "storage_limit_exceeded",
-          limitKey: "storage_bytes",
+        memberLimit: {
+          ...accessState().memberLimit,
+          limit: 20,
+          blocked: true,
+          nearLimit: true,
+        },
+        storageLimit: {
+          ...accessState().storageLimit,
           currentUsage: 1100 * 1024 * 1024,
           projectedUsage: 1100 * 1024 * 1024,
           limit: 1024 * 1024 * 1024,
           remaining: 0,
           nearLimit: true,
           blocked: true,
-        }),
+        },
       }),
       true,
       {
         companyBillingPath: () => "/acme/admin/billing",
-        companyBillingPlansPath: (opts) => `/acme/admin/billing/plans?plan=${opts?.plan}&billing_period=${opts?.billingPeriod}`,
+        companyBillingPlansPath: () => "/acme/admin/billing/plans",
       },
     );
 
@@ -194,7 +156,7 @@ describe("billing danger banner helpers", () => {
       shouldContactAdmin: false,
       cta: {
         label: "Review plans",
-        to: "/acme/admin/billing/plans?plan=team&billing_period=monthly",
+        to: "/acme/admin/billing/plans",
       },
       usageRows: [
         { label: "Active members", value: "21 / 20", state: "blocked" },
@@ -228,7 +190,37 @@ describe("billing danger banner helpers", () => {
             blocked: false,
           },
         }),
-        null,
+        true,
+        {
+          companyBillingPath: () => "/acme/admin/billing",
+          companyBillingPlansPath: () => "/acme/admin/billing/plans",
+        },
+      ),
+    ).toBeNull();
+  });
+
+  it("returns null when usage is only near the limit", () => {
+    expect(
+      Billing.buildBillingDangerBanner(
+        accessState({
+          accessState: "normal",
+          accessStateReason: null,
+          memberLimit: {
+            ...accessState().memberLimit,
+            limit: 20,
+            blocked: false,
+            nearLimit: true,
+          },
+          storageLimit: {
+            ...accessState().storageLimit,
+            currentUsage: 950 * 1024 * 1024,
+            projectedUsage: 950 * 1024 * 1024,
+            limit: 1024 * 1024 * 1024,
+            remaining: 74 * 1024 * 1024,
+            blocked: false,
+            nearLimit: true,
+          },
+        }),
         true,
         {
           companyBillingPath: () => "/acme/admin/billing",

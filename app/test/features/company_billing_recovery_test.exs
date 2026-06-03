@@ -38,7 +38,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
     |> RecoverySteps.assert_payment_default_banner_has_upgrade_cta()
     |> RecoverySteps.assert_payment_default_banner_text("Payment issue requires attention")
     |> RecoverySteps.assert_payment_default_banner_text("switch to read-only mode")
-    |> AdminSteps.refute_approaching_limit_banner_visible()
+    |> AdminSteps.refute_company_billing_banner_visible()
     |> RecoverySteps.follow_payment_default_banner_cta()
   end
 
