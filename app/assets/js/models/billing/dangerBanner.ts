@@ -4,10 +4,7 @@ import { formatStorageBytes } from "turboui/CompanyBilling";
 import { isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
 
 type BillingCompanyAccessState = api.BillingCompanyAccessState;
-type BillingLimitWarnings = api.BillingLimitWarnings;
-type BillingLimitSnapshot = (api.BillingAccessStateLimit | api.BillingLimitStatus) & {
-  recommendedUpgrade?: api.BillingRecommendedUpgrade | null;
-};
+type BillingLimitSnapshot = api.BillingAccessStateLimit;
 
 interface BillingDangerBannerRoutes {
   companyBillingPath: () => string;
@@ -47,7 +44,6 @@ type BillingDangerBannerViewModel = PaymentDefaultDangerBannerViewModel | OverLi
 
 export function buildBillingDangerBanner(
   accessState: BillingCompanyAccessState | null | undefined,
-  warnings: BillingLimitWarnings | null | undefined,
   canManageBilling: boolean,
   routes: BillingDangerBannerRoutes,
 ): BillingDangerBannerViewModel | null {
@@ -64,13 +60,15 @@ export function buildBillingDangerBanner(
     };
   }
 
-  const activeStatuses = selectOverLimitDangerStatuses(accessState, warnings);
+  if (!accessState) {
+    return null;
+  }
+
+  const activeStatuses = dangerStatuses([accessState.memberLimit, accessState.storageLimit]);
 
   if (activeStatuses.length === 0) {
     return null;
   }
-
-  const recommendedUpgrade = activeStatuses.find((status) => status.recommendedUpgrade?.planKey)?.recommendedUpgrade || null;
 
   return {
     kind: "over_limit",
@@ -82,33 +80,10 @@ export function buildBillingDangerBanner(
     cta: canManageBilling
       ? {
           label: "Review plans",
-          to:
-            recommendedUpgrade?.planKey && recommendedUpgrade?.billingInterval
-              ? routes.companyBillingPlansPath({
-                  plan: recommendedUpgrade.planKey,
-                  billingPeriod: recommendedUpgrade.billingInterval,
-                })
-              : routes.companyBillingPath(),
+          to: routes.companyBillingPlansPath(),
         }
       : null,
   };
-}
-
-function selectOverLimitDangerStatuses(
-  accessState: BillingCompanyAccessState | null | undefined,
-  warnings: BillingLimitWarnings | null | undefined,
-): BillingLimitSnapshot[] {
-  const warningStatuses = warnings ? dangerStatuses([warnings.memberLimit, warnings.storageLimit]) : [];
-
-  if (warningStatuses.length > 0) {
-    return warningStatuses;
-  }
-
-  if (!accessState) {
-    return [];
-  }
-
-  return dangerStatuses([accessState.memberLimit, accessState.storageLimit]);
 }
 
 function dangerStatuses(statuses: BillingLimitSnapshot[]): BillingLimitSnapshot[] {
@@ -141,4 +116,8 @@ function usageRows(activeStatuses: BillingLimitSnapshot[]): BillingDangerUsageRo
       state,
     };
   });
+}
+
+export function isBillingManagementPath(pathname: string, billingPath: string) {
+  return pathname === billingPath || pathname.startsWith(`${billingPath}/`);
 }
