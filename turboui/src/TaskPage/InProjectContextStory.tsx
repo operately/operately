@@ -35,6 +35,9 @@ export function InProjectContextStory() {
   const [taskDueDate, setTaskDueDate] = useState<DateField.ContextualDate | undefined>(
     createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
   );
+  const [taskReminders, setTaskReminders] = useState<TaskPage.Reminder[]>([
+    { type: "before_due", days: 1, date: null },
+  ]);
   const [taskAssignees, setTaskAssignees] = useState<TaskPage.Person[]>([mockTaskPeople[1]!]);
   const [taskMilestone, setTaskMilestone] = useState<TaskPage.Milestone | null>(mockMilestones[1]!); // Beta Release
   const [milestones, setMilestones] = useState<TaskPage.Milestone[]>(mockMilestones);
@@ -84,6 +87,12 @@ export function InProjectContextStory() {
       onDueDateChange={(newDate) => {
         console.log("Updating due date:", newDate);
         setTaskDueDate(newDate ?? undefined);
+      }}
+      reminders={taskReminders}
+      onRemindersChange={(newReminders) => {
+        console.log("Updating reminders:", newReminders);
+        setTaskReminders(newReminders);
+        return true;
       }}
       assignees={taskAssignees}
       onAssigneesChange={(newAssignees) => {

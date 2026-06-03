@@ -88,6 +88,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
           onTaskNameChange={state.onTaskNameChange}
           onTaskAssigneeChange={state.onTaskAssigneeChange}
           onTaskDueDateChange={state.onTaskDueDateChange}
+          onTaskRemindersChange={state.onTaskRemindersChange}
           onTaskStatusChange={state.onTaskStatusChange}
           onTaskMilestoneChange={handleTaskMilestoneChange}
           onTaskDelete={state.onTaskDelete}
@@ -116,6 +117,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         onMilestoneCreate={state.onMilestoneCreate}
         onTaskAssigneeChange={state.onTaskAssigneeChange}
         onTaskDueDateChange={state.onTaskDueDateChange}
+        onTaskRemindersChange={state.onTaskRemindersChange}
         onTaskStatusChange={state.onTaskStatusChange}
         onTaskMilestoneChange={state.onTaskMilestoneChange}
         onTaskNameChange={state.onTaskNameChange}

@@ -8,23 +8,25 @@ defmodule OperatelyEmail.Cron.Assignments do
 
   @impl Oban.Worker
   def perform(_) do
-    if is_workday?() do
-      send_assignments()
-    else
-      :ok
-    end
+    Date.utc_today()
+    |> send_mode()
+    |> send_assignments()
   end
 
-  def send_assignments do
+  def send_assignments(mode \\ :baseline_and_reminders) do
     people = people_who_want_assignment_emails()
 
     Enum.each(people, fn person ->
       catch_and_log_errors(fn ->
-        OperatelyEmail.Emails.AssignmentsEmail.send(person)
+        OperatelyEmail.Emails.AssignmentsEmail.send(person, mode: mode)
       end)
     end)
 
     :ok
+  end
+
+  def send_mode(%Date{} = date) do
+    if workday?(date), do: :baseline_and_reminders, else: :explicit_reminders_only
   end
 
   defp catch_and_log_errors(cb) do
@@ -50,6 +52,10 @@ defmodule OperatelyEmail.Cron.Assignments do
   end
 
   def is_workday? do
-    Date.day_of_week(Date.utc_today()) in [1, 2, 3, 4, 5]
+    workday?(Date.utc_today())
+  end
+
+  defp workday?(date) do
+    Date.day_of_week(date) in [1, 2, 3, 4, 5]
   end
 end

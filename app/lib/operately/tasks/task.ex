@@ -11,6 +11,7 @@ defmodule Operately.Tasks.Task do
           size: String.t() | nil,
           description: map() | nil,
           due_date: %Operately.ContextualDates.ContextualDate{} | nil,
+          reminders: [Operately.Tasks.Reminder.t()],
           status: String.t(),
           task_status: Operately.Tasks.Status.t() | nil,
           closed_at: NaiveDateTime.t() | nil,
@@ -48,6 +49,7 @@ defmodule Operately.Tasks.Task do
 
     field :deprecated_due_date, :naive_datetime
     embeds_one :due_date, Operately.ContextualDates.ContextualDate, on_replace: :update
+    embeds_many :reminders, Operately.Tasks.Reminder, on_replace: :delete
 
     embeds_one :task_status, Operately.Tasks.Status, on_replace: :update
     field :closed_at, :naive_datetime
@@ -88,6 +90,7 @@ defmodule Operately.Tasks.Task do
       :subscription_list_id
     ])
     |> cast_embed(:due_date)
+    |> cast_embed(:reminders)
     |> cast_embed(:task_status)
     |> put_default_task_status()
     |> validate_required([:name, :description, :creator_id, :subscription_list_id])
@@ -147,8 +150,11 @@ defmodule Operately.Tasks.Task do
         |> Ecto.Changeset.add_error(:project_id, "either project_id or space_id must be present")
         |> Ecto.Changeset.add_error(:space_id, "either project_id or space_id must be present")
 
-      {nil, _} -> changeset
-      {_, nil} -> changeset
+      {nil, _} ->
+        changeset
+
+      {_, nil} ->
+        changeset
 
       {_, _} ->
         changeset
@@ -187,7 +193,7 @@ defmodule Operately.Tasks.Task do
   #
 
   def load_comments_count(tasks) do
-    task_ids = Enum.map(tasks, &(&1.id))
+    task_ids = Enum.map(tasks, & &1.id)
 
     counts =
       from(c in Operately.Updates.Comment,
@@ -276,10 +282,12 @@ defmodule Operately.Tasks.Task do
         left_join: sp in assoc(r, :space),
         join: c in Operately.Access.Context,
         on: c.project_id == proj.id or c.group_id == sp.id,
-        join: b in assoc(c, :bindings), as: :binding,
+        join: b in assoc(c, :bindings),
+        as: :binding,
         join: g in assoc(b, :group),
         join: m in assoc(g, :memberships),
-        join: p in assoc(m, :person), as: :person,
+        join: p in assoc(m, :person),
+        as: :person,
         where: m.person_id == ^requester_id,
         where: is_nil(p.suspended_at),
         where: b.access_level >= ^Binding.view_access()
