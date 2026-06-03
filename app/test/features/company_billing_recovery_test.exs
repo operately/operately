@@ -43,13 +43,14 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   end
 
   @tag role: :admin
-  feature "company admins still do not get billing access during payment grace", ctx do
+  feature "company admins can review billing during payment grace", ctx do
     ctx
     |> RecoverySteps.enable_billing_for_company()
     |> RecoverySteps.put_company_in_payment_recovery(:payment_grace)
     |> AdminSteps.visit_company_home_page()
-    |> RecoverySteps.assert_payment_default_banner_has_no_upgrade_cta()
-    |> BillingSteps.assert_billing_entry_is_hidden_on_company_admin_page()
+    |> RecoverySteps.assert_payment_default_banner_has_upgrade_cta()
+    |> RecoverySteps.follow_payment_default_banner_cta()
+    |> BillingSteps.assert_billing_entry_is_visible_on_company_admin_page()
   end
 
   @tag role: :owner
@@ -82,11 +83,11 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   end
 
   @tag role: :admin
-  feature "company admins cannot open the cancellation page during payment recovery", ctx do
+  feature "company admins can open the cancellation page during payment recovery", ctx do
     ctx
     |> RecoverySteps.enable_billing_for_company()
     |> RecoverySteps.put_company_in_payment_recovery(:payment_grace)
     |> RecoverySteps.visit_company_billing_cancel_page()
-    |> AdminSteps.assert_redirected_to_company_admin_page()
+    |> BillingSteps.assert_billing_cancellation_page_is_open()
   end
 end
