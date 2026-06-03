@@ -1,5 +1,6 @@
 defmodule Operately.PeopleTest do
   use Operately.DataCase
+  use Oban.Testing, repo: Operately.Repo
 
   alias Operately.People
   alias Operately.People.Person
@@ -81,6 +82,22 @@ defmodule Operately.PeopleTest do
       assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
       assert person.full_name == "some full_name"
       assert person.title == "some title"
+    end
+
+    test "create_person/1 enqueues a limit-reached email when the company hits the member limit", ctx do
+      enable_billing(ctx.person.company_id)
+      fill_company_to_one_below_member_limit(ctx.person.company_id)
+
+      valid_attrs = %{
+        full_name: "threshold person",
+        title: "some title",
+        company_id: ctx.person.company_id
+      }
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, %Person{}} = People.create_person(valid_attrs)
+        assert length(all_enqueued(worker: Operately.Billing.LimitBreachAlertEmailWorker)) == 1
+      end)
     end
 
     test "person changeset populates default notification preferences when creating a person", ctx do
@@ -558,6 +575,42 @@ defmodule Operately.PeopleTest do
       # And now Alice can have Bob as manager (which was not possible before)
       {:ok, alice_with_manager} = People.update_person(alice, %{manager_id: dave.id})
       assert alice_with_manager.manager_id == dave.id
+    end
+  end
+
+  defp enable_billing(company_id) do
+    previous_value = Application.get_env(:operately, :billing_enabled)
+    Application.put_env(:operately, :billing_enabled, true)
+
+    on_exit(fn ->
+      restore_billing_enabled(previous_value)
+    end)
+
+    company = Operately.Companies.get_company!(company_id)
+    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
+  end
+
+  defp restore_billing_enabled(nil), do: Application.delete_env(:operately, :billing_enabled)
+  defp restore_billing_enabled(value), do: Application.put_env(:operately, :billing_enabled, value)
+
+  defp fill_company_to_one_below_member_limit(company_id) do
+    company = Operately.Companies.get_company!(company_id)
+    needed_people = max(19 - Operately.Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        account = account_fixture(%{email: "people-limit-member-#{index}@example.com", full_name: "People Limit Member #{index}"})
+
+        %Person{}
+        |> Person.changeset(%{
+          company_id: company.id,
+          account_id: account.id,
+          full_name: "People Limit Member #{index}",
+          email: account.email,
+          suspended: false
+        })
+        |> Repo.insert!()
+      end)
     end
   end
 end

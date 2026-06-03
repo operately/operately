@@ -3,6 +3,7 @@ defmodule Operately.Features.CompanyAdminTest do
 
   alias Operately.Billing
   alias Operately.Billing.Plans
+  alias Operately.Support.Features.UI.Emails
   alias Operately.People
   alias Operately.Support.Features.CompanyAdminSteps, as: Steps
 
@@ -51,6 +52,32 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_limit_guidance_has_upgrade_cta()
     |> Steps.follow_limit_guidance_upgrade_cta()
     |> assert_no_person_added(params.email)
+  end
+
+  @tag role: :owner
+  feature "reaching the member limit sends one upgrade email for the breach episode", ctx do
+    first_params = %{
+      full_name: "Threshold Member",
+      email: "threshold.member@example.com",
+      title: "Designer"
+    }
+
+    second_params = %{
+      full_name: "Blocked Member",
+      email: "blocked.member@example.com",
+      title: "Engineer"
+    }
+
+    ctx
+    |> enable_billing_for_company()
+    |> fill_company_to_one_below_member_limit()
+    |> Steps.open_company_team_page()
+    |> Steps.invite_company_member(first_params)
+    |> assert_limit_reached_email(:member_count, [ctx.creator.email, ctx.owner.email])
+    |> Steps.open_company_team_page()
+    |> Steps.invite_company_member(second_params)
+    |> Steps.assert_limit_guidance_has_upgrade_cta()
+    |> assert_limit_reached_email_sent_once(:member_count)
   end
 
   @tag role: :owner
@@ -478,6 +505,18 @@ defmodule Operately.Features.CompanyAdminTest do
     end
   end
 
+  defp fill_company_to_one_below_member_limit(ctx) do
+    needed_people = max(19 - Billing.active_member_count(ctx.company), 0)
+
+    if needed_people > 0 do
+      Enum.reduce(1..needed_people, ctx, fn index, acc ->
+        Factory.add_company_member(acc, :"almost_limit_member_#{index}", name: "Almost Limit Member #{index}")
+      end)
+    else
+      ctx
+    end
+  end
+
   defp fill_company_to_near_member_limit(ctx) do
     needed_people = max(18 - Billing.active_member_count(ctx.company), 0)
 
@@ -524,6 +563,24 @@ defmodule Operately.Features.CompanyAdminTest do
 
   defp assert_no_person_added(ctx, email) do
     refute People.get_person_by_email(ctx.company, email)
+    ctx
+  end
+
+  defp assert_limit_reached_email(ctx, :member_count, recipients) do
+    subject = "#{ctx.company.name} has reached its member limit"
+    Enum.each(recipients, &Emails.assert_email_sent(subject, &1))
+
+    ctx
+  end
+
+  defp assert_limit_reached_email_sent_once(ctx, :member_count) do
+    subject = "#{ctx.company.name} has reached its member limit"
+
+    attempts(ctx, 20, fn ->
+      emails = Enum.filter(Emails.list_sent_emails(), &(&1.subject == subject))
+      assert length(emails) == 1
+    end)
+
     ctx
   end
 

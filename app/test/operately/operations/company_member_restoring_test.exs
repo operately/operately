@@ -1,5 +1,6 @@
 defmodule Operately.Operations.CompanyMemberRestoringTest do
   use Operately.DataCase
+  use Oban.Testing, repo: Operately.Repo
 
   import Ecto.Query, only: [from: 2]
   import Operately.CompaniesFixtures
@@ -8,6 +9,7 @@ defmodule Operately.Operations.CompanyMemberRestoringTest do
   alias Operately.Activities.Activity
   alias Operately.Billing
   alias Operately.Billing.EnforceLimits.LimitError
+  alias Operately.Billing.LimitBreachAlertEmailWorker
   alias Operately.Repo
 
   setup do
@@ -29,6 +31,16 @@ defmodule Operately.Operations.CompanyMemberRestoringTest do
 
     assert restored_person.suspended == false
     assert restored_person.suspended_at == nil
+  end
+
+  test "CompanyMemberRestoring enqueues a limit-reached email when the company hits the member limit", ctx do
+    company = enable_billing(ctx.company)
+    fill_company_to_one_below_member_limit(company)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, _restored_person} = Operately.Operations.CompanyMemberRestoring.run(ctx.admin, company, ctx.suspended_person)
+      assert length(all_enqueued(worker: LimitBreachAlertEmailWorker)) == 1
+    end)
   end
 
   test "CompanyMemberRestoring blocks when the company is already at the member limit", ctx do
@@ -75,6 +87,20 @@ defmodule Operately.Operations.CompanyMemberRestoringTest do
 
   defp fill_company_to_member_limit(company) do
     needed_people = max(20 - Billing.active_member_count(company), 0)
+
+    if needed_people > 0 do
+      Enum.each(1..needed_people, fn index ->
+        person_fixture_with_account(%{
+          company_id: company.id,
+          full_name: "Restore Limit Member #{index}",
+          email: "restore-limit-member-#{index}@example.com"
+        })
+      end)
+    end
+  end
+
+  defp fill_company_to_one_below_member_limit(company) do
+    needed_people = max(19 - Billing.active_member_count(company), 0)
 
     if needed_people > 0 do
       Enum.each(1..needed_people, fn index ->

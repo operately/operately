@@ -1,11 +1,14 @@
 defmodule Operately.Operations.ResourceHubFileCreatingTest do
   use Operately.DataCase
+  use Oban.Testing, repo: Operately.Repo
   use Operately.Support.Notifications
 
   alias Operately.Access.Binding
   alias Operately.Support.RichText
   alias Operately.Operations.ResourceHubFileCreating
   alias Operately.Notifications.{SubscriptionList, Subscription}
+
+  import Operately.BlobsFixtures
 
   setup ctx do
     ctx
@@ -50,6 +53,23 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
       |> Enum.each(fn blob ->
         blob = Repo.reload(blob)
         assert blob.status == :uploaded
+      end)
+    end
+
+    test "does not enqueue a limit-reached email when file creation hits the storage limit", ctx do
+      enable_billing(ctx.company)
+      {:ok, _blob} = Operately.Blobs.update_blob(ctx.blob1, %{size: 1})
+
+      blob_fixture(%{
+        company_id: ctx.company.id,
+        author_id: ctx.creator.id,
+        status: :uploaded,
+        size: Operately.Billing.Plans.storage_limit_bytes(:free) - 1
+      })
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, _file} = create_file(ctx, false, [])
+        refute_enqueued worker: Operately.Billing.LimitBreachAlertEmailWorker
       end)
     end
   end
@@ -178,5 +198,19 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
     Enum.find(activities, fn a ->
       file.id in Enum.map(a.content["files"], &(&1["file_id"]))
     end)
+  end
+
+  defp enable_billing(company) do
+    previous_value = Application.get_env(:operately, :billing_enabled)
+    Application.put_env(:operately, :billing_enabled, true)
+
+    on_exit(fn ->
+      case previous_value do
+        nil -> Application.delete_env(:operately, :billing_enabled)
+        value -> Application.put_env(:operately, :billing_enabled, value)
+      end
+    end)
+
+    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

@@ -63,6 +63,10 @@ defmodule OperatelyWeb.EmailPreview do
     preview :access_level_to_full, label: "Access Level To Full"
   end
 
+  group "billing-limit-reached", module: Previews.BillingLimitReached do
+    preview :member_limit, label: "Member Limit"
+  end
+
   get "/*_path" do
     OperatelyWeb.EmailPreview.Router.call(conn, __MODULE__)
   end

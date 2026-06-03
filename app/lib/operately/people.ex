@@ -4,6 +4,7 @@ defmodule Operately.People do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Billing
   alias Operately.Companies
   alias Operately.Companies.Company
   alias Operately.People.{Account, AccountToken, ApiToken, Person}
@@ -92,6 +93,9 @@ defmodule Operately.People do
   defdelegate insert_person(multi, callback), to: Operately.People.InsertPersonIntoOperation, as: :insert
 
   def create_person(attrs \\ %{}) do
+    company = attrs[:company_id] && Companies.get_company!(attrs[:company_id])
+    previous_member_count = company && Billing.active_member_count(company)
+
     Multi.new()
     |> Multi.insert(:person, Person.changeset(%Person{}, attrs))
     |> Multi.run(:group, fn _, %{person: person} ->
@@ -109,7 +113,13 @@ defmodule Operately.People do
     end)
     |> Repo.transaction()
     |> case do
-      {:ok, %{person: person}} -> {:ok, person}
+      {:ok, %{person: person}} ->
+        if company && previous_member_count do
+          Billing.maybe_enqueue_limit_reached_email(company, :member_count, previous_member_count)
+        end
+
+        {:ok, person}
+
       {:error, :person, changeset, _} -> {:error, changeset}
       error -> error
     end
