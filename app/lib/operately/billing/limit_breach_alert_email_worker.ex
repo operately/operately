@@ -4,13 +4,15 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorker do
   require Logger
 
   alias Operately.Billing.LimitBreachAlerting
+  alias Operately.Companies
   alias OperatelyEmail.Emails.BillingLimitReachedEmail
 
   def perform(%Oban.Job{args: %{"company_id" => company_id, "limit_key" => limit_key, "current_usage" => current_usage, "limit" => limit}}) do
     with {:ok, limit_key} <- parse_limit_key(limit_key),
          {:ok, current_usage} <- parse_integer(current_usage),
-         {:ok, limit} <- parse_integer(limit),
-         company when not is_nil(company) <- LimitBreachAlerting.fetch_company(company_id) do
+         {:ok, limit} <- parse_integer(limit) do
+      company = Companies.get_company!(company_id)
+
       company
       |> LimitBreachAlerting.recipients()
       |> BillingLimitReachedEmail.send(company, LimitBreachAlerting.snapshot(limit_key, current_usage, limit))
@@ -20,12 +22,18 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorker do
       end
     else
       :error -> {:discard, "invalid_job_args"}
-      nil -> {:discard, "company_not_found"}
     end
   rescue
+    Ecto.NoResultsError ->
+      {:discard, "company_not_found"}
+
     error ->
-      Logger.error("Failed to send billing limit breach email for company #{company_id}: #{Exception.message(error)}")
-      {:error, Exception.message(error)}
+      Logger.error("""
+      Failed to send billing limit breach email for company #{company_id}
+      #{Exception.format(:error, error, __STACKTRACE__)}
+      """)
+
+      reraise(error, __STACKTRACE__)
   end
 
   defp parse_limit_key(limit_key) when limit_key in ["member_count", :member_count], do: {:ok, :member_count}

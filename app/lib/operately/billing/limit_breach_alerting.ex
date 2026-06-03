@@ -1,7 +1,6 @@
 defmodule Operately.Billing.LimitBreachAlerting do
   require Logger
 
-  alias Operately.Repo
   alias Operately.Billing
   alias Operately.Billing.EnforceLimits
   alias Operately.Billing.EnforceLimits.LimitStatus
@@ -24,13 +23,16 @@ defmodule Operately.Billing.LimitBreachAlerting do
     end
   rescue
     error ->
-      Logger.error("Failed to enqueue billing limit reached email for company #{company.id} and #{limit_key}: #{Exception.message(error)}")
+      Logger.error("""
+      Failed to enqueue billing limit reached email for company #{company.id} and #{limit_key}
+      #{Exception.format(:error, error, __STACKTRACE__)}
+      """)
+
       {:error, error}
   end
 
   def recipients(%Company{} = company) do
     (Companies.list_admins(company) ++ Companies.list_owners(company))
-    |> Enum.filter(&usable_email?/1)
     |> Enum.uniq_by(&String.downcase(&1.email))
   end
 
@@ -60,10 +62,6 @@ defmodule Operately.Billing.LimitBreachAlerting do
     }
   end
 
-  def fetch_company(company_id) when is_binary(company_id) do
-    Repo.get(Company, company_id)
-  end
-
   defp enqueue_email(company_id, %LimitStatus{} = status) do
     %{
       company_id: company_id,
@@ -78,6 +76,4 @@ defmodule Operately.Billing.LimitBreachAlerting do
       {:error, reason} -> {:error, reason}
     end
   end
-
-  defp usable_email?(person), do: is_binary(person.email) and String.trim(person.email) != ""
 end
