@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.Companies.ListTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.People.Person
+  alias Operately.Access.Binding
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -78,6 +78,25 @@ defmodule OperatelyWeb.Api.Companies.ListTest do
       assert length(res.companies) == 1
       assert hd(res.companies).id == OperatelyWeb.Paths.company_id(ctx.company)
     end
+
+    test "can_manage_billing returns admin-owned and owner-owned companies", ctx do
+      admin_company = company_fixture(name: "Admin Corp")
+      owner_company = company_fixture(name: "Owner Corp")
+      member_company = company_fixture(name: "Member Corp")
+
+      add_as_admin(ctx.person, admin_company)
+      add_as_owner(ctx.person, owner_company)
+      add_as_member(ctx.person, member_company)
+
+      assert {200, res} = query(ctx.conn, [:companies, :list], %{can_manage_billing: true})
+
+      returned_ids = Enum.map(res.companies, & &1.id)
+
+      assert OperatelyWeb.Paths.company_id(admin_company) in returned_ids
+      assert OperatelyWeb.Paths.company_id(owner_company) in returned_ids
+      refute OperatelyWeb.Paths.company_id(member_company) in returned_ids
+      refute OperatelyWeb.Paths.company_id(ctx.company) in returned_ids
+    end
   end
 
   defp find_in_response(res, company) do
@@ -85,8 +104,21 @@ defmodule OperatelyWeb.Api.Companies.ListTest do
   end
 
   defp add_as_admin(person, company) do
+    member = add_as_member(person, company)
+    grant_company_access(member, company, Binding.admin_access())
+    member
+  end
+
+  defp add_as_owner(person, company) do
+    member = add_as_member(person, company)
+    grant_company_access(member, company, Binding.full_access())
+    member
+  end
+
+  defp add_as_member(person, company) do
     account = Operately.People.get_account!(person.account_id)
-    changeset = Person.changeset(%{
+
+    person_fixture(%{
       company_id: company.id,
       account_id: account.id,
       full_name: "John Doe",
@@ -94,7 +126,10 @@ defmodule OperatelyWeb.Api.Companies.ListTest do
       avatar_url: "",
       title: "COO",
     })
+  end
 
-    {:ok, _} = Operately.Repo.insert(changeset)
+  defp grant_company_access(person, company, access_level) do
+    context = Operately.Access.get_context!(company_id: company.id)
+    {:ok, _} = Operately.Access.bind(context, person_id: person.id, level: access_level)
   end
 end

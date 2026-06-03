@@ -11,13 +11,38 @@ defmodule OperatelyWeb.Api.Billing.ReactivateTest do
       assert {401, "Unauthorized"} = mutation(ctx.conn, [:billing, :reactivate], %{})
     end
 
-    test "it requires a company owner", ctx do
+    test "it allows a company admin", ctx do
       ctx =
         ctx
         |> Factory.setup()
         |> Factory.enable_feature("billing")
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
+
+      {:ok, _current_product} = create_active_product("prod_team_monthly_admin", "team", "monthly")
+
+      put_sequence(:customer_state_responses, [
+        {:ok, active_subscription_payload("prod_team_monthly_admin", %{"id" => "sub_reactivate_admin", "cancel_at_period_end" => true})},
+        {:ok, active_subscription_payload("prod_team_monthly_admin", %{"id" => "sub_reactivate_admin", "cancel_at_period_end" => false})}
+      ])
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
+        update_subscription: fn "sub_reactivate_admin", %{cancel_at_period_end: false} ->
+          {:ok, %{"id" => "sub_reactivate_admin"}}
+        end do
+        assert {200, res} = mutation(ctx.conn, [:billing, :reactivate], %{})
+        assert res.billing.account.cancel_at_period_end == false
+      end
+    end
+
+    test "it rejects regular members", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.enable_feature("billing")
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
 
       assert {403, _} = mutation(ctx.conn, [:billing, :reactivate], %{})
     end

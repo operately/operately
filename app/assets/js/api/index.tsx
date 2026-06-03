@@ -1307,6 +1307,7 @@ export interface CompanyImportRun {
 export interface CompanyPermissions {
   canView: boolean;
   isAdmin: boolean;
+  canManageBilling: boolean;
   canEditTrustedEmailDomains: boolean;
   canInviteMembers: boolean;
   canEditMembers: boolean;
@@ -2018,8 +2019,6 @@ export interface TaskReminder {
   date?: string | null;
 }
 
-export type TaskReminderType = "before_due" | "due_day" | "overdue" | "on_date";
-
 export interface TaskStatus {
   id: string;
   label: string;
@@ -2422,6 +2421,8 @@ export type SubscriptionParentType =
 
 export type SuccessStatus = "achieved" | "missed";
 
+export type TaskReminderType = "before_due" | "due_day" | "overdue" | "on_date";
+
 export type TaskType = "space" | "project";
 
 export type TimeFormat = "automatic" | "hour_12" | "hour_24";
@@ -2621,6 +2622,7 @@ export interface CompaniesGlobalSearchResult {
 export interface CompaniesListInput {
   includeMemberCount?: boolean | null;
   isCompanyOwner?: boolean;
+  canManageBilling?: boolean;
 }
 
 export interface CompaniesListResult {
@@ -5181,16 +5183,6 @@ export interface TasksUpdateDueDateResult {
   task: Task;
 }
 
-export interface TasksUpdateRemindersInput {
-  taskId: Id;
-  reminders: TaskReminder[];
-  type: TaskType;
-}
-
-export interface TasksUpdateRemindersResult {
-  task: Task;
-}
-
 export interface TasksUpdateMilestoneInput {
   taskId: Id;
   milestoneId: Id | null;
@@ -5218,6 +5210,16 @@ export interface TasksUpdateNameInput {
 }
 
 export interface TasksUpdateNameResult {
+  task: Task;
+}
+
+export interface TasksUpdateRemindersInput {
+  taskId: Id;
+  reminders: TaskReminder[];
+  type: TaskType;
+}
+
+export interface TasksUpdateRemindersResult {
   task: Task;
 }
 
@@ -6047,10 +6049,6 @@ class ApiNamespaceTasks {
     return this.client.post("/tasks/update_due_date", input);
   }
 
-  async updateReminders(input: TasksUpdateRemindersInput): Promise<TasksUpdateRemindersResult> {
-    return this.client.post("/tasks/update_reminders", input);
-  }
-
   async updateMilestone(input: TasksUpdateMilestoneInput): Promise<TasksUpdateMilestoneResult> {
     return this.client.post("/tasks/update_milestone", input);
   }
@@ -6063,6 +6061,10 @@ class ApiNamespaceTasks {
 
   async updateName(input: TasksUpdateNameInput): Promise<TasksUpdateNameResult> {
     return this.client.post("/tasks/update_name", input);
+  }
+
+  async updateReminders(input: TasksUpdateRemindersInput): Promise<TasksUpdateRemindersResult> {
+    return this.client.post("/tasks/update_reminders", input);
   }
 
   async updateStatus(input: TasksUpdateStatusInput): Promise<TasksUpdateStatusResult> {
@@ -7710,6 +7712,12 @@ export default {
     list: (input: TasksListInput) => defaultApiClient.apiNamespaceTasks.list(input),
     useList: (input: TasksListInput) => useQuery<TasksListResult>(() => defaultApiClient.apiNamespaceTasks.list(input)),
 
+    updateReminders: (input: TasksUpdateRemindersInput) => defaultApiClient.apiNamespaceTasks.updateReminders(input),
+    useUpdateReminders: () =>
+      useMutation<TasksUpdateRemindersInput, TasksUpdateRemindersResult>((input) =>
+        defaultApiClient.apiNamespaceTasks.updateReminders(input),
+      ),
+
     updateAssignee: (input: TasksUpdateAssigneeInput) => defaultApiClient.apiNamespaceTasks.updateAssignee(input),
     useUpdateAssignee: () =>
       useMutation<TasksUpdateAssigneeInput, TasksUpdateAssigneeResult>((input) =>
@@ -7758,12 +7766,6 @@ export default {
     useUpdateDueDate: () =>
       useMutation<TasksUpdateDueDateInput, TasksUpdateDueDateResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateDueDate(input),
-      ),
-
-    updateReminders: (input: TasksUpdateRemindersInput) => defaultApiClient.apiNamespaceTasks.updateReminders(input),
-    useUpdateReminders: () =>
-      useMutation<TasksUpdateRemindersInput, TasksUpdateRemindersResult>((input) =>
-        defaultApiClient.apiNamespaceTasks.updateReminders(input),
       ),
 
     updateName: (input: TasksUpdateNameInput) => defaultApiClient.apiNamespaceTasks.updateName(input),

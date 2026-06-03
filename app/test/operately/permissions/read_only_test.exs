@@ -99,10 +99,11 @@ defmodule Operately.Permissions.ReadOnlyTest do
            }
   end
 
-  test "company permissions keep admin, invite, and view access in read-only mode" do
+  test "company permissions keep admin, billing-management, and view access in read-only mode" do
     assert CompanyPermissions.calculate(Binding.admin_access(), company_read_only: true) == %CompanyPermissions{
              can_view: true,
              is_admin: true,
+             can_manage_billing: true,
              can_edit_trusted_email_domains: false,
              can_invite_members: false,
              can_edit_members: false,

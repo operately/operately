@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Billing.CreatePaymentMethodSession do
   end
 
   def call(conn, inputs) do
-    with {:ok, %{company: company}} <- Helpers.authorize_owner_billing_access(conn),
+    with {:ok, %{company: company}} <- Helpers.authorize_billing_management_access(conn),
          {:ok, session} <- Billing.create_payment_method_session(company, return_to: inputs[:return_to]) do
       {:ok, %{session: Serializer.serialize(session, level: :essential)}}
     else

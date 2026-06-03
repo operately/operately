@@ -4,6 +4,7 @@ defmodule OperatelyWeb.BillingIntentControllerTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.Access.Binding
   alias OperatelyWeb.Paths
 
   describe "GET /billing/intent" do
@@ -40,10 +41,34 @@ defmodule OperatelyWeb.BillingIntentControllerTest do
       assert redirected_to(conn) == "/#{company_id}/admin/billing/plans?plan=team&billing_period=monthly"
     end
 
+    test "authenticated user with one billing-manageable company is redirected to company billing plan selection page", %{conn: conn} do
+      account = account_fixture()
+      company = company_fixture(name: "Managed Company")
+      grant_billing_management_access(account, company, Binding.admin_access())
+
+      conn = log_in_account(conn, account) |> get("/billing/intent?plan=team&billing_period=monthly")
+
+      company_id = Paths.company_id(company)
+      assert redirected_to(conn) == "/#{company_id}/admin/billing/plans?plan=team&billing_period=monthly"
+    end
+
     test "authenticated user with multiple owned companies is redirected to pick-company", %{conn: conn} do
       account = account_fixture()
       company1 = company_fixture(%{company_name: "Company One"}, account)
       _company2 = company_fixture(%{company_name: "Company Two"}, account)
+
+      conn = log_in_account(conn, account, company1) |> get("/billing/intent?plan=team")
+
+      assert redirected_to(conn) == "/billing/pick-company?plan=team"
+    end
+
+    test "authenticated user with multiple billing-manageable companies is redirected to pick-company", %{conn: conn} do
+      account = account_fixture()
+      company1 = company_fixture(name: "Company One")
+      company2 = company_fixture(name: "Company Two")
+
+      grant_billing_management_access(account, company1, Binding.admin_access())
+      grant_billing_management_access(account, company2, Binding.admin_access())
 
       conn = log_in_account(conn, account, company1) |> get("/billing/intent?plan=team")
 
@@ -57,5 +82,18 @@ defmodule OperatelyWeb.BillingIntentControllerTest do
 
       assert redirected_to(conn) == "/"
     end
+  end
+
+  defp grant_billing_management_access(account, company, access_level) do
+    person =
+      person_fixture(%{
+        company_id: company.id,
+        account_id: account.id
+      })
+
+    context = Operately.Access.get_context!(company_id: company.id)
+    {:ok, _} = Operately.Access.bind(context, person_id: person.id, level: access_level)
+
+    person
   end
 end

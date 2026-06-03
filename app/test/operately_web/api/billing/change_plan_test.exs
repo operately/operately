@@ -11,13 +11,39 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
       assert {401, "Unauthorized"} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "monthly"})
     end
 
-    test "it requires a company owner", ctx do
+    test "it allows a company admin", ctx do
       ctx =
         ctx
         |> Factory.setup()
         |> Factory.enable_feature("billing")
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
+
+      {:ok, _current_product} = create_active_product("prod_team_monthly_admin", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_business_yearly_admin", "business", "yearly")
+
+      put_sequence(:customer_state_responses, [
+        {:ok, active_subscription_payload("prod_team_monthly_admin", %{"id" => "sub_upgrade_admin"})},
+        {:ok, active_subscription_payload("prod_business_yearly_admin", %{"id" => "sub_upgrade_admin"})}
+      ])
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
+        update_subscription: fn "sub_upgrade_admin", %{product_id: "prod_business_yearly_admin", proration_behavior: "prorate"} ->
+          {:ok, %{"id" => "sub_upgrade_admin"}}
+        end do
+        assert {200, res} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "business", billing_interval: "yearly"})
+        assert res.billing.account.plan_key == "business"
+      end
+    end
+
+    test "it rejects regular members", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.enable_feature("billing")
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
 
       assert {403, _} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "monthly"})
     end

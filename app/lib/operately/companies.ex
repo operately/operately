@@ -34,6 +34,20 @@ defmodule Operately.Companies do
     )
   end
 
+  def list_companies_by_billing_manager(account = %Operately.People.Account{}) do
+    Repo.all(
+      from c in Company,
+        join: p in assoc(c, :people),
+        join: m in Operately.Access.GroupMembership, on: m.person_id == p.id,
+        join: g in Operately.Access.Group, on: g.id == m.group_id,
+        join: b in Operately.Access.Binding, on: b.group_id == g.id,
+        join: ctx in Operately.Access.Context, on: ctx.id == b.context_id,
+        where: p.account_id == ^account.id,
+        where: ctx.company_id == c.id and b.access_level >= ^Operately.Access.Binding.admin_access(),
+        distinct: true
+    )
+  end
+
   def count_companies do
     Repo.aggregate(Company, :count, :id)
   end

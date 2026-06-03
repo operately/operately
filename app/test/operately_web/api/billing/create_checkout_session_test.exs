@@ -11,13 +11,40 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSessionTest do
       assert {401, "Unauthorized"} = mutation(ctx.conn, [:billing, :create_checkout_session], %{plan: "team", billing_interval: "monthly"})
     end
 
-    test "it requires a company owner", ctx do
+    test "it allows a company admin", ctx do
       ctx =
         ctx
         |> Factory.setup()
         |> Factory.enable_feature("billing")
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
+
+      {:ok, _product} = create_active_product("prod_team_monthly_admin", "team", "monthly")
+
+      with_mock Operately.Billing.Polar.Client, [:passthrough],
+        get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
+        create_checkout_session: fn attrs ->
+          {:ok,
+           %{
+             "id" => "chk_admin",
+             "url" => "https://polar.sh/example/checkout/admin",
+             "return_url" => attrs[:return_url],
+             "success_url" => attrs[:success_url],
+             "expires_at" => "2026-08-31T00:00:00Z"
+           }}
+        end do
+        assert {200, res} = mutation(ctx.conn, [:billing, :create_checkout_session], %{plan: "team", billing_interval: "monthly"})
+        assert res.session.id == "chk_admin"
+      end
+    end
+
+    test "it rejects regular members", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.enable_feature("billing")
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
 
       assert {403, _} = mutation(ctx.conn, [:billing, :create_checkout_session], %{plan: "team", billing_interval: "monthly"})
     end
