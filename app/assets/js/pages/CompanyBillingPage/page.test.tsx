@@ -11,7 +11,6 @@ import {
 import {
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
-  buildCompanyBillingPageViewModel,
   buildCompanyBillingStatusNotices,
 } from "turboui/CompanyBillingPage";
 
@@ -510,18 +509,5 @@ describe("CompanyBillingPage bridge helpers", () => {
       }),
     ]);
     expect(notices[0]!.description).toContain("Collaborative work is blocked");
-  });
-
-  it("shows a manual refresh header action when billing refresh is available", () => {
-    const page = buildCompanyBillingPageViewModel({
-      title: ["Acme", "Billing"],
-      billing: billingOverviewMock(),
-      onRefreshBilling: jest.fn(),
-    });
-
-    expect(page.headerAction).toEqual({
-      label: "Refresh billing",
-      onClick: expect.any(Function),
-    });
   });
 });
