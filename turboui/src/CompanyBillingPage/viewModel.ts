@@ -22,7 +22,6 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
   return {
     pageTitle: "Billing",
     pageSubtitle: "Review the current subscription state for this company.",
-    headerAction: props.onRefreshBilling ? { label: "Refresh billing", onClick: props.onRefreshBilling } : null,
     mode: "overview",
     overview: buildCompanyBillingOverviewMode({
       billing: props.billing,

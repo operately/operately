@@ -73,7 +73,6 @@ export namespace CompanyBillingPage {
   export type DetailRow = CompanyBillingPageTypes.DetailRow;
   export type Notice = CompanyBillingPageTypes.Notice;
   export type Action = CompanyBillingPageTypes.Action;
-  export type HeaderAction = CompanyBillingPageTypes.HeaderAction;
   export type Feedback = CompanyBillingPageTypes.Feedback;
   export type CurrentPlan = CompanyBillingPageTypes.CurrentPlan;
   export type OverviewModeView = CompanyBillingPageTypes.OverviewModeView;
@@ -88,7 +87,7 @@ export function CompanyBillingPage(props: CompanyBillingPage.Props) {
   return (
     <Page title={props.title} size="small" navigation={props.navigation} testId={props.testId}>
       <div className="p-8">
-        <Header title={viewModel.pageTitle} subtitle={viewModel.pageSubtitle} action={viewModel.headerAction} />
+        <Header title={viewModel.pageTitle} subtitle={viewModel.pageSubtitle} />
 
         {viewModel.mode === "overview" && viewModel.overview && <OverviewModeView overview={viewModel.overview} />}
         {viewModel.mode === "confirming" && viewModel.confirming && <ConfirmingModeView confirming={viewModel.confirming} />}
@@ -97,27 +96,13 @@ export function CompanyBillingPage(props: CompanyBillingPage.Props) {
   );
 }
 
-function Header({
-  title,
-  subtitle,
-  action,
-}: {
-  title: string;
-  subtitle: string;
-  action?: CompanyBillingPage.HeaderAction | null;
-}) {
+function Header({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div className="mb-8 flex items-start justify-between gap-4">
       <div>
         <div className="text-content-accent text-3xl font-extrabold">{title}</div>
         <div className="mt-2">{subtitle}</div>
       </div>
-
-      {action && (
-        <SecondaryButton size="xs" onClick={action.onClick}>
-          {action.label}
-        </SecondaryButton>
-      )}
     </div>
   );
 }

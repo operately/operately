@@ -118,11 +118,6 @@ export namespace CompanyBillingPage {
     loading?: boolean;
   }
 
-  export interface HeaderAction {
-    label: string;
-    onClick: () => void;
-  }
-
   export interface Feedback {
     kind: FeedbackKind;
     message: string;
@@ -155,7 +150,6 @@ export namespace CompanyBillingPage {
   export interface PageViewModel {
     pageTitle: string;
     pageSubtitle: string;
-    headerAction?: HeaderAction | null;
     mode: Mode;
     overview?: OverviewModeView;
     confirming?: ConfirmingModeView;
@@ -175,7 +169,6 @@ export namespace CompanyBillingPage {
     onReactivatePlan?: (() => void) | null;
     onUpdatePaymentMethod?: (() => void) | null;
     onManageBilling?: (() => void) | null;
-    onRefreshBilling?: (() => void) | null;
     testId?: string;
   }
 }
