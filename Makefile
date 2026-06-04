@@ -161,6 +161,34 @@ test.build:
 	$(MAKE) test.db.create
 	$(MAKE) test.db.migrate
 
+test.setup.turboui:
+	$(MAKE) test.up
+
+test.setup.lint:
+	$(MAKE) test.up
+	$(MAKE) test.app.elixir.build
+	$(MAKE) test.app.node_modules
+
+test.setup.dialyzer:
+	$(MAKE) test.up
+	$(MAKE) test.app.elixir.build
+
+test.setup.unit:
+	$(MAKE) test.up
+	$(MAKE) test.app.elixir.build
+	$(MAKE) test.db.create
+	$(MAKE) test.db.migrate
+
+test.setup.ee:
+	$(MAKE) test.setup.unit
+
+test.setup.js:
+	$(MAKE) test.up
+	$(MAKE) test.app.node_modules
+
+test.setup.features:
+	$(MAKE) test.build
+
 test.up:
 	$(MAKE) test.init
 	$(MAKE) test.seed.env
@@ -186,13 +214,19 @@ test.turboui.build:
 	./devenv bash -c "cd turboui && MIX_ENV=test npm run build"
 
 test.app.build:
+	$(MAKE) test.app.elixir.build
+	$(MAKE) test.app.js.build
+
+test.app.elixir.build:
 	./devenv bash -c "cd app && MIX_ENV=test mix local.hex --force --if-missing"
 	./devenv bash -c "cd app && MIX_ENV=test mix deps.get"
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
-	$(MAKE) test.app.js.build
+
+test.app.node_modules:
+	./devenv bash -c "cd app && MIX_ENV=test npm install"
 
 test.app.js.build:
-	./devenv bash -c "cd app && MIX_ENV=test npm install"
+	$(MAKE) test.app.node_modules
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
 	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
 
@@ -221,7 +255,7 @@ test.ee:
 	./devenv bash -c "./scripts/run_ee_tests.js"
 
 test.mix.unit: test.init
-	./devenv bash -c "./scripts/run_unit_tests.js"
+	./devenv bash -c "./scripts/run_unit_tests.js $(INDEX) $(TOTAL)"
 
 test.mix.features: test.init
 	./devenv bash -c "./scripts/run_feature_tests.js $(INDEX) $(TOTAL)"
