@@ -221,7 +221,7 @@ test.ee:
 	./devenv bash -c "./scripts/run_ee_tests.js"
 
 test.mix.unit: test.init
-	./devenv bash -c "./scripts/run_unit_tests.js"
+	./devenv bash -c "./scripts/run_unit_tests.js $(INDEX) $(TOTAL)"
 
 test.mix.features: test.init
 	./devenv bash -c "./scripts/run_feature_tests.js $(INDEX) $(TOTAL)"
