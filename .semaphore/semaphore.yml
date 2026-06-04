@@ -94,9 +94,16 @@ blocks:
             - make test.dialyzer
 
         - name: Unit Tests
+          parallelism: 16
           commands:
-            - make test.mix.unit
+            - make test.mix.unit INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
+
+        - name: EE Tests
+          commands:
             - make test.ee
+
+        - name: JS Tests
+          commands:
             - make test.npm
 
         - name: Features
