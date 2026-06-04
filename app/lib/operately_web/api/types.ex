@@ -679,6 +679,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :milestones, list_of(:milestone), null: true
     field? :contributors, list_of(:project_contributor), null: true
     field? :key_resources, list_of(:project_key_resource), null: true
+    field? :resource_hub, :resource_hub, null: true
     field? :is_outdated, :boolean, null: true
     field? :space_id, :string, null: true
     field? :space, :space, null: true
@@ -926,6 +927,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_resource_hub_folder_created do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :folder, :resource_hub_folder, null: true
   end
@@ -947,6 +949,7 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_resource_hub_file_created do
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :files, list_of(:resource_hub_file), null: true
   end
 
@@ -970,6 +973,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_resource_hub_document_created do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
     field? :copied_document, :resource_hub_document, null: true
@@ -995,6 +999,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_resource_hub_link_created do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :link, :resource_hub_link, null: true
   end
@@ -1267,6 +1272,7 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string, null: false
     field? :description, :string, null: true
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :nodes, list_of(:resource_hub_node), null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :permissions, :resource_hub_permissions, null: true

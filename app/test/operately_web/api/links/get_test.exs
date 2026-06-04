@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.Links.GetTest do
   import Operately.ResourceHubsFixtures
 
   alias Operately.Access.Binding
+  alias Operately.ResourceHubs.ProjectHub
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -97,6 +98,24 @@ defmodule OperatelyWeb.Api.Links.GetTest do
       })
 
       assert res.link.resource_hub == Serializer.serialize(ctx.hub)
+    end
+
+    test "include_project", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space)
+
+      {:ok, hub} = ProjectHub.create_for_project(ctx.project)
+      link = link_fixture(hub, ctx.creator)
+
+      assert {200, res} =
+               query(ctx.conn, [:links, :get], %{
+                 id: Paths.link_id(link),
+                 include_resource_hub: true,
+                 include_project: true,
+               })
+
+      assert res.link.resource_hub.project == Serializer.serialize(ctx.project, level: :essential)
     end
 
     test "include_parent_folder", ctx do

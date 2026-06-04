@@ -6,12 +6,17 @@ import { useNavigate } from "react-router-dom";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
+import * as ResourceHubs from "@/models/resourceHubs";
 import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
+import { CommentsCountIndicator } from "@/features/Comments";
+import * as Hub from "@/features/ResourceHub";
+import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
+import { NodeType, findCommentsCount, findPath } from "@/features/ResourceHub/utils";
 import { PageCache } from "@/routes/PageCache";
-import { ProjectPage, showErrorToast } from "turboui";
+import { DivLink, Link, ProjectPage, showErrorToast } from "turboui";
 import { fetchAll } from "../../utils/async";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
@@ -34,6 +39,9 @@ function pageCacheKey(id: string): string {
 type LoaderResult = {
   data: {
     project: Projects.Project;
+    resourceHub: ResourceHubs.ResourceHub | null;
+    resourceHubNodes: ResourceHubs.ResourceHubNode[];
+    resourceHubDraftNodes: ResourceHubs.ResourceHubNode[];
     checkIns: ProjectCheckIn[];
     discussions: Projects.Discussion[];
     backendTasks: Tasks.Task[];
@@ -46,38 +54,79 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
-    fetchFn: () =>
-      fetchAll({
-        project: Projects.getProject({
-          id: params.id,
-          includeSpace: true,
-          includeGoal: true,
-          includeChampion: true,
-          includeReviewer: true,
-          includePermissions: true,
-          includeContributors: true,
-          includeKeyResources: true,
-          includeMilestones: true,
-          includeLastCheckIn: true,
-          includePrivacy: true,
-          includeRetrospective: true,
-          includeUnreadNotifications: true,
-          includeSubscriptionList: true,
-        }).then((d) => d.project!),
+    fetchFn: async () => {
+      const project = await Projects.getProject({
+        id: params.id,
+        includeSpace: true,
+        includeGoal: true,
+        includeChampion: true,
+        includeReviewer: true,
+        includePermissions: true,
+        includeContributors: true,
+        includeResourceHub: true,
+        includeMilestones: true,
+        includeLastCheckIn: true,
+        includePrivacy: true,
+        includeRetrospective: true,
+        includeUnreadNotifications: true,
+        includeSubscriptionList: true,
+      }).then((d) => d.project!);
+
+      const hubId = project.resourceHub?.id;
+      const resourceHubRequests = hubId
+        ? {
+            resourceHub: ResourceHubs.resource_hubs
+              .get({
+                id: hubId,
+                includeProject: true,
+                includePermissions: true,
+                includePotentialSubscribers: true,
+              })
+              .then((res) => res.resourceHub!),
+            resourceHubNodes: ResourceHubs.resource_hubs.listNodes({
+              resourceHubId: hubId,
+              includeCommentsCount: true,
+              includeChildrenCount: true,
+            }),
+          }
+        : {
+            resourceHub: Promise.resolve(null),
+            resourceHubNodes: Promise.resolve({ nodes: [], draftNodes: [] }),
+          };
+
+      const data = await fetchAll({
+        ...resourceHubRequests,
         checkIns: Api.projects
           .listCheckIns({ projectId: params.id, includeAuthor: true })
           .then((d) => d.projectCheckIns!),
         discussions: Api.projects.listDiscussions({ projectId: params.id }).then((d) => d.discussions!),
         backendTasks: Api.tasks.list({ projectId: params.id }).then((d) => d.tasks!),
         childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
-      }),
+      });
+
+      return {
+        ...data,
+        project,
+        resourceHubNodes: data.resourceHubNodes.nodes!,
+        resourceHubDraftNodes: data.resourceHubNodes.draftNodes!,
+      };
+    },
   });
 }
 
 function Page() {
   const paths = usePaths();
   const { data, refresh } = PageCache.useData(loader);
-  const { project, checkIns, discussions, backendTasks, childrenCount } = data;
+  const {
+    project,
+    resourceHub,
+    resourceHubNodes,
+    resourceHubDraftNodes,
+    checkIns,
+    discussions,
+    backendTasks,
+    childrenCount,
+  } = data;
   const navigate = useNavigate();
   const currentUser = useMe();
 
@@ -139,7 +188,6 @@ function Page() {
     reorderMilestones,
     searchMilestones,
   } = useMilestones(paths, project, refresh);
-  const { resources, createResource, updateResource, removeResource } = useResources(project);
 
   const {
     tasks: baseTasks,
@@ -335,10 +383,15 @@ function Page() {
     richTextHandlers: richEditorHandlers,
     localDraftKeyBase: `project:${project.id}`,
 
-    resources,
-    onResourceAdd: createResource,
-    onResourceEdit: updateResource,
-    onResourceRemove: removeResource,
+    docsAndFiles: resourceHub
+      ? {
+          preview: <DocsAndFilesPreview resourceHub={resourceHub} nodes={resourceHubNodes} />,
+          tabContent: (
+            <DocsAndFilesTab resourceHub={resourceHub} nodes={resourceHubNodes} draftNodes={resourceHubDraftNodes} />
+          ),
+          count: resourceHubNodes.length,
+        }
+      : undefined,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
 
@@ -565,19 +618,6 @@ function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): P
   });
 }
 
-function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[] {
-  return resources.map((r) => prepareResource(r));
-}
-
-function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
-  return {
-    id: resource.id,
-    name: resource.title,
-    url: resource.link,
-    type: resource.resourceType,
-  };
-}
-
 function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
   const parsedMilestones = parseMilestonesForTurboUi(
     paths,
@@ -676,78 +716,109 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
   };
 }
 
-function useResources(project: Projects.Project) {
-  const [resources, setResources] = React.useState<ProjectPage.Resource[]>(prepareResources(project.keyResources!));
+function DocsAndFilesPreview({
+  resourceHub,
+  nodes,
+}: {
+  resourceHub: ResourceHubs.ResourceHub;
+  nodes: ResourceHubs.ResourceHubNode[];
+}) {
+  const paths = usePaths();
+  const previewLimit = 5;
+  const recentNodes = React.useMemo(() => [...nodes].sort(compareNodesByUpdatedAt).slice(0, previewLimit), [nodes]);
+  const hiddenCount = Math.max(nodes.length - recentNodes.length, 0);
+  const hiddenCountLabel = hiddenCount === 1 ? "1 more" : `${hiddenCount} more`;
+  const tabPath = resourceHub.project?.id
+    ? paths.projectPath(resourceHub.project.id, { tab: "docs-and-files" })
+    : paths.resourceHubPath(resourceHub.id!);
 
-  const createResource = async (resource: ProjectPage.NewResourcePayload) => {
-    return Api.projects
-      .createKeyResource({
-        projectId: project.id,
-        title: resource.name,
-        link: resource.url,
-        resourceType: resource.type,
-      })
-      .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setResources((prev) => [...prev, prepareResource(data.keyResource)]);
+  return (
+    <div className="space-y-3" data-test-id="docs-and-files-preview">
+      <div className="flex items-center gap-2">
+        <h2 className="font-bold">Docs & Files</h2>
+      </div>
 
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to create resource", e);
-        showErrorToast("Error", "Failed to create resource");
+      {recentNodes.length > 0 ? (
+        <div className="space-y-1">
+          {recentNodes.map((node) => (
+            <DocsAndFilesPreviewItem key={node.id} node={node} />
+          ))}
+          {hiddenCount > 0 && (
+            <Link to={tabPath} underline="hover" className="inline-block pt-1 text-sm font-medium">
+              Show {hiddenCountLabel}
+            </Link>
+          )}
+        </div>
+      ) : (
+        <div className="text-sm text-content-dimmed">
+          No support materials yet.{" "}
+          <Link to={tabPath} underline="hover" className="font-medium">
+            Add files, docs, or links
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
 
-        return { success: false };
-      });
+function DocsAndFilesPreviewItem({ node }: { node: ResourceHubs.ResourceHubNode }) {
+  const paths = usePaths();
+  const path = findPath(paths, node.type as NodeType, node);
+  const commentsCount = findCommentsCount(node.type as NodeType, node);
+  const hasComments = commentsCount > 0;
+
+  return (
+    <DivLink
+      to={path}
+      className="group -mx-1 flex items-center justify-between gap-3 rounded-sm px-1 py-1.5 hover:bg-surface-dimmed"
+    >
+      <div className="flex min-w-0 items-center gap-2">
+        <NodeIcon node={node} size={22} />
+        <div className="min-w-0 flex items-baseline gap-2">
+          <div className="truncate text-sm font-medium text-content-base group-hover:text-link-base">{node.name}</div>
+        </div>
+      </div>
+      {hasComments && <CommentsCountIndicator count={commentsCount} size={18} />}
+    </DivLink>
+  );
+}
+
+function DocsAndFilesTab({
+  resourceHub,
+  nodes,
+  draftNodes,
+}: {
+  resourceHub: ResourceHubs.ResourceHub;
+  nodes: ResourceHubs.ResourceHubNode[];
+  draftNodes: ResourceHubs.ResourceHubNode[];
+}) {
+  const { refresh } = PageCache.useData(loader, { refreshCache: false });
+
+  if (!refresh || !resourceHub.id) return null;
+
+  const refetch = () => {
+    void refresh();
   };
 
-  const updateResource = async (resource: ProjectPage.UpdateResourcePayload) => {
-    return Api.projects
-      .updateKeyResource({
-        id: resource.id,
-        title: resource.name,
-        link: resource.url,
-      })
-      .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setResources((prev) =>
-          prev.map((r) => {
-            if (r.id === resource.id) {
-              return prepareResource(data.keyResource);
-            }
-            return r;
-          }),
-        );
+  return (
+    <Hub.NewFileModalsProvider resourceHub={resourceHub}>
+      <Hub.FileDragAndDropArea>
+        <div className="p-4 max-w-6xl mx-auto my-6">
+          <Hub.Header resource={resourceHub} />
+          <Hub.ContinueEditingDrafts resourceHubId={resourceHub.id} drafts={draftNodes} />
+          <Hub.AddFileWidget resourceHub={resourceHub} refresh={refetch} />
+          <Hub.NodesList resourceHub={resourceHub} type="resource_hub" nodes={nodes} refetch={refetch} />
+          <Hub.AddFolderModal resourceHub={resourceHub} refresh={refetch} />
+        </div>
+      </Hub.FileDragAndDropArea>
+    </Hub.NewFileModalsProvider>
+  );
+}
 
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to update resource", e);
-        showErrorToast("Error", "Failed to update resource");
+function compareNodesByUpdatedAt(left: ResourceHubs.ResourceHubNode, right: ResourceHubs.ResourceHubNode) {
+  return nodeTimestamp(right) - nodeTimestamp(left);
+}
 
-        return { success: false };
-      });
-  };
-
-  const removeResource = async (id: string) => {
-    return Api.projects
-      .deleteKeyResource({ id })
-      .then(() => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        const keyResources = project.keyResources || [];
-
-        const updatedResources = keyResources.filter((r) => r.id !== id);
-        setResources(prepareResources(updatedResources));
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to remove resource", e);
-        showErrorToast("Error", "Failed to remove resource");
-
-        return { success: false };
-      });
-  };
-
-  return { resources, createResource, updateResource, removeResource };
+function nodeTimestamp(node: ResourceHubs.ResourceHubNode) {
+  return Date.parse(node.updatedAt || node.insertedAt || "") || 0;
 }

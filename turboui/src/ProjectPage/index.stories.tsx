@@ -237,6 +237,66 @@ const mockResources: ResourceManager.Resource[] = [
   },
 ];
 
+const mockDocsAndFilesItems = [
+  "Referral rollout FAQ",
+  "Reward ledger controls",
+  "Partner announcement draft",
+  "Support macros",
+  "Attribution dashboard notes",
+  "Pilot customer list",
+];
+
+function mockDocsAndFiles(items = mockDocsAndFilesItems): NonNullable<ProjectPage.Props["docsAndFiles"]> {
+  const visibleItems = items.slice(0, 5);
+  const hiddenCount = items.length - visibleItems.length;
+
+  return {
+    count: items.length,
+    preview: (
+      <div className="space-y-4">
+        <div className="flex items-baseline gap-3">
+          <h2 className="text-xl font-bold">Docs & Files</h2>
+        </div>
+
+        {visibleItems.length === 0 ? (
+          <p className="text-content-dimmed">No support materials yet. Add files, docs, or links.</p>
+        ) : (
+          <div className="space-y-3">
+            {visibleItems.map((item) => (
+              <a key={item} href="#" className="block text-content-accent hover:underline">
+                {item}
+              </a>
+            ))}
+            {hiddenCount > 0 && (
+              <a href="#" className="block text-content-accent hover:underline">
+                Show {hiddenCount} more
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    ),
+    tabContent: (
+      <div className="p-4 max-w-6xl mx-auto my-6">
+        <div className="mb-4">
+          <h2 className="text-xl font-bold">Docs & Files</h2>
+        </div>
+        {items.length === 0 ? (
+          <p className="text-content-dimmed">No support materials yet. Add files, docs, or links.</p>
+        ) : (
+          <div className="space-y-3">
+            {items.map((item) => (
+              <a key={item} href="#" className="block text-content-accent hover:underline">
+                {item}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    ),
+  };
+}
+
 export const Default: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
@@ -424,6 +484,7 @@ export const Default: Story = {
         onResourceAdd={handleResourceAdd}
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
+        docsAndFiles={mockDocsAndFiles()}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
@@ -548,6 +609,7 @@ export const OverdueCheckIn: Story = {
         onResourceRemove={(id) => {
           setResources(resources.filter((resource) => resource.id !== id));
         }}
+        docsAndFiles={mockDocsAndFiles()}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
@@ -937,6 +999,7 @@ export const EmptyProject: Story = {
         onResourceAdd={handleResourceAdd}
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
+        docsAndFiles={mockDocsAndFiles([])}
         contributors={[]}
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}

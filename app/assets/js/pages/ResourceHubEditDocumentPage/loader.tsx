@@ -10,6 +10,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     document: await documents.get({
       id: params.id,
       includeSpace: true,
+      includeProject: true,
       includeResourceHub: true,
       includeParentFolder: true,
       includePathToDocument: true,
