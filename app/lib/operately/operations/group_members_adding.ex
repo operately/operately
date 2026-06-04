@@ -14,6 +14,7 @@ defmodule Operately.Operations.GroupMembersAdding do
     |> insert_access_group_memberships(group_id, members)
     |> Multi.run(:context, fn _, _ -> {:ok, Access.get_context!(group_id: group_id)} end)
     |> insert_access_bindings(members)
+    |> sync_resource_hub_access(group_id)
     |> insert_activities(author, group_id)
     |> Repo.transaction()
   end
@@ -68,6 +69,12 @@ defmodule Operately.Operations.GroupMembersAdding do
         space_id: group_id,
         members: serialize_created_members(changes),
       }
+    end)
+  end
+
+  defp sync_resource_hub_access(multi, group_id) do
+    Multi.run(multi, :resource_hub_access, fn _, _ ->
+      Operately.ResourceHubs.SpaceHub.sync_access_from_space(group_id)
     end)
   end
 

@@ -13,6 +13,7 @@ defmodule Operately.Operations.GroupMemberRemoving do
     |> delete_member(space.id, person_id)
     |> delete_access_group_memberships(space.id, person_id)
     |> delete_access_binding(space.id, person_id)
+    |> sync_resource_hub_access(space.id)
     |> insert_activity(author)
     |> Repo.transaction()
   end
@@ -57,6 +58,12 @@ defmodule Operately.Operations.GroupMemberRemoving do
         space_id: member.group_id,
         member_id: member.person_id,
       }
+    end)
+  end
+
+  defp sync_resource_hub_access(multi, space_id) do
+    Multi.run(multi, :resource_hub_access, fn _, _ ->
+      Operately.ResourceHubs.SpaceHub.sync_access_from_space(space_id)
     end)
   end
 end
