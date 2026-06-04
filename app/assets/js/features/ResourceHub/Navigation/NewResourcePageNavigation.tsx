@@ -4,6 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 import { Paths, usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { resourceHubParentItem } from "./resourceHubNavigation";
 
 interface Props {
   resourceHub: ResourceHub;
@@ -12,10 +13,9 @@ interface Props {
 
 export function NewResourcePageNavigation({ resourceHub, folder }: Props) {
   const paths = usePaths();
-  assertPresent(resourceHub.space, "space must be present in resourceHub");
 
   let items = [
-    { to: paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
+    resourceHubParentItem(paths, resourceHub),
     { to: paths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
   ];
 
