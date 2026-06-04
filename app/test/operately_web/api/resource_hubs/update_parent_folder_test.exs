@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolderTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         folder = folder_fixture(resource_hub.id)
         document = document_fixture(resource_hub.id, ctx.creator.id)
 
@@ -140,5 +140,13 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolderTest do
     end
 
     space
+  end
+
+  defp resource_hub_access_attrs(test_case) do
+    %{
+      anonymous_access_level: Binding.no_access(),
+      company_access_level: Binding.from_atom(test_case.company),
+      space_access_level: Binding.from_atom(test_case.space)
+    }
   end
 end

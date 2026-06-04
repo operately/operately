@@ -68,8 +68,8 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
     tabletest @space_table do
       test "Resource Hubs - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub_fixture(ctx.creator, space)
-        resource_hub_fixture(ctx.creator, space)
+        resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
+        resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
 
         assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(space)})
 
@@ -382,5 +382,13 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
     end
 
     goal
+  end
+
+  defp resource_hub_access_attrs(test_case) do
+    %{
+      anonymous_access_level: Binding.no_access(),
+      company_access_level: Binding.from_atom(test_case.company),
+      space_access_level: Binding.from_atom(test_case.space)
+    }
   end
 end

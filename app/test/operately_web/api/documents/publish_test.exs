@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Documents.PublishTest do
   import Ecto.Query, only: [from: 2]
   use OperatelyWeb.TurboCase
 
+  alias Operately.Access.Binding
   alias Operately.Support.RichText
 
   describe "security" do
@@ -16,7 +17,11 @@ defmodule OperatelyWeb.Api.Documents.PublishTest do
       ctx
       |> Factory.setup()
       |> Factory.add_space(:space)
-      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_resource_hub(:hub, :space, :creator,
+        anonymous_access_level: Binding.no_access(),
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.view_access()
+      )
       |> Factory.add_document(:document, :hub, state: :draft)
       |> Factory.add_company_member(:user_no_permissions)
       |> Factory.add_space_member(:user_view_access, :space)

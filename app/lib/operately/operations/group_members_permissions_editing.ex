@@ -10,17 +10,24 @@ defmodule Operately.Operations.GroupMembersPermissionsEditing do
       {:ok, Access.get_context!(group_id: space.id)}
     end)
     |> update_bindings(members)
+    |> sync_resource_hub_access(space)
     |> insert_activity(author, space)
     |> Repo.transaction()
   end
 
   defp update_bindings(multi, members) do
     members
-    |> Enum.reduce(multi, fn (%{id: person_id, access_level: access_level}, multi) ->
+    |> Enum.reduce(multi, fn %{id: person_id, access_level: access_level}, multi ->
       access_group = Access.get_group!(person_id: person_id)
       name = person_id <> "_updated_binding"
 
       Access.update_or_insert_binding(multi, name, access_group, access_level)
+    end)
+  end
+
+  defp sync_resource_hub_access(multi, space) do
+    Multi.run(multi, :resource_hub_access, fn _, _ ->
+      Operately.ResourceHubs.SpaceHub.sync_access_from_space(space.id)
     end)
   end
 
@@ -29,7 +36,7 @@ defmodule Operately.Operations.GroupMembersPermissionsEditing do
       %{
         company_id: space.company_id,
         space_id: space.id,
-        members: serialize_updated_members(changes),
+        members: serialize_updated_members(changes)
       }
     end)
   end
@@ -42,7 +49,7 @@ defmodule Operately.Operations.GroupMembersPermissionsEditing do
       %{
         person_id: String.replace(key, "_updated_binding", ""),
         previous_access_level: target.previous.access_level,
-        updated_access_level: target.updated.access_level,
+        updated_access_level: target.updated.access_level
       }
     end)
   end

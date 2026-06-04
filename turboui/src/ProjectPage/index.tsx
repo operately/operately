@@ -2,7 +2,7 @@ import React from "react";
 
 import { ProjectPageLayout } from "../ProjectPageLayout";
 
-import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
+import { IconClipboardText, IconFileText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
@@ -182,10 +182,15 @@ export namespace ProjectPage {
     getTaskPageProps: KanbanBoardProps["getTaskPageProps"];
 
     // Resource management
-    resources: ResourceManager.Resource[];
-    onResourceAdd: (resource: NewResourcePayload) => void;
-    onResourceEdit: (resource: ResourceManager.Resource) => void;
-    onResourceRemove: (id: string) => void;
+    resources?: ResourceManager.Resource[];
+    onResourceAdd?: (resource: NewResourcePayload) => void;
+    onResourceEdit?: (resource: ResourceManager.Resource) => void;
+    onResourceRemove?: (id: string) => void;
+    docsAndFiles?: {
+      preview: React.ReactNode;
+      tabContent: React.ReactNode;
+      count?: number;
+    };
 
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;
@@ -240,6 +245,13 @@ export function ProjectPage(props: ProjectPage.Props) {
       icon: <IconMessages size={14} />,
       count: state.childrenCount.discussionsCount,
     },
+    {
+      id: "docs-and-files",
+      label: "Docs & Files",
+      icon: <IconFileText size={14} />,
+      count: state.docsAndFiles?.count,
+      hidden: !state.docsAndFiles,
+    },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
 
@@ -257,6 +269,7 @@ export function ProjectPage(props: ProjectPage.Props) {
         {tabs.active === "tasks" && <TasksSection state={state} />}
         {tabs.active === "check-ins" && <CheckIns {...state} />}
         {tabs.active === "discussions" && <Discussions {...state} />}
+        {tabs.active === "docs-and-files" && state.docsAndFiles?.tabContent}
         {tabs.active === "activity" && <Activity {...state} />}
       </div>
 
