@@ -3,6 +3,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
 
   alias Operately.Repo
   alias Operately.ResourceHubs.Link
+  alias OperatelyEmail.Emails.ResourceHubParent
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -11,7 +12,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
     {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [
       preload: [:node, resource_hub: [:project, :space]],
     ])
-    parent = parent(link)
+    parent = ResourceHubParent.from_resource(link)
 
     company
     |> new()
@@ -28,7 +29,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [preload: [:node, resource_hub: [:project, :space]]])
-    parent = parent(link)
+    parent = ResourceHubParent.from_resource(link)
 
     %{
       parent_id: parent.id,
@@ -42,12 +43,5 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
       occurred_at: activity.inserted_at,
       coalesce_key: nil
     }
-  end
-
-  defp parent(link) do
-    cond do
-      link.resource_hub.project -> %{id: link.resource_hub.project.id, name: link.resource_hub.project.name, type: :project}
-      link.resource_hub.space -> %{id: link.resource_hub.space.id, name: link.resource_hub.space.name, type: :space}
-    end
   end
 end

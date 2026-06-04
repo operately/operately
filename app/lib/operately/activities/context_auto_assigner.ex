@@ -227,10 +227,11 @@ defmodule Operately.Activities.ContextAutoAssigner do
   end
 
   defp fetch_resource_hub_context(content) do
-    cond do
-      Map.get(content, :project_id) != nil -> fetch_project_context(content.project_id)
-      Map.get(content, :space_id) != nil -> fetch_space_context(%{content: content})
-    end
+    from(c in Context,
+      where: c.resource_hub_id == ^content.resource_hub_id,
+      select: c.id
+    )
+    |> Repo.one()
   end
 
   defp fetch_comment_added_context(activity) do
