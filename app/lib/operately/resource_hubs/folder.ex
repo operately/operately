@@ -2,6 +2,8 @@ defmodule Operately.ResourceHubs.Folder do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Notifications.Subscriber
+
   schema "resource_folders" do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
 
@@ -75,11 +77,21 @@ defmodule Operately.ResourceHubs.Folder do
   end
 
   def load_potential_subscribers(folder = %__MODULE__{}) do
-    folder = Repo.preload(folder, space: :members)
+    folder = Repo.preload(folder, node: [resource_hub: [space: :members, project: [contributors: :person]]])
 
-    subscribers = Operately.Notifications.Subscriber.from_space_members(folder.space.members)
+    subscribers = potential_subscribers(folder.node.resource_hub)
     Map.put(folder, :potential_subscribers, subscribers)
   end
+
+  defp potential_subscribers(%{project: project}) when not is_nil(project) do
+    Subscriber.from_project_contributor(project.contributors)
+  end
+
+  defp potential_subscribers(%{space: space}) when not is_nil(space) do
+    Subscriber.from_space_members(space.members)
+  end
+
+  defp potential_subscribers(_resource_hub), do: []
 
   def set_permissions(folder = %__MODULE__{}, company_read_only \\ false) do
     perms = Operately.ResourceHubs.Permissions.calculate(folder.request_info.access_level, company_read_only: company_read_only)

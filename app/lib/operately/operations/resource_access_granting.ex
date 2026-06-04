@@ -36,6 +36,7 @@ defmodule Operately.Operations.ResourceAccessGranting do
     end)
     |> maybe_add_space_member(prefix, person_id, resource)
     |> maybe_add_project_contributor(prefix, person_id, resource, access_level)
+    |> maybe_sync_project_resource_hub_access(prefix, resource)
   end
 
   defp get_context(:space, id), do: Access.get_context!(group_id: id)
@@ -93,6 +94,14 @@ defmodule Operately.Operations.ResourceAccessGranting do
   end
 
   defp maybe_add_project_contributor(multi, _prefix, _person_id, _resource, _access_level), do: multi
+
+  defp maybe_sync_project_resource_hub_access(multi, prefix, %{resource_type: :project, resource_id: project_id}) do
+    Multi.run(multi, :"#{prefix}_project_resource_hub_access", fn _, _ ->
+      Operately.ResourceHubs.ProjectHub.sync_access_from_project(project_id)
+    end)
+  end
+
+  defp maybe_sync_project_resource_hub_access(multi, _prefix, _resource), do: multi
 
   defp deduplicate(resources) do
     resources

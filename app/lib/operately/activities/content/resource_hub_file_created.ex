@@ -19,18 +19,28 @@ defmodule Operately.Activities.Content.ResourceHubFileCreated do
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
+    belongs_to :project, Operately.Projects.Project
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
     embeds_many :files, File
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:company_id, :space_id, :resource_hub_id])
+    |> cast(attrs, [:company_id, :space_id, :project_id, :resource_hub_id])
     |> cast_embed(:files)
-    |> validate_required([:company_id, :space_id, :resource_hub_id])
+    |> validate_required([:company_id, :resource_hub_id])
+    |> validate_parent()
   end
 
   def build(params) do
     changeset(params)
+  end
+
+  defp validate_parent(changeset) do
+    if get_field(changeset, :space_id) || get_field(changeset, :project_id) do
+      changeset
+    else
+      add_error(changeset, :base, "space_id or project_id is required")
+    end
   end
 end

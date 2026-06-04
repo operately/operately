@@ -130,7 +130,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
     tabletest @space_table do
       test "resource hub document - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         doc = document_fixture(resource_hub.id, ctx.creator.id)
 
         assert {code, res} =
@@ -159,7 +159,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
     tabletest @space_table do
       test "resource hub file - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         file = file_fixture(resource_hub, ctx.creator)
 
         assert {code, res} =
@@ -188,7 +188,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
     tabletest @space_table do
       test "resource hub link - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         link = link_fixture(resource_hub, ctx.creator)
 
         assert {code, res} =
@@ -490,7 +490,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
     tabletest @space_table do
       test "resource hub document comment - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         doc = document_fixture(resource_hub.id, ctx.creator.id) |> Repo.preload(resource_hub: :space)
         comment = create_comment(ctx, doc, "resource_hub_document")
 
@@ -521,7 +521,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
     tabletest @space_table do
       test "resource hub file comment - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         file = file_fixture(resource_hub, ctx.creator) |> Repo.preload(:resource_hub)
         comment = create_comment(ctx, file, "resource_hub_file")
 
@@ -552,7 +552,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
     tabletest @space_table do
       test "resource hub link comment - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         link = link_fixture(resource_hub, ctx.creator) |> Repo.preload(:resource_hub)
         comment = create_comment(ctx, link, "resource_hub_link")
 
