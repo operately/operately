@@ -4,8 +4,10 @@ import type { ActivityContentResourceHubDocumentCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import * as People from "@/models/people";
 
-import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
+import { assertPresent } from "@/utils/assertions";
+import { documentLink, feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -14,8 +16,11 @@ const ResourceHubDocumentCreating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(paths, _activity: Activity): string {
-    return paths.resourceHubDocumentPath(content(_activity).document!.id!);
+  pagePath(paths, activity: Activity): string {
+    const document = content(activity).document;
+    assertPresent(document?.id, "document.id must be present in ResourceHubDocumentCreated activity content");
+
+    return paths.resourceHubDocumentPath(document.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -58,23 +63,21 @@ const ResourceHubDocumentCreating: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    const document = content(activity).document!;
-    const copiedDocument = content(activity).copiedDocument;
+    const data = content(activity);
+    const document = data.document;
+    const copiedDocument = data.copiedDocument;
 
-    if (copiedDocument) {
-      return (
-        "Created a copy of " +
-        copiedDocument.name +
-        " and named it " +
-        document.name
-      );
+    if (copiedDocument && document) {
+      return "Created a copy of " + copiedDocument.name + " and named it " + document.name;
+    } else if (document) {
+      return "Added: " + document.name;
     } else {
-      return "Added: " + document.name!;
+      return "Added a document";
     }
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).resourceHub!.name!;
+    return content(activity).resourceHub?.name || null;
   },
 };
 
@@ -87,26 +90,31 @@ export default ResourceHubDocumentCreating;
 function ItemCopiedTitle(activity: Activity, page: string) {
   const data = content(activity);
 
-  const space = spaceLink(data.space!);
-  const document = documentLink(data.document!);
-  const copiedDocument = documentLink(data.copiedDocument!);
+  const document = data.document ? documentLink(data.document) : "a document";
+  const copiedDocument = data.copiedDocument ? documentLink(data.copiedDocument) : "a document";
 
-  if (page === "space") {
+  if (page === "space" || page === "project") {
     return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document);
   } else {
-    return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document, "in the", space, "space");
+    return feedTitle(
+      activity,
+      "created a copy of",
+      copiedDocument,
+      "and named it",
+      document,
+      ...resourceHubParentScope(data, page),
+    );
   }
 }
 
 function ItemCreatedTitle(activity: Activity, page: string) {
   const data = content(activity);
 
-  const space = spaceLink(data.space!);
-  const document = documentLink(data.document!);
+  const document = data.document ? documentLink(data.document) : "a document";
 
-  if (page === "space") {
+  if (page === "space" || page === "project") {
     return feedTitle(activity, "created a document:", document);
   } else {
-    return feedTitle(activity, "created a document in the", space, "space:", document);
+    return feedTitle(activity, "created a document", ...resourceHubParentScope(data, page, ":"), document);
   }
 }

@@ -1,7 +1,57 @@
 defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpace do
   import Ecto.Query, only: [from: 2]
-  alias Operately.{Access, Repo}
-  alias __MODULE__.{Space, ResourceHub}
+  alias Operately.Repo
+  alias __MODULE__.{AccessContext, Space, ResourceHub}
+
+  defmodule Space do
+    use Operately.Schema
+
+    schema "groups" do
+      field :company_id, :binary_id
+    end
+  end
+
+  defmodule ResourceHub do
+    use Operately.Schema
+
+    schema "resource_hubs" do
+      field :space_id, :binary_id
+      field :name, :string
+      field :description, :map
+
+      timestamps()
+    end
+
+    def changeset(attrs) do
+      changeset(%__MODULE__{}, attrs)
+    end
+
+    def changeset(resource_hub, attrs) do
+      resource_hub
+      |> cast(attrs, [:space_id, :name, :description])
+      |> validate_required([:space_id, :name])
+    end
+  end
+
+  defmodule AccessContext do
+    use Operately.Schema
+
+    schema "access_contexts" do
+      field :resource_hub_id, :binary_id
+
+      timestamps()
+    end
+
+    def changeset(attrs) do
+      changeset(%__MODULE__{}, attrs)
+    end
+
+    def changeset(context, attrs) do
+      context
+      |> cast(attrs, [:resource_hub_id])
+      |> validate_required([:resource_hub_id])
+    end
+  end
 
   def run do
     Repo.transaction(fn ->
@@ -16,8 +66,8 @@ defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpace do
   end
 
   defp create_hubs(space) do
-    case ResourceHub.get(:system, space_id: space.id) do
-      {:error, :not_found} ->
+    case Repo.get_by(ResourceHub, space_id: space.id) do
+      nil ->
         {:ok, hub} =
           ResourceHub.changeset(%{
             space_id: space.id,
@@ -25,40 +75,11 @@ defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpace do
           })
           |> Repo.insert()
 
-        {:ok, _} = Access.create_context(%{resource_hub_id: hub.id})
+        {:ok, _} =
+          AccessContext.changeset(%{resource_hub_id: hub.id})
+          |> Repo.insert()
 
-      {:ok, _} -> :ok
-    end
-  end
-
-  defmodule Space do
-    use Operately.Schema
-
-    schema "groups" do
-      field :company_id, :binary_id
-    end
-  end
-
-  defmodule ResourceHub do
-    use Operately.Schema
-    use Operately.Repo.Getter
-
-    schema "resource_hubs" do
-      field :space_id, :binary_id
-      field :name, :string
-      field :description, :map
-
-      request_info()
-    end
-
-    def changeset(attrs) do
-      changeset(%__MODULE__{}, attrs)
-    end
-
-    def changeset(resource_hub, attrs) do
-      resource_hub
-      |> cast(attrs, [:space_id, :name, :description])
-      |> validate_required([:space_id, :name])
+      _ -> :ok
     end
   end
 end

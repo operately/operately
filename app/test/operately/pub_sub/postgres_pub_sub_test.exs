@@ -1,5 +1,5 @@
 defmodule Operately.PubSub.PostgresPubSubTest do
-  use ExUnit.Case
+  use Operately.DataCase
 
   alias Operately.PubSub.PostgresPubSub
 

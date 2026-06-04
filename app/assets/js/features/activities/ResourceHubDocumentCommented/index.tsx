@@ -6,10 +6,11 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
-import { commentPath, commentedLink, documentLink, feedTitle, spaceLink } from "../feedItemLinks";
+import { commentPath, commentedLink, documentLink, feedTitle } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { Summary } from "turboui";
 import { parseCommentContent } from "@/models/comments";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubDocumentCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -17,10 +18,10 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { document, space, comment } = content(activity);
+    const { document, resourceHub, comment } = content(activity);
 
     if (!document) {
-      return paths.resourceHubPath(space.id);
+      return resourceHub?.id ? paths.resourceHubPath(resourceHub.id) : paths.homePath();
     }
 
     return commentPath(paths.resourceHubDocumentPath(document.id), comment);
@@ -41,7 +42,6 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
     const data = content(activity);
-    const space = spaceLink(data.space);
     let action: any = "commented";
     let document: any = "a document";
 
@@ -53,10 +53,10 @@ const ResourceHubDocumentCommented: ActivityHandler = {
       action = commentedLink(paths.resourceHubDocumentPath(data.document.id), data.comment);
     }
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, action, "on", document);
     } else {
-      return feedTitle(activity, action, "on", document, "in the", space, "space");
+      return feedTitle(activity, action, "on", document, ...resourceHubParentScope(data, page));
     }
   },
 
