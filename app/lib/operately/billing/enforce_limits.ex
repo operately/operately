@@ -99,6 +99,13 @@ defmodule Operately.Billing.EnforceLimits do
     |> Map.delete(:recommended_upgrade)
   end
 
+  def near_limit_threshold(limit) when is_integer(limit) do
+    limit
+    |> Kernel.*(0.9)
+    |> Float.ceil()
+    |> trunc()
+  end
+
   defp error_from_status(%LimitStatus{} = status) do
     %LimitError{
       code: error_code(status.limit_key),
@@ -157,13 +164,6 @@ defmodule Operately.Billing.EnforceLimits do
 
   defp normalize_current_usage(current_usage, limit_key) do
     raise ArgumentError, "current_usage must be an integer for #{inspect(limit_key)}, got: #{inspect(current_usage)}"
-  end
-
-  defp near_limit_threshold(limit) do
-    limit
-    |> Kernel.*(0.9)
-    |> Float.ceil()
-    |> trunc()
   end
 
   defp recommended_upgrade(_company, _account, _plan_key, false, _opts), do: nil

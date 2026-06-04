@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploaded do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Billing
   alias Operately.Blobs
   alias Operately.Blobs.Blob
 
@@ -15,10 +16,13 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploaded do
 
   def call(conn, inputs) do
     Action.new()
+    |> run(:company, fn -> {:ok, conn.assigns[:current_company]} end)
     |> run(:account, fn -> find_account(conn) end)
     |> run(:blob, fn -> fetch_blob(inputs.blob_id) end)
     |> run(:permissions, fn ctx -> authorize(ctx.blob, ctx.account, conn.assigns[:current_person]) end)
+    |> run(:previous_storage_usage, fn ctx -> previous_storage_usage(ctx.blob, ctx.company) end)
     |> run(:updated_blob, fn ctx -> mark_uploaded(ctx.blob) end)
+    |> run(:near_limit_warning, fn ctx -> maybe_enqueue_near_limit_warning(ctx.blob, ctx.updated_blob, ctx.previous_storage_usage, ctx.company) end)
     |> respond()
   end
 
@@ -60,4 +64,26 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploaded do
   defp mark_uploaded(%Blob{status: :pending} = blob), do: Blobs.update_blob(blob, %{status: :uploaded})
   defp mark_uploaded(%Blob{status: :uploaded} = blob), do: {:ok, blob}
   defp mark_uploaded(%Blob{}), do: {:error, :invalid_status}
+
+  defp previous_storage_usage(%Blob{company_id: company_id, purpose: :company_file, status: :pending}, %{id: company_id} = company) do
+    {:ok, Billing.company_storage_bytes(company)}
+  end
+
+  defp previous_storage_usage(_blob, _company), do: {:ok, nil}
+
+  defp maybe_enqueue_near_limit_warning(
+         %Blob{company_id: company_id, purpose: :company_file, status: :pending},
+         %Blob{status: :uploaded},
+         previous_storage_usage,
+         %{id: company_id} = company
+       )
+       when is_integer(previous_storage_usage) do
+    Billing.maybe_enqueue_near_limit_warning_email(company, :storage_bytes, previous_storage_usage,
+      current_usage: Billing.company_storage_bytes(company)
+    )
+
+    {:ok, :queued}
+  end
+
+  defp maybe_enqueue_near_limit_warning(_blob, _updated_blob, _previous_storage_usage, _company), do: {:ok, :skipped}
 end

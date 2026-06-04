@@ -91,6 +91,31 @@ defmodule Operately.Blobs.UploadDownloadTest do
         File.rm("/media/#{Operately.Blobs.Blob.path(blob)}")
       end)
     end
+
+    test "enqueues a near-limit warning email when uploaded storage reaches 90 percent", ctx do
+      enable_billing(ctx.company)
+      threshold = Operately.Billing.EnforceLimits.near_limit_threshold(Operately.Billing.Plans.storage_limit_bytes(:free))
+
+      source_path = Path.join(System.tmp_dir!(), "near_limit_upload_#{System.unique_integer([:positive])}.txt")
+      File.write!(source_path, "x")
+
+      blob_fixture(%{
+        company_id: ctx.company.id,
+        author_id: ctx.creator.id,
+        status: :uploaded,
+        size: threshold - 1
+      })
+
+      on_exit(fn ->
+        File.rm(source_path)
+      end)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, blob} = Blobs.upload_file_to_blob(ctx.company, ctx.creator, source_path, "text/plain")
+        assert length(all_enqueued(worker: Operately.Billing.NearLimitAlertEmailWorker)) == 1
+        File.rm("/media/#{Operately.Blobs.Blob.path(blob)}")
+      end)
+    end
   end
 
   describe "download_blob_to_file/2 with local storage" do

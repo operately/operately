@@ -3,6 +3,7 @@ defmodule Operately.Blobs.Upload do
   Handles uploading files to blob storage (local or S3).
   """
 
+  alias Operately.Billing
   alias Operately.Blobs.Blob
 
   @doc """
@@ -12,8 +13,10 @@ defmodule Operately.Blobs.Upload do
   Returns {:ok, blob} on success.
   """
   def upload_file_to_blob(company, author, file_path, content_type) do
+    company = Operately.Companies.get_company!(company.id)
     filename = Path.basename(file_path)
     file_size = File.stat!(file_path).size
+    previous_storage_usage = Billing.company_storage_bytes(company)
 
     # Create blob record
     {:ok, blob} =
@@ -31,7 +34,13 @@ defmodule Operately.Blobs.Upload do
     {:ok, blob} = upload(blob, file_path)
 
     # Mark blob as uploaded
-    Operately.Blobs.update_blob(blob, %{status: :uploaded})
+    with {:ok, blob} <- Operately.Blobs.update_blob(blob, %{status: :uploaded}) do
+      Billing.maybe_enqueue_near_limit_warning_email(company, :storage_bytes, previous_storage_usage,
+        current_usage: Billing.company_storage_bytes(company)
+      )
+
+      {:ok, blob}
+    end
   end
 
   @doc """

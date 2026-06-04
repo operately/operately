@@ -27,6 +27,7 @@ defmodule Operately.Operations.CompanyMemberRestoring do
       |> Repo.extract_result(:person)
       |> case do
         {:ok, _restored_person} = result ->
+          Billing.maybe_enqueue_near_limit_warning_email(company, :member_count, previous_member_count)
           Billing.maybe_enqueue_limit_reached_email(company, :member_count, previous_member_count)
           result
 

@@ -2,10 +2,14 @@ defmodule Operately.Operations.ResourceHubFileCreating do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.Billing
+  alias Operately.Companies
   alias Operately.ResourceHubs.{File, Node}
   alias Operately.Notifications.{SubscriptionList, Subscription}
 
   def run(author, hub, attrs) do
+    company = Companies.get_company!(author.company_id)
+    previous_storage_usage = Billing.company_storage_bytes(company)
     multi = Multi.new()
 
     attrs.files
@@ -23,6 +27,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
     |> insert_activity(author, hub)
     |> Repo.transaction()
     |> Repo.extract_result(:result)
+    |> maybe_enqueue_near_limit_warning(company, previous_storage_usage)
   end
 
   defp insert_subscriptions_list(multi, index, attrs) do
@@ -131,6 +136,16 @@ defmodule Operately.Operations.ResourceHubFileCreating do
       {:ok, files}
     end)
   end
+
+  defp maybe_enqueue_near_limit_warning({:ok, _files} = result, company, previous_storage_usage) do
+    Billing.maybe_enqueue_near_limit_warning_email(company, :storage_bytes, previous_storage_usage,
+      current_usage: Billing.company_storage_bytes(company)
+    )
+
+    result
+  end
+
+  defp maybe_enqueue_near_limit_warning(error, _company, _previous_storage_usage), do: error
 
   #
   # Names
