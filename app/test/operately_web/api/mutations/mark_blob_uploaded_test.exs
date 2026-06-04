@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Mutations.MarkBlobUploadedTest do
   use OperatelyWeb.TurboCase
+  use Oban.Testing, repo: Operately.Repo
 
   import Operately.BlobsFixtures
   import Operately.PeopleFixtures
@@ -33,6 +34,25 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploadedTest do
 
       blob = Operately.Blobs.get_blob!(blob.id)
       assert blob.status == :uploaded
+    end
+
+    test "enqueues a near-limit warning email when uploaded storage reaches 90 percent", ctx do
+      enable_billing(ctx.company)
+      threshold = Operately.Billing.EnforceLimits.near_limit_threshold(Operately.Billing.Plans.storage_limit_bytes(:free))
+
+      blob_fixture(%{
+        company_id: ctx.company.id,
+        author_id: ctx.person.id,
+        status: :uploaded,
+        size: threshold - 1
+      })
+
+      blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.person.id, size: 1})
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {200, _res} = mutation(ctx.conn, :mark_blob_uploaded, %{blob_id: blob.id})
+        assert length(all_enqueued(worker: Operately.Billing.NearLimitAlertEmailWorker)) == 1
+      end)
     end
 
     test "does not allow marking another person's blob", ctx do
@@ -74,6 +94,15 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploadedTest do
 
       blob = Operately.Blobs.get_blob!(blob.id)
       assert blob.status == :uploaded
+
+      refute_enqueued worker: Operately.Billing.NearLimitAlertEmailWorker
     end
+  end
+
+  defp enable_billing(company) do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

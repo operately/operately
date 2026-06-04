@@ -42,15 +42,12 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
         |> Enum.map(& &1.email)
         |> Enum.sort()
 
-      assert_email_sent(fn email ->
-        assert email.subject == expected_subject
-        assert Enum.sort(Enum.map(email.to, &elem(&1, 1))) == expected_recipients
-        assert email.html_body =~ ctx.company.name
-        assert email.html_body =~ "20"
-        assert email.html_body =~ "Review Billing"
-        assert email.text_body =~ OperatelyWeb.Paths.company_billing_path(ctx.company)
-        true
-      end)
+      assert_received {:email, %Swoosh.Email{subject: ^expected_subject} = email}
+      assert Enum.sort(Enum.map(email.to, &elem(&1, 1))) == expected_recipients
+      assert email.html_body =~ ctx.company.name
+      assert email.html_body =~ "20"
+      assert email.html_body =~ "Review Billing"
+      assert email.text_body =~ OperatelyWeb.Paths.company_billing_path(ctx.company)
     end)
   end
 

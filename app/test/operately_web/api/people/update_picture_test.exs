@@ -112,6 +112,7 @@ defmodule OperatelyWeb.Api.People.UpdatePictureTest do
                  })
 
         refute_enqueued worker: Operately.Billing.LimitBreachAlertEmailWorker
+        refute_enqueued worker: Operately.Billing.NearLimitAlertEmailWorker
       end)
     end
 
