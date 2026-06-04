@@ -20,6 +20,8 @@ defmodule Operately.AccessBindingsTest do
     end
 
     test "list_bindings/0 returns all bindings", ctx do
+      initial_count = Access.list_bindings() |> length()
+
       binding = binding_fixture(%{
         group_id: ctx.group.id,
         context_id: ctx.context.id,
@@ -27,7 +29,7 @@ defmodule Operately.AccessBindingsTest do
 
       bindings_list = Access.list_bindings()
 
-      assert 10 == length(bindings_list)
+      assert length(bindings_list) == initial_count + 1
       assert Enum.member?(bindings_list, binding)
     end
 

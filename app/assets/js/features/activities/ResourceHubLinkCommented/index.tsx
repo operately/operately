@@ -5,10 +5,11 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
-import { commentPath, commentedLink, feedTitle, linkLink, spaceLink } from "../feedItemLinks";
+import { commentPath, commentedLink, feedTitle, linkLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubLinkCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -16,13 +17,13 @@ const ResourceHubLinkCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { link, space, comment } = content(activity);
+    const { link, resourceHub, comment } = content(activity);
 
     if (link) {
       return commentPath(paths.resourceHubLinkPath(link.id), comment);
     }
 
-    return paths.resourceHubPath(space.id);
+    return resourceHub?.id ? paths.resourceHubPath(resourceHub.id) : paths.homePath();
   },
 
   PageTitle(_props: { activity: any }) {
@@ -40,7 +41,6 @@ const ResourceHubLinkCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
     const data = content(activity);
-    const space = spaceLink(data.space);
     let action: any = "commented";
     let link: any = "a link";
 
@@ -52,10 +52,10 @@ const ResourceHubLinkCommented: ActivityHandler = {
       action = commentedLink(paths.resourceHubLinkPath(data.link.id), data.comment);
     }
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, action, "on", link);
     } else {
-      return feedTitle(activity, action, "on", link, "in the", space, "space");
+      return feedTitle(activity, action, "on", link, ...resourceHubParentScope(data, page));
     }
   },
 

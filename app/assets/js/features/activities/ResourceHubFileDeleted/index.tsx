@@ -2,8 +2,9 @@ import type { ActivityContentResourceHubFileDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { assertPresent } from "@/utils/assertions";
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubFileDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -32,14 +33,13 @@ const ResourceHubFileDeleted: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
     const resourceHub = resourceHubLink(data.resourceHub!);
     const file = content(activity).file!;
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, `deleted "${file.name}" from`, resourceHub);
     } else {
-      return feedTitle(activity, `deleted "${file.name}" from`, resourceHub, "in the", space, "space");
+      return feedTitle(activity, `deleted "${file.name}" from`, resourceHub, ...resourceHubParentScope(data, page));
     }
   },
 

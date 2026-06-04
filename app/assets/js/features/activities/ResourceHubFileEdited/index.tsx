@@ -3,8 +3,9 @@ import React from "react";
 import type { ActivityContentResourceHubFileEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, fileLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -33,13 +34,12 @@ const ResourceHubFileEdited: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
     const file = fileLink(data.file!);
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, "edited a file:", file);
     } else {
-      return feedTitle(activity, "edited a file in the", space, "space:", file);
+      return feedTitle(activity, "edited a file", ...resourceHubParentScope(data, page, ":"), file);
     }
   },
 
