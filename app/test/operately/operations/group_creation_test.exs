@@ -136,13 +136,11 @@ defmodule Operately.Operations.GroupCreationTest do
 
     context = Access.get_context(resource_hub_id: hd(hubs).id)
     company_full = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
-    space_full = Access.get_group!(group_id: group.id, tag: :full_access)
+    creator_group = Access.get_group!(person_id: ctx.creator.id)
     company_standard = Access.get_group!(company_id: ctx.company.id, tag: :standard)
-    space_standard = Access.get_group!(group_id: group.id, tag: :standard)
 
     assert Access.get_binding(group_id: company_full.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: space_full.id, context_id: context.id, access_level: Binding.full_access())
+    assert Access.get_binding(group_id: creator_group.id, context_id: context.id, access_level: Binding.full_access())
     assert Access.get_binding(group_id: company_standard.id, context_id: context.id, access_level: Binding.comment_access())
-    assert Access.get_binding(group_id: space_standard.id, context_id: context.id, access_level: Binding.edit_access())
   end
 end

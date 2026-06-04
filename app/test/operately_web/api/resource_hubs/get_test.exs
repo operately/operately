@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         folder_fixture(resource_hub.id)
 
         assert {code, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(resource_hub), include_nodes: true})

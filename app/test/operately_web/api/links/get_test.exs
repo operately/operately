@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Links.GetTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         link = link_fixture(resource_hub, ctx.creator)
 
         assert {code, res} = query(ctx.conn, [:links, :get], %{id: Paths.link_id(link)})

@@ -142,11 +142,4 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolderTest do
     space
   end
 
-  defp resource_hub_access_attrs(test_case) do
-    %{
-      anonymous_access_level: Binding.no_access(),
-      company_access_level: Binding.from_atom(test_case.company),
-      space_access_level: Binding.from_atom(test_case.space)
-    }
-  end
 end
