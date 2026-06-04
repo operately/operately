@@ -920,6 +920,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_resource_hub_folder_copied do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :folder, :resource_hub_folder, null: true
     field? :original_folder, :resource_hub_folder, null: true
@@ -934,12 +935,14 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_resource_hub_folder_deleted do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :folder, :resource_hub_folder, null: true
   end
 
   object :activity_content_resource_hub_folder_renamed do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :folder, :resource_hub_folder, null: true
     field? :old_name, :string, null: true
@@ -955,18 +958,22 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_resource_hub_file_deleted do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :file, :resource_hub_file, null: true
   end
 
   object :activity_content_resource_hub_file_edited do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :file, :resource_hub_file, null: true
   end
 
   object :activity_content_resource_hub_file_commented do
-    field :space, :space, null: false
+    field? :space, :space, null: true
+    field? :project, :project, null: true
+    field? :resource_hub, :resource_hub, null: true
     field :file, :resource_hub_file, null: true
     field :comment, :comment, null: true
   end
@@ -981,18 +988,22 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_resource_hub_document_edited do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
   end
 
   object :activity_content_resource_hub_document_deleted do
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
   end
 
   object :activity_content_resource_hub_document_commented do
-    field :space, :space, null: false
+    field? :space, :space, null: true
+    field? :project, :project, null: true
+    field? :resource_hub, :resource_hub, null: true
     field :document, :resource_hub_document, null: true
     field :comment, :comment, null: true
   end
@@ -1007,6 +1018,7 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_resource_hub_link_edited do
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :link, :resource_hub_link, null: true
 
     field? :previous_name, :string, null: true
@@ -1017,11 +1029,14 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_resource_hub_link_deleted do
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :link, :resource_hub_link, null: true
   end
 
   object :activity_content_resource_hub_link_commented do
-    field :space, :space, null: false
+    field? :space, :space, null: true
+    field? :project, :project, null: true
+    field? :resource_hub, :resource_hub, null: true
     field :link, :resource_hub_link, null: true
     field :comment, :comment, null: true
   end

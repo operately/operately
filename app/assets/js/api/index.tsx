@@ -728,7 +728,9 @@ export interface ActivityContentProjectTimelineEdited {
 }
 
 export interface ActivityContentResourceHubDocumentCommented {
-  space: Space;
+  space?: Space | null;
+  project?: Project | null;
+  resourceHub?: ResourceHub | null;
   document: ResourceHubDocument | null;
   comment: Comment | null;
 }
@@ -743,18 +745,22 @@ export interface ActivityContentResourceHubDocumentCreated {
 
 export interface ActivityContentResourceHubDocumentDeleted {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
 }
 
 export interface ActivityContentResourceHubDocumentEdited {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
 }
 
 export interface ActivityContentResourceHubFileCommented {
-  space: Space;
+  space?: Space | null;
+  project?: Project | null;
+  resourceHub?: ResourceHub | null;
   file: ResourceHubFile | null;
   comment: Comment | null;
 }
@@ -768,18 +774,21 @@ export interface ActivityContentResourceHubFileCreated {
 
 export interface ActivityContentResourceHubFileDeleted {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   file?: ResourceHubFile | null;
 }
 
 export interface ActivityContentResourceHubFileEdited {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   file?: ResourceHubFile | null;
 }
 
 export interface ActivityContentResourceHubFolderCopied {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
   originalFolder?: ResourceHubFolder | null;
@@ -794,12 +803,14 @@ export interface ActivityContentResourceHubFolderCreated {
 
 export interface ActivityContentResourceHubFolderDeleted {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
 }
 
 export interface ActivityContentResourceHubFolderRenamed {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
   oldName?: string | null;
@@ -807,7 +818,9 @@ export interface ActivityContentResourceHubFolderRenamed {
 }
 
 export interface ActivityContentResourceHubLinkCommented {
-  space: Space;
+  space?: Space | null;
+  project?: Project | null;
+  resourceHub?: ResourceHub | null;
   link: ResourceHubLink | null;
   comment: Comment | null;
 }
@@ -822,12 +835,14 @@ export interface ActivityContentResourceHubLinkCreated {
 export interface ActivityContentResourceHubLinkDeleted {
   resourceHub?: ResourceHub | null;
   space?: Space | null;
+  project?: Project | null;
   link?: ResourceHubLink | null;
 }
 
 export interface ActivityContentResourceHubLinkEdited {
   resourceHub?: ResourceHub | null;
   space?: Space | null;
+  project?: Project | null;
   link?: ResourceHubLink | null;
   previousName?: string | null;
   previousType?: string | null;

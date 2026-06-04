@@ -5,6 +5,7 @@ defmodule Operately.Data.Change101CreateProjectResourceHubs do
   alias __MODULE__.{AccessBinding, AccessContext, KeyResource, Project, ResourceHub, ResourceLink, ResourceNode, SubscriptionList}
 
   @hub_name "Docs & Files"
+  @space_hub_name "Documents & Files"
   @link_type :other
 
   def run do
@@ -18,7 +19,7 @@ defmodule Operately.Data.Change101CreateProjectResourceHubs do
   end
 
   defp sync_existing_space_hub_access do
-    from(h in ResourceHub, where: not is_nil(h.space_id))
+    from(h in ResourceHub, where: not is_nil(h.space_id) and h.name == ^@space_hub_name)
     |> Repo.all()
     |> Enum.each(&sync_space_hub_access/1)
   end
