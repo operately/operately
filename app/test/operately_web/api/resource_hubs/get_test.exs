@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         folder_fixture(resource_hub.id)
 
         assert {code, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(resource_hub), include_nodes: true})
@@ -102,6 +102,17 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
 
       assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(ctx.hub1), include_space: true})
       assert res.resource_hub.space == Serializer.serialize(ctx.space, level: :essential)
+    end
+
+    test "include_project", ctx do
+      ctx = Factory.add_project(ctx, :project, :space)
+      {:ok, hub} = Operately.ResourceHubs.ProjectHub.create_for_project(ctx.project)
+
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(hub)})
+      refute res.resource_hub.project
+
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(hub), include_project: true})
+      assert res.resource_hub.project == Serializer.serialize(ctx.project, level: :essential)
     end
   end
 

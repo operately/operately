@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.DeleteFolderTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         folder = folder_fixture(resource_hub.id)
 
         assert {code, res} = mutation(ctx.conn, [:resource_hubs, :delete_folder], %{
