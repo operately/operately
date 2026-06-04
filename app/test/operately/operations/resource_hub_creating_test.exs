@@ -37,29 +37,13 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     assert Access.get_context(resource_hub_id: resource_hub.id)
   end
 
-  test "ResourceHubCreating operation creates bindings to company", ctx do
+  test "ResourceHubCreating operation mirrors space access bindings", ctx do
     {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
 
-    context = Access.get_context!(resource_hub_id: resource_hub.id)
+    space_context = Access.get_context!(group_id: ctx.space.id)
+    hub_context = Access.get_context!(resource_hub_id: resource_hub.id)
 
-    full_access = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
-    members = Access.get_group!(company_id: ctx.company.id, tag: :standard)
-    anonymous = Access.get_group!(company_id: ctx.company.id, tag: :anonymous)
-
-    assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.comment_access())
-    assert Access.get_binding(group_id: anonymous.id, context_id: context.id, access_level: Binding.view_access())
-  end
-
-  test "ResourceHubCreating operation creates bindings to space", ctx do
-    {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
-
-    context = Access.get_context!(resource_hub_id: resource_hub.id)
-    full_access = Access.get_group!(group_id: ctx.space.id, tag: :full_access)
-    members = Access.get_group!(group_id: ctx.space.id, tag: :standard)
-
-    assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.edit_access())
+    assert binding_signature(hub_context.id) == binding_signature(space_context.id)
   end
 
   test "ResourceHubCreating operation creates activity", ctx do
@@ -68,5 +52,14 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     query = from(a in Activity, where: a.action == "resource_hub_created" and a.content["resource_hub_id"] == ^resource_hub.id)
 
     assert Repo.one(query)
+  end
+
+  defp binding_signature(context_id) do
+    from(b in Binding,
+      where: b.context_id == ^context_id,
+      select: {b.group_id, b.access_level, b.tag}
+    )
+    |> Repo.all()
+    |> Enum.sort()
   end
 end

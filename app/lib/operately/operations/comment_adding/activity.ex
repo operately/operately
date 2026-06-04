@@ -53,6 +53,7 @@ defmodule Operately.Operations.CommentAdding.Activity do
       %{
         company_id: creator.company_id,
         space_id: entity.resource_hub.space_id,
+        project_id: entity.resource_hub.project_id,
         resource_hub_id: entity.resource_hub.id,
         document_id: entity.id,
         node_id: entity.node.id,
@@ -66,6 +67,7 @@ defmodule Operately.Operations.CommentAdding.Activity do
       %{
         company_id: creator.company_id,
         space_id: entity.resource_hub.space_id,
+        project_id: entity.resource_hub.project_id,
         resource_hub_id: entity.resource_hub.id,
         file_id: entity.id,
         node_id: entity.node.id,
@@ -79,6 +81,7 @@ defmodule Operately.Operations.CommentAdding.Activity do
       %{
         company_id: creator.company_id,
         space_id: entity.resource_hub.space_id,
+        project_id: entity.resource_hub.project_id,
         resource_hub_id: entity.resource_hub.id,
         link_id: entity.id,
         node_id: entity.node.id,

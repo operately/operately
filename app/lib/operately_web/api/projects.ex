@@ -291,6 +291,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
       |> Steps.update_project_champion(inputs.champion_id)
+      |> Steps.sync_project_resource_hub_access()
       |> Steps.save_activity(:project_champion_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -368,6 +369,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
       |> Steps.update_project_reviewer(inputs.reviewer_id)
+      |> Steps.sync_project_resource_hub_access()
       |> Steps.save_activity(:project_reviewer_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -968,6 +970,12 @@ defmodule OperatelyWeb.Api.Projects do
       end)
       |> Ecto.Multi.merge(fn changes ->
         ensure_subscription(Ecto.Multi.new(), changes.project_subscription_list.id, new_reviewer_id)
+      end)
+    end
+
+    def sync_project_resource_hub_access(multi) do
+      Ecto.Multi.run(multi, :resource_hub_access, fn _repo, %{project: project} ->
+        Operately.ResourceHubs.ProjectHub.sync_access_from_project(project.id)
       end)
     end
 

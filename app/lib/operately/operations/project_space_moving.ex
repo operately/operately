@@ -14,6 +14,7 @@ defmodule Operately.Operations.ProjectSpaceMoving do
     end)
     |> delete_old_binding(project.group_id)
     |> insert_new_binding(space_id)
+    |> sync_resource_hub_access(project)
     |> insert_activity(author, project)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
@@ -47,12 +48,20 @@ defmodule Operately.Operations.ProjectSpaceMoving do
   end
 
   defp insert_activity(multi, author, project) do
-    Activities.insert_sync(multi, author.id, :project_moved, fn changes -> %{
-      company_id: project.company_id,
-      project_id: project.id,
-      old_space_id: project.group_id,
-      new_space_id: changes.project.group_id
-    } end)
+    Activities.insert_sync(multi, author.id, :project_moved, fn changes ->
+      %{
+        company_id: project.company_id,
+        project_id: project.id,
+        old_space_id: project.group_id,
+        new_space_id: changes.project.group_id
+      }
+    end)
+  end
+
+  defp sync_resource_hub_access(multi, project) do
+    Multi.run(multi, :resource_hub_access, fn _, _ ->
+      Operately.ResourceHubs.ProjectHub.sync_access_from_project(project.id)
+    end)
   end
 
   #

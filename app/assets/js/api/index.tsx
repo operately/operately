@@ -735,6 +735,7 @@ export interface ActivityContentResourceHubDocumentCommented {
 
 export interface ActivityContentResourceHubDocumentCreated {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
   copiedDocument?: ResourceHubDocument | null;
@@ -761,6 +762,7 @@ export interface ActivityContentResourceHubFileCommented {
 export interface ActivityContentResourceHubFileCreated {
   resourceHub?: ResourceHub | null;
   space?: Space | null;
+  project?: Project | null;
   files?: ResourceHubFile[] | null;
 }
 
@@ -785,6 +787,7 @@ export interface ActivityContentResourceHubFolderCopied {
 
 export interface ActivityContentResourceHubFolderCreated {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
 }
@@ -811,6 +814,7 @@ export interface ActivityContentResourceHubLinkCommented {
 
 export interface ActivityContentResourceHubLinkCreated {
   space?: Space | null;
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   link?: ResourceHubLink | null;
 }
@@ -1628,6 +1632,7 @@ export interface Project {
   milestones?: Milestone[] | null;
   contributors?: ProjectContributor[] | null;
   keyResources?: ProjectKeyResource[] | null;
+  resourceHub?: ResourceHub | null;
   isOutdated?: boolean | null;
   spaceId?: string | null;
   space?: Space | null;
@@ -1760,6 +1765,7 @@ export interface ResourceHub {
   name: string;
   description?: string | null;
   space?: Space | null;
+  project?: Project | null;
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
@@ -2671,6 +2677,7 @@ export interface DocumentsGetInput {
   id: Id;
   includeAuthor?: boolean | null;
   includeSpace?: boolean | null;
+  includeProject?: boolean | null;
   includeResourceHub?: boolean | null;
   includeParentFolder?: boolean | null;
   includeReactions?: boolean | null;
@@ -2690,6 +2697,7 @@ export interface FilesGetInput {
   includeAuthor?: boolean;
   includeResourceHub?: boolean;
   includeSpace?: boolean;
+  includeProject?: boolean;
   includeParentFolder?: boolean;
   includeReactions?: boolean;
   includePermissions?: boolean;
@@ -2838,6 +2846,7 @@ export interface LinksGetInput {
   id: Id;
   includeAuthor?: boolean;
   includeSpace?: boolean;
+  includeProject?: boolean;
   includeResourceHub?: boolean;
   includeParentFolder?: boolean;
   includeReactions?: boolean;
@@ -2974,6 +2983,7 @@ export interface ProjectsGetInput {
   includeContributors?: boolean | null;
   includeGoal?: boolean | null;
   includeKeyResources?: boolean | null;
+  includeResourceHub?: boolean | null;
   includeLastCheckIn?: boolean | null;
   includeMilestones?: boolean | null;
   includePermissions?: boolean | null;
@@ -3175,6 +3185,7 @@ export interface ProjectsSearchPotentialContributorsResult {
 export interface ResourceHubsGetInput {
   id: Id;
   includeSpace?: boolean | null;
+  includeProject?: boolean | null;
   includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includePermissions?: boolean | null;
