@@ -19,7 +19,10 @@ defmodule Operately.Billing do
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.EnforceLimits
   alias Operately.Billing.LimitBreachAlerting
+  alias Operately.Billing.NearLimitAlerting
   alias Operately.Billing.Overview
+  alias Operately.Companies.Company
+  alias Operately.People.Person
   alias Operately.Billing.Polar.Operations.CustomerStateSync
   alias Operately.Billing.Polar.ProductMapper
   alias Operately.Billing.ProductCatalogEntry
@@ -42,6 +45,22 @@ defmodule Operately.Billing do
   defdelegate active_member_count(company), to: Operately.Billing.Usage
   defdelegate company_storage_bytes(company), to: Operately.Billing.Usage
   defdelegate check_storage_limit(company, requested_delta), to: Operately.Billing.Usage
+
+  def list_alert_recipients(%Company{} = company) do
+    alias Operately.Access.{Binding, Context, GroupMembership}
+
+    Repo.all(
+      from p in Person,
+        join: m in GroupMembership, on: m.person_id == p.id,
+        join: b in Binding, on: b.group_id == m.group_id,
+        join: ctx in Context, on: ctx.id == b.context_id,
+        where: p.company_id == ^company.id,
+        where: p.suspended == false and is_nil(p.suspended_at),
+        where: ctx.company_id == ^company.id and b.access_level >= ^Binding.admin_access(),
+        order_by: [asc: fragment("lower(?)", p.email), asc: p.id],
+        distinct: fragment("lower(?)", p.email)
+    )
+  end
 
   #
   # Billing accounts
@@ -80,6 +99,17 @@ defmodule Operately.Billing do
 
       {:error, reason} ->
         Logger.error("Failed to enqueue billing limit reached email for company #{company.id} and #{limit_key}: #{inspect(reason)}")
+        :ok
+    end
+  end
+
+  def maybe_enqueue_near_limit_warning_email(%Operately.Companies.Company{} = company, limit_key, previous_usage, opts \\ []) do
+    case NearLimitAlerting.maybe_enqueue_near_limit_warning_email(company, limit_key, previous_usage, opts) do
+      :ok ->
+        :ok
+
+      {:error, reason} ->
+        Logger.error("Failed to enqueue billing near-limit warning email for company #{company.id} and #{limit_key}: #{inspect(reason)}")
         :ok
     end
   end

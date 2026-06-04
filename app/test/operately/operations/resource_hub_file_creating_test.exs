@@ -72,6 +72,25 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
         refute_enqueued worker: Operately.Billing.LimitBreachAlertEmailWorker
       end)
     end
+
+    test "enqueues a near-limit warning email when uploaded storage reaches 90 percent", ctx do
+      enable_billing(ctx.company)
+      threshold = Operately.Billing.EnforceLimits.near_limit_threshold(Operately.Billing.Plans.storage_limit_bytes(:free))
+
+      {:ok, _blob} = Operately.Blobs.update_blob(ctx.blob1, %{size: 1})
+
+      blob_fixture(%{
+        company_id: ctx.company.id,
+        author_id: ctx.creator.id,
+        status: :uploaded,
+        size: threshold - 1
+      })
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, _file} = create_file(ctx, false, [])
+        assert length(all_enqueued(worker: Operately.Billing.NearLimitAlertEmailWorker)) == 1
+      end)
+    end
   end
 
   describe "notifications" do

@@ -5,7 +5,6 @@ defmodule Operately.Billing.LimitBreachAlerting do
   alias Operately.Billing.EnforceLimits
   alias Operately.Billing.EnforceLimits.LimitStatus
   alias Operately.Billing.LimitBreachAlertEmailWorker
-  alias Operately.Companies
   alias Operately.Companies.Company
 
   @valid_limit_keys [:member_count]
@@ -32,8 +31,7 @@ defmodule Operately.Billing.LimitBreachAlerting do
   end
 
   def recipients(%Company{} = company) do
-    (Companies.list_admins(company) ++ Companies.list_owners(company))
-    |> Enum.uniq_by(&String.downcase(&1.email))
+    Billing.list_alert_recipients(company)
   end
 
   def limit_status(company, limit_key, opts \\ [])

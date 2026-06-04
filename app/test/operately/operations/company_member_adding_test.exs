@@ -11,6 +11,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   alias Operately.Billing
   alias Operately.Billing.EnforceLimits.LimitError
   alias Operately.Billing.LimitBreachAlertEmailWorker
+  alias Operately.Billing.NearLimitAlertEmailWorker
   alias Operately.People
   alias Operately.People.Person
   alias Operately.Groups
@@ -57,6 +58,16 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, _changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, company, @member_attrs)
       assert length(all_enqueued(worker: LimitBreachAlertEmailWorker)) == 1
+    end)
+  end
+
+  test "CompanyMemberAdding enqueues a near-limit warning email at 90 percent of the member limit", ctx do
+    company = enable_billing(ctx.company)
+    fill_company_to_member_count(company, 17)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, _changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, company, @member_attrs)
+      assert length(all_enqueued(worker: NearLimitAlertEmailWorker)) == 1
     end)
   end
 
@@ -236,7 +247,11 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   defp fill_company_to_one_below_member_limit(company) do
-    needed_people = max(19 - Billing.active_member_count(company), 0)
+    fill_company_to_member_count(company, 19)
+  end
+
+  defp fill_company_to_member_count(company, target_count) do
+    needed_people = max(target_count - Billing.active_member_count(company), 0)
 
     if needed_people > 0 do
       Enum.each(1..needed_people, fn index ->

@@ -67,6 +67,11 @@ defmodule OperatelyWeb.EmailPreview do
     preview :member_limit, label: "Member Limit"
   end
 
+  group "billing-near-limit-warning", module: Previews.BillingNearLimitWarning do
+    preview :member_limit, label: "Member Limit"
+    preview :storage_limit, label: "Storage Limit"
+  end
+
   get "/*_path" do
     OperatelyWeb.EmailPreview.Router.call(conn, __MODULE__)
   end

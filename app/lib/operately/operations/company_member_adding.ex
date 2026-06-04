@@ -20,6 +20,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
 
       case result do
         {:ok, changes} ->
+          Billing.maybe_enqueue_near_limit_warning_email(company, :member_count, previous_member_count)
           Billing.maybe_enqueue_limit_reached_email(company, :member_count, previous_member_count)
           {:ok, changes}
 
