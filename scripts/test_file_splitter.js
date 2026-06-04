@@ -54,9 +54,7 @@ class FileGroup {
     this.totalSize = 0;
   }
 
-  addFile(file) {
-    const fileSize = fs.statSync(file).size;
-
+  addFile(file, fileSize) {
     this.files.push(file);
     this.totalSize += fileSize;
   }
@@ -75,9 +73,9 @@ class FileGroupManager {
     this.groups = new Array(count).fill(null).map(() => new FileGroup());
   }
 
-  addFile(file) {
+  addFile(file, fileSize) {
     const smallestGroup = this.findSmallestGroup();
-    smallestGroup.addFile(file);
+    smallestGroup.addFile(file, fileSize);
   }
 
   findSmallestGroup() {
@@ -122,7 +120,10 @@ function splitFiles(files, split) {
 
   const groupManager = new FileGroupManager(split.total);
 
-  files.forEach((file) => groupManager.addFile(file));
+  files
+    .map((file) => ({ file, size: fs.statSync(file).size }))
+    .sort((a, b) => b.size - a.size)
+    .forEach(({ file, size }) => groupManager.addFile(file, size));
 
   return groupManager.getFilesFromGroup(split.index);
 }
