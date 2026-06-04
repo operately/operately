@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
       status: Operately.Projects.Project.status(project) |> Atom.to_string(),
       success_status: Atom.to_string(project.success_status),
-      goal_id: project.goal_id && OperatelyWeb.Paths.goal_id(project.goal_id),
+      goal_id: project.goal_id && OperatelyWeb.Paths.goal_id(project.goal_id)
     }
   end
 
@@ -33,13 +33,14 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone),
       permissions: OperatelyWeb.Api.Serializer.serialize(project.permissions),
       key_resources: OperatelyWeb.Api.Serializer.serialize(project.key_resources),
+      resource_hub: OperatelyWeb.Api.Serializer.serialize(project.resource_hub),
       access_levels: OperatelyWeb.Api.Serializer.serialize(project.access_levels, level: :full),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(project.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(project.notifications),
       state: Operately.Projects.Project.state(project) |> Atom.to_string(),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(project.subscription_list),
       task_statuses: OperatelyWeb.Api.Serializer.serialize(project.task_statuses),
-      tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: project.tasks_kanban_state}),
+      tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: project.tasks_kanban_state})
     })
   end
 

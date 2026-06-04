@@ -10,12 +10,15 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const [resourceHub, nodes] = await Promise.all([
-    resource_hubs.get({
-      id: params.id,
-      includeSpace: true,
-      includePermissions: true,
-      includePotentialSubscribers: true,
-    }).then((res) => res.resourceHub!),
+    resource_hubs
+      .get({
+        id: params.id,
+        includeSpace: true,
+        includeProject: true,
+        includePermissions: true,
+        includePotentialSubscribers: true,
+      })
+      .then((res) => res.resourceHub!),
     resource_hubs.listNodes({
       resourceHubId: params.id,
       includeCommentsCount: true,
