@@ -38,6 +38,13 @@ defmodule Operately.Support.Features.BillingSteps do
     |> Factory.log_in_person(:member)
   end
 
+  step :given_another_billing_enabled_company_exists, ctx do
+    ctx = Factory.add_company(ctx, :second_company, ctx.account, name: "Beta Labs")
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.second_company, "billing")
+
+    Map.put(ctx, :second_company, company)
+  end
+
   step :seed_active_billing_catalog, ctx do
     products = %{
       team_monthly: create_active_product("prod_team_monthly", "team", "monthly").polar_product_id,
@@ -88,6 +95,17 @@ defmodule Operately.Support.Features.BillingSteps do
     UI.visit(ctx, OperatelyWeb.Paths.company_billing_path(ctx.company) <> "?checkout_id=#{checkout_id}")
   end
 
+  step :assert_billing_pick_company_page_is_open, ctx, attrs do
+    assert Browser.current_path(ctx.session) == "/billing/pick-company"
+    plan = String.capitalize(attrs.plan)
+    billing_period = String.capitalize(attrs.billing_period)
+
+    ctx
+    |> UI.assert_has(testid: "billing-pick-company-page")
+    |> UI.assert_text("Select a company")
+    |> UI.assert_text("Selected plan: #{plan} (#{billing_period})")
+  end
+
   step :assert_billing_overview_page_is_open, ctx do
     ctx
     |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company))
@@ -108,10 +126,7 @@ defmodule Operately.Support.Features.BillingSteps do
 
   step :assert_plan_selection_page_is_open, ctx, attrs do
     expected_path = billing_plan_selection_path(ctx.company, attrs.plan, attrs.billing_period)
-    expected_base_path = billing_plan_selection_base_path(ctx.company)
-    current_path = Browser.current_path(ctx.session)
-
-    assert current_path in [expected_path, expected_base_path]
+    wait_for_billing_plan_selection_page(ctx.session, expected_path, billing_plan_selection_base_path(ctx.company))
 
     ctx
     |> UI.assert_has(testid: "company-billing-plan-selection-page")
@@ -121,6 +136,14 @@ defmodule Operately.Support.Features.BillingSteps do
     UI.find(ctx, [testid: billing_plan_card_test_id(attrs.plan, attrs.billing_period)], fn card ->
       UI.assert_text(card, "Selected")
     end)
+  end
+
+  step :assert_plan_selection_page_is_open_for_company, ctx, attrs do
+    company = Map.fetch!(ctx, attrs.company)
+    wait_for_billing_plan_selection_page(ctx.session, billing_plan_selection_path(company, attrs.plan, attrs.billing_period), billing_plan_selection_base_path(company))
+
+    ctx
+    |> UI.assert_has(testid: "company-billing-plan-selection-page")
   end
 
   step :assert_no_pending_checkout_is_recorded, ctx do
@@ -170,6 +193,20 @@ defmodule Operately.Support.Features.BillingSteps do
 
   step :click_change_plan, ctx do
     UI.click_button(ctx, "Change plan")
+  end
+
+  step :select_company_from_billing_picker, ctx, company_name do
+    company = Map.fetch!(ctx, company_name)
+
+    UI.click_text(ctx, company.name)
+  end
+
+  step :click_cancel_plan, ctx do
+    UI.click_button(ctx, "Cancel plan")
+  end
+
+  step :click_reactivate_plan, ctx do
+    UI.click_button(ctx, "Reactivate plan")
   end
 
   step :assert_billing_redirect_was_captured, ctx, expected_url do
@@ -231,6 +268,32 @@ defmodule Operately.Support.Features.BillingSteps do
     end)
   end
 
+  step :assert_cancellation_scheduled, ctx do
+    attempts(ctx, 10, fn ->
+      account = Billing.get_billing_account_by_company(ctx.company)
+
+      assert account.cancel_at_period_end == true
+
+      ctx
+      |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company))
+      |> UI.assert_text("Cancellation scheduled")
+      |> UI.assert_text("Reactivate plan")
+    end)
+  end
+
+  step :assert_plan_reactivated, ctx do
+    attempts(ctx, 10, fn ->
+      account = Billing.get_billing_account_by_company(ctx.company)
+
+      assert account.cancel_at_period_end == false
+
+      ctx
+      |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company))
+      |> UI.assert_text("Plan reactivated")
+      |> UI.assert_text("Cancel plan")
+    end)
+  end
+
   step :assert_billing_entry_is_hidden_on_company_admin_page, ctx do
     ctx
     |> UI.visit(OperatelyWeb.Paths.company_admin_path(ctx.company))
@@ -276,6 +339,18 @@ defmodule Operately.Support.Features.BillingSteps do
 
   defp billing_plan_card_test_id(plan, billing_period) do
     "billing-plan-card-#{plan}-#{billing_period}"
+  end
+
+  defp wait_for_billing_plan_selection_page(session, expected_path, expected_base_path) do
+    Browser.retry(fn ->
+      current_path = Browser.current_path(session)
+
+      if current_path in [expected_path, expected_base_path] do
+        {:ok, current_path}
+      else
+        {:error, :not_yet}
+      end
+    end)
   end
 
   defp wait_for_redirects(session, attempts \\ [50, 150, 250, 400, 1000])
