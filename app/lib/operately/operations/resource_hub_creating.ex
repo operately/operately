@@ -2,8 +2,9 @@ defmodule Operately.Operations.ResourceHubCreating do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
-  alias Operately.Access.Context
-  alias Operately.ResourceHubs.{ResourceHub, SpaceHub}
+  alias Operately.Access
+  alias Operately.Access.{Binding, Context}
+  alias Operately.ResourceHubs.ResourceHub
 
   def run(author, space, attrs) do
     Multi.new()
@@ -20,7 +21,7 @@ defmodule Operately.Operations.ResourceHubCreating do
         resource_hub_id: changes.resource_hub.id
       })
     end)
-    |> sync_access_from_space()
+    |> insert_bindings(space, attrs)
     |> Activities.insert_sync(author.id, :resource_hub_created, fn changes ->
       %{
         space_id: space.id,
@@ -33,9 +34,17 @@ defmodule Operately.Operations.ResourceHubCreating do
     |> Repo.extract_result(:resource_hub)
   end
 
-  defp sync_access_from_space(multi) do
-    Multi.run(multi, :resource_hub_access, fn _, %{resource_hub: hub} ->
-      {:ok, SpaceHub.sync_access_from_hub!(hub)}
-    end)
+  defp insert_bindings(multi, space, attrs) do
+    company_full_access = Access.get_group!(company_id: space.company_id, tag: :full_access)
+    company_members = Access.get_group!(company_id: space.company_id, tag: :standard)
+    space_full_access = Access.get_group!(group_id: space.id, tag: :full_access)
+    space_members = Access.get_group!(group_id: space.id, tag: :standard)
+
+    multi
+    |> Access.maybe_insert_anonymous_binding(space.company_id, attrs.anonymous_access_level)
+    |> Access.insert_binding(:company_full_access_binding, company_full_access, Binding.full_access())
+    |> Access.insert_binding(:company_members_binding, company_members, attrs.company_access_level)
+    |> Access.insert_binding(:space_full_access_binding, space_full_access, Binding.full_access())
+    |> Access.insert_binding(:space_members_binding, space_members, attrs.space_access_level)
   end
 end

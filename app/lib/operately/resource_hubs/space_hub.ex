@@ -6,8 +6,10 @@ defmodule Operately.ResourceHubs.SpaceHub do
   alias Operately.Repo
   alias Operately.ResourceHubs.ResourceHub
 
+  @default_name "Documents & Files"
+
   def sync_access_from_space(space_id) do
-    from(h in ResourceHub, where: h.space_id == ^space_id)
+    from(h in ResourceHub, where: h.space_id == ^space_id and h.name == ^@default_name)
     |> Repo.all()
     |> Enum.each(&sync_access_from_hub!/1)
 

@@ -37,13 +37,16 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     assert Access.get_context(resource_hub_id: resource_hub.id)
   end
 
-  test "ResourceHubCreating operation mirrors space access bindings", ctx do
+  test "ResourceHubCreating operation creates requested access bindings", ctx do
     {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
 
-    space_context = Access.get_context!(group_id: ctx.space.id)
     hub_context = Access.get_context!(resource_hub_id: resource_hub.id)
 
-    assert binding_signature(hub_context.id) == binding_signature(space_context.id)
+    assert_binding(hub_context, company_group(ctx, :anonymous), Binding.view_access())
+    assert_binding(hub_context, company_group(ctx, :full_access), Binding.full_access())
+    assert_binding(hub_context, company_group(ctx, :standard), Binding.comment_access())
+    assert_binding(hub_context, space_group(ctx, :full_access), Binding.full_access())
+    assert_binding(hub_context, space_group(ctx, :standard), Binding.edit_access())
   end
 
   test "ResourceHubCreating operation creates activity", ctx do
@@ -54,12 +57,10 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     assert Repo.one(query)
   end
 
-  defp binding_signature(context_id) do
-    from(b in Binding,
-      where: b.context_id == ^context_id,
-      select: {b.group_id, b.access_level, b.tag}
-    )
-    |> Repo.all()
-    |> Enum.sort()
+  defp assert_binding(context, group, access_level) do
+    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: access_level)
   end
+
+  defp company_group(ctx, tag), do: Access.get_group!(company_id: ctx.company.id, tag: tag)
+  defp space_group(ctx, tag), do: Access.get_group!(group_id: ctx.space.id, tag: tag)
 end
