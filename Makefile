@@ -168,6 +168,7 @@ test.setup.lint:
 	$(MAKE) test.up
 	$(MAKE) test.app.elixir.build
 	$(MAKE) test.app.node_modules
+	$(MAKE) test.turboui.node_modules
 
 test.setup.dialyzer:
 	$(MAKE) test.up
@@ -185,6 +186,7 @@ test.setup.ee:
 test.setup.js:
 	$(MAKE) test.up
 	$(MAKE) test.app.node_modules
+	$(MAKE) test.turboui.node_modules
 
 test.setup.features:
 	$(MAKE) test.build
@@ -209,8 +211,11 @@ test.up:
 		fi; \
 	done
 
-test.turboui.build:
+test.turboui.node_modules:
 	./devenv bash -c "cd turboui && npm install"
+
+test.turboui.build:
+	$(MAKE) test.turboui.node_modules
 	./devenv bash -c "cd turboui && MIX_ENV=test npm run build"
 
 test.app.build:
