@@ -118,6 +118,19 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
       assert contributor.role == :contributor
     end
 
+    test "syncs the project resource hub access", ctx do
+      resources = [%{resource_type: :project, resource_id: ctx.project.id, access_level: :comment_access}]
+
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+
+      hub = Operately.ResourceHubs.ProjectHub.get_project_hub(ctx.project.id)
+      hub_context = Access.get_context!(resource_hub_id: hub.id)
+      binding = Access.get_binding(hub_context, person_id: ctx.guest.id)
+
+      assert binding
+      assert binding.access_level == Binding.comment_access()
+    end
+
     test "does not duplicate contributor if already exists", ctx do
       resources = [%{resource_type: :project, resource_id: ctx.project.id, access_level: :edit_access}]
 

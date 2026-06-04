@@ -337,6 +337,17 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert res.project.key_resources == [Serializer.serialize(key_resource, level: :essential)]
     end
 
+    test "include_resource_hub", ctx do
+      project = create_project(ctx)
+      {:ok, hub} = Operately.ResourceHubs.ProjectHub.create_for_project(project)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.resource_hub == nil
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_resource_hub: true})
+      assert res.project.resource_hub == Serializer.serialize(hub, level: :essential)
+    end
+
     test "include_access_levels", ctx do
       space = group_fixture(ctx.person)
       project = create_project(ctx, %{

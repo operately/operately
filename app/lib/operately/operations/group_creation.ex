@@ -15,6 +15,7 @@ defmodule Operately.Operations.GroupCreation do
     Multi.new()
     |> Groups.insert_group(attrs)
     |> insert_creator(creator)
+    |> sync_default_resource_hub_access()
     |> insert_activity(creator)
     |> Repo.transaction()
     |> Repo.extract_result(:group)
@@ -34,6 +35,12 @@ defmodule Operately.Operations.GroupCreation do
       })
     end)
     |> Access.insert_binding(:creator_group_binding, creator_group, Binding.full_access())
+  end
+
+  defp sync_default_resource_hub_access(multi) do
+    Multi.run(multi, :resource_hub_access_after_creator, fn _, changes ->
+      {:ok, Operately.ResourceHubs.SpaceHub.sync_access_from_hub!(changes.resource_hub)}
+    end)
   end
 
   defp insert_activity(multi, creator) do

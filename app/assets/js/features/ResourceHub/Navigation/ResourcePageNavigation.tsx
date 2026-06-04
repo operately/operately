@@ -5,14 +5,15 @@ import { Resource } from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
+import { resourceHubParentItem } from "./resourceHubNavigation";
+
 export function ResourcePageNavigation({ resource }: { resource: Resource }) {
   const paths = usePaths();
   assertPresent(resource.resourceHub, "resourceHub must be present in document");
-  assertPresent(resource.resourceHub.space, "space must be present in document.resourceHub");
   const path = getPathToResource(resource);
 
   let items = [
-    { to: paths.spacePath(resource.resourceHub.space.id!), label: resource.resourceHub.space.name! },
+    resourceHubParentItem(paths, resource.resourceHub),
     { to: paths.resourceHubPath(resource.resourceHub.id!), label: resource.resourceHub.name! },
   ];
 

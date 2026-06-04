@@ -10,12 +10,13 @@ defmodule Operately.Operations.ResourceHubParentFolderEditing do
     |> Activities.insert_sync(author.id, :resource_hub_parent_folder_edited, fn _changes ->
       %{
         company_id: author.company_id,
-        space_id: resource.space.id,
+        space_id: resource.resource_hub.space_id,
+        project_id: resource.resource_hub.project_id,
         resource_hub_id: resource.node.resource_hub_id,
         node_id: resource.node.id,
         new_folder_id: new_folder_id,
         resource_id: resource.id,
-        resource_type: Atom.to_string(resource.node.type),
+        resource_type: Atom.to_string(resource.node.type)
       }
     end)
     |> Repo.transaction()

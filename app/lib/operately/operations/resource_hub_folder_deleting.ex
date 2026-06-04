@@ -11,9 +11,10 @@ defmodule Operately.Operations.ResourceHubFolderDeleting do
       %{
         company_id: author.company_id,
         space_id: folder.resource_hub.space_id,
+        project_id: folder.resource_hub.project_id,
         resource_hub_id: folder.resource_hub.id,
         node_id: folder.node_id,
-        folder_id: folder.id,
+        folder_id: folder.id
       }
     end)
     |> Repo.transaction()
