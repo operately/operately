@@ -93,7 +93,7 @@ blocks:
             - make test.dialyzer
 
         - name: Unit Tests
-          parallelism: 4
+          parallelism: 2
           commands:
             - make test.setup.unit
             - make test.mix.unit INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
