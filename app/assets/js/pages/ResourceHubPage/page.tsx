@@ -39,12 +39,5 @@ function PageNavigation() {
   const { resourceHub } = useLoadedData();
   const paths = usePaths();
 
-  assertPresent(resourceHub.space, "space must be present in resourceHub");
-
-  return (
-    <Paper.Navigation
-      testId="navigation"
-      items={[{ to: paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! }]}
-    />
-  );
+  return <Paper.Navigation testId="navigation" items={[Hub.resourceHubParentItem(paths, resourceHub)]} />;
 }
