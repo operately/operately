@@ -123,10 +123,7 @@ defmodule Operately.Notifications.Subscriber do
         {s.person.id, from_subscription(s)}
       end)
 
-    potential_subs =
-      Enum.into(resource_hub_child.resource_hub.space.members, %{}, fn p ->
-        {p.id, from_person(p)}
-      end)
+    potential_subs = resource_hub_child_potential_subscribers(resource_hub_child)
 
     merge_subs_and_potential_subs(subs, potential_subs)
   end
@@ -141,6 +138,23 @@ defmodule Operately.Notifications.Subscriber do
 
   defp from_person(person = %Person{}) do
     build_struct(person, person.title)
+  end
+
+  defp resource_hub_child_potential_subscribers(resource_hub_child) do
+    hub = resource_hub_child.resource_hub
+
+    cond do
+      Ecto.assoc_loaded?(hub.project) && hub.project ->
+        hub.project.contributors
+        |> from_project_contributor()
+        |> Enum.into(%{}, fn subscriber -> {subscriber.person.id, subscriber} end)
+
+      Ecto.assoc_loaded?(hub.space) && hub.space ->
+        Enum.into(hub.space.members, %{}, fn person -> {person.id, from_person(person)} end)
+
+      true ->
+        %{}
+    end
   end
 
   defp from_goal_reviewer(reviewer = %Person{}) do

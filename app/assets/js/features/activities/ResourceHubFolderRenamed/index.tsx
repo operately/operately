@@ -4,8 +4,9 @@ import type { ActivityContentResourceHubFolderRenamed } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { assertPresent } from "@/utils/assertions";
-import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, folderLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubFolderRenamed: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -34,13 +35,12 @@ const ResourceHubFolderRenamed: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
     const folder = folderLink(data.folder!);
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, "renamed the", folder, "folder");
     } else {
-      return feedTitle(activity, "renamed the", folder, "folder in the", space, "space");
+      return feedTitle(activity, "renamed the", folder, "folder", ...resourceHubParentScope(data, page));
     }
   },
 

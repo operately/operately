@@ -1,8 +1,9 @@
 import type { ActivityContentResourceHubFolderDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubFolderDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,14 +29,18 @@ const ResourceHubFolderDeleted: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
     const resourceHub = resourceHubLink(data.resourceHub!);
     const folder = data.folder!;
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, `deleted the "${folder.name}" folder from`, resourceHub);
     } else {
-      return feedTitle(activity, `deleted the "${folder.name}" folder from`, resourceHub, "in the", space, "space");
+      return feedTitle(
+        activity,
+        `deleted the "${folder.name}" folder from`,
+        resourceHub,
+        ...resourceHubParentScope(data, page),
+      );
     }
   },
 

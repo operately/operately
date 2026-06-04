@@ -3,21 +3,23 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
 
   alias Operately.Repo
   alias Operately.ResourceHubs.Document
+  alias OperatelyEmail.Emails.ResourceHubParent
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
     {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [
-      preload: [:node, :space, :resource_hub],
+      preload: [:node, resource_hub: [:project, :space]],
       with_deleted: true,
     ])
+    parent = ResourceHubParent.from_resource(document)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: document.space.name, who: author, action: "deleted a document: #{document.node.name}")
+    |> subject(where: parent.name, who: author, action: "deleted a document: #{document.node.name}")
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:cta_url, OperatelyWeb.Paths.resource_hub_path(company, document.resource_hub) |> OperatelyWeb.Paths.to_url())
@@ -29,12 +31,9 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
     company = Operately.Repo.preload(author, :company).company
 
     {:ok, document} =
-      Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :resource_hub, :space], with_deleted: true])
+      Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, resource_hub: [:project, :space]], with_deleted: true])
 
     %{
-      parent_id: document.space.id,
-      parent_type: :space,
-      parent_name: document.space.name,
       headline: "deleted the document \"#{document.node.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
@@ -43,5 +42,6 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
       occurred_at: activity.inserted_at,
       coalesce_key: nil
     }
+    |> Map.merge(ResourceHubParent.fields(document))
   end
 end

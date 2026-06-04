@@ -6,8 +6,9 @@ import type { Activity } from "@/models/activities";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
-import { feedTitle, fileLink, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, fileLink, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubFileCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -42,26 +43,23 @@ const ResourceHubFileCreated: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    assertPresent(data.space, "space must be present in FileCreated activity");
     assertPresent(data.files, "files must be present in FileCreated activity");
-    assertPresent(data.resourceHub, "resourceHub must be present in FileCreated activity");
 
-    const space = spaceLink(data.space);
-    const resourceHub = resourceHubLink(data.resourceHub);
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "Docs & Files";
 
     if (data.files.length === 1 && data.files[0]) {
       const file = fileLink(data.files[0]);
 
-      if (page === "space") {
+      if (page === "space" || page === "project") {
         return feedTitle(activity, "added a file:", file);
       } else {
-        return feedTitle(activity, "added a file to", resourceHub, "in the", space, "space:", file);
+        return feedTitle(activity, "added a file to", resourceHub, ...resourceHubParentScope(data, page, ":"), file);
       }
     } else {
-      if (page === "space") {
+      if (page === "space" || page === "project") {
         return feedTitle(activity, "added some files:");
       } else {
-        return feedTitle(activity, "added some files to", resourceHub, "in the", space, "space:");
+        return feedTitle(activity, "added some files to", resourceHub, ...resourceHubParentScope(data, page, ":"));
       }
     }
   },

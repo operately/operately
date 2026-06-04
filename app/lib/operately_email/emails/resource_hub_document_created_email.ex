@@ -3,23 +3,25 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
 
   alias Operately.Repo
   alias Operately.ResourceHubs.Document
+  alias OperatelyEmail.Emails.ResourceHubParent
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
     {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [
-      preload: [:node, :space],
+      preload: [:node, resource_hub: [:project, :space]],
     ])
 
-    copied_document = get_copied_document(activity.content.copied_document_id)
-    action = get_action(activity.content.copied_document_id)
+    copied_document = get_copied_document(activity.content["copied_document_id"])
+    action = get_action(activity.content["copied_document_id"])
+    parent = ResourceHubParent.from_resource(document)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: document.space.name, who: author, action: "#{action} a document: #{document.node.name}")
+    |> subject(where: parent.name, who: author, action: "#{action} a document: #{document.node.name}")
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:copied_document, copied_document)
@@ -40,14 +42,11 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
 
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :space]])
+    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, resource_hub: [:project, :space]]])
 
     action = get_action(activity.content["copied_document_id"])
 
     %{
-      parent_id: document.space.id,
-      parent_type: :space,
-      parent_name: document.space.name,
       headline: "#{action} the document \"#{document.node.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
@@ -56,5 +55,6 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
       occurred_at: activity.inserted_at,
       coalesce_key: nil
     }
+    |> Map.merge(ResourceHubParent.fields(document))
   end
 end

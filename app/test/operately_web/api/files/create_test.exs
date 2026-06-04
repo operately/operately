@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         blob = blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
 
         assert {code, res} = mutation(ctx.conn, [:files, :create], %{
