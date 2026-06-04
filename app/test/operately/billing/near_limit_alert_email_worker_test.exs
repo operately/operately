@@ -80,4 +80,16 @@ defmodule Operately.Billing.NearLimitAlertEmailWorkerTest do
 
     refute_email_sent()
   end
+
+  test "discards jobs for invalid limit keys", ctx do
+    assert {:discard, "invalid_job_args"} =
+             perform_job(NearLimitAlertEmailWorker, %{
+               company_id: ctx.company.id,
+               limit_key: "unknown_limit",
+               current_usage: 18,
+               limit: 20
+             })
+
+    refute_email_sent()
+  end
 end

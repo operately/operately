@@ -14,6 +14,17 @@ defmodule Operately.Billing.NearLimitAlert do
 
   def valid_limit_keys, do: @valid_limit_keys
 
+  def parse_limit_key(limit_key) when limit_key in @valid_limit_keys, do: {:ok, limit_key}
+
+  def parse_limit_key(limit_key) when is_binary(limit_key) do
+    case Enum.find(@valid_limit_keys, &(Atom.to_string(&1) == limit_key)) do
+      nil -> :error
+      parsed_limit_key -> {:ok, parsed_limit_key}
+    end
+  end
+
+  def parse_limit_key(_limit_key), do: :error
+
   def changeset(alert, attrs) do
     alert
     |> cast(attrs, [:company_id, :limit_key, :sent_at])

@@ -3,12 +3,13 @@ defmodule Operately.Billing.NearLimitAlertEmailWorker do
 
   require Logger
 
+  alias Operately.Billing.NearLimitAlert
   alias Operately.Billing.NearLimitAlerting
   alias Operately.Companies
   alias OperatelyEmail.Emails.BillingNearLimitWarningEmail
 
   def perform(%Oban.Job{args: %{"company_id" => company_id, "limit_key" => limit_key, "current_usage" => current_usage, "limit" => limit}}) do
-    with {:ok, limit_key} <- parse_limit_key(limit_key),
+    with {:ok, limit_key} <- NearLimitAlert.parse_limit_key(limit_key),
          {:ok, current_usage} <- parse_integer(current_usage),
          {:ok, limit} <- parse_integer(limit) do
       company = Companies.get_company!(company_id)
@@ -35,10 +36,6 @@ defmodule Operately.Billing.NearLimitAlertEmailWorker do
 
       reraise(error, __STACKTRACE__)
   end
-
-  defp parse_limit_key(limit_key) when limit_key in ["member_count", :member_count], do: {:ok, :member_count}
-  defp parse_limit_key(limit_key) when limit_key in ["storage_bytes", :storage_bytes], do: {:ok, :storage_bytes}
-  defp parse_limit_key(_limit_key), do: :error
 
   defp parse_integer(value) when is_integer(value), do: {:ok, value}
 
