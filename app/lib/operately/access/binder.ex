@@ -92,10 +92,8 @@ defmodule Operately.Access.Binder do
   defp sync_project_hub_access(%Context{project_id: nil}, result), do: result
 
   defp sync_project_hub_access(%Context{project_id: project_id}, {:ok, _} = result) do
-    case Operately.ResourceHubs.ProjectHub.sync_access_from_project(project_id) do
-      {:ok, _} -> result
-      error -> error
-    end
+    {:ok, _} = Operately.ResourceHubs.ProjectHub.sync_access_from_project(project_id)
+    result
   end
 
   defp sync_project_hub_access(_context, result), do: result
