@@ -10,19 +10,23 @@ defmodule Operately.Demo do
 
     resources = Resources.init()
 
-    {:ok, context} = Operately.Repo.transaction(fn ->
-      resources
-      |> Company.create_company(account, company_name, title)
-      |> People.create_people(data[:people])
-      |> People.create_outside_collaborators(data[:outside_collaborators])
-      |> Spaces.create_spaces(data[:spaces])
-      |> Goals.create_goals(data[:goals])
-      |> Projects.create_projects(data[:projects])
-      |> Discussions.create_discussions(data[:discussions])
-      |> ResourceHubs.create_documents(data[:documents])
-    end)
+    {:ok, context} =
+      Operately.Activities.without_notification_dispatch(fn ->
+        Operately.Repo.transaction(fn ->
+          resources
+          |> Company.create_company(account, company_name, title)
+          |> People.create_people(data[:people])
+          |> People.create_outside_collaborators(data[:outside_collaborators])
+          |> Spaces.create_spaces(data[:spaces])
+          |> Goals.create_goals(data[:goals])
+          |> Projects.create_projects(data[:projects])
+          |> Discussions.create_discussions(data[:discussions])
+          |> ResourceHubs.create_documents(data[:documents])
+        end)
+      end)
 
-    :timer.sleep(2000) # wait for background job to finish
+    # wait for background job to finish
+    :timer.sleep(2000)
     mark_all_notifications_as_read(context)
 
     {:ok, context.company}
@@ -39,5 +43,4 @@ defmodule Operately.Demo do
       raise "Demo builder is not allowed"
     end
   end
-
 end
