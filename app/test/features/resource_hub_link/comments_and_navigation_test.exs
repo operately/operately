@@ -1,4 +1,4 @@
-defmodule Operately.Features.ResourceHubLink.ActionsTest do
+defmodule Operately.Features.ResourceHubLink.CommentsAndNavigationTest do
   use Operately.FeatureCase
   use Operately.Support.Features.ResourceHubLinkCase
 
@@ -9,36 +9,6 @@ defmodule Operately.Features.ResourceHubLink.ActionsTest do
   }
 
   describe "Link actions" do
-    feature "edit link", ctx do
-      link = %{
-        title: "Link (edited)",
-        url: "http://localhost:3000",
-        notes: "This is a link (also edited)",
-        previous_title: @link.title,
-        previous_url: @link.url
-      }
-
-      ctx
-      |> Steps.visit_resource_hub_page()
-      |> Steps.create_link(@link)
-      |> Steps.edit_link(link)
-      |> Steps.assert_link_content(link)
-      |> Steps.assert_link_edited_on_space_feed(link)
-      |> Steps.assert_link_edited_on_company_feed(link)
-      |> Steps.assert_link_edited_notification_sent(link.title)
-      |> Steps.assert_link_edited_email_sent(link.title)
-    end
-
-    feature "editing a link without any changes doesn't make an API call", ctx do
-      ctx
-      |> Steps.visit_resource_hub_page()
-      |> Steps.create_link(@link)
-      |> Steps.edit_link(@link)
-      |> Steps.assert_link_content(@link)
-      |> Steps.refute_link_edited_on_space_feed(@link)
-      |> Steps.refute_link_edited_on_company_feed(@link)
-    end
-
     feature "link navigation works", ctx do
       ctx
       |> Steps.given_link_within_nested_folders_exists()
