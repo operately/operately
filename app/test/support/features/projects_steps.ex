@@ -197,20 +197,22 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :given_project_is_resumed, ctx do
-    {:ok, project} = Operately.Operations.ProjectResuming.run(ctx.champion, ctx.project, %{
-      content: %{
-        "type" => "doc",
-        "content" => [
-          %{
-            "type" => "paragraph",
-            "content" => [%{"type" => "text", "text" => "Resuming project"}]
-          }
-        ]
-      },
-      send_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :comment_thread
-    })
+    {:ok, project} =
+      Operately.Operations.ProjectResuming.run(ctx.champion, ctx.project, %{
+        content: %{
+          "type" => "doc",
+          "content" => [
+            %{
+              "type" => "paragraph",
+              "content" => [%{"type" => "text", "text" => "Resuming project"}]
+            }
+          ]
+        },
+        send_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
+
     Map.put(ctx, :project, project)
   end
 
@@ -306,10 +308,12 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_next_check_in_scheduled_at_is_next_friday, ctx do
     project = Operately.Repo.reload(ctx.project)
-    next_friday = Operately.Time.calculate_next_weekly_check_in(
-      ctx.project.next_check_in_scheduled_at,
-      DateTime.utc_now()
-    )
+
+    next_friday =
+      Operately.Time.calculate_next_weekly_check_in(
+        ctx.project.next_check_in_scheduled_at,
+        DateTime.utc_now()
+      )
 
     assert Date.compare(project.next_check_in_scheduled_at, next_friday) == :eq
     ctx

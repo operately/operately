@@ -1,7 +1,7 @@
 SHELL := /bin/bash  # Use bash syntax
 MAKEFLAGS += -s     # Silent mode
 
-.PHONY: test cli.build cli.test cli.test.unit cli.test.e2e
+.PHONY: test cli.build cli.test cli.test.unit cli.test.e2e app.node_modules turboui.node_modules cli.node_modules
 
 REPORTS_DIR ?= $(PWD)/app/testreports
 SCREENSHOTS_DIR ?= $(PWD)/app/screenshots
@@ -59,12 +59,21 @@ dev.up:
 	$(MAKE) dev.seed.env
 	./devenv up
 
+app.node_modules:
+	./devenv bash -c "./scripts/ensure_node_modules.sh app app"
+
+turboui.node_modules:
+	./devenv bash -c "./scripts/ensure_node_modules.sh turboui turboui"
+
+cli.node_modules:
+	./scripts/ensure_node_modules.sh cli cli
+
 dev.build:
 	$(MAKE) dev.up
 	./devenv bash -c "cd app && mix local.hex --force --if-missing"
 	./devenv bash -c "cd app && mix deps.get"
 	./devenv bash -c "cd app && mix compile"
-	./devenv bash -c "cd app && npm install"
+	$(MAKE) app.node_modules
 	$(MAKE) turboui.build
 	$(MAKE) dev.db.create
 	$(MAKE) test.db.create
@@ -76,22 +85,26 @@ dev.server:
 	./devenv bash -c "cd app && iex -S mix phx.server"
 
 turboui.storybook:
+	$(MAKE) turboui.node_modules
 	./devenv bash -c "cd turboui && npm run storybook"
 
 turboui.build:
 	@rm -rf turboui/dist
-	./devenv bash -c "cd turboui && npm install && npm run build"
+	$(MAKE) turboui.node_modules
+	./devenv bash -c "cd turboui && npm run build"
 
 turboui.test:
-	./devenv bash -c "cd turboui && npm install && npm run test"
+	$(MAKE) turboui.node_modules
+	./devenv bash -c "cd turboui && npm run test"
 
 cli.build:
-	./devenv bash -c "cd cli && npm install && npm run build"
+	$(MAKE) cli.node_modules
+	./devenv bash -c "cd cli && npm run build"
 
 cli.test: cli.test.unit
 
 cli.test.unit:
-	npm --prefix cli install
+	$(MAKE) cli.node_modules
 	npm --prefix cli test
 
 cli.test.e2e: test.init
@@ -101,7 +114,8 @@ cli.test.e2e: test.init
 
 gen.cli.catalog:
 	$(MAKE) gen.api.catalog
-	./devenv bash -c "cd cli && npm install && npm run gen:commands"
+	$(MAKE) cli.node_modules
+	./devenv bash -c "cd cli && npm run gen:commands"
 
 dev.shell:
 	./devenv shell
@@ -161,6 +175,36 @@ test.build:
 	$(MAKE) test.db.create
 	$(MAKE) test.db.migrate
 
+test.setup.turboui:
+	$(MAKE) test.up
+
+test.setup.lint:
+	$(MAKE) test.up
+	$(MAKE) test.app.elixir.build
+	$(MAKE) test.app.node_modules
+	$(MAKE) test.turboui.node_modules
+
+test.setup.dialyzer:
+	$(MAKE) test.up
+	$(MAKE) test.app.elixir.build
+
+test.setup.unit:
+	$(MAKE) test.up
+	$(MAKE) test.app.elixir.build
+	$(MAKE) test.db.create
+	$(MAKE) test.db.migrate
+
+test.setup.ee:
+	$(MAKE) test.setup.unit
+
+test.setup.js:
+	$(MAKE) test.up
+	$(MAKE) test.app.node_modules
+	$(MAKE) test.turboui.node_modules
+
+test.setup.features:
+	$(MAKE) test.build
+
 test.up:
 	$(MAKE) test.init
 	$(MAKE) test.seed.env
@@ -181,18 +225,27 @@ test.up:
 		fi; \
 	done
 
+test.turboui.node_modules:
+	$(MAKE) turboui.node_modules
+
 test.turboui.build:
-	./devenv bash -c "cd turboui && npm install"
+	$(MAKE) test.turboui.node_modules
 	./devenv bash -c "cd turboui && MIX_ENV=test npm run build"
 
 test.app.build:
+	$(MAKE) test.app.elixir.build
+	$(MAKE) test.app.js.build
+
+test.app.elixir.build:
 	./devenv bash -c "cd app && MIX_ENV=test mix local.hex --force --if-missing"
 	./devenv bash -c "cd app && MIX_ENV=test mix deps.get"
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
-	$(MAKE) test.app.js.build
+
+test.app.node_modules:
+	$(MAKE) app.node_modules
 
 test.app.js.build:
-	./devenv bash -c "cd app && MIX_ENV=test npm install"
+	$(MAKE) test.app.node_modules
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
 	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
 
@@ -221,7 +274,7 @@ test.ee:
 	./devenv bash -c "./scripts/run_ee_tests.js"
 
 test.mix.unit: test.init
-	./devenv bash -c "./scripts/run_unit_tests.js"
+	./devenv bash -c "./scripts/run_unit_tests.js $(INDEX) $(TOTAL)"
 
 test.mix.features: test.init
 	./devenv bash -c "./scripts/run_feature_tests.js $(INDEX) $(TOTAL)"
@@ -261,7 +314,8 @@ test.tsc.lint:
 
 test.cli.catalog.sync:
 	$(MAKE) gen.api.catalog
-	./devenv bash -c "cd cli && npm install && npm run check:catalog"
+	$(MAKE) cli.node_modules
+	./devenv bash -c "cd cli && npm run check:catalog"
 
 test.pr.name:
 	ruby scripts/pr-name-check

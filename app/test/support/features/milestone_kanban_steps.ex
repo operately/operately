@@ -3,8 +3,27 @@ defmodule Operately.Support.Features.MilestoneKanbanSteps do
 
   alias Operately.Repo
   alias Operately.Tasks.Task
+  alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.UI
   alias OperatelyWeb.Paths
+
+  step :setup, ctx do
+    ctx = ProjectSteps.create_project(ctx, name: "Kanban Project")
+
+    ctx =
+      ctx
+      |> Map.put(:creator, ctx.champion)
+      |> Factory.add_project_milestone(:milestone, :project, title: "Alpha Milestone")
+      |> Factory.add_project_milestone(:another_milestone, :project, title: "Beta Milestone")
+      |> Factory.add_project_task(:task, :milestone, name: "First Task")
+      |> Factory.add_project_task(:second_task, :milestone, name: "Second Task")
+      |> Factory.add_project_contributor(:teammate, :project, :as_person)
+      |> ProjectSteps.login()
+
+    status_values = Enum.map(ctx.project.task_statuses, & &1.value)
+
+    Map.put(ctx, :status_values, status_values)
+  end
 
   step :visit_kanban_page, ctx do
     ctx
@@ -99,6 +118,7 @@ defmodule Operately.Support.Features.MilestoneKanbanSteps do
 
   step :delete_status, ctx, opts do
     value = Keyword.fetch!(opts, :value)
+
     replacement_value =
       Keyword.get(opts, :replacement_value) ||
         Enum.find(ctx.status_values, fn v -> v != value end) ||

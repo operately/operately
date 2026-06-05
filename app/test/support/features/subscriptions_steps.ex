@@ -1,6 +1,12 @@
 defmodule Operately.Support.Features.SubscriptionsSteps do
   use Operately.FeatureCase
 
+  step :setup, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space)
+  end
+
   #
   # Project
   #
@@ -176,5 +182,31 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
 
     ctx
     |> UI.assert_text("#{text} will be notified when someone comments on this #{attrs.resource}.")
+  end
+
+  step :exercise_current_subscriptions_widget, ctx, resource do
+    ctx
+    |> assert_current_subscribers(%{count: 5, resource: resource})
+    |> open_current_subscriptions_form()
+    |> toggle_person_checkbox(ctx.bob)
+    |> toggle_person_checkbox(ctx.jane)
+    |> save_people_selection()
+    |> assert_current_subscribers(%{count: 3, resource: resource})
+    |> unsubscribe()
+    |> assert_current_subscribers(%{count: 2, resource: resource})
+    |> open_current_subscriptions_form()
+    |> deselect_everyone()
+    |> save_people_selection()
+    |> assert_current_subscribers(%{count: 0, resource: resource})
+    |> open_current_subscriptions_form()
+    |> select_everyone()
+    |> close_form_without_saving()
+    |> assert_current_subscribers(%{count: 0, resource: resource})
+    |> subscribe()
+    |> assert_current_subscribers(%{count: 1, resource: resource})
+    |> open_current_subscriptions_form()
+    |> select_everyone()
+    |> save_people_selection()
+    |> assert_current_subscribers(%{count: 5, resource: resource})
   end
 end
