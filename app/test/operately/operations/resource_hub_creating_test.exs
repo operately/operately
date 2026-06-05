@@ -37,29 +37,16 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     assert Access.get_context(resource_hub_id: resource_hub.id)
   end
 
-  test "ResourceHubCreating operation creates bindings to company", ctx do
+  test "ResourceHubCreating operation creates requested access bindings", ctx do
     {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
 
-    context = Access.get_context!(resource_hub_id: resource_hub.id)
+    hub_context = Access.get_context!(resource_hub_id: resource_hub.id)
 
-    full_access = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
-    members = Access.get_group!(company_id: ctx.company.id, tag: :standard)
-    anonymous = Access.get_group!(company_id: ctx.company.id, tag: :anonymous)
-
-    assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.comment_access())
-    assert Access.get_binding(group_id: anonymous.id, context_id: context.id, access_level: Binding.view_access())
-  end
-
-  test "ResourceHubCreating operation creates bindings to space", ctx do
-    {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
-
-    context = Access.get_context!(resource_hub_id: resource_hub.id)
-    full_access = Access.get_group!(group_id: ctx.space.id, tag: :full_access)
-    members = Access.get_group!(group_id: ctx.space.id, tag: :standard)
-
-    assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.edit_access())
+    assert_binding(hub_context, company_group(ctx, :anonymous), Binding.view_access())
+    assert_binding(hub_context, company_group(ctx, :full_access), Binding.full_access())
+    assert_binding(hub_context, company_group(ctx, :standard), Binding.comment_access())
+    assert_binding(hub_context, space_group(ctx, :full_access), Binding.full_access())
+    assert_binding(hub_context, space_group(ctx, :standard), Binding.edit_access())
   end
 
   test "ResourceHubCreating operation creates activity", ctx do
@@ -69,4 +56,11 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
 
     assert Repo.one(query)
   end
+
+  defp assert_binding(context, group, access_level) do
+    assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: access_level)
+  end
+
+  defp company_group(ctx, tag), do: Access.get_group!(company_id: ctx.company.id, tag: tag)
+  defp space_group(ctx, tag), do: Access.get_group!(group_id: ctx.space.id, tag: tag)
 end

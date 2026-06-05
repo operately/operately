@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
   inputs do
     field :id, :id, null: false
     field? :include_space, :boolean, null: true
+    field? :include_project, :boolean, null: true
     field? :include_nodes, :boolean, null: true
     field? :include_potential_subscribers, :boolean, null: true
     field? :include_permissions, :boolean, null: true
@@ -38,25 +39,29 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
   end
 
   defp load(ctx, inputs, company_read_only) do
-    ResourceHub.get(ctx.me, id: inputs.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs, company_read_only),
-    ])
+    ResourceHub.get(ctx.me,
+      id: inputs.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs, company_read_only)
+      ]
+    )
   end
 
   defp preload(inputs) do
     q = from(n in Node, where: is_nil(n.parent_folder_id)) |> Node.preload_content()
 
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_space: :space,
-      include_nodes: [nodes: q],
-    ])
+      include_project: :project,
+      include_nodes: [nodes: q]
+    )
   end
 
   defp after_load(inputs, company_read_only) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_potential_subscribers: &ResourceHub.load_potential_subscribers/1,
-      include_permissions: &ResourceHub.set_permissions(&1, company_read_only),
-    ])
+      include_permissions: &ResourceHub.set_permissions(&1, company_read_only)
+    )
   end
 end
