@@ -7,6 +7,8 @@ defmodule Operately.Activities do
   alias Operately.Activities.NotificationDispatcher
   alias Operately.Activities.ListActivitiesOperation
 
+  @notification_dispatch_suppressed_key {__MODULE__, :notification_dispatch_suppressed}
+
   def get_activity!(id) do
     Repo.get!(Activity, id) |> cast_content()
   end
@@ -24,6 +26,17 @@ defmodule Operately.Activities do
     activity
     |> Activity.changeset(attrs)
     |> Repo.update()
+  end
+
+  def without_notification_dispatch(fun) when is_function(fun, 0) do
+    previous = Process.get(@notification_dispatch_suppressed_key, false)
+    Process.put(@notification_dispatch_suppressed_key, true)
+
+    try do
+      fun.()
+    after
+      Process.put(@notification_dispatch_suppressed_key, previous)
+    end
   end
 
   def insert_sync(multi, author_id, action, callback, opts \\ []) do
@@ -46,19 +59,31 @@ defmodule Operately.Activities do
   def dispatch_notification(multi, opts) do
     include_notification = Keyword.get(opts, :include_notification, true)
 
-    if include_notification do
-      dispatch_notification(multi)
+    if include_notification and not notification_dispatch_suppressed?() do
+      enqueue_notification_dispatch(multi)
     else
       multi
     end
   end
 
   def dispatch_notification(multi) do
+    if notification_dispatch_suppressed?() do
+      multi
+    else
+      enqueue_notification_dispatch(multi)
+    end
+  end
+
+  defp enqueue_notification_dispatch(multi) do
     multi
     |> Ecto.Multi.run(:dispatch_notification, fn _repo, changes ->
       job = NotificationDispatcher.new(%{activity_id: changes.activity.id})
       Oban.insert(job)
     end)
+  end
+
+  defp notification_dispatch_suppressed? do
+    Process.get(@notification_dispatch_suppressed_key, false)
   end
 
   def build_content!(action, params) do
