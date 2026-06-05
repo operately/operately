@@ -40,20 +40,17 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cache restore app-deps
-          - cache restore app-build
-          - cache restore app-node-modules
           - cache restore turboui-node-modules
-          - cache restore turboui-dist
-          - make test.build
 
       jobs:
         - name: Turbo Lint
           commands:
+            - make test.setup.turboui
             - make turboui.build
 
         - name: Turbo Test
           commands:
+            - make test.setup.turboui
             - make turboui.test
 
       epilogue:
@@ -74,14 +71,15 @@ blocks:
           - cache restore app-deps
           - cache restore app-build
           - cache restore app-node-modules
+          - cache restore cli-node-modules
           - cache restore turboui-node-modules
           - cache restore turboui-dist
           - ./scripts/cache-fix-for-erlang
-          - make test.build
 
       jobs:
         - name: Lint
           commands:
+            - make test.setup.lint
             - make test.js.dead.code
             - make test.tsc.lint
             - make test.cli.catalog.sync
@@ -91,17 +89,29 @@ blocks:
 
         - name: Dialyzer
           commands:
+            - make test.setup.dialyzer
             - make test.dialyzer
 
         - name: Unit Tests
+          parallelism: 2
           commands:
-            - make test.mix.unit
+            - make test.setup.unit
+            - make test.mix.unit INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
+
+        - name: EE Tests
+          commands:
+            - make test.setup.ee
             - make test.ee
+
+        - name: JS Tests
+          commands:
+            - make test.setup.js
             - make test.npm
 
         - name: Features
           parallelism: 16
           commands:
+            - make test.setup.features
             - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
 
       epilogue:
