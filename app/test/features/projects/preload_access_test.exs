@@ -1,6 +1,7 @@
 defmodule Operately.Features.Projects.PreloadAccessTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectsCase
+
+  alias Operately.Support.Features.ProjectSteps, as: Steps
 
   describe "project page preload access" do
     setup ctx do

@@ -1,6 +1,9 @@
 defmodule Operately.Features.Goal.DetailsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.GoalCase
+
+  alias Operately.Support.Features.GoalSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "changing goal name", ctx do
     ctx

@@ -1,6 +1,10 @@
 defmodule Operately.Features.SpaceKanban.TaskMovesTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpaceKanbanCase
+  @moduletag login_as: :creator
+
+  alias Operately.Support.Features.SpaceKanbanSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "move task" do
     feature "move to a project from the slide-in sidebar", ctx do

@@ -326,12 +326,12 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
 
     assert champion_activity["content"]["project_id"] == imported_project["id"]
     assert champion_activity["content"]["new_champion_id"] == imported_member["id"]
-    assert (space_members_activity["content"]["members"] |> hd() |> Map.fetch!("person_id")) == imported_member["id"]
-    assert (goal_editing_activity["content"]["added_targets"] |> hd() |> Map.fetch!("id")) == imported_target_one["id"]
-    assert (goal_editing_activity["content"]["updated_targets"] |> hd() |> Map.fetch!("id")) == imported_target_two["id"]
-    assert (goal_editing_activity["content"]["deleted_targets"] |> hd() |> Map.fetch!("id")) == imported_target_three["id"]
+    assert space_members_activity["content"]["members"] |> hd() |> Map.fetch!("person_id") == imported_member["id"]
+    assert goal_editing_activity["content"]["added_targets"] |> hd() |> Map.fetch!("id") == imported_target_one["id"]
+    assert goal_editing_activity["content"]["updated_targets"] |> hd() |> Map.fetch!("id") == imported_target_two["id"]
+    assert goal_editing_activity["content"]["deleted_targets"] |> hd() |> Map.fetch!("id") == imported_target_three["id"]
     assert parent_folder_activity["content"]["resource_id"] == imported_document["id"]
-    assert (missing_admin_activity["content"]["people"] |> hd() |> Map.fetch!("id")) == ctx.missing_person_id
+    assert missing_admin_activity["content"]["people"] |> hd() |> Map.fetch!("id") == ctx.missing_person_id
 
     ctx
   end

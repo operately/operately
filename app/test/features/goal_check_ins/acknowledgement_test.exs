@@ -1,6 +1,9 @@
 defmodule Operately.Features.GoalChecksIns.AcknowledgementTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.GoalCheckInsCase
+
+  alias Operately.Support.Features.GoalCheckInsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "acknowledge a check-in in the web app", ctx do
     ctx

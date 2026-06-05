@@ -1,6 +1,7 @@
 defmodule Operately.Features.Projects.AiSidebarTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectsCase
+
+  alias Operately.Support.Features.ProjectSteps, as: Steps
 
   describe "ai sidebar" do
     setup ctx do

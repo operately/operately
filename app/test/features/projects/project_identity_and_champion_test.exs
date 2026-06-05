@@ -1,6 +1,7 @@
 defmodule Operately.Features.Projects.ProjectIdentityAndChampionTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectsCase
+
+  alias Operately.Support.Features.ProjectSteps, as: Steps
 
   setup ctx do
     ctx

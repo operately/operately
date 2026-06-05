@@ -1,6 +1,8 @@
 defmodule Operately.Features.CompanyAdmin.CompanySettingsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.CompanyAdminCase
+  alias Operately.Support.Features.CompanyAdminSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx, as: ctx[:role])
 
   set_app_config(:billing_enabled, true)
 

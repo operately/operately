@@ -1,6 +1,12 @@
 defmodule Operately.Features.ResourceHubDocument.DraftsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ResourceHubDocumentCase
+  use Operately.Support.ResourceHub.Deletion
+  use Operately.Support.ResourceHub.Comments
+  use Operately.Support.ResourceHub.Moving
+
+  alias Operately.Support.Features.ResourceHubDocumentSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   @document %{
     name: "My First Document",

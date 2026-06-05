@@ -1,6 +1,10 @@
 defmodule Operately.Features.SpaceKanban.Activities.DescriptionTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpaceKanbanCase
+  @moduletag login_as: :creator
+
+  alias Operately.Support.Features.SpaceKanbanSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "changing a task description creates an activity", ctx do
     ctx

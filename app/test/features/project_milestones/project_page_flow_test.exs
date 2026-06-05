@@ -1,6 +1,8 @@
 defmodule Operately.Features.ProjectMilestones.ProjectPageFlowTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectMilestonesCase
+  alias Operately.Support.Features.ProjectMilestonesSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "project timeline zero state", ctx do
     ctx

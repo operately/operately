@@ -1,6 +1,10 @@
 defmodule Operately.Features.SpaceKanban.Activities.AssignmentAndCreationTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpaceKanbanCase
+  @moduletag login_as: :creator
+
+  alias Operately.Support.Features.SpaceKanbanSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "changing a task assignee creates an activity", ctx do
     assignee_name = ctx.teammate.full_name

@@ -1,6 +1,8 @@
 defmodule Operately.Features.Projects.ProjectPageTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectsCase
+
+  alias Operately.Support.Features.ProjectSteps, as: Steps
+  alias Operately.Support.Features.ReviewSteps
 
   setup ctx do
     ctx

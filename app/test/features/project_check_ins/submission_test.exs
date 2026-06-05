@@ -1,6 +1,13 @@
 defmodule Operately.Features.ProjectCheckIns.SubmissionTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectCheckInsCase
+
+  alias Operately.Support.Features.ProjectCheckInsSteps, as: Steps
+
+  setup ctx do
+    ctx
+    |> Steps.given_a_project_exists()
+    |> Steps.log_in_as_champion()
+  end
 
   feature "submitting a check-in", ctx do
     values = %{status: "on_track", description: "This is a check-in."}

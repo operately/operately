@@ -1,6 +1,9 @@
 defmodule Operately.Features.GoalChecksIns.SubmissionTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.GoalCheckInsCase
+
+  alias Operately.Support.Features.GoalCheckInsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "check-in on a goal", ctx do
     params = %{

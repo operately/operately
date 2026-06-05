@@ -1,6 +1,8 @@
 defmodule Operately.Features.ProjectContributors.RemovalTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectContributorsCase
+  alias Operately.Support.Features.ProjectContributorsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "removing project contributors" do
     setup ctx do

@@ -1,6 +1,11 @@
 defmodule Operately.Features.SpaceKanban.NotificationsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpaceKanbanCase
+  @moduletag login_as: :creator
+
+  alias Operately.Support.Features.SpaceKanbanSteps, as: Steps
+  alias Operately.Support.Time
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "changing a task assignee sends notification and email to the new assignee", ctx do
     assignee_name = ctx.teammate.full_name

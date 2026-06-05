@@ -1,14 +1,16 @@
 defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.CompanyAdminCase
+  alias Operately.Support.Features.CompanyAdminSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx, as: ctx[:role])
 
   set_app_config(:billing_enabled, true)
 
   @tag role: :owner
   feature "near-limit usage does not show a company billing banner", ctx do
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_to_near_member_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_to_near_member_limit()
     |> Steps.visit_company_home_page()
     |> Steps.refute_company_billing_banner_visible()
   end
@@ -16,8 +18,8 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
   @tag role: :member
   feature "regular members see a blocked member-limit danger banner without a CTA", ctx do
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_beyond_member_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_beyond_member_limit()
     |> Steps.visit_company_home_page()
     |> Steps.assert_company_billing_banner_has_no_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
@@ -28,8 +30,8 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
   @tag role: :member
   feature "regular members see a blocked storage-limit danger banner without a CTA", ctx do
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_beyond_storage_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_beyond_storage_limit()
     |> Steps.visit_company_home_page()
     |> Steps.assert_company_billing_banner_has_no_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
@@ -40,8 +42,8 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
   @tag role: :owner
   feature "owner sees an urgent over-limit banner when the company is over the member limit", ctx do
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_beyond_member_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_beyond_member_limit()
     |> Steps.visit_company_home_page()
     |> Steps.assert_company_billing_banner_has_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
@@ -52,8 +54,8 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
   @tag role: :admin
   feature "company admin sees an urgent over-limit banner with a CTA when storage is over the limit", ctx do
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_beyond_storage_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_beyond_storage_limit()
     |> Steps.visit_company_home_page()
     |> Steps.assert_company_billing_banner_has_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
@@ -63,9 +65,9 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
   @tag role: :owner
   feature "mixed blocked and near-limit states show one urgent banner with both rows", ctx do
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_beyond_member_limit()
-    |> fill_company_to_near_storage_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_beyond_member_limit()
+    |> Steps.fill_company_to_near_storage_limit()
     |> Steps.visit_company_home_page()
     |> Steps.assert_company_billing_banner_has_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()

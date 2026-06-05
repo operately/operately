@@ -1,6 +1,9 @@
 defmodule Operately.Features.Spaces.PermissionsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpacesCase
+
+  alias Operately.Support.Features.SpacesSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "permissions" do
     feature "user with full access can see all action", ctx do

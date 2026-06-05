@@ -1,6 +1,8 @@
 defmodule Operately.Features.ProjectMilestones.ProjectPageNotificationsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectMilestonesCase
+  alias Operately.Support.Features.ProjectMilestonesSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "creator is automatically subscribed to milestone", ctx do
     name = "New Milestone"

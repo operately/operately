@@ -1,6 +1,9 @@
 defmodule Operately.Features.Discussions.CollaborationAndPermissionsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.DiscussionsCase
+
+  alias Operately.Support.Features.DiscussionsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "leave a comment on a discussion", ctx do
     ctx

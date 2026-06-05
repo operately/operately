@@ -1,6 +1,12 @@
 defmodule Operately.Features.ResourceHubFile.DeletionTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ResourceHubFileCase
+  use Operately.Support.ResourceHub.Deletion
+  use Operately.Support.ResourceHub.Comments
+  use Operately.Support.ResourceHub.Moving
+
+  alias Operately.Support.Features.ResourceHubFileSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "Delete" do
     feature "deleting file adds event to feed", ctx do

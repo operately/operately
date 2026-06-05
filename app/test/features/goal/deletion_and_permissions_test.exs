@@ -1,6 +1,9 @@
 defmodule Operately.Features.Goal.DeletionAndPermissionsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.GoalCase
+
+  alias Operately.Support.Features.GoalSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "deletion" do
     feature "deleting a goal with no subitems", ctx do

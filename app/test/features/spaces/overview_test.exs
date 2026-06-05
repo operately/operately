@@ -1,6 +1,9 @@
 defmodule Operately.Features.Spaces.OverviewTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpacesCase
+
+  alias Operately.Support.Features.SpacesSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "listing existing space", ctx do
     ctx

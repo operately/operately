@@ -1,6 +1,12 @@
 defmodule Operately.Features.ResourceHubLink.ResourceManagementTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ResourceHubLinkCase
+  use Operately.Support.ResourceHub.Deletion
+  use Operately.Support.ResourceHub.Comments
+  use Operately.Support.ResourceHub.Moving
+
+  alias Operately.Support.Features.ResourceHubLinkSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   @link %{
     title: "Link",

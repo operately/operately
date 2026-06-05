@@ -1,6 +1,9 @@
 defmodule Operately.Features.GlobalSearch.FilteringAndContextTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.GlobalSearchCase
+
+  alias Operately.Support.Features.GlobalSearchSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "search filters out done milestones", ctx do
     ctx

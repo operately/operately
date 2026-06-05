@@ -1,6 +1,11 @@
 defmodule Operately.Features.SpaceKanban.TaskCardsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpaceKanbanCase
+  @moduletag login_as: :creator
+
+  alias Operately.Support.Features.SpaceKanbanSteps, as: Steps
+  alias Operately.Support.Time
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "add a task inline in a column", ctx do
     [primary_status | _] = ctx.status_values
