@@ -25,15 +25,7 @@ defmodule Operately.Demo do
         end)
       end)
 
-    # wait for background job to finish
-    :timer.sleep(2000)
-    mark_all_notifications_as_read(context)
-
     {:ok, context.company}
-  end
-
-  defp mark_all_notifications_as_read(context) do
-    {:ok, _} = Operately.Notifications.mark_all_as_read(context.owner)
   end
 
   defp verify_if_demo_can_be_run do
