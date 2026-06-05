@@ -40,13 +40,15 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
 
     assert_email_sent(fn email ->
       email.to == [{"", ctx.first_assignee.email}] and
-        email.subject == "#{ctx.company.name}: Your assignments for today" and
+        email.subject == "#{ctx.company.name}: Your work for today" and
+        email.html_body =~ "Tasks, reminders, and reviews that need your attention today." and
+        email.text_body =~ "Tasks, reminders, and reviews that need your attention today." and
         email.html_body =~ "Shared urgent task"
     end)
 
     assert_email_sent(fn email ->
       email.to == [{"", ctx.second_assignee.email}] and
-        email.subject == "#{ctx.company.name}: Your assignments for today" and
+        email.subject == "#{ctx.company.name}: Your work for today" and
         email.html_body =~ "Shared urgent task"
     end)
   end
@@ -63,7 +65,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
 
     assert_email_sent(fn email ->
       email.to == [{"", ctx.first_assignee.email}] and
-        email.subject == "#{ctx.company.name}: Your assignments for today" and
+        email.subject == "#{ctx.company.name}: Your work for today" and
         email.html_body =~ "Shared urgent task" and
         email.html_body =~ "Due tomorrow"
     end)
@@ -82,7 +84,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
 
     assert_email_sent(fn email ->
       email.to == [{"", ctx.first_assignee.email}] and
-        email.subject == "#{ctx.company.name}: Your assignments for today" and
+        email.subject == "#{ctx.company.name}: Your work for today" and
         email.html_body =~ "Shared urgent task" and
         email.html_body =~ "Due tomorrow"
     end)
@@ -118,6 +120,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
     assert_email_sent(fn email ->
       email.to == [{"", ctx.first_assignee.email}] and
         email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "Reminder for today" and
         email.html_body =~ "Due in 3 days"
     end)
   end
@@ -138,6 +141,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
     assert_email_sent(fn email ->
       email.to == [{"", ctx.first_assignee.email}] and
         email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "Reminder for today" and
         email.html_body =~ "No due date"
     end)
   end
@@ -194,6 +198,7 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
     assert_email_sent(fn email ->
       email.to == [{"", ctx.first_assignee.email}] and
         email.html_body =~ "Shared urgent task" and
+        email.html_body =~ "Reminder for today" and
         email.html_body =~ "No due date"
     end)
   end

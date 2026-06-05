@@ -29,7 +29,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.Assignments do
       |> Mailer.new()
       |> Mailer.from("Operately")
       |> Mailer.to(person)
-      |> Mailer.subject("#{company.name}: Your assignments for today")
+      |> Mailer.subject("#{company.name}: Your work for today")
       |> Mailer.assign(:company, company)
       |> Mailer.assign(:urgent_groups, urgent_groups)
 
@@ -253,6 +253,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.Assignments do
       origin: origin,
       display_label: display_label,
       badge_label: badge_label,
+      detail_labels: Map.get(attrs, :detail_labels, [badge_label]),
       url: Map.fetch!(attrs, :url),
       due_date: Map.get(attrs, :due_date),
       due_status: Map.get(attrs, :due_status, :due_soon),
@@ -265,6 +266,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.Assignments do
       |> Map.drop([
         :display_label,
         :badge_label,
+        :detail_labels,
         :url,
         :due_date,
         :due_status,

@@ -20,7 +20,7 @@ defmodule Operately.Features.AssignmentsEmailTest do
 
     # Verify the email subject includes the company name
     company_name = ctx.company.name
-    expected_subject = "#{company_name}: Your assignments for today"
+    expected_subject = "#{company_name}: Your work for today"
     assert email.subject == expected_subject
 
     link = UI.Emails.find_link(email, "Submit weekly check-in")

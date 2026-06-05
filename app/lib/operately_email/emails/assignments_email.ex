@@ -11,6 +11,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   @due_soon_window_in_days 1
   @far_future_tuple {9999, 12, 31}
   @due_status_rank %{overdue: 0, due_today: 1, due_soon: 2, upcoming: 3, none: 4}
+  @reminder_due_today_label "Reminder for today"
 
   #
   # Sending out an email to remind people of their assignments.
@@ -27,7 +28,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
           |> new()
           |> from("Operately")
           |> to(person)
-          |> subject("#{company.name}: Your assignments for today")
+          |> subject("#{company.name}: Your work for today")
           |> assign(:company, company)
 
         email =
@@ -94,7 +95,6 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     |> Map.put(:due_status, due_status)
     |> Map.put(:due_status_label, due_status_label)
     |> Map.put(:display_label, assignment.action_label || assignment.name)
-    |> Map.put(:badge_label, due_status_label)
     |> Map.put(:url, Paths.to_url(assignment.path))
   end
 
@@ -106,9 +106,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
         :none
       end
 
-    assignment
-    |> Map.put(:category, category)
-    |> Map.put(:badge_label, assignment.due_status_label)
+    add_assignment_display_details(assignment, category)
   end
 
   defp assign_category(assignment, _mode) do
@@ -125,9 +123,14 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
         true -> :none
       end
 
+    add_assignment_display_details(assignment, category)
+  end
+
+  defp add_assignment_display_details(assignment, category) do
     assignment
     |> Map.put(:category, category)
     |> Map.put(:badge_label, assignment.due_status_label)
+    |> Map.put(:detail_labels, detail_labels(assignment))
   end
 
   defp group_assignments_by_origin([]), do: []
@@ -220,6 +223,16 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   end
 
   defp explicit_task_reminder_due?(_assignment), do: false
+
+  defp detail_labels(assignment) do
+    [reminder_detail_label(assignment), assignment.due_status_label]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq()
+  end
+
+  defp reminder_detail_label(assignment) do
+    if explicit_task_reminder_due?(assignment), do: @reminder_due_today_label
+  end
 
   defp task_assignment_category(assignment) when is_list(assignment.reminders) and assignment.reminders != [] do
     if task_reminder_due?(assignment), do: :due_soon, else: :none
