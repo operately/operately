@@ -23,6 +23,7 @@
 ## Coding Style & Naming Conventions 
 
 - Elixir: `mix format` with `app/.formatter.exs` (line_length 200). Modules under `Operately.*`. Tests end with `_test.exs`.
+- Always write clean code: work test-first by default, then keep names clear, functions focused, side effects explicit, control flow shallow, and error handling useful.
 - Agents should not wrap Elixir macros with parentheses unless explicitly requested. Keep keyword-style macro calls such as `field`, `field?`, `object`, `enum`, `plug`, etc. in their existing form (e.g., `field :company, :company`) across schemas, API modules, and similar contexts. Example of what not to do: do not rewrite `field :company, :company` to `field(:company, :company)` or `object :task` to `object(:task), do: ...`.
 - Agents should not format Elixir code beyond the scope of the requested change or bug fix; only format the lines directly related to the current work.
 - TypeScript/JS: Prettier (`printWidth: 120`, `trailingComma: all`). Check: `npm --prefix app run prettier:check`; fix: `make js.fmt.fix`.
