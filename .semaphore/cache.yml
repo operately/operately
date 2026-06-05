@@ -15,7 +15,7 @@ blocks:
           commands:
             - checkout
             - make test.build
-            - npm --prefix cli install
+            - make cli.node_modules
             - cache store app-deps app/deps
             - cache store app-build app/_build
             - cache store app-node-modules app/node_modules

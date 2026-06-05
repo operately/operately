@@ -50,7 +50,7 @@ defmodule Operately.Support.Features.BillingSteps do
       team_monthly: create_active_product("prod_team_monthly", "team", "monthly").polar_product_id,
       team_yearly: create_active_product("prod_team_yearly", "team", "yearly").polar_product_id,
       business_monthly: create_active_product("prod_business_monthly", "business", "monthly").polar_product_id,
-      business_yearly: create_active_product("prod_business_yearly", "business", "yearly").polar_product_id,
+      business_yearly: create_active_product("prod_business_yearly", "business", "yearly").polar_product_id
     }
 
     Map.put(ctx, :billing_products, products)
@@ -73,7 +73,7 @@ defmodule Operately.Support.Features.BillingSteps do
     query =
       URI.encode_query(%{
         plan: attrs.plan,
-        billing_period: attrs.billing_period,
+        billing_period: attrs.billing_period
       })
 
     UI.visit(ctx, "/billing/intent?" <> query)
@@ -321,7 +321,7 @@ defmodule Operately.Support.Features.BillingSteps do
         provider: "polar",
         plan_family: plan_family,
         billing_interval: billing_interval,
-        polar_product_id: polar_product_id,
+        polar_product_id: polar_product_id
       })
 
     {:ok, product} = Billing.set_active_product(product)
@@ -393,7 +393,7 @@ defmodule Operately.Support.Features.BillingSteps do
         "status" => "active",
         "product_id" => product_id,
         "current_period_end" => "2026-06-30T00:00:00Z",
-        "cancel_at_period_end" => false,
+        "cancel_at_period_end" => false
       }
       |> Map.merge(overrides)
 
@@ -418,10 +418,10 @@ defmodule Operately.Support.Features.BillingSteps do
       event_type: "customer.state_changed",
       payload: %{
         "type" => "customer.state_changed",
-        "data" => %{"external_id" => company_id},
+        "data" => %{"external_id" => company_id}
       },
       received_at: DateTime.utc_now() |> DateTime.truncate(:second),
-      status: :pending,
+      status: :pending
     })
     |> Repo.insert!()
   end
