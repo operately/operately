@@ -1,6 +1,8 @@
 defmodule Operately.Features.Subscriptions.ProjectCheckInTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SubscriptionsCase
+  alias Operately.Support.Features.SubscriptionsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "Project Check-in" do
     setup ctx do
@@ -49,7 +51,7 @@ defmodule Operately.Features.Subscriptions.ProjectCheckInTest do
       |> Steps.fill_out_check_in_form()
       |> Steps.select_all_people()
       |> Steps.submit_check_in_form()
-      |> test_current_subscriptions_widget("check-in")
+      |> Steps.exercise_current_subscriptions_widget("check-in")
     end
   end
 end

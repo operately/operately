@@ -1,8 +1,10 @@
 defmodule Operately.Features.Subscriptions.ProjectRetrospectiveTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SubscriptionsCase
+  alias Operately.Support.Features.SubscriptionsSteps, as: Steps
 
   alias Operately.Support.Features.ProjectRetrospectiveSteps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "Project Retrospective" do
     setup ctx do
@@ -62,7 +64,7 @@ defmodule Operately.Features.Subscriptions.ProjectRetrospectiveTest do
       |> Steps.select_all_people()
       |> ProjectRetrospectiveSteps.submit_retrospective()
       |> Steps.go_to_project_retrospective_page()
-      |> test_current_subscriptions_widget("project retrospective")
+      |> Steps.exercise_current_subscriptions_widget("project retrospective")
     end
   end
 end

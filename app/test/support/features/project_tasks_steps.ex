@@ -6,6 +6,15 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   alias Operately.Access.Binding
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.ProjectSteps
+
+  step :setup, ctx do
+    ctx
+    |> ProjectSteps.create_project(name: "Test Project")
+    |> Factory.add_project_milestone(:milestone, :project)
+    |> setup_contributor()
+    |> ProjectSteps.login()
+  end
 
   step :setup_contributor, ctx do
     ctx

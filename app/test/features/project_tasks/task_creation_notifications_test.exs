@@ -1,6 +1,8 @@
 defmodule Operately.Features.ProjectTasks.TaskCreationNotificationsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectTasksCase
+  alias Operately.Support.Features.ProjectTasksSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   @tag login_as: :contributor
   feature "creating a task notifies the champion and assignee", ctx do

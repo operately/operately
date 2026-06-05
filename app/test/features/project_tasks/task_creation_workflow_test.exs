@@ -1,6 +1,8 @@
 defmodule Operately.Features.ProjectTasks.TaskCreationWorkflowTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectTasksCase
+  alias Operately.Support.Features.ProjectTasksSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   @tag login_as: :contributor
   feature "creating task automatically subscribes creator", ctx do

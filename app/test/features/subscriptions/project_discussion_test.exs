@@ -1,6 +1,8 @@
 defmodule Operately.Features.Subscriptions.ProjectDiscussionTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SubscriptionsCase
+  alias Operately.Support.Features.SubscriptionsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "Project Discussion" do
     setup ctx do
@@ -53,7 +55,7 @@ defmodule Operately.Features.Subscriptions.ProjectDiscussionTest do
       |> Steps.fill_out_discussion()
       |> Steps.select_all_people()
       |> Steps.save_project_discussion()
-      |> test_current_subscriptions_widget("discussion")
+      |> Steps.exercise_current_subscriptions_widget("discussion")
     end
   end
 end

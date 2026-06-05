@@ -1,6 +1,8 @@
 defmodule Operately.Features.ProjectTasks.TaskCommentsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectTasksCase
+  alias Operately.Support.Features.ProjectTasksSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   @tag login_as: :commenter
   feature "post comment to task", ctx do
