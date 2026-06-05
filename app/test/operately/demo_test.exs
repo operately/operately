@@ -71,7 +71,7 @@ defmodule Operately.DemoTest do
           check_in: nil,
           milestones: [
             %{title: "M1", status: :done},
-            %{title: "M2", status: :pending},
+            %{title: "M2", status: :pending}
           ]
         },
       ]
