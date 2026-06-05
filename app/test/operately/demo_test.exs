@@ -1,7 +1,10 @@
 defmodule Operately.DemoTest do
   use Operately.DataCase
+  use Oban.Testing, repo: Operately.Repo
 
   import Operately.PeopleFixtures
+
+  alias Operately.Activities.NotificationDispatcher
 
   test "it creates a demo company without failures" do
     account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
@@ -9,6 +12,16 @@ defmodule Operately.DemoTest do
     assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
     assert %Operately.Companies.Company{} = company
     assert Operately.Companies.get_company_by_name("Acme Inc.")
+  end
+
+  test "it does not enqueue activity notification jobs while building the demo" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
+      assert %Operately.Companies.Company{} = company
+      assert all_enqueued(worker: NotificationDispatcher) == []
+    end)
   end
 
   test "most demo people have descriptions" do
@@ -30,6 +43,7 @@ defmodule Operately.DemoTest do
     goals = Operately.Goals.list_goals(%{company_id: company.id, space_id: nil})
 
     assert length(goals) > 0
+
     assert Enum.all?(goals, fn goal ->
              description =
                goal.description
