@@ -1,6 +1,7 @@
 defmodule Operately.Features.Projects.PagePermissionsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectsCase
+
+  alias Operately.Support.Features.ProjectSteps, as: Steps
 
   describe "project page permissions" do
     setup ctx, do: Steps.setup(ctx)

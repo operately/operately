@@ -1,14 +1,11 @@
 defmodule Operately.Features.ProjectContributors.RoleAssignmentsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectContributorsCase
+  alias Operately.Support.Features.ProjectContributorsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "adding project contributors" do
-    setup ctx do
-      ctx
-      |> Steps.given_a_person_exists(name: "Michael Scott")
-      |> Steps.given_a_person_exists(name: "Dwight Schrute")
-      |> Steps.given_a_person_exists(name: "Jim Halpert")
-    end
+    setup ctx, do: Steps.setup_default_people(ctx)
 
     @tag login_as: :champion
     feature "add a new champion", ctx do

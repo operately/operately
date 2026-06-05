@@ -1,6 +1,11 @@
 defmodule Operately.Features.ResourceHubFolder.DeletionAndMovementTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ResourceHubFolderCase
+  use Operately.Support.ResourceHub.Deletion
+  use Operately.Support.ResourceHub.Moving
+
+  alias Operately.Support.Features.ResourceHubFolderSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "Delete" do
     feature "deleting folder adds event to feed", ctx do

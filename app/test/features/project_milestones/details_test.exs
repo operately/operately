@@ -1,10 +1,10 @@
 defmodule Operately.Features.ProjectMilestones.DetailsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectMilestonesCase
+  alias Operately.Support.Features.ProjectMilestonesSteps, as: Steps
+  alias Operately.Support.Features.ProjectSteps
 
-  setup ctx do
-    Steps.given_that_a_milestone_exists(ctx, "My milestone")
-  end
+  setup ctx, do: Steps.setup(ctx)
+  setup ctx, do: Steps.setup_milestone(ctx)
 
   feature "assert newly created milestone page", ctx do
     due_date = get_milestone_due_date(ctx.milestone)

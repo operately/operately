@@ -16,9 +16,11 @@ defmodule Operately.Support.Features.ProfileSteps do
     person = person_fixture_with_account(%{company_id: company.id, full_name: "Miles Davis", manager_id: manager.id})
 
     space = group_fixture(manager, %{company_id: company.id})
-    {:ok, _} = Operately.Groups.add_members(manager, space.id, [
-      %{id: person.id, access_level: Operately.Access.Binding.full_access()}
-    ])
+
+    {:ok, _} =
+      Operately.Groups.add_members(manager, space.id, [
+        %{id: person.id, access_level: Operately.Access.Binding.full_access()}
+      ])
 
     report_1 = person_fixture_with_account(%{company_id: company.id, full_name: "Bill Evans", manager_id: person.id})
     report_2 = person_fixture_with_account(%{company_id: company.id, full_name: "Herbie Hancock", manager_id: person.id})
@@ -37,7 +39,7 @@ defmodule Operately.Support.Features.ProfileSteps do
       reports: reports,
       peers: peers,
       company: company,
-      space: space,
+      space: space
     })
   end
 
@@ -116,20 +118,22 @@ defmodule Operately.Support.Features.ProfileSteps do
   step :given_goals_exist_for_person, ctx do
     peer = hd(ctx.peers)
 
-    goal1 = goal_fixture(ctx.person, %{
-      company_id: ctx.company.id,
-      space_id: ctx.company.company_space_id,
-      reviewer_id: peer.id,
-      name: "Improve support first response time",
-    })
+    goal1 =
+      goal_fixture(ctx.person, %{
+        company_id: ctx.company.id,
+        space_id: ctx.company.company_space_id,
+        reviewer_id: peer.id,
+        name: "Improve support first response time"
+      })
 
-    goal2 = goal_fixture(ctx.person, %{
-      company_id: ctx.company.id,
-      space_id: ctx.company.company_space_id,
-      champion_id: peer.id,
-      reviewer_id: ctx.person.id,
-      name: "Increase customer satisfaction",
-    })
+    goal2 =
+      goal_fixture(ctx.person, %{
+        company_id: ctx.company.id,
+        space_id: ctx.company.company_space_id,
+        champion_id: peer.id,
+        reviewer_id: ctx.person.id,
+        name: "Increase customer satisfaction"
+      })
 
     Map.merge(ctx, %{goals: [goal1, goal2], goal1: goal1, goal2: goal2})
   end
@@ -137,23 +141,25 @@ defmodule Operately.Support.Features.ProfileSteps do
   step :given_projects_exist_for_person, ctx do
     peer = hd(ctx.peers)
 
-    project1 = project_fixture(%{
-      company_id: ctx.company.id,
-      group_id: ctx.company.company_space_id,
-      creator_id: ctx.person.id,
-      champion_id: ctx.person.id,
-      reviewer_id: peer.id,
-      name: "Project 1",
-    })
+    project1 =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        group_id: ctx.company.company_space_id,
+        creator_id: ctx.person.id,
+        champion_id: ctx.person.id,
+        reviewer_id: peer.id,
+        name: "Project 1"
+      })
 
-    project2 = project_fixture(%{
-      company_id: ctx.company.id,
-      group_id: ctx.company.company_space_id,
-      creator_id: ctx.person.id,
-      champion_id: peer.id,
-      reviewer_id: ctx.person.id,
-      name: "Project 2",
-    })
+    project2 =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        group_id: ctx.company.company_space_id,
+        creator_id: ctx.person.id,
+        champion_id: peer.id,
+        reviewer_id: ctx.person.id,
+        name: "Project 2"
+      })
 
     Map.merge(ctx, %{projects: [project1, project2], project1: project1, project2: project2})
   end
@@ -167,18 +173,18 @@ defmodule Operately.Support.Features.ProfileSteps do
     ctx =
       ctx
       |> Map.put(:creator, ctx.person)
-      |> Factory.add_project(project_key, :space, [
+      |> Factory.add_project(project_key, :space,
         name: project_name,
         champion: :person,
         reviewer: :manager
-      ])
+      )
 
     ctx =
       ctx
-      |> Factory.add_project_task(task_key, nil, [
+      |> Factory.add_project_task(task_key, nil,
         name: task_name,
         project_id: ctx[project_key].id
-      ])
+      )
       |> Factory.add_task_assignee(:"#{task_key}_assignee", task_key, :person)
 
     ctx
@@ -220,19 +226,19 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :given_goal_with_user_as_reviewer_exists, ctx do
-    Factory.add_goal(ctx, :goal, :space, [
+    Factory.add_goal(ctx, :goal, :space,
       name: "Improve support first response time",
       reviewer: :person,
       champion: :manager
-    ])
+    )
   end
 
   step :given_project_with_user_as_reviewer_exists, ctx do
-    Factory.add_project(ctx, :project, :space, [
+    Factory.add_project(ctx, :project, :space,
       name: "Deploy new feature",
       reviewer: :person,
       champion: :manager
-    ])
+    )
   end
 
   step :given_a_goal_is_closed, ctx, opts \\ [] do
@@ -371,7 +377,7 @@ defmodule Operately.Support.Features.ProfileSteps do
   step :given_space_task_assigned_to_person, ctx, task_name: task_name do
     ctx
     |> Map.put(:creator, ctx.person)
-    |> Factory.create_space_task(:space_task, :space, [name: task_name])
+    |> Factory.create_space_task(:space_task, :space, name: task_name)
     |> Factory.add_task_assignee(:space_task_assignee, :space_task, :person)
   end
 
@@ -424,9 +430,10 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :given_person_is_member_of_space, ctx do
-    {:ok, _} = Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.secret_space.id, [
-      %{ id: ctx.person.id, access_level: Binding.view_access() }
-    ])
+    {:ok, _} =
+      Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.secret_space.id, [
+        %{id: ctx.person.id, access_level: Binding.view_access()}
+      ])
 
     ctx
   end

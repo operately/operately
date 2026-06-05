@@ -1,6 +1,11 @@
 defmodule Operately.Features.MilestoneKanban.TasksTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.MilestoneKanbanCase
+  @moduletag login_as: :champion
+
+  alias Operately.Support.Features.MilestoneKanbanSteps, as: Steps
+  alias Operately.Support.Time
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "add a task inline in a column", ctx do
     [primary_status | _] = ctx.status_values

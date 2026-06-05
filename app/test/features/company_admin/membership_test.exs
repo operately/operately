@@ -1,6 +1,8 @@
 defmodule Operately.Features.CompanyAdmin.MembershipTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.CompanyAdminCase
+  alias Operately.Support.Features.CompanyAdminSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx, as: ctx[:role])
 
   set_app_config(:billing_enabled, true)
 
@@ -111,15 +113,15 @@ defmodule Operately.Features.CompanyAdmin.MembershipTest do
   @tag role: :admin
   feature "restoring a removed member is blocked when the company is already full", ctx do
     ctx
-    |> enable_billing_for_company()
+    |> Steps.enable_billing_for_company()
     |> Steps.given_a_removed_company_member_exists()
-    |> fill_company_to_member_limit()
+    |> Steps.fill_company_to_member_limit()
     |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.open_restore_people_page()
     |> Steps.assert_removed_person_is_listed()
     |> Steps.restore_company_member()
     |> Steps.assert_limit_guidance_has_no_upgrade_cta()
-    |> assert_member_still_suspended(:suspended)
+    |> Steps.assert_member_still_suspended(:suspended)
   end
 
   @tag role: :member

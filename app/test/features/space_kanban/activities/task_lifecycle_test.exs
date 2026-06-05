@@ -1,6 +1,10 @@
 defmodule Operately.Features.SpaceKanban.Activities.TaskLifecycleTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpaceKanbanCase
+  @moduletag login_as: :creator
+
+  alias Operately.Support.Features.SpaceKanbanSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "deleting a task creates an activity", ctx do
     status_value = hd(ctx.status_values)

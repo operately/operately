@@ -1,6 +1,9 @@
 defmodule Operately.Features.Goal.PreloadAccessTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.GoalCase
+
+  alias Operately.Support.Features.GoalSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "goal page preload access" do
     feature "goal page hides space navigation when space is not accessible", ctx do

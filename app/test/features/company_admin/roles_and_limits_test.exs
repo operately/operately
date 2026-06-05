@@ -1,6 +1,8 @@
 defmodule Operately.Features.CompanyAdmin.RolesAndLimitsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.CompanyAdminCase
+  alias Operately.Support.Features.CompanyAdminSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx, as: ctx[:role])
 
   set_app_config(:billing_enabled, true)
 
@@ -13,13 +15,13 @@ defmodule Operately.Features.CompanyAdmin.RolesAndLimitsTest do
     }
 
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_to_member_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_to_member_limit()
     |> Steps.open_company_team_page()
     |> Steps.invite_company_member(params)
     |> Steps.assert_limit_guidance_has_upgrade_cta()
     |> Steps.follow_limit_guidance_upgrade_cta()
-    |> assert_no_person_added(params.email)
+    |> Steps.assert_no_person_added(params.email)
   end
 
   @tag role: :owner
@@ -37,15 +39,15 @@ defmodule Operately.Features.CompanyAdmin.RolesAndLimitsTest do
     }
 
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_to_one_below_member_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_to_one_below_member_limit()
     |> Steps.open_company_team_page()
     |> Steps.invite_company_member(first_params)
-    |> assert_limit_reached_email(:member_count, [ctx.creator.email, ctx.owner.email])
+    |> Steps.assert_member_limit_reached_email([ctx.creator.email, ctx.owner.email])
     |> Steps.open_company_team_page()
     |> Steps.invite_company_member(second_params)
     |> Steps.assert_limit_guidance_has_upgrade_cta()
-    |> assert_limit_reached_email_sent_once(:member_count)
+    |> Steps.assert_member_limit_reached_email_sent_once()
   end
 
   @tag role: :owner
@@ -57,12 +59,12 @@ defmodule Operately.Features.CompanyAdmin.RolesAndLimitsTest do
     }
 
     ctx
-    |> enable_billing_for_company()
-    |> fill_company_to_member_limit()
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_to_member_limit()
     |> Steps.open_company_team_page()
     |> Steps.invite_outside_collaborator(params)
     |> Steps.assert_limit_guidance_has_upgrade_cta()
-    |> assert_no_person_added(params.email)
+    |> Steps.assert_no_person_added(params.email)
   end
 
   @tag role: :owner

@@ -47,6 +47,7 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
       case Operately.Projects.Retrospective.get(:system, project_id: ctx.project.id) do
         {:ok, retrospective} ->
           Map.put(ctx, :retrospective, retrospective)
+
         {:error, _} ->
           ctx
       end

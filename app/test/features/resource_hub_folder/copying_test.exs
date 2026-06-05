@@ -1,6 +1,11 @@
 defmodule Operately.Features.ResourceHubFolder.CopyingTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ResourceHubFolderCase
+  use Operately.Support.ResourceHub.Deletion
+  use Operately.Support.ResourceHub.Moving
+
+  alias Operately.Support.Features.ResourceHubFolderSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "Copy" do
     feature "copy folder in the same location", ctx do

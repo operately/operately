@@ -17,6 +17,20 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   defdelegate assert_logged_in_contributor_has_comment_access(ctx), to: ProjectSteps
   defdelegate assert_logged_in_contributor_has_view_access(ctx), to: ProjectSteps
 
+  step :setup, ctx do
+    ctx
+    |> create_project(name: "Test Project")
+    |> setup_contributors()
+    |> login()
+  end
+
+  step :setup_default_people, ctx do
+    ctx
+    |> given_a_person_exists(name: "Michael Scott")
+    |> given_a_person_exists(name: "Dwight Schrute")
+    |> given_a_person_exists(name: "Jim Halpert")
+  end
+
   step :visit_project_contributors_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))

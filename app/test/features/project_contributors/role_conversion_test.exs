@@ -1,6 +1,8 @@
 defmodule Operately.Features.ProjectContributors.RoleConversionTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectContributorsCase
+  alias Operately.Support.Features.ProjectContributorsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "converting contributors" do
     @tag login_as: :champion

@@ -1,6 +1,12 @@
 defmodule Operately.Features.ResourceHubDocument.MovementTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ResourceHubDocumentCase
+  use Operately.Support.ResourceHub.Deletion
+  use Operately.Support.ResourceHub.Comments
+  use Operately.Support.ResourceHub.Moving
+
+  alias Operately.Support.Features.ResourceHubDocumentSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "Move" do
     @resource_name "Document"

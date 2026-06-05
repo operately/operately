@@ -1,6 +1,11 @@
 defmodule Operately.Features.SpaceKanban.Activities.StatusAndScheduleTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpaceKanbanCase
+  @moduletag login_as: :creator
+
+  alias Operately.Support.Features.SpaceKanbanSteps, as: Steps
+  alias Operately.Support.Time
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "changing a task status creates an activity", ctx do
     [old_status_value, new_status_value | _] = ctx.status_values

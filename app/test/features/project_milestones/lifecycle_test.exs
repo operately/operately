@@ -1,10 +1,9 @@
 defmodule Operately.Features.ProjectMilestones.LifecycleTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectMilestonesCase
+  alias Operately.Support.Features.ProjectMilestonesSteps, as: Steps
 
-  setup ctx do
-    Steps.given_that_a_milestone_exists(ctx, "My milestone")
-  end
+  setup ctx, do: Steps.setup(ctx)
+  setup ctx, do: Steps.setup_milestone(ctx)
 
   feature "mark milestone as completed", ctx do
     ctx

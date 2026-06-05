@@ -26,7 +26,7 @@ defmodule Operately.Support.Features.SignupSteps do
     subject = hd(emails).subject
     code = String.split(subject, ": ") |> List.last()
 
-    ctx 
+    ctx
     |> UI.fill(testid: "code", with: code)
     |> UI.click(testid: "submit")
   end
@@ -34,5 +34,4 @@ defmodule Operately.Support.Features.SignupSteps do
   step :assert_signup_successful, ctx do
     ctx |> UI.assert_has(testid: "lobby-page")
   end
-
 end

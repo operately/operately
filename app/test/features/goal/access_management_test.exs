@@ -1,6 +1,9 @@
 defmodule Operately.Features.Goal.AccessManagementTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.GoalCase
+
+  alias Operately.Support.Features.GoalSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "access management" do
     feature "outside collaborator cannot see goal with comment access until admin grants access", ctx do

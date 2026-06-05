@@ -1,6 +1,9 @@
 defmodule Operately.Features.Discussions.PublishingTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.DiscussionsCase
+
+  alias Operately.Support.Features.DiscussionsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "post a discussion with blank body", ctx do
     ctx

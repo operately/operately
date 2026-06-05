@@ -1,6 +1,9 @@
 defmodule Operately.Features.GoalChecksIns.CommentsAndAccessTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.GoalCheckInsCase
+
+  alias Operately.Support.Features.GoalCheckInsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "commenting on a check-in", ctx do
     ctx

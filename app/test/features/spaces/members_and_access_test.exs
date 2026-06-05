@@ -1,6 +1,13 @@
 defmodule Operately.Features.Spaces.MembersAndAccessTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpacesCase
+
+  import Operately.GroupsFixtures
+  import Operately.PeopleFixtures
+
+  alias Operately.Access.Binding
+  alias Operately.Support.Features.SpacesSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "joining a space", ctx do
     group = group_fixture(ctx.creator, %{name: "Marketing", company_permissions: Binding.view_access()})

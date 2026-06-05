@@ -1,6 +1,10 @@
 defmodule Operately.Features.MilestoneKanban.StatusesTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.MilestoneKanbanCase
+  @moduletag login_as: :champion
+
+  alias Operately.Support.Features.MilestoneKanbanSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "add, use, and delete a custom status from the kanban", ctx do
     qa_label = "QA Ready"

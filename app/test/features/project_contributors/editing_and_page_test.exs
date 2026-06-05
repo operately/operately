@@ -1,6 +1,9 @@
 defmodule Operately.Features.ProjectContributors.EditingAndPageTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.ProjectContributorsCase
+  alias Operately.Access.Binding
+  alias Operately.Support.Features.ProjectContributorsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   describe "editing project contributors" do
     @tag login_as: :champion

@@ -1,6 +1,9 @@
 defmodule Operately.Features.Discussions.DraftsTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.DiscussionsCase
+
+  alias Operately.Support.Features.DiscussionsSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "trying to post a discussion without a title", ctx do
     ctx

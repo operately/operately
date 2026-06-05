@@ -1,6 +1,10 @@
 defmodule Operately.Features.SpaceKanban.StatusesTest do
   use Operately.FeatureCase
-  use Operately.Support.Features.SpaceKanbanCase
+  @moduletag login_as: :creator
+
+  alias Operately.Support.Features.SpaceKanbanSteps, as: Steps
+
+  setup ctx, do: Steps.setup(ctx)
 
   feature "add, use, and delete a custom status from the kanban", ctx do
     qa_label = "QA Ready"
