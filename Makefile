@@ -313,7 +313,7 @@ test.tsc.lint:
 	./devenv bash -c "cd app && npx tsc --noEmit -p tsconfig.lint.json"
 
 test.cli.catalog.sync:
-	$(MAKE) gen.api.catalog
+	MIX_ENV=test $(MAKE) gen.api.catalog
 	$(MAKE) cli.node_modules
 	./devenv bash -c "cd cli && npm run check:catalog"
 
