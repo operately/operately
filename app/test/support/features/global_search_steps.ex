@@ -272,7 +272,7 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     |> Factory.add_space_member(:test_person, :test_space, name: "Test Person")
     |> Factory.add_goal(:test_goal, :test_space,
       name: "Test Goal",
-    champion: :test_person
+      champion: :test_person
     )
     |> Factory.add_project(:test_project, :test_space, name: "Test Project")
     |> Factory.add_project_milestone(:test_milestone, :test_project,

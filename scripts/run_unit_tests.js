@@ -1,23 +1,21 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
 const path = require("path");
-
 const { execSync } = require("child_process");
+const { findTestFiles, parseSplitArgs, splitFiles } = require("./test_file_splitter");
 
 function findUnitTests() {
   const excludedSuites = ["test/features", "test/cli_e2e"];
+  const split = parseSplitArgs(process.argv);
+  const files = findTestFiles(["app/test"], (file) => !excludedSuites.some((suite) => file.includes(suite)));
 
-  return fs
-    .readdirSync("app/test", { recursive: true })
-    .map((f) => path.join("test", f))
-    .filter((f) => f.endsWith("_test.exs"))
-    .filter((f) => !excludedSuites.some((suite) => f.includes(suite)));
+  return splitFiles(files, split);
 }
 
 function runTests(testFiles) {
   try {
-    const command = `cd app && MIX_ENV=test mix tests_with_retries ${testFiles.join(" ")}`;
+    const files = testFiles.map((file) => path.relative("app", file));
+    const command = `cd app && MIX_ENV=test mix tests_with_retries ${files.join(" ")}`;
 
     execSync(command, { stdio: "inherit" });
   } catch (error) {

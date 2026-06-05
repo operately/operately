@@ -9,18 +9,19 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :change_theme, ctx, theme do
-    ctx = try do
-      # If we're already on the account page, use the settings entry there.
-      UI.find(ctx, UI.query(testid: "my-account-page"), fn el ->
-        UI.click(el, testid: "settings-link")
-      end)
-    rescue
-      _ ->
-        # Otherwise open the account menu and navigate through Settings.
-        ctx
-        |> UI.click(testid: "account-menu")
-        |> UI.click(testid: "settings-link")
-    end
+    ctx =
+      try do
+        # If we're already on the account page, use the settings entry there.
+        UI.find(ctx, UI.query(testid: "my-account-page"), fn el ->
+          UI.click(el, testid: "settings-link")
+        end)
+      rescue
+        _ ->
+          # Otherwise open the account menu and navigate through Settings.
+          ctx
+          |> UI.click(testid: "account-menu")
+          |> UI.click(testid: "settings-link")
+      end
 
     ctx
     |> UI.click(testid: "appearance")
@@ -271,5 +272,4 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
 
     ctx
   end
-
 end

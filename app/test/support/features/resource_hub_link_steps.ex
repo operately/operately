@@ -292,7 +292,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Added a link: #{link_name}",
+      action: "Added a link: #{link_name}"
     })
   end
 
@@ -302,7 +302,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Edited a link: #{link_name}",
+      action: "Edited a link: #{link_name}"
     })
   end
 
@@ -312,7 +312,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Deleted a link: Link",
+      action: "Deleted a link: Link"
     })
   end
 
@@ -322,7 +322,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Re: #{link_title}",
+      action: "Re: #{link_title}"
     })
   end
 
@@ -331,38 +331,42 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   #
 
   step :assert_link_created_email_sent, ctx do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "added a link",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 
   step :assert_link_edited_email_sent, ctx, link_name do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "edited a link: #{link_name}",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 
   step :assert_link_deleted_email_sent, ctx do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "deleted a link: Link",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 
   step :assert_link_commented_email_sent, ctx, link_title do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "commented on: #{link_title}",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 end
