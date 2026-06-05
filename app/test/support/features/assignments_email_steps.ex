@@ -152,7 +152,7 @@ defmodule Operately.Support.Features.AssignmentsEmailSteps do
 
     email = Emails.last_sent_email(to: ctx.champion.account.email)
 
-    assert email.subject == "#{ctx.company.name}: Your assignments for today"
+    assert email.subject == "#{ctx.company.name}: Your work for today"
     refute email.html =~ "Needs your attention"
     refute email.html =~ "Upcoming work"
     assert email.html =~ "Project Atlas"
@@ -181,7 +181,7 @@ defmodule Operately.Support.Features.AssignmentsEmailSteps do
 
     email = Emails.last_sent_email(to: ctx.reviewer.account.email)
 
-    assert email.subject == "#{ctx.company.name}: Your assignments for today"
+    assert email.subject == "#{ctx.company.name}: Your work for today"
     refute email.html =~ "Needs your attention"
     assert email.html =~ "Project Beacon"
     assert email.html =~ "Review weekly check-in"
