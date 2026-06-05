@@ -1,5 +1,5 @@
 <%= title(@company.name) %>
-<%= subtitle("Catch up on work that's due soon or waiting for your review.") %>
+<%= subtitle("Tasks, reminders, and reviews that need your attention today.") %>
 
 <%= spacer() %>
 <%= line() %>
@@ -25,9 +25,11 @@
         <div>
           <%= link(assignment.url, assignment.display_label) %>
         </div>
-        <%= if assignment.badge_label do %>
+        <%= if assignment.detail_labels != [] do %>
           <div style="margin-top: 2px; color: #6b6b6b; font-size: 13px;">
-            <span><%= assignment.badge_label %></span>
+            <%= Enum.map(assignment.detail_labels, fn label -> %>
+              <div><%= label %></div>
+            <% end) %>
           </div>
         <% end %>
       </div>
