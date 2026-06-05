@@ -20,7 +20,7 @@ gen.api.docs:
 	./devenv bash -c "cd app && mix operately.gen.api.docs"
 
 gen.api.catalog:
-	./devenv bash -c "cd app && mix operately.gen.api.catalog"
+	./devenv bash -c "cd app && MIX_ENV=$${MIX_ENV:-dev} mix operately.gen.api.catalog"
 
 gen.api.docs.ci:
 	$(MAKE) test.up
@@ -313,7 +313,7 @@ test.tsc.lint:
 	./devenv bash -c "cd app && npx tsc --noEmit -p tsconfig.lint.json"
 
 test.cli.catalog.sync:
-	$(MAKE) gen.api.catalog
+	./devenv bash -c 'cd app && MIX_ENV=test mix run --no-compile -e "Mix.Tasks.Operately.Gen.Api.Catalog.run([])"'
 	$(MAKE) cli.node_modules
 	./devenv bash -c "cd cli && npm run check:catalog"
 
