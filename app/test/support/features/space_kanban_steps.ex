@@ -9,6 +9,24 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
   alias Operately.Support.Features.EmailSteps
   alias OperatelyWeb.Paths
 
+  step :setup, ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space, name: "Kanban Space")
+      |> Factory.add_space(:destination_space, name: "Destination Space")
+      |> Factory.enable_space_tool(:destination_space, :tasks)
+      |> Factory.add_project(:destination_project, :destination_space, name: "Destination Project")
+      |> Factory.create_space_task(:task, :space, name: "First Task")
+      |> Factory.create_space_task(:second_task, :space, name: "Second Task")
+      |> Factory.add_space_member(:teammate, :space, name: "Taylor Teammate")
+      |> UI.login_based_on_tag()
+
+    status_values = Enum.map(ctx.space.task_statuses, & &1.value)
+
+    Map.put(ctx, :status_values, status_values)
+  end
+
   step :visit_kanban_page, ctx do
     ctx
     |> UI.visit(Paths.space_kanban_path(ctx.company, ctx.space))

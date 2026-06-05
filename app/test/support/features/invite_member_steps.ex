@@ -99,7 +99,8 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.fill(testid: "passwordConfirmation", with: password)
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "company-home")
-    |> UI.sleep(200) # Wait for the redirect to complete
+    # Wait for the redirect to complete
+    |> UI.sleep(200)
   end
 
   step :reissue_invitation_token, ctx, name do
@@ -201,12 +202,13 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_an_invitation_was_sent, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invite_link = personal_invite_link_fixture(%{company_id: ctx.company.id, author_id: ctx.admin.id, person_id: member.id})
     token = invite_link.token
@@ -250,12 +252,13 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_an_invitation_was_sent_and_expired, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invite_link = personal_invite_link_fixture(%{company_id: ctx.company.id, author_id: ctx.admin.id, person_id: member.id})
 
@@ -293,12 +296,13 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_an_invitation_will_expire_in_minutes, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invite_link = personal_invite_link_fixture(%{company_id: ctx.company.id, author_id: ctx.admin.id, person_id: member.id})
 
@@ -314,12 +318,13 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_an_invitation_will_expire_in_hours, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invite_link = personal_invite_link_fixture(%{company_id: ctx.company.id, author_id: ctx.admin.id, person_id: member.id})
 
@@ -335,12 +340,13 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_an_invitation_will_expire_in_days, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invite_link = personal_invite_link_fixture(%{company_id: ctx.company.id, author_id: ctx.admin.id, person_id: member.id})
 
@@ -403,11 +409,12 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_a_company_member_was_invited, ctx, params do
-    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, %{
-      full_name: params[:fullName],
-      title: params[:title],
-      email: params[:email]
-    })
+    {:ok, _invite_link} =
+      Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, %{
+        full_name: params[:fullName],
+        title: params[:title],
+        email: params[:email]
+      })
 
     member = Operately.People.get_person_by_email(ctx.company, params[:email])
     {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(member.id)
@@ -464,12 +471,18 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   step :assert_work_map_shows_correct_resources, ctx do
     ctx
     |> UI.visit(Paths.work_map_path(ctx.company))
-    |> UI.assert_text(ctx.project1.name) # access via marketing space
-    |> UI.assert_text(ctx.project2.name) # access via marketing space
-    |> UI.assert_text(ctx.project3.name) # direct access
-    |> UI.assert_text(ctx.goal1.name) # access via marketing space
-    |> UI.assert_text(ctx.goal2.name) # access via marketing space
-    |> UI.assert_text(ctx.goal4.name) # direct access
+    # access via marketing space
+    |> UI.assert_text(ctx.project1.name)
+    # access via marketing space
+    |> UI.assert_text(ctx.project2.name)
+    # direct access
+    |> UI.assert_text(ctx.project3.name)
+    # access via marketing space
+    |> UI.assert_text(ctx.goal1.name)
+    # access via marketing space
+    |> UI.assert_text(ctx.goal2.name)
+    # direct access
+    |> UI.assert_text(ctx.goal4.name)
     # No Access
     |> UI.refute_text(ctx.project4.name)
     |> UI.refute_text(ctx.project5.name)

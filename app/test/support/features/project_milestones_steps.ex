@@ -4,10 +4,27 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Support.Features.{EmailSteps, NotificationsSteps, FeedSteps}
+  alias Operately.Support.Features.ProjectSteps
   alias Operately.ContextualDates.ContextualDate
   alias Operately.Access.Binding
   alias OperatelyWeb.Paths
   alias Wallaby.QueryError
+
+  step :setup, ctx do
+    ctx
+    |> ProjectSteps.create_project(name: "Live support")
+    |> Factory.add_company_owner(:creator)
+    |> Factory.add_project_contributor(:contributor, :project, permissions: :edit_access)
+    |> Factory.preload(:contributor, :person)
+    |> Factory.add_project_contributor(:commenter, :project, permissions: :comment_access)
+    |> Factory.preload(:commenter, :person)
+    |> Factory.add_project_contributor(:viewer, :project, permissions: :view_access)
+    |> Factory.preload(:viewer, :person)
+  end
+
+  step :setup_milestone, ctx do
+    given_that_a_milestone_exists(ctx, "My milestone")
+  end
 
   step :given_that_a_milestone_exists, ctx, title do
     milestone =

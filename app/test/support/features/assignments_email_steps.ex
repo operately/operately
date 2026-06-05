@@ -44,11 +44,11 @@ defmodule Operately.Support.Features.AssignmentsEmailSteps do
   defp add_champion_project_work(ctx) do
     ctx =
       ctx
-      |> Factory.add_project(:project_alpha, :product_space, [
+      |> Factory.add_project(:project_alpha, :product_space,
         champion: :champion,
         reviewer: :reviewer,
         name: "Project Atlas"
-      ])
+      )
       |> Factory.set_project_next_check_in_date(:project_alpha, hours_ago(6))
 
     timeframe =
@@ -59,31 +59,32 @@ defmodule Operately.Support.Features.AssignmentsEmailSteps do
 
     ctx =
       ctx
-      |> Factory.add_project_milestone(:project_alpha_milestone, :project_alpha, [
+      |> Factory.add_project_milestone(:project_alpha_milestone, :project_alpha,
         title: "Milestone Alpha",
         timeframe: timeframe
-      ])
-      |> Factory.add_project_task(:project_alpha_task_due, :project_alpha_milestone, [
+      )
+      |> Factory.add_project_task(:project_alpha_task_due, :project_alpha_milestone,
         name: "Prepare weekly update",
         due_date: ContextualDate.create_day_date(days_from_today(-1))
-      ])
+      )
       |> Factory.add_task_assignee(:project_alpha_task_due_assignee, :project_alpha_task_due, :champion)
-      |> Factory.add_project_task(:project_alpha_task_future, :project_alpha_milestone, [
+      |> Factory.add_project_task(:project_alpha_task_future, :project_alpha_milestone,
         name: "Draft planning outline",
         due_date: ContextualDate.create_day_date(days_from_today(5))
-      ])
+      )
       |> Factory.add_task_assignee(:project_alpha_task_future_assignee, :project_alpha_task_future, :champion)
 
     ctx
   end
 
   defp add_champion_goal_work(ctx) do
-    ctx = Factory.add_goal(ctx, :growth_goal, :product_space, [
-      name: "Improve Activation",
-      champion: :champion,
-      reviewer: :reviewer,
-      timeframe: Timeframe.current_year()
-    ])
+    ctx =
+      Factory.add_goal(ctx, :growth_goal, :product_space,
+        name: "Improve Activation",
+        champion: :champion,
+        reviewer: :reviewer,
+        timeframe: Timeframe.current_year()
+      )
 
     goal = Map.fetch!(ctx, :growth_goal)
     {:ok, goal} = Goals.update_goal(goal, %{next_update_scheduled_at: hours_ago(12)})
@@ -102,23 +103,24 @@ defmodule Operately.Support.Features.AssignmentsEmailSteps do
   defp add_reviewer_project_review(ctx) do
     ctx =
       ctx
-      |> Factory.add_project(:project_beta, :product_space, [
+      |> Factory.add_project(:project_beta, :product_space,
         champion: :teammate,
         reviewer: :reviewer,
         name: "Project Beacon"
-      ])
+      )
       |> Factory.set_project_next_check_in_date(:project_beta, hours_ago(4))
 
     Factory.add_project_check_in(ctx, :project_beta_check_in, :project_beta, :teammate, status: "caution")
   end
 
   defp add_reviewer_goal_review(ctx) do
-    ctx = Factory.add_goal(ctx, :feedback_goal, :product_space, [
-      name: "Feedback Program",
-      champion: :teammate,
-      reviewer: :reviewer,
-      timeframe: Timeframe.current_year()
-    ])
+    ctx =
+      Factory.add_goal(ctx, :feedback_goal, :product_space,
+        name: "Feedback Program",
+        champion: :teammate,
+        reviewer: :reviewer,
+        timeframe: Timeframe.current_year()
+      )
 
     goal = Map.fetch!(ctx, :feedback_goal)
     {:ok, goal} = Goals.update_goal(goal, %{next_update_scheduled_at: hours_ago(3)})

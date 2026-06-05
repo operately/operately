@@ -402,7 +402,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Added: #{document_name}",
+      action: "Added: #{document_name}"
     })
   end
 
@@ -412,7 +412,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Created a copy of #{attrs.name} and named it #{attrs.new_name}",
+      action: "Created a copy of #{attrs.name} and named it #{attrs.new_name}"
     })
   end
 
@@ -422,7 +422,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Re: #{document_name}",
+      action: "Re: #{document_name}"
     })
   end
 
@@ -432,7 +432,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Deleted a document: #{document_name}",
+      action: "Deleted a document: #{document_name}"
     })
   end
 
@@ -441,38 +441,42 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   #
 
   step :assert_document_created_email_sent, ctx, document_name do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "added a document: #{document_name}",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 
   step :assert_document_copied_email_sent, ctx, document_name do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "copied a document: #{document_name}",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 
   step :assert_document_commented_email_sent, ctx, document_name do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "commented on: #{document_name}",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 
   step :assert_document_deleted_email_sent, ctx, document_name do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "deleted a document: #{document_name}",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 end
