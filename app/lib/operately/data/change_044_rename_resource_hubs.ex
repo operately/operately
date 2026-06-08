@@ -1,6 +1,6 @@
 defmodule Operately.Data.Change044RenameResourceHubs do
   alias Operately.Repo
-  alias Operately.ResourceHubs.ResourceHub
+  alias __MODULE__.ResourceHub
 
   def run do
     Repo.transaction(fn ->
@@ -8,5 +8,13 @@ defmodule Operately.Data.Change044RenameResourceHubs do
         name: "Documents & Files",
       ])
     end)
+  end
+
+  defmodule ResourceHub do
+    use Operately.Schema
+
+    schema "resource_hubs" do
+      field :name, :string
+    end
   end
 end

@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolderTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
 
         assert {code, res} = mutation(ctx.conn, [:resource_hubs, :create_folder], %{
           resource_hub_id: Paths.resource_hub_id(resource_hub),

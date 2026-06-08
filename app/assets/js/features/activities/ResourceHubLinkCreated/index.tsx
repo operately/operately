@@ -1,8 +1,10 @@
 import type { ActivityContentResourceHubLinkCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, linkLink, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { assertPresent } from "@/utils/assertions";
+import { feedTitle, linkLink, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubLinkCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +12,10 @@ const ResourceHubLinkCreated: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    return paths.resourceHubLinkPath(content(activity).link?.id!);
+    const link = content(activity).link;
+    assertPresent(link?.id, "link.id must be present in ResourceHubLinkCreated activity content");
+
+    return paths.resourceHubLinkPath(link.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -28,15 +33,15 @@ const ResourceHubLinkCreated: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
-    const resourceHub = resourceHubLink(data.resourceHub!);
-    const link = linkLink(data.link!);
+    const link = data.link ? linkLink(data.link) : "a link";
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, "added a link:", link);
-    } else {
-      return feedTitle(activity, "added a link to", resourceHub, "in the", space, "space:", link);
     }
+
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "Documents & Files";
+
+    return feedTitle(activity, "added a link to", resourceHub, ...resourceHubParentScope(data, page, ":"), link);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

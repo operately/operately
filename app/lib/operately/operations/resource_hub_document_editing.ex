@@ -30,6 +30,7 @@ defmodule Operately.Operations.ResourceHubDocumentEditing do
       %{
         company_id: author.company_id,
         space_id: document.resource_hub.space_id,
+        project_id: document.resource_hub.project_id,
         resource_hub_id: document.resource_hub.id,
         node_id: document.node_id,
         document_id: document.id,
@@ -44,7 +45,7 @@ defmodule Operately.Operations.ResourceHubDocumentEditing do
     if should_update_subscriptions?(attrs) do
       attrs_for_update = %{
         send_notifications_to_everyone: attrs[:send_to_everyone],
-        subscriber_ids: attrs[:subscriber_ids] || [],
+        subscriber_ids: attrs[:subscriber_ids] || []
       }
 
       case SubscriptionsListEditing.run(subscription_list, attrs_for_update) do

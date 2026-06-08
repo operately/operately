@@ -1,8 +1,9 @@
 import type { ActivityContentResourceHubLinkDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubLinkDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -26,14 +27,14 @@ const ResourceHubLinkDeleted: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const resourceHub = resourceHubLink(content(activity).resourceHub!);
-    const space = spaceLink(content(activity).space!);
-    const link = content(activity).link!.name!;
+    const data = content(activity);
+    const resourceHub = resourceHubLink(data.resourceHub!);
+    const link = data.link!.name!;
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, `deleted the "${link}" link from`, resourceHub);
     } else {
-      return feedTitle(activity, `deleted the "${link}" link from`, resourceHub, "in the", space, "space");
+      return feedTitle(activity, `deleted the "${link}" link from`, resourceHub, ...resourceHubParentScope(data, page));
     }
   },
 

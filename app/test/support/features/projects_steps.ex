@@ -1310,12 +1310,14 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_add_resource_visible, ctx do
     ctx
-    |> UI.assert_has(testid: "add-resource")
+    |> UI.click(testid: "tab-docs & files")
+    |> UI.assert_has(testid: "add-options")
   end
 
   step :refute_add_resource_visible, ctx do
     ctx
-    |> UI.refute_has(testid: "add-resource")
+    |> UI.click(testid: "tab-docs & files")
+    |> UI.refute_has(testid: "add-options")
   end
 
   step :assert_add_task_and_milestone_visible_in_tasks_tab, ctx do

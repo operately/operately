@@ -111,14 +111,14 @@ function findMentionedScope(props: Comments.CommentableResource): SearchScope {
       assertPresent(props.retrospective.project, "project must be present in retrospective");
       return { type: "project", id: props.retrospective.project.id! };
     case "resource_hub_document":
-      assertPresent(props.document.resourceHub?.space, "resourceHub.space must be present in document");
-      return { type: "space", id: props.document.resourceHub.space.id! };
+      assertPresent(props.document.resourceHubId, "resourceHubId must be present in document");
+      return { type: "resource_hub", id: props.document.resourceHubId };
     case "resource_hub_file":
-      assertPresent(props.file.resourceHub?.space, "resourceHub.space must be present in file");
-      return { type: "space", id: props.file.resourceHub.space.id! };
+      assertPresent(props.file.resourceHubId, "resourceHubId must be present in file");
+      return { type: "resource_hub", id: props.file.resourceHubId };
     case "resource_hub_link":
-      assertPresent(props.link.resourceHub?.space, "resourceHub.space must be present in link");
-      return { type: "space", id: props.link.resourceHub.space.id! };
+      assertPresent(props.link.resourceHubId, "resourceHubId must be present in link");
+      return { type: "resource_hub", id: props.link.resourceHubId };
     case "goal_update":
       assertPresent(props.update?.goal?.id, "goal must be present in update");
       return { type: "goal", id: props.update.goal.id };
