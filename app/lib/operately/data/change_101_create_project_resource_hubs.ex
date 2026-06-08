@@ -4,7 +4,7 @@ defmodule Operately.Data.Change101CreateProjectResourceHubs do
   alias Operately.Repo
   alias __MODULE__.{AccessBinding, AccessContext, KeyResource, Project, ResourceHub, ResourceLink, ResourceNode, SubscriptionList}
 
-  @hub_name "Docs & Files"
+  @hub_name "Documents & Files"
   @space_hub_name "Documents & Files"
   @link_type :other
 

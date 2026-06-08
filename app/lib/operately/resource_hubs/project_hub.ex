@@ -7,7 +7,7 @@ defmodule Operately.ResourceHubs.ProjectHub do
   alias Operately.Repo
   alias Operately.ResourceHubs.ResourceHub
 
-  @name "Docs & Files"
+  @name "Documents & Files"
 
   def create_for_project(project = %Project{}) do
     with {:ok, hub} <- find_or_create_hub(project),

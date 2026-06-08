@@ -11,12 +11,9 @@ import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { CommentsCountIndicator } from "@/features/Comments";
-import * as Hub from "@/features/ResourceHub";
-import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
-import { NodeType, findCommentsCount, findPath } from "@/features/ResourceHub/utils";
+import { ResourceHubDocsAndFiles, ResourceHubDocsAndFilesPreview } from "@/features/ResourceHub/DocsAndFiles";
 import { PageCache } from "@/routes/PageCache";
-import { DivLink, Link, ProjectPage, showErrorToast } from "turboui";
+import { ProjectPage, showErrorToast } from "turboui";
 import { fetchAll } from "../../utils/async";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
@@ -219,6 +216,10 @@ function Page() {
 
   const parentGoalSearch = useParentGoalSearch(project);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
+  const refreshProjectPage = React.useCallback(async () => {
+    PageCache.invalidate(pageCacheKey(project.id));
+    await refresh?.();
+  }, [project.id, refresh]);
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
     id: project.id,
@@ -385,9 +386,14 @@ function Page() {
 
     docsAndFiles: resourceHub
       ? {
-          preview: <DocsAndFilesPreview resourceHub={resourceHub} nodes={resourceHubNodes} />,
+          preview: <ResourceHubDocsAndFilesPreview resourceHub={resourceHub} nodes={resourceHubNodes} />,
           tabContent: (
-            <DocsAndFilesTab resourceHub={resourceHub} nodes={resourceHubNodes} draftNodes={resourceHubDraftNodes} />
+            <ResourceHubDocsAndFiles
+              resourceHub={resourceHub}
+              nodes={resourceHubNodes}
+              draftNodes={resourceHubDraftNodes}
+              refresh={refreshProjectPage}
+            />
           ),
           count: resourceHubNodes.length,
         }
@@ -714,111 +720,4 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
     searchMilestones,
     orderingState,
   };
-}
-
-function DocsAndFilesPreview({
-  resourceHub,
-  nodes,
-}: {
-  resourceHub: ResourceHubs.ResourceHub;
-  nodes: ResourceHubs.ResourceHubNode[];
-}) {
-  const paths = usePaths();
-  const previewLimit = 5;
-  const recentNodes = React.useMemo(() => [...nodes].sort(compareNodesByUpdatedAt).slice(0, previewLimit), [nodes]);
-  const hiddenCount = Math.max(nodes.length - recentNodes.length, 0);
-  const hiddenCountLabel = hiddenCount === 1 ? "1 more" : `${hiddenCount} more`;
-  const tabPath = resourceHub.project?.id
-    ? paths.projectPath(resourceHub.project.id, { tab: "docs-and-files" })
-    : paths.resourceHubPath(resourceHub.id!);
-
-  return (
-    <div className="space-y-3" data-test-id="docs-and-files-preview">
-      <div className="flex items-center gap-2">
-        <h2 className="font-bold">Docs & Files</h2>
-      </div>
-
-      {recentNodes.length > 0 ? (
-        <div className="space-y-1">
-          {recentNodes.map((node) => (
-            <DocsAndFilesPreviewItem key={node.id} node={node} />
-          ))}
-          {hiddenCount > 0 && (
-            <Link to={tabPath} underline="hover" className="inline-block pt-1 text-sm font-medium">
-              Show {hiddenCountLabel}
-            </Link>
-          )}
-        </div>
-      ) : (
-        <div className="text-sm text-content-dimmed">
-          No support materials yet.{" "}
-          <Link to={tabPath} underline="hover" className="font-medium">
-            Add files, docs, or links
-          </Link>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function DocsAndFilesPreviewItem({ node }: { node: ResourceHubs.ResourceHubNode }) {
-  const paths = usePaths();
-  const path = findPath(paths, node.type as NodeType, node);
-  const commentsCount = findCommentsCount(node.type as NodeType, node);
-  const hasComments = commentsCount > 0;
-
-  return (
-    <DivLink
-      to={path}
-      className="group -mx-1 flex items-center justify-between gap-3 rounded-sm px-1 py-1.5 hover:bg-surface-dimmed"
-    >
-      <div className="flex min-w-0 items-center gap-2">
-        <NodeIcon node={node} size={22} />
-        <div className="min-w-0 flex items-baseline gap-2">
-          <div className="truncate text-sm font-medium text-content-base group-hover:text-link-base">{node.name}</div>
-        </div>
-      </div>
-      {hasComments && <CommentsCountIndicator count={commentsCount} size={18} />}
-    </DivLink>
-  );
-}
-
-function DocsAndFilesTab({
-  resourceHub,
-  nodes,
-  draftNodes,
-}: {
-  resourceHub: ResourceHubs.ResourceHub;
-  nodes: ResourceHubs.ResourceHubNode[];
-  draftNodes: ResourceHubs.ResourceHubNode[];
-}) {
-  const { refresh } = PageCache.useData(loader, { refreshCache: false });
-
-  if (!refresh || !resourceHub.id) return null;
-
-  const refetch = () => {
-    void refresh();
-  };
-
-  return (
-    <Hub.NewFileModalsProvider resourceHub={resourceHub}>
-      <Hub.FileDragAndDropArea>
-        <div className="p-4 max-w-6xl mx-auto my-6">
-          <Hub.Header resource={resourceHub} />
-          <Hub.ContinueEditingDrafts resourceHubId={resourceHub.id} drafts={draftNodes} />
-          <Hub.AddFileWidget resourceHub={resourceHub} refresh={refetch} />
-          <Hub.NodesList resourceHub={resourceHub} type="resource_hub" nodes={nodes} refetch={refetch} />
-          <Hub.AddFolderModal resourceHub={resourceHub} refresh={refetch} />
-        </div>
-      </Hub.FileDragAndDropArea>
-    </Hub.NewFileModalsProvider>
-  );
-}
-
-function compareNodesByUpdatedAt(left: ResourceHubs.ResourceHubNode, right: ResourceHubs.ResourceHubNode) {
-  return nodeTimestamp(right) - nodeTimestamp(left);
-}
-
-function nodeTimestamp(node: ResourceHubs.ResourceHubNode) {
-  return Date.parse(node.updatedAt || node.insertedAt || "") || 0;
 }

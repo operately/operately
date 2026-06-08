@@ -4,6 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Hub from "@/features/ResourceHub";
+import { ResourceHubDocsAndFiles } from "@/features/ResourceHub/DocsAndFiles";
 
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
@@ -22,21 +23,20 @@ export function Page() {
 
   return (
     <Pages.Page title={folder.name!}>
-      <Hub.NewFileModalsProvider folder={folder} resourceHub={folder.resourceHub}>
-        <Hub.FileDragAndDropArea>
-          <Paper.Root size="large">
-            <Hub.ResourcePageNavigation resource={folder} />
+      <Paper.Root size="large">
+        <Hub.ResourcePageNavigation resource={folder} />
 
-            <Paper.Body minHeight="75vh">
-              <Options folder={folder} />
-              <Hub.Header resource={folder} />
-              <Hub.AddFileWidget folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
-              <Hub.NodesList folder={folder} nodes={nodes} type="folder" refetch={refresh} />
-              <Hub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
-            </Paper.Body>
-          </Paper.Root>
-        </Hub.FileDragAndDropArea>
-      </Hub.NewFileModalsProvider>
+        <Paper.Body minHeight="75vh">
+          <Options folder={folder} />
+          <ResourceHubDocsAndFiles
+            folder={folder}
+            resourceHub={folder.resourceHub}
+            nodes={nodes}
+            refresh={refresh}
+            className="p-0"
+          />
+        </Paper.Body>
+      </Paper.Root>
     </Pages.Page>
   );
 }

@@ -35,6 +35,7 @@ export { Checklist } from "./Checklist";
 export { Conversations, useConversations } from "./Conversations";
 export { DateDisplay, DateField } from "./DateField";
 export { FloatingActionButton } from "./FloatingActionButton";
+export * from "./DocsAndFiles";
 export { FormattedTime } from "./FormattedTime";
 export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
