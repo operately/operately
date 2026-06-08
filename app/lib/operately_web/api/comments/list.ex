@@ -92,25 +92,25 @@ defmodule OperatelyWeb.Api.Comments.List do
   defp load(id, :goal_discussion, person), do: load_comment_thread(id, person)
 
   defp load(id, :resource_hub_document, person) do
-    from(c in Comment, join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :document, where: d.id == ^id)
+    from(c in Comment, join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :resource, where: d.id == ^id)
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :document)
+    |> filter_by_view_access(person.id, resource_hub_effective_context: :child)
     |> Repo.all()
     |> load_notifications(person, action: "resource_hub_document_commented")
   end
 
   defp load(id, :resource_hub_file, person) do
-    from(c in Comment, join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id, as: :file, where: f.id == ^id)
+    from(c in Comment, join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id, as: :resource, where: f.id == ^id)
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :file)
+    |> filter_by_view_access(person.id, resource_hub_effective_context: :child)
     |> Repo.all()
     |> load_notifications(person, action: "resource_hub_file_commented")
   end
 
   defp load(id, :resource_hub_link, person) do
-    from(c in Comment, join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id, as: :link, where: l.id == ^id)
+    from(c in Comment, join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id, as: :resource, where: l.id == ^id)
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :link)
+    |> filter_by_view_access(person.id, resource_hub_effective_context: :child)
     |> Repo.all()
     |> load_notifications(person, action: "resource_hub_link_commented")
   end
