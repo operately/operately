@@ -1,7 +1,10 @@
 import * as Billing from "@/models/billing";
 
 import { parseCompanyBillingSearch, selectCompanyBillingTarget } from "turboui/CompanyBilling";
-import { buildCompanyBillingPlanSelectionMode } from "turboui/CompanyBillingPlanSelectionPage";
+import {
+  buildCompanyBillingPlanSelectionMode,
+  buildCompanyBillingPlanSelectionPageViewModel,
+} from "turboui/CompanyBillingPlanSelectionPage";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
   const { account, ...rest } = params;
@@ -105,6 +108,18 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
 }
 
 describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
+  it("uses the refreshed checkout subtitle", () => {
+    const viewModel = buildCompanyBillingPlanSelectionPageViewModel({
+      title: ["Acme", "Choose a plan"],
+      navigation: [],
+      billing: billingOverviewMock(),
+      selection: selectCompanyBillingTarget(billingOverviewMock(), parseCompanyBillingSearch("")),
+      testId: "company-billing-plan-selection-page",
+    });
+
+    expect(viewModel.pageSubtitle).toBe("Choose a paid plan for this company. Payment details are handled at checkout.");
+  });
+
   it("builds checkout mode props from the catalog data", () => {
     const billing = billingOverviewMock();
 
@@ -317,7 +332,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     });
 
     expect(selection.consequenceNotice?.tone).toBe("warning");
-    expect(selection.consequenceNotice?.description).toContain("invites and restores may be blocked");
+    expect(selection.consequenceNotice?.description).toContain("adding or restoring people may be blocked");
   });
 
   it("shows downgrade warnings for storage overage only", () => {
@@ -342,7 +357,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     });
 
     expect(selection.consequenceNotice?.tone).toBe("warning");
-    expect(selection.consequenceNotice?.description).toContain("uploads may be blocked");
+    expect(selection.consequenceNotice?.description).toContain("uploading files may be blocked");
     expect(selection.consequenceNotice?.description).toContain("120 GB");
     expect(selection.consequenceNotice?.description).toContain("100 GB");
   });
@@ -369,7 +384,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     });
 
     expect(selection.consequenceNotice?.tone).toBe("warning");
-    expect(selection.consequenceNotice?.description).toContain("invites, restores, and uploads may be blocked");
+    expect(selection.consequenceNotice?.description).toContain("adding or restoring people and uploading files may be blocked");
     expect(selection.consequenceNotice?.description).toContain("60 active members");
     expect(selection.consequenceNotice?.description).toContain("120 GB");
   });

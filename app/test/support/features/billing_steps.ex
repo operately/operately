@@ -122,6 +122,8 @@ defmodule Operately.Support.Features.BillingSteps do
     ctx
     |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company) <> "/cancel")
     |> UI.assert_has(testid: "company-billing-cancellation-page")
+    |> UI.assert_text("Schedule cancellation")
+    |> UI.assert_text("Keep current plan")
   end
 
   step :assert_plan_selection_page_is_open, ctx, attrs do
@@ -169,7 +171,7 @@ defmodule Operately.Support.Features.BillingSteps do
 
   step :open_plan_selection_from_billing_overview, ctx do
     ctx
-    |> UI.click_button("Switch Plan")
+    |> UI.click_button("Change plan")
     |> UI.assert_has(testid: "company-billing-plan-selection-page")
   end
 
@@ -202,11 +204,17 @@ defmodule Operately.Support.Features.BillingSteps do
   end
 
   step :click_cancel_plan, ctx do
-    UI.click_button(ctx, "Cancel plan")
+    UI.click_button(ctx, "Schedule cancellation")
   end
 
   step :click_reactivate_plan, ctx do
-    UI.click_button(ctx, "Reactivate plan")
+    UI.click_button(ctx, "Keep current plan")
+  end
+
+  step :open_billing_cancellation_from_overview, ctx do
+    ctx
+    |> UI.click_button("Review cancellation")
+    |> UI.assert_has(testid: "company-billing-cancellation-page")
   end
 
   step :assert_billing_redirect_was_captured, ctx, expected_url do
@@ -277,7 +285,7 @@ defmodule Operately.Support.Features.BillingSteps do
       ctx
       |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company))
       |> UI.assert_text("Cancellation scheduled")
-      |> UI.assert_text("Reactivate plan")
+      |> UI.assert_text("Keep current plan")
     end)
   end
 
@@ -289,8 +297,8 @@ defmodule Operately.Support.Features.BillingSteps do
 
       ctx
       |> UI.assert_page(OperatelyWeb.Paths.company_billing_path(ctx.company))
-      |> UI.assert_text("Plan reactivated")
-      |> UI.assert_text("Cancel plan")
+      |> UI.assert_text("Current plan kept")
+      |> UI.assert_text("Review cancellation")
     end)
   end
 

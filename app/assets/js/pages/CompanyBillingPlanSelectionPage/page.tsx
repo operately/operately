@@ -85,8 +85,8 @@ export function Page() {
 
     if (result.outcome === "target_unavailable") {
       setIsSubmitting(false);
-      setActionError("That billing option is no longer sellable. Please choose another plan.");
-      showErrorToast("Checkout unavailable", "That billing option is no longer available. Please choose another plan.");
+      setActionError("That plan is no longer available. Choose another plan.");
+      showErrorToast("Checkout unavailable", "That plan is no longer available. Choose another plan.");
       return;
     }
 
@@ -100,7 +100,7 @@ export function Page() {
     }
 
     setActionError("We couldn't start checkout right now. Please try again.");
-    showErrorToast("Failed to start checkout", "We couldn't start Polar checkout. Please try again.");
+    showErrorToast("Failed to start checkout", "We couldn't start checkout right now. Please try again.");
     setIsSubmitting(false);
   }, [selection.target]);
 
@@ -117,8 +117,8 @@ export function Page() {
 
     if (result.outcome === "target_unavailable") {
       setIsSubmitting(false);
-      setActionError("That billing option is no longer sellable. Please choose another plan.");
-      showErrorToast("Plan unavailable", "That billing option is no longer available. Please choose another plan.");
+      setActionError("That plan is no longer available. Choose another plan.");
+      showErrorToast("Plan unavailable", "That plan is no longer available. Choose another plan.");
       return;
     }
 
@@ -137,7 +137,7 @@ export function Page() {
     }
 
     setActionError("We couldn't change the plan right now. Please try again.");
-    showErrorToast("Failed to change plan", "We couldn't update the subscription in Polar. Please try again.");
+    showErrorToast("Failed to change plan", "We couldn't change the plan right now. Please try again.");
     setIsSubmitting(false);
   }, [navigate, paths, selection.target]);
 

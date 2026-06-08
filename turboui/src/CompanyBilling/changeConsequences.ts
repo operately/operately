@@ -90,21 +90,21 @@ export function buildCompanyBillingOverageDescription(consequence: CompanyBillin
       description =
         memberLimit == null
           ? null
-          : `After it takes effect, invites and restores may be blocked because the company has ${consequence.memberCount} active members and ${limitLabel} allows ${memberLimit}.`;
+          : `After it takes effect, adding or restoring people may be blocked because this company has ${consequence.memberCount} active members and ${limitLabel} includes ${memberLimit}.`;
       break;
 
     case "storage":
       description =
         storageLimitBytes == null
           ? null
-          : `After it takes effect, uploads may be blocked because the company is using ${formatStorageBytes(consequence.storageUsageBytes)} and ${limitLabel} allows ${formatStorageBytes(storageLimitBytes)}.`;
+          : `After it takes effect, uploading files may be blocked because this company is using ${formatStorageBytes(consequence.storageUsageBytes)} and ${limitLabel} includes ${formatStorageBytes(storageLimitBytes)}.`;
       break;
 
     case "member_and_storage":
       description =
         memberLimit == null || storageLimitBytes == null
           ? null
-          : `After it takes effect, invites, restores, and uploads may be blocked because the company has ${consequence.memberCount} active members and is using ${formatStorageBytes(consequence.storageUsageBytes)}, while ${limitLabel} allows ${memberLimit} members and ${formatStorageBytes(storageLimitBytes)} of storage.`;
+          : `After it takes effect, adding or restoring people and uploading files may be blocked because this company has ${consequence.memberCount} active members, is using ${formatStorageBytes(consequence.storageUsageBytes)}, and ${limitLabel} includes ${memberLimit} members and ${formatStorageBytes(storageLimitBytes)} of storage.`;
       break;
 
     default:

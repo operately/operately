@@ -117,7 +117,7 @@ function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewM
       {overview.stale && (
         <WarningCallout
           message="Billing data may be out of date"
-          description="We could not reach Polar on the last sync. Reload the page to try again."
+          description="We couldn't refresh billing details the last time we checked. Reload the page to try again."
         />
       )}
 
@@ -266,9 +266,7 @@ function StatusDetailNotice({ notice }: { notice: CompanyBillingPage.Notice }) {
   return (
     <div className={`rounded-lg border px-4 py-3 ${toneClasses.wrapper}`}>
       <div className="flex items-start gap-3">
-        <span className={`mt-0.5 rounded-full px-2 py-1 text-xs font-semibold ${toneClasses.badge}`}>
-          {notice.tone === "danger" ? "Danger" : notice.tone === "warning" ? "Warning" : "Info"}
-        </span>
+        <span className={`mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full ${toneClasses.badge}`} aria-hidden="true" />
 
         <div className="min-w-0">
           <div className={`font-semibold ${toneClasses.title}`}>{notice.message}</div>

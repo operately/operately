@@ -11,6 +11,7 @@ import {
 import {
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
+  buildCompanyBillingPageViewModel,
   buildCompanyBillingStatusNotices,
 } from "turboui/CompanyBillingPage";
 
@@ -120,6 +121,27 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
 }
 
 describe("CompanyBillingPage bridge helpers", () => {
+  it("uses the refreshed billing subtitle in overview and confirming modes", () => {
+    const overview = buildCompanyBillingPageViewModel({
+      title: ["Acme", "Billing"],
+      navigation: [],
+      billing: billingOverviewMock(),
+      testId: "company-billing-page",
+    });
+
+    const confirming = buildCompanyBillingPageViewModel({
+      title: ["Acme", "Billing"],
+      navigation: [],
+      billing: billingOverviewMock(),
+      isConfirmingCheckout: true,
+      confirmingTarget: { plan: "team", billingInterval: "yearly", product: null },
+      testId: "company-billing-page",
+    });
+
+    expect(overview.pageSubtitle).toBe("Manage this company's plan, usage, and billing details.");
+    expect(confirming.pageSubtitle).toBe("Manage this company's plan, usage, and billing details.");
+  });
+
   it("builds a free-plan notice when there are no pending billing changes", () => {
     const notices = buildCompanyBillingStatusNotices(
       billingOverviewMock({
@@ -200,7 +222,8 @@ describe("CompanyBillingPage bridge helpers", () => {
       onManageBilling: null,
     });
 
-    expect(overview.actions.map((action) => action.label)).toEqual(["Complete upgrade", "Switch Plan"]);
+    expect(overview.actions.map((action) => action.label)).toEqual(["Complete upgrade", "Change plan"]);
+    expect(overview.actions[0]?.description).toBe("Start checkout again for Team Yearly.");
     expect(overview.actions[0]?.tone).toBe("primary");
     expect(overview.actions[1]?.tone).toBe("secondary");
     expect(overview.usageRows).toEqual([
@@ -229,10 +252,10 @@ describe("CompanyBillingPage bridge helpers", () => {
     });
 
     expect(overview.actions.map((action) => action.label)).toEqual([
-      "Switch Plan",
-      "Update credit card",
-      "Manage billing",
-      "Cancel plan",
+      "Change plan",
+      "Update payment method",
+      "View billing history",
+      "Review cancellation",
     ]);
   });
 
@@ -257,10 +280,10 @@ describe("CompanyBillingPage bridge helpers", () => {
     });
 
     expect(overview.actions.map((action) => action.label)).toEqual([
-      "Switch Plan",
-      "Reactivate plan",
-      "Update credit card",
-      "Manage billing",
+      "Change plan",
+      "Keep current plan",
+      "Update payment method",
+      "View billing history",
     ]);
   });
 
@@ -377,6 +400,7 @@ describe("CompanyBillingPage bridge helpers", () => {
 
     expect(success).toMatchObject({ kind: "success", message: "Upgrade confirmed" });
     expect(recovery).toMatchObject({ kind: "pending", message: "Checkout not completed yet" });
+    expect(recovery.description).toContain("start checkout again");
   });
 
   it("builds plan-change success feedback for immediate and scheduled changes", () => {
@@ -466,7 +490,7 @@ describe("CompanyBillingPage bridge helpers", () => {
 
     expect(scheduledCancellationFeedback).toMatchObject({ kind: "success", message: "Cancellation scheduled" });
     expect(scheduledCancellationFeedback.description).toContain("2026");
-    expect(reactivationFeedback).toMatchObject({ kind: "success", message: "Plan reactivated" });
+    expect(reactivationFeedback).toMatchObject({ kind: "success", message: "Current plan kept" });
     expect(reactivationFeedback.description).toContain("Business Yearly");
   });
 
@@ -488,7 +512,7 @@ describe("CompanyBillingPage bridge helpers", () => {
         message: "Payment issue requires attention",
       }),
     ]);
-    expect(notices[0]!.description).toContain("read-only mode");
+    expect(notices[0]!.description).toContain("become read-only");
   });
 
   it("adds a danger notice when the company is already read-only because of non-payment", () => {
@@ -508,6 +532,6 @@ describe("CompanyBillingPage bridge helpers", () => {
         message: "This company is read-only",
       }),
     ]);
-    expect(notices[0]!.description).toContain("Collaborative work is blocked");
+    expect(notices[0]!.description).toContain("collaborative work is paused");
   });
 });

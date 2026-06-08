@@ -1,6 +1,7 @@
 import {
   buildCompanyBillingCancellationFeedback,
   buildCompanyBillingChangeConsequence,
+  buildCompanyBillingOverageDescription,
   buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingReactivationFeedback,
   findCompanyBillingPlanDefinition,
@@ -235,7 +236,7 @@ describe("CompanyBilling shared helpers", () => {
     });
 
     expect(buildCompanyBillingCancellationFeedback(billing)).toMatchObject({ message: "Cancellation scheduled" });
-    expect(buildCompanyBillingReactivationFeedback(billing)).toMatchObject({ message: "Plan reactivated" });
+    expect(buildCompanyBillingReactivationFeedback(billing)).toMatchObject({ message: "Current plan kept" });
   });
 
   it("builds downgrade consequences with member and storage overages", () => {
@@ -257,5 +258,8 @@ describe("CompanyBilling shared helpers", () => {
     expect(consequence.memberLimit).toBe(20);
     expect(consequence.storageLimitBytes).toBe(1_073_741_824);
     expect(consequence.overageKind).toBe("member_and_storage");
+    expect(buildCompanyBillingOverageDescription(consequence)).toContain(
+      "adding or restoring people and uploading files may be blocked",
+    );
   });
 });

@@ -18,14 +18,14 @@ export function buildCompanyBillingRecoveryFeedback(
     return {
       kind: "pending",
       message: "Checkout not completed yet",
-      description: `You can start a fresh Polar checkout for ${formatCompanyBillingPlanLabel(billing.account.pendingPlanKey, billing.account.pendingBillingInterval)}.`,
+      description: `You can start checkout again for ${formatCompanyBillingPlanLabel(billing.account.pendingPlanKey, billing.account.pendingBillingInterval)}.`,
     };
   }
 
   return {
     kind: "incomplete",
     message: "Checkout not completed",
-    description: "We couldn't confirm a completed checkout. You can safely return to plan selection and try again.",
+    description: "We couldn't confirm the checkout. You can go back to plan selection and try again.",
   };
 }
 
@@ -75,7 +75,7 @@ export function buildCompanyBillingReactivationFeedback(
 ): CompanyBillingPageTypes.Feedback {
   return {
     kind: "success",
-    message: "Plan reactivated",
+    message: "Current plan kept",
     description: `This company will remain on ${formatCompanyBillingPlanLabel(billing.account.planKey, billing.account.billingInterval, "its current paid plan")}.`,
   };
 }
