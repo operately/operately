@@ -4,7 +4,6 @@ import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Hub from "@/features/ResourceHub";
 import { ResourceHubDocsAndFiles } from "@/features/ResourceHub/DocsAndFiles";
 import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
@@ -55,8 +54,6 @@ export function Page() {
   return (
     <Pages.Page title={folder.name!}>
       <Paper.Root size="large">
-        <Hub.ResourcePageNavigation resource={folder} />
-
         <Paper.Body minHeight="75vh">
           <Options folder={folder} />
           <ResourceHubDocsAndFiles

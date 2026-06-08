@@ -12,6 +12,7 @@ import { AddFileWidget } from "./AddFileWidget";
 import { AddFolderModal } from "./AddFolderModal";
 import { DocumentMenu, FileMenu, FolderMenu, LinkMenu } from "./components";
 import { FileDragAndDropArea } from "./FileDragAndDropArea";
+import { resourceHubParentItem } from "./Navigation/resourceHubNavigation";
 import { NewFileModalsProvider, useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { NodesProvider } from "./contexts/NodesContext";
 import { findCommentsCount, findPath, NodeType } from "./utils";
@@ -160,8 +161,13 @@ function useFolderBreadcrumbs(
     ? paths.projectPath(resourceHub.project.id, { tab: "docs-and-files" })
     : paths.resourceHubPath(resourceHub.id!);
   const ancestors = (folder.pathToFolder || []).filter((ancestor) => ancestor.id && ancestor.id !== folder.id);
+  const parentBreadcrumbs = resourceHub.project ? [] : [resourceHubParentItem(paths, resourceHub)];
 
   return [
+    ...parentBreadcrumbs.map((item) => ({
+      label: item.label,
+      link: item.to,
+    })),
     {
       label: displayResourceHubName(resourceHub.name),
       link: rootPath,

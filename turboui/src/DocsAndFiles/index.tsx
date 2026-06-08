@@ -1,6 +1,7 @@
 import React from "react";
 
 import { DivLink, Link } from "../Link";
+import { createTestId } from "../TestableElement";
 import {
   IconAlignJustified,
   IconChartColumn,
@@ -176,11 +177,19 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs?: DocsAndFiles.Breadcrumb[] 
   if (!breadcrumbs || breadcrumbs.length < 1) return null;
 
   return (
-    <nav className="mb-1.5 flex min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap text-sm text-content-dimmed">
+    <nav
+      className="mb-1.5 flex min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap text-sm text-content-dimmed"
+      data-test-id="navigation"
+    >
       {breadcrumbs.map((breadcrumb, index) => (
         <React.Fragment key={`${breadcrumb.link}-${breadcrumb.label}`}>
           {index > 0 && <IconChevronRight size={14} className="shrink-0 text-content-subtle" />}
-          <Link to={breadcrumb.link} underline="hover" className="shrink-0 font-medium text-content-dimmed">
+          <Link
+            to={breadcrumb.link}
+            underline="hover"
+            testId={createTestId("nav-item", breadcrumb.label)}
+            className="shrink-0 font-medium text-content-dimmed"
+          >
             {breadcrumb.label}
           </Link>
         </React.Fragment>

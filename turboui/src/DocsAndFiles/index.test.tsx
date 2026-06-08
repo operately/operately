@@ -72,7 +72,7 @@ describe("DocsAndFiles", () => {
   });
 
   it("renders folder breadcrumbs above the title", () => {
-    renderWithRouter(
+    const { container } = renderWithRouter(
       <DocsAndFilesTab
         title="Research notes"
         items={items}
@@ -85,6 +85,8 @@ describe("DocsAndFiles", () => {
 
     expect(screen.getByRole("link", { name: "Documents & Files" })).toHaveAttribute("href", "/project/docs-and-files");
     expect(screen.getByRole("link", { name: "Planning" })).toHaveAttribute("href", "/folders/planning");
+    expect(container.querySelector('[data-test-id="navigation"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="nav-item-documents-files"]')).toBeInTheDocument();
     expect(screen.getByText("Research notes")).toBeInTheDocument();
   });
 });
