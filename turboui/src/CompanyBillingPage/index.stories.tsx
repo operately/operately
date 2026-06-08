@@ -120,7 +120,7 @@ export const PendingCheckoutOverview: Story = {
         feedback={{
           kind: "pending",
           message: "Checkout not completed yet",
-          description: "You can start a fresh Polar checkout for Team Yearly.",
+          description: "You can start checkout again for Team Yearly.",
         }}
         onOpenSelection={() => console.log("switch plan")}
         onCompleteUpgrade={() => console.log("complete")}

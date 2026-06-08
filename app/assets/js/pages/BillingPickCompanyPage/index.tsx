@@ -72,7 +72,7 @@ function CompanyList({
   if (companies.length === 0) {
     return (
       <div className="text-center text-content-dimmed py-8">
-        You don't own any companies yet.
+        You don't have access to manage billing for any companies yet.
       </div>
     );
   }
