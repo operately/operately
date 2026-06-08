@@ -6,10 +6,12 @@ import { useNavigate } from "react-router-dom";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
+import * as ResourceHubs from "@/models/resourceHubs";
 import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
+import { ResourceHubDocsAndFiles, ResourceHubDocsAndFilesPreview } from "@/features/ResourceHub/DocsAndFiles";
 import { PageCache } from "@/routes/PageCache";
 import { ProjectPage, showErrorToast } from "turboui";
 import { fetchAll } from "../../utils/async";
@@ -34,6 +36,9 @@ function pageCacheKey(id: string): string {
 type LoaderResult = {
   data: {
     project: Projects.Project;
+    resourceHub: ResourceHubs.ResourceHub | null;
+    resourceHubNodes: ResourceHubs.ResourceHubNode[];
+    resourceHubDraftNodes: ResourceHubs.ResourceHubNode[];
     checkIns: ProjectCheckIn[];
     discussions: Projects.Discussion[];
     backendTasks: Tasks.Task[];
@@ -46,38 +51,79 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
-    fetchFn: () =>
-      fetchAll({
-        project: Projects.getProject({
-          id: params.id,
-          includeSpace: true,
-          includeGoal: true,
-          includeChampion: true,
-          includeReviewer: true,
-          includePermissions: true,
-          includeContributors: true,
-          includeKeyResources: true,
-          includeMilestones: true,
-          includeLastCheckIn: true,
-          includePrivacy: true,
-          includeRetrospective: true,
-          includeUnreadNotifications: true,
-          includeSubscriptionList: true,
-        }).then((d) => d.project!),
+    fetchFn: async () => {
+      const project = await Projects.getProject({
+        id: params.id,
+        includeSpace: true,
+        includeGoal: true,
+        includeChampion: true,
+        includeReviewer: true,
+        includePermissions: true,
+        includeContributors: true,
+        includeResourceHub: true,
+        includeMilestones: true,
+        includeLastCheckIn: true,
+        includePrivacy: true,
+        includeRetrospective: true,
+        includeUnreadNotifications: true,
+        includeSubscriptionList: true,
+      }).then((d) => d.project!);
+
+      const hubId = project.resourceHub?.id;
+      const resourceHubRequests = hubId
+        ? {
+            resourceHub: ResourceHubs.resource_hubs
+              .get({
+                id: hubId,
+                includeProject: true,
+                includePermissions: true,
+                includePotentialSubscribers: true,
+              })
+              .then((res) => res.resourceHub!),
+            resourceHubNodes: ResourceHubs.resource_hubs.listNodes({
+              resourceHubId: hubId,
+              includeCommentsCount: true,
+              includeChildrenCount: true,
+            }),
+          }
+        : {
+            resourceHub: Promise.resolve(null),
+            resourceHubNodes: Promise.resolve({ nodes: [], draftNodes: [] }),
+          };
+
+      const data = await fetchAll({
+        ...resourceHubRequests,
         checkIns: Api.projects
           .listCheckIns({ projectId: params.id, includeAuthor: true })
           .then((d) => d.projectCheckIns!),
         discussions: Api.projects.listDiscussions({ projectId: params.id }).then((d) => d.discussions!),
         backendTasks: Api.tasks.list({ projectId: params.id }).then((d) => d.tasks!),
         childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
-      }),
+      });
+
+      return {
+        ...data,
+        project,
+        resourceHubNodes: data.resourceHubNodes.nodes!,
+        resourceHubDraftNodes: data.resourceHubNodes.draftNodes!,
+      };
+    },
   });
 }
 
 function Page() {
   const paths = usePaths();
   const { data, refresh } = PageCache.useData(loader);
-  const { project, checkIns, discussions, backendTasks, childrenCount } = data;
+  const {
+    project,
+    resourceHub,
+    resourceHubNodes,
+    resourceHubDraftNodes,
+    checkIns,
+    discussions,
+    backendTasks,
+    childrenCount,
+  } = data;
   const navigate = useNavigate();
   const currentUser = useMe();
 
@@ -139,7 +185,6 @@ function Page() {
     reorderMilestones,
     searchMilestones,
   } = useMilestones(paths, project, refresh);
-  const { resources, createResource, updateResource, removeResource } = useResources(project);
 
   const {
     tasks: baseTasks,
@@ -171,6 +216,10 @@ function Page() {
 
   const parentGoalSearch = useParentGoalSearch(project);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
+  const refreshProjectPage = React.useCallback(async () => {
+    PageCache.invalidate(pageCacheKey(project.id));
+    await refresh?.();
+  }, [project.id, refresh]);
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
     id: project.id,
@@ -335,10 +384,20 @@ function Page() {
     richTextHandlers: richEditorHandlers,
     localDraftKeyBase: `project:${project.id}`,
 
-    resources,
-    onResourceAdd: createResource,
-    onResourceEdit: updateResource,
-    onResourceRemove: removeResource,
+    docsAndFiles: resourceHub
+      ? {
+          preview: <ResourceHubDocsAndFilesPreview resourceHub={resourceHub} nodes={resourceHubNodes} />,
+          tabContent: (
+            <ResourceHubDocsAndFiles
+              resourceHub={resourceHub}
+              nodes={resourceHubNodes}
+              draftNodes={resourceHubDraftNodes}
+              refresh={refreshProjectPage}
+            />
+          ),
+          count: resourceHubNodes.length,
+        }
+      : undefined,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
 
@@ -565,19 +624,6 @@ function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): P
   });
 }
 
-function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[] {
-  return resources.map((r) => prepareResource(r));
-}
-
-function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
-  return {
-    id: resource.id,
-    name: resource.title,
-    url: resource.link,
-    type: resource.resourceType,
-  };
-}
-
 function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
   const parsedMilestones = parseMilestonesForTurboUi(
     paths,
@@ -674,80 +720,4 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
     searchMilestones,
     orderingState,
   };
-}
-
-function useResources(project: Projects.Project) {
-  const [resources, setResources] = React.useState<ProjectPage.Resource[]>(prepareResources(project.keyResources!));
-
-  const createResource = async (resource: ProjectPage.NewResourcePayload) => {
-    return Api.projects
-      .createKeyResource({
-        projectId: project.id,
-        title: resource.name,
-        link: resource.url,
-        resourceType: resource.type,
-      })
-      .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setResources((prev) => [...prev, prepareResource(data.keyResource)]);
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to create resource", e);
-        showErrorToast("Error", "Failed to create resource");
-
-        return { success: false };
-      });
-  };
-
-  const updateResource = async (resource: ProjectPage.UpdateResourcePayload) => {
-    return Api.projects
-      .updateKeyResource({
-        id: resource.id,
-        title: resource.name,
-        link: resource.url,
-      })
-      .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setResources((prev) =>
-          prev.map((r) => {
-            if (r.id === resource.id) {
-              return prepareResource(data.keyResource);
-            }
-            return r;
-          }),
-        );
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to update resource", e);
-        showErrorToast("Error", "Failed to update resource");
-
-        return { success: false };
-      });
-  };
-
-  const removeResource = async (id: string) => {
-    return Api.projects
-      .deleteKeyResource({ id })
-      .then(() => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        const keyResources = project.keyResources || [];
-
-        const updatedResources = keyResources.filter((r) => r.id !== id);
-        setResources(prepareResources(updatedResources));
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to remove resource", e);
-        showErrorToast("Error", "Failed to remove resource");
-
-        return { success: false };
-      });
-  };
-
-  return { resources, createResource, updateResource, removeResource };
 }

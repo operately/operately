@@ -4,8 +4,9 @@ import type { ActivityContentResourceHubLinkEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 import { EditedResourceList } from "../resourceHubEditedResources";
 
 const ResourceHubLinkEdited: ActivityHandler = {
@@ -30,23 +31,23 @@ const ResourceHubLinkEdited: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const space = spaceLink(content(activity).space!);
+    const data = content(activity);
     const resources = <EditedResourceList activity={activity} />;
 
     if (Activities.getAggregatedActivities(activity).length === 1) {
-      const link = content(activity).link!.name!;
+      const link = data.link!.name!;
 
-      if (page === "space") {
+      if (page === "space" || page === "project") {
         return feedTitle(activity, "edited a link:", link);
       } else {
-        return feedTitle(activity, "edited a link in the", space, "space:", link);
+        return feedTitle(activity, "edited a link", ...resourceHubParentScope(data, page, ":"), link);
       }
     }
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, "edited", resources);
     } else {
-      return feedTitle(activity, "edited", resources, "in the", space, "space");
+      return feedTitle(activity, "edited", resources, ...resourceHubParentScope(data, page));
     }
   },
 

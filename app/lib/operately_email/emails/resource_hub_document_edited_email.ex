@@ -4,18 +4,20 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
   alias Operately.Activities.Notifications.MentionedPeople
   alias Operately.Repo
   alias Operately.ResourceHubs.Document
+  alias OperatelyEmail.Emails.ResourceHubParent
 
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
 
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :space]])
+    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, resource_hub: [:project, :space]]])
     content = activity.content["content"] || document.content
+    parent = ResourceHubParent.from_resource(document)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: document.space.name, who: author, action: action(person, document, content))
+    |> subject(where: parent.name, who: author, action: action(person, document, content))
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:content, content)
@@ -27,14 +29,11 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :space]])
+    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, resource_hub: [:project, :space]]])
     content = activity.content["content"] || document.content
     %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
 
     %{
-      parent_id: document.space.id,
-      parent_type: :space,
-      parent_name: document.space.name,
       headline: "updated the document \"#{document.node.name}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
@@ -43,6 +42,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
       occurred_at: activity.inserted_at,
       coalesce_key: nil
     }
+    |> Map.merge(ResourceHubParent.fields(document))
   end
 
   defp action(person, document, content) do

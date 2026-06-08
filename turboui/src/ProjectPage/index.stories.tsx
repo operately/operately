@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 
 import { DateField } from "../DateField";
+import { DocsAndFilesPreview, DocsAndFilesTab } from "../DocsAndFiles";
+import type { DocsAndFiles } from "../DocsAndFiles";
 import { createContextualDate } from "../DateField/mockData";
 import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
@@ -237,6 +239,71 @@ const mockResources: ResourceManager.Resource[] = [
   },
 ];
 
+const mockDocsAndFilesItems: DocsAndFiles.Item[] = [
+  {
+    id: "doc-1",
+    name: "Referral rollout FAQ",
+    type: "document",
+    link: "#",
+    updatedAt: daysAgo(1).toISOString(),
+    commentsCount: 3,
+    details: ["Alice Johnson", "Answers for the customer-facing launch questions"],
+  },
+  {
+    id: "folder-1",
+    name: "Reward ledger controls",
+    type: "folder",
+    link: "#",
+    updatedAt: daysAgo(2).toISOString(),
+    details: ["4 items"],
+  },
+  {
+    id: "doc-2",
+    name: "Partner announcement draft",
+    type: "document",
+    link: "#",
+    updatedAt: daysAgo(3).toISOString(),
+    details: ["Bob Smith"],
+  },
+  {
+    id: "file-1",
+    name: "Support macros",
+    type: "file",
+    link: "#",
+    fileKind: "pdf",
+    updatedAt: daysAgo(4).toISOString(),
+    details: ["Diana Prince", "240KB"],
+  },
+  {
+    id: "link-1",
+    name: "Attribution dashboard notes",
+    type: "link",
+    link: "#",
+    updatedAt: daysAgo(5).toISOString(),
+    commentsCount: 1,
+    details: ["Charlie Brown"],
+  },
+  {
+    id: "file-2",
+    name: "Pilot customer list",
+    type: "file",
+    link: "#",
+    fileKind: "default",
+    updatedAt: daysAgo(6).toISOString(),
+    details: ["Alice Johnson", "18KB"],
+  },
+];
+
+function mockDocsAndFiles(
+  items: DocsAndFiles.Item[] = mockDocsAndFilesItems,
+): NonNullable<ProjectPage.Props["docsAndFiles"]> {
+  return {
+    count: items.length,
+    preview: <DocsAndFilesPreview items={items} tabPath="#" />,
+    tabContent: <DocsAndFilesTab title="Documents & Files" items={items} />,
+  };
+}
+
 export const Default: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
@@ -424,6 +491,7 @@ export const Default: Story = {
         onResourceAdd={handleResourceAdd}
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
+        docsAndFiles={mockDocsAndFiles()}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
@@ -548,6 +616,7 @@ export const OverdueCheckIn: Story = {
         onResourceRemove={(id) => {
           setResources(resources.filter((resource) => resource.id !== id));
         }}
+        docsAndFiles={mockDocsAndFiles()}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
@@ -937,6 +1006,7 @@ export const EmptyProject: Story = {
         onResourceAdd={handleResourceAdd}
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
+        docsAndFiles={mockDocsAndFiles([])}
         contributors={[]}
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
