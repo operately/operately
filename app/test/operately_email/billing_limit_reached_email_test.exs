@@ -22,11 +22,13 @@ defmodule OperatelyEmail.BillingLimitReachedEmailTest do
     assert {:ok, _} = BillingLimitReachedEmail.send([ctx.admin, ctx.owner], ctx.company, status)
 
     assert_email_sent(fn email ->
-      assert email.subject == "#{ctx.company.name} has reached its member limit"
+      assert email.subject == "#{ctx.company.name} has reached its Free plan member limit"
       assert Enum.sort(Enum.map(email.to, &elem(&1, 1))) == Enum.sort([ctx.admin.email, ctx.owner.email])
-      assert email.html_body =~ "member limit"
-      assert email.html_body =~ "20"
-      assert email.html_body =~ "Review Billing"
+      assert email.html_body =~ "#{ctx.company.name} has reached its member limit: 20 of 20 active members."
+      assert email.html_body =~ "Adding or restoring people is blocked until the plan is upgraded."
+      assert email.html_body =~ "Review billing"
+      assert email.text_body =~ "#{ctx.company.name} has reached its Free plan member limit."
+      assert email.text_body =~ "#{ctx.company.name} has reached its member limit: 20 of 20 active members."
       assert email.text_body =~ OperatelyWeb.Paths.company_billing_path(ctx.company)
       true
     end)

@@ -1,7 +1,7 @@
-Your company has reached 90% of its <%= @limit_name %>.
+<%= @headline %>.
 
-Current usage: <%= @current_usage %> of <%= @limit %>.
+<%= @usage_summary %>
 
-<%= @blocked_work %>
+<%= @impact_message %>
 
-Review billing: <%= @cta_url %>
+<%= @cta_label %>: <%= @cta_url %>
