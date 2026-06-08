@@ -2,6 +2,7 @@ import { AxiosRequestConfig } from "axios";
 import csrftoken from "@/utils/csrf_token";
 import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
 import { showErrorToast } from "turboui";
+import { formatStorageBytes } from "turboui/CompanyBilling";
 
 import Api, { BlobCreationInput, BlobCreationOutput, createBlob, createAvatarBlob, markBlobUploaded } from "@/api";
 import { extractLimitError } from "@/models/billing/limitError";
@@ -52,7 +53,11 @@ async function uploadWithCreator(
     const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
 
     if (limitError?.code === "storage_limit_exceeded") {
-      showErrorToast("Storage limit reached", message || "This company has reached its storage limit. Upgrade the plan to add more files.");
+      showErrorToast(
+        "Storage limit reached",
+        message ||
+          `This company has reached its storage limit: ${formatStorageBytes(limitError.currentUsage)} of ${formatStorageBytes(limitError.limit)} used. Uploading files is blocked until this company is back within its plan limits.`,
+      );
     }
 
     throw error;

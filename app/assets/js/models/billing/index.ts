@@ -12,7 +12,7 @@ export type BillingOverview = api.BillingOverview;
 export type { BillingLimitGuidance, BillingLimitViewerRole } from "./memberLimitGuidance";
 export type { BillingLimitError } from "./limitError";
 
-export { buildBillingDangerBanner, isBillingManagementPath } from "./dangerBanner";
+export { buildBillingDangerBanner, describeBlockedActions, isBillingManagementPath } from "./dangerBanner";
 export { isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
 export { buildMemberLimitGuidance } from "./memberLimitGuidance";
 export { extractLimitError, extractLimitErrorDetails } from "./limitError";

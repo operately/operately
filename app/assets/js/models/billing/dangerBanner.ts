@@ -79,7 +79,7 @@ export function buildBillingDangerBanner(
     shouldContactAdmin: !canManageBilling,
     cta: canManageBilling
       ? {
-          label: "Review plans",
+          label: "Review billing",
           to: routes.companyBillingPlansPath(),
         }
       : null,
@@ -120,4 +120,16 @@ function usageRows(activeStatuses: BillingLimitSnapshot[]): BillingDangerUsageRo
 
 export function isBillingManagementPath(pathname: string, billingPath: string) {
   return pathname === billingPath || pathname.startsWith(`${billingPath}/`);
+}
+
+export function describeBlockedActions(blockedMemberLimit: boolean, blockedStorageLimit: boolean) {
+  if (blockedMemberLimit && blockedStorageLimit) {
+    return { subject: "Adding or restoring people and uploading files", verb: "are" as const };
+  }
+
+  if (blockedMemberLimit) {
+    return { subject: "Adding or restoring people", verb: "is" as const };
+  }
+
+  return { subject: "Uploading files", verb: "is" as const };
 }

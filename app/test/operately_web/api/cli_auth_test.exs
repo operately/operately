@@ -249,7 +249,8 @@ defmodule OperatelyWeb.Api.CliAuthTest do
                  invite_token: invite_link.token
                })
 
-      assert res.message == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert res.message ==
+               "This company has reached its member limit: 20 of 20 active members. Adding or restoring people is blocked until this company is back within its plan limits."
       assert res.details.code == "member_count_limit_exceeded"
       assert res.details.limit_key == "member_count"
       assert res.details.plan_key == "free"

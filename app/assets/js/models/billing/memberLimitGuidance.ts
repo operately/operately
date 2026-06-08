@@ -25,16 +25,16 @@ export function buildMemberLimitGuidance(
     ? formatCompanyBillingPlanLabel(error.recommendedUpgrade.target.plan, error.recommendedUpgrade.target.billingInterval)
     : null;
 
-  const usageSummary = `This company has ${error.currentUsage} users. The limit is ${error.limit}.`;
+  const usageSummary = `This company has ${error.currentUsage} active members. The plan includes ${error.limit}.`;
 
-  if (role === "owner") {
+  if (role === "owner" || role === "company_admin") {
     return {
       title: "This company has reached its member limit",
-      description: "Review the available company plans to add more people.",
+      description: "Review billing to change the plan and add or restore people.",
       usageSummary,
       recommendedPlanLabel,
       cta: {
-        label: "Review upgrade options",
+        label: "Review billing",
         to: error.recommendedUpgrade.target
           ? routes.companyBillingPlansPath({
               plan: error.recommendedUpgrade.target.plan,
@@ -45,19 +45,9 @@ export function buildMemberLimitGuidance(
     };
   }
 
-  if (role === "company_admin") {
-    return {
-      title: "This company has reached its member limit",
-      description: "A company owner needs to upgrade the company plan before you can add or restore people.",
-      usageSummary,
-      recommendedPlanLabel,
-      cta: null,
-    };
-  }
-
   return {
     title: "This company has reached its member limit",
-    description: "Contact a company owner or company admin and ask them to upgrade the plan before trying again.",
+    description: "Contact an admin or owner to review billing and change the plan before trying again.",
     usageSummary,
     recommendedPlanLabel: null,
     cta: null,

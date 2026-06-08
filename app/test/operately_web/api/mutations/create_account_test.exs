@@ -106,7 +106,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
       assert {200, result} = mutation(ctx.conn, [:create_account], inputs)
       assert result.company == nil
       assert result.person == nil
-      assert result.error == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert result.error ==
+               "This company has reached its member limit: 20 of 20 active members. Adding or restoring people is blocked until this company is back within its plan limits."
       assert result.join_error_details.code == "member_count_limit_exceeded"
       assert result.join_error_details.limit_key == "member_count"
       assert result.join_error_details.plan_key == "free"
