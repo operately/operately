@@ -13,7 +13,7 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
   if (props.isConfirmingCheckout) {
     return {
       pageTitle: "Billing",
-      pageSubtitle: "Review the current subscription state for this company.",
+      pageSubtitle: "Manage this company's plan, usage, and billing details.",
       mode: "confirming",
       confirming: buildCompanyBillingConfirmingMode(props.confirmingTarget || null),
     };
@@ -21,7 +21,7 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
 
   return {
     pageTitle: "Billing",
-    pageSubtitle: "Review the current subscription state for this company.",
+    pageSubtitle: "Manage this company's plan, usage, and billing details.",
     mode: "overview",
     overview: buildCompanyBillingOverviewMode({
       billing: props.billing,
@@ -164,7 +164,7 @@ export function buildCompanyBillingStatusNotices(
     notices.push({
       tone: "danger",
       message: "This company is read-only",
-      description: "This company is read-only because payment was not resolved in time. Collaborative work is blocked until an admin resolves the payment issue.",
+      description: "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until billing is updated.",
     });
   }
 
@@ -173,7 +173,7 @@ export function buildCompanyBillingStatusNotices(
       notices.push({
         tone: "warning",
         message: "Payment issue detected",
-        description: "Polar reports this subscription as past due. Billing access may be affected until payment is resolved.",
+        description: "Payment for this company is past due. Billing access may be affected until payment is resolved.",
       });
     }
   }
@@ -208,7 +208,7 @@ function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.A
     actions.push({
       label: "Complete upgrade",
       title: "Finish your upgrade",
-      description: `Start a fresh Polar checkout for ${pendingPlanLabel}.`,
+      description: `Start checkout again for ${pendingPlanLabel}.`,
       kind: "featured",
       tone: "primary",
       onClick: args.onCompleteUpgrade,
@@ -217,7 +217,7 @@ function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.A
 
   if (args.onSeePlans) {
     actions.push({
-      label: "Switch Plan",
+      label: "Change plan",
       title: isPaidCompany ? "Change plan" : "Choose a paid plan",
       description: isPaidCompany
         ? "Compare available plans and switch this company to a different subscription."
@@ -230,8 +230,8 @@ function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.A
 
   if (isPaidCompany && args.billing.account.cancelAtPeriodEnd && args.onReactivatePlan) {
     actions.push({
-      label: "Reactivate plan",
-      title: "Keep the current plan",
+      label: "Keep current plan",
+      title: "Keep current plan",
       description: "Remove the scheduled cancellation and keep this paid plan active.",
       kind: "recovery",
       tone: "secondary",
@@ -241,7 +241,7 @@ function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.A
 
   if (isPaidCompany && args.onUpdatePaymentMethod) {
     actions.push({
-      label: "Update credit card",
+      label: "Update payment method",
       title: "Payment method",
       description: "Update the card used for renewals and payment recovery.",
       kind: "support",
@@ -252,9 +252,9 @@ function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.A
 
   if (isPaidCompany && args.onManageBilling) {
     actions.push({
-      label: "Manage billing",
-      title: "Invoices and billing history",
-      description: "Open Polar for invoices, receipts, and full billing details.",
+      label: "View billing history",
+      title: "Billing history",
+      description: "Open invoices, receipts, and payment history for this company.",
       kind: "support",
       tone: "secondary",
       onClick: args.onManageBilling,
@@ -263,9 +263,9 @@ function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.A
 
   if (isPaidCompany && !args.billing.account.cancelAtPeriodEnd && args.onCancelPlan) {
     actions.push({
-      label: "Cancel plan",
-      title: "Cancel subscription",
-      description: "Schedule this subscription to end at the close of the current billing period.",
+      label: "Review cancellation",
+      title: "Cancel plan",
+      description: "See what will change before this company moves to the Free plan.",
       kind: "danger",
       tone: "danger",
       onClick: args.onCancelPlan,
@@ -294,8 +294,8 @@ function paymentGraceDescription(value?: string | null): string {
   const formattedDate = formatCompanyBillingDate(value);
 
   if (!formattedDate) {
-    return "Payment must be resolved soon or this company will switch to read-only mode.";
+    return "Billing needs attention soon or this company will become read-only.";
   }
 
-  return `Payment must be resolved by ${formattedDate} or this company will switch to read-only mode.`;
+  return `Billing needs attention by ${formattedDate} or this company will become read-only.`;
 }

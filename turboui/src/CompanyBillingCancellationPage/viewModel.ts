@@ -13,11 +13,11 @@ export function buildCompanyBillingCancellationPageViewModel(
 ): CompanyBillingCancellationPage.PageViewModel {
   return {
     pageTitle: "Cancel plan",
-    pageSubtitle: "Review what changes before this company moves back to the free plan.",
+    pageSubtitle: "See what will change before this company moves to the Free plan.",
     summary: buildCompanyBillingCancellationSummary(props.billing),
     errorMessage: props.actionError || null,
     cancelAction: {
-      label: "Cancel plan",
+      label: "Schedule cancellation",
       onClick: props.onCancelPlan || noop,
       loading: props.isSubmitting || false,
     },
@@ -77,11 +77,11 @@ function compactRows(
 function overLimitWarningMessage(overageKind: ReturnType<typeof buildCompanyBillingChangeConsequence>["overageKind"]) {
   switch (overageKind) {
     case "member":
-      return "This company is above the free plan member limit";
+      return "This company is above the Free plan member limit";
     case "storage":
-      return "This company is above the free plan storage limit";
+      return "This company is above the Free plan storage limit";
     default:
-      return "This company is above the free plan limits";
+      return "This company is above the Free plan limits";
   }
 }
 

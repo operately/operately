@@ -195,7 +195,8 @@ defmodule Operately.Features.BillingTest do
     })
 
     ctx
-    |> Steps.visit_billing_cancel_page()
+    |> Steps.visit_billing_overview_page()
+    |> Steps.open_billing_cancellation_from_overview()
     |> Steps.assert_billing_cancellation_page_is_open()
   end
 
@@ -221,7 +222,8 @@ defmodule Operately.Features.BillingTest do
     })
 
     ctx
-    |> Steps.visit_billing_cancel_page()
+    |> Steps.visit_billing_overview_page()
+    |> Steps.open_billing_cancellation_from_overview()
     |> Steps.assert_billing_cancellation_page_is_open()
     |> Steps.click_cancel_plan()
     |> Steps.assert_cancellation_scheduled()

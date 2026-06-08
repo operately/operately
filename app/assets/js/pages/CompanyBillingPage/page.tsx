@@ -152,8 +152,8 @@ export function Page() {
 
       if (result.outcome === "target_unavailable") {
         setIsStartingCheckout(false);
-        setActionError("That billing option is no longer sellable. Please choose another plan.");
-        showErrorToast("Checkout unavailable", "That billing option is no longer available. Please choose another plan.");
+        setActionError("That plan is no longer available. Choose another plan.");
+        showErrorToast("Checkout unavailable", "That plan is no longer available. Choose another plan.");
         return;
       }
 
@@ -167,7 +167,7 @@ export function Page() {
       }
 
       setActionError("We couldn't start checkout right now. Please try again.");
-      showErrorToast("Failed to start checkout", "We couldn't start Polar checkout. Please try again.");
+      showErrorToast("Failed to start checkout", "We couldn't start checkout right now. Please try again.");
       setIsStartingCheckout(false);
     },
     [],
@@ -187,8 +187,8 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't open payment method management right now. Please try again.");
-    showErrorToast("Payment method unavailable", "We couldn't open payment method management in Polar. Please try again.");
+    setActionError("We couldn't open payment method details right now. Please try again.");
+    showErrorToast("Payment method unavailable", "We couldn't open payment method details right now. Please try again.");
   }, [paths]);
 
   const openCustomerPortalSession = React.useCallback(async () => {
@@ -205,8 +205,8 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't open billing management right now. Please try again.");
-    showErrorToast("Billing management unavailable", "We couldn't open the Polar billing portal. Please try again.");
+    setActionError("We couldn't open billing history right now. Please try again.");
+    showErrorToast("Billing management unavailable", "We couldn't open billing history right now. Please try again.");
   }, [paths]);
 
   const reactivatePlan = React.useCallback(async () => {
@@ -225,8 +225,8 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't reactivate the plan right now. Please try again.");
-    showErrorToast("Reactivation unavailable", "We couldn't update the subscription in Polar. Please try again.");
+    setActionError("We couldn't keep the current plan right now. Please try again.");
+    showErrorToast("Reactivation unavailable", "We couldn't keep the current plan right now. Please try again.");
   }, []);
 
   const refreshFromBillingUpdate = React.useCallback(() => {

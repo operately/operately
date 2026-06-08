@@ -34,7 +34,7 @@ export function buildCompanyBillingPlanSelectionPageViewModel(
     pageSubtitle:
       selection.mode === "change_plan"
         ? "Choose a new plan for this company."
-        : "Select a paid plan. Card and payment confirmation happen in Polar.",
+        : "Choose a paid plan for this company. Payment details are handled at checkout.",
     selection,
   };
 }

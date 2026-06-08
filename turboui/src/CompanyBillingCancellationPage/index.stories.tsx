@@ -63,7 +63,7 @@ export const NormalPaidCancellation: Story = {
       navigation={navigation}
       billing={billingOverviewMock()}
       onKeepCurrentPlan={() => console.log("keep")}
-      onCancelPlan={() => console.log("cancel")}
+      onCancelPlan={() => console.log("schedule cancellation")}
       testId="billing-cancellation-page"
     />
   ),
@@ -76,7 +76,7 @@ export const OverFreeLimitWarning: Story = {
       navigation={navigation}
       billing={billingOverviewMock({ memberCount: 25 })}
       onKeepCurrentPlan={() => console.log("keep")}
-      onCancelPlan={() => console.log("cancel")}
+      onCancelPlan={() => console.log("schedule cancellation")}
       testId="billing-cancellation-page-over-limit"
     />
   ),
@@ -89,7 +89,7 @@ export const SafeWithinFreeLimit: Story = {
       navigation={navigation}
       billing={billingOverviewMock({ memberCount: 8 })}
       onKeepCurrentPlan={() => console.log("keep")}
-      onCancelPlan={() => console.log("cancel")}
+      onCancelPlan={() => console.log("schedule cancellation")}
       testId="billing-cancellation-page-within-limit"
     />
   ),

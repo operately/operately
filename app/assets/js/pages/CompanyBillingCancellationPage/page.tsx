@@ -70,8 +70,8 @@ export function Page() {
       }
     }
 
-    setActionError("We couldn't cancel the plan right now. Please try again.");
-    showErrorToast("Cancellation unavailable", "We couldn't update the subscription in Polar. Please try again.");
+    setActionError("We couldn't schedule the cancellation right now. Please try again.");
+    showErrorToast("Cancellation unavailable", "We couldn't schedule the cancellation right now. Please try again.");
     setIsSubmitting(false);
   }, [navigate, paths]);
 

@@ -1,6 +1,9 @@
 import * as Billing from "@/models/billing";
 
-import { buildCompanyBillingCancellationPageViewModel, buildCompanyBillingCancellationSummary } from "turboui/CompanyBillingCancellationPage";
+import {
+  buildCompanyBillingCancellationPageViewModel,
+  buildCompanyBillingCancellationSummary,
+} from "turboui/CompanyBillingCancellationPage";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
   const { account, ...rest } = params;
@@ -61,7 +64,7 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
       ]),
     );
     expect(summary.overLimitWarning).toMatchObject({
-      message: "This company is above the free plan storage limit",
+      message: "This company is above the Free plan storage limit",
     });
   });
 
@@ -79,6 +82,7 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
     });
 
     expect(viewModel.pageTitle).toBe("Cancel plan");
+    expect(viewModel.pageSubtitle).toBe("See what will change before this company moves to the Free plan.");
     expect(viewModel.summary.rows).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ label: "Active members", value: "25" }),
@@ -88,10 +92,12 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
       ]),
     );
     expect(viewModel.summary.overLimitWarning).toMatchObject({
-      message: "This company is above the free plan limits",
+      message: "This company is above the Free plan limits",
     });
-    expect(viewModel.summary.overLimitWarning?.description).toContain("invites, restores, and uploads may be blocked");
+    expect(viewModel.summary.overLimitWarning?.description).toContain(
+      "adding or restoring people and uploading files may be blocked",
+    );
     expect(viewModel.keepAction.label).toBe("Keep current plan");
-    expect(viewModel.cancelAction.label).toBe("Cancel plan");
+    expect(viewModel.cancelAction.label).toBe("Schedule cancellation");
   });
 });
