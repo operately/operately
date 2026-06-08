@@ -1,9 +1,11 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Billing.ProductCatalogEntry do
+  alias Operately.Billing.Plans
+
   def serialize(product, level: :essential) do
     %{
       id: OperatelyWeb.Paths.billing_product_id(product),
       provider: product.provider,
-      plan_family: product.plan_family,
+      plan_family: Plans.atom_key(product.plan_family) || product.plan_family,
       billing_interval: product.billing_interval,
       polar_product_id: product.polar_product_id,
       polar_product_name: product.polar_product_name,

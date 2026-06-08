@@ -52,7 +52,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly",
+          polar_product_id: "prod_pro_monthly",
           archived_at: ~U[2026-01-01 00:00:00Z]
         })
 
@@ -69,7 +69,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
          %{
            "active_subscription" => %{
              "status" => "trialing",
-             "product_id" => "prod_team_monthly",
+             "product_id" => "prod_pro_monthly",
              "current_period_end" => "2026-06-30T00:00:00Z",
              "cancel_at_period_end" => false
            },
@@ -87,7 +87,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
       assert {:ok, account} = CustomerStateSync.run(ctx.company, client: StubClient)
 
       assert account.status == :active
-      assert account.plan_key == :team
+      assert account.plan_key == "team"
       assert account.billing_interval == :monthly
       assert account.current_period_end == ~U[2026-06-30 00:00:00Z]
       assert account.cancel_at_period_end == false
@@ -119,7 +119,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
       assert {:ok, account} = CustomerStateSync.run(ctx.company, client: StubClient)
 
       assert account.status == :canceled
-      assert account.plan_key == :business
+      assert account.plan_key == "business"
       assert account.billing_interval == :yearly
       assert account.cancel_at_period_end == true
       assert account.current_period_end == ~U[2026-12-31 00:00:00Z]
@@ -169,7 +169,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "yearly",
-          polar_product_id: "prod_team_yearly"
+          polar_product_id: "prod_pro_yearly"
         })
 
       put_client_response(fn _company_id ->
@@ -182,7 +182,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
                "product_id" => "prod_business_yearly",
                "current_period_end" => "2026-12-31T00:00:00Z",
                "cancel_at_period_end" => false,
-               "pending_update" => %{"product_id" => "prod_team_yearly"}
+               "pending_update" => %{"product_id" => "prod_pro_yearly"}
              }
            ]
          }}
@@ -190,9 +190,9 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
 
       assert {:ok, account} = CustomerStateSync.run(ctx.company, client: StubClient)
 
-      assert account.plan_key == :business
+      assert account.plan_key == "business"
       assert account.billing_interval == :yearly
-      assert account.scheduled_plan_key == :team
+      assert account.scheduled_plan_key == "team"
       assert account.scheduled_billing_interval == :yearly
       assert account.scheduled_change_effective_at == ~U[2026-12-31 00:00:00Z]
     end
@@ -203,7 +203,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly"
+          polar_product_id: "prod_pro_monthly"
         })
 
       {:ok, _account} =
@@ -224,7 +224,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
              %{
                "id" => "sub_current",
                "status" => "active",
-               "product_id" => "prod_team_monthly",
+               "product_id" => "prod_pro_monthly",
                "current_period_end" => "2026-06-30T00:00:00Z",
                "cancel_at_period_end" => false
              }
@@ -244,7 +244,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly"
+          polar_product_id: "prod_pro_monthly"
         })
 
       put_client_response(fn _company_id ->
@@ -254,7 +254,7 @@ defmodule Operately.Billing.Polar.Operations.CustomerStateSyncTest do
              %{
                "id" => "sub_unknown_pending",
                "status" => "active",
-               "product_id" => "prod_team_monthly",
+               "product_id" => "prod_pro_monthly",
                "current_period_end" => "2026-06-30T00:00:00Z",
                "cancel_at_period_end" => false,
                "pending_update" => %{"product_id" => "prod_business_yearly"}

@@ -21,13 +21,14 @@ defmodule Operately.Billing do
   alias Operately.Billing.LimitBreachAlerting
   alias Operately.Billing.NearLimitAlerting
   alias Operately.Billing.Overview
+  alias Operately.Billing.PlanDefinition
+  alias Operately.Billing.Plans
   alias Operately.Companies.Company
   alias Operately.People.Person
   alias Operately.Billing.Polar.Operations.CustomerStateSync
   alias Operately.Billing.Polar.ProductMapper
   alias Operately.Billing.ProductCatalogEntry
 
-  @valid_plan_keys CompanyBillingAccount.valid_plan_keys()
   @valid_billing_intervals CompanyBillingAccount.valid_billing_intervals()
 
   def billing_enabled? do
@@ -183,6 +184,29 @@ defmodule Operately.Billing do
       pending_billing_interval: billing_interval,
       pending_checkout_started_at: DateTime.utc_now()
     })
+  end
+
+  #
+  # Plan definitions
+  #
+
+  def list_plan_definitions do
+    Repo.all(from plan in PlanDefinition, order_by: [asc: plan.sort_order, asc: plan.inserted_at])
+  end
+
+  def get_plan_definition!(id), do: Repo.get!(PlanDefinition, id)
+
+  def get_plan_definition(id) do
+    case Repo.get(PlanDefinition, id) do
+      nil -> {:error, :not_found}
+      plan_definition -> {:ok, plan_definition}
+    end
+  end
+
+  def update_plan_definition(%PlanDefinition{} = plan_definition, attrs) do
+    plan_definition
+    |> PlanDefinition.changeset(attrs)
+    |> Repo.update()
   end
 
   #
@@ -439,17 +463,7 @@ defmodule Operately.Billing do
     end
   end
 
-  defp cast_plan_family(plan_family) when plan_family in @valid_plan_keys, do: {:ok, plan_family}
-
-  defp cast_plan_family(plan_family) when is_binary(plan_family) do
-    case String.downcase(plan_family) do
-      "team" -> {:ok, :team}
-      "business" -> {:ok, :business}
-      _ -> {:error, :invalid_plan_family}
-    end
-  end
-
-  defp cast_plan_family(_), do: {:error, :invalid_plan_family}
+  defp cast_plan_family(plan_family), do: Plans.cast_paid_plan_key(plan_family)
 
   defp cast_billing_interval(interval) when interval in @valid_billing_intervals, do: {:ok, interval}
 

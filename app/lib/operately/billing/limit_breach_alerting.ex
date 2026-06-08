@@ -47,7 +47,7 @@ defmodule Operately.Billing.LimitBreachAlerting do
   def snapshot(limit_key, current_usage, limit) when limit_key in @valid_limit_keys and is_integer(current_usage) and is_integer(limit) do
     %LimitStatus{
       limit_key: limit_key,
-      plan_key: :free,
+      plan_key: "free",
       current_usage: current_usage,
       requested_delta: 0,
       projected_usage: current_usage,

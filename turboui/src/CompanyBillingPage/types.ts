@@ -4,7 +4,7 @@ export namespace CompanyBillingPage {
   export type Mode = "overview" | "confirming";
   export type Status = "free" | "active" | "past_due" | "canceled";
   export type Interval = "monthly" | "yearly";
-  export type Plan = "team" | "business";
+  export type Plan = "team" | "business" | "unlimited";
   export type ChangeTargetPlan = Plan | "free";
   export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
   export type NoticeTone = "info" | "warning" | "danger";
@@ -38,8 +38,8 @@ export namespace CompanyBillingPage {
   export interface BillingPlanDefinition {
     key: string;
     displayName: string;
-    memberLimit: number;
-    storageLimitBytes: number;
+    memberLimit?: number | null;
+    storageLimitBytes?: number | null;
   }
 
   export interface BillingCatalogProduct {
