@@ -65,8 +65,8 @@ defmodule OperatelyWeb.Api.Types do
   object :billing_plan_definition do
     field :key, :string, null: false
     field :display_name, :string, null: false
-    field :member_limit, :integer, null: false
-    field :storage_limit_bytes, :integer, null: false
+    field? :member_limit, :integer, null: true
+    field? :storage_limit_bytes, :integer, null: true
   end
 
   object :billing_catalog_product do
@@ -99,8 +99,8 @@ defmodule OperatelyWeb.Api.Types do
     field :current_usage, :integer, null: false
     field :requested_delta, :integer, null: false
     field :projected_usage, :integer, null: false
-    field :limit, :integer, null: false
-    field :remaining, :integer, null: false
+    field? :limit, :integer, null: true
+    field? :remaining, :integer, null: true
     field :near_limit, :boolean, null: false
     field :blocked, :boolean, null: false
     field :enforced, :boolean, null: false
@@ -119,8 +119,8 @@ defmodule OperatelyWeb.Api.Types do
     field :current_usage, :integer, null: false
     field :requested_delta, :integer, null: false
     field :projected_usage, :integer, null: false
-    field :limit, :integer, null: false
-    field :remaining, :integer, null: false
+    field? :limit, :integer, null: true
+    field? :remaining, :integer, null: true
     field :near_limit, :boolean, null: false
     field :blocked, :boolean, null: false
     field :enforced, :boolean, null: false

@@ -8,8 +8,8 @@ defmodule Operately.Billing.Polar.ProductMapper do
   """
 
   alias Operately.Billing.CompanyBillingAccount
+  alias Operately.Billing.Plans
 
-  @valid_plan_keys CompanyBillingAccount.valid_plan_keys()
   @valid_billing_intervals CompanyBillingAccount.valid_billing_intervals()
   @managed_metadata_key "operately_managed"
   @plan_family_metadata_key "operately_plan_family"
@@ -25,7 +25,7 @@ defmodule Operately.Billing.Polar.ProductMapper do
   def metadata(plan_family, billing_interval, version) do
     %{
       @managed_metadata_key => "true",
-      @plan_family_metadata_key => Atom.to_string(plan_family),
+      @plan_family_metadata_key => Plans.normalize_key(plan_family),
       @billing_interval_metadata_key => Atom.to_string(billing_interval),
       @version_metadata_key => version
     }
@@ -187,19 +187,12 @@ defmodule Operately.Billing.Polar.ProductMapper do
     end
   end
 
-  defp normalize_plan_family(plan_family) when plan_family in @valid_plan_keys, do: {:ok, plan_family}
-
-  defp normalize_plan_family(plan_family) when is_binary(plan_family) do
-    plan_family
-    |> String.downcase()
-    |> case do
-      "team" -> {:ok, :team}
-      "business" -> {:ok, :business}
-      _ -> {:error, :invalid_plan_family}
+  defp normalize_plan_family(plan_family) do
+    case Plans.cast_paid_plan_key(plan_family) do
+      {:ok, normalized_plan_key} -> {:ok, normalized_plan_key}
+      {:error, :invalid_plan_key} -> {:error, :invalid_plan_family}
     end
   end
-
-  defp normalize_plan_family(_), do: {:error, :invalid_plan_family}
 
   defp normalize_billing_interval(interval) when interval in @valid_billing_intervals, do: {:ok, interval}
 

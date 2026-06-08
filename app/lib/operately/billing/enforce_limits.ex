@@ -3,8 +3,6 @@ defmodule Operately.Billing.EnforceLimits do
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.Plans
 
-  @upgrade_order [:free, :team, :business]
-
   defmodule LimitStatus do
     @enforce_keys [:limit_key, :plan_key, :current_usage, :requested_delta, :projected_usage, :limit, :remaining, :near_limit, :blocked, :enforced, :recommended_upgrade]
     defstruct @enforce_keys
@@ -32,9 +30,9 @@ defmodule Operately.Billing.EnforceLimits do
       requested_delta: requested_delta,
       projected_usage: projected_usage,
       limit: limit,
-      remaining: max(limit - current_usage, 0),
-      near_limit: enforced && current_usage >= near_limit_threshold(limit),
-      blocked: enforced && projected_usage > limit,
+      remaining: remaining(limit, current_usage),
+      near_limit: enforced and near_limit?(current_usage, limit),
+      blocked: enforced and blocked?(projected_usage, limit),
       enforced: enforced,
       recommended_upgrade: recommended_upgrade(company, account, plan_key, enforced, opts)
     }
@@ -98,6 +96,8 @@ defmodule Operately.Billing.EnforceLimits do
     |> public_details()
     |> Map.delete(:recommended_upgrade)
   end
+
+  def near_limit_threshold(nil), do: nil
 
   def near_limit_threshold(limit) when is_integer(limit) do
     limit
@@ -166,8 +166,8 @@ defmodule Operately.Billing.EnforceLimits do
     end
   end
 
-  defp effective_plan_key(nil), do: :free
-  defp effective_plan_key(%CompanyBillingAccount{plan_key: nil}), do: :free
+  defp effective_plan_key(nil), do: "free"
+  defp effective_plan_key(%CompanyBillingAccount{plan_key: nil}), do: "free"
   defp effective_plan_key(%CompanyBillingAccount{plan_key: plan_key}), do: plan_key
 
   defp plan_limit(plan_key, :member_count), do: Plans.member_limit(plan_key)
@@ -234,7 +234,7 @@ defmodule Operately.Billing.EnforceLimits do
   defp fallback_recommendation(_company, plan_key, account, catalog_products) do
     fallback_interval = fallback_interval(account)
 
-    Enum.find_value(next_upgrade_plan_keys(plan_key), fn next_plan_key ->
+    Enum.find_value(Plans.next_upgrade_plan_keys(plan_key), fn next_plan_key ->
       recommendation_for_plan(next_plan_key, fallback_interval, :next_plan, catalog_products)
     end)
   end
@@ -284,19 +284,8 @@ defmodule Operately.Billing.EnforceLimits do
 
   defp fallback_interval(_account), do: :monthly
 
-  defp next_upgrade_plan_keys(plan_key) do
-    case Enum.find_index(@upgrade_order, &(&1 == plan_key)) do
-      nil -> @upgrade_order
-      index -> Enum.drop(@upgrade_order, index + 1)
-    end
-  end
-
   defp valid_upgrade?(current_plan_key, target_plan_key) do
-    compare_plan_rank(target_plan_key) > compare_plan_rank(current_plan_key)
-  end
-
-  defp compare_plan_rank(plan_key) do
-    Enum.find_index(@upgrade_order, &(&1 == plan_key)) || -1
+    Plans.compare_rank(target_plan_key, current_plan_key) > 0
   end
 
   defp error_code(:member_count), do: :member_count_limit_exceeded
@@ -315,4 +304,13 @@ defmodule Operately.Billing.EnforceLimits do
   defp normalize_optional_atom(nil), do: nil
   defp normalize_optional_atom(value) when is_atom(value), do: Atom.to_string(value)
   defp normalize_optional_atom(value), do: value
+
+  defp near_limit?(current_usage, limit) when is_integer(limit), do: current_usage >= near_limit_threshold(limit)
+  defp near_limit?(_current_usage, _limit), do: false
+
+  defp blocked?(projected_usage, limit) when is_integer(limit), do: projected_usage > limit
+  defp blocked?(_projected_usage, _limit), do: false
+
+  defp remaining(limit, current_usage) when is_integer(limit), do: max(limit - current_usage, 0)
+  defp remaining(_limit, _current_usage), do: nil
 end

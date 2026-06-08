@@ -75,7 +75,7 @@ defmodule Operately.BillingTest do
       attrs = %{plan_key: "team", billing_interval: "monthly", status: :active}
       assert {:ok, account} = Billing.sync_billing_account(ctx.company, attrs)
 
-      assert account.plan_key == :team
+      assert account.plan_key == "team"
       assert account.status == :active
     end
 
@@ -85,7 +85,7 @@ defmodule Operately.BillingTest do
       attrs = %{plan_key: "business", billing_interval: "yearly", status: :active}
       assert {:ok, account} = Billing.sync_billing_account(ctx.company, attrs)
 
-      assert account.plan_key == :business
+      assert account.plan_key == "business"
       assert account.billing_interval == :yearly
     end
 
@@ -93,7 +93,7 @@ defmodule Operately.BillingTest do
       {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
 
       assert {:ok, updated} = Billing.remember_plan(account, :team, "monthly", "website-pricing")
-      assert updated.suggested_plan_key == :team
+      assert updated.suggested_plan_key == "team"
       assert updated.suggested_billing_interval == :monthly
       assert updated.suggested_plan_source == "website-pricing"
     end
@@ -102,7 +102,7 @@ defmodule Operately.BillingTest do
       {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
 
       assert {:ok, pending} = Billing.set_pending_checkout(account, :business, "yearly")
-      assert pending.pending_plan_key == :business
+      assert pending.pending_plan_key == "business"
       assert pending.pending_billing_interval == :yearly
       assert pending.pending_checkout_started_at != nil
 
@@ -126,7 +126,7 @@ defmodule Operately.BillingTest do
       }
 
       assert {:ok, %ProductCatalogEntry{} = entry} = Billing.create_product(attrs)
-      assert entry.plan_family == :team
+      assert entry.plan_family == "team"
       assert entry.billing_interval == :monthly
       assert entry.polar_product_id == "prod_123"
       assert entry.active == false
@@ -196,7 +196,7 @@ defmodule Operately.BillingTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly_v1",
+          polar_product_id: "prod_pro_monthly_v1",
           version: 1
         })
 
@@ -205,7 +205,7 @@ defmodule Operately.BillingTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly_v2",
+          polar_product_id: "prod_pro_monthly_v2",
           version: 2
         })
 
@@ -214,7 +214,7 @@ defmodule Operately.BillingTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "yearly",
-          polar_product_id: "prod_team_yearly_v1",
+          polar_product_id: "prod_pro_yearly_v1",
           version: 1
         })
 
@@ -268,7 +268,7 @@ defmodule Operately.BillingTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly",
+          polar_product_id: "prod_pro_monthly",
           polar_product_name: "Team Monthly",
           price_amount: 1900,
           price_currency: "usd",
@@ -296,14 +296,14 @@ defmodule Operately.BillingTest do
              %{
                items: [
                  managed_product_payload(%{
-                   "id" => "prod_team_monthly",
+                   "id" => "prod_pro_monthly",
                    "name" => "Team Monthly Updated",
                    "price_amount" => 2900,
                    "metadata" => managed_metadata("team", "monthly", 1)
                  }),
                  unmanaged_product_payload(),
                  managed_product_payload(%{
-                   "id" => "prod_team_yearly",
+                   "id" => "prod_pro_yearly",
                    "name" => "Team Yearly",
                    "recurring_interval" => "yearly",
                    "price_amount" => 29900,
@@ -337,8 +337,8 @@ defmodule Operately.BillingTest do
       assert synced_active.polar_product_name == "Team Monthly Updated"
       assert synced_active.price_amount == 2900
 
-      imported = Billing.get_product_by_polar_product_id("prod_team_yearly")
-      assert imported.plan_family == :team
+      imported = Billing.get_product_by_polar_product_id("prod_pro_yearly")
+      assert imported.plan_family == "team"
       assert imported.billing_interval == :yearly
       assert imported.active == false
       assert imported.version == 1
@@ -376,7 +376,7 @@ defmodule Operately.BillingTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly",
+          polar_product_id: "prod_pro_monthly",
           active: true
         })
 
@@ -387,7 +387,7 @@ defmodule Operately.BillingTest do
              "subscriptions" => [
                %{
                  "status" => "active",
-                 "product_id" => "prod_team_monthly",
+                 "product_id" => "prod_pro_monthly",
                  "current_period_end" => "2026-06-30T00:00:00Z",
                  "cancel_at_period_end" => false
                }
@@ -397,7 +397,7 @@ defmodule Operately.BillingTest do
         assert {:ok, account} = Billing.refresh_company_billing_state(ctx.company)
 
         assert account.status == :active
-        assert account.plan_key == :team
+        assert account.plan_key == "team"
         assert account.billing_interval == :monthly
         assert account.current_period_end == ~U[2026-06-30 00:00:00Z]
         assert account.cancel_at_period_end == false
@@ -430,7 +430,7 @@ defmodule Operately.BillingTest do
         assert {:ok, account} = Billing.refresh_company_billing_state(ctx.company)
 
         assert account.status == :active
-        assert account.plan_key == :business
+        assert account.plan_key == "business"
         assert account.billing_interval == :yearly
         assert account.cancel_at_period_end == true
       end
@@ -486,11 +486,11 @@ defmodule Operately.BillingTest do
     end
 
     test "create_payment_method_session/2 builds a default return URL and hosted session", ctx do
-      {:ok, _product} = create_product("prod_team_monthly", "team", "monthly")
+      {:ok, _product} = create_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_team_monthly")}
+          {:ok, active_subscription_payload("prod_pro_monthly")}
         end,
         create_customer_session: fn external_customer_id, return_url ->
           assert external_customer_id == ctx.company.id
@@ -566,12 +566,12 @@ defmodule Operately.BillingTest do
     end
 
     test "create_checkout_session/4 creates checkout for a free company and persists pending state", ctx do
-      {:ok, _product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
         create_checkout_session: fn attrs ->
-          assert attrs[:products] == ["prod_team_monthly"]
+          assert attrs[:products] == ["prod_pro_monthly"]
           assert attrs[:external_customer_id] == ctx.company.id
           assert attrs[:return_url] == Operately.Billing.Polar.Client.app_base_url() <> OperatelyWeb.Paths.company_billing_path(ctx.company)
           assert attrs[:success_url] == Operately.Billing.Polar.Client.app_base_url() <> OperatelyWeb.Paths.company_billing_path(ctx.company) <> "?checkout_id={CHECKOUT_ID}"
@@ -594,19 +594,19 @@ defmodule Operately.BillingTest do
 
         account = Billing.get_billing_account_by_company(ctx.company)
         assert account.status == :free
-        assert account.pending_plan_key == :team
+        assert account.pending_plan_key == "team"
         assert account.pending_billing_interval == :monthly
         assert account.pending_checkout_started_at != nil
       end
     end
 
     test "create_checkout_session/4 allows a canceled company to start a new checkout", ctx do
-      {:ok, _old_product} = create_active_product("prod_old_team_monthly", "team", "monthly")
+      {:ok, _old_product} = create_active_product("prod_old_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_old_team_monthly", %{"status" => "canceled"})}
+          {:ok, active_subscription_payload("prod_old_pro_monthly", %{"status" => "canceled"})}
         end,
         create_checkout_session: fn _attrs ->
           {:ok, checkout_session_payload(%{"id" => "chk_canceled"})}
@@ -617,18 +617,18 @@ defmodule Operately.BillingTest do
 
         account = Billing.get_billing_account_by_company(ctx.company)
         assert account.status == :canceled
-        assert account.pending_plan_key == :business
+        assert account.pending_plan_key == "business"
         assert account.pending_billing_interval == :yearly
       end
     end
 
     test "create_checkout_session/4 rejects active paid companies", ctx do
-      {:ok, _current_product} = create_active_product("prod_current_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_current_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_current_team_monthly")}
+          {:ok, active_subscription_payload("prod_current_pro_monthly")}
         end,
         create_checkout_session: fn _attrs -> flunk("unexpected checkout session call") end do
         assert {:error, :bad_request} = Billing.create_checkout_session(ctx.company, :business, :yearly)
@@ -636,12 +636,12 @@ defmodule Operately.BillingTest do
     end
 
     test "create_checkout_session/4 rejects past-due paid companies", ctx do
-      {:ok, _current_product} = create_active_product("prod_current_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_current_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_current_team_monthly", %{"status" => "past_due"})}
+          {:ok, active_subscription_payload("prod_current_pro_monthly", %{"status" => "past_due"})}
         end,
         create_checkout_session: fn _attrs -> flunk("unexpected checkout session call") end do
         assert {:error, :bad_request} = Billing.create_checkout_session(ctx.company, :business, :yearly)
@@ -658,7 +658,7 @@ defmodule Operately.BillingTest do
     end
 
     test "create_checkout_session/4 does not persist pending state when Polar checkout creation fails", ctx do
-      {:ok, _product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
@@ -685,7 +685,7 @@ defmodule Operately.BillingTest do
         assert {:ok, refreshed} = Billing.refresh_company_billing_state(ctx.company)
 
         assert refreshed.status == :active
-        assert refreshed.plan_key == :business
+        assert refreshed.plan_key == "business"
         assert refreshed.billing_interval == :yearly
         assert refreshed.pending_plan_key == nil
         assert refreshed.pending_billing_interval == nil
@@ -702,7 +702,7 @@ defmodule Operately.BillingTest do
         assert {:ok, refreshed} = Billing.refresh_company_billing_state(ctx.company)
 
         assert refreshed.status == :free
-        assert refreshed.pending_plan_key == :business
+        assert refreshed.pending_plan_key == "business"
         assert refreshed.pending_billing_interval == :yearly
         assert refreshed.pending_checkout_started_at != nil
       end
@@ -716,11 +716,11 @@ defmodule Operately.BillingTest do
     end
 
     test "change_plan/4 upgrades an active subscription immediately", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_upgrade"})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_upgrade"})},
         {:ok, active_subscription_payload("prod_business_yearly", %{"id" => "sub_upgrade"})}
       ])
 
@@ -733,18 +733,18 @@ defmodule Operately.BillingTest do
         end do
         assert {:ok, overview} = Billing.change_plan(ctx.company, :business, :yearly)
 
-        assert overview.account.plan_key == :business
+        assert overview.account.plan_key == "business"
         assert overview.account.billing_interval == :yearly
         assert overview.account.scheduled_plan_key == nil
       end
     end
 
     test "change_plan/4 upgrades a past-due subscription immediately", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_monthly", "business", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_past_due", "status" => "past_due"})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_past_due", "status" => "past_due"})},
         {:ok, active_subscription_payload("prod_business_monthly", %{"id" => "sub_past_due", "status" => "past_due"})}
       ])
 
@@ -754,7 +754,7 @@ defmodule Operately.BillingTest do
           {:ok, %{"id" => "sub_past_due"}}
         end do
         assert {:ok, overview} = Billing.change_plan(ctx.company, :business, :monthly)
-        assert overview.account.plan_key == :business
+        assert overview.account.plan_key == "business"
         assert overview.account.billing_interval == :monthly
         assert overview.account.status == :past_due
       end
@@ -762,83 +762,83 @@ defmodule Operately.BillingTest do
 
     test "change_plan/4 schedules downgrades and persists scheduled target fields", ctx do
       {:ok, _current_product} = create_active_product("prod_business_yearly", "business", "yearly")
-      {:ok, _target_product} = create_active_product("prod_team_yearly", "team", "yearly")
+      {:ok, _target_product} = create_active_product("prod_pro_yearly", "team", "yearly")
 
       put_sequence(:customer_state_responses, [
         {:ok, active_subscription_payload("prod_business_yearly", %{"id" => "sub_downgrade"})},
         {:ok,
          active_subscription_payload("prod_business_yearly", %{
            "id" => "sub_downgrade",
-           "pending_update" => %{"product_id" => "prod_team_yearly"}
+           "pending_update" => %{"product_id" => "prod_pro_yearly"}
          })}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
-        update_subscription: fn "sub_downgrade", %{product_id: "prod_team_yearly", proration_behavior: "next_period"} ->
+        update_subscription: fn "sub_downgrade", %{product_id: "prod_pro_yearly", proration_behavior: "next_period"} ->
           {:ok, %{"id" => "sub_downgrade"}}
         end do
         assert {:ok, overview} = Billing.change_plan(ctx.company, :team, :yearly)
 
-        assert overview.account.plan_key == :business
+        assert overview.account.plan_key == "business"
         assert overview.account.billing_interval == :yearly
-        assert overview.account.scheduled_plan_key == :team
+        assert overview.account.scheduled_plan_key == "team"
         assert overview.account.scheduled_billing_interval == :yearly
         assert overview.account.scheduled_change_effective_at == ~U[2026-06-30 00:00:00Z]
       end
     end
 
     test "change_plan/4 applies monthly-to-yearly interval switches immediately", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
-      {:ok, _target_product} = create_active_product("prod_team_yearly", "team", "yearly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_pro_yearly", "team", "yearly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_interval"})},
-        {:ok, active_subscription_payload("prod_team_yearly", %{"id" => "sub_interval"})}
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_interval"})},
+        {:ok, active_subscription_payload("prod_pro_yearly", %{"id" => "sub_interval"})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
-        update_subscription: fn "sub_interval", %{product_id: "prod_team_yearly", proration_behavior: "prorate"} ->
+        update_subscription: fn "sub_interval", %{product_id: "prod_pro_yearly", proration_behavior: "prorate"} ->
           {:ok, %{"id" => "sub_interval"}}
         end do
         assert {:ok, overview} = Billing.change_plan(ctx.company, :team, :yearly)
 
-        assert overview.account.plan_key == :team
+        assert overview.account.plan_key == "team"
         assert overview.account.billing_interval == :yearly
         assert overview.account.scheduled_plan_key == nil
       end
     end
 
     test "change_plan/4 schedules yearly-to-monthly interval switches", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_yearly", "team", "yearly")
-      {:ok, _target_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_yearly", "team", "yearly")
+      {:ok, _target_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_yearly", %{"id" => "sub_interval"})},
+        {:ok, active_subscription_payload("prod_pro_yearly", %{"id" => "sub_interval"})},
         {:ok,
-         active_subscription_payload("prod_team_yearly", %{
+         active_subscription_payload("prod_pro_yearly", %{
            "id" => "sub_interval",
-           "pending_update" => %{"product_id" => "prod_team_monthly"}
+           "pending_update" => %{"product_id" => "prod_pro_monthly"}
          })}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
-        update_subscription: fn "sub_interval", %{product_id: "prod_team_monthly", proration_behavior: "next_period"} ->
+        update_subscription: fn "sub_interval", %{product_id: "prod_pro_monthly", proration_behavior: "next_period"} ->
           {:ok, %{"id" => "sub_interval"}}
         end do
         assert {:ok, overview} = Billing.change_plan(ctx.company, :team, :monthly)
 
-        assert overview.account.plan_key == :team
+        assert overview.account.plan_key == "team"
         assert overview.account.billing_interval == :yearly
-        assert overview.account.scheduled_plan_key == :team
+        assert overview.account.scheduled_plan_key == "team"
         assert overview.account.scheduled_billing_interval == :monthly
       end
     end
 
     test "change_plan/4 rejects free and ended companies", ctx do
-      {:ok, _target_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
@@ -858,12 +858,12 @@ defmodule Operately.BillingTest do
     end
 
     test "change_plan/4 rejects raw trialing subscriptions", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_monthly", "business", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_trialing", "status" => "trialing"})}
+          {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_trialing", "status" => "trialing"})}
         end,
         update_subscription: fn _subscription_id, _attrs -> flunk("unexpected update call") end do
         assert {:error, :bad_request} = Billing.change_plan(ctx.company, :business, :monthly)
@@ -871,11 +871,11 @@ defmodule Operately.BillingTest do
     end
 
     test "change_plan/4 rejects no-op plan changes", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_noop"})}
+          {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_noop"})}
         end,
         update_subscription: fn _subscription_id, _attrs -> flunk("unexpected update call") end do
         assert {:error, :bad_request} = Billing.change_plan(ctx.company, :team, :monthly)
@@ -883,11 +883,11 @@ defmodule Operately.BillingTest do
     end
 
     test "change_plan/4 reactivates a pending cancellation before applying the new target", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_monthly", "business", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_reactivate_first", "cancel_at_period_end" => true})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_reactivate_first", "cancel_at_period_end" => true})},
         {:ok, active_subscription_payload("prod_business_monthly", %{"id" => "sub_reactivate_first"})}
       ])
 
@@ -904,7 +904,7 @@ defmodule Operately.BillingTest do
         end do
         assert {:ok, overview} = Billing.change_plan(ctx.company, :business, :monthly)
 
-        assert overview.account.plan_key == :business
+        assert overview.account.plan_key == "business"
         assert recorded_calls(:subscription_update_calls) == [
                  {"sub_reactivate_first", %{cancel_at_period_end: false}},
                  {"sub_reactivate_first", %{product_id: "prod_business_monthly", proration_behavior: "prorate"}}
@@ -913,11 +913,11 @@ defmodule Operately.BillingTest do
     end
 
     test "change_plan/4 attempts to restore cancellation if the target update fails after reactivation", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_monthly", "business", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_restore", "cancel_at_period_end" => true})}
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_restore", "cancel_at_period_end" => true})}
       ])
 
       put_sequence(:subscription_update_responses, [
@@ -943,11 +943,11 @@ defmodule Operately.BillingTest do
     end
 
     test "cancel_subscription/2 schedules period-end cancellation", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_cancel"})},
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_cancel", "cancel_at_period_end" => true})}
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_cancel"})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_cancel", "cancel_at_period_end" => true})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
@@ -961,11 +961,11 @@ defmodule Operately.BillingTest do
     end
 
     test "cancel_subscription/2 is idempotent when cancellation is already pending", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_cancel_pending", "cancel_at_period_end" => true})},
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_cancel_pending", "cancel_at_period_end" => true})}
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_cancel_pending", "cancel_at_period_end" => true})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_cancel_pending", "cancel_at_period_end" => true})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
@@ -977,11 +977,11 @@ defmodule Operately.BillingTest do
     end
 
     test "reactivate_subscription/2 clears pending cancellation", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_reactivate", "cancel_at_period_end" => true})},
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_reactivate", "cancel_at_period_end" => false})}
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_reactivate", "cancel_at_period_end" => true})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_reactivate", "cancel_at_period_end" => false})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
@@ -995,11 +995,11 @@ defmodule Operately.BillingTest do
     end
 
     test "reactivate_subscription/2 is idempotent when cancellation is not pending", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_still_active"})},
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_still_active"})}
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_still_active"})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_still_active"})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
@@ -1033,6 +1033,7 @@ defmodule Operately.BillingTest do
       assert Plans.member_limit(:free) == 20
       assert Plans.member_limit(:team) == 50
       assert Plans.member_limit(:business) == 200
+      assert Plans.member_limit(:unlimited) == nil
       assert Plans.member_limit(:unknown) == nil
     end
 
@@ -1040,6 +1041,7 @@ defmodule Operately.BillingTest do
       assert Plans.storage_limit_bytes(:free) == 1_073_741_824
       assert Plans.storage_limit_bytes(:team) == 107_374_182_400
       assert Plans.storage_limit_bytes(:business) == 1_099_511_627_776
+      assert Plans.storage_limit_bytes(:unlimited) == nil
       assert Plans.storage_limit_bytes(:unknown) == nil
     end
 
@@ -1047,16 +1049,48 @@ defmodule Operately.BillingTest do
       assert Plans.valid_plan?(:free)
       assert Plans.valid_plan?(:team)
       assert Plans.valid_plan?(:business)
+      assert Plans.valid_plan?(:unlimited)
       refute Plans.valid_plan?(:enterprise)
     end
 
     test "all/0 returns all plans" do
       plans = Plans.all()
-      assert length(plans) == 3
-      keys = Enum.map(plans, & &1.key)
-      assert :free in keys
-      assert :team in keys
-      assert :business in keys
+      assert length(plans) == 4
+
+      keys = Enum.map(plans, & &1.plan_key)
+
+      assert "free" in keys
+      assert "team" in keys
+      assert "business" in keys
+      assert "unlimited" in keys
+    end
+  end
+
+  describe "plan definitions" do
+    test "list_plan_definitions/0 returns the seeded rows in order" do
+      plan_definitions = Billing.list_plan_definitions()
+
+      assert Enum.map(plan_definitions, & &1.plan_key) == ["free", "team", "business", "unlimited"]
+      assert Enum.map(plan_definitions, & &1.display_name) == ["Free", "Team", "Business", "Unlimited"]
+    end
+
+    test "update_plan_definition/2 updates editable fields and supports unlimited values" do
+      team_plan =
+        Billing.list_plan_definitions()
+        |> Enum.find(&(&1.plan_key == "team"))
+
+      assert {:ok, updated} =
+               Billing.update_plan_definition(team_plan, %{
+                 display_name: "Team Plus",
+                 sort_order: 5,
+                 member_limit: nil,
+                 storage_limit_bytes: 500_000
+               })
+
+      assert updated.display_name == "Team Plus"
+      assert updated.sort_order == 5
+      assert updated.member_limit == nil
+      assert updated.storage_limit_bytes == 500_000
     end
   end
 

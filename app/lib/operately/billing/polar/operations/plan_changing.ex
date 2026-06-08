@@ -3,6 +3,7 @@ defmodule Operately.Billing.Polar.Operations.PlanChanging do
 
   alias Operately.Billing
   alias Operately.Billing.Overview
+  alias Operately.Billing.Plans
   alias Operately.Billing.Polar.SubscriptionState
   alias Operately.Billing.ProductCatalogEntry
   alias Operately.Companies.Company
@@ -116,17 +117,13 @@ defmodule Operately.Billing.Polar.Operations.PlanChanging do
 
   defp proration_behavior(current_product, target_product) do
     cond do
-      plan_tier(target_product.plan_family) > plan_tier(current_product.plan_family) -> "prorate"
-      plan_tier(target_product.plan_family) < plan_tier(current_product.plan_family) -> "next_period"
+      Plans.compare_rank(target_product.plan_family, current_product.plan_family) > 0 -> "prorate"
+      Plans.compare_rank(target_product.plan_family, current_product.plan_family) < 0 -> "next_period"
       current_product.billing_interval == :monthly and target_product.billing_interval == :yearly -> "prorate"
       current_product.billing_interval == :yearly and target_product.billing_interval == :monthly -> "next_period"
       true -> "prorate"
     end
   end
-
-  defp plan_tier(:team), do: 1
-  defp plan_tier(:business), do: 2
-  defp plan_tier(_), do: 0
 
   defp refreshed_overview(%Company{} = company, opts) do
     with {:ok, account} <- Billing.refresh_company_billing_state(company, opts) do
@@ -134,17 +131,12 @@ defmodule Operately.Billing.Polar.Operations.PlanChanging do
     end
   end
 
-  defp cast_plan_key(plan_key) when plan_key in [:team, :business], do: {:ok, plan_key}
-
-  defp cast_plan_key(plan_key) when is_binary(plan_key) do
-    case String.downcase(plan_key) do
-      "team" -> {:ok, :team}
-      "business" -> {:ok, :business}
-      _ -> {:error, :bad_request}
+  defp cast_plan_key(plan_key) do
+    case Plans.cast_paid_plan_key(plan_key) do
+      {:ok, normalized_plan_key} -> {:ok, normalized_plan_key}
+      {:error, :invalid_plan_key} -> {:error, :bad_request}
     end
   end
-
-  defp cast_plan_key(_), do: {:error, :bad_request}
 
   defp cast_billing_interval(interval) when interval in [:monthly, :yearly], do: {:ok, interval}
 
