@@ -1,19 +1,19 @@
-<%= title("Your company has reached 90% of its #{@limit_name}") %>
+<%= title(@headline) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  Current usage: <strong><%= @current_usage %></strong> of <strong><%= @limit %></strong>.
+  <%= @usage_summary %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= @blocked_work %>
+  <%= @impact_message %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "Review Billing") %>
+  <%= cta_button(@cta_url, @cta_label) %>
 <% end %>

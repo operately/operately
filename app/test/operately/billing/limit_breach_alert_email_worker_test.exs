@@ -35,7 +35,7 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
       [job] = all_enqueued(worker: LimitBreachAlertEmailWorker)
       assert :ok = perform_job(LimitBreachAlertEmailWorker, job.args)
 
-      expected_subject = "#{ctx.company.name} has reached its member limit"
+      expected_subject = "#{ctx.company.name} has reached its Free plan member limit"
       expected_recipients =
         ctx.company
         |> LimitBreachAlerting.recipients()
@@ -44,9 +44,9 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
 
       assert_received {:email, %Swoosh.Email{subject: ^expected_subject} = email}
       assert Enum.sort(Enum.map(email.to, &elem(&1, 1))) == expected_recipients
-      assert email.html_body =~ ctx.company.name
-      assert email.html_body =~ "20"
-      assert email.html_body =~ "Review Billing"
+      assert email.html_body =~ "#{ctx.company.name} has reached its member limit: 20 of 20 active members."
+      assert email.html_body =~ "Adding or restoring people is blocked until the plan is upgraded."
+      assert email.html_body =~ "Review billing"
       assert email.text_body =~ OperatelyWeb.Paths.company_billing_path(ctx.company)
     end)
   end

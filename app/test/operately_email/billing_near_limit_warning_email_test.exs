@@ -22,11 +22,12 @@ defmodule OperatelyEmail.BillingNearLimitWarningEmailTest do
     assert {:ok, _} = BillingNearLimitWarningEmail.send([ctx.admin, ctx.owner], ctx.company, status)
 
     assert_email_sent(fn email ->
-      assert email.subject == "#{ctx.company.name} has reached 90% of its free-plan member limit"
+      assert email.subject == "#{ctx.company.name} is near its Free plan member limit"
       assert Enum.sort(Enum.map(email.to, &elem(&1, 1))) == Enum.sort([ctx.admin.email, ctx.owner.email])
-      assert email.html_body =~ "free-plan member limit"
-      assert email.html_body =~ "18"
-      assert email.html_body =~ "Review Billing"
+      assert email.html_body =~ "#{ctx.company.name} has 18 of 20 active members on the Free plan."
+      assert email.html_body =~ "Adding or restoring people will be blocked once the member limit is reached."
+      assert email.html_body =~ "Review billing"
+      assert email.text_body =~ "#{ctx.company.name} is near its Free plan member limit."
       assert email.text_body =~ OperatelyWeb.Paths.company_billing_path(ctx.company)
       true
     end)
@@ -38,9 +39,11 @@ defmodule OperatelyEmail.BillingNearLimitWarningEmailTest do
     assert {:ok, _} = BillingNearLimitWarningEmail.send([ctx.admin, ctx.owner], ctx.company, status)
 
     assert_email_sent(fn email ->
-      assert email.subject == "#{ctx.company.name} has reached 90% of its free-plan storage limit"
-      assert email.html_body =~ "free-plan storage limit"
-      assert email.html_body =~ "Review Billing"
+      assert email.subject == "#{ctx.company.name} is near its Free plan storage limit"
+      assert email.html_body =~ "#{ctx.company.name} is using 921.6 MB of 1.0 GB on the Free plan."
+      assert email.html_body =~ "Uploading files will be blocked once the storage limit is reached."
+      assert email.html_body =~ "Review billing"
+      assert email.text_body =~ "#{ctx.company.name} is near its Free plan storage limit."
       assert email.text_body =~ OperatelyWeb.Paths.company_billing_path(ctx.company)
       true
     end)
