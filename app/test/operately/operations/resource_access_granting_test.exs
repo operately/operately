@@ -6,6 +6,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
   alias Operately.Access.GroupMembership
   alias Operately.Groups
   alias Operately.Projects.Contributor
+  alias Operately.ResourceHubs.ResourceHub
   alias Operately.Support.Factory
 
   setup do
@@ -77,6 +78,19 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
       memberships = Repo.all(from m in GroupMembership, where: m.group_id == ^standard_group.id and m.person_id == ^ctx.guest.id)
 
       assert length(memberships) == 1
+    end
+
+    test "syncs the default space resource hub access", ctx do
+      resources = [%{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}]
+
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+
+      hub = Repo.get_by!(ResourceHub, space_id: ctx.space.id, name: "Documents & Files")
+      hub_context = Access.get_context!(resource_hub_id: hub.id)
+      binding = Access.get_binding(hub_context, person_id: ctx.guest.id)
+
+      assert binding
+      assert binding.access_level == Binding.edit_access()
     end
   end
 
