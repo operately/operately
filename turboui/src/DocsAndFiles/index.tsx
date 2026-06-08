@@ -142,10 +142,10 @@ export function DocsAndFilesTab({
 
   return (
     <div className={className} data-test-id="docs-and-files-tab">
-      <div className="flex items-start justify-between gap-4 border-b border-surface-outline pb-3">
+      <div className="flex items-start justify-between gap-4 border-b border-surface-outline pb-4">
         <div className="min-w-0">
           <Breadcrumbs breadcrumbs={breadcrumbs} />
-          <div className="truncate text-lg font-bold">{title}</div>
+          <div className="truncate text-xl font-semibold tracking-tight">{title}</div>
         </div>
         {addAction}
       </div>
@@ -158,7 +158,8 @@ export function DocsAndFilesTab({
       ) : (
         sortedItems.length > 0 && (
           <>
-            <div className="flex justify-end my-4">
+            <div className="flex items-center justify-between border-b border-surface-outline py-3">
+              <div className="text-sm font-medium text-content-dimmed">{itemCountLabel(sortedItems.length)}</div>
               <SortControl sortBy={sortBy} onSortChange={setSortBy} />
             </div>
             <DocsAndFilesList items={sortedItems} />
@@ -175,10 +176,10 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs?: DocsAndFiles.Breadcrumb[] 
   if (!breadcrumbs || breadcrumbs.length < 1) return null;
 
   return (
-    <nav className="mb-1 flex min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap text-sm text-content-dimmed">
+    <nav className="mb-1.5 flex min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap text-sm text-content-dimmed">
       {breadcrumbs.map((breadcrumb, index) => (
         <React.Fragment key={`${breadcrumb.link}-${breadcrumb.label}`}>
-          {index > 0 && <IconChevronRight size={14} className="shrink-0" />}
+          {index > 0 && <IconChevronRight size={14} className="shrink-0 text-content-subtle" />}
           <Link to={breadcrumb.link} underline="hover" className="shrink-0 font-medium text-content-dimmed">
             {breadcrumb.label}
           </Link>
@@ -207,7 +208,7 @@ function DraftPrompt({ prompt }: { prompt?: DocsAndFiles.DraftPrompt | null }) {
 
 function DocsAndFilesList({ items }: { items: DocsAndFiles.Item[] }) {
   return (
-    <div>
+    <div className="divide-y divide-surface-outline">
       {items.map((item, index) => (
         <DocsAndFilesListItem item={item} testId={`node-${index}`} key={item.id} />
       ))}
@@ -217,23 +218,30 @@ function DocsAndFilesList({ items }: { items: DocsAndFiles.Item[] }) {
 
 function DocsAndFilesListItem({ item, testId }: { item: DocsAndFiles.Item; testId: string }) {
   const className = classNames(
-    "flex justify-between gap-2 py-4 px-2 items-center",
-    "border-b border-stroke-base first:border-t",
+    "group flex min-h-[72px] items-center gap-3 px-3 py-3",
+    "transition-colors hover:bg-surface-dimmed",
   );
 
   return (
     <div className={className} data-test-id={testId}>
-      <DivLink to={item.link} className="flex gap-4 items-center cursor-pointer flex-1 min-w-0">
-        <DocsAndFilesIcon item={item} size={48} />
+      <DivLink to={item.link} className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
+        <DocsAndFilesIcon item={item} size={40} />
 
-        <div className="min-w-0">
-          <div className="font-bold text-base truncate">{item.name}</div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-base font-semibold text-content-base group-hover:text-link-base">
+            {item.name}
+          </div>
           <ItemDetails item={item} />
         </div>
       </DivLink>
 
-      <CommentsCountIndicator count={item.commentsCount || 0} size={24} />
-      {item.menu && <div className="flex items-center">{item.menu}</div>}
+      <div className="hidden w-24 shrink-0 text-right text-sm font-medium text-content-dimmed sm:block">
+        {itemTypeLabel(item)}
+      </div>
+      <div className="flex w-10 shrink-0 justify-end">
+        <CommentsCountIndicator count={item.commentsCount || 0} size={22} />
+      </div>
+      {item.menu && <div className="flex w-9 shrink-0 items-center justify-end">{item.menu}</div>}
     </div>
   );
 }
@@ -242,7 +250,7 @@ function ItemDetails({ item }: { item: DocsAndFiles.Item }) {
   const details = item.details?.filter(Boolean) || [];
   if (details.length < 1) return null;
 
-  return <div className="text-xs font-medium truncate">{details.join(" · ")}</div>;
+  return <div className="mt-0.5 truncate text-sm text-content-dimmed">{details.join(" · ")}</div>;
 }
 
 function EmptyState({ kind }: { kind: "resourceHub" | "folder" }) {
@@ -252,12 +260,11 @@ function EmptyState({ kind }: { kind: "resourceHub" | "folder" }) {
       : "Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started.";
 
   return (
-    <div className="border border-dashed border-stroke-base p-4 w-full max-w-[500px] mx-auto mt-12 flex gap-4">
-      <IconFile size={48} className="text-gray-600 shrink-0" />
-      <div>
-        <div className="font-bold">Ready for your first document</div>
-        <br />
-        <div>{message}</div>
+    <div className="mt-6 flex w-full items-start gap-4 rounded-md border border-dashed border-surface-outline bg-surface-dimmed px-5 py-5">
+      <IconFile size={40} className="shrink-0 text-content-dimmed" />
+      <div className="max-w-[56ch]">
+        <div className="font-semibold">Ready for your first document</div>
+        <div className="mt-1 text-sm text-content-dimmed">{message}</div>
       </div>
     </div>
   );
@@ -272,7 +279,7 @@ function SortControl({
 }) {
   const currentOption = SORT_OPTIONS.find((option) => option.value === sortBy);
   const trigger = (
-    <button className="flex items-center gap-2 px-3 py-2 text-sm text-content-dimmed hover:text-content-accent border border-surface-outline rounded-md transition-colors">
+    <button className="flex items-center gap-2 rounded-md border border-surface-outline px-3 py-1.5 text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-accent">
       <span>Sort by {currentOption?.label}</span>
       <IconChevronDown size={14} />
     </button>
@@ -301,6 +308,25 @@ const SORT_OPTIONS: { value: DocsAndFiles.SortBy; label: string }[] = [
   { value: "insertedAt", label: "Creation Date" },
   { value: "updatedAt", label: "Modified Date" },
 ];
+
+function itemCountLabel(count: number) {
+  return count === 1 ? "1 item" : `${count} items`;
+}
+
+function itemTypeLabel(item: DocsAndFiles.Item) {
+  if (item.type === "file" && item.fileTypeLabel) return item.fileTypeLabel;
+
+  switch (item.type) {
+    case "document":
+      return "Document";
+    case "folder":
+      return "Folder";
+    case "link":
+      return "Link";
+    case "file":
+      return "File";
+  }
+}
 
 function sortItemsWithFoldersFirst(items: DocsAndFiles.Item[], sortBy: DocsAndFiles.SortBy) {
   const folders: DocsAndFiles.Item[] = [];
