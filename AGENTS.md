@@ -37,6 +37,16 @@
 - When a request references an existing screen, component, or screenshot, inspect that source in the repo before coding. Reuse its structure, typography, and spacing verbatim unless the user explicitly requests something different.
 - Treat screenshots as canonical references: find the implementation they depict (e.g., ProjectPage headers, Milestone cards) and mirror that implementation rather than improvising.
 - Prefer existing TurboUI components over hand-rolled versions. If you cannot reuse an existing piece, call it out in the summary with a brief reason.
+- For UI that is shared or clearly reusable across surfaces (for example Resource Hub docs/files in spaces and projects), put the reusable presentation layer in `turboui/`. App code in `app/assets/js` should own backend interaction, routing, data loading, and permission wiring, then pass data and callbacks into TurboUI components.
+- Do not fork an app-local copy of an existing feature UI just to adapt it to another page. Move the common components to TurboUI first, then update all consumers to import the shared version.
+- If a TurboUI story has to mock app-level components to show a feature, treat that as an architecture smell. Adjust the component boundary so Storybook can render the real UI with realistic data and callbacks.
+- After create/update/delete interactions, make the changed item visible in the UI immediately through local state, cache invalidation plus reload, or the existing page refresh mechanism. Do not leave users needing a manual browser refresh to see newly added files, folders, docs, or links.
+
+## Diff Hygiene & Generated Files
+
+- Before finishing a change, inspect `git diff --stat` and `git status --short`. If the diff includes unrelated generated files or a surprisingly large churn, stop and remove only your accidental changes before handing off.
+- Do not run or commit outputs from `make gen.api.catalog`, `make gen.cli.catalog`, `make gen.api.docs`, or similar generated-file tasks unless the requested change explicitly modifies the external API/docs/CLI catalog contract.
+- When API generation is required, keep the generated output in the same commit as the source API change and call it out in the summary. Otherwise, leave generated catalogs and docs untouched.
 
 ## Activity System Guidelines
 

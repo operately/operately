@@ -154,6 +154,19 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Access.get_binding(group_id: champion.id, context_id: context.id, access_level: Binding.full_access())
   end
 
+  test "ProjectCreation operation creates Documents & Files hub with project access", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+
+    project_context = Access.get_context!(project_id: project.id)
+    hub = Operately.ResourceHubs.ProjectHub.get_project_hub(project.id)
+    hub_context = Access.get_context!(resource_hub_id: hub.id)
+
+    assert hub.name == "Documents & Files"
+    assert hub.project_id == project.id
+    assert hub.space_id == nil
+    assert binding_signature(hub_context.id) == binding_signature(project_context.id)
+  end
+
   test "ProjectCreation operation creates subscriptions for contributors", ctx do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
@@ -291,5 +304,14 @@ defmodule Operately.Operations.ProjectCreationTest do
     notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
 
     assert mentioned.id in notified_ids
+  end
+
+  defp binding_signature(context_id) do
+    from(b in Binding,
+      where: b.context_id == ^context_id,
+      select: {b.group_id, b.access_level, b.tag}
+    )
+    |> Repo.all()
+    |> Enum.sort()
   end
 end

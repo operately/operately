@@ -6,6 +6,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
   alias Operately.Access.GroupMembership
   alias Operately.Groups
   alias Operately.Projects.Contributor
+  alias Operately.ResourceHubs.ResourceHub
   alias Operately.Support.Factory
 
   setup do
@@ -78,6 +79,19 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
 
       assert length(memberships) == 1
     end
+
+    test "syncs the default space resource hub access", ctx do
+      resources = [%{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}]
+
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+
+      hub = Repo.get_by!(ResourceHub, space_id: ctx.space.id, name: "Documents & Files")
+      hub_context = Access.get_context!(resource_hub_id: hub.id)
+      binding = Access.get_binding(hub_context, person_id: ctx.guest.id)
+
+      assert binding
+      assert binding.access_level == Binding.edit_access()
+    end
   end
 
   describe "granting access to a goal" do
@@ -116,6 +130,19 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
 
       assert contributor
       assert contributor.role == :contributor
+    end
+
+    test "syncs the project resource hub access", ctx do
+      resources = [%{resource_type: :project, resource_id: ctx.project.id, access_level: :comment_access}]
+
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+
+      hub = Operately.ResourceHubs.ProjectHub.get_project_hub(ctx.project.id)
+      hub_context = Access.get_context!(resource_hub_id: hub.id)
+      binding = Access.get_binding(hub_context, person_id: ctx.guest.id)
+
+      assert binding
+      assert binding.access_level == Binding.comment_access()
     end
 
     test "does not duplicate contributor if already exists", ctx do

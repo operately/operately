@@ -1557,6 +1557,17 @@
           },
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "resource_hub",
             "type": {
               "name": "resource_hub",
@@ -3138,9 +3149,31 @@
               "name": "space",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           },
           {
             "default": null,
@@ -4906,9 +4939,31 @@
               "name": "space",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           },
           {
             "default": null,
@@ -4941,6 +4996,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -5489,6 +5555,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -7001,6 +7078,17 @@
           },
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "resource_hub",
             "type": {
               "name": "resource_hub",
@@ -7192,6 +7280,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -7441,6 +7540,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -8268,6 +8378,17 @@
           },
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "resource_hub",
             "type": {
               "name": "resource_hub",
@@ -8371,6 +8492,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -9607,6 +9739,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -11102,6 +11245,17 @@
           },
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "resource_hub",
             "type": {
               "name": "resource_hub",
@@ -11150,6 +11304,17 @@
           },
           {
             "default": null,
+            "name": "can_manage_billing",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "can_edit_trusted_email_domains",
             "type": {
               "name": "boolean",
@@ -11172,7 +11337,29 @@
           },
           {
             "default": null,
+            "name": "can_edit_members",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "can_remove_members",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "can_edit_details",
             "type": {
               "name": "boolean",
               "kind": "named"
@@ -11282,6 +11469,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -11835,6 +12033,17 @@
           },
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "files",
             "type": {
               "item": {
@@ -12149,9 +12358,31 @@
               "name": "space",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           },
           {
             "default": null,
@@ -12402,6 +12633,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -13505,6 +13747,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -15473,6 +15726,17 @@
                 "kind": "named"
               },
               "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
             },
             "optional": true,
             "has_default": false,
@@ -17814,6 +18078,17 @@
           "optional": true,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "can_manage_billing",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
         }
       ],
       "docstring": "Lists all companies for the current account.",
@@ -18190,6 +18465,17 @@
         },
         {
           "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
           "name": "include_resource_hub",
           "type": {
             "name": "boolean",
@@ -18539,6 +18825,17 @@
         {
           "default": null,
           "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -21563,6 +21860,17 @@
         },
         {
           "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
           "name": "include_resource_hub",
           "type": {
             "name": "boolean",
@@ -23769,6 +24077,17 @@
         {
           "default": null,
           "name": "include_key_resources",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_resource_hub",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -26777,6 +27096,17 @@
         },
         {
           "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
           "name": "include_nodes",
           "type": {
             "name": "boolean",
@@ -29547,6 +29877,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-02T15:14:04Z",
+  "generated_at": "2026-06-05T22:00:02Z",
   "schema_version": 1
 }

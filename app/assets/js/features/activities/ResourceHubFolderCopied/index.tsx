@@ -4,9 +4,9 @@ import type { ActivityContentResourceHubFolderCopied } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
 import { assertPresent } from "@/utils/assertions";
-import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, folderLink } from "../feedItemLinks";
+import { resourceHubParentScope } from "../resourceHubActivityContext";
 
 const ResourceHubFolderCopied: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -35,20 +35,19 @@ const ResourceHubFolderCopied: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
     const folder = folderLink(data.folder!);
     const originalFolder = folderLink(data.originalFolder!);
 
-    if (page === "space") {
+    if (page === "space" || page === "project") {
       return feedTitle(activity, "made a copy of the", originalFolder, "folder and named it", folder);
     } else {
       return feedTitle(
         activity,
         "made a copy of the",
         originalFolder,
-        "folder in the",
-        space,
-        "space and named it",
+        "folder",
+        ...resourceHubParentScope(data, page),
+        "and named it",
         folder,
       );
     }
