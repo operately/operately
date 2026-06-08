@@ -214,7 +214,7 @@ defmodule Operately.Features.BillingTest do
       end,
       update_subscription: fn "sub_feature_test", %{cancel_at_period_end: true} ->
         Agent.update(ctx.polar_state_agent, fn _ ->
-          subscription_payload(ctx.billing_products.pro_monthly, %{"cancel_at_period_end" => true})
+          subscription_payload(ctx.billing_products.team_monthly, %{"cancel_at_period_end" => true})
         end)
 
         {:ok, %{"id" => "sub_feature_test"}}
@@ -247,7 +247,7 @@ defmodule Operately.Features.BillingTest do
       end,
       update_subscription: fn "sub_feature_test", %{cancel_at_period_end: false} ->
         Agent.update(ctx.polar_state_agent, fn _ ->
-          subscription_payload(ctx.billing_products.pro_monthly, %{"cancel_at_period_end" => false})
+          subscription_payload(ctx.billing_products.team_monthly, %{"cancel_at_period_end" => false})
         end)
 
         {:ok, %{"id" => "sub_feature_test"}}
