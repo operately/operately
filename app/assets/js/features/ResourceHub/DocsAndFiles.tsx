@@ -81,6 +81,7 @@ function ResourceHubDocsAndFilesContent({
   const title = folder?.name || displayResourceHubName(resourceHub.name);
   const draftPrompt = useDraftPrompt(resourceHub, draftNodes);
   const items = useDocsAndFilesItems(nodes);
+  const breadcrumbs = useFolderBreadcrumbs(resourceHub, folder);
   const refetch = React.useCallback(() => {
     void refresh();
   }, [refresh]);
@@ -97,6 +98,7 @@ function ResourceHubDocsAndFilesContent({
           draftPrompt={draftPrompt}
           uploadForm={<AddFileWidget folder={folder} resourceHub={resourceHub} refresh={refetch} />}
           folderModal={<AddFolderModal folder={folder} resourceHub={resourceHub} refresh={refetch} />}
+          breadcrumbs={breadcrumbs}
           emptyStateKind={folder ? "folder" : "resourceHub"}
           hideEmptyState={filesSelected}
           className={className}
@@ -144,6 +146,31 @@ function useDocsAndFilesItems(nodes: ResourceHubs.ResourceHubNode[]): DocsAndFil
   const paths = usePaths();
 
   return React.useMemo(() => nodes.map((node) => toDocsAndFilesItem(paths, node)), [paths, nodes]);
+}
+
+function useFolderBreadcrumbs(
+  resourceHub: ResourceHubs.ResourceHub,
+  folder?: ResourceHubs.ResourceHubFolder,
+): DocsAndFiles.Breadcrumb[] | undefined {
+  const paths = usePaths();
+
+  if (!folder) return undefined;
+
+  const rootPath = resourceHub.project?.id
+    ? paths.projectPath(resourceHub.project.id, { tab: "docs-and-files" })
+    : paths.resourceHubPath(resourceHub.id!);
+  const ancestors = (folder.pathToFolder || []).filter((ancestor) => ancestor.id && ancestor.id !== folder.id);
+
+  return [
+    {
+      label: displayResourceHubName(resourceHub.name),
+      link: rootPath,
+    },
+    ...ancestors.map((ancestor) => ({
+      label: ancestor.name || "",
+      link: paths.resourceHubFolderPath(ancestor.id!),
+    })),
+  ];
 }
 
 function useDraftPrompt(
