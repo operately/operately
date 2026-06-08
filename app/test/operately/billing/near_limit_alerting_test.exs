@@ -39,7 +39,7 @@ defmodule Operately.Billing.NearLimitAlertingTest do
     threshold = EnforceLimits.near_limit_threshold(Plans.member_limit(:free))
 
     fill_company_to_member_count(company, threshold)
-    put_company_on_team_plan(company)
+    put_company_on_pro_plan(company)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert :ok = NearLimitAlerting.maybe_enqueue_near_limit_warning_email(company, :member_count, threshold - 1)
@@ -114,7 +114,7 @@ defmodule Operately.Billing.NearLimitAlertingTest do
     end
   end
 
-  defp put_company_on_team_plan(company) do
+  defp put_company_on_pro_plan(company) do
     {:ok, _account} =
       Billing.sync_billing_account(company, %{
         provider: "polar",

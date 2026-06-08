@@ -64,7 +64,8 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.member_count == 2
         assert res.billing.storage_usage_bytes == 0
         assert res.billing.stale == false
-        assert length(res.billing.plans) == 3
+        assert length(res.billing.plans) == 4
+        assert Enum.any?(res.billing.plans, &(&1.key == "unlimited"))
         assert res.billing.catalog_products == []
       end
     end
@@ -75,7 +76,7 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly",
+          polar_product_id: "prod_pro_monthly",
           polar_product_name: "Team Monthly",
           price_amount: 2900,
           price_currency: "usd",
@@ -89,7 +90,7 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
              "subscriptions" => [
                %{
                  "status" => "active",
-                 "product_id" => "prod_team_monthly",
+                 "product_id" => "prod_pro_monthly",
                  "current_period_end" => "2026-06-30T00:00:00Z",
                  "cancel_at_period_end" => false
                }
@@ -110,7 +111,7 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.storage_usage_bytes == 2048
         assert res.billing.stale == false
         assert length(res.billing.catalog_products) == 1
-        assert hd(res.billing.catalog_products).polar_product_id == "prod_team_monthly"
+        assert hd(res.billing.catalog_products).polar_product_id == "prod_pro_monthly"
       end
     end
 

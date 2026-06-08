@@ -14,7 +14,7 @@ import { Link } from "turboui";
 
 export default { name: "NewCompanyPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-const BILLING_PLANS: BillingPlan[] = ["team", "business"];
+const BILLING_PLANS: BillingPlan[] = ["team", "business", "unlimited"];
 const BILLING_INTERVALS: BillingInterval[] = ["monthly", "yearly"];
 
 function Page() {

@@ -2,6 +2,7 @@ defmodule Operately.Billing.Polar.Operations.CheckoutSessionCreating do
   alias Operately.Billing
   alias Operately.Billing.CheckoutSession
   alias Operately.Billing.CompanyBillingAccount
+  alias Operately.Billing.Plans
   alias Operately.Billing.ProductCatalogEntry
   alias Operately.Companies.Company
   alias OperatelyWeb.Paths
@@ -99,17 +100,12 @@ defmodule Operately.Billing.Polar.Operations.CheckoutSessionCreating do
 
   defp parse_datetime(_), do: nil
 
-  defp cast_plan_key(plan_key) when plan_key in [:team, :business], do: {:ok, plan_key}
-
-  defp cast_plan_key(plan_key) when is_binary(plan_key) do
-    case String.downcase(plan_key) do
-      "team" -> {:ok, :team}
-      "business" -> {:ok, :business}
-      _ -> {:error, :bad_request}
+  defp cast_plan_key(plan_key) do
+    case Plans.cast_paid_plan_key(plan_key) do
+      {:ok, normalized_plan_key} -> {:ok, normalized_plan_key}
+      {:error, :invalid_plan_key} -> {:error, :bad_request}
     end
   end
-
-  defp cast_plan_key(_), do: {:error, :bad_request}
 
   defp cast_billing_interval(interval) when interval in [:monthly, :yearly], do: {:ok, interval}
 

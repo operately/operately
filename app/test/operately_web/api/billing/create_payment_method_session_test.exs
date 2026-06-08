@@ -19,11 +19,11 @@ defmodule OperatelyWeb.Api.Billing.CreatePaymentMethodSessionTest do
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
 
-      {:ok, _product} = create_product("prod_team_monthly_admin", "team", "monthly")
+      {:ok, _product} = create_product("prod_pro_monthly_admin", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_team_monthly_admin")}
+          {:ok, active_subscription_payload("prod_pro_monthly_admin")}
         end,
         create_customer_session: fn _external_customer_id, return_url ->
           {:ok,
@@ -63,11 +63,11 @@ defmodule OperatelyWeb.Api.Billing.CreatePaymentMethodSessionTest do
     setup :setup_owner_ctx
 
     test "it returns a hosted payment-method session", ctx do
-      {:ok, _product} = create_product("prod_team_monthly", "team", "monthly")
+      {:ok, _product} = create_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_team_monthly")}
+          {:ok, active_subscription_payload("prod_pro_monthly")}
         end,
         create_customer_session: fn _external_customer_id, return_url ->
           {:ok,

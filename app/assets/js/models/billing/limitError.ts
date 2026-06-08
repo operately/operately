@@ -21,8 +21,8 @@ export interface BillingLimitError {
   currentUsage: number;
   requestedDelta: number;
   projectedUsage: number;
-  limit: number;
-  remaining: number;
+  limit: number | null;
+  remaining: number | null;
   nearLimit: boolean;
   blocked: boolean;
   enforced: boolean;
@@ -48,8 +48,8 @@ export function extractLimitErrorDetails(details: unknown): BillingLimitError | 
     currentUsage: typeof data.current_usage === "number" ? data.current_usage : 0,
     requestedDelta: typeof data.requested_delta === "number" ? data.requested_delta : 0,
     projectedUsage: typeof data.projected_usage === "number" ? data.projected_usage : 0,
-    limit: typeof data.limit === "number" ? data.limit : 0,
-    remaining: typeof data.remaining === "number" ? data.remaining : 0,
+    limit: typeof data.limit === "number" ? data.limit : null,
+    remaining: typeof data.remaining === "number" ? data.remaining : null,
     nearLimit: data.near_limit === true,
     blocked: data.blocked === true,
     enforced: data.enforced === true,
@@ -86,7 +86,7 @@ function normalizeUpgradeRecommendationSource(source: unknown): BillingUpgradeRe
 }
 
 function isBillingPlan(value: unknown): value is BillingPlan {
-  return value === "free" || value === "team" || value === "business";
+  return value === "free" || value === "team" || value === "business" || value === "unlimited";
 }
 
 function isBillingInterval(value: unknown): value is BillingInterval {

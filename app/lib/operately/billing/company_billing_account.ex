@@ -2,28 +2,32 @@ defmodule Operately.Billing.CompanyBillingAccount do
   use Operately.Schema
   use Operately.Repo.Getter
 
-  @valid_plan_keys [:team, :business]
+  alias Operately.Billing.Plans
+
+  @valid_plan_keys [:team, :business, :unlimited]
   @valid_billing_intervals [:monthly, :yearly]
   @valid_statuses [:free, :active, :past_due, :canceled]
   @valid_access_states [:normal, :payment_grace, :over_limit_grace, :read_only]
   @valid_access_state_reasons [:past_due, :over_limit_after_downgrade]
 
+  @plan_key_fields [:plan_key, :suggested_plan_key, :pending_plan_key, :scheduled_plan_key]
+
   schema "company_billing_accounts" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
 
     field :provider, :string, default: "polar"
-    field :plan_key, Ecto.Enum, values: @valid_plan_keys
+    field :plan_key, :string
     field :billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :status, Ecto.Enum, values: @valid_statuses, default: :free
-    field :suggested_plan_key, Ecto.Enum, values: @valid_plan_keys
+    field :suggested_plan_key, :string
     field :suggested_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :suggested_plan_source, :string
     field :current_period_end, :utc_datetime
     field :cancel_at_period_end, :boolean, default: false
-    field :pending_plan_key, Ecto.Enum, values: @valid_plan_keys
+    field :pending_plan_key, :string
     field :pending_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :pending_checkout_started_at, :utc_datetime
-    field :scheduled_plan_key, Ecto.Enum, values: @valid_plan_keys
+    field :scheduled_plan_key, :string
     field :scheduled_billing_interval, Ecto.Enum, values: @valid_billing_intervals
     field :scheduled_change_effective_at, :utc_datetime
     field :last_synced_at, :utc_datetime
@@ -36,6 +40,7 @@ defmodule Operately.Billing.CompanyBillingAccount do
   end
 
   def valid_plan_keys, do: @valid_plan_keys
+  def valid_plan_key_strings, do: Plans.paid_plan_key_strings()
   def valid_billing_intervals, do: @valid_billing_intervals
   def valid_statuses, do: @valid_statuses
   def valid_access_states, do: @valid_access_states
@@ -46,6 +51,8 @@ defmodule Operately.Billing.CompanyBillingAccount do
   end
 
   def changeset(account, attrs) do
+    attrs = normalize_plan_key_attrs(attrs)
+
     account
     |> cast(attrs, [
       :company_id,
@@ -71,6 +78,43 @@ defmodule Operately.Billing.CompanyBillingAccount do
       :access_state_ends_at
     ])
     |> validate_required([:company_id, :provider, :status])
+    |> validate_plan_key_fields()
     |> assoc_constraint(:company)
+  end
+
+  # Plan keys are stored as strings, so normalize mixed inputs and reject unknown values here.
+  defp validate_plan_key_fields(changeset) do
+    Enum.reduce(@plan_key_fields, changeset, fn field, changeset ->
+      validate_change(changeset, field, fn ^field, value ->
+        if value in valid_plan_key_strings() do
+          []
+        else
+          [{field, "is invalid"}]
+        end
+      end)
+    end)
+  end
+
+  defp normalize_plan_key_attrs(attrs) when is_map(attrs) do
+    Enum.reduce(@plan_key_fields, attrs, fn field, attrs ->
+      normalize_plan_key_attr(attrs, field)
+    end)
+  end
+
+  defp normalize_plan_key_attrs(attrs), do: attrs
+
+  defp normalize_plan_key_attr(attrs, field) do
+    string_field = Atom.to_string(field)
+
+    cond do
+      Map.has_key?(attrs, field) ->
+        Map.update!(attrs, field, &Plans.normalize_key/1)
+
+      Map.has_key?(attrs, string_field) ->
+        Map.update!(attrs, string_field, &Plans.normalize_key/1)
+
+      true ->
+        attrs
+    end
   end
 end

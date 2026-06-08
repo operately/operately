@@ -4,6 +4,7 @@ const PLAN_NAMES: Record<string, string> = {
   free: "Free",
   team: "Team",
   business: "Business",
+  unlimited: "Unlimited",
 };
 
 export function formatCompanyBillingPlanName(planKey?: string | null, fallback = "Unknown plan"): string {

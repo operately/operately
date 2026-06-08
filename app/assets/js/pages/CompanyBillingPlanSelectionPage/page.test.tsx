@@ -33,6 +33,7 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
       { key: "free", displayName: "Free", memberLimit: 20, storageLimitBytes: 1_073_741_824 },
       { key: "team", displayName: "Team", memberLimit: 50, storageLimitBytes: 107_374_182_400 },
       { key: "business", displayName: "Business", memberLimit: 200, storageLimitBytes: 1_099_511_627_776 },
+      { key: "unlimited", displayName: "Unlimited", memberLimit: null, storageLimitBytes: null },
     ],
     catalogProducts: [
       {
@@ -40,7 +41,7 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
         provider: "polar",
         planFamily: "team",
         billingInterval: "monthly",
-        polarProductId: "pol_team_monthly",
+        polarProductId: "pol_pro_monthly",
         polarProductName: "Team Monthly",
         priceAmount: 7900,
         priceCurrency: "usd",
@@ -56,7 +57,7 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
         provider: "polar",
         planFamily: "team",
         billingInterval: "yearly",
-        polarProductId: "pol_team_yearly",
+        polarProductId: "pol_pro_yearly",
         polarProductName: "Team Yearly",
         priceAmount: 79000,
         priceCurrency: "usd",
@@ -91,6 +92,22 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
         polarProductId: "pol_business_yearly",
         polarProductName: "Business Yearly",
         priceAmount: 199000,
+        priceCurrency: "usd",
+        version: 1,
+        active: true,
+        archivedAt: null,
+        lastSyncedAt: "2026-05-23T00:00:00Z",
+        insertedAt: "2026-05-23T00:00:00Z",
+        updatedAt: "2026-05-23T00:00:00Z",
+      },
+      {
+        id: "unlimited-yearly",
+        provider: "polar",
+        planFamily: "unlimited",
+        billingInterval: "yearly",
+        polarProductId: "pol_unlimited_yearly",
+        polarProductName: "Unlimited Yearly",
+        priceAmount: 499000,
         priceCurrency: "usd",
         version: 1,
         active: true,
@@ -135,7 +152,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     expect(selection.mode).toBe("checkout");
     expect(selection.selectedInterval).toBe("yearly");
-    expect(selection.cards.map((card) => card.title)).toEqual(["Team", "Business"]);
+    expect(selection.cards.map((card) => card.title)).toEqual(["Team", "Business", "Unlimited"]);
     expect(selection.cards[0]?.priceLabel).toBe("$66 / month");
     expect(selection.cards[0]?.detailLines).toContain("100 GB storage");
     expect(selection.cards[0]?.detailLines).toContain("Billed yearly at $790");
