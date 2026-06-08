@@ -15,6 +15,18 @@ defmodule Operately.ResourceHubsFixtures do
     hub
   end
 
+  def resource_hub_access_attrs(%{company: company_access_level, space: space_access_level}) do
+    resource_hub_access_attrs(company_access_level, space_access_level)
+  end
+
+  def resource_hub_access_attrs(company_access_level, space_access_level) do
+    %{
+      anonymous_access_level: Binding.no_access(),
+      company_access_level: Binding.from_atom(company_access_level),
+      space_access_level: Binding.from_atom(space_access_level),
+    }
+  end
+
   def folder_fixture(hub_id, attrs \\ %{}) do
     {:ok, node} = Operately.ResourceHubs.create_node(%{
       resource_hub_id: hub_id,

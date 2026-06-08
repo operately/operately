@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
   alias Operately.Repo
   alias OperatelyWeb.Paths
+  alias OperatelyEmail.Emails.ResourceHubParent
 
   def send(person, activity) do
     import OperatelyEmail.Mailers.ActivityMailer
@@ -11,12 +12,13 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
 
     first_file = hd(files)
     action = find_action(files)
+    parent = ResourceHubParent.from_resource(first_file)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: first_file.space.name, who: author, action: action)
+    |> subject(where: parent.name, who: author, action: action)
     |> assign(:action, action)
     |> assign(:author, author)
     |> assign(:files, files)
@@ -32,7 +34,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
 
     from(f in Operately.ResourceHubs.File,
       where: f.id in ^file_ids,
-      preload: [:space, node: [:parent_folder, :resource_hub]]
+      preload: [resource_hub: [:project, :space], node: [:parent_folder, :resource_hub]]
     )
     |> Repo.all()
   end
@@ -61,9 +63,6 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
     action = find_action(files)
 
     %{
-      parent_id: first_file.space.id,
-      parent_type: :space,
-      parent_name: first_file.space.name,
       headline: action,
       excerpt_html: nil,
       excerpt_text: nil,
@@ -72,5 +71,6 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
       occurred_at: activity.inserted_at,
       coalesce_key: nil
     }
+    |> Map.merge(ResourceHubParent.fields(first_file))
   end
 end

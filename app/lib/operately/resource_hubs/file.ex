@@ -45,7 +45,7 @@ defmodule Operately.ResourceHubs.File do
   #
 
   def load_potential_subscribers(file = %__MODULE__{}) do
-    file = Repo.preload(file, [:access_context, resource_hub: [space: :members]])
+    file = Repo.preload(file, [:access_context, resource_hub: [space: :members, project: [contributors: :person]]])
 
     subs =
       file

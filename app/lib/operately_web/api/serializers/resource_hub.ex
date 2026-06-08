@@ -5,11 +5,12 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.ResourceHub d
       name: resource_hub.name,
       description: Jason.encode!(resource_hub.description),
       space: OperatelyWeb.Api.Serializer.serialize(resource_hub.space),
+      project: OperatelyWeb.Api.Serializer.serialize(resource_hub.project),
       nodes: OperatelyWeb.Api.Serializer.serialize(resource_hub.nodes),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(resource_hub.potential_subscribers),
       permissions: OperatelyWeb.Api.Serializer.serialize(resource_hub.permissions),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(resource_hub.inserted_at),
-      updated_at: OperatelyWeb.Api.Serializer.serialize(resource_hub.updated_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(resource_hub.updated_at)
     }
   end
 end
