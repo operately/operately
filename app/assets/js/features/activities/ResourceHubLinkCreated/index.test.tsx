@@ -20,7 +20,7 @@ describe("ResourceHubLinkCreated", () => {
       author: { fullName: "Jo Smith" },
       content: {
         project: { id: "project-1", name: "Launch" },
-        resourceHub: { id: "hub-1", name: "Docs & Files" },
+        resourceHub: { id: "hub-1", name: "Documents & Files" },
         link: { id: "link-1", name: "Referral launch brief" },
       },
     };

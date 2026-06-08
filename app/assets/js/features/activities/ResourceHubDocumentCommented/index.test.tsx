@@ -41,7 +41,7 @@ describe("ResourceHubDocumentCommented", () => {
       author: { fullName: "Jo Smith" },
       content: {
         project: { id: "project-1", name: "Launch" },
-        resourceHub: { id: "hub-1", name: "Docs & Files" },
+        resourceHub: { id: "hub-1", name: "Documents & Files" },
         document: { id: "doc-1", name: "Project Brief" },
         comment: { id: "comment-1" },
       },

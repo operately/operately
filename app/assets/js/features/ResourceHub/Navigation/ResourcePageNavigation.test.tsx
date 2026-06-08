@@ -30,7 +30,7 @@ describe("ResourcePageNavigation", () => {
       pathToLink: [],
       resourceHub: {
         id: "hub-1",
-        name: "Docs & Files",
+        name: "Documents & Files",
         project: {
           id: "project-1",
           name: "Launch",

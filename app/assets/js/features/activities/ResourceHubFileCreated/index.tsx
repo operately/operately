@@ -45,7 +45,7 @@ const ResourceHubFileCreated: ActivityHandler = {
 
     assertPresent(data.files, "files must be present in FileCreated activity");
 
-    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "Docs & Files";
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "Documents & Files";
 
     if (data.files.length === 1 && data.files[0]) {
       const file = fileLink(data.files[0]);

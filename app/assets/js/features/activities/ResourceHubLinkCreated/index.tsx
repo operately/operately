@@ -39,7 +39,7 @@ const ResourceHubLinkCreated: ActivityHandler = {
       return feedTitle(activity, "added a link:", link);
     }
 
-    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "Docs & Files";
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "Documents & Files";
 
     return feedTitle(activity, "added a link to", resourceHub, ...resourceHubParentScope(data, page, ":"), link);
   },

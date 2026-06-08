@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 
 import { DateField } from "../DateField";
+import { DocsAndFilesPreview, DocsAndFilesTab } from "../DocsAndFiles";
+import type { DocsAndFiles } from "../DocsAndFiles";
 import { createContextualDate } from "../DateField/mockData";
 import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
@@ -237,63 +239,68 @@ const mockResources: ResourceManager.Resource[] = [
   },
 ];
 
-const mockDocsAndFilesItems = [
-  "Referral rollout FAQ",
-  "Reward ledger controls",
-  "Partner announcement draft",
-  "Support macros",
-  "Attribution dashboard notes",
-  "Pilot customer list",
+const mockDocsAndFilesItems: DocsAndFiles.Item[] = [
+  {
+    id: "doc-1",
+    name: "Referral rollout FAQ",
+    type: "document",
+    link: "#",
+    updatedAt: daysAgo(1).toISOString(),
+    commentsCount: 3,
+    details: ["Alice Johnson", "Answers for the customer-facing launch questions"],
+  },
+  {
+    id: "folder-1",
+    name: "Reward ledger controls",
+    type: "folder",
+    link: "#",
+    updatedAt: daysAgo(2).toISOString(),
+    details: ["4 items"],
+  },
+  {
+    id: "doc-2",
+    name: "Partner announcement draft",
+    type: "document",
+    link: "#",
+    updatedAt: daysAgo(3).toISOString(),
+    details: ["Bob Smith"],
+  },
+  {
+    id: "file-1",
+    name: "Support macros",
+    type: "file",
+    link: "#",
+    fileKind: "pdf",
+    updatedAt: daysAgo(4).toISOString(),
+    details: ["Diana Prince", "240KB"],
+  },
+  {
+    id: "link-1",
+    name: "Attribution dashboard notes",
+    type: "link",
+    link: "#",
+    updatedAt: daysAgo(5).toISOString(),
+    commentsCount: 1,
+    details: ["Charlie Brown"],
+  },
+  {
+    id: "file-2",
+    name: "Pilot customer list",
+    type: "file",
+    link: "#",
+    fileKind: "default",
+    updatedAt: daysAgo(6).toISOString(),
+    details: ["Alice Johnson", "18KB"],
+  },
 ];
 
-function mockDocsAndFiles(items = mockDocsAndFilesItems): NonNullable<ProjectPage.Props["docsAndFiles"]> {
-  const visibleItems = items.slice(0, 5);
-  const hiddenCount = items.length - visibleItems.length;
-
+function mockDocsAndFiles(
+  items: DocsAndFiles.Item[] = mockDocsAndFilesItems,
+): NonNullable<ProjectPage.Props["docsAndFiles"]> {
   return {
     count: items.length,
-    preview: (
-      <div className="space-y-4">
-        <div className="flex items-baseline gap-3">
-          <h2 className="text-xl font-bold">Docs & Files</h2>
-        </div>
-
-        {visibleItems.length === 0 ? (
-          <p className="text-content-dimmed">No support materials yet. Add files, docs, or links.</p>
-        ) : (
-          <div className="space-y-3">
-            {visibleItems.map((item) => (
-              <a key={item} href="#" className="block text-content-accent hover:underline">
-                {item}
-              </a>
-            ))}
-            {hiddenCount > 0 && (
-              <a href="#" className="block text-content-accent hover:underline">
-                Show {hiddenCount} more
-              </a>
-            )}
-          </div>
-        )}
-      </div>
-    ),
-    tabContent: (
-      <div className="p-4 max-w-6xl mx-auto my-6">
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">Docs & Files</h2>
-        </div>
-        {items.length === 0 ? (
-          <p className="text-content-dimmed">No support materials yet. Add files, docs, or links.</p>
-        ) : (
-          <div className="space-y-3">
-            {items.map((item) => (
-              <a key={item} href="#" className="block text-content-accent hover:underline">
-                {item}
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    ),
+    preview: <DocsAndFilesPreview items={items} tabPath="#" />,
+    tabContent: <DocsAndFilesTab title="Documents & Files" items={items} />,
   };
 }
 
