@@ -111,6 +111,25 @@ defmodule Operately.Features.CompanyAdmin.MembershipTest do
   end
 
   @tag role: :admin
+  feature "adding a new person is blocked when the company is already full", ctx do
+    params = %{
+      full_name: "Limit Blocked Member",
+      email: "limit.blocked.member.admin@example.com",
+      title: "Designer"
+    }
+
+    ctx
+    |> Steps.enable_billing_for_company()
+    |> Steps.fill_company_to_member_limit()
+    |> Steps.assert_logged_in_user_has_admin_access_level()
+    |> Steps.open_company_team_page()
+    |> Steps.invite_company_member(params)
+    |> Steps.assert_limit_guidance_has_upgrade_cta()
+    |> Steps.follow_limit_guidance_upgrade_cta()
+    |> Steps.assert_no_person_added(params.email)
+  end
+
+  @tag role: :admin
   feature "restoring a removed member is blocked when the company is already full", ctx do
     ctx
     |> Steps.enable_billing_for_company()
@@ -120,7 +139,7 @@ defmodule Operately.Features.CompanyAdmin.MembershipTest do
     |> Steps.open_restore_people_page()
     |> Steps.assert_removed_person_is_listed()
     |> Steps.restore_company_member()
-    |> Steps.assert_limit_guidance_has_no_upgrade_cta()
+    |> Steps.assert_limit_guidance_has_upgrade_cta()
     |> Steps.assert_member_still_suspended(:suspended)
   end
 

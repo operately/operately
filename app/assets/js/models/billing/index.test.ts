@@ -217,7 +217,8 @@ describe("billing model helpers", () => {
       response: {
         data: {
           error: "Bad request",
-          message: "This company has reached its member limit. Upgrade the plan to add more people.",
+          message:
+            "This company has reached its member limit: 20 of 20 active members. Adding or restoring people is blocked until this company is back within its plan limits.",
           details: {
             code: "member_count_limit_exceeded",
             limit_key: "member_count",
@@ -287,15 +288,17 @@ describe("billing model helpers", () => {
       }),
     ).toMatchObject({
       title: "This company has reached its member limit",
+      description: "Review billing to change the plan and add or restore people.",
+      usageSummary: "This company has 20 active members. The plan includes 20.",
       recommendedPlanLabel: "Team Monthly",
       cta: {
-        label: "Review upgrade options",
+        label: "Review billing",
         to: "/acme/admin/billing/plans?plan=team&billing_period=monthly",
       },
     });
   });
 
-  it("builds company-admin guidance without a billing CTA", () => {
+  it("builds company-admin guidance with the same billing CTA as owners", () => {
     const error = Billing.extractLimitErrorDetails({
       code: "member_count_limit_exceeded",
       limit_key: "member_count",
@@ -318,11 +321,17 @@ describe("billing model helpers", () => {
     expect(
       Billing.buildMemberLimitGuidance(error, "company_admin", {
         companyBillingPath: () => "/acme/admin/billing",
-        companyBillingPlansPath: () => "/acme/admin/billing/plans",
+        companyBillingPlansPath: (opts) =>
+          `/acme/admin/billing/plans?plan=${opts?.plan}&billing_period=${opts?.billingPeriod}`,
       }),
     ).toMatchObject({
+      description: "Review billing to change the plan and add or restore people.",
+      usageSummary: "This company has 20 active members. The plan includes 20.",
       recommendedPlanLabel: "Team Monthly",
-      cta: null,
+      cta: {
+        label: "Review billing",
+        to: "/acme/admin/billing/plans?plan=team&billing_period=monthly",
+      },
     });
   });
 
@@ -348,6 +357,8 @@ describe("billing model helpers", () => {
         companyBillingPlansPath: () => "/acme/admin/billing/plans",
       }),
     ).toMatchObject({
+      description: "Contact an admin or owner to review billing and change the plan before trying again.",
+      usageSummary: "This company has 20 active members. The plan includes 20.",
       cta: null,
     });
   });

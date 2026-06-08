@@ -387,8 +387,8 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.assert_has(testid: "invite-link-full-page")
     |> UI.assert_text("Member limit reached")
     |> UI.assert_text(ctx.company.name)
-    |> UI.assert_text("Try Again")
-    |> UI.refute_text("Review upgrade options")
+    |> UI.assert_text("An admin or owner needs to help")
+    |> UI.assert_text("Try again")
   end
 
   step :assert_you_are_not_member_of_the_company, ctx do

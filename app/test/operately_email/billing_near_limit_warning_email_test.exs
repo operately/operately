@@ -45,4 +45,10 @@ defmodule OperatelyEmail.BillingNearLimitWarningEmailTest do
       true
     end)
   end
+
+  test "formats storage usage across byte ranges" do
+    assert BillingNearLimitWarningEmail.format_usage(:storage_bytes, 512) == "512 B"
+    assert BillingNearLimitWarningEmail.format_usage(:storage_bytes, 1_073_741_824) == "1.0 GB"
+    assert BillingNearLimitWarningEmail.format_usage(:storage_bytes, 1_125_899_906_842_624) == "1.0 PB"
+  end
 end

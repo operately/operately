@@ -108,7 +108,8 @@ defmodule Operately.Operations.AccountSigningUpTest do
 
       assert invite_context.company == nil
       assert invite_context.person == nil
-      assert invite_context.error == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert invite_context.error ==
+               "This company has reached its member limit: 20 of 20 active members. Adding or restoring people is blocked until this company is back within its plan limits."
       assert invite_context.join_error_details.code == "member_count_limit_exceeded"
       assert invite_context.join_error_details.limit_key == "member_count"
       assert invite_context.join_error_details.plan_key == "free"
