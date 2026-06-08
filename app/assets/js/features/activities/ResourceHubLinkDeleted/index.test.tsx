@@ -28,7 +28,7 @@ describe("ResourceHubLinkDeleted", () => {
 
     const html = renderToStaticMarkup(<>{ResourceHubLinkDeleted.FeedItemTitle({ activity, page: "project" })}</>);
 
-    expect(html).toContain('href="/hubs/hub-1">Docs &amp; Files</a>');
+    expect(html).toContain('href="/hubs/hub-1">Documents &amp; Files</a>');
     expect(html).toContain("deleted the &quot;Launch brief&quot; link from");
     expect(html).not.toContain("/spaces/");
   });

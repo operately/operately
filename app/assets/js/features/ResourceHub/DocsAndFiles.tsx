@@ -289,7 +289,7 @@ function fileTypeLabel(node: ResourceHubs.ResourceHubNode): string | undefined {
   const contentType = node.file?.blob?.contentType;
   if (node.type !== "file" || !contentType) return undefined;
 
-  return contentType.split("/").pop();
+  return contentType.split("/").pop()?.toUpperCase();
 }
 
 function thumbnail(node: ResourceHubs.ResourceHubNode): DocsAndFiles.Item["thumbnail"] {

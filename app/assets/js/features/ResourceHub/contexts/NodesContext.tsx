@@ -17,7 +17,7 @@ interface FolderProps {
   refetch: () => void;
 }
 
-export type NodesProps = ResourceHubProps | FolderProps;
+type NodesProps = ResourceHubProps | FolderProps;
 
 interface NodesContext {
   parent: ResourceHub | ResourceHubFolder;

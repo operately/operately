@@ -41,6 +41,6 @@ describe("ResourcePageNavigation", () => {
     const html = renderToStaticMarkup(<ResourcePageNavigation resource={link} />);
 
     expect(html).toContain('href="/projects/project-1">Launch</a>');
-    expect(html).toContain('href="/hubs/hub-1">Docs &amp; Files</a>');
+    expect(html).toContain('href="/hubs/hub-1">Documents &amp; Files</a>');
   });
 });

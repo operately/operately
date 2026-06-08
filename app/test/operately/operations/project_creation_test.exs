@@ -154,14 +154,14 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Access.get_binding(group_id: champion.id, context_id: context.id, access_level: Binding.full_access())
   end
 
-  test "ProjectCreation operation creates Docs & Files hub with project access", ctx do
+  test "ProjectCreation operation creates Documents & Files hub with project access", ctx do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
     project_context = Access.get_context!(project_id: project.id)
     hub = Operately.ResourceHubs.ProjectHub.get_project_hub(project.id)
     hub_context = Access.get_context!(resource_hub_id: hub.id)
 
-    assert hub.name == "Docs & Files"
+    assert hub.name == "Documents & Files"
     assert hub.project_id == project.id
     assert hub.space_id == nil
     assert binding_signature(hub_context.id) == binding_signature(project_context.id)
