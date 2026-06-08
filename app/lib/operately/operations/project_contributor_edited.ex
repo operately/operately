@@ -50,7 +50,6 @@ defmodule Operately.Operations.ProjectContributorEdited do
     |> Multi.run(:update_bindings, fn _, _ ->
       Access.bind_person(context, attrs.person_id, access_level(contributor, attrs))
     end)
-    |> sync_resource_hub_access(contributor.project_id)
     |> Activities.insert_sync(author.id, :project_contributor_edited, fn changes ->
       %{
         company_id: project.company_id,
@@ -86,7 +85,6 @@ defmodule Operately.Operations.ProjectContributorEdited do
       # increase the access level of the new contributor to the level of the previous contributor
       Access.bind_person(context, new_contributor.person_id, access_level(old_contributor))
     end)
-    |> sync_resource_hub_access(old_contributor.project_id)
     |> Activities.insert_sync(author.id, :project_contributor_edited, fn changes ->
       %{
         company_id: project.company_id,
@@ -117,7 +115,6 @@ defmodule Operately.Operations.ProjectContributorEdited do
     |> Multi.run(:update_bindings, fn _, _ ->
       Access.bind_person(context, contributor.person_id, level)
     end)
-    |> sync_resource_hub_access(contributor.project_id)
     |> Activities.insert_sync(author.id, :project_contributor_edited, fn changes ->
       %{
         company_id: project.company_id,
@@ -159,11 +156,5 @@ defmodule Operately.Operations.ProjectContributorEdited do
       role: Atom.to_string(contributor.role),
       permissions: access_level(contributor)
     }
-  end
-
-  defp sync_resource_hub_access(multi, project_id) do
-    Multi.run(multi, :resource_hub_access, fn _, _ ->
-      Operately.ResourceHubs.ProjectHub.sync_access_from_project(project_id)
-    end)
   end
 end

@@ -32,11 +32,15 @@ defmodule Operately.ResourceHubs.Notifications do
   end
 
   defp load_resource(schema, id, with_deleted) do
-    from(resource in schema,
-      join: c in assoc(resource, :access_context),
-      as: :context,
-      preload: [:author, access_context: c, resource_hub: [space: :members, project: [contributors: :person]]],
-      where: resource.id == ^id
+    query =
+      from(resource in schema,
+        as: :resource,
+        where: resource.id == ^id
+      )
+      |> Operately.ResourceHubs.Getter.join_effective_context(:child)
+
+    from([context: c] in query,
+      preload: [:author, access_context: c, resource_hub: [space: :members, project: [contributors: :person]]]
     )
     |> Repo.one(with_deleted: with_deleted)
   end

@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 
 import { DateField } from "../DateField";
-import { DocsAndFilesPreview, DocsAndFilesTab } from "../DocsAndFiles";
 import type { DocsAndFiles } from "../DocsAndFiles";
 import { createContextualDate } from "../DateField/mockData";
 import { ResourceManager } from "../ResourceManager";
@@ -299,8 +298,9 @@ function mockDocsAndFiles(
 ): NonNullable<ProjectPage.Props["docsAndFiles"]> {
   return {
     count: items.length,
-    preview: <DocsAndFilesPreview items={items} tabPath="#" />,
-    tabContent: <DocsAndFilesTab title="Documents & Files" items={items} />,
+    title: "Documents & Files",
+    items,
+    tabPath: "#",
   };
 }
 

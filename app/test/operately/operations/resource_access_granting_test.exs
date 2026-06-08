@@ -80,17 +80,17 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
       assert length(memberships) == 1
     end
 
-    test "syncs the default space resource hub access", ctx do
+    test "grants default space resource hub access through the space context", ctx do
       resources = [%{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}]
 
       assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       hub = Repo.get_by!(ResourceHub, space_id: ctx.space.id, name: "Documents & Files")
       hub_context = Access.get_context!(resource_hub_id: hub.id)
-      binding = Access.get_binding(hub_context, person_id: ctx.guest.id)
 
-      assert binding
-      assert binding.access_level == Binding.edit_access()
+      refute Access.get_binding(hub_context, person_id: ctx.guest.id)
+      assert {:ok, hub} = ResourceHub.get(ctx.guest, id: hub.id)
+      assert hub.request_info.access_level == Binding.edit_access()
     end
   end
 
@@ -132,17 +132,17 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
       assert contributor.role == :contributor
     end
 
-    test "syncs the project resource hub access", ctx do
-      resources = [%{resource_type: :project, resource_id: ctx.project.id, access_level: :comment_access}]
+    test "grants project resource hub access through the project context", ctx do
+      resources = [%{resource_type: :project, resource_id: ctx.project.id, access_level: :full_access}]
 
       assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       hub = Operately.ResourceHubs.ProjectHub.get_project_hub(ctx.project.id)
       hub_context = Access.get_context!(resource_hub_id: hub.id)
-      binding = Access.get_binding(hub_context, person_id: ctx.guest.id)
 
-      assert binding
-      assert binding.access_level == Binding.comment_access()
+      refute Access.get_binding(hub_context, person_id: ctx.guest.id)
+      assert {:ok, hub} = ResourceHub.get(ctx.guest, id: hub.id)
+      assert hub.request_info.access_level == Binding.full_access()
     end
 
     test "does not duplicate contributor if already exists", ctx do
@@ -162,7 +162,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
       resources = [
         %{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access},
         %{resource_type: :goal, resource_id: ctx.goal.id, access_level: :view_access},
-        %{resource_type: :project, resource_id: ctx.project.id, access_level: :full_access},
+        %{resource_type: :project, resource_id: ctx.project.id, access_level: :full_access}
       ]
 
       assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
@@ -186,7 +186,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
       resources = [
         %{resource_type: :space, resource_id: ctx.space.id, access_level: :view_access},
         %{resource_type: :space, resource_id: ctx.space.id, access_level: :full_access},
-        %{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access},
+        %{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}
       ]
 
       assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
@@ -202,7 +202,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
         %{resource_type: :space, resource_id: ctx.space.id, access_level: :view_access},
         %{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access},
         %{resource_type: :goal, resource_id: ctx.goal.id, access_level: :comment_access},
-        %{resource_type: :goal, resource_id: ctx.goal.id, access_level: :full_access},
+        %{resource_type: :goal, resource_id: ctx.goal.id, access_level: :full_access}
       ]
 
       assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
@@ -218,7 +218,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
       resources = [
         %{resource_type: :space, resource_id: ctx.space.id, access_level: :view_access},
         %{resource_type: :goal, resource_id: ctx.goal.id, access_level: :edit_access},
-        %{resource_type: :project, resource_id: ctx.project.id, access_level: :full_access},
+        %{resource_type: :project, resource_id: ctx.project.id, access_level: :full_access}
       ]
 
       assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)

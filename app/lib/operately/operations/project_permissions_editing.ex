@@ -10,7 +10,6 @@ defmodule Operately.Operations.ProjectPermissionsEditing do
       {:ok, Access.get_context!(project_id: project.id)}
     end)
     |> update_bindings(project, attrs)
-    |> sync_resource_hub_access(project)
     |> insert_activity(author, project)
     |> Repo.transaction()
   end
@@ -43,12 +42,6 @@ defmodule Operately.Operations.ProjectPermissionsEditing do
           space: find_access_level(changes, :space_members_binding, :updated)
         }
       }
-    end)
-  end
-
-  defp sync_resource_hub_access(multi, project) do
-    Multi.run(multi, :resource_hub_access, fn _, _ ->
-      Operately.ResourceHubs.ProjectHub.sync_access_from_project(project.id)
     end)
   end
 

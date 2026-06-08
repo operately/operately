@@ -1,6 +1,6 @@
 defmodule Operately.ResourceHubs.ResourceHub do
   use Operately.Schema
-  use Operately.Repo.Getter
+  use Operately.ResourceHubs.Getter, source: :hub
 
   schema "resource_hubs" do
     belongs_to :space, Operately.Groups.Group

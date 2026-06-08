@@ -10,7 +10,6 @@ defmodule Operately.Operations.GroupPermissionsEditing do
       {:ok, Access.get_context!(group_id: space.id)}
     end)
     |> update_bindings(space.company_id, attrs)
-    |> sync_resource_hub_access(space)
     |> insert_activity(author, space)
     |> Repo.transaction()
   end
@@ -21,12 +20,6 @@ defmodule Operately.Operations.GroupPermissionsEditing do
     multi
     |> Access.update_or_insert_binding(:company_members_binding, standard, attrs.company)
     |> Access.maybe_update_anonymous_binding(company_id, attrs.public)
-  end
-
-  defp sync_resource_hub_access(multi, space) do
-    Multi.run(multi, :resource_hub_access, fn _, _ ->
-      Operately.ResourceHubs.SpaceHub.sync_access_from_space(space.id)
-    end)
   end
 
   defp insert_activity(multi, author, space) do

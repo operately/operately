@@ -4,8 +4,8 @@ import * as ResourceHubs from "@/models/resourceHubs";
 import { Paths, usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
 import plurarize from "@/utils/plurarize";
-import { richContentToString, DocsAndFilesPreview, DocsAndFilesTab } from "turboui";
-import type { DocsAndFiles } from "turboui";
+import { richContentToString, DocsAndFilesTab } from "turboui";
+import type { DocsAndFiles, ProjectPage } from "turboui";
 
 import { AddFilesButton } from "./AddFilesButton";
 import { AddFileWidget } from "./AddFileWidget";
@@ -51,22 +51,47 @@ export function ResourceHubDocsAndFiles({
   );
 }
 
-export function ResourceHubDocsAndFilesPreview({
+export function useResourceHubDocsAndFilesProjectProps({
   resourceHub,
   nodes,
-}: {
-  resourceHub: ResourceHubs.ResourceHub;
-  nodes: ResourceHubs.ResourceHubNode[];
-}) {
+  draftNodes = [],
+  refresh,
+}: Omit<ResourceHubDocsAndFilesProps, "resourceHub"> & {
+  resourceHub: ResourceHubs.ResourceHub | null | undefined;
+}): ProjectPage.Props["docsAndFiles"] {
   const paths = usePaths();
+  const permissions = resourceHub?.permissions;
+  const title = displayResourceHubName(resourceHub?.name);
   const items = useDocsAndFilesItems(nodes);
-  const tabPath = resourceHub.project?.id
-    ? paths.projectPath(resourceHub.project.id, { tab: "docs-and-files" })
-    : resourceHub.id
-      ? paths.resourceHubPath(resourceHub.id)
-      : "#";
+  const draftPrompt = useDraftPrompt(resourceHub, draftNodes);
+  const refetch = React.useCallback(() => {
+    void refresh();
+  }, [refresh]);
 
-  return <DocsAndFilesPreview items={items} tabPath={tabPath} />;
+  if (!resourceHub || !permissions) return undefined;
+
+  const tabPath = resourceHub.project?.id ? paths.projectPath(resourceHub.project.id, { tab: "docs-and-files" }) : "#";
+
+  return {
+    title,
+    items,
+    tabPath,
+    count: nodes.length,
+    addAction: <AddFilesButton permissions={permissions} />,
+    draftPrompt,
+    uploadForm: <AddFileWidget resourceHub={resourceHub} refresh={refetch} />,
+    folderModal: <AddFolderModal resourceHub={resourceHub} refresh={refetch} />,
+    emptyStateKind: "resourceHub",
+    renderTabWrapper: (children) => (
+      <NewFileModalsProvider resourceHub={resourceHub}>
+        <FileDragAndDropArea>
+          <DocsAndFilesNodesProvider resourceHub={resourceHub} nodes={nodes} refetch={refetch}>
+            {children}
+          </DocsAndFilesNodesProvider>
+        </FileDragAndDropArea>
+      </NewFileModalsProvider>
+    ),
+  };
 }
 
 function ResourceHubDocsAndFilesContent({
@@ -180,12 +205,12 @@ function useFolderBreadcrumbs(
 }
 
 function useDraftPrompt(
-  resourceHub: ResourceHubs.ResourceHub,
+  resourceHub: ResourceHubs.ResourceHub | null | undefined,
   drafts: ResourceHubs.ResourceHubNode[],
 ): DocsAndFiles.DraftPrompt | null {
   const paths = usePaths();
 
-  if (drafts.length < 1 || !resourceHub.id) return null;
+  if (drafts.length < 1 || !resourceHub?.id) return null;
 
   if (drafts.length === 1) {
     const documentId = drafts[0]?.document?.id;

@@ -1,6 +1,6 @@
 defmodule Operately.ResourceHubs.Folder do
   use Operately.Schema
-  use Operately.Repo.Getter
+  use Operately.ResourceHubs.Getter, source: :child
 
   alias Operately.Notifications.Subscriber
 
@@ -41,7 +41,7 @@ defmodule Operately.ResourceHubs.Folder do
     folder_ids =
       nodes
       |> Enum.filter(&(&1.type == :folder))
-      |> Enum.map(&(&1.folder.id))
+      |> Enum.map(& &1.folder.id)
 
     counts =
       from(n in Operately.ResourceHubs.Node,

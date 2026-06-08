@@ -14,7 +14,6 @@ defmodule Operately.Operations.GroupMembersAdding do
     |> insert_access_group_memberships(group_id, members)
     |> Multi.run(:context, fn _, _ -> {:ok, Access.get_context!(group_id: group_id)} end)
     |> insert_access_bindings(members)
-    |> sync_resource_hub_access(group_id)
     |> insert_activities(author, group_id)
     |> Repo.transaction()
   end
@@ -28,7 +27,7 @@ defmodule Operately.Operations.GroupMembersAdding do
       })
     end)
     |> Enum.with_index()
-    |> Enum.reduce(multi, fn ({changeset, index}, multi) ->
+    |> Enum.reduce(multi, fn {changeset, index}, multi ->
       Multi.insert(multi, Integer.to_string(index), changeset)
     end)
   end
@@ -40,11 +39,11 @@ defmodule Operately.Operations.GroupMembersAdding do
 
       GroupMembership.changeset(%{
         group_id: access_group.id,
-        person_id: person_id,
+        person_id: person_id
       })
     end)
     |> Enum.with_index()
-    |> Enum.reduce(multi, fn ({changeset, index}, multi) ->
+    |> Enum.reduce(multi, fn {changeset, index}, multi ->
       name = Integer.to_string(index) <> "_membership"
 
       Multi.insert(multi, name, changeset)
@@ -54,7 +53,7 @@ defmodule Operately.Operations.GroupMembersAdding do
   defp insert_access_bindings(multi, members) do
     members
     |> Enum.with_index()
-    |> Enum.reduce(multi, fn ({%{id: person_id, access_level: access_level}, index}, multi) ->
+    |> Enum.reduce(multi, fn {%{id: person_id, access_level: access_level}, index}, multi ->
       access_group = Access.get_group!(person_id: person_id)
       name = Integer.to_string(index) <> "_binding"
 
@@ -67,14 +66,8 @@ defmodule Operately.Operations.GroupMembersAdding do
       %{
         company_id: author.company_id,
         space_id: group_id,
-        members: serialize_created_members(changes),
+        members: serialize_created_members(changes)
       }
-    end)
-  end
-
-  defp sync_resource_hub_access(multi, group_id) do
-    Multi.run(multi, :resource_hub_access, fn _, _ ->
-      Operately.ResourceHubs.SpaceHub.sync_access_from_space(group_id)
     end)
   end
 
@@ -86,8 +79,10 @@ defmodule Operately.Operations.GroupMembersAdding do
     cond do
       access_level == Binding.full_access() ->
         Access.get_group!(group_id: group_id, tag: :full_access)
+
       access_level in Binding.valid_access_levels() ->
         Access.get_group!(group_id: group_id, tag: :standard)
+
       true ->
         :error
     end
@@ -111,7 +106,7 @@ defmodule Operately.Operations.GroupMembersAdding do
   end
 
   defp fetch_members_name(people) do
-    ids = Enum.map(people, &(&1.person_id))
+    ids = Enum.map(people, & &1.person_id)
 
     name_tuples =
       from(p in Operately.People.Person, where: p.id in ^ids, select: %{id: p.id, full_name: p.full_name})

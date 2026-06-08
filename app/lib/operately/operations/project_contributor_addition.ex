@@ -11,7 +11,6 @@ defmodule Operately.Operations.ProjectContributorAddition do
     |> Multi.insert(:contributor, Contributor.changeset(attrs))
     |> Multi.run(:project, fn _, _ -> Project.get(:system, id: attrs.project_id) end)
     |> insert_binding(attrs)
-    |> sync_resource_hub_access(attrs.project_id)
     |> ensure_subscription_step()
     |> insert_activity(author)
     |> Repo.transaction()
@@ -31,12 +30,6 @@ defmodule Operately.Operations.ProjectContributorAddition do
   defp ensure_subscription_step(multi) do
     Multi.run(multi, :subscription, fn _repo, %{project: project, contributor: contributor} ->
       ensure_subscription(project.subscription_list_id, contributor.person_id)
-    end)
-  end
-
-  defp sync_resource_hub_access(multi, project_id) do
-    Multi.run(multi, :resource_hub_access, fn _, _ ->
-      Operately.ResourceHubs.ProjectHub.sync_access_from_project(project_id)
     end)
   end
 

@@ -128,10 +128,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
 
   defp load_tasks(space_id, me) do
     tasks =
-      from(t in Operately.Tasks.Task,
-        join: s in assoc(t, :space), as: :space,
-        preload: [:assigned_people]
-      )
+      from(t in Operately.Tasks.Task, join: s in assoc(t, :space), as: :space, preload: [:assigned_people])
       |> Operately.Tasks.Task.scope_space(space_id)
       |> Filters.filter_by_view_access(me.id, named_binding: :space)
       |> Repo.all()
@@ -161,10 +158,11 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
 
     hubs =
       from(h in ResourceHub,
+        as: :resource,
         preload: [nodes: ^nodes_q],
         where: h.space_id == ^space_id
       )
-      |> Filters.filter_by_view_access(me.id)
+      |> Filters.filter_by_view_access(me.id, resource_hub_effective_context: :hub)
       |> Repo.all()
       |> ResourceHub.set_children_count()
       |> ResourceHub.load_comments_count()

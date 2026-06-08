@@ -9,7 +9,6 @@ defmodule Operately.Operations.ProjectContributorRemoved do
     Multi.new()
     |> remove_contributor(contrib)
     |> delete_binding()
-    |> sync_resource_hub_access()
     |> insert_activity(author)
     |> Repo.transaction()
     |> Repo.extract_result(:contributor)
@@ -47,12 +46,6 @@ defmodule Operately.Operations.ProjectContributorRemoved do
         responsibility: contributor.responsibility,
         role: Atom.to_string(contributor.role)
       }
-    end)
-  end
-
-  defp sync_resource_hub_access(multi) do
-    Multi.run(multi, :resource_hub_access, fn _, %{contributor: contributor} ->
-      Operately.ResourceHubs.ProjectHub.sync_access_from_project(contributor.project_id)
     end)
   end
 end

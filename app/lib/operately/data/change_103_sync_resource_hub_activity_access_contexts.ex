@@ -2,7 +2,9 @@ defmodule Operately.Data.Change103SyncResourceHubActivityAccessContexts do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Repo
-  alias __MODULE__.{AccessContext, Activity}
+  alias __MODULE__.{AccessContext, Activity, ResourceHub}
+
+  @parent_space_hub_names ["Documents & Files", "Docs & Files"]
 
   def run do
     Repo.transaction(fn ->
@@ -13,8 +15,13 @@ defmodule Operately.Data.Change103SyncResourceHubActivityAccessContexts do
 
   defp fetch_activity_contexts do
     from(a in Activity,
+      join: h in ResourceHub,
+      on: fragment("?::text = ?->>?", h.id, a.content, "resource_hub_id"),
       join: c in AccessContext,
-      on: fragment("?::text = ?->>?", c.resource_hub_id, a.content, "resource_hub_id"),
+      on:
+        (not is_nil(h.project_id) and c.project_id == h.project_id) or
+          (is_nil(h.project_id) and h.name in ^@parent_space_hub_names and c.group_id == h.space_id) or
+          (is_nil(h.project_id) and h.name not in ^@parent_space_hub_names and c.resource_hub_id == h.id),
       where: fragment("?->>? IS NOT NULL", a.content, "resource_hub_id"),
       select: %{activity_id: a.id, access_context_id: c.id}
     )
@@ -41,7 +48,21 @@ defmodule Operately.Data.Change103SyncResourceHubActivityAccessContexts do
     use Operately.Schema
 
     schema "access_contexts" do
+      field :group_id, :binary_id
+      field :project_id, :binary_id
       field :resource_hub_id, :binary_id
+
+      timestamps()
+    end
+  end
+
+  defmodule ResourceHub do
+    use Operately.Schema
+
+    schema "resource_hubs" do
+      field :space_id, :binary_id
+      field :project_id, :binary_id
+      field :name, :string
 
       timestamps()
     end

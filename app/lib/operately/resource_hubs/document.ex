@@ -1,6 +1,6 @@
 defmodule Operately.ResourceHubs.Document do
   use Operately.Schema
-  use Operately.Repo.Getter
+  use Operately.ResourceHubs.Getter, source: :child
 
   alias Operately.Notifications
   alias Operately.StateMachine

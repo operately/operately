@@ -16,9 +16,11 @@ defmodule Operately.Groups.InsertGroup do
   defp insert_group(multi, attrs) do
     multi
     |> Multi.insert(:group, fn changes ->
-      Groups.Group.changeset(Map.merge(attrs, %{
-        company_id: attrs[:company_id] || changes[:company].id
-      }))
+      Groups.Group.changeset(
+        Map.merge(attrs, %{
+          company_id: attrs[:company_id] || changes[:company].id
+        })
+      )
     end)
   end
 
@@ -26,7 +28,7 @@ defmodule Operately.Groups.InsertGroup do
     multi
     |> Multi.insert(:context, fn changes ->
       Access.Context.changeset(%{
-        group_id: changes.group.id,
+        group_id: changes.group.id
       })
     end)
   end
@@ -71,7 +73,7 @@ defmodule Operately.Groups.InsertGroup do
     |> Multi.insert(:messages_board, fn changes ->
       Operately.Messages.MessagesBoard.changeset(%{
         space_id: changes.group.id,
-        name: "Messages Board",
+        name: "Messages Board"
       })
     end)
   end
@@ -81,16 +83,13 @@ defmodule Operately.Groups.InsertGroup do
     |> Multi.insert(:resource_hub, fn changes ->
       Operately.ResourceHubs.ResourceHub.changeset(%{
         space_id: changes.group.id,
-        name: "Documents & Files",
+        name: "Documents & Files"
       })
     end)
     |> Multi.insert(:hub_context, fn changes ->
       Access.Context.changeset(%{
-        resource_hub_id: changes.resource_hub.id,
+        resource_hub_id: changes.resource_hub.id
       })
-    end)
-    |> Multi.run(:resource_hub_access, fn _, changes ->
-      {:ok, Operately.ResourceHubs.SpaceHub.sync_access_from_hub!(changes.resource_hub)}
     end)
   end
 end

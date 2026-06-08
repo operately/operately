@@ -42,23 +42,17 @@ defmodule Operately.Access.Binder do
   end
 
   def bind(%Context{} = context, access_group_id: access_group_id, level: level) do
-    result =
-      case get_binding(context.id, access_group_id) do
-        nil -> create_binding(context.id, access_group_id, level)
-        binding -> update_binding(binding, level)
-      end
-
-    sync_project_hub_access(context, result)
+    case get_binding(context.id, access_group_id) do
+      nil -> create_binding(context.id, access_group_id, level)
+      binding -> update_binding(binding, level)
+    end
   end
 
   def bind(%Context{} = context, access_group_id: access_group_id, level: level, tag: tag) do
-    result =
-      case get_binding(context.id, access_group_id) do
-        nil -> create_binding(context.id, access_group_id, level, tag: tag)
-        binding -> update_binding(binding, level, tag: tag)
-      end
-
-    sync_project_hub_access(context, result)
+    case get_binding(context.id, access_group_id) do
+      nil -> create_binding(context.id, access_group_id, level, tag: tag)
+      binding -> update_binding(binding, level, tag: tag)
+    end
   end
 
   def unbind(context, person_id: person_id) do
@@ -70,33 +64,18 @@ defmodule Operately.Access.Binder do
   end
 
   def unbind(context, access_group_id: access_group_id) do
-    result =
-      case get_binding(context.id, access_group_id) do
-        nil -> {:ok, nil}
-        binding -> {:ok, Access.delete_binding(binding)}
-      end
-
-    sync_project_hub_access(context, result)
+    case get_binding(context.id, access_group_id) do
+      nil -> {:ok, nil}
+      binding -> {:ok, Access.delete_binding(binding)}
+    end
   end
 
   def unbind(context, access_group_id: access_group_id, tag: tag) do
-    result =
-      case get_binding(context.id, access_group_id, tag: tag) do
-        nil -> {:ok, nil}
-        binding -> {:ok, Access.delete_binding(binding)}
-      end
-
-    sync_project_hub_access(context, result)
+    case get_binding(context.id, access_group_id, tag: tag) do
+      nil -> {:ok, nil}
+      binding -> {:ok, Access.delete_binding(binding)}
+    end
   end
-
-  defp sync_project_hub_access(%Context{project_id: nil}, result), do: result
-
-  defp sync_project_hub_access(%Context{project_id: project_id}, {:ok, _} = result) do
-    {:ok, _} = Operately.ResourceHubs.ProjectHub.sync_access_from_project(project_id)
-    result
-  end
-
-  defp sync_project_hub_access(_context, result), do: result
 
   def add_to_group(%Operately.Access.Group{} = group, person_id: person_id) do
     add_to_group(group.id, person_id: person_id)

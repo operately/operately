@@ -10,7 +10,6 @@ defmodule Operately.Operations.ProjectContributorsAddition do
   def run(author, project, contributors) do
     Multi.new()
     |> add_contributors(project, contributors)
-    |> sync_resource_hub_access(project)
     |> insert_activity(author, project)
     |> Repo.transaction()
     |> Repo.extract_result(:contributors)
@@ -61,12 +60,6 @@ defmodule Operately.Operations.ProjectContributorsAddition do
             }
           end)
       }
-    end)
-  end
-
-  defp sync_resource_hub_access(multi, project) do
-    Multi.run(multi, :resource_hub_access, fn _, _ ->
-      Operately.ResourceHubs.ProjectHub.sync_access_from_project(project.id)
     end)
   end
 

@@ -13,7 +13,6 @@ defmodule Operately.Operations.GroupMemberRemoving do
     |> delete_member(space.id, person_id)
     |> delete_access_group_memberships(space.id, person_id)
     |> delete_access_binding(space.id, person_id)
-    |> sync_resource_hub_access(space.id)
     |> insert_activity(author)
     |> Repo.transaction()
   end
@@ -23,6 +22,7 @@ defmodule Operately.Operations.GroupMemberRemoving do
       case repo.get_by(Member, group_id: group_id, person_id: person_id) do
         nil ->
           {:error, nil}
+
         member ->
           repo.delete(member)
           {:ok, member}
@@ -33,9 +33,11 @@ defmodule Operately.Operations.GroupMemberRemoving do
   defp delete_access_group_memberships(multi, group_id, person_id) do
     from(g in Group, where: g.group_id == ^group_id)
     |> Repo.all()
-    |> Enum.reduce(multi, fn (access_group, multi) ->
+    |> Enum.reduce(multi, fn access_group, multi ->
       case Access.get_group_membership(group_id: access_group.id, person_id: person_id) do
-        nil -> multi
+        nil ->
+          multi
+
         membership ->
           name = Atom.to_string(access_group.tag) <> "_membership_deleted"
           Multi.delete(multi, name, membership)
@@ -56,14 +58,8 @@ defmodule Operately.Operations.GroupMemberRemoving do
       %{
         company_id: author.company_id,
         space_id: member.group_id,
-        member_id: member.person_id,
+        member_id: member.person_id
       }
-    end)
-  end
-
-  defp sync_resource_hub_access(multi, space_id) do
-    Multi.run(multi, :resource_hub_access, fn _, _ ->
-      Operately.ResourceHubs.SpaceHub.sync_access_from_space(space_id)
     end)
   end
 end

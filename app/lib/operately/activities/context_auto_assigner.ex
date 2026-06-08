@@ -227,11 +227,16 @@ defmodule Operately.Activities.ContextAutoAssigner do
   end
 
   defp fetch_resource_hub_context(content) do
-    from(c in Context,
-      where: c.resource_hub_id == ^content.resource_hub_id,
+    from(h in Operately.ResourceHubs.ResourceHub, as: :resource, where: h.id == ^content.resource_hub_id)
+    |> Operately.ResourceHubs.Getter.join_effective_context(:hub)
+    |> select_context_id()
+    |> Repo.one()
+  end
+
+  defp select_context_id(query) do
+    from([context: c] in query,
       select: c.id
     )
-    |> Repo.one()
   end
 
   defp fetch_comment_added_context(activity) do

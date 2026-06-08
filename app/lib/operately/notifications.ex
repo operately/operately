@@ -169,7 +169,7 @@ defmodule Operately.Notifications do
           where: s.id == ^id
         )
     end
-    |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
+    |> Fetch.get_resource_with_access_level(person_id, subscription_list_access_opts(type))
   end
 
   def get_subscription_list_access_level(id, type, person_id) do
@@ -239,7 +239,15 @@ defmodule Operately.Notifications do
         )
     end
 
-    {:ok, Fetch.get_access_level(query, person_id)}
+    {:ok, Fetch.get_access_level(query, person_id, subscription_list_access_opts(type))}
+  end
+
+  defp subscription_list_access_opts(type) when type in [:resource_hub_document, :resource_hub_file, :resource_hub_link] do
+    [selected_resource: :subscription_list, resource_hub_source: :child]
+  end
+
+  defp subscription_list_access_opts(_type) do
+    [selected_resource: :subscription_list]
   end
 
   def create_subscription_list(attrs \\ %{}) do

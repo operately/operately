@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
+import { DocsAndFilesPreview } from "../DocsAndFiles";
 import { PieChart } from "../PieChart";
 import { SwitchToggle } from "../SwitchToggle";
 import * as TaskBoardTypes from "../TaskBoard/types";
@@ -279,7 +280,15 @@ function MilestoneList({ milestones, canEdit, onMilestoneUpdate, onMilestoneReor
 }
 
 function ResourcesSection(props: ProjectPage.State) {
-  return props.docsAndFiles?.preview || null;
+  if (!props.docsAndFiles) return null;
+
+  return (
+    <DocsAndFilesPreview
+      items={props.docsAndFiles.items}
+      tabPath={props.docsAndFiles.tabPath}
+      limit={props.docsAndFiles.previewLimit}
+    />
+  );
 }
 
 interface AddMilestoneFormProps {

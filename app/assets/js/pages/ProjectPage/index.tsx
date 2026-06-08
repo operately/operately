@@ -11,7 +11,7 @@ import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { ResourceHubDocsAndFiles, ResourceHubDocsAndFilesPreview } from "@/features/ResourceHub/DocsAndFiles";
+import { useResourceHubDocsAndFilesProjectProps } from "@/features/ResourceHub/DocsAndFiles";
 import { PageCache } from "@/routes/PageCache";
 import { ProjectPage, showErrorToast } from "turboui";
 import { fetchAll } from "../../utils/async";
@@ -220,6 +220,12 @@ function Page() {
     PageCache.invalidate(pageCacheKey(project.id));
     await refresh?.();
   }, [project.id, refresh]);
+  const docsAndFiles = useResourceHubDocsAndFilesProjectProps({
+    resourceHub,
+    nodes: resourceHubNodes,
+    draftNodes: resourceHubDraftNodes,
+    refresh: refreshProjectPage,
+  });
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
     id: project.id,
@@ -384,20 +390,7 @@ function Page() {
     richTextHandlers: richEditorHandlers,
     localDraftKeyBase: `project:${project.id}`,
 
-    docsAndFiles: resourceHub
-      ? {
-          preview: <ResourceHubDocsAndFilesPreview resourceHub={resourceHub} nodes={resourceHubNodes} />,
-          tabContent: (
-            <ResourceHubDocsAndFiles
-              resourceHub={resourceHub}
-              nodes={resourceHubNodes}
-              draftNodes={resourceHubDraftNodes}
-              refresh={refreshProjectPage}
-            />
-          ),
-          count: resourceHubNodes.length,
-        }
-      : undefined,
+    docsAndFiles: resourceHub ? docsAndFiles : undefined,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
 
