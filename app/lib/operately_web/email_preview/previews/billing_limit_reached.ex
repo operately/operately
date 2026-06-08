@@ -14,25 +14,16 @@ defmodule OperatelyWeb.EmailPreview.Previews.BillingLimitReached do
     company = %{name: "Acme Corporation"}
     recipient = %{full_name: "Taylor Reed", email: "taylor@localhost.com"}
     cta_url = OperatelyWeb.Paths.to_url("#")
+    assigns = BillingLimitReachedEmail.template_assigns(company, status, cta_url)
 
     company
     |> Mailer.new()
     |> Mailer.from("Operately")
     |> Mailer.to(recipient)
     |> Mailer.subject(BillingLimitReachedEmail.subject(company, status))
-    |> Mailer.assign(:company, company)
-    |> Mailer.assign(:limit_name, limit_name(status.limit_key))
-    |> Mailer.assign(:current_usage, format_usage(status.limit_key, status.current_usage))
-    |> Mailer.assign(:limit, format_usage(status.limit_key, status.limit))
-    |> Mailer.assign(:blocked_work, blocked_work(status.limit_key))
-    |> Mailer.assign(:cta_url, cta_url)
+    |> assign_all(assigns)
     |> Preview.build("billing_limit_reached")
   end
-
-  defp limit_name(:member_count), do: "member limit"
-  defp blocked_work(:member_count), do: "Adding or restoring people may already be blocked until the plan is upgraded."
-
-  defp format_usage(:member_count, value), do: Integer.to_string(value)
 
   defp limit_status(limit_key, current_usage, limit) do
     %LimitStatus{
@@ -48,5 +39,11 @@ defmodule OperatelyWeb.EmailPreview.Previews.BillingLimitReached do
       enforced: true,
       recommended_upgrade: nil
     }
+  end
+
+  defp assign_all(email, assigns) do
+    Enum.reduce(assigns, email, fn {key, value}, acc ->
+      Mailer.assign(acc, key, value)
+    end)
   end
 end

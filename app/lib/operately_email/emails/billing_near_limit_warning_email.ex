@@ -14,7 +14,7 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmail do
 
   def build(recipients, company, %LimitStatus{} = status) do
     subject = subject(company, status)
-    assigns = template_assigns(company, status) |> Map.put(:subject, subject)
+    assigns = template_assigns(company, status, Paths.company_billing_path(company) |> Paths.to_url()) |> Map.put(:subject, subject)
 
     Swoosh.Email.new()
     |> Swoosh.Email.to(Enum.map(recipients, &recipient_address/1))
@@ -25,35 +25,44 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmail do
   end
 
   def subject(company, %LimitStatus{limit_key: :member_count}) do
-    "#{company.name} has reached 90% of its free-plan member limit"
+    "#{company.name} is near its Free plan member limit"
   end
 
   def subject(company, %LimitStatus{limit_key: :storage_bytes}) do
-    "#{company.name} has reached 90% of its free-plan storage limit"
+    "#{company.name} is near its Free plan storage limit"
   end
 
-  defp template_assigns(company, %LimitStatus{} = status) do
+  def template_assigns(company, %LimitStatus{} = status, cta_url) do
     %{
-      company: company,
-      limit_name: limit_name(status.limit_key),
-      current_usage: format_usage(status.limit_key, status.current_usage),
-      limit: format_usage(status.limit_key, status.limit),
-      blocked_work: blocked_work(status.limit_key),
-      cta_url: Paths.company_billing_path(company) |> Paths.to_url()
+      headline: subject(company, status),
+      usage_summary: usage_summary(company, status),
+      impact_message: impact_message(status),
+      cta_label: "Review billing",
+      cta_url: cta_url
     }
   end
 
   defp recipient_address(%Person{} = person), do: {person.full_name, person.email}
   defp recipient_address(person), do: {Map.get(person, :full_name), Map.get(person, :email)}
 
-  def limit_name(:member_count), do: "free-plan member limit"
-  def limit_name(:storage_bytes), do: "free-plan storage limit"
-
-  def blocked_work(:member_count), do: "Adding or restoring people will be blocked once the free-plan member limit is reached."
-  def blocked_work(:storage_bytes), do: "Uploads will be blocked once the free-plan storage limit is reached."
-
   def format_usage(:member_count, value), do: Integer.to_string(value)
   def format_usage(:storage_bytes, value), do: format_storage_bytes(value)
+
+  defp usage_summary(company, %LimitStatus{limit_key: :member_count} = status) do
+    "#{company.name} has #{format_usage(status.limit_key, status.current_usage)} of #{format_usage(status.limit_key, status.limit)} active members on the Free plan."
+  end
+
+  defp usage_summary(company, %LimitStatus{limit_key: :storage_bytes} = status) do
+    "#{company.name} is using #{format_usage(status.limit_key, status.current_usage)} of #{format_usage(status.limit_key, status.limit)} on the Free plan."
+  end
+
+  defp impact_message(%LimitStatus{limit_key: :member_count}) do
+    "Adding or restoring people will be blocked once the member limit is reached."
+  end
+
+  defp impact_message(%LimitStatus{limit_key: :storage_bytes}) do
+    "Uploading files will be blocked once the storage limit is reached."
+  end
 
   @storage_units [
     {"PB", 1_125_899_906_842_624},

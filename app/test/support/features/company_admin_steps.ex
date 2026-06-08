@@ -128,14 +128,14 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :assert_member_limit_reached_email, ctx, recipients do
-    subject = "#{ctx.company.name} has reached its member limit"
+    subject = "#{ctx.company.name} has reached its Free plan member limit"
     Enum.each(recipients, &Emails.assert_email_sent(subject, &1))
 
     ctx
   end
 
   step :assert_member_limit_reached_email_sent_once, ctx do
-    subject = "#{ctx.company.name} has reached its member limit"
+    subject = "#{ctx.company.name} has reached its Free plan member limit"
 
     attempts(ctx, 20, fn ->
       emails = Enum.filter(Emails.list_sent_emails(), &(&1.subject == subject))
