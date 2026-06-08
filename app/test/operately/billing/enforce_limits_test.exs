@@ -73,10 +73,12 @@ defmodule Operately.Billing.EnforceLimitsTest do
       assert error.current_usage == 20
       assert error.projected_usage == 21
       assert error.limit == 20
-      assert EnforceLimits.public_message(error) == "This company has reached its member limit. Upgrade the plan to add more people."
+      assert EnforceLimits.public_message(error) ==
+               "This company has reached its member limit: 20 of 20 active members. Adding or restoring people is blocked until this company is back within its plan limits."
 
       assert EnforceLimits.to_api_error(error) ==
-               {:error, :bad_request, "This company has reached its member limit. Upgrade the plan to add more people.",
+               {:error, :bad_request,
+                "This company has reached its member limit: 20 of 20 active members. Adding or restoring people is blocked until this company is back within its plan limits.",
                 %{
                   blocked: true,
                   code: "member_count_limit_exceeded",
@@ -91,6 +93,17 @@ defmodule Operately.Billing.EnforceLimitsTest do
                   remaining: 0,
                   requested_delta: 1
                 }}
+    end
+
+    test "formats storage-limit public messages with usage details", ctx do
+      company = enable_billing(ctx.company)
+      storage_limit = Plans.storage_limit_bytes(:free)
+
+      assert {:error, %LimitError{} = error} =
+               EnforceLimits.check(company, :storage_bytes, current_usage: storage_limit, requested_delta: 1)
+
+      assert EnforceLimits.public_message(error) ==
+               "This company has reached its storage limit: 1 GB of 1 GB used. Uploading files is blocked until this company is back within its plan limits."
     end
 
     test "marks usage as near the limit once it reaches ninety percent", ctx do

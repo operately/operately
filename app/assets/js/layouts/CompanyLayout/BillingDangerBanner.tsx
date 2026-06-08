@@ -97,7 +97,7 @@ function renderDescription(banner: ReturnType<typeof Billing.buildBillingDangerB
     if (banner.mode === "payment_grace") {
       return (
         <>
-          Payment needs to be resolved
+          Billing needs attention
           {banner.deadline ? (
             <>
               {" by "}
@@ -106,34 +106,22 @@ function renderDescription(banner: ReturnType<typeof Billing.buildBillingDangerB
           ) : (
             " soon"
           )}{" "}
-          or this company will switch to read-only mode.
-          {banner.shouldContactAdmin && " Contact a company admin or owner."}
+          or this company will become read-only.
+          {banner.shouldContactAdmin && " Contact an admin or owner."}
         </>
       );
     }
 
     return banner.shouldContactAdmin
-      ? "This company is read-only because payment was not resolved in time. Collaborative work is blocked until a company admin or owner resolves the payment issue."
-      : "This company is read-only because payment was not resolved in time. Collaborative work is blocked until the payment issue is resolved.";
+      ? "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until an admin or owner updates billing."
+      : "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until billing is updated.";
   }
 
   const blockedMemberLimit = banner.blockedLimitKeys.includes("member_count");
   const blockedStorageLimit = banner.blockedLimitKeys.includes("storage_bytes");
-  const blockedActions = describeBlockedActions(blockedMemberLimit, blockedStorageLimit);
+  const blockedActions = Billing.describeBlockedActions(blockedMemberLimit, blockedStorageLimit);
 
   return banner.shouldContactAdmin
-    ? `${blockedActions} are blocked until the company is back within its plan limits. Contact a company admin or owner.`
-    : `${blockedActions} are blocked until the company is back within its plan limits. Review billing to fix it.`;
-}
-
-function describeBlockedActions(blockedMemberLimit: boolean, blockedStorageLimit: boolean) {
-  if (blockedMemberLimit && blockedStorageLimit) {
-    return "Invites, restores, and uploads";
-  }
-
-  if (blockedMemberLimit) {
-    return "Invites and restores";
-  }
-
-  return "Uploads";
+    ? `${blockedActions.subject} ${blockedActions.verb} paused until this company is back within its plan limits. Contact an admin or owner.`
+    : `${blockedActions.subject} ${blockedActions.verb} paused until this company is back within its plan limits. Review billing to change the plan or reduce usage.`;
 }
