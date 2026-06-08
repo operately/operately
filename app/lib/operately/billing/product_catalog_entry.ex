@@ -3,10 +3,11 @@ defmodule Operately.Billing.ProductCatalogEntry do
   use Operately.Repo.Getter
 
   alias Operately.Billing.CompanyBillingAccount
+  alias Operately.Billing.Plans
 
   schema "billing_products" do
     field :provider, :string, default: "polar"
-    field :plan_family, Ecto.Enum, values: CompanyBillingAccount.valid_plan_keys()
+    field :plan_family, :string
     field :billing_interval, Ecto.Enum, values: CompanyBillingAccount.valid_billing_intervals()
     field :polar_product_id, :string
     field :polar_product_name, :string
@@ -26,6 +27,8 @@ defmodule Operately.Billing.ProductCatalogEntry do
   end
 
   def changeset(entry, attrs) do
+    attrs = normalize_plan_family(attrs)
+
     entry
     |> cast(attrs, [
       :provider,
@@ -42,5 +45,27 @@ defmodule Operately.Billing.ProductCatalogEntry do
       :last_synced_at
     ])
     |> validate_required([:provider, :plan_family, :billing_interval, :polar_product_id])
+    |> validate_change(:plan_family, fn :plan_family, value ->
+      if value in CompanyBillingAccount.valid_plan_key_strings() do
+        []
+      else
+        [plan_family: "is invalid"]
+      end
+    end)
   end
+
+  defp normalize_plan_family(attrs) when is_map(attrs) do
+    cond do
+      Map.has_key?(attrs, :plan_family) ->
+        Map.update!(attrs, :plan_family, &Plans.normalize_key/1)
+
+      Map.has_key?(attrs, "plan_family") ->
+        Map.update!(attrs, "plan_family", &Plans.normalize_key/1)
+
+      true ->
+        attrs
+    end
+  end
+
+  defp normalize_plan_family(attrs), do: attrs
 end

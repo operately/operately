@@ -66,7 +66,7 @@ defmodule OperatelyEE.AdminApi.Mutations.SyncBillingProductsFromPolarTest do
       end
 
       product = Operately.Billing.get_product_by_polar_product_id("prod_team_monthly")
-      assert product.plan_family == :team
+      assert product.plan_family == "team"
       assert product.billing_interval == :monthly
       assert product.price_amount == 2900
     end

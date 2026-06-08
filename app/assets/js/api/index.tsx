@@ -1085,8 +1085,8 @@ export interface BillingAccessStateLimit {
   currentUsage: number;
   requestedDelta: number;
   projectedUsage: number;
-  limit: number;
-  remaining: number;
+  limit?: number | null;
+  remaining?: number | null;
   nearLimit: boolean;
   blocked: boolean;
   enforced: boolean;
@@ -1164,8 +1164,8 @@ export interface BillingLimitStatus {
   currentUsage: number;
   requestedDelta: number;
   projectedUsage: number;
-  limit: number;
-  remaining: number;
+  limit?: number | null;
+  remaining?: number | null;
   nearLimit: boolean;
   blocked: boolean;
   enforced: boolean;
@@ -1189,8 +1189,8 @@ export interface BillingOverview {
 export interface BillingPlanDefinition {
   key: string;
   displayName: string;
-  memberLimit: number;
-  storageLimitBytes: number;
+  memberLimit?: number | null;
+  storageLimitBytes?: number | null;
 }
 
 export interface BillingRecommendedUpgrade {
@@ -2302,9 +2302,9 @@ export type BillingAccessStateReason = "past_due" | "over_limit_after_downgrade"
 
 export type BillingInterval = "monthly" | "yearly";
 
-export type BillingLimitPlan = "free" | "team" | "business";
+export type BillingLimitPlan = "free" | "team" | "business" | "unlimited";
 
-export type BillingPlan = "team" | "business";
+export type BillingPlan = "team" | "business" | "unlimited";
 
 export type BillingStatus = "free" | "active" | "past_due" | "canceled";
 

@@ -589,6 +589,14 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(token.id)
   end
 
+  def billing_plan_definition_id(plan_definition_id) when is_binary(plan_definition_id) do
+    Operately.ShortUuid.encode!(plan_definition_id)
+  end
+
+  def billing_plan_definition_id(plan_definition) do
+    Operately.ShortUuid.encode!(plan_definition.id)
+  end
+
   def billing_product_id(product_id) when is_binary(product_id) do
     Operately.ShortUuid.encode!(product_id)
   end

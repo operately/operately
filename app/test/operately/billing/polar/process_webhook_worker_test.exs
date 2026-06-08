@@ -37,7 +37,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly"
+          polar_product_id: "prod_pro_monthly"
         })
 
       {:ok, _scheduled_product} =
@@ -72,7 +72,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
                %{
                  "id" => "sub_123",
                  "status" => "active",
-                 "product_id" => "prod_team_monthly",
+                 "product_id" => "prod_pro_monthly",
                  "current_period_end" => "2026-06-30T00:00:00Z",
                  "cancel_at_period_end" => false,
                  "pending_update" => %{"product_id" => "prod_business_yearly"}
@@ -97,12 +97,12 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
 
       account = Billing.get_billing_account_by_company(ctx.company)
       assert account.status == :active
-      assert account.plan_key == :team
+      assert account.plan_key == "team"
       assert account.billing_interval == :monthly
       assert account.pending_plan_key == nil
       assert account.pending_billing_interval == nil
       assert account.pending_checkout_started_at == nil
-      assert account.scheduled_plan_key == :business
+      assert account.scheduled_plan_key == "business"
       assert account.scheduled_billing_interval == :yearly
       assert account.scheduled_change_effective_at == ~U[2026-06-30 00:00:00Z]
     end
@@ -247,7 +247,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly"
+          polar_product_id: "prod_pro_monthly"
         })
 
       webhook_event =
@@ -277,7 +277,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
                    %{
                      "id" => "sub_retry",
                      "status" => "active",
-                     "product_id" => "prod_team_monthly",
+                     "product_id" => "prod_pro_monthly",
                      "current_period_end" => "2026-06-30T00:00:00Z",
                      "cancel_at_period_end" => false
                    }
@@ -309,7 +309,7 @@ defmodule Operately.Billing.Polar.ProcessWebhookWorkerTest do
 
       account = Billing.get_billing_account_by_company(ctx.company)
       assert account.status == :active
-      assert account.plan_key == :team
+      assert account.plan_key == "team"
       assert account.billing_interval == :monthly
     end
   end
