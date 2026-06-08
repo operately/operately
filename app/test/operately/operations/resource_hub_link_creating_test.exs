@@ -2,6 +2,7 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
   use Operately.DataCase
   use Operately.Support.Notifications
 
+  alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Support.RichText
   alias Operately.Operations.ResourceHubLinkCreating
@@ -83,6 +84,14 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
 
     assert notifications_count(action: @action) == 1
     assert hd(notifications).person_id == ctx.person.id
+  end
+
+  test "assigns activity to the resource hub access context", ctx do
+    {:ok, link} = create_link(ctx, false, [])
+    activity = get_activity(link, @action)
+    hub_context = Access.get_context!(resource_hub_id: ctx.hub.id)
+
+    assert activity.access_context_id == hub_context.id
   end
 
   #

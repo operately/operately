@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodesTest do
     tabletest @space do
       test "Resource Hubs - if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         link_fixture(resource_hub, ctx.creator)
         file_fixture(resource_hub, ctx.creator)
         document_fixture(resource_hub.id, ctx.creator.id, %{state: :published})

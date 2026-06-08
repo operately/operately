@@ -29,11 +29,11 @@ defmodule Operately.Operations.GroupPermissionsEditing do
         space_id: space.id,
         previous_permissions: %{
           public: find_access_level(changes, :anonymous_binding, :previous),
-          company: find_access_level(changes, :company_members_binding, :previous),
+          company: find_access_level(changes, :company_members_binding, :previous)
         },
         new_permissions: %{
           public: find_access_level(changes, :anonymous_binding, :updated),
-          company: find_access_level(changes, :company_members_binding, :updated),
+          company: find_access_level(changes, :company_members_binding, :updated)
         }
       }
     end)

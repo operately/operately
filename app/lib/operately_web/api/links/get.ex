@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Links.Get do
     field :id, :id, null: false
     field? :include_author, :boolean, null: false
     field? :include_space, :boolean, null: false
+    field? :include_project, :boolean, null: false
     field? :include_resource_hub, :boolean, null: false
     field? :include_parent_folder, :boolean, null: false
     field? :include_reactions, :boolean, null: false
@@ -56,6 +57,7 @@ defmodule OperatelyWeb.Api.Links.Get do
       include_reactions: [reactions: :person],
       include_resource_hub: [node: :resource_hub],
       include_space: [resource_hub: :space],
+      include_project: [resource_hub: :project],
       include_parent_folder: [node: [parent_folder: :node]],
       include_subscriptions_list: :subscription_list,
       always_include: :node,

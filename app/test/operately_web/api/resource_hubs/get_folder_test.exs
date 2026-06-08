@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
   import Operately.ResourceHubsFixtures
 
   alias Operately.Access.Binding
+  alias Operately.ResourceHubs.ProjectHub
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -38,7 +39,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         folder = folder_fixture(resource_hub.id)
         document_fixture(resource_hub.id, ctx.creator.id, %{parent_folder_id: folder.id})
         document_fixture(resource_hub.id, ctx.creator.id, %{parent_folder_id: folder.id})
@@ -156,6 +157,25 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
       })
 
       assert res.folder.path_to_folder == []
+    end
+
+    test "include_potential_subscribers for project folders", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_contributor(:contributor, :project)
+
+      {:ok, hub} = ProjectHub.create_for_project(ctx.project)
+      folder = folder_fixture(hub.id)
+      contributor = Repo.preload(ctx.contributor, :person)
+
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :get_folder], %{
+                 id: Paths.folder_id(folder),
+                 include_potential_subscribers: true,
+               })
+
+      assert Enum.find(res.folder.potential_subscribers, &(&1.person.id == Paths.person_id(contributor.person)))
     end
   end
 

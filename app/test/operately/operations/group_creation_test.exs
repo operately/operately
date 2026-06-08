@@ -3,18 +3,21 @@ defmodule Operately.Operations.GroupCreationTest do
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+  import Ecto.Query, only: [from: 2]
 
+  alias Operately.Repo
   alias Operately.Groups
   alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
+  alias Operately.ResourceHubs.ResourceHub
 
   @group_attrs %{
     name: "my group",
     mission: "my mission",
     icon: "IconBuildingEstate",
     color: "text-cyan-500",
-    company_permissions: Binding.comment_access(),
+    company_permissions: Binding.comment_access()
   }
 
   setup do
@@ -46,7 +49,8 @@ defmodule Operately.Operations.GroupCreationTest do
     context = Access.get_context!(group_id: group.id)
 
     assert context
-    assert length(access_groups) == 9 # 4 company and company space's + 2 space's + 2 user's + 1 anonymous
+    # 4 company and company space's + 2 space's + 2 user's + 1 anonymous
+    assert length(access_groups) == 9
 
     assert Access.get_group(group_id: group.id, tag: :standard)
     assert Access.get_group(group_id: group.id, tag: :full_access)
@@ -68,7 +72,7 @@ defmodule Operately.Operations.GroupCreationTest do
   end
 
   test "GroupCreation operation can create no_access binding to company members", ctx do
-    attrs = Map.merge(@group_attrs, %{ company_permissions: Binding.no_access() })
+    attrs = Map.merge(@group_attrs, %{company_permissions: Binding.no_access()})
 
     {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, attrs)
 
@@ -134,15 +138,13 @@ defmodule Operately.Operations.GroupCreationTest do
     hubs = Operately.ResourceHubs.list_resource_hubs(group)
     assert length(hubs) == 1
 
-    context = Access.get_context(resource_hub_id: hd(hubs).id)
-    company_full = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
-    space_full = Access.get_group!(group_id: group.id, tag: :full_access)
-    company_standard = Access.get_group!(company_id: ctx.company.id, tag: :standard)
-    space_standard = Access.get_group!(group_id: group.id, tag: :standard)
+    hub = hd(hubs)
+    context = Access.get_context(resource_hub_id: hub.id)
 
-    assert Access.get_binding(group_id: company_full.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: space_full.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: company_standard.id, context_id: context.id, access_level: Binding.comment_access())
-    assert Access.get_binding(group_id: space_standard.id, context_id: context.id, access_level: Binding.edit_access())
+    assert context
+    refute Repo.exists?(from(b in Operately.Access.Binding, where: b.context_id == ^context.id))
+
+    assert {:ok, hub} = ResourceHub.get(ctx.creator, id: hub.id)
+    assert hub.request_info.access_level == Binding.full_access()
   end
 end

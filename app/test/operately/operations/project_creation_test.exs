@@ -36,9 +36,8 @@ defmodule Operately.Operations.ProjectCreationTest do
       group_id: space.id,
       anonymous_access_level: Binding.view_access(),
       company_access_level: Binding.comment_access(),
-      space_access_level: Binding.edit_access(),
+      space_access_level: Binding.edit_access()
     }
-
 
     {:ok, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion, project_attrs: project_attrs}
   end
@@ -154,6 +153,27 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Access.get_binding(group_id: champion.id, context_id: context.id, access_level: Binding.full_access())
   end
 
+  test "ProjectCreation operation creates Documents & Files hub with project access", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+
+    hub = Operately.ResourceHubs.ProjectHub.get_project_hub(project.id)
+    hub_context = Access.get_context!(resource_hub_id: hub.id)
+
+    assert hub.name == "Documents & Files"
+    assert hub.project_id == project.id
+    assert hub.space_id == nil
+    assert binding_signature(hub_context.id) == []
+
+    assert {:ok, hub} = Operately.ResourceHubs.ResourceHub.get(ctx.creator, id: hub.id)
+    assert hub.request_info.access_level == Binding.full_access()
+
+    assert {:ok, hub} = Operately.ResourceHubs.ResourceHub.get(ctx.reviewer, id: hub.id)
+    assert hub.request_info.access_level == Binding.full_access()
+
+    assert {:ok, hub} = Operately.ResourceHubs.ResourceHub.get(ctx.champion, id: hub.id)
+    assert hub.request_info.access_level == Binding.full_access()
+  end
+
   test "ProjectCreation operation creates subscriptions for contributors", ctx do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
@@ -162,6 +182,7 @@ defmodule Operately.Operations.ProjectCreationTest do
         subscription_list_id: project.subscription_list_id,
         person_id: ctx.champion.id
       )
+
     assert champion_subscription.type == :invited
     refute champion_subscription.canceled
 
@@ -170,6 +191,7 @@ defmodule Operately.Operations.ProjectCreationTest do
         subscription_list_id: project.subscription_list_id,
         person_id: ctx.reviewer.id
       )
+
     assert reviewer_subscription.type == :invited
     refute reviewer_subscription.canceled
 
@@ -178,6 +200,7 @@ defmodule Operately.Operations.ProjectCreationTest do
         subscription_list_id: project.subscription_list_id,
         person_id: ctx.creator.id
       )
+
     assert creator_subscription.type == :invited
     refute creator_subscription.canceled
   end
@@ -260,9 +283,10 @@ defmodule Operately.Operations.ProjectCreationTest do
   end
 
   test "ProjectCreation operation creates activity and notification", ctx do
-    {:ok, project} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectCreation.run(ctx.project_attrs)
-    end)
+    {:ok, project} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+      end)
 
     activity = from(a in Activity, where: a.action == "project_created" and a.content["project_id"] == ^project.id) |> Repo.one()
 
@@ -291,5 +315,14 @@ defmodule Operately.Operations.ProjectCreationTest do
     notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
 
     assert mentioned.id in notified_ids
+  end
+
+  defp binding_signature(context_id) do
+    from(b in Binding,
+      where: b.context_id == ^context_id,
+      select: {b.group_id, b.access_level, b.tag}
+    )
+    |> Repo.all()
+    |> Enum.sort()
   end
 end

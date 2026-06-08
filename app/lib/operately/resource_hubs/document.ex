@@ -1,6 +1,6 @@
 defmodule Operately.ResourceHubs.Document do
   use Operately.Schema
-  use Operately.Repo.Getter
+  use Operately.ResourceHubs.Getter, source: :child
 
   alias Operately.Notifications
   alias Operately.StateMachine
@@ -58,7 +58,7 @@ defmodule Operately.ResourceHubs.Document do
   #
 
   def load_potential_subscribers(document = %__MODULE__{}) do
-    document = Repo.preload(document, [:access_context, resource_hub: [space: :members]])
+    document = Repo.preload(document, [:access_context, resource_hub: [space: :members, project: [contributors: :person]]])
 
     subs =
       document

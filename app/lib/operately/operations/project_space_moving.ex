@@ -47,12 +47,14 @@ defmodule Operately.Operations.ProjectSpaceMoving do
   end
 
   defp insert_activity(multi, author, project) do
-    Activities.insert_sync(multi, author.id, :project_moved, fn changes -> %{
-      company_id: project.company_id,
-      project_id: project.id,
-      old_space_id: project.group_id,
-      new_space_id: changes.project.group_id
-    } end)
+    Activities.insert_sync(multi, author.id, :project_moved, fn changes ->
+      %{
+        company_id: project.company_id,
+        project_id: project.id,
+        old_space_id: project.group_id,
+        new_space_id: changes.project.group_id
+      }
+    end)
   end
 
   #
