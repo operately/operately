@@ -81,7 +81,7 @@ export function buildCompanyBillingOverviewMode(args: BuildOverviewModeArgs): Co
 
 function formatCountUsage(current: number, limit?: number | null): string {
   if (limit == null) {
-    return `${current} / Unavailable`;
+    return `${current} / Unlimited`;
   }
 
   return `${current} / ${limit}`;
@@ -89,7 +89,7 @@ function formatCountUsage(current: number, limit?: number | null): string {
 
 function formatStorageUsage(current: number, limit?: number | null): string {
   if (limit == null) {
-    return `${formatStorageBytes(current)} / Unavailable`;
+    return `${formatStorageBytes(current)} / Unlimited`;
   }
 
   return `${formatStorageBytes(current)} / ${formatStorageBytes(limit)}`;
@@ -221,7 +221,7 @@ function buildOverviewActions(args: BuildOverviewModeArgs): CompanyBillingPage.A
       title: isPaidCompany ? "Change plan" : "Choose a paid plan",
       description: isPaidCompany
         ? "Compare available plans and switch this company to a different subscription."
-        : "Review Team and Business plans and continue to checkout when you're ready.",
+        : "Review paid plans and continue to checkout when you're ready.",
       kind: args.onCompleteUpgrade ? "support" : "featured",
       tone: args.onCompleteUpgrade ? "secondary" : "primary",
       onClick: args.onSeePlans,

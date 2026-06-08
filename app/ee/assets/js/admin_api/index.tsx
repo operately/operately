@@ -135,6 +135,15 @@ export interface Activity {
   insertedAt?: string;
 }
 
+export interface BillingPlanDefinition {
+  id: string;
+  key: string;
+  displayName: string;
+  sortOrder: number;
+  memberLimit?: number;
+  storageLimitBytes?: number;
+}
+
 export interface BillingProduct {
   id: string;
   provider: string;
@@ -233,6 +242,12 @@ export interface GetEmailSettingsResult {
   emailSettings: EmailSettings;
 }
 
+export interface ListBillingPlanDefinitionsInput {}
+
+export interface ListBillingPlanDefinitionsResult {
+  planDefinitions: BillingPlanDefinition[];
+}
+
 export interface ListBillingProductsInput {}
 
 export interface ListBillingProductsResult {
@@ -322,6 +337,18 @@ export interface SyncBillingProductsFromPolarResult {
   syncedCount: number;
 }
 
+export interface UpdateBillingPlanDefinitionInput {
+  id: string;
+  displayName: string;
+  sortOrder: number;
+  memberLimit?: number | null;
+  storageLimitBytes?: number | null;
+}
+
+export interface UpdateBillingPlanDefinitionResult {
+  planDefinition: BillingPlanDefinition;
+}
+
 export interface UpdateBillingProductInput {
   id: string;
   polarProductName?: string;
@@ -378,6 +405,10 @@ class ApiNamespaceRoot {
     return this.client.get("/get_email_settings", input);
   }
 
+  async listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
+    return this.client.get("/list_billing_plan_definitions", input);
+  }
+
   async listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
     return this.client.get("/list_billing_products", input);
   }
@@ -418,6 +449,12 @@ class ApiNamespaceRoot {
     input: SyncBillingProductsFromPolarInput,
   ): Promise<SyncBillingProductsFromPolarResult> {
     return this.client.post("/sync_billing_products_from_polar", input);
+  }
+
+  async updateBillingPlanDefinition(
+    input: UpdateBillingPlanDefinitionInput,
+  ): Promise<UpdateBillingPlanDefinitionResult> {
+    return this.client.post("/update_billing_plan_definition", input);
   }
 
   async updateBillingProduct(input: UpdateBillingProductInput): Promise<UpdateBillingProductResult> {
@@ -504,6 +541,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getEmailSettings(input);
   }
 
+  listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
+    return this.apiNamespaceRoot.listBillingPlanDefinitions(input);
+  }
+
   listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
     return this.apiNamespaceRoot.listBillingProducts(input);
   }
@@ -544,6 +585,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.syncBillingProductsFromPolar(input);
   }
 
+  updateBillingPlanDefinition(input: UpdateBillingPlanDefinitionInput): Promise<UpdateBillingPlanDefinitionResult> {
+    return this.apiNamespaceRoot.updateBillingPlanDefinition(input);
+  }
+
   updateBillingProduct(input: UpdateBillingProductInput): Promise<UpdateBillingProductResult> {
     return this.apiNamespaceRoot.updateBillingProduct(input);
   }
@@ -572,6 +617,11 @@ export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResu
 }
 export async function getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
   return defaultApiClient.getEmailSettings(input);
+}
+export async function listBillingPlanDefinitions(
+  input: ListBillingPlanDefinitionsInput,
+): Promise<ListBillingPlanDefinitionsResult> {
+  return defaultApiClient.listBillingPlanDefinitions(input);
 }
 export async function listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
   return defaultApiClient.listBillingProducts(input);
@@ -611,6 +661,11 @@ export async function syncBillingProductsFromPolar(
 ): Promise<SyncBillingProductsFromPolarResult> {
   return defaultApiClient.syncBillingProductsFromPolar(input);
 }
+export async function updateBillingPlanDefinition(
+  input: UpdateBillingPlanDefinitionInput,
+): Promise<UpdateBillingPlanDefinitionResult> {
+  return defaultApiClient.updateBillingPlanDefinition(input);
+}
 export async function updateBillingProduct(input: UpdateBillingProductInput): Promise<UpdateBillingProductResult> {
   return defaultApiClient.updateBillingProduct(input);
 }
@@ -640,6 +695,12 @@ export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCom
 
 export function useGetEmailSettings(input: GetEmailSettingsInput): UseQueryHookResult<GetEmailSettingsResult> {
   return useQuery<GetEmailSettingsResult>(() => defaultApiClient.getEmailSettings(input));
+}
+
+export function useListBillingPlanDefinitions(
+  input: ListBillingPlanDefinitionsInput,
+): UseQueryHookResult<ListBillingPlanDefinitionsResult> {
+  return useQuery<ListBillingPlanDefinitionsResult>(() => defaultApiClient.listBillingPlanDefinitions(input));
 }
 
 export function useListBillingProducts(input: ListBillingProductsInput): UseQueryHookResult<ListBillingProductsResult> {
@@ -712,6 +773,15 @@ export function useSyncBillingProductsFromPolar(): UseMutationHookResult<
   );
 }
 
+export function useUpdateBillingPlanDefinition(): UseMutationHookResult<
+  UpdateBillingPlanDefinitionInput,
+  UpdateBillingPlanDefinitionResult
+> {
+  return useMutation<UpdateBillingPlanDefinitionInput, UpdateBillingPlanDefinitionResult>((input) =>
+    defaultApiClient.updateBillingPlanDefinition(input),
+  );
+}
+
 export function useUpdateBillingProduct(): UseMutationHookResult<
   UpdateBillingProductInput,
   UpdateBillingProductResult
@@ -742,6 +812,8 @@ export default {
   useGetCompany,
   getEmailSettings,
   useGetEmailSettings,
+  listBillingPlanDefinitions,
+  useListBillingPlanDefinitions,
   listBillingProducts,
   useListBillingProducts,
   archiveBillingProduct,
@@ -762,6 +834,8 @@ export default {
   useSetActiveBillingProduct,
   syncBillingProductsFromPolar,
   useSyncBillingProductsFromPolar,
+  updateBillingPlanDefinition,
+  useUpdateBillingPlanDefinition,
   updateBillingProduct,
   useUpdateBillingProduct,
   updateEmailSettings,

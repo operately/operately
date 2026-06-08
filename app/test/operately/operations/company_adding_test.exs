@@ -128,7 +128,7 @@ defmodule Operately.Operations.CompanyAddingTest do
     {:ok, company} = Operately.Operations.CompanyAdding.run(attrs)
     billing_account = Billing.get_billing_account_by_company(company)
 
-    assert billing_account.suggested_plan_key == :team
+    assert billing_account.suggested_plan_key == "team"
     assert billing_account.suggested_billing_interval == :monthly
     assert billing_account.suggested_plan_source == "website"
   end

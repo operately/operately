@@ -57,7 +57,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product }: ProductMod
   });
 
   return (
-    <Modal title={isEdit ? "Edit Product" : "Create Product"} isOpen={isOpen} hideModal={onClose}>
+    <Modal title={isEdit ? "Edit product" : "Create product"} isOpen={isOpen} hideModal={onClose}>
       <Forms.Form form={form}>
         <Forms.FieldGroup layout="vertical">
           <Forms.TextInput label="Display Name" field="displayName" required autoFocus />
@@ -74,6 +74,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product }: ProductMod
                 options={[
                   { value: "team", label: "Team" },
                   { value: "business", label: "Business" },
+                  { value: "unlimited", label: "Unlimited" },
                 ]}
                 required
               />
@@ -90,7 +91,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product }: ProductMod
           )}
           <Forms.NumberInput label="Price (in cents)" field="unitAmount" required />
         </Forms.FieldGroup>
-        <Forms.Submit saveText={isEdit ? "Save Changes" : "Create Product"} cancelText="Cancel" />
+        <Forms.Submit saveText={isEdit ? "Save changes" : "Create product"} cancelText="Cancel" />
       </Forms.Form>
     </Modal>
   );
@@ -107,7 +108,9 @@ function ReadOnlyField({ label, value }: { label: string; value: string }) {
 }
 
 function planFamilyLabel(value: string) {
-  return value === "business" ? "Business" : "Team";
+  if (value === "business") return "Business";
+  if (value === "unlimited") return "Unlimited";
+  return "Team";
 }
 
 function billingIntervalLabel(value: string) {

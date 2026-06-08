@@ -61,7 +61,7 @@ export function buildCompanyBillingPlanSelectionMode(
     errorMessage: args.actionError,
     selectedInterval,
     onSelectInterval: args.onSelectInterval,
-    cards: (["team", "business"] as CompanyBillingPlanSelectionPage.Plan[]).map((plan) => {
+    cards: (["team", "business", "unlimited"] as CompanyBillingPlanSelectionPage.Plan[]).map((plan) => {
       const definition = findCompanyBillingPlanDefinition(args.billing.plans, plan);
       const product = findCompanyBillingSellableProduct(args.billing.catalogProducts, plan, selectedInterval);
 
@@ -70,8 +70,8 @@ export function buildCompanyBillingPlanSelectionMode(
         title: definition?.displayName || formatCompanyBillingPlanName(plan),
         priceLabel: formatPlanPriceLabel(product, selectedInterval),
         detailLines: [
-          definition?.memberLimit ? `${definition.memberLimit} member limit` : "Member limit unavailable",
-          definition?.storageLimitBytes ? `${formatStorageBytes(definition.storageLimitBytes)} storage` : "Storage allowance unavailable",
+          formatMemberLimitLine(definition?.memberLimit),
+          formatStorageLimitLine(definition?.storageLimitBytes),
           formatBillingHint(product, selectedInterval),
         ],
         selected: selectedTarget?.plan === plan,
@@ -229,3 +229,19 @@ function buildConsequenceRows(
 }
 
 function noop() {}
+
+function formatMemberLimitLine(memberLimit?: number | null): string {
+  if (memberLimit == null) {
+    return "Unlimited members";
+  }
+
+  return `${memberLimit} member limit`;
+}
+
+function formatStorageLimitLine(storageLimitBytes?: number | null): string {
+  if (storageLimitBytes == null) {
+    return "Unlimited storage";
+  }
+
+  return `${formatStorageBytes(storageLimitBytes)} storage`;
+}

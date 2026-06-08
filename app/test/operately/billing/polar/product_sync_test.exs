@@ -24,7 +24,7 @@ defmodule Operately.Billing.Polar.Operations.ProductSyncTest do
           provider: "polar",
           plan_family: "team",
           billing_interval: "monthly",
-          polar_product_id: "prod_team_monthly",
+          polar_product_id: "prod_pro_monthly",
           polar_product_name: "Team Monthly",
           price_amount: 1900,
           price_currency: "usd",
@@ -51,14 +51,14 @@ defmodule Operately.Billing.Polar.Operations.ProductSyncTest do
            %{
              items: [
                managed_product_payload(%{
-                 "id" => "prod_team_monthly",
+                 "id" => "prod_pro_monthly",
                  "name" => "Team Monthly Updated",
                  "prices" => [%{"amount_type" => "fixed", "price_amount" => 2900, "price_currency" => "usd"}],
                  "metadata" => ProductMapper.metadata(:team, :monthly, 1)
                }),
                unmanaged_product_payload(),
                managed_product_payload(%{
-                 "id" => "prod_team_yearly",
+                 "id" => "prod_pro_yearly",
                  "name" => "Team Yearly",
                  "recurring_interval" => "yearly",
                  "prices" => [%{"amount_type" => "fixed", "price_amount" => 29_900, "price_currency" => "usd"}],
@@ -95,8 +95,8 @@ defmodule Operately.Billing.Polar.Operations.ProductSyncTest do
       assert existing_product.price_amount == 2900
       assert existing_product.version == 1
 
-      imported_product = Billing.get_product_by_polar_product_id("prod_team_yearly")
-      assert imported_product.plan_family == :team
+      imported_product = Billing.get_product_by_polar_product_id("prod_pro_yearly")
+      assert imported_product.plan_family == "team"
       assert imported_product.billing_interval == :yearly
       assert imported_product.price_amount == 29_900
       assert imported_product.active == false

@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSessionTest do
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
 
-      {:ok, _product} = create_active_product("prod_team_monthly_admin", "team", "monthly")
+      {:ok, _product} = create_active_product("prod_pro_monthly_admin", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
@@ -63,12 +63,12 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSessionTest do
     setup :setup_owner_ctx
 
     test "it returns a checkout session and records pending checkout state", ctx do
-      {:ok, _product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
         create_checkout_session: fn attrs ->
-          assert attrs[:products] == ["prod_team_monthly"]
+          assert attrs[:products] == ["prod_pro_monthly"]
           assert attrs[:external_customer_id] == ctx.company.id
 
           {:ok,
@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSessionTest do
         assert res.session.expires_at == "2026-08-31T00:00:00Z"
 
         account = Billing.get_billing_account_by_company(ctx.company)
-        assert account.pending_plan_key == :team
+        assert account.pending_plan_key == "team"
         assert account.pending_billing_interval == :monthly
         assert account.pending_checkout_started_at != nil
       end
@@ -106,7 +106,7 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSessionTest do
     end
 
     test "it rejects active paid companies", ctx do
-      {:ok, _current_product} = create_active_product("prod_current_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_current_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
@@ -116,7 +116,7 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSessionTest do
              "subscriptions" => [
                %{
                  "status" => "active",
-                 "product_id" => "prod_current_team_monthly",
+                 "product_id" => "prod_current_pro_monthly",
                  "current_period_end" => "2026-06-30T00:00:00Z",
                  "cancel_at_period_end" => false
                }
@@ -129,7 +129,7 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSessionTest do
     end
 
     test "it returns provider failures from Polar", ctx do
-      {:ok, _product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,

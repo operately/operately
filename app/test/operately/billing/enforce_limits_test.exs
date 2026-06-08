@@ -24,7 +24,7 @@ defmodule Operately.Billing.EnforceLimitsTest do
 
       assert %LimitStatus{} = status = EnforceLimits.status(company, :member_count, current_usage: 0)
 
-      assert status.plan_key == :free
+      assert status.plan_key == "free"
       assert status.limit_key == :member_count
       assert status.limit == 20
       assert status.current_usage == 0
@@ -32,20 +32,20 @@ defmodule Operately.Billing.EnforceLimitsTest do
       assert status.remaining == 20
       assert status.enforced == true
       assert status.blocked == false
-      assert status.recommended_upgrade == %{plan_key: :team, billing_interval: :monthly, source: :next_plan}
+      assert status.recommended_upgrade == %{plan_key: "team", billing_interval: :monthly, source: :next_plan}
     end
 
     test "uses the local paid projection for plan entitlements", ctx do
       company = enable_billing(ctx.company)
       create_active_product("business", "yearly")
-      {:ok, _account} = Billing.sync_billing_account(company, %{provider: "polar", plan_key: :team, billing_interval: :yearly, status: :active})
+      {:ok, _account} = Billing.sync_billing_account(company, %{provider: "polar", plan_key: "team", billing_interval: :yearly, status: :active})
 
       assert %LimitStatus{} = status = EnforceLimits.status(company, :member_count, current_usage: 10)
 
-      assert status.plan_key == :team
+      assert status.plan_key == "team"
       assert status.limit == 50
       assert status.remaining == 40
-      assert status.recommended_upgrade == %{plan_key: :business, billing_interval: :yearly, source: :next_plan}
+      assert status.recommended_upgrade == %{plan_key: "business", billing_interval: :yearly, source: :next_plan}
     end
 
     test "returns unenforced pass-through status and never blocks when billing is off", ctx do
@@ -69,7 +69,7 @@ defmodule Operately.Billing.EnforceLimitsTest do
       assert {:error, %LimitError{} = error} = EnforceLimits.check(company, :member_count, current_usage: 20, requested_delta: 1)
 
       assert error.code == :member_count_limit_exceeded
-      assert error.plan_key == :free
+      assert error.plan_key == "free"
       assert error.current_usage == 20
       assert error.projected_usage == 21
       assert error.limit == 20
@@ -110,7 +110,7 @@ defmodule Operately.Billing.EnforceLimitsTest do
       error = %LimitError{
         code: :storage_limit_exceeded,
         limit_key: :storage_bytes,
-        plan_key: :free,
+        plan_key: "free",
         current_usage: 512,
         requested_delta: 1,
         projected_usage: 513,
@@ -143,23 +143,23 @@ defmodule Operately.Billing.EnforceLimitsTest do
       {:ok, _account} = Billing.remember_plan(account, :team, :yearly, "website")
 
       assert EnforceLimits.status(company, :member_count, current_usage: 0).recommended_upgrade ==
-               %{plan_key: :team, billing_interval: :yearly, source: :suggested}
+               %{plan_key: "team", billing_interval: :yearly, source: :suggested}
     end
 
     test "falls back to the next higher sellable plan when the suggestion is not an upgrade", ctx do
       company = enable_billing(ctx.company)
       create_active_product("business", "monthly")
       create_active_product("business", "yearly")
-      {:ok, account} = Billing.sync_billing_account(company, %{provider: "polar", plan_key: :team, billing_interval: :monthly, status: :active})
+      {:ok, account} = Billing.sync_billing_account(company, %{provider: "polar", plan_key: "team", billing_interval: :monthly, status: :active})
       {:ok, _account} = Billing.remember_plan(account, :team, :yearly, "website")
 
       assert EnforceLimits.status(company, :member_count, current_usage: 0).recommended_upgrade ==
-               %{plan_key: :business, billing_interval: :monthly, source: :next_plan}
+               %{plan_key: "business", billing_interval: :monthly, source: :next_plan}
     end
 
     test "returns no recommendation when the company is already on the highest plan", ctx do
       company = enable_billing(ctx.company)
-      {:ok, _account} = Billing.sync_billing_account(company, %{provider: "polar", plan_key: :business, billing_interval: :monthly, status: :active})
+      {:ok, _account} = Billing.sync_billing_account(company, %{provider: "polar", plan_key: "business", billing_interval: :monthly, status: :active})
 
       assert EnforceLimits.status(company, :member_count, current_usage: 0).recommended_upgrade == nil
     end
@@ -229,7 +229,7 @@ defmodule Operately.Billing.EnforceLimitsTest do
 
       paid_company = company_fixture()
       paid_company = enable_billing(paid_company)
-      {:ok, _account} = Billing.sync_billing_account(paid_company, %{provider: "polar", plan_key: :team, billing_interval: :monthly, status: :active})
+      {:ok, _account} = Billing.sync_billing_account(paid_company, %{provider: "polar", plan_key: "team", billing_interval: :monthly, status: :active})
       paid_author = person_fixture_with_account(%{company_id: paid_company.id})
 
       blob_fixture(%{

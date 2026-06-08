@@ -66,25 +66,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
       assert result.companies == []
     end
 
-    test "excludes companies with insufficient goals", ctx do
-      ctx =
-        ctx
-        |> Factory.setup()
-        |> Factory.add_space(:space)
-        |> Factory.add_company_member(:member1)
-        |> Factory.add_company_member(:member2)
-        |> Factory.add_goal(:goal1, :space, creator: :member1)  # Only 1 goal
-        |> Factory.add_project(:project1, :space, creator: :member1)
-        |> Factory.add_project(:project2, :space, creator: :member2)
-
-      # Add recent activity
-      create_recent_activity(ctx.company)
-
-      {:ok, result} = GetActiveCompanies.call(nil, %{})
-      assert result.companies == []
-    end
-
-    test "excludes companies with insufficient projects", ctx do
+    test "excludes companies with fewer than two goals and projects combined", ctx do
       ctx =
         ctx
         |> Factory.setup()
@@ -92,14 +74,31 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
         |> Factory.add_company_member(:member1)
         |> Factory.add_company_member(:member2)
         |> Factory.add_goal(:goal1, :space, creator: :member1)
-        |> Factory.add_goal(:goal2, :space, creator: :member2)
-        |> Factory.add_project(:project1, :space, creator: :member1)  # Only 1 project
 
-      # Add recent activity
       create_recent_activity(ctx.company)
 
       {:ok, result} = GetActiveCompanies.call(nil, %{})
       assert result.companies == []
+    end
+
+    test "includes companies with one goal and one project", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)
+        |> Factory.add_project(:project1, :space, creator: :member1)
+
+      create_recent_activity(ctx.company)
+
+      {:ok, result} = GetActiveCompanies.call(nil, %{})
+      assert length(result.companies) == 1
+
+      company = hd(result.companies)
+      assert company.goals_count == 1
+      assert company.projects_count == 1
     end
 
     test "excludes companies without recent activity", ctx do

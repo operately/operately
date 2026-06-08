@@ -70,6 +70,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "api_tokens",
     "billing_limit_breach_alerts",
     "billing_near_limit_alerts",
+    "billing_plan_definitions",
     "billing_products",
     "billing_webhook_events",
     "cli_auth_sessions",

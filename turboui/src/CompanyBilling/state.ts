@@ -225,14 +225,14 @@ function compareTargets(
   rightPlan: CompanyBillingPageTypes.Plan,
   rightInterval: CompanyBillingPageTypes.Interval,
 ): number {
-  const planOrder: Record<CompanyBillingPageTypes.Plan, number> = { team: 0, business: 1 };
+  const planOrder: Record<CompanyBillingPageTypes.Plan, number> = { team: 0, business: 1, unlimited: 2 };
   const intervalOrder: Record<CompanyBillingPageTypes.Interval, number> = { monthly: 0, yearly: 1 };
 
   return planOrder[leftPlan] - planOrder[rightPlan] || intervalOrder[leftInterval] - intervalOrder[rightInterval];
 }
 
 function isBillingPlan(value: string | null): value is CompanyBillingPageTypes.Plan {
-  return value === "team" || value === "business";
+  return value === "team" || value === "business" || value === "unlimited";
 }
 
 function isBillingInterval(value: string | null): value is CompanyBillingPageTypes.Interval {

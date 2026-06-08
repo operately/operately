@@ -75,7 +75,7 @@ defmodule Operately.Billing.AccessStateReconciling do
     member_limit = Plans.member_limit(plan_key)
     storage_limit_bytes = Plans.storage_limit_bytes(plan_key)
 
-    if is_nil(member_limit) || is_nil(storage_limit_bytes) do
+    if is_nil(member_limit) or is_nil(storage_limit_bytes) do
       false
     else
       Usage.active_member_count(company) > member_limit ||
@@ -106,8 +106,8 @@ defmodule Operately.Billing.AccessStateReconciling do
 
   defp cancel_to_free_became_current?(%CompanyBillingAccount{} = account, attrs) do
     account.cancel_at_period_end &&
-      effective_plan_key(account.plan_key) != :free &&
-      effective_plan_key(Map.get(attrs, :plan_key)) == :free
+      effective_plan_key(account.plan_key) != "free" &&
+      effective_plan_key(Map.get(attrs, :plan_key)) == "free"
   end
 
   defp lower_entitlements?(previous_plan_key, new_plan_key) do
@@ -117,8 +117,8 @@ defmodule Operately.Billing.AccessStateReconciling do
     new_storage_limit = Plans.storage_limit_bytes(new_plan_key)
 
     cond do
-      is_nil(previous_member_limit) || is_nil(previous_storage_limit) -> false
-      is_nil(new_member_limit) || is_nil(new_storage_limit) -> false
+      is_nil(previous_member_limit) or is_nil(previous_storage_limit) -> false
+      is_nil(new_member_limit) or is_nil(new_storage_limit) -> false
       true -> new_member_limit < previous_member_limit || new_storage_limit < previous_storage_limit
     end
   end
@@ -183,19 +183,12 @@ defmodule Operately.Billing.AccessStateReconciling do
 
   defp grace_ends_at(now), do: DateTime.add(now, @grace_period_seconds, :second)
 
-  defp effective_plan_key(nil), do: :free
+  defp effective_plan_key(nil), do: "free"
   defp effective_plan_key(plan_key), do: normalize_plan_key(plan_key)
 
-  defp normalize_plan_key(plan_key) when plan_key in [:free, :team, :business], do: plan_key
-
-  defp normalize_plan_key(plan_key) when is_binary(plan_key) do
-    case Plans.get(plan_key) do
-      nil -> plan_key
-      plan -> plan.key
-    end
+  defp normalize_plan_key(plan_key) do
+    Plans.normalize_key(plan_key) || plan_key
   end
-
-  defp normalize_plan_key(plan_key), do: plan_key
 
   defp normalize_billing_interval(interval) when interval in [:monthly, :yearly], do: interval
 

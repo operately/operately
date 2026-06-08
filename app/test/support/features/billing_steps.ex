@@ -47,8 +47,8 @@ defmodule Operately.Support.Features.BillingSteps do
 
   step :seed_active_billing_catalog, ctx do
     products = %{
-      team_monthly: create_active_product("prod_team_monthly", "team", "monthly").polar_product_id,
-      team_yearly: create_active_product("prod_team_yearly", "team", "yearly").polar_product_id,
+      team_monthly: create_active_product("prod_pro_monthly", "team", "monthly").polar_product_id,
+      team_yearly: create_active_product("prod_pro_yearly", "team", "yearly").polar_product_id,
       business_monthly: create_active_product("prod_business_monthly", "business", "monthly").polar_product_id,
       business_yearly: create_active_product("prod_business_yearly", "business", "yearly").polar_product_id
     }
@@ -248,7 +248,7 @@ defmodule Operately.Support.Features.BillingSteps do
       account = Billing.get_billing_account_by_company(ctx.company)
 
       assert account.status == :active
-      assert account.plan_key == to_existing_atom(attrs.plan)
+      assert account.plan_key == normalize_plan_key(attrs.plan)
       assert account.billing_interval == to_existing_atom(attrs.billing_interval)
       assert account.pending_plan_key == nil
       assert account.pending_billing_interval == nil
@@ -266,7 +266,7 @@ defmodule Operately.Support.Features.BillingSteps do
       account = Billing.get_billing_account_by_company(ctx.company)
 
       assert account.status == :active
-      assert account.plan_key == to_existing_atom(attrs.plan)
+      assert account.plan_key == normalize_plan_key(attrs.plan)
       assert account.billing_interval == to_existing_atom(attrs.billing_interval)
 
       ctx
@@ -414,6 +414,9 @@ defmodule Operately.Support.Features.BillingSteps do
 
   defp plan_display_name("team"), do: "Team"
   defp plan_display_name("business"), do: "Business"
+
+  defp normalize_plan_key(value) when is_atom(value), do: Atom.to_string(value)
+  defp normalize_plan_key(value), do: value
 
   defp to_existing_atom(value) when is_binary(value), do: String.to_existing_atom(value)
   defp to_existing_atom(value), do: value

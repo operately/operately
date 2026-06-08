@@ -52,7 +52,7 @@ export function buildCompanyBillingChangeConsequence(args: {
     isLowerEntitlement:
       !!currentPlan &&
       !!targetPlan &&
-      (targetPlan.memberLimit < currentPlan.memberLimit || targetPlan.storageLimitBytes < currentPlan.storageLimitBytes),
+      isLowerEntitlement(currentPlan, targetPlan),
     memberCount: billing.memberCount,
     memberLimit,
     memberOverage,
@@ -127,6 +127,24 @@ function determineOverageKind(
 }
 
 function planTier(planKey: CompanyBillingPageTypes.Plan): number {
+  if (planKey === "unlimited") return 3;
   if (planKey === "business") return 2;
   return 1;
+}
+
+function isLowerEntitlement(
+  currentPlan: CompanyBillingPageTypes.BillingPlanDefinition,
+  targetPlan: CompanyBillingPageTypes.BillingPlanDefinition,
+): boolean {
+  const memberLimitDecreases =
+    currentPlan.memberLimit != null &&
+    targetPlan.memberLimit != null &&
+    targetPlan.memberLimit < currentPlan.memberLimit;
+
+  const storageLimitDecreases =
+    currentPlan.storageLimitBytes != null &&
+    targetPlan.storageLimitBytes != null &&
+    targetPlan.storageLimitBytes < currentPlan.storageLimitBytes;
+
+  return memberLimitDecreases || storageLimitDecreases;
 }

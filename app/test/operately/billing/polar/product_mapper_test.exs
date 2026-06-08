@@ -18,7 +18,7 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
     test "normalizes a managed product into local catalog attrs" do
       payload =
         managed_product_payload(%{
-          "id" => "prod_team_monthly_v2",
+          "id" => "prod_pro_monthly_v2",
           "name" => "Team Monthly v2",
           "recurring_interval" => "monthly",
           "prices" => [
@@ -31,9 +31,9 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
       assert {:ok, attrs} = ProductMapper.normalize_provider_product(payload)
 
       assert attrs.provider == "polar"
-      assert attrs.plan_family == :team
+      assert attrs.plan_family == "team"
       assert attrs.billing_interval == :monthly
-      assert attrs.polar_product_id == "prod_team_monthly_v2"
+      assert attrs.polar_product_id == "prod_pro_monthly_v2"
       assert attrs.polar_product_name == "Team Monthly v2"
       assert attrs.price_amount == 2900
       assert attrs.price_currency == "usd"
@@ -63,7 +63,7 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
 
       assert {:ok, attrs} = ProductMapper.normalize_provider_product(payload)
 
-      assert attrs.plan_family == :business
+      assert attrs.plan_family == "business"
       assert attrs.billing_interval == :yearly
       assert attrs.price_amount == 19_900
       assert attrs.price_currency == "eur"

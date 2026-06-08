@@ -19,11 +19,11 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
 
-      {:ok, _current_product} = create_active_product("prod_team_monthly_admin", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly_admin", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_yearly_admin", "business", "yearly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly_admin", %{"id" => "sub_upgrade_admin"})},
+        {:ok, active_subscription_payload("prod_pro_monthly_admin", %{"id" => "sub_upgrade_admin"})},
         {:ok, active_subscription_payload("prod_business_yearly_admin", %{"id" => "sub_upgrade_admin"})}
       ])
 
@@ -62,11 +62,11 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
     setup :setup_owner_ctx
 
     test "it returns refreshed billing overview for an immediate upgrade", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_yearly", "business", "yearly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_upgrade"})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_upgrade"})},
         {:ok, active_subscription_payload("prod_business_yearly", %{"id" => "sub_upgrade"})}
       ])
 
@@ -85,20 +85,20 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
 
     test "it returns scheduled change fields for next-period changes", ctx do
       {:ok, _current_product} = create_active_product("prod_business_yearly", "business", "yearly")
-      {:ok, _target_product} = create_active_product("prod_team_yearly", "team", "yearly")
+      {:ok, _target_product} = create_active_product("prod_pro_yearly", "team", "yearly")
 
       put_sequence(:customer_state_responses, [
         {:ok, active_subscription_payload("prod_business_yearly", %{"id" => "sub_downgrade"})},
         {:ok,
          active_subscription_payload("prod_business_yearly", %{
            "id" => "sub_downgrade",
-           "pending_update" => %{"product_id" => "prod_team_yearly"}
+           "pending_update" => %{"product_id" => "prod_pro_yearly"}
          })}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
-        update_subscription: fn "sub_downgrade", %{product_id: "prod_team_yearly", proration_behavior: "next_period"} ->
+        update_subscription: fn "sub_downgrade", %{product_id: "prod_pro_yearly", proration_behavior: "next_period"} ->
           {:ok, %{"id" => "sub_downgrade"}}
         end do
         assert {200, res} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "yearly"})
@@ -112,17 +112,17 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
     end
 
     test "it applies monthly-to-yearly interval switches immediately", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
-      {:ok, _target_product} = create_active_product("prod_team_yearly", "team", "yearly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_pro_yearly", "team", "yearly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_interval"})},
-        {:ok, active_subscription_payload("prod_team_yearly", %{"id" => "sub_interval"})}
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_interval"})},
+        {:ok, active_subscription_payload("prod_pro_yearly", %{"id" => "sub_interval"})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
-        update_subscription: fn "sub_interval", %{product_id: "prod_team_yearly", proration_behavior: "prorate"} ->
+        update_subscription: fn "sub_interval", %{product_id: "prod_pro_yearly", proration_behavior: "prorate"} ->
           {:ok, %{"id" => "sub_interval"}}
         end do
         assert {200, res} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "yearly"})
@@ -134,21 +134,21 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
     end
 
     test "it schedules yearly-to-monthly interval switches", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_yearly", "team", "yearly")
-      {:ok, _target_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_yearly", "team", "yearly")
+      {:ok, _target_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_yearly", %{"id" => "sub_interval"})},
+        {:ok, active_subscription_payload("prod_pro_yearly", %{"id" => "sub_interval"})},
         {:ok,
-         active_subscription_payload("prod_team_yearly", %{
+         active_subscription_payload("prod_pro_yearly", %{
            "id" => "sub_interval",
-           "pending_update" => %{"product_id" => "prod_team_monthly"}
+           "pending_update" => %{"product_id" => "prod_pro_monthly"}
          })}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> next_sequence(:customer_state_responses) end,
-        update_subscription: fn "sub_interval", %{product_id: "prod_team_monthly", proration_behavior: "next_period"} ->
+        update_subscription: fn "sub_interval", %{product_id: "prod_pro_monthly", proration_behavior: "next_period"} ->
           {:ok, %{"id" => "sub_interval"}}
         end do
         assert {200, res} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "monthly"})
@@ -166,12 +166,12 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
     end
 
     test "it rejects unsupported subscription states", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_monthly", "business", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_trialing", "status" => "trialing"})}
+          {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_trialing", "status" => "trialing"})}
         end,
         update_subscription: fn _subscription_id, _attrs -> flunk("unexpected update call") end do
         assert {400, _} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "business", billing_interval: "monthly"})
@@ -179,7 +179,7 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
     end
 
     test "it returns not found when there is no live subscription", ctx do
-      {:ok, _target_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _target_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end,
@@ -189,12 +189,12 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
     end
 
     test "it returns provider failures", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
       {:ok, _target_product} = create_active_product("prod_business_monthly", "business", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_failure"})}
+          {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_failure"})}
         end,
         update_subscription: fn "sub_failure", %{product_id: "prod_business_monthly", proration_behavior: "prorate"} ->
           {:error, :internal_server_error}

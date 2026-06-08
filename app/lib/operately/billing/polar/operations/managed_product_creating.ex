@@ -1,10 +1,9 @@
 defmodule Operately.Billing.Polar.Operations.ManagedProductCreating do
   alias Operately.Billing
-  alias Operately.Billing.CompanyBillingAccount
+  alias Operately.Billing.Plans
   alias Operately.Billing.Polar.ProductMapper
 
-  @valid_plan_keys CompanyBillingAccount.valid_plan_keys()
-  @valid_billing_intervals CompanyBillingAccount.valid_billing_intervals()
+  @valid_billing_intervals Operately.Billing.CompanyBillingAccount.valid_billing_intervals()
 
   def run(attrs, opts \\ []) do
     with {:ok, plan_family} <- cast_plan_family(attrs[:plan_family] || attrs["plan_family"]),
@@ -33,17 +32,12 @@ defmodule Operately.Billing.Polar.Operations.ManagedProductCreating do
     end
   end
 
-  defp cast_plan_family(plan_family) when plan_family in @valid_plan_keys, do: {:ok, plan_family}
-
-  defp cast_plan_family(plan_family) when is_binary(plan_family) do
-    case String.downcase(plan_family) do
-      "team" -> {:ok, :team}
-      "business" -> {:ok, :business}
-      _ -> {:error, :invalid_plan_family}
+  defp cast_plan_family(plan_family) do
+    case Plans.cast_paid_plan_key(plan_family) do
+      {:ok, normalized_plan_key} -> {:ok, normalized_plan_key}
+      {:error, :invalid_plan_key} -> {:error, :invalid_plan_family}
     end
   end
-
-  defp cast_plan_family(_), do: {:error, :invalid_plan_family}
 
   defp cast_billing_interval(interval) when interval in @valid_billing_intervals, do: {:ok, interval}
 

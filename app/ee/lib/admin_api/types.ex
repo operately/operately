@@ -81,4 +81,13 @@ defmodule OperatelyEE.AdminApi.Types do
     field :inserted_at, :datetime
     field :updated_at, :datetime
   end
+
+  object :billing_plan_definition do
+    field :id, :string
+    field :key, :string
+    field :display_name, :string
+    field :sort_order, :integer
+    field? :member_limit, :integer
+    field? :storage_limit_bytes, :integer
+  end
 end

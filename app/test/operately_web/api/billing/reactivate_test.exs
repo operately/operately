@@ -19,11 +19,11 @@ defmodule OperatelyWeb.Api.Billing.ReactivateTest do
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
 
-      {:ok, _current_product} = create_active_product("prod_team_monthly_admin", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly_admin", "team", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly_admin", %{"id" => "sub_reactivate_admin", "cancel_at_period_end" => true})},
-        {:ok, active_subscription_payload("prod_team_monthly_admin", %{"id" => "sub_reactivate_admin", "cancel_at_period_end" => false})}
+        {:ok, active_subscription_payload("prod_pro_monthly_admin", %{"id" => "sub_reactivate_admin", "cancel_at_period_end" => true})},
+        {:ok, active_subscription_payload("prod_pro_monthly_admin", %{"id" => "sub_reactivate_admin", "cancel_at_period_end" => false})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
@@ -61,11 +61,11 @@ defmodule OperatelyWeb.Api.Billing.ReactivateTest do
     setup :setup_owner_ctx
 
     test "it returns refreshed billing overview with cancel_at_period_end=false", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       put_sequence(:customer_state_responses, [
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_reactivate", "cancel_at_period_end" => true})},
-        {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_reactivate", "cancel_at_period_end" => false})}
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_reactivate", "cancel_at_period_end" => true})},
+        {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_reactivate", "cancel_at_period_end" => false})}
       ])
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
@@ -87,11 +87,11 @@ defmodule OperatelyWeb.Api.Billing.ReactivateTest do
     end
 
     test "it returns provider failures", ctx do
-      {:ok, _current_product} = create_active_product("prod_team_monthly", "team", "monthly")
+      {:ok, _current_product} = create_active_product("prod_pro_monthly", "team", "monthly")
 
       with_mock Operately.Billing.Polar.Client, [:passthrough],
         get_customer_state_by_external_id: fn _company_id ->
-          {:ok, active_subscription_payload("prod_team_monthly", %{"id" => "sub_failure", "cancel_at_period_end" => true})}
+          {:ok, active_subscription_payload("prod_pro_monthly", %{"id" => "sub_failure", "cancel_at_period_end" => true})}
         end,
         update_subscription: fn "sub_failure", %{cancel_at_period_end: false} ->
           {:error, :internal_server_error}

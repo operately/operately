@@ -14,6 +14,7 @@ defmodule OperatelyEE.AdminApi do
   query :get_company, Q.GetCompany
   query :get_activities, Q.GetActivities
   query :get_email_settings, Q.GetEmailSettings
+  query :list_billing_plan_definitions, Q.ListBillingPlanDefinitions
   query :list_billing_products, Q.ListBillingProducts
 
   mutation :delete_account, M.DeleteAccount
@@ -22,6 +23,7 @@ defmodule OperatelyEE.AdminApi do
   mutation :enable_feature, M.EnableFeature
   mutation :update_email_settings, M.UpdateEmailSettings
   mutation :send_test_email, M.SendTestEmail
+  mutation :update_billing_plan_definition, M.UpdateBillingPlanDefinition
   mutation :create_billing_product, M.CreateBillingProduct
   mutation :update_billing_product, M.UpdateBillingProduct
   mutation :archive_billing_product, M.ArchiveBillingProduct

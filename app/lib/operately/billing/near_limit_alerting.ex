@@ -48,13 +48,13 @@ defmodule Operately.Billing.NearLimitAlerting do
   def threshold_crossed?(%LimitStatus{} = status, previous_usage) when is_integer(previous_usage) do
     threshold = EnforceLimits.near_limit_threshold(status.limit)
 
-    status.enforced and status.plan_key == :free and previous_usage < threshold and status.current_usage >= threshold
+    status.enforced and status.plan_key == "free" and is_integer(threshold) and previous_usage < threshold and status.current_usage >= threshold
   end
 
   def snapshot(limit_key, current_usage, limit) when limit_key in @valid_limit_keys and is_integer(current_usage) and is_integer(limit) do
     %LimitStatus{
       limit_key: limit_key,
-      plan_key: :free,
+      plan_key: "free",
       current_usage: current_usage,
       requested_delta: 0,
       projected_usage: current_usage,
