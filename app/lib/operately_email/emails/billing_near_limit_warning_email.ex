@@ -55,15 +55,16 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmail do
   def format_usage(:member_count, value), do: Integer.to_string(value)
   def format_usage(:storage_bytes, value), do: format_storage_bytes(value)
 
-  defp format_storage_bytes(bytes) when bytes < 1024, do: "#{bytes} B"
+  @storage_units [
+    {"PB", 1_125_899_906_842_624},
+    {"TB", 1_099_511_627_776},
+    {"GB", 1_073_741_824},
+    {"MB", 1_048_576},
+    {"KB", 1_024}
+  ]
 
   defp format_storage_bytes(bytes) do
-    [
-      {"TB", 1024 ** 4},
-      {"GB", 1024 ** 3},
-      {"MB", 1024 ** 2},
-      {"KB", 1024}
-    ]
+    @storage_units
     |> Enum.find(fn {_unit, size} -> bytes >= size end)
     |> case do
       {unit, size} ->
