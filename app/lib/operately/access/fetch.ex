@@ -5,11 +5,12 @@ defmodule Operately.Access.Fetch do
   alias Operately.Access.Binding
 
   def get_resource_with_access_level(query, person_id) do
-    get_resource_with_access_level(query, person_id, selected_resource: :resource)
+    get_resource_with_access_level(query, person_id, [])
   end
 
-  def get_resource_with_access_level(query, person_id, selected_resource: selected_resource) do
-    query = join_access_level(query, person_id)
+  def get_resource_with_access_level(query, person_id, opts) do
+    selected_resource = Keyword.get(opts, :selected_resource, :resource)
+    query = join_access_level(query, person_id, opts)
 
     from([{^selected_resource, r}, binding: b] in query,
       where: b.access_level >= ^Binding.view_access(),
@@ -24,7 +25,11 @@ defmodule Operately.Access.Fetch do
   end
 
   def get_access_level(query, person_id) do
-    query = join_access_level(query, person_id)
+    get_access_level(query, person_id, [])
+  end
+
+  def get_access_level(query, person_id, opts) do
+    query = join_access_level(query, person_id, opts)
 
     from([binding: b] in query,
       where: b.access_level >= ^Binding.view_access(),
@@ -38,9 +43,34 @@ defmodule Operately.Access.Fetch do
   end
 
   def join_access_level(query, person_id) do
-    from([resource: r] in query,
-      join: c in assoc(r, :access_context),
-      join: b in assoc(c, :bindings), as: :binding,
+    join_access_level(query, person_id, [])
+  end
+
+  def join_access_level(query, person_id, opts) do
+    case Keyword.get(opts, :resource_hub_source) do
+      nil ->
+        from([resource: r] in query,
+          join: c in assoc(r, :access_context),
+          join: b in assoc(c, :bindings),
+          as: :binding,
+          join: g in assoc(b, :group),
+          join: m in assoc(g, :memberships),
+          join: p in assoc(m, :person),
+          where: b.access_level >= ^Binding.view_access(),
+          where: m.person_id == ^person_id and is_nil(p.suspended_at)
+        )
+
+      source ->
+        query
+        |> Operately.ResourceHubs.Getter.join_effective_context(source)
+        |> join_bindings(person_id)
+    end
+  end
+
+  defp join_bindings(query, person_id) do
+    from([context: c] in query,
+      join: b in assoc(c, :bindings),
+      as: :binding,
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
       join: p in assoc(m, :person),

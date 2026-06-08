@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         document = document_fixture(resource_hub.id, ctx.creator.id)
 
         assert {code, res} = mutation(ctx.conn, [:documents, :update], %{

@@ -61,7 +61,7 @@ defmodule Operately.Operations.ResourceAccessGranting do
         nil ->
           GroupMembership.changeset(%{
             group_id: standard_group.id,
-            person_id: person_id,
+            person_id: person_id
           })
           |> repo.insert()
 
@@ -82,7 +82,7 @@ defmodule Operately.Operations.ResourceAccessGranting do
             person_id: person_id,
             responsibility: "",
             permissions: access_level,
-            role: :contributor,
+            role: :contributor
           })
           |> repo.insert()
 

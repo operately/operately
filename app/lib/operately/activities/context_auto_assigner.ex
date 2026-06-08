@@ -16,7 +16,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_review_submitted",
     "project_review_request_submitted",
     "project_review_acknowledged",
-    "project_review_commented",
+    "project_review_commented"
   ]
 
   @company_actions [
@@ -34,7 +34,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "guest_invited",
     "password_first_time_changed",
     "company_invitation_token_created",
-    "company_member_added",
+    "company_member_added"
   ]
 
   @space_actions [
@@ -45,14 +45,12 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "space_members_added",
     "space_member_removed",
     "group_edited",
-
     "goal_archived",
-
     "discussion_posting",
     "discussion_editing",
     "discussion_comment_submitted",
     "message_archiving",
-    "space_task_commented",
+    "space_task_commented"
   ]
 
   @project_actions [
@@ -92,7 +90,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "milestone_title_updating",
     "milestone_due_date_updating",
     "milestone_description_updating",
-    "milestone_deleting",
+    "milestone_deleting"
   ]
 
   @task_actions [
@@ -110,7 +108,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_priority_change",
     "task_reopening",
     "task_size_change",
-    "task_status_updating",
+    "task_status_updating"
   ]
 
   @resource_hub_actions [
@@ -131,7 +129,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "resource_hub_link_created",
     "resource_hub_link_commented",
     "resource_hub_link_deleted",
-    "resource_hub_link_edited",
+    "resource_hub_link_edited"
   ]
 
   def assign_context(multi) do
@@ -145,14 +143,30 @@ defmodule Operately.Activities.ContextAutoAssigner do
 
   defp fetch_context(activity) do
     cond do
-      activity.action in @deprecated_actions -> :ok
-      activity.action in @company_actions -> fetch_company_context(activity.content.company_id)
-      activity.action in @space_actions -> fetch_space_context(activity)
-      activity.action in Operately.Goals.goal_actions() -> fetch_goal_context(activity.content)
-      activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
-      activity.action in @task_actions -> fetch_project_or_space_context(activity.content)
-      activity.action in @resource_hub_actions-> fetch_resource_hub_context(activity.content.space_id)
-      activity.action == "comment_added" -> fetch_comment_added_context(activity)
+      activity.action in @deprecated_actions ->
+        :ok
+
+      activity.action in @company_actions ->
+        fetch_company_context(activity.content.company_id)
+
+      activity.action in @space_actions ->
+        fetch_space_context(activity)
+
+      activity.action in Operately.Goals.goal_actions() ->
+        fetch_goal_context(activity.content)
+
+      activity.action in @project_actions ->
+        fetch_project_context(activity.content.project_id)
+
+      activity.action in @task_actions ->
+        fetch_project_or_space_context(activity.content)
+
+      activity.action in @resource_hub_actions ->
+        fetch_resource_hub_context(activity.content)
+
+      activity.action == "comment_added" ->
+        fetch_comment_added_context(activity)
+
       true ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
         raise "Activity not handled in context assignment #{activity.action}"
@@ -178,6 +192,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
   end
 
   defp fetch_goal_context(%{goal_id: goal_id}), do: fetch_goal_context(goal_id)
+
   defp fetch_goal_context(goal_id) do
     from(c in Context,
       where: c.goal_id == ^goal_id,
@@ -211,21 +226,32 @@ defmodule Operately.Activities.ContextAutoAssigner do
     |> Repo.one()
   end
 
-  defp fetch_resource_hub_context(space_id) do
-    from(c in Context,
-      where: c.group_id == ^space_id,
+  defp fetch_resource_hub_context(content) do
+    from(h in Operately.ResourceHubs.ResourceHub, as: :resource, where: h.id == ^content.resource_hub_id)
+    |> Operately.ResourceHubs.Getter.join_effective_context(:hub)
+    |> select_context_id()
+    |> Repo.one()
+  end
+
+  defp select_context_id(query) do
+    from([context: c] in query,
       select: c.id
     )
-    |> Repo.one()
   end
 
   defp fetch_comment_added_context(activity) do
     comment = Operately.Updates.get_comment!(activity.content.comment_id)
 
     case comment.entity_type do
-      :project_check_in -> fetch_project_context(comment.entity_id)
-      :update -> fetch_goal_context(comment.entity_id)
-      :comment_thread -> fetch_comment_thread_context(comment)
+      :project_check_in ->
+        fetch_project_context(comment.entity_id)
+
+      :update ->
+        fetch_goal_context(comment.entity_id)
+
+      :comment_thread ->
+        fetch_comment_thread_context(comment)
+
       _ ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
         Logger.error("Comment associated with activity: #{inspect(comment)}")

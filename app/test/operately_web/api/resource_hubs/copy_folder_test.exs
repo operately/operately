@@ -66,8 +66,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
         origin_space = create_space(ctx, @test.company, @test.origin_space)
         dest_space = create_space(ctx, @test.company, @test.dest_space)
 
-        origin_resource_hub = resource_hub_fixture(ctx.creator, origin_space)
-        dest_resource_hub = resource_hub_fixture(ctx.creator, dest_space)
+        origin_resource_hub = resource_hub_fixture(ctx.creator, origin_space, resource_hub_access_attrs(@test.company, @test.origin_space))
+        dest_resource_hub = resource_hub_fixture(ctx.creator, dest_space, resource_hub_access_attrs(@test.company, @test.dest_space))
 
         folder = folder_fixture(origin_resource_hub.id)
 
