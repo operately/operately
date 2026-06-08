@@ -109,6 +109,7 @@ export { ProfileEditPage } from "./ProfileEditPage";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectField } from "./ProjectField";
 export { ProjectPage } from "./ProjectPage";
+export { ProjectPageLayout } from "./ProjectPageLayout";
 export { ReviewPage } from "./ReviewPage";
 export { SidebarNotificationSection } from "./SidebarSection";
 export { SpaceField } from "./SpaceField";

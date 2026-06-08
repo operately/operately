@@ -70,4 +70,21 @@ describe("DocsAndFiles", () => {
     expect(within(rows[1]!).getByText("Beta file")).toBeInTheDocument();
     expect(within(rows[1]!).getByText("Ada Lovelace · 24KB")).toBeInTheDocument();
   });
+
+  it("renders folder breadcrumbs above the title", () => {
+    renderWithRouter(
+      <DocsAndFilesTab
+        title="Research notes"
+        items={items}
+        breadcrumbs={[
+          { label: "Documents & Files", link: "/project/docs-and-files" },
+          { label: "Planning", link: "/folders/planning" },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: "Documents & Files" })).toHaveAttribute("href", "/project/docs-and-files");
+    expect(screen.getByRole("link", { name: "Planning" })).toHaveAttribute("href", "/folders/planning");
+    expect(screen.getByText("Research notes")).toBeInTheDocument();
+  });
 });

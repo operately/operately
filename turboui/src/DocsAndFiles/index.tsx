@@ -6,6 +6,7 @@ import {
   IconChartColumn,
   IconCheck,
   IconChevronDown,
+  IconChevronRight,
   IconFile,
   IconFolderFilled,
   IconLink,
@@ -45,6 +46,11 @@ export namespace DocsAndFiles {
     link: string;
   }
 
+  export interface Breadcrumb {
+    label: string;
+    link: string;
+  }
+
   export interface PreviewProps {
     items: Item[];
     tabPath: string;
@@ -58,6 +64,7 @@ export namespace DocsAndFiles {
     draftPrompt?: DraftPrompt | null;
     uploadForm?: React.ReactNode;
     folderModal?: React.ReactNode;
+    breadcrumbs?: Breadcrumb[];
     emptyStateKind?: "resourceHub" | "folder";
     hideEmptyState?: boolean;
     className?: string;
@@ -124,6 +131,7 @@ export function DocsAndFilesTab({
   draftPrompt,
   uploadForm,
   folderModal,
+  breadcrumbs,
   emptyStateKind = "resourceHub",
   hideEmptyState = false,
   className = "p-4 max-w-6xl mx-auto my-6",
@@ -134,8 +142,11 @@ export function DocsAndFilesTab({
 
   return (
     <div className={className} data-test-id="docs-and-files-tab">
-      <div className="flex items-center justify-between border-b border-surface-outline pb-3">
-        <div className="font-bold text-lg">{title}</div>
+      <div className="flex items-start justify-between gap-4 border-b border-surface-outline pb-3">
+        <div className="min-w-0">
+          <Breadcrumbs breadcrumbs={breadcrumbs} />
+          <div className="truncate text-lg font-bold">{title}</div>
+        </div>
         {addAction}
       </div>
 
@@ -157,6 +168,23 @@ export function DocsAndFilesTab({
 
       {folderModal}
     </div>
+  );
+}
+
+function Breadcrumbs({ breadcrumbs }: { breadcrumbs?: DocsAndFiles.Breadcrumb[] }) {
+  if (!breadcrumbs || breadcrumbs.length < 1) return null;
+
+  return (
+    <nav className="mb-1 flex min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap text-sm text-content-dimmed">
+      {breadcrumbs.map((breadcrumb, index) => (
+        <React.Fragment key={`${breadcrumb.link}-${breadcrumb.label}`}>
+          {index > 0 && <IconChevronRight size={14} className="shrink-0" />}
+          <Link to={breadcrumb.link} underline="hover" className="shrink-0 font-medium text-content-dimmed">
+            {breadcrumb.label}
+          </Link>
+        </React.Fragment>
+      ))}
+    </nav>
   );
 }
 

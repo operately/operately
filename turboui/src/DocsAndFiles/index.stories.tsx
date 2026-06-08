@@ -122,7 +122,18 @@ export const Empty: Story = {
 };
 
 export const FolderEmpty: Story = {
-  render: () => <DocsAndFilesTab title="Research notes" items={[]} addAction={<AddButton />} emptyStateKind="folder" />,
+  render: () => (
+    <DocsAndFilesTab
+      title="Research notes"
+      items={[]}
+      addAction={<AddButton />}
+      breadcrumbs={[
+        { label: "Documents & Files", link: "#" },
+        { label: "Planning", link: "#" },
+      ]}
+      emptyStateKind="folder"
+    />
+  ),
 };
 
 export const Preview: Story = {
