@@ -47,12 +47,12 @@ defmodule Operately.Billing.EnforceLimits do
     end
   end
 
-  def public_message(%LimitError{code: :member_count_limit_exceeded}) do
-    "This company has reached its member limit. Upgrade the plan to add more people."
+  def public_message(%LimitError{code: :member_count_limit_exceeded} = error) do
+    "This company has reached its member limit: #{error.current_usage} of #{error.limit} active members. Adding or restoring people is blocked until this company is back within its plan limits."
   end
 
-  def public_message(%LimitError{code: :storage_limit_exceeded}) do
-    "This company has reached its storage limit. Upgrade the plan to add more files."
+  def public_message(%LimitError{code: :storage_limit_exceeded} = error) do
+    "This company has reached its storage limit: #{format_storage_bytes(error.current_usage)} of #{format_storage_bytes(error.limit)} used. Uploading files is blocked until this company is back within its plan limits."
   end
 
   def to_api_error(%LimitError{} = error) do
@@ -133,6 +133,36 @@ defmodule Operately.Billing.EnforceLimits do
     case Keyword.get(opts, :requested_delta, 0) do
       delta when is_integer(delta) -> delta
       delta -> raise ArgumentError, "requested_delta must be an integer, got: #{inspect(delta)}"
+    end
+  end
+
+  @storage_units [
+    {"PB", 1_125_899_906_842_624},
+    {"TB", 1_099_511_627_776},
+    {"GB", 1_073_741_824},
+    {"MB", 1_048_576},
+    {"KB", 1_024}
+  ]
+
+  defp format_storage_bytes(bytes) do
+    @storage_units
+    |> Enum.find(fn {_unit, size} -> bytes >= size end)
+    |> case do
+      {unit, size} ->
+        value = bytes / size
+        rounded = if value >= 10, do: Float.round(value), else: Float.round(value, 1)
+        "#{format_storage_value(rounded)} #{unit}"
+
+      nil ->
+        "#{bytes} B"
+    end
+  end
+
+  defp format_storage_value(value) do
+    if value == trunc(value) do
+      Integer.to_string(trunc(value))
+    else
+      :erlang.float_to_binary(value, decimals: 1)
     end
   end
 

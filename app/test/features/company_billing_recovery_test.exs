@@ -37,7 +37,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
     |> AdminSteps.visit_company_home_page()
     |> RecoverySteps.assert_payment_default_banner_has_upgrade_cta()
     |> RecoverySteps.assert_payment_default_banner_text("Payment issue requires attention")
-    |> RecoverySteps.assert_payment_default_banner_text("switch to read-only mode")
+    |> RecoverySteps.assert_payment_default_banner_text("become read-only")
     |> AdminSteps.refute_company_billing_banner_visible()
     |> RecoverySteps.follow_payment_default_banner_cta()
   end
@@ -69,8 +69,8 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
     |> RecoverySteps.put_company_in_payment_recovery(:payment_grace)
     |> AdminSteps.visit_company_home_page()
     |> RecoverySteps.assert_payment_default_banner_has_no_upgrade_cta()
-    |> RecoverySteps.assert_payment_default_banner_text("switch to read-only mode")
-    |> RecoverySteps.assert_payment_default_banner_text("Contact a company admin or owner.")
+    |> RecoverySteps.assert_payment_default_banner_text("become read-only")
+    |> RecoverySteps.assert_payment_default_banner_text("Contact an admin or owner.")
   end
 
   @tag role: :member
@@ -81,7 +81,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
     |> AdminSteps.visit_company_home_page()
     |> RecoverySteps.assert_payment_default_banner_has_no_upgrade_cta()
     |> RecoverySteps.assert_payment_default_banner_text("This company is read-only")
-    |> RecoverySteps.assert_payment_default_banner_text("company admin or owner")
+    |> RecoverySteps.assert_payment_default_banner_text("an admin or owner updates billing")
   end
 
   @tag role: :admin

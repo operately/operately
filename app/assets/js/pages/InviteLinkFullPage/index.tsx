@@ -50,8 +50,8 @@ function Page() {
             <div className="grid gap-3 sm:grid-cols-2">
               <NextStepCard
                 eyebrow="What happens now"
-                title="The company needs an upgrade"
-                description="An owner or company admin needs to update the plan before anyone else can join."
+                title="An admin or owner needs to help"
+                description="An admin or owner needs to review billing or free up member space before anyone else can join."
               />
               <NextStepCard
                 eyebrow="What you can do"
@@ -63,10 +63,10 @@ function Page() {
             <div className="mt-8 border-t border-stroke-base pt-6">
               <div className="flex flex-col gap-3 sm:flex-row">
                 <PrimaryButton linkTo={Paths.inviteJoinPath(token)} testId="retry-join">
-                  Try Again
+                  Try again
                 </PrimaryButton>
                 <SecondaryButton linkTo="/" testId="back-to-home">
-                  Back to Home
+                  Back to home
                 </SecondaryButton>
               </div>
             </div>
@@ -85,12 +85,12 @@ function Hero({ companyName }: { companyName?: string | null }) {
       <p className="mt-4 max-w-2xl text-base leading-7 text-content-accent">
         {companyName ? (
           <>
-            <span className="font-semibold">{companyName}</span> has reached its current member limit, so this invite cannot be used just yet.
+            <span className="font-semibold">{companyName}</span> has reached its member limit, so this invite can't be used yet.
           </>
         ) : (
-          <>This company has reached its current member limit, so this invite cannot be used just yet.</>
+          <>This company has reached its member limit, so this invite can't be used yet.</>
         )}{" "}
-        When more member capacity becomes available, you can come back and try again.
+        When more member capacity is available, you can come back and try again.
       </p>
     </div>
   );

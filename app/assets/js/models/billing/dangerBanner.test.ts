@@ -155,7 +155,7 @@ describe("billing danger banner helpers", () => {
       blockedLimitKeys: ["member_count", "storage_bytes"],
       shouldContactAdmin: false,
       cta: {
-        label: "Review plans",
+        label: "Review billing",
         to: "/acme/admin/billing/plans",
       },
       usageRows: [

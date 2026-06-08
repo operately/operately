@@ -24,7 +24,8 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
     |> Steps.assert_company_billing_banner_has_no_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
     |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
-    |> Steps.assert_company_billing_banner_text("Contact a company admin or owner.")
+    |> Steps.assert_company_billing_banner_text("Adding or restoring people is paused")
+    |> Steps.assert_company_billing_banner_text("Contact an admin or owner.")
   end
 
   @tag role: :member
@@ -36,7 +37,8 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
     |> Steps.assert_company_billing_banner_has_no_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
     |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
-    |> Steps.assert_company_billing_banner_text("Contact a company admin or owner.")
+    |> Steps.assert_company_billing_banner_text("Uploading files is paused")
+    |> Steps.assert_company_billing_banner_text("Contact an admin or owner.")
   end
 
   @tag role: :owner
@@ -48,6 +50,7 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
     |> Steps.assert_company_billing_banner_has_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
     |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
+    |> Steps.assert_company_billing_banner_text("Review billing")
     |> Steps.follow_company_billing_banner_upgrade_cta()
   end
 
@@ -60,6 +63,7 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
     |> Steps.assert_company_billing_banner_has_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
     |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
+    |> Steps.assert_company_billing_banner_text("Review billing")
   end
 
   @tag role: :owner
@@ -72,6 +76,7 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
     |> Steps.assert_company_billing_banner_has_upgrade_cta()
     |> Steps.assert_company_billing_banner_has_no_dismiss_action()
     |> Steps.assert_company_billing_banner_text("This company is over its plan limits")
+    |> Steps.assert_company_billing_banner_text("Adding or restoring people is paused")
     |> Steps.assert_company_billing_banner_text("Active members:")
     |> Steps.assert_company_billing_banner_text("Storage used:")
   end

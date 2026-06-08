@@ -91,7 +91,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
                  ]
                })
 
-      assert res.message == "This company has reached its storage limit. Upgrade the plan to add more files."
+      assert res.message ==
+               "This company has reached its storage limit: 1 GB of 1 GB used. Uploading files is blocked until this company is back within its plan limits."
       assert res.details.code == "storage_limit_exceeded"
       assert res.details.limit_key == "storage_bytes"
       assert res.details.current_usage == Operately.Billing.Plans.storage_limit_bytes(:free)

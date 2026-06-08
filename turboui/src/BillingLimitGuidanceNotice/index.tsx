@@ -16,6 +16,12 @@ export function BillingLimitGuidanceNotice({
   onClose,
   guidance,
 }: BillingLimitGuidanceNoticeProps) {
+  const nextStepValue = guidance.recommendedPlanLabel
+    ? guidance.recommendedPlanLabel
+    : guidance.cta
+      ? "Choose a plan with more member capacity."
+      : "An admin or owner needs to choose a plan with more member capacity.";
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="medium" contentPadding="p-0">
       <div className="overflow-hidden rounded-lg bg-surface-base" data-test-id="billing-limit-guidance">
@@ -39,7 +45,7 @@ export function BillingLimitGuidanceNotice({
           <InfoTile label="Usage" value={guidance.usageSummary} />
           <InfoTile
             label={guidance.recommendedPlanLabel ? "Recommended plan" : "Next step"}
-            value={guidance.recommendedPlanLabel || "A company owner needs to review the available billing options."}
+            value={nextStepValue}
             emphasized={!!guidance.recommendedPlanLabel}
           />
         </div>
