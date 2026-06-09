@@ -6,11 +6,11 @@ import { parseCheckInsForTurboUi, usePostProjectCheckIn, ProjectCheckInStatus } 
 import { Project } from "@/models/projects";
 import { useNavigate } from "react-router-dom";
 
-import Forms from "@/components/Forms";
+import Forms, { FormState } from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
-import { ActionLink, Link, RichContent, StatusBadge, SubscribersSelector } from "turboui";
+import { ActionLink, GhostButton, Link, PrimaryButton, RichContent, StatusBadge, SubscribersSelector } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
@@ -49,11 +49,16 @@ export function Form({ project }: { project: Project }) {
     cancel: () => {
       navigate(paths.projectCheckInsPath(project.id!));
     },
-    submit: async () => {
+    submit: async (action: "submit" | "draft" = "submit") => {
+      const status = form.values.status;
+      const description = form.values.description;
+      if (!status || !description) return;
+
       const res = await post({
         projectId: project.id,
-        status: form.values.status!,
-        description: JSON.stringify(form.values.description),
+        status,
+        description: JSON.stringify(description),
+        postAsDraft: action === "draft",
         sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
@@ -81,8 +86,39 @@ export function Form({ project }: { project: Project }) {
 
       <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
 
-      <Forms.Submit saveText="Submit" buttonSize="base" />
+      <SubmitButtons form={form} />
     </Forms.Form>
+  );
+}
+
+function SubmitButtons({ form }: { form: FormState<{ status: ProjectCheckInStatus | null; description: any }> }) {
+  const submit = (action: "submit" | "draft") => {
+    form.actions.setTrigger(action);
+    form.actions.submit(action);
+  };
+
+  const isSubmitting = form.state === "submitting";
+
+  return (
+    <div className="mt-8 flex items-center gap-2">
+      <PrimaryButton
+        loading={isSubmitting && form.trigger === "submit"}
+        testId="submit"
+        size="base"
+        onClick={() => submit("submit")}
+      >
+        Submit
+      </PrimaryButton>
+
+      <GhostButton
+        loading={isSubmitting && form.trigger === "draft"}
+        testId="save-as-draft"
+        size="base"
+        onClick={() => submit("draft")}
+      >
+        Save as draft
+      </GhostButton>
+    </div>
   );
 }
 

@@ -17,8 +17,10 @@ import {
   ActionLink,
   Checklist,
   DateField,
+  GhostButton,
   IconInfoCircle,
   Link,
+  PrimaryButton,
   RichContent,
   StatusBadge,
   Tooltip,
@@ -33,6 +35,7 @@ interface Props {
   goal: Goals.Goal;
   children?: React.ReactNode;
   subscriptionsState?: SubscriptionsState;
+  isDraft?: boolean;
 
   // Full editing is allowed only for the latest check-in,
   // and allows editing the status, due date, and targets.
@@ -75,12 +78,62 @@ export function Form(props: Props) {
 function SubmitSection(props: Props) {
   if (props.mode === "view") return null;
 
-  const text = match(props.mode)
-    .with("new", () => "Check-in")
-    .with("edit", () => "Save")
-    .run();
+  const submit = (action: "submit" | "save-draft" | "publish-draft") => {
+    props.form.actions.setTrigger(action);
+    props.form.actions.submit(action);
+  };
 
-  return <Forms.Submit saveText={text} buttonSize="base" />;
+  const isSubmitting = props.form.state === "submitting";
+
+  if (props.mode === "new") {
+    return (
+      <div className="mt-8 flex items-center gap-2">
+        <PrimaryButton
+          loading={isSubmitting && props.form.trigger === "submit"}
+          testId="submit"
+          size="base"
+          onClick={() => submit("submit")}
+        >
+          Check-in
+        </PrimaryButton>
+
+        <GhostButton
+          loading={isSubmitting && props.form.trigger === "save-draft"}
+          testId="save-as-draft"
+          size="base"
+          onClick={() => submit("save-draft")}
+        >
+          Save as draft
+        </GhostButton>
+      </div>
+    );
+  }
+
+  if (props.isDraft) {
+    return (
+      <div className="mt-8 flex items-center gap-2">
+        <PrimaryButton
+          loading={isSubmitting && props.form.trigger === "save-draft"}
+          testId="save-draft"
+          size="base"
+          onClick={() => submit("save-draft")}
+        >
+          Save draft
+        </PrimaryButton>
+
+        <GhostButton
+          loading={isSubmitting && props.form.trigger === "publish-draft"}
+          testId="publish-draft"
+          size="base"
+          onClick={() => submit("publish-draft")}
+        >
+          Submit check-in
+        </GhostButton>
+      </div>
+    );
+  }
+
+  return <Forms.Submit saveText="Save" buttonSize="base" />;
 }
 
 function FullEditDisabledMessage({ mode, allowFullEdit }: Props) {

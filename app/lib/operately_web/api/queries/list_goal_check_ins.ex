@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
 
   def call(conn, inputs) do
     with {:ok, _} <- get_goal(conn, inputs.goal_id) do
-      check_ins = load(inputs.goal_id)
+      check_ins = load(inputs.goal_id, me(conn))
       {:ok, %{check_ins: Serializer.serialize(check_ins, level: :full)}}
     else
       {:error, :not_found} -> {:error, :not_found, "Goal not found"}
@@ -30,8 +30,13 @@ defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
     Goal.get(me(conn), id: goal_id)
   end
 
-  defp load(goal_id) do
-    from(u in Update, where: u.goal_id == ^goal_id, order_by: [desc: u.inserted_at], preload: [:author])
+  defp load(goal_id, person) do
+    from(u in Update,
+      where: u.goal_id == ^goal_id,
+      where: u.state == :published or u.author_id == ^person.id,
+      order_by: [desc: u.inserted_at],
+      preload: [:author]
+    )
     |> Repo.all()
     |> Update.preload_comment_count()
   end

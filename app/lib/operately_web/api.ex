@@ -49,6 +49,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_check_in, OperatelyWeb.Api.Goals.CreateCheckIn)
         mutation(:update_check_in, OperatelyWeb.Api.Goals.UpdateCheckIn)
         mutation(:acknowledge_check_in, OperatelyWeb.Api.Goals.AcknowledgeCheckIn)
+        mutation(:delete_check_in, OperatelyWeb.Api.Goals.DeleteCheckIn)
         mutation(:create_discussion, OperatelyWeb.Api.Goals.CreateDiscussion)
         mutation(:update_discussion, OperatelyWeb.Api.Goals.UpdateDiscussion)
       end

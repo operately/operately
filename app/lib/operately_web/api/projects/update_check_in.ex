@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
     field :check_in_id, :id, null: false
     field :status, :project_check_in_status, null: false
     field :description, :json, null: false
+    field? :state, :check_in_state, null: true
   end
 
   outputs do
@@ -23,9 +24,11 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
+    |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:check_in, fn ctx -> Projects.get_check_in_with_access_level(inputs.check_in_id, ctx.me.id) end)
+    |> run(:check_draft_access, fn ctx -> check_draft_access(ctx.check_in, ctx.me) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, :can_edit, company_read_only: company_read_only(conn)) end)
-    |> run(:operation, fn ctx -> ProjectCheckInEdit.run(ctx.me, ctx.check_in, inputs.status, inputs.description) end)
+    |> run(:operation, fn ctx -> ProjectCheckInEdit.run(ctx.me, ctx.check_in, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{check_in: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -33,10 +36,21 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :check_in, _} -> {:error, :not_found}
+      {:error, :check_draft_access, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
+  end
+
+  defp parse_inputs(inputs) do
+    {:ok,
+     %{
+       status: inputs.status,
+       description: inputs.description,
+       state: inputs[:state]
+     }}
   end
 end
