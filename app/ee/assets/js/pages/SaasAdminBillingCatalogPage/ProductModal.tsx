@@ -9,19 +9,29 @@ interface ProductModalProps {
   onClose: () => void;
   onSuccess: () => void;
   product?: AdminApi.BillingProduct;
+  planDefinitions: AdminApi.BillingPlanDefinition[];
 }
 
-export function ProductModal({ isOpen, onClose, onSuccess, product }: ProductModalProps) {
+export function ProductModal({ isOpen, onClose, onSuccess, product, planDefinitions }: ProductModalProps) {
   const [create] = AdminApi.useCreateBillingProduct();
   const [update] = AdminApi.useUpdateBillingProduct();
   const isEdit = product !== undefined;
+  const availablePlanDefinitions = planDefinitions
+    .filter((planDefinition) => planDefinition.billingBehavior === "provider_managed" && !planDefinition.archivedAt)
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.tierRank - b.tierRank || a.displayName.localeCompare(b.displayName));
+  const defaultPlanFamily = availablePlanDefinitions[0]?.key ?? "";
 
   const form = Forms.useForm({
     fields: {
       displayName: product?.polarProductName ?? "",
-      planFamily: product?.planFamily ?? "team",
+      planFamily: product?.planFamily ?? defaultPlanFamily,
       billingInterval: product?.billingInterval ?? "monthly",
       unitAmount: product?.priceAmount ? String(product.priceAmount) : "",
+    },
+    validate: (addError) => {
+      if (!isEdit && !form.values.planFamily) {
+        addError("planFamily", "Create or unarchive a provider-managed plan first");
+      }
     },
     cancel: onClose,
     submit: async () => {
@@ -63,7 +73,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product }: ProductMod
           <Forms.TextInput label="Display Name" field="displayName" required autoFocus />
           {isEdit ? (
             <>
-              <ReadOnlyField label="Plan Family" value={planFamilyLabel(form.values.planFamily)} />
+              <ReadOnlyField label="Plan Family" value={planFamilyLabel(form.values.planFamily, planDefinitions)} />
               <ReadOnlyField label="Billing Interval" value={billingIntervalLabel(form.values.billingInterval)} />
             </>
           ) : (
@@ -71,11 +81,11 @@ export function ProductModal({ isOpen, onClose, onSuccess, product }: ProductMod
               <Forms.SelectBox
                 label="Plan Family"
                 field="planFamily"
-                options={[
-                  { value: "team", label: "Team" },
-                  { value: "business", label: "Business" },
-                  { value: "unlimited", label: "Unlimited" },
-                ]}
+                options={availablePlanDefinitions.map((planDefinition) => ({
+                  value: planDefinition.key,
+                  label: planFamilyLabel(planDefinition.key, availablePlanDefinitions),
+                }))}
+                placeholder={availablePlanDefinitions.length === 0 ? "No provider-managed plans available" : undefined}
                 required
               />
               <Forms.SelectBox
@@ -107,10 +117,12 @@ function ReadOnlyField({ label, value }: { label: string; value: string }) {
   );
 }
 
-function planFamilyLabel(value: string) {
-  if (value === "business") return "Business";
-  if (value === "unlimited") return "Unlimited";
-  return "Team";
+function planFamilyLabel(value: string, planDefinitions: AdminApi.BillingPlanDefinition[]) {
+  const planDefinition = planDefinitions.find((definition) => definition.key === value);
+
+  if (!planDefinition) return value;
+
+  return `${planDefinition.displayName} (${planDefinition.key})`;
 }
 
 function billingIntervalLabel(value: string) {

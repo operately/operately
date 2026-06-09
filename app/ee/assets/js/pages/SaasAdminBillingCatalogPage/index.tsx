@@ -52,6 +52,26 @@ export async function setActiveBillingCatalogProduct(
   refresh();
 }
 
+export async function archiveBillingPlanDefinition(
+  archive: (input: { id: string }) => Promise<unknown>,
+  planDefinitionId: string,
+  refresh: () => void,
+  onArchived?: () => void,
+) {
+  await archive({ id: planDefinitionId });
+  onArchived?.();
+  refresh();
+}
+
+export async function unarchiveBillingPlanDefinition(
+  unarchive: (input: { id: string }) => Promise<unknown>,
+  planDefinitionId: string,
+  refresh: () => void,
+) {
+  await unarchive({ id: planDefinitionId });
+  refresh();
+}
+
 export const loader = async () => {
   if (!window.appConfig.billingEnabled) {
     throw redirect("/admin");
@@ -81,7 +101,9 @@ export function Page() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editingProduct, setEditingProduct] = React.useState<AdminApi.BillingProduct | undefined>(undefined);
   const [isPlanModalOpen, setIsPlanModalOpen] = React.useState(false);
-  const [editingPlanDefinition, setEditingPlanDefinition] = React.useState<AdminApi.BillingPlanDefinition | undefined>(undefined);
+  const [editingPlanDefinition, setEditingPlanDefinition] = React.useState<AdminApi.BillingPlanDefinition | undefined>(
+    undefined,
+  );
 
   const openCreate = () => {
     setEditingProduct(undefined);
@@ -103,6 +125,11 @@ export function Page() {
     setIsPlanModalOpen(true);
   };
 
+  const openPlanCreate = () => {
+    setEditingPlanDefinition(undefined);
+    setIsPlanModalOpen(true);
+  };
+
   const closePlanModal = () => {
     setIsPlanModalOpen(false);
     setEditingPlanDefinition(undefined);
@@ -113,11 +140,12 @@ export function Page() {
       <Paper.Root size="xlarge">
         <Paper.Body>
           <PageHeader activeTab={tabs.active} onCreate={openCreate} onRefresh={refresh} />
+          {tabs.active === "plans" && <PlanHeaderActions onCreate={openPlanCreate} />}
           <div className="-mx-4 -mb-px">
             <Tabs tabs={tabs} />
           </div>
           {tabs.active === "plans" ? (
-            <PlanDefinitionTable planDefinitions={planDefinitions} onEdit={openPlanEdit} />
+            <PlanDefinitionTable planDefinitions={planDefinitions} onEdit={openPlanEdit} onRefresh={refresh} />
           ) : (
             <ProductTable products={products} onEdit={openEdit} onRefresh={refresh} />
           )}
@@ -128,14 +156,29 @@ export function Page() {
             onSuccess={refresh}
             planDefinition={editingPlanDefinition}
           />
-          <ProductModal key={editingProduct?.id ?? "new"} isOpen={isModalOpen} onClose={closeModal} onSuccess={refresh} product={editingProduct} />
+          <ProductModal
+            key={editingProduct?.id ?? "new"}
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onSuccess={refresh}
+            product={editingProduct}
+            planDefinitions={planDefinitions}
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function PageHeader({ activeTab, onCreate, onRefresh }: { activeTab: string; onCreate: () => void; onRefresh: () => void }) {
+function PageHeader({
+  activeTab,
+  onCreate,
+  onRefresh,
+}: {
+  activeTab: string;
+  onCreate: () => void;
+  onRefresh: () => void;
+}) {
   return (
     <div className="flex items-center justify-between">
       <Paper.Header title="Billing Catalog" />
@@ -151,6 +194,20 @@ function PageHeader({ activeTab, onCreate, onRefresh }: { activeTab: string; onC
           <SyncButton onRefresh={onRefresh} />
         </div>
       )}
+    </div>
+  );
+}
+
+function PlanHeaderActions({ onCreate }: { onCreate: () => void }) {
+  return (
+    <div className="mt-4 flex justify-end">
+      <button
+        onClick={onCreate}
+        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-surface-dimmed hover:bg-surface-highlight rounded border border-stroke-base transition-colors"
+      >
+        <IconPlus size={16} />
+        Create plan
+      </button>
     </div>
   );
 }
@@ -211,23 +268,34 @@ function ProductTable({
 function PlanDefinitionTable({
   planDefinitions,
   onEdit,
+  onRefresh,
 }: {
   planDefinitions: AdminApi.BillingPlanDefinition[];
   onEdit: (planDefinition: AdminApi.BillingPlanDefinition) => void;
+  onRefresh: () => void;
 }) {
   return (
     <div className="mt-6">
-      <TableRow header gridTemplateColumns="1.75fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
+      <TableRow header gridTemplateColumns="1.5fr 1fr 1fr 1.25fr 1fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
         <div>Plan</div>
         <div>Key</div>
+        <div>Status</div>
+        <div>Behavior</div>
+        <div className="text-center">Selectable</div>
         <div className="text-right">Sort order</div>
+        <div className="text-right">Tier rank</div>
         <div className="text-right">Member limit</div>
         <div className="text-right">Storage limit</div>
         <div className="text-right">Actions</div>
       </TableRow>
 
       {planDefinitions.map((planDefinition) => (
-        <PlanDefinitionRow key={planDefinition.id} planDefinition={planDefinition} onEdit={onEdit} />
+        <PlanDefinitionRow
+          key={planDefinition.id}
+          planDefinition={planDefinition}
+          onEdit={onEdit}
+          onRefresh={onRefresh}
+        />
       ))}
     </div>
   );
@@ -236,36 +304,90 @@ function PlanDefinitionTable({
 function PlanDefinitionRow({
   planDefinition,
   onEdit,
+  onRefresh,
 }: {
   planDefinition: AdminApi.BillingPlanDefinition;
   onEdit: (planDefinition: AdminApi.BillingPlanDefinition) => void;
+  onRefresh: () => void;
 }) {
+  const [archive] = AdminApi.useArchiveBillingPlanDefinition();
+  const [unarchive] = AdminApi.useUnarchiveBillingPlanDefinition();
+  const [confirmArchive, setConfirmArchive] = React.useState(false);
+  const isArchived = Boolean(planDefinition.archivedAt);
+
+  const handleArchive = async () => {
+    await archiveBillingPlanDefinition(archive, planDefinition.id, onRefresh, () => setConfirmArchive(false));
+  };
+
+  const handleUnarchive = async () => {
+    await unarchiveBillingPlanDefinition(unarchive, planDefinition.id, onRefresh);
+  };
+
   return (
-    <TableRow gridTemplateColumns="1.75fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
-      <div className="font-medium">{planDefinition.displayName}</div>
-      <div className="text-sm font-mono text-content-dimmed">{planDefinition.key}</div>
-      <div className="text-sm text-right">{formatInteger(planDefinition.sortOrder)}</div>
-      <div className="text-sm text-right">{formatLimit(planDefinition.memberLimit)}</div>
-      <div className="text-sm text-right">{formatStorageLimit(planDefinition.storageLimitBytes)}</div>
-      <div className="flex justify-end">
-        <PlanDefinitionActionsMenu planDefinition={planDefinition} onEdit={onEdit} />
-      </div>
-    </TableRow>
+    <>
+      <TableRow gridTemplateColumns="1.5fr 1fr 1fr 1.25fr 1fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
+        <div className="font-medium">{planDefinition.displayName}</div>
+        <div className="text-sm font-mono text-content-dimmed">{planDefinition.key}</div>
+        <div className="text-sm">{isArchived ? "Archived" : "Active"}</div>
+        <div className="text-sm">{billingBehaviorLabel(planDefinition.billingBehavior)}</div>
+        <div className="text-sm text-center">{planDefinition.customerSelectable ? "Yes" : "No"}</div>
+        <div className="text-sm text-right">{formatInteger(planDefinition.sortOrder)}</div>
+        <div className="text-sm text-right">{formatInteger(planDefinition.tierRank)}</div>
+        <div className="text-sm text-right">{formatLimit(planDefinition.memberLimit)}</div>
+        <div className="text-sm text-right">{formatStorageLimit(planDefinition.storageLimitBytes)}</div>
+        <div className="flex justify-end">
+          <PlanDefinitionActionsMenu
+            planDefinition={planDefinition}
+            onEdit={onEdit}
+            onArchive={() => setConfirmArchive(true)}
+            onUnarchive={handleUnarchive}
+            isArchived={isArchived}
+          />
+        </div>
+      </TableRow>
+
+      <ConfirmDialog
+        isOpen={confirmArchive}
+        title="Archive Plan"
+        message={`Are you sure you want to archive "${planDefinition.displayName}"?`}
+        confirmText="Archive"
+        variant="danger"
+        onConfirm={handleArchive}
+        onCancel={() => setConfirmArchive(false)}
+      />
+    </>
   );
 }
 
 function PlanDefinitionActionsMenu({
   planDefinition,
   onEdit,
+  onArchive,
+  onUnarchive,
+  isArchived,
 }: {
   planDefinition: AdminApi.BillingPlanDefinition;
   onEdit: (planDefinition: AdminApi.BillingPlanDefinition) => void;
+  onArchive: () => void;
+  onUnarchive: () => void;
+  isArchived: boolean;
 }) {
   return (
     <Menu align="end" testId={`plan-definition-actions-${planDefinition.id}`}>
       <MenuActionItem icon={IconEdit} onClick={() => onEdit(planDefinition)}>
         Edit plan
       </MenuActionItem>
+      {isArchived ? (
+        <MenuActionItem icon={IconRefresh} onClick={onUnarchive}>
+          Unarchive
+        </MenuActionItem>
+      ) : (
+        planDefinition.key !== "free" && (
+          <MenuActionItem icon={IconTrash} danger onClick={onArchive}>
+            Archive
+          </MenuActionItem>
+        )
+      )}
     </Menu>
   );
 }
@@ -405,6 +527,10 @@ function formatLimit(limit?: number | null) {
 function formatStorageLimit(limit?: number | null) {
   if (limit == null) return "Unlimited";
   return formatStorageBytes(limit);
+}
+
+function billingBehaviorLabel(value: AdminApi.BillingBehavior) {
+  return value === "internal" ? "Internal" : "Provider managed";
 }
 
 function formatInteger(value: number) {
