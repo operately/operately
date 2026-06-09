@@ -6,22 +6,24 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, "Unauthorized"} = admin_mutation(ctx.conn, :update_billing_plan_definition, %{
-        id: Operately.ShortUuid.encode!(Ecto.UUID.generate()),
-        display_name: "Updated",
-        sort_order: 1
-      })
+      assert {401, "Unauthorized"} =
+               admin_mutation(ctx.conn, :update_billing_plan_definition, %{
+                 id: Operately.ShortUuid.encode!(Ecto.UUID.generate()),
+                 display_name: "Updated",
+                 sort_order: 1
+               })
     end
 
     test "it requires a site admin", ctx do
       ctx = Factory.setup(ctx)
       ctx = Factory.log_in_account(ctx, :account)
 
-      assert {401, "Unauthorized"} = admin_mutation(ctx.conn, :update_billing_plan_definition, %{
-        id: Operately.ShortUuid.encode!(Ecto.UUID.generate()),
-        display_name: "Updated",
-        sort_order: 1
-      })
+      assert {401, "Unauthorized"} =
+               admin_mutation(ctx.conn, :update_billing_plan_definition, %{
+                 id: Operately.ShortUuid.encode!(Ecto.UUID.generate()),
+                 display_name: "Updated",
+                 sort_order: 1
+               })
     end
   end
 
@@ -45,18 +47,27 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
                  id: OperatelyWeb.Paths.billing_plan_definition_id(team_plan),
                  display_name: "Team Plus",
                  sort_order: 8,
+                 tier_rank: 9,
+                 billing_behavior: "provider_managed",
+                 customer_selectable: true,
                  member_limit: 75,
                  storage_limit_bytes: 250_000
                })
 
       assert updated.display_name == "Team Plus"
       assert updated.sort_order == 8
+      assert updated.tier_rank == 9
+      assert updated.billing_behavior == "provider_managed"
+      assert updated.customer_selectable == true
       assert updated.member_limit == 75
       assert updated.storage_limit_bytes == 250_000
 
       reloaded = Billing.get_plan_definition!(team_plan.id)
       assert reloaded.display_name == "Team Plus"
       assert reloaded.sort_order == 8
+      assert reloaded.tier_rank == 9
+      assert reloaded.billing_behavior == :provider_managed
+      assert reloaded.customer_selectable == true
       assert reloaded.member_limit == 75
       assert reloaded.storage_limit_bytes == 250_000
     end
@@ -71,12 +82,33 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
                  id: OperatelyWeb.Paths.billing_plan_definition_id(unlimited_plan),
                  display_name: "Unlimited",
                  sort_order: 3,
+                 tier_rank: 3,
+                 billing_behavior: "provider_managed",
+                 customer_selectable: true,
                  member_limit: nil,
                  storage_limit_bytes: nil
                })
 
       assert updated.member_limit == nil
       assert updated.storage_limit_bytes == nil
+    end
+
+    test "rejects making an internal plan customer selectable", ctx do
+      free_plan =
+        Billing.list_plan_definitions()
+        |> Enum.find(&(&1.plan_key == "free"))
+
+      assert {400, _} =
+               admin_mutation(ctx.conn, :update_billing_plan_definition, %{
+                 id: OperatelyWeb.Paths.billing_plan_definition_id(free_plan),
+                 display_name: "Free",
+                 sort_order: 0,
+                 tier_rank: 0,
+                 billing_behavior: "internal",
+                 customer_selectable: true,
+                 member_limit: 20,
+                 storage_limit_bytes: 1_073_741_824
+               })
     end
   end
 end

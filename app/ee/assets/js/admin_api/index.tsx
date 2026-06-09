@@ -140,6 +140,10 @@ export interface BillingPlanDefinition {
   key: string;
   displayName: string;
   sortOrder: number;
+  tierRank: number;
+  billingBehavior: BillingBehavior;
+  customerSelectable: boolean;
+  archivedAt?: string | null;
   memberLimit?: number;
   storageLimitBytes?: number;
 }
@@ -200,6 +204,8 @@ export interface SmtpSettings {
   smtpPasswordSet?: boolean;
 }
 
+export type BillingBehavior = "internal" | "provider_managed";
+
 export type EmailProvider = "smtp" | "sendgrid";
 
 export interface GetAccountsInput {}
@@ -254,12 +260,35 @@ export interface ListBillingProductsResult {
   products: BillingProduct[];
 }
 
+export interface ArchiveBillingPlanDefinitionInput {
+  id: string;
+}
+
+export interface ArchiveBillingPlanDefinitionResult {
+  planDefinition: BillingPlanDefinition;
+}
+
 export interface ArchiveBillingProductInput {
   id: string;
 }
 
 export interface ArchiveBillingProductResult {
   product: BillingProduct;
+}
+
+export interface CreateBillingPlanDefinitionInput {
+  planKey: string;
+  displayName: string;
+  sortOrder: number;
+  tierRank: number;
+  billingBehavior: BillingBehavior;
+  customerSelectable: boolean;
+  memberLimit?: number | null;
+  storageLimitBytes?: number | null;
+}
+
+export interface CreateBillingPlanDefinitionResult {
+  planDefinition: BillingPlanDefinition;
 }
 
 export interface CreateBillingProductInput {
@@ -337,10 +366,21 @@ export interface SyncBillingProductsFromPolarResult {
   syncedCount: number;
 }
 
+export interface UnarchiveBillingPlanDefinitionInput {
+  id: string;
+}
+
+export interface UnarchiveBillingPlanDefinitionResult {
+  planDefinition: BillingPlanDefinition;
+}
+
 export interface UpdateBillingPlanDefinitionInput {
   id: string;
   displayName: string;
   sortOrder: number;
+  tierRank: number;
+  billingBehavior: BillingBehavior;
+  customerSelectable: boolean;
   memberLimit?: number | null;
   storageLimitBytes?: number | null;
 }
@@ -413,8 +453,20 @@ class ApiNamespaceRoot {
     return this.client.get("/list_billing_products", input);
   }
 
+  async archiveBillingPlanDefinition(
+    input: ArchiveBillingPlanDefinitionInput,
+  ): Promise<ArchiveBillingPlanDefinitionResult> {
+    return this.client.post("/archive_billing_plan_definition", input);
+  }
+
   async archiveBillingProduct(input: ArchiveBillingProductInput): Promise<ArchiveBillingProductResult> {
     return this.client.post("/archive_billing_product", input);
+  }
+
+  async createBillingPlanDefinition(
+    input: CreateBillingPlanDefinitionInput,
+  ): Promise<CreateBillingPlanDefinitionResult> {
+    return this.client.post("/create_billing_plan_definition", input);
   }
 
   async createBillingProduct(input: CreateBillingProductInput): Promise<CreateBillingProductResult> {
@@ -449,6 +501,12 @@ class ApiNamespaceRoot {
     input: SyncBillingProductsFromPolarInput,
   ): Promise<SyncBillingProductsFromPolarResult> {
     return this.client.post("/sync_billing_products_from_polar", input);
+  }
+
+  async unarchiveBillingPlanDefinition(
+    input: UnarchiveBillingPlanDefinitionInput,
+  ): Promise<UnarchiveBillingPlanDefinitionResult> {
+    return this.client.post("/unarchive_billing_plan_definition", input);
   }
 
   async updateBillingPlanDefinition(
@@ -549,8 +607,16 @@ export class ApiClient {
     return this.apiNamespaceRoot.listBillingProducts(input);
   }
 
+  archiveBillingPlanDefinition(input: ArchiveBillingPlanDefinitionInput): Promise<ArchiveBillingPlanDefinitionResult> {
+    return this.apiNamespaceRoot.archiveBillingPlanDefinition(input);
+  }
+
   archiveBillingProduct(input: ArchiveBillingProductInput): Promise<ArchiveBillingProductResult> {
     return this.apiNamespaceRoot.archiveBillingProduct(input);
+  }
+
+  createBillingPlanDefinition(input: CreateBillingPlanDefinitionInput): Promise<CreateBillingPlanDefinitionResult> {
+    return this.apiNamespaceRoot.createBillingPlanDefinition(input);
   }
 
   createBillingProduct(input: CreateBillingProductInput): Promise<CreateBillingProductResult> {
@@ -583,6 +649,12 @@ export class ApiClient {
 
   syncBillingProductsFromPolar(input: SyncBillingProductsFromPolarInput): Promise<SyncBillingProductsFromPolarResult> {
     return this.apiNamespaceRoot.syncBillingProductsFromPolar(input);
+  }
+
+  unarchiveBillingPlanDefinition(
+    input: UnarchiveBillingPlanDefinitionInput,
+  ): Promise<UnarchiveBillingPlanDefinitionResult> {
+    return this.apiNamespaceRoot.unarchiveBillingPlanDefinition(input);
   }
 
   updateBillingPlanDefinition(input: UpdateBillingPlanDefinitionInput): Promise<UpdateBillingPlanDefinitionResult> {
@@ -626,8 +698,18 @@ export async function listBillingPlanDefinitions(
 export async function listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
   return defaultApiClient.listBillingProducts(input);
 }
+export async function archiveBillingPlanDefinition(
+  input: ArchiveBillingPlanDefinitionInput,
+): Promise<ArchiveBillingPlanDefinitionResult> {
+  return defaultApiClient.archiveBillingPlanDefinition(input);
+}
 export async function archiveBillingProduct(input: ArchiveBillingProductInput): Promise<ArchiveBillingProductResult> {
   return defaultApiClient.archiveBillingProduct(input);
+}
+export async function createBillingPlanDefinition(
+  input: CreateBillingPlanDefinitionInput,
+): Promise<CreateBillingPlanDefinitionResult> {
+  return defaultApiClient.createBillingPlanDefinition(input);
 }
 export async function createBillingProduct(input: CreateBillingProductInput): Promise<CreateBillingProductResult> {
   return defaultApiClient.createBillingProduct(input);
@@ -660,6 +742,11 @@ export async function syncBillingProductsFromPolar(
   input: SyncBillingProductsFromPolarInput,
 ): Promise<SyncBillingProductsFromPolarResult> {
   return defaultApiClient.syncBillingProductsFromPolar(input);
+}
+export async function unarchiveBillingPlanDefinition(
+  input: UnarchiveBillingPlanDefinitionInput,
+): Promise<UnarchiveBillingPlanDefinitionResult> {
+  return defaultApiClient.unarchiveBillingPlanDefinition(input);
 }
 export async function updateBillingPlanDefinition(
   input: UpdateBillingPlanDefinitionInput,
@@ -707,12 +794,30 @@ export function useListBillingProducts(input: ListBillingProductsInput): UseQuer
   return useQuery<ListBillingProductsResult>(() => defaultApiClient.listBillingProducts(input));
 }
 
+export function useArchiveBillingPlanDefinition(): UseMutationHookResult<
+  ArchiveBillingPlanDefinitionInput,
+  ArchiveBillingPlanDefinitionResult
+> {
+  return useMutation<ArchiveBillingPlanDefinitionInput, ArchiveBillingPlanDefinitionResult>((input) =>
+    defaultApiClient.archiveBillingPlanDefinition(input),
+  );
+}
+
 export function useArchiveBillingProduct(): UseMutationHookResult<
   ArchiveBillingProductInput,
   ArchiveBillingProductResult
 > {
   return useMutation<ArchiveBillingProductInput, ArchiveBillingProductResult>((input) =>
     defaultApiClient.archiveBillingProduct(input),
+  );
+}
+
+export function useCreateBillingPlanDefinition(): UseMutationHookResult<
+  CreateBillingPlanDefinitionInput,
+  CreateBillingPlanDefinitionResult
+> {
+  return useMutation<CreateBillingPlanDefinitionInput, CreateBillingPlanDefinitionResult>((input) =>
+    defaultApiClient.createBillingPlanDefinition(input),
   );
 }
 
@@ -773,6 +878,15 @@ export function useSyncBillingProductsFromPolar(): UseMutationHookResult<
   );
 }
 
+export function useUnarchiveBillingPlanDefinition(): UseMutationHookResult<
+  UnarchiveBillingPlanDefinitionInput,
+  UnarchiveBillingPlanDefinitionResult
+> {
+  return useMutation<UnarchiveBillingPlanDefinitionInput, UnarchiveBillingPlanDefinitionResult>((input) =>
+    defaultApiClient.unarchiveBillingPlanDefinition(input),
+  );
+}
+
 export function useUpdateBillingPlanDefinition(): UseMutationHookResult<
   UpdateBillingPlanDefinitionInput,
   UpdateBillingPlanDefinitionResult
@@ -816,8 +930,12 @@ export default {
   useListBillingPlanDefinitions,
   listBillingProducts,
   useListBillingProducts,
+  archiveBillingPlanDefinition,
+  useArchiveBillingPlanDefinition,
   archiveBillingProduct,
   useArchiveBillingProduct,
+  createBillingPlanDefinition,
+  useCreateBillingPlanDefinition,
   createBillingProduct,
   useCreateBillingProduct,
   deleteAccount,
@@ -834,6 +952,8 @@ export default {
   useSetActiveBillingProduct,
   syncBillingProductsFromPolar,
   useSyncBillingProductsFromPolar,
+  unarchiveBillingPlanDefinition,
+  useUnarchiveBillingPlanDefinition,
   updateBillingPlanDefinition,
   useUpdateBillingPlanDefinition,
   updateBillingProduct,

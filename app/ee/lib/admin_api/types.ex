@@ -48,6 +48,7 @@ defmodule OperatelyEE.AdminApi.Types do
   end
 
   enum(:email_provider, values: Operately.SystemSettings.EmailConfig.provider_values())
+  enum(:billing_behavior, values: [:internal, :provider_managed])
 
   object :smtp_settings do
     field :host, :string, null: false
@@ -87,6 +88,10 @@ defmodule OperatelyEE.AdminApi.Types do
     field :key, :string
     field :display_name, :string
     field :sort_order, :integer
+    field :tier_rank, :integer
+    field :billing_behavior, :billing_behavior
+    field :customer_selectable, :boolean
+    field? :archived_at, :datetime, null: true
     field? :member_limit, :integer
     field? :storage_limit_bytes, :integer
   end

@@ -217,10 +217,28 @@ defmodule Operately.Billing do
     end
   end
 
+  def create_plan_definition(attrs) do
+    %PlanDefinition{}
+    |> PlanDefinition.create_changeset(attrs)
+    |> Repo.insert()
+  end
+
   def update_plan_definition(%PlanDefinition{} = plan_definition, attrs) do
     plan_definition
-    |> PlanDefinition.changeset(attrs)
+    |> PlanDefinition.update_changeset(attrs)
     |> Repo.update()
+  end
+
+  def archive_plan_definition(%PlanDefinition{plan_key: "free"}) do
+    {:error, :cannot_archive_free_plan}
+  end
+
+  def archive_plan_definition(%PlanDefinition{} = plan_definition) do
+    update_plan_definition(plan_definition, %{archived_at: DateTime.utc_now()})
+  end
+
+  def unarchive_plan_definition(%PlanDefinition{} = plan_definition) do
+    update_plan_definition(plan_definition, %{archived_at: nil})
   end
 
   #
