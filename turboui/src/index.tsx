@@ -73,6 +73,7 @@ export {
   isCompanyBillingCheckoutReturnSuccessful,
   isCompanyBillingPaidStatus,
   listCompanyBillingSellableTargets,
+  normalizeCompanyBillingPlanKey,
   matchesCompanyBillingTarget,
   parseCompanyBillingSearch,
   resolveCompanyBillingChangeTiming,

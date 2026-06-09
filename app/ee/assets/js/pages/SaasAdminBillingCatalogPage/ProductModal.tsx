@@ -18,7 +18,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, planDefiniti
   const isEdit = product !== undefined;
   const availablePlanDefinitions = planDefinitions
     .filter((planDefinition) => planDefinition.billingBehavior === "provider_managed" && !planDefinition.archivedAt)
-    .sort((a, b) => a.sortOrder - b.sortOrder || a.tierRank - b.tierRank || a.displayName.localeCompare(b.displayName));
+    .sort((a, b) => a.tierRank - b.tierRank || a.displayName.localeCompare(b.displayName));
   const defaultPlanFamily = availablePlanDefinitions[0]?.key ?? "";
 
   const form = Forms.useForm({

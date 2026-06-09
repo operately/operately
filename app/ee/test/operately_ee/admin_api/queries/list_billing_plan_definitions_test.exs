@@ -26,13 +26,12 @@ defmodule OperatelyEE.AdminApi.Queries.ListBillingPlanDefinitionsTest do
       |> Factory.log_in_account(:account)
     end
 
-    test "returns the seeded plan definitions in sort order", ctx do
+    test "returns the seeded plan definitions in tier-rank order", ctx do
       assert {200, %{plan_definitions: plan_definitions}} =
                admin_query(ctx.conn, :list_billing_plan_definitions, %{})
 
       assert Enum.map(plan_definitions, & &1.key) == ["free", "team", "business", "unlimited"]
       assert Enum.map(plan_definitions, & &1.display_name) == ["Free", "Team", "Business", "Unlimited"]
-      assert Enum.map(plan_definitions, & &1.sort_order) == [0, 1, 2, 3]
       assert Enum.map(plan_definitions, & &1.tier_rank) == [0, 1, 2, 3]
       assert Enum.map(plan_definitions, & &1.billing_behavior) == ["internal", "provider_managed", "provider_managed", "provider_managed"]
       assert Enum.map(plan_definitions, & &1.customer_selectable) == [false, true, true, true]

@@ -1189,6 +1189,8 @@ export interface BillingOverview {
 export interface BillingPlanDefinition {
   key: string;
   displayName: string;
+  tierRank: number;
+  customerSelectable: boolean;
   memberLimit?: number | null;
   storageLimitBytes?: number | null;
 }
@@ -2520,6 +2522,13 @@ export interface BillingGetAccessStateInput {}
 
 export interface BillingGetAccessStateResult {
   accessState: BillingCompanyAccessState;
+}
+
+export interface BillingGetCatalogInput {}
+
+export interface BillingGetCatalogResult {
+  plans: BillingPlanDefinition[];
+  catalogProducts: BillingCatalogProduct[];
 }
 
 export interface BillingGetLimitWarningsInput {}
@@ -5425,6 +5434,10 @@ class ApiNamespaceBilling {
     return this.client.get("/billing/get_access_state", input);
   }
 
+  async getCatalog(input: BillingGetCatalogInput): Promise<BillingGetCatalogResult> {
+    return this.client.get("/billing/get_catalog", input);
+  }
+
   async getLimitWarnings(input: BillingGetLimitWarningsInput): Promise<BillingGetLimitWarningsResult> {
     return this.client.get("/billing/get_limit_warnings", input);
   }
@@ -7051,6 +7064,10 @@ export default {
   },
 
   billing: {
+    getCatalog: (input: BillingGetCatalogInput) => defaultApiClient.apiNamespaceBilling.getCatalog(input),
+    useGetCatalog: (input: BillingGetCatalogInput) =>
+      useQuery<BillingGetCatalogResult>(() => defaultApiClient.apiNamespaceBilling.getCatalog(input)),
+
     get: (input: BillingGetInput) => defaultApiClient.apiNamespaceBilling.get(input),
     useGet: (input: BillingGetInput) =>
       useQuery<BillingGetResult>(() => defaultApiClient.apiNamespaceBilling.get(input)),

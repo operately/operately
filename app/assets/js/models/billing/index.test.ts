@@ -25,9 +25,30 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
       ...(account || {}),
     },
     plans: [
-      { key: "free", displayName: "Free", memberLimit: 20, storageLimitBytes: 1_073_741_824 },
-      { key: "team", displayName: "Team", memberLimit: 50, storageLimitBytes: 107_374_182_400 },
-      { key: "business", displayName: "Business", memberLimit: 200, storageLimitBytes: 1_099_511_627_776 },
+      {
+        key: "free",
+        displayName: "Free",
+        tierRank: 0,
+        customerSelectable: false,
+        memberLimit: 20,
+        storageLimitBytes: 1_073_741_824,
+      },
+      {
+        key: "team",
+        displayName: "Team",
+        tierRank: 1,
+        customerSelectable: true,
+        memberLimit: 50,
+        storageLimitBytes: 107_374_182_400,
+      },
+      {
+        key: "business",
+        displayName: "Business",
+        tierRank: 2,
+        customerSelectable: true,
+        memberLimit: 200,
+        storageLimitBytes: 1_099_511_627_776,
+      },
     ],
     catalogProducts: [
       {
@@ -260,7 +281,7 @@ describe("billing model helpers", () => {
     });
   });
 
-  it("ignores unsupported dynamic plan recommendations in the current self-serve ui flow", () => {
+  it("preserves arbitrary dynamic plan recommendations for the billing selection page", () => {
     expect(
       Billing.extractLimitErrorDetails({
         code: "member_count_limit_exceeded",
@@ -283,8 +304,7 @@ describe("billing model helpers", () => {
     ).toMatchObject({
       recommendedUpgrade: {
         source: "next_plan",
-        target: null,
-        rawTarget: {
+        target: {
           plan: "enterprise",
           billingInterval: "monthly",
         },

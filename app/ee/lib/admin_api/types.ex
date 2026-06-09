@@ -1,10 +1,11 @@
 defmodule OperatelyEE.AdminApi.Types do
   use TurboConnect.Types
 
-  primitive :company_id,
+  primitive(:company_id,
     encoded_type: :string,
     decoded_type: :number,
     decode_with: &OperatelyWeb.Api.Types.CompanyId.decode/1
+  )
 
   object :company do
     field? :id, :string
@@ -87,7 +88,6 @@ defmodule OperatelyEE.AdminApi.Types do
     field :id, :string
     field :key, :string
     field :display_name, :string
-    field :sort_order, :integer
     field :tier_rank, :integer
     field :billing_behavior, :billing_behavior
     field :customer_selectable, :boolean

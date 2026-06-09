@@ -43,9 +43,30 @@ function billingOverviewMock(
       ...(account || {}),
     },
     plans: [
-      { key: "free", displayName: "Free", memberLimit: 20, storageLimitBytes: 1_073_741_824 },
-      { key: "team", displayName: "Team", memberLimit: 50, storageLimitBytes: 107_374_182_400 },
-      { key: "business", displayName: "Business", memberLimit: 200, storageLimitBytes: 1_099_511_627_776 },
+      {
+        key: "free",
+        displayName: "Free",
+        tierRank: 0,
+        customerSelectable: false,
+        memberLimit: 20,
+        storageLimitBytes: 1_073_741_824,
+      },
+      {
+        key: "team",
+        displayName: "Team",
+        tierRank: 1,
+        customerSelectable: true,
+        memberLimit: 50,
+        storageLimitBytes: 107_374_182_400,
+      },
+      {
+        key: "business",
+        displayName: "Business",
+        tierRank: 2,
+        customerSelectable: true,
+        memberLimit: 200,
+        storageLimitBytes: 1_099_511_627_776,
+      },
     ],
     catalogProducts: [
       {
@@ -105,7 +126,14 @@ describe("CompanyBilling shared helpers", () => {
       },
       plans: [
         ...billingOverviewMock().plans,
-        { key: "starter_internal", displayName: "Starter Internal", memberLimit: 12, storageLimitBytes: 4_096 },
+        {
+          key: "starter_internal",
+          displayName: "Starter Internal",
+          tierRank: 3,
+          customerSelectable: false,
+          memberLimit: 12,
+          storageLimitBytes: 4_096,
+        },
       ],
     });
 
@@ -128,11 +156,11 @@ describe("CompanyBilling shared helpers", () => {
     });
   });
 
-  it("keeps unsupported query plan keys raw while ignoring them for current selection", () => {
+  it("accepts arbitrary normalized query plan keys", () => {
     expect(parseCompanyBillingSearch("?plan=enterprise&billing_period=yearly")).toEqual({
       rawPlan: "enterprise",
       rawBillingPeriod: "yearly",
-      plan: null,
+      plan: "enterprise",
       billingInterval: "yearly",
       checkoutId: null,
       hasSelectionIntent: true,
@@ -213,8 +241,19 @@ describe("CompanyBilling shared helpers", () => {
     ).toEqual(["team:monthly", "team:yearly", "business:monthly", "business:yearly"]);
   });
 
-  it("ignores unsupported catalog plans in the current self-serve selection flow", () => {
+  it("includes arbitrary sellable plans from plan definitions and active products", () => {
     const billing = billingOverviewMock({
+      plans: [
+        ...billingOverviewMock().plans,
+        {
+          key: "enterprise",
+          displayName: "Enterprise",
+          tierRank: 3,
+          customerSelectable: true,
+          memberLimit: 500,
+          storageLimitBytes: 5_497_558_138_880,
+        },
+      ],
       catalogProducts: [
         ...billingOverviewMock().catalogProducts,
         {
@@ -233,6 +272,7 @@ describe("CompanyBilling shared helpers", () => {
       "team",
       "business",
       "business",
+      "enterprise",
     ]);
   });
 

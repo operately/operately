@@ -6,7 +6,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinition do
   inputs do
     field :id, :string
     field :display_name, :string
-    field :sort_order, :integer
     field :tier_rank, :integer
     field :billing_behavior, :billing_behavior
     field :customer_selectable, :boolean
@@ -50,7 +49,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinition do
   defp build_attrs(inputs) do
     Map.take(inputs, [
       :display_name,
-      :sort_order,
       :tier_rank,
       :billing_behavior,
       :customer_selectable,

@@ -96,7 +96,6 @@ const teamPlanDefinition = {
   id: "plan_team",
   key: "team",
   displayName: "Team",
-  sortOrder: 1,
   tierRank: 1,
   billingBehavior: "provider_managed",
   customerSelectable: true,
@@ -111,7 +110,6 @@ function renderModal(planDefinition: any = teamPlanDefinition, values?: Partial<
     ? {
         planKey: planDefinition?.key ?? "",
         displayName: planDefinition?.displayName ?? "",
-        sortOrder: String(planDefinition?.sortOrder ?? ""),
         tierRank: String(planDefinition?.tierRank ?? ""),
         billingBehavior: planDefinition?.billingBehavior ?? "provider_managed",
         customerSelectable: String(planDefinition?.customerSelectable ?? false),
@@ -149,7 +147,6 @@ describe("PlanDefinitionModal", () => {
     expect(markup).toContain("Plan key");
     expect(markup).toContain("team");
     expect(markup).toContain("Display Name:Team");
-    expect(markup).toContain("Sort order:1");
     expect(markup).toContain("Tier rank:1");
     expect(markup).toContain("Billing behavior:provider_managed");
     expect(markup).toContain("Customer selectable:true");
@@ -181,7 +178,6 @@ describe("PlanDefinitionModal", () => {
     mockCurrentValues = {
       planKey: "",
       displayName: "",
-      sortOrder: "",
       tierRank: "",
       billingBehavior: "provider_managed",
       customerSelectable: "false",
@@ -209,7 +205,6 @@ describe("PlanDefinitionModal", () => {
     mockCurrentValues = {
       planKey: "team",
       displayName: "Team Unlimited",
-      sortOrder: "3",
       tierRank: "4",
       billingBehavior: "provider_managed",
       customerSelectable: "true",
@@ -233,7 +228,6 @@ describe("PlanDefinitionModal", () => {
     expect(mockUpdate).toHaveBeenCalledWith({
       id: "plan_team",
       displayName: "Team Unlimited",
-      sortOrder: 3,
       tierRank: 4,
       billingBehavior: "provider_managed",
       customerSelectable: true,
@@ -249,7 +243,6 @@ describe("PlanDefinitionModal", () => {
     mockCurrentValues = {
       planKey: "team",
       displayName: "Team Plus",
-      sortOrder: "8",
       tierRank: "9",
       billingBehavior: "provider_managed",
       customerSelectable: "false",
@@ -273,7 +266,6 @@ describe("PlanDefinitionModal", () => {
     expect(mockUpdate).toHaveBeenCalledWith({
       id: "plan_team",
       displayName: "Team Plus",
-      sortOrder: 8,
       tierRank: 9,
       billingBehavior: "provider_managed",
       customerSelectable: false,
@@ -289,7 +281,6 @@ describe("PlanDefinitionModal", () => {
     mockCurrentValues = {
       planKey: "enterprise",
       displayName: "Enterprise",
-      sortOrder: "8",
       tierRank: "8",
       billingBehavior: "provider_managed",
       customerSelectable: "true",
@@ -308,7 +299,6 @@ describe("PlanDefinitionModal", () => {
     expect(mockCreate).toHaveBeenCalledWith({
       planKey: "enterprise",
       displayName: "Enterprise",
-      sortOrder: 8,
       tierRank: 8,
       billingBehavior: "provider_managed",
       customerSelectable: true,
@@ -324,7 +314,6 @@ describe("PlanDefinitionModal", () => {
     mockCurrentValues = {
       planKey: "trial_90_day",
       displayName: "Trial 90 Day",
-      sortOrder: "10",
       tierRank: "10",
       billingBehavior: "internal",
       customerSelectable: "true",
@@ -343,7 +332,6 @@ describe("PlanDefinitionModal", () => {
     expect(mockCreate).toHaveBeenCalledWith({
       planKey: "trial_90_day",
       displayName: "Trial 90 Day",
-      sortOrder: 10,
       tierRank: 10,
       billingBehavior: "internal",
       customerSelectable: false,
