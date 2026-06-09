@@ -162,6 +162,7 @@ defmodule OperatelyWeb.Api.Billing.ChangePlanTest do
 
     test "it rejects invalid inputs", ctx do
       assert {400, _} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "free", billing_interval: "monthly"})
+      assert {400, _} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "enterprise", billing_interval: "monthly"})
       assert {400, _} = mutation(ctx.conn, [:billing, :change_plan], %{plan: "team", billing_interval: "weekly"})
     end
 

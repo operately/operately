@@ -128,6 +128,23 @@ defmodule OperatelyWeb.Api.Companies.CreateTest do
       assert Billing.get_billing_account_by_company(company) == nil
     end
 
+    test "ignores incomplete billing intent params", ctx do
+      Application.put_env(:operately, :billing_enabled, true)
+      on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+      account = Operately.PeopleFixtures.account_fixture()
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, _res} = mutation(conn, [:companies, :create], Map.merge(@input, %{plan: "team"}))
+      assert {200, _res} = mutation(conn, [:companies, :create], %{company_name: "Beta Co.", title: "Founder", billing_period: "monthly"})
+
+      acme = Operately.Companies.get_company_by_name("Acme Co.")
+      beta = Operately.Companies.get_company_by_name("Beta Co.")
+
+      assert Billing.get_billing_account_by_company(acme) == nil
+      assert Billing.get_billing_account_by_company(beta) == nil
+    end
+
     test "rejects unsupported billing plan params", ctx do
       account = Operately.PeopleFixtures.account_fixture()
       conn = log_in_account(ctx.conn, account)

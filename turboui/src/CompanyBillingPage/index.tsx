@@ -51,7 +51,8 @@ export namespace CompanyBillingPage {
   export type Mode = CompanyBillingPageTypes.Mode;
   export type Status = CompanyBillingPageTypes.Status;
   export type Interval = CompanyBillingPageTypes.Interval;
-  export type Plan = CompanyBillingPageTypes.Plan;
+  export type PlanKey = CompanyBillingPageTypes.PlanKey;
+  export type SelfServePlan = CompanyBillingPageTypes.SelfServePlan;
   export type ChangeTargetPlan = CompanyBillingPageTypes.ChangeTargetPlan;
   export type BillingTargetSource = CompanyBillingPageTypes.BillingTargetSource;
   export type NoticeTone = CompanyBillingPageTypes.NoticeTone;

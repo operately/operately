@@ -23,6 +23,9 @@ defmodule OperatelyEE.AdminApi do
   mutation :enable_feature, M.EnableFeature
   mutation :update_email_settings, M.UpdateEmailSettings
   mutation :send_test_email, M.SendTestEmail
+  mutation :create_billing_plan_definition, M.CreateBillingPlanDefinition
+  mutation :archive_billing_plan_definition, M.ArchiveBillingPlanDefinition
+  mutation :unarchive_billing_plan_definition, M.UnarchiveBillingPlanDefinition
   mutation :update_billing_plan_definition, M.UpdateBillingPlanDefinition
   mutation :create_billing_product, M.CreateBillingProduct
   mutation :update_billing_product, M.UpdateBillingProduct

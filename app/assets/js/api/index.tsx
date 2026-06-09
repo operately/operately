@@ -2306,8 +2306,6 @@ export type BillingAccessStateReason = "past_due" | "over_limit_after_downgrade"
 
 export type BillingInterval = "monthly" | "yearly";
 
-export type BillingPlan = "team" | "business" | "unlimited";
-
 export type BillingStatus = "free" | "active" | "past_due" | "canceled";
 
 export type CheckInState = "draft" | "published";
@@ -3527,7 +3525,7 @@ export interface BillingCancelResult {
 }
 
 export interface BillingChangePlanInput {
-  plan: BillingPlan;
+  plan: string;
   billingInterval: BillingInterval;
 }
 
@@ -3536,7 +3534,7 @@ export interface BillingChangePlanResult {
 }
 
 export interface BillingCreateCheckoutSessionInput {
-  plan: BillingPlan;
+  plan: string;
   billingInterval: BillingInterval;
 }
 
@@ -3749,7 +3747,7 @@ export interface CompaniesConvertMemberToGuestResult {
 export interface CompaniesCreateInput {
   companyName: string;
   title: string;
-  plan?: BillingPlan;
+  plan?: string;
   billingPeriod?: BillingInterval;
   isDemo?: boolean;
 }
