@@ -1,7 +1,7 @@
-import { CommentsCountIndicator } from "@/features/Comments";
-import { NodeDescription, NodeType, SortBy } from "@/features/ResourceHub";
-import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
-import { findCommentsCount, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
+import { nodeToUiNode } from "@/features/ResourceHub/turbouiAdapters";
+import { SortBy, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
+import { usePaths } from "@/routes/paths";
+import { CommentCountIndicator, NodeDescription, NodeIcon } from "turboui";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 import classNames from "classnames";
@@ -42,18 +42,19 @@ function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
 function NodeItem({ node }: { node: ResourceHubNode }) {
   const className = classNames("px-2 py-1.5", "border-b border-stroke-base last:border-b-0", "flex items-center gap-2");
 
-  const commentsCount = findCommentsCount(node.type as NodeType, node);
+  const paths = usePaths();
+  const uiNode = nodeToUiNode(paths, node);
 
   return (
     <div key={node.id} className={className}>
       <div>
-        <NodeIcon node={node} size={32} />
+        <NodeIcon node={uiNode} size={32} />
       </div>
       <div className="overflow-hidden leading-snug flex-1">
         <div className="font-bold truncate">{node.name}</div>
-        <NodeDescription node={node} fontSize="text-[10px] truncate" />
+        <NodeDescription node={uiNode} fontSize="text-[10px] truncate" />
       </div>
-      <CommentsCountIndicator count={commentsCount} size={16} />
+      <CommentCountIndicator count={uiNode.commentsCount} size={16} />
     </div>
   );
 }
