@@ -2,7 +2,9 @@ import {
   findCompanyBillingSellableProduct,
   getCompanyBillingCurrentTarget,
   getCompanyBillingScheduledTarget,
+  getCompanyBillingSuggestedTarget,
   isCompanyBillingPaidStatus,
+  listCompanyBillingSellableTargets,
   matchesCompanyBillingTarget,
   formatCompanyBillingPlanName,
   formatCompanyBillingPriceFromMinorUnits,
@@ -13,10 +15,8 @@ import {
   formatCompanyBillingChangeTimingDescription,
   resolveCompanyBillingChangeTiming,
 } from "../CompanyBilling";
-import { findCompanyBillingPlanDefinition, formatStorageBytes } from "../CompanyBilling";
+import { formatStorageBytes, listCompanyBillingSellablePlanDefinitions } from "../CompanyBilling";
 import { CompanyBillingPlanSelectionPage } from "./types";
-
-const CURRENT_SELF_SERVE_BILLING_PLANS = ["team", "business", "unlimited"] as const;
 
 export function buildCompanyBillingPlanSelectionPageViewModel(
   props: CompanyBillingPlanSelectionPage.Props,
@@ -65,24 +65,23 @@ export function buildCompanyBillingPlanSelectionMode(
     errorMessage: args.actionError,
     selectedInterval,
     onSelectInterval: args.onSelectInterval,
-    cards: CURRENT_SELF_SERVE_BILLING_PLANS.map((plan) => {
-      const definition = findCompanyBillingPlanDefinition(args.billing.plans, plan);
-      const product = findCompanyBillingSellableProduct(args.billing.catalogProducts, plan, selectedInterval);
+    cards: listCompanyBillingSellablePlanDefinitions(args.billing).map((definition) => {
+      const product = findCompanyBillingSellableProduct(args.billing.catalogProducts, definition.key, selectedInterval);
 
       return {
-        key: `${plan}-${selectedInterval}`,
-        title: definition?.displayName || formatCompanyBillingPlanName(plan),
+        key: `${definition.key}-${selectedInterval}`,
+        title: definition.displayName || formatCompanyBillingPlanName(definition.key),
         priceLabel: formatPlanPriceLabel(product, selectedInterval),
         detailLines: [
-          formatMemberLimitLine(definition?.memberLimit),
-          formatStorageLimitLine(definition?.storageLimitBytes),
+          formatMemberLimitLine(definition.memberLimit),
+          formatStorageLimitLine(definition.storageLimitBytes),
           formatBillingHint(product, selectedInterval),
         ],
-        selected: selectedTarget?.plan === plan,
-        suggested: args.billing.account.suggestedPlanKey === plan,
+        selected: selectedTarget?.plan === definition.key,
+        suggested: args.billing.account.suggestedPlanKey === definition.key,
         disabled: !product,
-        onSelect: () => args.onSelectPlan(plan),
-        testId: `billing-plan-card-${plan}-${selectedInterval}`,
+        onSelect: () => args.onSelectPlan(definition.key),
+        testId: `billing-plan-card-${definition.key}-${selectedInterval}`,
       };
     }),
     consequenceNotice: buildSelectionConsequenceNotice(args.billing, mode, selectedTarget),
@@ -102,11 +101,16 @@ function findFallbackSelectionTarget(
   billing: CompanyBillingPlanSelectionPage.BillingOverview,
   mode: CompanyBillingPlanSelectionPage.Mode,
 ): CompanyBillingPlanSelectionPage.BillingTarget | null {
+  const sellableTargets = listCompanyBillingSellableTargets(billing);
+
   if (mode === "change_plan") {
-    return getCompanyBillingScheduledTarget(billing) || getCompanyBillingCurrentTarget(billing);
+    return (
+      resolveSelectionTarget(sellableTargets, getCompanyBillingScheduledTarget(billing)) ||
+      resolveSelectionTarget(sellableTargets, getCompanyBillingCurrentTarget(billing))
+    );
   }
 
-  return findSuggestedSelectionTarget(billing);
+  return getCompanyBillingSuggestedTarget(billing) || sellableTargets[0] || null;
 }
 
 function isCurrentOrScheduledSelection(
@@ -132,7 +136,7 @@ function buildSelectionConsequenceNotice(
   const currentTarget = getCompanyBillingCurrentTarget(billing);
   if (currentTarget && matchesTarget(selectedTarget, currentTarget)) return null;
 
-  const timing = resolveCompanyBillingChangeTiming(currentTarget, selectedTarget);
+  const timing = resolveCompanyBillingChangeTiming(currentTarget, selectedTarget, billing.plans);
   if (!timing) return null;
 
   const consequence = buildCompanyBillingChangeConsequence({
@@ -159,36 +163,6 @@ function matchesTarget(
   right: CompanyBillingPlanSelectionPage.BillingTarget,
 ): boolean {
   return left.plan === right.plan && left.billingInterval === right.billingInterval;
-}
-
-function findSuggestedSelectionTarget(
-  billing: CompanyBillingPlanSelectionPage.BillingOverview,
-): CompanyBillingPlanSelectionPage.BillingTarget | null {
-  const suggestedPlan = billing.account.suggestedPlanKey;
-  if (!isCurrentSelfServeBillingPlan(suggestedPlan)) return null;
-
-  const suggestedInterval = billing.account.suggestedBillingInterval;
-
-  if (suggestedInterval) {
-    const product = findCompanyBillingSellableProduct(billing.catalogProducts, suggestedPlan, suggestedInterval);
-    if (product) {
-      return { plan: suggestedPlan, billingInterval: suggestedInterval, product };
-    }
-  }
-
-  const fallbackProduct =
-    billing.catalogProducts.find((product) => product.active && product.planFamily === suggestedPlan) || null;
-  if (!fallbackProduct) return null;
-
-  return {
-    plan: suggestedPlan,
-    billingInterval: fallbackProduct.billingInterval,
-    product: fallbackProduct,
-  };
-}
-
-function isCurrentSelfServeBillingPlan(value: string | null | undefined): value is CompanyBillingPlanSelectionPage.Plan {
-  return value != null && CURRENT_SELF_SERVE_BILLING_PLANS.includes(value as CompanyBillingPlanSelectionPage.Plan);
 }
 
 function formatPlanPriceLabel(
@@ -242,6 +216,21 @@ function buildConsequenceRows(
 }
 
 function noop() {}
+
+function resolveSelectionTarget(
+  sellableTargets: CompanyBillingPlanSelectionPage.BillingTarget[],
+  target: CompanyBillingPlanSelectionPage.BillingTarget | null,
+) {
+  if (!target) return null;
+
+  return (
+    sellableTargets.find(
+      (candidate) => candidate.plan === target.plan && candidate.billingInterval === target.billingInterval,
+    ) ||
+    sellableTargets.find((candidate) => candidate.plan === target.plan) ||
+    null
+  );
+}
 
 function formatMemberLimitLine(memberLimit?: number | null): string {
   if (memberLimit == null) {

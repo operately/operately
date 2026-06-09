@@ -5,7 +5,6 @@ export namespace CompanyBillingPage {
   export type Status = "free" | "active" | "past_due" | "canceled";
   export type Interval = "monthly" | "yearly";
   export type PlanKey = string;
-  export type SelfServePlan = "team" | "business" | "unlimited";
   export type ChangeTargetPlan = PlanKey;
   export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
   export type NoticeTone = "info" | "warning" | "danger";
@@ -39,6 +38,8 @@ export namespace CompanyBillingPage {
   export interface BillingPlanDefinition {
     key: string;
     displayName: string;
+    tierRank: number;
+    customerSelectable: boolean;
     memberLimit?: number | null;
     storageLimitBytes?: number | null;
   }
@@ -62,7 +63,7 @@ export namespace CompanyBillingPage {
   }
 
   export interface BillingTarget {
-    plan: SelfServePlan;
+    plan: PlanKey;
     billingInterval: Interval;
     product?: BillingCatalogProduct | null;
   }
@@ -85,7 +86,7 @@ export namespace CompanyBillingPage {
   export interface BillingSearchParams {
     rawPlan: string | null;
     rawBillingPeriod: string | null;
-    plan: SelfServePlan | null;
+    plan: PlanKey | null;
     billingInterval: Interval | null;
     checkoutId: string | null;
     hasSelectionIntent: boolean;

@@ -1,6 +1,7 @@
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
+import { listCompanyBillingSellablePlanDefinitions, normalizeCompanyBillingPlanKey } from "./plans";
 
-const CURRENT_SELF_SERVE_BILLING_PLANS = ["team", "business", "unlimited"] as const;
+const INTERVAL_ORDER: Record<CompanyBillingPageTypes.Interval, number> = { monthly: 0, yearly: 1 };
 
 export function parseCompanyBillingSearch(search: string): CompanyBillingPageTypes.BillingSearchParams {
   const params = new URLSearchParams(search);
@@ -10,7 +11,7 @@ export function parseCompanyBillingSearch(search: string): CompanyBillingPageTyp
   return {
     rawPlan,
     rawBillingPeriod,
-    plan: isCurrentSelfServeBillingPlan(rawPlan) ? rawPlan : null,
+    plan: normalizeCompanyBillingPlanKey(rawPlan),
     billingInterval: isBillingInterval(rawBillingPeriod) ? rawBillingPeriod : null,
     checkoutId: params.get("checkout_id"),
     hasSelectionIntent: Boolean(rawPlan || rawBillingPeriod),
@@ -20,24 +21,25 @@ export function parseCompanyBillingSearch(search: string): CompanyBillingPageTyp
 export function listCompanyBillingSellableTargets(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget[] {
-  return billing.catalogProducts
-    .filter(isSelectableCatalogProduct)
-    .sort((a, b) => compareTargets(a.planFamily, a.billingInterval, b.planFamily, b.billingInterval))
-    .map((product) => ({
-      plan: product.planFamily,
-      billingInterval: product.billingInterval,
-      product,
-    }));
+  return listCompanyBillingSellablePlanDefinitions(billing).flatMap((plan) =>
+    listTargetsForPlan(billing.catalogProducts, plan.key),
+  );
 }
 
 export function findCompanyBillingSellableProduct(
   catalogProducts: CompanyBillingPageTypes.BillingCatalogProduct[],
-  plan: CompanyBillingPageTypes.SelfServePlan,
+  plan: CompanyBillingPageTypes.PlanKey,
   billingInterval: CompanyBillingPageTypes.Interval,
 ): CompanyBillingPageTypes.BillingCatalogProduct | null {
+  const normalizedPlan = normalizeCompanyBillingPlanKey(plan);
+  if (!normalizedPlan) return null;
+
   return (
     catalogProducts.find(
-      (product) => product.active && product.planFamily === plan && product.billingInterval === billingInterval,
+      (product) =>
+        product.active &&
+        normalizeCompanyBillingPlanKey(product.planFamily) === normalizedPlan &&
+        product.billingInterval === billingInterval,
     ) || null
   );
 }
@@ -45,67 +47,35 @@ export function findCompanyBillingSellableProduct(
 export function getCompanyBillingPendingTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (!isCurrentSelfServeBillingPlan(billing.account.pendingPlanKey) || !billing.account.pendingBillingInterval) {
-    return null;
-  }
-
-  return {
-    plan: billing.account.pendingPlanKey,
-    billingInterval: billing.account.pendingBillingInterval,
-    product: findCompanyBillingSellableProduct(
-      billing.catalogProducts,
-      billing.account.pendingPlanKey,
-      billing.account.pendingBillingInterval,
-    ),
-  };
+  return buildAccountTarget(
+    billing.catalogProducts,
+    billing.account.pendingPlanKey,
+    billing.account.pendingBillingInterval,
+  );
 }
 
 export function getCompanyBillingScheduledTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (!isCurrentSelfServeBillingPlan(billing.account.scheduledPlanKey) || !billing.account.scheduledBillingInterval) {
-    return null;
-  }
-
-  return {
-    plan: billing.account.scheduledPlanKey,
-    billingInterval: billing.account.scheduledBillingInterval,
-    product: findCompanyBillingSellableProduct(
-      billing.catalogProducts,
-      billing.account.scheduledPlanKey,
-      billing.account.scheduledBillingInterval,
-    ),
-  };
+  return buildAccountTarget(
+    billing.catalogProducts,
+    billing.account.scheduledPlanKey,
+    billing.account.scheduledBillingInterval,
+  );
 }
 
 export function getCompanyBillingCurrentTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (!isCurrentSelfServeBillingPlan(billing.account.planKey) || !billing.account.billingInterval) {
-    return null;
-  }
-
-  return {
-    plan: billing.account.planKey,
-    billingInterval: billing.account.billingInterval,
-    product: findCompanyBillingSellableProduct(
-      billing.catalogProducts,
-      billing.account.planKey,
-      billing.account.billingInterval,
-    ),
-  };
+  return buildAccountTarget(billing.catalogProducts, billing.account.planKey, billing.account.billingInterval);
 }
 
 export function getCompanyBillingSuggestedTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (!isCurrentSelfServeBillingPlan(billing.account.suggestedPlanKey)) {
-    return null;
-  }
-
   return resolveRequestedTarget(listCompanyBillingSellableTargets(billing), {
-    plan: billing.account.suggestedPlanKey,
-    billingInterval: billing.account.suggestedBillingInterval || null,
+    plan: billing.account.suggestedPlanKey ?? null,
+    billingInterval: billing.account.suggestedBillingInterval ?? null,
   });
 }
 
@@ -174,25 +144,25 @@ function selectFallbackTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
   sellableTargets: CompanyBillingPageTypes.BillingTarget[],
 ): { target: CompanyBillingPageTypes.BillingTarget; source: CompanyBillingPageTypes.BillingTargetSource } | null {
-  const pendingTarget = getCompanyBillingPendingTarget(billing);
+  const pendingTarget = resolveTargetSelection(sellableTargets, getCompanyBillingPendingTarget(billing));
   if (pendingTarget?.product) {
     return { target: pendingTarget, source: "pending" };
   }
 
   if (isCompanyBillingPaidStatus(billing.account.status)) {
-    const scheduledTarget = getCompanyBillingScheduledTarget(billing);
+    const scheduledTarget = resolveTargetSelection(sellableTargets, getCompanyBillingScheduledTarget(billing));
     if (scheduledTarget) {
       return { target: scheduledTarget, source: "scheduled" };
     }
 
-    const currentTarget = getCompanyBillingCurrentTarget(billing);
+    const currentTarget = resolveTargetSelection(sellableTargets, getCompanyBillingCurrentTarget(billing));
     if (currentTarget) {
       return { target: currentTarget, source: "current" };
     }
   }
 
   if (billing.account.status === "free") {
-    const suggestedTarget = getCompanyBillingSuggestedTarget(billing);
+    const suggestedTarget = resolveTargetSelection(sellableTargets, getCompanyBillingSuggestedTarget(billing));
     if (suggestedTarget?.product) {
       return { target: suggestedTarget, source: "suggested" };
     }
@@ -206,20 +176,50 @@ function selectFallbackTarget(
   return { target: firstSellable, source: "catalog" };
 }
 
+function buildAccountTarget(
+  catalogProducts: CompanyBillingPageTypes.BillingCatalogProduct[],
+  planKey: string | null | undefined,
+  billingInterval: CompanyBillingPageTypes.Interval | null | undefined,
+): CompanyBillingPageTypes.BillingTarget | null {
+  const normalizedPlanKey = normalizeCompanyBillingPlanKey(planKey);
+
+  if (!normalizedPlanKey || !billingInterval) return null;
+
+  return {
+    plan: normalizedPlanKey,
+    billingInterval,
+    product: findCompanyBillingSellableProduct(catalogProducts, normalizedPlanKey, billingInterval),
+  };
+}
+
+function resolveTargetSelection(
+  sellableTargets: CompanyBillingPageTypes.BillingTarget[],
+  target: CompanyBillingPageTypes.BillingTarget | null,
+): CompanyBillingPageTypes.BillingTarget | null {
+  if (!target) return null;
+
+  return resolveRequestedTarget(sellableTargets, {
+    plan: target.plan,
+    billingInterval: target.billingInterval,
+  });
+}
+
 function resolveRequestedTarget(
   sellableTargets: CompanyBillingPageTypes.BillingTarget[],
-  search: { plan: CompanyBillingPageTypes.SelfServePlan | null; billingInterval: CompanyBillingPageTypes.Interval | null },
+  search: { plan: CompanyBillingPageTypes.PlanKey | null; billingInterval: CompanyBillingPageTypes.Interval | null },
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (search.plan && search.billingInterval) {
+  const normalizedPlan = normalizeCompanyBillingPlanKey(search.plan);
+
+  if (normalizedPlan && search.billingInterval) {
     return (
       sellableTargets.find(
-        (target) => target.plan === search.plan && target.billingInterval === search.billingInterval,
+        (target) => target.plan === normalizedPlan && target.billingInterval === search.billingInterval,
       ) || null
     );
   }
 
-  if (search.plan) {
-    return sellableTargets.find((target) => target.plan === search.plan) || null;
+  if (normalizedPlan) {
+    return sellableTargets.find((target) => target.plan === normalizedPlan) || null;
   }
 
   if (search.billingInterval) {
@@ -229,26 +229,18 @@ function resolveRequestedTarget(
   return null;
 }
 
-function compareTargets(
-  leftPlan: CompanyBillingPageTypes.SelfServePlan,
-  leftInterval: CompanyBillingPageTypes.Interval,
-  rightPlan: CompanyBillingPageTypes.SelfServePlan,
-  rightInterval: CompanyBillingPageTypes.Interval,
-): number {
-  const planOrder: Record<CompanyBillingPageTypes.SelfServePlan, number> = { team: 0, business: 1, unlimited: 2 };
-  const intervalOrder: Record<CompanyBillingPageTypes.Interval, number> = { monthly: 0, yearly: 1 };
-
-  return planOrder[leftPlan] - planOrder[rightPlan] || intervalOrder[leftInterval] - intervalOrder[rightInterval];
-}
-
-function isCurrentSelfServeBillingPlan(value: string | null | undefined): value is CompanyBillingPageTypes.SelfServePlan {
-  return value != null && CURRENT_SELF_SERVE_BILLING_PLANS.includes(value as CompanyBillingPageTypes.SelfServePlan);
-}
-
-function isSelectableCatalogProduct(
-  product: CompanyBillingPageTypes.BillingCatalogProduct,
-): product is CompanyBillingPageTypes.BillingCatalogProduct & { planFamily: CompanyBillingPageTypes.SelfServePlan } {
-  return product.active && isCurrentSelfServeBillingPlan(product.planFamily);
+function listTargetsForPlan(
+  catalogProducts: CompanyBillingPageTypes.BillingCatalogProduct[],
+  planKey: CompanyBillingPageTypes.PlanKey,
+): CompanyBillingPageTypes.BillingTarget[] {
+  return catalogProducts
+    .filter((product) => product.active && normalizeCompanyBillingPlanKey(product.planFamily) === planKey)
+    .sort((left, right) => INTERVAL_ORDER[left.billingInterval] - INTERVAL_ORDER[right.billingInterval])
+    .map((product) => ({
+      plan: planKey,
+      billingInterval: product.billingInterval,
+      product,
+    }));
 }
 
 function isBillingInterval(value: string | null): value is CompanyBillingPageTypes.Interval {

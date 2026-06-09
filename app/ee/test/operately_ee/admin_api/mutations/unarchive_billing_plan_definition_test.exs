@@ -53,7 +53,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UnarchiveBillingPlanDefinitionTest do
         Billing.create_plan_definition(%{
           plan_key: "enterprise_archive_conflict",
           display_name: "Enterprise",
-          sort_order: 10,
           tier_rank: 10,
           billing_behavior: :provider_managed,
           customer_selectable: true,
@@ -66,7 +65,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UnarchiveBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :create_billing_plan_definition, %{
                  plan_key: "enterprise_active_conflict",
                  display_name: "Enterprise Active",
-                 sort_order: 10,
                  tier_rank: 10,
                  billing_behavior: "provider_managed",
                  customer_selectable: true,

@@ -68,6 +68,7 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.stale == false
         assert length(res.billing.plans) == 4
         assert Enum.any?(res.billing.plans, &(&1.key == "unlimited"))
+        assert Enum.any?(res.billing.plans, &(&1.key == "team" && &1.tier_rank == 1 && &1.customer_selectable == true))
         assert res.billing.catalog_products == []
       end
     end
@@ -143,7 +144,6 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
       create_plan_definition(%{
         plan_key: "starter_internal",
         display_name: "Starter Internal",
-        sort_order: 9,
         tier_rank: 9,
         billing_behavior: :internal,
         member_limit: 12,

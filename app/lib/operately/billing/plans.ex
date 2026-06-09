@@ -162,14 +162,15 @@ defmodule Operately.Billing.Plans do
 
   defp self_serve_sellable_query do
     from(plan in customer_selectable_query(),
-      join: product in ProductCatalogEntry, on: product.plan_family == plan.plan_key,
+      join: product in ProductCatalogEntry,
+      on: product.plan_family == plan.plan_key,
       where: product.active == true and is_nil(product.archived_at),
       distinct: plan.id
     )
   end
 
   defp display_ordered_query(query) do
-    from(plan in query, order_by: [asc: plan.sort_order, asc: plan.inserted_at])
+    from(plan in query, order_by: [asc: plan.tier_rank, asc: plan.inserted_at])
   end
 
   defp higher_ranked_plan_keys(query, plan_key) do
@@ -178,13 +179,13 @@ defmodule Operately.Billing.Plans do
         query
         |> where([plan], plan.tier_rank > ^tier_rank)
         |> Repo.all()
-        |> Enum.sort_by(&{&1.tier_rank, &1.sort_order, &1.inserted_at}, :asc)
+        |> Enum.sort_by(&{&1.tier_rank, &1.inserted_at}, :asc)
         |> Enum.map(& &1.plan_key)
 
       nil ->
         query
         |> Repo.all()
-        |> Enum.sort_by(&{&1.tier_rank, &1.sort_order, &1.inserted_at}, :asc)
+        |> Enum.sort_by(&{&1.tier_rank, &1.inserted_at}, :asc)
         |> Enum.map(& &1.plan_key)
     end
   end

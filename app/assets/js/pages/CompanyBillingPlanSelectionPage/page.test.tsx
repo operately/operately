@@ -30,10 +30,38 @@ function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Bil
       ...(account || {}),
     },
     plans: [
-      { key: "free", displayName: "Free", memberLimit: 20, storageLimitBytes: 1_073_741_824 },
-      { key: "team", displayName: "Team", memberLimit: 50, storageLimitBytes: 107_374_182_400 },
-      { key: "business", displayName: "Business", memberLimit: 200, storageLimitBytes: 1_099_511_627_776 },
-      { key: "unlimited", displayName: "Unlimited", memberLimit: null, storageLimitBytes: null },
+      {
+        key: "free",
+        displayName: "Free",
+        tierRank: 0,
+        customerSelectable: false,
+        memberLimit: 20,
+        storageLimitBytes: 1_073_741_824,
+      },
+      {
+        key: "team",
+        displayName: "Team",
+        tierRank: 1,
+        customerSelectable: true,
+        memberLimit: 50,
+        storageLimitBytes: 107_374_182_400,
+      },
+      {
+        key: "business",
+        displayName: "Business",
+        tierRank: 2,
+        customerSelectable: true,
+        memberLimit: 200,
+        storageLimitBytes: 1_099_511_627_776,
+      },
+      {
+        key: "unlimited",
+        displayName: "Unlimited",
+        tierRank: 3,
+        customerSelectable: true,
+        memberLimit: null,
+        storageLimitBytes: null,
+      },
     ],
     catalogProducts: [
       {
@@ -134,7 +162,9 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
       testId: "company-billing-plan-selection-page",
     });
 
-    expect(viewModel.pageSubtitle).toBe("Choose a paid plan for this company. Payment details are handled at checkout.");
+    expect(viewModel.pageSubtitle).toBe(
+      "Choose a paid plan for this company. Payment details are handled at checkout.",
+    );
   });
 
   it("builds checkout mode props from the catalog data", () => {
@@ -158,6 +188,57 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     expect(selection.cards[0]?.detailLines).toContain("Billed yearly at $790");
     expect(selection.continueAction.label).toBe("Continue to checkout");
     expect(selection.continueAction.disabled).toBe(false);
+  });
+
+  it("renders dynamic sellable plan cards in tier-rank order", () => {
+    const billing = billingOverviewMock({
+      plans: [
+        ...billingOverviewMock().plans,
+        {
+          key: "enterprise",
+          displayName: "Enterprise",
+          tierRank: 4,
+          customerSelectable: true,
+          memberLimit: 500,
+          storageLimitBytes: 5_497_558_138_880,
+        },
+      ],
+      catalogProducts: [
+        ...billingOverviewMock().catalogProducts,
+        {
+          id: "enterprise-monthly",
+          provider: "polar",
+          planFamily: "enterprise",
+          billingInterval: "monthly",
+          polarProductId: "pol_enterprise_monthly",
+          polarProductName: "Enterprise Monthly",
+          priceAmount: 49900,
+          priceCurrency: "usd",
+          version: 1,
+          active: true,
+          archivedAt: null,
+          lastSyncedAt: "2026-05-23T00:00:00Z",
+          insertedAt: "2026-05-23T00:00:00Z",
+          updatedAt: "2026-05-23T00:00:00Z",
+        },
+      ],
+    });
+
+    const selection = buildCompanyBillingPlanSelectionMode({
+      billing,
+      selection: selectCompanyBillingTarget(
+        billing,
+        parseCompanyBillingSearch("?plan=enterprise&billing_period=monthly"),
+      ),
+      actionError: null,
+      isSubmitting: false,
+      onSelectPlan: jest.fn(),
+      onSelectInterval: jest.fn(),
+      onSubmit: jest.fn(),
+    });
+
+    expect(selection.cards.map((card) => card.title)).toEqual(["Team", "Business", "Unlimited", "Enterprise"]);
+    expect(selection.cards.find((card) => card.title === "Enterprise")?.selected).toBe(true);
   });
 
   it("preselects the current paid plan and disables same-plan changes", () => {
@@ -401,7 +482,9 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     });
 
     expect(selection.consequenceNotice?.tone).toBe("warning");
-    expect(selection.consequenceNotice?.description).toContain("adding or restoring people and uploading files may be blocked");
+    expect(selection.consequenceNotice?.description).toContain(
+      "adding or restoring people and uploading files may be blocked",
+    );
     expect(selection.consequenceNotice?.description).toContain("60 active members");
     expect(selection.consequenceNotice?.description).toContain("120 GB");
   });

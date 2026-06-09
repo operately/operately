@@ -19,6 +19,12 @@ defmodule Operately.Support.Features.CompaniesSteps do
     ctx
   end
 
+  step :seed_active_billing_catalog, ctx do
+    create_active_product("prod_pro_monthly", "team", "monthly")
+
+    ctx
+  end
+
   step :navigate_to_the_loby, ctx do
     ctx |> UI.visit("/")
   end
@@ -127,6 +133,7 @@ defmodule Operately.Support.Features.CompaniesSteps do
   step :assert_billing_intent_is_saved, ctx do
     billing_account = Billing.get_billing_account_by_company(ctx.company)
 
+    assert billing_account != nil
     assert billing_account.suggested_plan_key == "team"
     assert billing_account.suggested_billing_interval == :monthly
     assert billing_account.suggested_plan_source == "website"
@@ -134,5 +141,18 @@ defmodule Operately.Support.Features.CompaniesSteps do
     assert billing_account.plan_key == nil
 
     ctx
+  end
+
+  defp create_active_product(polar_product_id, plan_family, billing_interval) do
+    {:ok, product} =
+      Billing.create_product(%{
+        provider: "polar",
+        plan_family: plan_family,
+        billing_interval: billing_interval,
+        polar_product_id: polar_product_id
+      })
+
+    {:ok, product} = Billing.set_active_product(product)
+    product
   end
 end

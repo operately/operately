@@ -1,19 +1,14 @@
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
 
-const PLAN_NAMES: Record<string, string> = {
-  free: "Free",
-  team: "Team",
-  business: "Business",
-  unlimited: "Unlimited",
-};
-
 export function formatCompanyBillingPlanName(planKey?: string | null, fallback = "Unknown plan"): string {
   if (!planKey) return fallback;
 
-  return PLAN_NAMES[planKey] || fallback;
+  return formatPlanKey(planKey) || fallback;
 }
 
-export function formatCompanyBillingIntervalLabel(interval?: CompanyBillingPageTypes.Interval | string | null): string | null {
+export function formatCompanyBillingIntervalLabel(
+  interval?: CompanyBillingPageTypes.Interval | string | null,
+): string | null {
   if (!interval) return null;
 
   return interval === "monthly" ? "Monthly" : interval === "yearly" ? "Yearly" : null;
@@ -57,4 +52,16 @@ export function formatCompanyBillingPriceFromMinorUnits(amount?: number | null, 
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount / 100);
+}
+
+function formatPlanKey(planKey: string): string | null {
+  const parts = planKey
+    .trim()
+    .split(/[_-]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length === 0) return null;
+
+  return parts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
 }

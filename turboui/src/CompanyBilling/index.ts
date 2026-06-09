@@ -20,8 +20,11 @@ export {
   formatCompanyBillingRelativeDateLine,
 } from "./formatting";
 export {
+  compareCompanyBillingPlanDefinitions,
   findCompanyBillingPlanDefinition,
   getCompanyBillingCurrentPlanDefinition,
+  listCompanyBillingSellablePlanDefinitions,
+  normalizeCompanyBillingPlanKey,
 } from "./plans";
 export {
   canCreateCompanyBillingCheckout,

@@ -10,6 +10,7 @@ import { Paths } from "@/routes/paths";
 import classnames from "classnames";
 import plurarize from "@/utils/plurarize";
 import { useNavigate } from "react-router-dom";
+import { formatCompanyBillingPlanName } from "turboui/CompanyBilling";
 
 export default { name: "BillingPickCompanyPage", loader, Page } as PageModule;
 
@@ -38,15 +39,11 @@ function Page() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <div className="text-content-accent text-xl font-semibold">Select a company</div>
-              <div className="text-content-accent mt-1">
-                Which company would you like to manage billing for?
-              </div>
+              <div className="text-content-accent mt-1">Which company would you like to manage billing for?</div>
               {plan && (
                 <div className="text-content-dimmed text-sm mt-1">
-                  Selected plan: <span className="font-semibold capitalize">{plan}</span>
-                  {billingPeriod && (
-                    <span className="capitalize"> ({billingPeriod})</span>
-                  )}
+                  Selected plan: <span className="font-semibold">{formatCompanyBillingPlanName(plan, plan)}</span>
+                  {billingPeriod && <span className="capitalize"> ({billingPeriod})</span>}
                 </div>
               )}
             </div>
@@ -130,9 +127,7 @@ function CompanyRow({
       <IconBuildingEstate size={40} className="text-cyan-500" strokeWidth={1} />
       <div className="flex-1">
         <div className="font-medium">{company.name}</div>
-        <div className="text-xs text-content-dimmed">
-          {plurarize(company.memberCount || 0, "member", "members")}
-        </div>
+        <div className="text-xs text-content-dimmed">{plurarize(company.memberCount || 0, "member", "members")}</div>
       </div>
     </div>
   );

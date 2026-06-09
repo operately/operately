@@ -30,9 +30,30 @@ function billingOverviewMock(params: BillingOverviewOverrides = {}): CompanyBill
       ...(account || {}),
     },
     plans: [
-      { key: "free", displayName: "Free", memberLimit: 20, storageLimitBytes: 1_073_741_824 },
-      { key: "team", displayName: "Team", memberLimit: 50, storageLimitBytes: 107_374_182_400 },
-      { key: "business", displayName: "Business", memberLimit: 200, storageLimitBytes: 1_099_511_627_776 },
+      {
+        key: "free",
+        displayName: "Free",
+        tierRank: 0,
+        customerSelectable: false,
+        memberLimit: 20,
+        storageLimitBytes: 1_073_741_824,
+      },
+      {
+        key: "team",
+        displayName: "Team",
+        tierRank: 1,
+        customerSelectable: true,
+        memberLimit: 50,
+        storageLimitBytes: 107_374_182_400,
+      },
+      {
+        key: "business",
+        displayName: "Business",
+        tierRank: 2,
+        customerSelectable: true,
+        memberLimit: 200,
+        storageLimitBytes: 1_099_511_627_776,
+      },
     ],
     catalogProducts: [
       {
