@@ -4,7 +4,7 @@ import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBi
 export namespace CompanyBillingPlanSelectionPage {
   export type Mode = "checkout" | "change_plan";
   export type Interval = CompanyBillingPageTypes.Interval;
-  export type Plan = CompanyBillingPageTypes.SelfServePlan;
+  export type Plan = CompanyBillingPageTypes.PlanKey;
   export type BillingOverview = CompanyBillingPageTypes.BillingOverview;
   export type BillingTarget = CompanyBillingPageTypes.BillingTarget;
   export type BillingTargetSelection = CompanyBillingPageTypes.BillingTargetSelection;

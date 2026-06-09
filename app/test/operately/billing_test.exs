@@ -1122,7 +1122,6 @@ defmodule Operately.BillingTest do
       create_plan_definition(%{
         plan_key: "legacy_enterprise",
         display_name: "Legacy Enterprise",
-        sort_order: 20,
         tier_rank: 8,
         billing_behavior: :provider_managed,
         customer_selectable: false,
@@ -1132,7 +1131,6 @@ defmodule Operately.BillingTest do
       create_plan_definition(%{
         plan_key: "enterprise",
         display_name: "Enterprise",
-        sort_order: 10,
         tier_rank: 4,
         billing_behavior: :provider_managed,
         customer_selectable: true,
@@ -1171,7 +1169,6 @@ defmodule Operately.BillingTest do
       create_plan_definition(%{
         plan_key: "starter_internal",
         display_name: "Starter Internal",
-        sort_order: 9,
         tier_rank: 9,
         billing_behavior: :internal,
         member_limit: 9,
@@ -1181,7 +1178,6 @@ defmodule Operately.BillingTest do
       create_plan_definition(%{
         plan_key: "enterprise",
         display_name: "Enterprise",
-        sort_order: 10,
         tier_rank: 4,
         billing_behavior: :provider_managed,
         customer_selectable: true,
@@ -1245,13 +1241,13 @@ defmodule Operately.BillingTest do
       assert {:ok, updated} =
                Billing.update_plan_definition(team_plan, %{
                  display_name: "Team Plus",
-                 sort_order: 5,
+                 tier_rank: 5,
                  member_limit: nil,
                  storage_limit_bytes: 500_000
                })
 
       assert updated.display_name == "Team Plus"
-      assert updated.sort_order == 5
+      assert updated.tier_rank == 5
       assert updated.member_limit == nil
       assert updated.storage_limit_bytes == 500_000
     end
@@ -1325,7 +1321,6 @@ defmodule Operately.BillingTest do
       Enum.into(attrs, %{
         plan_key: "plan_#{unique}",
         display_name: "Plan #{unique}",
-        sort_order: 100 + unique,
         tier_rank: 100 + unique,
         billing_behavior: :internal,
         customer_selectable: false,

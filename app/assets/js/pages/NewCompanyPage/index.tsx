@@ -10,22 +10,33 @@ import { useNavigate } from "react-router-dom";
 import Forms from "@/components/Forms";
 import { PageModule } from "@/routes/types";
 import { Link } from "turboui";
+import { BillingCatalog, parseBillingIntent } from "./billingIntent";
 
-import { parseBillingInterval, parseCurrentSelfServeBillingPlan } from "./billingIntent";
+export default { name: "NewCompanyPage", loader, Page } as PageModule;
 
-export default { name: "NewCompanyPage", loader: Pages.emptyLoader, Page } as PageModule;
+interface LoaderResult {
+  billingCatalog: BillingCatalog;
+}
+
+async function loader(): Promise<LoaderResult> {
+  const result = await Api.billing.getCatalog({});
+
+  return {
+    billingCatalog: {
+      plans: result.plans ?? [],
+      catalogProducts: result.catalogProducts ?? [],
+    },
+  };
+}
 
 function Page() {
   const navigate = useNavigate();
   const [add] = Api.companies.useCreate();
-  const billingIntent = React.useMemo(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    return {
-      plan: parseCurrentSelfServeBillingPlan(params.get("plan")),
-      billingPeriod: parseBillingInterval(params.get("billing_period")),
-    };
-  }, []);
+  const { billingCatalog } = Pages.useLoadedData<LoaderResult>();
+  const billingIntent = React.useMemo(
+    () => parseBillingIntent(window.location.search, billingCatalog),
+    [billingCatalog],
+  );
 
   const form = Forms.useForm({
     fields: {

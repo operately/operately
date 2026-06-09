@@ -5,6 +5,7 @@ import {
   buildCompanyBillingPlanChangeFeedback,
   canCreateCompanyBillingCheckout,
   isCompanyBillingPaidStatus,
+  listCompanyBillingSellableTargets,
   parseCompanyBillingSearch,
   selectCompanyBillingTarget,
 } from "turboui/CompanyBilling";
@@ -66,10 +67,12 @@ export function Page() {
 
   const handleSelectInterval = React.useCallback(
     (billingInterval: TurboCompanyBillingPlanSelectionPage.Interval) => {
-      const plan = selection.target?.plan || search.plan || "team";
+      const plan = selection.target?.plan || search.plan || listCompanyBillingSellableTargets(billing)[0]?.plan;
+      if (!plan) return;
+
       navigateToSelection({ plan, billingInterval, product: null }, true);
     },
-    [navigateToSelection, search.plan, selection.target],
+    [billing, navigateToSelection, search.plan, selection.target],
   );
 
   const startCheckout = React.useCallback(async () => {

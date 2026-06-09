@@ -337,6 +337,7 @@ defmodule OperatelyWeb.Api do
 
       namespace(:billing) do
         query(:get, OperatelyWeb.Api.Billing.Get)
+        query(:get_catalog, OperatelyWeb.Api.Billing.GetCatalog)
         query(:get_access_state, OperatelyWeb.Api.Billing.GetAccessState)
         query(:get_limit_warnings, OperatelyWeb.Api.Billing.GetLimitWarnings)
 

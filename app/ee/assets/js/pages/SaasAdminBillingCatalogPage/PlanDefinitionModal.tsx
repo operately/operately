@@ -23,7 +23,6 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
     fields: {
       planKey: planDefinition?.key ?? "",
       displayName: planDefinition?.displayName ?? "",
-      sortOrder: planDefinition ? String(planDefinition.sortOrder) : "",
       tierRank: planDefinition ? String(planDefinition.tierRank) : "",
       billingBehavior: planDefinition?.billingBehavior ?? "provider_managed",
       customerSelectable: String(planDefinition?.customerSelectable ?? false),
@@ -37,9 +36,6 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
         addError("planKey", "Plan key is required");
       }
 
-      validatePositiveInteger(addError, "sortOrder", form.values.sortOrder, "Sort order must be 0 or greater", {
-        allowZero: true,
-      });
       validatePositiveInteger(addError, "tierRank", form.values.tierRank, "Tier rank must be 0 or greater", {
         allowZero: true,
       });
@@ -66,7 +62,6 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
     submit: async () => {
       const attrs = {
         displayName: form.values.displayName,
-        sortOrder: parseInt(form.values.sortOrder, 10),
         tierRank: parseInt(form.values.tierRank, 10),
         billingBehavior: form.values.billingBehavior as AdminApi.BillingBehavior,
         customerSelectable: customerSelectableValue(form.values),
@@ -107,7 +102,6 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
             <Forms.TextInput label="Plan key" field="planKey" required autoFocus />
           )}
           <Forms.TextInput label="Display Name" field="displayName" required />
-          <Forms.NumberInput label="Sort order" field="sortOrder" required />
           <Forms.NumberInput label="Tier rank" field="tierRank" required />
           <Forms.SelectBox
             label="Billing behavior"

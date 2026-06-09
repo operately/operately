@@ -52,7 +52,6 @@ export namespace CompanyBillingPage {
   export type Status = CompanyBillingPageTypes.Status;
   export type Interval = CompanyBillingPageTypes.Interval;
   export type PlanKey = CompanyBillingPageTypes.PlanKey;
-  export type SelfServePlan = CompanyBillingPageTypes.SelfServePlan;
   export type ChangeTargetPlan = CompanyBillingPageTypes.ChangeTargetPlan;
   export type BillingTargetSource = CompanyBillingPageTypes.BillingTargetSource;
   export type NoticeTone = CompanyBillingPageTypes.NoticeTone;
@@ -91,7 +90,9 @@ export function CompanyBillingPage(props: CompanyBillingPage.Props) {
         <Header title={viewModel.pageTitle} subtitle={viewModel.pageSubtitle} />
 
         {viewModel.mode === "overview" && viewModel.overview && <OverviewModeView overview={viewModel.overview} />}
-        {viewModel.mode === "confirming" && viewModel.confirming && <ConfirmingModeView confirming={viewModel.confirming} />}
+        {viewModel.mode === "confirming" && viewModel.confirming && (
+          <ConfirmingModeView confirming={viewModel.confirming} />
+        )}
       </div>
     </Page>
   );
@@ -113,7 +114,9 @@ function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewM
     <div className="space-y-10">
       {overview.feedback && <FeedbackBlock feedback={overview.feedback} />}
 
-      {overview.errorMessage && <WarningCallout message="Billing action unavailable" description={overview.errorMessage} />}
+      {overview.errorMessage && (
+        <WarningCallout message="Billing action unavailable" description={overview.errorMessage} />
+      )}
 
       {overview.stale && (
         <WarningCallout
@@ -127,7 +130,9 @@ function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewM
           <div className="flex flex-col gap-3 border-b border-stroke-base pb-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div className="text-content-accent text-2xl font-extrabold">{overview.currentPlan.name}</div>
-              {overview.currentPlan.intervalLabel && <div className="mt-1 text-content-dimmed">{overview.currentPlan.intervalLabel} billing</div>}
+              {overview.currentPlan.intervalLabel && (
+                <div className="mt-1 text-content-dimmed">{overview.currentPlan.intervalLabel} billing</div>
+              )}
             </div>
 
             <BillingStatusBadge status={overview.currentPlan.status} />
@@ -210,7 +215,6 @@ function DetailRows({ rows }: { rows: CompanyBillingPage.DetailRow[] }) {
   );
 }
 
-
 function BillingStatusBadge({ status }: { status: CompanyBillingPage.Status }) {
   const className = {
     free: "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -227,9 +231,7 @@ function BillingStatusBadge({ status }: { status: CompanyBillingPage.Status }) {
   }[status];
 
   return (
-    <span className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${className}`}>
-      {label}
-    </span>
+    <span className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${className}`}>{label}</span>
   );
 }
 
@@ -378,13 +380,7 @@ function ActionCopy({ action }: { action: CompanyBillingPage.Action }) {
   );
 }
 
-function ActionButton({
-  action,
-  size,
-}: {
-  action: CompanyBillingPage.Action;
-  size: "xs" | "sm";
-}) {
+function ActionButton({ action, size }: { action: CompanyBillingPage.Action; size: "xs" | "sm" }) {
   if (action.tone === "danger") {
     return (
       <DangerButton size={size} onClick={action.onClick} disabled={action.disabled} loading={action.loading}>

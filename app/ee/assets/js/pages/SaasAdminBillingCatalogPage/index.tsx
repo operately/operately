@@ -276,13 +276,12 @@ function PlanDefinitionTable({
 }) {
   return (
     <div className="mt-6">
-      <TableRow header gridTemplateColumns="1.5fr 1fr 1fr 1.25fr 1fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
+      <TableRow header gridTemplateColumns="1.5fr 1fr 1fr 1.25fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
         <div>Plan</div>
         <div>Key</div>
         <div>Status</div>
         <div>Behavior</div>
         <div className="text-center">Selectable</div>
-        <div className="text-right">Sort order</div>
         <div className="text-right">Tier rank</div>
         <div className="text-right">Member limit</div>
         <div className="text-right">Storage limit</div>
@@ -325,13 +324,12 @@ function PlanDefinitionRow({
 
   return (
     <>
-      <TableRow gridTemplateColumns="1.5fr 1fr 1fr 1.25fr 1fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
+      <TableRow gridTemplateColumns="1.5fr 1fr 1fr 1.25fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
         <div className="font-medium">{planDefinition.displayName}</div>
         <div className="text-sm font-mono text-content-dimmed">{planDefinition.key}</div>
         <div className="text-sm">{isArchived ? "Archived" : "Active"}</div>
         <div className="text-sm">{billingBehaviorLabel(planDefinition.billingBehavior)}</div>
         <div className="text-sm text-center">{planDefinition.customerSelectable ? "Yes" : "No"}</div>
-        <div className="text-sm text-right">{formatInteger(planDefinition.sortOrder)}</div>
         <div className="text-sm text-right">{formatInteger(planDefinition.tierRank)}</div>
         <div className="text-sm text-right">{formatLimit(planDefinition.memberLimit)}</div>
         <div className="text-sm text-right">{formatStorageLimit(planDefinition.storageLimitBytes)}</div>

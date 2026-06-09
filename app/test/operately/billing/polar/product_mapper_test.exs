@@ -77,7 +77,6 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
       create_plan_definition(%{
         plan_key: "enterprise",
         display_name: "Enterprise",
-        sort_order: 10,
         tier_rank: 10,
         billing_behavior: :provider_managed,
         customer_selectable: true,

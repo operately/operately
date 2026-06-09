@@ -10,7 +10,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :update_billing_plan_definition, %{
                  id: Operately.ShortUuid.encode!(Ecto.UUID.generate()),
                  display_name: "Updated",
-                 sort_order: 1
+                 tier_rank: 1
                })
     end
 
@@ -22,7 +22,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :update_billing_plan_definition, %{
                  id: Operately.ShortUuid.encode!(Ecto.UUID.generate()),
                  display_name: "Updated",
-                 sort_order: 1
+                 tier_rank: 1
                })
     end
   end
@@ -46,7 +46,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :update_billing_plan_definition, %{
                  id: OperatelyWeb.Paths.billing_plan_definition_id(team_plan),
                  display_name: "Team Plus",
-                 sort_order: 8,
                  tier_rank: 9,
                  billing_behavior: "provider_managed",
                  customer_selectable: true,
@@ -55,7 +54,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
                })
 
       assert updated.display_name == "Team Plus"
-      assert updated.sort_order == 8
       assert updated.tier_rank == 9
       assert updated.billing_behavior == "provider_managed"
       assert updated.customer_selectable == true
@@ -64,7 +62,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
 
       reloaded = Billing.get_plan_definition!(team_plan.id)
       assert reloaded.display_name == "Team Plus"
-      assert reloaded.sort_order == 8
       assert reloaded.tier_rank == 9
       assert reloaded.billing_behavior == :provider_managed
       assert reloaded.customer_selectable == true
@@ -81,7 +78,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :update_billing_plan_definition, %{
                  id: OperatelyWeb.Paths.billing_plan_definition_id(unlimited_plan),
                  display_name: "Unlimited",
-                 sort_order: 3,
                  tier_rank: 3,
                  billing_behavior: "provider_managed",
                  customer_selectable: true,
@@ -102,7 +98,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :update_billing_plan_definition, %{
                  id: OperatelyWeb.Paths.billing_plan_definition_id(free_plan),
                  display_name: "Free",
-                 sort_order: 0,
                  tier_rank: 0,
                  billing_behavior: "internal",
                  customer_selectable: true,

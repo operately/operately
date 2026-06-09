@@ -2,9 +2,6 @@ import type * as api from "@/api";
 
 type BillingInterval = api.BillingInterval;
 type BillingPlanKey = string;
-type CurrentSelfServeBillingPlan = "team" | "business" | "unlimited";
-
-const CURRENT_SELF_SERVE_BILLING_PLANS = ["team", "business", "unlimited"] as const;
 
 type BillingUpgradeRecommendationSource = "suggested" | "next_plan" | "none";
 
@@ -15,12 +12,7 @@ interface BillingUpgradeRecommendationTarget {
 }
 
 interface BillingUpgradeRecommendation {
-  target: {
-    plan: CurrentSelfServeBillingPlan;
-    billingInterval: BillingInterval;
-    product: null;
-  } | null;
-  rawTarget: BillingUpgradeRecommendationTarget | null;
+  target: BillingUpgradeRecommendationTarget | null;
   source: BillingUpgradeRecommendationSource;
 }
 
@@ -73,27 +65,18 @@ function extractRecommendedUpgrade(raw: unknown): BillingUpgradeRecommendation {
     const interval = (raw as any).billing_interval;
 
     if (typeof plan === "string" && isBillingInterval(interval)) {
-      const rawTarget: BillingUpgradeRecommendationTarget = {
-        plan,
-        billingInterval: interval,
-        product: null,
-      };
-
       return {
-        target: isCurrentSelfServeBillingPlan(plan)
-          ? {
-              plan,
-              billingInterval: interval,
-              product: null,
-            }
-          : null,
-        rawTarget,
+        target: {
+          plan,
+          billingInterval: interval,
+          product: null,
+        },
         source: normalizeUpgradeRecommendationSource((raw as any).source),
       };
     }
   }
 
-  return { target: null, rawTarget: null, source: "none" };
+  return { target: null, source: "none" };
 }
 
 function normalizeUpgradeRecommendationSource(source: unknown): BillingUpgradeRecommendationSource {
@@ -102,10 +85,6 @@ function normalizeUpgradeRecommendationSource(source: unknown): BillingUpgradeRe
   }
 
   return "none";
-}
-
-function isCurrentSelfServeBillingPlan(value: string): value is CurrentSelfServeBillingPlan {
-  return CURRENT_SELF_SERVE_BILLING_PLANS.includes(value as CurrentSelfServeBillingPlan);
 }
 
 function isBillingInterval(value: unknown): value is BillingInterval {

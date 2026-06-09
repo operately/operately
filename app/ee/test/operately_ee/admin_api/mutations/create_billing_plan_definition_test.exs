@@ -35,7 +35,6 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :create_billing_plan_definition, %{
                  plan_key: "  Enterprise  ",
                  display_name: "Enterprise",
-                 sort_order: 8,
                  tier_rank: 8,
                  billing_behavior: "provider_managed",
                  customer_selectable: true,
@@ -45,7 +44,6 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingPlanDefinitionTest do
 
       assert plan_definition.key == "enterprise"
       assert plan_definition.display_name == "Enterprise"
-      assert plan_definition.sort_order == 8
       assert plan_definition.tier_rank == 8
       assert plan_definition.billing_behavior == "provider_managed"
       assert plan_definition.customer_selectable == true
@@ -61,7 +59,6 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :create_billing_plan_definition, %{
                  plan_key: "Trial_90_Day",
                  display_name: "Trial 90 Day",
-                 sort_order: 9,
                  tier_rank: 9,
                  billing_behavior: "internal",
                  customer_selectable: false,
@@ -79,7 +76,6 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingPlanDefinitionTest do
                admin_mutation(ctx.conn, :create_billing_plan_definition, %{
                  plan_key: "staff_only",
                  display_name: "Staff Only",
-                 sort_order: 10,
                  tier_rank: 10,
                  billing_behavior: "internal",
                  customer_selectable: true,
@@ -93,7 +89,6 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingPlanDefinitionTest do
     %{
       plan_key: "enterprise",
       display_name: "Enterprise",
-      sort_order: 8,
       tier_rank: 8,
       billing_behavior: "provider_managed",
       customer_selectable: true,
