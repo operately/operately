@@ -17,7 +17,7 @@ defmodule Operately.Billing.EnforceLimits do
     normalized_limit_key = normalize_limit_key(limit_key)
     requested_delta = normalize_requested_delta(opts)
     account = Billing.get_billing_account_by_company(company)
-    plan_key = effective_plan_key(account)
+    plan_key = resolve_current_plan_key(account)
     limit = plan_limit(plan_key, normalized_limit_key)
     current_usage = resolve_current_usage(company, normalized_limit_key, opts)
     projected_usage = current_usage + requested_delta
@@ -166,9 +166,8 @@ defmodule Operately.Billing.EnforceLimits do
     end
   end
 
-  defp effective_plan_key(nil), do: "free"
-  defp effective_plan_key(%CompanyBillingAccount{plan_key: nil}), do: "free"
-  defp effective_plan_key(%CompanyBillingAccount{plan_key: plan_key}), do: plan_key
+  defp resolve_current_plan_key(nil), do: Plans.resolve_current_plan_key(nil)
+  defp resolve_current_plan_key(%CompanyBillingAccount{plan_key: plan_key}), do: Plans.resolve_current_plan_key(plan_key)
 
   defp plan_limit(plan_key, :member_count), do: Plans.member_limit(plan_key)
   defp plan_limit(plan_key, :storage_bytes), do: Plans.storage_limit_bytes(plan_key)
@@ -234,7 +233,7 @@ defmodule Operately.Billing.EnforceLimits do
   defp fallback_recommendation(_company, plan_key, account, catalog_products) do
     fallback_interval = fallback_interval(account)
 
-    Enum.find_value(Plans.next_upgrade_plan_keys(plan_key), fn next_plan_key ->
+    Enum.find_value(Plans.next_self_serve_upgrade_plan_keys(plan_key), fn next_plan_key ->
       recommendation_for_plan(next_plan_key, fallback_interval, :next_plan, catalog_products)
     end)
   end

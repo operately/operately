@@ -5,6 +5,7 @@ export namespace CompanyBillingPage {
   export type Status = "free" | "active" | "past_due" | "canceled";
   export type Interval = "monthly" | "yearly";
   export type Plan = "team" | "business" | "unlimited";
+  export type PlanKey = string;
   export type ChangeTargetPlan = Plan | "free";
   export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
   export type NoticeTone = "info" | "warning" | "danger";
@@ -15,18 +16,18 @@ export namespace CompanyBillingPage {
   export type OverageKind = "none" | "member" | "storage" | "member_and_storage";
 
   export interface BillingAccount {
-    planKey?: Plan | null;
+    planKey?: PlanKey | null;
     billingInterval?: Interval | null;
     status: Status;
-    suggestedPlanKey?: Plan | null;
+    suggestedPlanKey?: PlanKey | null;
     suggestedBillingInterval?: Interval | null;
     suggestedPlanSource?: string | null;
     currentPeriodEnd?: string | null;
     cancelAtPeriodEnd: boolean;
-    pendingPlanKey?: Plan | null;
+    pendingPlanKey?: PlanKey | null;
     pendingBillingInterval?: Interval | null;
     pendingCheckoutStartedAt?: string | null;
-    scheduledPlanKey?: Plan | null;
+    scheduledPlanKey?: PlanKey | null;
     scheduledBillingInterval?: Interval | null;
     scheduledChangeEffectiveAt?: string | null;
     accessState?: "normal" | "payment_grace" | "over_limit_grace" | "read_only";
@@ -43,7 +44,7 @@ export namespace CompanyBillingPage {
   }
 
   export interface BillingCatalogProduct {
-    planFamily: Plan;
+    planFamily: PlanKey;
     billingInterval: Interval;
     polarProductName?: string | null;
     priceAmount?: number | null;

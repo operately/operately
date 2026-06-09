@@ -56,7 +56,7 @@ defmodule Operately.Billing.AccountSyncing do
 
   defp synced_status_allows_pending_clear?(_status), do: false
 
-  defp cast_plan_family(plan_family), do: Plans.cast_paid_plan_key(plan_family)
+  defp cast_plan_family(plan_family), do: Plans.cast_provider_managed_plan_key(plan_family)
 
   defp cast_billing_interval(interval) when interval in [:monthly, :yearly], do: {:ok, interval}
 

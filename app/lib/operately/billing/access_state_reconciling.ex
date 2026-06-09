@@ -71,23 +71,19 @@ defmodule Operately.Billing.AccessStateReconciling do
   end
 
   defp over_limit?(company, attrs) do
-    plan_key = effective_plan_key(Map.get(attrs, :plan_key))
+    plan_key = Plans.resolve_current_plan_key(Map.get(attrs, :plan_key))
     member_limit = Plans.member_limit(plan_key)
     storage_limit_bytes = Plans.storage_limit_bytes(plan_key)
 
-    if is_nil(member_limit) or is_nil(storage_limit_bytes) do
-      false
-    else
-      Usage.active_member_count(company) > member_limit ||
-        Usage.company_storage_bytes(company) > storage_limit_bytes
-    end
+    limit_exceeded?(Usage.active_member_count(company), member_limit) ||
+      limit_exceeded?(Usage.company_storage_bytes(company), storage_limit_bytes)
   end
 
   defp downgrade_became_current?(nil, _attrs), do: false
 
   defp downgrade_became_current?(%CompanyBillingAccount{} = account, attrs) do
-    previous_plan_key = effective_plan_key(account.plan_key)
-    new_plan_key = effective_plan_key(Map.get(attrs, :plan_key))
+    previous_plan_key = Plans.resolve_current_plan_key(account.plan_key)
+    new_plan_key = Plans.resolve_current_plan_key(Map.get(attrs, :plan_key))
 
     # We only start remediation when the newly effective plan has lower
     # entitlements than the previously effective plan.
@@ -106,8 +102,8 @@ defmodule Operately.Billing.AccessStateReconciling do
 
   defp cancel_to_free_became_current?(%CompanyBillingAccount{} = account, attrs) do
     account.cancel_at_period_end &&
-      effective_plan_key(account.plan_key) != "free" &&
-      effective_plan_key(Map.get(attrs, :plan_key)) == "free"
+      Plans.resolve_current_plan_key(account.plan_key) != "free" &&
+      Plans.resolve_current_plan_key(Map.get(attrs, :plan_key)) == "free"
   end
 
   defp lower_entitlements?(previous_plan_key, new_plan_key) do
@@ -116,11 +112,8 @@ defmodule Operately.Billing.AccessStateReconciling do
     new_member_limit = Plans.member_limit(new_plan_key)
     new_storage_limit = Plans.storage_limit_bytes(new_plan_key)
 
-    cond do
-      is_nil(previous_member_limit) or is_nil(previous_storage_limit) -> false
-      is_nil(new_member_limit) or is_nil(new_storage_limit) -> false
-      true -> new_member_limit < previous_member_limit || new_storage_limit < previous_storage_limit
-    end
+    lower_limit?(previous_member_limit, new_member_limit) ||
+      lower_limit?(previous_storage_limit, new_storage_limit)
   end
 
   defp existing_over_limit_state?(account), do: state_for_reason?(account, :over_limit_after_downgrade)
@@ -183,12 +176,17 @@ defmodule Operately.Billing.AccessStateReconciling do
 
   defp grace_ends_at(now), do: DateTime.add(now, @grace_period_seconds, :second)
 
-  defp effective_plan_key(nil), do: "free"
-  defp effective_plan_key(plan_key), do: normalize_plan_key(plan_key)
-
   defp normalize_plan_key(plan_key) do
     Plans.normalize_key(plan_key) || plan_key
   end
+
+  defp lower_limit?(nil, nil), do: false
+  defp lower_limit?(nil, _new_limit), do: true
+  defp lower_limit?(_previous_limit, nil), do: false
+  defp lower_limit?(previous_limit, new_limit), do: new_limit < previous_limit
+
+  defp limit_exceeded?(_usage, nil), do: false
+  defp limit_exceeded?(usage, limit), do: usage > limit
 
   defp normalize_billing_interval(interval) when interval in [:monthly, :yearly], do: interval
 

@@ -52,7 +52,9 @@ interface BuildSelectionModeArgs {
 export function buildCompanyBillingPlanSelectionMode(
   args: BuildSelectionModeArgs,
 ): CompanyBillingPlanSelectionPage.SelectionModeView {
-  const mode: CompanyBillingPlanSelectionPage.Mode = isCompanyBillingPaidStatus(args.billing.account.status) ? "change_plan" : "checkout";
+  const mode: CompanyBillingPlanSelectionPage.Mode = isCompanyBillingPaidStatus(args.billing.account.status)
+    ? "change_plan"
+    : "checkout";
   const selectedTarget = args.selection.target || findFallbackSelectionTarget(args.billing, mode);
   const selectedInterval = selectedTarget?.billingInterval || "monthly";
 
@@ -86,7 +88,9 @@ export function buildCompanyBillingPlanSelectionMode(
       label: mode === "change_plan" ? "Change plan" : "Continue to checkout",
       tone: "primary",
       onClick: args.onSubmit,
-      disabled: !selectedTarget?.product || (mode === "change_plan" && isCurrentOrScheduledSelection(args.billing, selectedTarget)),
+      disabled:
+        !selectedTarget?.product ||
+        (mode === "change_plan" && isCurrentOrScheduledSelection(args.billing, selectedTarget)),
       loading: args.isSubmitting,
     },
   };
@@ -159,7 +163,7 @@ function findSuggestedSelectionTarget(
   billing: CompanyBillingPlanSelectionPage.BillingOverview,
 ): CompanyBillingPlanSelectionPage.BillingTarget | null {
   const suggestedPlan = billing.account.suggestedPlanKey;
-  if (!suggestedPlan) return null;
+  if (!isSelectableBillingPlan(suggestedPlan)) return null;
 
   const suggestedInterval = billing.account.suggestedBillingInterval;
 
@@ -170,7 +174,8 @@ function findSuggestedSelectionTarget(
     }
   }
 
-  const fallbackProduct = billing.catalogProducts.find((product) => product.active && product.planFamily === suggestedPlan) || null;
+  const fallbackProduct =
+    billing.catalogProducts.find((product) => product.active && product.planFamily === suggestedPlan) || null;
   if (!fallbackProduct) return null;
 
   return {
@@ -178,6 +183,10 @@ function findSuggestedSelectionTarget(
     billingInterval: fallbackProduct.billingInterval,
     product: fallbackProduct,
   };
+}
+
+function isSelectableBillingPlan(value: string | null | undefined): value is CompanyBillingPlanSelectionPage.Plan {
+  return value === "team" || value === "business" || value === "unlimited";
 }
 
 function formatPlanPriceLabel(
@@ -215,7 +224,9 @@ function buildConsequenceRows(
 ): CompanyBillingPlanSelectionPage.ConsequenceNotice["rows"] {
   const rows = [
     { label: "Active members", value: `${consequence.memberCount}` },
-    consequence.memberLimit != null ? { label: `${consequence.targetPlanLabel} member limit`, value: `${consequence.memberLimit}` } : null,
+    consequence.memberLimit != null
+      ? { label: `${consequence.targetPlanLabel} member limit`, value: `${consequence.memberLimit}` }
+      : null,
     { label: "Storage used", value: formatStorageBytes(consequence.storageUsageBytes) },
     consequence.storageLimitBytes != null
       ? {

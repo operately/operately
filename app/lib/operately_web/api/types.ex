@@ -32,8 +32,9 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:account_theme, values: Operately.People.Account.valid_themes())
 
-  enum(:billing_plan, values: Operately.Billing.CompanyBillingAccount.valid_plan_keys())
-  enum(:billing_limit_plan, values: [:free | Operately.Billing.CompanyBillingAccount.valid_plan_keys()])
+  @self_serve_billing_plans [:team, :business, :unlimited]
+
+  enum(:billing_plan, values: @self_serve_billing_plans)
   enum(:billing_interval, values: Operately.Billing.CompanyBillingAccount.valid_billing_intervals())
   enum(:billing_status, values: Operately.Billing.CompanyBillingAccount.valid_statuses())
   enum(:billing_access_state, values: Operately.Billing.CompanyBillingAccount.valid_access_states())
@@ -41,18 +42,18 @@ defmodule OperatelyWeb.Api.Types do
 
   object :billing_account do
     field :provider, :string, null: false
-    field? :plan_key, :billing_plan, null: true
+    field? :plan_key, :string, null: true
     field? :billing_interval, :billing_interval, null: true
     field :status, :billing_status, null: false
-    field? :suggested_plan_key, :billing_plan, null: true
+    field? :suggested_plan_key, :string, null: true
     field? :suggested_billing_interval, :billing_interval, null: true
     field? :suggested_plan_source, :string, null: true
     field? :current_period_end, :datetime, null: true
     field :cancel_at_period_end, :boolean, null: false
-    field? :pending_plan_key, :billing_plan, null: true
+    field? :pending_plan_key, :string, null: true
     field? :pending_billing_interval, :billing_interval, null: true
     field? :pending_checkout_started_at, :datetime, null: true
-    field? :scheduled_plan_key, :billing_plan, null: true
+    field? :scheduled_plan_key, :string, null: true
     field? :scheduled_billing_interval, :billing_interval, null: true
     field? :scheduled_change_effective_at, :datetime, null: true
     field? :last_synced_at, :datetime, null: true
@@ -72,7 +73,7 @@ defmodule OperatelyWeb.Api.Types do
   object :billing_catalog_product do
     field :id, :string, null: false
     field :provider, :string, null: false
-    field :plan_family, :billing_plan, null: false
+    field :plan_family, :string, null: false
     field :billing_interval, :billing_interval, null: false
     field :polar_product_id, :string, null: false
     field? :polar_product_name, :string, null: true
@@ -87,7 +88,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :billing_recommended_upgrade do
-    field? :plan_key, :billing_plan, null: true
+    field? :plan_key, :string, null: true
     field? :billing_interval, :billing_interval, null: true
     field? :source, :string, null: true
   end
@@ -95,7 +96,7 @@ defmodule OperatelyWeb.Api.Types do
   object :billing_limit_status do
     field :code, :string, null: false
     field :limit_key, :string, null: false
-    field? :plan_key, :billing_limit_plan, null: true
+    field? :plan_key, :string, null: true
     field :current_usage, :integer, null: false
     field :requested_delta, :integer, null: false
     field :projected_usage, :integer, null: false
@@ -115,7 +116,7 @@ defmodule OperatelyWeb.Api.Types do
   object :billing_access_state_limit do
     field :code, :string, null: false
     field :limit_key, :string, null: false
-    field? :plan_key, :billing_limit_plan, null: true
+    field? :plan_key, :string, null: true
     field :current_usage, :integer, null: false
     field :requested_delta, :integer, null: false
     field :projected_usage, :integer, null: false

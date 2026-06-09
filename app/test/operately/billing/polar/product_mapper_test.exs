@@ -1,7 +1,9 @@
 defmodule Operately.Billing.Polar.ProductMapperTest do
-  use ExUnit.Case, async: true
+  use Operately.DataCase, async: true
 
+  alias Operately.Billing.PlanDefinition
   alias Operately.Billing.Polar.ProductMapper
+  alias Operately.Repo
 
   describe "metadata/3" do
     test "builds the managed metadata stored on Polar products" do
@@ -71,6 +73,32 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
       assert attrs.archived_at == ~U[2026-01-02 03:04:05Z]
     end
 
+    test "accepts custom provider-managed plan families from plan definitions" do
+      create_plan_definition(%{
+        plan_key: "enterprise",
+        display_name: "Enterprise",
+        sort_order: 10,
+        tier_rank: 10,
+        billing_behavior: :provider_managed,
+        customer_selectable: true,
+        member_limit: 500,
+        storage_limit_bytes: 5_497_558_138_880
+      })
+
+      payload =
+        managed_product_payload(%{
+          "metadata" => %{
+            "operately_managed" => "true",
+            "operately_plan_family" => "enterprise",
+            "operately_billing_interval" => "monthly",
+            "operately_version" => 1
+          }
+        })
+
+      assert {:ok, attrs} = ProductMapper.normalize_provider_product(payload)
+      assert attrs.plan_family == "enterprise"
+    end
+
     test "ignores products that are not marked as Operately-managed" do
       payload =
         managed_product_payload(%{
@@ -121,5 +149,11 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
       },
       overrides
     )
+  end
+
+  defp create_plan_definition(attrs) do
+    %PlanDefinition{}
+    |> PlanDefinition.changeset(attrs)
+    |> Repo.insert!()
   end
 end

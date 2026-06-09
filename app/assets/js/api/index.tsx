@@ -1081,7 +1081,7 @@ export interface Assignments {
 export interface BillingAccessStateLimit {
   code: string;
   limitKey: string;
-  planKey?: BillingLimitPlan | null;
+  planKey?: string | null;
   currentUsage: number;
   requestedDelta: number;
   projectedUsage: number;
@@ -1094,18 +1094,18 @@ export interface BillingAccessStateLimit {
 
 export interface BillingAccount {
   provider: string;
-  planKey?: BillingPlan | null;
+  planKey?: string | null;
   billingInterval?: BillingInterval | null;
   status: BillingStatus;
-  suggestedPlanKey?: BillingPlan | null;
+  suggestedPlanKey?: string | null;
   suggestedBillingInterval?: BillingInterval | null;
   suggestedPlanSource?: string | null;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd: boolean;
-  pendingPlanKey?: BillingPlan | null;
+  pendingPlanKey?: string | null;
   pendingBillingInterval?: BillingInterval | null;
   pendingCheckoutStartedAt?: string | null;
-  scheduledPlanKey?: BillingPlan | null;
+  scheduledPlanKey?: string | null;
   scheduledBillingInterval?: BillingInterval | null;
   scheduledChangeEffectiveAt?: string | null;
   lastSyncedAt?: string | null;
@@ -1118,7 +1118,7 @@ export interface BillingAccount {
 export interface BillingCatalogProduct {
   id: string;
   provider: string;
-  planFamily: BillingPlan;
+  planFamily: string;
   billingInterval: BillingInterval;
   polarProductId: string;
   polarProductName?: string | null;
@@ -1160,7 +1160,7 @@ export interface BillingHostedSession {
 export interface BillingLimitStatus {
   code: string;
   limitKey: string;
-  planKey?: BillingLimitPlan | null;
+  planKey?: string | null;
   currentUsage: number;
   requestedDelta: number;
   projectedUsage: number;
@@ -1194,7 +1194,7 @@ export interface BillingPlanDefinition {
 }
 
 export interface BillingRecommendedUpgrade {
-  planKey?: BillingPlan | null;
+  planKey?: string | null;
   billingInterval?: BillingInterval | null;
   source?: string | null;
 }
@@ -2305,8 +2305,6 @@ export type BillingAccessState = "normal" | "payment_grace" | "over_limit_grace"
 export type BillingAccessStateReason = "past_due" | "over_limit_after_downgrade";
 
 export type BillingInterval = "monthly" | "yearly";
-
-export type BillingLimitPlan = "free" | "team" | "business" | "unlimited";
 
 export type BillingPlan = "team" | "business" | "unlimited";
 
