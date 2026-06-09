@@ -260,6 +260,34 @@ describe("billing model helpers", () => {
     });
   });
 
+  it("ignores unsupported dynamic plan recommendations in the current self-serve ui flow", () => {
+    expect(
+      Billing.extractLimitErrorDetails({
+        code: "member_count_limit_exceeded",
+        limit_key: "member_count",
+        plan_key: "free",
+        current_usage: 20,
+        requested_delta: 1,
+        projected_usage: 21,
+        limit: 20,
+        remaining: 0,
+        near_limit: true,
+        blocked: true,
+        enforced: true,
+        recommended_upgrade: {
+          plan_key: "enterprise",
+          billing_interval: "monthly",
+          source: "next_plan",
+        },
+      }),
+    ).toMatchObject({
+      recommendedUpgrade: {
+        source: "none",
+        target: null,
+      },
+    });
+  });
+
   it("builds owner guidance with a direct billing CTA", () => {
     const error = Billing.extractLimitErrorDetails({
       code: "member_count_limit_exceeded",
@@ -397,7 +425,11 @@ describe("billing model helpers", () => {
 
     jest.spyOn(Api.billing, "changePlan").mockResolvedValue({ billing } as any);
 
-    const result = await Billing.changePlan({ plan: "business", billingInterval: "monthly", product: billing.catalogProducts[2] });
+    const result = await Billing.changePlan({
+      plan: "business",
+      billingInterval: "monthly",
+      product: billing.catalogProducts[2],
+    });
 
     expect(Api.billing.changePlan).toHaveBeenCalledWith({ plan: "business", billingInterval: "monthly" });
     expect(result).toEqual({ outcome: "billing_updated", billing });

@@ -52,9 +52,12 @@ defmodule Operately.Billing do
 
     Repo.all(
       from p in Person,
-        join: m in GroupMembership, on: m.person_id == p.id,
-        join: b in Binding, on: b.group_id == m.group_id,
-        join: ctx in Context, on: ctx.id == b.context_id,
+        join: m in GroupMembership,
+        on: m.person_id == p.id,
+        join: b in Binding,
+        on: b.group_id == m.group_id,
+        join: ctx in Context,
+        on: ctx.id == b.context_id,
         where: p.company_id == ^company.id,
         where: p.suspended == false and is_nil(p.suspended_at),
         where: ctx.company_id == ^company.id and b.access_level >= ^Binding.admin_access(),
@@ -191,7 +194,19 @@ defmodule Operately.Billing do
   #
 
   def list_plan_definitions do
-    Repo.all(from plan in PlanDefinition, order_by: [asc: plan.sort_order, asc: plan.inserted_at])
+    Plans.all()
+  end
+
+  def list_active_plan_definitions do
+    Plans.list_active()
+  end
+
+  def list_customer_selectable_plan_definitions do
+    Plans.list_customer_selectable()
+  end
+
+  def list_self_serve_sellable_plan_definitions do
+    Plans.list_self_serve_sellable()
   end
 
   def get_plan_definition!(id), do: Repo.get!(PlanDefinition, id)
@@ -234,7 +249,7 @@ defmodule Operately.Billing do
   end
 
   def find_active_product(plan_family, billing_interval) do
-    with {:ok, plan_family} <- cast_plan_family(plan_family),
+    with {:ok, plan_family} <- cast_provider_managed_plan_family(plan_family),
          {:ok, billing_interval} <- cast_billing_interval(billing_interval) do
       ProductCatalogEntry
       |> where([e], e.plan_family == ^plan_family)
@@ -254,7 +269,7 @@ defmodule Operately.Billing do
   end
 
   def next_product_version(plan_family, billing_interval) do
-    with {:ok, plan_family} <- cast_plan_family(plan_family),
+    with {:ok, plan_family} <- cast_provider_managed_plan_family(plan_family),
          {:ok, billing_interval} <- cast_billing_interval(billing_interval) do
       ProductCatalogEntry
       |> where([e], e.plan_family == ^plan_family)
@@ -463,7 +478,7 @@ defmodule Operately.Billing do
     end
   end
 
-  defp cast_plan_family(plan_family), do: Plans.cast_paid_plan_key(plan_family)
+  defp cast_provider_managed_plan_family(plan_family), do: Plans.cast_provider_managed_plan_key(plan_family)
 
   defp cast_billing_interval(interval) when interval in @valid_billing_intervals, do: {:ok, interval}
 

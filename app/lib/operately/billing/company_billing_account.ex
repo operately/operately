@@ -4,7 +4,6 @@ defmodule Operately.Billing.CompanyBillingAccount do
 
   alias Operately.Billing.Plans
 
-  @valid_plan_keys [:team, :business, :unlimited]
   @valid_billing_intervals [:monthly, :yearly]
   @valid_statuses [:free, :active, :past_due, :canceled]
   @valid_access_states [:normal, :payment_grace, :over_limit_grace, :read_only]
@@ -39,8 +38,6 @@ defmodule Operately.Billing.CompanyBillingAccount do
     timestamps()
   end
 
-  def valid_plan_keys, do: @valid_plan_keys
-  def valid_plan_key_strings, do: Plans.paid_plan_key_strings()
   def valid_billing_intervals, do: @valid_billing_intervals
   def valid_statuses, do: @valid_statuses
   def valid_access_states, do: @valid_access_states
@@ -86,13 +83,19 @@ defmodule Operately.Billing.CompanyBillingAccount do
   defp validate_plan_key_fields(changeset) do
     Enum.reduce(@plan_key_fields, changeset, fn field, changeset ->
       validate_change(changeset, field, fn ^field, value ->
-        if value in valid_plan_key_strings() do
-          []
-        else
-          [{field, "is invalid"}]
-        end
+        validate_plan_key_value(field, value)
       end)
     end)
+  end
+
+  defp validate_plan_key_value(_field, nil), do: []
+
+  defp validate_plan_key_value(field, value) do
+    if Plans.valid_plan?(value) do
+      []
+    else
+      [{field, "is invalid"}]
+    end
   end
 
   defp normalize_plan_key_attrs(attrs) when is_map(attrs) do

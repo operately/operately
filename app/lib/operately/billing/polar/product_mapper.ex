@@ -188,7 +188,7 @@ defmodule Operately.Billing.Polar.ProductMapper do
   end
 
   defp normalize_plan_family(plan_family) do
-    case Plans.cast_paid_plan_key(plan_family) do
+    case Plans.cast_provider_managed_plan_key(plan_family) do
       {:ok, normalized_plan_key} -> {:ok, normalized_plan_key}
       {:error, :invalid_plan_key} -> {:error, :invalid_plan_family}
     end

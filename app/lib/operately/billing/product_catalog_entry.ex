@@ -46,7 +46,7 @@ defmodule Operately.Billing.ProductCatalogEntry do
     ])
     |> validate_required([:provider, :plan_family, :billing_interval, :polar_product_id])
     |> validate_change(:plan_family, fn :plan_family, value ->
-      if value in CompanyBillingAccount.valid_plan_key_strings() do
+      if Plans.provider_managed_plan?(value) do
         []
       else
         [plan_family: "is invalid"]

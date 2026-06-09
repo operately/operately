@@ -132,7 +132,7 @@ defmodule Operately.Billing.Polar.Operations.PlanChanging do
   end
 
   defp cast_plan_key(plan_key) do
-    case Plans.cast_paid_plan_key(plan_key) do
+    case Plans.cast_customer_selectable_plan_key(plan_key) do
       {:ok, normalized_plan_key} -> {:ok, normalized_plan_key}
       {:error, :invalid_plan_key} -> {:error, :bad_request}
     end
