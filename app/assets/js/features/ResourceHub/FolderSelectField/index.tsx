@@ -2,13 +2,14 @@ import * as React from "react";
 
 import { BeatLoader } from "react-spinners";
 
-import { IconArrowLeft } from "turboui";
-import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
+import { IconArrowLeft, NodeIcon } from "turboui";
 
 import { useViewModel, ViewModel, ViewModelNode, NotAllowedSelection } from "./viewModel";
 import classNames from "classnames";
 import Forms from "@/components/Forms";
 import { createTestId } from "@/utils/testid";
+import { usePaths } from "@/routes/paths";
+import { nodeToUiNode } from "@/features/ResourceHub/turbouiAdapters";
 
 interface FolderSelectFieldProps {
   label: string;
@@ -67,6 +68,8 @@ function NodeList({ viewModel }: { viewModel: ViewModel }) {
 }
 
 function NodeItem({ viewModel, node }: { viewModel: ViewModel; node: ViewModelNode }) {
+  const paths = usePaths();
+  const uiNode = node.apiNode ? nodeToUiNode(paths, node.apiNode) : null;
   const className = classNames("flex items-center justify-between", "p-2", "even:bg-surface-dimmed", {
     "cursor-pointer": node.selectable,
     "hover:bg-surface-highlight": !viewModel.isNodeLoading(node),
@@ -80,7 +83,7 @@ function NodeItem({ viewModel, node }: { viewModel: ViewModel; node: ViewModelNo
   return (
     <div className={className} onClick={() => viewModel.select(node)} data-test-id={testId}>
       <div className={innerClassName}>
-        <NodeIcon size={16} node={node.apiNode!} />
+        {uiNode && <NodeIcon size={16} node={uiNode} />}
         {node.name}
       </div>
 

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 
-import { LinkOptions } from "@/features/ResourceHub";
+import type { ResourceHubLinkType } from "turboui";
 import { AddFileProps, useAddFile } from "../useAddFile";
 
 import { usePaths } from "@/routes/paths";
@@ -17,7 +17,7 @@ interface NewFileModalsContext extends AddFileProps {
   showAddFolder: boolean;
   toggleShowAddFolder: () => void;
   navigateToNewDocument: () => void;
-  navigateToNewLink: (type?: string) => void;
+  navigateToNewLink: (type?: ResourceHubLinkType) => void;
 }
 
 const Context = React.createContext<NewFileModalsContext | undefined>(undefined);
@@ -32,7 +32,7 @@ export function NewFileModalsProvider({ children, resourceHub, folder }: Props) 
   const navigateToNewDocument = () =>
     navigate(paths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
 
-  const navigateToNewLink = (type?: LinkOptions) => {
+  const navigateToNewLink = (type?: ResourceHubLinkType) => {
     navigate(
       paths.resourceHubNewLinkPath(resourceHub.id!, {
         folderId: folder?.id || undefined,
