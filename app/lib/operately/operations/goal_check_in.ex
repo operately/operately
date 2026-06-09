@@ -18,36 +18,41 @@ defmodule Operately.Operations.GoalCheckIn do
         author_id: author.id,
         status: attrs.status,
         message: attrs.content,
+        state: state(attrs),
         subscription_list_id: changes.subscription_list.id,
         timeframe: to_timeframe(goal, attrs.due_date)
       }
 
-      changeset_attrs = if target_values != nil do
-        encoded_target_values = encode_new_target_values(targets, target_values)
-        Map.put(changeset_attrs, :targets, encoded_target_values)
-      else
-        changeset_attrs
-      end
+      changeset_attrs =
+        if target_values != nil do
+          encoded_target_values = encode_new_target_values(targets, target_values)
+          Map.put(changeset_attrs, :targets, encoded_target_values)
+        else
+          changeset_attrs
+        end
 
-      changeset_attrs = if checklist != nil do
-        Map.put(changeset_attrs, :checks, checklist)
-      else
-        changeset_attrs
-      end
+      changeset_attrs =
+        if checklist != nil do
+          Map.put(changeset_attrs, :checks, checklist)
+        else
+          changeset_attrs
+        end
 
       Update.changeset(changeset_attrs)
     end)
     |> SubscriptionList.update(:update)
-    |> update_goal(goal, attrs)
-    |> maybe_update_targets(targets, target_values)
-    |> maybe_update_checklist(goal, checklist)
-    |> record_activity(author, goal)
+    |> maybe_update_goal(goal, attrs)
+    |> maybe_update_targets(targets, target_values, attrs)
+    |> maybe_update_checklist(goal, checklist, attrs)
+    |> maybe_record_activity(author, goal, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
     |> handle_result_broadcast()
   end
 
-  defp update_goal(multi, goal, attrs) do
+  defp maybe_update_goal(multi, _goal, %{post_as_draft: true}), do: multi
+
+  defp maybe_update_goal(multi, goal, attrs) do
     Multi.update(multi, :goal, fn changes ->
       Goal.changeset(goal, %{
         next_update_scheduled_at: calc_next_check_in_time(goal),
@@ -58,9 +63,10 @@ defmodule Operately.Operations.GoalCheckIn do
     end)
   end
 
-  defp maybe_update_targets(multi, _targets, nil), do: multi
+  defp maybe_update_targets(multi, _targets, _new_target_values, %{post_as_draft: true}), do: multi
+  defp maybe_update_targets(multi, _targets, nil, _attrs), do: multi
 
-  defp maybe_update_targets(multi, targets, new_target_values) do
+  defp maybe_update_targets(multi, targets, new_target_values, _attrs) do
     Enum.reduce(new_target_values, multi, fn target_value, multi ->
       target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
       changeset = Target.changeset(target, %{value: target_value["value"]})
@@ -70,9 +76,10 @@ defmodule Operately.Operations.GoalCheckIn do
     end)
   end
 
-  defp maybe_update_checklist(multi, _goal, nil), do: multi
+  defp maybe_update_checklist(multi, _goal, _checklist, %{post_as_draft: true}), do: multi
+  defp maybe_update_checklist(multi, _goal, nil, _attrs), do: multi
 
-  defp maybe_update_checklist(multi, goal, checklist) do
+  defp maybe_update_checklist(multi, goal, checklist, _attrs) do
     checks = Operately.Repo.preload(goal, :checks).checks
 
     Enum.reduce(checklist, multi, fn item, multi ->
@@ -87,9 +94,10 @@ defmodule Operately.Operations.GoalCheckIn do
     end)
   end
 
-  defp record_activity(multi, author, goal) do
-    multi
-    |> Activities.insert_sync(author.id, :goal_check_in, fn changes ->
+  defp maybe_record_activity(multi, _author, _goal, %{post_as_draft: true}), do: multi
+
+  defp maybe_record_activity(multi, author, goal, _attrs) do
+    Activities.insert_sync(multi, author.id, :goal_check_in, fn changes ->
       old_timeframe = goal.timeframe
       new_timeframe = changes.update.timeframe
 
@@ -105,7 +113,10 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp handle_result_broadcast({:ok, update}) do
-    OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: update.author_id)
+    if update.state == :published do
+      OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: update.author_id)
+    end
+
     {:ok, update}
   end
 
@@ -126,6 +137,9 @@ defmodule Operately.Operations.GoalCheckIn do
       })
     end)
   end
+
+  defp state(%{post_as_draft: true}), do: :draft
+  defp state(_attrs), do: :published
 
   defp calc_next_check_in_time(goal) do
     Operately.Time.calculate_next_monthly_check_in(goal.next_update_scheduled_at, DateTime.utc_now())

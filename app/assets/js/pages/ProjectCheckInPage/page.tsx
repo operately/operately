@@ -51,17 +51,21 @@ export function Page() {
           <Title />
           <StatusSection checkIn={checkIn} reviewer={checkIn.project!.reviewer} />
           <DescriptionSection checkIn={checkIn} />
-          <AckCTA />
 
-          <Spacer size={4} />
-          <CheckInReactions />
+          {checkIn.state !== "draft" && (
+            <>
+              <AckCTA />
 
-          <div className="border-t border-stroke-base mt-8" />
-          <Comments />
+              <Spacer size={4} />
+              <CheckInReactions />
 
-          <div className="border-t border-stroke-base mt-16 mb-8" />
+              <div className="border-t border-stroke-base mt-8" />
+              <Comments />
 
-          <SubscriptionsSection />
+              <div className="border-t border-stroke-base mt-16 mb-8" />
+              <SubscriptionsSection />
+            </>
+          )}
 
           <DeleteCheckInModal isOpen={showDeleteConfirmModal} toggleModal={toggleDeleteConfirmModal} />
         </Paper.Body>
@@ -125,6 +129,7 @@ function Title() {
       <div className="text-content-accent text-2xl font-extrabold">
         Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
       </div>
+      {checkIn.state === "draft" && <DraftBadge />}
       <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
         <div className="flex items-center gap-2">
           <Avatar person={checkIn.author!} size="tiny" /> {checkIn.author!.fullName}
@@ -159,6 +164,10 @@ function Navigation() {
 function Acknowledgement() {
   const { checkIn } = useLoadedData();
 
+  if (checkIn.state === "draft") {
+    return <span className="flex items-center gap-1">Draft</span>;
+  }
+
   if (checkIn.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
@@ -177,13 +186,15 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const me = useMe()!;
 
   const isAuthor = compareIds(me.id!, checkIn.author!.id!);
-  const canDelete = checkIn.project?.permissions?.hasFullAccess || false;
+  const canManageDraft = checkIn.state === "draft";
+  const canEdit = canManageDraft || isAuthor;
+  const canDelete = canManageDraft || checkIn.project?.permissions?.hasFullAccess || false;
 
-  if (!isAuthor && !canDelete) return null;
+  if (!canEdit && !canDelete) return null;
 
   return (
     <PageOptions.Root testId="options-button">
-      {isAuthor && (
+      {canEdit && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit check-in"
@@ -194,7 +205,7 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
       {canDelete && (
         <PageOptions.Action
           icon={IconTrash}
-          title="Delete check-in"
+          title={checkIn.state === "draft" ? "Discard draft" : "Delete check-in"}
           onClick={showDeleteModal}
           testId="delete-check-in"
         />
@@ -221,7 +232,11 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
     cancel: toggleModal,
     submit: async () => {
       await remove({ checkInId: checkIn.id });
-      showSuccessToast("Check-in deleted", "The check-in has been successfully deleted.");
+      if (checkIn.state === "draft") {
+        showSuccessToast("Draft discarded", "The draft has been discarded.");
+      } else {
+        showSuccessToast("Check-in deleted", "The check-in has been successfully deleted.");
+      }
       navigate(paths.projectCheckInsPath(checkIn.project?.id!));
     },
   });
@@ -230,10 +245,20 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
     <Modal isOpen={isOpen} hideModal={toggleModal}>
       <Forms.Form form={form}>
         <p>
-          Are you sure you want to delete this check-in?
+          {checkIn.state === "draft"
+            ? "Are you sure you want to discard this draft?"
+            : "Are you sure you want to delete this check-in?"}
         </p>
-        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+        <Forms.Submit saveText={checkIn.state === "draft" ? "Discard draft" : "Delete"} cancelText="Cancel" />
       </Forms.Form>
     </Modal>
+  );
+}
+
+function DraftBadge() {
+  return (
+    <span className="mt-2 rounded-sm border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-semibold uppercase leading-none text-amber-700 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300">
+      Draft
+    </span>
   );
 }

@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckIn do
     field :project_id, :id, null: false
     field :status, :project_check_in_status, null: false
     field :description, :json, null: false
+    field? :post_as_draft, :boolean, null: false, default: false
     field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
     field? :subscriber_ids, list_of(:id), null: false, default: []
   end
@@ -45,13 +46,15 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckIn do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, %{
-      project_id: inputs.project_id,
-      status: inputs.status,
-      content: inputs.description,
-      send_to_everyone: inputs[:send_notifications_to_everyone],
-      subscription_parent_type: :project_check_in,
-      subscriber_ids: inputs[:subscriber_ids]
-    }}
+    {:ok,
+     %{
+       project_id: inputs.project_id,
+       status: inputs.status,
+       content: inputs.description,
+       post_as_draft: inputs[:post_as_draft],
+       send_to_everyone: inputs[:send_notifications_to_everyone],
+       subscription_parent_type: :project_check_in,
+       subscriber_ids: inputs[:subscriber_ids]
+     }}
   end
 end

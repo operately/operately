@@ -60,6 +60,17 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckInTest do
       assert {200, res} = request(ctx.conn, update)
       assert_response(res, update)
     end
+
+    test "draft updates cannot be acknowledged", ctx do
+      update = create_update(ctx, reviewer_id: ctx.person.id, post_as_draft: true)
+
+      assert {404, res} = request(ctx.conn, update)
+      assert res.message == "The requested resource was not found"
+
+      update = Repo.reload(update)
+      refute update.acknowledged_at
+      refute update.acknowledged_by_id
+    end
   end
 
   describe "acknowledge_goal_progress_update functionality" do
@@ -98,25 +109,32 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckInTest do
   end
 
   defp create_update(ctx, opts) do
+    goal_attrs = Keyword.drop(opts, [:post_as_draft])
+
     goal =
       goal_fixture(
         ctx.creator,
-        Enum.into(opts, %{
+        Enum.into(goal_attrs, %{
           space_id: ctx[:space_id] || ctx.company.company_space_id,
           company_access_level: Keyword.get(opts, :company_access_level, Binding.no_access()),
           space_access_level: Keyword.get(opts, :space_access_level, Binding.no_access())
         })
       )
 
-    goal_update_fixture(ctx.creator, goal)
+    attrs = Keyword.take(opts, [:post_as_draft])
+
+    goal_update_fixture(ctx.creator, goal, attrs)
   end
 
   defp add_person_to_space(ctx) do
     space = Operately.Groups.get_group!(ctx.space_id)
 
-    {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access()
-    }])
+    {:ok, _} =
+      Operately.Groups.add_members(ctx.creator, space.id, [
+        %{
+          id: ctx.person.id,
+          access_level: Binding.edit_access()
+        }
+      ])
   end
 end
