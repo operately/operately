@@ -16,6 +16,8 @@ import {
 import { findCompanyBillingPlanDefinition, formatStorageBytes } from "../CompanyBilling";
 import { CompanyBillingPlanSelectionPage } from "./types";
 
+const CURRENT_SELF_SERVE_BILLING_PLANS = ["team", "business", "unlimited"] as const;
+
 export function buildCompanyBillingPlanSelectionPageViewModel(
   props: CompanyBillingPlanSelectionPage.Props,
 ): CompanyBillingPlanSelectionPage.PageViewModel {
@@ -63,7 +65,7 @@ export function buildCompanyBillingPlanSelectionMode(
     errorMessage: args.actionError,
     selectedInterval,
     onSelectInterval: args.onSelectInterval,
-    cards: (["team", "business", "unlimited"] as CompanyBillingPlanSelectionPage.Plan[]).map((plan) => {
+    cards: CURRENT_SELF_SERVE_BILLING_PLANS.map((plan) => {
       const definition = findCompanyBillingPlanDefinition(args.billing.plans, plan);
       const product = findCompanyBillingSellableProduct(args.billing.catalogProducts, plan, selectedInterval);
 
@@ -163,7 +165,7 @@ function findSuggestedSelectionTarget(
   billing: CompanyBillingPlanSelectionPage.BillingOverview,
 ): CompanyBillingPlanSelectionPage.BillingTarget | null {
   const suggestedPlan = billing.account.suggestedPlanKey;
-  if (!isSelectableBillingPlan(suggestedPlan)) return null;
+  if (!isCurrentSelfServeBillingPlan(suggestedPlan)) return null;
 
   const suggestedInterval = billing.account.suggestedBillingInterval;
 
@@ -185,8 +187,8 @@ function findSuggestedSelectionTarget(
   };
 }
 
-function isSelectableBillingPlan(value: string | null | undefined): value is CompanyBillingPlanSelectionPage.Plan {
-  return value === "team" || value === "business" || value === "unlimited";
+function isCurrentSelfServeBillingPlan(value: string | null | undefined): value is CompanyBillingPlanSelectionPage.Plan {
+  return value != null && CURRENT_SELF_SERVE_BILLING_PLANS.includes(value as CompanyBillingPlanSelectionPage.Plan);
 }
 
 function formatPlanPriceLabel(

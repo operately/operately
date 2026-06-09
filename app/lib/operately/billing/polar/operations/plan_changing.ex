@@ -2,6 +2,7 @@ defmodule Operately.Billing.Polar.Operations.PlanChanging do
   require Logger
 
   alias Operately.Billing
+  alias Operately.Billing.Inputs
   alias Operately.Billing.Overview
   alias Operately.Billing.Plans
   alias Operately.Billing.Polar.SubscriptionState
@@ -132,23 +133,18 @@ defmodule Operately.Billing.Polar.Operations.PlanChanging do
   end
 
   defp cast_plan_key(plan_key) do
-    case Plans.cast_customer_selectable_plan_key(plan_key) do
+    case Inputs.cast_customer_selectable_plan_key(plan_key) do
       {:ok, normalized_plan_key} -> {:ok, normalized_plan_key}
       {:error, :invalid_plan_key} -> {:error, :bad_request}
     end
   end
 
-  defp cast_billing_interval(interval) when interval in [:monthly, :yearly], do: {:ok, interval}
-
-  defp cast_billing_interval(interval) when is_binary(interval) do
-    case String.downcase(interval) do
-      "monthly" -> {:ok, :monthly}
-      "yearly" -> {:ok, :yearly}
-      _ -> {:error, :bad_request}
+  defp cast_billing_interval(interval) do
+    case Inputs.cast_billing_interval(interval) do
+      {:ok, normalized_interval} -> {:ok, normalized_interval}
+      {:error, :invalid_billing_interval} -> {:error, :bad_request}
     end
   end
-
-  defp cast_billing_interval(_), do: {:error, :bad_request}
 
   defp provider_client(opts) do
     Billing.provider_client(opts)

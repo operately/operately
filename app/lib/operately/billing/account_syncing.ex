@@ -2,7 +2,7 @@ defmodule Operately.Billing.AccountSyncing do
   alias Operately.Billing
   alias Operately.Billing.AccessStateReconciling
   alias Operately.Billing.CompanyBillingAccount
-  alias Operately.Billing.Plans
+  alias Operately.Billing.Inputs
 
   @doc """
   Upserts a billing account with normalized state fetched from Polar.
@@ -56,17 +56,6 @@ defmodule Operately.Billing.AccountSyncing do
 
   defp synced_status_allows_pending_clear?(_status), do: false
 
-  defp cast_plan_family(plan_family), do: Plans.cast_provider_managed_plan_key(plan_family)
-
-  defp cast_billing_interval(interval) when interval in [:monthly, :yearly], do: {:ok, interval}
-
-  defp cast_billing_interval(interval) when is_binary(interval) do
-    case String.downcase(interval) do
-      "monthly" -> {:ok, :monthly}
-      "yearly" -> {:ok, :yearly}
-      _ -> {:error, :invalid_billing_interval}
-    end
-  end
-
-  defp cast_billing_interval(_), do: {:error, :invalid_billing_interval}
+  defp cast_plan_family(plan_family), do: Inputs.cast_provider_managed_plan_key(plan_family)
+  defp cast_billing_interval(interval), do: Inputs.cast_billing_interval(interval)
 end

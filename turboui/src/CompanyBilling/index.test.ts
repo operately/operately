@@ -128,6 +128,17 @@ describe("CompanyBilling shared helpers", () => {
     });
   });
 
+  it("keeps unsupported query plan keys raw while ignoring them for current selection", () => {
+    expect(parseCompanyBillingSearch("?plan=enterprise&billing_period=yearly")).toEqual({
+      rawPlan: "enterprise",
+      rawBillingPeriod: "yearly",
+      plan: null,
+      billingInterval: "yearly",
+      checkoutId: null,
+      hasSelectionIntent: true,
+    });
+  });
+
   it("selects query, scheduled, current, and suggested targets predictably", () => {
     const queryBilling = billingOverviewMock({
       account: {

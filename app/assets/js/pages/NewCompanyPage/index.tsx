@@ -1,5 +1,5 @@
 import Api from "@/api";
-import type { BillingInterval, BillingPlan } from "@/api";
+import type { BillingInterval } from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -14,8 +14,10 @@ import { Link } from "turboui";
 
 export default { name: "NewCompanyPage", loader: Pages.emptyLoader, Page } as PageModule;
 
-const BILLING_PLANS: BillingPlan[] = ["team", "business", "unlimited"];
+const CURRENT_SELF_SERVE_BILLING_PLANS = ["team", "business", "unlimited"] as const;
 const BILLING_INTERVALS: BillingInterval[] = ["monthly", "yearly"];
+
+type CurrentSelfServeBillingPlan = (typeof CURRENT_SELF_SERVE_BILLING_PLANS)[number];
 
 function Page() {
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ function Page() {
     const params = new URLSearchParams(window.location.search);
 
     return {
-      plan: parseBillingPlan(params.get("plan")),
+      plan: parseCurrentSelfServeBillingPlan(params.get("plan")),
       billingPeriod: parseBillingInterval(params.get("billing_period")),
     };
   }, []);
@@ -87,11 +89,11 @@ function Page() {
   );
 }
 
-function parseBillingPlan(value: string | null): BillingPlan | undefined {
-  return BILLING_PLANS.find((plan) => plan === value);
+export function parseCurrentSelfServeBillingPlan(value: string | null): CurrentSelfServeBillingPlan | undefined {
+  return CURRENT_SELF_SERVE_BILLING_PLANS.find((plan) => plan === value);
 }
 
-function parseBillingInterval(value: string | null): BillingInterval | undefined {
+export function parseBillingInterval(value: string | null): BillingInterval | undefined {
   return BILLING_INTERVALS.find((billingInterval) => billingInterval === value);
 }
 
