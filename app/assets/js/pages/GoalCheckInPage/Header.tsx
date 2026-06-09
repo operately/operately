@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconSquareCheckFilled } from "turboui";
+import { IconSquareCheckFilled, StatusBadge } from "turboui";
 
 import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
@@ -26,9 +26,12 @@ function Title({ update }: { update: Update }) {
   assertPresent(update.insertedAt, "Update insertedAt must be defined");
 
   return (
-    <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
-      Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
-    </h1>
+    <div className="flex flex-col items-center">
+      <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
+        Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
+      </h1>
+      {update.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon className="mt-2" />}
+    </div>
   );
 }
 
@@ -53,6 +56,10 @@ function AvatarAndName({ person }: { person: Person }) {
 }
 
 function Acknowledgement({ update }) {
+  if (update.state === "draft") {
+    return <span className="flex items-center gap-1">Draft</span>;
+  }
+
   if (update.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">

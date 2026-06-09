@@ -62,6 +62,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Goals.CreateCheckIn,
       Mutations.Goals.UpdateCheckIn,
       Mutations.Goals.AcknowledgeCheckIn,
+      Mutations.Goals.DeleteCheckIn,
       Mutations.Goals.CreateDiscussion,
       Mutations.Goals.UpdateDiscussion,
       Mutations.Notifications.MarkAllAsRead,

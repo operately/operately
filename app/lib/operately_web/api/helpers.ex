@@ -67,6 +67,12 @@ defmodule OperatelyWeb.Api.Helpers do
   def extend_map_if(m1, true, fun), do: Map.merge(m1, fun.())
   def extend_map_if(m1, _, _), do: m1
 
+  def check_draft_access(%{state: :draft, author_id: author_id}, %{id: person_id}) when author_id != person_id, do: {:error, :not_found}
+  def check_draft_access(_resource, _person), do: {:ok, :allowed}
+
+  def check_published(%{state: :published}), do: {:ok, :published}
+  def check_published(_resource), do: {:error, :not_found}
+
   def extract_include_filters(inputs) do
     Enum.reduce(inputs, [], fn {k, v}, acc ->
       if String.starts_with?(Atom.to_string(k), "include_") && v do

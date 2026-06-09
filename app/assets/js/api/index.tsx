@@ -1463,8 +1463,10 @@ export interface GoalPermissions {
 export interface GoalProgressUpdate {
   id: string;
   status?: GoalCheckInStatus | null;
+  state?: CheckInState | null;
   message?: string | null;
   insertedAt?: string | null;
+  publishedAt?: string | null;
   author?: Person | null;
   acknowledged?: boolean | null;
   acknowledgedAt?: string | null;
@@ -1651,7 +1653,9 @@ export interface Project {
 export interface ProjectCheckIn {
   id: string;
   status: ProjectCheckInStatus;
+  state: CheckInState;
   insertedAt: string | null;
+  publishedAt: string | null;
   description: string | null;
   author: Person | null;
   project: Project | null;
@@ -2307,6 +2311,8 @@ export type BillingLimitPlan = "free" | "team" | "business" | "unlimited";
 export type BillingPlan = "team" | "business" | "unlimited";
 
 export type BillingStatus = "free" | "active" | "past_due" | "canceled";
+
+export type CheckInState = "draft" | "published";
 
 export type CliAuthStatus = "pending" | "authenticated" | "failed" | "no_companies" | "expired";
 
@@ -4076,6 +4082,7 @@ export interface GoalsCreateCheckInInput {
   checklist?: GoalCheckUpdate[];
   content: Json;
   newTargetValues?: string;
+  postAsDraft?: boolean;
   sendNotificationsToEveryone?: boolean;
   subscriberIds?: Id[];
 }
@@ -4133,6 +4140,14 @@ export interface GoalsDeleteCheckInput {
 }
 
 export interface GoalsDeleteCheckResult {
+  success: boolean;
+}
+
+export interface GoalsDeleteCheckInInput {
+  id: Id;
+}
+
+export interface GoalsDeleteCheckInResult {
   success: boolean;
 }
 
@@ -4208,6 +4223,7 @@ export interface GoalsUpdateCheckInInput {
   dueDate: ContextualDate | null;
   status: GoalCheckInStatus;
   content: Json;
+  state?: CheckInState | null;
   newTargetValues?: string | null;
   checklist?: GoalCheckUpdate[] | null;
 }
@@ -4536,6 +4552,7 @@ export interface ProjectsCreateCheckInInput {
   projectId: Id;
   status: ProjectCheckInStatus;
   description: Json;
+  postAsDraft?: boolean;
   sendNotificationsToEveryone?: boolean;
   subscriberIds?: Id[];
 }
@@ -4687,6 +4704,7 @@ export interface ProjectsUpdateCheckInInput {
   checkInId: Id;
   status: ProjectCheckInStatus;
   description: Json;
+  state?: CheckInState | null;
 }
 
 export interface ProjectsUpdateCheckInResult {
@@ -6391,6 +6409,10 @@ class ApiNamespaceGoals {
 
   async deleteCheck(input: GoalsDeleteCheckInput): Promise<GoalsDeleteCheckResult> {
     return this.client.post("/goals/delete_check", input);
+  }
+
+  async deleteCheckIn(input: GoalsDeleteCheckInInput): Promise<GoalsDeleteCheckInResult> {
+    return this.client.post("/goals/delete_check_in", input);
   }
 
   async deleteTarget(input: GoalsDeleteTargetInput): Promise<GoalsDeleteTargetResult> {
@@ -8162,6 +8184,12 @@ export default {
     useUpdateTargetIndex: () =>
       useMutation<GoalsUpdateTargetIndexInput, GoalsUpdateTargetIndexResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateTargetIndex(input),
+      ),
+
+    deleteCheckIn: (input: GoalsDeleteCheckInInput) => defaultApiClient.apiNamespaceGoals.deleteCheckIn(input),
+    useDeleteCheckIn: () =>
+      useMutation<GoalsDeleteCheckInInput, GoalsDeleteCheckInResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.deleteCheckIn(input),
       ),
 
     updateAccessLevels: (input: GoalsUpdateAccessLevelsInput) =>

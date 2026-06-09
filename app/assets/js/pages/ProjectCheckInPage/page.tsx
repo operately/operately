@@ -11,7 +11,17 @@ import { useDeleteProjectCheckIn } from "@/models/projectCheckIns";
 import FormattedTime from "@/components/FormattedTime";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
-import { Avatar, IconEdit, IconSquareCheckFilled, IconTrash, CurrentSubscriptions, showSuccessToast } from "turboui";
+import {
+  Avatar,
+  IconEdit,
+  IconSquareCheckFilled,
+  IconTrash,
+  CurrentSubscriptions,
+  PrimaryButton,
+  SecondaryButton,
+  showSuccessToast,
+  StatusBadge,
+} from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { compareIds } from "@/routes/paths";
@@ -51,17 +61,22 @@ export function Page() {
           <Title />
           <StatusSection checkIn={checkIn} reviewer={checkIn.project!.reviewer} />
           <DescriptionSection checkIn={checkIn} />
-          <AckCTA />
+          {checkIn.state === "draft" && <DraftActions showDeleteModal={toggleDeleteConfirmModal} />}
 
-          <Spacer size={4} />
-          <CheckInReactions />
+          {checkIn.state !== "draft" && (
+            <>
+              <AckCTA />
 
-          <div className="border-t border-stroke-base mt-8" />
-          <Comments />
+              <Spacer size={4} />
+              <CheckInReactions />
 
-          <div className="border-t border-stroke-base mt-16 mb-8" />
+              <div className="border-t border-stroke-base mt-8" />
+              <Comments />
 
-          <SubscriptionsSection />
+              <div className="border-t border-stroke-base mt-16 mb-8" />
+              <SubscriptionsSection />
+            </>
+          )}
 
           <DeleteCheckInModal isOpen={showDeleteConfirmModal} toggleModal={toggleDeleteConfirmModal} />
         </Paper.Body>
@@ -125,6 +140,7 @@ function Title() {
       <div className="text-content-accent text-2xl font-extrabold">
         Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
       </div>
+      {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon className="mt-2" />}
       <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
         <div className="flex items-center gap-2">
           <Avatar person={checkIn.author!} size="tiny" /> {checkIn.author!.fullName}
@@ -159,6 +175,10 @@ function Navigation() {
 function Acknowledgement() {
   const { checkIn } = useLoadedData();
 
+  if (checkIn.state === "draft") {
+    return <span className="flex items-center gap-1">Draft</span>;
+  }
+
   if (checkIn.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
@@ -177,13 +197,16 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const me = useMe()!;
 
   const isAuthor = compareIds(me.id!, checkIn.author!.id!);
-  const canDelete = checkIn.project?.permissions?.hasFullAccess || false;
+  const canManageDraft = checkIn.state === "draft";
+  const canEdit = canManageDraft || isAuthor;
+  const canDelete = canManageDraft || checkIn.project?.permissions?.hasFullAccess || false;
 
-  if (!isAuthor && !canDelete) return null;
+  if (!canEdit && !canDelete) return null;
+  if (canManageDraft) return null;
 
   return (
     <PageOptions.Root testId="options-button">
-      {isAuthor && (
+      {canEdit && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit check-in"
@@ -200,6 +223,22 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
         />
       )}
     </PageOptions.Root>
+  );
+}
+
+function DraftActions({ showDeleteModal }: { showDeleteModal: () => void }) {
+  const paths = usePaths();
+  const { checkIn } = useLoadedData();
+
+  return (
+    <div className="mt-8 flex items-center gap-2">
+      <PrimaryButton linkTo={paths.projectCheckInEditPath(checkIn.id!)} size="base" testId="edit-check-in">
+        Edit draft
+      </PrimaryButton>
+      <SecondaryButton onClick={showDeleteModal} size="base" testId="delete-check-in">
+        Discard draft
+      </SecondaryButton>
+    </div>
   );
 }
 
@@ -221,7 +260,11 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
     cancel: toggleModal,
     submit: async () => {
       await remove({ checkInId: checkIn.id });
-      showSuccessToast("Check-in deleted", "The check-in has been successfully deleted.");
+      if (checkIn.state === "draft") {
+        showSuccessToast("Draft discarded", "The draft has been discarded.");
+      } else {
+        showSuccessToast("Check-in deleted", "The check-in has been successfully deleted.");
+      }
       navigate(paths.projectCheckInsPath(checkIn.project?.id!));
     },
   });
@@ -230,9 +273,11 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
     <Modal isOpen={isOpen} hideModal={toggleModal}>
       <Forms.Form form={form}>
         <p>
-          Are you sure you want to delete this check-in?
+          {checkIn.state === "draft"
+            ? "Are you sure you want to discard this draft?"
+            : "Are you sure you want to delete this check-in?"}
         </p>
-        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+        <Forms.Submit saveText={checkIn.state === "draft" ? "Discard draft" : "Delete"} cancelText="Cancel" />
       </Forms.Form>
     </Modal>
   );

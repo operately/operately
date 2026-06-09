@@ -2112,11 +2112,14 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:project_check_in_status, values: Operately.Projects.CheckIn.valid_status())
+  enum(:check_in_state, values: Operately.Projects.CheckIn.valid_states())
 
   object :project_check_in do
     field :id, :string
     field :status, :project_check_in_status
+    field :state, :check_in_state
     field :inserted_at, :date, null: true
+    field :published_at, :datetime, null: true
     field :description, :string, null: true
     field :author, :person, null: true
     field :project, :project, null: true
@@ -2230,8 +2233,10 @@ defmodule OperatelyWeb.Api.Types do
   object :goal_progress_update do
     field :id, :string, null: false
     field? :status, :goal_check_in_status, null: true
+    field? :state, :check_in_state, null: true
     field? :message, :string, null: true
     field? :inserted_at, :datetime, null: true
+    field? :published_at, :datetime, null: true
     field? :author, :person, null: true
     field? :acknowledged, :boolean, null: true
     field? :acknowledged_at, :datetime, null: true
