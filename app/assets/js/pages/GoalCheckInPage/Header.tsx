@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconSquareCheckFilled } from "turboui";
+import { IconSquareCheckFilled, StatusBadge } from "turboui";
 
 import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
@@ -30,7 +30,7 @@ function Title({ update }: { update: Update }) {
       <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
         Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
       </h1>
-      {update.state === "draft" && <DraftBadge />}
+      {update.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon className="mt-2" />}
     </div>
   );
 }
@@ -71,12 +71,4 @@ function Acknowledgement({ update }) {
   } else {
     return <span className="flex items-center gap-1">Not yet acknowledged</span>;
   }
-}
-
-function DraftBadge() {
-  return (
-    <span className="mt-2 rounded-sm border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-semibold uppercase leading-none text-amber-700 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300">
-      Draft
-    </span>
-  );
 }

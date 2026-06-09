@@ -20,6 +20,7 @@ import {
   PrimaryButton,
   SecondaryButton,
   showSuccessToast,
+  StatusBadge,
 } from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
@@ -139,7 +140,7 @@ function Title() {
       <div className="text-content-accent text-2xl font-extrabold">
         Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
       </div>
-      {checkIn.state === "draft" && <DraftBadge />}
+      {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon className="mt-2" />}
       <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
         <div className="flex items-center gap-2">
           <Avatar person={checkIn.author!} size="tiny" /> {checkIn.author!.fullName}
@@ -279,13 +280,5 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
         <Forms.Submit saveText={checkIn.state === "draft" ? "Discard draft" : "Delete"} cancelText="Cancel" />
       </Forms.Form>
     </Modal>
-  );
-}
-
-function DraftBadge() {
-  return (
-    <span className="mt-2 rounded-sm border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-semibold uppercase leading-none text-amber-700 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300">
-      Draft
-    </span>
   );
 }
