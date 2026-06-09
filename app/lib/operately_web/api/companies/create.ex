@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Companies.Create do
   inputs do
     field :company_name, :string, null: false
     field :title, :string, null: false
-    field? :plan, :billing_plan, null: false
+    field? :plan, :string, null: false
     field? :billing_period, :billing_interval, null: false
     field? :is_demo, :boolean, null: false
   end
@@ -19,8 +19,10 @@ defmodule OperatelyWeb.Api.Companies.Create do
 
   def call(conn, inputs) do
     account = conn.assigns.current_account
-    {:ok, company} = add_company(inputs, account)
-    {:ok, %{company: OperatelyWeb.Api.Serializer.serialize(company)}}
+
+    with {:ok, company} <- add_company(inputs, account) do
+      {:ok, %{company: OperatelyWeb.Api.Serializer.serialize(company)}}
+    end
   end
 
   def add_company(inputs, account) do

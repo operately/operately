@@ -1,5 +1,7 @@
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
 
+const CURRENT_SELF_SERVE_BILLING_PLANS = ["team", "business", "unlimited"] as const;
+
 export function parseCompanyBillingSearch(search: string): CompanyBillingPageTypes.BillingSearchParams {
   const params = new URLSearchParams(search);
   const rawPlan = params.get("plan");
@@ -8,7 +10,7 @@ export function parseCompanyBillingSearch(search: string): CompanyBillingPageTyp
   return {
     rawPlan,
     rawBillingPeriod,
-    plan: isSelectableBillingPlan(rawPlan) ? rawPlan : null,
+    plan: isCurrentSelfServeBillingPlan(rawPlan) ? rawPlan : null,
     billingInterval: isBillingInterval(rawBillingPeriod) ? rawBillingPeriod : null,
     checkoutId: params.get("checkout_id"),
     hasSelectionIntent: Boolean(rawPlan || rawBillingPeriod),
@@ -30,7 +32,7 @@ export function listCompanyBillingSellableTargets(
 
 export function findCompanyBillingSellableProduct(
   catalogProducts: CompanyBillingPageTypes.BillingCatalogProduct[],
-  plan: CompanyBillingPageTypes.Plan,
+  plan: CompanyBillingPageTypes.SelfServePlan,
   billingInterval: CompanyBillingPageTypes.Interval,
 ): CompanyBillingPageTypes.BillingCatalogProduct | null {
   return (
@@ -43,7 +45,7 @@ export function findCompanyBillingSellableProduct(
 export function getCompanyBillingPendingTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (!isSelectableBillingPlan(billing.account.pendingPlanKey) || !billing.account.pendingBillingInterval) {
+  if (!isCurrentSelfServeBillingPlan(billing.account.pendingPlanKey) || !billing.account.pendingBillingInterval) {
     return null;
   }
 
@@ -61,7 +63,7 @@ export function getCompanyBillingPendingTarget(
 export function getCompanyBillingScheduledTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (!isSelectableBillingPlan(billing.account.scheduledPlanKey) || !billing.account.scheduledBillingInterval) {
+  if (!isCurrentSelfServeBillingPlan(billing.account.scheduledPlanKey) || !billing.account.scheduledBillingInterval) {
     return null;
   }
 
@@ -79,7 +81,7 @@ export function getCompanyBillingScheduledTarget(
 export function getCompanyBillingCurrentTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (!isSelectableBillingPlan(billing.account.planKey) || !billing.account.billingInterval) {
+  if (!isCurrentSelfServeBillingPlan(billing.account.planKey) || !billing.account.billingInterval) {
     return null;
   }
 
@@ -97,7 +99,7 @@ export function getCompanyBillingCurrentTarget(
 export function getCompanyBillingSuggestedTarget(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.BillingTarget | null {
-  if (!isSelectableBillingPlan(billing.account.suggestedPlanKey)) {
+  if (!isCurrentSelfServeBillingPlan(billing.account.suggestedPlanKey)) {
     return null;
   }
 
@@ -206,7 +208,7 @@ function selectFallbackTarget(
 
 function resolveRequestedTarget(
   sellableTargets: CompanyBillingPageTypes.BillingTarget[],
-  search: { plan: CompanyBillingPageTypes.Plan | null; billingInterval: CompanyBillingPageTypes.Interval | null },
+  search: { plan: CompanyBillingPageTypes.SelfServePlan | null; billingInterval: CompanyBillingPageTypes.Interval | null },
 ): CompanyBillingPageTypes.BillingTarget | null {
   if (search.plan && search.billingInterval) {
     return (
@@ -228,25 +230,25 @@ function resolveRequestedTarget(
 }
 
 function compareTargets(
-  leftPlan: CompanyBillingPageTypes.Plan,
+  leftPlan: CompanyBillingPageTypes.SelfServePlan,
   leftInterval: CompanyBillingPageTypes.Interval,
-  rightPlan: CompanyBillingPageTypes.Plan,
+  rightPlan: CompanyBillingPageTypes.SelfServePlan,
   rightInterval: CompanyBillingPageTypes.Interval,
 ): number {
-  const planOrder: Record<CompanyBillingPageTypes.Plan, number> = { team: 0, business: 1, unlimited: 2 };
+  const planOrder: Record<CompanyBillingPageTypes.SelfServePlan, number> = { team: 0, business: 1, unlimited: 2 };
   const intervalOrder: Record<CompanyBillingPageTypes.Interval, number> = { monthly: 0, yearly: 1 };
 
   return planOrder[leftPlan] - planOrder[rightPlan] || intervalOrder[leftInterval] - intervalOrder[rightInterval];
 }
 
-function isSelectableBillingPlan(value: string | null | undefined): value is CompanyBillingPageTypes.Plan {
-  return value === "team" || value === "business" || value === "unlimited";
+function isCurrentSelfServeBillingPlan(value: string | null | undefined): value is CompanyBillingPageTypes.SelfServePlan {
+  return value != null && CURRENT_SELF_SERVE_BILLING_PLANS.includes(value as CompanyBillingPageTypes.SelfServePlan);
 }
 
 function isSelectableCatalogProduct(
   product: CompanyBillingPageTypes.BillingCatalogProduct,
-): product is CompanyBillingPageTypes.BillingCatalogProduct & { planFamily: CompanyBillingPageTypes.Plan } {
-  return product.active && isSelectableBillingPlan(product.planFamily);
+): product is CompanyBillingPageTypes.BillingCatalogProduct & { planFamily: CompanyBillingPageTypes.SelfServePlan } {
+  return product.active && isCurrentSelfServeBillingPlan(product.planFamily);
 }
 
 function isBillingInterval(value: string | null): value is CompanyBillingPageTypes.Interval {

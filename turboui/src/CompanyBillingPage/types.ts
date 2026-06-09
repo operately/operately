@@ -4,9 +4,9 @@ export namespace CompanyBillingPage {
   export type Mode = "overview" | "confirming";
   export type Status = "free" | "active" | "past_due" | "canceled";
   export type Interval = "monthly" | "yearly";
-  export type Plan = "team" | "business" | "unlimited";
   export type PlanKey = string;
-  export type ChangeTargetPlan = Plan | "free";
+  export type SelfServePlan = "team" | "business" | "unlimited";
+  export type ChangeTargetPlan = PlanKey;
   export type BillingTargetSource = "query" | "pending" | "scheduled" | "current" | "suggested" | "catalog";
   export type NoticeTone = "info" | "warning" | "danger";
   export type ActionTone = "primary" | "secondary" | "danger";
@@ -62,7 +62,7 @@ export namespace CompanyBillingPage {
   }
 
   export interface BillingTarget {
-    plan: Plan;
+    plan: SelfServePlan;
     billingInterval: Interval;
     product?: BillingCatalogProduct | null;
   }
@@ -85,7 +85,7 @@ export namespace CompanyBillingPage {
   export interface BillingSearchParams {
     rawPlan: string | null;
     rawBillingPeriod: string | null;
-    plan: Plan | null;
+    plan: SelfServePlan | null;
     billingInterval: Interval | null;
     checkoutId: string | null;
     hasSelectionIntent: boolean;

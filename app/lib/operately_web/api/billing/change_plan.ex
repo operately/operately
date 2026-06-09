@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Billing.ChangePlan do
   alias OperatelyWeb.Api.Serializer
 
   inputs do
-    field :plan, :billing_plan, null: false
+    field :plan, :string, null: false
     field :billing_interval, :billing_interval, null: false
   end
 

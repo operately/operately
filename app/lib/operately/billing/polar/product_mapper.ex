@@ -8,6 +8,7 @@ defmodule Operately.Billing.Polar.ProductMapper do
   """
 
   alias Operately.Billing.CompanyBillingAccount
+  alias Operately.Billing.Inputs
   alias Operately.Billing.Plans
 
   @valid_billing_intervals CompanyBillingAccount.valid_billing_intervals()
@@ -188,7 +189,7 @@ defmodule Operately.Billing.Polar.ProductMapper do
   end
 
   defp normalize_plan_family(plan_family) do
-    case Plans.cast_provider_managed_plan_key(plan_family) do
+    case Inputs.cast_provider_managed_plan_key(plan_family) do
       {:ok, normalized_plan_key} -> {:ok, normalized_plan_key}
       {:error, :invalid_plan_key} -> {:error, :invalid_plan_family}
     end
