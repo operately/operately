@@ -3,7 +3,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import { ProductModal } from "./ProductModal";
 
-let mockCapturedConfig: any;
 let mockCurrentValues: Record<string, any> | undefined;
 let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
@@ -32,7 +31,6 @@ jest.mock("@/components/Forms", () => {
     __esModule: true,
     default: {
       useForm: jest.fn((config: any) => {
-        mockCapturedConfig = config;
         mockCurrentValues = mockCurrentValues ?? { ...config.fields };
 
         return {
@@ -152,7 +150,6 @@ const planDefinitions = [
 
 describe("ProductModal", () => {
   beforeEach(() => {
-    mockCapturedConfig = undefined;
     mockCurrentValues = undefined;
     mockCreate = jest.fn().mockResolvedValue({ product: { id: "prod_team_monthly" } });
     mockUpdate = jest.fn().mockResolvedValue({ product: { id: "prod_team_monthly" } });
