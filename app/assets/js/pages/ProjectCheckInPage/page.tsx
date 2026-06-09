@@ -11,7 +11,16 @@ import { useDeleteProjectCheckIn } from "@/models/projectCheckIns";
 import FormattedTime from "@/components/FormattedTime";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
-import { Avatar, IconEdit, IconSquareCheckFilled, IconTrash, CurrentSubscriptions, showSuccessToast } from "turboui";
+import {
+  Avatar,
+  IconEdit,
+  IconSquareCheckFilled,
+  IconTrash,
+  CurrentSubscriptions,
+  PrimaryButton,
+  SecondaryButton,
+  showSuccessToast,
+} from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { compareIds } from "@/routes/paths";
@@ -51,6 +60,7 @@ export function Page() {
           <Title />
           <StatusSection checkIn={checkIn} reviewer={checkIn.project!.reviewer} />
           <DescriptionSection checkIn={checkIn} />
+          {checkIn.state === "draft" && <DraftActions showDeleteModal={toggleDeleteConfirmModal} />}
 
           {checkIn.state !== "draft" && (
             <>
@@ -191,6 +201,7 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const canDelete = canManageDraft || checkIn.project?.permissions?.hasFullAccess || false;
 
   if (!canEdit && !canDelete) return null;
+  if (canManageDraft) return null;
 
   return (
     <PageOptions.Root testId="options-button">
@@ -205,12 +216,28 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
       {canDelete && (
         <PageOptions.Action
           icon={IconTrash}
-          title={checkIn.state === "draft" ? "Discard draft" : "Delete check-in"}
+          title="Delete check-in"
           onClick={showDeleteModal}
           testId="delete-check-in"
         />
       )}
     </PageOptions.Root>
+  );
+}
+
+function DraftActions({ showDeleteModal }: { showDeleteModal: () => void }) {
+  const paths = usePaths();
+  const { checkIn } = useLoadedData();
+
+  return (
+    <div className="mt-8 flex items-center gap-2">
+      <PrimaryButton linkTo={paths.projectCheckInEditPath(checkIn.id!)} size="base" testId="edit-check-in">
+        Edit draft
+      </PrimaryButton>
+      <SecondaryButton onClick={showDeleteModal} size="base" testId="delete-check-in">
+        Discard draft
+      </SecondaryButton>
+    </div>
   );
 }
 
