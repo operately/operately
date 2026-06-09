@@ -4,8 +4,11 @@ defmodule Operately.BillingTest do
 
   alias Operately.Billing
   alias Operately.Billing.CompanyBillingAccount
+  alias Operately.Billing.EnforceLimits
+  alias Operately.Billing.PlanDefinition
   alias Operately.Billing.ProductCatalogEntry
   alias Operately.Billing.Plans
+  alias Operately.Repo
 
   import Operately.CompaniesFixtures
 
@@ -111,6 +114,20 @@ defmodule Operately.BillingTest do
       assert cleared.pending_billing_interval == nil
       assert cleared.pending_checkout_started_at == nil
     end
+
+    test "create_billing_account/1 accepts custom plan keys that exist in plan definitions", ctx do
+      plan_definition = create_plan_definition(%{plan_key: "starter_internal", display_name: "Starter Internal", member_limit: 15})
+
+      assert {:ok, account} =
+               Billing.create_billing_account(%{
+                 company_id: ctx.company.id,
+                 provider: "polar",
+                 plan_key: plan_definition.plan_key,
+                 status: :free
+               })
+
+      assert account.plan_key == "starter_internal"
+    end
   end
 
   describe "product catalog" do
@@ -139,6 +156,42 @@ defmodule Operately.BillingTest do
         plan_family: "enterprise",
         billing_interval: "monthly",
         polar_product_id: "prod_123"
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Billing.create_product(attrs)
+    end
+
+    test "create_product/1 accepts custom provider-managed plan families" do
+      create_plan_definition(%{
+        plan_key: "enterprise",
+        display_name: "Enterprise",
+        billing_behavior: :provider_managed,
+        customer_selectable: true
+      })
+
+      attrs = %{
+        provider: "polar",
+        plan_family: "enterprise",
+        billing_interval: "monthly",
+        polar_product_id: "prod_enterprise"
+      }
+
+      assert {:ok, %ProductCatalogEntry{} = entry} = Billing.create_product(attrs)
+      assert entry.plan_family == "enterprise"
+    end
+
+    test "create_product/1 rejects internal plan families" do
+      create_plan_definition(%{
+        plan_key: "internal_support",
+        display_name: "Internal Support",
+        billing_behavior: :internal
+      })
+
+      attrs = %{
+        provider: "polar",
+        plan_family: "internal_support",
+        billing_interval: "monthly",
+        polar_product_id: "prod_internal_support"
       }
 
       assert {:error, %Ecto.Changeset{}} = Billing.create_product(attrs)
@@ -697,8 +750,7 @@ defmodule Operately.BillingTest do
       {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
       {:ok, _pending_account} = Billing.set_pending_checkout(account, :business, :yearly)
 
-      with_mock Operately.Billing.Polar.Client, [:passthrough],
-        get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end do
+      with_mock Operately.Billing.Polar.Client, [:passthrough], get_customer_state_by_external_id: fn _company_id -> {:error, :not_found} end do
         assert {:ok, refreshed} = Billing.refresh_company_billing_state(ctx.company)
 
         assert refreshed.status == :free
@@ -905,6 +957,7 @@ defmodule Operately.BillingTest do
         assert {:ok, overview} = Billing.change_plan(ctx.company, :business, :monthly)
 
         assert overview.account.plan_key == "business"
+
         assert recorded_calls(:subscription_update_calls) == [
                  {"sub_reactivate_first", %{cancel_at_period_end: false}},
                  {"sub_reactivate_first", %{product_id: "prod_business_monthly", proration_behavior: "prorate"}}
@@ -1064,6 +1117,109 @@ defmodule Operately.BillingTest do
       assert "business" in keys
       assert "unlimited" in keys
     end
+
+    test "dynamic plan helpers use plan-definition metadata" do
+      create_plan_definition(%{
+        plan_key: "legacy_enterprise",
+        display_name: "Legacy Enterprise",
+        sort_order: 20,
+        tier_rank: 8,
+        billing_behavior: :provider_managed,
+        customer_selectable: false,
+        archived_at: DateTime.utc_now()
+      })
+
+      create_plan_definition(%{
+        plan_key: "enterprise",
+        display_name: "Enterprise",
+        sort_order: 10,
+        tier_rank: 4,
+        billing_behavior: :provider_managed,
+        customer_selectable: true,
+        member_limit: 500,
+        storage_limit_bytes: 5_497_558_138_880
+      })
+
+      {:ok, _team_product} = Billing.create_product(%{provider: "polar", plan_family: "team", billing_interval: "monthly", polar_product_id: "prod_team", active: true})
+      {:ok, _enterprise_product} = Billing.create_product(%{provider: "polar", plan_family: "enterprise", billing_interval: "monthly", polar_product_id: "prod_enterprise", active: true})
+      {:ok, _business_product} = Billing.create_product(%{provider: "polar", plan_family: "business", billing_interval: "monthly", polar_product_id: "prod_business", active: true})
+
+      assert Plans.valid_plan?("enterprise")
+      assert Plans.active_plan?("enterprise")
+      assert Plans.provider_managed_plan?("enterprise")
+      refute Plans.customer_selectable_plan?("legacy_enterprise")
+      refute Plans.active_plan?("legacy_enterprise")
+      assert Plans.compare_rank("enterprise", "business") > 0
+      assert Plans.next_self_serve_upgrade_plan_keys("team") == ["business", "enterprise"]
+    end
+
+    test "current-plan resolution keeps nil mapped to free" do
+      assert Plans.resolve_current_plan_key(nil) == "free"
+      assert Plans.resolve_current_plan_key(:team) == "team"
+    end
+  end
+
+  describe "dynamic billing runtime" do
+    test "limit enforcement uses custom plan definitions and dynamic sellable upgrades" do
+      Application.put_env(:operately, :billing_enabled, true)
+
+      company = company_fixture()
+      {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+      free_company = company_fixture()
+      {:ok, free_company} = Operately.Companies.enable_experimental_feature(free_company, "billing")
+
+      create_plan_definition(%{
+        plan_key: "starter_internal",
+        display_name: "Starter Internal",
+        sort_order: 9,
+        tier_rank: 9,
+        billing_behavior: :internal,
+        member_limit: 9,
+        storage_limit_bytes: 2_048
+      })
+
+      create_plan_definition(%{
+        plan_key: "enterprise",
+        display_name: "Enterprise",
+        sort_order: 10,
+        tier_rank: 4,
+        billing_behavior: :provider_managed,
+        customer_selectable: true,
+        member_limit: 500,
+        storage_limit_bytes: 5_497_558_138_880
+      })
+
+      {:ok, _product} =
+        Billing.create_product(%{
+          provider: "polar",
+          plan_family: "enterprise",
+          billing_interval: "monthly",
+          polar_product_id: "prod_enterprise_monthly",
+          active: true
+        })
+
+      {:ok, _account} =
+        Billing.create_billing_account(%{
+          company_id: company.id,
+          provider: "polar",
+          plan_key: "starter_internal",
+          status: :active
+        })
+
+      status = EnforceLimits.status(company, :member_count, current_usage: 9)
+
+      assert status.plan_key == "starter_internal"
+      assert status.limit == 9
+      refute status.blocked
+
+      free_status = EnforceLimits.status(free_company, :member_count, current_usage: 19)
+
+      assert free_status.plan_key == "free"
+      assert free_status.recommended_upgrade.plan_key == "enterprise"
+      assert free_status.recommended_upgrade.billing_interval == :monthly
+    after
+      Application.delete_env(:operately, :billing_enabled)
+    end
   end
 
   describe "plan definitions" do
@@ -1072,6 +1228,13 @@ defmodule Operately.BillingTest do
 
       assert Enum.map(plan_definitions, & &1.plan_key) == ["free", "team", "business", "unlimited"]
       assert Enum.map(plan_definitions, & &1.display_name) == ["Free", "Team", "Business", "Unlimited"]
+
+      assert Enum.map(plan_definitions, &{&1.plan_key, &1.tier_rank, &1.billing_behavior, &1.customer_selectable}) == [
+               {"free", 0, :internal, false},
+               {"team", 1, :provider_managed, true},
+               {"business", 2, :provider_managed, true},
+               {"unlimited", 3, :provider_managed, true}
+             ]
     end
 
     test "update_plan_definition/2 updates editable fields and supports unlimited values" do
@@ -1153,6 +1316,26 @@ defmodule Operately.BillingTest do
          {:ok, product} <- Billing.set_active_product(product) do
       {:ok, product}
     end
+  end
+
+  defp create_plan_definition(attrs) do
+    unique = System.unique_integer([:positive])
+
+    attrs =
+      Enum.into(attrs, %{
+        plan_key: "plan_#{unique}",
+        display_name: "Plan #{unique}",
+        sort_order: 100 + unique,
+        tier_rank: 100 + unique,
+        billing_behavior: :internal,
+        customer_selectable: false,
+        member_limit: 10,
+        storage_limit_bytes: 1_024
+      })
+
+    %PlanDefinition{}
+    |> PlanDefinition.changeset(attrs)
+    |> Repo.insert!()
   end
 
   defp active_subscription_payload(product_id, overrides \\ %{}) do

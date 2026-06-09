@@ -15,7 +15,9 @@ import {
 } from "./index";
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
 
-function billingOverviewMock(params: Partial<CompanyBillingPageTypes.BillingOverview> = {}): CompanyBillingPageTypes.BillingOverview {
+function billingOverviewMock(
+  params: Partial<CompanyBillingPageTypes.BillingOverview> = {},
+): CompanyBillingPageTypes.BillingOverview {
   const { account, ...rest } = params;
 
   return {
@@ -94,6 +96,22 @@ describe("CompanyBilling shared helpers", () => {
     expect(findCompanyBillingPlanDefinition(billing.plans, "team")?.displayName).toBe("Team");
   });
 
+  it("finds a custom current plan from the plan definitions", () => {
+    const billing = billingOverviewMock({
+      account: {
+        planKey: "starter_internal",
+        billingInterval: null,
+        status: "active",
+      },
+      plans: [
+        ...billingOverviewMock().plans,
+        { key: "starter_internal", displayName: "Starter Internal", memberLimit: 12, storageLimitBytes: 4_096 },
+      ],
+    });
+
+    expect(getCompanyBillingCurrentPlanDefinition(billing)?.displayName).toBe("Starter Internal");
+  });
+
   it("formats plan labels and price labels", () => {
     expect(formatCompanyBillingPlanLabel("team", "yearly")).toBe("Team Yearly");
     expect(formatCompanyBillingPriceFromMinorUnits(7900, "usd")).toBe("$79");
@@ -120,7 +138,9 @@ describe("CompanyBilling shared helpers", () => {
       },
     });
 
-    expect(selectCompanyBillingTarget(queryBilling, parseCompanyBillingSearch("?plan=business&billing_period=yearly"))).toMatchObject({
+    expect(
+      selectCompanyBillingTarget(queryBilling, parseCompanyBillingSearch("?plan=business&billing_period=yearly")),
+    ).toMatchObject({
       source: "query",
       target: { plan: "business", billingInterval: "yearly" },
       warning: null,
@@ -166,18 +186,42 @@ describe("CompanyBilling shared helpers", () => {
       catalogProducts: billingOverviewMock().catalogProducts.filter((product) => product.planFamily !== "business"),
     });
 
-    expect(selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=business&billing_period=yearly"))).toMatchObject({
+    expect(
+      selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=business&billing_period=yearly")),
+    ).toMatchObject({
       source: "suggested",
       target: { plan: "team", billingInterval: "yearly" },
     });
   });
 
   it("lists sellable targets in a stable order", () => {
-    expect(listCompanyBillingSellableTargets(billingOverviewMock()).map((target) => `${target.plan}:${target.billingInterval}`)).toEqual([
-      "team:monthly",
-      "team:yearly",
-      "business:monthly",
-      "business:yearly",
+    expect(
+      listCompanyBillingSellableTargets(billingOverviewMock()).map(
+        (target) => `${target.plan}:${target.billingInterval}`,
+      ),
+    ).toEqual(["team:monthly", "team:yearly", "business:monthly", "business:yearly"]);
+  });
+
+  it("ignores unsupported catalog plans in the current self-serve selection flow", () => {
+    const billing = billingOverviewMock({
+      catalogProducts: [
+        ...billingOverviewMock().catalogProducts,
+        {
+          planFamily: "enterprise",
+          billingInterval: "monthly",
+          polarProductName: "Enterprise Monthly",
+          priceAmount: 49900,
+          priceCurrency: "usd",
+          active: true,
+        },
+      ],
+    });
+
+    expect(listCompanyBillingSellableTargets(billing).map((target) => target.plan)).toEqual([
+      "team",
+      "team",
+      "business",
+      "business",
     ]);
   });
 
@@ -192,7 +236,9 @@ describe("CompanyBilling shared helpers", () => {
       },
     });
 
-    expect(isCompanyBillingCheckoutReturnSuccessful(billing, { plan: "team", billingInterval: "yearly", product: null })).toBe(true);
+    expect(
+      isCompanyBillingCheckoutReturnSuccessful(billing, { plan: "team", billingInterval: "yearly", product: null }),
+    ).toBe(true);
   });
 
   it("builds immediate and scheduled plan-change feedback", () => {

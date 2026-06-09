@@ -4,6 +4,8 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
   import Operately.BlobsFixtures
 
   alias Operately.Billing
+  alias Operately.Billing.PlanDefinition
+  alias Operately.Repo
 
   describe "security" do
     setup :enable_instance_billing
@@ -57,7 +59,7 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert {200, res} = query(ctx.conn, [:billing, :get], %{})
 
         assert res.billing.account.status == "free"
-        assert res.billing.account.plan_key == nil
+        assert res.billing.account.plan_key == "free"
         assert res.billing.account.billing_interval == nil
         assert res.billing.account.access_state == "normal"
         assert res.billing.account.access_state_reason == nil
@@ -136,6 +138,35 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert res.billing.account.access_state_reason == nil
       end
     end
+
+    test "it serializes arbitrary current plan keys from the local projection", ctx do
+      create_plan_definition(%{
+        plan_key: "starter_internal",
+        display_name: "Starter Internal",
+        sort_order: 9,
+        tier_rank: 9,
+        billing_behavior: :internal,
+        member_limit: 12,
+        storage_limit_bytes: 1_024
+      })
+
+      {:ok, _account} =
+        Billing.sync_billing_account(ctx.company, %{
+          provider: "polar",
+          plan_key: "starter_internal",
+          billing_interval: nil,
+          status: :active
+        })
+
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id -> {:error, :internal_server_error} end do
+        assert {200, res} = query(ctx.conn, [:billing, :get], %{})
+
+        assert res.billing.stale == true
+        assert res.billing.account.plan_key == "starter_internal"
+        assert Enum.any?(res.billing.plans, &(&1.key == "starter_internal"))
+      end
+    end
   end
 
   defp enable_instance_billing(_ctx) do
@@ -155,5 +186,18 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
       |> Factory.log_in_person(:creator)
 
     {:ok, ctx}
+  end
+
+  defp create_plan_definition(attrs) do
+    attrs =
+      Enum.into(attrs, %{
+        customer_selectable: false,
+        member_limit: 10,
+        storage_limit_bytes: 1_024
+      })
+
+    %PlanDefinition{}
+    |> PlanDefinition.changeset(attrs)
+    |> Repo.insert!()
   end
 end
