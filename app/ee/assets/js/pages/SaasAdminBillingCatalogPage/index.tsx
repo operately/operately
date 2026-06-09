@@ -27,6 +27,31 @@ import {
 import { PlanDefinitionModal } from "./PlanDefinitionModal";
 import { ProductModal } from "./ProductModal";
 
+export async function syncBillingCatalogProducts(sync: (input: {}) => Promise<unknown>, refresh: () => void) {
+  await sync({});
+  refresh();
+}
+
+export async function archiveBillingCatalogProduct(
+  archive: (input: { id: string }) => Promise<unknown>,
+  productId: string,
+  refresh: () => void,
+  onArchived?: () => void,
+) {
+  await archive({ id: productId });
+  onArchived?.();
+  refresh();
+}
+
+export async function setActiveBillingCatalogProduct(
+  setActive: (input: { id: string }) => Promise<unknown>,
+  productId: string,
+  refresh: () => void,
+) {
+  await setActive({ id: productId });
+  refresh();
+}
+
 export const loader = async () => {
   if (!window.appConfig.billingEnabled) {
     throw redirect("/admin");
@@ -87,11 +112,15 @@ export function Page() {
     <Pages.Page title="Billing Catalog" testId="saas-admin-billing-catalog-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
-          <PageHeader activeTab={tabs.active} onCreate={openCreate} />
+          <PageHeader activeTab={tabs.active} onCreate={openCreate} onRefresh={refresh} />
           <div className="-mx-4 -mb-px">
             <Tabs tabs={tabs} />
           </div>
-          {tabs.active === "plans" ? <PlanDefinitionTable planDefinitions={planDefinitions} onEdit={openPlanEdit} /> : <ProductTable products={products} onEdit={openEdit} />}
+          {tabs.active === "plans" ? (
+            <PlanDefinitionTable planDefinitions={planDefinitions} onEdit={openPlanEdit} />
+          ) : (
+            <ProductTable products={products} onEdit={openEdit} onRefresh={refresh} />
+          )}
           <PlanDefinitionModal
             key={editingPlanDefinition?.id ?? "plan-definition"}
             isOpen={isPlanModalOpen}
@@ -106,7 +135,7 @@ export function Page() {
   );
 }
 
-function PageHeader({ activeTab, onCreate }: { activeTab: string; onCreate: () => void }) {
+function PageHeader({ activeTab, onCreate, onRefresh }: { activeTab: string; onCreate: () => void; onRefresh: () => void }) {
   return (
     <div className="flex items-center justify-between">
       <Paper.Header title="Billing Catalog" />
@@ -119,19 +148,18 @@ function PageHeader({ activeTab, onCreate }: { activeTab: string; onCreate: () =
             <IconPlus size={16} />
             Create product
           </button>
-          <SyncButton />
+          <SyncButton onRefresh={onRefresh} />
         </div>
       )}
     </div>
   );
 }
 
-function SyncButton() {
+function SyncButton({ onRefresh }: { onRefresh: () => void }) {
   const [sync, { loading }] = AdminApi.useSyncBillingProductsFromPolar();
 
   const handleSync = async () => {
-    await sync({});
-    window.location.reload();
+    await syncBillingCatalogProducts(sync, onRefresh);
   };
 
   return (
@@ -154,9 +182,11 @@ function SyncButton() {
 function ProductTable({
   products,
   onEdit,
+  onRefresh,
 }: {
   products: AdminApi.BillingProduct[];
   onEdit: (product: AdminApi.BillingProduct) => void;
+  onRefresh: () => void;
 }) {
   return (
     <div className="mt-6">
@@ -172,7 +202,7 @@ function ProductTable({
       </TableRow>
 
       {products.map((product) => (
-        <ProductRow key={product.id} product={product} onEdit={onEdit} />
+        <ProductRow key={product.id} product={product} onEdit={onEdit} onRefresh={onRefresh} />
       ))}
     </div>
   );
@@ -243,23 +273,22 @@ function PlanDefinitionActionsMenu({
 function ProductRow({
   product,
   onEdit,
+  onRefresh,
 }: {
   product: AdminApi.BillingProduct;
   onEdit: (product: AdminApi.BillingProduct) => void;
+  onRefresh: () => void;
 }) {
   const [archive] = AdminApi.useArchiveBillingProduct();
   const [setActive] = AdminApi.useSetActiveBillingProduct();
   const [confirmArchive, setConfirmArchive] = React.useState(false);
 
   const handleArchive = async () => {
-    await archive({ id: product.id });
-    setConfirmArchive(false);
-    window.location.reload();
+    await archiveBillingCatalogProduct(archive, product.id, onRefresh, () => setConfirmArchive(false));
   };
 
   const handleSetActive = async () => {
-    await setActive({ id: product.id });
-    window.location.reload();
+    await setActiveBillingCatalogProduct(setActive, product.id, onRefresh);
   };
 
   const isActive = product.active && !product.archivedAt;
