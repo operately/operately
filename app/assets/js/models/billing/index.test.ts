@@ -282,8 +282,12 @@ describe("billing model helpers", () => {
       }),
     ).toMatchObject({
       recommendedUpgrade: {
-        source: "none",
+        source: "next_plan",
         target: null,
+        rawTarget: {
+          plan: "enterprise",
+          billingInterval: "monthly",
+        },
       },
     });
   });

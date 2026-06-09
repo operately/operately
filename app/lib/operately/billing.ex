@@ -18,6 +18,7 @@ defmodule Operately.Billing do
   alias Operately.Repo
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.EnforceLimits
+  alias Operately.Billing.Inputs
   alias Operately.Billing.LimitBreachAlerting
   alias Operately.Billing.NearLimitAlerting
   alias Operately.Billing.Overview
@@ -28,8 +29,6 @@ defmodule Operately.Billing do
   alias Operately.Billing.Polar.Operations.CustomerStateSync
   alias Operately.Billing.Polar.ProductMapper
   alias Operately.Billing.ProductCatalogEntry
-
-  @valid_billing_intervals CompanyBillingAccount.valid_billing_intervals()
 
   def billing_enabled? do
     Application.get_env(:operately, :billing_enabled, false) == true
@@ -218,10 +217,28 @@ defmodule Operately.Billing do
     end
   end
 
+  def create_plan_definition(attrs) do
+    %PlanDefinition{}
+    |> PlanDefinition.create_changeset(attrs)
+    |> Repo.insert()
+  end
+
   def update_plan_definition(%PlanDefinition{} = plan_definition, attrs) do
     plan_definition
-    |> PlanDefinition.changeset(attrs)
+    |> PlanDefinition.update_changeset(attrs)
     |> Repo.update()
+  end
+
+  def archive_plan_definition(%PlanDefinition{plan_key: "free"}) do
+    {:error, :cannot_archive_free_plan}
+  end
+
+  def archive_plan_definition(%PlanDefinition{} = plan_definition) do
+    update_plan_definition(plan_definition, %{archived_at: DateTime.utc_now()})
+  end
+
+  def unarchive_plan_definition(%PlanDefinition{} = plan_definition) do
+    update_plan_definition(plan_definition, %{archived_at: nil})
   end
 
   #
@@ -478,17 +495,6 @@ defmodule Operately.Billing do
     end
   end
 
-  defp cast_provider_managed_plan_family(plan_family), do: Plans.cast_provider_managed_plan_key(plan_family)
-
-  defp cast_billing_interval(interval) when interval in @valid_billing_intervals, do: {:ok, interval}
-
-  defp cast_billing_interval(interval) when is_binary(interval) do
-    case String.downcase(interval) do
-      "monthly" -> {:ok, :monthly}
-      "yearly" -> {:ok, :yearly}
-      _ -> {:error, :invalid_billing_interval}
-    end
-  end
-
-  defp cast_billing_interval(_), do: {:error, :invalid_billing_interval}
+  defp cast_provider_managed_plan_family(plan_family), do: Inputs.cast_provider_managed_plan_key(plan_family)
+  defp cast_billing_interval(interval), do: Inputs.cast_billing_interval(interval)
 end

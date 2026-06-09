@@ -32,9 +32,6 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:account_theme, values: Operately.People.Account.valid_themes())
 
-  @self_serve_billing_plans [:team, :business, :unlimited]
-
-  enum(:billing_plan, values: @self_serve_billing_plans)
   enum(:billing_interval, values: Operately.Billing.CompanyBillingAccount.valid_billing_intervals())
   enum(:billing_status, values: Operately.Billing.CompanyBillingAccount.valid_statuses())
   enum(:billing_access_state, values: Operately.Billing.CompanyBillingAccount.valid_access_states())

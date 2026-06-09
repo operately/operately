@@ -98,6 +98,7 @@ defmodule OperatelyWeb.Api.Billing.CreateCheckoutSessionTest do
 
     test "it rejects invalid inputs", ctx do
       assert {400, _} = mutation(ctx.conn, [:billing, :create_checkout_session], %{plan: "free", billing_interval: "monthly"})
+      assert {400, _} = mutation(ctx.conn, [:billing, :create_checkout_session], %{plan: "enterprise", billing_interval: "monthly"})
       assert {400, _} = mutation(ctx.conn, [:billing, :create_checkout_session], %{plan: "team", billing_interval: "weekly"})
     end
 
