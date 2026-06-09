@@ -12,6 +12,7 @@ export const getGoalProgressUpdate = Api.goals.getCheckIn;
 export const useAcknowledgeGoalProgressUpdate = Api.goals.useAcknowledgeCheckIn;
 export const useEditGoalProgressUpdate = Api.goals.useUpdateCheckIn;
 export const usePostGoalProgressUpdate = Api.goals.useCreateCheckIn;
+export const useDeleteGoalProgressUpdate = Api.goals.useDeleteCheckIn;
 
 export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.GoalProgressUpdate[]) {
   return checkIns.map((checkIn) => {
@@ -23,6 +24,7 @@ export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.GoalProgress
       content: JSON.parse(checkIn.message!),
       commentCount: checkIn.commentsCount!,
       status: checkIn.status!,
+      state: checkIn.state,
     };
   });
 }

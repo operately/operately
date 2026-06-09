@@ -6,6 +6,7 @@ defmodule Operately.Goals.Update do
   alias Operately.Goals.Update.Permissions
 
   @valid_statuses [:on_track, :caution, :off_track]
+  @valid_states [:draft, :published]
 
   schema "goal_updates" do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
@@ -19,6 +20,8 @@ defmodule Operately.Goals.Update do
 
     field :message, :map
     field :status, Ecto.Enum, values: @valid_statuses
+    field :state, Ecto.Enum, values: @valid_states, default: :published
+    field :published_at, :utc_datetime
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
 
     field :acknowledged_at, :utc_datetime
@@ -48,6 +51,8 @@ defmodule Operately.Goals.Update do
       :author_id,
       :message,
       :status,
+      :state,
+      :published_at,
       :acknowledged_at,
       :acknowledged_by_id,
       :subscription_list_id
@@ -60,11 +65,31 @@ defmodule Operately.Goals.Update do
       :author_id,
       :message,
       :status,
+      :state,
       :subscription_list_id
     ])
+    |> validate_state_transition()
+    |> set_published_at()
   end
 
   def valid_statuses, do: @valid_statuses
+  def valid_states, do: @valid_states
+
+  defp validate_state_transition(changeset) do
+    if changeset.data.__meta__.state == :loaded and changeset.data.state == :published and get_change(changeset, :state) == :draft do
+      add_error(changeset, :state, "cannot move a published check-in back to draft")
+    else
+      changeset
+    end
+  end
+
+  defp set_published_at(changeset) do
+    if get_field(changeset, :state) == :published and is_nil(get_field(changeset, :published_at)) do
+      put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
+    else
+      changeset
+    end
+  end
 
   #
   # After load hooks

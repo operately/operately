@@ -64,9 +64,11 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp pending_tasks_query(person) do
-    from(t in Operately.Tasks.Task, as: :task,
+    from(t in Operately.Tasks.Task,
+      as: :task,
       join: assignee in assoc(t, :assignees),
-      join: project in assoc(t, :project), as: :project,
+      join: project in assoc(t, :project),
+      as: :project,
       where: assignee.person_id == ^person.id,
       where: fragment("not (?->>'closed')::boolean", t.task_status),
       where: is_nil(project.deleted_at),
@@ -102,8 +104,10 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp pending_milestones_query(person) do
-    from(m in Milestone, as: :milestone,
-      join: project in assoc(m, :project), as: :project,
+    from(m in Milestone,
+      as: :milestone,
+      join: project in assoc(m, :project),
+      as: :project,
       join: champion in assoc(project, :champion),
       where: m.status == :pending,
       where: champion.id == ^person.id,
@@ -138,8 +142,10 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp pending_project_check_ins_query(person) do
-    from(p in Project, as: :project,
-      join: champion in assoc(p, :champion), as: :champion,
+    from(p in Project,
+      as: :project,
+      join: champion in assoc(p, :champion),
+      as: :champion,
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
       where: p.status == "active",
       where: champion.id == ^person.id,
@@ -178,19 +184,26 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp pending_project_check_in_acknowledgements_query(person) do
-    latest_reviewer_change_subquery = from(a in Operately.Activities.Activity,
-      where: a.action == "project_reviewer_updating",
-      group_by: fragment("(?->>'project_id')::uuid", a.content),
-      select: %{project_id: type(fragment("(?->>'project_id')::uuid", a.content), :binary_id), inserted_at: max(a.inserted_at)}
-    )
+    latest_reviewer_change_subquery =
+      from(a in Operately.Activities.Activity,
+        where: a.action == "project_reviewer_updating",
+        group_by: fragment("(?->>'project_id')::uuid", a.content),
+        select: %{project_id: type(fragment("(?->>'project_id')::uuid", a.content), :binary_id), inserted_at: max(a.inserted_at)}
+      )
 
-    from(c in CheckIn, as: :check_in,
-      join: project in assoc(c, :project), as: :project,
-      join: author in assoc(c, :author), as: :author,
+    from(c in CheckIn,
+      as: :check_in,
+      join: project in assoc(c, :project),
+      as: :project,
+      join: author in assoc(c, :author),
+      as: :author,
       left_join: champion in assoc(project, :champion),
-      left_join: reviewer in assoc(project, :reviewer), as: :reviewer,
-      left_join: reviewer_change in subquery(latest_reviewer_change_subquery), on: reviewer_change.project_id == project.id,
+      left_join: reviewer in assoc(project, :reviewer),
+      as: :reviewer,
+      left_join: reviewer_change in subquery(latest_reviewer_change_subquery),
+      on: reviewer_change.project_id == project.id,
       where: is_nil(c.acknowledged_by_id),
+      where: c.state == :published,
       where: project.status == "active" and is_nil(project.deleted_at),
       where:
         (reviewer.id == ^person.id and author.id != reviewer.id) or
@@ -225,7 +238,8 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp pending_goal_updates_query(person) do
-    from(g in Goal, as: :goal,
+    from(g in Goal,
+      as: :goal,
       where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
       where: is_nil(g.closed_at),
       where: g.champion_id == ^person.id,
@@ -263,18 +277,24 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp pending_goal_update_acknowledgements_query(person) do
-    latest_reviewer_change_subquery = from(a in Operately.Activities.Activity,
-      where: a.action == "goal_reviewer_updating",
-      group_by: fragment("(?->>'goal_id')::uuid", a.content),
-      select: %{goal_id: type(fragment("(?->>'goal_id')::uuid", a.content), :binary_id), inserted_at: max(a.inserted_at)}
-    )
+    latest_reviewer_change_subquery =
+      from(a in Operately.Activities.Activity,
+        where: a.action == "goal_reviewer_updating",
+        group_by: fragment("(?->>'goal_id')::uuid", a.content),
+        select: %{goal_id: type(fragment("(?->>'goal_id')::uuid", a.content), :binary_id), inserted_at: max(a.inserted_at)}
+      )
 
-    from(u in Update, as: :update,
-      join: goal in assoc(u, :goal), as: :goal,
-      join: author in assoc(u, :author), as: :author,
-      left_join: reviewer_change in subquery(latest_reviewer_change_subquery), on: reviewer_change.goal_id == goal.id,
+    from(u in Update,
+      as: :update,
+      join: goal in assoc(u, :goal),
+      as: :goal,
+      join: author in assoc(u, :author),
+      as: :author,
+      left_join: reviewer_change in subquery(latest_reviewer_change_subquery),
+      on: reviewer_change.goal_id == goal.id,
       where: is_nil(goal.closed_at) and is_nil(goal.deleted_at),
       where: is_nil(u.acknowledged_by_id),
+      where: u.state == :published,
       where:
         (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or
           (goal.champion_id == ^person.id and author.id != goal.champion_id),
@@ -289,10 +309,11 @@ defmodule Operately.Assignments.Loader do
   defp load_pending_space_tasks(company, person) do
     base_query = pending_space_tasks_query(person)
 
-    result = from([space: s] in base_query,
-      preload: [space: s]
-    )
-    |> Repo.all()
+    result =
+      from([space: s] in base_query,
+        preload: [space: s]
+      )
+      |> Repo.all()
 
     Enum.map(result, &Assignment.build(&1, company))
   end
@@ -310,9 +331,11 @@ defmodule Operately.Assignments.Loader do
   end
 
   defp pending_space_tasks_query(person) do
-    from(t in Operately.Tasks.Task, as: :task,
+    from(t in Operately.Tasks.Task,
+      as: :task,
       join: assignee in assoc(t, :assignees),
-      join: space in assoc(t, :space), as: :space,
+      join: space in assoc(t, :space),
+      as: :space,
       where: assignee.person_id == ^person.id,
       where: fragment("not (?->>'closed')::boolean", t.task_status),
       where: is_nil(space.deleted_at)
@@ -325,5 +348,4 @@ defmodule Operately.Assignments.Loader do
 
   defp default_zero(nil), do: 0
   defp default_zero(count), do: count
-
 end

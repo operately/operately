@@ -3,8 +3,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update do
     %{
       id: OperatelyWeb.Paths.goal_update_id(update),
       status: Atom.to_string(update.status),
+      state: Atom.to_string(update.state),
       message: Jason.encode!(update.message),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
+      published_at: OperatelyWeb.Api.Serializer.serialize(update.published_at),
       goal_target_updates: serialize_targets(update.targets),
       checklist: serialize_checks(update.checks),
       timeframe: OperatelyWeb.Api.Serializer.serialize(update.timeframe),

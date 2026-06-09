@@ -1,13 +1,13 @@
-defmodule Operately.Operations.ProjectCheckInDeleting do
+defmodule Operately.Operations.GoalCheckInDeleting do
   alias Ecto.Multi
   alias Operately.{Repo, Updates}
-  alias Operately.Projects.{CheckIn, Project}
+  alias Operately.Goals.{Goal, Update}
   alias Operately.Notifications.{Subscription, SubscriptionList}
 
   import Ecto.Query, only: [from: 2]
 
   def run(check_in) do
-    project = Repo.preload(check_in, :project).project
+    goal = Repo.preload(check_in, :goal).goal
     previous_check_in = find_previous_check_in(check_in)
 
     Multi.new()
@@ -16,15 +16,15 @@ defmodule Operately.Operations.ProjectCheckInDeleting do
     |> delete_subscriptions(check_in)
     |> delete_subscription_list(check_in)
     |> Multi.delete(:check_in, check_in)
-    |> maybe_update_project(project, check_in, previous_check_in)
+    |> maybe_update_goal(goal, check_in, previous_check_in)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
   end
 
   defp find_previous_check_in(check_in) do
     Repo.one(
-      from c in CheckIn,
-        where: c.project_id == ^check_in.project_id and c.id != ^check_in.id and c.state == :published,
+      from c in Update,
+        where: c.goal_id == ^check_in.goal_id and c.id != ^check_in.id and c.state == :published,
         order_by: [desc: c.inserted_at],
         limit: 1
     )
@@ -61,15 +61,15 @@ defmodule Operately.Operations.ProjectCheckInDeleting do
     end)
   end
 
-  defp maybe_update_project(multi, project, check_in, previous_check_in) do
-    Multi.update(multi, :project, fn _ ->
-      if project.last_check_in_id == check_in.id do
-        Project.changeset(project, %{
+  defp maybe_update_goal(multi, goal, check_in, previous_check_in) do
+    Multi.update(multi, :goal, fn _ ->
+      if goal.last_check_in_id == check_in.id do
+        Goal.changeset(goal, %{
           last_check_in_id: previous_check_in && previous_check_in.id,
-          last_check_in_status: previous_check_in && previous_check_in.status
+          last_update_status: previous_check_in && previous_check_in.status
         })
       else
-        Project.changeset(project, %{})
+        Goal.changeset(goal, %{})
       end
     end)
   end
