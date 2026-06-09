@@ -1,3 +1,4 @@
+import type { CheckInState } from "@/api";
 import { Update, useEditGoalProgressUpdate, usePostGoalProgressUpdate } from "@/models/goalCheckIns";
 import { Goal } from "@/models/goals";
 import { useNavigate } from "react-router-dom";
@@ -53,13 +54,19 @@ export function useForm(props: EditProps | NewProps) {
     validate: (addErrors) => {
       validateTargets(form.values.targets || [], addErrors);
     },
-    submit: async () => {
+    submit: async (action: "submit" | "save-draft" | "publish-draft" = "submit") => {
+      const status = form.values.status;
+      if (!status) return;
+
+      const targets = form.values.targets || [];
+      const checklist = form.values.checklist || [];
+
       const commonAttrs = {
-        status: form.values.status!,
+        status,
         content: JSON.stringify(form.values.description),
-        newTargetValues: JSON.stringify(form.values.targets!.map((t) => ({ id: t.id, value: t.value }))),
+        newTargetValues: JSON.stringify(targets.map((t) => ({ id: t.id, value: t.value }))),
         dueDate: serializeContextualDate(form.values.dueDate),
-        checklist: form.values.checklist!.map((item) => ({
+        checklist: checklist.map((item) => ({
           id: item.id,
           completed: item.completed,
           name: item.name,
@@ -72,6 +79,7 @@ export function useForm(props: EditProps | NewProps) {
         const payload = {
           ...commonAttrs,
           goalId: goal.id,
+          postAsDraft: action === "save-draft",
           sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
           subscriberIds: subscriptionsState.currentSubscribersList,
         };
@@ -80,7 +88,14 @@ export function useForm(props: EditProps | NewProps) {
 
         navigate(paths.goalCheckInPath(res.update!.id));
       } else {
-        const payload = { ...commonAttrs, id: props.update.id! };
+        const state: CheckInState | undefined =
+          props.update.state === "draft" ? (action === "publish-draft" ? "published" : "draft") : undefined;
+
+        const payload = {
+          ...commonAttrs,
+          id: props.update.id!,
+          state,
+        };
         await edit(payload);
 
         setPageMode("view");

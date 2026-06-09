@@ -5,6 +5,7 @@ defmodule Operately.Projects.CheckIn do
   alias Operately.Notifications
 
   @valid_statuses [:on_track, :caution, :off_track]
+  @valid_states [:draft, :published]
 
   schema "project_check_ins" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -13,6 +14,8 @@ defmodule Operately.Projects.CheckIn do
 
     field :status, Ecto.Enum, values: @valid_statuses
     field :description, :map
+    field :state, Ecto.Enum, values: @valid_states, default: :published
+    field :published_at, :utc_datetime
 
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
     field :acknowledged_at, :utc_datetime
@@ -38,8 +41,26 @@ defmodule Operately.Projects.CheckIn do
 
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:author_id, :project_id, :description, :status, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
-    |> validate_required([:author_id, :project_id, :description, :status, :subscription_list_id])
+    |> cast(attrs, [:author_id, :project_id, :description, :status, :state, :published_at, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
+    |> validate_required([:author_id, :project_id, :description, :status, :state, :subscription_list_id])
+    |> validate_state_transition()
+    |> set_published_at()
+  end
+
+  defp validate_state_transition(changeset) do
+    if changeset.data.__meta__.state == :loaded and changeset.data.state == :published and get_change(changeset, :state) == :draft do
+      add_error(changeset, :state, "cannot move a published check-in back to draft")
+    else
+      changeset
+    end
+  end
+
+  defp set_published_at(changeset) do
+    if get_field(changeset, :state) == :published and is_nil(get_field(changeset, :published_at)) do
+      put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
+    else
+      changeset
+    end
   end
 
   # After load hooks
@@ -78,4 +99,5 @@ defmodule Operately.Projects.CheckIn do
   end
 
   def valid_status, do: @valid_statuses
+  def valid_states, do: @valid_states
 end

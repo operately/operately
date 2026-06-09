@@ -36,6 +36,7 @@ defmodule OperatelyWeb.Api.Goals.GetCheckIn do
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
     |> Action.run(:update, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
+    |> Action.run(:check_draft_access, fn ctx -> check_draft_access(ctx.update, ctx.me) end)
     |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_view, company_read_only: company_read_only(conn)) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.update, level: :full)}} end)
     |> respond()
@@ -46,6 +47,7 @@ defmodule OperatelyWeb.Api.Goals.GetCheckIn do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :id, _} -> {:error, :bad_request}
       {:error, :update, _} -> {:error, :not_found}
+      {:error, :check_draft_access, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :not_found}
       _ -> {:error, :not_found}
     end

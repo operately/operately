@@ -17,6 +17,7 @@ namespace CheckInCard {
     content: string;
     commentCount: number;
     status: BadgeStatus;
+    state?: "draft" | "published" | null;
   }
 
   export interface Props {
@@ -45,7 +46,10 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type }: CheckInCar
 
         <div className="flex-1 h-full">
           <div className="flex items-center gap-2 mb-1">
-            <div className="font-semibold leading-none" data-test-id="check-in-title">Check-In for {formatTitleDate(checkIn.date, type)}</div>
+            <div className="font-semibold leading-none" data-test-id="check-in-title">
+              Check-In for {formatTitleDate(checkIn.date, type)}
+            </div>
+            {checkIn.state === "draft" && <DraftBadge />}
             <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0" />
           </div>
           <div className="break-words">
@@ -68,6 +72,14 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type }: CheckInCar
 
       <CommentCountIndicator count={checkIn.commentCount} size={28} />
     </DivLink>
+  );
+}
+
+function DraftBadge() {
+  return (
+    <span className="rounded-sm border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-xs font-semibold uppercase leading-none text-amber-700 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300">
+      Draft
+    </span>
   );
 }
 
