@@ -137,16 +137,22 @@ function Title() {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="text-content-accent text-2xl font-extrabold">
-        Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
+      <div className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-2xl font-extrabold text-center">
+        <span>
+          Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
+        </span>
+        {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
       </div>
-      {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon className="mt-2" />}
       <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
         <div className="flex items-center gap-2">
           <Avatar person={checkIn.author!} size="tiny" /> {checkIn.author!.fullName}
         </div>
-        <TextSeparator />
-        <Acknowledgement />
+        {checkIn.state !== "draft" && (
+          <>
+            <TextSeparator />
+            <Acknowledgement />
+          </>
+        )}
       </div>
     </div>
   );
@@ -174,10 +180,6 @@ function Navigation() {
 
 function Acknowledgement() {
   const { checkIn } = useLoadedData();
-
-  if (checkIn.state === "draft") {
-    return <span className="flex items-center gap-1">Draft</span>;
-  }
 
   if (checkIn.acknowledgedAt) {
     return (

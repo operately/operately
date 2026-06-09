@@ -27,10 +27,12 @@ function Title({ update }: { update: Update }) {
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
-        Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
+      <h1 className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-xl sm:text-3xl font-extrabold text-center">
+        <span>
+          Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
+        </span>
+        {update.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
       </h1>
-      {update.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon className="mt-2" />}
     </div>
   );
 }
@@ -41,8 +43,12 @@ function Subtitle({ update }: { update: Update }) {
   return (
     <div className="flex gap-1.5 items-center mt-1 font-medium text-sm sm:text-base">
       <AvatarAndName person={update.author} />
-      <BulletDot />
-      <Acknowledgement update={update} />
+      {update.state !== "draft" && (
+        <>
+          <BulletDot />
+          <Acknowledgement update={update} />
+        </>
+      )}
     </div>
   );
 }
@@ -56,10 +62,6 @@ function AvatarAndName({ person }: { person: Person }) {
 }
 
 function Acknowledgement({ update }) {
-  if (update.state === "draft") {
-    return <span className="flex items-center gap-1">Draft</span>;
-  }
-
   if (update.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
