@@ -23,6 +23,7 @@ defmodule Operately.Features.CompaniesTest do
   feature "creating another company remembers billing intent from query params", ctx do
     ctx
     |> Steps.given_a_user_is_logged_in_that_belongs_to_a_company()
+    |> Steps.seed_active_billing_catalog()
     |> Steps.navigate_to_new_company_page_with_billing_intent()
     |> Steps.fill_in_company_form_and_submit()
     |> Steps.assert_company_is_created()
