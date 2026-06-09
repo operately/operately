@@ -44,6 +44,7 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
 
       # 4. Pending milestone
       project_for_milestone = create_project(ctx, gen_future_date(3))
+
       create_milestone(project_for_milestone, %{
         status: :pending,
         timeframe: %{
@@ -76,6 +77,7 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
         task_status: todo,
         due_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 5))
       })
+
       # Upcoming milestone
       create_milestone(project_for_milestone, %{
         status: :pending,
@@ -84,8 +86,14 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
           contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 5))
         }
       })
+
       # Assignment for another person
       create_goal(ctx.another_person, ctx.company, gen_past_date(3))
+      # Draft check-in acknowledgements
+      draft_project = create_project(ctx, gen_future_date(3), %{reviewer_id: ctx.person.id, creator_id: ctx.another_person.id})
+      create_check_in(draft_project, state: :draft)
+      draft_goal = create_goal(ctx.another_person, ctx.company, gen_future_date(3), %{reviewer_id: ctx.person.id})
+      create_update(ctx.another_person, draft_goal, post_as_draft: true)
 
       assert {200, %{count: count}} = query(ctx.conn, [:people, :get_assignments_count], %{})
       assert count == 6
@@ -114,6 +122,7 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
         status: "todo",
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "todo",
         due_date: ContextualDate.create_day_date(tomorrow_date())
@@ -130,6 +139,7 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
         status: "todo",
         due_date: ContextualDate.create_day_date(gen_future_date(2))
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "todo",
         due_date: ContextualDate.create_day_date(gen_future_date(3))
@@ -146,10 +156,12 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
         status: "pending",
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "todo",
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "in_progress",
         due_date: ContextualDate.create_day_date(Date.utc_today())
@@ -169,6 +181,7 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
         task_status: done,
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
+
       create_task(project_for_task, ctx.person, %{
         task_status: canceled,
         due_date: ContextualDate.create_day_date(Date.utc_today())
@@ -177,7 +190,6 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
       assert {200, %{count: count}} = query(ctx.conn, [:people, :get_assignments_count], %{})
       assert count == 0
     end
-
   end
 
   describe "get_assignments_count project check-ins" do
@@ -343,6 +355,7 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
           contextual_end_date: ContextualDate.create_day_date(Date.utc_today())
         }
       })
+
       create_milestone(project, %{
         status: :pending,
         timeframe: %{
@@ -365,6 +378,7 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
           contextual_end_date: ContextualDate.create_day_date(gen_future_date(2))
         }
       })
+
       create_milestone(project, %{
         status: :pending,
         timeframe: %{
@@ -447,17 +461,21 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
     goal
   end
 
-  defp create_check_in(project) do
+  defp create_check_in(project, attrs \\ %{}) do
     project = Repo.preload(project, :champion)
+    attrs = Enum.into(attrs, %{})
 
-    Operately.ProjectsFixtures.check_in_fixture(%{
-      author_id: project.champion.id,
-      project_id: project.id
-    })
+    Operately.ProjectsFixtures.check_in_fixture(
+      %{
+        author_id: project.champion.id,
+        project_id: project.id
+      }
+      |> Map.merge(attrs)
+    )
   end
 
-  defp create_update(creator, goal) do
-    Operately.GoalsFixtures.goal_update_fixture(creator, goal)
+  defp create_update(creator, goal, attrs \\ []) do
+    Operately.GoalsFixtures.goal_update_fixture(creator, goal, attrs)
   end
 
   defp create_task(project, person, attrs) do

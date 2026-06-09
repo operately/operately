@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckInsTest do
 
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
+  alias Operately.Repo
 
   defp request(ctx, params) do
     query(ctx.conn, [:goals, :list_check_ins], params)
@@ -72,6 +73,20 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckInsTest do
 
       assert {200, res} = request(ctx, %{goal_id: goal_id})
       assert length(res.check_ins) == length(updates)
+    end
+
+    test "drafts are visible only to their author", ctx do
+      viewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      {goal_id, [published_update | _]} = create_goal_and_updates(ctx, company_access: Binding.view_access())
+      goal = Repo.get!(Operately.Goals.Goal, published_update.goal_id)
+      draft = goal_update_fixture(ctx.person, goal, post_as_draft: true)
+
+      assert {200, res} = request(ctx, %{goal_id: goal_id})
+      assert Enum.map(res.check_ins, & &1.id) |> Enum.member?(Paths.goal_update_id(draft))
+
+      viewer_ctx = %{ctx | conn: log_in_account(ctx.conn, Repo.preload(viewer, :account).account)}
+      assert {200, res} = request(viewer_ctx, %{goal_id: goal_id})
+      refute Enum.map(res.check_ins, & &1.id) |> Enum.member?(Paths.goal_update_id(draft))
     end
   end
 

@@ -80,6 +80,37 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckInTest do
       assert_update_edited(update)
     end
 
+    test "publishes a draft goal progress update", ctx do
+      update = create_goal_update(ctx)
+
+      {:ok, draft} =
+        Ecto.Changeset.change(update, %{
+          state: :draft,
+          published_at: nil
+        })
+        |> Repo.update()
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :update_check_in], %{
+                 id: Paths.goal_update_id(draft),
+                 status: "off_track",
+                 content: RichText.rich_text("Ready to publish", :as_string),
+                 new_target_values: Jason.encode!([]),
+                 due_date: nil,
+                 checklist: [],
+                 state: "published"
+               })
+
+      update = Repo.reload(draft)
+      goal = Repo.get!(Operately.Goals.Goal, update.goal_id)
+
+      assert res.update.state == "published"
+      assert update.state == :published
+      assert update.published_at
+      assert goal.last_check_in_id == update.id
+      assert goal.last_update_status == update.status
+    end
+
     test "mentioned people are added to subscriptions list", ctx do
       update = create_goal_update(ctx)
 

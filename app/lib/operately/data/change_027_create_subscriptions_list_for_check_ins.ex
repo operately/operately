@@ -3,7 +3,7 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
 
   alias Operately.{Repo, Notifications}
   alias Operately.Notifications.{Subscription, SubscriptionList}
-  alias Operately.Projects.{CheckIn, Contributor}
+  alias __MODULE__.{CheckIn, Contributor}
 
   def run do
     Repo.transaction(fn ->
@@ -23,22 +23,26 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
   defp create_subscriptions_list(check_in) do
     case SubscriptionList.get(:system, parent_id: check_in.id) do
       {:error, :not_found} ->
-        {:ok, subscriptions_list} = Notifications.create_subscription_list(%{
-          parent_id: check_in.id,
-          parent_type: :project_check_in,
-          send_to_everyone: true,
-        })
+        {:ok, subscriptions_list} =
+          Notifications.create_subscription_list(%{
+            parent_id: check_in.id,
+            parent_type: :project_check_in,
+            send_to_everyone: true
+          })
+
         subscriptions_list
 
-      {:ok, subscriptions_list} -> subscriptions_list
+      {:ok, subscriptions_list} ->
+        subscriptions_list
     end
     |> edit_check_in(check_in)
   end
 
   defp edit_check_in(subscriptions_list, check_in) do
     if subscriptions_list.id != check_in.subscription_list_id do
-      {:ok, _} = Operately.Projects.update_check_in(check_in, %{subscription_list_id: subscriptions_list.id})
+      {:ok, _} = CheckIn.update(check_in, %{subscription_list_id: subscriptions_list.id})
     end
+
     subscriptions_list
   end
 
@@ -50,8 +54,8 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
 
   defp create_subscriptions(subscriptions_list) do
     from(contrib in Contributor,
-      join: p in assoc(contrib, :project),
-      join: c in assoc(p, :check_ins),
+      join: c in CheckIn,
+      on: c.project_id == contrib.project_id,
       where: c.id == ^subscriptions_list.parent_id
     )
     |> Repo.all()
@@ -63,12 +67,40 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
   defp find_or_create_subscription(subscriptions_list, contrib) do
     case Subscription.get(:system, subscription_list_id: subscriptions_list.id, person_id: contrib.person_id) do
       {:error, :not_found} ->
-        {:ok, _} = Notifications.create_subscription(%{
-          subscription_list_id: subscriptions_list.id,
-          person_id: contrib.person_id,
-          type: :invited,
-        })
-      _ -> :ok
+        {:ok, _} =
+          Notifications.create_subscription(%{
+            subscription_list_id: subscriptions_list.id,
+            person_id: contrib.person_id,
+            type: :invited
+          })
+
+      _ ->
+        :ok
+    end
+  end
+
+  defmodule CheckIn do
+    use Operately.Schema
+
+    schema "project_check_ins" do
+      field :project_id, Ecto.UUID
+      field :subscription_list_id, Ecto.UUID
+    end
+
+    def changeset(check_in, attrs) do
+      check_in
+      |> cast(attrs, [:subscription_list_id])
+    end
+
+    def update(check_in, attrs), do: changeset(check_in, attrs) |> Repo.update()
+  end
+
+  defmodule Contributor do
+    use Operately.Schema
+
+    schema "project_contributors" do
+      field :project_id, Ecto.UUID
+      field :person_id, Ecto.UUID
     end
   end
 end

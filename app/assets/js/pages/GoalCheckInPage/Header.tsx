@@ -26,9 +26,12 @@ function Title({ update }: { update: Update }) {
   assertPresent(update.insertedAt, "Update insertedAt must be defined");
 
   return (
-    <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
-      Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
-    </h1>
+    <div className="flex flex-col items-center">
+      <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
+        Check-In for <FormattedTime time={update.insertedAt} format="long-date" />
+      </h1>
+      {update.state === "draft" && <DraftBadge />}
+    </div>
   );
 }
 
@@ -53,6 +56,10 @@ function AvatarAndName({ person }: { person: Person }) {
 }
 
 function Acknowledgement({ update }) {
+  if (update.state === "draft") {
+    return <span className="flex items-center gap-1">Draft</span>;
+  }
+
   if (update.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
@@ -64,4 +71,12 @@ function Acknowledgement({ update }) {
   } else {
     return <span className="flex items-center gap-1">Not yet acknowledged</span>;
   }
+}
+
+function DraftBadge() {
+  return (
+    <span className="mt-2 rounded-sm border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-semibold uppercase leading-none text-amber-700 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300">
+      Draft
+    </span>
+  );
 }

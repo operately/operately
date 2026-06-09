@@ -82,6 +82,7 @@ export namespace GoalPage {
     link: string;
     commentCount: number;
     status: BadgeStatus;
+    state?: "draft" | "published" | null;
   }
 
   export interface Discussion {
@@ -181,7 +182,7 @@ export namespace GoalPage {
     closeMoveModal: () => void;
 
     onReviewGoal?: () => void;
-  }
+  };
 }
 
 function useGoalPageState(props: GoalPage.Props): GoalPage.State {
