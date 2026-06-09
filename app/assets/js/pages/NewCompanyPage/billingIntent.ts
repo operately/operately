@@ -8,7 +8,7 @@ export interface BillingCatalog {
   catalogProducts: BillingCatalogProduct[];
 }
 
-export interface BillingIntent {
+interface BillingIntent {
   plan?: string;
   billingPeriod?: BillingInterval;
 }
