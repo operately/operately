@@ -160,4 +160,28 @@ defmodule Operately.Operations.CompanyAddingTest do
     assert person.title == "CEO"
     assert Billing.get_billing_account_by_company(company) == nil
   end
+
+  test "CompanyAdding operation ignores incomplete billing intent" do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    attrs = Map.merge(@company_attrs, %{plan: "team"})
+
+    {:ok, company} = Operately.Operations.CompanyAdding.run(attrs)
+
+    assert Billing.get_billing_account_by_company(company) == nil
+  end
+
+  test "CompanyAdding operation rejects unsupported billing intent" do
+    Application.put_env(:operately, :billing_enabled, true)
+    on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
+    attrs =
+      Map.merge(@company_attrs, %{
+        plan: "enterprise",
+        billing_period: "monthly"
+      })
+
+    assert {:error, :bad_request, "Invalid billing intent"} = Operately.Operations.CompanyAdding.run(attrs)
+  end
 end

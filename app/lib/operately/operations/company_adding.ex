@@ -1,5 +1,6 @@
 defmodule Operately.Operations.CompanyAdding do
   alias Operately.Billing
+  alias Operately.Billing.Inputs
   alias Operately.Companies.ShortId
   alias Ecto.Multi
   alias Operately.Repo
@@ -11,19 +12,21 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.Activities
 
   def run(attrs, account \\ nil) do
-    Multi.new()
-    |> insert_company(attrs)
-    |> insert_access_context()
-    |> insert_access_groups()
-    |> insert_access_bindings()
-    |> insert_space()
-    |> maybe_remember_billing_intent(attrs)
-    |> insert_account_if_doesnt_exists(attrs, account)
-    |> insert_person(attrs)
-    |> insert_activity()
-    |> send_discord_notification()
-    |> Repo.transaction()
-    |> Repo.extract_result(:updated_company)
+    with :ok <- validate_billing_intent(attrs) do
+      Multi.new()
+      |> insert_company(attrs)
+      |> insert_access_context()
+      |> insert_access_groups()
+      |> insert_access_bindings()
+      |> insert_space()
+      |> maybe_remember_billing_intent(attrs)
+      |> insert_account_if_doesnt_exists(attrs, account)
+      |> insert_person(attrs)
+      |> insert_activity()
+      |> send_discord_notification()
+      |> Repo.transaction()
+      |> Repo.extract_result(:updated_company)
+    end
   end
 
   defp insert_company(multi, attrs) do
@@ -181,7 +184,7 @@ defmodule Operately.Operations.CompanyAdding do
         {:ok, :skipped}
       else
         with true <- Billing.billing_enabled?(),
-             {:ok, plan, billing_period} <- extract_billing_intent(attrs),
+             {:ok, plan, billing_period} <- cast_billing_intent(attrs),
              {:ok, billing_account} <- Billing.get_or_create_billing_account(changes.updated_company),
              {:ok, _updated_account} <- Billing.remember_plan(billing_account, plan, billing_period, "website") do
           {:ok, :remembered}
@@ -199,17 +202,21 @@ defmodule Operately.Operations.CompanyAdding do
     end)
   end
 
-  defp extract_billing_intent(attrs) do
-    case {Map.get(attrs, :plan), Map.get(attrs, :billing_period)} do
-      {nil, _} ->
-        :ignore
+  defp validate_billing_intent(attrs) do
+    case cast_billing_intent(attrs) do
+      :ignore ->
+        :ok
 
-      {_, nil} ->
-        :ignore
+      {:ok, _plan, _billing_period} ->
+        :ok
 
-      {plan, billing_period} ->
-        {:ok, plan, billing_period}
+      {:error, _reason} ->
+        {:error, :bad_request, "Invalid billing intent"}
     end
+  end
+
+  defp cast_billing_intent(attrs) do
+    Inputs.cast_customer_billing_intent(Map.get(attrs, :plan), Map.get(attrs, :billing_period))
   end
 
   defp send_discord_notification(multi) do

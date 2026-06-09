@@ -1,16 +1,26 @@
 import type * as api from "@/api";
 
-type BillingPlan = api.BillingPlan;
 type BillingInterval = api.BillingInterval;
+type BillingPlanKey = string;
+type CurrentSelfServeBillingPlan = "team" | "business" | "unlimited";
+
+const CURRENT_SELF_SERVE_BILLING_PLANS = ["team", "business", "unlimited"] as const;
 
 type BillingUpgradeRecommendationSource = "suggested" | "next_plan" | "none";
 
+interface BillingUpgradeRecommendationTarget {
+  plan: BillingPlanKey;
+  billingInterval: BillingInterval;
+  product: null;
+}
+
 interface BillingUpgradeRecommendation {
   target: {
-    plan: BillingPlan;
+    plan: CurrentSelfServeBillingPlan;
     billingInterval: BillingInterval;
     product: null;
   } | null;
+  rawTarget: BillingUpgradeRecommendationTarget | null;
   source: BillingUpgradeRecommendationSource;
 }
 
@@ -62,19 +72,28 @@ function extractRecommendedUpgrade(raw: unknown): BillingUpgradeRecommendation {
     const plan = (raw as any).plan_key;
     const interval = (raw as any).billing_interval;
 
-    if (isBillingPlan(plan) && isBillingInterval(interval)) {
+    if (typeof plan === "string" && isBillingInterval(interval)) {
+      const rawTarget: BillingUpgradeRecommendationTarget = {
+        plan,
+        billingInterval: interval,
+        product: null,
+      };
+
       return {
-        target: {
-          plan,
-          billingInterval: interval,
-          product: null,
-        },
+        target: isCurrentSelfServeBillingPlan(plan)
+          ? {
+              plan,
+              billingInterval: interval,
+              product: null,
+            }
+          : null,
+        rawTarget,
         source: normalizeUpgradeRecommendationSource((raw as any).source),
       };
     }
   }
 
-  return { target: null, source: "none" };
+  return { target: null, rawTarget: null, source: "none" };
 }
 
 function normalizeUpgradeRecommendationSource(source: unknown): BillingUpgradeRecommendationSource {
@@ -85,8 +104,8 @@ function normalizeUpgradeRecommendationSource(source: unknown): BillingUpgradeRe
   return "none";
 }
 
-function isBillingPlan(value: unknown): value is BillingPlan {
-  return value === "free" || value === "team" || value === "business" || value === "unlimited";
+function isCurrentSelfServeBillingPlan(value: string): value is CurrentSelfServeBillingPlan {
+  return CURRENT_SELF_SERVE_BILLING_PLANS.includes(value as CurrentSelfServeBillingPlan);
 }
 
 function isBillingInterval(value: unknown): value is BillingInterval {

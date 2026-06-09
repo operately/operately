@@ -126,7 +126,7 @@ function determineOverageKind(
   return "none";
 }
 
-function planTier(planKey: CompanyBillingPageTypes.Plan): number {
+function planTier(planKey: CompanyBillingPageTypes.SelfServePlan): number {
   if (planKey === "unlimited") return 3;
   if (planKey === "business") return 2;
   return 1;

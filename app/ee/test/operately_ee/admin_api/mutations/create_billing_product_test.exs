@@ -2,6 +2,7 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProductTest do
   use OperatelyWeb.TurboCase
   import Mock
 
+  alias Operately.Billing
   alias Operately.People.Account
 
   describe "security" do
@@ -81,6 +82,73 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProductTest do
       assert product.price_currency == "usd"
       assert product.version == 1
       refute product.active
+    end
+
+    test "creates a product for a newly added provider-managed plan without code changes", ctx do
+      {:ok, _plan_definition} =
+        Billing.create_plan_definition(%{
+          plan_key: "enterprise",
+          display_name: "Enterprise",
+          sort_order: 8,
+          tier_rank: 8,
+          billing_behavior: :provider_managed,
+          customer_selectable: true,
+          member_limit: 500,
+          storage_limit_bytes: 5_497_558_138_880
+        })
+
+      {200, %{product: product}} =
+        with_mock Operately.Billing.Polar.Client,
+          create_product: fn _attrs ->
+            {:ok,
+             %{
+               "id" => "prod_enterprise_monthly",
+               "name" => "Enterprise Monthly",
+               "recurring_interval" => "monthly",
+               "prices" => [%{"amount_type" => "fixed", "price_amount" => 19_900, "price_currency" => "usd"}],
+               "metadata" => %{
+                 "operately_managed" => "true",
+                 "operately_plan_family" => "enterprise",
+                 "operately_billing_interval" => "monthly",
+                 "operately_version" => 1
+               },
+               "is_archived" => false
+             }}
+          end do
+          admin_mutation(ctx.conn, :create_billing_product, %{
+            plan_family: "enterprise",
+            billing_interval: "monthly",
+            polar_product_name: "Enterprise Monthly",
+            price_amount: 19_900,
+            price_currency: "usd"
+          })
+        end
+
+      assert product.plan_family == "enterprise"
+      assert product.polar_product_id == "prod_enterprise_monthly"
+    end
+
+    test "rejects internal plans", ctx do
+      {:ok, _plan_definition} =
+        Billing.create_plan_definition(%{
+          plan_key: "internal_support",
+          display_name: "Internal Support",
+          sort_order: 9,
+          tier_rank: 9,
+          billing_behavior: :internal,
+          customer_selectable: false,
+          member_limit: 100,
+          storage_limit_bytes: nil
+        })
+
+      assert {400, _} =
+               admin_mutation(ctx.conn, :create_billing_product, %{
+                 plan_family: "internal_support",
+                 billing_interval: "monthly",
+                 polar_product_name: "Internal Support Monthly",
+                 price_amount: 100,
+                 price_currency: "usd"
+               })
     end
 
     test "returns error with invalid params", ctx do
