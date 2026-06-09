@@ -1,4 +1,4 @@
-import { parseBillingInterval, parseCurrentSelfServeBillingPlan } from "./index";
+import { parseBillingInterval, parseCurrentSelfServeBillingPlan } from "./billingIntent";
 
 describe("NewCompanyPage billing intent parsing", () => {
   it("accepts the current self-serve plan subset", () => {

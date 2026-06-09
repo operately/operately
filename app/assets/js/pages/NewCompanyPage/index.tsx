@@ -1,5 +1,4 @@
 import Api from "@/api";
-import type { BillingInterval } from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -12,12 +11,9 @@ import Forms from "@/components/Forms";
 import { PageModule } from "@/routes/types";
 import { Link } from "turboui";
 
+import { parseBillingInterval, parseCurrentSelfServeBillingPlan } from "./billingIntent";
+
 export default { name: "NewCompanyPage", loader: Pages.emptyLoader, Page } as PageModule;
-
-const CURRENT_SELF_SERVE_BILLING_PLANS = ["team", "business", "unlimited"] as const;
-const BILLING_INTERVALS: BillingInterval[] = ["monthly", "yearly"];
-
-type CurrentSelfServeBillingPlan = (typeof CURRENT_SELF_SERVE_BILLING_PLANS)[number];
 
 function Page() {
   const navigate = useNavigate();
@@ -87,14 +83,6 @@ function Page() {
       </Paper.Root>
     </Pages.Page>
   );
-}
-
-export function parseCurrentSelfServeBillingPlan(value: string | null): CurrentSelfServeBillingPlan | undefined {
-  return CURRENT_SELF_SERVE_BILLING_PLANS.find((plan) => plan === value);
-}
-
-export function parseBillingInterval(value: string | null): BillingInterval | undefined {
-  return BILLING_INTERVALS.find((billingInterval) => billingInterval === value);
 }
 
 function PageTitle() {
