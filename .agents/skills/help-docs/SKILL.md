@@ -170,7 +170,7 @@ When screenshots are available (provided by the user or captured via browser):
 - Use the folder layout: `{slug}/index.mdx` with co-located PNGs
 - Include `<ImageEnhancer />` at the top of the page
 - Follow the contributor guide: demo org "Nexus Dynamics", profile name "John
-  Cooper", window size 1280×1100, Cleanshot X background settings
+  Cooper", window size 1280×1100, CleanShot X background settings
 
 Do not add background to element-level screenshots; add background to full-page
 screenshots only.
