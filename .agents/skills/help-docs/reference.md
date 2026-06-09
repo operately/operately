@@ -319,20 +319,34 @@ Why this pattern:
 - Screenshot alt text describes what is shown
 - `<Steps>` for the email login sub-flow
 
-## API Docs Boundary
+## API Documentation
 
-The `help/api/` directory is **auto-generated**. Agents must never create,
-edit, or delete files there.
+The `website/src/content/docs/help/api/` directory is **fully auto-generated**.
+Agents must never create, edit, or delete MDX files there. Those files are
+overwritten on every sync.
 
-**How it works:**
+When API docs need to change, work in **this repo (operately)** at the generator
+or API definition level. Commit those changes — CI publishes updated docs to the
+website on the next deploy. **Do not run the generation command manually** and
+do not copy output into the website repo yourself; that is CI's job.
 
-1. The operately repo generates API docs via `make gen.api.docs` (Mix task
-   `operately.gen.api.docs`)
-2. Output goes to `tmp/generated/api-docs/help/api/`
-3. CI runs `scripts/sync_api_docs_to_website.sh` to rsync into the website repo
+### How generation and publishing work
+
+1. `Operately.ApiDocs.Generator` introspects `OperatelyWeb.Api.External`
+   (`__queries__`, `__mutations__`, `__types__`, `__namespace_descriptions__`)
+2. It writes MDX under `tmp/generated/api-docs/help/api/` — one file per
+   endpoint, plus namespace indexes and a root index
+3. On deploy, CI runs `scripts/sync_api_docs_to_website.sh`, which calls
+   `make gen.api.docs.ci` and rsyncs the output into the website repo
 4. A bot commits: `docs: sync API docs from operately@{sha}`
 
-**Sidebar:** The API docs section uses Starlight autogenerate:
+The Mix task (`mix operately.gen.api.docs`) and Makefile target
+(`make gen.api.docs`) exist for local inspection and tests. **Agents should not
+run them** as part of doc work — making the source changes and merging is
+enough; the next deploy updates the live help center.
+
+**Sidebar:** The API docs section uses Starlight autogenerate — no manual
+`helpCenter.js` entries needed for individual endpoints:
 
 ```javascript
 {
@@ -341,8 +355,75 @@ edit, or delete files there.
 }
 ```
 
-If a user asks to document API usage, point them to the auto-generated reference
-at `/help/api/` or write CLI docs instead. Do not hand-write API endpoint pages.
+### What drives each part of a generated page
+
+Each endpoint page (e.g. `api/tasks/create.mdx`) is built from API metadata,
+not hand-written prose:
+
+| Page section | Source |
+| ------------ | ------ |
+| Title and description | Derived from namespace + endpoint name in `Operately.ApiDocs.Markdown` |
+| Endpoint table (method, path, handler) | Query/mutation registration in `app/lib/operately_web/api.ex` |
+| Inputs table | `inputs do` block on the handler module |
+| Outputs table | `outputs do` block on the handler module |
+| Authentication notes | `Operately.ApiDocs.Markdown` (query vs mutation rules) |
+| cURL example | `Operately.ApiDocs.CurlExample` |
+| Response example JSON | `Operately.ApiDocs.ResponseExample` |
+| Type formatting in tables | `Operately.ApiDocs.TypeFormatter` |
+| Namespace index intro | `@doc` on the `namespace(:…)` block in `api.ex` |
+
+Handler `@moduledoc` strings are extracted into the catalog JSON but are **not**
+currently rendered on MDX endpoint pages. To add per-endpoint descriptions to
+the published docs, extend `Operately.ApiDocs.Markdown.endpoint_page/2`.
+
+### Where to make changes
+
+**Generator and formatting** (affects all or many API doc pages):
+
+| File | Change when |
+| ---- | ----------- |
+| `app/lib/operately/api_docs/generator.ex` | Output structure, file layout, catalog building |
+| `app/lib/operately/api_docs/markdown.ex` | Page templates, intro text, table layout, titles |
+| `app/lib/operately/api_docs/type_formatter.ex` | How types appear in input/output tables |
+| `app/lib/operately/api_docs/curl_example.ex` | cURL command format |
+| `app/lib/operately/api_docs/response_example.ex` | Sample JSON responses |
+| `app/lib/operately/api_docs/catalog.ex` | CLI catalog JSON alongside docs |
+
+Changes to `markdown.ex` or shared formatters will likely affect **every** API
+doc page. Review generated output broadly, not just one endpoint.
+
+**New or updated endpoints** (adds or updates specific pages):
+
+1. Register the endpoint in `app/lib/operately_web/api.ex` inside the appropriate
+   `namespace(:…)` block via `query/3` or `mutation/3`
+2. Implement the handler module under `app/lib/operately_web/api/` with
+   `inputs do`, `outputs do`, and permission logic
+3. Set the namespace description with `@doc` immediately before `namespace(:goals)`
+   (or whichever namespace) — this text appears on the namespace index page
+4. To exclude an endpoint from the public catalog, pass `catalog: false` in the
+   query/mutation opts (see `Operately.ApiDocs.Generator.build_endpoint/5`)
+
+External API surface is defined by `OperatelyWeb.Api.external_endpoints/0` in
+`app/lib/operately_web/api/external.ex`, which currently mirrors
+`common_endpoints/0`.
+
+**Tests:** `app/test/mix/tasks/operately.gen.api.docs_test.exs` verifies generation
+output. Update it if generation behavior changes.
+
+### Agent workflow for API doc changes
+
+1. Confirm the request is about the **API reference** (`/help/api/`), not a
+   product how-to page
+2. Identify whether the change is global (generator/formatting) or
+   endpoint-specific (handler registration or inputs/outputs)
+3. Make changes only in the operately repo paths listed above
+4. Do **not** edit `website/src/content/docs/help/api/`
+5. Do **not** run `make gen.api.docs` or copy files to the website repo
+6. Tell the user that CI will sync the updated docs on the next deploy
+
+For user-facing API **usage guides** (when to use tokens, how to get started),
+write a product help page under `website/src/content/docs/help/` (e.g. near the
+existing `create-api-token` page) — not hand-written endpoint reference pages.
 
 ## Screenshot Guidelines
 
@@ -370,7 +451,9 @@ When editing an existing help page:
 ## Common Mistakes to Avoid
 
 - Documenting API endpoints or Elixir modules instead of UI steps
-- Editing files under `help/api/`
+- Editing generated files under `website/src/content/docs/help/api/`
+- Running `make gen.api.docs` manually or copying generated MDX into the website repo (CI handles publishing)
+- Changing `markdown.ex` or other generator code without expecting all API pages to change
 - Forgetting to add the sidebar entry in `helpCenter.js`
 - Starting the page body with an H1 or a heading before the intro paragraph
 - Adding a "Related pages" section at the bottom

@@ -19,7 +19,11 @@ see and do in the UI. Do not document backend implementation, database schema,
 GraphQL, Elixir modules, or API handler details.
 
 **Never edit** anything under `operately-website/src/content/docs/help/api/`.
-The API reference is auto-generated from this repo and synced by CI.
+The API reference is auto-generated from this repo and synced to the website
+by CI on deploy. If API docs need to change, modify the generator or the API
+definitions in this repo — not the generated MDX files. See
+[reference.md — API documentation](reference.md#api-documentation) for how that
+works.
 
 For templates, file paths, research map, and annotated examples, read
 [reference.md](reference.md). For user-facing wording, apply the
@@ -183,4 +187,5 @@ A help doc task is done only when:
 - [ ] Related help pages are cross-linked inline; no "Related pages" footer
 - [ ] A sidebar entry was added in `helpCenter.js` under the correct section
 - [ ] Tone and structure match nearby existing docs; ui-copy principles applied
-- [ ] Nothing under `help/api/` was modified
+- [ ] Nothing under `help/api/` in the website repo was modified by hand
+- [ ] If API docs were in scope, changes were made in the operately generator or API handlers only (CI publishes them on deploy)
