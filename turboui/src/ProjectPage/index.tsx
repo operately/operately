@@ -45,6 +45,7 @@ export namespace ProjectPage {
     link: string;
     commentCount: number;
     status: BadgeStatus;
+    state?: "draft" | "published" | null;
   }
 
   export interface Discussion {

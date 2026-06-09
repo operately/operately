@@ -5,9 +5,10 @@ import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns"
 import { useNavigate } from "react-router-dom";
 
 import FormattedTime from "@/components/FormattedTime";
-import Forms from "@/components/Forms";
+import Forms, { FormState } from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
+import { GhostButton, PrimaryButton } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
@@ -31,11 +32,16 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
     cancel: () => {
       navigate(paths.projectCheckInPath(checkIn.id!));
     },
-    submit: async () => {
+    submit: async (action: "save" | "publish" = "save") => {
+      const status = form.values.status;
+      const description = form.values.description;
+      if (!status || !description) return;
+
       const res = await edit({
         checkInId: checkIn.id,
-        status: form.values.status,
-        description: JSON.stringify(form.values.description),
+        status,
+        description: JSON.stringify(description),
+        state: checkIn.state === "draft" ? (action === "publish" ? "published" : "draft") : undefined,
       });
 
       navigate(paths.projectCheckInPath(res.checkIn.id));
@@ -53,8 +59,49 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
 
       <Spacer size={4} />
 
-      <Forms.Submit saveText="Submit" buttonSize="base" />
+      <SubmitButtons form={form} isDraft={checkIn.state === "draft"} />
     </Forms.Form>
+  );
+}
+
+function SubmitButtons({
+  form,
+  isDraft,
+}: {
+  form: FormState<{ status: ProjectCheckIn["status"]; description: any }>;
+  isDraft: boolean;
+}) {
+  const submit = (action: "save" | "publish") => {
+    form.actions.setTrigger(action);
+    form.actions.submit(action);
+  };
+
+  const isSubmitting = form.state === "submitting";
+
+  if (!isDraft) {
+    return <Forms.Submit saveText="Submit" buttonSize="base" />;
+  }
+
+  return (
+    <div className="mt-8 flex items-center gap-2">
+      <PrimaryButton
+        loading={isSubmitting && form.trigger === "save"}
+        testId="save-draft"
+        size="base"
+        onClick={() => submit("save")}
+      >
+        Save draft
+      </PrimaryButton>
+
+      <GhostButton
+        loading={isSubmitting && form.trigger === "publish"}
+        testId="publish-draft"
+        size="base"
+        onClick={() => submit("publish")}
+      >
+        Submit check-in
+      </GhostButton>
+    </div>
   );
 }
 

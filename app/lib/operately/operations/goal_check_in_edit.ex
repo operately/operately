@@ -15,6 +15,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> record_activity(author, goal, check_in)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
+    |> broadcast_if_published(author)
   end
 
   #
@@ -28,7 +29,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     is_latest = goal.last_check_in_id == check_in.id
     is_in_edit_deadline = NaiveDateTime.compare(NaiveDateTime.utc_now(), edit_deadline) == :lt
 
-    Multi.put(multi, :full_edit_allowed, is_latest and is_in_edit_deadline)
+    Multi.put(multi, :full_edit_allowed, check_in.state == :draft or (is_latest and is_in_edit_deadline))
   end
 
   defp update_check_in(multi, check_in, attrs) do
@@ -37,13 +38,15 @@ defmodule Operately.Operations.GoalCheckInEdit do
         Update.changeset(check_in, %{
           status: attrs.status,
           message: attrs.content,
+          state: state(check_in, attrs),
           targets: encode_new_target_values(attrs.new_target_values, check_in),
           checks: attrs.checklist,
           timeframe: to_timeframe(check_in.goal, attrs[:due_date])
         })
       else
         Update.changeset(check_in, %{
-          message: attrs.content
+          message: attrs.content,
+          state: state(check_in, attrs)
         })
       end
     end)
@@ -51,7 +54,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
 
   defp maybe_update_targets(multi, targets, new_target_values) do
     Multi.merge(multi, fn changes ->
-      if changes.full_edit_allowed do
+      if changes.full_edit_allowed and changes.check_in.state == :published do
         update_targets(targets, new_target_values)
       else
         # no-op
@@ -72,7 +75,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
 
   defp maybe_update_checks(multi, checks, checklist) do
     Multi.merge(multi, fn changes ->
-      if changes.full_edit_allowed do
+      if changes.full_edit_allowed and changes.check_in.state == :published do
         update_checks(checks, checklist)
       else
         # no-op
@@ -110,27 +113,51 @@ defmodule Operately.Operations.GoalCheckInEdit do
 
   defp maybe_update_goal(multi, goal, attrs) do
     Multi.update(multi, :goal, fn changes ->
-      if changes.full_edit_allowed do
-        Goal.changeset(goal, %{timeframe: to_timeframe(goal, attrs[:due_date]), last_update_status: changes.check_in.status})
-      else
-        Goal.changeset(goal, %{})
+      cond do
+        changes.check_in.state == :draft ->
+          Goal.changeset(goal, %{})
+
+        changes.full_edit_allowed and changes.check_in.state == :published ->
+          Goal.changeset(goal, %{timeframe: to_timeframe(goal, attrs[:due_date]), last_check_in_id: changes.check_in.id, last_update_status: changes.check_in.status})
+
+        true ->
+          Goal.changeset(goal, %{})
       end
     end)
   end
 
   defp record_activity(multi, author, goal, check_in) do
-    multi
-    |> Activities.insert_sync(author.id, :goal_check_in_edit, fn changes ->
-      old_timeframe = check_in.timeframe
-      new_timeframe = changes.check_in.timeframe
+    Multi.merge(multi, fn changes ->
+      cond do
+        check_in.state == :draft and changes.check_in.state == :draft ->
+          Multi.new()
 
-      %{
-        company_id: goal.company_id,
-        goal_id: goal.id,
-        check_in_id: changes.check_in.id,
-        old_timeframe: old_timeframe,
-        new_timeframe: new_timeframe
-      }
+        check_in.state == :draft and changes.check_in.state == :published ->
+          Activities.insert_sync(Multi.new(), author.id, :goal_check_in, fn _ ->
+            %{
+              company_id: goal.company_id,
+              space_id: goal.group_id,
+              goal_id: goal.id,
+              update_id: changes.check_in.id,
+              old_timeframe: goal.timeframe,
+              new_timeframe: changes.check_in.timeframe
+            }
+          end)
+
+        true ->
+          Activities.insert_sync(Multi.new(), author.id, :goal_check_in_edit, fn _ ->
+            old_timeframe = check_in.timeframe
+            new_timeframe = changes.check_in.timeframe
+
+            %{
+              company_id: goal.company_id,
+              goal_id: goal.id,
+              check_in_id: changes.check_in.id,
+              old_timeframe: old_timeframe,
+              new_timeframe: new_timeframe
+            }
+          end)
+      end
     end)
   end
 
@@ -146,6 +173,8 @@ defmodule Operately.Operations.GoalCheckInEdit do
       |> Map.from_struct()
     end)
   end
+
+  defp state(check_in, attrs), do: attrs[:state] || check_in.state
 
   defp to_timeframe(goal, due_date) do
     if due_date == nil do
@@ -163,4 +192,14 @@ defmodule Operately.Operations.GoalCheckInEdit do
       }
     end
   end
+
+  defp broadcast_if_published({:ok, check_in}, author) do
+    if check_in.state == :published do
+      OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: author.id)
+    end
+
+    {:ok, check_in}
+  end
+
+  defp broadcast_if_published(error, _author), do: error
 end

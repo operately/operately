@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
 
     field :content, :json, null: false
     field? :new_target_values, :string, null: false
+    field? :post_as_draft, :boolean, null: false, default: false
     field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
     field? :subscriber_ids, list_of(:id), null: false, default: []
   end
@@ -61,15 +62,16 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
   end
 
   defp parse_inputs(inputs) do
-    target_values = if inputs[:new_target_values] do
-         Jason.decode!(inputs.new_target_values)
-         |> Enum.map(fn t ->
-           {:ok, id} = decode_id(t["id"])
-           %{"id" => id, "value" => t["value"]}
-      end)
-    else
-      nil
-    end
+    target_values =
+      if inputs[:new_target_values] do
+        Jason.decode!(inputs.new_target_values)
+        |> Enum.map(fn t ->
+          {:ok, id} = decode_id(t["id"])
+          %{"id" => id, "value" => t["value"]}
+        end)
+      else
+        nil
+      end
 
     {:ok,
      %{
@@ -78,6 +80,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
        status: inputs.status,
        due_date: inputs.due_date,
        checklist: inputs[:checklist],
+       post_as_draft: inputs[:post_as_draft],
        send_to_everyone: inputs[:send_notifications_to_everyone],
        subscription_parent_type: :goal_update,
        subscriber_ids: inputs[:subscriber_ids]

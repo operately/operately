@@ -40,7 +40,8 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       assert Repo.aggregate(Project, :count, :id) == 5
       assert length(needs_review) == 0
       assert length(upcoming) == 0
-      assert length(due_soon) == 2  # Two separate project groups
+      # Two separate project groups
+      assert length(due_soon) == 2
 
       all_assignments = Enum.flat_map(due_soon, & &1.assignments)
       assert length(all_assignments) == 2
@@ -105,13 +106,14 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       })
 
       # Project that has already started
-      started_project = create_project_with_timeframe(ctx, past_date(), %{
-        name: "Started Project",
-        timeframe: %{
-          contextual_start_date: ContextualDate.create_day_date(past_start_date),
-          contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 30))
-        }
-      })
+      started_project =
+        create_project_with_timeframe(ctx, past_date(), %{
+          name: "Started Project",
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(past_start_date),
+            contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 30))
+          }
+        })
 
       assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
@@ -185,10 +187,11 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
     test "get pending project check-in acknowledgements", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+
       project =
         create_project(ctx, upcoming_date(), %{
           creator_id: another_person.id,
-          reviewer_id: ctx.person.id,
+          reviewer_id: ctx.person.id
         })
 
       check_in = create_check_in(project)
@@ -212,6 +215,21 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       assert c.origin.type == "project"
     end
 
+    test "ignores draft project check-in acknowledgements", ctx do
+      another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+
+      project =
+        create_project(ctx, upcoming_date(), %{
+          creator_id: another_person.id,
+          reviewer_id: ctx.person.id
+        })
+
+      create_check_in(project, another_person, %{state: :draft})
+
+      assert {200, %{needs_review: needs_review} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert needs_review == []
+    end
+
     test "ignores pending acknowledgements of own project check-ins", ctx do
       project = create_project(ctx, upcoming_date())
       create_check_in(project)
@@ -225,9 +243,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
     test "get pending goal check-in acknowledgements", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+
       goal =
         create_goal(another_person, ctx.company, upcoming_date(), %{
-          reviewer_id: ctx.person.id,
+          reviewer_id: ctx.person.id
         })
 
       update = create_update(another_person, goal)
@@ -251,6 +270,20 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       assert u.origin.type == "goal"
     end
 
+    test "ignores draft goal check-in acknowledgements", ctx do
+      another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+
+      goal =
+        create_goal(another_person, ctx.company, upcoming_date(), %{
+          reviewer_id: ctx.person.id
+        })
+
+      create_update(another_person, goal, post_as_draft: true)
+
+      assert {200, %{needs_review: needs_review} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert needs_review == []
+    end
+
     test "ignores pending acknowledgements of own goal check-ins", ctx do
       goal = create_goal(ctx.person, ctx.company, upcoming_date())
       create_update(ctx.person, goal)
@@ -269,20 +302,23 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       in_progress = Enum.find(project.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
       done = Enum.find(project.task_statuses, &(&1.color == :green)) |> Map.from_struct()
 
-      task1 = create_task(project, ctx.person, %{
-        name: "Task 1",
-        task_status: pending,
-        due_date: ContextualDate.create_day_date(Date.utc_today())
-      })
+      task1 =
+        create_task(project, ctx.person, %{
+          name: "Task 1",
+          task_status: pending,
+          due_date: ContextualDate.create_day_date(Date.utc_today())
+        })
 
-      task2 = create_task(project, ctx.person, %{
-        name: "Task 2",
-        task_status: in_progress,
-        due_date: ContextualDate.create_day_date(past_date_as_date())
-      })
+      task2 =
+        create_task(project, ctx.person, %{
+          name: "Task 2",
+          task_status: in_progress,
+          due_date: ContextualDate.create_day_date(past_date_as_date())
+        })
 
       # Task for another person - should not appear
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
+
       create_task(project, another_person, %{
         name: "Other Task",
         task_status: pending,
@@ -325,20 +361,23 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       pending = Enum.find(ctx.space.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
       in_progress = Enum.find(ctx.space.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
 
-      task1 = create_space_task(ctx.space, ctx.person, %{
-        name: "Space Task 1",
-        task_status: pending,
-        due_date: ContextualDate.create_day_date(Date.utc_today())
-      })
+      task1 =
+        create_space_task(ctx.space, ctx.person, %{
+          name: "Space Task 1",
+          task_status: pending,
+          due_date: ContextualDate.create_day_date(Date.utc_today())
+        })
 
-      task2 = create_space_task(ctx.space, ctx.person, %{
-        name: "Space Task 2",
-        task_status: in_progress,
-        due_date: ContextualDate.create_day_date(past_date_as_date())
-      })
+      task2 =
+        create_space_task(ctx.space, ctx.person, %{
+          name: "Space Task 2",
+          task_status: in_progress,
+          due_date: ContextualDate.create_day_date(past_date_as_date())
+        })
 
       # Task for another person - should not appear
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
+
       create_space_task(ctx.space, another_person, %{
         name: "Other Space Task",
         task_status: pending,
@@ -411,23 +450,25 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     test "get pending milestones", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
-      milestone1 = create_milestone(project, %{
-        title: "Milestone 1",
-        status: :pending,
-        timeframe: %{
-          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 7))
-        }
-      })
+      milestone1 =
+        create_milestone(project, %{
+          title: "Milestone 1",
+          status: :pending,
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+            contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 7))
+          }
+        })
 
-      milestone2 = create_milestone(project, %{
-        title: "Milestone 2",
-        status: :pending,
-        timeframe: %{
-          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 14))
-        }
-      })
+      milestone2 =
+        create_milestone(project, %{
+          title: "Milestone 2",
+          status: :pending,
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+            contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 14))
+          }
+        })
 
       # Completed milestone - should not appear
       create_milestone(project, %{
@@ -498,10 +539,12 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
     test "get pending milestones for project champion only", ctx do
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
-      project = create_project(ctx, upcoming_date(), %{
-        creator_id: another_person.id,
-        name: "Other Project"
-      })
+
+      project =
+        create_project(ctx, upcoming_date(), %{
+          creator_id: another_person.id,
+          name: "Other Project"
+        })
 
       create_milestone(project, %{
         title: "Milestone",
@@ -523,10 +566,11 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
         status: :pending
       })
 
-      deleted_milestone = create_milestone(project, %{
-        title: "Deleted Milestone",
-        status: :pending
-      })
+      deleted_milestone =
+        create_milestone(project, %{
+          title: "Deleted Milestone",
+          status: :pending
+        })
 
       Repo.soft_delete(deleted_milestone)
 
@@ -557,18 +601,23 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       # Create another person's check-in to review
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
-      review_project = create_project(ctx, upcoming_date(), %{
-        creator_id: another_person.id,
-        reviewer_id: ctx.person.id,
-        name: "Review Project"
-      })
+
+      review_project =
+        create_project(ctx, upcoming_date(), %{
+          creator_id: another_person.id,
+          reviewer_id: ctx.person.id,
+          name: "Review Project"
+        })
+
       create_check_in(review_project)
 
       # Create another person's goal update to review
-      review_goal = create_goal(another_person, ctx.company, upcoming_date(), %{
-        reviewer_id: ctx.person.id,
-        name: "Review Goal"
-      })
+      review_goal =
+        create_goal(another_person, ctx.company, upcoming_date(), %{
+          reviewer_id: ctx.person.id,
+          name: "Review Goal"
+        })
+
       create_update(another_person, review_goal)
 
       assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
@@ -607,11 +656,13 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
     test "filters project check-ins created before reviewer change", ctx do
       # Create project with old reviewer
-      project = create_project(ctx, upcoming_date(), %{
-        creator_id: ctx.champion.id,
-        champion_id: ctx.champion.id,
-        reviewer_id: ctx.reviewer.id,
-      })
+      project =
+        create_project(ctx, upcoming_date(), %{
+          creator_id: ctx.champion.id,
+          champion_id: ctx.champion.id,
+          reviewer_id: ctx.reviewer.id
+        })
+
       create_check_in(project)
 
       assert {200, %{needs_review: needs_review}} = query(ctx.conn, [:people, :list_assignments], %{})
@@ -620,10 +671,11 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       assert length(all_assignments) == 1
 
       # Change reviewer to new reviewer
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
-        project_id: Paths.project_id(project),
-        reviewer_id: Paths.person_id(ctx.new_reviewer)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_reviewer], %{
+                 project_id: Paths.project_id(project),
+                 reviewer_id: Paths.person_id(ctx.new_reviewer)
+               })
 
       ctx = Factory.log_in_person(ctx, :new_reviewer)
       assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming}} = query(ctx.conn, [:people, :list_assignments], %{})
@@ -645,11 +697,12 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     end
 
     test "includes all project check-ins when no reviewer change occurred", ctx do
-      project = create_project(ctx, upcoming_date(), %{
-        creator_id: ctx.champion.id,
-        champion_id: ctx.champion.id,
-        reviewer_id: ctx.reviewer.id,
-      })
+      project =
+        create_project(ctx, upcoming_date(), %{
+          creator_id: ctx.champion.id,
+          champion_id: ctx.champion.id,
+          reviewer_id: ctx.reviewer.id
+        })
 
       check_in1 = create_check_in(project, ctx.champion)
       check_in2 = create_check_in(project, ctx.champion)
@@ -668,19 +721,21 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     end
 
     test "uses latest reviewer change when multiple changes occur", ctx do
-      project = create_project(ctx, upcoming_date(), %{
-        creator_id: ctx.champion.id,
-        champion_id: ctx.champion.id,
-        reviewer_id: ctx.reviewer.id,
-      })
+      project =
+        create_project(ctx, upcoming_date(), %{
+          creator_id: ctx.champion.id,
+          champion_id: ctx.champion.id,
+          reviewer_id: ctx.reviewer.id
+        })
 
       create_check_in(project, ctx.champion)
 
       # First reviewer change
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
-        project_id: Paths.project_id(project),
-        reviewer_id: Paths.person_id(ctx.person)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_reviewer], %{
+                 project_id: Paths.project_id(project),
+                 reviewer_id: Paths.person_id(ctx.person)
+               })
 
       # Small delay to ensure the new check-in has a later timestamp than the activity
       Process.sleep(1000)
@@ -688,10 +743,11 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       create_check_in(project, ctx.champion)
 
       # Second reviewer change to new reviewer
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
-        project_id: Paths.project_id(project),
-        reviewer_id: Paths.person_id(ctx.new_reviewer)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_reviewer], %{
+                 project_id: Paths.project_id(project),
+                 reviewer_id: Paths.person_id(ctx.new_reviewer)
+               })
 
       # Small delay to ensure the new check-in has a later timestamp than the activity
       Process.sleep(1000)
@@ -713,17 +769,19 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
     test "filters goal updates created before reviewer change", ctx do
       # Create goal with old reviewer
-      goal = create_goal(ctx.champion, ctx.company, upcoming_date(), %{
-        reviewer_id: ctx.reviewer.id,
-      })
+      goal =
+        create_goal(ctx.champion, ctx.company, upcoming_date(), %{
+          reviewer_id: ctx.reviewer.id
+        })
 
       create_update(ctx.champion, goal)
 
       # Change reviewer to new reviewer (creates goal_reviewer_updating activity)
-      assert {200, _} = mutation(ctx.conn, [:goals, :update_reviewer], %{
-        goal_id: Paths.goal_id(goal),
-        reviewer_id: Paths.person_id(ctx.new_reviewer)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:goals, :update_reviewer], %{
+                 goal_id: Paths.goal_id(goal),
+                 reviewer_id: Paths.person_id(ctx.new_reviewer)
+               })
 
       # Small delay to ensure the new update has a later timestamp than the activity
       Process.sleep(1000)
@@ -744,9 +802,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     end
 
     test "includes all goal updates when no reviewer change occurred", ctx do
-      goal = create_goal(ctx.champion, ctx.company, upcoming_date(), %{
-        reviewer_id: ctx.reviewer.id,
-      })
+      goal =
+        create_goal(ctx.champion, ctx.company, upcoming_date(), %{
+          reviewer_id: ctx.reviewer.id
+        })
 
       update1 = create_update(ctx.champion, goal)
       update2 = create_update(ctx.champion, goal)
@@ -862,15 +921,20 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
     })
   end
 
-  defp create_check_in(project, author) do
-    Operately.ProjectsFixtures.check_in_fixture(%{
-      author_id: author.id,
-      project_id: project.id
-    })
+  defp create_check_in(project, author, attrs \\ %{}) do
+    attrs = Enum.into(attrs, %{})
+
+    Operately.ProjectsFixtures.check_in_fixture(
+      %{
+        author_id: author.id,
+        project_id: project.id
+      }
+      |> Map.merge(attrs)
+    )
   end
 
-  defp create_update(creator, goal) do
-    Operately.GoalsFixtures.goal_update_fixture(creator, goal)
+  defp create_update(creator, goal, attrs \\ []) do
+    Operately.GoalsFixtures.goal_update_fixture(creator, goal, attrs)
   end
 
   defp create_task(project, person, attrs) do

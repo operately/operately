@@ -23,6 +23,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckIn do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:check_in, fn ctx -> CheckIn.get(ctx.me, id: inputs.id, opts: [preload: [project: [:champion, :reviewer]]]) end)
+    |> run(:check_published, fn ctx -> check_published(ctx.check_in) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:check_already_acknowledged, fn ctx -> check_already_acknowledged(ctx.check_in) end)
     |> run(:check_not_the_author, fn ctx -> check_not_the_author(ctx.me, ctx.check_in) end)
@@ -39,6 +40,9 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckIn do
         {:ok, %{check_in: Serializer.serialize(e.context.check_in, level: :essential)}}
 
       {:error, :check_in, _} ->
+        {:error, :not_found}
+
+      {:error, :check_published, _} ->
         {:error, :not_found}
 
       {:error, :check_permissions, _} ->
@@ -63,6 +67,9 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckIn do
       {:ok, :can_acknowledge}
     end
   end
+
+  defp check_published(%{state: :published}), do: {:ok, :published}
+  defp check_published(_check_in), do: {:error, :draft}
 
   defp check_not_the_author(me, check_in) do
     if me.id == check_in.author_id do

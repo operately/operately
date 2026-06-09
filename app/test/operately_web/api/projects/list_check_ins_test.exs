@@ -81,6 +81,27 @@ defmodule OperatelyWeb.Api.Projects.ListCheckInsTest do
       assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert length(res.project_check_ins) == 0
     end
+
+    test "drafts are visible only to their author", ctx do
+      viewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      {project_id, [published_check_in | _]} = create_project_and_check_ins(ctx, company_access: Binding.view_access())
+      draft = check_in_fixture(%{author_id: ctx.person.id, project_id: published_check_in.project_id, state: :draft})
+
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
+      assert Enum.map(res.project_check_ins, & &1.id) |> Enum.member?(Paths.project_check_in_id(draft))
+
+      viewer_conn = log_in_account(ctx.conn, Repo.preload(viewer, :account).account)
+      assert {200, res} = query(viewer_conn, [:projects, :list_check_ins], %{project_id: project_id})
+      refute Enum.map(res.project_check_ins, & &1.id) |> Enum.member?(Paths.project_check_in_id(draft))
+    end
+
+    test "authors can see their own drafts when normal project access hides the history", ctx do
+      {project_id, [published_check_in | _]} = create_project_and_check_ins(ctx, [])
+      draft = check_in_fixture(%{author_id: ctx.person.id, project_id: published_check_in.project_id, state: :draft})
+
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
+      assert Enum.map(res.project_check_ins, & &1.id) == [Paths.project_check_in_id(draft)]
+    end
   end
 
   #
@@ -88,28 +109,33 @@ defmodule OperatelyWeb.Api.Projects.ListCheckInsTest do
   #
 
   defp create_project_and_check_ins(ctx, opts) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      group_id: ctx.space.id,
-      creator_id: ctx.creator.id,
-      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
-      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
-      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        group_id: ctx.space.id,
+        creator_id: ctx.creator.id,
+        champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+        reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+        company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+        space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
+      })
 
-    check_ins = Enum.map(1..3, fn _ ->
-      check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
-    end)
+    check_ins =
+      Enum.map(1..3, fn _ ->
+        check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
+      end)
 
     {Paths.project_id(project), check_ins}
   end
 
   defp add_person_to_space(ctx) do
-    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access()
-    }])
+    {:ok, _} =
+      Operately.Groups.add_members(ctx.creator, ctx.space.id, [
+        %{
+          id: ctx.person.id,
+          access_level: Binding.edit_access()
+        }
+      ])
   end
 
   defp assert_check_ins(res, check_ins) do
@@ -117,8 +143,8 @@ defmodule OperatelyWeb.Api.Projects.ListCheckInsTest do
 
     Enum.each(check_ins, fn check_in ->
       assert Enum.find(res.project_check_ins, fn c ->
-        c.id == Paths.project_check_in_id(check_in)
-      end)
+               c.id == Paths.project_check_in_id(check_in)
+             end)
     end)
   end
 end
