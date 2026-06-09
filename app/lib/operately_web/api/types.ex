@@ -63,6 +63,8 @@ defmodule OperatelyWeb.Api.Types do
   object :billing_plan_definition do
     field :key, :string, null: false
     field :display_name, :string, null: false
+    field :tier_rank, :integer, null: false
+    field :customer_selectable, :boolean, null: false
     field? :member_limit, :integer, null: true
     field? :storage_limit_bytes, :integer, null: true
   end

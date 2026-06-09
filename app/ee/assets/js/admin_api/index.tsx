@@ -139,7 +139,6 @@ export interface BillingPlanDefinition {
   id: string;
   key: string;
   displayName: string;
-  sortOrder: number;
   tierRank: number;
   billingBehavior: BillingBehavior;
   customerSelectable: boolean;
@@ -279,7 +278,6 @@ export interface ArchiveBillingProductResult {
 export interface CreateBillingPlanDefinitionInput {
   planKey: string;
   displayName: string;
-  sortOrder: number;
   tierRank: number;
   billingBehavior: BillingBehavior;
   customerSelectable: boolean;
@@ -377,7 +375,6 @@ export interface UnarchiveBillingPlanDefinitionResult {
 export interface UpdateBillingPlanDefinitionInput {
   id: string;
   displayName: string;
-  sortOrder: number;
   tierRank: number;
   billingBehavior: BillingBehavior;
   customerSelectable: boolean;

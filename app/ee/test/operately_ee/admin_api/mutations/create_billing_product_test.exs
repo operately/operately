@@ -89,7 +89,6 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProductTest do
         Billing.create_plan_definition(%{
           plan_key: "enterprise",
           display_name: "Enterprise",
-          sort_order: 8,
           tier_rank: 8,
           billing_behavior: :provider_managed,
           customer_selectable: true,
@@ -133,7 +132,6 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProductTest do
         Billing.create_plan_definition(%{
           plan_key: "internal_support",
           display_name: "Internal Support",
-          sort_order: 9,
           tier_rank: 9,
           billing_behavior: :internal,
           customer_selectable: false,

@@ -1,19 +1,17 @@
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
-import {
-  formatCompanyBillingDate,
-  formatCompanyBillingPlanLabel,
-} from "./formatting";
+import { formatCompanyBillingDate, formatCompanyBillingPlanLabel } from "./formatting";
 import { getCompanyBillingCurrentPlanDefinition, findCompanyBillingPlanDefinition } from "./plans";
 import { formatStorageBytes } from "./storageFormatting";
 
 export function resolveCompanyBillingChangeTiming(
   currentTarget: CompanyBillingPageTypes.BillingTarget | null,
   nextTarget: CompanyBillingPageTypes.BillingTarget | null,
+  plans: CompanyBillingPageTypes.BillingPlanDefinition[],
 ): CompanyBillingPageTypes.ChangeTiming | null {
   if (!currentTarget || !nextTarget) return null;
 
-  const currentTier = planTier(currentTarget.plan);
-  const nextTier = planTier(nextTarget.plan);
+  const currentTier = planTier(plans, currentTarget.plan);
+  const nextTier = planTier(plans, nextTarget.plan);
 
   if (nextTier > currentTier) return "immediate";
   if (nextTier < currentTier) return "next_renewal";
@@ -42,17 +40,15 @@ export function buildCompanyBillingChangeConsequence(args: {
   const memberLimit = targetPlan?.memberLimit ?? null;
   const storageLimitBytes = targetPlan?.storageLimitBytes ?? null;
   const memberOverage = memberLimit == null ? 0 : Math.max(billing.memberCount - memberLimit, 0);
-  const storageOverageBytes = storageLimitBytes == null ? 0 : Math.max(billing.storageUsageBytes - storageLimitBytes, 0);
+  const storageOverageBytes =
+    storageLimitBytes == null ? 0 : Math.max(billing.storageUsageBytes - storageLimitBytes, 0);
 
   return {
     targetPlanKey,
     targetPlanLabel: formatCompanyBillingPlanLabel(targetPlanKey, targetBillingInterval),
     timing,
     effectiveDate,
-    isLowerEntitlement:
-      !!currentPlan &&
-      !!targetPlan &&
-      isLowerEntitlement(currentPlan, targetPlan),
+    isLowerEntitlement: !!currentPlan && !!targetPlan && isLowerEntitlement(currentPlan, targetPlan),
     memberCount: billing.memberCount,
     memberLimit,
     memberOverage,
@@ -116,20 +112,18 @@ export function buildCompanyBillingOverageDescription(consequence: CompanyBillin
   return description;
 }
 
-function determineOverageKind(
-  memberOverage: number,
-  storageOverageBytes: number,
-): CompanyBillingPageTypes.OverageKind {
+function determineOverageKind(memberOverage: number, storageOverageBytes: number): CompanyBillingPageTypes.OverageKind {
   if (memberOverage > 0 && storageOverageBytes > 0) return "member_and_storage";
   if (memberOverage > 0) return "member";
   if (storageOverageBytes > 0) return "storage";
   return "none";
 }
 
-function planTier(planKey: CompanyBillingPageTypes.SelfServePlan): number {
-  if (planKey === "unlimited") return 3;
-  if (planKey === "business") return 2;
-  return 1;
+function planTier(
+  plans: CompanyBillingPageTypes.BillingPlanDefinition[],
+  planKey: CompanyBillingPageTypes.PlanKey,
+): number {
+  return findCompanyBillingPlanDefinition(plans, planKey)?.tierRank ?? -1;
 }
 
 function isLowerEntitlement(

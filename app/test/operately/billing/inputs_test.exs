@@ -76,7 +76,6 @@ defmodule Operately.Billing.InputsTest do
       Enum.into(attrs, %{
         plan_key: "plan_#{unique}",
         display_name: "Plan #{unique}",
-        sort_order: 100 + unique,
         tier_rank: 100 + unique,
         billing_behavior: :internal,
         customer_selectable: false,
