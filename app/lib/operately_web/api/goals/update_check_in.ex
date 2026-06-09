@@ -66,7 +66,4 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
        checklist: inputs.checklist || []
      }}
   end
-
-  defp check_draft_access(%{state: :draft, author_id: author_id}, person) when author_id != person.id, do: {:error, :not_found}
-  defp check_draft_access(_update, _person), do: {:ok, :allowed}
 end

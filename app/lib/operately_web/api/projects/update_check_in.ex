@@ -53,7 +53,4 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
        state: inputs[:state]
      }}
   end
-
-  defp check_draft_access(%{state: :draft, author_id: author_id}, person) when author_id != person.id, do: {:error, :not_found}
-  defp check_draft_access(_check_in, _person), do: {:ok, :allowed}
 end

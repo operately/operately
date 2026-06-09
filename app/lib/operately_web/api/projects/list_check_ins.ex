@@ -52,6 +52,7 @@ defmodule OperatelyWeb.Api.Projects.ListCheckIns do
     drafts =
       drafts
       |> include_requested(requested)
+      # Drafts are private to the author and stay recoverable even when normal history access hides published check-ins.
       |> Repo.all()
 
     (published ++ drafts)

@@ -68,9 +68,6 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckIn do
     end
   end
 
-  defp check_published(%{state: :published}), do: {:ok, :published}
-  defp check_published(_check_in), do: {:error, :draft}
-
   defp check_not_the_author(me, check_in) do
     if me.id == check_in.author_id do
       {:error, :cant_acknowledge_own_check_in}

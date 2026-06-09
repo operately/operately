@@ -40,9 +40,6 @@ defmodule OperatelyWeb.Api.Goals.DeleteCheckIn do
     end
   end
 
-  defp check_draft_access(%{state: :draft, author_id: author_id}, person) when author_id != person.id, do: {:error, :not_found}
-  defp check_draft_access(_update, _person), do: {:ok, :allowed}
-
   defp check_permissions(%{state: :draft, author_id: author_id}, %{id: author_id}, false), do: {:ok, :allowed}
   defp check_permissions(update, person, company_read_only), do: Permissions.check(update.request_info.access_level, update, person.id, :can_delete, company_read_only: company_read_only)
 end

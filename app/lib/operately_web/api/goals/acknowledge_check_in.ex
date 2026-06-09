@@ -40,7 +40,4 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckIn do
       _ -> {:error, :internal_server_error}
     end
   end
-
-  defp check_published(%{state: :published}), do: {:ok, :published}
-  defp check_published(_update), do: {:error, :draft}
 end

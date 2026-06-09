@@ -93,7 +93,4 @@ defmodule OperatelyWeb.Api.Goals.GetCheckIn do
       include_permissions: &Update.preload_permissions(&1, nil, nil, company_read_only)
     )
   end
-
-  defp check_draft_access(%{state: :draft, author_id: author_id}, person) when author_id != person.id, do: {:error, :not_found}
-  defp check_draft_access(_update, _person), do: {:ok, :allowed}
 end
