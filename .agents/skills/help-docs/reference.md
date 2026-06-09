@@ -345,7 +345,7 @@ The Mix task (`mix operately.gen.api.docs`) and Makefile target
 run them** as part of doc work — making the source changes and merging is
 enough; the next deploy updates the live help center.
 
-**Sidebar:** The API docs section uses Starlight autogenerate — no manual
+**Sidebar:** The API docs section uses Starlight autogeneration — no manual
 `helpCenter.js` entries needed for individual endpoints:
 
 ```javascript
