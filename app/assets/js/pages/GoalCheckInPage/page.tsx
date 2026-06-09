@@ -31,7 +31,7 @@ export function Page() {
 
 function Body() {
   const mode = Pages.usePageMode();
-  const { goal } = Pages.useLoadedData();
+  const { goal, update } = Pages.useLoadedData();
 
   return (
     <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding banner={banner(goal)}>
@@ -39,7 +39,7 @@ function Body() {
       <Header />
       <Form />
 
-      {mode === "view" && (
+      {mode === "view" && update.state !== "draft" && (
         <>
           <AckCTA />
           <CheckInReactions />

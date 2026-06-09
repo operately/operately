@@ -87,6 +87,31 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
 
       assert length(updates) == 1
       assert res.update == Serializer.serialize(hd(updates), level: :full)
+      assert hd(updates).state == :published
+      assert hd(updates).published_at
+    end
+
+    test "saves goal progress update as a draft without publishing side effects", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "caution",
+                 content: RichText.rich_text("Draft content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 checklist: [],
+                 due_date: nil,
+                 post_as_draft: true
+               })
+
+      updates = Goals.list_updates(ctx.goal)
+      goal = Repo.reload(ctx.goal)
+
+      assert length(updates) == 1
+      assert res.update.state == "draft"
+      assert hd(updates).state == :draft
+      refute hd(updates).published_at
+      refute goal.last_check_in_id
+      refute goal.last_update_status
     end
 
     test "clearing the due date", ctx do
@@ -148,7 +173,6 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
 
       assert update.subscription_list_id
     end
-
 
     test "adds mentioned people to subscription list", ctx do
       people = ctx.people ++ ctx.people ++ ctx.people
@@ -359,7 +383,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
 
     test "updates targets when provided", ctx do
       original_target_values = Enum.map(ctx.targets, & &1.value)
-      new_values = Enum.map(ctx.targets, & &1.value + 50)
+      new_values = Enum.map(ctx.targets, &(&1.value + 50))
 
       assert {200, res} =
                mutation(ctx.conn, [:goals, :create_check_in], %{
@@ -401,8 +425,9 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
     test "updates only specified targets", ctx do
       first_target = hd(ctx.targets)
 
-      partial_update = [%{id: first_target.id, value: first_target.value + 100}]
-      |> Jason.encode!()
+      partial_update =
+        [%{id: first_target.id, value: first_target.value + 100}]
+        |> Jason.encode!()
 
       assert {200, res} =
                mutation(ctx.conn, [:goals, :create_check_in], %{

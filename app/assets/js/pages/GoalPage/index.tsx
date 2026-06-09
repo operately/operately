@@ -305,6 +305,7 @@ function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage
       content: JSON.parse(checkIn.message!),
       commentCount: checkIn.commentsCount!,
       status: checkIn.status!,
+      state: checkIn.state,
     };
   });
 }

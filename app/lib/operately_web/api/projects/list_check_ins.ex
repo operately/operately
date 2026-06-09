@@ -29,12 +29,34 @@ defmodule OperatelyWeb.Api.Projects.ListCheckIns do
   defp load(person, id, inputs) do
     requested = extract_include_filters(inputs)
 
-    query = from p in CheckIn, where: p.project_id == ^id, preload: [:acknowledged_by], order_by: [desc: p.inserted_at]
+    published =
+      from p in CheckIn,
+        where: p.project_id == ^id,
+        where: p.state == :published,
+        preload: [:acknowledged_by],
+        order_by: [desc: p.inserted_at]
 
-    query
-    |> include_requested(requested)
-    |> filter_by_view_access(person.id, join_parent: :project)
-    |> Repo.all()
+    drafts =
+      from p in CheckIn,
+        where: p.project_id == ^id,
+        where: p.state == :draft and p.author_id == ^person.id,
+        preload: [:acknowledged_by],
+        order_by: [desc: p.inserted_at]
+
+    published =
+      published
+      |> include_requested(requested)
+      |> filter_by_view_access(person.id, join_parent: :project)
+      |> Repo.all()
+
+    drafts =
+      drafts
+      |> include_requested(requested)
+      # Drafts are private to the author and stay recoverable even when normal history access hides published check-ins.
+      |> Repo.all()
+
+    (published ++ drafts)
+    |> Enum.sort_by(& &1.inserted_at, {:desc, NaiveDateTime})
     |> CheckIn.preload_comment_count()
   end
 
