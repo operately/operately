@@ -10,10 +10,6 @@ export function BulletDot(props?: Props) {
   return <span className={calcClassName(props)}>•</span>;
 }
 
-export function MDash(props?: Props) {
-  return <span className={calcClassName(props)}>&mdash;</span>;
-}
-
 function calcClassName(props?: Props) {
   return classNames(props?.color || "text-content-dimmed", props?.margin || "");
 }

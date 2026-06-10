@@ -1,5 +1,6 @@
 import React from "react";
 
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +18,8 @@ import { assertPresent } from "@/utils/assertions";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { LinkIcon, LinkOptions, ResourcePageNavigation } from "@/features/ResourceHub";
+import { ResourcePageNavigation } from "turboui";
+import { LinkIcon, type ResourceHubLinkType } from "turboui";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
@@ -29,6 +31,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export function Page() {
   const { link } = useLoadedData();
+  const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
 
   assertPresent(link.notifications, "notifications must be present in link");
@@ -37,7 +40,10 @@ export function Page() {
   return (
     <Pages.Page title={link.name!}>
       <Paper.Root>
-        <ResourcePageNavigation resource={link} />
+        <ResourcePageNavigation
+          resource={link}
+          paths={resourceHubNavigationPaths(paths)}
+        />
 
         <Paper.Body className="lg:px-28">
           <Options showDeleteModal={toggleDeleteModal} />
@@ -85,7 +91,7 @@ function Title() {
 
   return (
     <div className="flex flex-col items-center">
-      <LinkIcon type={link.type! as LinkOptions} size={70} />
+      <LinkIcon type={link.type! as ResourceHubLinkType} size={70} />
       <div className="text-2xl font-extrabold mt-4">{link.name}</div>
       <div className="font-medium inline-flex gap-1">
         <span>{link.author.fullName}</span>

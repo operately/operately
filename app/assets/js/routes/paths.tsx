@@ -5,7 +5,7 @@ import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage"
 import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
 import * as React from "react";
 
-import { LinkOptions } from "@/features/ResourceHub";
+import type { ResourceHubLinkType } from "turboui";
 import { useRouteLoaderData } from "react-router-dom";
 import { WorkMap } from "turboui";
 
@@ -350,7 +350,7 @@ export class Paths {
     }
   }
 
-  resourceHubNewLinkPath(resourceHubId: string, attrs: { folderId?: string; type?: LinkOptions }) {
+  resourceHubNewLinkPath(resourceHubId: string, attrs: { folderId?: string; type?: ResourceHubLinkType }) {
     const { folderId, type } = attrs;
 
     if (folderId && type) {

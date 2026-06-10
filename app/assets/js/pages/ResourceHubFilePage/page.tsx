@@ -3,6 +3,7 @@ import React from "react";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
 import { files } from "@/models/resourceHubs";
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import * as Reactions from "@/models/reactions";
@@ -20,7 +21,7 @@ import { assertPresent } from "@/utils/assertions";
 import { Avatar, richContentToString, RichContent, CurrentSubscriptions } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import { TextSeparator } from "@/components/TextSeparator";
-import { ResourcePageNavigation } from "@/features/ResourceHub";
+import { ResourcePageNavigation } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
@@ -29,12 +30,16 @@ import { Options } from "./Options";
 
 export function Page() {
   const { file } = useLoadedData();
+  const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
 
   return (
     <Pages.Page title={file.name!}>
       <Paper.Root>
-        <ResourcePageNavigation resource={file} />
+        <ResourcePageNavigation
+          resource={file}
+          paths={resourceHubNavigationPaths(paths)}
+        />
 
         <Paper.Body>
           <Title />
