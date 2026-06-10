@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Hub from "@/models/resourceHubs";
 
-import { sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
+import { sortNodesWithFoldersFirst } from "turboui";
 import { useFieldValue, useFieldError } from "@/components/Forms/FormContext";
 import { compareIds } from "@/routes/paths";
 import { match } from "ts-pattern";

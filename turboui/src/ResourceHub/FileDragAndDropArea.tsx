@@ -1,12 +1,15 @@
-import React from "react";
+import * as React from "react";
 
-import classNames from "classnames";
-import { useFileDragAndDrop } from "@/hooks/useFileDragAndDrop";
-import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
+import classNames from "../utils/classnames";
+import { useFileDragAndDrop } from "./useFileDragAndDrop";
 
-export function FileDragAndDropArea({ children }) {
-  const { setFiles } = useNewFileModalsContext();
-  const { isFileDragging, onDragLeave, onDragOver, onDrop } = useFileDragAndDrop(setFiles);
+interface FileDragAndDropAreaProps {
+  children: React.ReactNode;
+  onFilesDropped: (files: File[]) => void;
+}
+
+export function FileDragAndDropArea({ children, onFilesDropped }: FileDragAndDropAreaProps) {
+  const { isFileDragging, onDragLeave, onDragOver, onDrop } = useFileDragAndDrop(onFilesDropped);
 
   const overlayClassName = classNames(
     "fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 z-50",

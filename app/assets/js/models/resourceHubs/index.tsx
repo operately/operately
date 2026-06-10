@@ -12,6 +12,7 @@ export type {
   ResourceHubLink,
 } from "@/api";
 
+export { draftNodeToUiNode, nodeToUiNode, resourceHubPermissionsToUi, resourceToHeader } from "./turbouiAdapters";
 export const resource_hubs = Api.resource_hubs;
 export const documents = Api.documents;
 export const files = Api.files;
