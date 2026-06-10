@@ -3,20 +3,22 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkEditedEmail do
 
   alias Operately.Repo
   alias Operately.ResourceHubs.Link
+  alias OperatelyEmail.Emails.ResourceHubParent
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
     {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [
-      preload: [:space, :node]
+      preload: [:node, resource_hub: [:project, :space]]
     ])
+    parent = ResourceHubParent.from_resource(link)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: link.space.name, who: author, action: "edited a link: #{link.node.name}")
+    |> subject(where: parent.name, who: author, action: "edited a link: #{link.node.name}")
     |> assign(:author, author)
     |> assign(:link, link)
     |> assign(:cta_url, OperatelyWeb.Paths.link_path(company, link) |> OperatelyWeb.Paths.to_url())
@@ -26,12 +28,9 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkEditedEmail do
   def buffered_item(_person, activity) do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
-    {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [preload: [:space, :node]])
+    {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [preload: [:node, resource_hub: [:project, :space]]])
 
     %{
-      parent_id: link.space.id,
-      parent_type: :space,
-      parent_name: link.space.name,
       headline: "edited the link \"#{link.node.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
@@ -40,5 +39,6 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkEditedEmail do
       occurred_at: activity.inserted_at,
       coalesce_key: nil
     }
+    |> Map.merge(ResourceHubParent.fields(link))
   end
 end

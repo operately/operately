@@ -36,6 +36,7 @@ defmodule Operately.Operations.ProjectCreation do
     |> insert_creator_as_contributor(params)
     |> insert_mentioned_people(params)
     |> insert_bindings(params)
+    |> insert_resource_hub()
     |> insert_activity(params)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
@@ -56,7 +57,7 @@ defmodule Operately.Operations.ProjectCreation do
         :started_at => DateTime.utc_now(),
         :timeframe => %{
           contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: nil,
+          contextual_end_date: nil
         },
         :next_check_in_scheduled_at => Operately.Time.first_friday_from_today(),
         :health => :on_track,
@@ -185,6 +186,12 @@ defmodule Operately.Operations.ProjectCreation do
         project_id: changes.project.id,
         description: changes.project.description
       }
+    end)
+  end
+
+  defp insert_resource_hub(multi) do
+    Multi.run(multi, :resource_hub, fn _repo, %{project: project} ->
+      Operately.ResourceHubs.ProjectHub.create_for_project(project)
     end)
   end
 

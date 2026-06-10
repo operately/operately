@@ -40,10 +40,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
 
   defp load_nodes(me, inputs) do
     nodes =
-      from(n in Node, order_by: [desc: n.inserted_at])
+      from(n in Node, as: :resource, order_by: [desc: n.inserted_at])
       |> filter_nodes(inputs)
       |> Node.preload_content(me)
-      |> Filters.filter_by_view_access(me.id)
+      |> Filters.filter_by_view_access(me.id, resource_hub_effective_context: :node)
       |> Repo.all()
       |> load_comments_count(inputs[:include_comments_count])
       |> set_folders_children_count(inputs[:include_children_count])
@@ -54,15 +54,17 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   defp serialize(nodes) do
     {drafts, published} = Node.separate_drafts(nodes)
 
-    {:ok, %{
-      nodes: Serializer.serialize(published, level: :essential),
-      draft_nodes: Serializer.serialize(drafts, level: :essential)
-    }}
+    {:ok,
+     %{
+       nodes: Serializer.serialize(published, level: :essential),
+       draft_nodes: Serializer.serialize(drafts, level: :essential)
+     }}
   end
 
   defp filter_nodes(q, %{resource_hub_id: resource_hub_id}) do
     from(n in q, where: n.resource_hub_id == ^resource_hub_id and is_nil(n.parent_folder_id))
   end
+
   defp filter_nodes(q, %{folder_id: folder_id}) do
     from(n in q, where: n.parent_folder_id == ^folder_id)
   end

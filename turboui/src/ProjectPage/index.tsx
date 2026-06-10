@@ -2,9 +2,11 @@ import React from "react";
 
 import { ProjectPageLayout } from "../ProjectPageLayout";
 
-import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
+import { IconClipboardText, IconFileText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
+import { DocsAndFilesTab } from "../DocsAndFiles";
+import type { DocsAndFiles } from "../DocsAndFiles";
 import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
 import { BadgeStatus } from "../StatusBadge/types";
@@ -183,10 +185,16 @@ export namespace ProjectPage {
     getTaskPageProps: KanbanBoardProps["getTaskPageProps"];
 
     // Resource management
-    resources: ResourceManager.Resource[];
-    onResourceAdd: (resource: NewResourcePayload) => void;
-    onResourceEdit: (resource: ResourceManager.Resource) => void;
-    onResourceRemove: (id: string) => void;
+    resources?: ResourceManager.Resource[];
+    onResourceAdd?: (resource: NewResourcePayload) => void;
+    onResourceEdit?: (resource: ResourceManager.Resource) => void;
+    onResourceRemove?: (id: string) => void;
+    docsAndFiles?: DocsAndFiles.TabProps & {
+      tabPath: string;
+      count?: number;
+      previewLimit?: number;
+      renderTabWrapper?: (children: React.ReactNode) => React.ReactNode;
+    };
 
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;
@@ -241,6 +249,13 @@ export function ProjectPage(props: ProjectPage.Props) {
       icon: <IconMessages size={14} />,
       count: state.childrenCount.discussionsCount,
     },
+    {
+      id: "docs-and-files",
+      label: "Docs & Files",
+      icon: <IconFileText size={14} />,
+      count: state.docsAndFiles?.count,
+      hidden: !state.docsAndFiles,
+    },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
 
@@ -258,6 +273,9 @@ export function ProjectPage(props: ProjectPage.Props) {
         {tabs.active === "tasks" && <TasksSection state={state} />}
         {tabs.active === "check-ins" && <CheckIns {...state} />}
         {tabs.active === "discussions" && <Discussions {...state} />}
+        {tabs.active === "docs-and-files" && state.docsAndFiles && (
+          <ProjectDocsAndFilesTab docsAndFiles={state.docsAndFiles} />
+        )}
         {tabs.active === "activity" && <Activity {...state} />}
       </div>
 
@@ -265,6 +283,13 @@ export function ProjectPage(props: ProjectPage.Props) {
       <DeleteModal {...state} />
     </ProjectPageLayout>
   );
+}
+
+function ProjectDocsAndFilesTab({ docsAndFiles }: { docsAndFiles: NonNullable<ProjectPage.State["docsAndFiles"]> }) {
+  const { tabPath: _tabPath, count: _count, previewLimit: _previewLimit, renderTabWrapper, ...tabProps } = docsAndFiles;
+  const tab = <DocsAndFilesTab {...tabProps} />;
+
+  return <>{renderTabWrapper ? renderTabWrapper(tab) : tab}</>;
 }
 
 function Activity(props: ProjectPage.State) {

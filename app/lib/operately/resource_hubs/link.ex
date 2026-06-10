@@ -1,6 +1,6 @@
 defmodule Operately.ResourceHubs.Link do
   use Operately.Schema
-  use Operately.Repo.Getter
+  use Operately.ResourceHubs.Getter, source: :child
 
   alias Operately.Notifications
 
@@ -32,7 +32,7 @@ defmodule Operately.ResourceHubs.Link do
     request_info()
   end
 
-def changeset(attrs) do
+  def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
   end
 
@@ -49,7 +49,7 @@ def changeset(attrs) do
   #
 
   def load_potential_subscribers(link = %__MODULE__{}) do
-    link = Repo.preload(link, [:access_context, resource_hub: [space: :members]])
+    link = Repo.preload(link, [:access_context, resource_hub: [space: :members, project: [contributors: :person]]])
 
     subs =
       link

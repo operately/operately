@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
+import { DocsAndFilesPreview } from "../DocsAndFiles";
 import { PieChart } from "../PieChart";
-import { ResourceManager } from "../ResourceManager";
 import { SwitchToggle } from "../SwitchToggle";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { SectionHeader } from "../TaskPage/SectionHeader";
@@ -280,13 +280,13 @@ function MilestoneList({ milestones, canEdit, onMilestoneUpdate, onMilestoneReor
 }
 
 function ResourcesSection(props: ProjectPage.State) {
+  if (!props.docsAndFiles) return null;
+
   return (
-    <ResourceManager
-      resources={props.resources}
-      onResourceAdd={props.onResourceAdd}
-      onResourceEdit={props.onResourceEdit}
-      onResourceRemove={props.onResourceRemove}
-      canEdit={props.permissions.canEdit}
+    <DocsAndFilesPreview
+      items={props.docsAndFiles.items}
+      tabPath={props.docsAndFiles.tabPath}
+      limit={props.docsAndFiles.previewLimit}
     />
   );
 }

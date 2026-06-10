@@ -47,7 +47,7 @@ defmodule Operately.Operations.ProjectContributorEdited do
     |> Multi.insert(:new_contributor, fn _ ->
       Contributor.changeset(%{person_id: attrs.person_id, project_id: contributor.project_id, role: contributor.role})
     end)
-    |> Multi.run(:update_bindings, fn _, _ -> 
+    |> Multi.run(:update_bindings, fn _, _ ->
       Access.bind_person(context, attrs.person_id, access_level(contributor, attrs))
     end)
     |> Activities.insert_sync(author.id, :project_contributor_edited, fn changes ->
@@ -81,7 +81,7 @@ defmodule Operately.Operations.ProjectContributorEdited do
       # upgrade the new contributor to the role of the previous contributor (champion or reviewer)
       Contributor.changeset(new_contributor, %{role: old_contributor.role})
     end)
-    |> Multi.run(:update_bindings, fn _, _ -> 
+    |> Multi.run(:update_bindings, fn _, _ ->
       # increase the access level of the new contributor to the level of the previous contributor
       Access.bind_person(context, new_contributor.person_id, access_level(old_contributor))
     end)
@@ -112,7 +112,7 @@ defmodule Operately.Operations.ProjectContributorEdited do
     |> Multi.update(:contributor, fn _ ->
       Contributor.changeset(contributor, attrs)
     end)
-    |> Multi.run(:update_bindings, fn _, _ -> 
+    |> Multi.run(:update_bindings, fn _, _ ->
       Access.bind_person(context, contributor.person_id, level)
     end)
     |> Activities.insert_sync(author.id, :project_contributor_edited, fn changes ->
@@ -154,8 +154,7 @@ defmodule Operately.Operations.ProjectContributorEdited do
     %{
       person_id: contributor.person_id,
       role: Atom.to_string(contributor.role),
-      permissions: access_level(contributor),
+      permissions: access_level(contributor)
     }
   end
-
 end

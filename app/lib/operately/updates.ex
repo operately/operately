@@ -123,7 +123,15 @@ defmodule Operately.Updates do
       :resource_hub_link ->
         from(c in Comment, as: :comment, join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id, as: :resource, where: c.id == ^id)
     end
-    |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
+    |> Fetch.get_resource_with_access_level(person_id, comment_access_opts(type))
+  end
+
+  defp comment_access_opts(type) when type in [:resource_hub_document, :resource_hub_file, :resource_hub_link] do
+    [selected_resource: :comment, resource_hub_source: :child]
+  end
+
+  defp comment_access_opts(_type) do
+    [selected_resource: :comment]
   end
 
   def delete_comments(entity_ids) when is_list(entity_ids) do

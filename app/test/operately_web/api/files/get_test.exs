@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Files.GetTest do
 
   alias Operately.Access.Binding
   alias Operately.Notifications.SubscriptionList
+  alias Operately.ResourceHubs.ProjectHub
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -39,7 +40,7 @@ defmodule OperatelyWeb.Api.Files.GetTest do
     tabletest @table do
       test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
-        resource_hub = resource_hub_fixture(ctx.creator, space)
+        resource_hub = resource_hub_fixture(ctx.creator, space, resource_hub_access_attrs(@test))
         file = file_fixture(resource_hub, ctx.creator)
 
         assert {code, res} = query(ctx.conn, [:files, :get], %{id: Paths.file_id(file)})
@@ -115,6 +116,24 @@ defmodule OperatelyWeb.Api.Files.GetTest do
 
       assert length(res.file.potential_subscribers) == 1
       assert hd(res.file.potential_subscribers).person == Serializer.serialize(ctx.creator)
+    end
+
+    test "include_project", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space)
+
+      {:ok, hub} = ProjectHub.create_for_project(ctx.project)
+      file = file_fixture(hub, ctx.creator)
+
+      assert {200, res} =
+               query(ctx.conn, [:files, :get], %{
+                 id: Paths.file_id(file),
+                 include_resource_hub: true,
+                 include_project: true,
+               })
+
+      assert res.file.resource_hub.project == Serializer.serialize(ctx.project, level: :essential)
     end
   end
 

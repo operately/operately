@@ -1,7 +1,7 @@
 defmodule Operately.ResourceHubs.Node do
   import Ecto.Query, only: [from: 2]
   use Operately.Schema
-  use Operately.Repo.Getter
+  use Operately.ResourceHubs.Getter, source: :node
 
   schema "resource_nodes" do
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
