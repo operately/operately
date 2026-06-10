@@ -26,6 +26,10 @@ export function FolderMenu({ folder }: FolderMenuProps) {
   const toggleCopyForm = () => setShowCopyForm((value) => !value);
   const toggleDeleteConfirmModal = () => setShowDeleteConfirmModal((value) => !value);
 
+  if (!permissions) return null;
+
+  const renameFolder = actions.renameFolder;
+
   const relevantPermissions = [
     permissions.canRenameFolder,
     permissions.canCopyFolder,
@@ -39,7 +43,9 @@ export function FolderMenu({ folder }: FolderMenuProps) {
   return (
     <>
       <Menu size="medium" testId={menuId}>
-        {permissions.canRenameFolder && <RenameFolderMenuItem folder={folder} showForm={toggleRenameForm} />}
+        {permissions.canRenameFolder && renameFolder && (
+          <RenameFolderMenuItem folder={folder} showForm={toggleRenameForm} />
+        )}
         {permissions.canCopyFolder && <CopyResourceMenuItem resource={folder} showModal={toggleCopyForm} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} showModal={toggleMoveForm} />}
         {permissions.canDeleteFolder && (
@@ -47,16 +53,18 @@ export function FolderMenu({ folder }: FolderMenuProps) {
         )}
       </Menu>
 
-      <RenameFolderModal
-        folder={folder}
-        showForm={showRenameForm}
-        toggleForm={toggleRenameForm}
-        key={folder.name}
-        onSave={onRefetch}
-        forms={forms}
-        modal={modal}
-        onRename={actions.renameFolder}
-      />
+      {renameFolder && (
+        <RenameFolderModal
+          folder={folder}
+          showForm={showRenameForm}
+          toggleForm={toggleRenameForm}
+          key={folder.name}
+          onSave={() => onRefetch?.()}
+          forms={forms}
+          modal={modal}
+          onRename={renameFolder}
+        />
+      )}
       <MoveResourceModal resource={folder} resourceType="folder" isOpen={showMoveForm} hideModal={toggleMoveForm} />
       <CopyFolderModal resource={folder} isOpen={showCopyForm} hideModal={toggleCopyForm} />
       <DeleteFolderModal folder={folder} isOpen={showDeleteConfirmModal} hideModal={toggleDeleteConfirmModal} />
@@ -103,10 +111,14 @@ function DeleteFolderModal({
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
+    const deleteFolder = actions.deleteFolder;
+
+    if (!deleteFolder) return;
+
     setIsDeleting(true);
     try {
-      await actions.deleteFolder(folder.id);
-      onRefetch();
+      await deleteFolder(folder.id);
+      onRefetch?.();
       hideModal();
     } finally {
       setIsDeleting(false);

@@ -16,7 +16,8 @@ import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { OngoingDraftActions } from "@/features/drafts";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CopyDocumentModal, ResourcePageNavigation } from "@/features/ResourceHub";
+import { CopyDocumentModalWrapper, ResourcePageNavigation, type ResourceHubDocumentMenuData } from "turboui";
+import { useCopyDocumentListContext } from "@/models/resourceHubs";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
 import { assertPresent } from "@/utils/assertions";
@@ -28,8 +29,19 @@ import { Options } from "./Options";
 
 export function Page() {
   const { document, folder, resourceHub } = useLoadedData();
+  const paths = usePaths();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
+  const copyListContext = useCopyDocumentListContext(folder ?? resourceHub, document);
+
+  const menuResource: ResourceHubDocumentMenuData = {
+    type: "document",
+    id: document.id!,
+    name: document.name || "",
+    content: document.content,
+    parentFolderId: document.parentFolderId,
+    resourceHubId: document.resourceHubId,
+  };
 
   assertPresent(document.notifications, "notifications must be present in document");
   useClearNotificationsOnLoad(document.notifications);
@@ -39,7 +51,14 @@ export function Page() {
   return (
     <Pages.Page title={document.name!}>
       <Paper.Root size="large">
-        <ResourcePageNavigation resource={document} />
+        <ResourcePageNavigation
+          resource={document}
+          paths={{
+            spacePath: paths.spacePath,
+            resourceHubPath: paths.resourceHubPath,
+            resourceHubFolderPath: paths.resourceHubFolderPath,
+          }}
+        />
 
         <Paper.Body minHeight="600px" className="lg:px-28">
           <Options showCopyModal={openCopyForm} showDeleteModal={toggleDeleteConfirmModal} />
@@ -54,9 +73,9 @@ export function Page() {
 
           <DeleteDocumentModal isOpen={showDeleteConfirmModal} toggleModal={toggleDeleteConfirmModal} />
 
-          <CopyDocumentModal
-            parent={folder ?? resourceHub}
-            resource={document}
+          <CopyDocumentModalWrapper
+            listContext={copyListContext}
+            menuResource={menuResource}
             isOpen={isCopyFormOpen}
             hideModal={closeCopyForm}
           />

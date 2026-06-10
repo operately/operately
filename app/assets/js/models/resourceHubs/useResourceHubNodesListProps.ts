@@ -1,13 +1,14 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { createTestId } from "@/utils/testid";
 import { nodeToUiNode } from "@/models/resourceHubs";
-import { NodesList as TurboNodesList, ResourceHubSortBy, sortNodesWithFoldersFirst } from "turboui";
-import { usePaths } from "../../routes/paths";
+import { usePaths } from "@/routes/paths";
+import { ResourceHubSortBy, sortNodesWithFoldersFirst } from "turboui";
+
 import { useResourceHubNodesListContext, type NodesProps } from "./useResourceHubNodesListContext";
 
-export function NodesList(props: NodesProps) {
+export function useResourceHubNodesListProps(props: NodesProps) {
   const paths = usePaths();
   const listContext = useResourceHubNodesListContext(props);
   const [sortBy, setSortBy] = useStateWithLocalStorage<ResourceHubSortBy>("resourceHub", "sortBy", "name");
@@ -23,16 +24,14 @@ export function NodesList(props: NodesProps) {
     [sortedApiNodes, paths],
   );
 
-  return (
-    <TurboNodesList
-      nodes={uiNodes}
-      sortBy={sortBy}
-      onSortChange={setSortBy}
-      emptyVariant={props.type === "resource_hub" ? "hub" : "folder"}
-      listContext={listContext}
-      getNodeTestId={(_, index) => createTestId("node", index.toString())}
-    />
-  );
+  return {
+    nodes: uiNodes,
+    sortBy,
+    onSortChange: setSortBy,
+    emptyVariant: props.type === "resource_hub" ? ("hub" as const) : ("folder" as const),
+    listContext,
+    getNodeTestId: (_: unknown, index: number) => createTestId("node", index.toString()),
+  };
 }
 
-export type { NodesProps } from "./useResourceHubNodesListContext";
+export type { NodesProps };

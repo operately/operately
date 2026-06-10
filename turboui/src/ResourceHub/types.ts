@@ -100,9 +100,94 @@ export interface MoveResourceArgs {
   newFolderId: string | null;
 }
 
+export interface ResourceHubNodesListPaths {
+  editDocumentPath: (id: string) => string;
+  editFilePath: (id: string) => string;
+  editLinkPath: (id: string) => string;
+  documentPath: (id: string) => string;
+  folderPath: (id: string) => string;
+}
+
+export interface ResourceHubNodesListActions {
+  deleteDocument: (id: string) => Promise<void>;
+  deleteFile: (id: string) => Promise<void>;
+  deleteFolder: (id: string) => Promise<void>;
+  deleteLink: (id: string) => Promise<void>;
+  renameFolder: (id: string, name: string) => Promise<void>;
+  moveResource: (args: MoveResourceArgs) => Promise<void>;
+  copyDocument: (args: CopyDocumentArgs) => Promise<void>;
+  copyFolder: (args: CopyFolderArgs) => Promise<void>;
+  downloadFile: (url: string, name: string) => void;
+  exportDocumentMarkdown: (content: string, name: string) => void;
+}
+
 export interface ResourceHubNotAllowedSelection {
   id: string;
   type: ResourceHubResourceTypeName;
+}
+
+export interface ResourceHubNavigationPaths {
+  spacePath: (id: string) => string;
+  resourceHubPath: (id: string) => string;
+  resourceHubFolderPath: (id: string) => string;
+}
+
+export interface ResourceHubBreadcrumbFolder {
+  id: string;
+  name?: string | null;
+}
+
+export interface ResourceHubBreadcrumbSpace {
+  id: string;
+  name?: string | null;
+}
+
+export interface ResourceHubBreadcrumbResourceHub {
+  id: string;
+  name?: string | null;
+  space?: ResourceHubBreadcrumbSpace | null;
+}
+
+export interface ResourceHubBreadcrumbResource {
+  resourceHub?: ResourceHubBreadcrumbResourceHub | null;
+  pathToDocument?: ResourceHubBreadcrumbFolder[] | null;
+  pathToLink?: ResourceHubBreadcrumbFolder[] | null;
+  pathToFile?: ResourceHubBreadcrumbFolder[] | null;
+  pathToFolder?: ResourceHubBreadcrumbFolder[] | null;
+}
+
+export interface ResourceHubNewResourceNavigationResourceHub {
+  id: string;
+  name?: string | null;
+  space?: ResourceHubBreadcrumbSpace | null;
+}
+
+export interface ResourceHubNewResourceNavigationFolder {
+  id: string;
+  name?: string | null;
+  pathToFolder?: ResourceHubBreadcrumbFolder[] | null;
+}
+
+export interface FolderSelectLoadNode {
+  id: string;
+  selectable: boolean;
+  name: string;
+  type: ResourceHubResourceTypeName | "resourceHub";
+  resource: { id?: string | null; name?: string | null };
+  apiNode?: unknown;
+  parent?: FolderSelectLoadNode;
+}
+
+export interface FolderSelectLoadResult {
+  currentNode: FolderSelectLoadNode;
+  nodes: FolderSelectLoadNode[];
+}
+
+export interface ResourceHubFolderSelectApi {
+  loadFolder: (id: string) => Promise<FolderSelectLoadResult>;
+  loadResourceHub: (id: string) => Promise<FolderSelectLoadResult>;
+  mapApiNodeToUiNode: (apiNode: unknown) => ResourceHubNode | null;
+  compareIds: (a: string, b: string) => boolean;
 }
 
 export interface ResourceHubFolderSelectFieldProps {
@@ -125,6 +210,8 @@ export interface ResourceHubFormsApi {
   }>;
   Submit: React.ComponentType<{ saveText?: string; cancelText?: string }>;
   InputField: React.ComponentType<{ label: string; field: string; error?: string; children: React.ReactNode }>;
+  useFieldValue: <T>(field: string) => [T, (value: T) => void];
+  useFieldError: (field: string) => string | undefined;
 }
 
 export interface ResourceHubFormState {

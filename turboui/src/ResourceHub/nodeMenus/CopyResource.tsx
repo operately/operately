@@ -3,6 +3,7 @@ import * as React from "react";
 import { MenuActionItem } from "../../Menu";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
+import { FolderSelectField } from "../FolderSelectField";
 import type { ResourceHubFormState, ResourceHubNodeMenuData } from "../types";
 
 interface CopyResourceMenuItemProps {
@@ -28,9 +29,8 @@ interface CopyResourceModalProps {
 }
 
 export function CopyResourceModal({ form, resource, isOpen, hideModal }: CopyResourceModalProps) {
-  const { forms, modal, components } = useResourceHubNodesListContext();
+  const { forms, modal } = useResourceHubNodesListContext();
   const { Modal } = modal;
-  const { FolderSelectField } = components;
 
   return (
     <Modal title={`Create a copy of ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>

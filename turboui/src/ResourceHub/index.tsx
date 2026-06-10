@@ -21,7 +21,9 @@ export {
   useResourceHubNodesListContext,
   type ResourceHubNodesListContextValue,
 } from "./contexts/NodesListContext";
-export { CopyDocumentModal } from "./nodeMenus/CopyDocumentModal";
+export { CopyDocumentModal, CopyDocumentModalWrapper } from "./nodeMenus/CopyDocumentModal";
+export { FolderSelectField } from "./FolderSelectField";
+export { ResourcePageNavigation, NewResourcePageNavigation } from "./Navigation";
 export { RenameFolderModal } from "./nodeMenus/FolderMenu";
 export { ResourceHubNodeRow } from "./ResourceHubNodeRow";
 export { FolderZeroNodes, HubZeroNodes } from "./ZeroNodes";
@@ -35,11 +37,21 @@ export type {
   CopyDocumentArgs,
   CopyFolderArgs,
   MoveResourceArgs,
+  ResourceHubNodesListActions,
+  ResourceHubNodesListPaths,
   ResourceHubDraftNode,
   ResourceHubDocumentMenuData,
   ResourceHubFolderMenuData,
   ResourceHubFolderSelectFieldProps,
+  ResourceHubFolderSelectApi,
+  FolderSelectLoadNode,
+  FolderSelectLoadResult,
+  ResourceHubNotAllowedSelection,
   ResourceHubFormsApi,
+  ResourceHubNavigationPaths,
+  ResourceHubBreadcrumbResource,
+  ResourceHubNewResourceNavigationResourceHub,
+  ResourceHubNewResourceNavigationFolder,
   ResourceHubLinkType,
   ResourceHubListParent,
   ResourceHubListPermissions,

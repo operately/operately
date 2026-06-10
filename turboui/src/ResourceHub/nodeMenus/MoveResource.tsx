@@ -3,6 +3,7 @@ import * as React from "react";
 import { MenuActionItem } from "../../Menu";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
+import { FolderSelectField } from "../FolderSelectField";
 import type { ResourceHubNodeMenuData, ResourceHubResourceTypeName } from "../types";
 
 interface MoveResourceMenuItemProps {
@@ -28,9 +29,8 @@ interface MoveResourceModalProps {
 }
 
 export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }: MoveResourceModalProps) {
-  const { parent, onRefetch, actions, forms, modal, components } = useResourceHubNodesListContext();
+  const { parent, onRefetch, actions, forms, modal } = useResourceHubNodesListContext();
   const { Modal } = modal;
-  const { FolderSelectField } = components;
 
   const locationChanged = (location: { id?: string | null; type: string }) => {
     if (!resource.parentFolderId && !location.id) return false;
@@ -54,14 +54,15 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
     cancel: hideModal,
     submit: async () => {
       const location = form.values.location as { id?: string | null; type: string };
+      const moveResource = actions.moveResource;
 
-      if (locationChanged(location)) {
-        await actions.moveResource({
+      if (locationChanged(location) && moveResource) {
+        await moveResource({
           resourceId: resource.id,
           resourceType,
           newFolderId: location.type === "folder" ? location.id || null : null,
         });
-        onRefetch();
+        onRefetch?.();
       }
 
       hideModal();

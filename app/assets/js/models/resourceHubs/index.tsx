@@ -13,6 +13,10 @@ export type {
 
 export { draftNodeToUiNode, nodeToUiNode, resourceHubPermissionsToUi } from "./turbouiAdapters";
 export { useNewFileModalsContextValue } from "./useNewFileModalsContextValue";
+export { useResourceHubNodesListContext, type NodesProps } from "./useResourceHubNodesListContext";
+export { useResourceHubNodesListProps } from "./useResourceHubNodesListProps";
+export { useCopyDocumentListContext } from "./useCopyDocumentListContext";
+export { useAddFileWidgetProps } from "./useAddFileWidgetProps";
 export const resource_hubs = Api.resource_hubs;
 export const documents = Api.documents;
 export const files = Api.files;

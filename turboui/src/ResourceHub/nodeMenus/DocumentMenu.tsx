@@ -24,6 +24,8 @@ export function DocumentMenu({ document }: DocumentMenuProps) {
   const toggleCopyForm = () => setShowCopyForm((value) => !value);
   const toggleDeleteConfirmModal = () => setShowDeleteConfirmModal((value) => !value);
 
+  if (!permissions) return null;
+
   const relevantPermissions = [
     permissions.canEditDocument,
     permissions.canCreateDocument,
@@ -55,6 +57,9 @@ export function DocumentMenu({ document }: DocumentMenuProps) {
 
 function EditDocumentMenuItem({ document }: DocumentMenuProps) {
   const { paths } = useResourceHubNodesListContext();
+
+  if (!paths) return null;
+
   const editPath = paths.editDocumentPath(document.id);
   const editId = createTestId("edit", document.id);
 
@@ -94,10 +99,14 @@ function DeleteDocumentModal({
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
+    const deleteDocument = actions.deleteDocument;
+
+    if (!deleteDocument) return;
+
     setIsDeleting(true);
     try {
-      await actions.deleteDocument(document.id);
-      onRefetch();
+      await deleteDocument(document.id);
+      onRefetch?.();
       hideModal();
     } finally {
       setIsDeleting(false);
@@ -126,7 +135,12 @@ function ExportMarkdownMenuItem({ document }: DocumentMenuProps) {
 
   const handleExport = () => {
     if (!document.content) return;
-    actions.exportDocumentMarkdown(document.content, document.name || "document");
+
+    const exportDocumentMarkdown = actions.exportDocumentMarkdown;
+
+    if (!exportDocumentMarkdown) return;
+
+    exportDocumentMarkdown(document.content, document.name || "document");
   };
 
   return (

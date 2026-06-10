@@ -2,7 +2,6 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Hub from "@/features/ResourceHub";
 import {
   AddFileWidget,
   AddFilesButton,
@@ -11,15 +10,23 @@ import {
   FileDragAndDropArea,
   Header as ResourceHubHeader,
   NewFileModalsProvider,
+  NodesList,
   useNewFileModalsContext,
 } from "turboui";
-import { draftNodeToUiNode, folders, resourceHubPermissionsToUi, useNewFileModalsContextValue } from "@/models/resourceHubs";
-import type { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
+import {
+  draftNodeToUiNode,
+  folders,
+  resourceHubPermissionsToUi,
+  useAddFileWidgetProps,
+  useNewFileModalsContextValue,
+  useResourceHubNodesListProps,
+  type ResourceHub,
+  type ResourceHubNode,
+} from "@/models/resourceHubs";
 
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
-import { useAddFileWidgetProps } from "@/features/ResourceHub/useAddFileWidgetProps";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 import type { ResourceHubFormsApi } from "turboui";
@@ -56,6 +63,7 @@ function PageContent({
     useNewFileModalsContext();
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
   const [createFolder] = folders.useCreate();
+  const nodesListProps = useResourceHubNodesListProps({ resourceHub, type: "resource_hub", nodes, refetch: refresh });
 
   assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
   const permissions = resourceHubPermissionsToUi(resourceHub.permissions)!;
@@ -80,7 +88,7 @@ function PageContent({
           />
           <ContinueEditingDrafts drafts={draftUiNodes} draftsPath={paths.resourceHubDraftsPath(resourceHub.id!)} />
           <AddFileWidget {...addFileWidgetProps} />
-          <Hub.NodesList resourceHub={resourceHub} type="resource_hub" nodes={nodes} refetch={refresh} />
+          <NodesList {...nodesListProps} />
           <AddFolderModal
             resourceHubId={resourceHub.id!}
             onCreated={refresh}

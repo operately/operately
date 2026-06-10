@@ -1,32 +1,26 @@
 import * as React from "react";
 
 import { BeatLoader } from "react-spinners";
-
-import { IconArrowLeft, NodeIcon } from "turboui";
-
-import { useViewModel, ViewModel, ViewModelNode, NotAllowedSelection } from "./viewModel";
 import classNames from "classnames";
-import Forms from "@/components/Forms";
-import { createTestId } from "@/utils/testid";
-import { usePaths } from "@/routes/paths";
-import { nodeToUiNode } from "@/models/resourceHubs";
 
-interface FolderSelectFieldProps {
-  label: string;
-  field: string;
-  notAllowedSelections?: NotAllowedSelection[];
-}
+import { IconArrowLeft } from "../../icons";
+import { NodeIcon } from "../NodeIcon";
+import { createTestId } from "../../TestableElement";
+import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
+import type { FolderSelectLoadNode, ResourceHubFolderSelectFieldProps } from "../types";
+import { useViewModel, type ViewModel } from "./viewModel";
 
-export function FolderSelectField({ label, field, notAllowedSelections }: FolderSelectFieldProps) {
+export function FolderSelectField({ label, field, notAllowedSelections }: ResourceHubFolderSelectFieldProps) {
+  const { forms } = useResourceHubNodesListContext();
   const viewModel = useViewModel(field, notAllowedSelections || []);
 
   return (
-    <Forms.InputField label={label} field={field} error={viewModel.error}>
+    <forms.InputField label={label} field={field} error={viewModel.error}>
       <div className="border border-surface-outline rounded-lg">
         <Navigation viewModel={viewModel} />
         <NodeList viewModel={viewModel} />
       </div>
-    </Forms.InputField>
+    </forms.InputField>
   );
 }
 
@@ -37,15 +31,14 @@ function Navigation({ viewModel }: { viewModel: ViewModel }) {
     <div className="h-8 flex items-center gap-2 p-2 border-b border-stroke-base">
       <NavigateBack viewModel={viewModel} />
       <div className="text-sm" data-test-id={createTestId("folder-select-current", viewModel.currentNode.resource.id!)}>
-        {viewModel.currentNode!.name}
+        {viewModel.currentNode.name}
       </div>
     </div>
   );
 }
 
 function NavigateBack({ viewModel }: { viewModel: ViewModel }) {
-  if (!viewModel.currentNode) return null;
-  if (!viewModel.currentNode.parent) return null;
+  if (!viewModel.currentNode?.parent) return null;
 
   return (
     <IconArrowLeft
@@ -67,9 +60,9 @@ function NodeList({ viewModel }: { viewModel: ViewModel }) {
   );
 }
 
-function NodeItem({ viewModel, node }: { viewModel: ViewModel; node: ViewModelNode }) {
-  const paths = usePaths();
-  const uiNode = node.apiNode ? nodeToUiNode(paths, node.apiNode) : null;
+function NodeItem({ viewModel, node }: { viewModel: ViewModel; node: FolderSelectLoadNode }) {
+  const { folderSelect } = useResourceHubNodesListContext();
+  const uiNode = node.apiNode ? folderSelect.mapApiNodeToUiNode(node.apiNode) : null;
   const className = classNames("flex items-center justify-between", "p-2", "even:bg-surface-dimmed", {
     "cursor-pointer": node.selectable,
     "hover:bg-surface-highlight": !viewModel.isNodeLoading(node),

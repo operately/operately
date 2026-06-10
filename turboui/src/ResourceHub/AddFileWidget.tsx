@@ -20,7 +20,6 @@ export interface AddFileUploadItem {
 }
 
 export interface AddFileWidgetFormsApi extends ResourceHubFormsApi {
-  useFieldValue: <T>(field: string) => [T];
   RichTextArea: React.ComponentType<{
     field: string;
     placeholder?: string;

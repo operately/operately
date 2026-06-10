@@ -24,8 +24,11 @@ export function CopyFolderModal({ resource, isOpen, hideModal }: CopyFolderModal
     cancel: hideModal,
     submit: async () => {
       const location = form.values.location as { id?: string | null; type: "folder" | "resourceHub" };
+      const copyFolder = actions.copyFolder;
 
-      await actions.copyFolder({
+      if (!copyFolder) return;
+
+      await copyFolder({
         folderId: resource.id,
         name: form.values.name as string,
         resourceHubId: resource.resourceHubId,

@@ -3,7 +3,6 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as ResourceHub from "@/features/ResourceHub";
 
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
@@ -16,21 +15,25 @@ import {
   Header as ResourceHubHeader,
   IconEdit,
   NewFileModalsProvider,
+  NodesList,
   RenameFolderModal,
+  ResourcePageNavigation,
   useNewFileModalsContext,
 } from "turboui";
 import {
   folders,
   resourceHubPermissionsToUi,
+  useAddFileWidgetProps,
   useNewFileModalsContextValue,
+  useResourceHubNodesListProps,
   type ResourceHubNode,
 } from "@/models/resourceHubs";
 import { ResourceHubFolder } from "../../api";
 import { useBoolState } from "../../hooks/useBoolState";
+import { usePaths } from "@/routes/paths";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 import type { ResourceHubFormsApi } from "turboui";
-import { useAddFileWidgetProps } from "@/features/ResourceHub/useAddFileWidgetProps";
 
 export function Page() {
   const { folder, nodes } = useLoadedData();
@@ -54,6 +57,7 @@ export function Page() {
 
 function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: ResourceHubNode[] }) {
   const refresh = useRefresh();
+  const paths = usePaths();
   const { navigateToNewDocument, toggleShowAddFolder, selectFiles, navigateToNewLink, setFiles } =
     useNewFileModalsContext();
   const addFileWidgetProps = useAddFileWidgetProps({
@@ -62,6 +66,7 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
     onUploaded: refresh,
   });
   const [createFolder] = folders.useCreate();
+  const nodesListProps = useResourceHubNodesListProps({ folder, nodes, type: "folder", refetch: refresh });
 
   assertPresent(folder.permissions, "permissions must be present in folder");
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
@@ -70,7 +75,14 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
   return (
     <FileDragAndDropArea onFilesDropped={setFiles}>
       <Paper.Root size="large">
-        <ResourceHub.ResourcePageNavigation resource={folder} />
+        <ResourcePageNavigation
+          resource={folder}
+          paths={{
+            spacePath: paths.spacePath,
+            resourceHubPath: paths.resourceHubPath,
+            resourceHubFolderPath: paths.resourceHubFolderPath,
+          }}
+        />
 
         <Paper.Body minHeight="75vh">
           <Options folder={folder} />
@@ -87,7 +99,7 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
             }
           />
           <AddFileWidget {...addFileWidgetProps} />
-          <ResourceHub.NodesList folder={folder} nodes={nodes} type="folder" refetch={refresh} />
+          <NodesList {...nodesListProps} />
           <AddFolderModal
             resourceHubId={folder.resourceHub.id!}
             folderId={folder.id}

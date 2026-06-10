@@ -20,6 +20,8 @@ export function FileMenu({ file }: FileMenuProps) {
   const toggleMoveForm = () => setShowMoveForm((value) => !value);
   const toggleDeleteModal = () => setShowDeleteModal((value) => !value);
 
+  if (!permissions) return null;
+
   const menuId = createTestId("menu", file.id);
 
   const relevantPermissions = [permissions.canView, permissions.canEditFile, permissions.canEditParentFolder, permissions.canDeleteFile];
@@ -47,7 +49,11 @@ function DownloadFileMenuItem({ file }: FileMenuProps) {
   if (!file.downloadUrl || !file.name) return null;
 
   const handleDownload = () => {
-    actions.downloadFile(file.downloadUrl!, file.name);
+    const downloadFile = actions.downloadFile;
+
+    if (!downloadFile || !file.downloadUrl || !file.name) return;
+
+    downloadFile(file.downloadUrl, file.name);
   };
 
   return <MenuActionItem onClick={handleDownload}>Download</MenuActionItem>;
@@ -55,6 +61,9 @@ function DownloadFileMenuItem({ file }: FileMenuProps) {
 
 function EditFileMenuItem({ file }: FileMenuProps) {
   const { paths } = useResourceHubNodesListContext();
+
+  if (!paths) return null;
+
   const editPath = paths.editFilePath(file.id);
   const editId = createTestId("edit", file.id);
 
@@ -80,10 +89,14 @@ function DeleteFileModal({ file, isOpen, hideModal }: { file: ResourceHubFileMen
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
+    const deleteFile = actions.deleteFile;
+
+    if (!deleteFile) return;
+
     setIsDeleting(true);
     try {
-      await actions.deleteFile(file.id);
-      onRefetch();
+      await deleteFile(file.id);
+      onRefetch?.();
       hideModal();
     } finally {
       setIsDeleting(false);

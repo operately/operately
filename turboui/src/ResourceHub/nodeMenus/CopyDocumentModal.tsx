@@ -1,6 +1,10 @@
 import * as React from "react";
 
-import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
+import {
+  ResourceHubNodesListProvider,
+  useResourceHubNodesListContext,
+  type ResourceHubNodesListContextValue,
+} from "../contexts/NodesListContext";
 import type { ResourceHubDocumentMenuData } from "../types";
 import { CopyResourceModal } from "./CopyResource";
 
@@ -24,8 +28,11 @@ export function CopyDocumentModal({ resource, isOpen, hideModal }: CopyDocumentM
     cancel: hideModal,
     submit: async () => {
       const location = form.values.location as { id?: string | null; type: "folder" | "resourceHub" };
+      const copyDocument = actions.copyDocument;
 
-      await actions.copyDocument({
+      if (!copyDocument) return;
+
+      await copyDocument({
         documentId: resource.id,
         name: form.values.name as string,
         content: resource.content,
@@ -38,4 +45,24 @@ export function CopyDocumentModal({ resource, isOpen, hideModal }: CopyDocumentM
   });
 
   return <CopyResourceModal form={form} resource={resource} isOpen={isOpen} hideModal={hideModal} />;
+}
+
+interface CopyDocumentModalWrapperProps {
+  listContext: ResourceHubNodesListContextValue;
+  menuResource: ResourceHubDocumentMenuData;
+  isOpen: boolean;
+  hideModal: () => void;
+}
+
+export function CopyDocumentModalWrapper({
+  listContext,
+  menuResource,
+  isOpen,
+  hideModal,
+}: CopyDocumentModalWrapperProps) {
+  return (
+    <ResourceHubNodesListProvider value={listContext}>
+      <CopyDocumentModal resource={menuResource} isOpen={isOpen} hideModal={hideModal} />
+    </ResourceHubNodesListProvider>
+  );
 }

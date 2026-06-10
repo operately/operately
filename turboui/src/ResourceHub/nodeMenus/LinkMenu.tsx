@@ -20,6 +20,8 @@ export function LinkMenu({ link }: LinkMenuProps) {
   const toggleMoveForm = () => setShowMoveForm((value) => !value);
   const toggleDeleteModal = () => setShowDeleteModal((value) => !value);
 
+  if (!permissions) return null;
+
   const relevantPermissions = [permissions.canEditParentFolder, permissions.canEditLink, permissions.canDeleteLink];
   const menuId = createTestId("menu", link.id);
 
@@ -41,6 +43,9 @@ export function LinkMenu({ link }: LinkMenuProps) {
 
 function EditLinkMenuItem({ link }: LinkMenuProps) {
   const { paths } = useResourceHubNodesListContext();
+
+  if (!paths) return null;
+
   const editPath = paths.editLinkPath(link.id);
   const editId = createTestId("edit", link.id);
 
@@ -66,10 +71,14 @@ function DeleteLinkModal({ link, isOpen, hideModal }: { link: ResourceHubLinkMen
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
+    const deleteLink = actions.deleteLink;
+
+    if (!deleteLink) return;
+
     setIsDeleting(true);
     try {
-      await actions.deleteLink(link.id);
-      onRefetch();
+      await deleteLink(link.id);
+      onRefetch?.();
       hideModal();
     } finally {
       setIsDeleting(false);
