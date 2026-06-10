@@ -8,7 +8,7 @@ import * as Hub from "@/features/ResourceHub";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
-import { IconEdit } from "turboui";
+import { Header as ResourceHubHeader, IconEdit } from "turboui";
 import { ResourceHubFolder } from "../../api";
 import { RenameFolderModal } from "../../features/ResourceHub/components/FolderMenu";
 import { useBoolState } from "../../hooks/useBoolState";
@@ -29,7 +29,10 @@ export function Page() {
 
             <Paper.Body minHeight="75vh">
               <Options folder={folder} />
-              <Hub.Header resource={folder} />
+              <ResourceHubHeader
+                title={folder.name!}
+                actions={<Hub.AddFilesButton permissions={folder.permissions!} />}
+              />
               <Hub.AddFileWidget folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
               <Hub.NodesList folder={folder} nodes={nodes} type="folder" refetch={refresh} />
               <Hub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />

@@ -1,9 +1,6 @@
 import * as React from "react";
-import { IconMail } from "turboui";
-
-import { GoogleLogo } from "@/components/Brands";
 import classNames from "classnames";
-import { DivLink } from "turboui";
+import { DivLink, GoogleLogo, IconMail } from "turboui";
 
 export function SignUpWithEmail({
   inviteToken,

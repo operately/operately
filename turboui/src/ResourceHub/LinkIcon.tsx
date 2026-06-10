@@ -1,15 +1,14 @@
-import React from "react";
+import * as React from "react";
+import { IconLink } from "../icons";
+import type { ResourceHubLinkType } from "./types";
+import * as BrandIcons from "../BrandIcons";
 
-import * as BrandIcons from "@/components/Brands";
-import { IconLink } from "turboui";
-import { LinkOptions } from ".";
-
-interface Props {
-  type: LinkOptions;
+interface LinkIconProps {
+  type: ResourceHubLinkType;
   size: number;
 }
 
-export function LinkIcon({ type, size }: Props) {
+export function LinkIcon({ type, size }: LinkIconProps) {
   switch (type) {
     case "airtable":
       return <BrandIcons.Airtable size={size} />;

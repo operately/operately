@@ -1,16 +1,17 @@
-import React from "react";
-import { IconCheck, IconChevronDown, Menu, MenuActionItem } from "turboui";
-import { SortBy } from "./utils";
+import * as React from "react";
+import { IconCheck, IconChevronDown } from "../icons";
+import { Menu, MenuActionItem } from "../Menu";
+import type { ResourceHubSortBy } from "./types";
 
 interface SortControlProps {
-  sortBy: SortBy;
-  onSortChange: (sortBy: SortBy) => void;
+  sortBy: ResourceHubSortBy;
+  onSortChange: (sortBy: ResourceHubSortBy) => void;
 }
 
-const SORT_OPTIONS = [
-  { value: "name" as SortBy, label: "Name" },
-  { value: "insertedAt" as SortBy, label: "Creation Date" },
-  { value: "updatedAt" as SortBy, label: "Modified Date" },
+const SORT_OPTIONS: Array<{ value: ResourceHubSortBy; label: string }> = [
+  { value: "name", label: "Name" },
+  { value: "insertedAt", label: "Creation Date" },
+  { value: "updatedAt", label: "Modified Date" },
 ];
 
 export function SortControl({ sortBy, onSortChange }: SortControlProps) {
@@ -26,11 +27,7 @@ export function SortControl({ sortBy, onSortChange }: SortControlProps) {
   return (
     <Menu testId="sort-control" size="tiny" customTrigger={trigger}>
       {SORT_OPTIONS.map((option) => (
-        <MenuActionItem
-          key={option.value}
-          onClick={() => onSortChange(option.value)}
-          testId={`sort-option-${option.value}`}
-        >
+        <MenuActionItem key={option.value} onClick={() => onSortChange(option.value)} testId={`sort-option-${option.value}`}>
           <div className="flex items-center justify-between w-full">
             <span>{option.label}</span>
             {sortBy === option.value && <IconCheck size={16} />}

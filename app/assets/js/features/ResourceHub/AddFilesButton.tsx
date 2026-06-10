@@ -3,8 +3,20 @@ import * as Pages from "@/components/Pages";
 
 import { ResourceHubPermissions } from "@/models/resourceHubs";
 
-import { Airtable, Dropbox, Figma, GoogleLogo, Notion } from "@/components/Brands";
-import { MenuActionItem, SubMenu, IconFile, IconFolderFilled, IconUpload, PrimaryButton, IconLink } from "turboui";
+import {
+  Airtable,
+  Dropbox,
+  Figma,
+  GoogleLogo,
+  IconFile,
+  IconFolderFilled,
+  IconLink,
+  IconUpload,
+  MenuActionItem,
+  Notion,
+  PrimaryButton,
+  SubMenu,
+} from "turboui";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 

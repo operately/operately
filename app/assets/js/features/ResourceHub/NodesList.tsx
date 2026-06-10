@@ -2,26 +2,34 @@ import React, { useMemo } from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
-import { CommentsCountIndicator } from "@/features/Comments";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
-import { DivLink } from "turboui";
+import {
+  CommentCountIndicator,
+  DivLink,
+  FolderZeroNodes,
+  HubZeroNodes,
+  NodeDescription,
+  NodeIcon,
+  SortControl,
+} from "turboui";
 import { usePaths } from "../../routes/paths";
-import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes, LinkMenu } from "./components";
+import { DocumentMenu, FileMenu, FolderMenu, LinkMenu } from "./components";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
-import { NodeDescription } from "./NodeDescription";
-import { NodeIcon } from "./NodeIcon";
-import { SortControl } from "./SortControl";
-import { findCommentsCount, findPath, NodeType, SortBy, sortNodesWithFoldersFirst } from "./utils";
+import { nodeToUiNode } from "@/models/resourceHubs";
+import { SortBy, sortNodesWithFoldersFirst } from "./utils";
 
 export function NodesList(props: NodesProps) {
   const { filesSelected } = useNewFileModalsContext();
   const [sortBy, setSortBy] = useStateWithLocalStorage<SortBy>("resourceHub", "sortBy", "name");
 
   const sortOrder = sortBy === "name" ? "asc" : "desc";
-  const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!, sortBy, sortOrder), [props.nodes, sortBy, sortOrder]);
+  const nodes = useMemo(
+    () => sortNodesWithFoldersFirst(props.nodes!, sortBy, sortOrder),
+    [props.nodes, sortBy, sortOrder],
+  );
 
   if (props.nodes.length < 1) {
     if (filesSelected) return <></>;
@@ -56,27 +64,26 @@ function NodeItem({ node, testid }: NodeItemProps) {
     "border-b border-stroke-base first:border-t",
   );
 
-  const path = findPath(paths, node.type as NodeType, node);
-  const commentsCount = findCommentsCount(node.type as NodeType, node);
+  const uiNode = nodeToUiNode(paths, node);
 
   return (
     <div className={className} data-test-id={testid}>
-      <DivLink to={path} className="flex gap-4 items-center cursor-pointer flex-1">
-        <NodeIcon node={node} size={48} />
+      <DivLink to={uiNode.path} className="flex gap-4 items-center cursor-pointer flex-1">
+        <NodeIcon node={uiNode} size={48} />
 
         <div>
-          <NodeName node={node} />
-          <NodeDescription node={node} />
+          <NodeName node={uiNode} />
+          <NodeDescription node={uiNode} />
         </div>
       </DivLink>
 
-      <CommentsCountIndicator count={commentsCount} size={24} />
+      <CommentCountIndicator count={uiNode.commentsCount} size={24} />
       <NodeMenu node={node} />
     </div>
   );
 }
 
-function NodeName({ node }: { node: Hub.ResourceHubNode }) {
+function NodeName({ node }: { node: { name: string } }) {
   return <div className="font-bold text-base">{node.name}</div>;
 }
 
