@@ -24,16 +24,13 @@ export function findPath(paths: Paths, nodeType: NodeType, node: ResourceHubNode
 export function findCommentsCount(nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {
     case "document":
-      assertPresent(node.document?.commentsCount, "commentsCount must be present in document");
-      return node.document.commentsCount;
+      return node.document?.commentsCount ?? 0;
 
     case "file":
-      assertPresent(node.file?.commentsCount, "commentsCount must be present in file");
-      return node.file.commentsCount;
+      return node.file?.commentsCount ?? 0;
 
     case "link":
-      assertPresent(node.link?.commentsCount, "commentsCount must be present in link");
-      return node.link.commentsCount;
+      return node.link?.commentsCount ?? 0;
 
     default:
       return 0;
