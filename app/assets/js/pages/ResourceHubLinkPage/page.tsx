@@ -1,5 +1,6 @@
 import React from "react";
 
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
@@ -41,11 +42,7 @@ export function Page() {
       <Paper.Root>
         <ResourcePageNavigation
           resource={link}
-          paths={{
-            spacePath: paths.spacePath,
-            resourceHubPath: paths.resourceHubPath,
-            resourceHubFolderPath: paths.resourceHubFolderPath,
-          }}
+          paths={resourceHubNavigationPaths(paths)}
         />
 
         <Paper.Body className="lg:px-28">

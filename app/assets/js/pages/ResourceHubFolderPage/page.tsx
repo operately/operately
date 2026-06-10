@@ -30,6 +30,7 @@ import {
 } from "@/models/resourceHubs";
 import { ResourceHubFolder } from "../../api";
 import { useBoolState } from "../../hooks/useBoolState";
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
@@ -77,11 +78,7 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
       <Paper.Root size="large">
         <ResourcePageNavigation
           resource={folder}
-          paths={{
-            spacePath: paths.spacePath,
-            resourceHubPath: paths.resourceHubPath,
-            resourceHubFolderPath: paths.resourceHubFolderPath,
-          }}
+          paths={resourceHubNavigationPaths(paths)}
         />
 
         <Paper.Body minHeight="75vh">

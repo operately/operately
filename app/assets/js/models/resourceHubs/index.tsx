@@ -11,6 +11,7 @@ export type {
   ResourceHubLink,
 } from "@/api";
 
+export { resourceHubListPaths, resourceHubNavigationPaths } from "./paths";
 export { draftNodeToUiNode, nodeToUiNode, resourceHubPermissionsToUi } from "./turbouiAdapters";
 export { useNewFileModalsContextValue } from "./useNewFileModalsContextValue";
 export { useResourceHubNodesListContext, type NodesProps } from "./useResourceHubNodesListContext";

@@ -8,6 +8,7 @@ import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
 import { documents } from "@/models/resourceHubs";
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import { Spacer } from "@/components/Spacer";
@@ -53,11 +54,7 @@ export function Page() {
       <Paper.Root size="large">
         <ResourcePageNavigation
           resource={document}
-          paths={{
-            spacePath: paths.spacePath,
-            resourceHubPath: paths.resourceHubPath,
-            resourceHubFolderPath: paths.resourceHubFolderPath,
-          }}
+          paths={resourceHubNavigationPaths(paths)}
         />
 
         <Paper.Body minHeight="600px" className="lg:px-28">

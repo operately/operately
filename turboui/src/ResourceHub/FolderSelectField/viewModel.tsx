@@ -13,7 +13,6 @@ export interface ViewModel {
   isNodeLoading: (node: FolderSelectLoadNode) => boolean;
 }
 
-// Form field value: the selected destination (folder or resource hub root).
 interface ViewModelLocation {
   id: string;
   type: "folder" | "resourceHub";

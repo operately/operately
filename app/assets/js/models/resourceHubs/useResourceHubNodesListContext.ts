@@ -10,6 +10,7 @@ import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 import { compareIds, usePaths } from "@/routes/paths";
+import { resourceHubListPaths } from "./paths";
 import type {
   FolderSelectLoadNode,
   FolderSelectLoadResult,
@@ -208,13 +209,7 @@ export function useResourceHubNodesListContext(props: NodesProps): ResourceHubNo
         resourceHubId: props.type === "folder" ? (parent as Hub.ResourceHubFolder).resourceHubId : parent.id,
       },
       onRefetch: props.refetch,
-      paths: {
-        editDocumentPath: paths.resourceHubEditDocumentPath,
-        editFilePath: paths.resourceHubEditFilePath,
-        editLinkPath: paths.resourceHubEditLinkPath,
-        documentPath: paths.resourceHubDocumentPath,
-        folderPath: paths.resourceHubFolderPath,
-      },
+      paths: resourceHubListPaths(paths),
       actions: {
         deleteDocument: async (id: string) => {
           await deleteDocument({ documentId: id });

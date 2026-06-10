@@ -4,6 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { ResourcePageNavigation } from "turboui";
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 import { Form } from "./form";
@@ -17,11 +18,7 @@ export function Page() {
       <Paper.Root>
         <ResourcePageNavigation
           resource={file}
-          paths={{
-            spacePath: paths.spacePath,
-            resourceHubPath: paths.resourceHubPath,
-            resourceHubFolderPath: paths.resourceHubFolderPath,
-          }}
+          paths={resourceHubNavigationPaths(paths)}
         />
 
         <Paper.Body>
