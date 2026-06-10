@@ -116,11 +116,12 @@ export interface ResourceHubFormsApi {
   Form: React.ComponentType<{ form: ResourceHubFormState; testId?: string; children: React.ReactNode }>;
   FieldGroup: React.ComponentType<{ children: React.ReactNode }>;
   TextInput: React.ComponentType<{
-    label: string;
+    label?: string;
     field: string;
     testId?: string;
     autoFocus?: boolean;
     required?: boolean;
+    placeholder?: string;
   }>;
   Submit: React.ComponentType<{ saveText?: string; cancelText?: string }>;
   InputField: React.ComponentType<{ label: string; field: string; error?: string; children: React.ReactNode }>;
@@ -128,8 +129,10 @@ export interface ResourceHubFormsApi {
 
 export interface ResourceHubFormState {
   values: Record<string, unknown>;
+  state?: string;
   actions: {
     reset: () => void;
+    setValue: (field: string, value: unknown) => void;
   };
 }
 

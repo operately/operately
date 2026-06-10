@@ -1,4 +1,8 @@
+export { AddFileWidget } from "./AddFileWidget";
+export type { AddFileUploadItem, AddFileWidgetFormsApi, AddFileWidgetProps } from "./AddFileWidget";
 export { AddFilesButton } from "./AddFilesButton";
+export { AddFolderModal } from "./AddFolderModal";
+export type { AddFolderModalProps } from "./AddFolderModal";
 export { ContinueEditingDrafts } from "./ContinueEditingDrafts";
 export { DraftNodesList } from "./DraftNodesList";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
@@ -7,6 +11,11 @@ export { LinkIcon } from "./LinkIcon";
 export { Header } from "./Header";
 export { NodeMenu } from "./NodeMenu";
 export { NodesList } from "./NodesList";
+export {
+  NewFileModalsProvider,
+  useNewFileModalsContext,
+  type NewFileModalsContextValue,
+} from "./contexts/NewFileModalsContext";
 export {
   ResourceHubNodesListProvider,
   useResourceHubNodesListContext,

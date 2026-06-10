@@ -4,18 +4,33 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as ResourceHub from "@/features/ResourceHub";
-import { useNewFileModalsContext } from "@/features/ResourceHub/contexts/NewFileModalsContext";
 
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
-import { AddFilesButton, FileDragAndDropArea, Header as ResourceHubHeader, IconEdit, RenameFolderModal } from "turboui";
-import { resourceHubPermissionsToUi, folders, type ResourceHubNode } from "@/models/resourceHubs";
+import {
+  AddFileWidget,
+  AddFilesButton,
+  AddFolderModal,
+  FileDragAndDropArea,
+  Header as ResourceHubHeader,
+  IconEdit,
+  NewFileModalsProvider,
+  RenameFolderModal,
+  useNewFileModalsContext,
+} from "turboui";
+import {
+  folders,
+  resourceHubPermissionsToUi,
+  useNewFileModalsContextValue,
+  type ResourceHubNode,
+} from "@/models/resourceHubs";
 import { ResourceHubFolder } from "../../api";
 import { useBoolState } from "../../hooks/useBoolState";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 import type { ResourceHubFormsApi } from "turboui";
+import { useAddFileWidgetProps } from "@/features/ResourceHub/useAddFileWidgetProps";
 
 export function Page() {
   const { folder, nodes } = useLoadedData();
@@ -23,11 +38,16 @@ export function Page() {
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
   assertPresent(folder.permissions, "permissions must be present in folder");
 
+  const newFileModalsContext = useNewFileModalsContextValue({
+    resourceHub: folder.resourceHub,
+    folder,
+  });
+
   return (
     <Pages.Page title={folder.name!}>
-      <ResourceHub.NewFileModalsProvider folder={folder} resourceHub={folder.resourceHub}>
+      <NewFileModalsProvider value={newFileModalsContext}>
         <PageContent folder={folder} nodes={nodes} />
-      </ResourceHub.NewFileModalsProvider>
+      </NewFileModalsProvider>
     </Pages.Page>
   );
 }
@@ -36,6 +56,12 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
   const refresh = useRefresh();
   const { navigateToNewDocument, toggleShowAddFolder, selectFiles, navigateToNewLink, setFiles } =
     useNewFileModalsContext();
+  const addFileWidgetProps = useAddFileWidgetProps({
+    resourceHub: folder.resourceHub!,
+    folder,
+    onUploaded: refresh,
+  });
+  const [createFolder] = folders.useCreate();
 
   assertPresent(folder.permissions, "permissions must be present in folder");
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
@@ -60,9 +86,22 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
               />
             }
           />
-          <ResourceHub.AddFileWidget folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
+          <AddFileWidget {...addFileWidgetProps} />
           <ResourceHub.NodesList folder={folder} nodes={nodes} type="folder" refetch={refresh} />
-          <ResourceHub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
+          <AddFolderModal
+            resourceHubId={folder.resourceHub.id!}
+            folderId={folder.id}
+            onCreated={refresh}
+            forms={Forms as unknown as ResourceHubFormsApi}
+            modal={{ Modal }}
+            onCreateFolder={async (args) => {
+              await createFolder({
+                resourceHubId: args.resourceHubId,
+                folderId: args.folderId,
+                name: args.name,
+              });
+            }}
+          />
         </Paper.Body>
       </Paper.Root>
     </FileDragAndDropArea>

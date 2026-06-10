@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { NodeMenu } from "./NodeMenu";
+import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { ResourceHubNodesListProvider, type ResourceHubNodesListContextValue } from "./contexts/NodesListContext";
 import { FolderZeroNodes, HubZeroNodes } from "./ZeroNodes";
 import { ResourceHubNodeRow } from "./ResourceHubNodeRow";
@@ -12,22 +13,15 @@ interface NodesListProps {
   sortBy: ResourceHubSortBy;
   onSortChange: (sortBy: ResourceHubSortBy) => void;
   emptyVariant: "hub" | "folder";
-  hideWhenEmpty?: boolean;
   listContext: ResourceHubNodesListContextValue;
   getNodeTestId?: (node: ResourceHubNode, index: number) => string;
 }
 
-export function NodesList({
-  nodes,
-  sortBy,
-  onSortChange,
-  emptyVariant,
-  hideWhenEmpty,
-  listContext,
-  getNodeTestId,
-}: NodesListProps) {
+export function NodesList({ nodes, sortBy, onSortChange, emptyVariant, listContext, getNodeTestId }: NodesListProps) {
+  const { filesSelected } = useNewFileModalsContext();
+
   if (nodes.length < 1) {
-    if (hideWhenEmpty) return null;
+    if (filesSelected) return null;
     if (emptyVariant === "hub") return <HubZeroNodes />;
     return <FolderZeroNodes />;
   }

@@ -3,25 +3,39 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Hub from "@/features/ResourceHub";
-import { useNewFileModalsContext } from "@/features/ResourceHub/contexts/NewFileModalsContext";
-import { AddFilesButton, ContinueEditingDrafts, FileDragAndDropArea, Header as ResourceHubHeader } from "turboui";
-import { draftNodeToUiNode, resourceHubPermissionsToUi } from "@/models/resourceHubs";
+import {
+  AddFileWidget,
+  AddFilesButton,
+  AddFolderModal,
+  ContinueEditingDrafts,
+  FileDragAndDropArea,
+  Header as ResourceHubHeader,
+  NewFileModalsProvider,
+  useNewFileModalsContext,
+} from "turboui";
+import { draftNodeToUiNode, folders, resourceHubPermissionsToUi, useNewFileModalsContextValue } from "@/models/resourceHubs";
 import type { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
+import { useAddFileWidgetProps } from "@/features/ResourceHub/useAddFileWidgetProps";
+import Forms from "@/components/Forms";
+import Modal from "@/components/Modal";
+import type { ResourceHubFormsApi } from "turboui";
 
 export function Page() {
   const { resourceHub, nodes, draftNodes } = useLoadedData();
 
   assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
 
+  const newFileModalsContext = useNewFileModalsContextValue({ resourceHub });
+
   return (
     <Pages.Page title={resourceHub.name!}>
-      <Hub.NewFileModalsProvider resourceHub={resourceHub}>
+      <NewFileModalsProvider value={newFileModalsContext}>
         <PageContent resourceHub={resourceHub} nodes={nodes} draftNodes={draftNodes} />
-      </Hub.NewFileModalsProvider>
+      </NewFileModalsProvider>
     </Pages.Page>
   );
 }
@@ -40,6 +54,8 @@ function PageContent({
   const draftUiNodes = draftNodes.map((node) => draftNodeToUiNode(paths, node));
   const { navigateToNewDocument, toggleShowAddFolder, selectFiles, navigateToNewLink, setFiles } =
     useNewFileModalsContext();
+  const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
+  const [createFolder] = folders.useCreate();
 
   assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
   const permissions = resourceHubPermissionsToUi(resourceHub.permissions)!;
@@ -63,9 +79,21 @@ function PageContent({
             }
           />
           <ContinueEditingDrafts drafts={draftUiNodes} draftsPath={paths.resourceHubDraftsPath(resourceHub.id!)} />
-          <Hub.AddFileWidget resourceHub={resourceHub} refresh={refresh} />
+          <AddFileWidget {...addFileWidgetProps} />
           <Hub.NodesList resourceHub={resourceHub} type="resource_hub" nodes={nodes} refetch={refresh} />
-          <Hub.AddFolderModal resourceHub={resourceHub} refresh={refresh} />
+          <AddFolderModal
+            resourceHubId={resourceHub.id!}
+            onCreated={refresh}
+            forms={Forms as unknown as ResourceHubFormsApi}
+            modal={{ Modal }}
+            onCreateFolder={async (args) => {
+              await createFolder({
+                resourceHubId: args.resourceHubId,
+                folderId: args.folderId,
+                name: args.name,
+              });
+            }}
+          />
         </Paper.Body>
       </Paper.Root>
     </FileDragAndDropArea>

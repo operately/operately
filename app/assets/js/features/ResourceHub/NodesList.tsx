@@ -5,12 +5,10 @@ import { createTestId } from "@/utils/testid";
 import { nodeToUiNode } from "@/models/resourceHubs";
 import { NodesList as TurboNodesList, ResourceHubSortBy, sortNodesWithFoldersFirst } from "turboui";
 import { usePaths } from "../../routes/paths";
-import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { useResourceHubNodesListContext, type NodesProps } from "./useResourceHubNodesListContext";
 
 export function NodesList(props: NodesProps) {
   const paths = usePaths();
-  const { filesSelected } = useNewFileModalsContext();
   const listContext = useResourceHubNodesListContext(props);
   const [sortBy, setSortBy] = useStateWithLocalStorage<ResourceHubSortBy>("resourceHub", "sortBy", "name");
 
@@ -31,7 +29,6 @@ export function NodesList(props: NodesProps) {
       sortBy={sortBy}
       onSortChange={setSortBy}
       emptyVariant={props.type === "resource_hub" ? "hub" : "folder"}
-      hideWhenEmpty={filesSelected}
       listContext={listContext}
       getNodeTestId={(_, index) => createTestId("node", index.toString())}
     />

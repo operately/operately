@@ -12,6 +12,7 @@ export type {
 } from "@/api";
 
 export { draftNodeToUiNode, nodeToUiNode, resourceHubPermissionsToUi } from "./turbouiAdapters";
+export { useNewFileModalsContextValue } from "./useNewFileModalsContextValue";
 export const resource_hubs = Api.resource_hubs;
 export const documents = Api.documents;
 export const files = Api.files;
