@@ -490,7 +490,7 @@ defmodule Operately.Billing do
 
   defp normalize_provider_product(provider_product) do
     case ProductMapper.normalize_provider_product(provider_product) do
-      {:ok, product} -> {:ok, product}
+      {:ok, normalized} -> {:ok, normalized.product_attrs}
       :ignore -> {:error, :internal_server_error}
     end
   end

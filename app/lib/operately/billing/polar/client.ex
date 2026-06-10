@@ -3,7 +3,6 @@ defmodule Operately.Billing.Polar.Client do
 
   require Logger
 
-  alias Operately.Billing.Polar.ProductMapper
   alias OperatelyWeb.Endpoint
 
   def create_product(attrs) do
@@ -65,19 +64,12 @@ defmodule Operately.Billing.Polar.Client do
   def base_url, do: Application.fetch_env!(:operately, :polar_base_url)
 
   defp create_product_payload(attrs) do
-    metadata =
-      ProductMapper.metadata(
-        attrs.plan_family,
-        attrs.billing_interval,
-        attrs.version
-      )
-
     %{
       name: attrs.polar_product_name,
       is_public: false,
       is_recurring: true,
       recurring_interval: billing_interval_to_polar(attrs.billing_interval),
-      metadata: metadata,
+      metadata: attrs.metadata || %{},
       prices: [
         %{
           amount_type: "fixed",
@@ -89,17 +81,10 @@ defmodule Operately.Billing.Polar.Client do
   end
 
   defp update_product_payload(attrs) do
-    metadata =
-      ProductMapper.metadata(
-        attrs.plan_family,
-        attrs.billing_interval,
-        attrs.version
-      )
-
     %{
       name: attrs.polar_product_name,
       is_public: false,
-      metadata: metadata,
+      metadata: attrs.metadata || %{},
       prices: [
         %{
           amount_type: "fixed",

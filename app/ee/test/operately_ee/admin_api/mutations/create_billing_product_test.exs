@@ -3,6 +3,7 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProductTest do
   import Mock
 
   alias Operately.Billing
+  alias Operately.Billing.Polar.ProductMapper
   alias Operately.People.Account
 
   describe "security" do
@@ -85,7 +86,7 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProductTest do
     end
 
     test "creates a product for a newly added provider-managed plan without code changes", ctx do
-      {:ok, _plan_definition} =
+      {:ok, plan_definition} =
         Billing.create_plan_definition(%{
           plan_key: "enterprise",
           display_name: "Enterprise",
@@ -98,19 +99,16 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProductTest do
 
       {200, %{product: product}} =
         with_mock Operately.Billing.Polar.Client,
-          create_product: fn _attrs ->
+          create_product: fn attrs ->
+            assert attrs.metadata == ProductMapper.metadata(plan_definition, :monthly, 1)
+
             {:ok,
              %{
                "id" => "prod_enterprise_monthly",
                "name" => "Enterprise Monthly",
                "recurring_interval" => "monthly",
                "prices" => [%{"amount_type" => "fixed", "price_amount" => 19_900, "price_currency" => "usd"}],
-               "metadata" => %{
-                 "operately_managed" => "true",
-                 "operately_plan_family" => "enterprise",
-                 "operately_billing_interval" => "monthly",
-                 "operately_version" => 1
-               },
+               "metadata" => attrs.metadata,
                "is_archived" => false
              }}
           end do
