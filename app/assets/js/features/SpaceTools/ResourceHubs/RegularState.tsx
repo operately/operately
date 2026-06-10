@@ -1,11 +1,10 @@
-import { SortBy, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
-import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { nodeToUiNode, ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import classNames from "classnames";
 import React, { useMemo } from "react";
-import { CommentCountIndicator, NodeDescription, NodeIcon } from "turboui";
+import { CommentCountIndicator, NodeDescription, NodeIcon, ResourceHubSortBy, sortNodesWithFoldersFirst } from "turboui";
 import { Title } from "../components";
+import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 
 interface Props {
   resourceHub: ResourceHub;
@@ -24,7 +23,7 @@ export function RegularState(props: Props) {
 }
 
 function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
-  const [sortBy] = useStateWithLocalStorage<SortBy>("resourceHub", "sortBy", "name");
+  const [sortBy] = useStateWithLocalStorage<ResourceHubSortBy>("resourceHub", "sortBy", "name");
 
   const sortOrder = sortBy === "name" ? "asc" : "desc";
   const sortedNodes = useMemo(() => sortNodesWithFoldersFirst(nodes, sortBy, sortOrder), [nodes, sortBy, sortOrder]);

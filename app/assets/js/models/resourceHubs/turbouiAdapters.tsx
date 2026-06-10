@@ -12,7 +12,7 @@ import { findCommentsCount, findPath, type NodeType } from "./nodeUtils";
 export function resourceToHeader(resource: ResourceHub | ResourceHubFolder) {
   return {
     name: resource.name || "",
-    permissions: permissionsToUi(resource.permissions),
+    permissions: resourceHubPermissionsToUi(resource.permissions),
   };
 }
 
@@ -46,7 +46,7 @@ export function draftNodeToUiNode(paths: Paths, node: ResourceHubNode): Resource
   };
 }
 
-function permissionsToUi(
+export function resourceHubPermissionsToUi(
   permissions?: ResourceHubPermissions | null,
 ): TurboUiResourceHubPermissions | undefined {
   if (!permissions) return undefined;

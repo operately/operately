@@ -12,6 +12,8 @@ import {
   HubZeroNodes,
   NodeDescription,
   NodeIcon,
+  ResourceHubSortBy,
+  sortNodesWithFoldersFirst,
   SortControl,
 } from "turboui";
 import { usePaths } from "../../routes/paths";
@@ -19,11 +21,10 @@ import { DocumentMenu, FileMenu, FolderMenu, LinkMenu } from "./components";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 import { nodeToUiNode } from "@/models/resourceHubs";
-import { SortBy, sortNodesWithFoldersFirst } from "./utils";
 
 export function NodesList(props: NodesProps) {
   const { filesSelected } = useNewFileModalsContext();
-  const [sortBy, setSortBy] = useStateWithLocalStorage<SortBy>("resourceHub", "sortBy", "name");
+  const [sortBy, setSortBy] = useStateWithLocalStorage<ResourceHubSortBy>("resourceHub", "sortBy", "name");
 
   const sortOrder = sortBy === "name" ? "asc" : "desc";
   const nodes = useMemo(

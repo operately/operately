@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 interface FileDragAndDrop {
   isFileDragging: boolean;
@@ -7,20 +7,17 @@ interface FileDragAndDrop {
   onDrop: (event: React.DragEvent<HTMLDivElement>) => void;
 }
 
-export function useFileDragAndDrop(callback: (file: File[]) => void): FileDragAndDrop {
+export function useFileDragAndDrop(callback: (files: File[]) => void): FileDragAndDrop {
   const [isFileDragging, setIsFileDragging] = useState(false);
 
-  const onDragOver = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      setIsFileDragging(true);
-    },
-    [setIsFileDragging],
-  );
+  const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsFileDragging(true);
+  }, []);
 
   const onDragLeave = useCallback(() => {
     setIsFileDragging(false);
-  }, [setIsFileDragging]);
+  }, []);
 
   const onDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
@@ -30,12 +27,10 @@ export function useFileDragAndDrop(callback: (file: File[]) => void): FileDragAn
       const files = event.dataTransfer.files;
 
       if (files && files.length > 0) {
-        if (callback) {
-          callback(Array.from(files));
-        }
+        callback(Array.from(files));
       }
     },
-    [callback, setIsFileDragging],
+    [callback],
   );
 
   return {

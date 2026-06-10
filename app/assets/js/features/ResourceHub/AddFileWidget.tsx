@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { emptyContent, FileIcon, IconX, SubscribersSelector } from "turboui";
+import { emptyContent, FileIcon, findNameAndExtension, IconX, SubscribersSelector } from "turboui";
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { ResourceHub, ResourceHubFolder, files } from "@/models/resourceHubs";
 
@@ -12,7 +12,6 @@ import { Spacer } from "@/components/Spacer";
 import { LoadingProgressBar } from "@/components/LoadingProgressBar";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
-import { findNameAndExtension } from "./utils";
 
 interface FormProps {
   resourceHub: ResourceHub;

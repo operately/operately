@@ -1,17 +1,22 @@
-import { ResourceHubNode } from "@/models/resourceHubs";
+import { parseISO } from "../utils/time";
+import type { ResourceHubSortBy } from "./types";
 
-import * as Time from "@/utils/time";
-
-export type SortBy = "name" | "insertedAt" | "updatedAt";
 type SortOrder = "asc" | "desc";
 
-export function sortNodesWithFoldersFirst(
-  nodes: ResourceHubNode[],
-  sortBy: SortBy = "name",
+export interface SortableResourceHubNode {
+  name?: string | null;
+  type?: string | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export function sortNodesWithFoldersFirst<T extends SortableResourceHubNode>(
+  nodes: T[],
+  sortBy: ResourceHubSortBy = "name",
   sortOrder: SortOrder = "desc",
 ) {
-  const folders: ResourceHubNode[] = [];
-  const others: ResourceHubNode[] = [];
+  const folders: T[] = [];
+  const others: T[] = [];
 
   nodes.forEach((node) => {
     if (node.type === "folder") {
@@ -22,18 +27,18 @@ export function sortNodesWithFoldersFirst(
   });
 
   // Always sort folders by name (ascending), regardless of the sort criteria
-  const folderSortFn = createSortFunction("name", "asc");
+  const folderSortFn = createSortFunction<T>("name", "asc");
   folders.sort(folderSortFn);
 
   // Sort other items by the specified criteria
-  const sortFn = createSortFunction(sortBy, sortOrder);
+  const sortFn = createSortFunction<T>(sortBy, sortOrder);
   others.sort(sortFn);
 
   return [...folders, ...others];
 }
 
-function createSortFunction(sortBy: SortBy, sortOrder: SortOrder) {
-  return (a: ResourceHubNode, b: ResourceHubNode) => {
+function createSortFunction<T extends SortableResourceHubNode>(sortBy: ResourceHubSortBy, sortOrder: SortOrder) {
+  return (a: T, b: T) => {
     let comparison = 0;
 
     switch (sortBy) {
@@ -52,12 +57,12 @@ function createSortFunction(sortBy: SortBy, sortOrder: SortOrder) {
   };
 }
 
-function getInsertedAt(node: ResourceHubNode): string | null {
-  return node.insertedAt!;
+function getInsertedAt(node: SortableResourceHubNode): string | null {
+  return node.insertedAt ?? null;
 }
 
-function getUpdatedAt(node: ResourceHubNode): string | null {
-  return node.updatedAt!;
+function getUpdatedAt(node: SortableResourceHubNode): string | null {
+  return node.updatedAt ?? null;
 }
 
 function compareDates(dateA: string | null, dateB: string | null): number {
@@ -65,8 +70,8 @@ function compareDates(dateA: string | null, dateB: string | null): number {
   if (!dateA) return 1;
   if (!dateB) return -1;
 
-  const parsedA = Time.parseISO(dateA);
-  const parsedB = Time.parseISO(dateB);
+  const parsedA = parseISO(dateA);
+  const parsedB = parseISO(dateB);
 
   if (parsedA > parsedB) return 1;
   if (parsedA < parsedB) return -1;
