@@ -1,4 +1,4 @@
-import type { ResourceHub, ResourceHubFolder, ResourceHubNode, ResourceHubPermissions } from "@/api";
+import type { ResourceHubNode, ResourceHubPermissions } from "@/api";
 import type { Paths } from "@/routes/paths";
 import {
   richContentToString,
@@ -8,13 +8,6 @@ import {
 } from "turboui";
 
 import { findCommentsCount, findPath, type NodeType } from "./nodeUtils";
-
-export function resourceToHeader(resource: ResourceHub | ResourceHubFolder) {
-  return {
-    name: resource.name || "",
-    permissions: resourceHubPermissionsToUi(resource.permissions),
-  };
-}
 
 export function nodeToUiNode(paths: Paths, node: ResourceHubNode): TurboUiResourceHubNode {
   const nodeType = assertNodeType(node.type);
