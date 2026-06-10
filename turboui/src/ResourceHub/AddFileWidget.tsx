@@ -67,7 +67,8 @@ export function AddFileWidget({ forms, modal, subscriptions, mentionSearchScope,
       form.actions.setValue("items", initialFileItems);
       setProgress(0);
     }
-  }, [files, form]);
+    // Intentionally omit `form`: it is a new object each render and would reset upload progress.
+  }, [files]);
 
   if (form.state === "submitting") {
     return <UploadingModal modal={modal} progress={progress} isOpen={filesSelected} />;

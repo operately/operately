@@ -6,7 +6,6 @@ import {
   type ResourceHubNode as TurboUiResourceHubNode,
   type ResourceHubNodeMenuData,
   type ResourceHubPermissions as TurboUiResourceHubPermissions,
-  type ResourceHubListPermissions as TurboUiResourceHubListPermissions,
 } from "turboui";
 
 import { findCommentsCount, findPath, type NodeType } from "./nodeUtils";
@@ -52,30 +51,6 @@ export function resourceHubPermissionsToUi(
     canCreateFile: Boolean(permissions.canCreateFile),
     canCreateFolder: Boolean(permissions.canCreateFolder),
     canCreateLink: Boolean(permissions.canCreateLink),
-  };
-}
-
-export function resourceHubListPermissionsToUi(
-  permissions?: ResourceHubPermissions | null,
-): TurboUiResourceHubListPermissions | undefined {
-  if (!permissions) return undefined;
-
-  return {
-    canCreateDocument: Boolean(permissions.canCreateDocument),
-    canCreateFile: Boolean(permissions.canCreateFile),
-    canCreateFolder: Boolean(permissions.canCreateFolder),
-    canCreateLink: Boolean(permissions.canCreateLink),
-    canView: Boolean(permissions.canView),
-    canEditDocument: Boolean(permissions.canEditDocument),
-    canEditFile: Boolean(permissions.canEditFile),
-    canEditLink: Boolean(permissions.canEditLink),
-    canEditParentFolder: Boolean(permissions.canEditParentFolder),
-    canDeleteDocument: Boolean(permissions.canDeleteDocument),
-    canDeleteFile: Boolean(permissions.canDeleteFile),
-    canDeleteFolder: Boolean(permissions.canDeleteFolder),
-    canDeleteLink: Boolean(permissions.canDeleteLink),
-    canRenameFolder: Boolean(permissions.canRenameFolder),
-    canCopyFolder: Boolean(permissions.canCopyFolder),
   };
 }
 

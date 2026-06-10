@@ -33,5 +33,3 @@ export function useResourceHubNodesListProps(props: NodesProps) {
     getNodeTestId: (_: unknown, index: number) => createTestId("node", index.toString()),
   };
 }
-
-export type { NodesProps };
