@@ -14,6 +14,49 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
                "operately_version" => 3
              }
     end
+
+    test "builds enriched managed metadata for finite plan definitions" do
+      plan_definition =
+        create_plan_definition(%{
+          plan_key: "enterprise",
+          display_name: "Enterprise",
+          tier_rank: 10,
+          billing_behavior: :provider_managed,
+          customer_selectable: true,
+          member_limit: 500,
+          storage_limit_bytes: 5_497_558_138_880
+        })
+
+      assert ProductMapper.metadata(plan_definition, :monthly, 3) == %{
+               "operately_managed" => "true",
+               "operately_plan_family" => "enterprise",
+               "operately_billing_interval" => "monthly",
+               "operately_version" => 3,
+               "operately_plan_display_name" => "Enterprise",
+               "operately_plan_tier_rank" => 10,
+               "operately_plan_customer_selectable" => "true",
+               "operately_plan_member_limit" => "500",
+               "operately_plan_storage_limit_bytes" => "5497558138880",
+               "operately_plan_metadata_version" => 1
+             }
+    end
+
+    test "builds enriched managed metadata for unbounded plan definitions" do
+      plan_definition = Repo.get_by!(PlanDefinition, plan_key: "unlimited")
+
+      assert ProductMapper.metadata(plan_definition, :yearly, 2) == %{
+               "operately_managed" => "true",
+               "operately_plan_family" => "unlimited",
+               "operately_billing_interval" => "yearly",
+               "operately_version" => 2,
+               "operately_plan_display_name" => "Unlimited",
+               "operately_plan_tier_rank" => 3,
+               "operately_plan_customer_selectable" => "true",
+               "operately_plan_member_limit" => "unlimited",
+               "operately_plan_storage_limit_bytes" => "unlimited",
+               "operately_plan_metadata_version" => 1
+             }
+    end
   end
 
   describe "normalize_provider_product/1" do
@@ -30,7 +73,7 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
           "metadata" => ProductMapper.metadata(:team, :monthly, 2)
         })
 
-      assert {:ok, attrs} = ProductMapper.normalize_provider_product(payload)
+      assert {:ok, %{product_attrs: attrs, plan_definition_snapshot: :missing}} = ProductMapper.normalize_provider_product(payload)
 
       assert attrs.provider == "polar"
       assert attrs.plan_family == "team"
@@ -63,7 +106,7 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
           "archivedAt" => "2026-01-02T03:04:05Z"
         })
 
-      assert {:ok, attrs} = ProductMapper.normalize_provider_product(payload)
+      assert {:ok, %{product_attrs: attrs, plan_definition_snapshot: :missing}} = ProductMapper.normalize_provider_product(payload)
 
       assert attrs.plan_family == "business"
       assert attrs.billing_interval == :yearly
@@ -94,8 +137,66 @@ defmodule Operately.Billing.Polar.ProductMapperTest do
           }
         })
 
-      assert {:ok, attrs} = ProductMapper.normalize_provider_product(payload)
+      assert {:ok, %{product_attrs: attrs, plan_definition_snapshot: :missing}} = ProductMapper.normalize_provider_product(payload)
       assert attrs.plan_family == "enterprise"
+    end
+
+    test "parses a valid plan-definition snapshot from enriched metadata" do
+      plan_definition =
+        create_plan_definition(%{
+          plan_key: "enterprise",
+          display_name: "Enterprise",
+          tier_rank: 10,
+          billing_behavior: :provider_managed,
+          customer_selectable: true,
+          member_limit: 500,
+          storage_limit_bytes: 5_497_558_138_880
+        })
+
+      payload =
+        managed_product_payload(%{
+          "metadata" => ProductMapper.metadata(plan_definition, :monthly, 1)
+        })
+
+      assert {:ok, %{product_attrs: attrs, plan_definition_snapshot: {:valid, snapshot}}} = ProductMapper.normalize_provider_product(payload)
+
+      assert attrs.plan_family == "enterprise"
+
+      assert snapshot == %{
+               metadata_version: 1,
+               plan_definition_attrs: %{
+                 plan_key: "enterprise",
+                 display_name: "Enterprise",
+                 tier_rank: 10,
+                 billing_behavior: :provider_managed,
+                 customer_selectable: true,
+                 member_limit: 500,
+                 storage_limit_bytes: 5_497_558_138_880,
+                 archived_at: nil
+               }
+             }
+    end
+
+    test "preserves product attrs when snapshot metadata is malformed" do
+      payload =
+        managed_product_payload(%{
+          "metadata" =>
+            ProductMapper.metadata(:team, :monthly, 1)
+            |> Map.merge(%{
+              "operately_plan_display_name" => "Team",
+              "operately_plan_tier_rank" => 1,
+              "operately_plan_customer_selectable" => "true",
+              "operately_plan_member_limit" => "50",
+              "operately_plan_storage_limit_bytes" => "107374182400",
+              "operately_plan_metadata_version" => "not-a-number"
+            })
+        })
+
+      assert {:ok, %{product_attrs: attrs, plan_definition_snapshot: {:invalid, :invalid_plan_metadata_version}}} =
+               ProductMapper.normalize_provider_product(payload)
+
+      assert attrs.plan_family == "team"
+      assert attrs.billing_interval == :monthly
     end
 
     test "ignores products that are not marked as Operately-managed" do

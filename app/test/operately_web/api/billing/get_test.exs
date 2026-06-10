@@ -167,6 +167,41 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
         assert Enum.any?(res.billing.plans, &(&1.key == "starter_internal"))
       end
     end
+
+    test "it keeps archived current plans readable in the local projection", ctx do
+      create_plan_definition(%{
+        plan_key: "legacy_enterprise",
+        display_name: "Legacy Enterprise",
+        tier_rank: 10,
+        billing_behavior: :provider_managed,
+        customer_selectable: true,
+        member_limit: 500,
+        storage_limit_bytes: 5_497_558_138_880,
+        archived_at: DateTime.utc_now()
+      })
+
+      {:ok, _account} =
+        Billing.sync_billing_account(ctx.company, %{
+          provider: "polar",
+          plan_key: "legacy_enterprise",
+          billing_interval: :yearly,
+          status: :active
+        })
+
+      with_mock Operately.Billing.Polar.Client,
+        get_customer_state_by_external_id: fn _company_id -> {:error, :internal_server_error} end do
+        assert {200, res} = query(ctx.conn, [:billing, :get], %{})
+
+        assert res.billing.stale == true
+        assert res.billing.account.plan_key == "legacy_enterprise"
+        assert res.billing.account.billing_interval == "yearly"
+
+        assert Enum.any?(
+                 res.billing.plans,
+                 &(&1.key == "legacy_enterprise" && &1.display_name == "Legacy Enterprise")
+               )
+      end
+    end
   end
 
   defp enable_instance_billing(_ctx) do
