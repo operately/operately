@@ -3,17 +3,19 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Hub from "@/features/ResourceHub";
+import * as ResourceHub from "@/features/ResourceHub";
 import { useNewFileModalsContext } from "@/features/ResourceHub/contexts/NewFileModalsContext";
 
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
-import { AddFilesButton, FileDragAndDropArea, Header as ResourceHubHeader, IconEdit } from "turboui";
-import { resourceHubPermissionsToUi, type ResourceHubNode } from "@/models/resourceHubs";
+import { AddFilesButton, FileDragAndDropArea, Header as ResourceHubHeader, IconEdit, RenameFolderModal } from "turboui";
+import { resourceHubPermissionsToUi, folders, type ResourceHubNode } from "@/models/resourceHubs";
 import { ResourceHubFolder } from "../../api";
-import { RenameFolderModal } from "../../features/ResourceHub/components/FolderMenu";
 import { useBoolState } from "../../hooks/useBoolState";
+import Forms from "@/components/Forms";
+import Modal from "@/components/Modal";
+import type { ResourceHubFormsApi } from "turboui";
 
 export function Page() {
   const { folder, nodes } = useLoadedData();
@@ -23,9 +25,9 @@ export function Page() {
 
   return (
     <Pages.Page title={folder.name!}>
-      <Hub.NewFileModalsProvider folder={folder} resourceHub={folder.resourceHub}>
+      <ResourceHub.NewFileModalsProvider folder={folder} resourceHub={folder.resourceHub}>
         <PageContent folder={folder} nodes={nodes} />
-      </Hub.NewFileModalsProvider>
+      </ResourceHub.NewFileModalsProvider>
     </Pages.Page>
   );
 }
@@ -42,7 +44,7 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
   return (
     <FileDragAndDropArea onFilesDropped={setFiles}>
       <Paper.Root size="large">
-        <Hub.ResourcePageNavigation resource={folder} />
+        <ResourceHub.ResourcePageNavigation resource={folder} />
 
         <Paper.Body minHeight="75vh">
           <Options folder={folder} />
@@ -58,9 +60,9 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
               />
             }
           />
-          <Hub.AddFileWidget folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
-          <Hub.NodesList folder={folder} nodes={nodes} type="folder" refetch={refresh} />
-          <Hub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
+          <ResourceHub.AddFileWidget folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
+          <ResourceHub.NodesList folder={folder} nodes={nodes} type="folder" refetch={refresh} />
+          <ResourceHub.AddFolderModal folder={folder} resourceHub={folder.resourceHub} refresh={refresh} />
         </Paper.Body>
       </Paper.Root>
     </FileDragAndDropArea>
@@ -72,6 +74,7 @@ function Options({ folder }: { folder: ResourceHubFolder }) {
 
   const [showRenameForm, toggleRenameForm] = useBoolState(false);
   const refresh = useRefresh();
+  const [rename] = folders.useRename();
 
   if (!folder.permissions.canRenameFolder) {
     return null;
@@ -91,6 +94,11 @@ function Options({ folder }: { folder: ResourceHubFolder }) {
         // is not rerendered, the old name will appear in the form
         key={folder.name}
         onSave={refresh}
+        forms={Forms as unknown as ResourceHubFormsApi}
+        modal={{ Modal }}
+        onRename={async (id, name) => {
+          await rename({ folderId: id, newName: name });
+        }}
       />
     </>
   );

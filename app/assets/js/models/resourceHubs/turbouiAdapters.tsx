@@ -4,7 +4,9 @@ import {
   richContentToString,
   type ResourceHubDraftNode,
   type ResourceHubNode as TurboUiResourceHubNode,
+  type ResourceHubNodeMenuData,
   type ResourceHubPermissions as TurboUiResourceHubPermissions,
+  type ResourceHubListPermissions as TurboUiResourceHubListPermissions,
 } from "turboui";
 
 import { findCommentsCount, findPath, type NodeType } from "./nodeUtils";
@@ -27,6 +29,7 @@ export function nodeToUiNode(paths: Paths, node: ResourceHubNode): TurboUiResour
     linkType: node.link?.type,
     contentType: node.file?.blob?.contentType,
     thumbnail: thumbnail(node),
+    menuData: menuData(nodeType, node),
   };
 }
 
@@ -49,6 +52,30 @@ export function resourceHubPermissionsToUi(
     canCreateFile: Boolean(permissions.canCreateFile),
     canCreateFolder: Boolean(permissions.canCreateFolder),
     canCreateLink: Boolean(permissions.canCreateLink),
+  };
+}
+
+export function resourceHubListPermissionsToUi(
+  permissions?: ResourceHubPermissions | null,
+): TurboUiResourceHubListPermissions | undefined {
+  if (!permissions) return undefined;
+
+  return {
+    canCreateDocument: Boolean(permissions.canCreateDocument),
+    canCreateFile: Boolean(permissions.canCreateFile),
+    canCreateFolder: Boolean(permissions.canCreateFolder),
+    canCreateLink: Boolean(permissions.canCreateLink),
+    canView: Boolean(permissions.canView),
+    canEditDocument: Boolean(permissions.canEditDocument),
+    canEditFile: Boolean(permissions.canEditFile),
+    canEditLink: Boolean(permissions.canEditLink),
+    canEditParentFolder: Boolean(permissions.canEditParentFolder),
+    canDeleteDocument: Boolean(permissions.canDeleteDocument),
+    canDeleteFile: Boolean(permissions.canDeleteFile),
+    canDeleteFolder: Boolean(permissions.canDeleteFolder),
+    canDeleteLink: Boolean(permissions.canDeleteLink),
+    canRenameFolder: Boolean(permissions.canRenameFolder),
+    canCopyFolder: Boolean(permissions.canCopyFolder),
   };
 }
 
@@ -107,4 +134,47 @@ function thumbnail(node: ResourceHubNode) {
     height: blob.height,
     alt: node.file?.name || node.name || "",
   };
+}
+
+function menuData(nodeType: NodeType, node: ResourceHubNode): ResourceHubNodeMenuData | undefined {
+  switch (nodeType) {
+    case "document":
+      if (!node.document?.id) return undefined;
+      return {
+        type: "document",
+        id: node.document.id,
+        name: node.document.name || node.name || "",
+        content: node.document.content,
+        parentFolderId: node.document.parentFolderId,
+        resourceHubId: node.document.resourceHubId,
+      };
+    case "folder":
+      if (!node.folder?.id) return undefined;
+      return {
+        type: "folder",
+        id: node.folder.id,
+        name: node.folder.name || node.name || "",
+        parentFolderId: node.folder.parentFolderId,
+        resourceHubId: node.folder.resourceHubId,
+      };
+    case "file":
+      if (!node.file?.id) return undefined;
+      return {
+        type: "file",
+        id: node.file.id,
+        name: node.file.name || node.name || "",
+        downloadUrl: node.file.blob?.url,
+        parentFolderId: node.file.parentFolderId,
+        resourceHubId: node.file.resourceHubId,
+      };
+    case "link":
+      if (!node.link?.id) return undefined;
+      return {
+        type: "link",
+        id: node.link.id,
+        name: node.link.name || node.name || "",
+        parentFolderId: node.link.parentFolderId,
+        resourceHubId: node.link.resourceHubId,
+      };
+  }
 }

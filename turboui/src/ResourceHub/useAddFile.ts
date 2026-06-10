@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 export interface AddFileProps {
   files: File[] | undefined;
@@ -18,9 +18,10 @@ export function useAddFile(): AddFileProps {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
 
-    fileInput.onchange = (e: any) => {
-      if (e.target?.files) {
-        setFiles(Array.from(e.target.files));
+    fileInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files) {
+        setFiles(Array.from(target.files));
       }
     };
 

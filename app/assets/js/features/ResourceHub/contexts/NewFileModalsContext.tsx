@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 
-import type { ResourceHubLinkType } from "turboui";
-import { AddFileProps, useAddFile } from "../useAddFile";
+import type { AddFileProps, ResourceHubLinkType } from "turboui";
+import { useAddFile } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 interface Props {
