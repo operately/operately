@@ -1,5 +1,7 @@
 defmodule Operately.Billing.Polar.Operations.ProductSync do
   alias Operately.Billing
+  alias Operately.Billing.PlanDefinition
+  alias Operately.Billing.Plans
   alias Operately.Billing.Polar.ProductMapper
 
   @doc """
@@ -31,9 +33,15 @@ defmodule Operately.Billing.Polar.Operations.ProductSync do
     Enum.reduce_while(items, {:ok, synced_count}, fn item, {:ok, count} ->
       case ProductMapper.normalize_provider_product(item) do
         {:ok, normalized} ->
-          case Billing.upsert_product_from_provider(normalized.product_attrs) do
-            {:ok, _product} -> {:cont, {:ok, count + 1}}
-            {:error, reason} -> {:halt, {:error, reason}}
+          case ensure_provider_managed_plan_definition(normalized) do
+            :ok ->
+              case Billing.upsert_product_from_provider(normalized.product_attrs) do
+                {:ok, _product} -> {:cont, {:ok, count + 1}}
+                {:error, reason} -> {:halt, {:error, reason}}
+              end
+
+            :skip ->
+              {:cont, {:ok, count}}
           end
 
         :ignore ->
@@ -41,4 +49,27 @@ defmodule Operately.Billing.Polar.Operations.ProductSync do
       end
     end)
   end
+
+  defp ensure_provider_managed_plan_definition(%{product_attrs: %{plan_family: plan_family}, plan_definition_snapshot: snapshot}) do
+    case Plans.get(plan_family) do
+      %PlanDefinition{billing_behavior: :provider_managed} ->
+        :ok
+
+      %PlanDefinition{} ->
+        :skip
+
+      nil ->
+        create_provider_managed_plan_definition(snapshot)
+    end
+  end
+
+  defp create_provider_managed_plan_definition({:valid, %{plan_definition_attrs: attrs}}) do
+    case Billing.create_plan_definition(attrs) do
+      {:ok, _plan_definition} -> :ok
+      {:error, _changeset} -> :skip
+    end
+  end
+
+  defp create_provider_managed_plan_definition(:missing), do: :skip
+  defp create_provider_managed_plan_definition({:invalid, _reason}), do: :skip
 end
