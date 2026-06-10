@@ -4,6 +4,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProductTest do
 
   alias Operately.People.Account
   alias Operately.Billing
+  alias Operately.Billing.Polar.ProductMapper
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -37,33 +38,34 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProductTest do
       |> Factory.log_in_account(:account)
     end
 
-    test "updates a billing product", ctx do
+    test "updates a billing product and rewrites enriched metadata", ctx do
       {:ok, product} =
         Billing.create_product(%{
           provider: "polar",
-          plan_family: "team",
-          billing_interval: "monthly",
+          plan_family: "unlimited",
+          billing_interval: "yearly",
           polar_product_id: "prod_original",
           polar_product_name: "Original",
           price_amount: 2900,
           price_currency: "usd"
         })
 
+      plan_definition =
+        Billing.list_plan_definitions()
+        |> Enum.find(&(&1.plan_key == "unlimited"))
+
       {200, %{product: updated}} =
         with_mock Operately.Billing.Polar.Client,
-          update_product: fn "prod_original", _attrs ->
+          update_product: fn "prod_original", attrs ->
+            assert attrs.metadata == ProductMapper.metadata(plan_definition, :yearly, 1)
+
             {:ok,
              %{
                "id" => "prod_original",
                "name" => "Updated Name",
-               "recurring_interval" => "monthly",
+               "recurring_interval" => "yearly",
                "prices" => [%{"amount_type" => "fixed", "price_amount" => 3900, "price_currency" => "usd"}],
-               "metadata" => %{
-                 "operately_managed" => "true",
-                 "operately_plan_family" => "team",
-                 "operately_billing_interval" => "monthly",
-                 "operately_version" => 1
-               },
+               "metadata" => attrs.metadata,
                "is_archived" => false
              }}
           end do
@@ -76,8 +78,8 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProductTest do
 
       assert updated.polar_product_name == "Updated Name"
       assert updated.price_amount == 3900
-      assert updated.plan_family == "team"
-      assert updated.billing_interval == "monthly"
+      assert updated.plan_family == "unlimited"
+      assert updated.billing_interval == "yearly"
     end
 
     test "returns error for non-existent product", ctx do

@@ -30,8 +30,8 @@ defmodule Operately.Billing.Polar.Operations.ProductSync do
   defp sync_products(items, synced_count) do
     Enum.reduce_while(items, {:ok, synced_count}, fn item, {:ok, count} ->
       case ProductMapper.normalize_provider_product(item) do
-        {:ok, product_attrs} ->
-          case Billing.upsert_product_from_provider(product_attrs) do
+        {:ok, normalized} ->
+          case Billing.upsert_product_from_provider(normalized.product_attrs) do
             {:ok, _product} -> {:cont, {:ok, count + 1}}
             {:error, reason} -> {:halt, {:error, reason}}
           end
