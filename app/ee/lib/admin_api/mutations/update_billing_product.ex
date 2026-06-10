@@ -29,9 +29,6 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProduct do
 
         {:error, error, message} ->
           {:error, error, message}
-
-        {:error, _changeset} ->
-          {:error, :bad_request, "Invalid product parameters"}
       end
     end
   end
