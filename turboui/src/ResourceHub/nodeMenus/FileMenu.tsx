@@ -109,7 +109,7 @@ function DeleteFileModal({ file, isOpen, hideModal }: { file: ResourceHubFileMen
         Are you sure you want to delete the file "<b>{file.name}</b>"?
       </p>
       <div className="flex items-center gap-2 mt-6">
-        <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting}>
+        <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">
           Delete
         </DangerButton>
         <SecondaryButton size="sm" onClick={hideModal}>
