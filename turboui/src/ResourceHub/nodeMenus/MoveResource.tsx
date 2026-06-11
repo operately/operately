@@ -4,10 +4,11 @@ import { MenuActionItem } from "../../Menu";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
 import { FolderSelectField } from "../FolderSelectField";
-import type { ResourceHubNodeMenuData, ResourceHubResourceTypeName } from "../types";
+import { getResourceName, getResourceParentFolderId } from "../selectors";
+import type { ResourceHubResource, ResourceHubResourceTypeName } from "../types";
 
 interface MoveResourceMenuItemProps {
-  resource: { id: string; name: string };
+  resource: { id: string; name?: string | null };
   showModal: () => void;
 }
 
@@ -22,7 +23,7 @@ export function MoveResourceMenuItem({ resource, showModal }: MoveResourceMenuIt
 }
 
 interface MoveResourceModalProps {
-  resource: ResourceHubNodeMenuData;
+  resource: ResourceHubResource;
   resourceType: ResourceHubResourceTypeName;
   isOpen: boolean;
   hideModal: () => void;
@@ -31,10 +32,11 @@ interface MoveResourceModalProps {
 export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }: MoveResourceModalProps) {
   const { parent, onRefetch, actions, forms, modal } = useResourceHubNodesListContext();
   const { Modal } = modal;
+  const parentFolderId = getResourceParentFolderId(resource);
 
   const locationChanged = (location: { id?: string | null; type: string }) => {
-    if (!resource.parentFolderId && !location.id) return false;
-    if (resource.parentFolderId === location.id) return false;
+    if (!parentFolderId && !location.id) return false;
+    if (parentFolderId === location.id) return false;
     return true;
   };
 
@@ -76,7 +78,7 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
   );
 
   return (
-    <Modal title={`Move ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>
+    <Modal title={`Move ${getResourceName(resource)}`} isOpen={isOpen} hideModal={hideModal}>
       <forms.Form form={form} testId="move-resource-modal">
         <forms.FieldGroup>
           <FolderSelectField field="location" notAllowedSelections={notAllowedSelections} label="Select destination" />

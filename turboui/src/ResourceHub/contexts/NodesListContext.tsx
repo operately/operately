@@ -4,10 +4,10 @@ import type {
   ResourceHubFolderSelectApi,
   ResourceHubFormsApi,
   ResourceHubListParent,
-  ResourceHubListPermissions,
   ResourceHubModalApi,
   ResourceHubNodesListActions,
   ResourceHubNodesListPaths,
+  ResourceHubPermissions,
 } from "../types";
 
 export interface ResourceHubNodesListContextValue {
@@ -15,7 +15,7 @@ export interface ResourceHubNodesListContextValue {
   forms: ResourceHubFormsApi;
   modal: ResourceHubModalApi;
   folderSelect: ResourceHubFolderSelectApi;
-  permissions?: ResourceHubListPermissions;
+  permissions?: ResourceHubPermissions | null;
   onRefetch?: () => void;
   paths?: ResourceHubNodesListPaths;
   actions: Partial<ResourceHubNodesListActions>;

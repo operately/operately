@@ -1,5 +1,4 @@
-import { nodeToUiNode, ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
-import { usePaths } from "@/routes/paths";
+import { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 import classNames from "classnames";
 import React, { useMemo } from "react";
 import { CommentCountIndicator, NodeDescription, NodeIcon, ResourceHubSortBy, sortNodesWithFoldersFirst } from "turboui";
@@ -39,20 +38,18 @@ function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
 
 function NodeItem({ node }: { node: ResourceHubNode }) {
   const className = classNames("px-2 py-1.5", "border-b border-stroke-base last:border-b-0", "flex items-center gap-2");
-
-  const paths = usePaths();
-  const uiNode = nodeToUiNode(paths, node);
+  const commentsCount = node.document?.commentsCount ?? node.file?.commentsCount ?? node.link?.commentsCount ?? 0;
 
   return (
     <div key={node.id} className={className}>
       <div>
-        <NodeIcon node={uiNode} size={32} />
+        <NodeIcon node={node} size={32} />
       </div>
       <div className="overflow-hidden leading-snug flex-1">
         <div className="font-bold truncate">{node.name}</div>
-        <NodeDescription node={uiNode} fontSize="text-[10px] truncate" />
+        <NodeDescription node={node} fontSize="text-[10px] truncate" />
       </div>
-      <CommentCountIndicator count={uiNode.commentsCount} size={16} />
+      <CommentCountIndicator count={commentsCount} size={16} />
     </div>
   );
 }

@@ -1,17 +1,19 @@
 import * as React from "react";
 import { Link } from "../Link";
-import type { ResourceHubDraftNode } from "./types";
+import type { ResourceHubNode } from "./types";
 
 interface ContinueEditingDraftsProps {
-  drafts: ResourceHubDraftNode[];
+  drafts: ResourceHubNode[];
   draftsPath: string;
+  getDraftEditPath: (node: ResourceHubNode) => string | undefined;
+  getNodePath: (node: ResourceHubNode) => string;
 }
 
-export function ContinueEditingDrafts({ drafts, draftsPath }: ContinueEditingDraftsProps) {
+export function ContinueEditingDrafts({ drafts, draftsPath, getDraftEditPath, getNodePath }: ContinueEditingDraftsProps) {
   if (drafts.length < 1) return null;
 
   const firstDraft = drafts[0];
-  const path = drafts.length === 1 && firstDraft ? firstDraft.editPath || firstDraft.path : draftsPath;
+  const path = drafts.length === 1 && firstDraft ? getDraftEditPath(firstDraft) || getNodePath(firstDraft) : draftsPath;
   const label = drafts.length === 1 ? "Continue writing your draft document…" : `Continue writing your ${drafts.length} draft documents…`;
 
   return (

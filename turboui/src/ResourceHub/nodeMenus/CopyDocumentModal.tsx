@@ -5,11 +5,12 @@ import {
   useResourceHubNodesListContext,
   type ResourceHubNodesListContextValue,
 } from "../contexts/NodesListContext";
-import type { ResourceHubDocumentMenuData } from "../types";
+import { getResourceName } from "../selectors";
+import type { ResourceHubDocument } from "../types";
 import { CopyResourceModal } from "./CopyResource";
 
 interface CopyDocumentModalProps {
-  resource: ResourceHubDocumentMenuData;
+  resource: ResourceHubDocument;
   isOpen: boolean;
   hideModal: () => void;
 }
@@ -19,7 +20,7 @@ export function CopyDocumentModal({ resource, isOpen, hideModal }: CopyDocumentM
 
   const form = forms.useForm({
     fields: {
-      name: resource.name + " - Copy",
+      name: `${getResourceName(resource)} - Copy`,
       location: {
         id: parent.id,
         type: parent.type === "folder" ? "folder" : "resourceHub",
@@ -49,20 +50,20 @@ export function CopyDocumentModal({ resource, isOpen, hideModal }: CopyDocumentM
 
 interface CopyDocumentModalWrapperProps {
   listContext: ResourceHubNodesListContextValue;
-  menuResource: ResourceHubDocumentMenuData;
+  document: ResourceHubDocument;
   isOpen: boolean;
   hideModal: () => void;
 }
 
 export function CopyDocumentModalWrapper({
   listContext,
-  menuResource,
+  document,
   isOpen,
   hideModal,
 }: CopyDocumentModalWrapperProps) {
   return (
     <ResourceHubNodesListProvider value={listContext}>
-      <CopyDocumentModal resource={menuResource} isOpen={isOpen} hideModal={hideModal} />
+      <CopyDocumentModal resource={document} isOpen={isOpen} hideModal={hideModal} />
     </ResourceHubNodesListProvider>
   );
 }

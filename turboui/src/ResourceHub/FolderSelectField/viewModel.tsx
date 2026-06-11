@@ -1,21 +1,34 @@
 import * as React from "react";
 
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
-import type { FolderSelectLoadNode, ResourceHubNotAllowedSelection } from "../types";
+import { getNodeId, getNodeName, getNodeResource, getNodeType, getResourceId } from "../selectors";
+import type { FolderSelectCurrentLocation, ResourceHubNode, ResourceHubNotAllowedSelection } from "../types";
 
-// View model for FolderSelectField: syncs a form "location" field with a browsable folder tree.
-export interface ViewModel {
-  currentNode: FolderSelectLoadNode | undefined;
-  nodes: FolderSelectLoadNode[];
-
-  error: string | undefined;
-  select: (node: FolderSelectLoadNode) => void;
-  isNodeLoading: (node: FolderSelectLoadNode) => boolean;
-}
+type FolderLocation = Extract<FolderSelectCurrentLocation, { type: "folder" }>["folder"];
 
 interface ViewModelLocation {
   id: string;
   type: "folder" | "resourceHub";
+}
+
+interface ViewModelNode {
+  id: string;
+  name: string;
+  type: "document" | "folder" | "file" | "link" | "resourceHub";
+  selectable: boolean;
+  location?: ViewModelLocation;
+  iconNode?: ResourceHubNode;
+  parent?: ViewModelNode;
+}
+
+// View model for FolderSelectField: syncs a form "location" field with a browsable folder tree.
+export interface ViewModel {
+  currentNode: ViewModelNode | undefined;
+  nodes: ViewModelNode[];
+
+  error: string | undefined;
+  select: (node: ViewModelNode) => void;
+  isNodeLoading: (node: ViewModelNode) => boolean;
 }
 
 const EMPTY_NOT_ALLOWED: ResourceHubNotAllowedSelection[] = [];
@@ -33,12 +46,10 @@ export function useViewModel(
   const error = forms.useFieldError(fieldName);
   const blockedSelectionsKey = notAllowedSelectionsKey(notAllowedSelections);
 
-  // Explorer UI state derived from the current location.
-  const [currentNode, setCurrentNode] = React.useState<FolderSelectLoadNode | undefined>();
-  const [nodes, setNodes] = React.useState<FolderSelectLoadNode[]>([]);
+  const [currentNode, setCurrentNode] = React.useState<ViewModelNode | undefined>();
+  const [nodes, setNodes] = React.useState<ViewModelNode[]>([]);
   const [loading, setLoading] = React.useState<ViewModelLocation | undefined>();
 
-  // When location changes, load that folder/hub and populate the explorer.
   React.useEffect(() => {
     let cancelled = false;
 
@@ -53,8 +64,10 @@ export function useViewModel(
       .then((result) => {
         if (cancelled) return;
 
-        setCurrentNode(applyNotAllowedSelections(result.currentNode, notAllowedSelections));
-        setNodes(result.nodes.map((node) => applyNotAllowedSelections(node, notAllowedSelections)!));
+        const current = buildCurrentNode(result.current, notAllowedSelections);
+
+        setCurrentNode(current);
+        setNodes(buildChildNodes(result.nodes, current, notAllowedSelections));
       })
       .finally(() => {
         if (!cancelled) {
@@ -67,15 +80,14 @@ export function useViewModel(
     };
   }, [location, folderSelect, blockedSelectionsKey]);
 
-  // Drill into a folder by updating the form field (re-triggers the load effect).
-  const select = (node: FolderSelectLoadNode) => {
-    if (!node.selectable) return;
-    setValue(nodeToLocation(node));
+  const select = (node: ViewModelNode) => {
+    if (!node.selectable || !node.location) return;
+    setValue(node.location);
   };
 
-  const isNodeLoading = (node: FolderSelectLoadNode) => {
-    if (!loading) return false;
-    return folderSelect.compareIds(loading.id, node.resource.id ?? "");
+  const isNodeLoading = (node: ViewModelNode) => {
+    if (!loading || !node.location) return false;
+    return folderSelect.compareIds(loading.id, node.location.id);
   };
 
   return {
@@ -87,27 +99,76 @@ export function useViewModel(
   };
 }
 
-function nodeToLocation(node: FolderSelectLoadNode): ViewModelLocation {
+function buildCurrentNode(current: FolderSelectCurrentLocation, notAllowedSelections: ResourceHubNotAllowedSelection[]): ViewModelNode {
+  if (current.type === "resourceHub") {
+    return {
+      id: current.resourceHub.id,
+      name: current.resourceHub.name,
+      type: "resourceHub",
+      selectable: true,
+      location: { id: current.resourceHub.id, type: "resourceHub" },
+    };
+  }
+
   return {
-    id: node.resource.id!,
-    type: node.type === "folder" ? "folder" : "resourceHub",
+    id: current.folder.id,
+    name: current.folder.name ?? "",
+    type: "folder",
+    selectable: !isBlockedSelection(current.folder.id, "folder", notAllowedSelections),
+    location: { id: current.folder.id, type: "folder" },
+    parent: buildParentNode(current.folder),
   };
 }
 
-// e.g. prevent moving a folder into itself
-function applyNotAllowedSelections(
-  node: FolderSelectLoadNode,
-  notAllowedSelections?: ResourceHubNotAllowedSelection[],
-): FolderSelectLoadNode {
-  if (!notAllowedSelections?.length || node.type === "resourceHub") {
-    return node;
+function buildParentNode(folder: FolderLocation): ViewModelNode {
+  const parentFolder = folder.pathToFolder?.slice(-1)[0];
+
+  if (parentFolder) {
+    return {
+      id: parentFolder.id,
+      name: parentFolder.name ?? "",
+      type: "folder",
+      selectable: true,
+      location: { id: parentFolder.id, type: "folder" },
+    };
   }
 
-  const blocked = notAllowedSelections.some((loc) => loc.id === node.resource.id && loc.type === node.type);
+  return {
+    id: folder.resourceHub!.id,
+    name: folder.resourceHub!.name,
+    type: "resourceHub",
+    selectable: true,
+    location: { id: folder.resourceHub!.id, type: "resourceHub" },
+  };
+}
 
-  if (!blocked) {
-    return node;
-  }
+function buildChildNodes(
+  nodes: ResourceHubNode[],
+  currentNode: ViewModelNode,
+  notAllowedSelections: ResourceHubNotAllowedSelection[],
+): ViewModelNode[] {
+  return nodes.flatMap((node) => {
+    const nodeType = getNodeType(node);
+    const nodeId = getResourceId(getNodeResource(node)) ?? getNodeId(node);
 
-  return { ...node, selectable: false };
+    if (!nodeType || !nodeId) return [];
+
+    const selectable = nodeType === "folder" && !isBlockedSelection(nodeId, nodeType, notAllowedSelections);
+
+    return [
+      {
+        id: nodeId,
+        name: getNodeName(node),
+        type: nodeType,
+        selectable,
+        location: selectable ? { id: nodeId, type: "folder" } : undefined,
+        iconNode: node,
+        parent: currentNode,
+      },
+    ];
+  });
+}
+
+function isBlockedSelection(id: string, type: "folder", notAllowedSelections: ResourceHubNotAllowedSelection[]) {
+  return notAllowedSelections.some((selection) => selection.type === type && selection.id === id);
 }
