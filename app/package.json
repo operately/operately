@@ -22,7 +22,6 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.30.1",
     "react-select": "^5.8.0",
-    "react-spinners": "^0.13.8",
     "ts-pattern": "^5.0.8",
     "turboui": "file:../turboui"
   },
