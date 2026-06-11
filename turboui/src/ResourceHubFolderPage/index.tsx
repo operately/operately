@@ -30,6 +30,7 @@ export function ResourceHubFolderPage(props: ResourceHubFolderPage.Props) {
         label: "Rename",
         onClick: toggleRenameForm,
         hidden: !props.folder.permissions?.canRenameFolder,
+        testId: "rename-folder",
       },
     ],
     [props.folder.permissions?.canRenameFolder, toggleRenameForm],

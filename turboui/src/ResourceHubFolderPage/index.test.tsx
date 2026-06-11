@@ -70,13 +70,13 @@ describe("ResourceHubFolderPage", () => {
     const { container } = render(<ResourceHubFolderPageHarness canRenameFolder />);
 
     expect(screen.queryByText(/Continue writing your draft/i)).not.toBeInTheDocument();
-    expect(container.querySelector('[data-test-id="page-options-trigger"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="options-button"]')).toBeInTheDocument();
   });
 
   test("hides rename when the folder cannot be renamed", () => {
     const { container } = render(<ResourceHubFolderPageHarness canRenameFolder={false} />);
 
-    expect(container.querySelector('[data-test-id="page-options-trigger"]')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="options-button"]')).not.toBeInTheDocument();
     expect(screen.queryByText(/Continue writing your draft/i)).not.toBeInTheDocument();
   });
 });

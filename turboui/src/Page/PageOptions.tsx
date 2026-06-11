@@ -9,7 +9,7 @@ import { createTestId } from "../TestableElement";
 
 import classNames from "classnames";
 
-export function PageOptions({ options }: { options?: Page.Option[] }) {
+export function PageOptions({ options, testId = "options-button" }: { options?: Page.Option[]; testId?: string }) {
   const [open, setOpen] = React.useState(false);
   const close = () => setOpen(false);
 
@@ -27,7 +27,7 @@ export function PageOptions({ options }: { options?: Page.Option[] }) {
     <div className="absolute right-0 top-0">
       <div className="absolute right-2.5 top-2.5 flex items-center gap-2">
         <DropdownMenu.Root open={open} onOpenChange={setOpen} modal={false}>
-          <Trigger />
+          <Trigger testId={testId} />
           <Content close={close} options={visibleOptions} />
         </DropdownMenu.Root>
       </div>
@@ -35,14 +35,14 @@ export function PageOptions({ options }: { options?: Page.Option[] }) {
   );
 }
 
-function Trigger() {
+function Trigger({ testId }: { testId: string }) {
   const className = classNames({
     "rounded-full border border-surface-outline cursor-pointer": true,
     "p-1 hover:bg-surface-dimmed": true,
   });
 
   return (
-    <DropdownMenu.Trigger className={className} data-test-id="page-options-trigger">
+    <DropdownMenu.Trigger className={className} data-test-id={testId}>
       <IconDots size={20} />
     </DropdownMenu.Trigger>
   );
@@ -79,7 +79,7 @@ function Link(props: Page.Option) {
       <DivLink
         to={props.link!}
         className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
-        testId={"page-option-" + createTestId(props.label)}
+        testId={props.testId ?? "page-option-" + createTestId(props.label)}
       >
         {React.createElement(props.icon, { size: 20 })}
         {props.label}
@@ -98,7 +98,7 @@ function Action(props: Page.Option & { close: () => void }) {
     <DropdownMenu.Item onSelect={handleClick}>
       <div
         className="flex items-center gap-2 py-2 px-4 hover:bg-shade-1 cursor-pointer"
-        data-test-id={"page-option-" + createTestId(props.label)}
+        data-test-id={props.testId ?? "page-option-" + createTestId(props.label)}
       >
         {React.createElement(props.icon, { size: 20 })}
         {props.label}
