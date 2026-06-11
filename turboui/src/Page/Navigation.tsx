@@ -14,6 +14,7 @@ export namespace Navigation {
 
   export interface Props {
     items: Item[];
+    testId?: string;
   }
 }
 
@@ -25,12 +26,12 @@ const navigationClassName = classNames(
   "border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline",
 );
 
-export function Navigation({ items }: Navigation.Props) {
+export function Navigation({ items, testId }: Navigation.Props) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const hiddenCount = useHiddenItemCounter(containerRef, items);
 
   return (
-    <div className={navigationClassName} ref={containerRef}>
+    <div className={navigationClassName} data-test-id={testId} ref={containerRef}>
       {hiddenCount > 0 && <HiddenItems items={items} hiddenCount={hiddenCount} />}
 
       {items.slice(hiddenCount).map((item, index) => (
