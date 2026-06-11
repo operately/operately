@@ -995,7 +995,6 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
       row["group_id"] -> {:group, resolve_name(package, "groups", row["group_id"])}
       row["project_id"] -> {:project, resolve_name(package, "projects", row["project_id"])}
       row["goal_id"] -> {:goal, resolve_name(package, "goals", row["goal_id"])}
-      row["resource_hub_id"] -> {:resource_hub, resolve_name(package, "resource_hubs", row["resource_hub_id"])}
       true -> {:unknown, row["id"]}
     end
   end

@@ -4,7 +4,7 @@ defmodule Operately.Support.Features.CompanyTransfersPermissionsSteps do
   import Operately.FeatureSteps
 
   alias Operately.Access
-  alias Operately.Access.{Binding, Context}
+  alias Operately.Access.Binding
   alias Operately.Access.Fetch
   alias Operately.Companies
   alias Operately.Companies.Company
@@ -233,7 +233,7 @@ defmodule Operately.Support.Features.CompanyTransfersPermissionsSteps do
   end
 
   defp bind_resource_hub_access(ctx, person_key, hub_key, level) do
-    context = Access.get_context!(resource_hub_id: Map.fetch!(ctx, hub_key).id)
+    context = Access.get_context!(group_id: Map.fetch!(ctx, hub_key).space_id)
     person = Map.fetch!(ctx, person_key)
     {:ok, _} = Access.bind_person(context, person.id, level)
     ctx
@@ -298,18 +298,8 @@ defmodule Operately.Support.Features.CompanyTransfersPermissionsSteps do
   end
 
   defp resource_hub_access_level(%ResourceHub{} = hub, %Person{} = person) do
-    Repo.one(
-      from(c in Context,
-        join: b in assoc(c, :bindings),
-        join: g in assoc(b, :group),
-        join: m in assoc(g, :memberships),
-        join: p in assoc(m, :person),
-        where: c.resource_hub_id == ^hub.id,
-        where: b.access_level >= ^Binding.view_access(),
-        where: m.person_id == ^person.id and is_nil(p.suspended_at),
-        select: max(b.access_level)
-      )
-    ) || Binding.no_access()
+    from(h in ResourceHub, as: :resource, where: h.id == ^hub.id)
+    |> Fetch.get_access_level(person.id)
   end
 
   defp requester_access_level({:ok, resource}), do: resource.requester_access_level
@@ -360,17 +350,17 @@ defmodule Operately.Support.Features.CompanyTransfersPermissionsSteps do
     %{
       creator: access(:human, full, full, full, full, full, full, full, full),
       owner: access(:human, full, full, full, full, full, full, full, full),
-      admin: access(:human, admin, view, view, none, comment, none, comment, none),
-      member: access(:human, view, view, view, none, comment, none, comment, none),
-      new_account_member: access(:human, view, view, view, none, comment, none, comment, none),
-      space_viewer: access(:human, view, view, comment, none, edit, none, edit, none),
-      space_commenter: access(:human, view, comment, comment, none, edit, none, edit, none),
-      space_editor: access(:human, view, edit, comment, none, edit, none, edit, none),
+      admin: access(:human, admin, view, view, none, comment, none, view, view),
+      member: access(:human, view, view, view, none, comment, none, view, view),
+      new_account_member: access(:human, view, view, view, none, comment, none, view, view),
+      space_viewer: access(:human, view, view, comment, none, edit, none, view, view),
+      space_commenter: access(:human, view, comment, comment, none, edit, none, comment, comment),
+      space_editor: access(:human, view, edit, comment, none, edit, none, edit, edit),
       space_manager: access(:human, view, full, full, full, full, full, full, full),
-      direct_viewer: access(:human, view, view, view, view, comment, view, comment, view),
-      direct_commenter: access(:human, view, view, view, comment, comment, comment, comment, comment),
-      direct_editor: access(:human, view, view, view, edit, comment, edit, comment, edit),
-      direct_full_access: access(:human, view, view, view, full, comment, full, comment, full)
+      direct_viewer: access(:human, view, view, view, view, comment, view, view, view),
+      direct_commenter: access(:human, view, comment, view, comment, comment, comment, comment, comment),
+      direct_editor: access(:human, view, edit, view, edit, comment, edit, edit, edit),
+      direct_full_access: access(:human, view, full, view, full, comment, full, full, full)
     }
   end
 
@@ -380,12 +370,12 @@ defmodule Operately.Support.Features.CompanyTransfersPermissionsSteps do
         access(
           :guest,
           Binding.no_access(),
-          Binding.no_access(),
+          Binding.edit_access(),
           Binding.no_access(),
           Binding.comment_access(),
           Binding.no_access(),
           Binding.view_access(),
-          Binding.no_access(),
+          Binding.edit_access(),
           Binding.edit_access()
         )
     }

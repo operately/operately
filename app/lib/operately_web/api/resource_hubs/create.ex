@@ -13,9 +13,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.Create do
     field :space_id, :id, null: false
     field :name, :string, null: false
     field? :description, :json, null: false
-    field :anonymous_access_level, :access_options_int, null: false
-    field :company_access_level, :access_options_int, null: false
-    field :space_access_level, :access_options_int, null: false
   end
 
   outputs do

@@ -48,10 +48,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateTest do
         assert {code, res} = mutation(ctx.conn, [:resource_hubs, :create], %{
           space_id: Paths.space_id(space),
           name: "Resource Hub",
-          description: RichText.rich_text("description", :as_string),
-          anonymous_access_level: Binding.no_access(),
-          company_access_level: Binding.view_access(),
-          space_access_level: Binding.edit_access()
+          description: RichText.rich_text("description", :as_string)
         })
 
         assert code == @test.expected
@@ -84,10 +81,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateTest do
       assert {200, res} = mutation(ctx.conn, [:resource_hubs, :create], %{
         space_id: Paths.space_id(ctx.space),
         name: "Resource Hub",
-        description: RichText.rich_text("description", :as_string),
-        anonymous_access_level: Binding.no_access(),
-        company_access_level: Binding.view_access(),
-        space_access_level: Binding.edit_access()
+        description: RichText.rich_text("description", :as_string)
       })
 
       hubs = ResourceHubs.list_resource_hubs(ctx.space)
@@ -101,10 +95,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateTest do
 
       assert {200, res} = mutation(ctx.conn, [:resource_hubs, :create], %{
         space_id: Paths.space_id(ctx.space),
-        name: "Resource Hub Without Description",
-        anonymous_access_level: Binding.no_access(),
-        company_access_level: Binding.view_access(),
-        space_access_level: Binding.edit_access()
+        name: "Resource Hub Without Description"
       })
 
       hubs = ResourceHubs.list_resource_hubs(ctx.space)

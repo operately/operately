@@ -1,6 +1,6 @@
 defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpace do
   import Ecto.Query, only: [from: 2]
-  alias Operately.{Access, Repo}
+  alias Operately.Repo
   alias __MODULE__.{Space, ResourceHub}
 
   def run do
@@ -24,8 +24,7 @@ defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpace do
             name: "Resource Hub",
           })
           |> Repo.insert()
-
-        {:ok, _} = Access.create_context(%{resource_hub_id: hub.id})
+        hub
 
       {:ok, _} -> :ok
     end
