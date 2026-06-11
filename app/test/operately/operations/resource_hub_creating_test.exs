@@ -31,35 +31,20 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     assert Enum.find(hubs, &(&1 == resource_hub))
   end
 
-  test "ResourceHubCreating operation creates context", ctx do
-    {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
+  test "ResourceHubCreating operation does not create a dedicated access context", ctx do
+    contexts_before = length(Access.list_contexts())
 
-    assert Access.get_context(resource_hub_id: resource_hub.id)
+    {:ok, _resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
+
+    assert length(Access.list_contexts()) == contexts_before
   end
 
-  test "ResourceHubCreating operation creates bindings to company", ctx do
-    {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
+  test "ResourceHubCreating operation does not create additional access bindings", ctx do
+    bindings_before = length(Access.list_bindings())
 
-    context = Access.get_context!(resource_hub_id: resource_hub.id)
+    {:ok, _resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
 
-    full_access = Access.get_group!(company_id: ctx.company.id, tag: :full_access)
-    members = Access.get_group!(company_id: ctx.company.id, tag: :standard)
-    anonymous = Access.get_group!(company_id: ctx.company.id, tag: :anonymous)
-
-    assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.comment_access())
-    assert Access.get_binding(group_id: anonymous.id, context_id: context.id, access_level: Binding.view_access())
-  end
-
-  test "ResourceHubCreating operation creates bindings to space", ctx do
-    {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
-
-    context = Access.get_context!(resource_hub_id: resource_hub.id)
-    full_access = Access.get_group!(group_id: ctx.space.id, tag: :full_access)
-    members = Access.get_group!(group_id: ctx.space.id, tag: :standard)
-
-    assert Access.get_binding(group_id: full_access.id, context_id: context.id, access_level: Binding.full_access())
-    assert Access.get_binding(group_id: members.id, context_id: context.id, access_level: Binding.edit_access())
+    assert length(Access.list_bindings()) == bindings_before
   end
 
   test "ResourceHubCreating operation creates activity", ctx do

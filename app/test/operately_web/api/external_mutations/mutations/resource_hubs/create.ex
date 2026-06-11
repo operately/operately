@@ -2,8 +2,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ResourceHubs.Create do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
-  alias Operately.Access.Binding
-
   @impl true
   def mutation_name, do: "resource_hubs/create"
 
@@ -19,10 +17,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ResourceHubs.Create do
     %{
       space_id: Paths.space_id(ctx.space),
       name: "Updated Name",
-      description: rich_text_string("Updated description"),
-      anonymous_access_level: Binding.no_access(),
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access()
+      description: rich_text_string("Updated description")
     }
   end
 

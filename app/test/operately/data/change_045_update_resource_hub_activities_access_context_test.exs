@@ -3,6 +3,8 @@ defmodule Operately.Data.Change045UpdateResourceHubActivitiesAccessContextTest d
 
   import Operately.ActivitiesFixtures
 
+  alias Operately.Access
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -17,7 +19,7 @@ defmodule Operately.Data.Change045UpdateResourceHubActivitiesAccessContextTest d
   end
 
   test "updates access context of existing resource hub activities", ctx do
-    context = fetch_resource_hub_context(ctx)
+    context = Access.get_context!(company_id: ctx.company.id)
 
     Enum.each(ctx.activities, fn activity ->
       activity = Repo.preload(activity, :access_context)
@@ -35,10 +37,6 @@ defmodule Operately.Data.Change045UpdateResourceHubActivitiesAccessContextTest d
   #
   # Helpers
   #
-
-  defp fetch_resource_hub_context(ctx) do
-    Operately.Access.get_context(resource_hub_id: ctx.hub.id)
-  end
 
   #
   # Setup helpers
@@ -78,7 +76,7 @@ defmodule Operately.Data.Change045UpdateResourceHubActivitiesAccessContextTest d
     })
 
     activity = activity_fixture(author_id: ctx.creator.id, content: content)
-    context = fetch_resource_hub_context(ctx)
+    context = Access.get_context!(company_id: ctx.company.id)
 
     {:ok, activity} = Operately.Activities.Activity.changeset(activity, %{access_context_id: context.id})
     |> Repo.update
