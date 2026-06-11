@@ -15,6 +15,7 @@ export namespace Page {
     link?: string;
     onClick?: () => void;
     hidden?: boolean;
+    testId?: string;
   }
 
   export interface Props {
@@ -23,6 +24,8 @@ export namespace Page {
     options?: Option[];
     children?: React.ReactNode;
     navigation?: Navigation.Item[];
+    navigationTestId?: string;
+    optionsTestId?: string;
     testId?: string;
     className?: string;
   }
@@ -45,10 +48,10 @@ export function Page(props: Page.Props) {
 
   return (
     <div className={containerClass}>
-      {props.navigation && <Navigation items={props.navigation} />}
+      {props.navigation && <Navigation items={props.navigation} testId={props.navigationTestId ?? "navigation"} />}
 
       <Paper testId={props.testId}>
-        <PageOptions options={props.options} />
+        <PageOptions options={props.options} testId={props.optionsTestId ?? "options-button"} />
         {props.children}
       </Paper>
     </div>
@@ -65,10 +68,10 @@ export function PageNew(props: Page.Props) {
 
   return (
     <div className={containerClass} data-test-id={props.testId}>
-      {props.navigation && <Navigation items={props.navigation} />}
+      {props.navigation && <Navigation items={props.navigation} testId={props.navigationTestId ?? "navigation"} />}
 
       <div className={innerClass}>
-        <PageOptions options={props.options} />
+        <PageOptions options={props.options} testId={props.optionsTestId ?? "options-button"} />
         <div className={contentClass}>{props.children}</div>
       </div>
     </div>
