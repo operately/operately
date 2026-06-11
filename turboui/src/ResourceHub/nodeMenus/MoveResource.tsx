@@ -70,7 +70,10 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
     },
   });
 
-  const notAllowedSelections = [{ id: resource.id, type: resourceType }];
+  const notAllowedSelections = React.useMemo(
+    () => [{ id: resource.id, type: resourceType }],
+    [resource.id, resourceType],
+  );
 
   return (
     <Modal title={`Move ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>

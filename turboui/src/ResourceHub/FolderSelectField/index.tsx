@@ -12,7 +12,7 @@ import { useViewModel, type ViewModel } from "./viewModel";
 
 export function FolderSelectField({ label, field, notAllowedSelections }: ResourceHubFolderSelectFieldProps) {
   const { forms } = useResourceHubNodesListContext();
-  const viewModel = useViewModel(field, notAllowedSelections || []);
+  const viewModel = useViewModel(field, notAllowedSelections);
 
   return (
     <forms.InputField label={label} field={field} error={viewModel.error}>

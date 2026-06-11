@@ -18,13 +18,20 @@ interface ViewModelLocation {
   type: "folder" | "resourceHub";
 }
 
+const EMPTY_NOT_ALLOWED: ResourceHubNotAllowedSelection[] = [];
+
+function notAllowedSelectionsKey(notAllowedSelections: ResourceHubNotAllowedSelection[]) {
+  return notAllowedSelections.map((selection) => `${selection.type}:${selection.id}`).join("|");
+}
+
 export function useViewModel(
   fieldName: string,
-  notAllowedSelections?: ResourceHubNotAllowedSelection[],
+  notAllowedSelections: ResourceHubNotAllowedSelection[] = EMPTY_NOT_ALLOWED,
 ): ViewModel {
   const { forms, folderSelect } = useResourceHubNodesListContext();
   const [location, setValue] = forms.useFieldValue<ViewModelLocation>(fieldName);
   const error = forms.useFieldError(fieldName);
+  const blockedSelectionsKey = notAllowedSelectionsKey(notAllowedSelections);
 
   // Explorer UI state derived from the current location.
   const [currentNode, setCurrentNode] = React.useState<FolderSelectLoadNode | undefined>();
@@ -33,6 +40,8 @@ export function useViewModel(
 
   // When location changes, load that folder/hub and populate the explorer.
   React.useEffect(() => {
+    let cancelled = false;
+
     setLoading(location);
 
     const loader =
@@ -42,13 +51,21 @@ export function useViewModel(
 
     loader
       .then((result) => {
+        if (cancelled) return;
+
         setCurrentNode(applyNotAllowedSelections(result.currentNode, notAllowedSelections));
         setNodes(result.nodes.map((node) => applyNotAllowedSelections(node, notAllowedSelections)!));
       })
       .finally(() => {
-        setLoading(undefined);
+        if (!cancelled) {
+          setLoading(undefined);
+        }
       });
-  }, [location, folderSelect, notAllowedSelections]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location, folderSelect, blockedSelectionsKey]);
 
   // Drill into a folder by updating the form field (re-triggers the load effect).
   const select = (node: FolderSelectLoadNode) => {
