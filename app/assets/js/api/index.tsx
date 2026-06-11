@@ -4951,9 +4951,6 @@ export interface ResourceHubsCreateInput {
   spaceId: Id;
   name: string;
   description?: Json;
-  anonymousAccessLevel: AccessOptionsInt;
-  companyAccessLevel: AccessOptionsInt;
-  spaceAccessLevel: AccessOptionsInt;
 }
 
 export interface ResourceHubsCreateResult {

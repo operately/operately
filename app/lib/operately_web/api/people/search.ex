@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.People.Search do
   alias Operately.Companies.Company
   alias Operately.People.Person
   alias Operately.Access.Binding
+  alias Operately.ResourceHubs.ResourceHub
 
   inputs do
     field? :query, :string, null: false, default: ""
@@ -117,11 +118,12 @@ defmodule OperatelyWeb.Api.People.Search do
 
       {:resource_hub, id} ->
         from p in query,
+          join: hub in ResourceHub, on: hub.id == ^id,
           join: m in assoc(p, :access_group_memberships),
           join: g in assoc(m, :group),
           join: b in assoc(g, :bindings),
           join: c in assoc(b, :context),
-          where: c.resource_hub_id == ^id and b.access_level >= ^Binding.view_access(),
+          where: c.group_id == hub.space_id and b.access_level >= ^Binding.view_access(),
           group_by: p.id
     end
   end

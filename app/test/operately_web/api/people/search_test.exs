@@ -139,6 +139,26 @@ defmodule OperatelyWeb.Api.People.SearchTest do
       assert {200, res} = query(ctx.conn, [:people, :search], query: "John", ignored_ids: [], search_scope_type: "company")
       assert res == %{people: [serialized(person1)]}
     end
+
+    test "resource hub scope uses the parent space access context", ctx do
+      ctx =
+        ctx
+        |> Map.put(:creator, ctx.company_creator)
+        |> Factory.add_space(:space, company_permissions: Operately.Access.Binding.no_access())
+        |> Factory.add_resource_hub(:hub, :space, :creator)
+        |> Factory.add_space_member(:member, :space, name: "Hub Member", permissions: :comment_access)
+
+      outsider = person_fixture(company_id: ctx.company.id, full_name: "Hub Outsider")
+
+      assert {200, res} = query(ctx.conn, [:people, :search], %{
+        query: "Hub",
+        search_scope_type: "resource_hub",
+        search_scope_id: Paths.resource_hub_id(ctx.hub)
+      })
+
+      assert res == %{people: [serialized(ctx.member)]}
+      refute serialized(outsider) in res.people
+    end
   end
 
   def serialized(person) do

@@ -16,11 +16,14 @@ defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpaceTest d
       group_fixture(ctx.creator)
     end)
 
+    contexts_before = length(Access.list_contexts())
+
     Operately.Data.Change041CreateOneResourceHubForEachExistingSpace.run()
 
     Enum.each(spaces, fn s ->
-      assert {:ok, hub} = ResourceHub.get(:system, space_id: s.id)
-      assert Access.get_context(resource_hub_id: hub.id)
+      assert {:ok, _hub} = ResourceHub.get(:system, space_id: s.id)
     end)
+
+    assert length(Access.list_contexts()) == contexts_before
   end
 end

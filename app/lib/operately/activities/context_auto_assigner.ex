@@ -151,7 +151,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in Operately.Goals.goal_actions() -> fetch_goal_context(activity.content)
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
       activity.action in @task_actions -> fetch_project_or_space_context(activity.content)
-      activity.action in @resource_hub_actions-> fetch_resource_hub_context(activity.content.space_id)
+      activity.action in @resource_hub_actions -> fetch_space_context_id(activity.content.space_id)
       activity.action == "comment_added" -> fetch_comment_added_context(activity)
       true ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
@@ -168,8 +168,10 @@ defmodule Operately.Activities.ContextAutoAssigner do
   end
 
   defp fetch_space_context(activity) do
-    space_id = activity.content.space_id
+    fetch_space_context_id(activity.content.space_id)
+  end
 
+  defp fetch_space_context_id(space_id) do
     from(c in Context,
       where: c.group_id == ^space_id,
       select: c.id
@@ -192,11 +194,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
         fetch_project_context(content.project_id)
 
       Map.get(content, :space_id) != nil ->
-        from(c in Context,
-          where: c.group_id == ^content.space_id,
-          select: c.id
-        )
-        |> Repo.one()
+        fetch_space_context_id(content.space_id)
 
       true ->
         raise "Activity content must have either project_id or space_id"
@@ -206,14 +204,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
   defp fetch_project_context(project_id) do
     from(c in Context,
       where: c.project_id == ^project_id,
-      select: c.id
-    )
-    |> Repo.one()
-  end
-
-  defp fetch_resource_hub_context(space_id) do
-    from(c in Context,
-      where: c.group_id == ^space_id,
       select: c.id
     )
     |> Repo.one()
