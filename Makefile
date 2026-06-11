@@ -13,8 +13,8 @@ CERTS_DIR ?= $(PWD)/tmp/certs
 #
 
 gen:
-	./devenv bash -c "cd app && mix operately.gen.page.index && mix operately.gen.typescript.api"
-	./devenv bash -c "cd app && npx prettier --write assets/js/api && npx prettier --write assets/js/pages/index.tsx && npx prettier --write ee/assets/js/admin_api/index.tsx"
+	./devenv bash -c "cd app && mix operately.gen.page.index && mix operately.gen.typescript.api && mix operately.gen.turboui.api_types"
+	./devenv bash -c "cd app && npx prettier --write assets/js/api && npx prettier --write assets/js/pages/index.tsx && npx prettier --write ee/assets/js/admin_api/index.tsx && npx prettier --write ../turboui/src/ApiTypes/index.ts"
 
 gen.api.docs:
 	./devenv bash -c "cd app && mix operately.gen.api.docs"
