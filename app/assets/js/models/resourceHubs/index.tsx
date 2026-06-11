@@ -1,5 +1,3 @@
-import { ResourceHubFile, ResourceHubFolder, ResourceHubDocument, ResourceHubLink } from "@/api";
-
 import Api from "@/api";
 export type {
   ResourceHub,
@@ -29,6 +27,3 @@ export const folders = {
   useRename: Api.resource_hubs.useRenameFolder,
 };
 export const links = Api.links;
-
-export type Resource = ResourceHubDocument | ResourceHubFile | ResourceHubFolder | ResourceHubLink;
-export type ResourceTypeName = "document" | "file" | "folder" | "link";
