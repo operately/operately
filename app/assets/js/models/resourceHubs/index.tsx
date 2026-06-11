@@ -1,6 +1,4 @@
-import { ResourceHubFile, ResourceHubFolder, ResourceHubDocument, ResourceHubLink } from "@/api";
-
-import Api from "@/api"
+import Api from "@/api";
 export type {
   ResourceHub,
   ResourceHubNode,
@@ -12,7 +10,7 @@ export type {
 } from "@/api";
 
 export { resourceHubListPaths, resourceHubNavigationPaths } from "./paths";
-export { draftNodeToUiNode, nodeToUiNode, resourceHubPermissionsToUi } from "./turbouiAdapters";
+export { getDraftEditPath, getNodePath } from "./nodeUtils";
 export { useNewFileModalsContextValue } from "./useNewFileModalsContextValue";
 export { useResourceHubNodesListContext, type NodesProps } from "./useResourceHubNodesListContext";
 export { useResourceHubNodesListProps } from "./useResourceHubNodesListProps";
@@ -29,6 +27,3 @@ export const folders = {
   useRename: Api.resource_hubs.useRenameFolder,
 };
 export const links = Api.links;
-
-export type Resource = ResourceHubDocument | ResourceHubFile | ResourceHubFolder | ResourceHubLink;
-export type ResourceTypeName = "document" | "file" | "folder" | "link";

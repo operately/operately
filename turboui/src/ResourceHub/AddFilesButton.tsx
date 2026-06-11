@@ -12,7 +12,7 @@ import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 import type { ResourceHubLinkType, ResourceHubPermissions } from "./types";
 
 interface AddFilesButtonProps {
-  permissions: ResourceHubPermissions;
+  permissions?: ResourceHubPermissions | null;
   onNewDocument: () => void;
   onNewFolder: () => void;
   onUploadFiles: () => void;
@@ -44,7 +44,7 @@ function buildOptions({
   onUploadFiles,
   onNewLink,
 }: {
-  permissions: ResourceHubPermissions;
+  permissions?: ResourceHubPermissions | null;
   onNewDocument: () => void;
   onNewFolder: () => void;
   onUploadFiles: () => void;
@@ -56,7 +56,7 @@ function buildOptions({
       icon={IconFile}
       onClick={onNewDocument}
       testId="new-document"
-      hidden={!permissions.canCreateDocument}
+      hidden={!permissions?.canCreateDocument}
       children="New document"
     />,
     <MenuActionItem
@@ -64,7 +64,7 @@ function buildOptions({
       icon={IconFolderFilled}
       onClick={onNewFolder}
       testId="new-folder"
-      hidden={!permissions.canCreateFolder}
+      hidden={!permissions?.canCreateFolder}
       children="New folder"
     />,
     <MenuActionItem
@@ -72,10 +72,10 @@ function buildOptions({
       icon={IconUpload}
       onClick={onUploadFiles}
       testId="upload-files"
-      hidden={!permissions.canCreateFile}
+      hidden={!permissions?.canCreateFile}
       children="Upload files"
     />,
-    <NewLinkSubMenu key={4} hidden={!permissions.canCreateLink} onNewLink={onNewLink} />,
+    <NewLinkSubMenu key={4} hidden={!permissions?.canCreateLink} onNewLink={onNewLink} />,
   ];
 }
 

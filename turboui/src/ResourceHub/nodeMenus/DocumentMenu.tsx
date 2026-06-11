@@ -5,13 +5,14 @@ import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
 import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
-import type { ResourceHubDocumentMenuData } from "../types";
+import { getResourceName } from "../selectors";
+import type { ResourceHubDocument } from "../types";
 import { CopyDocumentModal } from "./CopyDocumentModal";
 import { CopyResourceMenuItem } from "./CopyResource";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface DocumentMenuProps {
-  document: ResourceHubDocumentMenuData;
+  document: ResourceHubDocument;
 }
 
 export function DocumentMenu({ document }: DocumentMenuProps) {
@@ -74,7 +75,7 @@ function DeleteDocumentMenuItem({
   document,
   showConfirmModal,
 }: {
-  document: ResourceHubDocumentMenuData;
+  document: ResourceHubDocument;
   showConfirmModal: () => void;
 }) {
   const deleteId = createTestId("delete", document.id);
@@ -91,7 +92,7 @@ function DeleteDocumentModal({
   isOpen,
   hideModal,
 }: {
-  document: ResourceHubDocumentMenuData;
+  document: ResourceHubDocument;
   isOpen: boolean;
   hideModal: () => void;
 }) {
@@ -116,7 +117,7 @@ function DeleteDocumentModal({
   return (
     <Modal isOpen={isOpen} onClose={hideModal}>
       <p>
-        Are you sure you want to delete the document "<b>{document.name}</b>"?
+        Are you sure you want to delete the document "<b>{getResourceName(document)}</b>"?
       </p>
       <div className="flex items-center gap-2 mt-6">
         <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">
@@ -140,7 +141,7 @@ function ExportMarkdownMenuItem({ document }: DocumentMenuProps) {
 
     if (!exportDocumentMarkdown) return;
 
-    exportDocumentMarkdown(document.content, document.name || "document");
+    exportDocumentMarkdown(document.content, getResourceName(document) || "document");
   };
 
   return (

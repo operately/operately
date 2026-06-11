@@ -7,7 +7,7 @@ import { IconArrowLeft } from "../../icons";
 import { NodeIcon } from "../NodeIcon";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
-import type { FolderSelectLoadNode, ResourceHubFolderSelectFieldProps } from "../types";
+import type { ResourceHubFolderSelectFieldProps } from "../types";
 import { useViewModel, type ViewModel } from "./viewModel";
 
 export function FolderSelectField({ label, field, notAllowedSelections }: ResourceHubFolderSelectFieldProps) {
@@ -30,7 +30,7 @@ function Navigation({ viewModel }: { viewModel: ViewModel }) {
   return (
     <div className="h-8 flex items-center gap-2 p-2 border-b border-stroke-base">
       <NavigateBack viewModel={viewModel} />
-      <div className="text-sm" data-test-id={createTestId("folder-select-current", viewModel.currentNode.resource.id!)}>
+      <div className="text-sm" data-test-id={createTestId("folder-select-current", viewModel.currentNode.id)}>
         {viewModel.currentNode.name}
       </div>
     </div>
@@ -38,13 +38,15 @@ function Navigation({ viewModel }: { viewModel: ViewModel }) {
 }
 
 function NavigateBack({ viewModel }: { viewModel: ViewModel }) {
-  if (!viewModel.currentNode?.parent) return null;
+  const parent = viewModel.currentNode?.parent;
+
+  if (!parent) return null;
 
   return (
     <IconArrowLeft
       className="cursor-pointer"
       size={16}
-      onClick={() => viewModel.select(viewModel.currentNode!.parent!)}
+      onClick={() => viewModel.select(parent)}
       data-test-id="folder-select-go-back"
     />
   );
@@ -60,9 +62,7 @@ function NodeList({ viewModel }: { viewModel: ViewModel }) {
   );
 }
 
-function NodeItem({ viewModel, node }: { viewModel: ViewModel; node: FolderSelectLoadNode }) {
-  const { folderSelect } = useResourceHubNodesListContext();
-  const uiNode = node.apiNode ? folderSelect.mapApiNodeToUiNode(node.apiNode) : null;
+function NodeItem({ viewModel, node }: { viewModel: ViewModel; node: ViewModel["nodes"][number] }) {
   const className = classNames("flex items-center justify-between", "p-2", "even:bg-surface-dimmed", {
     "cursor-pointer": node.selectable,
     "hover:bg-surface-highlight": !viewModel.isNodeLoading(node),
@@ -71,12 +71,12 @@ function NodeItem({ viewModel, node }: { viewModel: ViewModel; node: FolderSelec
   const innerClassName = classNames("flex items-center gap-2 text-sm", {
     "opacity-40": !node.selectable,
   });
-  const testId = node.selectable ? createTestId("folder-select-node", node.resource.id!) : undefined;
+  const testId = node.selectable ? createTestId("folder-select-node", node.id) : undefined;
 
   return (
     <div className={className} onClick={() => viewModel.select(node)} data-test-id={testId}>
       <div className={innerClassName}>
-        {uiNode && <NodeIcon size={16} node={uiNode} />}
+        {node.iconNode && <NodeIcon size={16} node={node.iconNode} />}
         {node.name}
       </div>
 

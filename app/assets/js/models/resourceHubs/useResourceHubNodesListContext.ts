@@ -1,23 +1,16 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { match } from "ts-pattern";
 
-import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
+import Modal from "@/components/Modal";
 import * as Hub from "@/models/resourceHubs";
-import { nodeToUiNode } from "@/models/resourceHubs";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
+import { compareIds, usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
-import { compareIds, usePaths } from "@/routes/paths";
+import { sortNodesWithFoldersFirst, type FolderSelectLoadResult, type ResourceHubNodesListContextValue } from "turboui";
+
 import { resourceHubListPaths } from "./paths";
-import type {
-  FolderSelectLoadNode,
-  FolderSelectLoadResult,
-  ResourceHubNodesListContextValue,
-  ResourceHubNotAllowedSelection,
-} from "turboui";
-import { sortNodesWithFoldersFirst } from "turboui";
 
 interface ResourceHubProps {
   resourceHub: Hub.ResourceHub;
@@ -48,96 +41,13 @@ async function downloadFile(fileUrl: string, fileName: string) {
   URL.revokeObjectURL(url);
 }
 
-function selectionAllowed(
-  resourceType: Hub.ResourceTypeName,
-  resource: Hub.Resource,
-  preventSelection?: ResourceHubNotAllowedSelection[],
-): boolean {
-  return resourceType === "folder" && !preventSelection?.some((loc) => loc.id === resource.id);
-}
-
-function findResource(node: Hub.ResourceHubNode): Hub.Resource {
-  return match(node.type)
-    .with("folder", () => node.folder!)
-    .with("file", () => node.file!)
-    .with("document", () => node.document!)
-    .with("link", () => node.link!)
-    .run();
-}
-
-function apiFolderToNodeParent(
-  folder: Hub.ResourceHubFolder,
-  preventSelection?: ResourceHubNotAllowedSelection[],
-): FolderSelectLoadNode {
-  if (folder.pathToFolder && folder.pathToFolder.length > 0) {
-    const parent = folder.pathToFolder.slice(-1)[0]!;
-
-    return {
-      id: parent.id!,
-      selectable: selectionAllowed("folder", parent, preventSelection),
-      name: parent.name!,
-      type: "folder",
-      resource: parent,
-    };
-  }
-
-  return {
-    id: folder.resourceHub!.id!,
-    selectable: true,
-    name: folder.resourceHub!.name!,
-    type: "resourceHub",
-    resource: folder.resourceHub!,
-  };
-}
-
-function apiFolderToNode(
-  folder: Hub.ResourceHubFolder,
-  preventSelection?: ResourceHubNotAllowedSelection[],
-): FolderSelectLoadNode {
-  return {
-    id: folder.id!,
-    selectable: selectionAllowed("folder", folder, preventSelection),
-    name: folder.name!,
-    type: "folder",
-    resource: folder,
-    parent: apiFolderToNodeParent(folder, preventSelection),
-  };
-}
-
-function apiResourceHubToNode(resourceHub: Hub.ResourceHub): FolderSelectLoadNode {
-  return {
-    id: resourceHub.id!,
-    selectable: true,
-    name: resourceHub.name!,
-    type: "resourceHub",
-    resource: resourceHub,
-  };
-}
-
-function apiNodesToFolderSelectNodes(
-  nodes: Hub.ResourceHubNode[],
-  preventSelection?: ResourceHubNotAllowedSelection[],
-): FolderSelectLoadNode[] {
-  return sortNodesWithFoldersFirst(nodes).map((node) => {
-    const resource = findResource(node);
-
-    return {
-      id: node.id!,
-      selectable: selectionAllowed(node.type! as Hub.ResourceTypeName, resource, preventSelection),
-      name: node.name!,
-      type: "folder",
-      resource,
-      apiNode: node,
-    };
-  });
-}
-
 export function useResourceHubNodesListContext(props: NodesProps): ResourceHubNodesListContextValue {
   const paths = usePaths();
   const navigate = useNavigate();
   const parent = props.type === "resource_hub" ? props.resourceHub : props.folder;
 
   assertPresent(parent.permissions, `permissions must be present in ${props.type}`);
+  assertPresent(parent.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
 
   const [deleteDocument] = Hub.documents.useDelete();
   const [deleteFile] = Hub.files.useDelete();
@@ -148,32 +58,12 @@ export function useResourceHubNodesListContext(props: NodesProps): ResourceHubNo
   const [createDocument] = Hub.documents.useCreate();
   const [copyFolder] = Hub.folders.useCopy();
 
-  assertPresent(parent.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
-
   const subscriptionsState = useSubscriptionsAdapter(parent.potentialSubscribers, {
     ignoreMe: true,
     resourceHubName: parent.name || "",
   });
 
   return useMemo(() => {
-    const permissions = {
-      canCreateDocument: Boolean(parent.permissions!.canCreateDocument),
-      canCreateFile: Boolean(parent.permissions!.canCreateFile),
-      canCreateFolder: Boolean(parent.permissions!.canCreateFolder),
-      canCreateLink: Boolean(parent.permissions!.canCreateLink),
-      canView: Boolean(parent.permissions!.canView),
-      canEditDocument: Boolean(parent.permissions!.canEditDocument),
-      canEditFile: Boolean(parent.permissions!.canEditFile),
-      canEditLink: Boolean(parent.permissions!.canEditLink),
-      canEditParentFolder: Boolean(parent.permissions!.canEditParentFolder),
-      canDeleteDocument: Boolean(parent.permissions!.canDeleteDocument),
-      canDeleteFile: Boolean(parent.permissions!.canDeleteFile),
-      canDeleteFolder: Boolean(parent.permissions!.canDeleteFolder),
-      canDeleteLink: Boolean(parent.permissions!.canDeleteLink),
-      canRenameFolder: Boolean(parent.permissions!.canRenameFolder),
-      canCopyFolder: Boolean(parent.permissions!.canCopyFolder),
-    };
-
     const folderSelect: ResourceHubNodesListContextValue["folderSelect"] = {
       loadFolder: async (id: string): Promise<FolderSelectLoadResult> => {
         const res = await Hub.folders.get({
@@ -184,29 +74,28 @@ export function useResourceHubNodesListContext(props: NodesProps): ResourceHubNo
         });
 
         return {
-          currentNode: apiFolderToNode(res.folder!),
-          nodes: apiNodesToFolderSelectNodes(res.folder!.nodes!),
+          current: { type: "folder", folder: res.folder! },
+          nodes: sortNodesWithFoldersFirst(res.folder!.nodes || []),
         };
       },
       loadResourceHub: async (id: string): Promise<FolderSelectLoadResult> => {
         const res = await Hub.resource_hubs.get({ id, includeNodes: true });
 
         return {
-          currentNode: apiResourceHubToNode(res.resourceHub!),
-          nodes: apiNodesToFolderSelectNodes(res.resourceHub!.nodes!),
+          current: { type: "resourceHub", resourceHub: res.resourceHub! },
+          nodes: sortNodesWithFoldersFirst(res.resourceHub!.nodes || []),
         };
       },
-      mapApiNodeToUiNode: (apiNode: unknown) => nodeToUiNode(paths, apiNode as Hub.ResourceHubNode),
       compareIds,
     };
 
     return {
-      permissions,
+      permissions: parent.permissions,
       parent: {
         id: parent.id!,
         name: parent.name || "",
         type: props.type === "resource_hub" ? "resource_hub" : "folder",
-        resourceHubId: props.type === "folder" ? (parent as Hub.ResourceHubFolder).resourceHubId : parent.id,
+        resourceHubId: props.type === "folder" ? props.folder.resourceHubId : parent.id,
       },
       onRefetch: props.refetch,
       paths: resourceHubListPaths(paths),
@@ -276,8 +165,7 @@ export function useResourceHubNodesListContext(props: NodesProps): ResourceHubNo
     };
   }, [
     parent,
-    props.type,
-    props.refetch,
+    props,
     paths,
     deleteDocument,
     deleteFile,
