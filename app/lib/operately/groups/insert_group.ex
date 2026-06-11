@@ -84,22 +84,5 @@ defmodule Operately.Groups.InsertGroup do
         name: "Documents & Files",
       })
     end)
-    |> Multi.insert(:hub_context, fn changes ->
-      Access.Context.changeset(%{
-        resource_hub_id: changes.resource_hub.id,
-      })
-    end)
-    |> Multi.insert(:company_admins_and_hub_binding, fn changes ->
-      Binding.changeset(%{group_id: changes.company_admins_group.id, context_id: changes.hub_context.id, access_level: Binding.full_access()})
-    end)
-    |> Multi.insert(:company_members_and_hub_binding, fn changes ->
-      Binding.changeset(%{group_id: changes.company_members_group.id, context_id: changes.hub_context.id, access_level: Binding.comment_access()})
-    end)
-    |> Multi.insert(:space_managers_and_hub_binding, fn changes ->
-      Binding.changeset(%{group_id: changes.space_managers_access_group.id, context_id: changes.hub_context.id, access_level: Binding.full_access()})
-    end)
-    |> Multi.insert(:space_members_and_hub_binding, fn changes ->
-      Binding.changeset(%{group_id: changes.space_members_access_group.id, context_id: changes.hub_context.id, access_level: Binding.edit_access()})
-    end)
   end
 end

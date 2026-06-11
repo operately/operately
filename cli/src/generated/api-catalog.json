@@ -177,7 +177,7 @@
             "default": null,
             "name": "plan_key",
             "type": {
-              "name": "billing_plan",
+              "name": "string",
               "kind": "named"
             },
             "optional": true,
@@ -768,6 +768,17 @@
           },
           {
             "default": null,
+            "name": "state",
+            "type": {
+              "name": "check_in_state",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "message",
             "type": {
               "name": "string",
@@ -780,6 +791,17 @@
           {
             "default": null,
             "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "published_at",
             "type": {
               "name": "datetime",
               "kind": "named"
@@ -4641,7 +4663,7 @@
             "default": null,
             "name": "plan_key",
             "type": {
-              "name": "billing_limit_plan",
+              "name": "string",
               "kind": "named"
             },
             "optional": true,
@@ -4688,9 +4710,9 @@
               "name": "integer",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
           },
           {
             "default": null,
@@ -4699,9 +4721,9 @@
               "name": "integer",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
           },
           {
             "default": null,
@@ -7680,7 +7702,7 @@
             "default": null,
             "name": "plan_family",
             "type": {
-              "name": "billing_plan",
+              "name": "string",
               "kind": "named"
             },
             "optional": false,
@@ -9349,7 +9371,7 @@
           },
           {
             "default": null,
-            "name": "member_limit",
+            "name": "tier_rank",
             "type": {
               "name": "integer",
               "kind": "named"
@@ -9360,14 +9382,36 @@
           },
           {
             "default": null,
-            "name": "storage_limit_bytes",
+            "name": "customer_selectable",
             "type": {
-              "name": "integer",
+              "name": "boolean",
               "kind": "named"
             },
             "optional": false,
             "has_default": false,
             "nullable": false
+          },
+          {
+            "default": null,
+            "name": "member_limit",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "storage_limit_bytes",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -11150,6 +11194,17 @@
           },
           {
             "default": null,
+            "name": "can_manage_billing",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "can_edit_trusted_email_domains",
             "type": {
               "name": "boolean",
@@ -11172,7 +11227,29 @@
           },
           {
             "default": null,
+            "name": "can_edit_members",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "can_remove_members",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "can_edit_details",
             "type": {
               "name": "boolean",
               "kind": "named"
@@ -11877,7 +11954,7 @@
             "default": null,
             "name": "plan_key",
             "type": {
-              "name": "billing_limit_plan",
+              "name": "string",
               "kind": "named"
             },
             "optional": true,
@@ -11924,9 +12001,9 @@
               "name": "integer",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
           },
           {
             "default": null,
@@ -11935,9 +12012,9 @@
               "name": "integer",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
           },
           {
             "default": null,
@@ -12974,7 +13051,7 @@
             "default": null,
             "name": "plan_key",
             "type": {
-              "name": "billing_plan",
+              "name": "string",
               "kind": "named"
             },
             "optional": true,
@@ -13007,7 +13084,7 @@
             "default": null,
             "name": "suggested_plan_key",
             "type": {
-              "name": "billing_plan",
+              "name": "string",
               "kind": "named"
             },
             "optional": true,
@@ -13062,7 +13139,7 @@
             "default": null,
             "name": "pending_plan_key",
             "type": {
-              "name": "billing_plan",
+              "name": "string",
               "kind": "named"
             },
             "optional": true,
@@ -13095,7 +13172,7 @@
             "default": null,
             "name": "scheduled_plan_key",
             "type": {
-              "name": "billing_plan",
+              "name": "string",
               "kind": "named"
             },
             "optional": true,
@@ -13742,9 +13819,31 @@
           },
           {
             "default": null,
+            "name": "state",
+            "type": {
+              "name": "check_in_state",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "inserted_at",
             "type": {
               "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "published_at",
+            "type": {
+              "name": "datetime",
               "kind": "named"
             },
             "optional": false,
@@ -16326,15 +16425,6 @@
         "caution",
         "off_track"
       ],
-      "billing_plan": [
-        "team",
-        "business"
-      ],
-      "billing_limit_plan": [
-        "free",
-        "team",
-        "business"
-      ],
       "discussion_state": [
         "draft",
         "published"
@@ -16400,6 +16490,10 @@
       "create_conversation_context_type": [
         "goal",
         "project"
+      ],
+      "check_in_state": [
+        "draft",
+        "published"
       ],
       "review_assignment_roles": [
         "owner",
@@ -16567,9 +16661,9 @@
       ]
     }
   },
-  "endpoint_count": 200,
+  "endpoint_count": 201,
   "query_count": 64,
-  "mutation_count": 136,
+  "mutation_count": 137,
   "endpoints": [
     {
       "name": "create",
@@ -17807,6 +17901,17 @@
         {
           "default": null,
           "name": "is_company_owner",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "can_manage_billing",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -19200,6 +19305,17 @@
           "nullable": false
         },
         {
+          "default": "false",
+          "name": "post_as_draft",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
           "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
@@ -19542,6 +19658,42 @@
       ],
       "docstring": "Deletes a checklist item from a goal.",
       "full_name": "goals/delete_check",
+      "method": "POST"
+    },
+    {
+      "name": "delete_check_in",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/delete_check_in",
+      "handler": "OperatelyWeb.Api.Goals.DeleteCheckIn",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Deletes a goal check-in.",
+      "full_name": "goals/delete_check_in",
       "method": "POST"
     },
     {
@@ -20685,6 +20837,17 @@
           "optional": false,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "state",
+          "type": {
+            "name": "check_in_state",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         },
         {
           "default": null,
@@ -23095,6 +23258,17 @@
           "nullable": false
         },
         {
+          "default": "false",
+          "name": "post_as_draft",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
           "default": "true",
           "name": "send_notifications_to_everyone",
           "type": {
@@ -25378,6 +25552,17 @@
           "optional": false,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "state",
+          "type": {
+            "name": "check_in_state",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         }
       ],
       "docstring": "Updates an existing project check-in's status and/or description.",
@@ -26598,39 +26783,6 @@
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "anonymous_access_level",
-          "type": {
-            "name": "access_options_int",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "company_access_level",
-          "type": {
-            "name": "access_options_int",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "space_access_level",
-          "type": {
-            "name": "access_options_int",
-            "kind": "named"
-          },
-          "optional": false,
           "has_default": false,
           "nullable": false
         }
@@ -29547,6 +29699,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-02T15:14:04Z",
+  "generated_at": "2026-06-11T21:03:31Z",
   "schema_version": 1
 }
