@@ -1,4 +1,6 @@
 import * as React from "react";
+
+import { getNodeAuthorName, getNodeChildrenCount, getNodeDescription, getNodeFileSize, getNodeType } from "./selectors";
 import type { ResourceHubNode } from "./types";
 
 interface NodeDescriptionProps {
@@ -22,33 +24,45 @@ export function NodeDescription({ node, fontSize = DEFAULT_FONT_SIZE, maxCharact
 }
 
 function Author({ node }: { node: ResourceHubNode }) {
-  if (node.type === "folder" || !node.authorName) return null;
-  return <span className="font-medium">{node.authorName}</span>;
+  const nodeType = getNodeType(node);
+  const authorName = getNodeAuthorName(node);
+
+  if (nodeType === "folder" || !authorName) return null;
+
+  return <span className="font-medium">{authorName}</span>;
 }
 
 function FileSize({ node }: { node: ResourceHubNode }) {
-  if (node.type !== "file" || node.size === undefined || node.size === null) return null;
+  const size = getNodeFileSize(node);
+
+  if (getNodeType(node) !== "file" || size === null) return null;
 
   return (
     <span className="font-medium">
       {" "}
-      <BulletDot /> {humanReadableSize(node.size)}
+      <BulletDot /> {humanReadableSize(size)}
     </span>
   );
 }
 
 function SubItemsCount({ node }: { node: ResourceHubNode }) {
-  if (node.type !== "folder" || node.childrenCount === undefined || node.childrenCount === null) return null;
-  return <span className="font-medium">{pluralize(node.childrenCount, "item", "items")}</span>;
+  const childrenCount = getNodeChildrenCount(node);
+
+  if (getNodeType(node) !== "folder" || childrenCount === null) return null;
+
+  return <span className="font-medium">{pluralize(childrenCount, "item", "items")}</span>;
 }
 
 function ContentSnippet({ node, maxCharacters }: { node: ResourceHubNode; maxCharacters: number }) {
-  if (node.type === "folder" || node.type === "link" || !node.description) return null;
+  const nodeType = getNodeType(node);
+  const description = getNodeDescription(node);
+
+  if (nodeType === "folder" || nodeType === "link" || !description) return null;
 
   return (
     <>
       {" "}
-      <MDash /> {truncateString(node.description, maxCharacters)}
+      <MDash /> {truncateString(description, maxCharacters)}
     </>
   );
 }

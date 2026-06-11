@@ -6,10 +6,12 @@ import { ResourceHubNodesListProvider, type ResourceHubNodesListContextValue } f
 import { FolderZeroNodes, HubZeroNodes } from "./ZeroNodes";
 import { ResourceHubNodeRow } from "./ResourceHubNodeRow";
 import { SortControl } from "./SortControl";
+import { getNodeId } from "./selectors";
 import type { ResourceHubNode, ResourceHubSortBy } from "./types";
 
 interface NodesListProps {
   nodes: ResourceHubNode[];
+  getNodePath: (node: ResourceHubNode) => string;
   sortBy: ResourceHubSortBy;
   onSortChange: (sortBy: ResourceHubSortBy) => void;
   emptyVariant: "hub" | "folder";
@@ -17,7 +19,7 @@ interface NodesListProps {
   getNodeTestId?: (node: ResourceHubNode, index: number) => string;
 }
 
-export function NodesList({ nodes, sortBy, onSortChange, emptyVariant, listContext, getNodeTestId }: NodesListProps) {
+export function NodesList({ nodes, getNodePath, sortBy, onSortChange, emptyVariant, listContext, getNodeTestId }: NodesListProps) {
   const { filesSelected } = useNewFileModalsContext();
 
   if (nodes.length < 1) {
@@ -35,8 +37,9 @@ export function NodesList({ nodes, sortBy, onSortChange, emptyVariant, listConte
       <div>
         {nodes.map((node, index) => (
           <ResourceHubNodeRow
-            key={node.id}
+            key={getNodeId(node) ?? index}
             node={node}
+            path={getNodePath(node)}
             testId={getNodeTestId ? getNodeTestId(node, index) : `node-${index}`}
             className="first:border-t"
             actions={<NodeMenu node={node} />}

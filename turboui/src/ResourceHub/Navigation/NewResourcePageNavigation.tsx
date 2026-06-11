@@ -2,15 +2,11 @@ import * as React from "react";
 
 import { Navigation } from "../../Page/Navigation";
 import { assertPresent } from "../../utils/assertions";
-import type {
-  ResourceHubNavigationPaths,
-  ResourceHubNewResourceNavigationFolder,
-  ResourceHubNewResourceNavigationResourceHub,
-} from "../types";
+import type { ResourceHub, ResourceHubFolder, ResourceHubNavigationPaths } from "../types";
 
 interface NewResourcePageNavigationProps {
-  resourceHub: ResourceHubNewResourceNavigationResourceHub;
-  folder?: ResourceHubNewResourceNavigationFolder;
+  resourceHub: ResourceHub;
+  folder?: ResourceHubFolder;
   paths: ResourceHubNavigationPaths;
 }
 

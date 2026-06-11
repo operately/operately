@@ -14,9 +14,9 @@ import {
   useNewFileModalsContext,
 } from "turboui";
 import {
-  draftNodeToUiNode,
   folders,
-  resourceHubPermissionsToUi,
+  getDraftEditPath,
+  getNodePath,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
@@ -58,15 +58,11 @@ function PageContent({
 }) {
   const refresh = useRefresh();
   const paths = usePaths();
-  const draftUiNodes = draftNodes.map((node) => draftNodeToUiNode(paths, node));
   const { navigateToNewDocument, toggleShowAddFolder, selectFiles, navigateToNewLink, setFiles } =
     useNewFileModalsContext();
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
   const [createFolder] = folders.useCreate();
   const nodesListProps = useResourceHubNodesListProps({ resourceHub, type: "resource_hub", nodes, refetch: refresh });
-
-  assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
-  const permissions = resourceHubPermissionsToUi(resourceHub.permissions)!;
 
   return (
     <FileDragAndDropArea onFilesDropped={setFiles}>
@@ -78,7 +74,7 @@ function PageContent({
             title={resourceHub.name!}
             actions={
               <AddFilesButton
-                permissions={permissions}
+                permissions={resourceHub.permissions}
                 onNewDocument={navigateToNewDocument}
                 onNewFolder={toggleShowAddFolder}
                 onUploadFiles={selectFiles}
@@ -86,7 +82,12 @@ function PageContent({
               />
             }
           />
-          <ContinueEditingDrafts drafts={draftUiNodes} draftsPath={paths.resourceHubDraftsPath(resourceHub.id!)} />
+          <ContinueEditingDrafts
+            drafts={draftNodes}
+            draftsPath={paths.resourceHubDraftsPath(resourceHub.id!)}
+            getDraftEditPath={(node) => getDraftEditPath(paths, node)}
+            getNodePath={(node) => getNodePath(paths, node)}
+          />
           <AddFileWidget {...addFileWidgetProps} />
           <NodesList {...nodesListProps} />
           <AddFolderModal

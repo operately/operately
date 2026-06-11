@@ -5,11 +5,12 @@ import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
 import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
-import type { ResourceHubFileMenuData } from "../types";
+import { getResourceName } from "../selectors";
+import type { ResourceHubFile } from "../types";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface FileMenuProps {
-  file: ResourceHubFileMenuData;
+  file: ResourceHubFile;
 }
 
 export function FileMenu({ file }: FileMenuProps) {
@@ -45,15 +46,16 @@ export function FileMenu({ file }: FileMenuProps) {
 
 function DownloadFileMenuItem({ file }: FileMenuProps) {
   const { actions } = useResourceHubNodesListContext();
+  const downloadUrl = file.blob?.url;
 
-  if (!file.downloadUrl || !file.name) return null;
+  if (!downloadUrl || !file.name) return null;
 
   const handleDownload = () => {
     const downloadFile = actions.downloadFile;
 
-    if (!downloadFile || !file.downloadUrl || !file.name) return;
+    if (!downloadFile || !downloadUrl || !file.name) return;
 
-    downloadFile(file.downloadUrl, file.name);
+    downloadFile(downloadUrl, file.name);
   };
 
   return <MenuActionItem onClick={handleDownload}>Download</MenuActionItem>;
@@ -74,7 +76,7 @@ function EditFileMenuItem({ file }: FileMenuProps) {
   );
 }
 
-function DeleteFileMenuItem({ file, toggleDeleteModal }: { file: ResourceHubFileMenuData; toggleDeleteModal: () => void }) {
+function DeleteFileMenuItem({ file, toggleDeleteModal }: { file: ResourceHubFile; toggleDeleteModal: () => void }) {
   const deleteId = createTestId("delete", file.id);
 
   return (
@@ -84,7 +86,7 @@ function DeleteFileMenuItem({ file, toggleDeleteModal }: { file: ResourceHubFile
   );
 }
 
-function DeleteFileModal({ file, isOpen, hideModal }: { file: ResourceHubFileMenuData; isOpen: boolean; hideModal: () => void }) {
+function DeleteFileModal({ file, isOpen, hideModal }: { file: ResourceHubFile; isOpen: boolean; hideModal: () => void }) {
   const { onRefetch, actions } = useResourceHubNodesListContext();
   const [isDeleting, setIsDeleting] = React.useState(false);
 
@@ -106,7 +108,7 @@ function DeleteFileModal({ file, isOpen, hideModal }: { file: ResourceHubFileMen
   return (
     <Modal isOpen={isOpen} onClose={hideModal}>
       <p>
-        Are you sure you want to delete the file "<b>{file.name}</b>"?
+        Are you sure you want to delete the file "<b>{getResourceName(file)}</b>"?
       </p>
       <div className="flex items-center gap-2 mt-6">
         <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">

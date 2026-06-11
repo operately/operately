@@ -1,16 +1,13 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
+import Modal from "@/components/Modal";
 import * as Hub from "@/models/resourceHubs";
-import { nodeToUiNode } from "@/models/resourceHubs";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
-import { assertPresent } from "@/utils/assertions";
 import { compareIds, usePaths } from "@/routes/paths";
-import type { FolderSelectLoadResult, ResourceHubNodesListContextValue } from "turboui";
-import { sortNodesWithFoldersFirst } from "turboui";
-import { match } from "ts-pattern";
+import { assertPresent } from "@/utils/assertions";
+import { sortNodesWithFoldersFirst, type FolderSelectLoadResult, type ResourceHubNodesListContextValue } from "turboui";
 
 export function useCopyDocumentListContext(
   parent: Hub.ResourceHub | Hub.ResourceHubFolder,
@@ -65,89 +62,21 @@ export function useCopyDocumentListContext(
           });
 
           return {
-            currentNode: apiFolderToNode(res.folder!),
-            nodes: apiNodesToFolderSelectNodes(res.folder!.nodes!),
+            current: { type: "folder", folder: res.folder! },
+            nodes: sortNodesWithFoldersFirst(res.folder!.nodes || []),
           };
         },
         loadResourceHub: async (id: string): Promise<FolderSelectLoadResult> => {
           const res = await Hub.resource_hubs.get({ id, includeNodes: true });
 
           return {
-            currentNode: apiResourceHubToNode(res.resourceHub!),
-            nodes: apiNodesToFolderSelectNodes(res.resourceHub!.nodes!),
+            current: { type: "resourceHub", resourceHub: res.resourceHub! },
+            nodes: sortNodesWithFoldersFirst(res.resourceHub!.nodes || []),
           };
         },
-        mapApiNodeToUiNode: (apiNode: unknown) => nodeToUiNode(paths, apiNode as Hub.ResourceHubNode),
         compareIds,
       },
     }),
     [parent, resource.resourceHubId, paths, createDocument, subscriptionsState.currentSubscribersList, navigate],
   );
-}
-
-function findResource(node: Hub.ResourceHubNode): Hub.Resource {
-  return match(node.type)
-    .with("folder", () => node.folder!)
-    .with("file", () => node.file!)
-    .with("document", () => node.document!)
-    .with("link", () => node.link!)
-    .run();
-}
-
-function apiFolderToNodeParent(folder: Hub.ResourceHubFolder) {
-  if (folder.pathToFolder && folder.pathToFolder.length > 0) {
-    const parent = folder.pathToFolder.slice(-1)[0]!;
-
-    return {
-      id: parent.id!,
-      selectable: true,
-      name: parent.name!,
-      type: "folder" as const,
-      resource: parent,
-    };
-  }
-
-  return {
-    id: folder.resourceHub!.id!,
-    selectable: true,
-    name: folder.resourceHub!.name!,
-    type: "resourceHub" as const,
-    resource: folder.resourceHub!,
-  };
-}
-
-function apiFolderToNode(folder: Hub.ResourceHubFolder) {
-  return {
-    id: folder.id!,
-    selectable: true,
-    name: folder.name!,
-    type: "folder" as const,
-    resource: folder,
-    parent: apiFolderToNodeParent(folder),
-  };
-}
-
-function apiResourceHubToNode(resourceHub: Hub.ResourceHub) {
-  return {
-    id: resourceHub.id!,
-    selectable: true,
-    name: resourceHub.name!,
-    type: "resourceHub" as const,
-    resource: resourceHub,
-  };
-}
-
-function apiNodesToFolderSelectNodes(nodes: Hub.ResourceHubNode[]) {
-  return sortNodesWithFoldersFirst(nodes).map((node) => {
-    const resource = findResource(node);
-
-    return {
-      id: node.id!,
-      selectable: node.type === "folder",
-      name: node.name!,
-      type: "folder" as const,
-      resource,
-      apiNode: node,
-    };
-  });
 }

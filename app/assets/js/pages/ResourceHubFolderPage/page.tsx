@@ -22,7 +22,6 @@ import {
 } from "turboui";
 import {
   folders,
-  resourceHubPermissionsToUi,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
@@ -57,21 +56,19 @@ export function Page() {
 }
 
 function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: ResourceHubNode[] }) {
+  assertPresent(folder.resourceHub, "resourceHub must be present in folder");
+
   const refresh = useRefresh();
   const paths = usePaths();
   const { navigateToNewDocument, toggleShowAddFolder, selectFiles, navigateToNewLink, setFiles } =
     useNewFileModalsContext();
   const addFileWidgetProps = useAddFileWidgetProps({
-    resourceHub: folder.resourceHub!,
+    resourceHub: folder.resourceHub,
     folder,
     onUploaded: refresh,
   });
   const [createFolder] = folders.useCreate();
   const nodesListProps = useResourceHubNodesListProps({ folder, nodes, type: "folder", refetch: refresh });
-
-  assertPresent(folder.permissions, "permissions must be present in folder");
-  assertPresent(folder.resourceHub, "resourceHub must be present in folder");
-  const permissions = resourceHubPermissionsToUi(folder.permissions)!;
 
   return (
     <FileDragAndDropArea onFilesDropped={setFiles}>
@@ -87,7 +84,7 @@ function PageContent({ folder, nodes }: { folder: ResourceHubFolder; nodes: Reso
             title={folder.name!}
             actions={
               <AddFilesButton
-                permissions={permissions}
+                permissions={folder.permissions}
                 onNewDocument={navigateToNewDocument}
                 onNewFolder={toggleShowAddFolder}
                 onUploadFiles={selectFiles}

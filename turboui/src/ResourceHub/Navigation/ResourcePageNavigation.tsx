@@ -2,10 +2,12 @@ import * as React from "react";
 
 import { Navigation } from "../../Page/Navigation";
 import { assertPresent } from "../../utils/assertions";
-import type { ResourceHubBreadcrumbResource, ResourceHubNavigationPaths } from "../types";
+import type { ResourceHubDocument, ResourceHubFile, ResourceHubFolder, ResourceHubLink, ResourceHubNavigationPaths } from "../types";
+
+type ResourcePageResource = ResourceHubDocument | ResourceHubFile | ResourceHubFolder | ResourceHubLink;
 
 interface ResourcePageNavigationProps {
-  resource: ResourceHubBreadcrumbResource;
+  resource: ResourcePageResource;
   paths: ResourceHubNavigationPaths;
   testId?: string;
 }
@@ -28,11 +30,11 @@ export function ResourcePageNavigation({ resource, paths, testId = "navigation" 
   return <Navigation items={items} testId={testId} />;
 }
 
-function getPathToResource(resource: ResourceHubBreadcrumbResource) {
-  if (resource.pathToDocument) return resource.pathToDocument;
-  if (resource.pathToLink) return resource.pathToLink;
-  if (resource.pathToFile) return resource.pathToFile;
-  if (resource.pathToFolder) return resource.pathToFolder;
+function getPathToResource(resource: ResourcePageResource) {
+  if ("pathToDocument" in resource) return resource.pathToDocument ?? [];
+  if ("pathToLink" in resource) return resource.pathToLink ?? [];
+  if ("pathToFile" in resource) return resource.pathToFile ?? [];
+  if ("pathToFolder" in resource) return resource.pathToFolder ?? [];
 
   throw new Error("pathToDocument, pathToLink, pathToFolder or pathToFile must be included in the resource");
 }
