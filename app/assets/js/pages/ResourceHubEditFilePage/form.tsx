@@ -4,10 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { ResourceHubFile, files } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { findNameAndExtension } from "@/features/ResourceHub";
-
 import { usePaths } from "@/routes/paths";
-import { areRichTextObjectsEqual } from "turboui";
+import { areRichTextObjectsEqual, findNameAndExtension } from "turboui";
 
 export function Form({ file }: { file: ResourceHubFile }) {
   const paths = usePaths();

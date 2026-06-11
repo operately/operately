@@ -2,36 +2,109 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Hub from "@/features/ResourceHub";
+import {
+  AddFileWidget,
+  AddFilesButton,
+  AddFolderModal,
+  ContinueEditingDrafts,
+  FileDragAndDropArea,
+  Header as ResourceHubHeader,
+  NewFileModalsProvider,
+  NodesList,
+  useNewFileModalsContext,
+} from "turboui";
+import {
+  draftNodeToUiNode,
+  folders,
+  resourceHubPermissionsToUi,
+  useAddFileWidgetProps,
+  useNewFileModalsContextValue,
+  useResourceHubNodesListProps,
+  type ResourceHub,
+  type ResourceHubNode,
+} from "@/models/resourceHubs";
 
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
+import Forms from "@/components/Forms";
+import Modal from "@/components/Modal";
+import type { ResourceHubFormsApi } from "turboui";
 
 export function Page() {
   const { resourceHub, nodes, draftNodes } = useLoadedData();
-  const refresh = useRefresh();
 
   assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
 
+  const newFileModalsContext = useNewFileModalsContextValue({ resourceHub });
+
   return (
     <Pages.Page title={resourceHub.name!}>
-      <Hub.NewFileModalsProvider resourceHub={resourceHub}>
-        <Hub.FileDragAndDropArea>
-          <Paper.Root size="large">
-            <PageNavigation />
-
-            <Paper.Body minHeight="75vh">
-              <Hub.Header resource={resourceHub} />
-              <Hub.ContinueEditingDrafts resourceHubId={resourceHub.id!} drafts={draftNodes} />
-              <Hub.AddFileWidget resourceHub={resourceHub} refresh={refresh} />
-              <Hub.NodesList resourceHub={resourceHub} type="resource_hub" nodes={nodes} refetch={refresh} />
-              <Hub.AddFolderModal resourceHub={resourceHub} refresh={refresh} />
-            </Paper.Body>
-          </Paper.Root>
-        </Hub.FileDragAndDropArea>
-      </Hub.NewFileModalsProvider>
+      <NewFileModalsProvider value={newFileModalsContext}>
+        <PageContent resourceHub={resourceHub} nodes={nodes} draftNodes={draftNodes} />
+      </NewFileModalsProvider>
     </Pages.Page>
+  );
+}
+
+function PageContent({
+  resourceHub,
+  nodes,
+  draftNodes,
+}: {
+  resourceHub: ResourceHub;
+  nodes: ResourceHubNode[];
+  draftNodes: ResourceHubNode[];
+}) {
+  const refresh = useRefresh();
+  const paths = usePaths();
+  const draftUiNodes = draftNodes.map((node) => draftNodeToUiNode(paths, node));
+  const { navigateToNewDocument, toggleShowAddFolder, selectFiles, navigateToNewLink, setFiles } =
+    useNewFileModalsContext();
+  const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
+  const [createFolder] = folders.useCreate();
+  const nodesListProps = useResourceHubNodesListProps({ resourceHub, type: "resource_hub", nodes, refetch: refresh });
+
+  assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
+  const permissions = resourceHubPermissionsToUi(resourceHub.permissions)!;
+
+  return (
+    <FileDragAndDropArea onFilesDropped={setFiles}>
+      <Paper.Root size="large">
+        <PageNavigation />
+
+        <Paper.Body minHeight="75vh">
+          <ResourceHubHeader
+            title={resourceHub.name!}
+            actions={
+              <AddFilesButton
+                permissions={permissions}
+                onNewDocument={navigateToNewDocument}
+                onNewFolder={toggleShowAddFolder}
+                onUploadFiles={selectFiles}
+                onNewLink={navigateToNewLink}
+              />
+            }
+          />
+          <ContinueEditingDrafts drafts={draftUiNodes} draftsPath={paths.resourceHubDraftsPath(resourceHub.id!)} />
+          <AddFileWidget {...addFileWidgetProps} />
+          <NodesList {...nodesListProps} />
+          <AddFolderModal
+            resourceHubId={resourceHub.id!}
+            onCreated={refresh}
+            forms={Forms as unknown as ResourceHubFormsApi}
+            modal={{ Modal }}
+            onCreateFolder={async (args) => {
+              await createFolder({
+                resourceHubId: args.resourceHubId,
+                folderId: args.folderId,
+                name: args.name,
+              });
+            }}
+          />
+        </Paper.Body>
+      </Paper.Root>
+    </FileDragAndDropArea>
   );
 }
 

@@ -2,11 +2,10 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { links } from "@/models/resourceHubs";
-import { emptyContent, SubscribersSelector } from "turboui";
+import { emptyContent, LinkIcon, SubscribersSelector, type ResourceHubLinkType } from "turboui";
 
 import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
-import { LinkIcon, LinkOptions } from "@/features/ResourceHub";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -99,7 +98,7 @@ function FormFields() {
 }
 
 function SelectTypeField() {
-  const [type, _] = useFieldValue<LinkOptions>("type");
+  const [type, _] = useFieldValue<ResourceHubLinkType>("type");
   const isGoogleOption = useMemo(() => GOOGLE_OPTIONS.map((x) => x.value).includes(type), [type]);
 
   if (isGoogleOption) {
