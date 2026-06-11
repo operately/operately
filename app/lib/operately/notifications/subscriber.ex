@@ -124,8 +124,8 @@ defmodule Operately.Notifications.Subscriber do
       end)
 
     potential_subs =
-      Enum.into(resource_hub_child.resource_hub.space.members, %{}, fn p ->
-        {p.id, from_person(p)}
+      Enum.into(Operately.ResourceHubs.Parent.potential_subscribers(resource_hub_child.resource_hub), %{}, fn sub ->
+        {sub.person.id, sub}
       end)
 
     merge_subs_and_potential_subs(subs, potential_subs)

@@ -105,6 +105,10 @@ defmodule Operately.Notifications do
 
   alias Operately.Notifications.SubscriptionList
 
+  def get_subscription_list_with_access_level(id, type, person_id) when type in [:resource_hub_document, :resource_hub_file, :resource_hub_link] do
+    fetch_resource_hub_subscription_list_with_access_level(id, type, person_id)
+  end
+
   def get_subscription_list_with_access_level(id, type, person_id) do
     case type do
       :project_check_in ->
@@ -170,6 +174,10 @@ defmodule Operately.Notifications do
         )
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
+  end
+
+  def get_subscription_list_access_level(id, type, person_id) when type in [:resource_hub_document, :resource_hub_file, :resource_hub_link] do
+    fetch_resource_hub_subscription_list_access_level(id, type, person_id)
   end
 
   def get_subscription_list_access_level(id, type, person_id) do
@@ -240,6 +248,42 @@ defmodule Operately.Notifications do
     end
 
     {:ok, Fetch.get_access_level(query, person_id)}
+  end
+
+  defp fetch_resource_hub_subscription_list_with_access_level(id, type, person_id) do
+    module = resource_hub_subscription_module(type)
+
+    with resource_id when not is_nil(resource_id) <- fetch_resource_hub_resource_id(id, module),
+         {:ok, resource} <- module.get(person_id, id: resource_id, opts: [preload: :subscription_list]) do
+      {:ok, SubscriptionList.set_requester_access_level(resource.subscription_list, resource.request_info.access_level)}
+    else
+      nil -> {:error, :not_found}
+      {:error, :not_found} -> {:error, :not_found}
+    end
+  end
+
+  defp fetch_resource_hub_subscription_list_access_level(id, type, person_id) do
+    module = resource_hub_subscription_module(type)
+
+    with resource_id when not is_nil(resource_id) <- fetch_resource_hub_resource_id(id, module),
+         {:ok, resource} <- module.get(person_id, id: resource_id) do
+      {:ok, resource.request_info.access_level}
+    else
+      _ -> {:ok, Operately.Access.Binding.no_access()}
+    end
+  end
+
+  defp resource_hub_subscription_module(:resource_hub_document), do: Operately.ResourceHubs.Document
+  defp resource_hub_subscription_module(:resource_hub_file), do: Operately.ResourceHubs.File
+  defp resource_hub_subscription_module(:resource_hub_link), do: Operately.ResourceHubs.Link
+
+  defp fetch_resource_hub_resource_id(subscription_list_id, module) do
+    from(r in module,
+      join: s in assoc(r, :subscription_list),
+      where: s.id == ^subscription_list_id,
+      select: r.id
+    )
+    |> Repo.one()
   end
 
   def create_subscription_list(attrs \\ %{}) do
