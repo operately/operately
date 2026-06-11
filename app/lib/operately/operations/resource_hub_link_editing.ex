@@ -2,6 +2,7 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{Link, Node}
 
   def run(author, link, attrs) do
@@ -16,8 +17,6 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
     end)
     |> Activities.insert_sync(author.id, :resource_hub_link_edited, fn _changes ->
       %{
-        company_id: author.company_id,
-        space_id: link.resource_hub.space_id,
         resource_hub_id: link.resource_hub.id,
         node_id: link.node_id,
         link_id: link.id,
@@ -32,6 +31,7 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
           url: attrs.url
         }
       }
+      |> Map.merge(Parent.parent_fields(link.resource_hub))
     end)
     |> Repo.transaction()
     |> Repo.extract_result(:link_with_node)

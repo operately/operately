@@ -1,6 +1,7 @@
 defmodule Operately.Operations.ResourceHubDocumentPublishing do
   alias Ecto.Multi
   alias Operately.{Activities, Repo}
+  alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{Document, Node}
   alias Operately.Notifications.SubscriptionList
   alias Operately.Operations.Notifications.Subscription
@@ -27,14 +28,15 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
   end
 
   defp insert_activity(multi, author, document) do
-    Activities.insert_sync(multi, author.id, :resource_hub_document_created, fn _changes -> %{
-      company_id: author.company_id,
-      space_id: document.resource_hub.space_id,
-      resource_hub_id: document.resource_hub.id,
-      document_id: document.id,
-      node_id: document.node_id,
-      name: document.node.name,
-    } end)
+    Activities.insert_sync(multi, author.id, :resource_hub_document_created, fn _changes ->
+      %{
+        resource_hub_id: document.resource_hub.id,
+        document_id: document.id,
+        node_id: document.node_id,
+        name: document.node.name,
+      }
+      |> Map.merge(Parent.parent_fields(document.resource_hub))
+    end)
   end
 
   defp update_document(multi, document, nil) do
