@@ -4,10 +4,11 @@ import { MenuActionItem } from "../../Menu";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
 import { FolderSelectField } from "../FolderSelectField";
-import type { ResourceHubFormState, ResourceHubNodeMenuData } from "../types";
+import { getResourceName } from "../selectors";
+import type { ResourceHubFormState, ResourceHubResource } from "../types";
 
 interface CopyResourceMenuItemProps {
-  resource: { id: string; name: string };
+  resource: { id: string; name?: string | null };
   showModal: () => void;
 }
 
@@ -23,7 +24,7 @@ export function CopyResourceMenuItem({ resource, showModal }: CopyResourceMenuIt
 
 interface CopyResourceModalProps {
   form: ResourceHubFormState;
-  resource: ResourceHubNodeMenuData;
+  resource: ResourceHubResource;
   isOpen: boolean;
   hideModal: () => void;
 }
@@ -33,7 +34,7 @@ export function CopyResourceModal({ form, resource, isOpen, hideModal }: CopyRes
   const { Modal } = modal;
 
   return (
-    <Modal title={`Create a copy of ${resource.name}`} isOpen={isOpen} hideModal={hideModal}>
+    <Modal title={`Create a copy of ${getResourceName(resource)}`} isOpen={isOpen} hideModal={hideModal}>
       <forms.Form form={form} testId="copy-resource-modal">
         <forms.FieldGroup>
           <forms.TextInput field="name" label="New document name" required />

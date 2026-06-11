@@ -1,11 +1,11 @@
 import type { ResourceHubNode } from "@/api";
-import { assertPresent } from "@/utils/assertions";
 import type { Paths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 
-export type NodeType = "document" | "folder" | "file" | "link";
+type NodeType = "document" | "folder" | "file" | "link";
 
-export function findPath(paths: Paths, nodeType: NodeType, node: ResourceHubNode) {
-  switch (nodeType) {
+export function getNodePath(paths: Paths, node: ResourceHubNode) {
+  switch (getNodeType(node)) {
     case "document":
       assertPresent(node.document?.id, "document must be present in node");
       return paths.resourceHubDocumentPath(node.document.id);
@@ -21,18 +21,18 @@ export function findPath(paths: Paths, nodeType: NodeType, node: ResourceHubNode
   }
 }
 
-export function findCommentsCount(nodeType: NodeType, node: ResourceHubNode) {
-  switch (nodeType) {
-    case "document":
-      return node.document?.commentsCount ?? 0;
-
-    case "file":
-      return node.file?.commentsCount ?? 0;
-
-    case "link":
-      return node.link?.commentsCount ?? 0;
-
-    default:
-      return 0;
+export function getDraftEditPath(paths: Paths, node: ResourceHubNode) {
+  if (!node.document?.id) {
+    return getNodePath(paths, node);
   }
+
+  return paths.resourceHubEditDocumentPath(node.document.id);
+}
+
+function getNodeType(node: ResourceHubNode): NodeType {
+  if (node.type === "document" || node.type === "folder" || node.type === "file" || node.type === "link") {
+    return node.type;
+  }
+
+  throw new Error(`Unsupported resource hub node type: ${node.type}`);
 }

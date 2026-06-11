@@ -5,13 +5,14 @@ import { Menu, MenuActionItem } from "../../Menu";
 import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
-import type { ResourceHubFolderMenuData, ResourceHubFormsApi, ResourceHubModalApi } from "../types";
+import { getResourceName } from "../selectors";
+import type { ResourceHubFolder, ResourceHubFormsApi, ResourceHubModalApi } from "../types";
 import { CopyFolderModal } from "./CopyFolder";
 import { CopyResourceMenuItem } from "./CopyResource";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface FolderMenuProps {
-  folder: ResourceHubFolderMenuData;
+  folder: ResourceHubFolder;
 }
 
 export function FolderMenu({ folder }: FolderMenuProps) {
@@ -76,7 +77,7 @@ function DeleteFolderMenuItem({
   folder,
   showConfirmModal,
 }: {
-  folder: ResourceHubFolderMenuData;
+  folder: ResourceHubFolder;
   showConfirmModal: () => void;
 }) {
   const deleteId = createTestId("delete", folder.id);
@@ -88,7 +89,7 @@ function DeleteFolderMenuItem({
   );
 }
 
-function RenameFolderMenuItem({ folder, showForm }: { folder: ResourceHubFolderMenuData; showForm: () => void }) {
+function RenameFolderMenuItem({ folder, showForm }: { folder: ResourceHubFolder; showForm: () => void }) {
   const testId = createTestId("rename-folder", folder.id);
 
   return (
@@ -103,7 +104,7 @@ function DeleteFolderModal({
   isOpen,
   hideModal,
 }: {
-  folder: ResourceHubFolderMenuData;
+  folder: ResourceHubFolder;
   isOpen: boolean;
   hideModal: () => void;
 }) {
@@ -128,7 +129,7 @@ function DeleteFolderModal({
   return (
     <Modal isOpen={isOpen} onClose={hideModal}>
       <p>
-        Are you sure you want to delete the folder "<b>{folder.name}</b>"?
+        Are you sure you want to delete the folder "<b>{getResourceName(folder)}</b>"?
       </p>
       <div className="flex items-center gap-2 mt-6">
         <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">
@@ -143,7 +144,7 @@ function DeleteFolderModal({
 }
 
 export interface RenameFolderModalProps {
-  folder: { id: string; name?: string | null };
+  folder: ResourceHubFolder;
   showForm: boolean;
   toggleForm: () => void;
   onSave: () => void;
@@ -154,10 +155,11 @@ export interface RenameFolderModalProps {
 
 export function RenameFolderModal({ folder, showForm, toggleForm, onSave, forms, modal, onRename }: RenameFolderModalProps) {
   const { Modal } = modal;
+  const folderName = getResourceName(folder);
 
   const form = forms.useForm({
     fields: {
-      name: folder.name,
+      name: folderName,
     },
     validate: (addError: (field: string, message: string) => void) => {
       if (!form.values.name) {
@@ -168,7 +170,7 @@ export function RenameFolderModal({ folder, showForm, toggleForm, onSave, forms,
     submit: async () => {
       const name = form.values.name as string;
 
-      if (name !== folder.name) {
+      if (name !== folderName) {
         await onRename(folder.id, name);
         onSave();
       }

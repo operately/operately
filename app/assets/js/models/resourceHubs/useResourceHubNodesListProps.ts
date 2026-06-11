@@ -2,10 +2,10 @@ import { useMemo } from "react";
 
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { createTestId } from "@/utils/testid";
-import { nodeToUiNode } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { ResourceHubSortBy, sortNodesWithFoldersFirst } from "turboui";
 
+import { getNodePath } from "./nodeUtils";
 import { useResourceHubNodesListContext, type NodesProps } from "./useResourceHubNodesListContext";
 
 export function useResourceHubNodesListProps(props: NodesProps) {
@@ -19,17 +19,13 @@ export function useResourceHubNodesListProps(props: NodesProps) {
     [props.nodes, sortBy, sortOrder],
   );
 
-  const uiNodes = useMemo(
-    () => sortedApiNodes.map((node) => nodeToUiNode(paths, node)),
-    [sortedApiNodes, paths],
-  );
-
   return {
-    nodes: uiNodes,
+    nodes: sortedApiNodes,
+    getNodePath: (node: NodesProps["nodes"][number]) => getNodePath(paths, node),
     sortBy,
     onSortChange: setSortBy,
     emptyVariant: props.type === "resource_hub" ? ("hub" as const) : ("folder" as const),
     listContext,
-    getNodeTestId: (_: unknown, index: number) => createTestId("node", index.toString()),
+    getNodeTestId: (_node: NodesProps["nodes"][number], index: number) => createTestId("node", index.toString()),
   };
 }

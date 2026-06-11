@@ -17,7 +17,7 @@ import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { OngoingDraftActions } from "@/features/drafts";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CopyDocumentModalWrapper, ResourcePageNavigation, type ResourceHubDocumentMenuData } from "turboui";
+import { CopyDocumentModalWrapper, ResourcePageNavigation } from "turboui";
 import { useCopyDocumentListContext } from "@/models/resourceHubs";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
@@ -34,15 +34,6 @@ export function Page() {
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
   const copyListContext = useCopyDocumentListContext(folder ?? resourceHub, document);
-
-  const menuResource: ResourceHubDocumentMenuData = {
-    type: "document",
-    id: document.id!,
-    name: document.name || "",
-    content: document.content,
-    parentFolderId: document.parentFolderId,
-    resourceHubId: document.resourceHubId,
-  };
 
   assertPresent(document.notifications, "notifications must be present in document");
   useClearNotificationsOnLoad(document.notifications);
@@ -72,7 +63,7 @@ export function Page() {
 
           <CopyDocumentModalWrapper
             listContext={copyListContext}
-            menuResource={menuResource}
+            document={document}
             isOpen={isCopyFormOpen}
             hideModal={closeCopyForm}
           />

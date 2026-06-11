@@ -1,11 +1,12 @@
 import * as React from "react";
 
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
-import type { ResourceHubFolderMenuData } from "../types";
+import { getResourceName } from "../selectors";
+import type { ResourceHubFolder } from "../types";
 import { CopyResourceModal } from "./CopyResource";
 
 interface CopyFolderModalProps {
-  resource: ResourceHubFolderMenuData;
+  resource: ResourceHubFolder;
   isOpen: boolean;
   hideModal: () => void;
 }
@@ -15,7 +16,7 @@ export function CopyFolderModal({ resource, isOpen, hideModal }: CopyFolderModal
 
   const form = forms.useForm({
     fields: {
-      name: resource.name + " - Copy",
+      name: `${getResourceName(resource)} - Copy`,
       location: {
         id: parent.id,
         type: parent.type === "folder" ? "folder" : "resourceHub",

@@ -3,7 +3,7 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import { DraftNodesList } from "turboui";
-import { draftNodeToUiNode } from "@/models/resourceHubs";
+import { getNodePath } from "@/models/resourceHubs";
 
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
@@ -12,7 +12,6 @@ import { usePaths } from "@/routes/paths";
 export function Page() {
   const { resourceHub, draftNodes } = useLoadedData();
   const paths = usePaths();
-  const draftUiNodes = draftNodes.map((node) => draftNodeToUiNode(paths, node));
 
   return (
     <Pages.Page title={["Drafts", resourceHub.name!]}>
@@ -21,7 +20,7 @@ export function Page() {
 
         <Paper.Body minHeight="75vh">
           <Paper.Header title="Your Drafts" layout="title-center-actions-left" underline />
-          <DraftNodesList nodes={draftUiNodes} />
+          <DraftNodesList nodes={draftNodes} getNodePath={(node) => getNodePath(paths, node)} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

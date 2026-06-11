@@ -1,20 +1,25 @@
 import * as React from "react";
 import classNames from "../utils/classnames";
 import { IconAlignJustified, IconChartColumn, IconFolderFilled, IconLink, IconLogs, IconVideo } from "../icons";
-import type { ResourceHubNode, ResourceHubThumbnail } from "./types";
+import { getNodeContentType, getNodeLinkType, getNodeThumbnail, getNodeType } from "./selectors";
+import type { ResourceHubNode } from "./types";
 import { LinkIcon } from "./LinkIcon";
 
 export function NodeIcon({ node, size }: { node: ResourceHubNode; size: number }) {
-  if (node.type === "folder") return <FolderIcon size={size} />;
+  const nodeType = getNodeType(node);
+  const linkType = getNodeLinkType(node);
+  const thumbnail = getNodeThumbnail(node);
 
-  if (node.type === "link") {
-    if (node.linkType && node.linkType !== "other") return <LinkIcon type={node.linkType} size={size} />;
+  if (nodeType === "folder") return <FolderIcon size={size} />;
+
+  if (nodeType === "link") {
+    if (linkType && linkType !== "other") return <LinkIcon type={linkType} size={size} />;
     return <FileIcon size={size} icon={IconLink} />;
   }
 
-  if (node.thumbnail) return <Thumbnail thumbnail={node.thumbnail} size={size} />;
+  if (thumbnail) return <Thumbnail url={thumbnail.url} alt={thumbnail.alt} width={thumbnail.width} height={thumbnail.height} size={size} />;
 
-  if (node.type === "document") return <FileIcon size={size} icon={IconAlignJustified} color="bg-sky-500" />;
+  if (nodeType === "document") return <FileIcon size={size} icon={IconAlignJustified} color="bg-sky-500" />;
   if (hasContentType(node, "pdf")) return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
   if (hasContentType(node, "video")) return <FileIcon size={size} icon={IconVideo} />;
   if (hasContentType(node, "audio")) return <FileIcon size={size} filetype="audio" />;
@@ -25,7 +30,7 @@ export function NodeIcon({ node, size }: { node: ResourceHubNode; size: number }
 }
 
 function hasContentType(node: ResourceHubNode, contentType: string) {
-  return node.type === "file" && Boolean(node.contentType?.includes(contentType));
+  return getNodeType(node) === "file" && Boolean(getNodeContentType(node)?.includes(contentType));
 }
 
 function FolderIcon({ size }: { size: number }) {
@@ -78,16 +83,16 @@ function FileIconBadge({ size, filetype, color }: FileIconProps) {
   return <div className={badgeClass} style={style} children={filetype} />;
 }
 
-function Thumbnail({ thumbnail, size }: { thumbnail: ResourceHubThumbnail; size: number }) {
+function Thumbnail({ url, alt, width, height, size }: { url: string; alt: string; width: number; height: number; size: number }) {
   const padding = 1;
-  const imgRatio = thumbnail.height / thumbnail.width;
-  const width = size - padding * 2;
-  const height = width * imgRatio;
+  const imgRatio = height / width;
+  const thumbnailWidth = size - padding * 2;
+  const thumbnailHeight = thumbnailWidth * imgRatio;
 
   return (
     <div className="border border-surface-outline shadow rounded-sm overflow-hidden" style={{ padding }}>
-      <div style={{ width, height }}>
-        <ImageWithPlaceholder src={thumbnail.url} alt={thumbnail.alt} ratio={imgRatio} />
+      <div style={{ width: thumbnailWidth, height: thumbnailHeight }}>
+        <ImageWithPlaceholder src={url} alt={alt} ratio={imgRatio} />
       </div>
     </div>
   );

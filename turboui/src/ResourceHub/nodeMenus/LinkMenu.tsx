@@ -5,11 +5,12 @@ import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
 import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
-import type { ResourceHubLinkMenuData } from "../types";
+import { getResourceName } from "../selectors";
+import type { ResourceHubLink } from "../types";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface LinkMenuProps {
-  link: ResourceHubLinkMenuData;
+  link: ResourceHubLink;
 }
 
 export function LinkMenu({ link }: LinkMenuProps) {
@@ -56,7 +57,7 @@ function EditLinkMenuItem({ link }: LinkMenuProps) {
   );
 }
 
-function DeleteLinkMenuItem({ link, toggleDeleteModal }: { link: ResourceHubLinkMenuData; toggleDeleteModal: () => void }) {
+function DeleteLinkMenuItem({ link, toggleDeleteModal }: { link: ResourceHubLink; toggleDeleteModal: () => void }) {
   const deleteId = createTestId("delete", link.id);
 
   return (
@@ -66,7 +67,7 @@ function DeleteLinkMenuItem({ link, toggleDeleteModal }: { link: ResourceHubLink
   );
 }
 
-function DeleteLinkModal({ link, isOpen, hideModal }: { link: ResourceHubLinkMenuData; isOpen: boolean; hideModal: () => void }) {
+function DeleteLinkModal({ link, isOpen, hideModal }: { link: ResourceHubLink; isOpen: boolean; hideModal: () => void }) {
   const { onRefetch, actions } = useResourceHubNodesListContext();
   const [isDeleting, setIsDeleting] = React.useState(false);
 
@@ -88,7 +89,7 @@ function DeleteLinkModal({ link, isOpen, hideModal }: { link: ResourceHubLinkMen
   return (
     <Modal isOpen={isOpen} onClose={hideModal}>
       <p>
-        Are you sure you want to delete the link "<b>{link.name}</b>"?
+        Are you sure you want to delete the link "<b>{getResourceName(link)}</b>"?
       </p>
       <div className="flex items-center gap-2 mt-6">
         <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">
