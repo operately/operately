@@ -1,6 +1,7 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import ResourceHubDocumentCreated from "./ResourceHubDocumentCreated";
 import ResourceHubDocumentCommented from "./ResourceHubDocumentCommented";
 import ResourceHubFileCreated from "./ResourceHubFileCreated";
 import ResourceHubLinkCreated from "./ResourceHubLinkCreated";
@@ -24,6 +25,20 @@ jest.mock("@/routes/paths", () => ({
 }));
 
 describe("resource hub activity parent-aware rendering", () => {
+  it("keeps the existing space-backed document copy", () => {
+    const activity: any = {
+      author: { fullName: "Jo Smith" },
+      content: {
+        space: { id: "space-1", name: "General" },
+        document: { id: "doc-1", name: "Start Here" },
+      },
+    };
+
+    const html = renderToStaticMarkup(<>{ResourceHubDocumentCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+
+    expect(html).toContain('created a document in the <a href="/spaces/space-1">General</a> space: <a href="/documents/doc-1">Start Here</a>');
+  });
+
   it("renders project-backed document comments under the project", () => {
     const activity: any = {
       author: { fullName: "Jo Smith" },
@@ -78,6 +93,23 @@ describe("resource hub activity parent-aware rendering", () => {
     expect(html).not.toContain("space");
   });
 
+  it("keeps the existing space-backed file creation copy", () => {
+    const activity: any = {
+      author: { fullName: "Jo Smith" },
+      content: {
+        space: { id: "space-1", name: "General" },
+        resourceHub: { id: "hub-1", name: "Documents & Files" },
+        files: [{ id: "file-1", name: "Readme.pdf" }],
+      },
+    };
+
+    const html = renderToStaticMarkup(<>{ResourceHubFileCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+
+    expect(html).toContain(
+      'added a file to <a href="/resource-hubs/hub-1">Documents &amp; Files</a> in the <a href="/spaces/space-1">General</a> space: <a href="/files/file-1">Readme.pdf</a>',
+    );
+  });
+
   it("renders project-backed link creation under the project", () => {
     const activity: any = {
       author: { fullName: "Jo Smith" },
@@ -94,5 +126,22 @@ describe("resource hub activity parent-aware rendering", () => {
     expect(html).toContain('href="/projects/project-1"');
     expect(html).toContain(">Apollo</a> project");
     expect(html).not.toContain("space");
+  });
+
+  it("keeps the existing space-backed link creation copy", () => {
+    const activity: any = {
+      author: { fullName: "Jo Smith" },
+      content: {
+        space: { id: "space-1", name: "General" },
+        resourceHub: { id: "hub-1", name: "Documents & Files" },
+        link: { id: "link-1", name: "Spec" },
+      },
+    };
+
+    const html = renderToStaticMarkup(<>{ResourceHubLinkCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+
+    expect(html).toContain(
+      'added a link to <a href="/resource-hubs/hub-1">Documents &amp; Files</a> in the <a href="/spaces/space-1">General</a> space: <a href="/links/link-1">Spec</a>',
+    );
   });
 });

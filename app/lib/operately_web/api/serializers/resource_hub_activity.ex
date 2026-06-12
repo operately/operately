@@ -11,8 +11,8 @@ defmodule OperatelyWeb.Api.Serializers.ResourceHubActivity do
 
   def serialize_resource(content, key, node_key \\ "node") do
     content
-    |> Map.get(key)
-    |> attach_node(Map.get(content, node_key))
+    |> then(& &1[key])
+    |> attach_node(content[node_key])
     |> Serializer.serialize(level: :essential)
   end
 

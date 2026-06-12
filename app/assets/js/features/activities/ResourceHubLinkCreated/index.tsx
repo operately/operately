@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 
 import { feedTitle, linkLink, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
-import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubLinkCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -36,17 +36,17 @@ const ResourceHubLinkCreated: ActivityHandler = {
     const data = content(activity);
     const link = data.link ? linkLink(data.link) : "a link";
     const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : null;
-    const parentParts = resourceHubParentParts(page, data);
+    const parent = visibleParentDescriptor(page, data);
 
-    if (parentParts.length === 0) {
+    if (!parent) {
       return feedTitle(activity, "added a link:", link);
     }
 
     if (resourceHub) {
-      return feedTitle(activity, "added a link to", resourceHub, ...parentParts, ":", link);
+      return feedTitle(activity, "added a link to", resourceHub, "in the", parent.link, `${parent.label}:`, link);
     }
 
-    return feedTitle(activity, "added a link", ...parentParts, ":", link);
+    return feedTitle(activity, "added a link in the", parent.link, `${parent.label}:`, link);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

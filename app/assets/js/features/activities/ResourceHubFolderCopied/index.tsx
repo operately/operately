@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { feedTitle, folderLink } from "../feedItemLinks";
-import { resourceHubFolderPathOrParent, resourceHubParentParts } from "../resourceHubActivity";
+import { resourceHubFolderPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubFolderCopied: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -32,16 +32,15 @@ const ResourceHubFolderCopied: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
-
     const folder = data.folder ? folderLink(data.folder) : "a folder";
     const originalFolder = data.originalFolder ? folderLink(data.originalFolder) : "a folder";
-    const parentParts = resourceHubParentParts(page, data);
+    const parent = visibleParentDescriptor(page, data);
 
-    if (parentParts.length === 0) {
+    if (!parent) {
       return feedTitle(activity, "made a copy of the", originalFolder, "folder and named it", folder);
     }
 
-    return feedTitle(activity, "made a copy of the", originalFolder, "folder and named it", folder, ...parentParts);
+    return feedTitle(activity, "made a copy of the", originalFolder, "folder in the", parent.link, parent.label, "and named it", folder);
   },
 
   FeedItemContent({}: { activity: Activity }) {

@@ -10,7 +10,7 @@ import { commentedLink, documentLink, feedTitle } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { Summary } from "turboui";
 import { parseCommentContent } from "@/models/comments";
-import { commentedResourcePath, resourceHubParentParts } from "../resourceHubActivity";
+import { commentedResourcePath, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubDocumentCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -39,6 +39,7 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
     const data = content(activity);
+    const parent = visibleParentDescriptor(page, data);
     let action: any = "commented";
     let document: any = "a document";
 
@@ -50,7 +51,11 @@ const ResourceHubDocumentCommented: ActivityHandler = {
       action = commentedLink(paths.resourceHubDocumentPath(data.document.id), data.comment);
     }
 
-    return feedTitle(activity, action, "on", document, ...resourceHubParentParts(page, data));
+    if (!parent) {
+      return feedTitle(activity, action, "on", document);
+    }
+
+    return feedTitle(activity, action, "on", document, "in the", parent.link, parent.label);
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

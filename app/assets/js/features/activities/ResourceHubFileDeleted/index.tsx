@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 
 import { feedTitle, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
-import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubFileDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -30,8 +30,13 @@ const ResourceHubFileDeleted: ActivityHandler = {
     const data = content(activity);
     const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "the resource hub";
     const fileName = data.file?.name ?? "a file";
+    const parent = visibleParentDescriptor(page, data);
 
-    return feedTitle(activity, `deleted "${fileName}" from`, resourceHub, ...resourceHubParentParts(page, data));
+    if (!parent) {
+      return feedTitle(activity, `deleted "${fileName}" from`, resourceHub);
+    }
+
+    return feedTitle(activity, `deleted "${fileName}" from`, resourceHub, "in the", parent.link, parent.label);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

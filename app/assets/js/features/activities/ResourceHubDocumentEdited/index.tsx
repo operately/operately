@@ -5,7 +5,7 @@ import React from "react";
 import { feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { EditedResourceList } from "../resourceHubEditedResources";
-import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubDocumentEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -36,10 +36,14 @@ const ResourceHubDocumentEdited: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
-
     const resources = <EditedResourceList activity={activity} />;
+    const parent = visibleParentDescriptor(page, data);
 
-    return feedTitle(activity, "edited", resources, ...resourceHubParentParts(page, data));
+    if (!parent) {
+      return feedTitle(activity, "edited", resources);
+    }
+
+    return feedTitle(activity, "edited", resources, "in the", parent.link, parent.label);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

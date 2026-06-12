@@ -7,7 +7,7 @@ import * as Activities from "@/models/activities";
 import { feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { EditedResourceList } from "../resourceHubEditedResources";
-import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubLinkEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -39,23 +39,23 @@ const ResourceHubLinkEdited: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
     const resources = <EditedResourceList activity={activity} />;
-    const parentParts = resourceHubParentParts(page, data);
+    const parent = visibleParentDescriptor(page, data);
 
     if (Activities.getAggregatedActivities(activity).length === 1) {
       const link = data.link?.name ?? "a link";
 
-      if (parentParts.length === 0) {
+      if (!parent) {
         return feedTitle(activity, "edited a link:", link);
       }
 
-      return feedTitle(activity, "edited a link", ...parentParts, ":", link);
+      return feedTitle(activity, "edited a link in the", parent.link, `${parent.label}:`, link);
     }
 
-    if (parentParts.length === 0) {
+    if (!parent) {
       return feedTitle(activity, "edited", resources);
     }
 
-    return feedTitle(activity, "edited", resources, ...parentParts);
+    return feedTitle(activity, "edited", resources, "in the", parent.link, parent.label);
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {

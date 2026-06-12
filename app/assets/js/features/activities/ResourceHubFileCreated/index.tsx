@@ -7,7 +7,7 @@ import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, fileLink, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
-import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubFileCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -38,33 +38,33 @@ const ResourceHubFileCreated: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
-    const parentParts = resourceHubParentParts(page, data);
+    const parent = visibleParentDescriptor(page, data);
     const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : null;
     const files = data.files ?? [];
 
     if (files.length === 1 && files[0]) {
       const file = files[0].id ? fileLink(files[0]) : files[0].name ?? "a file";
 
-      if (parentParts.length === 0) {
+      if (!parent) {
         return feedTitle(activity, "added a file:", file);
       }
 
       if (resourceHub) {
-        return feedTitle(activity, "added a file to", resourceHub, ...parentParts, ":", file);
+        return feedTitle(activity, "added a file to", resourceHub, "in the", parent.link, `${parent.label}:`, file);
       }
 
-      return feedTitle(activity, "added a file", ...parentParts, ":", file);
+      return feedTitle(activity, "added a file in the", parent.link, `${parent.label}:`, file);
     }
 
-    if (parentParts.length === 0) {
+    if (!parent) {
       return feedTitle(activity, "added files:");
     }
 
     if (resourceHub) {
-      return feedTitle(activity, "added files to", resourceHub, ...parentParts, ":");
+      return feedTitle(activity, "added files to", resourceHub, "in the", parent.link, `${parent.label}:`);
     }
 
-    return feedTitle(activity, "added files", ...parentParts, ":");
+    return feedTitle(activity, "added files in the", parent.link, `${parent.label}:`);
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {

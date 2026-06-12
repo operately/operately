@@ -1,6 +1,6 @@
 import type { Comment, Project, ResourceHub, ResourceHubFolder, Space } from "@/api";
 import type { Paths } from "@/routes/paths";
-import { commentPath, projectLink, resourceHubLink, spaceLink } from "./feedItemLinks";
+import { commentPath, projectLink, spaceLink } from "./feedItemLinks";
 
 type ParentData = {
   project?: Project | null;
@@ -11,16 +11,50 @@ type ScopeData = ParentData & {
   resourceHub?: ResourceHub | null;
 };
 
+type ParentDescriptor = {
+  link: JSX.Element;
+  label: "project" | "space";
+  page: "project" | "space";
+};
+
 export function resourceHubParentParts(page: string, data: ParentData): Array<string | JSX.Element> {
-  const parent = parentDescriptor(data);
+  const parent = visibleParentDescriptor(page, data);
 
   if (!parent) return [];
-  if (page === parent.page) return [];
 
   return ["in the", parent.link, parent.label];
 }
 
-export function resourceHubParentPath(paths: Paths, data: ParentData): string {
+export function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null {
+  if (data.project) {
+    return {
+      link: projectLink(data.project),
+      label: "project",
+      page: "project",
+    };
+  }
+
+  if (data.space) {
+    return {
+      link: spaceLink(data.space),
+      label: "space",
+      page: "space",
+    };
+  }
+
+  return null;
+}
+
+export function visibleParentDescriptor(page: string, data: ParentData): ParentDescriptor | null {
+  const parent = resourceHubParentDescriptor(data);
+
+  if (!parent) return null;
+  if (page === parent.page) return null;
+
+  return parent;
+}
+
+function resourceHubParentPath(paths: Paths, data: ParentData): string {
   if (data.project?.id) return paths.projectPath(data.project.id);
   if (data.space?.id) return paths.spacePath(data.space.id);
 
@@ -52,31 +86,4 @@ export function commentedResourcePath(
 
 export function resourceHubLocationName(data: ScopeData): string | null {
   return data.resourceHub?.name ?? data.project?.name ?? data.space?.name ?? null;
-}
-
-export function resourceHubDisplay(resourceHub?: ResourceHub | null, fallbackName?: string | null) {
-  if (resourceHub) return resourceHubLink(resourceHub);
-  if (fallbackName) return `"${fallbackName}"`;
-
-  return "a resource hub";
-}
-
-function parentDescriptor(data: ParentData): { link: JSX.Element; label: "project" | "space"; page: "project" | "space" } | null {
-  if (data.project) {
-    return {
-      link: projectLink(data.project),
-      label: "project",
-      page: "project",
-    };
-  }
-
-  if (data.space) {
-    return {
-      link: spaceLink(data.space),
-      label: "space",
-      page: "space",
-    };
-  }
-
-  return null;
 }

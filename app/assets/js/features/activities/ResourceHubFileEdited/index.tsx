@@ -7,7 +7,7 @@ import { feedTitle, fileLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubFileEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -39,13 +39,13 @@ const ResourceHubFileEdited: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
     const file = data.file?.id && data.file?.name ? fileLink(data.file) : data.file?.name ?? "a file";
-    const parentParts = resourceHubParentParts(page, data);
+    const parent = visibleParentDescriptor(page, data);
 
-    if (parentParts.length === 0) {
+    if (!parent) {
       return feedTitle(activity, "edited a file:", file);
     }
 
-    return feedTitle(activity, "edited a file", ...parentParts, ":", file);
+    return feedTitle(activity, "edited a file in the", parent.link, `${parent.label}:`, file);
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {

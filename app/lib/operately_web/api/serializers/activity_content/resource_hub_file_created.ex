@@ -13,8 +13,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Resourc
           files ->
             Enum.map(files, fn f ->
               f
-              |> Map.get("file")
-              |> ResourceHubActivity.attach_node(Map.get(f, "node"))
+              |> then(& &1["file"])
+              |> ResourceHubActivity.attach_node(f["node"])
               |> Serializer.serialize(level: :essential)
             end)
         end

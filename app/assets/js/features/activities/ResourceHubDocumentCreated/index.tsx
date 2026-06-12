@@ -8,7 +8,7 @@ import { documentLink, feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubDocumentCreating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -97,23 +97,24 @@ function ItemCopiedTitle(activity: Activity, page: string) {
 
   const document = data.document ? documentLink(data.document) : "a document";
   const copiedDocument = data.copiedDocument ? documentLink(data.copiedDocument) : "a document";
+  const parent = visibleParentDescriptor(page, data);
 
-  if (resourceHubParentParts(page, data).length === 0) {
+  if (!parent) {
     return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document);
   }
 
-  return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document, ...resourceHubParentParts(page, data));
+  return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document, "in the", parent.link, parent.label);
 }
 
 function ItemCreatedTitle(activity: Activity, page: string) {
   const data = content(activity);
 
   const document = data.document ? documentLink(data.document) : "a document";
-  const parentParts = resourceHubParentParts(page, data);
+  const parent = visibleParentDescriptor(page, data);
 
-  if (parentParts.length === 0) {
+  if (!parent) {
     return feedTitle(activity, "created a document:", document);
   }
 
-  return feedTitle(activity, "created a document", ...parentParts, ":", document);
+  return feedTitle(activity, "created a document in the", parent.link, `${parent.label}:`, document);
 }
