@@ -4,9 +4,8 @@ import type { ActivityContentResourceHubFolderCopied } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
-import { assertPresent } from "@/utils/assertions";
-import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, folderLink } from "../feedItemLinks";
+import { resourceHubFolderPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubFolderCopied: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -14,10 +13,9 @@ const ResourceHubFolderCopied: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const folder = content(activity).folder;
-    assertPresent(folder?.id, "folder.id must be present in ResourceHubFolderCreated activity content");
+    const data = content(activity);
 
-    return paths.resourceHubFolderPath(folder.id);
+    return resourceHubFolderPathOrParent(paths, data.folder, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,24 +32,15 @@ const ResourceHubFolderCopied: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const folder = data.folder ? folderLink(data.folder) : "a folder";
+    const originalFolder = data.originalFolder ? folderLink(data.originalFolder) : "a folder";
+    const parent = visibleParentDescriptor(page, data);
 
-    const space = spaceLink(data.space!);
-    const folder = folderLink(data.folder!);
-    const originalFolder = folderLink(data.originalFolder!);
-
-    if (page === "space") {
+    if (!parent) {
       return feedTitle(activity, "made a copy of the", originalFolder, "folder and named it", folder);
-    } else {
-      return feedTitle(
-        activity,
-        "made a copy of the",
-        originalFolder,
-        "folder in the",
-        space,
-        "space and named it",
-        folder,
-      );
     }
+
+    return feedTitle(activity, "made a copy of the", originalFolder, "folder in the", parent.link, parent.label, "and named it", folder);
   },
 
   FeedItemContent({}: { activity: Activity }) {
@@ -71,11 +60,11 @@ const ResourceHubFolderCopied: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Made a copy of a folder: " + content(activity).folder!.name!;
+    return "Made a copy of a folder: " + (content(activity).folder?.name ?? "a folder");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).folder!.name!;
+    return content(activity).folder?.name ?? null;
   },
 };
 

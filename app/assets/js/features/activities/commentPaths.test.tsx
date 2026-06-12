@@ -12,6 +12,7 @@ import SpaceTaskCommented from "./SpaceTaskCommented";
 import { commentPath } from "./feedItemLinks";
 
 const paths: any = {
+  homePath: () => "/home",
   discussionPath: (id: string) => `/discussions/${id}`,
   goalActivityPath: (id: string) => `/goal-activities/${id}`,
   goalCheckInPath: (id: string) => `/goal-check-ins/${id}`,
@@ -103,6 +104,32 @@ describe("comment activity paths", () => {
         content: { task: { id: "task-1" }, space: { id: "space-1" }, comment },
       } as any),
     ).toEqual("/spaces/space-1/kanban?taskId=task-1#comment-1");
+  });
+
+  it("falls back from resource-hub comment targets to hub, project, space, then home", () => {
+    expect(
+      ResourceHubDocumentCommented.pagePath(paths, {
+        content: { resourceHub: { id: "hub-1" } },
+      } as any),
+    ).toEqual("/resource-hubs/hub-1");
+
+    expect(
+      ResourceHubFileCommented.pagePath(paths, {
+        content: { project: { id: "project-1" } },
+      } as any),
+    ).toEqual("/projects/project-1");
+
+    expect(
+      ResourceHubLinkCommented.pagePath(paths, {
+        content: { space: { id: "space-1" } },
+      } as any),
+    ).toEqual("/spaces/space-1");
+
+    expect(
+      ResourceHubDocumentCommented.pagePath(paths, {
+        content: {},
+      } as any),
+    ).toEqual("/home");
   });
 
   it("links generic activity-thread comments to the comment anchor", () => {

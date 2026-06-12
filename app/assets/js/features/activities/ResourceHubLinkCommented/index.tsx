@@ -5,10 +5,11 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
-import { commentPath, commentedLink, feedTitle, linkLink, spaceLink } from "../feedItemLinks";
+import { commentedLink, feedTitle, linkLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
+import { commentedResourcePath, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubLinkCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -16,13 +17,10 @@ const ResourceHubLinkCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { link, space, comment } = content(activity);
+    const data = content(activity);
+    const resourcePath = data.link?.id ? paths.resourceHubLinkPath(data.link.id) : null;
 
-    if (link) {
-      return commentPath(paths.resourceHubLinkPath(link.id), comment);
-    }
-
-    return paths.resourceHubPath(space.id);
+    return commentedResourcePath(paths, data, resourcePath, data.comment);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -40,7 +38,7 @@ const ResourceHubLinkCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
     const data = content(activity);
-    const space = spaceLink(data.space);
+    const parent = visibleParentDescriptor(page, data);
     let action: any = "commented";
     let link: any = "a link";
 
@@ -52,11 +50,11 @@ const ResourceHubLinkCommented: ActivityHandler = {
       action = commentedLink(paths.resourceHubLinkPath(data.link.id), data.comment);
     }
 
-    if (page === "space") {
+    if (!parent) {
       return feedTitle(activity, action, "on", link);
-    } else {
-      return feedTitle(activity, action, "on", link, "in the", space, "space");
     }
+
+    return feedTitle(activity, action, "on", link, "in the", parent.link, parent.label);
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

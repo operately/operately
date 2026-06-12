@@ -1,13 +1,10 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.ResourceHubFileEdited do
-  alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Api.Serializers.ResourceHubActivity
 
   def serialize(content, level: :essential) do
-    file = Map.put(content["file"], :node, content["node"])
-
-    %{
-      space: Serializer.serialize(content["space"], level: :essential),
-      resource_hub: Serializer.serialize(content["resource_hub"], level: :essential),
-      file: Serializer.serialize(file, level: :essential),
-    }
+    ResourceHubActivity.parent_fields(content)
+    |> Map.merge(%{
+      file: ResourceHubActivity.serialize_resource(content, "file"),
+    })
   end
 end
