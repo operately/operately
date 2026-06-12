@@ -106,14 +106,23 @@ defmodule Operately.ResourceHubs.Parent do
   end
 
   def preload_child_resource_hub(resource, opts \\ []) do
-    resource = Repo.preload(resource, [:resource_hub], force: true)
-    hub = preload_parent(resource.resource_hub, opts)
+    with_deleted = Keyword.get(opts, :with_deleted, false)
+    parent_opts = Keyword.take(opts, [:people])
+
+    resource =
+      Repo.preload(resource, [node: :resource_hub], force: true, with_deleted: with_deleted)
+
+    hub =
+      case resource.node do
+        %{resource_hub: %ResourceHub{} = hub} -> preload_parent(hub, parent_opts)
+        _ -> nil
+      end
 
     Map.put(resource, :resource_hub, hub)
   end
 
-  def prepare_for_notifications(resource) do
-    resource = preload_child_resource_hub(resource, people: true)
+  def prepare_for_notifications(resource, opts \\ []) do
+    resource = preload_child_resource_hub(resource, Keyword.put_new(opts, :people, true))
     Map.put(resource, :access_context, get_access_context(resource.resource_hub))
   end
 

@@ -33,10 +33,10 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
   end
 
   defp resource_hub_or_folder_path(company, file) do
-    if file.node.parent_folder do
+    if file.node.parent_folder_id do
       Paths.folder_path(company, file.node.parent_folder)
     else
-      Paths.resource_hub_path(company, file.node.resource_hub)
+      Paths.resource_hub_path(company, file.resource_hub)
     end
   end
 

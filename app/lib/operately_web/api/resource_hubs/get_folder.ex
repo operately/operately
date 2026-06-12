@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolder do
 
     Inputs.parse_includes(inputs, [
       include_nodes: [child_nodes: q],
-      include_resource_hub: [node: :resource_hub],
+      include_resource_hub: [node: [resource_hub: :space]],
       always_include: :node,
     ])
   end
