@@ -164,7 +164,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
         preload: [nodes: ^nodes_q],
         where: h.space_id == ^space_id
       )
-      |> Filters.filter_by_view_access(me.id)
+      |> Filters.filter_by_view_access(me.id, resource_hub: true)
       |> Repo.all()
       |> ResourceHub.set_children_count()
       |> ResourceHub.load_comments_count()

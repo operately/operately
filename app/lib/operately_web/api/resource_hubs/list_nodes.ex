@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
       from(n in Node, order_by: [desc: n.inserted_at])
       |> filter_nodes(inputs)
       |> Node.preload_content(me)
-      |> Filters.filter_by_view_access(me.id)
+      |> Filters.filter_by_view_access(me.id, join_resource_hub: true)
       |> Repo.all()
       |> load_comments_count(inputs[:include_comments_count])
       |> set_folders_children_count(inputs[:include_children_count])
