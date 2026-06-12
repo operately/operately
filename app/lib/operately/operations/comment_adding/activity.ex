@@ -1,5 +1,6 @@
 defmodule Operately.Operations.CommentAdding.Activity do
   alias Operately.Activities
+  alias Operately.ResourceHubs.Parent
 
   def insert(multi, creator, action = :discussion_comment_submitted, entity) do
     Activities.insert_sync(multi, creator.id, action, fn changes ->
@@ -51,39 +52,36 @@ defmodule Operately.Operations.CommentAdding.Activity do
   def insert(multi, creator, action = :resource_hub_document_commented, entity) do
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       %{
-        company_id: creator.company_id,
-        space_id: entity.resource_hub.space_id,
         resource_hub_id: entity.resource_hub.id,
         document_id: entity.id,
         node_id: entity.node.id,
         comment_id: changes.comment.id
       }
+      |> Map.merge(Parent.parent_fields(entity.resource_hub))
     end)
   end
 
   def insert(multi, creator, action = :resource_hub_file_commented, entity) do
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       %{
-        company_id: creator.company_id,
-        space_id: entity.resource_hub.space_id,
         resource_hub_id: entity.resource_hub.id,
         file_id: entity.id,
         node_id: entity.node.id,
         comment_id: changes.comment.id
       }
+      |> Map.merge(Parent.parent_fields(entity.resource_hub))
     end)
   end
 
   def insert(multi, creator, action = :resource_hub_link_commented, entity) do
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       %{
-        company_id: creator.company_id,
-        space_id: entity.resource_hub.space_id,
         resource_hub_id: entity.resource_hub.id,
         link_id: entity.id,
         node_id: entity.node.id,
         comment_id: changes.comment.id
       }
+      |> Map.merge(Parent.parent_fields(entity.resource_hub))
     end)
   end
 

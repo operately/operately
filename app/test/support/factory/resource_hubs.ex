@@ -1,9 +1,9 @@
 defmodule Operately.Support.Factory.ResourceHubs do
-  def add_resource_hub(ctx, testid, space_name, creator_name, attrs \\ []) do
-    space = Map.fetch!(ctx, space_name)
+  def add_resource_hub(ctx, testid, parent_name, creator_name, attrs \\ []) do
+    parent = Map.fetch!(ctx, parent_name)
     creator = Map.fetch!(ctx, creator_name)
 
-    hub = Operately.ResourceHubsFixtures.resource_hub_fixture(creator, space, attrs)
+    hub = Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
 
     Map.put(ctx, testid, hub)
   end

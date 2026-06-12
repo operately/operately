@@ -116,6 +116,44 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     assert hd(notifications).person_id == ctx.person.id
   end
 
+  test "Creating a document on a project-backed hub uses the project context and contributor notifications", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+      |> Factory.add_project_contributor(:project_contributor, :project, :as_person)
+      |> Factory.add_space_member(:space_member, :space, name: "Project Space Member", permissions: :view_access)
+      |> Factory.add_resource_hub(:project_hub, :project, :creator)
+
+    {:ok, document} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.project_hub, %{
+          name: "Project document",
+          content: RichText.rich_text("Content"),
+          post_as_draft: false,
+          send_to_everyone: true,
+          subscription_parent_type: :resource_hub_document,
+          subscriber_ids: [],
+        })
+      end)
+
+    action = "resource_hub_document_created"
+    activity =
+      get_activity(document, action)
+      |> Repo.preload(:access_context)
+
+    assert activity.access_context == Operately.Access.get_context!(project_id: ctx.project.id)
+    assert activity.content["space_id"] == ctx.space.id
+    assert activity.content["project_id"] == ctx.project.id
+
+    perform_job(activity.id)
+
+    notifications = fetch_notifications(activity.id, action: action)
+
+    assert notifications_count(action: action) == 1
+    assert hd(notifications).person_id == ctx.project_contributor.id
+    refute Enum.any?(notifications, &(&1.person_id == ctx.space_member.id))
+  end
+
   #
   # Helpers
   #

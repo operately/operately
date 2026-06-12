@@ -1,5 +1,6 @@
 defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
   alias Operately.Repo
+  alias OperatelyEmail.Emails.ResourceHubEmail
   alias OperatelyWeb.Paths
 
   def send(person, activity) do
@@ -10,13 +11,14 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
     files = get_files(activity)
 
     first_file = hd(files)
+    parent = ResourceHubEmail.parent(first_file)
     action = find_action(files)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: first_file.space.name, who: author, action: action)
+    |> subject(where: parent.name, who: author, action: action)
     |> assign(:action, action)
     |> assign(:author, author)
     |> assign(:files, files)
@@ -26,15 +28,8 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
   end
 
   defp get_files(activity) do
-    import Ecto.Query, only: [from: 2]
-
     file_ids = Enum.map(activity.content["files"], &(&1["file_id"]))
-
-    from(f in Operately.ResourceHubs.File,
-      where: f.id in ^file_ids,
-      preload: [:space, node: [:parent_folder, :resource_hub]]
-    )
-    |> Repo.all()
+    ResourceHubEmail.load_files(file_ids)
   end
 
   defp resource_hub_or_folder_path(company, file) do
@@ -58,12 +53,13 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
     company = Operately.Repo.preload(author, :company).company
     files = get_files(activity)
     first_file = hd(files)
+    parent = ResourceHubEmail.parent(first_file)
     action = find_action(files)
 
     %{
-      parent_id: first_file.space.id,
-      parent_type: :space,
-      parent_name: first_file.space.name,
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
       headline: action,
       excerpt_html: nil,
       excerpt_text: nil,

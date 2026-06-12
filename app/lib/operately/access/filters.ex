@@ -2,7 +2,7 @@ defmodule Operately.Access.Filters do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Repo
-  alias Operately.Access.Binding
+  alias Operately.Access.{Binding, Context}
 
   def filter_by_view_access(query, person_id, opts \\ []) do
     query
@@ -76,6 +76,37 @@ defmodule Operately.Access.Filters do
       join: c in assoc(p, :access_context), as: :context
     )
   end
+
+  defp join_context(query, join_resource_hub: true, named_binding: name) do
+    from([{^name, item}] in query,
+      join: hub in assoc(item, :resource_hub),
+      left_join: project in assoc(hub, :project),
+      left_join: space in assoc(hub, :space),
+      join: c in Context,
+      on: c.project_id == project.id or c.group_id == space.id,
+      as: :context
+    )
+  end
+  defp join_context(query, join_resource_hub: true) do
+    from(item in query,
+      join: hub in assoc(item, :resource_hub),
+      left_join: project in assoc(hub, :project),
+      left_join: space in assoc(hub, :space),
+      join: c in Context,
+      on: c.project_id == project.id or c.group_id == space.id,
+      as: :context
+    )
+  end
+  defp join_context(query, resource_hub: true) do
+    from(hub in query,
+      left_join: project in assoc(hub, :project),
+      left_join: space in assoc(hub, :space),
+      join: c in Context,
+      on: c.project_id == project.id or c.group_id == space.id,
+      as: :context
+    )
+  end
+
   defp join_context(query, named_binding: name) do
     from([{^name, item}] in query,
       join: c in assoc(item, :access_context), as: :context

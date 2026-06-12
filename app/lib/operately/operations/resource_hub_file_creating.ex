@@ -4,6 +4,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
   alias Operately.Activities
   alias Operately.Billing
   alias Operately.Companies
+  alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{File, Node}
   alias Operately.Notifications.{SubscriptionList, Subscription}
 
@@ -111,13 +112,12 @@ defmodule Operately.Operations.ResourceHubFileCreating do
     multi
     |> Activities.insert_sync(author.id, :resource_hub_file_created, fn changes ->
       %{
-        company_id: author.company_id,
-        space_id: hub.space_id,
         resource_hub_id: hub.id,
         files: Enum.map(changes.result, fn file ->
           %{file_id: file.id, node_id: file.node.id}
         end)
       }
+      |> Map.merge(Parent.parent_fields(hub))
     end)
   end
 
