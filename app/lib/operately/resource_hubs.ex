@@ -2,14 +2,21 @@ defmodule Operately.ResourceHubs do
   import Ecto.Query, warn: false
 
   alias Operately.Repo
+  alias Operately.Groups.Group
+  alias Operately.Projects.Project
   alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, File, Link}
 
-  def list_resource_hubs(space) do
+  def list_resource_hubs(%Group{} = space) do
     from(r in ResourceHub, where: r.space_id == ^space.id)
     |> Repo.all()
   end
 
-  defdelegate create_resource_hub(creator, space, attrs), to: Operately.Operations.ResourceHubCreating, as: :run
+  def list_resource_hubs(%Project{} = project) do
+    from(r in ResourceHub, where: r.project_id == ^project.id)
+    |> Repo.all()
+  end
+
+  defdelegate create_resource_hub(creator, parent, attrs), to: Operately.Operations.ResourceHubCreating, as: :run
 
   #
   # Folders

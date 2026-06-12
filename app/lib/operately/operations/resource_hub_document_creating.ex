@@ -2,6 +2,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{Document, Node}
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
@@ -40,17 +41,16 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
       multi
     else
       Activities.insert_sync(multi, author.id, :resource_hub_document_created, fn changes ->
-      %{
-        company_id: author.company_id,
-        space_id: hub.space_id,
-        resource_hub_id: hub.id,
-        document_id: changes.document.id,
-        node_id: changes.node.id,
-        name: changes.node.name,
-        copied_document_id: attrs[:copied_document] && attrs.copied_document.id,
-        copied_document_node_id: attrs[:copied_document] && attrs.copied_document.node_id,
-      }
-    end)
+        %{
+          resource_hub_id: hub.id,
+          document_id: changes.document.id,
+          node_id: changes.node.id,
+          name: changes.node.name,
+          copied_document_id: attrs[:copied_document] && attrs.copied_document.id,
+          copied_document_node_id: attrs[:copied_document] && attrs.copied_document.node_id,
+        }
+        |> Map.merge(Parent.parent_fields(hub))
+      end)
     end
   end
 

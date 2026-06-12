@@ -1,8 +1,10 @@
 defmodule Operately.ResourceHubs.Link do
   use Operately.Schema
-  use Operately.Repo.Getter
+
+  import Operately.Repo.RequestInfo, only: [request_info: 0]
 
   alias Operately.Notifications
+  alias Operately.ResourceHubs.{Getter, Parent}
 
   @valid_types [:airtable, :dropbox, :figma, :google, :google_doc, :google_sheet, :google_slides, :notion, :other]
 
@@ -13,7 +15,6 @@ defmodule Operately.ResourceHubs.Link do
 
     has_one :space, through: [:node, :resource_hub, :space]
     has_one :resource_hub, through: [:node, :resource_hub]
-    has_one :access_context, through: [:node, :resource_hub, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_link], foreign_key: :entity_id
 
     field :url, :string
@@ -21,6 +22,7 @@ defmodule Operately.ResourceHubs.Link do
     field :type, Ecto.Enum, values: @valid_types
 
     # populated with after load hooks
+    field :access_context, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
@@ -32,7 +34,7 @@ defmodule Operately.ResourceHubs.Link do
     request_info()
   end
 
-def changeset(attrs) do
+  def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
   end
 
@@ -42,6 +44,18 @@ def changeset(attrs) do
     |> validate_required([:node_id, :author_id, :url, :type])
   end
 
+  def get(requester, args) do
+    Getter.get(__MODULE__, requester, args, :node_child)
+  end
+
+  def get!(requester, args) do
+    case get(requester, args) do
+      {:ok, resource} -> resource
+      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
+      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
+    end
+  end
+
   def valid_types, do: @valid_types
 
   #
@@ -49,7 +63,7 @@ def changeset(attrs) do
   #
 
   def load_potential_subscribers(link = %__MODULE__{}) do
-    link = Repo.preload(link, [:access_context, resource_hub: [space: :members]])
+    link = Parent.prepare_for_notifications(link)
 
     subs =
       link

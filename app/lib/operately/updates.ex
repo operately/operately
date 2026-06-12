@@ -11,6 +11,7 @@ defmodule Operately.Updates do
   alias Operately.Repo
 
   alias Operately.Updates.Comment
+  alias Operately.ResourceHubs.{Document, File, Link}
 
   def list_comments(entity_id, entity_type) do
     query =
@@ -22,6 +23,13 @@ defmodule Operately.Updates do
   end
 
   def get_comment!(id), do: Repo.get!(Comment, id)
+
+  def get_comment_with_access_level(id, person_id, type) when type in [:resource_hub_document, :resource_hub_file, :resource_hub_link] do
+    case Repo.get(Comment, id) do
+      nil -> {:error, :not_found}
+      comment -> get_resource_hub_comment_with_access_level(comment, person_id, type)
+    end
+  end
 
   def get_comment_with_access_level(id, person_id, type) do
     case type do
@@ -114,16 +122,30 @@ defmodule Operately.Updates do
           where: c.id == ^id
         )
 
-      :resource_hub_document ->
-        from(c in Comment, as: :comment, join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :resource, where: c.id == ^id)
-
-      :resource_hub_file ->
-        from(c in Comment, as: :comment, join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id, as: :resource, where: c.id == ^id)
-
-      :resource_hub_link ->
-        from(c in Comment, as: :comment, join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id, as: :resource, where: c.id == ^id)
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
+  end
+
+  defp get_resource_hub_comment_with_access_level(comment, person_id, :resource_hub_document) do
+    get_resource_hub_comment_with_access_level(comment, person_id, Document)
+  end
+
+  defp get_resource_hub_comment_with_access_level(comment, person_id, :resource_hub_file) do
+    get_resource_hub_comment_with_access_level(comment, person_id, File)
+  end
+
+  defp get_resource_hub_comment_with_access_level(comment, person_id, :resource_hub_link) do
+    get_resource_hub_comment_with_access_level(comment, person_id, Link)
+  end
+
+  defp get_resource_hub_comment_with_access_level(comment, person_id, module) do
+    case module.get(person_id, id: comment.entity_id) do
+      {:ok, resource} ->
+        {:ok, Comment.set_requester_access_level(comment, resource.request_info.access_level)}
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
   end
 
   def delete_comments(entity_ids) when is_list(entity_ids) do

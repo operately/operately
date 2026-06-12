@@ -2,7 +2,7 @@ defmodule Operately.ResourceHubsFixtures do
   alias Operately.Support.RichText
   alias Operately.Access.Binding
 
-  def resource_hub_fixture(creator, space, attrs \\ %{}) do
+  def resource_hub_fixture(creator, parent, attrs \\ %{}) do
     attrs = Enum.into(attrs, %{
       name: "Resource hub",
       description: RichText.rich_text("This is a rosource hub"),
@@ -11,7 +11,7 @@ defmodule Operately.ResourceHubsFixtures do
       space_access_level: Binding.edit_access(),
     })
 
-    {:ok, hub} = Operately.ResourceHubs.create_resource_hub(creator, space, attrs)
+    {:ok, hub} = Operately.ResourceHubs.create_resource_hub(creator, parent, attrs)
     hub
   end
 

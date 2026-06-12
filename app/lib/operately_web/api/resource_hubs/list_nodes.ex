@@ -40,10 +40,14 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
 
   defp load_nodes(me, inputs) do
     nodes =
-      from(n in Node, order_by: [desc: n.inserted_at])
+      from(n in Node,
+        left_join: hub in assoc(n, :resource_hub),
+        left_join: space in assoc(hub, :space), as: :space,
+        order_by: [desc: n.inserted_at]
+      )
       |> filter_nodes(inputs)
       |> Node.preload_content(me)
-      |> Filters.filter_by_view_access(me.id)
+      |> Filters.filter_by_view_access(me.id, named_binding: :space)
       |> Repo.all()
       |> load_comments_count(inputs[:include_comments_count])
       |> set_folders_children_count(inputs[:include_children_count])

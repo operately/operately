@@ -54,8 +54,8 @@ defmodule OperatelyWeb.Api.Links.Get do
     Inputs.parse_includes(inputs, [
       include_author: :author,
       include_reactions: [reactions: :person],
-      include_resource_hub: [node: :resource_hub],
-      include_space: [resource_hub: :space],
+      include_resource_hub: [node: [resource_hub: :space]],
+      include_space: [node: [resource_hub: :space]],
       include_parent_folder: [node: [parent_folder: :node]],
       include_subscriptions_list: :subscription_list,
       always_include: :node,

@@ -16,6 +16,8 @@ export async function loader({ params }): Promise<LoaderResult> {
     includeReactions: true,
     includePermissions: true,
     includePotentialSubscribers: true,
+    includeResourceHub: true,
+    includeSpace: true,
     includeSubscriptionsList: true,
     includeUnreadNotifications: true,
     includePathToDocument: true,
@@ -27,7 +29,7 @@ export async function loader({ params }): Promise<LoaderResult> {
           (res) => res.folder!,
         )
       : undefined,
-    Hub.resource_hubs.get({ id: document.resourceHubId!, includePotentialSubscribers: true }).then(
+    Hub.resource_hubs.get({ id: document.resourceHubId!, includeSpace: true, includePotentialSubscribers: true }).then(
       (res) => res.resourceHub!,
     ),
     Api.notifications.isSubscribed({
