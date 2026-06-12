@@ -1,7 +1,8 @@
 defmodule Operately.ResourceHubs.Node do
   import Ecto.Query, only: [from: 2]
   use Operately.Schema
-  use Operately.Repo.Getter
+
+  import Operately.Repo.RequestInfo, only: [request_info: 0]
 
   schema "resource_nodes" do
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
@@ -10,7 +11,6 @@ defmodule Operately.ResourceHubs.Node do
     field :name, :string
     field :type, Ecto.Enum, values: [:document, :folder, :file, :link]
 
-    has_one :access_context, through: [:resource_hub, :access_context]
     has_one :folder, Operately.ResourceHubs.Folder, foreign_key: :node_id
     has_one :document, Operately.ResourceHubs.Document, foreign_key: :node_id
     has_one :file, Operately.ResourceHubs.File, foreign_key: :node_id
@@ -29,6 +29,18 @@ defmodule Operately.ResourceHubs.Node do
     node
     |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type, :updated_at])
     |> validate_required([:resource_hub_id, :name, :type])
+  end
+
+  def get(requester, args) do
+    Operately.ResourceHubs.Getter.get(__MODULE__, requester, args, :node)
+  end
+
+  def get!(requester, args) do
+    case get(requester, args) do
+      {:ok, resource} -> resource
+      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
+      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
+    end
   end
 
   #

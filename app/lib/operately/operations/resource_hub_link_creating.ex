@@ -1,6 +1,7 @@
 defmodule Operately.Operations.ResourceHubLinkCreating do
   alias Ecto.Multi
   alias Operately.{Activities, Repo}
+  alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{Link, Node}
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
@@ -31,12 +32,11 @@ defmodule Operately.Operations.ResourceHubLinkCreating do
     end)
     |> Activities.insert_sync(author.id, :resource_hub_link_created, fn changes ->
       %{
-        company_id: author.company_id,
-        space_id: hub.space_id,
         resource_hub_id: hub.id,
         link_id: changes.link.id,
         node_id: changes.node.id,
       }
+      |> Map.merge(Parent.parent_fields(hub))
     end)
     |> Repo.transaction()
     |> Repo.extract_result(:link_with_node)

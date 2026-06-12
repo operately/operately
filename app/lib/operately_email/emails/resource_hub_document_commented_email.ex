@@ -1,22 +1,21 @@
 defmodule OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
+  alias OperatelyEmail.Emails.ResourceHubEmail
   alias OperatelyWeb.Paths
   alias Operately.{Repo, Updates}
-  alias Operately.ResourceHubs.Document
 
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [
-      preload: [:node, :space]
-    ])
+    document = ResourceHubEmail.load_document(activity.content["document_id"])
+    parent = ResourceHubEmail.parent(document)
     comment = Updates.get_comment!(activity.content["comment_id"])
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: document.space.name, who: author, action: "commented on: #{document.node.name}")
+    |> subject(where: parent.name, who: author, action: "commented on: #{document.node.name}")
     |> assign(:author, author)
     |> assign(:comment, comment)
     |> assign(:name, document.node.name)
@@ -27,14 +26,15 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCommentedEmail do
   def buffered_item(_person, activity) do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :space]])
+    document = ResourceHubEmail.load_document(activity.content["document_id"])
+    parent = ResourceHubEmail.parent(document)
     comment = Updates.get_comment!(activity.content["comment_id"])
     %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content)
 
     %{
-      parent_id: document.space.id,
-      parent_type: :space,
-      parent_name: document.space.name,
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
       headline: "commented on the document \"#{document.node.name}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,

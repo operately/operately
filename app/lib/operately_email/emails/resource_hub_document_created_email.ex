@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
+  alias OperatelyEmail.Emails.ResourceHubEmail
   alias Operately.Repo
   alias Operately.ResourceHubs.Document
 
@@ -8,18 +9,17 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [
-      preload: [:node, :space],
-    ])
+    document = ResourceHubEmail.load_document(activity.content["document_id"])
+    parent = ResourceHubEmail.parent(document)
 
-    copied_document = get_copied_document(activity.content.copied_document_id)
-    action = get_action(activity.content.copied_document_id)
+    copied_document = get_copied_document(activity.content["copied_document_id"])
+    action = get_action(activity.content["copied_document_id"])
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: document.space.name, who: author, action: "#{action} a document: #{document.node.name}")
+    |> subject(where: parent.name, who: author, action: "#{action} a document: #{document.node.name}")
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:copied_document, copied_document)
@@ -40,14 +40,15 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
 
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :space]])
+    document = ResourceHubEmail.load_document(activity.content["document_id"])
+    parent = ResourceHubEmail.parent(document)
 
     action = get_action(activity.content["copied_document_id"])
 
     %{
-      parent_id: document.space.id,
-      parent_type: :space,
-      parent_name: document.space.name,
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
       headline: "#{action} the document \"#{document.node.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,

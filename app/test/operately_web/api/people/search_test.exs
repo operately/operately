@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.People.SearchTest do
   import Operately.CompaniesFixtures
 
   alias Operately.People
+  alias Operately.Access.Binding
   alias OperatelyWeb.Paths
 
   describe "security" do
@@ -158,6 +159,26 @@ defmodule OperatelyWeb.Api.People.SearchTest do
 
       assert res == %{people: [serialized(ctx.member)]}
       refute serialized(outsider) in res.people
+    end
+
+    test "resource hub scope uses the parent project access context for project-backed hubs", ctx do
+      ctx =
+        ctx
+        |> Map.put(:creator, ctx.company_creator)
+        |> Factory.add_space(:space, company_permissions: Binding.no_access())
+        |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+        |> Factory.add_resource_hub(:hub, :project, :creator)
+        |> Factory.add_project_contributor(:contributor, :project, :as_person)
+        |> Factory.add_space_member(:space_member, :space, name: "Contributor Space Member", permissions: :view_access)
+
+      assert {200, res} = query(ctx.conn, [:people, :search], %{
+        query: "Contributor",
+        search_scope_type: "resource_hub",
+        search_scope_id: Paths.resource_hub_id(ctx.hub)
+      })
+
+      assert res == %{people: [serialized(ctx.contributor)]}
+      refute serialized(ctx.space_member) in res.people
     end
   end
 

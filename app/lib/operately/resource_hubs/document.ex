@@ -1,8 +1,10 @@
 defmodule Operately.ResourceHubs.Document do
   use Operately.Schema
-  use Operately.Repo.Getter
+
+  import Operately.Repo.RequestInfo, only: [request_info: 0]
 
   alias Operately.Notifications
+  alias Operately.ResourceHubs.{Getter, Parent}
   alias Operately.StateMachine
 
   schema "resource_documents" do
@@ -12,7 +14,6 @@ defmodule Operately.ResourceHubs.Document do
 
     has_one :space, through: [:node, :resource_hub, :space]
     has_one :resource_hub, through: [:node, :resource_hub]
-    has_one :access_context, through: [:node, :resource_hub, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
 
@@ -21,6 +22,7 @@ defmodule Operately.ResourceHubs.Document do
     field :published_at, :utc_datetime
 
     # populated with after load hooks
+    field :access_context, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
@@ -49,6 +51,18 @@ defmodule Operately.ResourceHubs.Document do
     |> validate_required([:node_id, :author_id, :subscription_list_id, :content])
   end
 
+  def get(requester, args) do
+    Getter.get(__MODULE__, requester, args, :node_child)
+  end
+
+  def get!(requester, args) do
+    case get(requester, args) do
+      {:ok, resource} -> resource
+      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
+      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
+    end
+  end
+
   defp set_published_at(changeset) do
     put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
   end
@@ -58,7 +72,7 @@ defmodule Operately.ResourceHubs.Document do
   #
 
   def load_potential_subscribers(document = %__MODULE__{}) do
-    document = Repo.preload(document, [:access_context, resource_hub: [space: :members]])
+    document = Parent.prepare_for_notifications(document)
 
     subs =
       document
