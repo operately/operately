@@ -94,7 +94,8 @@ defmodule OperatelyWeb.Api.Documents.GetTest do
         include_resource_hub: true,
       })
 
-      assert res.document.resource_hub == Serializer.serialize(ctx.hub)
+      hub = Repo.preload(ctx.hub, :space)
+      assert res.document.resource_hub == Serializer.serialize(hub)
     end
 
     test "include_parent_folder", ctx do
@@ -108,6 +109,31 @@ defmodule OperatelyWeb.Api.Documents.GetTest do
       })
 
       assert res.document.parent_folder == Repo.preload(ctx.folder, :node) |> Serializer.serialize()
+    end
+
+    test "include_potential_subscribers preserves resource_hub space", ctx do
+      assert {200, res} = query(ctx.conn, [:documents, :get], %{
+        id: Paths.document_id(ctx.doc),
+        include_resource_hub: true,
+        include_space: true,
+        include_potential_subscribers: true,
+      })
+
+      hub = Repo.preload(ctx.hub, :space)
+
+      assert res.document.resource_hub == Serializer.serialize(hub)
+      assert length(res.document.potential_subscribers) == 1
+    end
+
+    test "include_potential_subscribers preserves parent_folder", ctx do
+      assert {200, res} = query(ctx.conn, [:documents, :get], %{
+        id: Paths.document_id(ctx.doc),
+        include_parent_folder: true,
+        include_potential_subscribers: true,
+      })
+
+      assert res.document.parent_folder == Repo.preload(ctx.folder, :node) |> Serializer.serialize()
+      assert length(res.document.potential_subscribers) == 1
     end
   end
 

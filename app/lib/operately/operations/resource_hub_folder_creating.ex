@@ -2,6 +2,7 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{Folder, Node}
 
   def run(author, hub, attrs) do
@@ -23,13 +24,12 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
     end)
     |> Activities.insert_sync(author.id, :resource_hub_folder_created, fn changes ->
       %{
-        company_id: author.company_id,
-        space_id: hub.space_id,
         resource_hub_id: hub.id,
         node_id: changes.node.id,
         folder_id: changes.folder.id,
         resource_name: attrs.name,
       }
+      |> Map.merge(Parent.parent_fields(hub))
     end)
     |> Repo.transaction()
     |> Repo.extract_result(:folder_with_node)
