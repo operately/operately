@@ -1,10 +1,14 @@
 defmodule Operately.ResourceHubs.ResourceHub do
   use Operately.Schema
-  use Operately.Repo.Getter
+
+  import Operately.Repo.RequestInfo, only: [request_info: 0]
+
+  alias Operately.ResourceHubs.{Getter, Parent}
 
   schema "resource_hubs" do
     belongs_to :space, Operately.Groups.Group
-    has_one :access_context, through: [:space, :access_context]
+    belongs_to :project, Operately.Projects.Project
+
     has_many :nodes, Operately.ResourceHubs.Node, foreign_key: :resource_hub_id
 
     field :name, :string
@@ -25,8 +29,44 @@ defmodule Operately.ResourceHubs.ResourceHub do
 
   def changeset(resource_hub, attrs) do
     resource_hub
-    |> cast(attrs, [:space_id, :name, :description])
-    |> validate_required([:space_id, :name])
+    |> cast(attrs, [:space_id, :project_id, :name, :description])
+    |> validate_required([:name])
+    |> validate_project_or_space()
+  end
+
+  def get(requester, args) do
+    Getter.get(__MODULE__, requester, args, :hub)
+  end
+
+  def get!(requester, args) do
+    case get(requester, args) do
+      {:ok, resource} -> resource
+      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
+      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
+    end
+  end
+
+  defp validate_project_or_space(changeset) do
+    project_id = Ecto.Changeset.get_field(changeset, :project_id)
+    space_id = Ecto.Changeset.get_field(changeset, :space_id)
+
+    case {project_id, space_id} do
+      {nil, nil} ->
+        changeset
+        |> Ecto.Changeset.add_error(:project_id, "either project_id or space_id must be present")
+        |> Ecto.Changeset.add_error(:space_id, "either project_id or space_id must be present")
+
+      {nil, _space_id} ->
+        changeset
+
+      {_project_id, nil} ->
+        changeset
+
+      {_project_id, _space_id} ->
+        changeset
+        |> Ecto.Changeset.add_error(:project_id, "cannot have both project_id and space_id")
+        |> Ecto.Changeset.add_error(:space_id, "cannot have both project_id and space_id")
+    end
   end
 
   #
@@ -34,9 +74,7 @@ defmodule Operately.ResourceHubs.ResourceHub do
   #
 
   def load_potential_subscribers(resource_hub = %__MODULE__{}) do
-    resource_hub = Repo.preload(resource_hub, space: :members)
-
-    subscribers = Operately.Notifications.Subscriber.from_space_members(resource_hub.space.members)
+    subscribers = Parent.potential_subscribers(resource_hub)
     Map.put(resource_hub, :potential_subscribers, subscribers)
   end
 

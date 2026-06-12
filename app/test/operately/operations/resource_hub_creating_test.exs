@@ -10,6 +10,7 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
+    |> Factory.add_project(:project, :space)
   end
 
   @attrs %{
@@ -31,6 +32,16 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     assert Enum.find(hubs, &(&1 == resource_hub))
   end
 
+  test "ResourceHubCreating operation creates a project-backed resource hub", ctx do
+    assert ResourceHubs.list_resource_hubs(ctx.project) == []
+
+    {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.project, @attrs)
+
+    assert ResourceHubs.list_resource_hubs(ctx.project) == [resource_hub]
+    assert resource_hub.project_id == ctx.project.id
+    assert is_nil(resource_hub.space_id)
+  end
+
   test "ResourceHubCreating operation does not create a dedicated access context", ctx do
     contexts_before = length(Access.list_contexts())
 
@@ -50,8 +61,26 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
   test "ResourceHubCreating operation creates activity", ctx do
     {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.space, @attrs)
 
-    query = from(a in Activity, where: a.action == "resource_hub_created" and a.content["resource_hub_id"] == ^resource_hub.id)
+    activity = get_activity(resource_hub)
 
-    assert Repo.one(query)
+    assert activity.access_context == Access.get_context!(group_id: ctx.space.id)
+    assert activity.content["space_id"] == ctx.space.id
+    assert activity.content["project_id"] == nil
+  end
+
+  test "ResourceHubCreating operation assigns the project context for project-backed hubs", ctx do
+    {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.project, @attrs)
+
+    activity = get_activity(resource_hub)
+
+    assert activity.access_context == Access.get_context!(project_id: ctx.project.id)
+    assert activity.content["space_id"] == ctx.space.id
+    assert activity.content["project_id"] == ctx.project.id
+  end
+
+  defp get_activity(resource_hub) do
+    from(a in Activity, where: a.action == "resource_hub_created" and a.content["resource_hub_id"] == ^resource_hub.id)
+    |> Repo.one()
+    |> Repo.preload(:access_context)
   end
 end
