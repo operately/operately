@@ -25,7 +25,7 @@ export function resourceHubParentParts(page: string, data: ParentData): Array<st
   return ["in the", parent.link, parent.label];
 }
 
-export function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null {
+function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null {
   if (data.project) {
     return {
       link: projectLink(data.project),
