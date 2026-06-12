@@ -96,7 +96,21 @@ defmodule OperatelyWeb.Api.Links.GetTest do
         include_resource_hub: true,
       })
 
-      assert res.link.resource_hub == Serializer.serialize(ctx.hub)
+      hub = Repo.preload(ctx.hub, :space)
+      assert res.link.resource_hub == Serializer.serialize(hub)
+    end
+
+    test "include_space", ctx do
+      assert {200, res} = query(ctx.conn, [:links, :get], %{id: Paths.link_id(ctx.link)})
+      refute res.link.resource_hub
+
+      assert {200, res} = query(ctx.conn, [:links, :get], %{
+        id: Paths.link_id(ctx.link),
+        include_space: true,
+      })
+
+      hub = Repo.preload(ctx.hub, :space)
+      assert res.link.resource_hub == Serializer.serialize(hub)
     end
 
     test "include_parent_folder", ctx do

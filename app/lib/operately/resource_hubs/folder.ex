@@ -1,16 +1,20 @@
 defmodule Operately.ResourceHubs.Folder do
   use Operately.Schema
-  use Operately.Repo.Getter
+
+  import Ecto.Query
+  import Operately.Repo.RequestInfo, only: [request_info: 0]
+
+  alias Operately.ResourceHubs.{Getter, Parent}
 
   schema "resource_folders" do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
 
     has_one :space, through: [:node, :resource_hub, :space]
     has_one :resource_hub, through: [:node, :resource_hub]
-    has_one :access_context, through: [:node, :resource_hub, :access_context]
     has_many :child_nodes, Operately.ResourceHubs.Node, foreign_key: :parent_folder_id
 
     # populated with after load hooks
+    field :access_context, :any, virtual: true
     field :permissions, :any, virtual: true
     field :path_to_folder, :any, virtual: true
     field :children_count, :integer, virtual: true
@@ -29,6 +33,18 @@ defmodule Operately.ResourceHubs.Folder do
     folder
     |> cast(attrs, [:node_id])
     |> validate_required([:node_id])
+  end
+
+  def get(requester, args) do
+    Getter.get(__MODULE__, requester, args, :node_child)
+  end
+
+  def get!(requester, args) do
+    case get(requester, args) do
+      {:ok, resource} -> resource
+      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
+      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
+    end
   end
 
   #
@@ -75,9 +91,8 @@ defmodule Operately.ResourceHubs.Folder do
   end
 
   def load_potential_subscribers(folder = %__MODULE__{}) do
-    folder = Repo.preload(folder, space: :members)
-
-    subscribers = Operately.Notifications.Subscriber.from_space_members(folder.space.members)
+    folder = Parent.preload_child_resource_hub(folder, people: true)
+    subscribers = Parent.potential_subscribers(folder.resource_hub)
     Map.put(folder, :potential_subscribers, subscribers)
   end
 

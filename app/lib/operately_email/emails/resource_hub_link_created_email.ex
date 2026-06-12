@@ -1,22 +1,21 @@
 defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
+  alias OperatelyEmail.Emails.ResourceHubEmail
   alias Operately.Repo
-  alias Operately.ResourceHubs.Link
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
-    {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [
-      preload: [:node, :space],
-    ])
+    link = ResourceHubEmail.load_link(activity.content["link_id"])
+    parent = ResourceHubEmail.parent(link)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: link.space.name, who: author, action: "added a link")
+    |> subject(where: parent.name, who: author, action: "added a link")
     |> assign(:author, author)
     |> assign(:link, link)
     |> assign(:cta_url, OperatelyWeb.Paths.link_path(company, link) |> OperatelyWeb.Paths.to_url())
@@ -26,12 +25,13 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
   def buffered_item(_person, activity) do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
-    {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [preload: [:node, :space]])
+    link = ResourceHubEmail.load_link(activity.content["link_id"])
+    parent = ResourceHubEmail.parent(link)
 
     %{
-      parent_id: link.space.id,
-      parent_type: :space,
-      parent_name: link.space.name,
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
       headline: "added the link \"#{link.node.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
