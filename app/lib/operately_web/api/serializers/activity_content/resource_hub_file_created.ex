@@ -1,14 +1,23 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.ResourceHubFileCreated do
   alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Api.Serializers.ResourceHubActivity
 
   def serialize(content, level: :essential) do
-    %{
-      resource_hub: Serializer.serialize(content["resource_hub"], level: :essential),
-      space: Serializer.serialize(content["space"], level: :essential),
-      files: Enum.map(content["files"], fn f ->
-        file = Map.put(f["file"], :node, f["node"])
-        Serializer.serialize(file, level: :essential)
-      end)
-    }
+    ResourceHubActivity.parent_fields(content)
+    |> Map.merge(%{
+      files:
+        case content["files"] do
+          nil ->
+            nil
+
+          files ->
+            Enum.map(files, fn f ->
+              f
+              |> Map.get("file")
+              |> ResourceHubActivity.attach_node(Map.get(f, "node"))
+              |> Serializer.serialize(level: :essential)
+            end)
+        end
+    })
   end
 end

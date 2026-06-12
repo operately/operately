@@ -4,10 +4,10 @@ import type { ActivityContentResourceHubFileCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { usePaths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
-import { feedTitle, fileLink, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, fileLink, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
 
 const ResourceHubFileCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -17,14 +17,11 @@ const ResourceHubFileCreated: ActivityHandler = {
   pagePath(paths, activity: Activity) {
     const data = content(activity);
 
-    assertPresent(data.files, "files must be present in FileCreated activity");
-    assertPresent(data.resourceHub?.id, "resourceHub must be present in FileCreated activity");
-
-    if (data.files.length === 1 && data.files[0]) {
-      return paths.resourceHubFilePath(data.files[0].id!);
-    } else {
-      return paths.resourceHubPath(data.resourceHub.id);
+    if (data.files?.length === 1 && data.files[0]?.id) {
+      return paths.resourceHubFilePath(data.files[0].id);
     }
+
+    return resourceHubPathOrParent(paths, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -41,29 +38,33 @@ const ResourceHubFileCreated: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const parentParts = resourceHubParentParts(page, data);
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : null;
+    const files = data.files ?? [];
 
-    assertPresent(data.space, "space must be present in FileCreated activity");
-    assertPresent(data.files, "files must be present in FileCreated activity");
-    assertPresent(data.resourceHub, "resourceHub must be present in FileCreated activity");
+    if (files.length === 1 && files[0]) {
+      const file = files[0].id ? fileLink(files[0]) : files[0].name ?? "a file";
 
-    const space = spaceLink(data.space);
-    const resourceHub = resourceHubLink(data.resourceHub);
-
-    if (data.files.length === 1 && data.files[0]) {
-      const file = fileLink(data.files[0]);
-
-      if (page === "space") {
+      if (parentParts.length === 0) {
         return feedTitle(activity, "added a file:", file);
-      } else {
-        return feedTitle(activity, "added a file to", resourceHub, "in the", space, "space:", file);
       }
-    } else {
-      if (page === "space") {
-        return feedTitle(activity, "added some files:");
-      } else {
-        return feedTitle(activity, "added some files to", resourceHub, "in the", space, "space:");
+
+      if (resourceHub) {
+        return feedTitle(activity, "added a file to", resourceHub, ...parentParts, ":", file);
       }
+
+      return feedTitle(activity, "added a file", ...parentParts, ":", file);
     }
+
+    if (parentParts.length === 0) {
+      return feedTitle(activity, "added files:");
+    }
+
+    if (resourceHub) {
+      return feedTitle(activity, "added files to", resourceHub, ...parentParts, ":");
+    }
+
+    return feedTitle(activity, "added files", ...parentParts, ":");
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -74,11 +75,13 @@ const ResourceHubFileCreated: ActivityHandler = {
       return (
         <ul className="list-disc ml-4">
           {data.files.map((file, idx) => {
-            assertPresent(file.id, "id must be present in file");
-            assertPresent(file.name, "name must be present in file");
+            const name = file.name ?? "a file";
+
+            if (!file.id) {
+              return <li key={idx}>{name}</li>;
+            }
 
             const path = paths.resourceHubFilePath(file.id);
-            const name = file.name;
 
             return (
               <li key={idx}>
@@ -109,14 +112,14 @@ const ResourceHubFileCreated: ActivityHandler = {
     const data = content(activity);
 
     if (data.files?.length === 1) {
-      return "Added a file: " + data.files[0]?.name;
+      return "Added a file: " + (data.files[0]?.name ?? "a file");
     } else {
-      return "Added some files";
+      return "Added files";
     }
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    return null;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return resourceHubLocationName(content(activity));
   },
 };
 

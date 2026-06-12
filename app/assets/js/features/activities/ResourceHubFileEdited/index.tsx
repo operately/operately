@@ -3,10 +3,11 @@ import React from "react";
 import type { ActivityContentResourceHubFileEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, fileLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
 
 const ResourceHubFileEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -14,8 +15,13 @@ const ResourceHubFileEdited: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    const file = content(activity).file!;
-    return paths.resourceHubFilePath(file.id!);
+    const data = content(activity);
+
+    if (data.file?.id) {
+      return paths.resourceHubFilePath(data.file.id);
+    }
+
+    return resourceHubPathOrParent(paths, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,15 +38,14 @@ const ResourceHubFileEdited: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const file = data.file?.id && data.file?.name ? fileLink(data.file) : data.file?.name ?? "a file";
+    const parentParts = resourceHubParentParts(page, data);
 
-    const space = spaceLink(data.space!);
-    const file = fileLink(data.file!);
-
-    if (page === "space") {
+    if (parentParts.length === 0) {
       return feedTitle(activity, "edited a file:", file);
-    } else {
-      return feedTitle(activity, "edited a file in the", space, "space:", file);
     }
+
+    return feedTitle(activity, "edited a file", ...parentParts, ":", file);
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -63,11 +68,11 @@ const ResourceHubFileEdited: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Edited a file: " + content(activity).file!.name!;
+    return "Edited a file: " + (content(activity).file?.name ?? "a file");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).resourceHub!.name!;
+    return resourceHubLocationName(content(activity));
   },
 };
 

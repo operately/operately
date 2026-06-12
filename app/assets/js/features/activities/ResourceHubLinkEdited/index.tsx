@@ -4,9 +4,10 @@ import type { ActivityContentResourceHubLinkEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { EditedResourceList } from "../resourceHubEditedResources";
+import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
 
 const ResourceHubLinkEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -14,7 +15,13 @@ const ResourceHubLinkEdited: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    return paths.resourceHubLinkPath(content(activity).link!.id!);
+    const data = content(activity);
+
+    if (data.link?.id) {
+      return paths.resourceHubLinkPath(data.link.id);
+    }
+
+    return resourceHubPathOrParent(paths, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -30,37 +37,40 @@ const ResourceHubLinkEdited: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const space = spaceLink(content(activity).space!);
+    const data = content(activity);
     const resources = <EditedResourceList activity={activity} />;
+    const parentParts = resourceHubParentParts(page, data);
 
     if (Activities.getAggregatedActivities(activity).length === 1) {
-      const link = content(activity).link!.name!;
+      const link = data.link?.name ?? "a link";
 
-      if (page === "space") {
+      if (parentParts.length === 0) {
         return feedTitle(activity, "edited a link:", link);
-      } else {
-        return feedTitle(activity, "edited a link in the", space, "space:", link);
       }
+
+      return feedTitle(activity, "edited a link", ...parentParts, ":", link);
     }
 
-    if (page === "space") {
+    if (parentParts.length === 0) {
       return feedTitle(activity, "edited", resources);
-    } else {
-      return feedTitle(activity, "edited", resources, "in the", space, "space");
     }
+
+    return feedTitle(activity, "edited", resources, ...parentParts);
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     if (Activities.getAggregatedActivities(activity).length > 1) return null;
 
     const contentObj = content(activity);
-    const link = contentObj.link!;
+    const link = contentObj.link;
+
+    if (!link) return null;
 
     return (
       <div>
-        <NameEdited currentName={link.name!} previousName={contentObj.previousName!} />
-        <UrlEdited currentUrl={link.url!} previousUrl={contentObj.previousUrl!} />
-        <TypeEdited currentType={link.type!} previousType={contentObj.previousType!} />
+        <NameEdited currentName={link.name ?? ""} previousName={contentObj.previousName ?? ""} />
+        <UrlEdited currentUrl={link.url ?? ""} previousUrl={contentObj.previousUrl ?? ""} />
+        <TypeEdited currentType={link.type ?? ""} previousType={contentObj.previousType ?? ""} />
       </div>
     );
   },
@@ -78,11 +88,11 @@ const ResourceHubLinkEdited: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Edited a link: " + content(activity).link!.name!;
+    return "Edited a link: " + (content(activity).link?.name ?? "a link");
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    return null;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return resourceHubLocationName(content(activity));
   },
 };
 
