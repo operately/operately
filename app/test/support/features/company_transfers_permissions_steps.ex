@@ -298,10 +298,12 @@ defmodule Operately.Support.Features.CompanyTransfersPermissionsSteps do
   end
 
   defp resource_hub_access_level(%ResourceHub{} = hub, %Person{} = person) do
-    from(h in ResourceHub, as: :resource, where: h.id == ^hub.id)
-    |> Fetch.get_access_level(person.id)
+    person
+    |> ResourceHub.get(id: hub.id)
+    |> requester_access_level()
   end
 
+  defp requester_access_level({:ok, %{request_info: %{access_level: access_level}}}), do: access_level
   defp requester_access_level({:ok, resource}), do: resource.requester_access_level
   defp requester_access_level({:error, :not_found}), do: Binding.no_access()
 
