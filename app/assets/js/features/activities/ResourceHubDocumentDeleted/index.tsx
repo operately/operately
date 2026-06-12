@@ -1,8 +1,9 @@
 import type { ActivityContentResourceHubDocumentDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubDocumentDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +11,7 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    return paths.resourceHubPath(content(activity).resourceHub!.id!);
+    return resourceHubPathOrParent(paths, content(activity));
   },
 
   PageTitle(_props: { activity: any }) {
@@ -27,16 +28,15 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "the resource hub";
+    const documentName = data.document?.name ?? "a document";
+    const parent = visibleParentDescriptor(page, data);
 
-    const space = spaceLink(data.space!);
-    const resourceHub = resourceHubLink(data.resourceHub!);
-    const document = content(activity).document!;
-
-    if (page === "space") {
-      return feedTitle(activity, `deleted "${document.name}" from`, resourceHub);
-    } else {
-      return feedTitle(activity, `deleted "${document.name}" from`, resourceHub, "in the", space, "space");
+    if (!parent) {
+      return feedTitle(activity, `deleted "${documentName}" from`, resourceHub);
     }
+
+    return feedTitle(activity, `deleted "${documentName}" from`, resourceHub, "in the", parent.link, parent.label);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -56,11 +56,11 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Deleted a document: " + content(activity).document!.name!;
+    return "Deleted a document: " + (content(activity).document?.name ?? "a document");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).resourceHub!.name!;
+    return resourceHubLocationName(content(activity));
   },
 };
 

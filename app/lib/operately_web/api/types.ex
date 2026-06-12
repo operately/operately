@@ -899,6 +899,22 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_reviewer_updating,
       :activity_content_project_review_submitted,
       :activity_content_project_timeline_edited,
+      :activity_content_resource_hub_document_commented,
+      :activity_content_resource_hub_document_created,
+      :activity_content_resource_hub_document_deleted,
+      :activity_content_resource_hub_document_edited,
+      :activity_content_resource_hub_file_commented,
+      :activity_content_resource_hub_file_created,
+      :activity_content_resource_hub_file_deleted,
+      :activity_content_resource_hub_file_edited,
+      :activity_content_resource_hub_folder_copied,
+      :activity_content_resource_hub_folder_created,
+      :activity_content_resource_hub_folder_deleted,
+      :activity_content_resource_hub_folder_renamed,
+      :activity_content_resource_hub_link_commented,
+      :activity_content_resource_hub_link_created,
+      :activity_content_resource_hub_link_deleted,
+      :activity_content_resource_hub_link_edited,
       :activity_content_space_task_commented,
       :activity_content_space_joining,
       :activity_content_task_adding,
@@ -918,6 +934,7 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_resource_hub_folder_copied do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :folder, :resource_hub_folder, null: true
@@ -925,18 +942,21 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_folder_created do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :folder, :resource_hub_folder, null: true
   end
 
   object :activity_content_resource_hub_folder_deleted do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :folder, :resource_hub_folder, null: true
   end
 
   object :activity_content_resource_hub_folder_renamed do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :folder, :resource_hub_folder, null: true
@@ -945,30 +965,36 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_file_created do
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
     field? :files, list_of(:resource_hub_file), null: true
   end
 
   object :activity_content_resource_hub_file_deleted do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :file, :resource_hub_file, null: true
   end
 
   object :activity_content_resource_hub_file_edited do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :file, :resource_hub_file, null: true
   end
 
   object :activity_content_resource_hub_file_commented do
-    field :space, :space, null: false
-    field :file, :resource_hub_file, null: true
-    field :comment, :comment, null: true
+    field? :project, :project, null: true
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :file, :resource_hub_file, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_resource_hub_document_created do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
@@ -976,30 +1002,36 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_document_edited do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
   end
 
   object :activity_content_resource_hub_document_deleted do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
   end
 
   object :activity_content_resource_hub_document_commented do
-    field :space, :space, null: false
-    field :document, :resource_hub_document, null: true
-    field :comment, :comment, null: true
+    field? :project, :project, null: true
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :document, :resource_hub_document, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_resource_hub_link_created do
+    field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :link, :resource_hub_link, null: true
   end
 
   object :activity_content_resource_hub_link_edited do
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
     field? :link, :resource_hub_link, null: true
@@ -1010,15 +1042,18 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_link_deleted do
+    field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
     field? :link, :resource_hub_link, null: true
   end
 
   object :activity_content_resource_hub_link_commented do
-    field :space, :space, null: false
-    field :link, :resource_hub_link, null: true
-    field :comment, :comment, null: true
+    field? :project, :project, null: true
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :link, :resource_hub_link, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_project_discussion_submitted do

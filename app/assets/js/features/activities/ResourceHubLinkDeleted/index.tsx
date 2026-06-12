@@ -1,8 +1,9 @@
 import type { ActivityContentResourceHubLinkDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubLinkDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +11,7 @@ const ResourceHubLinkDeleted: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    return paths.resourceHubPath(content(activity).resourceHub!.id!);
+    return resourceHubPathOrParent(paths, content(activity));
   },
 
   PageTitle(_props: { activity: any }) {
@@ -26,15 +27,16 @@ const ResourceHubLinkDeleted: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const resourceHub = resourceHubLink(content(activity).resourceHub!);
-    const space = spaceLink(content(activity).space!);
-    const link = content(activity).link!.name!;
+    const data = content(activity);
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "the resource hub";
+    const linkName = data.link?.name ?? "a link";
+    const parent = visibleParentDescriptor(page, data);
 
-    if (page === "space") {
-      return feedTitle(activity, `deleted the "${link}" link from`, resourceHub);
-    } else {
-      return feedTitle(activity, `deleted the "${link}" link from`, resourceHub, "in the", space, "space");
+    if (!parent) {
+      return feedTitle(activity, `deleted the "${linkName}" link from`, resourceHub);
     }
+
+    return feedTitle(activity, `deleted the "${linkName}" link from`, resourceHub, "in the", parent.link, parent.label);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -54,11 +56,11 @@ const ResourceHubLinkDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Deleted a link: " + content(activity).link!.name!;
+    return "Deleted a link: " + (content(activity).link?.name ?? "a link");
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    return null;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return resourceHubLocationName(content(activity));
   },
 };
 

@@ -1,9 +1,9 @@
 import type { ActivityContentResourceHubFileDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { assertPresent } from "@/utils/assertions";
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubFileDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -11,10 +11,7 @@ const ResourceHubFileDeleted: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    const data = content(activity);
-    assertPresent(data.resourceHub?.id, "resourceHub must be present in activity");
-
-    return paths.resourceHubPath(content(activity).resourceHub!.id!);
+    return resourceHubPathOrParent(paths, content(activity));
   },
 
   PageTitle(_props: { activity: any }) {
@@ -31,16 +28,15 @@ const ResourceHubFileDeleted: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "the resource hub";
+    const fileName = data.file?.name ?? "a file";
+    const parent = visibleParentDescriptor(page, data);
 
-    const space = spaceLink(data.space!);
-    const resourceHub = resourceHubLink(data.resourceHub!);
-    const file = content(activity).file!;
-
-    if (page === "space") {
-      return feedTitle(activity, `deleted "${file.name}" from`, resourceHub);
-    } else {
-      return feedTitle(activity, `deleted "${file.name}" from`, resourceHub, "in the", space, "space");
+    if (!parent) {
+      return feedTitle(activity, `deleted "${fileName}" from`, resourceHub);
     }
+
+    return feedTitle(activity, `deleted "${fileName}" from`, resourceHub, "in the", parent.link, parent.label);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -60,11 +56,11 @@ const ResourceHubFileDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Deleted a file: " + content(activity).file!.name!;
+    return "Deleted a file: " + (content(activity).file?.name ?? "a file");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).resourceHub!.name!;
+    return resourceHubLocationName(content(activity));
   },
 };
 
