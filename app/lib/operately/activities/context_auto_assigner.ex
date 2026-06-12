@@ -151,7 +151,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in Operately.Goals.goal_actions() -> fetch_goal_context(activity.content)
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
       activity.action in @task_actions -> fetch_project_or_space_context(activity.content)
-      activity.action in @resource_hub_actions -> fetch_space_context_id(activity.content.space_id)
+      activity.action in @resource_hub_actions -> fetch_project_or_space_context(activity.content)
       activity.action == "comment_added" -> fetch_comment_added_context(activity)
       true ->
         Logger.error("Unhandled activity: #{inspect(activity)}")

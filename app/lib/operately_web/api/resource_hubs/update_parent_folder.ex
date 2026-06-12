@@ -40,18 +40,18 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
   end
 
   defp find_resource(me, id, "document") do
-    Document.get(me, id: id, opts: [preload: [:node, :space]])
+    Document.get(me, id: id, opts: [preload: [:node, :resource_hub]])
   end
 
   defp find_resource(me, id, "folder") do
-    Folder.get(me, id: id, opts: [preload: [:node, :space]])
+    Folder.get(me, id: id, opts: [preload: [:node, :resource_hub]])
   end
 
   defp find_resource(me, id, "file") do
-    File.get(me, id: id, opts: [preload: [:node, :space]])
+    File.get(me, id: id, opts: [preload: [:node, :resource_hub]])
   end
 
   defp find_resource(me, id, "link") do
-    Link.get(me, id: id, opts: [preload: [:node, :space]])
+    Link.get(me, id: id, opts: [preload: [:node, :resource_hub]])
   end
 end

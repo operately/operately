@@ -54,9 +54,9 @@ defmodule OperatelyWeb.Api.Documents.Get do
     Inputs.parse_includes(inputs, [
       include_author: :author,
       include_reactions: [reactions: :person],
-      include_resource_hub: [node: :resource_hub],
+      include_resource_hub: [node: [resource_hub: :space]],
       include_parent_folder: [node: [parent_folder: :node]],
-      include_space: [:space],
+      include_space: [node: [resource_hub: :space]],
       include_subscriptions_list: :subscription_list,
       always_include: :node,
     ])

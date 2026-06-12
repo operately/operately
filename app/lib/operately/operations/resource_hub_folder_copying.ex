@@ -1,6 +1,7 @@
 defmodule Operately.Operations.ResourceHubFolderCopying do
   alias Ecto.Multi
   alias Operately.{Repo, Activities}
+  alias Operately.ResourceHubs.Parent
   alias Operately.Operations.ResourceHubFolderCopying.{
     Folders,
     Nodes,
@@ -43,18 +44,17 @@ defmodule Operately.Operations.ResourceHubFolderCopying do
     multi
     |> Activities.insert_sync(author.id, :resource_hub_folder_copied, fn changes ->
       %{
-        company_id: author.company_id,
-        space_id: dest_resource_hub.space_id,
         resource_hub_id: dest_resource_hub.id,
         node_id: changes.new_folder.node_id,
         folder_id: changes.new_folder.id,
         original_folder: %{
-          space_id: folder.resource_hub.space_id,
           resource_hub_id: folder.resource_hub.id,
           node_id: folder.node_id,
           folder_id: folder.id,
-        },
+        }
+        |> Map.merge(Parent.parent_fields(folder.resource_hub)),
       }
+      |> Map.merge(Parent.parent_fields(dest_resource_hub))
     end)
   end
 end

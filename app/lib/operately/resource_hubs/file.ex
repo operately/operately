@@ -1,8 +1,10 @@
 defmodule Operately.ResourceHubs.File do
   use Operately.Schema
-  use Operately.Repo.Getter
+
+  import Operately.Repo.RequestInfo, only: [request_info: 0]
 
   alias Operately.Notifications
+  alias Operately.ResourceHubs.{Getter, Parent}
 
   schema "resource_files" do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
@@ -13,13 +15,13 @@ defmodule Operately.ResourceHubs.File do
 
     has_one :space, through: [:node, :resource_hub, :space]
     has_one :resource_hub, through: [:node, :resource_hub]
-    has_one :access_context, through: [:node, :resource_hub, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
 
     field :description, :map
 
     # populated with after load hooks
+    field :access_context, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
     field :permissions, :any, virtual: true
     field :comments_count, :integer, virtual: true
@@ -40,12 +42,24 @@ defmodule Operately.ResourceHubs.File do
     |> validate_required([:node_id, :author_id, :blob_id, :subscription_list_id])
   end
 
+  def get(requester, args) do
+    Getter.get(__MODULE__, requester, args, :node_child)
+  end
+
+  def get!(requester, args) do
+    case get(requester, args) do
+      {:ok, resource} -> resource
+      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
+      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
+    end
+  end
+
   #
   # After load hooks
   #
 
   def load_potential_subscribers(file = %__MODULE__{}) do
-    file = Repo.preload(file, [:access_context, resource_hub: [space: :members]])
+    file = Parent.prepare_for_notifications(file)
 
     subs =
       file

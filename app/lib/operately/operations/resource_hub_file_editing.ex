@@ -2,6 +2,7 @@ defmodule Operately.Operations.ResourceHubFileEditing do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{File, Node}
 
   def run(author, file, attrs) do
@@ -19,14 +20,13 @@ defmodule Operately.Operations.ResourceHubFileEditing do
     end)
     |> Activities.insert_sync(author.id, :resource_hub_file_edited, fn _changes ->
       %{
-        company_id: author.company_id,
-        space_id: file.resource_hub.space_id,
         resource_hub_id: file.resource_hub.id,
         node_id: file.node_id,
         file_id: file.id,
         old_name: file.node.name,
         new_name: attrs.name
       }
+      |> Map.merge(Parent.parent_fields(file.resource_hub))
     end)
     |> Repo.transaction()
     |> Repo.extract_result(:file_with_node)
