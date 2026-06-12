@@ -1,13 +1,10 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.ResourceHubLinkDeleted do
-  alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Api.Serializers.ResourceHubActivity
 
   def serialize(content, level: :essential) do
-    link = Map.put(content["link"], :node, content["node"])
-
-    %{
-      resource_hub: Serializer.serialize(content["resource_hub"], level: :essential),
-      space: Serializer.serialize(content["space"], level: :essential),
-      link: Serializer.serialize(link, level: :essential),
-    }
+    ResourceHubActivity.parent_fields(content)
+    |> Map.merge(%{
+      link: ResourceHubActivity.serialize_resource(content, "link"),
+    })
   end
 end

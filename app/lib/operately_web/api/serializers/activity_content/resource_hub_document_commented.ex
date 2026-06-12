@@ -1,13 +1,12 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.ResourceHubDocumentCommented do
   alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Api.Serializers.ResourceHubActivity
 
   def serialize(content, level: :essential) do
-    document = Map.put(content["document"], :node, content["node"])
-
-    %{
-      space: Serializer.serialize(content["space"], level: :essential),
-      document: Serializer.serialize(document, level: :essential),
+    ResourceHubActivity.parent_fields(content)
+    |> Map.merge(%{
+      document: ResourceHubActivity.serialize_resource(content, "document"),
       comment: Serializer.serialize(content["comment"], level: :essential),
-    }
+    })
   end
 end

@@ -4,18 +4,25 @@ import type { ActivityContentResourceHubDocumentCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import * as People from "@/models/people";
 
-import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
+import { documentLink, feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubDocumentCreating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
 
-  pagePath(paths, _activity: Activity): string {
-    return paths.resourceHubDocumentPath(content(_activity).document!.id!);
+  pagePath(paths, activity: Activity): string {
+    const data = content(activity);
+
+    if (data.document?.id) {
+      return paths.resourceHubDocumentPath(data.document.id);
+    }
+
+    return resourceHubPathOrParent(paths, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -58,23 +65,24 @@ const ResourceHubDocumentCreating: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    const document = content(activity).document!;
+    const document = content(activity).document;
     const copiedDocument = content(activity).copiedDocument;
+    const documentName = document?.name ?? "a document";
 
     if (copiedDocument) {
       return (
         "Created a copy of " +
         copiedDocument.name +
         " and named it " +
-        document.name
+        documentName
       );
     } else {
-      return "Added: " + document.name!;
+      return "Added: " + documentName;
     }
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).resourceHub!.name!;
+    return resourceHubLocationName(content(activity));
   },
 };
 
@@ -87,26 +95,26 @@ export default ResourceHubDocumentCreating;
 function ItemCopiedTitle(activity: Activity, page: string) {
   const data = content(activity);
 
-  const space = spaceLink(data.space!);
-  const document = documentLink(data.document!);
-  const copiedDocument = documentLink(data.copiedDocument!);
+  const document = data.document ? documentLink(data.document) : "a document";
+  const copiedDocument = data.copiedDocument ? documentLink(data.copiedDocument) : "a document";
+  const parent = visibleParentDescriptor(page, data);
 
-  if (page === "space") {
+  if (!parent) {
     return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document);
-  } else {
-    return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document, "in the", space, "space");
   }
+
+  return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document, "in the", parent.link, parent.label);
 }
 
 function ItemCreatedTitle(activity: Activity, page: string) {
   const data = content(activity);
 
-  const space = spaceLink(data.space!);
-  const document = documentLink(data.document!);
+  const document = data.document ? documentLink(data.document) : "a document";
+  const parent = visibleParentDescriptor(page, data);
 
-  if (page === "space") {
+  if (!parent) {
     return feedTitle(activity, "created a document:", document);
-  } else {
-    return feedTitle(activity, "created a document in the", space, "space:", document);
   }
+
+  return feedTitle(activity, "created a document in the", parent.link, `${parent.label}:`, document);
 }

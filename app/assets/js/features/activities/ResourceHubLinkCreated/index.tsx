@@ -1,8 +1,9 @@
 import type { ActivityContentResourceHubLinkCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, linkLink, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, linkLink, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubLinkCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +11,13 @@ const ResourceHubLinkCreated: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    return paths.resourceHubLinkPath(content(activity).link?.id!);
+    const data = content(activity);
+
+    if (data.link?.id) {
+      return paths.resourceHubLinkPath(data.link.id);
+    }
+
+    return resourceHubPathOrParent(paths, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -27,16 +34,19 @@ const ResourceHubLinkCreated: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const link = data.link ? linkLink(data.link) : "a link";
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : null;
+    const parent = visibleParentDescriptor(page, data);
 
-    const space = spaceLink(data.space!);
-    const resourceHub = resourceHubLink(data.resourceHub!);
-    const link = linkLink(data.link!);
-
-    if (page === "space") {
+    if (!parent) {
       return feedTitle(activity, "added a link:", link);
-    } else {
-      return feedTitle(activity, "added a link to", resourceHub, "in the", space, "space:", link);
     }
+
+    if (resourceHub) {
+      return feedTitle(activity, "added a link to", resourceHub, "in the", parent.link, `${parent.label}:`, link);
+    }
+
+    return feedTitle(activity, "added a link in the", parent.link, `${parent.label}:`, link);
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -56,11 +66,11 @@ const ResourceHubLinkCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Added a link: " + content(activity).link?.name;
+    return "Added a link: " + (content(activity).link?.name ?? "a link");
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    return null;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return resourceHubLocationName(content(activity));
   },
 };
 

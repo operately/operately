@@ -6,10 +6,11 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
-import { commentPath, commentedLink, documentLink, feedTitle, spaceLink } from "../feedItemLinks";
+import { commentedLink, documentLink, feedTitle } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { Summary } from "turboui";
 import { parseCommentContent } from "@/models/comments";
+import { commentedResourcePath, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubDocumentCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -17,13 +18,10 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { document, space, comment } = content(activity);
+    const data = content(activity);
+    const resourcePath = data.document?.id ? paths.resourceHubDocumentPath(data.document.id) : null;
 
-    if (!document) {
-      return paths.resourceHubPath(space.id);
-    }
-
-    return commentPath(paths.resourceHubDocumentPath(document.id), comment);
+    return commentedResourcePath(paths, data, resourcePath, data.comment);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -41,7 +39,7 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
     const data = content(activity);
-    const space = spaceLink(data.space);
+    const parent = visibleParentDescriptor(page, data);
     let action: any = "commented";
     let document: any = "a document";
 
@@ -53,11 +51,11 @@ const ResourceHubDocumentCommented: ActivityHandler = {
       action = commentedLink(paths.resourceHubDocumentPath(data.document.id), data.comment);
     }
 
-    if (page === "space") {
+    if (!parent) {
       return feedTitle(activity, action, "on", document);
-    } else {
-      return feedTitle(activity, action, "on", document, "in the", space, "space");
     }
+
+    return feedTitle(activity, action, "on", document, "in the", parent.link, parent.label);
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

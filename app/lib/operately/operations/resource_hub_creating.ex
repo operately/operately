@@ -14,7 +14,7 @@ defmodule Operately.Operations.ResourceHubCreating do
     |> Activities.insert_sync(author.id, :resource_hub_created, fn changes ->
       %{
         resource_hub_id: changes.resource_hub.id,
-        name: changes.resource_hub.id,
+        name: changes.resource_hub.name,
       }
       |> Map.merge(Parent.parent_fields(parent))
     end)

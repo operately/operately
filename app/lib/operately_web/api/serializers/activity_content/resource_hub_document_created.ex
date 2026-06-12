@@ -1,21 +1,19 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.ResourceHubDocumentCreated do
   alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Api.Serializers.ResourceHubActivity
 
   def serialize(content, level: :essential) do
-    document = Map.put(content["document"], :node, content["node"])
     copied_document = get_copied_document(content)
 
-    %{
-      space: Serializer.serialize(content["space"], level: :essential),
-      resource_hub: Serializer.serialize(content["resource_hub"], level: :essential),
-      document: Serializer.serialize(document, level: :essential),
+    ResourceHubActivity.parent_fields(content)
+    |> Map.merge(%{
+      document: ResourceHubActivity.serialize_resource(content, "document"),
       copied_document: Serializer.serialize(copied_document, level: :essential),
-    }
+    })
   end
 
   defp get_copied_document(content) do
-    if Ecto.assoc_loaded?(content["copied_document"]) do
-      Map.put(content["copied_document"], :node, content["copied_document_node"])
-    end
+    content["copied_document"]
+    |> ResourceHubActivity.attach_node(content["copied_document_node"])
   end
 end
