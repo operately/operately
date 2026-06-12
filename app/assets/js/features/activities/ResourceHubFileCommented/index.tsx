@@ -6,10 +6,11 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
-import { commentPath, commentedLink, feedTitle, fileLink, spaceLink } from "../feedItemLinks";
+import { commentedLink, feedTitle, fileLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
+import { commentedResourcePath, resourceHubParentParts } from "../resourceHubActivity";
 
 const ResourceHubFileCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -17,13 +18,10 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { file, space, comment } = content(activity);
+    const data = content(activity);
+    const resourcePath = data.file?.id ? paths.resourceHubFilePath(data.file.id) : null;
 
-    if (file) {
-      return commentPath(paths.resourceHubFilePath(file.id), comment);
-    }
-
-    return paths.resourceHubPath(space.id);
+    return commentedResourcePath(paths, data, resourcePath, data.comment);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -41,7 +39,6 @@ const ResourceHubFileCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
     const data = content(activity);
-    const space = spaceLink(data.space);
     let action: any = "commented";
     let file: any = "a file";
 
@@ -53,11 +50,7 @@ const ResourceHubFileCommented: ActivityHandler = {
       action = commentedLink(paths.resourceHubFilePath(data.file.id), data.comment);
     }
 
-    if (page === "space") {
-      return feedTitle(activity, action, "on", file);
-    } else {
-      return feedTitle(activity, action, "on", file, "in the", space, "space");
-    }
+    return feedTitle(activity, action, "on", file, ...resourceHubParentParts(page, data));
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

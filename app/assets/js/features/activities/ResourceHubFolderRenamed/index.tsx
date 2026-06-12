@@ -3,9 +3,9 @@ import React from "react";
 import type { ActivityContentResourceHubFolderRenamed } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { assertPresent } from "@/utils/assertions";
-import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, folderLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubFolderPathOrParent, resourceHubParentParts } from "../resourceHubActivity";
 
 const ResourceHubFolderRenamed: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -13,10 +13,9 @@ const ResourceHubFolderRenamed: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    const folder = content(activity).folder;
-    assertPresent(folder?.id, "folder.id must be present in ResourceHubFolderRenamed activity content");
+    const data = content(activity);
 
-    return paths.resourceHubFolderPath(folder.id);
+    return resourceHubFolderPathOrParent(paths, data.folder, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,14 +33,14 @@ const ResourceHubFolderRenamed: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
-    const folder = folderLink(data.folder!);
+    const folder = data.folder ? folderLink(data.folder) : "a folder";
+    const parentParts = resourceHubParentParts(page, data);
 
-    if (page === "space") {
+    if (parentParts.length === 0) {
       return feedTitle(activity, "renamed the", folder, "folder");
-    } else {
-      return feedTitle(activity, "renamed the", folder, "folder in the", space, "space");
     }
+
+    return feedTitle(activity, "renamed the", folder, "folder", ...parentParts);
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -65,7 +64,7 @@ const ResourceHubFolderRenamed: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Renamed a folder: " + content(activity).folder!.name!;
+    return "Renamed a folder: " + (content(activity).folder?.name ?? "a folder");
   },
 
   NotificationLocation(_props: { activity: Activity }) {

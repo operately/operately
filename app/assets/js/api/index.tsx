@@ -728,12 +728,15 @@ export interface ActivityContentProjectTimelineEdited {
 }
 
 export interface ActivityContentResourceHubDocumentCommented {
-  space: Space;
-  document: ResourceHubDocument | null;
-  comment: Comment | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  comment?: Comment | null;
 }
 
 export interface ActivityContentResourceHubDocumentCreated {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
@@ -741,42 +744,50 @@ export interface ActivityContentResourceHubDocumentCreated {
 }
 
 export interface ActivityContentResourceHubDocumentDeleted {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
 }
 
 export interface ActivityContentResourceHubDocumentEdited {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   document?: ResourceHubDocument | null;
 }
 
 export interface ActivityContentResourceHubFileCommented {
-  space: Space;
-  file: ResourceHubFile | null;
-  comment: Comment | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  file?: ResourceHubFile | null;
+  comment?: Comment | null;
 }
 
 export interface ActivityContentResourceHubFileCreated {
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   space?: Space | null;
   files?: ResourceHubFile[] | null;
 }
 
 export interface ActivityContentResourceHubFileDeleted {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   file?: ResourceHubFile | null;
 }
 
 export interface ActivityContentResourceHubFileEdited {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   file?: ResourceHubFile | null;
 }
 
 export interface ActivityContentResourceHubFolderCopied {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
@@ -784,18 +795,21 @@ export interface ActivityContentResourceHubFolderCopied {
 }
 
 export interface ActivityContentResourceHubFolderCreated {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
 }
 
 export interface ActivityContentResourceHubFolderDeleted {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
 }
 
 export interface ActivityContentResourceHubFolderRenamed {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   folder?: ResourceHubFolder | null;
@@ -804,24 +818,29 @@ export interface ActivityContentResourceHubFolderRenamed {
 }
 
 export interface ActivityContentResourceHubLinkCommented {
-  space: Space;
-  link: ResourceHubLink | null;
-  comment: Comment | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  link?: ResourceHubLink | null;
+  comment?: Comment | null;
 }
 
 export interface ActivityContentResourceHubLinkCreated {
+  project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   link?: ResourceHubLink | null;
 }
 
 export interface ActivityContentResourceHubLinkDeleted {
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   space?: Space | null;
   link?: ResourceHubLink | null;
 }
 
 export interface ActivityContentResourceHubLinkEdited {
+  project?: Project | null;
   resourceHub?: ResourceHub | null;
   space?: Space | null;
   link?: ResourceHubLink | null;
@@ -2243,6 +2262,22 @@ export type ActivityContent =
   | ActivityContentProjectReviewerUpdating
   | ActivityContentProjectReviewSubmitted
   | ActivityContentProjectTimelineEdited
+  | ActivityContentResourceHubDocumentCommented
+  | ActivityContentResourceHubDocumentCreated
+  | ActivityContentResourceHubDocumentDeleted
+  | ActivityContentResourceHubDocumentEdited
+  | ActivityContentResourceHubFileCommented
+  | ActivityContentResourceHubFileCreated
+  | ActivityContentResourceHubFileDeleted
+  | ActivityContentResourceHubFileEdited
+  | ActivityContentResourceHubFolderCopied
+  | ActivityContentResourceHubFolderCreated
+  | ActivityContentResourceHubFolderDeleted
+  | ActivityContentResourceHubFolderRenamed
+  | ActivityContentResourceHubLinkCommented
+  | ActivityContentResourceHubLinkCreated
+  | ActivityContentResourceHubLinkDeleted
+  | ActivityContentResourceHubLinkEdited
   | ActivityContentSpaceTaskCommented
   | ActivityContentSpaceJoining
   | ActivityContentTaskAdding

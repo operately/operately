@@ -4,9 +4,8 @@ import type { ActivityContentResourceHubFolderCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
-import { assertPresent } from "@/utils/assertions";
-import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, folderLink } from "../feedItemLinks";
+import { resourceHubFolderPathOrParent, resourceHubParentParts } from "../resourceHubActivity";
 
 const ResourceHubFolderCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -14,10 +13,9 @@ const ResourceHubFolderCreated: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const folder = content(activity).folder;
-    assertPresent(folder?.id, "folder.id must be present in ResourceHubFolderCreated activity content");
+    const data = content(activity);
 
-    return paths.resourceHubFolderPath(folder.id);
+    return resourceHubFolderPathOrParent(paths, data.folder, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -35,14 +33,14 @@ const ResourceHubFolderCreated: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    const space = spaceLink(data.space!);
-    const folder = folderLink(data.folder!);
+    const folder = data.folder ? folderLink(data.folder) : "a folder";
+    const parentParts = resourceHubParentParts(page, data);
 
-    if (page === "space") {
+    if (parentParts.length === 0) {
       return feedTitle(activity, "created a folder:", folder);
-    } else {
-      return feedTitle(activity, "created a folder in the", space, "space:", folder);
     }
+
+    return feedTitle(activity, "created a folder", ...parentParts, ":", folder);
   },
 
   FeedItemContent({}: { activity: Activity }) {
@@ -62,11 +60,11 @@ const ResourceHubFolderCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Created folder: " + content(activity).folder!.name!;
+    return "Created folder: " + (content(activity).folder?.name ?? "a folder");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).folder!.name!;
+    return content(activity).folder?.name ?? null;
   },
 };
 

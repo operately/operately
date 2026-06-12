@@ -2,9 +2,10 @@ import type { ActivityContentResourceHubDocumentEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 import React from "react";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { EditedResourceList } from "../resourceHubEditedResources";
+import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
 
 const ResourceHubDocumentEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -12,7 +13,13 @@ const ResourceHubDocumentEdited: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    return paths.resourceHubDocumentPath(content(activity).document!.id!);
+    const data = content(activity);
+
+    if (data.document?.id) {
+      return paths.resourceHubDocumentPath(data.document.id);
+    }
+
+    return resourceHubPathOrParent(paths, data);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -31,13 +38,8 @@ const ResourceHubDocumentEdited: ActivityHandler = {
     const data = content(activity);
 
     const resources = <EditedResourceList activity={activity} />;
-    const space = spaceLink(data.space!);
 
-    if (page === "space") {
-      return feedTitle(activity, "edited", resources);
-    } else {
-      return feedTitle(activity, "edited", resources, "in the", space, "space");
-    }
+    return feedTitle(activity, "edited", resources, ...resourceHubParentParts(page, data));
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -61,7 +63,7 @@ const ResourceHubDocumentEdited: ActivityHandler = {
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).resourceHub!.name!;
+    return resourceHubLocationName(content(activity));
   },
 };
 

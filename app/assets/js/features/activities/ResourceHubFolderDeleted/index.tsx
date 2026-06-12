@@ -1,8 +1,9 @@
 import type { ActivityContentResourceHubFolderDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import { feedTitle, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { resourceHubLocationName, resourceHubParentParts, resourceHubPathOrParent } from "../resourceHubActivity";
 
 const ResourceHubFolderDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +11,7 @@ const ResourceHubFolderDeleted: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    return paths.resourceHubPath(content(activity).resourceHub!.id!);
+    return resourceHubPathOrParent(paths, content(activity));
   },
 
   PageTitle(_props: { activity: any }) {
@@ -27,16 +28,10 @@ const ResourceHubFolderDeleted: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "the resource hub";
+    const folderName = data.folder?.name ?? "a folder";
 
-    const space = spaceLink(data.space!);
-    const resourceHub = resourceHubLink(data.resourceHub!);
-    const folder = data.folder!;
-
-    if (page === "space") {
-      return feedTitle(activity, `deleted the "${folder.name}" folder from`, resourceHub);
-    } else {
-      return feedTitle(activity, `deleted the "${folder.name}" folder from`, resourceHub, "in the", space, "space");
-    }
+    return feedTitle(activity, `deleted the "${folderName}" folder from`, resourceHub, ...resourceHubParentParts(page, data));
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -56,11 +51,11 @@ const ResourceHubFolderDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Deleted a folder: " + content(activity).folder!.name!;
+    return "Deleted a folder: " + (content(activity).folder?.name ?? "a folder");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).resourceHub!.name!;
+    return resourceHubLocationName(content(activity));
   },
 };
 
