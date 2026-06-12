@@ -116,6 +116,31 @@ defmodule OperatelyWeb.Api.Files.GetTest do
       assert length(res.file.potential_subscribers) == 1
       assert hd(res.file.potential_subscribers).person == Serializer.serialize(ctx.creator)
     end
+
+    test "include_potential_subscribers preserves resource_hub space", ctx do
+      assert {200, res} = query(ctx.conn, [:files, :get], %{
+        id: Paths.file_id(ctx.my_file),
+        include_resource_hub: true,
+        include_space: true,
+        include_potential_subscribers: true,
+      })
+
+      hub = Repo.preload(ctx.hub, :space)
+
+      assert res.file.resource_hub == Serializer.serialize(hub)
+      assert length(res.file.potential_subscribers) == 1
+    end
+
+    test "include_potential_subscribers preserves parent_folder", ctx do
+      assert {200, res} = query(ctx.conn, [:files, :get], %{
+        id: Paths.file_id(ctx.my_file),
+        include_parent_folder: true,
+        include_potential_subscribers: true,
+      })
+
+      assert res.file.parent_folder == Repo.preload(ctx.folder, :node) |> Serializer.serialize()
+      assert length(res.file.potential_subscribers) == 1
+    end
   end
 
   #

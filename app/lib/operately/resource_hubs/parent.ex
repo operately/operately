@@ -109,8 +109,12 @@ defmodule Operately.ResourceHubs.Parent do
     with_deleted = Keyword.get(opts, :with_deleted, false)
     parent_opts = Keyword.take(opts, [:people])
 
-    resource =
-      Repo.preload(resource, [node: :resource_hub], force: true, with_deleted: with_deleted)
+    node =
+      resource
+      |> ensure_child_node_loaded(with_deleted)
+      |> preload_node_resource_hub(with_deleted)
+
+    resource = Map.put(resource, :node, node)
 
     hub =
       case resource.node do
@@ -118,7 +122,8 @@ defmodule Operately.ResourceHubs.Parent do
         _ -> nil
       end
 
-    Map.put(resource, :resource_hub, hub)
+    resource
+    |> attach_preloaded_resource_hub(hub)
   end
 
   def prepare_for_notifications(resource, opts \\ []) do
@@ -149,4 +154,37 @@ defmodule Operately.ResourceHubs.Parent do
 
   defp maybe_put(map, _key, nil), do: map
   defp maybe_put(map, key, value), do: Map.put(map, key, value)
+
+  defp attach_preloaded_resource_hub(resource, nil), do: Map.put(resource, :resource_hub, nil)
+
+  defp attach_preloaded_resource_hub(resource, hub) do
+    node =
+      case resource.node do
+        nil -> nil
+        node -> Map.put(node, :resource_hub, hub)
+      end
+
+    resource
+    |> Map.put(:node, node)
+    |> Map.put(:resource_hub, hub)
+  end
+
+  defp ensure_child_node_loaded(resource, with_deleted) do
+    case resource.node do
+      %Ecto.Association.NotLoaded{} ->
+        Repo.preload(resource, :node, force: true, with_deleted: with_deleted).node
+
+      nil ->
+        nil
+
+      node ->
+        node
+    end
+  end
+
+  defp preload_node_resource_hub(nil, _with_deleted), do: nil
+
+  defp preload_node_resource_hub(node, with_deleted) do
+    Repo.preload(node, :resource_hub, force: true, with_deleted: with_deleted)
+  end
 end

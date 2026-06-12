@@ -126,6 +126,17 @@ defmodule OperatelyWeb.Api.Links.GetTest do
       assert res.link.parent_folder == Repo.preload(ctx.folder, :node) |> Serializer.serialize()
     end
 
+    test "include_potential_subscribers preserves parent_folder", ctx do
+      assert {200, res} = query(ctx.conn, [:links, :get], %{
+        id: Paths.link_id(ctx.link),
+        include_parent_folder: true,
+        include_potential_subscribers: true,
+      })
+
+      assert res.link.parent_folder == Repo.preload(ctx.folder, :node) |> Serializer.serialize()
+      assert res.link.potential_subscribers
+    end
+
     test "include_reactions", ctx do
       assert {200, res} = query(ctx.conn, [:links, :get], %{id: Paths.link_id(ctx.link)})
       refute res.link.reactions
@@ -181,6 +192,20 @@ defmodule OperatelyWeb.Api.Links.GetTest do
         id: Paths.link_id(ctx.link),
         include_potential_subscribers: true,
       })
+      assert res.link.potential_subscribers
+    end
+
+    test "include_potential_subscribers preserves resource_hub space", ctx do
+      assert {200, res} = query(ctx.conn, [:links, :get], %{
+        id: Paths.link_id(ctx.link),
+        include_resource_hub: true,
+        include_space: true,
+        include_potential_subscribers: true,
+      })
+
+      hub = Repo.preload(ctx.hub, :space)
+
+      assert res.link.resource_hub == Serializer.serialize(hub)
       assert res.link.potential_subscribers
     end
   end

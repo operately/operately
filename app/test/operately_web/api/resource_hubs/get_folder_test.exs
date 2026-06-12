@@ -157,6 +157,19 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
 
       assert res.folder.path_to_folder == []
     end
+
+    test "include_potential_subscribers preserves resource_hub space", ctx do
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :get_folder], %{
+        id: Paths.folder_id(ctx.folder1),
+        include_resource_hub: true,
+        include_potential_subscribers: true,
+      })
+
+      hub = Repo.preload(ctx.hub, :space)
+
+      assert res.folder.resource_hub == Serializer.serialize(hub)
+      assert length(res.folder.potential_subscribers) == 1
+    end
   end
 
   #
