@@ -7,8 +7,8 @@ defmodule Operately.ResourceHubs.Notifications do
     with_deleted = Keyword.get(opts, :with_deleted, false)
 
     document =
-      Document.get!(:system, id: document_id, opts: [preload: [:node, :resource_hub], with_deleted: with_deleted])
-      |> Parent.prepare_for_notifications()
+      Document.get!(:system, id: document_id, opts: [with_deleted: with_deleted])
+      |> Parent.prepare_for_notifications(with_deleted: with_deleted)
 
     SubscribersLoader.load_for_notifications(document, Parent.notification_people(document.resource_hub), ignore)
   end
@@ -18,8 +18,8 @@ defmodule Operately.ResourceHubs.Notifications do
     with_deleted = Keyword.get(opts, :with_deleted, false)
 
     file =
-      File.get!(:system, id: file_id, opts: [preload: [:node, :resource_hub], with_deleted: with_deleted])
-      |> Parent.prepare_for_notifications()
+      File.get!(:system, id: file_id, opts: [with_deleted: with_deleted])
+      |> Parent.prepare_for_notifications(with_deleted: with_deleted)
 
     SubscribersLoader.load_for_notifications(file, Parent.notification_people(file.resource_hub), ignore)
   end
@@ -29,8 +29,8 @@ defmodule Operately.ResourceHubs.Notifications do
     with_deleted = Keyword.get(opts, :with_deleted, false)
 
     link =
-      Link.get!(:system, id: link_id, opts: [preload: [:node, :resource_hub], with_deleted: with_deleted])
-      |> Parent.prepare_for_notifications()
+      Link.get!(:system, id: link_id, opts: [with_deleted: with_deleted])
+      |> Parent.prepare_for_notifications(with_deleted: with_deleted)
 
     SubscribersLoader.load_for_notifications(link, Parent.notification_people(link.resource_hub), ignore)
   end
