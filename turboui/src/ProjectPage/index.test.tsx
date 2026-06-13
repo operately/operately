@@ -30,7 +30,9 @@ jest.mock("../icons", () => {
   const HiddenIcon = () => <span aria-hidden="true" />;
 
   return {
+    IconAlignJustified: HiddenIcon,
     IconCheck: HiddenIcon,
+    IconChartColumn: HiddenIcon,
     IconChevronDown: HiddenIcon,
     IconChevronRight: HiddenIcon,
     IconCircleArrowRight: HiddenIcon,
@@ -55,6 +57,7 @@ jest.mock("../icons", () => {
     IconSlash: HiddenIcon,
     IconTrash: HiddenIcon,
     IconUpload: HiddenIcon,
+    IconVideo: HiddenIcon,
     IconX: HiddenIcon,
   };
 });
@@ -93,21 +96,71 @@ function ProjectPageHarness({
   const nodes = React.useMemo(
     () => [
       createMockDocumentNode({
+        id: "node-document-quarterly-plan",
         name: "Quarterly Plan",
-        document: { resourceHubId: resourceHub.id, parentFolderId: null },
+        updatedAt: "2026-06-13T12:00:00Z",
+        document: {
+          id: "document-quarterly-plan",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+          commentsCount: 3,
+        },
       }),
       createMockFileNode({
+        id: "node-file-roadmap-screenshot",
         name: "Roadmap Screenshot",
-        file: { resourceHubId: resourceHub.id, parentFolderId: null },
+        updatedAt: "2026-06-12T12:00:00Z",
+        file: {
+          id: "file-roadmap-screenshot",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+        },
       }),
       createMockFolderNode({
         name: "Research",
+        updatedAt: "2026-06-11T12:00:00Z",
         folder: createMockFolder({
           id: "folder-1",
           name: "Research",
           resourceHubId: resourceHub.id,
           resourceHub,
         }),
+      }),
+      createMockDocumentNode({
+        id: "node-document-launch-faq",
+        name: "Launch FAQ",
+        updatedAt: "2026-06-10T12:00:00Z",
+        document: {
+          id: "document-launch-faq",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+        },
+      }),
+      createMockFileNode({
+        id: "node-file-support-macros",
+        name: "Support macros",
+        updatedAt: "2026-06-09T12:00:00Z",
+        file: {
+          id: "file-support-macros",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+          blob: {
+            id: "blob-pdf-1",
+            url: "/support-macros.pdf",
+            contentType: "application/pdf",
+          } as any,
+        },
+      }),
+      createMockDocumentNode({
+        id: "node-document-attribution-dashboard-notes",
+        name: "Attribution dashboard notes",
+        updatedAt: "2026-06-08T12:00:00Z",
+        document: {
+          id: "document-attribution-dashboard-notes",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+          commentsCount: 1,
+        },
       }),
     ],
     [resourceHub],
@@ -121,12 +174,12 @@ function ProjectPageHarness({
   const docsAndFiles = includeDocsAndFiles
     ? {
         resourceHub,
-        previewNodes: nodes.slice(0, 3),
+        previewNodes: nodes,
         tabPath: "/projects/project-1?tab=docs-and-files",
         drafts: {
           nodes: [
             createMockDraftNode({
-              document: { resourceHubId: resourceHub.id, parentFolderId: null },
+              document: { resourceHubId: resourceHub.id, parentFolderId: undefined },
             }),
           ],
           draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
@@ -213,7 +266,7 @@ describe("ProjectPage", () => {
     render(<ProjectPageHarness includeDocsAndFiles />);
 
     expect(screen.getByRole("link", { name: "Docs & Files" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Open docs & files" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Show 1 more" })).toHaveAttribute(
       "href",
       "/projects/project-1?tab=docs-and-files",
     );

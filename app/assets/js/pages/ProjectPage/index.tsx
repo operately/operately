@@ -450,7 +450,7 @@ function useProjectDocsAndFilesProps({
 
     return {
       resourceHub,
-      previewNodes: docsAndFiles.nodes.slice(0, 5),
+      previewNodes: docsAndFiles.nodes,
       tabPath: paths.projectPath(projectId, { tab: "docs-and-files" }),
       drafts: {
         nodes: docsAndFiles.draftNodes,
