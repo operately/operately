@@ -5,7 +5,6 @@ defmodule Operately.Support.Features.ProjectSteps do
   alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.EmailSteps
-  alias Operately.Support.Features.UI.Emails, as: UIEmails
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.FeedSteps
   alias Operately.People.Person
@@ -450,6 +449,13 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_docs_and_files_node_visible, ctx, name: name do
     ctx
+    |> UI.assert_text(name)
+  end
+
+  step :assert_project_docs_and_files_preview_visible, ctx, name: name do
+    ctx
+    |> UI.assert_has(testid: "tab-docs & files")
+    |> UI.assert_has(testid: "docs-and-files-preview")
     |> UI.assert_text(name)
   end
 
@@ -905,102 +911,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     end)
   end
 
-  step :add_link_as_key_resource, ctx do
-    ctx =
-      ctx
-      |> UI.click_button("Add resource")
-      |> UI.fill(label: "Title", with: "Code Repository")
-      |> UI.fill(label: "URL", with: "https://github.com/operately/operately")
-      |> UI.click_button("Save")
-
-    Map.put(ctx, :last_added_resource, %{title: "Code Repository", link: "https://github.com/operately/operately"})
-  end
-
-  step :assert_new_key_resource_visible, ctx do
-    ctx
-    |> UI.assert_text("Code Repository")
-  end
-
-  step :assert_project_key_resource_added_visible_on_feed, ctx do
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_key_resource_added(author: ctx.champion)
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_key_resource_added(
-      author: ctx.champion,
-      project_name: ctx.project.name
-    )
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_key_resource_added(
-      author: ctx.champion,
-      project_name: ctx.project.name
-    )
-  end
-
-  step :assert_key_resource_added_notification_sent, ctx do
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.visit_notifications_page()
-    |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
-      action: "Added a key resource to the #{ctx.project.name} project"
-    })
-  end
-
-  step :assert_key_resource_email_sent, ctx do
-    resource = Map.get(ctx, :last_added_resource, %{title: "Code Repository", link: "https://github.com/operately/operately"})
-
-    ctx =
-      ctx
-      |> EmailSteps.assert_activity_email_sent(%{
-        where: ctx.project.name,
-        to: ctx.reviewer,
-        action: "added the \"#{resource.title}\" resource",
-        author: ctx.champion
-      })
-
-    email = UIEmails.last_sent_email(to: ctx.reviewer.email)
-
-    assert email.text =~ "added the \"#{resource.title}\" resource to the #{ctx.project.name} project resources"
-
-    if resource.link do
-      assert email.text =~ resource.link
-      assert email.html =~ resource.link
-    end
-
-    ctx
-  end
-
-  step :delete_key_resource, ctx, name: name do
-    ctx
-    |> UI.click(testid: UI.testid(["edit", name]))
-    |> UI.click_button("Delete")
-    |> UI.find(UI.query(testid: "confirm-resource-deletion"), fn el ->
-      UI.click_button(el, "Delete")
-    end)
-  end
-
-  step :assert_key_resource_deleted, ctx, name: name do
-    ctx
-    |> UI.refute_text(name, attempts: [50, 100, 200, 500])
-  end
-
-  step :assert_project_key_resource_deleted_visible_on_feed, ctx do
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion)
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_key_resource_deleted(
-      author: ctx.champion,
-      project_name: ctx.project.name
-    )
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_key_resource_deleted(
-      author: ctx.champion,
-      project_name: ctx.project.name
-    )
-  end
-
   #
   # New page step definitions
   #
@@ -1359,16 +1269,6 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :refute_add_milestone_visible, ctx do
     ctx
     |> UI.refute_has(testid: "add-milestone-button")
-  end
-
-  step :assert_add_resource_visible, ctx do
-    ctx
-    |> UI.assert_has(testid: "add-resource")
-  end
-
-  step :refute_add_resource_visible, ctx do
-    ctx
-    |> UI.refute_has(testid: "add-resource")
   end
 
   step :assert_add_task_and_milestone_visible_in_tasks_tab, ctx do
