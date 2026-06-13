@@ -62,9 +62,12 @@ defmodule OperatelyWeb.Api.Files.GetTest do
       |> Factory.setup()
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
       |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_resource_hub(:project_hub, :project, :creator)
       |> Factory.add_folder(:folder, :hub)
       |> Factory.add_file(:my_file, :hub, folder: :folder)
+      |> Factory.add_file(:project_file, :project_hub)
     end
 
     test "get file", ctx do
@@ -86,6 +89,32 @@ defmodule OperatelyWeb.Api.Files.GetTest do
       })
 
       assert res.file.author == Serializer.serialize(ctx.creator)
+    end
+
+    test "include_resource_hub", ctx do
+      assert {200, res} = query(ctx.conn, [:files, :get], %{id: Paths.file_id(ctx.my_file)})
+
+      refute res.file.resource_hub
+
+      assert {200, res} = query(ctx.conn, [:files, :get], %{
+        id: Paths.file_id(ctx.my_file),
+        include_resource_hub: true
+      })
+
+      assert res.file.resource_hub == Serializer.serialize(ctx.hub)
+    end
+
+    test "include_space", ctx do
+      assert {200, res} = query(ctx.conn, [:files, :get], %{id: Paths.file_id(ctx.my_file)})
+
+      refute res.file.space
+
+      assert {200, res} = query(ctx.conn, [:files, :get], %{
+        id: Paths.file_id(ctx.my_file),
+        include_space: true
+      })
+
+      assert res.file.space == Serializer.serialize(ctx.space, level: :essential)
     end
 
     test "include_subscriptions_list", ctx do
@@ -117,7 +146,7 @@ defmodule OperatelyWeb.Api.Files.GetTest do
       assert hd(res.file.potential_subscribers).person == Serializer.serialize(ctx.creator)
     end
 
-    test "include_potential_subscribers preserves resource_hub space", ctx do
+    test "include_potential_subscribers preserves included space", ctx do
       assert {200, res} = query(ctx.conn, [:files, :get], %{
         id: Paths.file_id(ctx.my_file),
         include_resource_hub: true,
@@ -125,9 +154,8 @@ defmodule OperatelyWeb.Api.Files.GetTest do
         include_potential_subscribers: true,
       })
 
-      hub = Repo.preload(ctx.hub, :space)
-
-      assert res.file.resource_hub == Serializer.serialize(hub)
+      assert res.file.resource_hub.id == Paths.resource_hub_id(ctx.hub)
+      assert res.file.space == Serializer.serialize(ctx.space, level: :essential)
       assert length(res.file.potential_subscribers) == 1
     end
 
@@ -140,6 +168,29 @@ defmodule OperatelyWeb.Api.Files.GetTest do
 
       assert res.file.parent_folder == Repo.preload(ctx.folder, :node) |> Serializer.serialize()
       assert length(res.file.potential_subscribers) == 1
+    end
+
+    test "include_project returns the project-backed hub parent", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:files, :get], %{
+                 id: Paths.file_id(ctx.project_file),
+                 include_project: true
+               })
+
+      refute res.file.resource_hub
+      assert res.file.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
+    test "include_resource_hub and include_project keep the project-backed hub data", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:files, :get], %{
+                 id: Paths.file_id(ctx.project_file),
+                 include_resource_hub: true,
+                 include_project: true
+               })
+
+      assert res.file.resource_hub.id == Paths.resource_hub_id(ctx.project_hub)
+      assert res.file.project == Serializer.serialize(ctx.project, level: :essential)
     end
   end
 

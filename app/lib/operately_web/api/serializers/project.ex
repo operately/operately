@@ -23,6 +23,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       is_archived: project.deleted_at != nil,
       is_outdated: Operately.Projects.outdated?(project),
       space: OperatelyWeb.Api.Serializer.serialize(project.group),
+      resource_hub: OperatelyWeb.Api.Serializer.serialize(project.resource_hub),
       champion: OperatelyWeb.Api.Serializer.serialize(project.champion),
       reviewer: OperatelyWeb.Api.Serializer.serialize(project.reviewer),
       goal: OperatelyWeb.Api.Serializer.serialize(project.goal),
