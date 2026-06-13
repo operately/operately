@@ -66,9 +66,13 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
       |> Factory.setup()
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
       |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_resource_hub(:project_hub, :project, :creator)
       |> Factory.add_folder(:folder1, :hub)
       |> Factory.preload(:folder1, :node)
+      |> Factory.add_folder(:project_folder, :project_hub)
+      |> Factory.preload(:project_folder, :node)
       |> Factory.add_document(:doc1, :hub, folder: :folder1)
       |> Factory.add_document(:doc2, :hub, folder: :folder1)
       |> Factory.add_folder(:folder2, :hub)
@@ -123,6 +127,40 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
       assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.hub)
     end
 
+    test "include_space returns the space-backed hub parent", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :get_folder], %{
+                 id: Paths.folder_id(ctx.folder1),
+                 include_space: true
+               })
+
+      refute res.folder.resource_hub
+      assert res.folder.space == Serializer.serialize(ctx.space, level: :essential)
+    end
+
+    test "include_project returns the project-backed hub parent", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :get_folder], %{
+                 id: Paths.folder_id(ctx.project_folder),
+                 include_project: true
+               })
+
+      refute res.folder.resource_hub
+      assert res.folder.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
+    test "include_resource_hub and include_project keep the project-backed hub data", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :get_folder], %{
+                 id: Paths.folder_id(ctx.project_folder),
+                 include_resource_hub: true,
+                 include_project: true
+               })
+
+      assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.project_hub)
+      assert res.folder.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
     test "include_path_to_folder", ctx do
       ctx =
         ctx
@@ -158,16 +196,16 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
       assert res.folder.path_to_folder == []
     end
 
-    test "include_potential_subscribers preserves resource_hub space", ctx do
+    test "include_potential_subscribers preserves included space", ctx do
       assert {200, res} = query(ctx.conn, [:resource_hubs, :get_folder], %{
         id: Paths.folder_id(ctx.folder1),
         include_resource_hub: true,
+        include_space: true,
         include_potential_subscribers: true,
       })
 
-      hub = Repo.preload(ctx.hub, :space)
-
-      assert res.folder.resource_hub == Serializer.serialize(hub)
+      assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.hub)
+      assert res.folder.space == Serializer.serialize(ctx.space, level: :essential)
       assert length(res.folder.potential_subscribers) == 1
     end
   end

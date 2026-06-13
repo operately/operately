@@ -1844,6 +1844,8 @@ export interface ResourceHubFolder {
   id: string;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
+  space?: Space | null;
+  project?: Project | null;
   name?: string | null;
   description?: string | null;
   nodes?: ResourceHubNode[] | null;
@@ -3247,6 +3249,8 @@ export interface ResourceHubsGetFolderInput {
   id: Id;
   includeNodes?: boolean;
   includeResourceHub?: boolean;
+  includeSpace?: boolean;
+  includeProject?: boolean;
   includePathToFolder?: boolean;
   includePermissions?: boolean;
   includePotentialSubscribers?: boolean;

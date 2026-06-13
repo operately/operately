@@ -1,8 +1,8 @@
 import * as React from "react";
 
 import { Navigation } from "../../Page/Navigation";
-import { assertPresent } from "../../utils/assertions";
 import type { ResourceHub, ResourceHubFolder, ResourceHubNavigationPaths } from "../types";
+import { resourceHubParentNavigationItem } from "./parentNavigation";
 
 interface NewResourcePageNavigationProps {
   resourceHub: ResourceHub;
@@ -11,10 +11,10 @@ interface NewResourcePageNavigationProps {
 }
 
 export function NewResourcePageNavigation({ resourceHub, folder, paths }: NewResourcePageNavigationProps) {
-  assertPresent(resourceHub.space, "space must be present in resourceHub");
+  const parentItem = resourceHubParentNavigationItem(resourceHub, paths);
 
   let items = [
-    { to: paths.spacePath(resourceHub.space.id), label: resourceHub.space.name ?? "" },
+    ...(parentItem ? [parentItem] : []),
     { to: paths.resourceHubPath(resourceHub.id), label: resourceHub.name ?? "" },
   ];
 

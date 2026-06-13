@@ -1336,6 +1336,8 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string, null: false
     field? :resource_hub_id, :string, null: true
     field? :resource_hub, :resource_hub, null: true
+    field? :space, :space, null: true
+    field? :project, :project, null: true
     field? :name, :string, null: true
     field? :description, :string, null: true
     field? :nodes, list_of(:resource_hub_node), null: true
