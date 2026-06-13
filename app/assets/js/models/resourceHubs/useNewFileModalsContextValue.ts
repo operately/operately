@@ -8,8 +8,8 @@ import { useAddFile } from "turboui";
 import type { ResourceHub, ResourceHubFolder } from "./index";
 
 interface UseNewFileModalsContextValueProps {
-  resourceHub: ResourceHub;
-  folder?: ResourceHubFolder;
+  resourceHub?: ResourceHub | null;
+  folder?: ResourceHubFolder | null;
 }
 
 export function useNewFileModalsContextValue({
@@ -22,11 +22,16 @@ export function useNewFileModalsContextValue({
   const fileProps = useAddFile();
 
   const toggleShowAddFolder = () => setShowAddFolder((value) => !value);
-  const navigateToNewDocument = () =>
-    navigate(paths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
+  const navigateToNewDocument = () => {
+    if (!resourceHub?.id) return;
+
+    navigate(paths.resourceHubNewDocumentPath(resourceHub.id, folder?.id || undefined));
+  };
   const navigateToNewLink = (type?: ResourceHubLinkType) => {
+    if (!resourceHub?.id) return;
+
     navigate(
-      paths.resourceHubNewLinkPath(resourceHub.id!, {
+      paths.resourceHubNewLinkPath(resourceHub.id, {
         folderId: folder?.id || undefined,
         type,
       }),

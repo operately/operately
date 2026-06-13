@@ -38,50 +38,55 @@ export interface SharedListPageProps {
   addFolderModalProps: AddFolderModalProps;
 }
 
-interface SharedResourceHubListPageProps extends SharedListPageProps {
+export interface SharedListContentProps extends Omit<SharedListPageProps, "title" | "navigation"> {
   heading: string;
   permissions?: ResourceHubPermissions | null;
-  options?: Page.Option[];
   beforeList?: React.ReactNode;
+}
+
+interface SharedResourceHubListPageProps extends SharedListPageProps, SharedListContentProps {
+  options?: Page.Option[];
   children?: React.ReactNode;
 }
 
-export function SharedListPage({
-  title,
-  navigation,
+export function SharedListContent({
   newFileModals,
   addFileWidgetProps,
   nodesListProps,
   addFolderModalProps,
   heading,
   permissions,
-  options,
   beforeList,
-  children,
-}: SharedResourceHubListPageProps) {
+}: SharedListContentProps) {
   return (
-    <NewFileModalsProvider value={newFileModals}>
-      <FileDragAndDropArea onFilesDropped={newFileModals.setFiles}>
-        <Page title={title} size="large" navigation={navigation} options={options}>
-          <div className="min-h-[75vh] px-4 sm:px-12 py-10">
-            <ResourceHubHeader
-              title={heading}
-              actions={
-                <AddFilesButton
-                  permissions={permissions}
-                  onNewDocument={newFileModals.navigateToNewDocument}
-                  onNewFolder={newFileModals.toggleShowAddFolder}
-                  onUploadFiles={newFileModals.selectFiles}
-                  onNewLink={newFileModals.navigateToNewLink}
-                />
-              }
-            />
+    <div className="min-h-[75vh] px-4 sm:px-12 py-10">
+      <ResourceHubHeader
+        title={heading}
+        actions={
+          <AddFilesButton
+            permissions={permissions}
+            onNewDocument={newFileModals.navigateToNewDocument}
+            onNewFolder={newFileModals.toggleShowAddFolder}
+            onUploadFiles={newFileModals.selectFiles}
+            onNewLink={newFileModals.navigateToNewLink}
+          />
+        }
+      />
 
-            {beforeList}
-            <AddFileWidget {...addFileWidgetProps} />
-            <NodesList {...nodesListProps} />
-            <AddFolderModal {...addFolderModalProps} />
-          </div>
+      {beforeList}
+      <AddFileWidget {...addFileWidgetProps} />
+      <NodesList {...nodesListProps} />
+      <AddFolderModal {...addFolderModalProps} />
+    </div>
+  );
+}
+
+export function SharedListPage({ title, navigation, options, children, ...contentProps }: SharedResourceHubListPageProps) {
+  return (
+    <NewFileModalsProvider value={contentProps.newFileModals}>
+      <FileDragAndDropArea onFilesDropped={contentProps.newFileModals.setFiles}>
+        <Page title={title} size="large" navigation={navigation} options={options}>
+          <SharedListContent {...contentProps} />
         </Page>
 
         {children}

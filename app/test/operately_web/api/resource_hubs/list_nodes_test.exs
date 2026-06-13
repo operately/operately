@@ -173,6 +173,31 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodesTest do
     end
   end
 
+  describe "project-backed hubs" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_resource_hub(:hub, :project, :creator)
+      |> Factory.add_document(:document, :hub)
+      |> Factory.add_link(:link, :hub)
+      |> Factory.add_file(:hub_file, :hub)
+    end
+
+    test "fetches nodes for a project-backed hub", ctx do
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :list_nodes], %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+      })
+
+      assert length(res.nodes) == 3
+      assert Enum.find(res.nodes, &(&1[:document] && &1.document.id == Paths.document_id(ctx.document)))
+      assert Enum.find(res.nodes, &(&1[:link] && &1.link.id == Paths.link_id(ctx.link)))
+      assert Enum.find(res.nodes, &(&1[:file] && &1.file.id == Paths.file_id(ctx.hub_file)))
+    end
+  end
+
   #
   # Helpers
   #
