@@ -12,6 +12,13 @@ defmodule Operately.Features.Projects.DocsAndFilesTest do
   end
 
   @tag login_as: :champion
+  feature "project overview shows the docs and files preview", ctx do
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.assert_project_docs_and_files_preview_visible(name: "Project Brief")
+  end
+
+  @tag login_as: :champion
   feature "project-backed docs and files link back to the project tab", ctx do
     ctx
     |> Steps.open_project_docs_and_files()
