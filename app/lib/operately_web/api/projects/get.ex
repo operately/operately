@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Projects.Get do
     field? :include_champion, :boolean, null: true
     field? :include_reviewer, :boolean, null: true
     field? :include_space, :boolean, null: true
+    field? :include_resource_hub, :boolean, null: true
     field? :include_contributors_access_levels, :boolean, null: true
     field? :include_access_levels, :boolean, null: true
     field? :include_privacy, :boolean, null: true
@@ -76,6 +77,7 @@ defmodule OperatelyWeb.Api.Projects.Get do
       include_champion: [:champion],
       include_reviewer: [:reviewer],
       include_last_check_in: [last_check_in: :author],
+      include_resource_hub: [resource_hub: [:space, :project]],
       include_retrospective: [:retrospective],
       include_subscription_list: [subscription_list: [subscriptions: :person]]
     )

@@ -25,6 +25,7 @@ defmodule Operately.Projects.Project do
 
     has_one :champion_contributor, Contributor, foreign_key: :project_id, where: [role: "champion"]
     has_one :reviewer_contributor, Contributor, foreign_key: :project_id, where: [role: "reviewer"]
+    has_one :resource_hub, Operately.ResourceHubs.ResourceHub, foreign_key: :project_id
 
     has_one :access_context, Operately.Access.Context, foreign_key: :project_id
     has_one :champion, through: [:champion_contributor, :person]
@@ -266,6 +267,7 @@ defmodule Operately.Projects.Project do
 
   defp exclude_ids(query, nil), do: query
   defp exclude_ids(query, []), do: query
+
   defp exclude_ids(query, ignored_ids) do
     from p in query, where: p.id not in ^ignored_ids
   end

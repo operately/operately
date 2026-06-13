@@ -1654,6 +1654,7 @@ export interface Project {
   isOutdated?: boolean | null;
   spaceId?: string | null;
   space?: Space | null;
+  resourceHub?: ResourceHub | null;
   myRole?: string | null;
   permissions?: ProjectPermissions | null;
   nextMilestone?: Milestone | null;
@@ -1785,6 +1786,7 @@ export interface ResourceHub {
   name: string;
   description?: string | null;
   space?: Space | null;
+  project?: Project | null;
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
@@ -1797,6 +1799,8 @@ export interface ResourceHubDocument {
   author?: Person | null;
   resourceHubId: string;
   resourceHub?: ResourceHub | null;
+  space?: Space | null;
+  project?: Project | null;
   parentFolder?: ResourceHubFolder | null;
   parentFolderId: string;
   name: string;
@@ -1818,6 +1822,8 @@ export interface ResourceHubFile {
   author?: Person | null;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
+  space?: Space | null;
+  project?: Project | null;
   parentFolder?: ResourceHubFolder | null;
   parentFolderId?: string | null;
   name?: string | null;
@@ -1853,6 +1859,8 @@ export interface ResourceHubLink {
   author?: Person | null;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
+  space?: Space | null;
+  project?: Project | null;
   parentFolder?: ResourceHubFolder | null;
   parentFolderId?: string | null;
   name: string;
@@ -2717,6 +2725,7 @@ export interface DocumentsGetInput {
   id: Id;
   includeAuthor?: boolean | null;
   includeSpace?: boolean | null;
+  includeProject?: boolean | null;
   includeResourceHub?: boolean | null;
   includeParentFolder?: boolean | null;
   includeReactions?: boolean | null;
@@ -2736,6 +2745,7 @@ export interface FilesGetInput {
   includeAuthor?: boolean;
   includeResourceHub?: boolean;
   includeSpace?: boolean;
+  includeProject?: boolean;
   includeParentFolder?: boolean;
   includeReactions?: boolean;
   includePermissions?: boolean;
@@ -2884,6 +2894,7 @@ export interface LinksGetInput {
   id: Id;
   includeAuthor?: boolean;
   includeSpace?: boolean;
+  includeProject?: boolean;
   includeResourceHub?: boolean;
   includeParentFolder?: boolean;
   includeReactions?: boolean;
@@ -3026,6 +3037,7 @@ export interface ProjectsGetInput {
   includeChampion?: boolean | null;
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
+  includeResourceHub?: boolean | null;
   includeContributorsAccessLevels?: boolean | null;
   includeAccessLevels?: boolean | null;
   includePrivacy?: boolean | null;
@@ -3221,6 +3233,7 @@ export interface ProjectsSearchPotentialContributorsResult {
 export interface ResourceHubsGetInput {
   id: Id;
   includeSpace?: boolean | null;
+  includeProject?: boolean | null;
   includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includePermissions?: boolean | null;
