@@ -12,6 +12,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolder do
     field :id, :id, null: false
     field? :include_nodes, :boolean, null: false
     field? :include_resource_hub, :boolean, null: false
+    field? :include_space, :boolean, null: false
+    field? :include_project, :boolean, null: false
     field? :include_path_to_folder, :boolean, null: false
     field? :include_permissions, :boolean, null: false
     field? :include_potential_subscribers, :boolean, null: false
@@ -49,7 +51,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolder do
 
     Inputs.parse_includes(inputs, [
       include_nodes: [child_nodes: q],
-      include_resource_hub: [node: [resource_hub: :space]],
+      include_resource_hub: :resource_hub,
+      include_space: :space,
+      include_project: :project,
       always_include: :node,
     ])
   end

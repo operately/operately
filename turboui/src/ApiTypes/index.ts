@@ -1730,6 +1730,8 @@ export interface ResourceHubFolder {
   id: string;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
+  space?: Space | null;
+  project?: Project | null;
   name?: string | null;
   description?: string | null;
   nodes?: ResourceHubNode[] | null;
