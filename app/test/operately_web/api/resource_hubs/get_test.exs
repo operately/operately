@@ -103,6 +103,24 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
       assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(ctx.hub1), include_space: true})
       assert res.resource_hub.space == Serializer.serialize(ctx.space, level: :essential)
     end
+
+    test "include_project", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_resource_hub(:project_hub, :project, :creator)
+
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(ctx.project_hub)})
+      refute res.resource_hub.project
+
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :get], %{
+                 id: Paths.resource_hub_id(ctx.project_hub),
+                 include_project: true
+               })
+
+      assert res.resource_hub.project == Serializer.serialize(ctx.project, level: :essential)
+    end
   end
 
   #

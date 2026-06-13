@@ -14,6 +14,7 @@ defmodule Operately.ResourceHubs.File do
     belongs_to :subscription_list, Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     has_one :space, through: [:node, :resource_hub, :space]
+    has_one :project, through: [:node, :resource_hub, :project]
     has_one :resource_hub, through: [:node, :resource_hub]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_file], foreign_key: :entity_id

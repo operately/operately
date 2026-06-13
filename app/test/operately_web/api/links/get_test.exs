@@ -61,9 +61,12 @@ defmodule OperatelyWeb.Api.Links.GetTest do
       |> Factory.setup()
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
       |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_resource_hub(:project_hub, :project, :creator)
       |> Factory.add_folder(:folder, :hub)
       |> Factory.add_link(:link, :hub, folder: :folder)
+      |> Factory.add_link(:project_link, :project_hub)
       |> Factory.preload(:link, :node)
     end
 
@@ -96,21 +99,19 @@ defmodule OperatelyWeb.Api.Links.GetTest do
         include_resource_hub: true,
       })
 
-      hub = Repo.preload(ctx.hub, :space)
-      assert res.link.resource_hub == Serializer.serialize(hub)
+      assert res.link.resource_hub == Serializer.serialize(ctx.hub)
     end
 
     test "include_space", ctx do
       assert {200, res} = query(ctx.conn, [:links, :get], %{id: Paths.link_id(ctx.link)})
-      refute res.link.resource_hub
+      refute res.link.space
 
       assert {200, res} = query(ctx.conn, [:links, :get], %{
         id: Paths.link_id(ctx.link),
         include_space: true,
       })
 
-      hub = Repo.preload(ctx.hub, :space)
-      assert res.link.resource_hub == Serializer.serialize(hub)
+      assert res.link.space == Serializer.serialize(ctx.space, level: :essential)
     end
 
     test "include_parent_folder", ctx do
@@ -195,7 +196,7 @@ defmodule OperatelyWeb.Api.Links.GetTest do
       assert res.link.potential_subscribers
     end
 
-    test "include_potential_subscribers preserves resource_hub space", ctx do
+    test "include_potential_subscribers preserves included space", ctx do
       assert {200, res} = query(ctx.conn, [:links, :get], %{
         id: Paths.link_id(ctx.link),
         include_resource_hub: true,
@@ -203,10 +204,32 @@ defmodule OperatelyWeb.Api.Links.GetTest do
         include_potential_subscribers: true,
       })
 
-      hub = Repo.preload(ctx.hub, :space)
-
-      assert res.link.resource_hub == Serializer.serialize(hub)
+      assert res.link.resource_hub.id == Paths.resource_hub_id(ctx.hub)
+      assert res.link.space == Serializer.serialize(ctx.space, level: :essential)
       assert res.link.potential_subscribers
+    end
+
+    test "include_project returns the project-backed hub parent", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:links, :get], %{
+                 id: Paths.link_id(ctx.project_link),
+                 include_project: true
+               })
+
+      refute res.link.resource_hub
+      assert res.link.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
+    test "include_resource_hub and include_project keep the project-backed hub data", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:links, :get], %{
+                 id: Paths.link_id(ctx.project_link),
+                 include_resource_hub: true,
+                 include_project: true
+               })
+
+      assert res.link.resource_hub.id == Paths.resource_hub_id(ctx.project_hub)
+      assert res.link.project == Serializer.serialize(ctx.project, level: :essential)
     end
   end
 

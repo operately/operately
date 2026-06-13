@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Documents.Get do
     field :id, :id, null: false
     field? :include_author, :boolean, null: true
     field? :include_space, :boolean, null: true
+    field? :include_project, :boolean, null: true
     field? :include_resource_hub, :boolean, null: true
     field? :include_parent_folder, :boolean, null: true
     field? :include_reactions, :boolean, null: true
@@ -54,9 +55,10 @@ defmodule OperatelyWeb.Api.Documents.Get do
     Inputs.parse_includes(inputs, [
       include_author: :author,
       include_reactions: [reactions: :person],
-      include_resource_hub: [node: [resource_hub: :space]],
+      include_resource_hub: :resource_hub,
       include_parent_folder: [node: [parent_folder: :node]],
-      include_space: [node: [resource_hub: :space]],
+      include_space: :space,
+      include_project: :project,
       include_subscriptions_list: :subscription_list,
       always_include: :node,
     ])

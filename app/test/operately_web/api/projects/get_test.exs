@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
   import Operately.GroupsFixtures
   import Operately.NotificationsFixtures
   import Operately.ActivitiesFixtures
+  import Operately.ResourceHubsFixtures
 
   alias Operately.Repo
   alias Operately.Access.Binding
@@ -205,6 +206,31 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert res.project.space == nil
     end
 
+    test "include_resource_hub", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get], %{
+                 id: Paths.project_id(project),
+                 include_resource_hub: true
+               })
+
+      assert res.project.resource_hub == nil
+
+      hub = resource_hub_fixture(ctx.person, project) |> Repo.preload(:project)
+
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get], %{
+                 id: Paths.project_id(project),
+                 include_resource_hub: true
+               })
+
+      assert res.project.resource_hub == Serializer.serialize(hub)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.resource_hub == nil
+    end
+
     test "include_retrospective", ctx do
       project = create_project(ctx)
 
@@ -385,8 +411,6 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
         |> Factory.add_project_contributor(:contrib1, :project)
         |> Factory.add_project_contributor(:contrib2, :project)
         |> Factory.add_project_contributor(:contrib3, :project)
-
-
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
 
       refute res.project.potential_subscribers
