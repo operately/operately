@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
+import { DocsAndFilesPreview } from "../DocsAndFiles";
 import { PieChart } from "../PieChart";
-import { ResourceManager } from "../ResourceManager";
 import { SwitchToggle } from "../SwitchToggle";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { SectionHeader } from "../TaskPage/SectionHeader";
 import { IconFlag } from "../icons";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
-import { DocsAndFilesPreview } from "./DocsAndFiles";
 import { ProjectPage } from "./index";
 import { PageDescription } from "../PageDescription";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../utils/PragmaticDragAndDrop";
@@ -37,12 +36,9 @@ function LeftColumn(props: ProjectPage.State) {
       <div className="pt-8 mt-8 border-t border-surface-outline">
         <TimelineSection {...props} />
       </div>
-      <div className="pt-8 mt-8 border-t border-surface-outline">
-        <ResourcesSection {...props} />
-      </div>
       {props.docsAndFiles && (
         <div className="pt-8 mt-8 border-t border-surface-outline">
-          <DocsAndFilesPreview docsAndFiles={props.docsAndFiles} />
+          <ResourcesSection {...props} />
         </div>
       )}
     </div>
@@ -286,13 +282,13 @@ function MilestoneList({ milestones, canEdit, onMilestoneUpdate, onMilestoneReor
 }
 
 function ResourcesSection(props: ProjectPage.State) {
+  if (!props.docsAndFiles) return null;
+
   return (
-    <ResourceManager
-      resources={props.resources}
-      onResourceAdd={props.onResourceAdd}
-      onResourceEdit={props.onResourceEdit}
-      onResourceRemove={props.onResourceRemove}
-      canEdit={props.permissions.canEdit}
+    <DocsAndFilesPreview
+      nodes={props.docsAndFiles.previewNodes}
+      tabPath={props.docsAndFiles.tabPath}
+      getNodePath={props.docsAndFiles.nodesListProps.getNodePath}
     />
   );
 }
