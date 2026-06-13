@@ -6,8 +6,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Access.{Binding, Context}
   alias Operately.ResourceHubs.{Node, Folder}
-  alias Operately.Access.Filters
 
   inputs do
     field? :resource_hub_id, :id, null: true
@@ -41,13 +41,14 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   defp load_nodes(me, inputs) do
     nodes =
       from(n in Node,
-        left_join: hub in assoc(n, :resource_hub),
+        left_join: hub in assoc(n, :resource_hub), as: :hub,
+        left_join: project in assoc(hub, :project), as: :project,
         left_join: space in assoc(hub, :space), as: :space,
         order_by: [desc: n.inserted_at]
       )
       |> filter_nodes(inputs)
       |> Node.preload_content(me)
-      |> Filters.filter_by_view_access(me.id, named_binding: :space)
+      |> filter_by_parent_view_access(me.id)
       |> Repo.all()
       |> load_comments_count(inputs[:include_comments_count])
       |> set_folders_children_count(inputs[:include_children_count])
@@ -76,4 +77,19 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
 
   defp set_folders_children_count(nodes, true), do: Folder.set_children_count(nodes)
   defp set_folders_children_count(nodes, _), do: nodes
+
+  defp filter_by_parent_view_access(query, requester_id) do
+    from([project: project, space: space] in query,
+      join: context in Context,
+      on: context.project_id == project.id or context.group_id == space.id,
+      join: binding in assoc(context, :bindings),
+      join: access_group in assoc(binding, :group),
+      join: membership in assoc(access_group, :memberships),
+      join: person in assoc(membership, :person),
+      where: membership.person_id == ^requester_id,
+      where: is_nil(person.suspended_at),
+      where: binding.access_level >= ^Binding.view_access(),
+      distinct: true
+    )
+  end
 end

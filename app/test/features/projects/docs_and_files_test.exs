@@ -1,0 +1,24 @@
+defmodule Operately.Features.Projects.DocsAndFilesTest do
+  use Operately.FeatureCase
+
+  alias Operately.Support.Features.ProjectSteps, as: Steps
+
+  setup ctx do
+    ctx
+    |> Steps.create_project(name: "Apollo")
+    |> Steps.setup_contributors()
+    |> Steps.login()
+    |> Steps.given_project_docs_and_files_exist()
+  end
+
+  @tag login_as: :champion
+  feature "project-backed docs and files link back to the project tab", ctx do
+    ctx
+    |> Steps.open_project_docs_and_files()
+    |> Steps.assert_project_docs_and_files_open()
+    |> Steps.assert_project_docs_and_files_node_visible(name: "Project Brief")
+    |> Steps.open_project_docs_and_files_node(name: "Project Brief")
+    |> Steps.assert_project_document_page_open()
+    |> Steps.navigate_back_to_project_docs_and_files()
+  end
+end

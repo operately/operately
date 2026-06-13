@@ -5,7 +5,7 @@ import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
 import * as Hub from "@/models/resourceHubs";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
-import { compareIds, usePaths } from "@/routes/paths";
+import { compareIds, usePaths, type Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 import { sortNodesWithFoldersFirst, type FolderSelectLoadResult, type ResourceHubNodesListContextValue } from "turboui";
@@ -27,6 +27,7 @@ interface FolderProps {
 }
 
 export type NodesProps = ResourceHubProps | FolderProps;
+type NullableNodesProps = NodesProps | null | undefined;
 
 async function downloadFile(fileUrl: string, fileName: string) {
   const res = await fetch(fileUrl);
@@ -41,13 +42,10 @@ async function downloadFile(fileUrl: string, fileName: string) {
   URL.revokeObjectURL(url);
 }
 
-export function useResourceHubNodesListContext(props: NodesProps): ResourceHubNodesListContextValue {
+export function useResourceHubNodesListContext(props: NullableNodesProps): ResourceHubNodesListContextValue {
   const paths = usePaths();
   const navigate = useNavigate();
-  const parent = props.type === "resource_hub" ? props.resourceHub : props.folder;
-
-  assertPresent(parent.permissions, `permissions must be present in ${props.type}`);
-  assertPresent(parent.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
+  const parent = props?.type === "resource_hub" ? props.resourceHub : props?.folder;
 
   const [deleteDocument] = Hub.documents.useDelete();
   const [deleteFile] = Hub.files.useDelete();
@@ -58,12 +56,19 @@ export function useResourceHubNodesListContext(props: NodesProps): ResourceHubNo
   const [createDocument] = Hub.documents.useCreate();
   const [copyFolder] = Hub.folders.useCopy();
 
-  const subscriptionsState = useSubscriptionsAdapter(parent.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(parent?.potentialSubscribers || [], {
     ignoreMe: true,
-    resourceHubName: parent.name || "",
+    resourceHubName: parent?.name || "",
   });
 
   return useMemo(() => {
+    if (!props || !parent) {
+      return createEmptyNodesListContext(paths);
+    }
+
+    assertPresent(parent.permissions, `permissions must be present in ${props.type}`);
+    assertPresent(parent.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
+
     const folderSelect: ResourceHubNodesListContextValue["folderSelect"] = {
       loadFolder: async (id: string): Promise<FolderSelectLoadResult> => {
         const res = await Hub.folders.get({
@@ -180,4 +185,28 @@ export function useResourceHubNodesListContext(props: NodesProps): ResourceHubNo
     subscriptionsState.currentSubscribersList,
     navigate,
   ]);
+}
+
+function createEmptyNodesListContext(paths: Paths): ResourceHubNodesListContextValue {
+  const resourceHubUnavailable = async () => {
+    throw new Error("Resource hub is unavailable");
+  };
+
+  return {
+    parent: {
+      id: "",
+      name: "",
+      type: "resource_hub",
+    },
+    forms: Forms as unknown as ResourceHubNodesListContextValue["forms"],
+    modal: { Modal },
+    folderSelect: {
+      loadFolder: resourceHubUnavailable,
+      loadResourceHub: resourceHubUnavailable,
+      compareIds,
+    },
+    permissions: null,
+    paths: resourceHubListPaths(paths),
+    actions: {},
+  };
 }

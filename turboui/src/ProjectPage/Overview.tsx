@@ -9,6 +9,7 @@ import { SectionHeader } from "../TaskPage/SectionHeader";
 import { IconFlag } from "../icons";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
+import { DocsAndFilesPreview } from "./DocsAndFiles";
 import { ProjectPage } from "./index";
 import { PageDescription } from "../PageDescription";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../utils/PragmaticDragAndDrop";
@@ -39,6 +40,11 @@ function LeftColumn(props: ProjectPage.State) {
       <div className="pt-8 mt-8 border-t border-surface-outline">
         <ResourcesSection {...props} />
       </div>
+      {props.docsAndFiles && (
+        <div className="pt-8 mt-8 border-t border-surface-outline">
+          <DocsAndFilesPreview docsAndFiles={props.docsAndFiles} />
+        </div>
+      )}
     </div>
   );
 }
