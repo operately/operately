@@ -5,6 +5,8 @@ import { Page } from "../Page";
 import {
   type AddFileWidgetProps,
   type AddFolderModalProps,
+  resourceHubFolderNavigation,
+  resourceHubPageNavigation,
   sortNodesWithFoldersFirst,
   type ResourceHub,
   type ResourceHubDocument,
@@ -354,22 +356,18 @@ function buildNavigation(
   parentType: UseMockSharedListPagePropsArgs["parentType"],
   resourceHub: ResourceHub,
 ): NonNullable<Page.Props["navigation"]> {
-  const space = resourceHub.space ?? ({ id: "space-1", name: "Operations" } as never);
+  const paths = {
+    projectPath: (id: string) => `/projects/${id}`,
+    spacePath: (id: string) => `/spaces/${id}`,
+    resourceHubPath: (id: string) => `/resource-hubs/${id}`,
+    resourceHubFolderPath: (id: string) => `/resource-hubs/folders/${id}`,
+  };
 
   if (parentType === "resource_hub") {
-    return [{ to: `/spaces/${space.id}`, label: space.name ?? "Operations" }];
+    return resourceHubPageNavigation(resourceHub, paths);
   }
 
-  const folder = parent as ResourceHubFolder;
-
-  return [
-    { to: `/spaces/${space.id}`, label: space.name ?? "Operations" },
-    { to: `/resource-hubs/${resourceHub.id}`, label: resourceHub.name ?? "Resource Hub" },
-    ...((folder.pathToFolder ?? []).map((item) => ({
-      to: `/resource-hubs/folders/${item.id}`,
-      label: item.name ?? "Folder",
-    })) as NonNullable<Page.Props["navigation"]>),
-  ];
+  return resourceHubFolderNavigation(parent as ResourceHubFolder, paths);
 }
 
 function buildNodePath(node: ResourceHubNode) {

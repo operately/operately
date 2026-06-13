@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ResourceHubPage } from "turboui";
+import { ResourceHubPage, resourceHubPageNavigation } from "turboui";
 import {
   folders,
   getDraftEditPath,
@@ -8,9 +8,9 @@ import {
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
 } from "@/models/resourceHubs";
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 
 import { usePaths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
@@ -21,9 +21,6 @@ export function Page() {
   const refresh = useRefresh();
   const paths = usePaths();
 
-  assertPresent(resourceHub.permissions, "permissions must be present in resourceHub");
-  assertPresent(resourceHub.space, "space must be present in resourceHub");
-
   const newFileModalsContext = useNewFileModalsContextValue({ resourceHub });
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
   const [createFolder] = folders.useCreate();
@@ -31,7 +28,7 @@ export function Page() {
 
   const props: ResourceHubPage.Props = {
     title: resourceHub.name || "Resource Hub",
-    navigation: [{ to: paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! }],
+    navigation: resourceHubPageNavigation(resourceHub, resourceHubNavigationPaths(paths)),
     resourceHub,
     drafts: {
       nodes: draftNodes,

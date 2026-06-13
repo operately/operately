@@ -17,6 +17,7 @@ export async function loader({ params, request }): Promise<LoaderResult> {
       .get({
         id: params.id,
         includeSpace: true,
+        includeProject: true,
         includePotentialSubscribers: true,
       })
       .then((res) => res.resourceHub!),

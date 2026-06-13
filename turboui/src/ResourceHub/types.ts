@@ -86,6 +86,7 @@ export interface ResourceHubNotAllowedSelection {
 }
 
 export interface ResourceHubNavigationPaths {
+  projectPath: (id: string) => string;
   spacePath: (id: string) => string;
   resourceHubPath: (id: string) => string;
   resourceHubFolderPath: (id: string) => string;
