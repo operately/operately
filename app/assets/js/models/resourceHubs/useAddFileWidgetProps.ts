@@ -5,12 +5,11 @@ import Forms from "@/components/Forms";
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { files, type ResourceHub, type ResourceHubFolder } from "@/models/resourceHubs";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
-import { assertPresent } from "@/utils/assertions";
 import type { AddFileUploadItem, AddFileWidgetProps } from "turboui";
 
 interface UseAddFileWidgetPropsArgs {
-  resourceHub: ResourceHub;
-  folder?: ResourceHubFolder;
+  resourceHub?: ResourceHub | null;
+  folder?: ResourceHubFolder | null;
   onUploaded: () => void;
 }
 
@@ -22,13 +21,11 @@ export function useAddFileWidgetProps({
   AddFileWidgetProps,
   "forms" | "modal" | "subscriptions" | "mentionSearchScope" | "formatFileSize" | "onUpload"
 > {
-  const potentialSubscribers = folder?.potentialSubscribers || resourceHub.potentialSubscribers;
-
-  assertPresent(potentialSubscribers, "potentialSubscribers must be present in folder or resourceHub");
+  const potentialSubscribers = folder?.potentialSubscribers || resourceHub?.potentialSubscribers || [];
 
   const subscriptionsState = useSubscriptionsAdapter(potentialSubscribers, {
     ignoreMe: true,
-    resourceHubName: resourceHub.name,
+    resourceHubName: resourceHub?.name ?? "",
   });
 
   return useMemo(
@@ -36,12 +33,14 @@ export function useAddFileWidgetProps({
       forms: Forms as unknown as AddFileWidgetProps["forms"],
       modal: { Modal },
       subscriptions: subscriptionsState,
-      mentionSearchScope: { type: "resource_hub", id: resourceHub.id! },
+      mentionSearchScope: { type: "resource_hub", id: resourceHub?.id ?? "" },
       formatFileSize: findFileSize,
       onUpload: async (items: AddFileUploadItem[], setProgress: (progress: number) => void) => {
+        if (!resourceHub?.id) return;
+
         const uploader = new FileUploader({
           items,
-          resourceHubId: resourceHub.id!,
+          resourceHubId: resourceHub.id,
           folderId: folder?.id,
           subscriptions: subscriptionsState,
           setProgress,
@@ -51,7 +50,7 @@ export function useAddFileWidgetProps({
         onUploaded();
       },
     }),
-    [resourceHub.id, resourceHub.name, folder?.id, subscriptionsState, onUploaded],
+    [resourceHub?.id, resourceHub?.name, folder?.id, subscriptionsState, onUploaded],
   );
 }
 

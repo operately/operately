@@ -16,6 +16,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
+  import Operately.ResourceHubsFixtures
   import Phoenix.ConnTest
   import Ecto.Query, only: [from: 2]
 
@@ -415,6 +416,58 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :reload_project_page, ctx do
     ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :given_project_docs_and_files_exist, ctx do
+    resource_hub =
+      resource_hub_fixture(ctx.champion, ctx.project, %{
+        name: "Documents & Files",
+      })
+
+    document =
+      document_fixture(resource_hub.id, ctx.champion.id, %{
+        name: "Project Brief",
+      })
+
+    ctx
+    |> Map.put(:resource_hub, resource_hub)
+    |> Map.put(:document, document)
+  end
+
+  step :open_project_docs_and_files, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_has(testid: "tab-docs & files")
+    |> UI.click_link("Docs & Files")
+  end
+
+  step :assert_project_docs_and_files_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("Documents & Files")
+    |> UI.refute_text("Description")
+  end
+
+  step :assert_project_docs_and_files_node_visible, ctx, name: name do
+    ctx
+    |> UI.assert_text(name)
+  end
+
+  step :open_project_docs_and_files_node, ctx, name: name do
+    ctx
+    |> UI.assert_text(name)
+    |> UI.click_link(name)
+  end
+
+  step :assert_project_document_page_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.document_path(ctx.company, ctx.document))
+  end
+
+  step :navigate_back_to_project_docs_and_files, ctx do
+    ctx
+    |> UI.click_link(ctx.project.name)
+    |> assert_project_docs_and_files_open()
   end
 
   step :assert_project_navigation_without_space, ctx do

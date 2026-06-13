@@ -18,7 +18,7 @@ import {
 } from "./parentNavigation";
 
 const paths = {
-  projectPath: (id: string) => `/projects/${id}`,
+  projectPath: (id: string) => `/projects/${id}?tab=docs-and-files`,
   spacePath: (id: string) => `/spaces/${id}`,
   resourceHubPath: (id: string) => `/resource-hubs/${id}`,
   resourceHubFolderPath: (id: string) => `/folders/${id}`,
@@ -36,7 +36,7 @@ describe("resource hub navigation", () => {
       paths,
     );
 
-    expect(item).toEqual({ to: "/projects/project-1", label: "Apollo" });
+    expect(item).toEqual({ to: "/projects/project-1?tab=docs-and-files", label: "Apollo" });
   });
 
   test("falls back to the space parent when the hub is space-backed", () => {
@@ -63,7 +63,7 @@ describe("resource hub navigation", () => {
         } as any,
         paths,
       ),
-    ).toEqual([{ to: "/projects/project-1", label: "Apollo" }]);
+    ).toEqual([{ to: "/projects/project-1?tab=docs-and-files", label: "Apollo" }]);
   });
 
   test("builds drafts navigation with the parent and hub", () => {
@@ -121,7 +121,7 @@ describe("resource hub navigation", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "Apollo" })).toHaveAttribute("href", "/projects/project-1");
+    expect(screen.getByRole("link", { name: "Apollo" })).toHaveAttribute("href", "/projects/project-1?tab=docs-and-files");
     expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/resource-hubs/hub-1");
     expect(screen.getByRole("link", { name: "Specs" })).toHaveAttribute("href", "/folders/folder-1");
   });

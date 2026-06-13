@@ -22,7 +22,18 @@ import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import {
+  folders,
+  getDraftEditPath,
+  useAddFileWidgetProps,
+  useNewFileModalsContextValue,
+  useResourceHubNodesListProps,
+} from "@/models/resourceHubs";
 import { useSubscription } from "@/models/subscriptions";
+import type * as Hub from "@/models/resourceHubs";
+import Forms from "@/components/Forms";
+import Modal from "@/components/Modal";
+import type { ResourceHubFormsApi } from "turboui";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -31,6 +42,12 @@ function pageCacheKey(id: string): string {
   return `v6-ProjectV2Page.project-${id}`;
 }
 
+type ProjectDocsAndFilesData = {
+  resourceHub: Hub.ResourceHub;
+  nodes: Hub.ResourceHubNode[];
+  draftNodes: Hub.ResourceHubNode[];
+};
+
 type LoaderResult = {
   data: {
     project: Projects.Project;
@@ -38,6 +55,7 @@ type LoaderResult = {
     discussions: Projects.Discussion[];
     backendTasks: Tasks.Task[];
     childrenCount: Projects.ProjectChildrenCount;
+    docsAndFiles: ProjectDocsAndFilesData | null;
   };
   cacheVersion: number;
 };
@@ -46,8 +64,8 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
-    fetchFn: () =>
-      fetchAll({
+    fetchFn: async () => {
+      const data = await fetchAll({
         project: Projects.getProject({
           id: params.id,
           includeSpace: true,
@@ -63,6 +81,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeRetrospective: true,
           includeUnreadNotifications: true,
           includeSubscriptionList: true,
+          includeResourceHub: true,
         }).then((d) => d.project!),
         checkIns: Api.projects
           .listCheckIns({ projectId: params.id, includeAuthor: true })
@@ -70,14 +89,55 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         discussions: Api.projects.listDiscussions({ projectId: params.id }).then((d) => d.discussions!),
         backendTasks: Api.tasks.list({ projectId: params.id }).then((d) => d.tasks!),
         childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
-      }),
+      });
+
+      return {
+        ...data,
+        docsAndFiles: await loadProjectDocsAndFiles(data.project),
+      };
+    },
   });
+}
+
+async function loadProjectDocsAndFiles(project: Projects.Project): Promise<ProjectDocsAndFilesData | null> {
+  const resourceHubId = project.resourceHub?.id;
+
+  if (!resourceHubId) {
+    return null;
+  }
+
+  try {
+    const [resourceHub, nodes] = await Promise.all([
+      Api.resource_hubs
+        .get({
+          id: resourceHubId,
+          includeSpace: true,
+          includeProject: true,
+          includePermissions: true,
+          includePotentialSubscribers: true,
+        })
+        .then((res) => res.resourceHub!),
+      Api.resource_hubs.listNodes({
+        resourceHubId,
+        includeCommentsCount: true,
+        includeChildrenCount: true,
+      }),
+    ]);
+
+    return {
+      resourceHub,
+      nodes: nodes.nodes || [],
+      draftNodes: nodes.draftNodes || [],
+    };
+  } catch {
+    return null;
+  }
 }
 
 function Page() {
   const paths = usePaths();
   const { data, refresh } = PageCache.useData(loader);
-  const { project, checkIns, discussions, backendTasks, childrenCount } = data;
+  const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles } = data;
   const navigate = useNavigate();
   const currentUser = useMe();
 
@@ -259,6 +319,12 @@ function Page() {
     window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
   }, [paths, project.id]);
 
+  const projectDocsAndFilesProps = useProjectDocsAndFilesProps({
+    docsAndFiles,
+    projectId: project.id,
+    onRefresh: refresh,
+  });
+
   const props: ProjectPage.Props = {
     ...spaceProps,
     champion,
@@ -343,9 +409,82 @@ function Page() {
     activityFeed: <ProjectFeedItems projectId={project.id} />,
 
     subscriptions,
+    docsAndFiles: projectDocsAndFilesProps,
   };
 
   return <ProjectPage key={project.id!} {...props} />;
+}
+
+function useProjectDocsAndFilesProps({
+  docsAndFiles,
+  projectId,
+  onRefresh,
+}: {
+  docsAndFiles: ProjectDocsAndFilesData | null;
+  projectId: string;
+  onRefresh?: () => Promise<void>;
+}): ProjectPage.Props["docsAndFiles"] {
+  const paths = usePaths();
+  const resourceHub = docsAndFiles?.resourceHub;
+  const refresh = React.useCallback(() => {
+    void onRefresh?.();
+  }, [onRefresh]);
+  const newFileModals = useNewFileModalsContextValue({ resourceHub });
+  const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
+  const [createFolder] = folders.useCreate();
+  const nodesListProps = useResourceHubNodesListProps(
+    resourceHub
+      ? {
+          resourceHub,
+          type: "resource_hub",
+          nodes: docsAndFiles?.nodes || [],
+          refetch: refresh,
+        }
+      : null,
+  );
+
+  return React.useMemo(() => {
+    if (!docsAndFiles || !resourceHub?.id) {
+      return undefined;
+    }
+
+    return {
+      resourceHub,
+      previewNodes: docsAndFiles.nodes.slice(0, 5),
+      tabPath: paths.projectPath(projectId, { tab: "docs-and-files" }),
+      drafts: {
+        nodes: docsAndFiles.draftNodes,
+        draftsPath: paths.resourceHubDraftsPath(resourceHub.id),
+        getDraftEditPath: (node) => getDraftEditPath(paths, node),
+      },
+      newFileModals,
+      addFileWidgetProps,
+      nodesListProps,
+      addFolderModalProps: {
+        resourceHubId: resourceHub.id,
+        onCreated: refresh,
+        forms: Forms as unknown as ResourceHubFormsApi,
+        modal: { Modal },
+        onCreateFolder: async (args) => {
+          await createFolder({
+            resourceHubId: args.resourceHubId,
+            folderId: args.folderId,
+            name: args.name,
+          });
+        },
+      },
+    };
+  }, [
+    addFileWidgetProps,
+    createFolder,
+    docsAndFiles,
+    newFileModals,
+    nodesListProps,
+    paths,
+    projectId,
+    refresh,
+    resourceHub,
+  ]);
 }
 
 function ProjectFeedItems({ projectId }: { projectId: string }) {

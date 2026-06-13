@@ -1,12 +1,14 @@
 import React from "react";
 
 import { ProjectPageLayout } from "../ProjectPageLayout";
+import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
 
 import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
+import type { AddFileWidgetProps, AddFolderModalProps, NewFileModalsContextValue, ResourceHub, ResourceHubNode } from "../ResourceHub";
 import { BadgeStatus } from "../StatusBadge/types";
 import { PersonField } from "../PersonField";
 import { useTabs } from "../Tabs";
@@ -14,6 +16,7 @@ import * as TaskBoardTypes from "../TaskBoard/types";
 import type { KanbanBoardProps, KanbanState } from "../TaskBoard/KanbanView/types";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
+import { DocsAndFilesTab } from "./DocsAndFiles";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
@@ -91,6 +94,24 @@ export namespace ProjectPage {
     | {
         homeLink: string;
       };
+
+  export interface DocsAndFiles {
+    resourceHub: ResourceHub;
+    previewNodes: ResourceHubNode[];
+    tabPath: string;
+    drafts: {
+      nodes: ResourceHubNode[];
+      draftsPath: string;
+      getDraftEditPath: (node: ResourceHubNode) => string | undefined;
+    };
+    newFileModals: NewFileModalsContextValue;
+    addFileWidgetProps: Pick<
+      AddFileWidgetProps,
+      "forms" | "modal" | "subscriptions" | "mentionSearchScope" | "formatFileSize" | "onUpload"
+    >;
+    nodesListProps: SharedListPageProps["nodesListProps"];
+    addFolderModalProps: AddFolderModalProps;
+  }
 
   interface CommonProps {
     closeLink: string;
@@ -190,6 +211,7 @@ export namespace ProjectPage {
 
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;
+    docsAndFiles?: DocsAndFiles;
   }
 
   export type Props = CommonProps & SpaceProps;
@@ -241,8 +263,15 @@ export function ProjectPage(props: ProjectPage.Props) {
       icon: <IconMessages size={14} />,
       count: state.childrenCount.discussionsCount,
     },
+    {
+      id: "docs-and-files",
+      label: "Docs & Files",
+      icon: <IconClipboardText size={14} />,
+      hidden: !state.docsAndFiles,
+    },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
+  const activeTab = !state.docsAndFiles && tabs.active === "docs-and-files" ? "overview" : tabs.active;
 
   return (
     <ProjectPageLayout
@@ -254,11 +283,12 @@ export function ProjectPage(props: ProjectPage.Props) {
       {...state}
     >
       <div className="flex-1 overflow-auto">
-        {tabs.active === "overview" && <Overview {...state} />}
-        {tabs.active === "tasks" && <TasksSection state={state} />}
-        {tabs.active === "check-ins" && <CheckIns {...state} />}
-        {tabs.active === "discussions" && <Discussions {...state} />}
-        {tabs.active === "activity" && <Activity {...state} />}
+        {activeTab === "overview" && <Overview {...state} />}
+        {activeTab === "tasks" && <TasksSection state={state} />}
+        {activeTab === "check-ins" && <CheckIns {...state} />}
+        {activeTab === "discussions" && <Discussions {...state} />}
+        {activeTab === "docs-and-files" && state.docsAndFiles && <DocsAndFilesTab docsAndFiles={state.docsAndFiles} />}
+        {activeTab === "activity" && <Activity {...state} />}
       </div>
 
       {"space" in state && <MoveModal {...state} />}
