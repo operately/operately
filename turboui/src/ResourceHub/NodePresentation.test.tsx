@@ -58,6 +58,24 @@ const imageFileNode: ResourceHubNode = {
   },
 };
 
+const quicktimeFileNode: ResourceHubNode = {
+  id: "node-3",
+  type: "file",
+  name: "Demo Clip",
+  file: {
+    id: "file-2",
+    resourceHubId: "hub-1",
+    parentFolderId: "folder-1",
+    name: "Demo Clip",
+    type: "video",
+    blob: {
+      id: "blob-2",
+      url: "/demo.mov",
+      contentType: "video/quicktime",
+    } as never,
+  },
+};
+
 const defaultLocation = { id: "hub-1", type: "resourceHub" } as const;
 const setLocation = jest.fn();
 
@@ -122,6 +140,12 @@ describe("resource hub node presentation", () => {
     render(<NodeIcon node={imageFileNode} size={48} />);
 
     expect(screen.getByAltText("Roadmap")).toBeInTheDocument();
+  });
+
+  test("renders a MOV badge for quicktime videos", () => {
+    render(<NodeIcon node={quicktimeFileNode} size={48} />);
+
+    expect(screen.getByText("mov")).toBeInTheDocument();
   });
 
   test("renders the menu trigger from a raw document node", () => {
