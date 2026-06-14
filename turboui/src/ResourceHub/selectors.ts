@@ -67,6 +67,20 @@ export function getNodeContentType(node: ResourceHubNode): string | null {
   return node.file?.blob?.contentType ?? null;
 }
 
+export function hasNodeContentType(node: ResourceHubNode, contentType: string): boolean {
+  return getNodeType(node) === "file" && Boolean(getNodeContentType(node)?.includes(contentType));
+}
+
+export function isNodeMovFile(node: ResourceHubNode): boolean {
+  const contentType = getNodeContentType(node);
+
+  return getNodeType(node) === "file" && Boolean(contentType && (contentType.includes("quicktime") || contentType.includes("mov")));
+}
+
+export function isNodeVideoFile(node: ResourceHubNode): boolean {
+  return hasNodeContentType(node, "video") && !isNodeMovFile(node);
+}
+
 export function getNodeThumbnail(node: ResourceHubNode) {
   const blob = node.file?.blob;
   const name = node.file?.name ?? node.name ?? "";

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { IconCheck, IconChevronDown } from "../icons";
 import { Menu, MenuActionItem } from "../Menu";
+import { NAME_AND_DATE_SORT_OPTIONS } from "../utils/sortWithFoldersFirst";
 import type { ResourceHubSortBy } from "./types";
 
 interface SortControlProps {
@@ -8,14 +9,8 @@ interface SortControlProps {
   onSortChange: (sortBy: ResourceHubSortBy) => void;
 }
 
-const SORT_OPTIONS: Array<{ value: ResourceHubSortBy; label: string }> = [
-  { value: "name", label: "Name" },
-  { value: "insertedAt", label: "Creation Date" },
-  { value: "updatedAt", label: "Modified Date" },
-];
-
 export function SortControl({ sortBy, onSortChange }: SortControlProps) {
-  const currentOption = SORT_OPTIONS.find((option) => option.value === sortBy);
+  const currentOption = NAME_AND_DATE_SORT_OPTIONS.find((option) => option.value === sortBy);
 
   const trigger = (
     <button className="flex items-center gap-2 px-3 py-2 text-sm text-content-dimmed hover:text-content-accent border border-surface-outline rounded-md transition-colors">
@@ -26,7 +21,7 @@ export function SortControl({ sortBy, onSortChange }: SortControlProps) {
 
   return (
     <Menu testId="sort-control" size="tiny" customTrigger={trigger}>
-      {SORT_OPTIONS.map((option) => (
+      {NAME_AND_DATE_SORT_OPTIONS.map((option) => (
         <MenuActionItem key={option.value} onClick={() => onSortChange(option.value)} testId={`sort-option-${option.value}`}>
           <div className="flex items-center justify-between w-full">
             <span>{option.label}</span>

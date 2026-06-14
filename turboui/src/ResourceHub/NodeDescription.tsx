@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { plurarize } from "../utils/plurarize";
 import { getNodeAuthorName, getNodeChildrenCount, getNodeDescription, getNodeFileSize, getNodeType } from "./selectors";
 import type { ResourceHubNode } from "./types";
 
@@ -50,7 +51,7 @@ function SubItemsCount({ node }: { node: ResourceHubNode }) {
 
   if (getNodeType(node) !== "folder" || childrenCount === null) return null;
 
-  return <span className="font-medium">{pluralize(childrenCount, "item", "items")}</span>;
+  return <span className="font-medium">{plurarize(childrenCount, "item", "items")}</span>;
 }
 
 function ContentSnippet({ node, maxCharacters }: { node: ResourceHubNode; maxCharacters: number }) {
@@ -71,10 +72,6 @@ function humanReadableSize(size: number) {
   if (size < 1024) return `${size}B`;
   if (size < 1024 * 1024) return `${(size / 1024).toFixed(0)}KB`;
   return `${(size / (1024 * 1024)).toFixed(0)}MB`;
-}
-
-function pluralize(count: number, singular: string, plural: string) {
-  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 function truncateString(value: string, maxCharacters: number) {
