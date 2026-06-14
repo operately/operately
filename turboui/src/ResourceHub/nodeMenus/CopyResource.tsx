@@ -1,11 +1,13 @@
 import * as React from "react";
 
+import * as Forms from "../../Forms";
+import type { FormState } from "../../Forms";
 import { MenuActionItem } from "../../Menu";
+import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
-import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
 import { FolderSelectField } from "../FolderSelectField";
 import { getResourceName } from "../selectors";
-import type { ResourceHubFormState, ResourceHubResource } from "../types";
+import type { ResourceHubResource } from "../types";
 
 interface CopyResourceMenuItemProps {
   resource: { id: string; name?: string | null };
@@ -23,26 +25,23 @@ export function CopyResourceMenuItem({ resource, showModal }: CopyResourceMenuIt
 }
 
 interface CopyResourceModalProps {
-  form: ResourceHubFormState;
+  form: FormState<Record<string, unknown>>;
   resource: ResourceHubResource;
   isOpen: boolean;
   hideModal: () => void;
 }
 
 export function CopyResourceModal({ form, resource, isOpen, hideModal }: CopyResourceModalProps) {
-  const { forms, modal } = useResourceHubNodesListContext();
-  const { Modal } = modal;
-
   return (
-    <Modal title={`Create a copy of ${getResourceName(resource)}`} isOpen={isOpen} hideModal={hideModal}>
-      <forms.Form form={form} testId="copy-resource-modal">
-        <forms.FieldGroup>
-          <forms.TextInput field="name" label="New document name" required />
+    <Modal title={`Create a copy of ${getResourceName(resource)}`} isOpen={isOpen} onClose={hideModal}>
+      <Forms.Form form={form} testId="copy-resource-modal">
+        <Forms.FieldGroup>
+          <Forms.TextInput field="name" label="New document name" required />
           <FolderSelectField field="location" label="Select destination" />
-        </forms.FieldGroup>
+        </Forms.FieldGroup>
 
-        <forms.Submit saveText="Create Copy" cancelText="Cancel" />
-      </forms.Form>
+        <Forms.Submit saveText="Create Copy" cancelText="Cancel" />
+      </Forms.Form>
     </Modal>
   );
 }

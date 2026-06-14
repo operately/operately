@@ -54,8 +54,6 @@ export function ResourceHubFolderPage(props: ResourceHubFolderPage.Props) {
         toggleForm={toggleRenameForm}
         key={props.folder.name}
         onSave={props.renameFolder.onSave}
-        forms={props.addFolderModalProps.forms}
-        modal={props.addFolderModalProps.modal}
         onRename={props.renameFolder.onRename}
       />
     </SharedListPage>

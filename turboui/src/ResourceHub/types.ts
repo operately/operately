@@ -1,5 +1,3 @@
-import type * as React from "react";
-
 import type {
   ResourceHub as ApiResourceHub,
   ResourceHubDocument as ApiResourceHubDocument,
@@ -111,42 +109,6 @@ export interface ResourceHubFolderSelectFieldProps {
   label: string;
   field: string;
   notAllowedSelections?: ResourceHubNotAllowedSelection[];
-}
-
-export interface ResourceHubFormsApi {
-  useForm: (options: Record<string, unknown>) => ResourceHubFormState;
-  Form: React.ComponentType<{ form: ResourceHubFormState; testId?: string; children: React.ReactNode }>;
-  FieldGroup: React.ComponentType<{ children: React.ReactNode }>;
-  TextInput: React.ComponentType<{
-    label?: string;
-    field: string;
-    testId?: string;
-    autoFocus?: boolean;
-    required?: boolean;
-    placeholder?: string;
-  }>;
-  Submit: React.ComponentType<{ saveText?: string; cancelText?: string }>;
-  InputField: React.ComponentType<{ label: string; field: string; error?: string; children: React.ReactNode }>;
-  useFieldValue: <T>(field: string) => [T, (value: T) => void];
-  useFieldError: (field: string) => string | undefined;
-}
-
-export interface ResourceHubFormState {
-  values: Record<string, unknown>;
-  state?: string;
-  actions: {
-    reset: () => void;
-    setValue: (field: string, value: unknown) => void;
-  };
-}
-
-export interface ResourceHubModalApi {
-  Modal: React.ComponentType<{
-    isOpen: boolean;
-    hideModal?: () => void;
-    title?: string;
-    children: React.ReactNode;
-  }>;
 }
 
 export interface ResourceHubResourceHeader {

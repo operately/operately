@@ -31,9 +31,6 @@ import {
 } from "@/models/resourceHubs";
 import { useSubscription } from "@/models/subscriptions";
 import type * as Hub from "@/models/resourceHubs";
-import Forms from "@/components/Forms";
-import Modal from "@/components/Modal";
-import type { ResourceHubFormsApi } from "turboui";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -463,8 +460,6 @@ function useProjectDocsAndFilesProps({
       addFolderModalProps: {
         resourceHubId: resourceHub.id,
         onCreated: refresh,
-        forms: Forms as unknown as ResourceHubFormsApi,
-        modal: { Modal },
         onCreateFolder: async (args) => {
           await createFolder({
             resourceHubId: args.resourceHubId,

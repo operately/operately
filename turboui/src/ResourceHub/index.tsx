@@ -1,5 +1,5 @@
 export { AddFileWidget } from "./AddFileWidget";
-export type { AddFileUploadItem, AddFileWidgetFormsApi, AddFileWidgetProps } from "./AddFileWidget";
+export type { AddFileUploadItem, AddFileWidgetProps } from "./AddFileWidget";
 export { AddFilesButton } from "./AddFilesButton";
 export { AddFolderModal } from "./AddFolderModal";
 export type { AddFolderModalProps } from "./AddFolderModal";
@@ -49,11 +49,9 @@ export type {
   ResourceHubFolderSelectApi,
   FolderSelectLoadResult,
   ResourceHubNotAllowedSelection,
-  ResourceHubFormsApi,
   ResourceHubNavigationPaths,
   ResourceHubLinkType,
   ResourceHubListParent,
-  ResourceHubModalApi,
   ResourceHubNode,
   ResourceHubNodeType,
   ResourceHubPermissions,
