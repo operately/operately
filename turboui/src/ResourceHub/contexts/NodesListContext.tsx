@@ -2,9 +2,7 @@ import * as React from "react";
 
 import type {
   ResourceHubFolderSelectApi,
-  ResourceHubFormsApi,
   ResourceHubListParent,
-  ResourceHubModalApi,
   ResourceHubNodesListActions,
   ResourceHubNodesListPaths,
   ResourceHubPermissions,
@@ -12,8 +10,6 @@ import type {
 
 export interface ResourceHubNodesListContextValue {
   parent: ResourceHubListParent;
-  forms: ResourceHubFormsApi;
-  modal: ResourceHubModalApi;
   folderSelect: ResourceHubFolderSelectApi;
   permissions?: ResourceHubPermissions | null;
   onRefetch?: () => void;

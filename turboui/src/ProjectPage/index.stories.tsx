@@ -13,6 +13,7 @@ import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import { ProjectPage } from "./index";
+import { ProjectPageWithDocsAndFilesStory, type ProjectPageWithDocsAndFilesStoryData } from "./ProjectPageWithDocsAndFilesStory";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { generatePermissions } from "../utils/storybook/permissions";
@@ -236,6 +237,19 @@ const mockResources: ResourceManager.Resource[] = [
     url: "https://www.figma.com/file/abc123",
   },
 ];
+
+const docsAndFilesStoryData: ProjectPageWithDocsAndFilesStoryData = {
+  currentViewer,
+  defaultSpace,
+  defaultStatuses: DEFAULT_STATUSES,
+  mockCheckIns,
+  mockContributors,
+  mockDiscussions,
+  mockPeople,
+  mockResources,
+  parentGoalSearch: mockParentGoalSearch,
+  people,
+};
 
 export const Default: Story = {
   render: () => {
@@ -1513,4 +1527,24 @@ export const ProjectWithoutSpace: Story = {
       />
     );
   },
+};
+
+export const WithDocsAndFiles: Story = {
+  parameters: {
+    reactRouter: {
+      path: "/projects/project-1?tab=docs-and-files",
+      routePath: "/projects/:id",
+    },
+  },
+  render: () => <ProjectPageWithDocsAndFilesStory storyData={docsAndFilesStoryData} />,
+};
+
+export const WithDocsAndFilesNoOpenDrafts: Story = {
+  parameters: {
+    reactRouter: {
+      path: "/projects/project-1?tab=docs-and-files",
+      routePath: "/projects/:id",
+    },
+  },
+  render: () => <ProjectPageWithDocsAndFilesStory storyData={docsAndFilesStoryData} includeDrafts={false} />,
 };

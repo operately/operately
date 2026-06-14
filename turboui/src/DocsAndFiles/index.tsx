@@ -63,10 +63,7 @@ export namespace DocsAndFiles {
   export interface TabProps {
     title: string;
     items: Item[];
-    addAction?: React.ReactNode;
     draftPrompt?: DraftPrompt | null;
-    uploadForm?: React.ReactNode;
-    folderModal?: React.ReactNode;
     breadcrumbs?: Breadcrumb[];
     emptyStateKind?: "resourceHub" | "folder";
     hideEmptyState?: boolean;
@@ -136,18 +133,13 @@ export function DocsAndFilesPreview({
 export function DocsAndFilesTab({
   title,
   items,
-  addAction,
   draftPrompt,
-  uploadForm,
-  folderModal,
   breadcrumbs,
   emptyStateKind = "resourceHub",
   hideEmptyState = false,
   className = "p-4 max-w-6xl mx-auto my-6",
 }: DocsAndFiles.TabProps) {
   const [sortBy, setSortBy] = React.useState<DocsAndFiles.SortBy>("name");
-  const sortedItems = React.useMemo(() => sortDocsAndFilesItems(items, sortBy), [items, sortBy]);
-  const showEmptyState = sortedItems.length < 1 && !hideEmptyState;
 
   return (
     <div className={className} data-test-id="docs-and-files-tab">
@@ -156,27 +148,16 @@ export function DocsAndFilesTab({
           <Breadcrumbs breadcrumbs={breadcrumbs} />
           <div className="truncate text-xl font-semibold tracking-tight">{title}</div>
         </div>
-        {addAction}
       </div>
 
-      <DraftPrompt prompt={draftPrompt} />
-      {uploadForm}
-
-      {showEmptyState ? (
-        <EmptyState kind={emptyStateKind} />
-      ) : (
-        sortedItems.length > 0 && (
-          <>
-            <div className="flex items-center justify-between border-b border-surface-outline py-3">
-              <div className="text-sm font-medium text-content-dimmed">{plurarize(sortedItems.length, "item", "items")}</div>
-              <SortControl sortBy={sortBy} onSortChange={setSortBy} />
-            </div>
-            <DocsAndFilesList items={sortedItems} />
-          </>
-        )
-      )}
-
-      {folderModal}
+      <DocsAndFilesDraftPrompt prompt={draftPrompt} />
+      <DocsAndFilesBody
+        items={items}
+        emptyStateKind={emptyStateKind}
+        hideEmptyState={hideEmptyState}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+      />
     </div>
   );
 }
@@ -223,7 +204,7 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs?: DocsAndFiles.Breadcrumb[] 
   );
 }
 
-function DraftPrompt({ prompt }: { prompt?: DocsAndFiles.DraftPrompt | null }) {
+export function DocsAndFilesDraftPrompt({ prompt }: { prompt?: DocsAndFiles.DraftPrompt | null }) {
   if (!prompt || prompt.count < 1) return null;
 
   const label =
@@ -237,6 +218,41 @@ function DraftPrompt({ prompt }: { prompt?: DocsAndFiles.DraftPrompt | null }) {
         {label}
       </Link>
     </div>
+  );
+}
+
+export function DocsAndFilesBody({
+  items,
+  emptyStateKind = "resourceHub",
+  hideEmptyState = false,
+  sortBy,
+  onSortChange,
+}: {
+  items: DocsAndFiles.Item[];
+  emptyStateKind?: "resourceHub" | "folder";
+  hideEmptyState?: boolean;
+  sortBy: DocsAndFiles.SortBy;
+  onSortChange: (sortBy: DocsAndFiles.SortBy) => void;
+}) {
+  const sortedItems = React.useMemo(() => sortDocsAndFilesItems(items, sortBy), [items, sortBy]);
+  const showEmptyState = sortedItems.length < 1 && !hideEmptyState;
+
+  if (showEmptyState) {
+    return <EmptyState kind={emptyStateKind} />;
+  }
+
+  if (sortedItems.length < 1) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="flex items-center justify-between border-b border-surface-outline py-3">
+        <div className="text-sm font-medium text-content-dimmed">{plurarize(sortedItems.length, "item", "items")}</div>
+        <SortControl sortBy={sortBy} onSortChange={onSortChange} />
+      </div>
+      <DocsAndFilesList items={sortedItems} />
+    </>
   );
 }
 

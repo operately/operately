@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import * as Forms from "../../Forms";
 import {
   ResourceHubNodesListProvider,
   useResourceHubNodesListContext,
@@ -16,9 +17,9 @@ interface CopyDocumentModalProps {
 }
 
 export function CopyDocumentModal({ resource, isOpen, hideModal }: CopyDocumentModalProps) {
-  const { parent, actions, forms } = useResourceHubNodesListContext();
+  const { parent, actions } = useResourceHubNodesListContext();
 
-  const form = forms.useForm({
+  const form = Forms.useForm({
     fields: {
       name: `${getResourceName(resource)} - Copy`,
       location: {

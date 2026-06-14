@@ -28,25 +28,12 @@ jest.mock("@/contexts/CurrentCompanyContext", () => ({
   useMe: () => ({ id: "person-1" }),
 }));
 
-jest.mock("@/components/Forms", () => ({
-  __esModule: true,
-  default: {
-    useForm: jest.fn(),
-    Form: () => null,
-    FieldGroup: () => null,
-    TextInput: () => null,
-    Submit: () => null,
-    InputField: () => null,
-    useFieldValue: jest.fn(),
-    useFieldError: jest.fn(),
-  },
-}));
-
-jest.mock("@/components/Modal", () => ({
-  __esModule: true,
-  default: {
-    Modal: () => null,
-  },
+jest.mock("@/hooks/useRichEditorHandlers", () => ({
+  useRichEditorHandlers: () => ({
+    mentionedPersonLookup: jest.fn(),
+    peopleSearch: jest.fn(),
+    uploadFile: jest.fn(),
+  }),
 }));
 
 jest.mock("@/routes/paths", () => ({

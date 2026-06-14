@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { useFieldError, useFieldValue } from "../../Forms";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
 import { getNodeId, getNodeName, getNodeResource, getNodeType, getResourceId } from "../selectors";
 import type { FolderSelectCurrentLocation, ResourceHubNode, ResourceHubNotAllowedSelection } from "../types";
@@ -41,9 +42,9 @@ export function useViewModel(
   fieldName: string,
   notAllowedSelections: ResourceHubNotAllowedSelection[] = EMPTY_NOT_ALLOWED,
 ): ViewModel {
-  const { forms, folderSelect } = useResourceHubNodesListContext();
-  const [location, setValue] = forms.useFieldValue<ViewModelLocation>(fieldName);
-  const error = forms.useFieldError(fieldName);
+  const { folderSelect } = useResourceHubNodesListContext();
+  const [location, setValue] = useFieldValue<ViewModelLocation>(fieldName);
+  const error = useFieldError(fieldName);
   const blockedSelectionsKey = notAllowedSelectionsKey(notAllowedSelections);
 
   const [currentNode, setCurrentNode] = React.useState<ViewModelNode | undefined>();
@@ -51,6 +52,10 @@ export function useViewModel(
   const [loading, setLoading] = React.useState<ViewModelLocation | undefined>();
 
   React.useEffect(() => {
+    if (!location) {
+      return;
+    }
+
     let cancelled = false;
 
     setLoading(location);

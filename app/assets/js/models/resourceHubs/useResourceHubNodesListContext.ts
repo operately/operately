@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Forms from "@/components/Forms";
-import Modal from "@/components/Modal";
 import * as Hub from "@/models/resourceHubs";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { compareIds, usePaths, type Paths } from "@/routes/paths";
@@ -166,8 +164,6 @@ export function useResourceHubNodesListContext(props: NullableNodesProps): Resou
           downloadMarkdown(markdown, name);
         },
       },
-      forms: Forms as unknown as ResourceHubNodesListContextValue["forms"],
-      modal: { Modal },
       folderSelect,
     };
   }, [
@@ -198,8 +194,6 @@ function createEmptyNodesListContext(paths: Paths): ResourceHubNodesListContextV
       name: "",
       type: "resource_hub",
     },
-    forms: Forms as unknown as ResourceHubNodesListContextValue["forms"],
-    modal: { Modal },
     folderSelect: {
       loadFolder: resourceHubUnavailable,
       loadResourceHub: resourceHubUnavailable,

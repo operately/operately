@@ -2,9 +2,10 @@ import * as React from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
+import * as Forms from "../../Forms";
 import { ResourceHubNodesListProvider, type ResourceHubNodesListContextValue } from "../contexts/NodesListContext";
 import { FolderSelectField } from ".";
-import type { ResourceHubFormsApi, ResourceHubNode } from "../types";
+import type { ResourceHubNode } from "../types";
 
 jest.mock("../NodeIcon", () => ({
   NodeIcon: ({ node }: { node: { name?: string | null } }) => <span>{node.name}</span>,
@@ -13,48 +14,6 @@ jest.mock("../NodeIcon", () => ({
 jest.mock("../../icons", () => ({
   IconArrowLeft: (props: React.ComponentProps<"span">) => <span {...props} />,
 }));
-
-function createFormsApi(initialValue: { id: string; type: "folder" | "resourceHub" }) {
-  const Context = React.createContext<
-    | {
-        value: { id: string; type: "folder" | "resourceHub" };
-        setValue: React.Dispatch<React.SetStateAction<{ id: string; type: "folder" | "resourceHub" }>>;
-      }
-    | undefined
-  >(undefined);
-
-  const Provider = ({ children }: { children: React.ReactNode }) => {
-    const [value, setValue] = React.useState(initialValue);
-
-    return <Context.Provider value={{ value, setValue }}>{children}</Context.Provider>;
-  };
-
-  const forms: ResourceHubFormsApi = {
-    useForm: () => ({ values: {}, actions: { reset: jest.fn(), setValue: jest.fn() } }),
-    Form: ({ children }) => <>{children}</>,
-    FieldGroup: ({ children }) => <>{children}</>,
-    TextInput: () => null,
-    Submit: () => null,
-    InputField: ({ label, children }) => (
-      <div>
-        <div>{label}</div>
-        {children}
-      </div>
-    ),
-    useFieldValue: () => {
-      const state = React.useContext(Context);
-
-      if (!state) {
-        throw new Error("forms context is missing");
-      }
-
-      return [state.value, state.setValue];
-    },
-    useFieldError: () => undefined,
-  };
-
-  return { Provider, forms };
-}
 
 const folderNode: ResourceHubNode = {
   id: "node-folder-1",
@@ -85,8 +44,6 @@ const documentNode: ResourceHubNode = {
 
 describe("FolderSelectField", () => {
   test("loads raw folder/resource hub results and navigates into folders", async () => {
-    const { Provider, forms } = createFormsApi({ id: "hub-1", type: "resourceHub" });
-
     const loadResourceHub = jest.fn().mockResolvedValue({
       current: { type: "resourceHub", resourceHub: { id: "hub-1", name: "Hub" } },
       nodes: [folderNode, documentNode],
@@ -107,8 +64,6 @@ describe("FolderSelectField", () => {
 
     const listContext: ResourceHubNodesListContextValue = {
       parent: { id: "hub-1", name: "Hub", type: "resource_hub", resourceHubId: "hub-1" },
-      forms,
-      modal: { Modal: ({ children }) => <>{children}</> },
       folderSelect: {
         loadFolder,
         loadResourceHub,
@@ -117,12 +72,25 @@ describe("FolderSelectField", () => {
       actions: {},
     };
 
+    function Harness() {
+      const form = Forms.useForm({
+        fields: {
+          location: { id: "hub-1", type: "resourceHub" as const },
+        },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Forms.Form form={form}>
+          <ResourceHubNodesListProvider value={listContext}>
+            <FolderSelectField label="Location" field="location" />
+          </ResourceHubNodesListProvider>
+        </Forms.Form>
+      );
+    }
+
     const { container } = render(
-      <Provider>
-        <ResourceHubNodesListProvider value={listContext}>
-          <FolderSelectField label="Location" field="location" />
-        </ResourceHubNodesListProvider>
-      </Provider>,
+      <Harness />,
     );
 
     await waitFor(() =>

@@ -11,7 +11,7 @@ import {
   type ResourceHubNode,
   useNewFileModalsContext,
 } from "../ResourceHub";
-import { DocsAndFiles, DocsAndFilesTab as EmbeddedDocsAndFilesTab } from "../DocsAndFiles";
+import { DocsAndFiles, DocsAndFilesBody, DocsAndFilesDraftPrompt } from "../DocsAndFiles";
 import {
   getNodeAuthorName,
   getNodeChildrenCount,
@@ -45,29 +45,37 @@ function ProjectDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: Project
     [docsAndFiles],
   );
   const draftPrompt = React.useMemo(() => buildDraftPrompt(docsAndFiles), [docsAndFiles]);
+  const [sortBy, setSortBy] = React.useState<DocsAndFiles.SortBy>("name");
 
   return (
     <ResourceHubNodesListProvider value={docsAndFiles.nodesListProps.listContext}>
       <FileDragAndDropArea onFilesDropped={docsAndFiles.newFileModals.setFiles}>
-        <div className="flex-1 overflow-auto">
-          <EmbeddedDocsAndFilesTab
-            title={docsAndFiles.resourceHub.name ?? "Documents & Files"}
+        <div className="flex-1 overflow-auto p-4 max-w-6xl mx-auto my-6" data-test-id="docs-and-files-tab">
+          <div className="flex items-start justify-between gap-4 border-b border-surface-outline pb-4">
+            <div className="min-w-0">
+              <div className="truncate text-xl font-semibold tracking-tight">
+                {docsAndFiles.resourceHub.name ?? "Documents & Files"}
+              </div>
+            </div>
+            <AddFilesButton
+              permissions={docsAndFiles.resourceHub.permissions}
+              onNewDocument={navigateToNewDocument}
+              onNewFolder={toggleShowAddFolder}
+              onUploadFiles={selectFiles}
+              onNewLink={navigateToNewLink}
+            />
+          </div>
+
+          <DocsAndFilesDraftPrompt prompt={draftPrompt} />
+          <AddFileWidget {...docsAndFiles.addFileWidgetProps} />
+          <DocsAndFilesBody
             items={items}
-            addAction={
-              <AddFilesButton
-                permissions={docsAndFiles.resourceHub.permissions}
-                onNewDocument={navigateToNewDocument}
-                onNewFolder={toggleShowAddFolder}
-                onUploadFiles={selectFiles}
-                onNewLink={navigateToNewLink}
-              />
-            }
-            draftPrompt={draftPrompt}
-            uploadForm={<AddFileWidget {...docsAndFiles.addFileWidgetProps} />}
-            folderModal={<AddFolderModal {...docsAndFiles.addFolderModalProps} />}
             emptyStateKind="resourceHub"
             hideEmptyState={filesSelected}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
           />
+          <AddFolderModal {...docsAndFiles.addFolderModalProps} />
         </div>
       </FileDragAndDropArea>
     </ResourceHubNodesListProvider>

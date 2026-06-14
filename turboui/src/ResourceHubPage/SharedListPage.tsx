@@ -22,10 +22,7 @@ export interface SharedListPageProps {
   title: Page.Props["title"];
   navigation: NonNullable<Page.Props["navigation"]>;
   newFileModals: NewFileModalsContextValue;
-  addFileWidgetProps: Pick<
-    AddFileWidgetProps,
-    "forms" | "modal" | "subscriptions" | "mentionSearchScope" | "formatFileSize" | "onUpload"
-  >;
+  addFileWidgetProps: Pick<AddFileWidgetProps, "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload">;
   nodesListProps: {
     nodes: ResourceHubNode[];
     getNodePath: (node: ResourceHubNode) => string;
