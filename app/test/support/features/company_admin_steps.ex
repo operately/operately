@@ -11,6 +11,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.UI.Emails
   alias Operately.Access.Binding
+  alias Wallaby.Browser
 
   step :setup, ctx, as: role do
     ctx
@@ -52,6 +53,20 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     })
 
     Factory.enable_feature(ctx, "billing")
+  end
+
+  step :enable_billing_notice_for_company, ctx do
+    Factory.enable_feature(ctx, "billing-notice")
+  end
+
+  step :given_another_company_with_billing_notice_exists, ctx do
+    person = ctx[:owner] || ctx[:admin] || ctx[:member] || ctx.creator
+    account = person |> Operately.Repo.preload(:account) |> Map.fetch!(:account)
+
+    ctx = Factory.add_company(ctx, :second_company, account, name: "Beta Labs")
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.second_company, "billing-notice")
+
+    Map.put(ctx, :second_company, company)
   end
 
   step :fill_company_to_member_limit, ctx do
@@ -177,6 +192,14 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :visit_company_home_page, ctx do
     ctx
     |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.assert_has(testid: "company-home")
+  end
+
+  step :visit_company_home_page_for_company, ctx, company_key do
+    company = Map.fetch!(ctx, company_key)
+
+    ctx
+    |> UI.visit(Paths.home_path(company))
     |> UI.assert_has(testid: "company-home")
   end
 
@@ -802,6 +825,29 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx |> UI.assert_text(text)
   end
 
+  step :assert_billing_notice_banner_visible, ctx do
+    ctx |> UI.assert_has(testid: "billing-notice-banner")
+  end
+
+  step :assert_billing_notice_banner_text, ctx, text do
+    ctx |> UI.assert_text(text)
+  end
+
+  step :dismiss_billing_notice_banner, ctx do
+    ctx
+    |> UI.click(testid: "billing-notice-banner-dismiss")
+    |> UI.refute_has(testid: "billing-notice-banner")
+  end
+
+  step :assert_billing_notice_dismissed_in_local_storage, ctx do
+    assert local_storage_value(ctx.session, "announcements:billing-notice-2026-06-29-dismissed") == "true"
+    ctx
+  end
+
+  step :refute_billing_notice_banner_visible, ctx do
+    ctx |> UI.refute_has(testid: "billing-notice-banner")
+  end
+
   step :refute_payment_default_banner_visible, ctx do
     ctx |> UI.refute_has(testid: "payment-default-banner")
   end
@@ -826,5 +872,17 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :assert_redirected_to_company_admin_page, ctx do
     ctx |> UI.assert_page(Paths.company_admin_path(ctx.company))
+  end
+
+  defp local_storage_value(session, key) do
+    Browser.execute_script(
+      session,
+      "return window.localStorage.getItem('#{key}');",
+      fn result -> send(self(), {:local_storage_value, result}) end
+    )
+
+    receive do
+      {:local_storage_value, value} -> value
+    end
   end
 end
