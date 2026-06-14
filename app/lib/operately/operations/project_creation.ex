@@ -8,6 +8,7 @@ defmodule Operately.Operations.ProjectCreation do
   alias Operately.Notifications
   alias Operately.Notifications.Subscription
   alias Operately.Projects.{Project, Contributor}
+  alias Operately.ResourceHubs.ResourceHub
   alias Operately.ContextualDates.ContextualDate
   alias Ecto.Multi
 
@@ -30,6 +31,7 @@ defmodule Operately.Operations.ProjectCreation do
   def run(%__MODULE__{} = params) do
     Multi.new()
     |> insert_project(params)
+    |> insert_default_resource_hub()
     |> insert_access_context(params)
     |> insert_champion_as_contributor(params)
     |> insert_reviewer_as_contributor(params)
@@ -64,6 +66,15 @@ defmodule Operately.Operations.ProjectCreation do
       })
     end)
     |> SubscriptionListOps.update(:project)
+  end
+
+  defp insert_default_resource_hub(multi) do
+    Multi.insert(multi, :resource_hub, fn changes ->
+      ResourceHub.changeset(%{
+        project_id: changes.project.id,
+        name: "Documents & Files",
+      })
+    end)
   end
 
   defp insert_mentioned_people(multi, params) do

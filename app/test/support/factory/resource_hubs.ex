@@ -3,7 +3,15 @@ defmodule Operately.Support.Factory.ResourceHubs do
     parent = Map.fetch!(ctx, parent_name)
     creator = Map.fetch!(ctx, creator_name)
 
-    hub = Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
+    hub =
+      case parent do
+        %Operately.Projects.Project{} = project ->
+          existing_hub = Operately.Repo.preload(project, :resource_hub).resource_hub
+          existing_hub || Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
+
+        _ ->
+          Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
+      end
 
     Map.put(ctx, testid, hub)
   end
