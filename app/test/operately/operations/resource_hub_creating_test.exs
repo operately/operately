@@ -33,11 +33,14 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
   end
 
   test "ResourceHubCreating operation creates a project-backed resource hub", ctx do
-    assert ResourceHubs.list_resource_hubs(ctx.project) == []
+    hubs_before = ResourceHubs.list_resource_hubs(ctx.project)
 
     {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.project, @attrs)
 
-    assert ResourceHubs.list_resource_hubs(ctx.project) == [resource_hub]
+    hubs_after = ResourceHubs.list_resource_hubs(ctx.project)
+
+    assert length(hubs_after) == length(hubs_before) + 1
+    assert Enum.find(hubs_after, &(&1 == resource_hub))
     assert resource_hub.project_id == ctx.project.id
     assert is_nil(resource_hub.space_id)
   end

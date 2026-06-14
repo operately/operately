@@ -418,10 +418,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :given_project_docs_and_files_exist, ctx do
-    resource_hub =
-      resource_hub_fixture(ctx.champion, ctx.project, %{
-        name: "Documents & Files",
-      })
+    resource_hub = Operately.Repo.preload(ctx.project, :resource_hub).resource_hub
 
     document =
       document_fixture(resource_hub.id, ctx.champion.id, %{
