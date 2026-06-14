@@ -7,7 +7,6 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
   import Operately.GroupsFixtures
   import Operately.NotificationsFixtures
   import Operately.ActivitiesFixtures
-  import Operately.ResourceHubsFixtures
 
   alias Operately.Repo
   alias Operately.Access.Binding
@@ -208,16 +207,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
 
     test "include_resource_hub", ctx do
       project = create_project(ctx)
-
-      assert {200, res} =
-               query(ctx.conn, [:projects, :get], %{
-                 id: Paths.project_id(project),
-                 include_resource_hub: true
-               })
-
-      assert res.project.resource_hub == nil
-
-      hub = resource_hub_fixture(ctx.person, project) |> Repo.preload(:project)
+      hub = project |> Repo.preload(resource_hub: :project) |> Map.fetch!(:resource_hub)
 
       assert {200, res} =
                query(ctx.conn, [:projects, :get], %{

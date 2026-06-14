@@ -15,6 +15,7 @@ defmodule Operately.Operations.ProjectCreationTest do
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
   alias Operately.Notifications.Subscription
+  alias Operately.ResourceHubs
 
   setup do
     company = company_fixture()
@@ -88,6 +89,13 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Enum.member?(contributors, {ctx.creator.id, :contributor})
     assert Enum.member?(contributors, {ctx.reviewer.id, :reviewer})
     assert Enum.member?(contributors, {ctx.champion.id, :champion})
+  end
+
+  test "ProjectCreation operation creates a default project-backed resource hub", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+    project_id = project.id
+
+    assert [%{project_id: ^project_id, space_id: nil, name: "Documents & Files"}] = ResourceHubs.list_resource_hubs(project)
   end
 
   test "ProjectCreation operation doesn't add creator as contributor when creator is champion", ctx do
@@ -265,8 +273,10 @@ defmodule Operately.Operations.ProjectCreationTest do
     end)
 
     activity = from(a in Activity, where: a.action == "project_created" and a.content["project_id"] == ^project.id) |> Repo.one()
+    resource_hub_activities = from(a in Activity, where: a.action == "resource_hub_created" and a.content["project_id"] == ^project.id) |> Repo.all()
 
     assert 0 == notifications_count()
+    assert resource_hub_activities == []
 
     perform_job(activity.id)
 

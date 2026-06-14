@@ -143,8 +143,11 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
 
   defp assert_project_created(res, space_id) do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.project.id)
-    project = Operately.Projects.get_project!(id)
+    project = Operately.Projects.get_project!(id) |> Operately.Repo.preload(:resource_hub)
     assert project.group_id == space_id
+    assert project.resource_hub
+    assert project.resource_hub.project_id == project.id
+    assert project.resource_hub.name == "Documents & Files"
   end
 
   #
