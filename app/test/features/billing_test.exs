@@ -180,6 +180,26 @@ defmodule Operately.Features.BillingTest do
     |> Steps.assert_billing_plan_selection_page_is_open()
   end
 
+  feature "billing notice banner appears on billing overview pages for flagged companies", ctx do
+    ctx =
+      ctx
+      |> Steps.given_a_billing_enabled_company_exists_and_i_am_company_admin()
+      |> CompanyAdminSteps.enable_billing_notice_for_company()
+      |> Steps.given_free_polar_state_agent()
+
+    put_polar_handlers(%{
+      get_customer_state_by_external_id: fn company_id ->
+        assert company_id == ctx.company.id
+        {:ok, Agent.get(ctx.polar_state_agent, & &1)}
+      end
+    })
+
+    ctx
+    |> Steps.visit_billing_overview_page()
+    |> CompanyAdminSteps.assert_billing_notice_banner_visible()
+    |> CompanyAdminSteps.assert_billing_notice_banner_text("New billing and plans are coming to Operately")
+  end
+
   feature "company admin can open billing cancellation for a cancelable paid subscription", ctx do
     ctx =
       ctx
