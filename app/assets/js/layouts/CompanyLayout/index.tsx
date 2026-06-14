@@ -41,6 +41,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { useGlobalSearchHandler } from "./useGlobalSearch";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { BillingDangerBanner } from "./BillingDangerBanner";
+import { BillingNoticeBanner } from "./BillingNoticeBanner";
 
 interface NavigationProps {
   company: Api.Company;
@@ -246,6 +247,7 @@ export default function CompanyLayout() {
 
   return (
     <div className="flex flex-col h-screen">
+      <BillingNoticeBanner />
       <Navigation {...data} onOpenKeyboardShortcuts={keyboardShortcutsModal.open} />
       <SupportSessionBanner />
 
