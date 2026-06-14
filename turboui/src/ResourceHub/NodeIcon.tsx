@@ -1,7 +1,7 @@
 import * as React from "react";
 import classNames from "../utils/classnames";
 import { IconAlignJustified, IconChartColumn, IconFolderFilled, IconLink, IconLogs, IconVideo } from "../icons";
-import { getNodeContentType, getNodeLinkType, getNodeThumbnail, getNodeType } from "./selectors";
+import { getNodeLinkType, getNodeThumbnail, getNodeType, hasNodeContentType, isNodeMovFile, isNodeVideoFile } from "./selectors";
 import type { ResourceHubNode } from "./types";
 import { LinkIcon } from "./LinkIcon";
 
@@ -20,17 +20,13 @@ export function NodeIcon({ node, size }: { node: ResourceHubNode; size: number }
   if (thumbnail) return <Thumbnail url={thumbnail.url} alt={thumbnail.alt} width={thumbnail.width} height={thumbnail.height} size={size} />;
 
   if (nodeType === "document") return <FileIcon size={size} icon={IconAlignJustified} color="bg-sky-500" />;
-  if (hasContentType(node, "pdf")) return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
-  if (hasContentType(node, "video")) return <FileIcon size={size} icon={IconVideo} />;
-  if (hasContentType(node, "audio")) return <FileIcon size={size} filetype="audio" />;
-  if (hasContentType(node, "zip")) return <FileIcon size={size} filetype="zip" icon={IconChartColumn} />;
-  if (hasContentType(node, "mov")) return <FileIcon size={size} filetype="mov" icon={IconVideo} />;
+  if (hasNodeContentType(node, "pdf")) return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
+  if (isNodeMovFile(node)) return <FileIcon size={size} filetype="mov" icon={IconVideo} />;
+  if (isNodeVideoFile(node)) return <FileIcon size={size} icon={IconVideo} />;
+  if (hasNodeContentType(node, "audio")) return <FileIcon size={size} filetype="audio" />;
+  if (hasNodeContentType(node, "zip")) return <FileIcon size={size} filetype="zip" icon={IconChartColumn} />;
 
   return <FileIcon size={size} icon={IconAlignJustified} />;
-}
-
-function hasContentType(node: ResourceHubNode, contentType: string) {
-  return getNodeType(node) === "file" && Boolean(getNodeContentType(node)?.includes(contentType));
 }
 
 function FolderIcon({ size }: { size: number }) {

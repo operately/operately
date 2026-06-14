@@ -79,9 +79,11 @@ import {
 
 function ProjectPageHarness({
   includeDocsAndFiles = false,
+  includeQuicktimeFile = false,
   initialEntry = "/projects/project-1",
 }: {
   includeDocsAndFiles?: boolean;
+  includeQuicktimeFile?: boolean;
   initialEntry?: string;
 }) {
   const subscriptions = useMockSubscriptions({ entityType: "project" });
@@ -162,8 +164,27 @@ function ProjectPageHarness({
           commentsCount: 1,
         },
       }),
+      ...(includeQuicktimeFile
+        ? [
+            createMockFileNode({
+              id: "node-file-demo-clip",
+              name: "Demo Clip",
+              updatedAt: "2026-06-07T12:00:00Z",
+              file: {
+                id: "file-demo-clip",
+                resourceHubId: resourceHub.id,
+                parentFolderId: undefined,
+                blob: {
+                  id: "blob-mov-1",
+                  url: "/demo.mov",
+                  contentType: "video/quicktime",
+                } as any,
+              },
+            }),
+          ]
+        : []),
     ],
-    [resourceHub],
+    [includeQuicktimeFile, resourceHub],
   );
   const sharedProps = useMockSharedListPageProps({
     parent: resourceHub,
@@ -276,15 +297,30 @@ describe("ProjectPage", () => {
   test("renders the shared resource hub content in the docs and files tab", () => {
     render(<ProjectPageHarness includeDocsAndFiles initialEntry="/projects/project-1?tab=docs-and-files" />);
 
-    expect(screen.getByText("Continue writing your draft document…")).toBeInTheDocument();
+    expect(screen.getByText("Continue writing your draft document...")).toBeInTheDocument();
+    expect(screen.getByText("6 items")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sort by Name" })).toBeInTheDocument();
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
     expect(screen.getByText("Roadmap Screenshot")).toBeInTheDocument();
+  });
+
+  test("renders quicktime videos as MOV files in the docs and files tab", () => {
+    render(
+      <ProjectPageHarness
+        includeDocsAndFiles
+        includeQuicktimeFile
+        initialEntry="/projects/project-1?tab=docs-and-files"
+      />,
+    );
+
+    expect(screen.getByText("Demo Clip")).toBeInTheDocument();
+    expect(screen.getByText("mov")).toBeInTheDocument();
   });
 
   test("falls back to the overview when the docs and files tab is requested without hub data", () => {
     render(<ProjectPageHarness initialEntry="/projects/project-1?tab=docs-and-files" />);
 
     expect(screen.getByText("Description")).toBeInTheDocument();
-    expect(screen.queryByText("Continue writing your draft document…")).not.toBeInTheDocument();
+    expect(screen.queryByText("Continue writing your draft document...")).not.toBeInTheDocument();
   });
 });
