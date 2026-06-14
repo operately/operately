@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 
-import Modal from "@/components/Modal";
-import Forms from "@/components/Forms";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { files, type ResourceHub, type ResourceHubFolder } from "@/models/resourceHubs";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
@@ -19,7 +18,7 @@ export function useAddFileWidgetProps({
   onUploaded,
 }: UseAddFileWidgetPropsArgs): Pick<
   AddFileWidgetProps,
-  "forms" | "modal" | "subscriptions" | "mentionSearchScope" | "formatFileSize" | "onUpload"
+  "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload"
 > {
   const potentialSubscribers = folder?.potentialSubscribers || resourceHub?.potentialSubscribers || [];
 
@@ -27,13 +26,14 @@ export function useAddFileWidgetProps({
     ignoreMe: true,
     resourceHubName: resourceHub?.name ?? "",
   });
+  const richTextHandlers = useRichEditorHandlers({
+    scope: { type: "resource_hub", id: resourceHub?.id ?? "" },
+  });
 
   return useMemo(
     () => ({
-      forms: Forms as unknown as AddFileWidgetProps["forms"],
-      modal: { Modal },
       subscriptions: subscriptionsState,
-      mentionSearchScope: { type: "resource_hub", id: resourceHub?.id ?? "" },
+      richTextHandlers,
       formatFileSize: findFileSize,
       onUpload: async (items: AddFileUploadItem[], setProgress: (progress: number) => void) => {
         if (!resourceHub?.id) return;
@@ -50,7 +50,7 @@ export function useAddFileWidgetProps({
         onUploaded();
       },
     }),
-    [resourceHub?.id, resourceHub?.name, folder?.id, subscriptionsState, onUploaded],
+    [resourceHub?.id, resourceHub?.name, folder?.id, subscriptionsState, richTextHandlers, onUploaded],
   );
 }
 

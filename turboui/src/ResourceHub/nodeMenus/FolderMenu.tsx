@@ -1,12 +1,13 @@
 import * as React from "react";
 
 import { DangerButton, SecondaryButton } from "../../Button";
+import * as Forms from "../../Forms";
 import { Menu, MenuActionItem } from "../../Menu";
 import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
 import { getResourceName } from "../selectors";
-import type { ResourceHubFolder, ResourceHubFormsApi, ResourceHubModalApi } from "../types";
+import type { ResourceHubFolder } from "../types";
 import { CopyFolderModal } from "./CopyFolder";
 import { CopyResourceMenuItem } from "./CopyResource";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
@@ -16,7 +17,7 @@ interface FolderMenuProps {
 }
 
 export function FolderMenu({ folder }: FolderMenuProps) {
-  const { permissions, onRefetch, forms, modal, actions } = useResourceHubNodesListContext();
+  const { permissions, onRefetch, actions } = useResourceHubNodesListContext();
   const [showRenameForm, setShowRenameForm] = React.useState(false);
   const [showMoveForm, setShowMoveForm] = React.useState(false);
   const [showCopyForm, setShowCopyForm] = React.useState(false);
@@ -61,8 +62,6 @@ export function FolderMenu({ folder }: FolderMenuProps) {
           toggleForm={toggleRenameForm}
           key={folder.name}
           onSave={() => onRefetch?.()}
-          forms={forms}
-          modal={modal}
           onRename={renameFolder}
         />
       )}
@@ -148,16 +147,13 @@ export interface RenameFolderModalProps {
   showForm: boolean;
   toggleForm: () => void;
   onSave: () => void;
-  forms: ResourceHubFormsApi;
-  modal: ResourceHubModalApi;
   onRename: (id: string, name: string) => Promise<void>;
 }
 
-export function RenameFolderModal({ folder, showForm, toggleForm, onSave, forms, modal, onRename }: RenameFolderModalProps) {
-  const { Modal } = modal;
+export function RenameFolderModal({ folder, showForm, toggleForm, onSave, onRename }: RenameFolderModalProps) {
   const folderName = getResourceName(folder);
 
-  const form = forms.useForm({
+  const form = Forms.useForm({
     fields: {
       name: folderName,
     },
@@ -180,14 +176,14 @@ export function RenameFolderModal({ folder, showForm, toggleForm, onSave, forms,
   });
 
   return (
-    <Modal title="Rename folder" isOpen={showForm} hideModal={toggleForm}>
-      <forms.Form form={form}>
-        <forms.FieldGroup>
-          <forms.TextInput label="Name" field="name" testId="new-folder-name" autoFocus />
-        </forms.FieldGroup>
+    <Modal title="Rename folder" isOpen={showForm} onClose={toggleForm}>
+      <Forms.Form form={form}>
+        <Forms.FieldGroup>
+          <Forms.TextInput label="Name" field="name" testId="new-folder-name" autoFocus />
+        </Forms.FieldGroup>
 
-        <forms.Submit cancelText="Cancel" />
-      </forms.Form>
+        <Forms.Submit cancelText="Cancel" />
+      </Forms.Form>
     </Modal>
   );
 }

@@ -1,6 +1,8 @@
 import * as React from "react";
 
+import * as Forms from "../../Forms";
 import { MenuActionItem } from "../../Menu";
+import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
 import { FolderSelectField } from "../FolderSelectField";
@@ -30,8 +32,7 @@ interface MoveResourceModalProps {
 }
 
 export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }: MoveResourceModalProps) {
-  const { parent, onRefetch, actions, forms, modal } = useResourceHubNodesListContext();
-  const { Modal } = modal;
+  const { parent, onRefetch, actions } = useResourceHubNodesListContext();
   const parentFolderId = getResourceParentFolderId(resource);
 
   const locationChanged = (location: { id?: string | null; type: string }) => {
@@ -40,7 +41,7 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
     return true;
   };
 
-  const form = forms.useForm({
+  const form = Forms.useForm({
     fields: {
       location: {
         id: parent.id,
@@ -78,14 +79,14 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
   );
 
   return (
-    <Modal title={`Move ${getResourceName(resource)}`} isOpen={isOpen} hideModal={hideModal}>
-      <forms.Form form={form} testId="move-resource-modal">
-        <forms.FieldGroup>
+    <Modal title={`Move ${getResourceName(resource)}`} isOpen={isOpen} onClose={hideModal}>
+      <Forms.Form form={form} testId="move-resource-modal">
+        <Forms.FieldGroup>
           <FolderSelectField field="location" notAllowedSelections={notAllowedSelections} label="Select destination" />
-        </forms.FieldGroup>
+        </Forms.FieldGroup>
 
-        <forms.Submit saveText="Move Here" cancelText="Cancel" />
-      </forms.Form>
+        <Forms.Submit saveText="Move Here" cancelText="Cancel" />
+      </Forms.Form>
     </Modal>
   );
 }

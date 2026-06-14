@@ -1,29 +1,20 @@
 import * as React from "react";
 
-import type { ResourceHubFormsApi, ResourceHubModalApi } from "./types";
+import * as Forms from "../Forms";
+import Modal from "../Modal";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
 export interface AddFolderModalProps {
   resourceHubId: string;
   folderId?: string;
   onCreated: () => void;
-  forms: ResourceHubFormsApi;
-  modal: ResourceHubModalApi;
   onCreateFolder: (args: { resourceHubId: string; folderId?: string; name: string }) => Promise<void>;
 }
 
-export function AddFolderModal({
-  resourceHubId,
-  folderId,
-  onCreated,
-  forms,
-  modal,
-  onCreateFolder,
-}: AddFolderModalProps) {
+export function AddFolderModal({ resourceHubId, folderId, onCreated, onCreateFolder }: AddFolderModalProps) {
   const { showAddFolder, toggleShowAddFolder } = useNewFileModalsContext();
-  const { Modal } = modal;
 
-  const form = forms.useForm({
+  const form = Forms.useForm({
     fields: {
       name: "",
     },
@@ -46,20 +37,20 @@ export function AddFolderModal({
   });
 
   return (
-    <Modal title="New folder" isOpen={showAddFolder} hideModal={toggleShowAddFolder}>
-      <forms.Form form={form}>
-        <forms.FieldGroup>
-          <forms.TextInput
+    <Modal title="New folder" isOpen={showAddFolder} onClose={toggleShowAddFolder}>
+      <Forms.Form form={form}>
+        <Forms.FieldGroup>
+          <Forms.TextInput
             label="Name"
             field="name"
             testId="new-folder-name"
             autoFocus
             placeholder="e.g. Monthly Reports"
           />
-        </forms.FieldGroup>
+        </Forms.FieldGroup>
 
-        <forms.Submit cancelText="Cancel" />
-      </forms.Form>
+        <Forms.Submit cancelText="Cancel" />
+      </Forms.Form>
     </Modal>
   );
 }
