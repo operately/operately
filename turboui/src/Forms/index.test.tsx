@@ -79,6 +79,25 @@ describe("Forms", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  test("assigns a default sanitized test id from the field name", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { items: [{ name: "Roadmap" }] },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="items[0].name" label="Name" />
+        </Form>
+      );
+    }
+
+    const { container } = render(<Harness />);
+
+    expect(container.querySelector('[data-test-id="items-0-name"]')).toBeInTheDocument();
+  });
+
   test("resets field values before invoking cancel", () => {
     const onCancel = jest.fn();
 

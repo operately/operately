@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { createTestId } from "../TestableElement";
 import { useFieldError, useFieldValue } from "./context";
 import { InputField } from "./FieldGroup";
 import { useValidation, validatePresence } from "./validation";
@@ -20,7 +21,7 @@ export function TextInput({ field, label, testId, autoFocus, required, placehold
         value={value ?? ""}
         autoFocus={autoFocus}
         placeholder={placeholder}
-        data-test-id={testId}
+        data-test-id={testId ?? createTestId(field)}
         onChange={(event) => setValue(event.target.value)}
         className={[
           "w-full rounded-lg border bg-surface-base px-3 py-1.5 text-content-accent placeholder-content-subtle",
