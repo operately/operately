@@ -105,10 +105,7 @@ export namespace ProjectPage {
       getDraftEditPath: (node: ResourceHubNode) => string | undefined;
     };
     newFileModals: NewFileModalsContextValue;
-    addFileWidgetProps: Pick<
-      AddFileWidgetProps,
-      "forms" | "modal" | "subscriptions" | "mentionSearchScope" | "formatFileSize" | "onUpload"
-    >;
+    addFileWidgetProps: Pick<AddFileWidgetProps, "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload">;
     nodesListProps: SharedListPageProps["nodesListProps"];
     addFolderModalProps: AddFolderModalProps;
   }

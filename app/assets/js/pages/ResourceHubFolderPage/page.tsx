@@ -12,9 +12,6 @@ import {
   useResourceHubNodesListProps,
 } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
-import Forms from "@/components/Forms";
-import Modal from "@/components/Modal";
-import type { ResourceHubFormsApi } from "turboui";
 
 export function Page() {
   const { folder, nodes } = useLoadedData();
@@ -53,8 +50,6 @@ export function Page() {
       resourceHubId: folder.resourceHub.id!,
       folderId: folder.id,
       onCreated: refresh,
-      forms: Forms as unknown as ResourceHubFormsApi,
-      modal: { Modal },
       onCreateFolder: async (args) => {
         await createFolder({
           resourceHubId: args.resourceHubId,

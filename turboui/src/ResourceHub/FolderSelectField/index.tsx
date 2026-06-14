@@ -3,24 +3,23 @@ import * as React from "react";
 import { BeatLoader } from "react-spinners";
 import classNames from "classnames";
 
+import { InputField } from "../../Forms";
 import { IconArrowLeft } from "../../icons";
 import { NodeIcon } from "../NodeIcon";
 import { createTestId } from "../../TestableElement";
-import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
 import type { ResourceHubFolderSelectFieldProps } from "../types";
 import { useViewModel, type ViewModel } from "./viewModel";
 
 export function FolderSelectField({ label, field, notAllowedSelections }: ResourceHubFolderSelectFieldProps) {
-  const { forms } = useResourceHubNodesListContext();
   const viewModel = useViewModel(field, notAllowedSelections);
 
   return (
-    <forms.InputField label={label} field={field} error={viewModel.error}>
+    <InputField label={label} field={field} error={viewModel.error}>
       <div className="border border-surface-outline rounded-lg">
         <Navigation viewModel={viewModel} />
         <NodeList viewModel={viewModel} />
       </div>
-    </forms.InputField>
+    </InputField>
   );
 }
 

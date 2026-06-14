@@ -76,24 +76,8 @@ const quicktimeFileNode: ResourceHubNode = {
   },
 };
 
-const defaultLocation = { id: "hub-1", type: "resourceHub" } as const;
-const setLocation = jest.fn();
-
 const listContext: ResourceHubNodesListContextValue = {
   parent: { id: "hub-1", name: "Hub", type: "resource_hub", resourceHubId: "hub-1" },
-  forms: {
-    useForm: () => ({ values: {}, actions: { reset: jest.fn(), setValue: jest.fn() } }),
-    Form: ({ children }) => <>{children}</>,
-    FieldGroup: ({ children }) => <>{children}</>,
-    TextInput: () => null,
-    Submit: () => null,
-    InputField: ({ children }) => <>{children}</>,
-    useFieldValue: () => [defaultLocation, setLocation],
-    useFieldError: () => undefined,
-  },
-  modal: {
-    Modal: ({ children, isOpen }: { children?: React.ReactNode; isOpen?: boolean }) => (isOpen ? <>{children}</> : null),
-  },
   folderSelect: {
     loadFolder: jest.fn().mockResolvedValue({
       current: {

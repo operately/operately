@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Forms from "@/components/Forms";
-import Modal from "@/components/Modal";
 import * as Hub from "@/models/resourceHubs";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { compareIds, usePaths } from "@/routes/paths";
@@ -50,8 +48,6 @@ export function useCopyDocumentListContext(
           navigate(paths.resourceHubDocumentPath(res.document.id));
         },
       },
-      forms: Forms as unknown as ResourceHubNodesListContextValue["forms"],
-      modal: { Modal },
       folderSelect: {
         loadFolder: async (id: string): Promise<FolderSelectLoadResult> => {
           const res = await Hub.folders.get({
