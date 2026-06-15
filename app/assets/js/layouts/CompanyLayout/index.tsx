@@ -253,7 +253,7 @@ export default function CompanyLayout() {
 
       <BillingDangerBanner />
 
-      <div className="flex-1 overflow-y-auto" ref={outletDiv}>
+      <div className="relative flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
 
