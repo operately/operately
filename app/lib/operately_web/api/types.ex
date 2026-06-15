@@ -160,6 +160,18 @@ defmodule OperatelyWeb.Api.Types do
     field :expires_at, :datetime, null: false
   end
 
+  object :site_message do
+    field :id, :string
+    field :title, :string
+    field :description, :string
+    field? :all_companies, :boolean
+    field? :active, :boolean
+    field? :expires_at, :datetime
+    field? :company_ids, list_of(:string)
+    field? :inserted_at, :datetime
+    field? :updated_at, :datetime
+  end
+
   object :account do
     field :full_name, :string, null: false
     field :site_admin, :boolean, null: false
