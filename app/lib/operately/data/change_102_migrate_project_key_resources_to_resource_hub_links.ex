@@ -3,6 +3,8 @@ defmodule Operately.Data.Change102MigrateProjectKeyResourcesToResourceHubLinks d
 
   alias Operately.Repo
 
+  @empty_description %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
+
   defmodule KeyResource do
     use Operately.Schema
 
@@ -150,6 +152,7 @@ defmodule Operately.Data.Change102MigrateProjectKeyResourcesToResourceHubLinks d
         author_id: author_id,
         url: key_resource.link,
         type: infer_link_type(key_resource.link),
+        description: @empty_description,
         subscription_list_id: subscription_list.id,
         inserted_at: key_resource.inserted_at,
         updated_at: key_resource.updated_at
