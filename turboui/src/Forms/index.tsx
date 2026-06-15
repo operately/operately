@@ -1,6 +1,7 @@
 export { Form } from "./Form";
 export { FieldGroup, InputField } from "./FieldGroup";
 export { RichTextArea } from "./RichTextArea";
+export { SelectBox } from "./SelectBox";
 export { Submit } from "./Submit";
 export { TextInput } from "./TextInput";
 export { useFieldError, useFieldValue } from "./context";
@@ -16,6 +17,8 @@ export type {
   FormValues,
   InputFieldProps,
   RichTextAreaProps,
+  SelectBoxOption,
+  SelectBoxProps,
   SubmitProps,
   TextInputProps,
   UseFormOptions,

@@ -71,6 +71,20 @@ export interface SubmitProps {
   cancelText?: string;
 }
 
+export interface SelectBoxOption {
+  label: string;
+  value: string;
+}
+
+export interface SelectBoxProps {
+  field: string;
+  label?: string;
+  hidden?: boolean;
+  placeholder?: string;
+  options: SelectBoxOption[];
+  required?: boolean;
+}
+
 export interface RichTextAreaProps {
   field: string;
   richTextHandlers: RichEditorHandlers;

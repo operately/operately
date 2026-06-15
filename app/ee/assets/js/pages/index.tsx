@@ -2,6 +2,7 @@ import * as SaasAdminBillingCatalogPage from "./SaasAdminBillingCatalogPage";
 import * as SaasAdminCompanyPage from "./SaasAdminCompanyPage";
 import * as SaasAdminEmailSettingsPage from "./SaasAdminEmailSettingsPage";
 import * as SaasAdminPage from "./SaasAdminPage";
+import * as SaasAdminSiteMessagesPage from "./SaasAdminSiteMessagesPage";
 
 export default {
   SaasAdminPage: {
@@ -26,5 +27,11 @@ export default {
     name: "SaasAdminBillingCatalogPage",
     loader: SaasAdminBillingCatalogPage.loader,
     Page: SaasAdminBillingCatalogPage.Page,
+  },
+
+  SaasAdminSiteMessagesPage: {
+    name: "SaasAdminSiteMessagesPage",
+    loader: SaasAdminSiteMessagesPage.loader,
+    Page: SaasAdminSiteMessagesPage.Page,
   },
 };

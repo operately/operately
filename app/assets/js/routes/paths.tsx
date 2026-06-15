@@ -556,20 +556,22 @@ export class Paths {
   }
 }
 
-export function usePaths() {
-  const data = useRouteLoaderData("companyRoot") as { company: { id: string | null } };
+export function useOptionalPaths(): Paths | null {
+  const data = useRouteLoaderData("companyRoot") as { company: { id: string | null } } | undefined;
 
-  if (!data) {
+  return React.useMemo(() => {
+    if (!data?.company?.id) return null;
+
+    return new Paths({ companyId: data.company.id });
+  }, [data?.company?.id]);
+}
+
+export function usePaths() {
+  const paths = useOptionalPaths();
+
+  if (!paths) {
     throw new Error("usePaths must be used within a company route context");
   }
-
-  if (!data.company) {
-    throw new Error("usePaths must be used within a company route context with a valid company");
-  }
-
-  const paths = React.useMemo(() => {
-    return new Paths({ companyId: data.company.id! });
-  }, [data.company.id]);
 
   return paths;
 }

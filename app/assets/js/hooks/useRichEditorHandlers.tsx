@@ -3,7 +3,7 @@ import React from "react";
 import * as People from "@/models/people";
 import * as Blobs from "@/models/blobs";
 
-import { usePaths } from "@/routes/paths";
+import { useOptionalPaths } from "@/routes/paths";
 import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { RichEditorHandlers } from "turboui";
 
@@ -12,12 +12,25 @@ interface Props {
 }
 
 export function useRichEditorHandlers(attrs?: Props): RichEditorHandlers {
-  const paths = usePaths();
+  const paths = useOptionalPaths();
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   const peopleSearch = People.useMentionedPersonSearch({
     scope: attrs?.scope ?? People.NoneSearchScope,
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+    transformResult: (p) => {
+      if (paths) {
+        return People.parsePersonForTurboUi(paths, p)!;
+      }
+
+      return {
+        id: p.id,
+        fullName: p.fullName,
+        email: p.email,
+        title: p.title || "",
+        avatarUrl: p.avatarUrl || "",
+        profileLink: "",
+      };
+    },
   });
 
   const uploadFile = React.useCallback((file: File, onProgress: (progress: number) => void) => {

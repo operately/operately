@@ -55,20 +55,6 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     Factory.enable_feature(ctx, "billing")
   end
 
-  step :enable_billing_notice_for_company, ctx do
-    Factory.enable_feature(ctx, "billing-notice")
-  end
-
-  step :given_another_company_with_billing_notice_exists, ctx do
-    person = ctx[:owner] || ctx[:admin] || ctx[:member] || ctx.creator
-    account = person |> Operately.Repo.preload(:account) |> Map.fetch!(:account)
-
-    ctx = Factory.add_company(ctx, :second_company, account, name: "Beta Labs")
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.second_company, "billing-notice")
-
-    Map.put(ctx, :second_company, company)
-  end
-
   step :fill_company_to_member_limit, ctx do
     needed_people = max(20 - Billing.active_member_count(ctx.company), 0)
 
@@ -825,27 +811,31 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx |> UI.assert_text(text)
   end
 
-  step :assert_billing_notice_banner_visible, ctx do
-    ctx |> UI.assert_has(testid: "billing-notice-banner")
+  step :assert_site_message_banner_visible, ctx do
+    ctx |> UI.assert_has(testid: "site-message-banner")
   end
 
-  step :assert_billing_notice_banner_text, ctx, text do
+  step :assert_site_message_banner_text, ctx, text do
     ctx |> UI.assert_text(text)
   end
 
-  step :dismiss_billing_notice_banner, ctx do
-    ctx
-    |> UI.click(testid: "billing-notice-banner-dismiss")
-    |> UI.refute_has(testid: "billing-notice-banner")
+  step :refute_site_message_banner_text, ctx, text do
+    ctx |> UI.refute_text(text)
   end
 
-  step :assert_billing_notice_dismissed_in_local_storage, ctx do
-    assert local_storage_value(ctx.session, "announcements:billing-notice-2026-06-29-dismissed") == "true"
+  step :dismiss_site_message_banner, ctx do
+    ctx |> UI.click(testid: "site-message-banner-dismiss")
+  end
+
+  step :assert_site_message_dismissed_in_local_storage, ctx do
+    encoded_id = OperatelyWeb.Paths.site_message_id(ctx.site_message)
+    value = local_storage_value(ctx.session, "announcements:dismissed-site-message-ids")
+    assert value =~ encoded_id
     ctx
   end
 
-  step :refute_billing_notice_banner_visible, ctx do
-    ctx |> UI.refute_has(testid: "billing-notice-banner")
+  step :refute_site_message_banner_visible, ctx do
+    ctx |> UI.refute_has(testid: "site-message-banner")
   end
 
   step :refute_payment_default_banner_visible, ctx do
