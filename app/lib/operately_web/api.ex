@@ -350,6 +350,10 @@ defmodule OperatelyWeb.Api do
         mutation(:refresh, OperatelyWeb.Api.Billing.Refresh)
       end
 
+      namespace(:site_messages) do
+        query(:list_active, OperatelyWeb.Api.SiteMessages.ListActive)
+      end
+
       namespace(:spaces) do
         mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
       end

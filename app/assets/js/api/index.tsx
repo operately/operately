@@ -1951,6 +1951,18 @@ export interface ReviewAssignmentOrigin {
   dueDate: string | null;
 }
 
+export interface SiteMessage {
+  id: string;
+  title: string;
+  description: string;
+  allCompanies?: boolean;
+  active?: boolean;
+  expiresAt?: string;
+  companyIds?: string[];
+  insertedAt?: string;
+  updatedAt?: string;
+}
+
 export interface Space {
   id: string;
   name: string;
@@ -3270,6 +3282,12 @@ export interface ResourceHubsListNodesInput {
 export interface ResourceHubsListNodesResult {
   nodes: ResourceHubNode[];
   draftNodes: ResourceHubNode[];
+}
+
+export interface SiteMessagesListActiveInput {}
+
+export interface SiteMessagesListActiveResult {
+  messages: SiteMessage[];
 }
 
 export interface SpacesCountByAccessLevelInput {
@@ -5472,6 +5490,14 @@ class ApiNamespaceInvitations {
   }
 }
 
+class ApiNamespaceSiteMessages {
+  constructor(private client: ApiClient) {}
+
+  async listActive(input: SiteMessagesListActiveInput): Promise<SiteMessagesListActiveResult> {
+    return this.client.get("/site_messages/list_active", input);
+  }
+}
+
 class ApiNamespaceBilling {
   constructor(private client: ApiClient) {}
 
@@ -6573,6 +6599,7 @@ export class ApiClient {
   public apiNamespaceCliAuth: ApiNamespaceCliAuth;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
+  public apiNamespaceSiteMessages: ApiNamespaceSiteMessages;
   public apiNamespaceBilling: ApiNamespaceBilling;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
@@ -6595,6 +6622,7 @@ export class ApiClient {
     this.apiNamespaceCliAuth = new ApiNamespaceCliAuth(this);
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
+    this.apiNamespaceSiteMessages = new ApiNamespaceSiteMessages(this);
     this.apiNamespaceBilling = new ApiNamespaceBilling(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
@@ -7110,6 +7138,12 @@ export default {
       useMutation<InvitationsJoinCompanyViaInviteLinkInput, InvitationsJoinCompanyViaInviteLinkResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
       ),
+  },
+
+  site_messages: {
+    listActive: (input: SiteMessagesListActiveInput) => defaultApiClient.apiNamespaceSiteMessages.listActive(input),
+    useListActive: (input: SiteMessagesListActiveInput) =>
+      useQuery<SiteMessagesListActiveResult>(() => defaultApiClient.apiNamespaceSiteMessages.listActive(input)),
   },
 
   billing: {
