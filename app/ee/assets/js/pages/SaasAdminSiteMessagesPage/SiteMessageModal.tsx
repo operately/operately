@@ -1,3 +1,4 @@
+import { useDebouncedValue } from "@/ee/hooks/useDebouncedValue";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
@@ -209,15 +210,4 @@ function dateInputFromExpiresAt(expiresAt?: string | null) {
 function expiresAtFromDateInput(date: string) {
   if (!date.trim()) return undefined;
   return new Date(`${date}T23:59:59.000Z`).toISOString();
-}
-
-function useDebouncedValue<T>(value: T, delay: number) {
-  const [debouncedValue, setDebouncedValue] = React.useState(value);
-
-  React.useEffect(() => {
-    const timeout = window.setTimeout(() => setDebouncedValue(value), delay);
-    return () => window.clearTimeout(timeout);
-  }, [value, delay]);
-
-  return debouncedValue;
 }
