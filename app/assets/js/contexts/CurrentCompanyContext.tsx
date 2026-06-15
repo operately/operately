@@ -5,7 +5,7 @@ import * as React from "react";
 import { useProfileUpdatedSignal } from "@/signals";
 import { throttle } from "@/utils/throttle";
 
-import { usePaths } from "@/routes/paths";
+import { useOptionalPaths } from "@/routes/paths";
 
 interface CurrentCompanyContextProps {
   company: Companies.Company | null;
@@ -61,9 +61,10 @@ export function useCurrentCompany(): Companies.Company | null {
 export function useMentionedPersonLookupFn(): (
   id: string,
 ) => Promise<(People.Person & { profileLink: string }) | null> {
-  const paths = usePaths();
+  const paths = useOptionalPaths();
   const ctx = React.useContext(CurrentCompanyContext);
-  if (!ctx) {
+
+  if (!ctx || !paths) {
     return async () => null;
   }
 

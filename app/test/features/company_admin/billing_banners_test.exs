@@ -7,43 +7,6 @@ defmodule Operately.Features.CompanyAdmin.BillingBannersTest do
   set_app_config(:billing_enabled, true)
 
   @tag role: :owner
-  feature "billing notice banner appears on company home and admin pages for flagged companies", ctx do
-    ctx
-    |> Steps.enable_billing_notice_for_company()
-    |> Steps.visit_company_home_page()
-    |> Steps.assert_billing_notice_banner_visible()
-    |> Steps.assert_billing_notice_banner_text("New billing and plans are coming to Operately")
-    |> Steps.assert_billing_notice_banner_text("You'll be able to review plan options, usage, and billing details in Company Administration.")
-    |> Steps.visit_company_admin_page()
-    |> Steps.assert_billing_notice_banner_visible()
-    |> Steps.assert_billing_notice_banner_text("No action is required today.")
-  end
-
-  @tag role: :owner
-  feature "dismissing the billing notice banner hides it across pages and flagged companies", ctx do
-    ctx
-    |> Steps.enable_billing_notice_for_company()
-    |> Steps.given_another_company_with_billing_notice_exists()
-    |> Steps.visit_company_home_page()
-    |> Steps.assert_billing_notice_banner_visible()
-    |> Steps.dismiss_billing_notice_banner()
-    |> Steps.assert_billing_notice_dismissed_in_local_storage()
-    |> Steps.visit_company_admin_page()
-    |> Steps.refute_billing_notice_banner_visible()
-    |> Steps.visit_company_home_page_for_company(:second_company)
-    |> Steps.refute_billing_notice_banner_visible()
-  end
-
-  @tag role: :owner
-  feature "companies without the billing-notice feature do not show the billing notice banner", ctx do
-    ctx
-    |> Steps.visit_company_home_page()
-    |> Steps.refute_billing_notice_banner_visible()
-    |> Steps.visit_company_admin_page()
-    |> Steps.refute_billing_notice_banner_visible()
-  end
-
-  @tag role: :owner
   feature "near-limit usage does not show a company billing banner", ctx do
     ctx
     |> Steps.enable_billing_for_company()

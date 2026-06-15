@@ -17,6 +17,7 @@ export function saasAdminRoutes() {
       pageRoute("", adminpages.SaasAdminPage),
       pageRoute("email-settings", adminpages.SaasAdminEmailSettingsPage),
       pageRoute("billing-catalog", adminpages.SaasAdminBillingCatalogPage),
+      pageRoute("site-messages", adminpages.SaasAdminSiteMessagesPage),
       pageRoute("companies/:companyId", adminpages.SaasAdminCompanyPage),
     ],
   };
