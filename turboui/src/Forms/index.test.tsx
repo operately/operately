@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 
 import { emptyContent } from "../RichContent/contentOps";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
-import { Form, RichTextArea, Submit, TextInput, useForm } from ".";
+import { Form, RichTextArea, SelectBox, Submit, TextInput, useForm } from ".";
 
 jest.mock("../RichEditor", () => ({
   Editor: () => <div data-testid="rich-editor" />,
@@ -17,6 +17,35 @@ jest.mock("../RichEditor", () => ({
     clearLocalDraft: () => undefined,
   }),
 }));
+
+jest.mock("react-select", () => {
+  return function MockSelect({
+    options,
+    value,
+    onChange,
+  }: {
+    options: { label: string; value: string }[];
+    value?: { label: string; value: string };
+    onChange: (option: { label: string; value: string } | null) => void;
+  }) {
+    return (
+      <select
+        aria-label="select-box"
+        value={value?.value ?? ""}
+        onChange={(event) => {
+          const option = options.find((item) => item.value === event.target.value) ?? null;
+          onChange(option);
+        }}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    );
+  };
+});
 
 describe("Forms", () => {
   test("updates nested field paths and submits the latest values", async () => {
@@ -96,6 +125,44 @@ describe("Forms", () => {
     const { container } = render(<Harness />);
 
     expect(container.querySelector('[data-test-id="items-0-name"]')).toBeInTheDocument();
+  });
+
+  test("updates select box values", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { status: "true" },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectBox
+            field="status"
+            label="Status"
+            options={[
+              { value: "true", label: "Active" },
+              { value: "false", label: "Inactive" },
+            ]}
+          />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.change(screen.getByLabelText("select-box"), { target: { value: "false" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        status: "false",
+      }),
+    );
   });
 
   test("resets field values before invoking cancel", () => {
