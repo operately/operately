@@ -64,7 +64,11 @@ defmodule Operately.ResourceHubsFixtures do
       type: :file,
     })
 
-    blob = Operately.BlobsFixtures.blob_fixture(%{author_id: author.id, company_id: author.company_id})
+    blob_attrs =
+      Keyword.get(attrs, :blob_attrs, %{})
+      |> Enum.into(%{author_id: author.id, company_id: author.company_id})
+
+    blob = Operately.BlobsFixtures.blob_fixture(blob_attrs)
     {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
     {:ok, file} = Operately.ResourceHubs.create_file(%{

@@ -447,6 +447,23 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  @doc """
+  Assert the full browser location, including query params.
+
+  Use this for pages whose UI state is encoded in `window.location.search`.
+  """
+  def assert_location(state, path) do
+    execute("assert_location", state, fn session ->
+      require ExUnit.Assertions
+
+      wait_for_location_to_load(session, path)
+
+      ExUnit.Assertions.assert(browser_location(session) == path)
+
+      session
+    end)
+  end
+
   def visit(state, path) do
     execute("visit", state, fn session ->
       session |> Browser.visit(path)
@@ -505,6 +522,32 @@ defmodule Operately.Support.Features.UI do
 
       session
     end)
+  end
+
+  # Wallaby's current_path/1 can miss query-string state in feature tests.
+  defp wait_for_location_to_load(session, path) do
+    Wallaby.Browser.retry(fn ->
+      if browser_location(session) == path do
+        {:ok, session}
+      else
+        {:error, :not_yet}
+      end
+    end)
+  end
+
+  # Read the browser's real location so tab/query-param navigation is preserved.
+  defp browser_location(session) do
+    ref = make_ref()
+
+    Browser.execute_script(session, "return window.location.pathname + window.location.search", fn result ->
+      send(self(), {ref, result})
+    end)
+
+    receive do
+      {^ref, location} -> location
+    after
+      1_000 -> raise "Timed out waiting for browser location"
+    end
   end
 
   alias Operately.Support.Features.UI.Emails, as: Emails
