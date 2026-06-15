@@ -34,7 +34,7 @@ defmodule Operately.Data.Change102MigrateProjectKeyResourcesToResourceHubLinksTe
     assert link.url == key_resource.link
     assert link.type == :other
     assert link.author_id == ctx.project.creator_id
-    assert link.description == nil
+    assert link.description == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
 
     node = Repo.get!(Node, link.node_id)
     assert node.name == key_resource.title

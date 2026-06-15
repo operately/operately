@@ -107,7 +107,7 @@ function Description() {
   const { link } = useLoadedData();
   assertPresent(link.description, "description must be present in link");
 
-  const hasDescription = !isContentEmpty(link.description);
+  const hasDescription = link.description != null && !isContentEmpty(link.description);
   const { mentionedPersonLookup } = useRichEditorHandlers();
 
   if (!hasDescription) return <></>;
