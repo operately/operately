@@ -9,6 +9,8 @@ export function isContentEmpty(input: any | string | null | undefined): boolean 
     content = input;
   }
 
+  if (content === null || content === undefined) return true;
+
   const innerContent = content["content"];
   if (!innerContent) return true;
   if (innerContent.length === 0) return true;
