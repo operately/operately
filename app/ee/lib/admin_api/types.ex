@@ -7,6 +7,12 @@ defmodule OperatelyEE.AdminApi.Types do
     decode_with: &OperatelyWeb.Api.Types.CompanyId.decode/1
   )
 
+  primitive(:json,
+    encoded_type: :string,
+    decoded_type: :map,
+    decode_with: &OperatelyWeb.Api.Types.Json.decode/1
+  )
+
   object :company do
     field? :id, :string
     field? :name, :string
@@ -94,5 +100,17 @@ defmodule OperatelyEE.AdminApi.Types do
     field? :archived_at, :datetime, null: true
     field? :member_limit, :integer
     field? :storage_limit_bytes, :integer
+  end
+
+  object :site_message do
+    field :id, :string
+    field :title, :string
+    field :description, :string
+    field :all_companies, :boolean
+    field :active, :boolean
+    field? :expires_at, :datetime
+    field? :company_ids, list_of(:string)
+    field :inserted_at, :datetime
+    field? :updated_at, :datetime
   end
 end

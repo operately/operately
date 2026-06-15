@@ -605,6 +605,14 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(product.id)
   end
 
+  def site_message_id(message_id) when is_binary(message_id) do
+    Operately.ShortUuid.encode!(message_id)
+  end
+
+  def site_message_id(message) do
+    Operately.ShortUuid.encode!(message.id)
+  end
+
   #
   # Path Construction Helpers
   #
