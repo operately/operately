@@ -420,14 +420,51 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :given_project_docs_and_files_exist, ctx do
     resource_hub = Operately.Repo.preload(ctx.project, :resource_hub).resource_hub
 
+    document_name = "Project Brief"
+    file_name = "Project Checklist"
+    link_name = "Project Tracker"
+    folder_name = "Project Folder"
+    folder_document_name = "Folder Notes"
+
     document =
       document_fixture(resource_hub.id, ctx.champion.id, %{
-        name: "Project Brief",
+        name: document_name,
+      })
+
+    file =
+      file_fixture(resource_hub, ctx.champion,
+        name: file_name,
+        blob_attrs: %{content_type: "text/plain", filename: "project-checklist.txt"}
+      )
+
+    link =
+      link_fixture(resource_hub, ctx.champion, %{
+        name: link_name,
+      })
+
+    folder =
+      folder_fixture(resource_hub.id, %{
+        name: folder_name,
+      })
+
+    folder_document =
+      document_fixture(resource_hub.id, ctx.champion.id, %{
+        parent_folder_id: folder.id,
+        name: folder_document_name,
       })
 
     ctx
     |> Map.put(:resource_hub, resource_hub)
-    |> Map.put(:document, document)
+    |> Map.put(:project_document, document)
+    |> Map.put(:project_file, file)
+    |> Map.put(:project_link, link)
+    |> Map.put(:project_folder, folder)
+    |> Map.put(:project_folder_document, folder_document)
+    |> Map.put(:project_document_name, document_name)
+    |> Map.put(:project_file_name, file_name)
+    |> Map.put(:project_link_name, link_name)
+    |> Map.put(:project_folder_name, folder_name)
+    |> Map.put(:project_folder_document_name, folder_document_name)
   end
 
   step :open_project_docs_and_files, ctx do
@@ -435,11 +472,13 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.assert_has(testid: "tab-docs & files")
     |> UI.click_link("Docs & Files")
+    |> assert_project_docs_and_files_open()
   end
 
   step :assert_project_docs_and_files_open, ctx do
     ctx
-    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_location(Paths.project_path(ctx.company, ctx.project, tab: "docs-and-files"))
+    |> UI.assert_has(testid: "docs-and-files-tab")
     |> UI.assert_text("Documents & Files")
     |> UI.refute_text("Description")
   end
@@ -464,12 +503,34 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_document_page_open, ctx do
     ctx
-    |> UI.assert_page(Paths.document_path(ctx.company, ctx.document))
+    |> UI.assert_page(Paths.document_path(ctx.company, ctx.project_document))
+    |> UI.assert_text(ctx.project_document_name)
+  end
+
+  step :assert_project_file_page_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.file_path(ctx.company, ctx.project_file))
+    |> UI.assert_text(ctx.project_file_name)
+  end
+
+  step :assert_project_link_page_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.link_path(ctx.company, ctx.project_link))
+    |> UI.assert_text(ctx.project_link_name)
+  end
+
+  step :assert_project_folder_page_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.folder_path(ctx.company, ctx.project_folder))
+    |> UI.assert_text(ctx.project_folder_name)
+    |> UI.assert_text(ctx.project_folder_document_name)
   end
 
   step :navigate_back_to_project_docs_and_files, ctx do
     ctx
-    |> UI.click_link(ctx.project.name)
+    |> UI.find(UI.query(testid: "navigation"), fn el ->
+      UI.click_link(el, ctx.project.name)
+    end)
     |> assert_project_docs_and_files_open()
   end
 

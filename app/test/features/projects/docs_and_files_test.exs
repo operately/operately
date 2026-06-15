@@ -19,13 +19,42 @@ defmodule Operately.Features.Projects.DocsAndFilesTest do
   end
 
   @tag login_as: :champion
-  feature "project-backed docs and files link back to the project tab", ctx do
+  feature "project-backed documents link back to the project tab", ctx do
     ctx
     |> Steps.open_project_docs_and_files()
-    |> Steps.assert_project_docs_and_files_open()
     |> Steps.assert_project_docs_and_files_node_visible(name: "Project Brief")
     |> Steps.open_project_docs_and_files_node(name: "Project Brief")
     |> Steps.assert_project_document_page_open()
+    |> Steps.navigate_back_to_project_docs_and_files()
+  end
+
+  @tag login_as: :champion
+  feature "project-backed files link back to the project tab", ctx do
+    ctx
+    |> Steps.open_project_docs_and_files()
+    |> Steps.assert_project_docs_and_files_node_visible(name: "Project Checklist")
+    |> Steps.open_project_docs_and_files_node(name: "Project Checklist")
+    |> Steps.assert_project_file_page_open()
+    |> Steps.navigate_back_to_project_docs_and_files()
+  end
+
+  @tag login_as: :champion
+  feature "project-backed links link back to the project tab", ctx do
+    ctx
+    |> Steps.open_project_docs_and_files()
+    |> Steps.assert_project_docs_and_files_node_visible(name: "Project Tracker")
+    |> Steps.open_project_docs_and_files_node(name: "Project Tracker")
+    |> Steps.assert_project_link_page_open()
+    |> Steps.navigate_back_to_project_docs_and_files()
+  end
+
+  @tag login_as: :champion
+  feature "project-backed folders link back to the project tab", ctx do
+    ctx
+    |> Steps.open_project_docs_and_files()
+    |> Steps.assert_project_docs_and_files_node_visible(name: "Project Folder")
+    |> Steps.open_project_docs_and_files_node(name: "Project Folder")
+    |> Steps.assert_project_folder_page_open()
     |> Steps.navigate_back_to_project_docs_and_files()
   end
 end
