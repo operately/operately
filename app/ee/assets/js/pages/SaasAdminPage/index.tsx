@@ -2,6 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as AdminApi from "@/ee/admin_api";
+import { useDebouncedValue } from "@/ee/hooks/useDebouncedValue";
 import * as React from "react";
 
 import { AccountActionsMenu, PendingAccountAction, useAccountActions } from "./AccountActionsMenu";
@@ -375,6 +376,7 @@ function Options() {
   return (
     <PageOptions.Root testId="options-button">
       <PageOptions.Link icon={IconMail} title="Email Configuration" to="/admin/email-settings" />
+      <PageOptions.Link icon={IconInfoCircle} title="Site Messages" to="/admin/site-messages" />
       {window.appConfig.billingEnabled && (
         <PageOptions.Link icon={IconBuilding} title="Billing Catalog" to="/admin/billing-catalog" />
       )}
@@ -460,16 +462,4 @@ function filterAccounts(accounts: AdminApi.Account[], searchQuery: string) {
 
 function normalizeSearchQuery(value: string) {
   return value.trim().toLowerCase();
-}
-
-function useDebouncedValue<T>(value: T, delay: number) {
-  const [debouncedValue, setDebouncedValue] = React.useState(value);
-
-  React.useEffect(() => {
-    const timeoutId = window.setTimeout(() => setDebouncedValue(value), delay);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [delay, value]);
-
-  return debouncedValue;
 }

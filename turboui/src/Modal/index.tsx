@@ -117,7 +117,7 @@ export function Modal({
     >
       <div
         ref={modalRef}
-        className={`bg-surface-base rounded-lg shadow-xl w-full overflow-auto ${sizeClasses} ${contentClassName}`}
+        className={`bg-surface-base rounded-lg shadow-xl w-full max-h-[95vh] overflow-auto ${sizeClasses} ${contentClassName}`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
