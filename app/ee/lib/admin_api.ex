@@ -16,6 +16,7 @@ defmodule OperatelyEE.AdminApi do
   query :get_email_settings, Q.GetEmailSettings
   query :list_billing_plan_definitions, Q.ListBillingPlanDefinitions
   query :list_billing_products, Q.ListBillingProducts
+  query :list_site_messages, Q.ListSiteMessages
 
   mutation :delete_account, M.DeleteAccount
   mutation :promote_account_to_site_admin, M.PromoteAccountToSiteAdmin
@@ -32,4 +33,7 @@ defmodule OperatelyEE.AdminApi do
   mutation :archive_billing_product, M.ArchiveBillingProduct
   mutation :set_active_billing_product, M.SetActiveBillingProduct
   mutation :sync_billing_products_from_polar, M.SyncBillingProductsFromPolar
+  mutation :create_site_message, M.CreateSiteMessage
+  mutation :update_site_message, M.UpdateSiteMessage
+  mutation :delete_site_message, M.DeleteSiteMessage
 end

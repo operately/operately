@@ -119,6 +119,8 @@ export function useMutation<InputT, ResultT>(
 
 export type CompanyId = string;
 
+export type Json = string;
+
 export interface Account {
   id: string;
   fullName: string;
@@ -194,6 +196,18 @@ export interface Person {
   title: string;
 }
 
+export interface SiteMessage {
+  id: string;
+  title: string;
+  description: string;
+  allCompanies: boolean;
+  active: boolean;
+  expiresAt?: string;
+  companyIds?: string[];
+  insertedAt: string;
+  updatedAt?: string;
+}
+
 export interface SmtpSettings {
   host: string;
   port: number;
@@ -259,6 +273,12 @@ export interface ListBillingProductsResult {
   products: BillingProduct[];
 }
 
+export interface ListSiteMessagesInput {}
+
+export interface ListSiteMessagesResult {
+  messages: SiteMessage[];
+}
+
 export interface ArchiveBillingPlanDefinitionInput {
   id: string;
 }
@@ -301,6 +321,19 @@ export interface CreateBillingProductResult {
   product: BillingProduct;
 }
 
+export interface CreateSiteMessageInput {
+  title: string;
+  description: Json;
+  allCompanies: boolean;
+  active: boolean;
+  expiresAt?: string;
+  companyIds?: string[];
+}
+
+export interface CreateSiteMessageResult {
+  message: SiteMessage;
+}
+
 export interface DeleteAccountInput {
   accountId: string;
 }
@@ -309,6 +342,14 @@ export interface DeleteAccountResult {
   success: boolean;
   error?: string;
   blockingCompanyNames?: string[];
+}
+
+export interface DeleteSiteMessageInput {
+  id: string;
+}
+
+export interface DeleteSiteMessageResult {
+  success: boolean;
 }
 
 export interface DemoteAccountFromSiteAdminInput {
@@ -415,6 +456,20 @@ export interface UpdateEmailSettingsResult {
   emailSettings?: EmailSettings;
 }
 
+export interface UpdateSiteMessageInput {
+  id: string;
+  title?: string;
+  description?: Json;
+  allCompanies?: boolean;
+  active?: boolean;
+  expiresAt?: string;
+  companyIds?: string[];
+}
+
+export interface UpdateSiteMessageResult {
+  message: SiteMessage;
+}
+
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -450,6 +505,10 @@ class ApiNamespaceRoot {
     return this.client.get("/list_billing_products", input);
   }
 
+  async listSiteMessages(input: ListSiteMessagesInput): Promise<ListSiteMessagesResult> {
+    return this.client.get("/list_site_messages", input);
+  }
+
   async archiveBillingPlanDefinition(
     input: ArchiveBillingPlanDefinitionInput,
   ): Promise<ArchiveBillingPlanDefinitionResult> {
@@ -470,8 +529,16 @@ class ApiNamespaceRoot {
     return this.client.post("/create_billing_product", input);
   }
 
+  async createSiteMessage(input: CreateSiteMessageInput): Promise<CreateSiteMessageResult> {
+    return this.client.post("/create_site_message", input);
+  }
+
   async deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
     return this.client.post("/delete_account", input);
+  }
+
+  async deleteSiteMessage(input: DeleteSiteMessageInput): Promise<DeleteSiteMessageResult> {
+    return this.client.post("/delete_site_message", input);
   }
 
   async demoteAccountFromSiteAdmin(input: DemoteAccountFromSiteAdminInput): Promise<DemoteAccountFromSiteAdminResult> {
@@ -518,6 +585,10 @@ class ApiNamespaceRoot {
 
   async updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
     return this.client.post("/update_email_settings", input);
+  }
+
+  async updateSiteMessage(input: UpdateSiteMessageInput): Promise<UpdateSiteMessageResult> {
+    return this.client.post("/update_site_message", input);
   }
 }
 
@@ -604,6 +675,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.listBillingProducts(input);
   }
 
+  listSiteMessages(input: ListSiteMessagesInput): Promise<ListSiteMessagesResult> {
+    return this.apiNamespaceRoot.listSiteMessages(input);
+  }
+
   archiveBillingPlanDefinition(input: ArchiveBillingPlanDefinitionInput): Promise<ArchiveBillingPlanDefinitionResult> {
     return this.apiNamespaceRoot.archiveBillingPlanDefinition(input);
   }
@@ -620,8 +695,16 @@ export class ApiClient {
     return this.apiNamespaceRoot.createBillingProduct(input);
   }
 
+  createSiteMessage(input: CreateSiteMessageInput): Promise<CreateSiteMessageResult> {
+    return this.apiNamespaceRoot.createSiteMessage(input);
+  }
+
   deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
     return this.apiNamespaceRoot.deleteAccount(input);
+  }
+
+  deleteSiteMessage(input: DeleteSiteMessageInput): Promise<DeleteSiteMessageResult> {
+    return this.apiNamespaceRoot.deleteSiteMessage(input);
   }
 
   demoteAccountFromSiteAdmin(input: DemoteAccountFromSiteAdminInput): Promise<DemoteAccountFromSiteAdminResult> {
@@ -665,6 +748,10 @@ export class ApiClient {
   updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
     return this.apiNamespaceRoot.updateEmailSettings(input);
   }
+
+  updateSiteMessage(input: UpdateSiteMessageInput): Promise<UpdateSiteMessageResult> {
+    return this.apiNamespaceRoot.updateSiteMessage(input);
+  }
 }
 
 const defaultApiClient = new ApiClient();
@@ -695,6 +782,9 @@ export async function listBillingPlanDefinitions(
 export async function listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
   return defaultApiClient.listBillingProducts(input);
 }
+export async function listSiteMessages(input: ListSiteMessagesInput): Promise<ListSiteMessagesResult> {
+  return defaultApiClient.listSiteMessages(input);
+}
 export async function archiveBillingPlanDefinition(
   input: ArchiveBillingPlanDefinitionInput,
 ): Promise<ArchiveBillingPlanDefinitionResult> {
@@ -711,8 +801,14 @@ export async function createBillingPlanDefinition(
 export async function createBillingProduct(input: CreateBillingProductInput): Promise<CreateBillingProductResult> {
   return defaultApiClient.createBillingProduct(input);
 }
+export async function createSiteMessage(input: CreateSiteMessageInput): Promise<CreateSiteMessageResult> {
+  return defaultApiClient.createSiteMessage(input);
+}
 export async function deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
   return defaultApiClient.deleteAccount(input);
+}
+export async function deleteSiteMessage(input: DeleteSiteMessageInput): Promise<DeleteSiteMessageResult> {
+  return defaultApiClient.deleteSiteMessage(input);
 }
 export async function demoteAccountFromSiteAdmin(
   input: DemoteAccountFromSiteAdminInput,
@@ -756,6 +852,9 @@ export async function updateBillingProduct(input: UpdateBillingProductInput): Pr
 export async function updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
   return defaultApiClient.updateEmailSettings(input);
 }
+export async function updateSiteMessage(input: UpdateSiteMessageInput): Promise<UpdateSiteMessageResult> {
+  return defaultApiClient.updateSiteMessage(input);
+}
 
 export function useGetAccounts(input: GetAccountsInput): UseQueryHookResult<GetAccountsResult> {
   return useQuery<GetAccountsResult>(() => defaultApiClient.getAccounts(input));
@@ -789,6 +888,10 @@ export function useListBillingPlanDefinitions(
 
 export function useListBillingProducts(input: ListBillingProductsInput): UseQueryHookResult<ListBillingProductsResult> {
   return useQuery<ListBillingProductsResult>(() => defaultApiClient.listBillingProducts(input));
+}
+
+export function useListSiteMessages(input: ListSiteMessagesInput): UseQueryHookResult<ListSiteMessagesResult> {
+  return useQuery<ListSiteMessagesResult>(() => defaultApiClient.listSiteMessages(input));
 }
 
 export function useArchiveBillingPlanDefinition(): UseMutationHookResult<
@@ -827,8 +930,20 @@ export function useCreateBillingProduct(): UseMutationHookResult<
   );
 }
 
+export function useCreateSiteMessage(): UseMutationHookResult<CreateSiteMessageInput, CreateSiteMessageResult> {
+  return useMutation<CreateSiteMessageInput, CreateSiteMessageResult>((input) =>
+    defaultApiClient.createSiteMessage(input),
+  );
+}
+
 export function useDeleteAccount(): UseMutationHookResult<DeleteAccountInput, DeleteAccountResult> {
   return useMutation<DeleteAccountInput, DeleteAccountResult>((input) => defaultApiClient.deleteAccount(input));
+}
+
+export function useDeleteSiteMessage(): UseMutationHookResult<DeleteSiteMessageInput, DeleteSiteMessageResult> {
+  return useMutation<DeleteSiteMessageInput, DeleteSiteMessageResult>((input) =>
+    defaultApiClient.deleteSiteMessage(input),
+  );
 }
 
 export function useDemoteAccountFromSiteAdmin(): UseMutationHookResult<
@@ -908,6 +1023,12 @@ export function useUpdateEmailSettings(): UseMutationHookResult<UpdateEmailSetti
   );
 }
 
+export function useUpdateSiteMessage(): UseMutationHookResult<UpdateSiteMessageInput, UpdateSiteMessageResult> {
+  return useMutation<UpdateSiteMessageInput, UpdateSiteMessageResult>((input) =>
+    defaultApiClient.updateSiteMessage(input),
+  );
+}
+
 export default {
   default: defaultApiClient,
 
@@ -927,6 +1048,8 @@ export default {
   useListBillingPlanDefinitions,
   listBillingProducts,
   useListBillingProducts,
+  listSiteMessages,
+  useListSiteMessages,
   archiveBillingPlanDefinition,
   useArchiveBillingPlanDefinition,
   archiveBillingProduct,
@@ -935,8 +1058,12 @@ export default {
   useCreateBillingPlanDefinition,
   createBillingProduct,
   useCreateBillingProduct,
+  createSiteMessage,
+  useCreateSiteMessage,
   deleteAccount,
   useDeleteAccount,
+  deleteSiteMessage,
+  useDeleteSiteMessage,
   demoteAccountFromSiteAdmin,
   useDemoteAccountFromSiteAdmin,
   enableFeature,
@@ -957,4 +1084,6 @@ export default {
   useUpdateBillingProduct,
   updateEmailSettings,
   useUpdateEmailSettings,
+  updateSiteMessage,
+  useUpdateSiteMessage,
 };

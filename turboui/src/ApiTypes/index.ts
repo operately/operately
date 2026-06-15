@@ -1837,6 +1837,18 @@ export interface ReviewAssignmentOrigin {
   dueDate: string | null;
 }
 
+export interface SiteMessage {
+  id: string;
+  title: string;
+  description: string;
+  allCompanies?: boolean;
+  active?: boolean;
+  expiresAt?: string;
+  companyIds?: string[];
+  insertedAt?: string;
+  updatedAt?: string;
+}
+
 export interface Space {
   id: string;
   name: string;

@@ -78,6 +78,8 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "email_activation_codes",
     "invite_links",
     "notification_email_batches",
+    "site_message_companies",
+    "site_messages",
     "system_settings"
   ]
 
