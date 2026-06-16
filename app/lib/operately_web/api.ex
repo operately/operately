@@ -239,7 +239,6 @@ defmodule OperatelyWeb.Api do
       namespace(:documents) do
         query(:get, OperatelyWeb.Api.Documents.Get)
 
-        mutation(:create, OperatelyWeb.Api.Documents.Create, catalog: false)
         mutation(:publish, OperatelyWeb.Api.Documents.Publish)
         mutation(:delete, OperatelyWeb.Api.Documents.Delete)
         mutation(:update, OperatelyWeb.Api.Documents.Update)
@@ -249,7 +248,6 @@ defmodule OperatelyWeb.Api do
       namespace(:links) do
         query(:get, OperatelyWeb.Api.Links.Get)
 
-        mutation(:create, OperatelyWeb.Api.Links.Create, catalog: false)
         mutation(:delete, OperatelyWeb.Api.Links.Delete)
         mutation(:update, OperatelyWeb.Api.Links.Update)
       end
@@ -258,7 +256,6 @@ defmodule OperatelyWeb.Api do
       namespace(:files) do
         query(:get, OperatelyWeb.Api.Files.Get)
 
-        mutation(:create, OperatelyWeb.Api.Files.Create, catalog: false)
         mutation(:delete, OperatelyWeb.Api.Files.Delete)
         mutation(:update, OperatelyWeb.Api.Files.Update)
       end
@@ -293,6 +290,18 @@ defmodule OperatelyWeb.Api do
   defmacro internal_endpoints do
     quote do
       common_endpoints()
+
+      namespace(:documents) do
+        mutation(:create, OperatelyWeb.Api.Documents.Create)
+      end
+
+      namespace(:links) do
+        mutation(:create, OperatelyWeb.Api.Links.Create)
+      end
+
+      namespace(:files) do
+        mutation(:create, OperatelyWeb.Api.Files.Create)
+      end
 
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)
       mutation(:add_company_owners, OperatelyWeb.Api.Mutations.AddCompanyOwners)
