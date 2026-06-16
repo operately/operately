@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 200
+- Endpoints: 199
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -34,7 +34,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `docs_and_files copy_folder` | `op docs_and_files copy_folder` | `POST` | `/api/external/v1/docs_and_files/copy_folder` |
 | `docs_and_files create_folder` | `op docs_and_files create_folder` | `POST` | `/api/external/v1/docs_and_files/create_folder` |
 | `docs_and_files delete_folder` | `op docs_and_files delete_folder` | `POST` | `/api/external/v1/docs_and_files/delete_folder` |
-| `docs_and_files get` | `op docs_and_files get` | `GET` | `/api/external/v1/docs_and_files/get` |
 | `docs_and_files get_folder` | `op docs_and_files get_folder` | `GET` | `/api/external/v1/docs_and_files/get_folder` |
 | `docs_and_files list_contents` | `op docs_and_files list_contents` | `GET` | `/api/external/v1/docs_and_files/list_contents` |
 | `docs_and_files rename_folder` | `op docs_and_files rename_folder` | `POST` | `/api/external/v1/docs_and_files/rename_folder` |
