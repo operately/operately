@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.DocsAndFiles.ListContents do
+defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents do
   @moduledoc """
   Lists contents in a Docs & Files hub or folder.
   """
@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.DocsAndFiles.ListContents do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias OperatelyWeb.Api.DocsAndFiles.HubScope
+  alias OperatelyWeb.Api.Wrappers.DocsAndFiles.HubScope
   alias OperatelyWeb.Api.ResourceHubs.ListNodes
 
   inputs do

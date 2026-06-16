@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.DocsAndFiles.ListContentsTest do
+defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContentsTest do
   use OperatelyWeb.TurboCase
 
   setup ctx do

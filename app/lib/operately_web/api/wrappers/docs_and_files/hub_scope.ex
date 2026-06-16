@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.DocsAndFiles.HubScope do
+defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.HubScope do
   @moduledoc false
 
   import Ecto.Query

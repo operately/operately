@@ -18639,7 +18639,7 @@
       "name": "create_document",
       "type": "mutation",
       "path": "/api/external/v1/docs_and_files/create_document",
-      "handler": "OperatelyWeb.Api.DocsAndFiles.CreateDocument",
+      "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateDocument",
       "outputs": [
         {
           "default": null,
@@ -18777,7 +18777,7 @@
       "name": "create_folder",
       "type": "mutation",
       "path": "/api/external/v1/docs_and_files/create_folder",
-      "handler": "OperatelyWeb.Api.DocsAndFiles.CreateFolder",
+      "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolder",
       "outputs": [
         {
           "default": null,
@@ -18846,7 +18846,7 @@
       "name": "create_link",
       "type": "mutation",
       "path": "/api/external/v1/docs_and_files/create_link",
-      "handler": "OperatelyWeb.Api.DocsAndFiles.CreateLink",
+      "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLink",
       "outputs": [
         {
           "default": null,
@@ -19701,7 +19701,7 @@
       "name": "list_contents",
       "type": "query",
       "path": "/api/external/v1/docs_and_files/list_contents",
-      "handler": "OperatelyWeb.Api.DocsAndFiles.ListContents",
+      "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents",
       "outputs": [
         {
           "default": null,
@@ -30183,6 +30183,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-16T23:41:40Z",
+  "generated_at": "2026-06-16T23:50:45Z",
   "schema_version": 1
 }

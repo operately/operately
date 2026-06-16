@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.DocsAndFiles.CreateFolder do
+defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolder do
   @moduledoc """
   Creates a new folder in a Docs & Files hub.
   """
@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateFolder do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias OperatelyWeb.Api.DocsAndFiles.HubScope
+  alias OperatelyWeb.Api.Wrappers.DocsAndFiles.HubScope
   alias OperatelyWeb.Api.ResourceHubs.CreateFolder, as: ResourceHubCreateFolder
 
   inputs do
