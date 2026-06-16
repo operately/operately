@@ -39,6 +39,9 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert File.exists?(Path.join(out_dir, "help/api/files/get.mdx"))
     assert File.exists?(Path.join(out_dir, "help/api/files/update.mdx"))
     assert File.exists?(Path.join(out_dir, "help/api/files/delete.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/docs_and_files/create_document.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/docs_and_files/create_link.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/docs_and_files/create_file.mdx"))
   end
 
   test "renders method and path for root and namespaced endpoints", %{out_dir: out_dir} do
@@ -192,6 +195,53 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "files/get"))
     assert Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "files/update"))
     assert Enum.any?(Catalog.payload(catalog, "/api/external/v1").endpoints, &(&1.full_name == "files/delete"))
+  end
+
+  test "legacy endpoints with docs_and_files wrappers are routable but excluded from catalog and docs", %{out_dir: out_dir} do
+    external_queries = OperatelyWeb.Api.External.__queries__()
+    external_mutations = OperatelyWeb.Api.External.__mutations__()
+
+    assert Map.has_key?(external_queries, "resource_hubs/get")
+    assert Map.has_key?(external_queries, "resource_hubs/list_nodes")
+    assert Map.has_key?(external_mutations, "resource_hubs/create_folder")
+    assert Map.has_key?(external_mutations, "documents/create")
+    assert Map.has_key?(external_mutations, "links/create")
+    assert Map.has_key?(external_mutations, "files/create")
+
+    catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
+
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "resource_hubs/get"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "resource_hubs/list_nodes"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "resource_hubs/create_folder"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "documents/create"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "links/create"))
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "files/create"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "resource_hubs/get_folder"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "documents/get"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "links/get"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "files/get"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "docs_and_files/get"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "docs_and_files/list_contents"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "docs_and_files/create_document"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "docs_and_files/create_link"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "docs_and_files/create_file"))
+
+    Generator.generate(out_dir: out_dir)
+    assert File.exists?(Path.join(out_dir, "help/api/resource_hubs/index.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/resource_hubs/get.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/resource_hubs/get_folder.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/documents/index.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/documents/create.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/documents/get.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/links/index.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/links/create.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/files/index.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/files/create.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/docs_and_files/index.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/docs_and_files/get.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/docs_and_files/create_document.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/docs_and_files/create_link.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/docs_and_files/create_file.mdx"))
   end
 
   defp find_input_field(catalog, full_name, field_name) do

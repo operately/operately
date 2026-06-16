@@ -27,11 +27,12 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.People.Get,
       Queries.Projects.Get,
       Queries.Projects.List,
-      Queries.ResourceHubs.Get,
+      Queries.DocsAndFiles.Get,
       Queries.Documents.Get,
       Queries.Files.Get,
-      Queries.ResourceHubs.GetFolder,
+      Queries.DocsAndFiles.GetFolder,
       Queries.Links.Get,
+      Queries.ResourceHubs.Get,
       Queries.Spaces.Get,
       Queries.Spaces.List,
       Queries.Tasks.Get,
@@ -41,6 +42,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Notifications.IsSubscribed,
       Queries.Goals.ListContributors,
       Queries.People.ListPossibleManagers,
+      Queries.DocsAndFiles.ListContents,
       Queries.ResourceHubs.ListNodes,
       Queries.Spaces.ListTools,
       Queries.Tasks.ListPotentialAssignees,
@@ -66,6 +68,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Spaces.ListMembers,
       Queries.Spaces.ListTasks,
       Queries.Spaces.Search,
+      Queries.ResourceHubs.GetFolder,
       Queries.Tasks.List
     ]
   end
