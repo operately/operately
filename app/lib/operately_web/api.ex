@@ -222,13 +222,12 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
       end
 
-      @doc "Get and create resource hubs"
+      @doc "Get and manage resource hubs"
       namespace(:resource_hubs) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
 
-        mutation(:create, OperatelyWeb.Api.ResourceHubs.Create)
         mutation(:update_parent_folder, OperatelyWeb.Api.ResourceHubs.UpdateParentFolder)
         mutation(:copy_folder, OperatelyWeb.Api.ResourceHubs.CopyFolder)
         mutation(:create_folder, OperatelyWeb.Api.ResourceHubs.CreateFolder)

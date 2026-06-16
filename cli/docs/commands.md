@@ -160,7 +160,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `reactions create` | `op reactions create` | `POST` | `/api/external/v1/reactions/create` |
 | `reactions delete` | `op reactions delete` | `POST` | `/api/external/v1/reactions/delete` |
 | `resource_hubs copy_folder` | `op resource_hubs copy_folder` | `POST` | `/api/external/v1/resource_hubs/copy_folder` |
-| `resource_hubs create` | `op resource_hubs create` | `POST` | `/api/external/v1/resource_hubs/create` |
 | `resource_hubs create_folder` | `op resource_hubs create_folder` | `POST` | `/api/external/v1/resource_hubs/create_folder` |
 | `resource_hubs delete_folder` | `op resource_hubs delete_folder` | `POST` | `/api/external/v1/resource_hubs/delete_folder` |
 | `resource_hubs get` | `op resource_hubs get` | `GET` | `/api/external/v1/resource_hubs/get` |

@@ -5017,16 +5017,6 @@ export interface ResourceHubsCopyFolderResult {
   folderId: Id;
 }
 
-export interface ResourceHubsCreateInput {
-  spaceId: Id;
-  name: string;
-  description?: Json;
-}
-
-export interface ResourceHubsCreateResult {
-  resourceHub: ResourceHub;
-}
-
 export interface ResourceHubsCreateFolderInput {
   resourceHubId: Id;
   folderId?: Id | null;
@@ -5819,10 +5809,6 @@ class ApiNamespaceResourceHubs {
 
   async copyFolder(input: ResourceHubsCopyFolderInput): Promise<ResourceHubsCopyFolderResult> {
     return this.client.post("/resource_hubs/copy_folder", input);
-  }
-
-  async create(input: ResourceHubsCreateInput): Promise<ResourceHubsCreateResult> {
-    return this.client.post("/resource_hubs/create", input);
   }
 
   async createFolder(input: ResourceHubsCreateFolderInput): Promise<ResourceHubsCreateFolderResult> {
@@ -7473,12 +7459,6 @@ export default {
     useCreateFolder: () =>
       useMutation<ResourceHubsCreateFolderInput, ResourceHubsCreateFolderResult>((input) =>
         defaultApiClient.apiNamespaceResourceHubs.createFolder(input),
-      ),
-
-    create: (input: ResourceHubsCreateInput) => defaultApiClient.apiNamespaceResourceHubs.create(input),
-    useCreate: () =>
-      useMutation<ResourceHubsCreateInput, ResourceHubsCreateResult>((input) =>
-        defaultApiClient.apiNamespaceResourceHubs.create(input),
       ),
   },
 
