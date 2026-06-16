@@ -62,8 +62,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
       |> Factory.add_space(:space2)
-      |> Factory.add_resource_hub(:hub1, :space, :creator)
-      |> Factory.add_resource_hub(:hub2, :space2, :creator)
+      |> Factory.fetch_default_resource_hub(:hub1, :space)
+      |> Factory.fetch_default_resource_hub(:hub2, :space2)
       |> Factory.add_folder(:folder1, :hub1)
       |> Factory.add_folder(:folder2, :hub1)
       |> Factory.add_folder(:folder3, :hub1)
@@ -116,7 +116,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
       ctx =
         ctx
         |> Factory.add_project(:project, :space)
-        |> Factory.add_resource_hub(:project_hub, :project, :creator)
+        |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
 
       assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{project_id: Paths.project_id(ctx.project)})
       refute res.resource_hub.project

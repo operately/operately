@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodesTest do
       |> Factory.setup()
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
-      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
       |> Factory.add_document(:document1, :hub, state: :draft)
       |> Factory.add_document(:document2, :hub)
       |> Factory.add_link(:link1, :hub)
@@ -180,7 +180,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodesTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
-      |> Factory.add_resource_hub(:hub, :project, :creator)
+      |> Factory.fetch_default_project_resource_hub(:hub, :project)
       |> Factory.add_document(:document, :hub)
       |> Factory.add_link(:link, :hub)
       |> Factory.add_file(:hub_file, :hub)
@@ -204,7 +204,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodesTest do
       |> Factory.setup()
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
-      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
       |> Factory.add_document(:document, :hub)
     end
 

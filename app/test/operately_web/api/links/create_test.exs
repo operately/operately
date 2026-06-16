@@ -75,7 +75,7 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
       |> Factory.add_space(:space)
       |> Factory.add_space_member(:person, :space)
       |> Factory.log_in_person(:person)
-      |> Factory.add_resource_hub(:hub, :space, :person)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
     end
 
     test "creates file within hub", ctx do
@@ -129,7 +129,7 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
       |> Factory.add_space(:space)
       |> Factory.add_space_member(:person, :space)
       |> Factory.log_in_person(:person)
-      |> Factory.add_resource_hub(:hub, :space, :person)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
     end
 
     test "creates link by space_id", ctx do
@@ -149,7 +149,7 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
       ctx =
         ctx
         |> Factory.add_project(:project, :space)
-        |> Factory.add_resource_hub(:project_hub, :project, :person)
+        |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
 
       assert {200, res} = mutation(ctx.conn, [:links, :create], %{
         project_id: Paths.project_id(ctx.project),

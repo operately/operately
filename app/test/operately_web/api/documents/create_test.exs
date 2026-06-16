@@ -72,7 +72,7 @@ defmodule OperatelyWeb.Api.Documents.CreateTest do
       |> Factory.add_space(:space)
       |> Factory.add_space_member(:person, :space)
       |> Factory.log_in_person(:person)
-      |> Factory.add_resource_hub(:hub, :space, :person)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
     end
 
     test "creates document within hub", ctx do
@@ -131,7 +131,7 @@ defmodule OperatelyWeb.Api.Documents.CreateTest do
       |> Factory.add_space(:space)
       |> Factory.add_space_member(:person, :space)
       |> Factory.log_in_person(:person)
-      |> Factory.add_resource_hub(:hub, :space, :person)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
     end
 
     test "creates document by space_id", ctx do
@@ -150,7 +150,7 @@ defmodule OperatelyWeb.Api.Documents.CreateTest do
       ctx =
         ctx
         |> Factory.add_project(:project, :space)
-        |> Factory.add_resource_hub(:project_hub, :project, :person)
+        |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
 
       assert {200, res} = mutation(ctx.conn, [:documents, :create], %{
         project_id: Paths.project_id(ctx.project),
