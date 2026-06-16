@@ -27,3 +27,29 @@ test("custom catalog commands are still normal registry endpoints", () => {
   assert.equal(pictureEndpoint?.full_name, "people/update_picture");
   assert.equal(fileEndpoint?.full_name, "files/create");
 });
+
+test("throws when generated catalog and custom endpoints share a command", () => {
+  const catalogWithDuplicate = {
+    ...fixtureCatalog,
+    endpoints: [
+      ...fixtureCatalog.endpoints,
+      {
+        full_name: "files/create",
+        namespace: "files",
+        name: "create",
+        type: "mutation" as const,
+        method: "POST" as const,
+        path: "/api/external/v1/files/create",
+        handler: "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFile",
+        inputs: [],
+        outputs: [],
+        docstring: "Generated catalog entry",
+      },
+    ],
+  };
+
+  assert.throws(
+    () => createRegistry(catalogWithDuplicate),
+    /Duplicate command mapping detected for 'files create'/,
+  );
+});

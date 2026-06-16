@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 198
+- Endpoints: 199
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -14,6 +14,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `companies convert_member_to_guest` | `op companies convert_member_to_guest` | `POST` | `/api/external/v1/companies/convert_member_to_guest` |
 | `companies create_admins` | `op companies create_admins` | `POST` | `/api/external/v1/companies/create_admins` |
 | `companies create_member` | `op companies create_member` | `POST` | `/api/external/v1/companies/create_member` |
+| `companies delete_activity` | `op companies delete_activity` | `POST` | `/api/external/v1/companies/delete_activity` |
 | `companies delete_admin` | `op companies delete_admin` | `POST` | `/api/external/v1/companies/delete_admin` |
 | `companies delete_member` | `op companies delete_member` | `POST` | `/api/external/v1/companies/delete_member` |
 | `companies delete_owner` | `op companies delete_owner` | `POST` | `/api/external/v1/companies/delete_owner` |
@@ -30,14 +31,25 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `companies restore_member` | `op companies restore_member` | `POST` | `/api/external/v1/companies/restore_member` |
 | `companies update` | `op companies update` | `POST` | `/api/external/v1/companies/update` |
 | `companies update_members_permissions` | `op companies update_members_permissions` | `POST` | `/api/external/v1/companies/update_members_permissions` |
-| `documents create` | `op documents create` | `POST` | `/api/external/v1/documents/create` |
-| `documents delete` | `op documents delete` | `POST` | `/api/external/v1/documents/delete` |
-| `documents get` | `op documents get` | `GET` | `/api/external/v1/documents/get` |
-| `documents publish` | `op documents publish` | `POST` | `/api/external/v1/documents/publish` |
-| `documents update` | `op documents update` | `POST` | `/api/external/v1/documents/update` |
-| `files delete` | `op files delete` | `POST` | `/api/external/v1/files/delete` |
-| `files get` | `op files get` | `GET` | `/api/external/v1/files/get` |
-| `files update` | `op files update` | `POST` | `/api/external/v1/files/update` |
+| `docs_and_files copy_folder` | `op docs_and_files copy_folder` | `POST` | `/api/external/v1/docs_and_files/copy_folder` |
+| `docs_and_files create_document` | `op docs_and_files create_document` | `POST` | `/api/external/v1/docs_and_files/create_document` |
+| `docs_and_files create_folder` | `op docs_and_files create_folder` | `POST` | `/api/external/v1/docs_and_files/create_folder` |
+| `docs_and_files create_link` | `op docs_and_files create_link` | `POST` | `/api/external/v1/docs_and_files/create_link` |
+| `docs_and_files delete_document` | `op docs_and_files delete_document` | `POST` | `/api/external/v1/docs_and_files/delete_document` |
+| `docs_and_files delete_file` | `op docs_and_files delete_file` | `POST` | `/api/external/v1/docs_and_files/delete_file` |
+| `docs_and_files delete_folder` | `op docs_and_files delete_folder` | `POST` | `/api/external/v1/docs_and_files/delete_folder` |
+| `docs_and_files delete_link` | `op docs_and_files delete_link` | `POST` | `/api/external/v1/docs_and_files/delete_link` |
+| `docs_and_files get_document` | `op docs_and_files get_document` | `GET` | `/api/external/v1/docs_and_files/get_document` |
+| `docs_and_files get_file` | `op docs_and_files get_file` | `GET` | `/api/external/v1/docs_and_files/get_file` |
+| `docs_and_files get_folder` | `op docs_and_files get_folder` | `GET` | `/api/external/v1/docs_and_files/get_folder` |
+| `docs_and_files get_link` | `op docs_and_files get_link` | `GET` | `/api/external/v1/docs_and_files/get_link` |
+| `docs_and_files list_contents` | `op docs_and_files list_contents` | `GET` | `/api/external/v1/docs_and_files/list_contents` |
+| `docs_and_files publish_document` | `op docs_and_files publish_document` | `POST` | `/api/external/v1/docs_and_files/publish_document` |
+| `docs_and_files rename_folder` | `op docs_and_files rename_folder` | `POST` | `/api/external/v1/docs_and_files/rename_folder` |
+| `docs_and_files update_document` | `op docs_and_files update_document` | `POST` | `/api/external/v1/docs_and_files/update_document` |
+| `docs_and_files update_file` | `op docs_and_files update_file` | `POST` | `/api/external/v1/docs_and_files/update_file` |
+| `docs_and_files update_link` | `op docs_and_files update_link` | `POST` | `/api/external/v1/docs_and_files/update_link` |
+| `docs_and_files update_parent_folder` | `op docs_and_files update_parent_folder` | `POST` | `/api/external/v1/docs_and_files/update_parent_folder` |
 | `goals acknowledge_check_in` | `op goals acknowledge_check_in` | `POST` | `/api/external/v1/goals/acknowledge_check_in` |
 | `goals change_parent` | `op goals change_parent` | `POST` | `/api/external/v1/goals/change_parent` |
 | `goals close` | `op goals close` | `POST` | `/api/external/v1/goals/close` |
@@ -50,6 +62,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals delete` | `op goals delete` | `POST` | `/api/external/v1/goals/delete` |
 | `goals delete_access_member` | `op goals delete_access_member` | `POST` | `/api/external/v1/goals/delete_access_member` |
 | `goals delete_check` | `op goals delete_check` | `POST` | `/api/external/v1/goals/delete_check` |
+| `goals delete_check_in` | `op goals delete_check_in` | `POST` | `/api/external/v1/goals/delete_check_in` |
 | `goals delete_target` | `op goals delete_target` | `POST` | `/api/external/v1/goals/delete_target` |
 | `goals get` | `op goals get` | `GET` | `/api/external/v1/goals/get` |
 | `goals get_check_in` | `op goals get_check_in` | `GET` | `/api/external/v1/goals/get_check_in` |
@@ -78,10 +91,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals update_target` | `op goals update_target` | `POST` | `/api/external/v1/goals/update_target` |
 | `goals update_target_index` | `op goals update_target_index` | `POST` | `/api/external/v1/goals/update_target_index` |
 | `goals update_target_value` | `op goals update_target_value` | `POST` | `/api/external/v1/goals/update_target_value` |
-| `links create` | `op links create` | `POST` | `/api/external/v1/links/create` |
-| `links delete` | `op links delete` | `POST` | `/api/external/v1/links/delete` |
-| `links get` | `op links get` | `GET` | `/api/external/v1/links/get` |
-| `links update` | `op links update` | `POST` | `/api/external/v1/links/update` |
 | `notifications get_unread_count` | `op notifications get_unread_count` | `GET` | `/api/external/v1/notifications/get_unread_count` |
 | `notifications is_subscribed` | `op notifications is_subscribed` | `GET` | `/api/external/v1/notifications/is_subscribed` |
 | `notifications list` | `op notifications list` | `GET` | `/api/external/v1/notifications/list` |
@@ -159,14 +168,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects update_task_statuses` | `op projects update_task_statuses` | `POST` | `/api/external/v1/projects/update_task_statuses` |
 | `reactions create` | `op reactions create` | `POST` | `/api/external/v1/reactions/create` |
 | `reactions delete` | `op reactions delete` | `POST` | `/api/external/v1/reactions/delete` |
-| `resource_hubs copy_folder` | `op resource_hubs copy_folder` | `POST` | `/api/external/v1/resource_hubs/copy_folder` |
-| `resource_hubs create_folder` | `op resource_hubs create_folder` | `POST` | `/api/external/v1/resource_hubs/create_folder` |
-| `resource_hubs delete_folder` | `op resource_hubs delete_folder` | `POST` | `/api/external/v1/resource_hubs/delete_folder` |
-| `resource_hubs get` | `op resource_hubs get` | `GET` | `/api/external/v1/resource_hubs/get` |
-| `resource_hubs get_folder` | `op resource_hubs get_folder` | `GET` | `/api/external/v1/resource_hubs/get_folder` |
-| `resource_hubs list_nodes` | `op resource_hubs list_nodes` | `GET` | `/api/external/v1/resource_hubs/list_nodes` |
-| `resource_hubs rename_folder` | `op resource_hubs rename_folder` | `POST` | `/api/external/v1/resource_hubs/rename_folder` |
-| `resource_hubs update_parent_folder` | `op resource_hubs update_parent_folder` | `POST` | `/api/external/v1/resource_hubs/update_parent_folder` |
 | `spaces add_members` | `op spaces add_members` | `POST` | `/api/external/v1/spaces/add_members` |
 | `spaces archive_discussion` | `op spaces archive_discussion` | `POST` | `/api/external/v1/spaces/archive_discussion` |
 | `spaces count_by_access_level` | `op spaces count_by_access_level` | `GET` | `/api/external/v1/spaces/count_by_access_level` |
@@ -203,4 +204,5 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `tasks update_milestone` | `op tasks update_milestone` | `POST` | `/api/external/v1/tasks/update_milestone` |
 | `tasks update_milestone_and_ordering` | `op tasks update_milestone_and_ordering` | `POST` | `/api/external/v1/tasks/update_milestone_and_ordering` |
 | `tasks update_name` | `op tasks update_name` | `POST` | `/api/external/v1/tasks/update_name` |
+| `tasks update_reminders` | `op tasks update_reminders` | `POST` | `/api/external/v1/tasks/update_reminders` |
 | `tasks update_status` | `op tasks update_status` | `POST` | `/api/external/v1/tasks/update_status` |

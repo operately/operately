@@ -143,92 +143,10 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
         assert Enum.find(res.files, &(&1.id == Paths.file_id(f)))
       end)
     end
-  end
 
-  describe "parent scope inputs" do
-    setup ctx do
-      ctx
-      |> Factory.add_space(:space)
-      |> Factory.add_space_member(:person, :space)
-      |> Factory.log_in_person(:person)
-      |> Factory.fetch_default_resource_hub(:hub, :space)
-      |> Factory.add_blob(:blob1)
-    end
-
-    test "creates file by space_id", ctx do
-      assert {200, res} = mutation(ctx.conn, [:files, :create], %{
-        space_id: Paths.space_id(ctx.space),
-        files: [
-          %{
-            blob_id: ctx.blob1.id,
-            name: "My file",
-            description: RichText.rich_text("description", :as_string),
-          }
-        ]
-      })
-
-      files = ResourceHubs.list_files(ctx.hub)
-      assert length(files) == 1
-      assert hd(res.files).id == Paths.file_id(hd(files))
-    end
-
-    test "creates file by project_id", ctx do
-      ctx =
-        ctx
-        |> Factory.add_project(:project, :space)
-        |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
-
-      assert {200, res} = mutation(ctx.conn, [:files, :create], %{
-        project_id: Paths.project_id(ctx.project),
-        files: [
-          %{
-            blob_id: ctx.blob1.id,
-            name: "Project file",
-            description: RichText.rich_text("description", :as_string),
-          }
-        ]
-      })
-
-      files = ResourceHubs.list_files(ctx.project_hub)
-      assert length(files) == 1
-      assert hd(res.files).id == Paths.file_id(hd(files))
-    end
-
-    test "requires hub scope", ctx do
+    test "requires resource_hub_id", ctx do
       assert {400, _} =
                mutation(ctx.conn, [:files, :create], %{
-                 files: [
-                   %{
-                     blob_id: ctx.blob1.id,
-                     name: "My file",
-                     description: RichText.rich_text("description", :as_string),
-                   }
-                 ]
-               })
-    end
-
-    test "rejects resource_hub_id with space_id", ctx do
-      assert {400, _} =
-               mutation(ctx.conn, [:files, :create], %{
-                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
-                 space_id: Paths.space_id(ctx.space),
-                 files: [
-                   %{
-                     blob_id: ctx.blob1.id,
-                     name: "My file",
-                     description: RichText.rich_text("description", :as_string),
-                   }
-                 ]
-               })
-    end
-
-    test "rejects both space_id and project_id", ctx do
-      ctx = Factory.add_project(ctx, :project, :space)
-
-      assert {400, _} =
-               mutation(ctx.conn, [:files, :create], %{
-                 space_id: Paths.space_id(ctx.space),
-                 project_id: Paths.project_id(ctx.project),
                  files: [
                    %{
                      blob_id: ctx.blob1.id,
