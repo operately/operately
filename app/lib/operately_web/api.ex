@@ -438,7 +438,7 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:files) do
-        mutation(:create, OperatelyWeb.Api.DocsAndFiles.CreateFile)
+        mutation(:create, OperatelyWeb.Api.DocsAndFiles.CreateFile, catalog: false)
       end
 
       @doc "Browse and manage Docs & Files"
