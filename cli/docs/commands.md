@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 198
+- Endpoints: 200
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -39,6 +39,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `docs_and_files list_contents` | `op docs_and_files list_contents` | `GET` | `/api/external/v1/docs_and_files/list_contents` |
 | `docs_and_files rename_folder` | `op docs_and_files rename_folder` | `POST` | `/api/external/v1/docs_and_files/rename_folder` |
 | `docs_and_files update_parent_folder` | `op docs_and_files update_parent_folder` | `POST` | `/api/external/v1/docs_and_files/update_parent_folder` |
+| `documents create` | `op documents create` | `POST` | `/api/external/v1/documents/create` |
 | `documents delete` | `op documents delete` | `POST` | `/api/external/v1/documents/delete` |
 | `documents get` | `op documents get` | `GET` | `/api/external/v1/documents/get` |
 | `documents publish` | `op documents publish` | `POST` | `/api/external/v1/documents/publish` |
@@ -87,6 +88,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals update_target` | `op goals update_target` | `POST` | `/api/external/v1/goals/update_target` |
 | `goals update_target_index` | `op goals update_target_index` | `POST` | `/api/external/v1/goals/update_target_index` |
 | `goals update_target_value` | `op goals update_target_value` | `POST` | `/api/external/v1/goals/update_target_value` |
+| `links create` | `op links create` | `POST` | `/api/external/v1/links/create` |
 | `links delete` | `op links delete` | `POST` | `/api/external/v1/links/delete` |
 | `links get` | `op links get` | `GET` | `/api/external/v1/links/get` |
 | `links update` | `op links update` | `POST` | `/api/external/v1/links/update` |
