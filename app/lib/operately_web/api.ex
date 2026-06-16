@@ -222,6 +222,9 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
       end
 
+      # Legacy Docs & Files routes stay on the external API for CLI <= 1.6.0 backward
+      # compatibility but are hidden from the catalog. The docs_and_files namespace
+      # is the supported CLI-facing surface for new clients.
       namespace(:resource_hubs, catalog: false) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
@@ -234,27 +237,27 @@ defmodule OperatelyWeb.Api do
         mutation(:rename_folder, OperatelyWeb.Api.ResourceHubs.RenameFolder)
       end
 
-      @doc "Get, create and manage documents in resource hubs"
-      namespace(:documents) do
+      namespace(:documents, catalog: false) do
         query(:get, OperatelyWeb.Api.Documents.Get)
 
+        mutation(:create, OperatelyWeb.Api.Documents.Create)
         mutation(:publish, OperatelyWeb.Api.Documents.Publish)
         mutation(:delete, OperatelyWeb.Api.Documents.Delete)
         mutation(:update, OperatelyWeb.Api.Documents.Update)
       end
 
-      @doc "Get, create and manage links in resource hubs"
-      namespace(:links) do
+      namespace(:links, catalog: false) do
         query(:get, OperatelyWeb.Api.Links.Get)
 
+        mutation(:create, OperatelyWeb.Api.Links.Create)
         mutation(:delete, OperatelyWeb.Api.Links.Delete)
         mutation(:update, OperatelyWeb.Api.Links.Update)
       end
 
-      @doc "Get, create and manage files in resource hubs"
-      namespace(:files) do
+      namespace(:files, catalog: false) do
         query(:get, OperatelyWeb.Api.Files.Get)
 
+        mutation(:create, OperatelyWeb.Api.Files.Create)
         mutation(:delete, OperatelyWeb.Api.Files.Delete)
         mutation(:update, OperatelyWeb.Api.Files.Update)
       end
@@ -289,18 +292,6 @@ defmodule OperatelyWeb.Api do
   defmacro internal_endpoints do
     quote do
       common_endpoints()
-
-      namespace(:documents) do
-        mutation(:create, OperatelyWeb.Api.Documents.Create)
-      end
-
-      namespace(:links) do
-        mutation(:create, OperatelyWeb.Api.Links.Create)
-      end
-
-      namespace(:files) do
-        mutation(:create, OperatelyWeb.Api.Files.Create)
-      end
 
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)
       mutation(:add_company_owners, OperatelyWeb.Api.Mutations.AddCompanyOwners)
@@ -428,28 +419,32 @@ defmodule OperatelyWeb.Api do
     quote do
       common_endpoints()
 
-      namespace(:documents) do
-        mutation(:create, OperatelyWeb.Api.DocsAndFiles.CreateDocument)
-      end
-
-      namespace(:links) do
-        mutation(:create, OperatelyWeb.Api.DocsAndFiles.CreateLink)
-      end
-
-      namespace(:files) do
-        mutation(:create, OperatelyWeb.Api.DocsAndFiles.CreateFile, catalog: false)
-      end
-
       @doc "Browse and manage Docs & Files"
       namespace(:docs_and_files) do
         query(:list_contents, OperatelyWeb.Api.DocsAndFiles.ListContents)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
+        query(:get_document, OperatelyWeb.Api.Documents.Get)
+        query(:get_link, OperatelyWeb.Api.Links.Get)
+        query(:get_file, OperatelyWeb.Api.Files.Get)
 
         mutation(:create_folder, OperatelyWeb.Api.DocsAndFiles.CreateFolder)
         mutation(:copy_folder, OperatelyWeb.Api.ResourceHubs.CopyFolder)
         mutation(:delete_folder, OperatelyWeb.Api.ResourceHubs.DeleteFolder)
         mutation(:rename_folder, OperatelyWeb.Api.ResourceHubs.RenameFolder)
         mutation(:update_parent_folder, OperatelyWeb.Api.ResourceHubs.UpdateParentFolder)
+
+        mutation(:create_document, OperatelyWeb.Api.DocsAndFiles.CreateDocument)
+        mutation(:publish_document, OperatelyWeb.Api.Documents.Publish)
+        mutation(:delete_document, OperatelyWeb.Api.Documents.Delete)
+        mutation(:update_document, OperatelyWeb.Api.Documents.Update)
+
+        mutation(:create_link, OperatelyWeb.Api.DocsAndFiles.CreateLink)
+        mutation(:delete_link, OperatelyWeb.Api.Links.Delete)
+        mutation(:update_link, OperatelyWeb.Api.Links.Update)
+
+        mutation(:create_file, OperatelyWeb.Api.DocsAndFiles.CreateFile, catalog: false)
+        mutation(:delete_file, OperatelyWeb.Api.Files.Delete)
+        mutation(:update_file, OperatelyWeb.Api.Files.Update)
       end
     end
   end
