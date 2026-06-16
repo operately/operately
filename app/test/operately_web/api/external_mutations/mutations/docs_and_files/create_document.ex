@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.CreateDocume
   alias Operately.Notifications.SubscriptionList
 
   @impl true
-  def mutation_name, do: "docs_and_files/create_document"
+  def mutation_name, do: "documents/create"
 
   @impl true
   def setup(ctx) do

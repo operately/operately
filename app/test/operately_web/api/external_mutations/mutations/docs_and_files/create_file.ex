@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.CreateFile d
   alias Operately.Support.RichText
 
   @impl true
-  def mutation_name, do: "docs_and_files/create_file"
+  def mutation_name, do: "files/create"
 
   @impl true
   def setup(ctx) do
