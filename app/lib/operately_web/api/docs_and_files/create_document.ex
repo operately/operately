@@ -10,6 +10,10 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateDocument do
   alias OperatelyWeb.Api.Documents.Create, as: DocumentCreate
 
   inputs do
+    # Backward compatibility for CLIs <= 1.6.0: their cached catalog still documents
+    # resource_hub_id on documents/create, links/create, and files/create.
+    field? :resource_hub_id, :id, null: true
+
     field? :space_id, :id, null: true
     field? :project_id, :id, null: true
     field? :folder_id, :id, null: true
