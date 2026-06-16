@@ -8,12 +8,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
 
   alias Operately.Access.{Binding, Context}
   alias Operately.ResourceHubs.{Folder, Node}
-  alias OperatelyWeb.Api.ResourceHubs.ParentScope
 
   inputs do
     field? :resource_hub_id, :id, null: true
-    field? :space_id, :id, null: true
-    field? :project_id, :id, null: true
     field? :folder_id, :id, null: true
     field? :include_comments_count, :boolean, null: true
     field? :include_children_count, :boolean, null: true
@@ -27,8 +24,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:filter, fn ctx -> resolve_filter_inputs(ctx.me, inputs) end)
-    |> run(:nodes, fn ctx -> load_nodes(ctx.me, ctx.filter, inputs) end)
+    |> run(:nodes, fn ctx -> load_nodes(ctx.me, inputs) end)
     |> run(:serialized, fn ctx -> serialize(ctx.nodes) end)
     |> respond()
   end
@@ -36,14 +32,13 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :filter, %{error: :bad_request}} -> {:error, :bad_request}
-      {:error, :filter, _} -> {:error, :not_found}
       {:error, :nodes, _} -> {:error, :not_found}
+      {:error, :bad_request, message} -> {:error, :bad_request, message}
       _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load_nodes(me, filter_inputs, inputs) do
+  defp load_nodes(me, inputs) do
     nodes =
       from(n in Node,
         left_join: hub in assoc(n, :resource_hub), as: :hub,
@@ -51,7 +46,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
         left_join: space in assoc(hub, :space), as: :space,
         order_by: [desc: n.inserted_at]
       )
-      |> filter_nodes(filter_inputs)
+      |> filter_nodes(inputs)
       |> Node.preload_content(me)
       |> filter_by_parent_view_access(me.id)
       |> Repo.all()
@@ -59,25 +54,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
       |> set_folders_children_count(inputs[:include_children_count])
 
     {:ok, nodes}
-  end
-
-  defp resolve_filter_inputs(me, inputs) do
-    cond do
-      not is_nil(inputs[:folder_id]) ->
-        {:ok, %{folder_id: inputs.folder_id}}
-
-      inputs[:resource_hub_id] && (inputs[:space_id] || inputs[:project_id]) ->
-        {:error, :bad_request}
-
-      not is_nil(inputs[:resource_hub_id]) ->
-        {:ok, %{resource_hub_id: inputs.resource_hub_id}}
-
-      true ->
-        with {:ok, hub_scope} <- ParentScope.parse_hub_scope(inputs),
-             {:ok, hub} <- ParentScope.get_resource_hub(me, hub_scope) do
-          {:ok, %{resource_hub_id: hub.id}}
-        end
-    end
   end
 
   defp serialize(nodes) do
