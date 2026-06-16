@@ -1,6 +1,28 @@
 defmodule Operately.ResourceHubsFixtures do
-  alias Operately.Support.RichText
+  import Ecto.Query
+
   alias Operately.Access.Binding
+  alias Operately.Repo
+  alias Operately.ResourceHubs.ResourceHub
+  alias Operately.Support.RichText
+
+  def default_resource_hub_for_space(space) do
+    from(h in ResourceHub,
+      where: h.space_id == ^space.id,
+      order_by: [asc: h.inserted_at],
+      limit: 1
+    )
+    |> Repo.one!()
+  end
+
+  def default_resource_hub_for_project(project) do
+    from(h in ResourceHub,
+      where: h.project_id == ^project.id,
+      order_by: [asc: h.inserted_at],
+      limit: 1
+    )
+    |> Repo.one!()
+  end
 
   def resource_hub_fixture(creator, parent, attrs \\ %{}) do
     attrs = Enum.into(attrs, %{

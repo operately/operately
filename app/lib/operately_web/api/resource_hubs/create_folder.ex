@@ -6,11 +6,14 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolder do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.ResourceHubs.{ResourceHub, Permissions}
   alias Operately.Operations.ResourceHubFolderCreating
+  alias Operately.ResourceHubs.Permissions
+  alias OperatelyWeb.Api.ResourceHubs.ParentScope
 
   inputs do
-    field :resource_hub_id, :id, null: false
+    field? :resource_hub_id, :id, null: true
+    field? :space_id, :id, null: true
+    field? :project_id, :id, null: true
     field? :folder_id, :id, null: true
     field :name, :string, null: false
   end
@@ -22,8 +25,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolder do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
+    |> run(:hub_scope, fn -> ParentScope.parse_hub_scope(inputs) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
-    |> run(:hub, fn ctx -> find_resource(ctx) end)
+    |> run(:hub, fn ctx -> ParentScope.get_resource_hub(ctx.me, ctx.hub_scope) end)
     |> run(:permissions, fn ctx -> authorize(ctx.hub, company_read_only(conn)) end)
     |> run(:operation, fn ctx -> execute(ctx) end)
     |> run(:serialized, fn ctx -> serialize(ctx) end)
@@ -34,6 +38,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolder do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :hub_scope, _} -> {:error, :bad_request}
       {:error, :hub, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
@@ -45,10 +50,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolder do
     {:ok, Map.merge(inputs, %{
       parent_folder_id: inputs[:folder_id],
     })}
-  end
-
-  defp find_resource(ctx) do
-    ResourceHub.get(ctx.me, id: ctx.attrs.resource_hub_id)
   end
 
   defp authorize(hub, company_read_only) do
