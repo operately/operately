@@ -222,7 +222,6 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
       end
 
-      @doc "Get and manage resource hubs"
       namespace(:resource_hubs, catalog: false) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
@@ -443,7 +442,6 @@ defmodule OperatelyWeb.Api do
 
       @doc "Browse and manage Docs & Files"
       namespace(:docs_and_files) do
-        query(:get, OperatelyWeb.Api.DocsAndFiles.Get)
         query(:list_contents, OperatelyWeb.Api.DocsAndFiles.ListContents)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
 
