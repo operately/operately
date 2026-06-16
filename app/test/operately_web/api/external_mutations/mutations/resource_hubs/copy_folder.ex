@@ -12,7 +12,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ResourceHubs.CopyFolder d
     |> Factory.add_space(:space)
     |> Factory.add_resource_hub(:resource_hub, :space, :creator)
     |> Factory.add_folder(:folder, :resource_hub)
-    |> Factory.add_resource_hub(:destination_resource_hub, :space, :creator)
   end
 
   @impl true
@@ -20,7 +19,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ResourceHubs.CopyFolder d
     %{
       folder_name: "Updated Name",
       folder_id: Paths.folder_id(ctx.folder),
-      dest_resource_hub_id: Paths.resource_hub_id(ctx.destination_resource_hub)
     }
   end
 

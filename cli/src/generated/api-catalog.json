@@ -18604,9 +18604,31 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         },
         {
           "default": null,
@@ -22057,9 +22079,31 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         },
         {
           "default": null,
@@ -27241,17 +27285,6 @@
         },
         {
           "default": null,
-          "name": "dest_resource_hub_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
           "name": "dest_parent_folder_id",
           "type": {
             "name": "id",
@@ -27262,7 +27295,7 @@
           "nullable": true
         }
       ],
-      "docstring": "Copies a folder to another location.",
+      "docstring": "Copies a folder within its resource hub.",
       "full_name": "resource_hubs/copy_folder",
       "method": "POST"
     },
@@ -27293,9 +27326,31 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         },
         {
           "default": null,
@@ -27387,9 +27442,31 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         },
         {
           "default": null,
@@ -27447,7 +27524,7 @@
           "nullable": true
         }
       ],
-      "docstring": "Retrieves a resource hub by ID with optional related data.",
+      "docstring": "Retrieves a resource hub by ID, space ID, or project ID with optional related data.",
       "full_name": "resource_hubs/get",
       "method": "GET"
     },
@@ -27604,6 +27681,28 @@
         {
           "default": null,
           "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "project_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -30207,6 +30306,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-16T11:45:01Z",
+  "generated_at": "2026-06-16T14:08:30Z",
   "schema_version": 1
 }

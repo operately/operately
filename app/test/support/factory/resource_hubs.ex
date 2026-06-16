@@ -9,10 +9,25 @@ defmodule Operately.Support.Factory.ResourceHubs do
           existing_hub = Operately.Repo.preload(project, :resource_hub).resource_hub
           existing_hub || Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
 
+        %Operately.Groups.Group{} ->
+          Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
+
         _ ->
           Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
       end
 
+    Map.put(ctx, testid, hub)
+  end
+
+  def fetch_default_resource_hub(ctx, testid, space_name) do
+    space = Map.fetch!(ctx, space_name)
+    hub = Operately.ResourceHubsFixtures.default_resource_hub_for_space(space)
+    Map.put(ctx, testid, hub)
+  end
+
+  def fetch_default_project_resource_hub(ctx, testid, project_name) do
+    project = Map.fetch!(ctx, project_name)
+    hub = Operately.ResourceHubsFixtures.default_resource_hub_for_project(project)
     Map.put(ctx, testid, hub)
   end
 
