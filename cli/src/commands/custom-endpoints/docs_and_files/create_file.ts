@@ -25,7 +25,7 @@ interface CreateBlobResponse {
   blobs?: BlobCreationOutput[];
 }
 
-export const executeFilesCreate: CustomEndpointExecutor = async (input, deps) => {
+export const executeDocsAndFilesCreateFile: CustomEndpointExecutor = async (input, deps) => {
   const resourceHubId = readRequiredString(input.endpointInputs.resource_hub_id, "resource_hub_id");
   const filePath = readRequiredString(input.endpointInputs.file, "file");
   const folderId = readOptionalString(input.endpointInputs.folder_id, "folder_id");

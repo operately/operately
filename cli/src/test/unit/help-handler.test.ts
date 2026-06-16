@@ -121,14 +121,14 @@ test("resolves custom endpoint help from trailing help", () => {
   }
 });
 
-test("resolves files create custom endpoint help", () => {
+test("resolves docs_and_files create_file custom endpoint help", () => {
   const registry = createRegistry(fixtureCatalog);
-  const request = resolveHelpRequest(["help", "files", "create"], registry);
+  const request = resolveHelpRequest(["help", "docs_and_files", "create_file"], registry);
 
   assert.ok(request);
   assert.equal(request.kind, "endpoint");
   if (request.kind === "endpoint") {
-    assert.equal(request.endpoint.full_name, "files/create");
+    assert.equal(request.endpoint.full_name, "docs_and_files/create_file");
   }
 });
 
