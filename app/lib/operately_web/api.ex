@@ -421,28 +421,28 @@ defmodule OperatelyWeb.Api do
 
       @doc "Browse and manage Docs & Files"
       namespace(:docs_and_files) do
-        query(:list_contents, OperatelyWeb.Api.DocsAndFiles.ListContents)
+        query(:list_contents, OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
         query(:get_document, OperatelyWeb.Api.Documents.Get)
         query(:get_link, OperatelyWeb.Api.Links.Get)
         query(:get_file, OperatelyWeb.Api.Files.Get)
 
-        mutation(:create_folder, OperatelyWeb.Api.DocsAndFiles.CreateFolder)
+        mutation(:create_folder, OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolder)
         mutation(:copy_folder, OperatelyWeb.Api.ResourceHubs.CopyFolder)
         mutation(:delete_folder, OperatelyWeb.Api.ResourceHubs.DeleteFolder)
         mutation(:rename_folder, OperatelyWeb.Api.ResourceHubs.RenameFolder)
         mutation(:update_parent_folder, OperatelyWeb.Api.ResourceHubs.UpdateParentFolder)
 
-        mutation(:create_document, OperatelyWeb.Api.DocsAndFiles.CreateDocument)
+        mutation(:create_document, OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateDocument)
         mutation(:publish_document, OperatelyWeb.Api.Documents.Publish)
         mutation(:delete_document, OperatelyWeb.Api.Documents.Delete)
         mutation(:update_document, OperatelyWeb.Api.Documents.Update)
 
-        mutation(:create_link, OperatelyWeb.Api.DocsAndFiles.CreateLink)
+        mutation(:create_link, OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLink)
         mutation(:delete_link, OperatelyWeb.Api.Links.Delete)
         mutation(:update_link, OperatelyWeb.Api.Links.Update)
 
-        mutation(:create_file, OperatelyWeb.Api.DocsAndFiles.CreateFile, catalog: false)
+        mutation(:create_file, OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFile, catalog: false)
         mutation(:delete_file, OperatelyWeb.Api.Files.Delete)
         mutation(:update_file, OperatelyWeb.Api.Files.Update)
       end

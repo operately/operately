@@ -40,7 +40,7 @@ test("throws when generated catalog and custom endpoints share a command", () =>
         type: "mutation" as const,
         method: "POST" as const,
         path: "/api/external/v1/files/create",
-        handler: "OperatelyWeb.Api.DocsAndFiles.CreateFile",
+        handler: "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFile",
         inputs: [],
         outputs: [],
         docstring: "Generated catalog entry",

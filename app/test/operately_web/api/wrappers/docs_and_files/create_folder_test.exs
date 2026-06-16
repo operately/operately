@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.DocsAndFiles.CreateFolderTest do
+defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolderTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.ResourceHubs
