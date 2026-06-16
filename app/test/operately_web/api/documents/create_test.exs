@@ -125,6 +125,75 @@ defmodule OperatelyWeb.Api.Documents.CreateTest do
     end
   end
 
+  describe "parent scope inputs" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:person, :space)
+      |> Factory.log_in_person(:person)
+      |> Factory.add_resource_hub(:hub, :space, :person)
+    end
+
+    test "creates document by space_id", ctx do
+      assert {200, res} = mutation(ctx.conn, [:documents, :create], %{
+        space_id: Paths.space_id(ctx.space),
+        name: "My document",
+        content: RichText.rich_text("content", :as_string),
+      })
+
+      documents = ResourceHubs.list_documents(ctx.hub)
+      assert length(documents) == 1
+      assert res.document.id == Paths.document_id(hd(documents))
+    end
+
+    test "creates document by project_id", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_resource_hub(:project_hub, :project, :person)
+
+      assert {200, res} = mutation(ctx.conn, [:documents, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "Project document",
+        content: RichText.rich_text("content", :as_string),
+      })
+
+      documents = ResourceHubs.list_documents(ctx.project_hub)
+      assert length(documents) == 1
+      assert res.document.id == Paths.document_id(hd(documents))
+    end
+
+    test "requires hub scope", ctx do
+      assert {400, _} =
+               mutation(ctx.conn, [:documents, :create], %{
+                 name: "My document",
+                 content: RichText.rich_text("content", :as_string),
+               })
+    end
+
+    test "rejects resource_hub_id with space_id", ctx do
+      assert {400, _} =
+               mutation(ctx.conn, [:documents, :create], %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 space_id: Paths.space_id(ctx.space),
+                 name: "My document",
+                 content: RichText.rich_text("content", :as_string),
+               })
+    end
+
+    test "rejects both space_id and project_id", ctx do
+      ctx = Factory.add_project(ctx, :project, :space)
+
+      assert {400, _} =
+               mutation(ctx.conn, [:documents, :create], %{
+                 space_id: Paths.space_id(ctx.space),
+                 project_id: Paths.project_id(ctx.project),
+                 name: "My document",
+                 content: RichText.rich_text("content", :as_string),
+               })
+    end
+  end
+
   describe "subscriptions to notifications" do
     setup ctx do
       ctx

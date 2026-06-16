@@ -103,6 +103,65 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateFolderTest do
     end
   end
 
+  describe "parent scope inputs" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:person, :space)
+      |> Factory.log_in_person(:person)
+      |> Factory.add_resource_hub(:hub, :space, :person)
+    end
+
+    test "creates folder by space_id", ctx do
+      assert {200, res} = mutation(ctx.conn, [:resource_hubs, :create_folder], %{
+        space_id: Paths.space_id(ctx.space),
+        name: "My folder",
+      })
+
+      folders = ResourceHubs.list_folders(ctx.hub)
+      assert length(folders) == 1
+      assert res.folder == Serializer.serialize(hd(folders))
+    end
+
+    test "creates folder by project_id", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_resource_hub(:project_hub, :project, :person)
+
+      assert {200, res} = mutation(ctx.conn, [:resource_hubs, :create_folder], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "Project folder",
+      })
+
+      folders = ResourceHubs.list_folders(ctx.project_hub)
+      assert length(folders) == 1
+      assert res.folder == Serializer.serialize(hd(folders))
+    end
+
+    test "requires hub scope", ctx do
+      assert {400, _} = mutation(ctx.conn, [:resource_hubs, :create_folder], %{name: "My folder"})
+    end
+
+    test "rejects resource_hub_id with space_id", ctx do
+      assert {400, _} = mutation(ctx.conn, [:resource_hubs, :create_folder], %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        space_id: Paths.space_id(ctx.space),
+        name: "My folder",
+      })
+    end
+
+    test "rejects both space_id and project_id", ctx do
+      ctx = Factory.add_project(ctx, :project, :space)
+
+      assert {400, _} = mutation(ctx.conn, [:resource_hubs, :create_folder], %{
+        space_id: Paths.space_id(ctx.space),
+        project_id: Paths.project_id(ctx.project),
+        name: "My folder",
+      })
+    end
+  end
+
   defp create_space(ctx, company_members_level, space_members_level) do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 

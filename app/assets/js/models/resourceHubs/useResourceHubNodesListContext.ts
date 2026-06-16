@@ -144,12 +144,9 @@ export function useResourceHubNodesListContext(props: NullableNodesProps): Resou
           navigate(paths.resourceHubDocumentPath(res.document.id));
         },
         copyFolder: async (args) => {
-          assertPresent(args.resourceHubId, "resourceHubId must be present in folder");
-
           const res = await copyFolder({
             folderName: args.name,
             folderId: args.folderId,
-            destResourceHubId: args.resourceHubId,
             destParentFolderId: args.location.type === "folder" ? args.location.id || undefined : undefined,
           });
 
