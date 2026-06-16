@@ -1,18 +1,15 @@
 defmodule OperatelyWeb.Api.ResourceHubs.Get do
   @moduledoc """
-  Retrieves a resource hub by ID, space ID, or project ID with optional related data.
+  Retrieves a resource hub by ID with optional related data.
   """
 
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
   alias Operately.ResourceHubs.{Node, ResourceHub}
-  alias OperatelyWeb.Api.ResourceHubs.ParentScope
 
   inputs do
-    field? :id, :id, null: true
-    field? :space_id, :id, null: true
-    field? :project_id, :id, null: true
+    field :id, :id, null: false
     field? :include_space, :boolean, null: true
     field? :include_project, :boolean, null: true
     field? :include_nodes, :boolean, null: true
@@ -27,7 +24,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:hub_scope, fn -> ParentScope.parse_hub_scope(inputs, hub_key: :id) end)
     |> run(:hub, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{resource_hub: Serializer.serialize(ctx.hub)}} end)
     |> respond()
@@ -36,14 +32,13 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :hub_scope, _} -> {:error, :bad_request}
       {:error, :hub, _} -> {:error, :not_found}
       _ -> {:error, :internal_server_error}
     end
   end
 
   defp load(ctx, inputs, company_read_only) do
-    ParentScope.get_resource_hub(ctx.me, ctx.hub_scope, opts: [
+    ResourceHub.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
       after_load: after_load(inputs, company_read_only),
     ])

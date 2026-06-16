@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
   import Operately.ResourceHubsFixtures
 
   alias Operately.Access.Binding
+  alias Operately.Repo
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -76,13 +77,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
 
       assert res.resource_hub.name == ctx.hub1.name
       assert length(res.resource_hub.nodes) == 3
-    end
-
-    test "include_nodes by space id", ctx do
-      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{space_id: Paths.space_id(ctx.space), include_nodes: true})
-
-      assert res.resource_hub.name == ctx.hub1.name
-      assert length(res.resource_hub.nodes) == 3
 
       [ctx.folder1, ctx.folder2, ctx.folder3]
       |> Enum.each(fn folder ->
@@ -91,7 +85,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
         assert Enum.find(res.resource_hub.nodes, &(&1.id == Paths.node_id(node)))
       end)
 
-      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{space_id: Paths.space_id(ctx.space2), include_nodes: true})
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(ctx.hub2), include_nodes: true})
 
       assert res.resource_hub.name == ctx.hub2.name
       assert length(res.resource_hub.nodes) == 2
@@ -105,10 +99,15 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
     end
 
     test "include_space", ctx do
-      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(ctx.hub1)})
       refute res.resource_hub.space
 
-      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{space_id: Paths.space_id(ctx.space), include_space: true})
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :get], %{
+                 id: Paths.resource_hub_id(ctx.hub1),
+                 include_space: true
+               })
+
       assert res.resource_hub.space == Serializer.serialize(ctx.space, level: :essential)
     end
 
@@ -118,47 +117,16 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
         |> Factory.add_project(:project, :space)
         |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
 
-      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{project_id: Paths.project_id(ctx.project)})
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(ctx.project_hub)})
       refute res.resource_hub.project
 
       assert {200, res} =
                query(ctx.conn, [:resource_hubs, :get], %{
-                 project_id: Paths.project_id(ctx.project),
+                 id: Paths.resource_hub_id(ctx.project_hub),
                  include_project: true
                })
 
       assert res.resource_hub.project == Serializer.serialize(ctx.project, level: :essential)
-    end
-  end
-
-  describe "hub scope validation" do
-    setup ctx do
-      ctx
-      |> Factory.setup()
-      |> Factory.log_in_person(:creator)
-      |> Factory.add_space(:space)
-      |> Factory.add_project(:project, :space)
-      |> Factory.add_resource_hub(:hub, :space, :creator)
-    end
-
-    test "requires id, space_id, or project_id", ctx do
-      assert {400, _} = query(ctx.conn, [:resource_hubs, :get], %{})
-    end
-
-    test "rejects both space_id and project_id", ctx do
-      assert {400, _} =
-               query(ctx.conn, [:resource_hubs, :get], %{
-                 space_id: Paths.space_id(ctx.space),
-                 project_id: Paths.project_id(ctx.project)
-               })
-    end
-
-    test "rejects id with project_id", ctx do
-      assert {400, _} =
-               query(ctx.conn, [:resource_hubs, :get], %{
-                 id: Paths.resource_hub_id(ctx.hub),
-                 project_id: Paths.project_id(ctx.project)
-               })
     end
   end
 

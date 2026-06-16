@@ -17150,9 +17150,9 @@
       ]
     }
   },
-  "endpoint_count": 200,
+  "endpoint_count": 198,
   "query_count": 64,
-  "mutation_count": 136,
+  "mutation_count": 134,
   "endpoints": [
     {
       "name": "create",
@@ -18578,16 +18578,16 @@
       "method": "POST"
     },
     {
-      "name": "create",
+      "name": "copy_folder",
       "type": "mutation",
-      "path": "/api/external/v1/documents/create",
-      "handler": "OperatelyWeb.Api.Documents.Create",
+      "path": "/api/external/v1/docs_and_files/copy_folder",
+      "handler": "OperatelyWeb.Api.ResourceHubs.CopyFolder",
       "outputs": [
         {
           "default": null,
-          "name": "document",
+          "name": "folder_id",
           "type": {
-            "name": "document",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -18595,7 +18595,413 @@
           "nullable": false
         }
       ],
-      "namespace": "documents",
+      "namespace": "docs_and_files",
+      "inputs": [
+        {
+          "default": null,
+          "name": "folder_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "dest_parent_folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Copies a folder within its resource hub.",
+      "full_name": "docs_and_files/copy_folder",
+      "method": "POST"
+    },
+    {
+      "name": "create_folder",
+      "type": "mutation",
+      "path": "/api/external/v1/docs_and_files/create_folder",
+      "handler": "OperatelyWeb.Api.DocsAndFiles.CreateFolder",
+      "outputs": [
+        {
+          "default": null,
+          "name": "folder",
+          "type": {
+            "name": "resource_hub_folder",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "docs_and_files",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Creates a new folder in a Docs & Files hub.",
+      "full_name": "docs_and_files/create_folder",
+      "method": "POST"
+    },
+    {
+      "name": "delete_folder",
+      "type": "mutation",
+      "path": "/api/external/v1/docs_and_files/delete_folder",
+      "handler": "OperatelyWeb.Api.ResourceHubs.DeleteFolder",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "docs_and_files",
+      "inputs": [
+        {
+          "default": null,
+          "name": "folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Deletes a folder.",
+      "full_name": "docs_and_files/delete_folder",
+      "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/docs_and_files/get",
+      "handler": "OperatelyWeb.Api.DocsAndFiles.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "resource_hub",
+          "type": {
+            "name": "resource_hub",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "docs_and_files",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_nodes",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Retrieves a Docs & Files hub by ID, space ID, or project ID with optional related data.",
+      "full_name": "docs_and_files/get",
+      "method": "GET"
+    },
+    {
+      "name": "get_folder",
+      "type": "query",
+      "path": "/api/external/v1/docs_and_files/get_folder",
+      "handler": "OperatelyWeb.Api.ResourceHubs.GetFolder",
+      "outputs": [
+        {
+          "default": null,
+          "name": "folder",
+          "type": {
+            "name": "resource_hub_folder",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "docs_and_files",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_nodes",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_resource_hub",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_path_to_folder",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Retrieves a folder by ID with optional related data.",
+      "full_name": "docs_and_files/get_folder",
+      "method": "GET"
+    },
+    {
+      "name": "list_contents",
+      "type": "query",
+      "path": "/api/external/v1/docs_and_files/list_contents",
+      "handler": "OperatelyWeb.Api.DocsAndFiles.ListContents",
+      "outputs": [
+        {
+          "default": null,
+          "name": "nodes",
+          "type": {
+            "item": {
+              "name": "resource_hub_node",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "draft_nodes",
+          "type": {
+            "item": {
+              "name": "resource_hub_node",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "docs_and_files",
       "inputs": [
         {
           "default": null,
@@ -18643,7 +19049,112 @@
         },
         {
           "default": null,
-          "name": "name",
+          "name": "include_comments_count",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_children_count",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Lists contents in a Docs & Files hub or folder.",
+      "full_name": "docs_and_files/list_contents",
+      "method": "GET"
+    },
+    {
+      "name": "rename_folder",
+      "type": "mutation",
+      "path": "/api/external/v1/docs_and_files/rename_folder",
+      "handler": "OperatelyWeb.Api.ResourceHubs.RenameFolder",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "docs_and_files",
+      "inputs": [
+        {
+          "default": null,
+          "name": "folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "new_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Renames a folder.",
+      "full_name": "docs_and_files/rename_folder",
+      "method": "POST"
+    },
+    {
+      "name": "update_parent_folder",
+      "type": "mutation",
+      "path": "/api/external/v1/docs_and_files/update_parent_folder",
+      "handler": "OperatelyWeb.Api.ResourceHubs.UpdateParentFolder",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "docs_and_files",
+      "inputs": [
+        {
+          "default": null,
+          "name": "resource_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "resource_type",
           "type": {
             "name": "string",
             "kind": "named"
@@ -18654,54 +19165,7 @@
         },
         {
           "default": null,
-          "name": "content",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "post_as_draft",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": true
-        },
-        {
-          "default": "true",
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": [],
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "copied_document_id",
+          "name": "new_folder_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -18711,8 +19175,8 @@
           "nullable": true
         }
       ],
-      "docstring": "Creates a new document in a resource hub.",
-      "full_name": "documents/create",
+      "docstring": "Updates the parent folder of a resource hub item.",
+      "full_name": "docs_and_files/update_parent_folder",
       "method": "POST"
     },
     {
@@ -22050,144 +22514,6 @@
       ],
       "docstring": "Updates the current value of a target for a goal.",
       "full_name": "goals/update_target_value",
-      "method": "POST"
-    },
-    {
-      "name": "create",
-      "type": "mutation",
-      "path": "/api/external/v1/links/create",
-      "handler": "OperatelyWeb.Api.Links.Create",
-      "outputs": [
-        {
-          "default": null,
-          "name": "link",
-          "type": {
-            "name": "resource_hub_link",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "links",
-      "inputs": [
-        {
-          "default": null,
-          "name": "resource_hub_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "url",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "type",
-          "type": {
-            "name": "resource_hub_link_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": "true",
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": [],
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        }
-      ],
-      "docstring": "Creates a new link in a resource hub.",
-      "full_name": "links/create",
       "method": "POST"
     },
     {
@@ -27242,619 +27568,6 @@
       "method": "POST"
     },
     {
-      "name": "copy_folder",
-      "type": "mutation",
-      "path": "/api/external/v1/resource_hubs/copy_folder",
-      "handler": "OperatelyWeb.Api.ResourceHubs.CopyFolder",
-      "outputs": [
-        {
-          "default": null,
-          "name": "folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "folder_name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "dest_parent_folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Copies a folder within its resource hub.",
-      "full_name": "resource_hubs/copy_folder",
-      "method": "POST"
-    },
-    {
-      "name": "create_folder",
-      "type": "mutation",
-      "path": "/api/external/v1/resource_hubs/create_folder",
-      "handler": "OperatelyWeb.Api.ResourceHubs.CreateFolder",
-      "outputs": [
-        {
-          "default": null,
-          "name": "folder",
-          "type": {
-            "name": "resource_hub_folder",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "resource_hub_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Creates a new folder in a resource hub.",
-      "full_name": "resource_hubs/create_folder",
-      "method": "POST"
-    },
-    {
-      "name": "delete_folder",
-      "type": "mutation",
-      "path": "/api/external/v1/resource_hubs/delete_folder",
-      "handler": "OperatelyWeb.Api.ResourceHubs.DeleteFolder",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Deletes a folder.",
-      "full_name": "resource_hubs/delete_folder",
-      "method": "POST"
-    },
-    {
-      "name": "get",
-      "type": "query",
-      "path": "/api/external/v1/resource_hubs/get",
-      "handler": "OperatelyWeb.Api.ResourceHubs.Get",
-      "outputs": [
-        {
-          "default": null,
-          "name": "resource_hub",
-          "type": {
-            "name": "resource_hub",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_nodes",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Retrieves a resource hub by ID, space ID, or project ID with optional related data.",
-      "full_name": "resource_hubs/get",
-      "method": "GET"
-    },
-    {
-      "name": "get_folder",
-      "type": "query",
-      "path": "/api/external/v1/resource_hubs/get_folder",
-      "handler": "OperatelyWeb.Api.ResourceHubs.GetFolder",
-      "outputs": [
-        {
-          "default": null,
-          "name": "folder",
-          "type": {
-            "name": "resource_hub_folder",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_nodes",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_resource_hub",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_path_to_folder",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Retrieves a folder by ID with optional related data.",
-      "full_name": "resource_hubs/get_folder",
-      "method": "GET"
-    },
-    {
-      "name": "list_nodes",
-      "type": "query",
-      "path": "/api/external/v1/resource_hubs/list_nodes",
-      "handler": "OperatelyWeb.Api.ResourceHubs.ListNodes",
-      "outputs": [
-        {
-          "default": null,
-          "name": "nodes",
-          "type": {
-            "item": {
-              "name": "resource_hub_node",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "draft_nodes",
-          "type": {
-            "item": {
-              "name": "resource_hub_node",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "resource_hub_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_comments_count",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_children_count",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Lists nodes in a resource hub or folder.",
-      "full_name": "resource_hubs/list_nodes",
-      "method": "GET"
-    },
-    {
-      "name": "rename_folder",
-      "type": "mutation",
-      "path": "/api/external/v1/resource_hubs/rename_folder",
-      "handler": "OperatelyWeb.Api.ResourceHubs.RenameFolder",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "new_name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Renames a folder.",
-      "full_name": "resource_hubs/rename_folder",
-      "method": "POST"
-    },
-    {
-      "name": "update_parent_folder",
-      "type": "mutation",
-      "path": "/api/external/v1/resource_hubs/update_parent_folder",
-      "handler": "OperatelyWeb.Api.ResourceHubs.UpdateParentFolder",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "resource_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "resource_type",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "new_folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Updates the parent folder of a resource hub item.",
-      "full_name": "resource_hubs/update_parent_folder",
-      "method": "POST"
-    },
-    {
       "name": "add_members",
       "type": "mutation",
       "path": "/api/external/v1/spaces/add_members",
@@ -30293,6 +30006,7 @@
   "namespace_descriptions": {
     "comments": "List, create and manage comments on resources",
     "companies": "Get, list, update and manage company settings, members, and permissions",
+    "docs_and_files": "Browse and manage Docs & Files",
     "documents": "Get, create and manage documents in resource hubs",
     "files": "Get, create and manage files in resource hubs",
     "goals": "Get, list, create and manage goals",
@@ -30306,6 +30020,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-16T14:08:30Z",
+  "generated_at": "2026-06-16T18:11:41Z",
   "schema_version": 1
 }

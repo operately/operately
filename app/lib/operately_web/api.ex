@@ -223,7 +223,7 @@ defmodule OperatelyWeb.Api do
       end
 
       @doc "Get and manage resource hubs"
-      namespace(:resource_hubs) do
+      namespace(:resource_hubs, catalog: false) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
@@ -239,7 +239,6 @@ defmodule OperatelyWeb.Api do
       namespace(:documents) do
         query(:get, OperatelyWeb.Api.Documents.Get)
 
-        mutation(:create, OperatelyWeb.Api.Documents.Create)
         mutation(:publish, OperatelyWeb.Api.Documents.Publish)
         mutation(:delete, OperatelyWeb.Api.Documents.Delete)
         mutation(:update, OperatelyWeb.Api.Documents.Update)
@@ -249,7 +248,6 @@ defmodule OperatelyWeb.Api do
       namespace(:links) do
         query(:get, OperatelyWeb.Api.Links.Get)
 
-        mutation(:create, OperatelyWeb.Api.Links.Create)
         mutation(:delete, OperatelyWeb.Api.Links.Delete)
         mutation(:update, OperatelyWeb.Api.Links.Update)
       end
@@ -258,7 +256,6 @@ defmodule OperatelyWeb.Api do
       namespace(:files) do
         query(:get, OperatelyWeb.Api.Files.Get)
 
-        mutation(:create, OperatelyWeb.Api.Files.Create, catalog: false)
         mutation(:delete, OperatelyWeb.Api.Files.Delete)
         mutation(:update, OperatelyWeb.Api.Files.Update)
       end
@@ -293,6 +290,18 @@ defmodule OperatelyWeb.Api do
   defmacro internal_endpoints do
     quote do
       common_endpoints()
+
+      namespace(:documents) do
+        mutation(:create, OperatelyWeb.Api.Documents.Create)
+      end
+
+      namespace(:links) do
+        mutation(:create, OperatelyWeb.Api.Links.Create)
+      end
+
+      namespace(:files) do
+        mutation(:create, OperatelyWeb.Api.Files.Create)
+      end
 
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)
       mutation(:add_company_owners, OperatelyWeb.Api.Mutations.AddCompanyOwners)
@@ -419,6 +428,31 @@ defmodule OperatelyWeb.Api do
   defmacro external_endpoints do
     quote do
       common_endpoints()
+
+      namespace(:documents) do
+        mutation(:create, OperatelyWeb.Api.DocsAndFiles.CreateDocument)
+      end
+
+      namespace(:links) do
+        mutation(:create, OperatelyWeb.Api.DocsAndFiles.CreateLink)
+      end
+
+      namespace(:files) do
+        mutation(:create, OperatelyWeb.Api.DocsAndFiles.CreateFile)
+      end
+
+      @doc "Browse and manage Docs & Files"
+      namespace(:docs_and_files) do
+        query(:get, OperatelyWeb.Api.DocsAndFiles.Get)
+        query(:list_contents, OperatelyWeb.Api.DocsAndFiles.ListContents)
+        query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
+
+        mutation(:create_folder, OperatelyWeb.Api.DocsAndFiles.CreateFolder)
+        mutation(:copy_folder, OperatelyWeb.Api.ResourceHubs.CopyFolder)
+        mutation(:delete_folder, OperatelyWeb.Api.ResourceHubs.DeleteFolder)
+        mutation(:rename_folder, OperatelyWeb.Api.ResourceHubs.RenameFolder)
+        mutation(:update_parent_folder, OperatelyWeb.Api.ResourceHubs.UpdateParentFolder)
+      end
     end
   end
 end

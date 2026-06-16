@@ -1,10 +1,45 @@
-defmodule OperatelyWeb.Api.ResourceHubs.ParentScope do
+defmodule OperatelyWeb.Api.DocsAndFiles.HubScope do
   @moduledoc false
 
   import Ecto.Query
 
   alias Operately.Repo
   alias Operately.ResourceHubs.ResourceHub
+
+  def resolve_hub_id(me, inputs, opts \\ []) do
+    with {:ok, scope} <- parse_hub_scope(inputs, opts),
+         {:ok, hub} <- get_resource_hub(me, scope) do
+      {:ok, hub.id}
+    end
+  end
+
+  def resolve_filter(me, inputs) do
+    cond do
+      not is_nil(inputs[:folder_id]) ->
+        {:ok, %{folder_id: inputs.folder_id}}
+
+      inputs[:resource_hub_id] && (inputs[:space_id] || inputs[:project_id]) ->
+        {:error, :bad_request}
+
+      not is_nil(inputs[:resource_hub_id]) ->
+        {:ok, %{resource_hub_id: inputs.resource_hub_id}}
+
+      true ->
+        case resolve_hub_id(me, inputs) do
+          {:ok, hub_id} -> {:ok, %{resource_hub_id: hub_id}}
+          error -> error
+        end
+    end
+  end
+
+  def to_resource_hub_inputs(me, inputs, opts \\ []) do
+    with {:ok, hub_id} <- resolve_hub_id(me, inputs, opts) do
+      {:ok,
+       inputs
+       |> Map.put(:resource_hub_id, hub_id)
+       |> Map.drop([:space_id, :project_id])}
+    end
+  end
 
   def parse_hub_scope(inputs, opts \\ []) do
     hub_key = Keyword.get(opts, :hub_key, :resource_hub_id)
