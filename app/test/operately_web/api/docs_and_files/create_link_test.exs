@@ -12,9 +12,23 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateLinkTest do
     |> Factory.fetch_default_resource_hub(:hub, :space)
   end
 
+  test "creates link by resource_hub_id for CLI <= 1.6.0 backward compatibility", ctx do
+    assert {200, res} =
+             external_mutation(ctx.conn, ctx.api_token, "links/create", %{
+               resource_hub_id: Paths.resource_hub_id(ctx.hub),
+               name: "My link",
+               url: "http://localhost:4000",
+               type: "other"
+             })
+
+    links = ResourceHubs.list_links(ctx.hub)
+    assert length(links) == 1
+    assert res.link.id == Paths.link_id(hd(links))
+  end
+
   test "creates link by space_id", ctx do
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_link", %{
+             external_mutation(ctx.conn, ctx.api_token, "links/create", %{
                space_id: Paths.space_id(ctx.space),
                name: "My link",
                url: "http://localhost:4000",
@@ -33,7 +47,7 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateLinkTest do
       |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
 
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_link", %{
+             external_mutation(ctx.conn, ctx.api_token, "links/create", %{
                project_id: Paths.project_id(ctx.project),
                name: "Project link",
                url: "https://example.com",
@@ -47,7 +61,18 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateLinkTest do
 
   test "requires hub scope", ctx do
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_link", %{
+             external_mutation(ctx.conn, ctx.api_token, "links/create", %{
+               name: "My link",
+               url: "http://localhost:4000",
+               type: "other"
+             })
+  end
+
+  test "rejects resource_hub_id with space_id", ctx do
+    assert {400, _} =
+             external_mutation(ctx.conn, ctx.api_token, "links/create", %{
+               resource_hub_id: Paths.resource_hub_id(ctx.hub),
+               space_id: Paths.space_id(ctx.space),
                name: "My link",
                url: "http://localhost:4000",
                type: "other"
@@ -58,7 +83,7 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateLinkTest do
     ctx = Factory.add_project(ctx, :project, :space)
 
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_link", %{
+             external_mutation(ctx.conn, ctx.api_token, "links/create", %{
                space_id: Paths.space_id(ctx.space),
                project_id: Paths.project_id(ctx.project),
                name: "My link",

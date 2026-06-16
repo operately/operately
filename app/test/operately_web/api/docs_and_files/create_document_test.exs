@@ -13,9 +13,22 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateDocumentTest do
     |> Factory.fetch_default_resource_hub(:hub, :space)
   end
 
+  test "creates document by resource_hub_id for CLI <= 1.6.0 backward compatibility", ctx do
+    assert {200, res} =
+             external_mutation(ctx.conn, ctx.api_token, "documents/create", %{
+               resource_hub_id: Paths.resource_hub_id(ctx.hub),
+               name: "My document",
+               content: RichText.rich_text("content", :as_string)
+             })
+
+    documents = ResourceHubs.list_documents(ctx.hub)
+    assert length(documents) == 1
+    assert res.document.id == Paths.document_id(hd(documents))
+  end
+
   test "creates document by space_id", ctx do
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_document", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create", %{
                space_id: Paths.space_id(ctx.space),
                name: "My document",
                content: RichText.rich_text("content", :as_string)
@@ -33,7 +46,7 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateDocumentTest do
       |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
 
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_document", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create", %{
                project_id: Paths.project_id(ctx.project),
                name: "Project document",
                content: RichText.rich_text("content", :as_string)
@@ -46,7 +59,17 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateDocumentTest do
 
   test "requires hub scope", ctx do
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_document", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create", %{
+               name: "My document",
+               content: RichText.rich_text("content", :as_string)
+             })
+  end
+
+  test "rejects resource_hub_id with space_id", ctx do
+    assert {400, _} =
+             external_mutation(ctx.conn, ctx.api_token, "documents/create", %{
+               resource_hub_id: Paths.resource_hub_id(ctx.hub),
+               space_id: Paths.space_id(ctx.space),
                name: "My document",
                content: RichText.rich_text("content", :as_string)
              })
@@ -56,7 +79,7 @@ defmodule OperatelyWeb.Api.DocsAndFiles.CreateDocumentTest do
     ctx = Factory.add_project(ctx, :project, :space)
 
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_document", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create", %{
                space_id: Paths.space_id(ctx.space),
                project_id: Paths.project_id(ctx.project),
                name: "My document",
