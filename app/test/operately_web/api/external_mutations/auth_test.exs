@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.AuthTest do
         conn = Conn.put_req_header(ctx.conn, "authorization", "Bearer #{ctx.api_token}")
 
         {status, response} = mutation(conn, row.mutation_name, inputs)
-        assert_unauthorized(status, response)
+        assert_internal_api_rejects_token(status, response, row.mutation_name, :mutation)
       end
 
       test "#{row.mutation_name} / external_read_only_token", ctx do
@@ -99,6 +99,15 @@ defmodule OperatelyWeb.Api.ExternalMutations.AuthTest do
   defp assert_unauthorized(status, response) do
     assert status == 401
     assert response == "Unauthorized"
+  end
+
+  defp assert_internal_api_rejects_token(status, response, endpoint_name, :mutation) do
+    if Map.has_key?(OperatelyWeb.Api.Internal.__mutations__(), endpoint_name) do
+      assert_unauthorized(status, response)
+    else
+      assert status == 404
+      assert response == "Mutation not found"
+    end
   end
 
   defp assert_read_only_forbidden(status, response) do
