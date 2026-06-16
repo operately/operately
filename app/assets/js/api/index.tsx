@@ -3245,7 +3245,9 @@ export interface ProjectsSearchPotentialContributorsResult {
 }
 
 export interface ResourceHubsGetInput {
-  id: Id;
+  id?: Id | null;
+  spaceId?: Id | null;
+  projectId?: Id | null;
   includeSpace?: boolean | null;
   includeProject?: boolean | null;
   includeNodes?: boolean | null;
@@ -3274,6 +3276,8 @@ export interface ResourceHubsGetFolderResult {
 
 export interface ResourceHubsListNodesInput {
   resourceHubId?: Id | null;
+  spaceId?: Id | null;
+  projectId?: Id | null;
   folderId?: Id | null;
   includeCommentsCount?: boolean | null;
   includeChildrenCount?: boolean | null;
@@ -4007,7 +4011,9 @@ export interface DeleteCompanyResult {
 }
 
 export interface DocumentsCreateInput {
-  resourceHubId: Id;
+  resourceHubId?: Id | null;
+  spaceId?: Id | null;
+  projectId?: Id | null;
   folderId?: Id | null;
   name: string;
   content: Json;
@@ -4054,7 +4060,9 @@ export interface DocumentsUpdateResult {
 }
 
 export interface FilesCreateInput {
-  resourceHubId: Id;
+  resourceHubId?: Id | null;
+  spaceId?: Id | null;
+  projectId?: Id | null;
   folderId?: Id | null;
   files: ResourceHubUploadedFile[];
   sendNotificationsToEveryone?: boolean;
@@ -4469,7 +4477,9 @@ export interface JoinCompanyResult {
 }
 
 export interface LinksCreateInput {
-  resourceHubId: Id;
+  resourceHubId?: Id | null;
+  spaceId?: Id | null;
+  projectId?: Id | null;
   folderId?: Id | null;
   name: string;
   url: string;
@@ -5009,7 +5019,6 @@ export interface ResetPasswordResult {}
 export interface ResourceHubsCopyFolderInput {
   folderName?: string;
   folderId: Id;
-  destResourceHubId: Id;
   destParentFolderId?: Id | null;
 }
 
@@ -5018,7 +5027,9 @@ export interface ResourceHubsCopyFolderResult {
 }
 
 export interface ResourceHubsCreateFolderInput {
-  resourceHubId: Id;
+  resourceHubId?: Id | null;
+  spaceId?: Id | null;
+  projectId?: Id | null;
   folderId?: Id | null;
   name: string;
 }

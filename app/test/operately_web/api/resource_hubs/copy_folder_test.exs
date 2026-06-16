@@ -19,40 +19,15 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :view_access,     expected: 404},
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :comment_access,  expected: 404},
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :edit_access,     expected: 404},
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :full_access,     expected: 404},
+      %{company: :no_access,      space: :no_access,      expected: 404},
 
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :view_access,     expected: 403},
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :edit_access,     expected: 403},
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :full_access,     expected: 403},
+      %{company: :no_access,      space: :comment_access, expected: 403},
+      %{company: :no_access,      space: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :full_access,    expected: 200},
 
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :view_access,     expected: 403},
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :edit_access,     expected: 403},
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :full_access,     expected: 403},
-
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :view_access,     expected: 403},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :edit_access,     expected: 200},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :full_access,     expected: 200},
-
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :view_access,     expected: 403},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :edit_access,     expected: 200},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :full_access,     expected: 200},
-
-      %{company: :view_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 403},
-      %{company: :comment_access,   origin_space: :no_access,     dest_space: :no_access,     expected: 403},
-      %{company: :edit_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 200},
-      %{company: :full_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 200},
+      %{company: :comment_access, space: :no_access,      expected: 403},
+      %{company: :edit_access,    space: :no_access,      expected: 200},
+      %{company: :full_access,    space: :no_access,      expected: 200},
     ]
 
     setup ctx do
@@ -62,31 +37,25 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
     end
 
     tabletest @table do
-      test "if caller has levels company=#{@test.company}, origin_space=#{@test.origin_space} and dest_space=#{@test.dest_space}, then expect code=#{@test.expected}", ctx do
-        origin_space = create_space(ctx, @test.company, @test.origin_space)
-        dest_space = create_space(ctx, @test.company, @test.dest_space)
-
-        origin_resource_hub = resource_hub_fixture(ctx.creator, origin_space)
-        dest_resource_hub = resource_hub_fixture(ctx.creator, dest_space)
-
-        folder = folder_fixture(origin_resource_hub.id)
+      test "if caller has levels company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx, @test.company, @test.space)
+        resource_hub = resource_hub_fixture(ctx.creator, space)
+        folder = folder_fixture(resource_hub.id)
 
         assert {code, res} = mutation(ctx.conn, [:resource_hubs, :copy_folder], %{
           folder_id: Paths.folder_id(folder),
-          dest_resource_hub_id: Paths.resource_hub_id(dest_resource_hub),
-          dest_parent_folder_id: nil,
         })
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             assert res.folder_id
-            assert ResourceHubs.count_children(dest_resource_hub) == 1
+            assert ResourceHubs.count_children(resource_hub) == 2
           403 ->
-            assert ResourceHubs.count_children(dest_resource_hub) == 0
+            assert ResourceHubs.count_children(resource_hub) == 1
             assert res.message == "You don't have permission to perform this action"
           404 ->
-            assert ResourceHubs.count_children(dest_resource_hub) == 0
+            assert ResourceHubs.count_children(resource_hub) == 1
             assert res.message == "The requested resource was not found"
         end
       end
@@ -115,8 +84,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
       assert {200, res} = mutation(ctx.conn, [:resource_hubs, :copy_folder], %{
         folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        dest_parent_folder_id: nil,
       })
 
       assert ResourceHubs.count_children(ctx.hub) == 8
@@ -134,7 +101,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
       assert {200, res} = mutation(ctx.conn, [:resource_hubs, :copy_folder], %{
         folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
         dest_parent_folder_id: Paths.folder_id(ctx.parent_folder),
       })
 
@@ -144,35 +110,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
       assert_folder_copied(ctx, res.folder_id)
 
-      # copied folder doesn't have parent
       assert ctx.folder.node.parent_folder_id == nil
 
-      # new folder has parent
       new_folder = fetch_folder(res.folder_id)
       assert new_folder.node.parent_folder_id == ctx.parent_folder.id
-    end
-
-    test "copied folder into resource hub in another space", ctx do
-      ctx =
-        ctx
-        |> Factory.add_space(:another_space)
-        |> Factory.add_resource_hub(:another_hub, :another_space, :creator)
-
-      assert ResourceHubs.count_children(ctx.hub) == 4
-      assert ResourceHubs.count_children(ctx.another_hub) == 0
-      assert ResourceHubs.count_children(ctx.folder) == 3
-
-      assert {200, res} = mutation(ctx.conn, [:resource_hubs, :copy_folder], %{
-        folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.another_hub),
-        dest_parent_folder_id: nil,
-      })
-
-      assert ResourceHubs.count_children(ctx.hub) == 4
-      assert ResourceHubs.count_children(ctx.another_hub) == 4
-      assert ResourceHubs.count_children(ctx.folder) == 3
-
-      assert_folder_copied(ctx, res.folder_id)
     end
 
     test "folder is copied and copy has a different name", ctx do
@@ -182,8 +123,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
       assert {200, res} = mutation(ctx.conn, [:resource_hubs, :copy_folder], %{
         folder_name: "Brand new name",
         folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        dest_parent_folder_id: nil,
       })
 
       assert ResourceHubs.count_children(ctx.hub) == 8
@@ -203,8 +142,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
       assert {200, res} = mutation(ctx.conn, [:resource_hubs, :copy_folder], %{
         folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        dest_parent_folder_id: nil,
       })
 
       assert ResourceHubs.count_children(ctx.hub) == 8

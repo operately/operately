@@ -1,19 +1,18 @@
 defmodule OperatelyWeb.Api.ResourceHubs.CopyFolder do
   @moduledoc """
-  Copies a folder to another location.
+  Copies a folder within its resource hub.
   """
 
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias OperatelyWeb.Paths
   alias Operately.Operations.ResourceHubFolderCopying
-  alias Operately.ResourceHubs.{Permissions, ResourceHub, Folder}
+  alias Operately.ResourceHubs.{Folder, Permissions, ResourceHub}
+  alias OperatelyWeb.Paths
 
   inputs do
     field? :folder_name, :string, null: false
     field :folder_id, :id, null: false
-    field :dest_resource_hub_id, :id, null: false
     field? :dest_parent_folder_id, :id, null: true
   end
 
@@ -25,7 +24,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolder do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:folder, fn ctx -> load_folder(ctx.me, inputs.folder_id) end)
-    |> run(:resource_hub, fn ctx -> load_resource_hub(ctx.me, inputs.dest_resource_hub_id) end)
+    |> run(:resource_hub, fn ctx -> load_resource_hub(ctx.me, ctx.folder) end)
     |> run(:folder_permissions, fn ctx -> Permissions.check(ctx.folder.request_info.access_level, :can_copy_folder, company_read_only: company_read_only(conn)) end)
     |> run(:resource_hub_permissions, fn ctx -> Permissions.check(ctx.resource_hub.request_info.access_level, :can_copy_folder, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> execute(ctx, inputs) end)
@@ -49,8 +48,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolder do
     Folder.get(person, id: id, opts: [preload: [:node, :resource_hub]])
   end
 
-  defp load_resource_hub(person, id) do
-    ResourceHub.get(person, id: id)
+  defp load_resource_hub(person, folder) do
+    ResourceHub.get(person, id: folder.resource_hub.id)
   end
 
   defp execute(ctx, inputs) do

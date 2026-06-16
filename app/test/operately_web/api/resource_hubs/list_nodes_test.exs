@@ -186,15 +186,55 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodesTest do
       |> Factory.add_file(:hub_file, :hub)
     end
 
-    test "fetches nodes for a project-backed hub", ctx do
+    test "fetches nodes for a project-backed hub by project_id", ctx do
       assert {200, res} = query(ctx.conn, [:resource_hubs, :list_nodes], %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        project_id: Paths.project_id(ctx.project),
       })
 
       assert length(res.nodes) == 3
       assert Enum.find(res.nodes, &(&1[:document] && &1.document.id == Paths.document_id(ctx.document)))
       assert Enum.find(res.nodes, &(&1[:link] && &1.link.id == Paths.link_id(ctx.link)))
       assert Enum.find(res.nodes, &(&1[:file] && &1.file.id == Paths.file_id(ctx.hub_file)))
+    end
+  end
+
+  describe "parent scope inputs" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:document, :hub)
+    end
+
+    test "lists nodes by space_id", ctx do
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :list_nodes], %{
+        space_id: Paths.space_id(ctx.space),
+      })
+
+      assert length(res.nodes) == 1
+      assert hd(res.nodes).document.id == Paths.document_id(ctx.document)
+    end
+
+    test "requires hub scope when folder_id is absent", ctx do
+      assert {400, _} = query(ctx.conn, [:resource_hubs, :list_nodes], %{})
+    end
+
+    test "rejects resource_hub_id with space_id", ctx do
+      assert {400, _} = query(ctx.conn, [:resource_hubs, :list_nodes], %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        space_id: Paths.space_id(ctx.space),
+      })
+    end
+
+    test "rejects both space_id and project_id", ctx do
+      ctx = Factory.add_project(ctx, :project, :space)
+
+      assert {400, _} = query(ctx.conn, [:resource_hubs, :list_nodes], %{
+        space_id: Paths.space_id(ctx.space),
+        project_id: Paths.project_id(ctx.project),
+      })
     end
   end
 

@@ -9,6 +9,9 @@ defmodule Operately.Support.Factory.ResourceHubs do
           existing_hub = Operately.Repo.preload(project, :resource_hub).resource_hub
           existing_hub || Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
 
+        %Operately.Groups.Group{} = space ->
+          Operately.ResourceHubsFixtures.default_resource_hub_for_space(space)
+
         _ ->
           Operately.ResourceHubsFixtures.resource_hub_fixture(creator, parent, attrs)
       end
