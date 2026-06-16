@@ -10,7 +10,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Comments.Create,
       Mutations.Companies.ConvertMemberToGuest,
       Mutations.ResourceHubs.CopyFolder,
-      Mutations.ResourceHubs.Create,
       Mutations.Documents.Create,
       Mutations.Files.Create,
       Mutations.ResourceHubs.CreateFolder,

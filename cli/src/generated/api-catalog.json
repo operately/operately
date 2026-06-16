@@ -1029,6 +1029,28 @@
           },
           {
             "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "parent_folder",
             "type": {
               "name": "resource_hub_folder",
@@ -1566,6 +1588,17 @@
       },
       "activity_content_resource_hub_file_edited": {
         "fields": [
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "space",
@@ -2608,6 +2641,28 @@
           },
           {
             "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "parent_folder",
             "type": {
               "name": "resource_hub_folder",
@@ -2962,6 +3017,28 @@
           },
           {
             "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "parent_folder",
             "type": {
               "name": "resource_hub_folder",
@@ -3155,14 +3232,36 @@
         "fields": [
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           },
           {
             "default": null,
@@ -3171,7 +3270,7 @@
               "name": "resource_hub_link",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": true
           },
@@ -3182,7 +3281,7 @@
               "name": "comment",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": true
           }
@@ -4923,14 +5022,36 @@
         "fields": [
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           },
           {
             "default": null,
@@ -4939,7 +5060,7 @@
               "name": "resource_hub_file",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": true
           },
@@ -4950,7 +5071,7 @@
               "name": "comment",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": true
           }
@@ -4958,6 +5079,17 @@
       },
       "activity_content_resource_hub_document_edited": {
         "fields": [
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "space",
@@ -5508,6 +5640,17 @@
         "fields": [
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
@@ -6038,6 +6181,112 @@
               "kind": "named"
             },
             "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
+      "site_message": {
+        "fields": [
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "all_companies",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "active",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "expires_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "company_ids",
+            "type": {
+              "item": {
+                "name": "string",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
             "has_default": false,
             "nullable": false
           }
@@ -6727,6 +6976,28 @@
           },
           {
             "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "name",
             "type": {
               "name": "string",
@@ -7012,6 +7283,17 @@
         "fields": [
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
@@ -7214,6 +7496,17 @@
             "name": "space",
             "type": {
               "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
               "kind": "named"
             },
             "optional": true,
@@ -7458,6 +7751,17 @@
       },
       "activity_content_resource_hub_link_created": {
         "fields": [
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "space",
@@ -8279,6 +8583,17 @@
         "fields": [
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
@@ -8377,6 +8692,17 @@
       },
       "activity_content_resource_hub_link_edited": {
         "fields": [
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "resource_hub",
@@ -9646,6 +9972,17 @@
       },
       "activity_content_resource_hub_folder_renamed": {
         "fields": [
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "space",
@@ -11135,6 +11472,17 @@
         "fields": [
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
@@ -11354,6 +11702,17 @@
       },
       "activity_content_resource_hub_document_created": {
         "fields": [
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "space",
@@ -11890,6 +12249,17 @@
         "fields": [
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "resource_hub",
             "type": {
               "name": "resource_hub",
@@ -12221,14 +12591,36 @@
         "fields": [
           {
             "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "space",
             "type": {
               "name": "space",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           },
           {
             "default": null,
@@ -12237,7 +12629,7 @@
               "name": "resource_hub_document",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": true
           },
@@ -12248,7 +12640,7 @@
               "name": "comment",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": true
           }
@@ -12474,6 +12866,17 @@
       },
       "activity_content_resource_hub_folder_copied": {
         "fields": [
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "space",
@@ -13566,6 +13969,17 @@
       },
       "activity_content_resource_hub_link_deleted": {
         "fields": [
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "resource_hub",
@@ -15612,6 +16026,17 @@
           },
           {
             "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "my_role",
             "type": {
               "name": "string",
@@ -16209,6 +16634,70 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_resource_hub_document_commented",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_document_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_document_deleted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_document_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_file_commented",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_file_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_file_deleted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_file_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_folder_copied",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_folder_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_folder_deleted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_folder_renamed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_link_commented",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_link_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_link_deleted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_link_edited",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_space_task_commented",
           "kind": "named"
         },
@@ -16661,9 +17150,9 @@
       ]
     }
   },
-  "endpoint_count": 201,
+  "endpoint_count": 200,
   "query_count": 64,
-  "mutation_count": 137,
+  "mutation_count": 136,
   "endpoints": [
     {
       "name": "create",
@@ -18295,6 +18784,17 @@
         },
         {
           "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
           "name": "include_resource_hub",
           "type": {
             "name": "boolean",
@@ -18644,6 +19144,17 @@
         {
           "default": null,
           "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -21726,6 +22237,17 @@
         },
         {
           "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
           "name": "include_resource_hub",
           "type": {
             "name": "boolean",
@@ -24009,6 +24531,17 @@
         {
           "default": null,
           "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_resource_hub",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -26734,64 +27267,6 @@
       "method": "POST"
     },
     {
-      "name": "create",
-      "type": "mutation",
-      "path": "/api/external/v1/resource_hubs/create",
-      "handler": "OperatelyWeb.Api.ResourceHubs.Create",
-      "outputs": [
-        {
-          "default": null,
-          "name": "resource_hub",
-          "type": {
-            "name": "resource_hub",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "resource_hubs",
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Creates a new resource hub in a space.",
-      "full_name": "resource_hubs/create",
-      "method": "POST"
-    },
-    {
       "name": "create_folder",
       "type": "mutation",
       "path": "/api/external/v1/resource_hubs/create_folder",
@@ -26929,6 +27404,17 @@
         },
         {
           "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
           "name": "include_nodes",
           "type": {
             "name": "boolean",
@@ -27010,6 +27496,28 @@
         {
           "default": null,
           "name": "include_resource_hub",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -29694,11 +30202,11 @@
     "people": "Get, list, update and manage user profiles and account settings",
     "projects": "Get, list, create and manage projects",
     "reactions": "Add or remove emoji reactions to content",
-    "resource_hubs": "Get and create resource hubs",
+    "resource_hubs": "Get and manage resource hubs",
     "spaces": "Get, list, create and manage spaces",
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-11T21:03:31Z",
+  "generated_at": "2026-06-16T11:45:01Z",
   "schema_version": 1
 }
