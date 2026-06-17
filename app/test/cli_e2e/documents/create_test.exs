@@ -7,14 +7,14 @@ defmodule Operately.CliE2E.Documents.CreateTest do
     {:ok, Steps.setup(ctx)}
   end
 
-  test "documents create uses the external defaults when optional flags are omitted", ctx do
+  test "documents create_document uses the external defaults when optional flags are omitted", ctx do
     ctx
     |> Steps.create_document_with_defaults()
     |> Steps.assert_document_created_successfully()
     |> Steps.assert_defaults_were_applied()
   end
 
-  test "documents create uses explicit flags instead of the defaults", ctx do
+  test "documents create_document uses explicit flags instead of the defaults", ctx do
     ctx
     |> Steps.create_document_with_overrides()
     |> Steps.assert_document_created_successfully()

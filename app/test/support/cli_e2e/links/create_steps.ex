@@ -37,8 +37,8 @@ defmodule Operately.Support.CliE2E.Links.CreateSteps do
   step :create_link_with_defaults, ctx do
     result =
       run_cli(ctx, [
-        "links",
-        "create",
+        "documents",
+        "create_link",
         "--resource-hub-id",
         ctx.resource_hub.id,
         "--name",
@@ -56,8 +56,8 @@ defmodule Operately.Support.CliE2E.Links.CreateSteps do
   step :create_link_with_overrides, ctx do
     result =
       run_cli(ctx, [
-        "links",
-        "create",
+        "documents",
+        "create_link",
         "--resource-hub-id",
         ctx.resource_hub.id,
         "--name",
