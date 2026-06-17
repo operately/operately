@@ -3,7 +3,7 @@ import { SecondaryButton, PrimaryButton } from "../Button";
 import { IconLink } from "../icons";
 import { SectionHeader } from "../TaskPage/SectionHeader";
 import { ResourceLink } from "../ResourceLink";
-import { Textfield } from "../forms/Textfield";
+import { Textfield } from "../FormElements/Textfield";
 import Modal from "../Modal";
 
 export namespace ResourceManager {

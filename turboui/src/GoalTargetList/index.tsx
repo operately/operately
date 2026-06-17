@@ -21,8 +21,8 @@ import { DeleteButton } from "./DeleteButton";
 import { EditButton } from "./EditButton";
 import { UpdateButton } from "./UpdateButton";
 
-import { Textarea } from "../forms/Textarea";
-import { Textfield } from "../forms/Textfield";
+import { Textarea } from "../FormElements/Textarea";
+import { Textfield } from "../FormElements/Textfield";
 import { SwitchToggle } from "../SwitchToggle";
 import { createTestId } from "../TestableElement";
 
