@@ -7,6 +7,14 @@ defmodule Operately.CliE2E.Documents.CreateFileTest do
     {:ok, Steps.setup(ctx)}
   end
 
+  test "documents create_file uploads a file by project_id", ctx do
+    ctx
+    |> Steps.setup_project()
+    |> Steps.create_file_for_project()
+    |> Steps.assert_file_created_successfully()
+    |> Steps.assert_defaults_were_applied()
+  end
+
   test "documents create_file uploads a file with external defaults", ctx do
     ctx
     |> Steps.create_file_with_defaults()

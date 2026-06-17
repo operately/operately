@@ -194,12 +194,41 @@ describe("people/update_picture", () => {
 });
 
 describe("documents/create_file", () => {
+  it("requires a hub scope", async () => {
+    await assert.rejects(
+      executeCustomEndpointCommand(buildInput("documents/create_file", { file: "./report.pdf" }), {}),
+      (error: unknown) => {
+        assert.ok(error instanceof UsageError);
+        assert.equal(error.message, "Either --space-id or --project-id is required.");
+        return true;
+      },
+    );
+  });
+
+  it("rejects both space_id and project_id", async () => {
+    await assert.rejects(
+      executeCustomEndpointCommand(
+        buildInput("documents/create_file", {
+          space_id: "space-1",
+          project_id: "project-1",
+          file: "./report.pdf",
+        }),
+        {},
+      ),
+      (error: unknown) => {
+        assert.ok(error instanceof UsageError);
+        assert.equal(error.message, "Provide either --space-id or --project-id, not both.");
+        return true;
+      },
+    );
+  });
+
   it("uploads a non-image file through the hidden blob flow", async () => {
     const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
 
     const payload = await executeCustomEndpointCommand(
       buildInput("documents/create_file", {
-        resource_hub_id: "hub-1",
+        space_id: "space-1",
         file: "./report.pdf",
       }),
       {
@@ -274,7 +303,7 @@ describe("documents/create_file", () => {
         kind: "mutation",
         path: "/api/external/v1/documents/create_file",
         inputs: {
-          resource_hub_id: "hub-1",
+          space_id: "space-1",
           files: [
             {
               blob_id: "blob-1",
@@ -288,12 +317,51 @@ describe("documents/create_file", () => {
     ]);
   });
 
+  it("uploads a file by project_id", async () => {
+    const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
+
+    await executeCustomEndpointCommand(
+      buildInput("documents/create_file", {
+        project_id: "project-1",
+        file: "./report.pdf",
+      }),
+      {
+        callExternalMutation: async ({ path, inputs }) => {
+          calls.push({ kind: "mutation", path, inputs });
+
+          if (path === "/create_blob") {
+            return {
+              blobs: [
+                {
+                  id: "blob-1",
+                  signed_upload_url: "https://uploads.example.com/blob-1",
+                  upload_strategy: "direct",
+                },
+              ],
+            };
+          }
+
+          return { files: [{ id: "file-1" }] };
+        },
+        uploadToSignedUrl: async () => undefined,
+        readFile: () => Buffer.from("file-bytes"),
+        statFile: () => ({ size: 10 } as Stats),
+        inferMimeType: () => "application/pdf",
+      },
+    );
+
+    const finalCreateCall = calls.find((call) => call.path === "/api/external/v1/documents/create_file");
+    assert.ok(finalCreateCall);
+    assert.equal(finalCreateCall.inputs?.project_id, "project-1");
+    assert.equal(finalCreateCall.inputs?.space_id, undefined);
+  });
+
   it("uploads an image file with a generated preview and preserves the original extension on renamed files", async () => {
     const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
 
     const payload = await executeCustomEndpointCommand(
       buildInput("documents/create_file", {
-        resource_hub_id: "hub-1",
+        space_id: "space-1",
         file: "./chart.png",
         folder_id: "folder-1",
         name: "Q2-report",
@@ -374,7 +442,7 @@ describe("documents/create_file", () => {
     const finalCreateCall = calls.find((call) => call.path === "/api/external/v1/documents/create_file");
     assert.ok(finalCreateCall);
     assert.deepEqual(finalCreateCall.inputs, {
-      resource_hub_id: "hub-1",
+      space_id: "space-1",
       folder_id: "folder-1",
       send_notifications_to_everyone: false,
       subscriber_ids: ["person-2"],
@@ -391,7 +459,7 @@ describe("documents/create_file", () => {
 
   it("surfaces unreadable file paths as usage errors", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./missing.png" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { space_id: "space-1", file: "./missing.png" }), {
         readFile: () => {
           throw new Error("ENOENT");
         },
@@ -406,7 +474,7 @@ describe("documents/create_file", () => {
 
   it("fails when blob creation does not return main upload metadata", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { space_id: "space-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
           if (path === "/create_blob") {
             return { blobs: [] };
@@ -424,7 +492,7 @@ describe("documents/create_file", () => {
 
   it("surfaces upload failures", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { space_id: "space-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
           if (path === "/create_blob") {
             return {
@@ -454,7 +522,7 @@ describe("documents/create_file", () => {
 
   it("surfaces blob finalization failures", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { space_id: "space-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
           if (path === "/create_blob") {
             return {
@@ -486,7 +554,7 @@ describe("documents/create_file", () => {
 
   it("surfaces final create failures", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { space_id: "space-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
           if (path === "/create_blob") {
             return {

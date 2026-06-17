@@ -3,7 +3,7 @@ import { UsageError } from "../../../core/parser-types";
 import { generateImagePreview, readImageMetadata } from "../../../core/uploads/image-preview";
 import { isImageContentType } from "../../../core/uploads/file-metadata";
 import type { CustomEndpointDeps, CustomEndpointExecutor } from "../types";
-import { buildStoredFileName, EMPTY_RICH_TEXT } from "./helpers";
+import { buildStoredFileName, EMPTY_RICH_TEXT, readHubScopeInputs } from "./helpers";
 
 const CREATE_BLOB_PATH = "/create_blob";
 const MARK_BLOB_UPLOADED_PATH = "/mark_blob_uploaded";
@@ -26,7 +26,7 @@ interface CreateBlobResponse {
 }
 
 export const executeDocumentsCreateFile: CustomEndpointExecutor = async (input, deps) => {
-  const resourceHubId = readRequiredString(input.endpointInputs.resource_hub_id, "resource_hub_id");
+  const hubScope = readHubScopeInputs(input.endpointInputs);
   const filePath = readRequiredString(input.endpointInputs.file, "file");
   const folderId = readOptionalString(input.endpointInputs.folder_id, "folder_id");
   const name = readOptionalString(input.endpointInputs.name, "name");
@@ -120,7 +120,7 @@ export const executeDocumentsCreateFile: CustomEndpointExecutor = async (input, 
   }
 
   const createInputs: Record<string, unknown> = {
-    resource_hub_id: resourceHubId,
+    ...hubScope,
     files: [
       {
         blob_id: mainBlob.id,

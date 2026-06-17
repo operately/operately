@@ -105,7 +105,7 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("documents namespace"));
       assert.ok(result.stdout.includes("create_file"));
-      assert.ok(result.stdout.includes("Uploads one local file into a resource hub and creates the corresponding file record."));
+      assert.ok(result.stdout.includes("Uploads one local file into a Docs & Files hub and creates the corresponding file record."));
     });
 
     it("shows namespace help with trailing help", async () => {
@@ -158,7 +158,7 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Command: documents create_file"));
       assert.ok(result.stdout.includes("--file <path> (required)"));
       assert.ok(result.stdout.includes("--description-file <path> (optional, alternative to --description)"));
-      assert.ok(result.stdout.includes("operately documents create_file --resource-hub-id rh_123 --file ./report.png"));
+      assert.ok(result.stdout.includes("operately documents create_file --space-id sp_123 --file ./report.png"));
       assert.ok(!result.stdout.includes("--files.0.blob-id"));
     });
 
@@ -166,7 +166,8 @@ describe("CLI Integration Tests", () => {
       const result = await runCLI(["help", "documents", "create_file"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("Command: documents create_file"));
-      assert.ok(result.stdout.includes("--resource-hub-id <id> (required)"));
+      assert.ok(result.stdout.includes("--space-id <id> (optional, nullable)"));
+      assert.ok(result.stdout.includes("--project-id <id> (optional, nullable)"));
     });
 
     it("shows plural task assignee flags in command help", async () => {
