@@ -59,6 +59,14 @@ function billingOverviewMock(params: BillingOverviewOverrides = {}): CompanyBill
         memberLimit: 200,
         storageLimitBytes: 1_099_511_627_776,
       },
+      {
+        key: "enterprise",
+        displayName: "Enterprise",
+        tierRank: 3,
+        customerSelectable: true,
+        memberLimit: null,
+        storageLimitBytes: null,
+      },
     ],
     catalogProducts: [
       {
@@ -90,6 +98,22 @@ function billingOverviewMock(params: BillingOverviewOverrides = {}): CompanyBill
         billingInterval: "yearly",
         polarProductName: "Business Yearly",
         priceAmount: 199000,
+        priceCurrency: "usd",
+        active: true,
+      },
+      {
+        planFamily: "enterprise",
+        billingInterval: "monthly",
+        polarProductName: "Enterprise Monthly",
+        priceAmount: 49900,
+        priceCurrency: "usd",
+        active: true,
+      },
+      {
+        planFamily: "enterprise",
+        billingInterval: "yearly",
+        polarProductName: "Enterprise Yearly",
+        priceAmount: 499000,
         priceCurrency: "usd",
         active: true,
       },
