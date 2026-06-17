@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
   @moduledoc """
-  Updates the parent folder of a resource hub item.
+  Updates the parent folder of a Docs & Files item.
   """
 
   use TurboConnect.Mutation
