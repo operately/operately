@@ -7,14 +7,14 @@ defmodule Operately.CliE2E.Links.CreateTest do
     {:ok, Steps.setup(ctx)}
   end
 
-  test "links create uses the external defaults when optional flags are omitted", ctx do
+  test "documents create_link uses the external defaults when optional flags are omitted", ctx do
     ctx
     |> Steps.create_link_with_defaults()
     |> Steps.assert_link_created_successfully()
     |> Steps.assert_defaults_were_applied()
   end
 
-  test "links create uses explicit flags instead of the defaults", ctx do
+  test "documents create_link uses explicit flags instead of the defaults", ctx do
     ctx
     |> Steps.create_link_with_overrides()
     |> Steps.assert_link_created_successfully()

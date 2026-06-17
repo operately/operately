@@ -1,4 +1,4 @@
-defmodule Operately.Support.CliE2E.Files.CreateSteps do
+defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
   use Operately.Support.CliE2E
 
   alias Operately.Blobs
@@ -19,7 +19,7 @@ defmodule Operately.Support.CliE2E.Files.CreateSteps do
     ctx = Factory.setup(ctx)
     ctx = Factory.add_space(ctx, :engineering, company_id: ctx.company.id)
     ctx = Factory.add_company_member(ctx, :subscriber)
-    ctx = Factory.add_resource_hub(ctx, :resource_hub, :engineering, :creator)
+    ctx = Factory.fetch_default_resource_hub(ctx, :resource_hub, :engineering)
     ctx = Factory.add_folder(ctx, :folder, :resource_hub)
     ctx = Factory.add_api_token(ctx, :api_token, :creator, read_only: false)
 
@@ -38,6 +38,39 @@ defmodule Operately.Support.CliE2E.Files.CreateSteps do
     ctx
     |> Map.put(:cli_result, result)
     |> Map.put(:profile, "e2e")
+    |> Map.put(:expected_resource_hub_id, ctx.resource_hub.id)
+  end
+
+  step :setup_project, ctx do
+    ctx
+    |> Factory.add_project(:project, :engineering)
+    |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
+    |> then(fn ctx ->
+      Map.put(ctx, :expected_resource_hub_id, ctx.project_hub.id)
+    end)
+  end
+
+  step :create_file_for_project, ctx do
+    upload_file = create_temp_file!("operately-cli-upload", @one_by_one_png, ".png")
+
+    on_exit(fn ->
+      File.rm(upload_file)
+    end)
+
+    result =
+      run_cli(ctx, [
+        "documents",
+        "create_file",
+        "--project-id",
+        ctx.project.id,
+        "--file",
+        upload_file
+      ])
+
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:upload_file, upload_file)
+    |> Map.put(:upload_file_bytes, @one_by_one_png)
   end
 
   step :create_file_with_defaults, ctx do
@@ -49,10 +82,10 @@ defmodule Operately.Support.CliE2E.Files.CreateSteps do
 
     result =
       run_cli(ctx, [
-        "files",
-        "create",
-        "--resource-hub-id",
-        ctx.resource_hub.id,
+        "documents",
+        "create_file",
+        "--space-id",
+        ctx.engineering.id,
         "--file",
         upload_file
       ])
@@ -74,10 +107,10 @@ defmodule Operately.Support.CliE2E.Files.CreateSteps do
 
     result =
       run_cli(ctx, [
-        "files",
-        "create",
-        "--resource-hub-id",
-        ctx.resource_hub.id,
+        "documents",
+        "create_file",
+        "--space-id",
+        ctx.engineering.id,
         "--folder-id",
         ctx.folder.id,
         "--file",
@@ -124,7 +157,7 @@ defmodule Operately.Support.CliE2E.Files.CreateSteps do
       end
     end)
 
-    assert file.node.resource_hub_id == ctx.resource_hub.id
+    assert file.node.resource_hub_id == ctx.expected_resource_hub_id
     assert file.blob_id == main_blob.id
     assert preview_blob
     assert main_blob.status == :uploaded
