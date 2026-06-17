@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolderTest do
 
   test "creates folder by space_id", ctx do
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_folder", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_folder", %{
                space_id: Paths.space_id(ctx.space),
                name: "My folder"
              })
@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolderTest do
       |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
 
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_folder", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_folder", %{
                project_id: Paths.project_id(ctx.project),
                name: "Project folder"
              })
@@ -43,14 +43,14 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolderTest do
 
   test "requires hub scope", ctx do
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_folder", %{name: "My folder"})
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_folder", %{name: "My folder"})
   end
 
   test "rejects both space_id and project_id", ctx do
     ctx = Factory.add_project(ctx, :project, :space)
 
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_folder", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_folder", %{
                space_id: Paths.space_id(ctx.space),
                project_id: Paths.project_id(ctx.project),
                name: "My folder"

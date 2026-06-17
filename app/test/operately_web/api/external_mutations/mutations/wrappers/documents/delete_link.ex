@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.DeleteDocument do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Documents.DeleteLink do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "docs_and_files/delete_document"
+  def mutation_name, do: "documents/delete_link"
 
   @impl true
   def setup(ctx) do
@@ -11,19 +11,19 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.DeleteDocume
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_resource_hub(:resource_hub, :space, :creator)
-    |> Factory.add_document(:document, :resource_hub)
+    |> Factory.add_link(:link, :resource_hub)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      document_id: Paths.document_id(ctx.document)
+      link_id: Paths.link_id(ctx.link)
     }
   end
 
   @impl true
   def assert(response, _ctx) do
-    assert response.document.id
+    assert response.success
     refute Map.has_key?(response, :error)
   end
 end

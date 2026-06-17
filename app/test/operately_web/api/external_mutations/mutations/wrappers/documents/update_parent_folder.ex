@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.DeleteLink do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Documents.UpdateParentFolder do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "docs_and_files/delete_link"
+  def mutation_name, do: "documents/update_parent_folder"
 
   @impl true
   def setup(ctx) do
@@ -11,13 +11,16 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.DeleteLink d
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_resource_hub(:resource_hub, :space, :creator)
-    |> Factory.add_link(:link, :resource_hub)
+    |> Factory.add_file(:file, :resource_hub)
+    |> Factory.add_folder(:folder, :resource_hub)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      link_id: Paths.link_id(ctx.link)
+      resource_id: Paths.file_id(ctx.file),
+      resource_type: "file",
+      new_folder_id: Paths.folder_id(ctx.folder)
     }
   end
 

@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.RenameFolder do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Documents.DeleteFolder do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "docs_and_files/rename_folder"
+  def mutation_name, do: "documents/delete_folder"
 
   @impl true
   def setup(ctx) do
@@ -17,8 +17,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.RenameFolder
   @impl true
   def inputs(ctx) do
     %{
-      folder_id: Paths.folder_id(ctx.folder),
-      new_name: "Updated Name"
+      folder_id: Paths.folder_id(ctx.folder)
     }
   end
 

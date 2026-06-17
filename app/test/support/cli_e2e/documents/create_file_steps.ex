@@ -1,4 +1,4 @@
-defmodule Operately.Support.CliE2E.DocsAndFiles.CreateFileSteps do
+defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
   use Operately.Support.CliE2E
 
   alias Operately.Blobs
@@ -49,7 +49,7 @@ defmodule Operately.Support.CliE2E.DocsAndFiles.CreateFileSteps do
 
     result =
       run_cli(ctx, [
-        "docs_and_files",
+        "documents",
         "create_file",
         "--resource-hub-id",
         ctx.resource_hub.id,
@@ -74,7 +74,7 @@ defmodule Operately.Support.CliE2E.DocsAndFiles.CreateFileSteps do
 
     result =
       run_cli(ctx, [
-        "docs_and_files",
+        "documents",
         "create_file",
         "--resource-hub-id",
         ctx.resource_hub.id,

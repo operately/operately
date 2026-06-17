@@ -1,11 +1,11 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.DocsAndFiles.ListContents do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Wrappers.Documents.ListContents do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
   @impl true
-  def query_name, do: "docs_and_files/list_contents"
+  def query_name, do: "documents/list_contents"
 
   @impl true
   def setup(ctx) do

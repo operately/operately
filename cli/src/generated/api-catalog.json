@@ -18580,7 +18580,7 @@
     {
       "name": "copy_folder",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/copy_folder",
+      "path": "/api/external/v1/documents/copy_folder",
       "handler": "OperatelyWeb.Api.ResourceHubs.CopyFolder",
       "outputs": [
         {
@@ -18595,7 +18595,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -18632,13 +18632,13 @@
         }
       ],
       "docstring": "Copies a folder within its resource hub.",
-      "full_name": "docs_and_files/copy_folder",
+      "full_name": "documents/copy_folder",
       "method": "POST"
     },
     {
       "name": "create_document",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/create_document",
+      "path": "/api/external/v1/documents/create_document",
       "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateDocument",
       "outputs": [
         {
@@ -18653,7 +18653,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -18770,13 +18770,13 @@
         }
       ],
       "docstring": "Creates a new document in a Docs & Files hub.",
-      "full_name": "docs_and_files/create_document",
+      "full_name": "documents/create_document",
       "method": "POST"
     },
     {
       "name": "create_folder",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/create_folder",
+      "path": "/api/external/v1/documents/create_folder",
       "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFolder",
       "outputs": [
         {
@@ -18791,7 +18791,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -18839,13 +18839,13 @@
         }
       ],
       "docstring": "Creates a new folder in a Docs & Files hub.",
-      "full_name": "docs_and_files/create_folder",
+      "full_name": "documents/create_folder",
       "method": "POST"
     },
     {
       "name": "create_link",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/create_link",
+      "path": "/api/external/v1/documents/create_link",
       "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLink",
       "outputs": [
         {
@@ -18860,7 +18860,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -18977,13 +18977,13 @@
         }
       ],
       "docstring": "Creates a new link in a Docs & Files hub.",
-      "full_name": "docs_and_files/create_link",
+      "full_name": "documents/create_link",
       "method": "POST"
     },
     {
       "name": "delete_document",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/delete_document",
+      "path": "/api/external/v1/documents/delete_document",
       "handler": "OperatelyWeb.Api.Documents.Delete",
       "outputs": [
         {
@@ -18998,7 +18998,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19013,13 +19013,13 @@
         }
       ],
       "docstring": "Deletes a document.",
-      "full_name": "docs_and_files/delete_document",
+      "full_name": "documents/delete_document",
       "method": "POST"
     },
     {
       "name": "delete_file",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/delete_file",
+      "path": "/api/external/v1/documents/delete_file",
       "handler": "OperatelyWeb.Api.Files.Delete",
       "outputs": [
         {
@@ -19034,7 +19034,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19049,13 +19049,13 @@
         }
       ],
       "docstring": "Deletes a file.",
-      "full_name": "docs_and_files/delete_file",
+      "full_name": "documents/delete_file",
       "method": "POST"
     },
     {
       "name": "delete_folder",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/delete_folder",
+      "path": "/api/external/v1/documents/delete_folder",
       "handler": "OperatelyWeb.Api.ResourceHubs.DeleteFolder",
       "outputs": [
         {
@@ -19070,7 +19070,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19085,13 +19085,13 @@
         }
       ],
       "docstring": "Deletes a folder.",
-      "full_name": "docs_and_files/delete_folder",
+      "full_name": "documents/delete_folder",
       "method": "POST"
     },
     {
       "name": "delete_link",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/delete_link",
+      "path": "/api/external/v1/documents/delete_link",
       "handler": "OperatelyWeb.Api.Links.Delete",
       "outputs": [
         {
@@ -19106,7 +19106,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19121,13 +19121,13 @@
         }
       ],
       "docstring": "Deletes a link.",
-      "full_name": "docs_and_files/delete_link",
+      "full_name": "documents/delete_link",
       "method": "POST"
     },
     {
       "name": "get_document",
       "type": "query",
-      "path": "/api/external/v1/docs_and_files/get_document",
+      "path": "/api/external/v1/documents/get_document",
       "handler": "OperatelyWeb.Api.Documents.Get",
       "outputs": [
         {
@@ -19142,7 +19142,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19278,13 +19278,13 @@
         }
       ],
       "docstring": "Retrieves a document by ID with optional related data.",
-      "full_name": "docs_and_files/get_document",
+      "full_name": "documents/get_document",
       "method": "GET"
     },
     {
       "name": "get_file",
       "type": "query",
-      "path": "/api/external/v1/docs_and_files/get_file",
+      "path": "/api/external/v1/documents/get_file",
       "handler": "OperatelyWeb.Api.Files.Get",
       "outputs": [
         {
@@ -19299,7 +19299,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19424,13 +19424,13 @@
         }
       ],
       "docstring": "Retrieves a file by ID with optional related data.",
-      "full_name": "docs_and_files/get_file",
+      "full_name": "documents/get_file",
       "method": "GET"
     },
     {
       "name": "get_folder",
       "type": "query",
-      "path": "/api/external/v1/docs_and_files/get_folder",
+      "path": "/api/external/v1/documents/get_folder",
       "handler": "OperatelyWeb.Api.ResourceHubs.GetFolder",
       "outputs": [
         {
@@ -19445,7 +19445,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19537,13 +19537,13 @@
         }
       ],
       "docstring": "Retrieves a folder by ID with optional related data.",
-      "full_name": "docs_and_files/get_folder",
+      "full_name": "documents/get_folder",
       "method": "GET"
     },
     {
       "name": "get_link",
       "type": "query",
-      "path": "/api/external/v1/docs_and_files/get_link",
+      "path": "/api/external/v1/documents/get_link",
       "handler": "OperatelyWeb.Api.Links.Get",
       "outputs": [
         {
@@ -19558,7 +19558,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19694,13 +19694,13 @@
         }
       ],
       "docstring": "Retrieves a link by ID with optional related data.",
-      "full_name": "docs_and_files/get_link",
+      "full_name": "documents/get_link",
       "method": "GET"
     },
     {
       "name": "list_contents",
       "type": "query",
-      "path": "/api/external/v1/docs_and_files/list_contents",
+      "path": "/api/external/v1/documents/list_contents",
       "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents",
       "outputs": [
         {
@@ -19732,7 +19732,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19802,13 +19802,13 @@
         }
       ],
       "docstring": "Lists contents in a Docs & Files hub or folder.",
-      "full_name": "docs_and_files/list_contents",
+      "full_name": "documents/list_contents",
       "method": "GET"
     },
     {
       "name": "publish_document",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/publish_document",
+      "path": "/api/external/v1/documents/publish_document",
       "handler": "OperatelyWeb.Api.Documents.Publish",
       "outputs": [
         {
@@ -19823,7 +19823,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19885,13 +19885,13 @@
         }
       ],
       "docstring": "Publishes a draft document.",
-      "full_name": "docs_and_files/publish_document",
+      "full_name": "documents/publish_document",
       "method": "POST"
     },
     {
       "name": "rename_folder",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/rename_folder",
+      "path": "/api/external/v1/documents/rename_folder",
       "handler": "OperatelyWeb.Api.ResourceHubs.RenameFolder",
       "outputs": [
         {
@@ -19906,7 +19906,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -19932,13 +19932,13 @@
         }
       ],
       "docstring": "Renames a folder.",
-      "full_name": "docs_and_files/rename_folder",
+      "full_name": "documents/rename_folder",
       "method": "POST"
     },
     {
       "name": "update_document",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/update_document",
+      "path": "/api/external/v1/documents/update_document",
       "handler": "OperatelyWeb.Api.Documents.Update",
       "outputs": [
         {
@@ -19953,7 +19953,7 @@
           "nullable": true
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -20015,13 +20015,13 @@
         }
       ],
       "docstring": "Updates a document.",
-      "full_name": "docs_and_files/update_document",
+      "full_name": "documents/update_document",
       "method": "POST"
     },
     {
       "name": "update_file",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/update_file",
+      "path": "/api/external/v1/documents/update_file",
       "handler": "OperatelyWeb.Api.Files.Update",
       "outputs": [
         {
@@ -20036,7 +20036,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -20073,13 +20073,13 @@
         }
       ],
       "docstring": "Updates a file.",
-      "full_name": "docs_and_files/update_file",
+      "full_name": "documents/update_file",
       "method": "POST"
     },
     {
       "name": "update_link",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/update_link",
+      "path": "/api/external/v1/documents/update_link",
       "handler": "OperatelyWeb.Api.Links.Update",
       "outputs": [
         {
@@ -20094,7 +20094,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -20153,13 +20153,13 @@
         }
       ],
       "docstring": "Updates a link.",
-      "full_name": "docs_and_files/update_link",
+      "full_name": "documents/update_link",
       "method": "POST"
     },
     {
       "name": "update_parent_folder",
       "type": "mutation",
-      "path": "/api/external/v1/docs_and_files/update_parent_folder",
+      "path": "/api/external/v1/documents/update_parent_folder",
       "handler": "OperatelyWeb.Api.ResourceHubs.UpdateParentFolder",
       "outputs": [
         {
@@ -20174,7 +20174,7 @@
           "nullable": false
         }
       ],
-      "namespace": "docs_and_files",
+      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -20211,7 +20211,7 @@
         }
       ],
       "docstring": "Updates the parent folder of a resource hub item.",
-      "full_name": "docs_and_files/update_parent_folder",
+      "full_name": "documents/update_parent_folder",
       "method": "POST"
     },
     {
@@ -30169,7 +30169,6 @@
   "namespace_descriptions": {
     "comments": "List, create and manage comments on resources",
     "companies": "Get, list, update and manage company settings, members, and permissions",
-    "docs_and_files": "Browse and manage Docs & Files",
     "documents": "",
     "files": "",
     "goals": "Get, list, create and manage goals",
@@ -30183,6 +30182,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-16T23:50:45Z",
+  "generated_at": "2026-06-17T13:15:37Z",
   "schema_version": 1
 }

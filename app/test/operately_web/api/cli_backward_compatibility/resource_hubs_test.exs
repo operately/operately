@@ -11,6 +11,14 @@ defmodule OperatelyWeb.Api.CliBackwardCompatibility.ResourceHubsTest do
   adds the commands to the catalog but keeps those routes reachable.
   """
 
+  use OperatelyWeb.TurboCase
+
+  alias Operately.Support.CliBackwardCompatibility.ResourceHubsSteps, as: Steps
+
+  setup ctx do
+    Steps.setup(ctx)
+  end
+
   test "legacy resource_hubs/create_folder creates a folder", ctx do
     Steps.create_folder(ctx)
   end

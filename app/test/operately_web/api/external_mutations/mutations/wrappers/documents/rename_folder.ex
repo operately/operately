@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.UpdateParentFolder do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Documents.RenameFolder do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "docs_and_files/update_parent_folder"
+  def mutation_name, do: "documents/rename_folder"
 
   @impl true
   def setup(ctx) do
@@ -11,16 +11,14 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.UpdateParent
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_resource_hub(:resource_hub, :space, :creator)
-    |> Factory.add_file(:file, :resource_hub)
     |> Factory.add_folder(:folder, :resource_hub)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      resource_id: Paths.file_id(ctx.file),
-      resource_type: "file",
-      new_folder_id: Paths.folder_id(ctx.folder)
+      folder_id: Paths.folder_id(ctx.folder),
+      new_name: "Updated Name"
     }
   end
 

@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
 
   test "creates file by resource_hub_id", ctx do
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_file", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{
                resource_hub_id: Paths.resource_hub_id(ctx.hub),
                files: [
                  %{
@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
 
   test "creates file by space_id", ctx do
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_file", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{
                space_id: Paths.space_id(ctx.space),
                files: [
                  %{
@@ -57,7 +57,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
       |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
 
     assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_file", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{
                project_id: Paths.project_id(ctx.project),
                files: [
                  %{
@@ -75,7 +75,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
 
   test "requires hub scope", ctx do
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_file", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{
                files: [
                  %{
                    blob_id: ctx.blob.id,
@@ -88,7 +88,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
 
   test "rejects resource_hub_id with space_id", ctx do
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_file", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{
                resource_hub_id: Paths.resource_hub_id(ctx.hub),
                space_id: Paths.space_id(ctx.space),
                files: [
@@ -105,7 +105,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
     ctx = Factory.add_project(ctx, :project, :space)
 
     assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "docs_and_files/create_file", %{
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{
                space_id: Paths.space_id(ctx.space),
                project_id: Paths.project_id(ctx.project),
                files: [

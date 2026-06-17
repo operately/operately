@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.DeleteFile do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Documents.CreateFolder do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "docs_and_files/delete_file"
+  def mutation_name, do: "documents/create_folder"
 
   @impl true
   def setup(ctx) do
@@ -11,19 +11,19 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.DeleteFile d
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_resource_hub(:resource_hub, :space, :creator)
-    |> Factory.add_file(:file, :resource_hub)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      file_id: Paths.file_id(ctx.file)
+      space_id: Paths.space_id(ctx.space),
+      name: "Updated Name"
     }
   end
 
   @impl true
   def assert(response, _ctx) do
-    assert response.file.id
+    assert response.folder.id
     refute Map.has_key?(response, :error)
   end
 end

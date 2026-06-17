@@ -1,11 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.UpdateFile do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Documents.DeleteFile do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
-  alias Operately.Support.RichText
-
   @impl true
-  def mutation_name, do: "docs_and_files/update_file"
+  def mutation_name, do: "documents/delete_file"
 
   @impl true
   def setup(ctx) do
@@ -19,16 +17,13 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.UpdateFile d
   @impl true
   def inputs(ctx) do
     %{
-      file_id: Paths.file_id(ctx.file),
-      name: "Updated file.pdf",
-      description: RichText.rich_text("Updated file description", :as_string)
+      file_id: Paths.file_id(ctx.file)
     }
   end
 
   @impl true
   def assert(response, _ctx) do
     assert response.file.id
-    assert response.file.name == "Updated file.pdf"
     refute Map.has_key?(response, :error)
   end
 end

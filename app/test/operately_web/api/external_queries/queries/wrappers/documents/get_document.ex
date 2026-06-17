@@ -1,11 +1,11 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.DocsAndFiles.GetLink do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Wrappers.Documents.GetDocument do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
   @impl true
-  def query_name, do: "docs_and_files/get_link"
+  def query_name, do: "documents/get_document"
 
   @impl true
   def setup(ctx) do
@@ -13,17 +13,17 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.DocsAndFiles.GetLink do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_resource_hub(:hub, :space, :creator)
-    |> Factory.add_link(:link, :hub)
+    |> Factory.add_document(:document, :hub)
   end
 
   @impl true
   def inputs(ctx) do
-    %{id: Paths.link_id(ctx.link)}
+    %{id: Paths.document_id(ctx.document)}
   end
 
   @impl true
   def assert(response, ctx) do
-    assert response.link
-    assert response.link.id == Paths.link_id(ctx.link)
+    assert response.document
+    assert response.document.id == Paths.document_id(ctx.document)
   end
 end

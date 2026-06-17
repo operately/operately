@@ -274,10 +274,10 @@ test("parses bare boolean flags for custom endpoints", () => {
   }
 });
 
-test("parses custom file input for docs_and_files create_file", () => {
+test("parses custom file input for documents create_file", () => {
   const registry = createRegistry(fixtureCatalog);
   const parsed = parseCommand(
-    ["docs_and_files", "create_file", "--resource-hub-id", "rh1", "--file", "./report.png"],
+    ["documents", "create_file", "--resource-hub-id", "rh1", "--file", "./report.png"],
     registry,
     fixtureCatalog.types,
   );
@@ -291,13 +291,13 @@ test("parses custom file input for docs_and_files create_file", () => {
   }
 });
 
-test("rejects repeated --file flags for docs_and_files create_file", () => {
+test("rejects repeated --file flags for documents create_file", () => {
   const registry = createRegistry(fixtureCatalog);
 
   assert.throws(
     () =>
       parseCommand(
-        ["docs_and_files", "create_file", "--resource-hub-id", "rh1", "--file", "./a.png", "--file", "./b.png"],
+        ["documents", "create_file", "--resource-hub-id", "rh1", "--file", "./a.png", "--file", "./b.png"],
         registry,
         fixtureCatalog.types,
       ),

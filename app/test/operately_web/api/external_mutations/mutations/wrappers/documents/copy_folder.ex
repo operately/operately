@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.CopyFolder do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Documents.CopyFolder do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "docs_and_files/copy_folder"
+  def mutation_name, do: "documents/copy_folder"
 
   @impl true
   def setup(ctx) do

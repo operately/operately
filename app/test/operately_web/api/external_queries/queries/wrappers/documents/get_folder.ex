@@ -1,11 +1,11 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.DocsAndFiles.GetFolder do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Wrappers.Documents.GetFolder do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
   @impl true
-  def query_name, do: "docs_and_files/get_folder"
+  def query_name, do: "documents/get_folder"
 
   @impl true
   def setup(ctx) do

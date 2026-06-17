@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DocsAndFiles.UpdateLink do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Documents.UpdateLink do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "docs_and_files/update_link"
+  def mutation_name, do: "documents/update_link"
 
   @impl true
   def setup(ctx) do

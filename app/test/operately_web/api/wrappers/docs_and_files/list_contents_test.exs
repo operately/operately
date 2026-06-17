@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContentsTest do
 
   test "lists contents by space_id", ctx do
     assert {200, res} =
-             external_query(ctx.conn, ctx.api_token, "docs_and_files/list_contents", %{
+             external_query(ctx.conn, ctx.api_token, "documents/list_contents", %{
                space_id: Paths.space_id(ctx.space)
              })
 
@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContentsTest do
       |> Factory.add_document(:project_document, :project_hub)
 
     assert {200, res} =
-             external_query(ctx.conn, ctx.api_token, "docs_and_files/list_contents", %{
+             external_query(ctx.conn, ctx.api_token, "documents/list_contents", %{
                project_id: Paths.project_id(ctx.project)
              })
 
@@ -44,6 +44,6 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContentsTest do
   end
 
   test "requires hub scope", ctx do
-    assert {400, _} = external_query(ctx.conn, ctx.api_token, "docs_and_files/list_contents", %{})
+    assert {400, _} = external_query(ctx.conn, ctx.api_token, "documents/list_contents", %{})
   end
 end

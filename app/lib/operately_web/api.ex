@@ -223,7 +223,7 @@ defmodule OperatelyWeb.Api do
       end
 
       # Legacy Docs & Files routes stay on the external API for CLI <= 1.6.0 backward
-      # compatibility but are hidden from the catalog. The docs_and_files namespace
+      # compatibility but are hidden from the catalog. The documents namespace
       # is the supported CLI-facing surface for new clients.
       namespace(:resource_hubs, catalog: false) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
@@ -420,7 +420,7 @@ defmodule OperatelyWeb.Api do
       common_endpoints()
 
       @doc "Browse and manage Docs & Files"
-      namespace(:docs_and_files) do
+      namespace(:documents) do
         query(:list_contents, OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
         query(:get_document, OperatelyWeb.Api.Documents.Get)
