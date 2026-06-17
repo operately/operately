@@ -32,7 +32,7 @@ defmodule TurboConnect.Api do
     end
   end
 
-  defmacro namespace(ns, do: block) do
+  defmacro namespace(ns, opts \\ [], do: block) do
     quote do
       desc = Module.get_attribute(__MODULE__, :doc) || {nil, ""}
       namespace_desc = if is_tuple(desc), do: elem(desc, 1), else: ""
@@ -40,24 +40,30 @@ defmodule TurboConnect.Api do
 
       @namespace_descriptions {unquote(ns), namespace_desc}
       @tc_namespace unquote(ns)
+      @tc_namespace_opts unquote(opts)
       unquote(block)
       @tc_namespace nil
+      @tc_namespace_opts []
     end
   end
 
   defmacro query(name, module, opts \\ []) do
     quote do
       namespace = Module.get_attribute(__MODULE__, :tc_namespace)
+      namespace_opts = Module.get_attribute(__MODULE__, :tc_namespace_opts) || []
+      endpoint_opts = Keyword.merge(namespace_opts, unquote(opts))
       full_name = TurboConnect.Api.full_name(namespace, unquote(name))
-      @queries {full_name, namespace, unquote(name), unquote(module), unquote(opts)}
+      @queries {full_name, namespace, unquote(name), unquote(module), endpoint_opts}
     end
   end
 
   defmacro mutation(name, module, opts \\ []) do
     quote do
       namespace = Module.get_attribute(__MODULE__, :tc_namespace)
+      namespace_opts = Module.get_attribute(__MODULE__, :tc_namespace_opts) || []
+      endpoint_opts = Keyword.merge(namespace_opts, unquote(opts))
       full_name = TurboConnect.Api.full_name(namespace, unquote(name))
-      @mutations {full_name, namespace, unquote(name), unquote(module), unquote(opts)}
+      @mutations {full_name, namespace, unquote(name), unquote(module), endpoint_opts}
     end
   end
 

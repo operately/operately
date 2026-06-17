@@ -4,24 +4,24 @@ import { callEndpoint } from "../../core/http";
 import { inferMimeType } from "../../core/uploads/file-metadata";
 import { uploadToSignedUrl } from "../../core/uploads/signed-url";
 import type { CatalogEndpoint } from "../../types/catalog";
-import { executeFilesCreate } from "./files/create";
+import { executeDocumentsCreateFile } from "./documents/create_file";
 import { executePeopleUpdatePicture } from "./people/update-picture";
 import type { CustomEndpointDeps, CustomEndpointExecutionInput, CustomEndpointExecutor } from "./types";
 
 const CUSTOM_ENDPOINT_EXECUTORS: Record<string, CustomEndpointExecutor> = {
-  "files/create": executeFilesCreate,
+  "documents/create_file": executeDocumentsCreateFile,
   "people/update_picture": executePeopleUpdatePicture,
 };
 
 const CUSTOM_ENDPOINTS: CatalogEndpoint[] = [
   {
-    full_name: "files/create",
-    namespace: "files",
-    name: "create",
+    full_name: "documents/create_file",
+    namespace: "documents",
+    name: "create_file",
     type: "mutation",
     method: "POST",
-    path: "/api/external/v1/files/create",
-    handler: "OperatelyWeb.Api.Files.Create",
+    path: "/api/external/v1/documents/create_file",
+    handler: "OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFile",
     inputs: [
       {
         name: "resource_hub_id",
@@ -85,8 +85,8 @@ const CUSTOM_ENDPOINTS: CatalogEndpoint[] = [
     execution_mode: "custom",
     example_mode: "cli",
     cli_examples: [
-      "operately files create --resource-hub-id rh_123 --file ./report.png",
-      "operately files create --resource-hub-id rh_123 --file ./report.png --name Q2-report --description-file ./notes.md",
+      "operately documents create_file --resource-hub-id rh_123 --file ./report.png",
+      "operately documents create_file --resource-hub-id rh_123 --file ./report.png --name Q2-report --description-file ./notes.md",
     ],
   },
   {

@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.AuthTest do
         conn = Conn.put_req_header(ctx.conn, "authorization", "Bearer #{ctx.api_token}")
 
         {status, response} = query(conn, row.query_name, inputs)
-        assert_unauthorized(status, response)
+        assert_internal_api_rejects_token(status, response, row.query_name, :query)
       end
 
       test "#{row.query_name} / external_read_only_token", ctx do
@@ -99,6 +99,15 @@ defmodule OperatelyWeb.Api.ExternalQueries.AuthTest do
   defp assert_unauthorized(status, response) do
     assert status == 401
     assert response == "Unauthorized"
+  end
+
+  defp assert_internal_api_rejects_token(status, response, endpoint_name, :query) do
+    if Map.has_key?(OperatelyWeb.Api.Internal.__queries__(), endpoint_name) do
+      assert_unauthorized(status, response)
+    else
+      assert status == 404
+      assert response == "Query not found"
+    end
   end
 
   defp resolve_inputs(inputs, ctx) when is_function(inputs, 1), do: inputs.(ctx)
