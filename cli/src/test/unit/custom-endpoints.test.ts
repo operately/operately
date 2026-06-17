@@ -193,12 +193,12 @@ describe("people/update_picture", () => {
   });
 });
 
-describe("files/create", () => {
+describe("documents/create_file", () => {
   it("uploads a non-image file through the hidden blob flow", async () => {
     const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
 
     const payload = await executeCustomEndpointCommand(
-      buildInput("files/create", {
+      buildInput("documents/create_file", {
         resource_hub_id: "hub-1",
         file: "./report.pdf",
       }),
@@ -272,7 +272,7 @@ describe("files/create", () => {
       },
       {
         kind: "mutation",
-        path: "/api/external/v1/files/create",
+        path: "/api/external/v1/documents/create_file",
         inputs: {
           resource_hub_id: "hub-1",
           files: [
@@ -292,7 +292,7 @@ describe("files/create", () => {
     const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
 
     const payload = await executeCustomEndpointCommand(
-      buildInput("files/create", {
+      buildInput("documents/create_file", {
         resource_hub_id: "hub-1",
         file: "./chart.png",
         folder_id: "folder-1",
@@ -371,7 +371,7 @@ describe("files/create", () => {
       [{ blob_id: "blob-1" }, { blob_id: "blob-2" }],
     );
 
-    const finalCreateCall = calls.find((call) => call.path === "/api/external/v1/files/create");
+    const finalCreateCall = calls.find((call) => call.path === "/api/external/v1/documents/create_file");
     assert.ok(finalCreateCall);
     assert.deepEqual(finalCreateCall.inputs, {
       resource_hub_id: "hub-1",
@@ -391,7 +391,7 @@ describe("files/create", () => {
 
   it("surfaces unreadable file paths as usage errors", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./missing.png" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./missing.png" }), {
         readFile: () => {
           throw new Error("ENOENT");
         },
@@ -406,7 +406,7 @@ describe("files/create", () => {
 
   it("fails when blob creation does not return main upload metadata", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
           if (path === "/create_blob") {
             return { blobs: [] };
@@ -424,7 +424,7 @@ describe("files/create", () => {
 
   it("surfaces upload failures", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
           if (path === "/create_blob") {
             return {
@@ -454,7 +454,7 @@ describe("files/create", () => {
 
   it("surfaces blob finalization failures", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
           if (path === "/create_blob") {
             return {
@@ -486,7 +486,7 @@ describe("files/create", () => {
 
   it("surfaces final create failures", async () => {
     await assert.rejects(
-      executeCustomEndpointCommand(buildInput("files/create", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
+      executeCustomEndpointCommand(buildInput("documents/create_file", { resource_hub_id: "hub-1", file: "./report.pdf" }), {
         callExternalMutation: async ({ path }) => {
           if (path === "/create_blob") {
             return {
@@ -501,7 +501,7 @@ describe("files/create", () => {
             };
           }
 
-          if (path === "/api/external/v1/files/create") {
+          if (path === "/api/external/v1/documents/create_file") {
             throw new Error("create failed");
           }
 
@@ -520,7 +520,7 @@ describe("files/create", () => {
 describe("custom endpoint registration", () => {
   it("accepts catalogs where all custom endpoints are implemented", () => {
     assert.doesNotThrow(() =>
-      validateCustomEndpointImplementations([findEndpoint("people/update_picture"), findEndpoint("files/create")]),
+      validateCustomEndpointImplementations([findEndpoint("people/update_picture"), findEndpoint("documents/create_file")]),
     );
   });
 
