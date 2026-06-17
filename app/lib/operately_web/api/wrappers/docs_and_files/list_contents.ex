@@ -10,7 +10,6 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents do
   alias OperatelyWeb.Api.ResourceHubs.ListNodes
 
   inputs do
-    field? :resource_hub_id, :id, null: true
     field? :space_id, :id, null: true
     field? :project_id, :id, null: true
     field? :folder_id, :id, null: true

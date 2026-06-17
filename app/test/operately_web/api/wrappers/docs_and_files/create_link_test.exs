@@ -12,20 +12,6 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLinkTest do
     |> Factory.fetch_default_resource_hub(:hub, :space)
   end
 
-  test "creates link by resource_hub_id", ctx do
-    assert {200, res} =
-             external_mutation(ctx.conn, ctx.api_token, "documents/create_link", %{
-               resource_hub_id: Paths.resource_hub_id(ctx.hub),
-               name: "My link",
-               url: "http://localhost:4000",
-               type: "other"
-             })
-
-    links = ResourceHubs.list_links(ctx.hub)
-    assert length(links) == 1
-    assert res.link.id == Paths.link_id(hd(links))
-  end
-
   test "creates link by space_id", ctx do
     assert {200, res} =
              external_mutation(ctx.conn, ctx.api_token, "documents/create_link", %{
@@ -62,17 +48,6 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLinkTest do
   test "requires hub scope", ctx do
     assert {400, _} =
              external_mutation(ctx.conn, ctx.api_token, "documents/create_link", %{
-               name: "My link",
-               url: "http://localhost:4000",
-               type: "other"
-             })
-  end
-
-  test "rejects resource_hub_id with space_id", ctx do
-    assert {400, _} =
-             external_mutation(ctx.conn, ctx.api_token, "documents/create_link", %{
-               resource_hub_id: Paths.resource_hub_id(ctx.hub),
-               space_id: Paths.space_id(ctx.space),
                name: "My link",
                url: "http://localhost:4000",
                type: "other"

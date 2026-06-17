@@ -12,13 +12,13 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Wrappers.Documents.ListConten
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
-    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.fetch_default_resource_hub(:hub, :space)
     |> Factory.add_document(:document, :hub)
   end
 
   @impl true
   def inputs(ctx) do
-    %{resource_hub_id: Paths.resource_hub_id(ctx.hub)}
+    %{space_id: Paths.space_id(ctx.space)}
   end
 
   @impl true

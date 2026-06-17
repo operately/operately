@@ -18631,7 +18631,7 @@
           "nullable": true
         }
       ],
-      "docstring": "Copies a folder within its resource hub.",
+      "docstring": "Copies a folder within Docs & Files.",
       "full_name": "documents/copy_folder",
       "method": "POST"
     },
@@ -18655,17 +18655,6 @@
       ],
       "namespace": "documents",
       "inputs": [
-        {
-          "default": null,
-          "name": "resource_hub_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
         {
           "default": null,
           "name": "space_id",
@@ -18862,17 +18851,6 @@
       ],
       "namespace": "documents",
       "inputs": [
-        {
-          "default": null,
-          "name": "resource_hub_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
         {
           "default": null,
           "name": "space_id",
@@ -19736,17 +19714,6 @@
       "inputs": [
         {
           "default": null,
-          "name": "resource_hub_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
           "name": "space_id",
           "type": {
             "name": "id",
@@ -20210,7 +20177,7 @@
           "nullable": true
         }
       ],
-      "docstring": "Updates the parent folder of a resource hub item.",
+      "docstring": "Updates the parent folder of a Docs & Files item.",
       "full_name": "documents/update_parent_folder",
       "method": "POST"
     },
@@ -30182,6 +30149,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-17T13:15:37Z",
+  "generated_at": "2026-06-17T19:18:54Z",
   "schema_version": 1
 }
