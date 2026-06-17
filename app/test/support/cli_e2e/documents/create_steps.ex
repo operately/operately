@@ -40,7 +40,7 @@ defmodule Operately.Support.CliE2E.Documents.CreateSteps do
     result =
       run_cli(ctx, [
         "documents",
-        "create",
+        "create_document",
         "--resource-hub-id",
         ctx.resource_hub.id,
         "--name",
@@ -60,7 +60,7 @@ defmodule Operately.Support.CliE2E.Documents.CreateSteps do
     result =
       run_cli(ctx, [
         "documents",
-        "create",
+        "create_document",
         "--resource-hub-id",
         ctx.resource_hub.id,
         "--name",
