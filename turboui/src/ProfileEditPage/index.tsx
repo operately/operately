@@ -3,7 +3,7 @@ import { Page } from "../Page";
 import { Avatar } from "../Avatar";
 import { SecondaryButton, PrimaryButton } from "../Button";
 import { Menu, MenuActionItem } from "../Menu";
-import { Textfield } from "../forms/Textfield";
+import { Textfield } from "../FormElements/Textfield";
 import { PersonField } from "../PersonField";
 import { IconPencil } from "../icons";
 import { Editor, useEditor } from "../RichEditor";

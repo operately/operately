@@ -1,7 +1,7 @@
 import React from "react";
 import { CompanyAdminAddPeoplePage } from "..";
 import { IconPlus, IconX } from "../../icons";
-import { Dropdown } from "../../forms/Dropdown";
+import { Dropdown } from "../../FormElements/Dropdown";
 import { SecondaryButton } from "../../Button";
 
 const RESOURCE_TYPE_OPTIONS: { value: CompanyAdminAddPeoplePage.ResourceType; label: string }[] = [

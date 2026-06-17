@@ -1,7 +1,7 @@
 import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { Textfield } from "../forms/Textfield";
+import { Textfield } from "../FormElements/Textfield";
 import classNames from "../utils/classnames";
 
 export namespace InviteMemberForm {
