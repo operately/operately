@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.ResourceHubs.CopyFolder do
   @moduledoc """
-  Copies a folder within its resource hub.
+  Copies a folder within Docs & Files.
   """
 
   use TurboConnect.Mutation
