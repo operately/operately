@@ -15,7 +15,7 @@ import classNames from "../utils/classnames";
 import { ChecklistItemState, State, useChecklistState } from "./useChecklistState";
 
 import { Checkbox } from "../Checkbox";
-import { Textfield } from "../forms/Textfield";
+import { Textfield } from "../FormElements/Textfield";
 import { PieChart } from "../PieChart";
 import { SwitchToggle } from "../SwitchToggle";
 import { createTestId } from "../TestableElement";

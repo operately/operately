@@ -4,7 +4,7 @@ import { ResourceManager } from "../ResourceManager";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { showInfoToast } from "../Toasts";
 import { ConfirmDialog } from "../ConfirmDialog";
-import { Textfield } from "../forms/Textfield";
+import { Textfield } from "../FormElements/Textfield";
 import Modal from "../Modal";
 import { createTestId } from "../TestableElement";
 

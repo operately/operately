@@ -4,7 +4,7 @@ import { PrimaryButton, SecondaryButton } from "../Button";
 import Modal from "../Modal";
 import { ProjectField } from "../ProjectField";
 import { SpaceField } from "../SpaceField";
-import { Dropdown } from "../forms/Dropdown";
+import { Dropdown } from "../FormElements/Dropdown";
 import { showErrorToast } from "../Toasts";
 import { TaskPage } from ".";
 

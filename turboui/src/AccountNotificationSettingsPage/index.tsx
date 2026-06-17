@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Dropdown } from "../forms/Dropdown";
+import { Dropdown } from "../FormElements/Dropdown";
 import { Page } from "../Page";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { SwitchToggle } from "../SwitchToggle";
