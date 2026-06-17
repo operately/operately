@@ -28,7 +28,7 @@ export function CompanyBillingPlanSelectionPage(props: CompanyBillingPlanSelecti
   const viewModel = buildCompanyBillingPlanSelectionPageViewModel(props);
 
   return (
-    <Page title={props.title} size="small" navigation={props.navigation} testId={props.testId}>
+    <Page title={props.title} size="medium" navigation={props.navigation} testId={props.testId}>
       <div className="p-8">
         <Header title={viewModel.pageTitle} subtitle={viewModel.pageSubtitle} />
         <SelectionModeView selection={viewModel.selection} />
@@ -61,7 +61,7 @@ function SelectionModeView({ selection }: { selection: CompanyBillingPlanSelecti
 
       <BillingCycleSelector selection={selection} />
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-3 gap-4">
         {selection.cards.map((card) => (
           <PlanCard key={card.key} card={card} />
         ))}
