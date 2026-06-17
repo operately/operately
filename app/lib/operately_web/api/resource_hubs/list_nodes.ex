@@ -24,7 +24,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:nodes, fn ctx -> load_nodes(ctx.me, inputs) end)
+    |> run(:filter, fn _ctx -> resolve_filter_inputs(inputs) end)
+    |> run(:nodes, fn ctx -> load_nodes(ctx.me, ctx.filter, inputs) end)
     |> run(:serialized, fn ctx -> serialize(ctx.nodes) end)
     |> respond()
   end
@@ -32,13 +33,27 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :filter, %{error: :bad_request}} -> {:error, :bad_request}
+      {:error, :filter, _} -> {:error, :not_found}
       {:error, :nodes, _} -> {:error, :not_found}
-      {:error, :bad_request, message} -> {:error, :bad_request, message}
       _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load_nodes(me, inputs) do
+  defp resolve_filter_inputs(inputs) do
+    cond do
+      not is_nil(inputs[:folder_id]) ->
+        {:ok, %{folder_id: inputs.folder_id}}
+
+      not is_nil(inputs[:resource_hub_id]) ->
+        {:ok, %{resource_hub_id: inputs.resource_hub_id}}
+
+      true ->
+        {:error, :bad_request}
+    end
+  end
+
+  defp load_nodes(me, filter_inputs, inputs) do
     nodes =
       from(n in Node,
         left_join: hub in assoc(n, :resource_hub), as: :hub,
@@ -46,7 +61,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
         left_join: space in assoc(hub, :space), as: :space,
         order_by: [desc: n.inserted_at]
       )
-      |> filter_nodes(inputs)
+      |> filter_nodes(filter_inputs)
       |> Node.preload_content(me)
       |> filter_by_parent_view_access(me.id)
       |> Repo.all()
