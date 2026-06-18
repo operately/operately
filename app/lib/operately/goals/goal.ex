@@ -22,6 +22,7 @@ defmodule Operately.Goals.Goal do
     has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
     has_many :checks, Operately.Goals.Check, foreign_key: :goal_id
 
+    has_one :resource_hub, Operately.ResourceHubs.ResourceHub, foreign_key: :goal_id
     has_one :access_context, Operately.Access.Context, foreign_key: :goal_id
 
     # Check-Ins (they are called updates for historical reasons)

@@ -105,6 +105,58 @@ defmodule Operately.ResourceHubs.GetterTest do
     end
   end
 
+  describe "goal-backed hubs" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space, company_permissions: Binding.no_access())
+      |> Factory.add_space_member(:space_member, :space, permissions: :view_access)
+      |> Factory.add_company_member(:goal_editor)
+      |> Factory.add_goal(:goal, :space, company_access: Binding.no_access(), space_access: Binding.no_access())
+      |> grant_goal_access(:goal_editor, :goal, :edit_access)
+      |> Factory.add_resource_hub(:hub, :goal, :creator)
+      |> Factory.add_folder(:folder, :hub)
+      |> Factory.add_document(:document, :hub, folder: :folder)
+      |> Factory.add_file(:hub_file, :hub, folder: :folder)
+      |> Factory.add_link(:link, :hub, folder: :folder)
+      |> preload_nodes()
+      |> then(&{:ok, &1})
+    end
+
+    test "getters resolve access through the goal context", ctx do
+      assert {:ok, hub} =
+               ResourceHub.get(ctx.goal_editor, id: ctx.hub.id, opts: [required_access_level: Binding.edit_access()])
+
+      assert hub.request_info.access_level == Binding.edit_access()
+      assert {:error, :not_found} = ResourceHub.get(ctx.space_member, id: ctx.hub.id)
+
+      [ctx.folder_node, ctx.document_node, ctx.file_node, ctx.link_node]
+      |> Enum.each(fn node ->
+        assert {:ok, fetched} =
+                 Node.get(ctx.goal_editor, id: node.id, opts: [required_access_level: Binding.edit_access()])
+
+        assert fetched.id == node.id
+        assert fetched.request_info.access_level == Binding.edit_access()
+        assert {:error, :not_found} = Node.get(ctx.space_member, id: node.id)
+      end)
+
+      [
+        {Folder, ctx.folder.id},
+        {Document, ctx.document.id},
+        {File, ctx.hub_file.id},
+        {Link, ctx.link.id}
+      ]
+      |> Enum.each(fn {module, id} ->
+        assert {:ok, resource} =
+                 module.get(ctx.goal_editor, id: id, opts: [required_access_level: Binding.edit_access()])
+
+        assert resource.id == id
+        assert resource.request_info.access_level == Binding.edit_access()
+        assert {:error, :not_found} = module.get(ctx.space_member, id: id)
+      end)
+    end
+  end
+
   defp preload_nodes(ctx) do
     folder = Repo.preload(ctx.folder, :node)
     document = Repo.preload(ctx.document, :node)
@@ -116,5 +168,17 @@ defmodule Operately.ResourceHubs.GetterTest do
     |> Map.put(:document_node, document.node)
     |> Map.put(:file_node, hub_file.node)
     |> Map.put(:link_node, link.node)
+  end
+
+  defp grant_goal_access(ctx, person_name, goal_name, access_level) do
+    person = Map.fetch!(ctx, person_name)
+    goal = Map.fetch!(ctx, goal_name)
+
+    {:ok, _} =
+      Operately.Operations.ResourceAccessGranting.run(person.id, [
+        %{resource_type: :goal, resource_id: goal.id, access_level: access_level}
+      ])
+
+    ctx
   end
 end

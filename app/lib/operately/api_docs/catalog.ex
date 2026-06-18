@@ -7,7 +7,6 @@ defmodule Operately.ApiDocs.Catalog do
     %{
       schema_version: @schema_version,
       api_base_path: api_base_path,
-      generated_at: generated_at(),
       endpoint_count: length(catalog.endpoints),
       query_count: length(catalog.queries),
       mutation_count: length(catalog.mutations),
@@ -19,12 +18,6 @@ defmodule Operately.ApiDocs.Catalog do
 
   def encode(payload) do
     Jason.encode!(payload, pretty: true, maps: :strict)
-  end
-
-  defp generated_at do
-    DateTime.utc_now()
-    |> DateTime.truncate(:second)
-    |> DateTime.to_iso8601()
   end
 
   defp serialize_types(types) do

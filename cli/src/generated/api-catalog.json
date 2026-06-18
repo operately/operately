@@ -7515,6 +7515,17 @@
           },
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "nodes",
             "type": {
               "item": {
@@ -10944,6 +10955,17 @@
                 "kind": "named"
               },
               "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
             },
             "optional": true,
             "has_default": false,
@@ -19168,6 +19190,17 @@
         },
         {
           "default": null,
+          "name": "include_goal",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
           "name": "include_resource_hub",
           "type": {
             "name": "boolean",
@@ -19293,6 +19326,17 @@
         {
           "default": null,
           "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_goal",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -19482,6 +19526,17 @@
         },
         {
           "default": null,
+          "name": "include_goal",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
           "name": "include_path_to_folder",
           "type": {
             "name": "boolean",
@@ -19574,6 +19629,17 @@
         {
           "default": null,
           "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_goal",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -21265,6 +21331,17 @@
         {
           "default": null,
           "name": "include_space_members",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_resource_hub",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -30149,6 +30226,5 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-06-17T19:18:54Z",
   "schema_version": 1
 }

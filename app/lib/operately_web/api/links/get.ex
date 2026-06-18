@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Links.Get do
     field? :include_author, :boolean, null: false
     field? :include_space, :boolean, null: false
     field? :include_project, :boolean, null: false
+    field? :include_goal, :boolean, null: false
     field? :include_resource_hub, :boolean, null: false
     field? :include_parent_folder, :boolean, null: false
     field? :include_reactions, :boolean, null: false
@@ -54,12 +55,13 @@ defmodule OperatelyWeb.Api.Links.Get do
   def preload(inputs) do
     Inputs.parse_includes(inputs, [
       include_author: :author,
-      include_resource_hub: :resource_hub,
       include_space: :space,
       include_project: :project,
       include_reactions: [reactions: :person],
       include_parent_folder: [node: [parent_folder: :node]],
       include_subscriptions_list: :subscription_list,
+      include_resource_hub: :resource_hub,
+      include_goal: [resource_hub: :goal],
       always_include: :node,
     ])
   end

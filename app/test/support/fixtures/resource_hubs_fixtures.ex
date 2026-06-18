@@ -24,6 +24,15 @@ defmodule Operately.ResourceHubsFixtures do
     |> Repo.one!()
   end
 
+  def default_resource_hub_for_goal(goal) do
+    from(h in ResourceHub,
+      where: h.goal_id == ^goal.id,
+      order_by: [asc: h.inserted_at],
+      limit: 1
+    )
+    |> Repo.one!()
+  end
+
   def resource_hub_fixture(creator, parent, attrs \\ %{}) do
     attrs = Enum.into(attrs, %{
       name: "Resource hub",
