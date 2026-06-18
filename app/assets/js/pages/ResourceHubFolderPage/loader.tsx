@@ -12,6 +12,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     folders.get({
       id: params.id,
       includeResourceHub: true,
+      includeGoal: true,
       includeSpace: true,
       includeProject: true,
       includePathToFolder: true,

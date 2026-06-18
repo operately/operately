@@ -5,6 +5,7 @@ defmodule Operately.Activities.Content.ResourceHubCreated do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
+    belongs_to :goal, Operately.Goals.Goal
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
     field :name, :string
   end
@@ -12,7 +13,7 @@ defmodule Operately.Activities.Content.ResourceHubCreated do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields) -- [:project_id])
+    |> validate_required(__schema__(:fields) -- [:project_id, :goal_id])
   end
 
   def build(params) do

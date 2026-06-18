@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Serializers.ResourceHubActivity do
 
   def parent_fields(content) do
     %{
+      goal: Serializer.serialize(content["goal"], level: :essential),
       project: Serializer.serialize(content["project"], level: :essential),
       space: Serializer.serialize(content["space"], level: :essential),
       resource_hub: Serializer.serialize(content["resource_hub"], level: :essential),

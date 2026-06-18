@@ -180,6 +180,31 @@ defmodule OperatelyWeb.Api.People.SearchTest do
       assert res == %{people: [serialized(ctx.contributor)]}
       refute serialized(ctx.space_member) in res.people
     end
+
+    test "resource hub scope uses the parent goal access context for goal-backed hubs", ctx do
+      ctx =
+        ctx
+        |> Map.put(:creator, ctx.company_creator)
+        |> Factory.add_space(:space, company_permissions: Binding.no_access())
+        |> Factory.add_space_member(:space_member, :space, name: "Goal Space Member", permissions: :view_access)
+        |> Factory.add_company_member(:goal_member, name: "Goal Champion")
+        |> Factory.add_goal(:goal, :space,
+          champion: :goal_member,
+          reviewer: :goal_member,
+          company_access: Binding.no_access(),
+          space_access: Binding.no_access()
+        )
+        |> Factory.add_resource_hub(:hub, :goal, :creator)
+
+      assert {200, res} = query(ctx.conn, [:people, :search], %{
+        query: "Goal",
+        search_scope_type: "resource_hub",
+        search_scope_id: Paths.resource_hub_id(ctx.hub)
+      })
+
+      assert res == %{people: [serialized(ctx.goal_member)]}
+      refute serialized(ctx.space_member) in res.people
+    end
   end
 
   def serialized(person) do

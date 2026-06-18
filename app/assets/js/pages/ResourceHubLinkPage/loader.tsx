@@ -18,6 +18,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeReactions: true,
       includePathToLink: true,
       includeResourceHub: true,
+      includeGoal: true,
       includeSpace: true,
       includeProject: true,
       includeUnreadNotifications: true,
