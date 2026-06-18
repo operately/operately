@@ -181,7 +181,7 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
 
     test "include_resource_hub", ctx do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
-      resource_hub = resource_hub_fixture(ctx.person, goal)
+      resource_hub = default_resource_hub_for_goal(goal)
 
       assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       refute res.goal.resource_hub

@@ -50,6 +50,24 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     |> UI.assert_text(name)
   end
 
+  step :assert_goal_docs_and_files_tab_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "tab-docs & files")
+  end
+
+  step :open_goal_docs_and_files, ctx do
+    ctx
+    |> UI.click_link("Docs & Files")
+    |> UI.assert_has(testid: "docs-and-files-tab")
+    |> UI.assert_text("Documents & Files")
+  end
+
+  step :assert_goal_docs_and_files_empty_state, ctx do
+    ctx
+    |> UI.assert_text("Ready for your first document")
+    |> UI.assert_text("Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started.")
+  end
+
   step :assert_subgoal_form_title_and_subtitle, ctx do
     ctx
     |> UI.assert_has(testid: "goal-add-page")

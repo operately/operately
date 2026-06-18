@@ -49,8 +49,17 @@ defmodule Operately.Support.Features.GoalSteps do
     UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
   end
 
+  step :given_legacy_goal_without_docs_and_files, ctx do
+    ctx.goal
+    |> Operately.Repo.preload(:resource_hub)
+    |> Map.fetch!(:resource_hub)
+    |> Operately.Repo.delete!()
+
+    ctx
+  end
+
   step :given_goal_docs_and_files_exist, ctx do
-    ctx = Factory.add_resource_hub(ctx, :resource_hub, :goal, :champion, name: "Documents & Files")
+    ctx = Factory.fetch_default_goal_resource_hub(ctx, :resource_hub, :goal)
     resource_hub = ctx.resource_hub
 
     document_name = "Goal Brief"
