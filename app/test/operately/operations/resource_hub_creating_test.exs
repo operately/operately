@@ -83,6 +83,9 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
   end
 
   test "ResourceHubCreating operation assigns the goal context for goal-backed hubs", ctx do
+    [default_hub] = ResourceHubs.list_resource_hubs(ctx.goal)
+    Repo.delete!(default_hub)
+
     {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.goal, @attrs)
 
     activity = get_activity(resource_hub)

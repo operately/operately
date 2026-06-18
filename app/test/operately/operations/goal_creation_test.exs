@@ -11,6 +11,7 @@ defmodule Operately.Operations.GoalCreationTest do
   alias Operately.Access.Binding
   alias Operately.Goals
   alias Operately.Activities.Activity
+  alias Operately.ResourceHubs
 
   @target_attrs %{ name: "First response time", from: 30, to: 15, unit: "minutes", index: 0 }
 
@@ -43,6 +44,14 @@ defmodule Operately.Operations.GoalCreationTest do
 
     assert Goals.list_goals() == [goal]
     assert Access.get_context(goal_id: goal.id)
+  end
+
+  test "GoalCreation operation creates a default goal-backed resource hub", ctx do
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
+    goal_id = goal.id
+
+    assert [%{goal_id: ^goal_id, project_id: nil, space_id: nil, name: "Documents & Files"}] =
+             ResourceHubs.list_resource_hubs(goal)
   end
 
   test "GoalCreation operation creates targets", ctx do
@@ -173,8 +182,10 @@ defmodule Operately.Operations.GoalCreationTest do
     end)
 
     activity = from(a in Activity, where: a.action == "goal_created" and a.content["goal_id"] == ^goal.id) |> Repo.one()
+    resource_hub_activities = from(a in Activity, where: a.action == "resource_hub_created" and a.content["goal_id"] == ^goal.id) |> Repo.all()
 
     assert activity
+    assert resource_hub_activities == []
     assert 0 == notifications_count()
 
     perform_job(activity.id)

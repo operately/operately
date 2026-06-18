@@ -198,7 +198,14 @@ defmodule OperatelyWeb.Api.Goals.CreateTest do
 
   defp assert_goal_created(res) do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.goal.id)
-    assert Operately.Goals.get_goal!(id)
+    goal = Operately.Goals.get_goal!(id) |> Operately.Repo.preload(:resource_hub)
+
+    assert goal
+    assert goal.resource_hub
+    assert goal.resource_hub.goal_id == goal.id
+    assert goal.resource_hub.project_id == nil
+    assert goal.resource_hub.space_id == nil
+    assert goal.resource_hub.name == "Documents & Files"
   end
 
   #

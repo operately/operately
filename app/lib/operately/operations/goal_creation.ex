@@ -5,10 +5,12 @@ defmodule Operately.Operations.GoalCreation do
   alias Operately.Activities
   alias Operately.Access
   alias Operately.Access.{Context, Binding}
+  alias Operately.ResourceHubs.ResourceHub
 
   def run(creator, attrs) do
     Multi.new()
     |> insert_goal(creator, attrs)
+    |> insert_default_resource_hub()
     |> insert_context()
     |> insert_targets(attrs[:targets] || [])
     |> insert_bindings(creator, attrs)
@@ -40,6 +42,15 @@ defmodule Operately.Operations.GoalCreation do
     Multi.insert(multi, :context, fn changes ->
       Context.changeset(%{
         goal_id: changes.goal.id
+      })
+    end)
+  end
+
+  defp insert_default_resource_hub(multi) do
+    Multi.insert(multi, :resource_hub, fn changes ->
+      ResourceHub.changeset(%{
+        goal_id: changes.goal.id,
+        name: "Documents & Files",
       })
     end)
   end
