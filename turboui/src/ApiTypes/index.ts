@@ -1308,6 +1308,7 @@ export interface Goal {
   closedBy?: Person | null;
   targets?: Target[] | null;
   projects?: Project[] | null;
+  resourceHub?: ResourceHub | null;
   parentGoal?: Goal | null;
   progressPercentage?: number | null;
   lastCheckInId?: Id | null;
@@ -1673,6 +1674,7 @@ export interface ResourceHub {
   description?: string | null;
   space?: Space | null;
   project?: Project | null;
+  goal?: Goal | null;
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;

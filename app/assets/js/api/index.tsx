@@ -1422,6 +1422,7 @@ export interface Goal {
   closedBy?: Person | null;
   targets?: Target[] | null;
   projects?: Project[] | null;
+  resourceHub?: ResourceHub | null;
   parentGoal?: Goal | null;
   progressPercentage?: number | null;
   lastCheckInId?: Id | null;
@@ -1787,6 +1788,7 @@ export interface ResourceHub {
   description?: string | null;
   space?: Space | null;
   project?: Project | null;
+  goal?: Goal | null;
   nodes?: ResourceHubNode[] | null;
   potentialSubscribers?: Subscriber[] | null;
   permissions?: ResourceHubPermissions | null;
@@ -2740,6 +2742,7 @@ export interface DocumentsGetInput {
   includeAuthor?: boolean | null;
   includeSpace?: boolean | null;
   includeProject?: boolean | null;
+  includeGoal?: boolean | null;
   includeResourceHub?: boolean | null;
   includeParentFolder?: boolean | null;
   includeReactions?: boolean | null;
@@ -2757,6 +2760,7 @@ export interface DocumentsGetResult {
 export interface FilesGetInput {
   id: Id;
   includeAuthor?: boolean;
+  includeGoal?: boolean;
   includeResourceHub?: boolean;
   includeSpace?: boolean;
   includeProject?: boolean;
@@ -2788,6 +2792,7 @@ export interface GoalsGetInput {
   includeReviewer?: boolean | null;
   includeSpace?: boolean | null;
   includeSpaceMembers?: boolean | null;
+  includeResourceHub?: boolean | null;
   includeAccessLevels?: boolean | null;
   includePrivacy?: boolean | null;
   includePotentialSubscribers?: boolean | null;
@@ -2909,6 +2914,7 @@ export interface LinksGetInput {
   includeAuthor?: boolean;
   includeSpace?: boolean;
   includeProject?: boolean;
+  includeGoal?: boolean;
   includeResourceHub?: boolean;
   includeParentFolder?: boolean;
   includeReactions?: boolean;
@@ -3248,6 +3254,7 @@ export interface ResourceHubsGetInput {
   id: Id;
   includeSpace?: boolean | null;
   includeProject?: boolean | null;
+  includeGoal?: boolean | null;
   includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includePermissions?: boolean | null;
@@ -3263,6 +3270,7 @@ export interface ResourceHubsGetFolderInput {
   includeResourceHub?: boolean;
   includeSpace?: boolean;
   includeProject?: boolean;
+  includeGoal?: boolean;
   includePathToFolder?: boolean;
   includePermissions?: boolean;
   includePotentialSubscribers?: boolean;

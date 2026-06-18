@@ -58,7 +58,6 @@ export interface CatalogEndpoint {
 export interface Catalog {
   schema_version: number;
   api_base_path: string;
-  generated_at: string;
   endpoint_count: number;
   query_count: number;
   mutation_count: number;

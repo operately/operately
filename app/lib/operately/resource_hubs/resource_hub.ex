@@ -8,6 +8,7 @@ defmodule Operately.ResourceHubs.ResourceHub do
   schema "resource_hubs" do
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
+    belongs_to :goal, Operately.Goals.Goal
 
     has_many :nodes, Operately.ResourceHubs.Node, foreign_key: :resource_hub_id
 
@@ -29,9 +30,9 @@ defmodule Operately.ResourceHubs.ResourceHub do
 
   def changeset(resource_hub, attrs) do
     resource_hub
-    |> cast(attrs, [:space_id, :project_id, :name, :description])
+    |> cast(attrs, [:space_id, :project_id, :goal_id, :name, :description])
     |> validate_required([:name])
-    |> validate_project_or_space()
+    |> validate_parent()
   end
 
   def get(requester, args) do
@@ -46,26 +47,26 @@ defmodule Operately.ResourceHubs.ResourceHub do
     end
   end
 
-  defp validate_project_or_space(changeset) do
+  defp validate_parent(changeset) do
     project_id = Ecto.Changeset.get_field(changeset, :project_id)
     space_id = Ecto.Changeset.get_field(changeset, :space_id)
+    goal_id = Ecto.Changeset.get_field(changeset, :goal_id)
 
-    case {project_id, space_id} do
-      {nil, nil} ->
+    case Enum.count([project_id, space_id, goal_id], &(!is_nil(&1))) do
+      0 ->
         changeset
-        |> Ecto.Changeset.add_error(:project_id, "either project_id or space_id must be present")
-        |> Ecto.Changeset.add_error(:space_id, "either project_id or space_id must be present")
+        |> Ecto.Changeset.add_error(:project_id, "exactly one of project_id, space_id, or goal_id must be present")
+        |> Ecto.Changeset.add_error(:space_id, "exactly one of project_id, space_id, or goal_id must be present")
+        |> Ecto.Changeset.add_error(:goal_id, "exactly one of project_id, space_id, or goal_id must be present")
 
-      {nil, _space_id} ->
-        changeset
-
-      {_project_id, nil} ->
+      1 ->
         changeset
 
-      {_project_id, _space_id} ->
+      _ ->
         changeset
-        |> Ecto.Changeset.add_error(:project_id, "cannot have both project_id and space_id")
-        |> Ecto.Changeset.add_error(:space_id, "cannot have both project_id and space_id")
+        |> Ecto.Changeset.add_error(:project_id, "only one of project_id, space_id, or goal_id can be present")
+        |> Ecto.Changeset.add_error(:space_id, "only one of project_id, space_id, or goal_id can be present")
+        |> Ecto.Changeset.add_error(:goal_id, "only one of project_id, space_id, or goal_id can be present")
     end
   end
 

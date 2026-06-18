@@ -3,7 +3,6 @@ import type { Catalog } from "../../types/catalog";
 export const fixtureCatalog: Catalog = {
   schema_version: 1,
   api_base_path: "/api/external/v1",
-  generated_at: "2026-01-01T00:00:00Z",
   endpoint_count: 7,
   query_count: 2,
   mutation_count: 5,

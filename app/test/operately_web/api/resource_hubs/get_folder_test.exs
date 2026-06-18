@@ -67,12 +67,16 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
+      |> Factory.add_goal(:goal, :space)
       |> Factory.add_resource_hub(:hub, :space, :creator)
       |> Factory.add_resource_hub(:project_hub, :project, :creator)
+      |> Factory.add_resource_hub(:goal_hub, :goal, :creator)
       |> Factory.add_folder(:folder1, :hub)
       |> Factory.preload(:folder1, :node)
       |> Factory.add_folder(:project_folder, :project_hub)
       |> Factory.preload(:project_folder, :node)
+      |> Factory.add_folder(:goal_folder, :goal_hub)
+      |> Factory.preload(:goal_folder, :node)
       |> Factory.add_document(:doc1, :hub, folder: :folder1)
       |> Factory.add_document(:doc2, :hub, folder: :folder1)
       |> Factory.add_folder(:folder2, :hub)
@@ -159,6 +163,17 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
 
       assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.project_hub)
       assert res.folder.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
+    test "include_goal returns the goal-backed hub data", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :get_folder], %{
+                 id: Paths.folder_id(ctx.goal_folder),
+                 include_goal: true
+               })
+
+      assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.goal_hub)
+      assert res.folder.resource_hub.goal == Serializer.serialize(ctx.goal, level: :essential)
     end
 
     test "include_path_to_folder", ctx do

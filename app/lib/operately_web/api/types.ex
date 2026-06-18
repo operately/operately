@@ -1316,6 +1316,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
     field? :space, :space, null: true
     field? :project, :project, null: true
+    field? :goal, :goal, null: true
     field? :nodes, list_of(:resource_hub_node), null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :permissions, :resource_hub_permissions, null: true
@@ -1679,6 +1680,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :closed_by, :person, null: true
     field? :targets, list_of(:target), null: true
     field? :projects, list_of(:project), null: true
+    field? :resource_hub, :resource_hub, null: true
     field? :parent_goal, :goal, null: true
     field? :progress_percentage, :float, null: true
     field? :last_check_in_id, :id, null: true

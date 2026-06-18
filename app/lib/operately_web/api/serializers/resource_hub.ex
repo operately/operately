@@ -6,6 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.ResourceHub d
       description: Jason.encode!(resource_hub.description),
       space: OperatelyWeb.Api.Serializer.serialize(resource_hub.space),
       project: OperatelyWeb.Api.Serializer.serialize(resource_hub.project),
+      goal: OperatelyWeb.Api.Serializer.serialize(resource_hub.goal),
       nodes: OperatelyWeb.Api.Serializer.serialize(resource_hub.nodes),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(resource_hub.potential_subscribers),
       permissions: OperatelyWeb.Api.Serializer.serialize(resource_hub.permissions),
