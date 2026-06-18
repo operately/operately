@@ -1,14 +1,13 @@
 import React from "react";
 
 import { ProjectPageLayout } from "../ProjectPageLayout";
-import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
 
+import { PageDocsAndFilesTab, type PageDocsAndFiles } from "../DocsAndFiles/PageDocsAndFiles";
 import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
-import type { AddFileWidgetProps, AddFolderModalProps, NewFileModalsContextValue, ResourceHub, ResourceHubNode } from "../ResourceHub";
 import { BadgeStatus } from "../StatusBadge/types";
 import { PersonField } from "../PersonField";
 import { useTabs } from "../Tabs";
@@ -16,7 +15,6 @@ import * as TaskBoardTypes from "../TaskBoard/types";
 import type { KanbanBoardProps, KanbanState } from "../TaskBoard/KanbanView/types";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
-import { DocsAndFilesTab } from "./DocsAndFiles";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
@@ -95,20 +93,7 @@ export namespace ProjectPage {
         homeLink: string;
       };
 
-  export interface DocsAndFiles {
-    resourceHub: ResourceHub;
-    previewNodes: ResourceHubNode[];
-    tabPath: string;
-    drafts: {
-      nodes: ResourceHubNode[];
-      draftsPath: string;
-      getDraftEditPath: (node: ResourceHubNode) => string | undefined;
-    };
-    newFileModals: NewFileModalsContextValue;
-    addFileWidgetProps: Pick<AddFileWidgetProps, "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload">;
-    nodesListProps: SharedListPageProps["nodesListProps"];
-    addFolderModalProps: AddFolderModalProps;
-  }
+  export type DocsAndFiles = PageDocsAndFiles;
 
   interface CommonProps {
     closeLink: string;
@@ -284,7 +269,7 @@ export function ProjectPage(props: ProjectPage.Props) {
         {activeTab === "tasks" && <TasksSection state={state} />}
         {activeTab === "check-ins" && <CheckIns {...state} />}
         {activeTab === "discussions" && <Discussions {...state} />}
-        {activeTab === "docs-and-files" && state.docsAndFiles && <DocsAndFilesTab docsAndFiles={state.docsAndFiles} />}
+        {activeTab === "docs-and-files" && state.docsAndFiles && <PageDocsAndFilesTab docsAndFiles={state.docsAndFiles} />}
         {activeTab === "activity" && <Activity {...state} />}
       </div>
 

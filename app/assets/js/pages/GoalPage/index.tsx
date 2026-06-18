@@ -25,15 +25,29 @@ import { fetchAll } from "../../utils/async";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import {
+  folders,
+  getDraftEditPath,
+  useAddFileWidgetProps,
+  useNewFileModalsContextValue,
+  useResourceHubNodesListProps,
+} from "@/models/resourceHubs";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
+import type * as Hub from "@/models/resourceHubs";
 import { useChecklists } from "./useChecklists";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 export function pageCacheKey(id: string): string {
-  return `v31-GoalPage.goal-${id}`;
+  return `v32-GoalPage.goal-${id}`;
 }
+
+type GoalDocsAndFilesData = {
+  resourceHub: Hub.ResourceHub;
+  nodes: Hub.ResourceHubNode[];
+  draftNodes: Hub.ResourceHubNode[];
+};
 
 type LoaderResult = {
   data: {
@@ -42,6 +56,7 @@ type LoaderResult = {
     checkIns: GoalProgressUpdate[];
     checklist: Goals.Check[];
     discussions: GoalDiscussion[];
+    docsAndFiles: GoalDocsAndFilesData | null;
   };
 
   cacheVersion: number;
@@ -51,8 +66,8 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
-    fetchFn: () =>
-      fetchAll({
+    fetchFn: async () => {
+      const data = await fetchAll({
         goal: getGoal({
           id: params.id,
           includeSpace: true,
@@ -65,19 +80,61 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includePrivacy: true,
           includeRetrospective: true,
           includeChecklist: true,
+          includeResourceHub: true,
         }).then((d) => d.goal),
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap),
         checkIns: Api.goals.listCheckIns({ goalId: params.id }).then((d) => d.checkIns),
         discussions: Api.goals.listDiscussions({ goalId: params.id }).then((d) => d.discussions),
-      }),
+      });
+
+      return {
+        ...data,
+        docsAndFiles: await loadGoalDocsAndFiles(data.goal),
+      };
+    },
   });
+}
+
+async function loadGoalDocsAndFiles(goal: Goal): Promise<GoalDocsAndFilesData | null> {
+  const resourceHubId = goal.resourceHub?.id;
+
+  if (!resourceHubId) {
+    return null;
+  }
+
+  try {
+    const [resourceHub, nodes] = await Promise.all([
+      Api.resource_hubs
+        .get({
+          id: resourceHubId,
+          includeGoal: true,
+          includeSpace: true,
+          includePermissions: true,
+          includePotentialSubscribers: true,
+        })
+        .then((res) => res.resourceHub!),
+      Api.resource_hubs.listNodes({
+        resourceHubId,
+        includeCommentsCount: true,
+        includeChildrenCount: true,
+      }),
+    ]);
+
+    return {
+      resourceHub,
+      nodes: nodes.nodes || [],
+      draftNodes: nodes.draftNodes || [],
+    };
+  } catch {
+    return null;
+  }
 }
 
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const { data, refresh } = PageCache.useData(loader);
-  const { goal, workMap, checkIns, discussions } = data;
+  const { goal, workMap, checkIns, discussions, docsAndFiles } = data;
   const currentUser = useMe();
 
   assertPresent(goal.privacy);
@@ -181,6 +238,7 @@ function Page() {
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
 
   const checklists = useChecklists({ goalId: goal.id, initialChecklist: goal.checklist || [] });
+  const goalDocsAndFilesProps = useGoalDocsAndFilesProps({ docsAndFiles, goalId: goal.id, onRefresh: refresh });
 
   const initialTargets = React.useMemo(() => prepareTargets(goal.targets), [goal.targets]);
 
@@ -269,6 +327,7 @@ function Page() {
     targets,
     checkIns: prepareCheckIns(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
+    docsAndFiles: goalDocsAndFilesProps,
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
@@ -293,6 +352,66 @@ function Page() {
   };
 
   return <GoalPage key={goal.id} {...props} />;
+}
+
+function useGoalDocsAndFilesProps({
+  docsAndFiles,
+  goalId,
+  onRefresh,
+}: {
+  docsAndFiles: GoalDocsAndFilesData | null;
+  goalId: string;
+  onRefresh?: () => Promise<void>;
+}): GoalPage.Props["docsAndFiles"] {
+  const paths = usePaths();
+  const resourceHub = docsAndFiles?.resourceHub;
+  const refresh = React.useCallback(() => {
+    void onRefresh?.();
+  }, [onRefresh]);
+  const newFileModals = useNewFileModalsContextValue({ resourceHub });
+  const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
+  const [createFolder] = folders.useCreate();
+  const nodesListProps = useResourceHubNodesListProps(
+    resourceHub
+      ? {
+          resourceHub,
+          type: "resource_hub",
+          nodes: docsAndFiles?.nodes || [],
+          refetch: refresh,
+        }
+      : null,
+  );
+
+  return React.useMemo(() => {
+    if (!docsAndFiles || !resourceHub?.id) {
+      return undefined;
+    }
+
+    return {
+      resourceHub,
+      previewNodes: docsAndFiles.nodes,
+      tabPath: paths.goalPath(goalId, { tab: "docs-and-files" }),
+      drafts: {
+        nodes: docsAndFiles.draftNodes,
+        draftsPath: paths.resourceHubDraftsPath(resourceHub.id),
+        getDraftEditPath: (node) => getDraftEditPath(paths, node),
+      },
+      newFileModals,
+      addFileWidgetProps,
+      nodesListProps,
+      addFolderModalProps: {
+        resourceHubId: resourceHub.id,
+        onCreated: refresh,
+        onCreateFolder: async (args) => {
+          await createFolder({
+            resourceHubId: args.resourceHubId,
+            folderId: args.folderId,
+            name: args.name,
+          });
+        },
+      },
+    };
+  }, [addFileWidgetProps, createFolder, docsAndFiles, goalId, newFileModals, nodesListProps, paths, refresh, resourceHub]);
 }
 
 function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage.Props["checkIns"] {

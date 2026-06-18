@@ -3,6 +3,7 @@ import type { Checklist } from "../Checklist";
 import type { GoalTargetList } from "../GoalTargetList";
 import type { MiniWorkMap } from "../MiniWorkMap";
 
+import { PageDocsAndFilesTab, type PageDocsAndFiles } from "../DocsAndFiles/PageDocsAndFiles";
 import { PageNew } from "../Page";
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons";
 
@@ -127,6 +128,7 @@ export namespace GoalPage {
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
     discussions: Discussion[];
+    docsAndFiles?: PageDocsAndFiles;
     currentUser?: Person | null;
     status: BadgeStatus;
     state: "active" | "closed";
@@ -209,8 +211,10 @@ export function GoalPage(props: GoalPage.Props) {
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
     { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.checkIns.length },
     { id: "discussions", label: "Discussions", icon: <IconMessages size={14} />, count: props.discussions.length },
+    { id: "docs-and-files", label: "Docs & Files", icon: <IconClipboardText size={14} />, hidden: !state.docsAndFiles },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
+  const activeTab = !state.docsAndFiles && tabs.active === "docs-and-files" ? "overview" : tabs.active;
 
   return (
     <>
@@ -226,10 +230,11 @@ export function GoalPage(props: GoalPage.Props) {
         <Tabs tabs={tabs} />
 
         <div className="flex-1 overflow-auto">
-          {tabs.active === "overview" && <Overview {...state} />}
-          {tabs.active === "check-ins" && <CheckIns {...state} />}
-          {tabs.active === "discussions" && <Discussions {...state} />}
-          {tabs.active === "activity" && <Activity {...state} />}
+          {activeTab === "overview" && <Overview {...state} />}
+          {activeTab === "check-ins" && <CheckIns {...state} />}
+          {activeTab === "discussions" && <Discussions {...state} />}
+          {activeTab === "docs-and-files" && state.docsAndFiles && <PageDocsAndFilesTab docsAndFiles={state.docsAndFiles} />}
+          {activeTab === "activity" && <Activity {...state} />}
         </div>
 
         <DeleteModal {...state} />

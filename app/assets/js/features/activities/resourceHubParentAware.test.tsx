@@ -13,7 +13,7 @@ jest.mock("turboui", () => ({
 
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({
-    goalPath: (id: string) => `/goals/${id}`,
+    goalPath: (id: string, params?: { tab?: string }) => `/goals/${id}${params?.tab ? `?tab=${params.tab}` : ""}`,
     homePath: () => "/home",
     projectPath: (id: string) => `/projects/${id}`,
     resourceHubDocumentPath: (id: string) => `/documents/${id}`,
@@ -73,7 +73,7 @@ describe("resource hub activity parent-aware rendering", () => {
 
     const html = renderToStaticMarkup(<>{ResourceHubDocumentCommented.FeedItemTitle({ activity, page: "feed" })}</>);
 
-    expect(html).toContain('href="/goals/goal-1"');
+    expect(html).toContain('href="/goals/goal-1?tab=docs-and-files"');
     expect(html).toContain(">Company Goal</a> goal");
     expect(html).not.toContain(">General</a> space");
   });
@@ -89,7 +89,7 @@ describe("resource hub activity parent-aware rendering", () => {
 
     const html = renderToStaticMarkup(<>{ResourceHubDocumentCreated.FeedItemTitle({ activity, page: "goal" })}</>);
 
-    expect(html).not.toContain('href="/goals/goal-1"');
+    expect(html).not.toContain('href="/goals/goal-1?tab=docs-and-files"');
     expect(html).not.toContain("in the");
   });
 
@@ -158,7 +158,7 @@ describe("resource hub activity parent-aware rendering", () => {
 
     const html = renderToStaticMarkup(<>{ResourceHubFileCreated.FeedItemTitle({ activity, page: "feed" })}</>);
 
-    expect(html).toContain('href="/goals/goal-1"');
+    expect(html).toContain('href="/goals/goal-1?tab=docs-and-files"');
     expect(html).toContain(">Company Goal</a> goal");
     expect(html).not.toContain(">General</a> space");
   });
@@ -211,7 +211,7 @@ describe("resource hub activity parent-aware rendering", () => {
 
     const html = renderToStaticMarkup(<>{ResourceHubLinkCreated.FeedItemTitle({ activity, page: "feed" })}</>);
 
-    expect(html).toContain('href="/goals/goal-1"');
+    expect(html).toContain('href="/goals/goal-1?tab=docs-and-files"');
     expect(html).toContain(">Company Goal</a> goal");
     expect(html).not.toContain(">General</a> space");
   });

@@ -4,6 +4,14 @@ import { GoalPage } from ".";
 import { DateField } from "../DateField";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { PrivacyField } from "../PrivacyField";
+import {
+  createMockDocumentNode,
+  createMockDraftNode,
+  createMockFileNode,
+  createMockFolderNode,
+  createMockResourceHub,
+  useMockSharedListPageProps,
+} from "../ResourceHubPage/mockData";
 import { genPeople, genPerson } from "../utils/storybook/genPeople";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
@@ -501,6 +509,145 @@ const description: any = {
   ],
 };
 
+function GoalPageDocsAndFilesStory({ includeDrafts = true }: { includeDrafts?: boolean }) {
+  const docsAndFiles = useMockGoalDocsAndFiles("goal-1", "Launch AI Platform", { includeDrafts });
+
+  return (
+    <Component
+      description={description}
+      champion={genPerson()}
+      reviewer={genPerson()}
+      checkIns={mockCheckIns}
+      targets={mockTargets}
+      checklistItems={mockChecklistItems}
+      discussions={mockDiscussions}
+      contributors={contributors}
+      relatedWorkItems={mockRelatedWorkItems}
+      docsAndFiles={docsAndFiles}
+    />
+  );
+}
+
+function useMockGoalDocsAndFiles(
+  goalId: string,
+  goalName: string,
+  { includeDrafts = true }: { includeDrafts?: boolean } = {},
+): NonNullable<GoalPage.Props["docsAndFiles"]> {
+  const resourceHub = React.useMemo(
+    () =>
+      createMockResourceHub({
+        id: "goal-hub-1",
+        name: "Documents & Files",
+        goal: { id: goalId, name: goalName } as never,
+        project: undefined,
+        space: undefined,
+      }),
+    [goalId, goalName],
+  );
+
+  const nodes = React.useMemo(
+    () => [
+      createMockFolderNode({
+        id: "node-folder-launch-assets",
+        name: "Launch Assets",
+        folder: {
+          id: "folder-launch-assets",
+          resourceHubId: resourceHub.id,
+          resourceHub,
+          pathToFolder: [],
+        },
+      }),
+      createMockDocumentNode({
+        id: "node-doc-narrative",
+        name: "Launch Narrative",
+        updatedAt: "2026-06-16T12:00:00Z",
+        document: {
+          id: "document-launch-narrative",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+          commentsCount: 4,
+        },
+      }),
+      createMockFileNode({
+        id: "node-file-analysis",
+        name: "Market Analysis",
+        updatedAt: "2026-06-15T12:00:00Z",
+        file: {
+          id: "file-market-analysis",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+          blob: {
+            id: "blob-market-analysis",
+            url: "/market-analysis.pdf",
+            contentType: "application/pdf",
+          } as any,
+        },
+      }),
+      createMockDocumentNode({
+        id: "node-doc-checklist",
+        name: "Rollout Checklist",
+        updatedAt: "2026-06-14T12:00:00Z",
+        document: {
+          id: "document-rollout-checklist",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+          commentsCount: 2,
+        },
+      }),
+      createMockFileNode({
+        id: "node-file-partner-brief",
+        name: "Partner Brief",
+        updatedAt: "2026-06-13T12:00:00Z",
+        file: {
+          id: "file-partner-brief",
+          resourceHubId: resourceHub.id,
+          parentFolderId: undefined,
+        },
+      }),
+    ],
+    [resourceHub],
+  );
+
+  const draftNodes = React.useMemo(
+    () =>
+      includeDrafts
+        ? [
+            createMockDraftNode({
+              id: "node-draft-kickoff-plan",
+              name: "Kickoff Plan Draft",
+              document: {
+                id: "document-kickoff-plan-draft",
+                resourceHubId: resourceHub.id,
+                parentFolderId: undefined,
+              },
+            }),
+          ]
+        : [],
+    [includeDrafts, resourceHub],
+  );
+
+  const sharedListProps = useMockSharedListPageProps({
+    parent: resourceHub,
+    parentType: "resource_hub",
+    nodes,
+  });
+
+  return {
+    resourceHub,
+    previewNodes: nodes,
+    tabPath: `/goals/${goalId}?tab=docs-and-files`,
+    drafts: {
+      nodes: draftNodes,
+      draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
+      getDraftEditPath: (node) => (node.document?.id ? `/resource-hub/documents/${node.document.id}/edit` : undefined),
+    },
+    newFileModals: sharedListProps.newFileModals,
+    addFileWidgetProps: sharedListProps.addFileWidgetProps,
+    nodesListProps: sharedListProps.nodesListProps,
+    addFolderModalProps: sharedListProps.addFolderModalProps,
+  };
+}
+
 export const Default: Story = {
   args: {
     description: description,
@@ -677,4 +824,24 @@ export const MoveGoal: Story = {
   args: {
     moveModalOpen: true,
   },
+};
+
+export const WithDocsAndFiles: Story = {
+  parameters: {
+    reactRouter: {
+      path: "/goals/goal-1?tab=docs-and-files",
+      routePath: "/goals/:id",
+    },
+  },
+  render: () => <GoalPageDocsAndFilesStory />,
+};
+
+export const WithDocsAndFilesNoOpenDrafts: Story = {
+  parameters: {
+    reactRouter: {
+      path: "/goals/goal-1?tab=docs-and-files",
+      routePath: "/goals/:id",
+    },
+  },
+  render: () => <GoalPageDocsAndFilesStory includeDrafts={false} />,
 };

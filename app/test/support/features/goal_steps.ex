@@ -12,6 +12,7 @@ defmodule Operately.Support.Features.GoalSteps do
   alias Wallaby.QueryError
 
   import Phoenix.ConnTest
+  import Operately.ResourceHubsFixtures
 
   def setup(ctx) do
     ctx
@@ -46,6 +47,130 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :visit_goal, ctx do
     UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :given_goal_docs_and_files_exist, ctx do
+    ctx = Factory.add_resource_hub(ctx, :resource_hub, :goal, :champion, name: "Documents & Files")
+    resource_hub = ctx.resource_hub
+
+    document_name = "Goal Brief"
+    file_name = "Goal Checklist"
+    link_name = "Goal Tracker"
+    folder_name = "Goal Folder"
+    folder_document_name = "Folder Notes"
+
+    document =
+      document_fixture(resource_hub.id, ctx.champion.id, %{
+        name: document_name,
+      })
+
+    file =
+      file_fixture(resource_hub, ctx.champion,
+        name: file_name,
+        blob_attrs: %{content_type: "text/plain", filename: "goal-checklist.txt"}
+      )
+
+    link =
+      link_fixture(resource_hub, ctx.champion, %{
+        name: link_name,
+      })
+
+    folder =
+      folder_fixture(resource_hub.id, %{
+        name: folder_name,
+      })
+
+    folder_document =
+      document_fixture(resource_hub.id, ctx.champion.id, %{
+        parent_folder_id: folder.id,
+        name: folder_document_name,
+      })
+
+    ctx
+    |> Map.put(:resource_hub, resource_hub)
+    |> Map.put(:goal_document, document)
+    |> Map.put(:goal_file, file)
+    |> Map.put(:goal_link, link)
+    |> Map.put(:goal_folder, folder)
+    |> Map.put(:goal_folder_document, folder_document)
+    |> Map.put(:goal_document_name, document_name)
+    |> Map.put(:goal_file_name, file_name)
+    |> Map.put(:goal_link_name, link_name)
+    |> Map.put(:goal_folder_name, folder_name)
+    |> Map.put(:goal_folder_document_name, folder_document_name)
+  end
+
+  step :open_goal_docs_and_files, ctx do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_has(testid: "tab-docs & files")
+    |> UI.click_link("Docs & Files")
+    |> assert_goal_docs_and_files_open()
+  end
+
+  step :assert_goal_docs_and_files_open, ctx do
+    ctx
+    |> UI.assert_location(Paths.goal_path(ctx.company, ctx.goal, tab: "docs-and-files"))
+    |> UI.assert_has(testid: "docs-and-files-tab")
+    |> UI.assert_text("Documents & Files")
+    |> UI.refute_text("Goal description")
+  end
+
+  step :assert_goal_docs_and_files_node_visible, ctx, name: name do
+    ctx
+    |> UI.assert_text(name)
+  end
+
+  step :assert_goal_docs_and_files_preview_visible, ctx, name: name do
+    ctx
+    |> UI.assert_has(testid: "tab-docs & files")
+    |> UI.assert_has(testid: "docs-and-files-preview")
+    |> UI.assert_text(name)
+  end
+
+  step :assert_goal_docs_and_files_hidden, ctx do
+    ctx
+    |> UI.refute_has(testid: "tab-docs & files")
+    |> UI.refute_has(testid: "docs-and-files-preview")
+  end
+
+  step :open_goal_docs_and_files_node, ctx, name: name do
+    ctx
+    |> UI.assert_text(name)
+    |> UI.click_link(name)
+  end
+
+  step :assert_goal_document_page_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.document_path(ctx.company, ctx.goal_document))
+    |> UI.assert_text(ctx.goal_document_name)
+  end
+
+  step :assert_goal_file_page_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.file_path(ctx.company, ctx.goal_file))
+    |> UI.assert_text(ctx.goal_file_name)
+  end
+
+  step :assert_goal_link_page_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.link_path(ctx.company, ctx.goal_link))
+    |> UI.assert_text(ctx.goal_link_name)
+  end
+
+  step :assert_goal_folder_page_open, ctx do
+    ctx
+    |> UI.assert_page(Paths.folder_path(ctx.company, ctx.goal_folder))
+    |> UI.assert_text(ctx.goal_folder_name)
+    |> UI.assert_text(ctx.goal_folder_document_name)
+  end
+
+  step :navigate_back_to_goal_docs_and_files, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "navigation"), fn el ->
+      UI.click_link(el, ctx.goal.name)
+    end)
+    |> assert_goal_docs_and_files_open()
   end
 
   step :assert_logged_in_member_has_view_access, ctx do
