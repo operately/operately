@@ -62,11 +62,14 @@ defmodule OperatelyWeb.Api.Links.GetTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
+      |> Factory.add_goal(:goal, :space)
       |> Factory.add_resource_hub(:hub, :space, :creator)
       |> Factory.add_resource_hub(:project_hub, :project, :creator)
+      |> Factory.add_resource_hub(:goal_hub, :goal, :creator)
       |> Factory.add_folder(:folder, :hub)
       |> Factory.add_link(:link, :hub, folder: :folder)
       |> Factory.add_link(:project_link, :project_hub)
+      |> Factory.add_link(:goal_link, :goal_hub)
       |> Factory.preload(:link, :node)
     end
 
@@ -230,6 +233,17 @@ defmodule OperatelyWeb.Api.Links.GetTest do
 
       assert res.link.resource_hub.id == Paths.resource_hub_id(ctx.project_hub)
       assert res.link.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
+    test "include_goal returns the goal-backed hub data", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:links, :get], %{
+                 id: Paths.link_id(ctx.goal_link),
+                 include_goal: true
+               })
+
+      assert res.link.resource_hub.id == Paths.resource_hub_id(ctx.goal_hub)
+      assert res.link.resource_hub.goal == Serializer.serialize(ctx.goal, level: :essential)
     end
   end
 

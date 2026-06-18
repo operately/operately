@@ -63,8 +63,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
       |> Factory.add_space(:space2)
+      |> Factory.add_goal(:goal, :space)
       |> Factory.fetch_default_resource_hub(:hub1, :space)
       |> Factory.fetch_default_resource_hub(:hub2, :space2)
+      |> Factory.add_resource_hub(:goal_hub, :goal, :creator)
       |> Factory.add_folder(:folder1, :hub1)
       |> Factory.add_folder(:folder2, :hub1)
       |> Factory.add_folder(:folder3, :hub1)
@@ -127,6 +129,19 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
                })
 
       assert res.resource_hub.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
+    test "include_goal", ctx do
+      assert {200, res} = query(ctx.conn, [:resource_hubs, :get], %{id: Paths.resource_hub_id(ctx.goal_hub), include_nodes: true})
+      refute res.resource_hub.goal
+
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :get], %{
+                 id: Paths.resource_hub_id(ctx.goal_hub),
+                 include_goal: true
+               })
+
+      assert res.resource_hub.goal == Serializer.serialize(ctx.goal, level: :essential)
     end
   end
 

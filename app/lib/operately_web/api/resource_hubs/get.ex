@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
     field :id, :id, null: false
     field? :include_space, :boolean, null: true
     field? :include_project, :boolean, null: true
+    field? :include_goal, :boolean, null: true
     field? :include_nodes, :boolean, null: true
     field? :include_potential_subscribers, :boolean, null: true
     field? :include_permissions, :boolean, null: true
@@ -50,6 +51,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
     Inputs.parse_includes(inputs, [
       include_space: :space,
       include_project: :project,
+      include_goal: :goal,
       include_nodes: [nodes: q],
     ])
   end
