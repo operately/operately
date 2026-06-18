@@ -5,7 +5,7 @@ import type { ResourceHubNavigationPaths, ResourceHubNodesListPaths } from "turb
 export function resourceHubNavigationPaths(paths: Paths): ResourceHubNavigationPaths {
   return {
     projectPath: (id) => paths.projectPath(id, { tab: "docs-and-files" }),
-    goalPath: (id) => paths.goalPath(id),
+    goalPath: (id) => paths.goalPath(id, { tab: "docs-and-files" }),
     spacePath: (id) => paths.spacePath(id),
     resourceHubPath: (id) => paths.resourceHubPath(id),
     resourceHubFolderPath: (id) => paths.resourceHubFolderPath(id),

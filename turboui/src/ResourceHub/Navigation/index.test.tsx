@@ -19,7 +19,7 @@ import {
 
 const paths = {
   projectPath: (id: string) => `/projects/${id}?tab=docs-and-files`,
-  goalPath: (id: string) => `/goals/${id}`,
+  goalPath: (id: string) => `/goals/${id}?tab=docs-and-files`,
   spacePath: (id: string) => `/spaces/${id}`,
   resourceHubPath: (id: string) => `/resource-hubs/${id}`,
   resourceHubFolderPath: (id: string) => `/folders/${id}`,
@@ -64,7 +64,7 @@ describe("resource hub navigation", () => {
       paths,
     );
 
-    expect(item).toEqual({ to: "/goals/goal-1", label: "Company Goal" });
+    expect(item).toEqual({ to: "/goals/goal-1?tab=docs-and-files", label: "Company Goal" });
   });
 
   test("builds root hub navigation from the parent only", () => {
@@ -92,7 +92,7 @@ describe("resource hub navigation", () => {
         } as any,
         paths,
       ),
-    ).toEqual([{ to: "/goals/goal-1", label: "Company Goal" }]);
+    ).toEqual([{ to: "/goals/goal-1?tab=docs-and-files", label: "Company Goal" }]);
   });
 
   test("builds drafts navigation with the parent and hub", () => {
@@ -177,7 +177,7 @@ describe("resource hub navigation", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "Company Goal" })).toHaveAttribute("href", "/goals/goal-1");
+    expect(screen.getByRole("link", { name: "Company Goal" })).toHaveAttribute("href", "/goals/goal-1?tab=docs-and-files");
     expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/resource-hubs/hub-1");
     expect(screen.getByRole("link", { name: "Specs" })).toHaveAttribute("href", "/folders/folder-1");
   });

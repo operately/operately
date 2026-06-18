@@ -57,6 +57,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
     nodes =
       from(n in Node,
         left_join: hub in assoc(n, :resource_hub), as: :hub,
+        left_join: goal in assoc(hub, :goal), as: :goal,
         left_join: project in assoc(hub, :project), as: :project,
         left_join: space in assoc(hub, :space), as: :space,
         order_by: [desc: n.inserted_at]
@@ -95,9 +96,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   defp set_folders_children_count(nodes, _), do: nodes
 
   defp filter_by_parent_view_access(query, requester_id) do
-    from([project: project, space: space] in query,
+    from([goal: goal, project: project, space: space] in query,
       join: context in Context,
-      on: context.project_id == project.id or context.group_id == space.id,
+      on: context.goal_id == goal.id or context.project_id == project.id or context.group_id == space.id,
       join: binding in assoc(context, :bindings),
       join: access_group in assoc(binding, :group),
       join: membership in assoc(access_group, :memberships),
