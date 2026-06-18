@@ -49,15 +49,6 @@ defmodule Operately.Support.Features.GoalSteps do
     UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
   end
 
-  step :given_legacy_goal_without_docs_and_files, ctx do
-    ctx.goal
-    |> Operately.Repo.preload(:resource_hub)
-    |> Map.fetch!(:resource_hub)
-    |> Operately.Repo.delete!()
-
-    ctx
-  end
-
   step :given_goal_docs_and_files_exist, ctx do
     ctx = Factory.fetch_default_goal_resource_hub(ctx, :resource_hub, :goal)
     resource_hub = ctx.resource_hub
@@ -137,10 +128,10 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_text(name)
   end
 
-  step :assert_goal_docs_and_files_hidden, ctx do
+  step :assert_goal_docs_and_files_empty_state, ctx do
     ctx
-    |> UI.refute_has(testid: "tab-docs & files")
-    |> UI.refute_has(testid: "docs-and-files-preview")
+    |> UI.assert_text("Ready for your first document")
+    |> UI.assert_text("Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started.")
   end
 
   step :open_goal_docs_and_files_node, ctx, name: name do
