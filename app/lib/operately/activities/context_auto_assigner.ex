@@ -151,7 +151,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in Operately.Goals.goal_actions() -> fetch_goal_context(activity.content)
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
       activity.action in @task_actions -> fetch_project_or_space_context(activity.content)
-      activity.action in @resource_hub_actions -> fetch_project_or_space_context(activity.content)
+      activity.action in @resource_hub_actions -> fetch_resource_hub_context(activity.content)
       activity.action == "comment_added" -> fetch_comment_added_context(activity)
       true ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
@@ -198,6 +198,22 @@ defmodule Operately.Activities.ContextAutoAssigner do
 
       true ->
         raise "Activity content must have either project_id or space_id"
+    end
+  end
+
+  defp fetch_resource_hub_context(content) do
+    cond do
+      Map.get(content, :project_id) != nil ->
+        fetch_project_context(content.project_id)
+
+      Map.get(content, :goal_id) != nil ->
+        fetch_goal_context(content.goal_id)
+
+      Map.get(content, :space_id) != nil ->
+        fetch_space_context_id(content.space_id)
+
+      true ->
+        raise "Resource hub activity content must have either project_id, goal_id, or space_id"
     end
   end
 

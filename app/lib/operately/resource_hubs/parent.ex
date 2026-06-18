@@ -103,11 +103,7 @@ defmodule Operately.ResourceHubs.Parent do
         |> Enum.reject(&is_nil/1)
 
       :goal ->
-        hub.goal
-        |> Subscriber.from_goal()
-        |> Enum.map(& &1.person)
-        |> Enum.reject(&is_nil/1)
-        |> Enum.uniq_by(& &1.id)
+        goal_notification_people(hub.goal)
     end
   end
 
@@ -179,6 +175,22 @@ defmodule Operately.ResourceHubs.Parent do
 
   defp preload_goal(hub, false), do: Repo.preload(hub, [:goal], force: true)
   defp preload_goal(hub, true), do: Repo.preload(hub, [goal: [:champion, :reviewer, group: :members]], force: true)
+
+  defp goal_notification_people(goal) do
+    allowed_ids =
+      goal
+      |> get_access_context()
+      |> Map.fetch!(:id)
+      |> Operately.Access.BindedPeopleLoader.load()
+      |> MapSet.new(& &1.id)
+
+    goal
+    |> Subscriber.from_goal()
+    |> Enum.map(& &1.person)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq_by(& &1.id)
+    |> Enum.filter(&MapSet.member?(allowed_ids, &1.id))
+  end
 
   defp get_space(%ResourceHub{space: %Group{} = space}), do: space
   defp get_space(%ResourceHub{space_id: space_id}), do: Repo.get!(Group, space_id)

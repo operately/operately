@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
   alias Operately.Repo
   alias Operately.Groups
   alias Operately.Access.Binding
+  alias Operately.Operations.ResourceHubDocumentCreating
+  alias Operately.Support.RichText
   alias OperatelyWeb.Paths
   alias Operately.Activities.Activity
   alias Operately.ResourceHubs.Node
@@ -289,6 +291,43 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
       })
 
       assert res.activities == []
+    end
+
+    test "goal-backed resource hub activities serialize the goal parent", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:goal_member)
+        |> Factory.add_goal(:private_goal, :space,
+          champion: :goal_member,
+          reviewer: :goal_member,
+          company_access: Binding.no_access(),
+          space_access: Binding.no_access()
+        )
+        |> Factory.add_resource_hub(:goal_hub, :private_goal, :creator)
+
+      {:ok, document} =
+        ResourceHubDocumentCreating.run(ctx.creator, ctx.goal_hub, %{
+          name: "Goal doc",
+          content: RichText.rich_text("Content"),
+          post_as_draft: false,
+          send_to_everyone: false,
+          subscription_parent_type: :resource_hub_document,
+          subscriber_ids: [],
+        })
+
+      assert document.id
+
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
+        scope_type: :company,
+        scope_id: Paths.company_id(ctx.company),
+        actions: ["resource_hub_document_created"]
+      })
+
+      assert Enum.any?(res.activities, fn activity ->
+               activity.action == "resource_hub_document_created" and
+                 activity.content.goal.id == Paths.goal_id(ctx.private_goal) and
+                 activity.content.project == nil
+             end)
     end
   end
 

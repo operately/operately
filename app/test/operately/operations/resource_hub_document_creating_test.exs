@@ -2,6 +2,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
   use Operately.DataCase
   use Operately.Support.Notifications
 
+  alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Support.RichText
 
@@ -152,6 +153,49 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     assert notifications_count(action: action) == 1
     assert hd(notifications).person_id == ctx.project_contributor.id
     refute Enum.any?(notifications, &(&1.person_id == ctx.space_member.id))
+  end
+
+  test "Creating a document on a goal-backed hub uses the goal context and goal access notifications", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:goal_member, name: "Goal Champion")
+      |> Factory.add_goal(:goal, :space,
+        champion: :goal_member,
+        reviewer: :goal_member,
+        company_access: Binding.no_access(),
+        space_access: Binding.no_access()
+      )
+      |> Factory.add_resource_hub(:goal_hub, :goal, :creator)
+
+    {:ok, document} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.goal_hub, %{
+          name: "Goal document",
+          content: RichText.rich_text("Content"),
+          post_as_draft: false,
+          send_to_everyone: true,
+          subscription_parent_type: :resource_hub_document,
+          subscriber_ids: [],
+        })
+      end)
+
+    action = "resource_hub_document_created"
+    activity =
+      get_activity(document, action)
+      |> Repo.preload(:access_context)
+
+    assert activity.access_context == Access.get_context!(goal_id: ctx.goal.id)
+    assert activity.content["space_id"] == ctx.space.id
+    assert activity.content["project_id"] == nil
+    assert activity.content["goal_id"] == ctx.goal.id
+
+    perform_job(activity.id)
+
+    notifications = fetch_notifications(activity.id, action: action)
+
+    assert notifications_count(action: action) == 1
+    assert hd(notifications).person_id == ctx.goal_member.id
+    refute Enum.any?(notifications, &(&1.person_id in [ctx.mike.id, ctx.bob.id, ctx.jane.id]))
   end
 
   #

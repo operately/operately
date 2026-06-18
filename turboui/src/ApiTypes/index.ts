@@ -614,6 +614,7 @@ export interface ActivityContentProjectTimelineEdited {
 }
 
 export interface ActivityContentResourceHubDocumentCommented {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -622,6 +623,7 @@ export interface ActivityContentResourceHubDocumentCommented {
 }
 
 export interface ActivityContentResourceHubDocumentCreated {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -630,6 +632,7 @@ export interface ActivityContentResourceHubDocumentCreated {
 }
 
 export interface ActivityContentResourceHubDocumentDeleted {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -637,6 +640,7 @@ export interface ActivityContentResourceHubDocumentDeleted {
 }
 
 export interface ActivityContentResourceHubDocumentEdited {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -644,6 +648,7 @@ export interface ActivityContentResourceHubDocumentEdited {
 }
 
 export interface ActivityContentResourceHubFileCommented {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -652,6 +657,7 @@ export interface ActivityContentResourceHubFileCommented {
 }
 
 export interface ActivityContentResourceHubFileCreated {
+  goal?: Goal | null;
   project?: Project | null;
   resourceHub?: ResourceHub | null;
   space?: Space | null;
@@ -659,6 +665,7 @@ export interface ActivityContentResourceHubFileCreated {
 }
 
 export interface ActivityContentResourceHubFileDeleted {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -666,6 +673,7 @@ export interface ActivityContentResourceHubFileDeleted {
 }
 
 export interface ActivityContentResourceHubFileEdited {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -673,6 +681,7 @@ export interface ActivityContentResourceHubFileEdited {
 }
 
 export interface ActivityContentResourceHubFolderCopied {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -681,6 +690,7 @@ export interface ActivityContentResourceHubFolderCopied {
 }
 
 export interface ActivityContentResourceHubFolderCreated {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -688,6 +698,7 @@ export interface ActivityContentResourceHubFolderCreated {
 }
 
 export interface ActivityContentResourceHubFolderDeleted {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -695,6 +706,7 @@ export interface ActivityContentResourceHubFolderDeleted {
 }
 
 export interface ActivityContentResourceHubFolderRenamed {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -704,6 +716,7 @@ export interface ActivityContentResourceHubFolderRenamed {
 }
 
 export interface ActivityContentResourceHubLinkCommented {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -712,6 +725,7 @@ export interface ActivityContentResourceHubLinkCommented {
 }
 
 export interface ActivityContentResourceHubLinkCreated {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
@@ -719,6 +733,7 @@ export interface ActivityContentResourceHubLinkCreated {
 }
 
 export interface ActivityContentResourceHubLinkDeleted {
+  goal?: Goal | null;
   project?: Project | null;
   resourceHub?: ResourceHub | null;
   space?: Space | null;
@@ -726,6 +741,7 @@ export interface ActivityContentResourceHubLinkDeleted {
 }
 
 export interface ActivityContentResourceHubLinkEdited {
+  goal?: Goal | null;
   project?: Project | null;
   resourceHub?: ResourceHub | null;
   space?: Space | null;

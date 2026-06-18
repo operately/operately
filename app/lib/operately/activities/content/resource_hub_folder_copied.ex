@@ -22,6 +22,7 @@ defmodule Operately.Activities.Content.ResourceHubFolderCopied do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
+    belongs_to :goal, Operately.Goals.Goal
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
     belongs_to :node, Operately.ResourceHubs.Node
     belongs_to :folder, Operately.ResourceHubs.Folder
@@ -31,7 +32,7 @@ defmodule Operately.Activities.Content.ResourceHubFolderCopied do
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:company_id, :space_id, :project_id, :resource_hub_id, :node_id, :folder_id])
+    |> cast(attrs, [:company_id, :space_id, :project_id, :goal_id, :resource_hub_id, :node_id, :folder_id])
     |> cast_embed(:original_folder)
     |> validate_required([:company_id, :space_id, :resource_hub_id, :node_id, :folder_id])
   end

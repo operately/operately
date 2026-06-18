@@ -1590,6 +1590,17 @@
         "fields": [
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "project",
             "type": {
               "name": "project",
@@ -3230,6 +3241,17 @@
       },
       "activity_content_resource_hub_link_commented": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",
@@ -5022,6 +5044,17 @@
         "fields": [
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "project",
             "type": {
               "name": "project",
@@ -5079,6 +5112,17 @@
       },
       "activity_content_resource_hub_document_edited": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",
@@ -5638,6 +5682,17 @@
       },
       "activity_content_resource_hub_folder_created": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",
@@ -7283,6 +7338,17 @@
         "fields": [
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "project",
             "type": {
               "name": "project",
@@ -7762,6 +7828,17 @@
       },
       "activity_content_resource_hub_link_created": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",
@@ -8594,6 +8671,17 @@
         "fields": [
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "project",
             "type": {
               "name": "project",
@@ -8703,6 +8791,17 @@
       },
       "activity_content_resource_hub_link_edited": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",
@@ -9983,6 +10082,17 @@
       },
       "activity_content_resource_hub_folder_renamed": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",
@@ -11494,6 +11604,17 @@
         "fields": [
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "project",
             "type": {
               "name": "project",
@@ -11724,6 +11845,17 @@
       },
       "activity_content_resource_hub_document_created": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",
@@ -12271,6 +12403,17 @@
         "fields": [
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "project",
             "type": {
               "name": "project",
@@ -12613,6 +12756,17 @@
         "fields": [
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "project",
             "type": {
               "name": "project",
@@ -12888,6 +13042,17 @@
       },
       "activity_content_resource_hub_folder_copied": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",
@@ -13991,6 +14156,17 @@
       },
       "activity_content_resource_hub_link_deleted": {
         "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
           {
             "default": null,
             "name": "project",

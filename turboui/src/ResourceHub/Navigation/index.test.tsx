@@ -19,6 +19,7 @@ import {
 
 const paths = {
   projectPath: (id: string) => `/projects/${id}?tab=docs-and-files`,
+  goalPath: (id: string) => `/goals/${id}`,
   spacePath: (id: string) => `/spaces/${id}`,
   resourceHubPath: (id: string) => `/resource-hubs/${id}`,
   resourceHubFolderPath: (id: string) => `/folders/${id}`,
@@ -52,6 +53,20 @@ describe("resource hub navigation", () => {
     expect(item).toEqual({ to: "/spaces/space-1", label: "Operations" });
   });
 
+  test("falls back to the goal parent before the space parent", () => {
+    const item = resourceHubParentNavigationItem(
+      {
+        id: "hub-1",
+        name: "Docs",
+        goal: { id: "goal-1", name: "Company Goal" },
+        space: { id: "space-1", name: "Operations" },
+      } as any,
+      paths,
+    );
+
+    expect(item).toEqual({ to: "/goals/goal-1", label: "Company Goal" });
+  });
+
   test("builds root hub navigation from the parent only", () => {
     expect(
       resourceHubPageNavigation(
@@ -64,6 +79,20 @@ describe("resource hub navigation", () => {
         paths,
       ),
     ).toEqual([{ to: "/projects/project-1?tab=docs-and-files", label: "Apollo" }]);
+  });
+
+  test("builds root hub navigation for goal-backed hubs", () => {
+    expect(
+      resourceHubPageNavigation(
+        {
+          id: "hub-1",
+          name: "Docs",
+          goal: { id: "goal-1", name: "Company Goal" },
+          space: { id: "space-1", name: "Operations" },
+        } as any,
+        paths,
+      ),
+    ).toEqual([{ to: "/goals/goal-1", label: "Company Goal" }]);
   });
 
   test("builds drafts navigation with the parent and hub", () => {
@@ -122,6 +151,33 @@ describe("resource hub navigation", () => {
     );
 
     expect(screen.getByRole("link", { name: "Apollo" })).toHaveAttribute("href", "/projects/project-1?tab=docs-and-files");
+    expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/resource-hubs/hub-1");
+    expect(screen.getByRole("link", { name: "Specs" })).toHaveAttribute("href", "/folders/folder-1");
+  });
+
+  test("renders goal-backed resource breadcrumbs", () => {
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <ResourcePageNavigation
+          resource={
+            {
+              id: "document-1",
+              name: "Spec",
+              resourceHub: {
+                id: "hub-1",
+                name: "Docs",
+                goal: { id: "goal-1", name: "Company Goal" },
+                space: { id: "space-1", name: "Operations" },
+              },
+              pathToDocument: [{ id: "folder-1", name: "Specs" }],
+            } as any
+          }
+          paths={paths}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("link", { name: "Company Goal" })).toHaveAttribute("href", "/goals/goal-1");
     expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/resource-hubs/hub-1");
     expect(screen.getByRole("link", { name: "Specs" })).toHaveAttribute("href", "/folders/folder-1");
   });
