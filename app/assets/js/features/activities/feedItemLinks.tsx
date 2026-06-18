@@ -44,6 +44,14 @@ export const goalLink = (goal: api.Goal) => {
   return <Link to={path}>{name}</Link>;
 };
 
+export const goalDocsAndFilesLink = (goal: api.Goal) => {
+  const paths = usePaths();
+  const path = paths.goalPath(goal.id, { tab: "docs-and-files" });
+  const name = goal.name;
+
+  return <Link to={path}>{name}</Link>;
+};
+
 export const goalCheckInLink = (checkIn?: api.GoalProgressUpdate | null) => {
   const paths = usePaths();
 

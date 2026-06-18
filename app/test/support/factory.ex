@@ -90,6 +90,7 @@ defmodule Operately.Support.Factory do
   defdelegate add_resource_hub(ctx, testid, space_name, creator_name, opts \\ []), to: Factory.ResourceHubs
   defdelegate fetch_default_resource_hub(ctx, testid, space_name), to: Factory.ResourceHubs
   defdelegate fetch_default_project_resource_hub(ctx, testid, project_name), to: Factory.ResourceHubs
+  defdelegate fetch_default_goal_resource_hub(ctx, testid, goal_name), to: Factory.ResourceHubs
   defdelegate add_folder(ctx, testid, hub_name, folder_name \\ nil), to: Factory.ResourceHubs
   defdelegate add_document(ctx, testid, hub_name, opts \\ []), to: Factory.ResourceHubs
   defdelegate add_file(ctx, testid, hub_name, opts \\ []), to: Factory.ResourceHubs

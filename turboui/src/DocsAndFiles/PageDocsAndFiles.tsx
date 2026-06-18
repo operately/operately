@@ -8,10 +8,14 @@ import {
   NewFileModalsProvider,
   NodeMenu,
   ResourceHubNodesListProvider,
+  type AddFileWidgetProps,
+  type AddFolderModalProps,
+  type NewFileModalsContextValue,
+  type ResourceHub,
   type ResourceHubNode,
   useNewFileModalsContext,
 } from "../ResourceHub";
-import { DocsAndFiles, DocsAndFilesBody, DocsAndFilesDraftPrompt } from "../DocsAndFiles";
+import { DocsAndFiles, DocsAndFilesBody, DocsAndFilesDraftPrompt } from ".";
 import {
   getNodeAuthorName,
   getNodeChildrenCount,
@@ -26,19 +30,34 @@ import {
   isNodeMovFile,
   isNodeVideoFile,
 } from "../ResourceHub/selectors";
+import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
 import { plurarize } from "../utils/plurarize";
 import { truncate } from "../utils/strings";
-import { ProjectPage } from "./index";
 
-export function DocsAndFilesTab({ docsAndFiles }: { docsAndFiles: ProjectPage.DocsAndFiles }) {
+export interface PageDocsAndFiles {
+  resourceHub: ResourceHub;
+  previewNodes: ResourceHubNode[];
+  tabPath: string;
+  drafts: {
+    nodes: ResourceHubNode[];
+    draftsPath: string;
+    getDraftEditPath: (node: ResourceHubNode) => string | undefined;
+  };
+  newFileModals: NewFileModalsContextValue;
+  addFileWidgetProps: Pick<AddFileWidgetProps, "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload">;
+  nodesListProps: SharedListPageProps["nodesListProps"];
+  addFolderModalProps: AddFolderModalProps;
+}
+
+export function PageDocsAndFilesTab({ docsAndFiles }: { docsAndFiles: PageDocsAndFiles }) {
   return (
     <NewFileModalsProvider value={docsAndFiles.newFileModals}>
-      <ProjectDocsAndFilesTabContent docsAndFiles={docsAndFiles} />
+      <PageDocsAndFilesTabContent docsAndFiles={docsAndFiles} />
     </NewFileModalsProvider>
   );
 }
 
-function ProjectDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: ProjectPage.DocsAndFiles }) {
+function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAndFiles }) {
   const { filesSelected, navigateToNewDocument, navigateToNewLink, selectFiles, toggleShowAddFolder } = useNewFileModalsContext();
   const items = React.useMemo(
     () => docsAndFiles.nodesListProps.nodes.flatMap((node) => mapNodeToItem(node, docsAndFiles)),
@@ -82,7 +101,7 @@ function ProjectDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: Project
   );
 }
 
-function buildDraftPrompt(docsAndFiles: ProjectPage.DocsAndFiles): DocsAndFiles.DraftPrompt | null {
+function buildDraftPrompt(docsAndFiles: PageDocsAndFiles): DocsAndFiles.DraftPrompt | null {
   if (docsAndFiles.drafts.nodes.length < 1) return null;
 
   const firstDraft = docsAndFiles.drafts.nodes[0];
@@ -97,7 +116,7 @@ function buildDraftPrompt(docsAndFiles: ProjectPage.DocsAndFiles): DocsAndFiles.
   };
 }
 
-function mapNodeToItem(node: ResourceHubNode, docsAndFiles: ProjectPage.DocsAndFiles): DocsAndFiles.Item[] {
+function mapNodeToItem(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles): DocsAndFiles.Item[] {
   const type = getNodeType(node);
 
   if (!type) return [];
@@ -120,7 +139,7 @@ function mapNodeToItem(node: ResourceHubNode, docsAndFiles: ProjectPage.DocsAndF
   ];
 }
 
-function buildNodeDetails(node: ResourceHubNode, docsAndFiles: ProjectPage.DocsAndFiles): string[] {
+function buildNodeDetails(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles): string[] {
   if (getNodeType(node) === "folder") {
     const childrenCount = getNodeChildrenCount(node);
 
@@ -136,7 +155,7 @@ function buildNodeDetails(node: ResourceHubNode, docsAndFiles: ProjectPage.DocsA
   ].filter((detail): detail is string => Boolean(detail));
 }
 
-function buildFileSize(node: ResourceHubNode, docsAndFiles: ProjectPage.DocsAndFiles) {
+function buildFileSize(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles) {
   const size = node.file?.size;
 
   if (getNodeType(node) !== "file" || size === undefined || size === null) return null;

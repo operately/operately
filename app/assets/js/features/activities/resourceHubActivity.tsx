@@ -1,6 +1,6 @@
 import type { Comment, Goal, Project, ResourceHub, ResourceHubFolder, Space } from "@/api";
 import type { Paths } from "@/routes/paths";
-import { commentPath, goalLink, projectLink, spaceLink } from "./feedItemLinks";
+import { commentPath, goalDocsAndFilesLink, projectLink, spaceLink } from "./feedItemLinks";
 
 type ParentData = {
   goal?: Goal | null;
@@ -37,7 +37,7 @@ function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null 
 
   if (data.goal) {
     return {
-      link: goalLink(data.goal),
+      link: goalDocsAndFilesLink(data.goal),
       label: "goal",
       page: "goal",
     };
@@ -65,7 +65,7 @@ export function visibleParentDescriptor(page: string, data: ParentData): ParentD
 
 function resourceHubParentPath(paths: Paths, data: ParentData): string {
   if (data.project?.id) return paths.projectPath(data.project.id);
-  if (data.goal?.id) return paths.goalPath(data.goal.id);
+  if (data.goal?.id) return paths.goalPath(data.goal.id, { tab: "docs-and-files" });
   if (data.space?.id) return paths.spacePath(data.space.id);
 
   return paths.homePath();

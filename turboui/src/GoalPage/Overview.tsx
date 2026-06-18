@@ -1,5 +1,6 @@
 import React from "react";
 
+import { DocsAndFilesPreview } from "../DocsAndFiles";
 import { GoalPage } from ".";
 import { WarningCallout } from "../Callouts";
 import { Checklists } from "./Checklists";
@@ -35,8 +36,25 @@ function MainContent(props: GoalPage.State) {
       <Targets {...props} />
       <Checklists {...props} />
       <RelatedWork {...props} />
+      {props.docsAndFiles && (
+        <div className="pt-8 mt-8 border-t border-surface-outline">
+          <ResourcesSection {...props} />
+        </div>
+      )}
       <Contributors {...props} />
     </div>
+  );
+}
+
+function ResourcesSection(props: GoalPage.State) {
+  if (!props.docsAndFiles) return null;
+
+  return (
+    <DocsAndFilesPreview
+      nodes={props.docsAndFiles.previewNodes}
+      tabPath={props.docsAndFiles.tabPath}
+      getNodePath={props.docsAndFiles.nodesListProps.getNodePath}
+    />
   );
 }
 

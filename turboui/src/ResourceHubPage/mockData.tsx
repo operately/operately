@@ -306,7 +306,7 @@ function buildNavigation(
 ): NonNullable<Page.Props["navigation"]> {
   const paths = {
     projectPath: (id: string) => `/projects/${id}?tab=docs-and-files`,
-    goalPath: (id: string) => `/goals/${id}`,
+    goalPath: (id: string) => `/goals/${id}?tab=docs-and-files`,
     spacePath: (id: string) => `/spaces/${id}`,
     resourceHubPath: (id: string) => `/resource-hubs/${id}`,
     resourceHubFolderPath: (id: string) => `/resource-hubs/folders/${id}`,
