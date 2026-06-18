@@ -1,0 +1,13 @@
+  # Sourcery project configuration.
+# See https://docs.sourcery.ai/References/Legacy-Configuration/sourcery-yaml/
+
+ignore:
+  # Generated API clients (make gen -> mix operately.gen.typescript.api)
+  - app/assets/js/api/index.tsx
+  - app/ee/assets/js/admin_api/index.tsx
+
+  # Generated TurboUI API types (make gen -> mix operately.gen.turboui.api_types)
+  - turboui/src/ApiTypes/index.ts
+
+  # Generated CLI catalog and docs (make gen.api.catalog -> mix operately.gen.api.catalog)
+  - cli/src/generated/
