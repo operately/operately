@@ -87,7 +87,7 @@ defmodule OperatelyWeb.Api.Goals.Get do
       include_reviewer: :reviewer,
       include_potential_subscribers: [:reviewer, :champion],
       include_last_check_in: [last_update: [:author, [reactions: :person]]],
-      include_resource_hub: [resource_hub: :goal],
+      include_resource_hub: :resource_hub,
       include_checklist: [:checks],
       always_include: [targets: from(t in Target, order_by: t.index)],
       always_include: [checks: from(c in Operately.Goals.Check, order_by: c.index)]

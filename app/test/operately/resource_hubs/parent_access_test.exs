@@ -35,6 +35,21 @@ defmodule Operately.ResourceHubs.ParentAccessTest do
       assert ResourceHub.changeset(%{name: "Hub", project_id: Ecto.UUID.generate()}).valid?
       assert ResourceHub.changeset(%{name: "Hub", goal_id: Ecto.UUID.generate()}).valid?
     end
+
+    test "enforces one hub per goal" do
+      ctx =
+        Factory.setup(%{})
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space)
+        |> Factory.add_resource_hub(:hub, :goal, :creator)
+
+      assert {:error, changeset} =
+               %ResourceHub{}
+               |> ResourceHub.changeset(%{name: "Another Hub", goal_id: ctx.goal.id})
+               |> Repo.insert()
+
+      assert errors_on(changeset) == %{goal_id: ["has already been taken"]}
+    end
   end
 
   describe "space-backed hubs" do

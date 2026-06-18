@@ -33,6 +33,7 @@ defmodule Operately.ResourceHubs.ResourceHub do
     |> cast(attrs, [:space_id, :project_id, :goal_id, :name, :description])
     |> validate_required([:name])
     |> validate_parent()
+    |> unique_constraint(:goal_id)
   end
 
   def get(requester, args) do

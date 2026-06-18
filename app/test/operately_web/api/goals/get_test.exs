@@ -181,7 +181,7 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
 
     test "include_resource_hub", ctx do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
-      resource_hub = resource_hub_fixture(ctx.person, goal) |> Repo.preload(:goal)
+      resource_hub = resource_hub_fixture(ctx.person, goal)
 
       assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       refute res.goal.resource_hub
@@ -193,6 +193,7 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
                })
 
       assert res.goal.resource_hub == Serializer.serialize(resource_hub)
+      refute res.goal.resource_hub.goal
     end
 
     test "include_closed_by", ctx do

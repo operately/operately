@@ -6,6 +6,6 @@ defmodule Operately.Repo.Migrations.AddGoalIdToResourceHubs do
       add :goal_id, references(:goals, on_delete: :delete_all, type: :binary_id)
     end
 
-    create index(:resource_hubs, [:goal_id])
+    create unique_index(:resource_hubs, [:goal_id])
   end
 end
