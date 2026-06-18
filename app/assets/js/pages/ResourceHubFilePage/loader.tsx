@@ -13,6 +13,7 @@ export async function loader({ params }): Promise<LoaderResult> {
       id: params.id,
       includeAuthor: true,
       includeResourceHub: true,
+      includeGoal: true,
       includeSpace: true,
       includeProject: true,
       includeParentFolder: true,

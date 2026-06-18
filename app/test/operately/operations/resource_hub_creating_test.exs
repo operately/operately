@@ -11,6 +11,7 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
+    |> Factory.add_goal(:goal, :space)
   end
 
   @attrs %{
@@ -79,6 +80,18 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     assert activity.access_context == Access.get_context!(project_id: ctx.project.id)
     assert activity.content["space_id"] == ctx.space.id
     assert activity.content["project_id"] == ctx.project.id
+  end
+
+  test "ResourceHubCreating operation assigns the goal context for goal-backed hubs", ctx do
+    {:ok, resource_hub} = Operately.Operations.ResourceHubCreating.run(ctx.creator, ctx.goal, @attrs)
+
+    activity = get_activity(resource_hub)
+
+    assert resource_hub.goal_id == ctx.goal.id
+    assert activity.access_context == Access.get_context!(goal_id: ctx.goal.id)
+    assert activity.content["space_id"] == ctx.space.id
+    assert activity.content["project_id"] == nil
+    assert activity.content["goal_id"] == ctx.goal.id
   end
 
   defp get_activity(resource_hub) do

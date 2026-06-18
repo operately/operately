@@ -947,6 +947,7 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_resource_hub_folder_copied do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -955,6 +956,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_folder_created do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -962,6 +964,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_folder_deleted do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -969,6 +972,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_folder_renamed do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -978,6 +982,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_file_created do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
@@ -985,6 +990,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_file_deleted do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -992,6 +998,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_file_edited do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -999,6 +1006,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_file_commented do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -1007,6 +1015,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_document_created do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -1015,6 +1024,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_document_edited do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -1022,6 +1032,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_document_deleted do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -1029,6 +1040,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_document_commented do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -1037,6 +1049,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_link_created do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -1044,6 +1057,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_link_edited do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
@@ -1055,6 +1069,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_link_deleted do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
@@ -1062,6 +1077,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_link_commented do
+    field? :goal, :goal, null: true
     field? :project, :project, null: true
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true

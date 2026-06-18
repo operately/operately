@@ -17,6 +17,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     includePermissions: true,
     includePotentialSubscribers: true,
     includeResourceHub: true,
+    includeGoal: true,
     includeSpace: true,
     includeProject: true,
     includeSubscriptionsList: true,
@@ -31,7 +32,7 @@ export async function loader({ params }): Promise<LoaderResult> {
         )
       : undefined,
     Hub.resource_hubs
-      .get({ id: document.resourceHubId!, includeSpace: true, includeProject: true, includePotentialSubscribers: true })
+      .get({ id: document.resourceHubId!, includeGoal: true, includeSpace: true, includeProject: true, includePotentialSubscribers: true })
       .then(
       (res) => res.resourceHub!,
       ),

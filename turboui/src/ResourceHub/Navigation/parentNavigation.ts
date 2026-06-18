@@ -16,6 +16,13 @@ export function resourceHubParentNavigationItem(
     };
   }
 
+  if (resourceHub.goal?.id) {
+    return {
+      to: paths.goalPath(resourceHub.goal.id),
+      label: resourceHub.goal.name ?? "",
+    };
+  }
+
   if (resourceHub.space?.id) {
     return {
       to: paths.spacePath(resourceHub.space.id),

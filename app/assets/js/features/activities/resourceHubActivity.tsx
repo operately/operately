@@ -1,8 +1,9 @@
-import type { Comment, Project, ResourceHub, ResourceHubFolder, Space } from "@/api";
+import type { Comment, Goal, Project, ResourceHub, ResourceHubFolder, Space } from "@/api";
 import type { Paths } from "@/routes/paths";
-import { commentPath, projectLink, spaceLink } from "./feedItemLinks";
+import { commentPath, goalLink, projectLink, spaceLink } from "./feedItemLinks";
 
 type ParentData = {
+  goal?: Goal | null;
   project?: Project | null;
   space?: Space | null;
 };
@@ -13,8 +14,8 @@ type ScopeData = ParentData & {
 
 type ParentDescriptor = {
   link: JSX.Element;
-  label: "project" | "space";
-  page: "project" | "space";
+  label: "goal" | "project" | "space";
+  page: "goal" | "project" | "space";
 };
 
 export function resourceHubParentParts(page: string, data: ParentData): Array<string | JSX.Element> {
@@ -31,6 +32,14 @@ function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null 
       link: projectLink(data.project),
       label: "project",
       page: "project",
+    };
+  }
+
+  if (data.goal) {
+    return {
+      link: goalLink(data.goal),
+      label: "goal",
+      page: "goal",
     };
   }
 
@@ -56,6 +65,7 @@ export function visibleParentDescriptor(page: string, data: ParentData): ParentD
 
 function resourceHubParentPath(paths: Paths, data: ParentData): string {
   if (data.project?.id) return paths.projectPath(data.project.id);
+  if (data.goal?.id) return paths.goalPath(data.goal.id);
   if (data.space?.id) return paths.spacePath(data.space.id);
 
   return paths.homePath();
@@ -85,5 +95,5 @@ export function commentedResourcePath(
 }
 
 export function resourceHubLocationName(data: ScopeData): string | null {
-  return data.resourceHub?.name ?? data.project?.name ?? data.space?.name ?? null;
+  return data.resourceHub?.name ?? data.project?.name ?? data.goal?.name ?? data.space?.name ?? null;
 }

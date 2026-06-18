@@ -5,6 +5,7 @@ defmodule Operately.Activities.Content.ResourceHubDocumentCreated do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
+    belongs_to :goal, Operately.Goals.Goal
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
     belongs_to :node, Operately.ResourceHubs.Node
     belongs_to :document, Operately.ResourceHubs.Document

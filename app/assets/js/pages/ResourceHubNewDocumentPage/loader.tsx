@@ -13,6 +13,7 @@ export async function loader({ params, request }): Promise<LoaderResult> {
   const [resourceHub, folder] = await Promise.all([
     resource_hubs.get({
       id: params.id,
+      includeGoal: true,
       includeSpace: true,
       includeProject: true,
       includePotentialSubscribers: true,

@@ -13,6 +13,7 @@ jest.mock("turboui", () => ({
 
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({
+    goalPath: (id: string) => `/goals/${id}`,
     homePath: () => "/home",
     projectPath: (id: string) => `/projects/${id}`,
     resourceHubDocumentPath: (id: string) => `/documents/${id}`,
@@ -56,6 +57,40 @@ describe("resource hub activity parent-aware rendering", () => {
     expect(html).toContain('href="/projects/project-1"');
     expect(html).toContain(">Apollo</a> project");
     expect(html).not.toContain("space");
+  });
+
+  it("renders goal-backed document comments under the goal", () => {
+    const activity: any = {
+      author: { fullName: "Jo Smith" },
+      content: {
+        goal: { id: "goal-1", name: "Company Goal" },
+        space: { id: "space-1", name: "General" },
+        resourceHub: { id: "hub-1", name: "Hub" },
+        document: { id: "doc-1", name: "Start Here" },
+        comment: { id: "comment-1" },
+      },
+    };
+
+    const html = renderToStaticMarkup(<>{ResourceHubDocumentCommented.FeedItemTitle({ activity, page: "feed" })}</>);
+
+    expect(html).toContain('href="/goals/goal-1"');
+    expect(html).toContain(">Company Goal</a> goal");
+    expect(html).not.toContain(">General</a> space");
+  });
+
+  it("suppresses goal parent phrasing on the goal page", () => {
+    const activity: any = {
+      author: { fullName: "Jo Smith" },
+      content: {
+        goal: { id: "goal-1", name: "Company Goal" },
+        document: { id: "doc-1", name: "Start Here" },
+      },
+    };
+
+    const html = renderToStaticMarkup(<>{ResourceHubDocumentCreated.FeedItemTitle({ activity, page: "goal" })}</>);
+
+    expect(html).not.toContain('href="/goals/goal-1"');
+    expect(html).not.toContain("in the");
   });
 
   it("omits missing parent phrasing for document comments", () => {
@@ -110,6 +145,24 @@ describe("resource hub activity parent-aware rendering", () => {
     );
   });
 
+  it("renders goal-backed file creation under the goal", () => {
+    const activity: any = {
+      author: { fullName: "Jo Smith" },
+      content: {
+        goal: { id: "goal-1", name: "Company Goal" },
+        space: { id: "space-1", name: "General" },
+        resourceHub: { id: "hub-1", name: "Hub" },
+        files: [{ id: "file-1", name: "Readme.pdf" }],
+      },
+    };
+
+    const html = renderToStaticMarkup(<>{ResourceHubFileCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+
+    expect(html).toContain('href="/goals/goal-1"');
+    expect(html).toContain(">Company Goal</a> goal");
+    expect(html).not.toContain(">General</a> space");
+  });
+
   it("renders project-backed link creation under the project", () => {
     const activity: any = {
       author: { fullName: "Jo Smith" },
@@ -143,5 +196,23 @@ describe("resource hub activity parent-aware rendering", () => {
     expect(html).toContain(
       'added a link to <a href="/resource-hubs/hub-1">Documents &amp; Files</a> in the <a href="/spaces/space-1">General</a> space: <a href="/links/link-1">Spec</a>',
     );
+  });
+
+  it("renders goal-backed link creation under the goal", () => {
+    const activity: any = {
+      author: { fullName: "Jo Smith" },
+      content: {
+        goal: { id: "goal-1", name: "Company Goal" },
+        space: { id: "space-1", name: "General" },
+        resourceHub: { id: "hub-1", name: "Hub" },
+        link: { id: "link-1", name: "Spec" },
+      },
+    };
+
+    const html = renderToStaticMarkup(<>{ResourceHubLinkCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+
+    expect(html).toContain('href="/goals/goal-1"');
+    expect(html).toContain(">Company Goal</a> goal");
+    expect(html).not.toContain(">General</a> space");
   });
 });
