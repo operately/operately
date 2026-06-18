@@ -63,11 +63,14 @@ defmodule OperatelyWeb.Api.Files.GetTest do
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
+      |> Factory.add_goal(:goal, :space)
       |> Factory.add_resource_hub(:hub, :space, :creator)
       |> Factory.add_resource_hub(:project_hub, :project, :creator)
+      |> Factory.add_resource_hub(:goal_hub, :goal, :creator)
       |> Factory.add_folder(:folder, :hub)
       |> Factory.add_file(:my_file, :hub, folder: :folder)
       |> Factory.add_file(:project_file, :project_hub)
+      |> Factory.add_file(:goal_file, :goal_hub)
     end
 
     test "get file", ctx do
@@ -191,6 +194,17 @@ defmodule OperatelyWeb.Api.Files.GetTest do
 
       assert res.file.resource_hub.id == Paths.resource_hub_id(ctx.project_hub)
       assert res.file.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
+    test "include_goal returns the goal-backed hub data", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:files, :get], %{
+                 id: Paths.file_id(ctx.goal_file),
+                 include_goal: true
+               })
+
+      assert res.file.resource_hub.id == Paths.resource_hub_id(ctx.goal_hub)
+      assert res.file.resource_hub.goal == Serializer.serialize(ctx.goal, level: :essential)
     end
   end
 

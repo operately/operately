@@ -2,6 +2,7 @@ defmodule Operately.ResourceHubs do
   import Ecto.Query, warn: false
 
   alias Operately.Repo
+  alias Operately.Goals.Goal
   alias Operately.Groups.Group
   alias Operately.Projects.Project
   alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, File, Link}
@@ -13,6 +14,11 @@ defmodule Operately.ResourceHubs do
 
   def list_resource_hubs(%Project{} = project) do
     from(r in ResourceHub, where: r.project_id == ^project.id)
+    |> Repo.all()
+  end
+
+  def list_resource_hubs(%Goal{} = goal) do
+    from(r in ResourceHub, where: r.goal_id == ^goal.id)
     |> Repo.all()
   end
 
