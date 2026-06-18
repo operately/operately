@@ -8,6 +8,7 @@ defmodule Operately.Features.Goal.DocsAndFilesTest do
   @tag login_as: :champion
   feature "goal overview hides the docs and files tab when no hub exists", ctx do
     ctx
+    |> Steps.given_legacy_goal_without_docs_and_files()
     |> Steps.assert_logged_in_member_has_full_access()
     |> Steps.visit_goal()
     |> Steps.assert_goal_docs_and_files_hidden()

@@ -10,6 +10,9 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.fill_in_goal_form("Example Goal")
     |> Steps.submit()
     |> Steps.assert_goal_added("Example Goal")
+    |> Steps.assert_goal_docs_and_files_tab_visible()
+    |> Steps.open_goal_docs_and_files()
+    |> Steps.assert_goal_docs_and_files_empty_state()
   end
 
   feature "create a new subgoal from an existing goal (from the goal page)", ctx do
