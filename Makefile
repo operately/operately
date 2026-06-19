@@ -138,9 +138,6 @@ dev.db.rollback:
 dev.db.reset:
 	./devenv bash -c "cd app && mix ecto.reset"
 
-dev.db.seed:
-	./devenv bash -c "cd app && mix run priv/repo/seeds.exs"
-
 dev.db.export.schema:
 	./devenv bash -c "./scripts/db_export_schema.sh"
 	cat tmp/schema.sql | pbcopy
