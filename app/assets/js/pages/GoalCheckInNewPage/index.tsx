@@ -10,8 +10,8 @@ import { PageModule } from "@/routes/types";
 
 import FormattedTime from "@/components/FormattedTime";
 
-import { usePaths } from "@/routes/paths";
 import { loader, useLoadedData } from "./loader";
+import { Navigation } from "./navigation";
 export default { name: "GoalCheckInNewPage", loader, Page } as PageModule;
 
 function Page() {
@@ -20,7 +20,7 @@ function Page() {
   return (
     <Pages.Page title={["Check-in", goal.name!]} testId="goal-check-in-new-page">
       <Paper.Root>
-        <Navigation goal={goal} />
+        <Navigation />
 
         <Paper.Body className="p-4 md:p-8 lg:px-28 lg:py-8" noPadding banner={banner(goal)}>
           <Header />
@@ -40,22 +40,6 @@ function Header() {
       <p className="text-center mt-1">Share the progress with the team</p>
     </div>
   );
-}
-
-function Navigation({ goal }: { goal: Goals.Goal }) {
-  const paths = usePaths();
-  const items: Paper.NavigationItem[] = [];
-
-  if (goal.space) {
-    items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
-    items.push({ to: paths.spaceWorkMapPath(goal.space.id!), label: "Work Map" });
-  } else {
-    items.push({ to: paths.workMapPath("goals"), label: "Work Map" });
-  }
-
-  items.push({ to: paths.goalPath(goal.id), label: goal.name });
-
-  return <Paper.Navigation items={items} />;
 }
 
 function Form({ goal }: { goal: Goals.Goal }) {
