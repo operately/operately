@@ -1021,38 +1021,40 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :change_reviewer, ctx, name: name do
     ctx
-    |> UI.sleep(150)
-    |> UI.assert_has(testid: "reviewer-field")
+    |> assert_reviewer_field_ready(ctx.curr_reviewer.full_name)
     |> UI.click(testid: "reviewer-field")
-    |> UI.assert_has(testid: "reviewer-field-assign-another")
+    |> UI.wait_until_testid(testid: "reviewer-field-popover")
     |> UI.click(testid: "reviewer-field-assign-another")
-    |> UI.assert_has(testid: UI.testid(["reviewer-field-search-result", name]))
+    |> UI.wait_until_testid(testid: "reviewer-field-search")
     |> UI.click(testid: UI.testid(["reviewer-field-search-result", name]))
-    |> UI.sleep(300)
   end
 
   step :remove_reviewer, ctx do
     ctx
-    |> UI.sleep(150)
-    |> UI.assert_has(testid: "reviewer-field")
+    |> assert_reviewer_field_ready(ctx.curr_reviewer.full_name)
     |> UI.click(testid: "reviewer-field")
-    |> UI.assert_has(testid: "reviewer-field-clear-assignment")
+    |> UI.wait_until_testid(testid: "reviewer-field-popover")
     |> UI.click(testid: "reviewer-field-clear-assignment")
-    |> UI.sleep(300)
   end
 
   step :assert_reviewer_changed, ctx, name: name do
     ctx
-    |> UI.assert_text(name, testid: "reviewer-field")
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text(name, testid: "reviewer-field")
+    |> UI.assert_has(testid: "project-page")
+    |> assert_reviewer_field_ready(name)
   end
 
   step :assert_reviewer_removed, ctx do
     ctx
-    |> UI.assert_text("Set reviewer", testid: "reviewer-field")
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text("Set reviewer", testid: "reviewer-field")
+    |> UI.assert_has(testid: "project-page")
+    |> assert_reviewer_field_ready("Set reviewer")
+  end
+
+  defp assert_reviewer_field_ready(ctx, text) do
+    ctx
+    |> UI.assert_has(testid: "reviewer-field")
+    |> UI.assert_text(text, testid: "reviewer-field")
   end
 
   step :assert_reviewer_changed_feed_posted, ctx, reviewer: reviewer do

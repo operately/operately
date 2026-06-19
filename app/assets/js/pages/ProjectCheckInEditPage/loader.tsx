@@ -10,6 +10,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     id: params.id,
     includeAuthor: true,
     includeProject: true,
+    includeSpace: true,
     includeReactions: true,
   });
 
