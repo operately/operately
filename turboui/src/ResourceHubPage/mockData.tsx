@@ -247,7 +247,13 @@ export function useMockSharedListPageProps({
         loadFolder: async (id) => {
           const folder =
             folderNodes.find((item) => item.id === id) ??
-            (folderParent?.id === id ? folderParent : createMockFolder({ id, resourceHub, resourceHubId: resourceHub.id }));
+            (folderParent?.id === id
+              ? folderParent
+              : createMockFolder({
+                  id,
+                  resourceHub,
+                  resourceHubId: resourceHub.id,
+                }));
 
           return {
             current: { type: "folder", folder },
@@ -305,9 +311,13 @@ function buildNavigation(
   resourceHub: ResourceHub,
 ): NonNullable<Page.Props["navigation"]> {
   const paths = {
-    projectPath: (id: string) => `/projects/${id}?tab=docs-and-files`,
-    goalPath: (id: string) => `/goals/${id}?tab=docs-and-files`,
+    projectOverviewPath: (id: string) => `/projects/${id}?tab=overview`,
+    projectDocsAndFilesPath: (id: string) => `/projects/${id}?tab=docs-and-files`,
+    goalOverviewPath: (id: string) => `/goals/${id}?tab=overview`,
+    goalDocsAndFilesPath: (id: string) => `/goals/${id}?tab=docs-and-files`,
     spacePath: (id: string) => `/spaces/${id}`,
+    projectWorkMapPath: (spaceId: string) => `/spaces/${spaceId}/work-map?tab=projects`,
+    goalWorkMapPath: (spaceId: string) => `/spaces/${spaceId}/work-map`,
     resourceHubPath: (id: string) => `/resource-hubs/${id}`,
     resourceHubFolderPath: (id: string) => `/resource-hubs/folders/${id}`,
   };

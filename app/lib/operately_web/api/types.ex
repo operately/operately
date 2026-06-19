@@ -1367,6 +1367,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
     field? :project, :project, null: true
+    field? :goal, :goal, null: true
     field? :name, :string, null: true
     field? :description, :string, null: true
     field? :nodes, list_of(:resource_hub_node), null: true
@@ -1384,6 +1385,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
     field? :project, :project, null: true
+    field? :goal, :goal, null: true
     field? :parent_folder, :resource_hub_folder, null: true
     field :parent_folder_id, :string, null: false
     field :name, :string, null: false
@@ -1407,6 +1409,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
     field? :project, :project, null: true
+    field? :goal, :goal, null: true
     field? :parent_folder, :resource_hub_folder, null: true
     field? :parent_folder_id, :string, null: true
     field? :name, :string, null: true
@@ -1439,6 +1442,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
     field? :project, :project, null: true
+    field? :goal, :goal, null: true
     field? :parent_folder, :resource_hub_folder, null: true
     field? :parent_folder_id, :string, null: true
     field :name, :string, null: false

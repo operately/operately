@@ -4,6 +4,7 @@ import { ResourceHubPage, resourceHubPageNavigation } from "turboui";
 import {
   folders,
   getDraftEditPath,
+  resourceHubWithParentContext,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
@@ -17,6 +18,7 @@ export function Page() {
   const { resourceHub, nodes, draftNodes } = useLoadedData();
   const refresh = useRefresh();
   const paths = usePaths();
+  const navigationResourceHub = resourceHubWithParentContext(resourceHub);
 
   const newFileModalsContext = useNewFileModalsContextValue({ resourceHub });
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
@@ -25,7 +27,7 @@ export function Page() {
 
   const props: ResourceHubPage.Props = {
     title: resourceHub.name || "Resource Hub",
-    navigation: resourceHubPageNavigation(resourceHub, resourceHubNavigationPaths(paths)),
+    navigation: resourceHubPageNavigation(navigationResourceHub, resourceHubNavigationPaths(paths)),
     resourceHub,
     drafts: {
       nodes: draftNodes,

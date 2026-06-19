@@ -35,7 +35,7 @@ const ResourceHubLinkCreated: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
     const link = data.link ? linkLink(data.link) : "a link";
-    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : null;
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub, { project: data.project, goal: data.goal }) : null;
     const parent = visibleParentDescriptor(page, data);
 
     if (!parent) {

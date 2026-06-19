@@ -21,6 +21,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
       resource_hub: OperatelyWeb.Api.Serializer.serialize(file.resource_hub),
       space: OperatelyWeb.Api.Serializer.serialize(file.space),
       project: OperatelyWeb.Api.Serializer.serialize(file.project),
+      goal: OperatelyWeb.Api.Serializer.serialize(file.goal),
       parent_folder: OperatelyWeb.Api.Serializer.serialize(file.node.parent_folder),
       name: file.node.name,
       description: Jason.encode!(file.description),
