@@ -495,6 +495,26 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.assert_text(name)
   end
 
+  step :assert_project_docs_and_files_navigation_links, ctx do
+    space_link = Paths.space_path(ctx.company, ctx.group)
+    workmap_link = Paths.space_work_map_path(ctx.company, ctx.group) <> "?tab=projects"
+    project_overview_link = Paths.project_path(ctx.company, ctx.project, tab: "overview")
+    project_docs_and_files_link = Paths.project_path(ctx.company, ctx.project, tab: "docs-and-files")
+
+    ctx
+    |> UI.find(UI.query(testid: "navigation"), fn el ->
+      el
+      |> UI.assert_text(ctx.group.name)
+      |> UI.assert_text("Work Map")
+      |> UI.assert_text(ctx.project.name)
+      |> UI.assert_text("Docs & Files")
+      |> UI.assert_has(css: "a[href=\"#{space_link}\"]")
+      |> UI.assert_has(css: "a[href=\"#{workmap_link}\"]")
+      |> UI.assert_has(css: "a[href=\"#{project_overview_link}\"]")
+      |> UI.assert_has(css: "a[href=\"#{project_docs_and_files_link}\"]")
+    end)
+  end
+
   step :open_project_docs_and_files_node, ctx, name: name do
     ctx
     |> UI.assert_text(name)
@@ -529,9 +549,18 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :navigate_back_to_project_docs_and_files, ctx do
     ctx
     |> UI.find(UI.query(testid: "navigation"), fn el ->
-      UI.click_link(el, ctx.project.name)
+      UI.click_link(el, "Docs & Files")
     end)
     |> assert_project_docs_and_files_open()
+  end
+
+  step :navigate_back_to_project_overview, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "navigation"), fn el ->
+      UI.click_link(el, ctx.project.name)
+    end)
+    |> UI.assert_location(Paths.project_path(ctx.company, ctx.project, tab: "overview"))
+    |> UI.assert_has(testid: "project-page")
   end
 
   step :assert_project_navigation_without_space, ctx do
