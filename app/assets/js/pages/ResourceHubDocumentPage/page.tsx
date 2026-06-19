@@ -33,15 +33,22 @@ export function Page() {
   const paths = usePaths();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
-  const copyListContext = useCopyDocumentListContext(folder ?? resourceHub, document);
-  const navigationDocument = {
-    ...document,
-    resourceHub: resourceHubWithParentContext(resourceHub, {
+  assertPresent(document.resourceHub, "resourceHub must be present in document");
+
+  const pageResourceHub = resourceHubWithParentContext(
+    {
+      ...document.resourceHub,
+      potentialSubscribers: resourceHub.potentialSubscribers,
+      permissions: resourceHub.permissions,
+    },
+    {
       space: document.space,
       project: document.project,
       goal: document.goal,
-    }),
-  };
+    },
+  );
+  const copyListContext = useCopyDocumentListContext(folder ?? pageResourceHub, document);
+  const navigationDocument = { ...document, resourceHub: pageResourceHub };
 
   assertPresent(document.notifications, "notifications must be present in document");
   useClearNotificationsOnLoad(document.notifications);
