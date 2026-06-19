@@ -510,6 +510,19 @@ defmodule Operately.Support.Features.UI do
     Query.css("[data-test-id=\"#{id}\"]")
   end
 
+  def wait_until_testid(state, testid: id) do
+    execute("wait_until_testid", state, fn session ->
+      Wallaby.Browser.retry(fn ->
+        case Browser.execute_query(session, query(testid: id)) do
+          {:ok, _} -> {:ok, session}
+          _ -> {:error, :not_yet}
+        end
+      end)
+
+      session
+    end)
+  end
+
   def wait_for_page_to_load(state, path) do
     execute("wait_for_page_load", state, fn session ->
       Wallaby.Browser.retry(fn ->
