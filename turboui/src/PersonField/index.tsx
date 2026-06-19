@@ -313,6 +313,7 @@ function Dialog({ state }: { state: PersonField.State }) {
         sideOffset={4}
         alignOffset={2}
         align="start"
+        data-test-id={`${state.testId}-popover`}
         onCloseAutoFocus={state.onCloseAutoFocus}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
@@ -510,7 +511,7 @@ function DialogSearch({ state }: { state: PersonField.State }) {
   };
 
   return (
-    <div className="p-1">
+    <div className="p-1" data-test-id={`${state.testId}-search`}>
       <div className="p-1 pb-0.5">
         {/* Use text-base (16px) on mobile to prevent auto-zoom and text-sm (14px) on desktop for consistency */}
         <input
