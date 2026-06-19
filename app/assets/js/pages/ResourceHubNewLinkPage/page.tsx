@@ -4,15 +4,16 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { NewResourcePageNavigation } from "turboui";
-import { resourceHubNavigationPaths, resourceHubWithParentContext } from "@/models/resourceHubs";
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { Form } from "./form";
 import { useLoadedData } from "./loader";
+import { buildNavigationResourceHub } from "./navigation";
 
 export function Page() {
   const { resourceHub, folder } = useLoadedData();
   const paths = usePaths();
-  const navigationResourceHub = resourceHubWithParentContext(resourceHub);
+  const navigationResourceHub = buildNavigationResourceHub(resourceHub);
 
   return (
     <Pages.Page title="New Link">

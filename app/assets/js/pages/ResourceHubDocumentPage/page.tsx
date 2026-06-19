@@ -8,7 +8,7 @@ import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
 import { documents } from "@/models/resourceHubs";
-import { resourceHubLandingPath, resourceHubNavigationPaths, resourceHubWithParentContext } from "@/models/resourceHubs";
+import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import { Spacer } from "@/components/Spacer";
@@ -26,6 +26,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { RichContent, CurrentSubscriptions } from "turboui";
 
 import { useLoadedData } from "./loader";
+import { buildNavigationDocument } from "./navigation";
 import { Options } from "./Options";
 
 export function Page() {
@@ -33,22 +34,9 @@ export function Page() {
   const paths = usePaths();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
-  assertPresent(document.resourceHub, "resourceHub must be present in document");
-
-  const pageResourceHub = resourceHubWithParentContext(
-    {
-      ...document.resourceHub,
-      potentialSubscribers: resourceHub.potentialSubscribers,
-      permissions: resourceHub.permissions,
-    },
-    {
-      space: document.space,
-      project: document.project,
-      goal: document.goal,
-    },
-  );
+  const navigationDocument = buildNavigationDocument(document, resourceHub);
+  const pageResourceHub = navigationDocument.resourceHub;
   const copyListContext = useCopyDocumentListContext(folder ?? pageResourceHub, document);
-  const navigationDocument = { ...document, resourceHub: pageResourceHub };
 
   assertPresent(document.notifications, "notifications must be present in document");
   useClearNotificationsOnLoad(document.notifications);

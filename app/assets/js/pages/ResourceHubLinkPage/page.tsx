@@ -1,6 +1,6 @@
 import React from "react";
 
-import { resourceHubLandingPath, resourceHubNavigationPaths, resourceHubWithParentContext } from "@/models/resourceHubs";
+import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
+import { buildNavigationLink } from "./navigation";
 import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions } from "turboui";
 import { BulletDot } from "@/components/TextElements";
 import FormattedTime from "@/components/FormattedTime";
@@ -33,14 +34,7 @@ export function Page() {
   const { link } = useLoadedData();
   const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const navigationLink = {
-    ...link,
-    resourceHub: resourceHubWithParentContext(link.resourceHub, {
-      space: link.space,
-      project: link.project,
-      goal: link.goal,
-    }),
-  };
+  const navigationLink = buildNavigationLink(link);
 
   assertPresent(link.notifications, "notifications must be present in link");
   useClearNotificationsOnLoad(link.notifications);

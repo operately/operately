@@ -3,22 +3,16 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { ResourcePageNavigation } from "turboui";
-import { resourceHubNavigationPaths, resourceHubWithParentContext } from "@/models/resourceHubs";
+import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { Form } from "./form";
 import { useLoadedData } from "./loader";
+import { buildNavigationDocument } from "./navigation";
 
 export function Page() {
   const { document } = useLoadedData();
   const paths = usePaths();
-  const navigationDocument = {
-    ...document,
-    resourceHub: resourceHubWithParentContext(document.resourceHub, {
-      space: document.space,
-      project: document.project,
-      goal: document.goal,
-    }),
-  };
+  const navigationDocument = buildNavigationDocument(document);
 
   return (
     <Pages.Page title="Edit Document">

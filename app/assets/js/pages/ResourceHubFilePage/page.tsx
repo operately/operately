@@ -3,7 +3,7 @@ import React from "react";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
 import { files } from "@/models/resourceHubs";
-import { resourceHubLandingPath, resourceHubNavigationPaths, resourceHubWithParentContext } from "@/models/resourceHubs";
+import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import * as Reactions from "@/models/reactions";
@@ -25,6 +25,7 @@ import { ResourcePageNavigation } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
+import { buildNavigationFile } from "./navigation";
 import { Content } from "./Content";
 import { Options } from "./Options";
 
@@ -32,14 +33,7 @@ export function Page() {
   const { file } = useLoadedData();
   const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const navigationFile = {
-    ...file,
-    resourceHub: resourceHubWithParentContext(file.resourceHub, {
-      space: file.space,
-      project: file.project,
-      goal: file.goal,
-    }),
-  };
+  const navigationFile = buildNavigationFile(file);
 
   return (
     <Pages.Page title={file.name!}>
