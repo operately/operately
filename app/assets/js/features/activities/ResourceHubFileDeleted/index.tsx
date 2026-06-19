@@ -28,7 +28,7 @@ const ResourceHubFileDeleted: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
-    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : "the resource hub";
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub, { project: data.project, goal: data.goal }) : "the resource hub";
     const fileName = data.file?.name ?? "a file";
     const parent = visibleParentDescriptor(page, data);
 

@@ -84,9 +84,13 @@ export interface ResourceHubNotAllowedSelection {
 }
 
 export interface ResourceHubNavigationPaths {
-  projectPath: (id: string) => string;
-  goalPath: (id: string) => string;
+  projectOverviewPath: (id: string) => string;
+  projectDocsAndFilesPath: (id: string) => string;
+  goalOverviewPath: (id: string) => string;
+  goalDocsAndFilesPath: (id: string) => string;
   spacePath: (id: string) => string;
+  projectWorkMapPath: (spaceId: string) => string;
+  goalWorkMapPath: (spaceId: string) => string;
   resourceHubPath: (id: string) => string;
   resourceHubFolderPath: (id: string) => string;
 }

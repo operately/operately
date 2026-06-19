@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { NewResourcePageNavigation } from "turboui";
-import { resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { resourceHubNavigationPaths, resourceHubWithParentContext } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { Form } from "./form";
 import { useLoadedData } from "./loader";
@@ -12,12 +12,13 @@ import { useLoadedData } from "./loader";
 export function Page() {
   const { resourceHub, folder } = useLoadedData();
   const paths = usePaths();
+  const navigationResourceHub = resourceHubWithParentContext(resourceHub);
 
   return (
     <Pages.Page title="New Document">
       <Paper.Root>
         <NewResourcePageNavigation
-          resourceHub={resourceHub}
+          resourceHub={navigationResourceHub}
           folder={folder}
           paths={resourceHubNavigationPaths(paths)}
         />

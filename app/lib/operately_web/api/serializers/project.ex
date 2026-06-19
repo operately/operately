@@ -3,6 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
     %{
       id: OperatelyWeb.Paths.project_id(project),
       name: project.name,
+      space: OperatelyWeb.Api.Serializer.serialize(project.group),
       privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
       status: Operately.Projects.Project.status(project) |> Atom.to_string(),
       success_status: Atom.to_string(project.success_status),

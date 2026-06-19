@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { links } from "@/models/resourceHubs";
+import { links, resourceHubLandingPath } from "@/models/resourceHubs";
 import { emptyContent, LinkIcon, SubscribersSelector, type ResourceHubLinkType } from "turboui";
 
 import Forms from "@/components/Forms";
@@ -39,7 +39,7 @@ export function Form() {
       }
     },
     cancel: () => {
-      navigate(paths.resourceHubPath(resourceHub.id!));
+      navigate(folder ? paths.resourceHubFolderPath(folder.id!) : resourceHubLandingPath(paths, resourceHub));
     },
     submit: async () => {
       const res = await post({

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { resourceHubLandingPath, resourceHubNavigationPaths, resourceHubWithParentContext } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +33,14 @@ export function Page() {
   const { link } = useLoadedData();
   const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
+  const navigationLink = {
+    ...link,
+    resourceHub: resourceHubWithParentContext(link.resourceHub, {
+      space: link.space,
+      project: link.project,
+      goal: link.goal,
+    }),
+  };
 
   assertPresent(link.notifications, "notifications must be present in link");
   useClearNotificationsOnLoad(link.notifications);
@@ -41,7 +49,7 @@ export function Page() {
     <Pages.Page title={link.name!}>
       <Paper.Root>
         <ResourcePageNavigation
-          resource={link}
+          resource={navigationLink}
           paths={resourceHubNavigationPaths(paths)}
         />
 
@@ -176,8 +184,7 @@ function DeleteLinkModal({ isOpen, hideModal, linkName }: DeleteLinkModalProps) 
     if (link.parentFolder) {
       navigate(paths.resourceHubFolderPath(link.parentFolder.id!));
     } else {
-      assertPresent(link.resourceHub, "resourceHub must be present in link");
-      navigate(paths.resourceHubPath(link.resourceHub.id!));
+      navigate(resourceHubLandingPath(paths, link));
     }
   };
 
