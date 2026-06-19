@@ -3,29 +3,20 @@ import React from "react";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
-import { ResourceHubFolderPage, resourceHubFolderNavigation } from "turboui";
+import { ResourceHubFolderPage } from "turboui";
 import {
   folders,
-  resourceHubNavigationPaths,
-  resourceHubWithParentContext,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
 } from "@/models/resourceHubs";
+import { buildFolderPageNavigation } from "./navigation";
 import { usePaths } from "@/routes/paths";
 
 export function Page() {
   const { folder, nodes } = useLoadedData();
   const refresh = useRefresh();
   const paths = usePaths();
-  const navigationFolder = {
-    ...folder,
-    resourceHub: resourceHubWithParentContext(folder.resourceHub, {
-      space: folder.space,
-      project: folder.project,
-      goal: folder.goal,
-    }),
-  };
 
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
   assertPresent(folder.permissions, "permissions must be present in folder");
@@ -44,7 +35,7 @@ export function Page() {
   const nodesListProps = useResourceHubNodesListProps({ folder, nodes, type: "folder", refetch: refresh });
   const props: ResourceHubFolderPage.Props = {
     title: folder.name || "Folder",
-    navigation: resourceHubFolderNavigation(navigationFolder, resourceHubNavigationPaths(paths)),
+    navigation: buildFolderPageNavigation(folder, paths),
     folder,
     renameFolder: {
       onRename: async (id, name) => {
