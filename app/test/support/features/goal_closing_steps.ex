@@ -75,6 +75,7 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> UI.fill_rich_text("We are closing the goal.")
     |> UI.click_button("Close Goal")
     |> UI.assert_page(OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.wait_until_testid(testid: "goal-page")
   end
 
   step :reopen_goal, ctx do
@@ -84,10 +85,13 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> UI.fill_rich_text("We are reopening the goal.")
     |> UI.click_button("Reopen Goal")
     |> UI.assert_page(OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.wait_until_testid(testid: "goal-page")
   end
 
   step :visit_goal_page, ctx do
-    UI.visit(ctx, OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal))
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.wait_until_testid(testid: "goal-page")
   end
 
   step :visit_goal_closing_page, ctx do
@@ -126,7 +130,7 @@ defmodule Operately.Support.Features.GoalClosingSteps do
   end
 
   step :assert_goal_closed_status_banner_visible, ctx do
-    UI.assert_has(ctx, testid: "closed-status-banner")
+    UI.wait_until_testid(ctx, testid: "closed-status-banner")
   end
 
   step :assert_goal_closed_status_banner_not_visible, ctx do
