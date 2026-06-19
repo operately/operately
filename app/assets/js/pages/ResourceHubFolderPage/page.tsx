@@ -7,6 +7,7 @@ import { ResourceHubFolderPage, resourceHubFolderNavigation } from "turboui";
 import {
   folders,
   resourceHubNavigationPaths,
+  resourceHubWithParentContext,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
@@ -17,6 +18,14 @@ export function Page() {
   const { folder, nodes } = useLoadedData();
   const refresh = useRefresh();
   const paths = usePaths();
+  const navigationFolder = {
+    ...folder,
+    resourceHub: resourceHubWithParentContext(folder.resourceHub, {
+      space: folder.space,
+      project: folder.project,
+      goal: folder.goal,
+    }),
+  };
 
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
   assertPresent(folder.permissions, "permissions must be present in folder");
@@ -35,7 +44,7 @@ export function Page() {
   const nodesListProps = useResourceHubNodesListProps({ folder, nodes, type: "folder", refetch: refresh });
   const props: ResourceHubFolderPage.Props = {
     title: folder.name || "Folder",
-    navigation: resourceHubFolderNavigation(folder, resourceHubNavigationPaths(paths)),
+    navigation: resourceHubFolderNavigation(navigationFolder, resourceHubNavigationPaths(paths)),
     folder,
     renameFolder: {
       onRename: async (id, name) => {

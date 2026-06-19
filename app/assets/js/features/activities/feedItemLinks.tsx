@@ -4,6 +4,7 @@ import * as React from "react";
 import { Link } from "turboui";
 
 import * as api from "@/api";
+import { resourceHubLandingPath } from "@/models/resourceHubs/paths";
 
 import { usePaths } from "@/routes/paths";
 
@@ -72,9 +73,16 @@ export const spaceLink = (space: api.Space) => {
   return <Link to={path}>{name}</Link>;
 };
 
-export const resourceHubLink = (hub: api.ResourceHub) => {
+export const resourceHubLink = (
+  hub: api.ResourceHub,
+  opts?: { project?: api.Project | null; goal?: api.Goal | null },
+) => {
   const paths = usePaths();
-  const path = paths.resourceHubPath(hub.id!);
+  const path = resourceHubLandingPath(paths, {
+    ...hub,
+    project: hub.project ?? opts?.project,
+    goal: hub.goal ?? opts?.goal,
+  });
   const name = hub.name!;
 
   return <Link to={path}>{name}</Link>;

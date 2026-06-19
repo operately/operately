@@ -161,7 +161,7 @@ defmodule Operately.ResourceHubs.Parent do
   defp preload_space(hub, false), do: Repo.preload(hub, [:space], force: true)
   defp preload_space(hub, true), do: Repo.preload(hub, [space: :members], force: true)
 
-  defp preload_project(hub, false), do: Repo.preload(hub, [:project], force: true)
+  defp preload_project(hub, false), do: Repo.preload(hub, [project: :group], force: true)
 
   defp preload_project(hub, true) do
     contributors =
@@ -170,10 +170,10 @@ defmodule Operately.ResourceHubs.Parent do
         preload: [person: person]
       )
 
-    Repo.preload(hub, [project: [contributors: contributors]], force: true)
+    Repo.preload(hub, [project: [:group, contributors: contributors]], force: true)
   end
 
-  defp preload_goal(hub, false), do: Repo.preload(hub, [:goal], force: true)
+  defp preload_goal(hub, false), do: Repo.preload(hub, [goal: :group], force: true)
   defp preload_goal(hub, true), do: Repo.preload(hub, [goal: [:champion, :reviewer, group: :members]], force: true)
 
   defp goal_notification_people(goal) do
