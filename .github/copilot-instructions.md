@@ -136,7 +136,7 @@ make test.pr.name           # Pull request naming validation
     /features/         # Feature test files
     /support/          # Test support modules
   /config/             # Application configuration
-  /priv/repo/          # Database migrations and seeds
+  /priv/repo/          # Database migrations
   mix.exs               # Elixir dependencies and config
   package.json          # Node.js dependencies
   vite.config.mjs       # Vite build configuration
@@ -184,7 +184,6 @@ make gen
 make dev.db.create      # Create development database
 make dev.db.migrate     # Run pending migrations  
 make dev.db.reset       # Drop, recreate, and migrate database
-make dev.db.seed        # Load seed data
 
 # Test database
 make test.db.create     # Create test database
