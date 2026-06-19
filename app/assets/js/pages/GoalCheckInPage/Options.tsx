@@ -21,16 +21,19 @@ export function Options() {
   const setPageMode = Pages.useSetPageMode();
   const me = useMe()!;
 
-  const canManageDraft = update.state === "draft";
-  const isEditVisible = (canManageDraft || compareIds(me.id, update.author?.id)) && mode === "view";
-  const isDiscardVisible = canManageDraft && mode === "view";
+  const isDraft = update.state === "draft";
+  const isAuthor = compareIds(me.id, update.author?.id);
+  const isEditVisible = isAuthor && mode === "view";
+  const isDiscardVisible = isDraft && mode === "view";
+
+  if (!isEditVisible && !isDiscardVisible) return null;
 
   return (
     <PageOptions.Root testId="check-in-options">
       {isEditVisible && (
         <PageOptions.Action
           icon={IconEdit}
-          title="Edit"
+          title={"Edit"}
           onClick={() => setPageMode("edit")}
           testId="edit-check-in"
           keepOutsideOnBigScreen
@@ -42,7 +45,6 @@ export function Options() {
           title="Discard draft"
           onClick={toggleDiscardModal}
           testId="delete-check-in"
-          keepOutsideOnBigScreen
         />
       )}
       <DiscardDraftModal

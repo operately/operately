@@ -75,8 +75,8 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   step :edit_check_in, ctx, %{status: status, description: description} do
     ctx
-    |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-check-in")
+    |> UI.assert_has(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
