@@ -1,11 +1,12 @@
 import React from "react";
 
-import { ResourceHubDraftsPage, resourceHubDraftsNavigation } from "turboui";
-import { getNodePath, resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { ResourceHubDraftsPage } from "turboui";
+import { getNodePath } from "@/models/resourceHubs";
 
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+import { buildDraftsPageNavigation } from "./navigation";
 
 export function Page() {
   const { resourceHub, draftNodes } = useLoadedData();
@@ -13,7 +14,7 @@ export function Page() {
 
   const props: ResourceHubDraftsPage.Props = {
     title: ["Drafts", resourceHub.name ?? "Resource Hub"],
-    navigation: resourceHubDraftsNavigation(resourceHub, resourceHubNavigationPaths(paths)),
+    navigation: buildDraftsPageNavigation(resourceHub, paths),
     nodes: draftNodes,
     getNodePath: (node) => getNodePath(paths, node),
   };

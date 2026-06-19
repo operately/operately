@@ -9,7 +9,7 @@ export type {
   ResourceHubLink,
 } from "@/api";
 
-export { resourceHubListPaths, resourceHubNavigationPaths } from "./paths";
+export { resourceHubLandingPath, resourceHubListPaths, resourceHubNavigationPaths, resourceHubWithParentContext } from "./paths";
 export { getDraftEditPath, getNodePath } from "./nodeUtils";
 export { useNewFileModalsContextValue } from "./useNewFileModalsContextValue";
 export { useResourceHubNodesListContext, type NodesProps } from "./useResourceHubNodesListContext";

@@ -3,7 +3,7 @@ import * as React from "react";
 import { Navigation } from "../../Page/Navigation";
 import { assertPresent } from "../../utils/assertions";
 import type { ResourceHubDocument, ResourceHubFile, ResourceHubFolder, ResourceHubLink, ResourceHubNavigationPaths } from "../types";
-import { resourceHubParentNavigationItem } from "./parentNavigation";
+import { resourceHubDraftsNavigation } from "./parentNavigation";
 
 type ResourcePageResource = ResourceHubDocument | ResourceHubFile | ResourceHubFolder | ResourceHubLink;
 
@@ -17,11 +17,8 @@ export function ResourcePageNavigation({ resource, paths, testId = "navigation" 
   const path = getPathToResource(resource);
 
   assertPresent(resource.resourceHub, "resourceHub must be present in resource");
-  const parentItem = resourceHubParentNavigationItem(resource.resourceHub, paths);
-
   const items = [
-    ...(parentItem ? [parentItem] : []),
-    { to: paths.resourceHubPath(resource.resourceHub.id), label: resource.resourceHub.name ?? "" },
+    ...resourceHubDraftsNavigation(resource.resourceHub, paths),
     ...path.map((folder) => ({
       to: paths.resourceHubFolderPath(folder.id),
       label: folder.name ?? "",
