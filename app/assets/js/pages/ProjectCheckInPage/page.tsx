@@ -17,8 +17,6 @@ import {
   IconSquareCheckFilled,
   IconTrash,
   CurrentSubscriptions,
-  PrimaryButton,
-  SecondaryButton,
   showSuccessToast,
   StatusBadge,
 } from "turboui";
@@ -61,7 +59,6 @@ export function Page() {
           <Title />
           <StatusSection checkIn={checkIn} reviewer={checkIn.project!.reviewer} />
           <DescriptionSection checkIn={checkIn} />
-          {checkIn.state === "draft" && <DraftActions showDeleteModal={toggleDeleteConfirmModal} />}
 
           {checkIn.state !== "draft" && (
             <>
@@ -199,48 +196,32 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const me = useMe()!;
 
   const isAuthor = compareIds(me.id!, checkIn.author!.id!);
-  const canManageDraft = checkIn.state === "draft";
-  const canEdit = canManageDraft || isAuthor;
-  const canDelete = canManageDraft || checkIn.project?.permissions?.hasFullAccess || false;
+  const isDraft = checkIn.state === "draft";
+  const canEdit = isAuthor;
+  const canDelete = isDraft || checkIn.project?.permissions?.hasFullAccess || false;
 
   if (!canEdit && !canDelete) return null;
-  if (canManageDraft) return null;
 
   return (
     <PageOptions.Root testId="options-button">
       {canEdit && (
         <PageOptions.Link
           icon={IconEdit}
-          title="Edit check-in"
+          title={"Edit"}
           to={paths.projectCheckInEditPath(checkIn.id!)}
           testId="edit-check-in"
+          keepOutsideOnBigScreen
         />
       )}
       {canDelete && (
         <PageOptions.Action
           icon={IconTrash}
-          title="Delete check-in"
+          title={isDraft ? "Discard draft" : "Delete check-in"}
           onClick={showDeleteModal}
           testId="delete-check-in"
         />
       )}
     </PageOptions.Root>
-  );
-}
-
-function DraftActions({ showDeleteModal }: { showDeleteModal: () => void }) {
-  const paths = usePaths();
-  const { checkIn } = useLoadedData();
-
-  return (
-    <div className="mt-8 flex items-center gap-2">
-      <PrimaryButton linkTo={paths.projectCheckInEditPath(checkIn.id!)} size="base" testId="edit-check-in">
-        Edit draft
-      </PrimaryButton>
-      <SecondaryButton onClick={showDeleteModal} size="base" testId="delete-check-in">
-        Discard draft
-      </SecondaryButton>
-    </div>
   );
 }
 
