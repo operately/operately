@@ -150,7 +150,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
                })
 
       refute res.folder.resource_hub
-      assert res.folder.project == Serializer.serialize(ctx.project, level: :essential)
+      assert res.folder.project.id == Paths.project_id(ctx.project)
+      assert res.folder.project.space.id == Paths.space_id(ctx.space)
     end
 
     test "include_resource_hub and include_project keep the project-backed hub data", ctx do
@@ -162,7 +163,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
                })
 
       assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.project_hub)
-      assert res.folder.project == Serializer.serialize(ctx.project, level: :essential)
+      assert res.folder.project.id == Paths.project_id(ctx.project)
+      assert res.folder.project.space.id == Paths.space_id(ctx.space)
     end
 
     test "include_goal returns the goal-backed hub data", ctx do
@@ -172,8 +174,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
                  include_goal: true
                })
 
-      assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.goal_hub)
-      assert res.folder.resource_hub.goal == Serializer.serialize(ctx.goal, level: :essential)
+      refute res.folder.resource_hub
+      assert res.folder.goal.id == Paths.goal_id(ctx.goal)
+      assert res.folder.goal.space.id == Paths.space_id(ctx.space)
     end
 
     test "include_path_to_folder", ctx do

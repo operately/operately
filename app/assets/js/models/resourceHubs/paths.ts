@@ -20,6 +20,7 @@ export function resourceHubNavigationPaths(paths: Paths): ResourceHubNavigationP
 type ResourceHubLandingTarget = {
   id?: string | null;
   resourceHubId?: string | null;
+  resourceHub?: Pick<ResourceHub, "id"> | null;
   project?: Pick<Project, "id"> | null;
   goal?: Pick<Goal, "id"> | null;
 };
@@ -34,6 +35,10 @@ export function resourceHubLandingPath(
 
   if (resourceHub?.goal?.id) {
     return paths.goalPath(resourceHub.goal.id, { tab: "docs-and-files" });
+  }
+
+  if (resourceHub?.resourceHub?.id) {
+    return paths.resourceHubPath(resourceHub.resourceHub.id);
   }
 
   if (resourceHub?.resourceHubId) {
