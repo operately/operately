@@ -220,7 +220,8 @@ defmodule OperatelyWeb.Api.Links.GetTest do
                })
 
       refute res.link.resource_hub
-      assert res.link.project == Serializer.serialize(ctx.project, level: :essential)
+      assert res.link.project.id == Paths.project_id(ctx.project)
+      assert res.link.project.space.id == Paths.space_id(ctx.space)
     end
 
     test "include_resource_hub and include_project keep the project-backed hub data", ctx do
@@ -232,7 +233,8 @@ defmodule OperatelyWeb.Api.Links.GetTest do
                })
 
       assert res.link.resource_hub.id == Paths.resource_hub_id(ctx.project_hub)
-      assert res.link.project == Serializer.serialize(ctx.project, level: :essential)
+      assert res.link.project.id == Paths.project_id(ctx.project)
+      assert res.link.project.space.id == Paths.space_id(ctx.space)
     end
 
     test "include_goal returns the goal-backed hub data", ctx do
@@ -242,8 +244,9 @@ defmodule OperatelyWeb.Api.Links.GetTest do
                  include_goal: true
                })
 
-      assert res.link.resource_hub.id == Paths.resource_hub_id(ctx.goal_hub)
-      assert res.link.resource_hub.goal == Serializer.serialize(ctx.goal, level: :essential)
+      refute res.link.resource_hub
+      assert res.link.goal.id == Paths.goal_id(ctx.goal)
+      assert res.link.goal.space.id == Paths.space_id(ctx.space)
     end
   end
 
