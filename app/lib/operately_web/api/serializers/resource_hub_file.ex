@@ -17,10 +17,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
     %{
       id: OperatelyWeb.Paths.file_id(file),
       author: OperatelyWeb.Api.Serializer.serialize(file.author),
-      resource_hub_id: file.node.resource_hub_id,
+      resource_hub_id: OperatelyWeb.Paths.resource_hub_id(file.node.resource_hub_id),
       resource_hub: OperatelyWeb.Api.Serializer.serialize(file.resource_hub),
       space: OperatelyWeb.Api.Serializer.serialize(file.space),
       project: OperatelyWeb.Api.Serializer.serialize(file.project),
+      goal: OperatelyWeb.Api.Serializer.serialize(file.goal),
       parent_folder: OperatelyWeb.Api.Serializer.serialize(file.node.parent_folder),
       name: file.node.name,
       description: Jason.encode!(file.description),

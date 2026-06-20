@@ -1,6 +1,6 @@
 import React from "react";
 
-import { resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
+import { buildNavigationLink } from "./navigation";
 import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions } from "turboui";
 import { BulletDot } from "@/components/TextElements";
 import FormattedTime from "@/components/FormattedTime";
@@ -33,6 +34,7 @@ export function Page() {
   const { link } = useLoadedData();
   const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
+  const navigationLink = buildNavigationLink(link);
 
   assertPresent(link.notifications, "notifications must be present in link");
   useClearNotificationsOnLoad(link.notifications);
@@ -41,7 +43,7 @@ export function Page() {
     <Pages.Page title={link.name!}>
       <Paper.Root>
         <ResourcePageNavigation
-          resource={link}
+          resource={navigationLink}
           paths={resourceHubNavigationPaths(paths)}
         />
 
@@ -176,8 +178,7 @@ function DeleteLinkModal({ isOpen, hideModal, linkName }: DeleteLinkModalProps) 
     if (link.parentFolder) {
       navigate(paths.resourceHubFolderPath(link.parentFolder.id!));
     } else {
-      assertPresent(link.resourceHub, "resourceHub must be present in link");
-      navigate(paths.resourceHubPath(link.resourceHub.id!));
+      navigate(resourceHubLandingPath(paths, link));
     }
   };
 

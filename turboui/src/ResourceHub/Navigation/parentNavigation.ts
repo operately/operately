@@ -9,16 +9,16 @@ export function resourceHubParentNavigationItem(
   resourceHub: ResourceHub,
   paths: ResourceHubNavigationPaths,
 ): NavigationItem | null {
-  if (resourceHub.project?.id) {
+  if (hasProjectParent(resourceHub)) {
     return {
-      to: paths.projectPath(resourceHub.project.id),
+      to: paths.projectOverviewPath(resourceHub.project.id),
       label: resourceHub.project.name ?? "",
     };
   }
 
-  if (resourceHub.goal?.id) {
+  if (hasGoalParent(resourceHub)) {
     return {
-      to: paths.goalPath(resourceHub.goal.id),
+      to: paths.goalOverviewPath(resourceHub.goal.id),
       label: resourceHub.goal.name ?? "",
     };
   }
@@ -37,6 +37,12 @@ export function resourceHubPageNavigation(
   resourceHub: ResourceHub,
   paths: ResourceHubNavigationPaths,
 ): NavigationItem[] {
+  const projectNavigation = resourceHubProjectNavigation(resourceHub, paths);
+  if (projectNavigation) return projectNavigation;
+
+  const goalNavigation = resourceHubGoalNavigation(resourceHub, paths);
+  if (goalNavigation) return goalNavigation;
+
   const parentItem = resourceHubParentNavigationItem(resourceHub, paths);
 
   return parentItem ? [parentItem] : [];
@@ -69,14 +75,78 @@ function resourceHubBaseNavigation(
   resourceHub: ResourceHub,
   paths: ResourceHubNavigationPaths,
 ): NavigationItem[] {
-  const items = resourceHubPageNavigation(resourceHub, paths);
+  const projectNavigation = resourceHubProjectNavigation(resourceHub, paths);
+  if (projectNavigation) return projectNavigation;
 
-  if (resourceHub.id) {
-    items.push({
-      to: paths.resourceHubPath(resourceHub.id),
-      label: resourceHub.name ?? "",
-    });
-  }
+  const goalNavigation = resourceHubGoalNavigation(resourceHub, paths);
+  if (goalNavigation) return goalNavigation;
+
+  const items = resourceHubPageNavigation(resourceHub, paths);
+  const resourceHubItem = resourceHubNavigationItem(resourceHub, paths);
+
+  if (resourceHubItem) items.push(resourceHubItem);
 
   return items;
+}
+
+function resourceHubProjectNavigation(
+  resourceHub: ResourceHub,
+  paths: ResourceHubNavigationPaths,
+): NavigationItem[] | null {
+  if (!hasProjectParent(resourceHub)) return null;
+
+  return [
+    { to: paths.spacePath(resourceHub.space.id), label: resourceHub.space.name ?? "" },
+    { to: paths.projectWorkMapPath(resourceHub.space.id), label: "Work Map" },
+    { to: paths.projectOverviewPath(resourceHub.project.id), label: resourceHub.project.name ?? "" },
+    { to: paths.projectDocsAndFilesPath(resourceHub.project.id), label: "Docs & Files" },
+  ];
+}
+
+function resourceHubGoalNavigation(
+  resourceHub: ResourceHub,
+  paths: ResourceHubNavigationPaths,
+): NavigationItem[] | null {
+  if (!hasGoalParent(resourceHub)) return null;
+
+  return [
+    { to: paths.spacePath(resourceHub.space.id), label: resourceHub.space.name ?? "" },
+    { to: paths.goalWorkMapPath(resourceHub.space.id), label: "Work Map" },
+    { to: paths.goalOverviewPath(resourceHub.goal.id), label: resourceHub.goal.name ?? "" },
+    { to: paths.goalDocsAndFilesPath(resourceHub.goal.id), label: "Docs & Files" },
+  ];
+}
+
+function resourceHubNavigationItem(
+  resourceHub: ResourceHub,
+  paths: ResourceHubNavigationPaths,
+): NavigationItem | null {
+  if (!resourceHub.id) return null;
+
+  return {
+    to: paths.resourceHubPath(resourceHub.id),
+    label: resourceHub.name ?? "",
+  };
+}
+
+function hasProjectParent(
+  resourceHub: ResourceHub,
+): resourceHub is ResourceHub & {
+  space: { id: string; name: string };
+  project: { id: string; name: string };
+} {
+  return Boolean(
+    resourceHub.space?.id && resourceHub.space?.name && resourceHub.project?.id && resourceHub.project?.name,
+  );
+}
+
+function hasGoalParent(
+  resourceHub: ResourceHub,
+): resourceHub is ResourceHub & {
+  space: { id: string; name: string };
+  goal: { id: string; name: string };
+} {
+  return Boolean(
+    resourceHub.space?.id && resourceHub.space?.name && resourceHub.goal?.id && resourceHub.goal?.name,
+  );
 }

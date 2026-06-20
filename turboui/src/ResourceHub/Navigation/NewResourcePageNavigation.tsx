@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { Navigation } from "../../Page/Navigation";
 import type { ResourceHub, ResourceHubFolder, ResourceHubNavigationPaths } from "../types";
-import { resourceHubParentNavigationItem } from "./parentNavigation";
+import { resourceHubDraftsNavigation } from "./parentNavigation";
 
 interface NewResourcePageNavigationProps {
   resourceHub: ResourceHub;
@@ -11,12 +11,7 @@ interface NewResourcePageNavigationProps {
 }
 
 export function NewResourcePageNavigation({ resourceHub, folder, paths }: NewResourcePageNavigationProps) {
-  const parentItem = resourceHubParentNavigationItem(resourceHub, paths);
-
-  let items = [
-    ...(parentItem ? [parentItem] : []),
-    { to: paths.resourceHubPath(resourceHub.id), label: resourceHub.name ?? "" },
-  ];
+  let items = resourceHubDraftsNavigation(resourceHub, paths);
 
   if (folder?.pathToFolder) {
     items = items.concat(
