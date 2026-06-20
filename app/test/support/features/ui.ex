@@ -370,7 +370,13 @@ defmodule Operately.Support.Features.UI do
 
   def wait_until_text(state, text, testid: id) do
     execute("wait_until_text", state, fn session ->
-      true = Browser.has_text?(session, query(testid: id), text)
+      Wallaby.Browser.retry(fn ->
+        if Browser.has_text?(session, query(testid: id), text) do
+          {:ok, session}
+        else
+          {:error, :not_yet}
+        end
+      end)
 
       session
     end)
