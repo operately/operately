@@ -7,6 +7,8 @@ import { resourceHubDraftsNavigation, resourceHubFolderNavigation, resourceHubPa
 
 type ParentAwareResource<T> = T & { resourceHub: ResourceHub };
 
+type ResourcePageInput = ResourceHubDocument | ResourceHubFile | ResourceHubFolder | ResourceHubLink;
+
 type ResourcePageResource =
   | ParentAwareResource<ResourceHubDocument>
   | ParentAwareResource<ResourceHubFile>
@@ -16,17 +18,15 @@ type ResourcePageResource =
 export function buildParentAwareResourceHub<T extends ResourceHub | null | undefined>(
   resourceHub: T,
   opts?: {
-    space?: ResourceHubDocument["space"] | ResourceHubFile["space"] | ResourceHubFolder["space"] | ResourceHubLink["space"];
-    project?: ResourceHubDocument["project"] | ResourceHubFile["project"] | ResourceHubFolder["project"] | ResourceHubLink["project"];
-    goal?: ResourceHubDocument["goal"] | ResourceHubFile["goal"] | ResourceHubFolder["goal"] | ResourceHubLink["goal"];
+    space?: ResourcePageInput["space"];
+    project?: ResourcePageInput["project"];
+    goal?: ResourcePageInput["goal"];
   },
 ) {
   return resourceHubWithParentContext(resourceHub, opts);
 }
 
-export function buildParentAwareResource<T extends { resourceHub?: ResourceHub | null; space?: any; project?: any; goal?: any }>(
-  resource: T,
-): ParentAwareResource<T> {
+export function buildParentAwareResource<T extends ResourcePageInput>(resource: T): ParentAwareResource<T> {
   assertPresent(resource.resourceHub, "resourceHub must be present in resource");
 
   return {
