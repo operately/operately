@@ -1027,6 +1027,8 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "reviewer-field-assign-another")
     |> UI.wait_until_testid(testid: "reviewer-field-search")
     |> UI.click(testid: UI.testid(["reviewer-field-search-result", name]))
+    |> UI.refute_has(testid: "reviewer-field-popover")
+    |> wait_for_reviewer_activity("assigned #{Person.short_name(ctx.reviewer)} as the reviewer")
   end
 
   step :remove_reviewer, ctx do
@@ -1035,6 +1037,8 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "reviewer-field")
     |> UI.wait_until_testid(testid: "reviewer-field-popover")
     |> UI.click(testid: "reviewer-field-clear-assignment")
+    |> UI.refute_has(testid: "reviewer-field-popover")
+    |> wait_for_reviewer_activity("removed the reviewer")
   end
 
   step :assert_reviewer_changed, ctx, name: name do
@@ -1053,8 +1057,18 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   defp assert_reviewer_field_ready(ctx, text) do
     ctx
-    |> UI.assert_has(testid: "reviewer-field")
-    |> UI.assert_text(text, testid: "reviewer-field")
+    |> UI.wait_until_has(css: "button[data-test-id=\"reviewer-field\"]")
+    |> UI.wait_until_text(text, testid: "reviewer-field")
+  end
+
+  defp wait_for_reviewer_activity(ctx, title) do
+    activity_path = Paths.project_path(ctx.company, ctx.project, tab: "activity")
+
+    ctx
+    |> UI.click(testid: "tab-activity")
+    |> UI.assert_location(activity_path)
+    |> UI.wait_until_testid(testid: "project-feed")
+    |> UI.wait_until_text(title, testid: "project-feed")
   end
 
   step :assert_reviewer_changed_feed_posted, ctx, reviewer: reviewer do
