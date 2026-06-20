@@ -3,7 +3,7 @@ import { buildDraftsPageNavigationItems, buildParentAwareResourceHub } from "@/m
 import type { ResourceHub } from "@/models/resourceHubs";
 import type { Paths } from "@/routes/paths";
 
-export function buildNavigationResourceHub(resourceHub: ResourceHub) {
+function buildNavigationResourceHub(resourceHub: ResourceHub) {
   return buildParentAwareResourceHub(resourceHub);
 }
 
