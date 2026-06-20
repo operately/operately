@@ -1705,6 +1705,7 @@ export interface ResourceHubDocument {
   resourceHub?: ResourceHub | null;
   space?: Space | null;
   project?: Project | null;
+  goal?: Goal | null;
   parentFolder?: ResourceHubFolder | null;
   parentFolderId: string;
   name: string;
@@ -1728,6 +1729,7 @@ export interface ResourceHubFile {
   resourceHub?: ResourceHub | null;
   space?: Space | null;
   project?: Project | null;
+  goal?: Goal | null;
   parentFolder?: ResourceHubFolder | null;
   parentFolderId?: string | null;
   name?: string | null;
@@ -1750,6 +1752,7 @@ export interface ResourceHubFolder {
   resourceHub?: ResourceHub | null;
   space?: Space | null;
   project?: Project | null;
+  goal?: Goal | null;
   name?: string | null;
   description?: string | null;
   nodes?: ResourceHubNode[] | null;
@@ -1767,6 +1770,7 @@ export interface ResourceHubLink {
   resourceHub?: ResourceHub | null;
   space?: Space | null;
   project?: Project | null;
+  goal?: Goal | null;
   parentFolder?: ResourceHubFolder | null;
   parentFolderId?: string | null;
   name: string;

@@ -20,6 +20,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       resource_hub: OperatelyWeb.Api.Serializer.serialize(document.resource_hub),
       space: OperatelyWeb.Api.Serializer.serialize(document.space),
       project: OperatelyWeb.Api.Serializer.serialize(document.project),
+      goal: OperatelyWeb.Api.Serializer.serialize(document.goal),
       parent_folder_id: document.node.parent_folder_id && OperatelyWeb.Paths.folder_id(document.node.parent_folder_id),
       parent_folder: OperatelyWeb.Api.Serializer.serialize(document.node.parent_folder),
       name: document.node.name,

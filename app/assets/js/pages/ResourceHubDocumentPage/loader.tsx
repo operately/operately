@@ -31,11 +31,7 @@ export async function loader({ params }): Promise<LoaderResult> {
           (res) => res.folder!,
         )
       : undefined,
-    Hub.resource_hubs
-      .get({ id: document.resourceHubId!, includeGoal: true, includeSpace: true, includeProject: true, includePotentialSubscribers: true })
-      .then(
-      (res) => res.resourceHub!,
-      ),
+    Hub.resource_hubs.get({ id: document.resourceHubId!, includePotentialSubscribers: true }).then((res) => res.resourceHub!),
     Api.notifications.isSubscribed({
       resourceId: document.id,
       resourceType: "resource_hub_document",

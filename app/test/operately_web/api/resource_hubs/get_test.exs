@@ -128,7 +128,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
                  include_project: true
                })
 
-      assert res.resource_hub.project == Serializer.serialize(ctx.project, level: :essential)
+      assert res.resource_hub.project.id == Paths.project_id(ctx.project)
+      assert res.resource_hub.project.space.id == Paths.space_id(ctx.space)
     end
 
     test "include_goal", ctx do
@@ -141,7 +142,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetTest do
                  include_goal: true
                })
 
-      assert res.resource_hub.goal == Serializer.serialize(ctx.goal, level: :essential)
+      assert res.resource_hub.goal.id == Paths.goal_id(ctx.goal)
+      assert res.resource_hub.goal.space.id == Paths.space_id(ctx.space)
     end
   end
 

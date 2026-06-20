@@ -39,7 +39,7 @@ const ResourceHubFileCreated: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
     const parent = visibleParentDescriptor(page, data);
-    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub) : null;
+    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub, { project: data.project, goal: data.goal }) : null;
     const files = data.files ?? [];
 
     if (files.length === 1 && files[0]) {

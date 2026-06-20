@@ -50,8 +50,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
 
     Inputs.parse_includes(inputs, [
       include_space: :space,
-      include_project: :project,
-      include_goal: :goal,
+      include_project: [project: :group],
+      include_goal: [goal: :group],
       include_nodes: [nodes: q],
     ])
   end
