@@ -249,7 +249,16 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   step :acknowledge_check_in_from_email, ctx, %{status: _status, description: _description} do
     ctx = Factory.log_in_contributor(ctx, :reviewer)
     person = Operately.People.get_person!(ctx.reviewer.person_id)
-    email = UI.Emails.last_sent_email()
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "submitted a check-in",
+      author: ctx.champion
+    })
+
+    email = UI.Emails.last_sent_email(to: person.email)
     link = UI.Emails.find_link(email, "Acknowledge")
 
     ctx
