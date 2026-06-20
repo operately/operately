@@ -3,7 +3,7 @@ import { buildFolderPageNavigationItems, buildParentAwareResource } from "@/mode
 import type { ResourceHubFolder } from "@/models/resourceHubs";
 import type { Paths } from "@/routes/paths";
 
-export function buildNavigationFolder(folder: ResourceHubFolder) {
+function buildNavigationFolder(folder: ResourceHubFolder) {
   return buildParentAwareResource(folder);
 }
 
