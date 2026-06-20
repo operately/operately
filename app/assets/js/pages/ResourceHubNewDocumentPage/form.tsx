@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ResourceHub, documents } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, documents, resourceHubLandingPath } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
@@ -85,6 +85,7 @@ export function Form() {
 }
 
 function FormActions({ resourceHub }: { resourceHub: ResourceHub }) {
+  const { folder } = useLoadedData();
   const form = useFormContext();
 
   return (
@@ -106,16 +107,18 @@ function FormActions({ resourceHub }: { resourceHub: ResourceHub }) {
       </div>
 
       <div className="mt-4">
-        Or, <DiscardLink resourceHubId={resourceHub.id!} />
+        Or, <DiscardLink resourceHub={resourceHub} folder={folder} />
       </div>
     </div>
   );
 }
 
-function DiscardLink({ resourceHubId }: { resourceHubId: string }) {
+function DiscardLink({ resourceHub, folder }: { resourceHub: ResourceHub; folder?: ResourceHubFolder }) {
   const paths = usePaths();
+  const path = folder ? paths.resourceHubFolderPath(folder.id!) : resourceHubLandingPath(paths, resourceHub);
+
   return (
-    <Link to={paths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
+    <Link to={path} testId="discard" className="font-medium">
       Discard this document
     </Link>
   );

@@ -23,7 +23,11 @@ defmodule Operately.Features.Goal.DocsAndFilesTest do
     |> Steps.assert_goal_docs_and_files_node_visible(name: "Goal Brief")
     |> Steps.open_goal_docs_and_files_node(name: "Goal Brief")
     |> Steps.assert_goal_document_page_open()
+    |> Steps.assert_goal_docs_and_files_navigation_links()
     |> Steps.navigate_back_to_goal_docs_and_files()
+    |> Steps.open_goal_docs_and_files_node(name: "Goal Brief")
+    |> Steps.assert_goal_document_page_open()
+    |> Steps.navigate_back_to_goal_overview()
   end
 
   @tag login_as: :champion
@@ -35,7 +39,11 @@ defmodule Operately.Features.Goal.DocsAndFilesTest do
     |> Steps.assert_goal_docs_and_files_node_visible(name: "Goal Checklist")
     |> Steps.open_goal_docs_and_files_node(name: "Goal Checklist")
     |> Steps.assert_goal_file_page_open()
+    |> Steps.assert_goal_docs_and_files_navigation_links()
     |> Steps.navigate_back_to_goal_docs_and_files()
+    |> Steps.open_goal_docs_and_files_node(name: "Goal Checklist")
+    |> Steps.assert_goal_file_page_open()
+    |> Steps.navigate_back_to_goal_overview()
   end
 
   @tag login_as: :champion
@@ -47,7 +55,11 @@ defmodule Operately.Features.Goal.DocsAndFilesTest do
     |> Steps.assert_goal_docs_and_files_node_visible(name: "Goal Tracker")
     |> Steps.open_goal_docs_and_files_node(name: "Goal Tracker")
     |> Steps.assert_goal_link_page_open()
+    |> Steps.assert_goal_docs_and_files_navigation_links()
     |> Steps.navigate_back_to_goal_docs_and_files()
+    |> Steps.open_goal_docs_and_files_node(name: "Goal Tracker")
+    |> Steps.assert_goal_link_page_open()
+    |> Steps.navigate_back_to_goal_overview()
   end
 
   @tag login_as: :champion
@@ -59,6 +71,10 @@ defmodule Operately.Features.Goal.DocsAndFilesTest do
     |> Steps.assert_goal_docs_and_files_node_visible(name: "Goal Folder")
     |> Steps.open_goal_docs_and_files_node(name: "Goal Folder")
     |> Steps.assert_goal_folder_page_open()
+    |> Steps.assert_goal_docs_and_files_navigation_links()
     |> Steps.navigate_back_to_goal_docs_and_files()
+    |> Steps.open_goal_docs_and_files_node(name: "Goal Folder")
+    |> Steps.assert_goal_folder_page_open()
+    |> Steps.navigate_back_to_goal_overview()
   end
 end

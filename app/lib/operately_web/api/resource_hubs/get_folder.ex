@@ -53,9 +53,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolder do
     Inputs.parse_includes(inputs, [
       include_nodes: [child_nodes: q],
       include_space: :space,
-      include_project: :project,
+      include_project: [project: :group],
       include_resource_hub: :resource_hub,
-      include_goal: [resource_hub: :goal],
+      include_goal: [goal: :group],
       always_include: :node,
     ])
   end

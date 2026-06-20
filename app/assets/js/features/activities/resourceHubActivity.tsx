@@ -1,4 +1,5 @@
 import type { Comment, Goal, Project, ResourceHub, ResourceHubFolder, Space } from "@/api";
+import { resourceHubLandingPath } from "@/models/resourceHubs/paths";
 import type { Paths } from "@/routes/paths";
 import { commentPath, goalDocsAndFilesLink, projectLink, spaceLink } from "./feedItemLinks";
 
@@ -64,7 +65,7 @@ export function visibleParentDescriptor(page: string, data: ParentData): ParentD
 }
 
 function resourceHubParentPath(paths: Paths, data: ParentData): string {
-  if (data.project?.id) return paths.projectPath(data.project.id);
+  if (data.project?.id) return paths.projectPath(data.project.id, { tab: "docs-and-files" });
   if (data.goal?.id) return paths.goalPath(data.goal.id, { tab: "docs-and-files" });
   if (data.space?.id) return paths.spacePath(data.space.id);
 
@@ -72,12 +73,22 @@ function resourceHubParentPath(paths: Paths, data: ParentData): string {
 }
 
 export function resourceHubPathOrParent(paths: Paths, data: ScopeData): string {
-  if (data.resourceHub?.id) return paths.resourceHubPath(data.resourceHub.id);
+  if (data.resourceHub) {
+    return resourceHubLandingPath(paths, {
+      ...data.resourceHub,
+      project: data.resourceHub.project ?? data.project,
+      goal: data.resourceHub.goal ?? data.goal,
+    });
+  }
 
   return resourceHubParentPath(paths, data);
 }
 
-export function resourceHubFolderPathOrParent(paths: Paths, folder: ResourceHubFolder | null | undefined, data: ScopeData): string {
+export function resourceHubFolderPathOrParent(
+  paths: Paths,
+  folder: ResourceHubFolder | null | undefined,
+  data: ScopeData,
+): string {
   if (folder?.id) return paths.resourceHubFolderPath(folder.id);
 
   return resourceHubPathOrParent(paths, data);

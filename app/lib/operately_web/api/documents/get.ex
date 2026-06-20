@@ -58,10 +58,10 @@ defmodule OperatelyWeb.Api.Documents.Get do
       include_reactions: [reactions: :person],
       include_parent_folder: [node: [parent_folder: :node]],
       include_space: :space,
-      include_project: :project,
+      include_project: [project: :group],
       include_subscriptions_list: :subscription_list,
       include_resource_hub: :resource_hub,
-      include_goal: [resource_hub: :goal],
+      include_goal: [goal: :group],
       always_include: :node,
     ])
   end

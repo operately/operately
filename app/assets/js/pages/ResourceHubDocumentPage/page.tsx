@@ -8,7 +8,7 @@ import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
 import { documents } from "@/models/resourceHubs";
-import { resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import { Spacer } from "@/components/Spacer";
@@ -26,6 +26,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { RichContent, CurrentSubscriptions } from "turboui";
 
 import { useLoadedData } from "./loader";
+import { buildNavigationDocument } from "./navigation";
 import { Options } from "./Options";
 
 export function Page() {
@@ -33,7 +34,9 @@ export function Page() {
   const paths = usePaths();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
-  const copyListContext = useCopyDocumentListContext(folder ?? resourceHub, document);
+  const navigationDocument = buildNavigationDocument(document, resourceHub);
+  const pageResourceHub = navigationDocument.resourceHub;
+  const copyListContext = useCopyDocumentListContext(folder ?? pageResourceHub, document);
 
   assertPresent(document.notifications, "notifications must be present in document");
   useClearNotificationsOnLoad(document.notifications);
@@ -44,7 +47,7 @@ export function Page() {
     <Pages.Page title={document.name!}>
       <Paper.Root size="large">
         <ResourcePageNavigation
-          resource={document}
+          resource={navigationDocument}
           paths={resourceHubNavigationPaths(paths)}
         />
 
@@ -149,7 +152,7 @@ interface DeleteDocumentModalProps {
 
 function DeleteDocumentModal({ isOpen, toggleModal }: DeleteDocumentModalProps) {
   const navigate = useNavigate();
-  const { document, folder, resourceHub } = useLoadedData();
+  const { document, folder } = useLoadedData();
   const [remove] = documents.useDelete();
   const paths = usePaths();
 
@@ -162,7 +165,7 @@ function DeleteDocumentModal({ isOpen, toggleModal }: DeleteDocumentModalProps) 
       if (folder) {
         navigate(paths.resourceHubFolderPath(folder.id!));
       } else {
-        navigate(paths.resourceHubPath(resourceHub.id!));
+        navigate(resourceHubLandingPath(paths, document));
       }
     },
   });
