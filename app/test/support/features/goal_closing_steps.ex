@@ -86,6 +86,8 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> UI.click_button("Reopen Goal")
     |> UI.assert_page(OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal))
     |> UI.wait_until_testid(testid: "goal-page")
+    |> UI.wait_until_text("On track", testid: "page-header")
+    |> UI.wait_until_has(testid: "close-goal-button")
   end
 
   step :visit_goal_page, ctx do
