@@ -20,6 +20,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Link do
       resource_hub: OperatelyWeb.Api.Serializer.serialize(link.resource_hub),
       space: OperatelyWeb.Api.Serializer.serialize(link.space),
       project: OperatelyWeb.Api.Serializer.serialize(link.project),
+      goal: OperatelyWeb.Api.Serializer.serialize(link.goal),
       parent_folder: OperatelyWeb.Api.Serializer.serialize(link.node.parent_folder),
       name: link.node.name,
       url: link.url,

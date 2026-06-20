@@ -8,16 +8,18 @@ import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 import { Form } from "./form";
+import { buildNavigationLink } from "./navigation";
 
 export function Page() {
   const { link } = useLoadedData();
   const paths = usePaths();
+  const navigationLink = buildNavigationLink(link);
 
   return (
     <Pages.Page title="Edit Link">
       <Paper.Root>
         <ResourcePageNavigation
-          resource={link}
+          resource={navigationLink}
           paths={resourceHubNavigationPaths(paths)}
         />
 

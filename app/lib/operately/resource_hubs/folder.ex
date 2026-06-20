@@ -11,6 +11,7 @@ defmodule Operately.ResourceHubs.Folder do
 
     has_one :space, through: [:node, :resource_hub, :space]
     has_one :project, through: [:node, :resource_hub, :project]
+    has_one :goal, through: [:node, :resource_hub, :goal]
     has_one :resource_hub, through: [:node, :resource_hub]
     has_many :child_nodes, Operately.ResourceHubs.Node, foreign_key: :parent_folder_id
 

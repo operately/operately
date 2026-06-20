@@ -3,7 +3,7 @@ import React from "react";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
 import { files } from "@/models/resourceHubs";
-import { resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import * as Reactions from "@/models/reactions";
@@ -25,6 +25,7 @@ import { ResourcePageNavigation } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
+import { buildNavigationFile } from "./navigation";
 import { Content } from "./Content";
 import { Options } from "./Options";
 
@@ -32,12 +33,13 @@ export function Page() {
   const { file } = useLoadedData();
   const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
+  const navigationFile = buildNavigationFile(file);
 
   return (
     <Pages.Page title={file.name!}>
       <Paper.Root>
         <ResourcePageNavigation
-          resource={file}
+          resource={navigationFile}
           paths={resourceHubNavigationPaths(paths)}
         />
 
@@ -184,8 +186,7 @@ function DeleteFileModal({ isOpen, hideModal, fileName }: DeleteFileModalProps) 
     if (file.parentFolder) {
       navigate(paths.resourceHubFolderPath(file.parentFolder.id!));
     } else {
-      assertPresent(file.resourceHub, "resourceHub must be present in file");
-      navigate(paths.resourceHubPath(file.resourceHub.id!));
+      navigate(resourceHubLandingPath(paths, file));
     }
   };
 

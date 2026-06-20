@@ -16,6 +16,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Folder do
       resource_hub_id: OperatelyWeb.Paths.resource_hub_id(folder.node.resource_hub_id),
       space: OperatelyWeb.Api.Serializer.serialize(folder.space),
       project: OperatelyWeb.Api.Serializer.serialize(folder.project),
+      goal: OperatelyWeb.Api.Serializer.serialize(folder.goal),
       name: folder.node.name,
       nodes: OperatelyWeb.Api.Serializer.serialize(folder.child_nodes),
       permissions: OperatelyWeb.Api.Serializer.serialize(folder.permissions),

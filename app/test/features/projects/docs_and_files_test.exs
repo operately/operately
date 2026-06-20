@@ -25,7 +25,11 @@ defmodule Operately.Features.Projects.DocsAndFilesTest do
     |> Steps.assert_project_docs_and_files_node_visible(name: "Project Brief")
     |> Steps.open_project_docs_and_files_node(name: "Project Brief")
     |> Steps.assert_project_document_page_open()
+    |> Steps.assert_project_docs_and_files_navigation_links()
     |> Steps.navigate_back_to_project_docs_and_files()
+    |> Steps.open_project_docs_and_files_node(name: "Project Brief")
+    |> Steps.assert_project_document_page_open()
+    |> Steps.navigate_back_to_project_overview()
   end
 
   @tag login_as: :champion
@@ -35,7 +39,11 @@ defmodule Operately.Features.Projects.DocsAndFilesTest do
     |> Steps.assert_project_docs_and_files_node_visible(name: "Project Checklist")
     |> Steps.open_project_docs_and_files_node(name: "Project Checklist")
     |> Steps.assert_project_file_page_open()
+    |> Steps.assert_project_docs_and_files_navigation_links()
     |> Steps.navigate_back_to_project_docs_and_files()
+    |> Steps.open_project_docs_and_files_node(name: "Project Checklist")
+    |> Steps.assert_project_file_page_open()
+    |> Steps.navigate_back_to_project_overview()
   end
 
   @tag login_as: :champion
@@ -45,7 +53,11 @@ defmodule Operately.Features.Projects.DocsAndFilesTest do
     |> Steps.assert_project_docs_and_files_node_visible(name: "Project Tracker")
     |> Steps.open_project_docs_and_files_node(name: "Project Tracker")
     |> Steps.assert_project_link_page_open()
+    |> Steps.assert_project_docs_and_files_navigation_links()
     |> Steps.navigate_back_to_project_docs_and_files()
+    |> Steps.open_project_docs_and_files_node(name: "Project Tracker")
+    |> Steps.assert_project_link_page_open()
+    |> Steps.navigate_back_to_project_overview()
   end
 
   @tag login_as: :champion
@@ -55,6 +67,10 @@ defmodule Operately.Features.Projects.DocsAndFilesTest do
     |> Steps.assert_project_docs_and_files_node_visible(name: "Project Folder")
     |> Steps.open_project_docs_and_files_node(name: "Project Folder")
     |> Steps.assert_project_folder_page_open()
+    |> Steps.assert_project_docs_and_files_navigation_links()
     |> Steps.navigate_back_to_project_docs_and_files()
+    |> Steps.open_project_docs_and_files_node(name: "Project Folder")
+    |> Steps.assert_project_folder_page_open()
+    |> Steps.navigate_back_to_project_overview()
   end
 end

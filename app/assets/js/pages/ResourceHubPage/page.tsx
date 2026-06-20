@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ResourceHubPage, resourceHubPageNavigation } from "turboui";
+import { ResourceHubPage } from "turboui";
 import {
   folders,
   getDraftEditPath,
@@ -8,10 +8,10 @@ import {
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
 } from "@/models/resourceHubs";
-import { resourceHubNavigationPaths } from "@/models/resourceHubs";
 
 import { usePaths } from "@/routes/paths";
 import { useLoadedData, useRefresh } from "./loader";
+import { buildResourceHubPageNavigation } from "./navigation";
 
 export function Page() {
   const { resourceHub, nodes, draftNodes } = useLoadedData();
@@ -25,7 +25,7 @@ export function Page() {
 
   const props: ResourceHubPage.Props = {
     title: resourceHub.name || "Resource Hub",
-    navigation: resourceHubPageNavigation(resourceHub, resourceHubNavigationPaths(paths)),
+    navigation: buildResourceHubPageNavigation(resourceHub, paths),
     resourceHub,
     drafts: {
       nodes: draftNodes,

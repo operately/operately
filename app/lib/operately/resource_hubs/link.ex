@@ -15,6 +15,7 @@ defmodule Operately.ResourceHubs.Link do
 
     has_one :space, through: [:node, :resource_hub, :space]
     has_one :project, through: [:node, :resource_hub, :project]
+    has_one :goal, through: [:node, :resource_hub, :goal]
     has_one :resource_hub, through: [:node, :resource_hub]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_link], foreign_key: :entity_id
 
