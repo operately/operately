@@ -354,6 +354,28 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def wait_until_text(state, text) do
+    execute("wait_until_text", state, fn session ->
+      Wallaby.Browser.retry(fn ->
+        if Browser.has_text?(session, text) do
+          {:ok, session}
+        else
+          {:error, :not_yet}
+        end
+      end)
+
+      session
+    end)
+  end
+
+  def wait_until_text(state, text, testid: id) do
+    execute("wait_until_text", state, fn session ->
+      true = Browser.has_text?(session, query(testid: id), text)
+
+      session
+    end)
+  end
+
   def assert_text(state, text, testid: id) do
     execute("assert_text", state, fn session ->
       session
@@ -511,9 +533,20 @@ defmodule Operately.Support.Features.UI do
   end
 
   def wait_until_testid(state, testid: id) do
-    execute("wait_until_testid", state, fn session ->
+    wait_until_has(state, query(testid: id))
+  end
+
+  def wait_until_has(state, opts) when is_list(opts) do
+    {_, opts} = Keyword.pop(opts, :in)
+    css_query = compose_css_query(opts)
+
+    wait_until_has(state, Query.css(css_query))
+  end
+
+  def wait_until_has(state, %Wallaby.Query{} = query) do
+    execute("wait_until_has", state, fn session ->
       Wallaby.Browser.retry(fn ->
-        case Browser.execute_query(session, query(testid: id)) do
+        case Browser.execute_query(session, query) do
           {:ok, _} -> {:ok, session}
           _ -> {:error, :not_yet}
         end
