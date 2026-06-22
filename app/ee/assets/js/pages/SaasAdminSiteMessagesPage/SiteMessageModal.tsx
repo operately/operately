@@ -3,7 +3,6 @@ import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import * as People from "@/models/people";
 import classNames from "classnames";
 import { emptyContent, Forms, IconSearch, IconX, Modal, parseContent } from "turboui";
 
@@ -20,7 +19,7 @@ export function SiteMessageModal({ isOpen, onClose, onSuccess, message }: SiteMe
   const [create] = AdminApi.useCreateSiteMessage();
   const [update] = AdminApi.useUpdateSiteMessage();
   const isEdit = message !== undefined;
-  const richTextHandlers = useRichEditorHandlers({ scope: People.NoneSearchScope });
+  const richTextHandlers = useRichEditorHandlers();
 
   const form = Forms.useForm({
     fields: {
