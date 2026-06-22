@@ -13,4 +13,4 @@ job_name="${SEMAPHORE_JOB_NAME:-unknown}"
 job_index="${SEMAPHORE_JOB_INDEX:-0}"
 job_slug="$(printf '%s-%s' "$job_name" "$job_index" | tr -cs 'A-Za-z0-9._-' '_')"
 
-artifact push workflow -f "retries-md/${job_slug}.md" "$report_path"
+artifact push workflow -d "retries-md/${job_slug}.md" "$report_path"
