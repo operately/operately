@@ -118,6 +118,7 @@ blocks:
         always:
           commands:
             - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
+            - "[ -f app/testreports/retries.json ] && artifact push workflow app/testreports/retries.json"
             - artifact push workflow screenshots
 
   - name: CLI Tests
@@ -151,6 +152,7 @@ blocks:
         always:
           commands:
             - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
+            - "[ -f app/testreports/retries.json ] && artifact push workflow app/testreports/retries.json"
 
   - name: Docker Build
     dependencies: []

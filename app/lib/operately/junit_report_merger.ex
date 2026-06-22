@@ -7,6 +7,32 @@ defmodule Operately.JUnitReportMerger do
           testcases: %{{String.t(), String.t()} => tuple()}
         }
 
+  @type testcase_key :: {String.t(), String.t()}
+
+  @type testcase_summary :: %{
+          classname: String.t(),
+          name: String.t(),
+          file: String.t(),
+          status: :pass | :failures | :errors | :skipped,
+          failure_message: String.t() | nil
+        }
+
+  @spec read_testcases(Path.t()) :: %{testcase_key() => testcase_summary()}
+  def read_testcases(path) do
+    path
+    |> parse_document()
+    |> element_content()
+    |> Enum.flat_map(fn testsuite ->
+      testsuite
+      |> element_content()
+      |> Enum.filter(fn node -> element_name(node) == :testcase end)
+      |> Enum.map(fn testcase ->
+        {testcase_key(testcase), summarize_testcase(testcase)}
+      end)
+    end)
+    |> Map.new()
+  end
+
   @spec merge!([Path.t()], Path.t()) :: :ok
   def merge!(paths, output_path) do
     paths = Enum.filter(paths, &File.exists?/1)
@@ -105,6 +131,48 @@ defmodule Operately.JUnitReportMerger do
 
     {:testsuite, attrs, [{:properties, [], properties} | cases]}
   end
+
+  defp summarize_testcase(testcase) do
+    exported = to_export(testcase)
+    attrs = elem(exported, 1)
+    children = elem(exported, 2)
+    status = testcase_status(exported)
+
+    %{
+      classname: attr_value(attrs, :classname),
+      name: attr_value(attrs, :name),
+      file: attr_value(attrs, :file),
+      status: status,
+      failure_message: failure_message(children, status)
+    }
+  end
+
+  defp failure_message(children, status) when status in [:failures, :errors] do
+    tag = if status == :errors, do: :error, else: :failure
+
+    case Enum.find(children, fn {name, _, _} -> name == tag end) do
+      {^tag, attrs, content} ->
+        message = attr_value(attrs, :message)
+        body = content |> List.first() |> failure_body()
+
+        case {message, body} do
+          {"", ""} -> nil
+          {message, ""} -> message
+          {"", body} -> body
+          {message, body} -> "#{message}\n#{body}"
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  defp failure_message(_children, _status), do: nil
+
+  defp failure_body(nil), do: ""
+  defp failure_body(body) when is_binary(body), do: body
+  defp failure_body(body) when is_list(body), do: List.to_string(body)
+  defp failure_body(body), do: inspect(body)
 
   defp testcase_status({:testcase, _attrs, children}) do
     cond do
