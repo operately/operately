@@ -1,84 +1,55 @@
 defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
   use Operately.Support.CliE2E
 
+  alias Operately.Support.CliE2E.Documents.HubScopeSteps
+
   alias Operately.Blobs
   alias Operately.Blobs.Blob
   alias Operately.Notifications.SubscriptionList
   alias Operately.ResourceHubs.File, as: ResourceHubFile
-  alias Operately.Support.CliE2E.Helpers
-
-  @one_by_one_png Base.decode64!("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+tmH0AAAAASUVORK5CYII=")
 
   step :setup, ctx do
-    previous = Helpers.enable_auth_methods()
-
-    on_exit(fn ->
-      Helpers.restore_auth_methods(previous)
-    end)
-
-    ctx = Factory.setup(ctx)
-    ctx = Factory.add_space(ctx, :engineering, company_id: ctx.company.id)
-    ctx = Factory.add_company_member(ctx, :subscriber)
-    ctx = Factory.fetch_default_resource_hub(ctx, :resource_hub, :engineering)
-    ctx = Factory.add_folder(ctx, :folder, :resource_hub)
-    ctx = Factory.add_api_token(ctx, :api_token, :creator, read_only: false)
-
-    result =
-      run_cli(ctx, [
-        "auth",
-        "login",
-        "--token",
-        ctx.api_token,
-        "--base-url",
-        ctx.cli_base_url,
-        "--profile",
-        "e2e"
-      ])
+    ctx =
+      HubScopeSteps.setup_base(ctx)
+      |> Factory.add_folder(:folder, :resource_hub)
 
     ctx
-    |> Map.put(:cli_result, result)
-    |> Map.put(:profile, "e2e")
-    |> Map.put(:expected_resource_hub_id, ctx.resource_hub.id)
   end
 
   step :setup_project, ctx do
+    ctx =
+      HubScopeSteps.init_project_scope(ctx)
+      |> Factory.add_folder(:folder, :project_hub)
+
     ctx
-    |> Factory.add_project(:project, :engineering)
-    |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
-    |> then(fn ctx ->
-      Map.put(ctx, :expected_resource_hub_id, ctx.project_hub.id)
-    end)
   end
 
-  step :create_file_for_project, ctx do
-    upload_file = create_temp_file!("operately-cli-upload", @one_by_one_png, ".png")
+  step :setup_goal, ctx do
+    ctx =
+      HubScopeSteps.init_goal_scope(ctx)
+      |> Factory.add_folder(:folder, :goal_hub)
 
-    on_exit(fn ->
-      File.rm(upload_file)
-    end)
+    ctx
+  end
+
+  step :create_file_for_parent, ctx do
+    upload_file = HubScopeSteps.create_temp_upload_file!()
 
     result =
       run_cli(ctx, [
         "documents",
-        "create_file",
-        "--project-id",
-        ctx.project.id,
-        "--file",
-        upload_file
+        "create_file"
+        | HubScopeSteps.hub_scope_flag(ctx) ++ ["--file", upload_file]
       ])
 
     ctx
     |> Map.put(:cli_result, result)
     |> Map.put(:upload_file, upload_file)
-    |> Map.put(:upload_file_bytes, @one_by_one_png)
+    |> Map.put(:upload_file_bytes, HubScopeSteps.one_by_one_png())
   end
 
   step :create_file_with_defaults, ctx do
-    upload_file = create_temp_file!("operately-cli-upload", @one_by_one_png, ".png")
-
-    on_exit(fn ->
-      File.rm(upload_file)
-    end)
+    upload_file = HubScopeSteps.create_temp_upload_file!()
 
     result =
       run_cli(ctx, [
@@ -93,15 +64,14 @@ defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
     ctx
     |> Map.put(:cli_result, result)
     |> Map.put(:upload_file, upload_file)
-    |> Map.put(:upload_file_bytes, @one_by_one_png)
+    |> Map.put(:upload_file_bytes, HubScopeSteps.one_by_one_png())
   end
 
   step :create_file_with_overrides, ctx do
-    upload_file = create_temp_file!("operately-cli-upload", @one_by_one_png, ".png")
+    upload_file = HubScopeSteps.create_temp_upload_file!()
     description_file = create_temp_file!("operately-cli-file-description", "# Upload notes\n\n- Visible in CLI", ".md")
 
     on_exit(fn ->
-      File.rm(upload_file)
       File.rm(description_file)
     end)
 
@@ -127,13 +97,13 @@ defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
     ctx
     |> Map.put(:cli_result, result)
     |> Map.put(:upload_file, upload_file)
-    |> Map.put(:upload_file_bytes, @one_by_one_png)
+    |> Map.put(:upload_file_bytes, HubScopeSteps.one_by_one_png())
   end
 
   step :assert_file_created_successfully, ctx do
-    assert ctx.cli_result.exit_code == 0
+    HubScopeSteps.assert_cli_success!(ctx)
 
-    payload = Jason.decode!(ctx.cli_result.output)
+    payload = HubScopeSteps.cli_payload(ctx)
     file_payload = List.first(payload["files"])
 
     assert is_map(file_payload)
@@ -200,7 +170,7 @@ defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
       |> Enum.map(& &1.person_id)
       |> Enum.sort()
 
-    text = ctx.created_file.description |> collect_text() |> Enum.join(" ")
+    text = ctx.created_file.description |> HubScopeSteps.collect_text() |> Enum.join(" ")
 
     assert ctx.created_file.node.parent_folder_id == ctx.folder.id
     assert ctx.created_file.node.name == "Quarterly report.png"
@@ -211,11 +181,6 @@ defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
 
     ctx
   end
-
-  defp collect_text(%{"text" => text}), do: [text]
-  defp collect_text(%{"content" => content}) when is_list(content), do: Enum.flat_map(content, &collect_text/1)
-  defp collect_text(list) when is_list(list), do: Enum.flat_map(list, &collect_text/1)
-  defp collect_text(_), do: []
 
   defp storage_path(%Blob{} = blob) do
     Path.join("/media", Blob.path(blob))

@@ -20,4 +20,18 @@ defmodule Operately.CliE2E.Documents.CreateTest do
     |> Steps.assert_document_created_successfully()
     |> Steps.assert_overrides_were_applied()
   end
+
+  test "documents create_document works by project_id", ctx do
+    ctx
+    |> Steps.setup_project()
+    |> Steps.create_document_for_parent()
+    |> Steps.assert_document_created_successfully()
+  end
+
+  test "documents create_document works by goal_id", ctx do
+    ctx
+    |> Steps.setup_goal()
+    |> Steps.create_document_for_parent()
+    |> Steps.assert_document_created_successfully()
+  end
 end

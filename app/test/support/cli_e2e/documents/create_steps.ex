@@ -1,37 +1,21 @@
 defmodule Operately.Support.CliE2E.Documents.CreateSteps do
   use Operately.Support.CliE2E
 
+  alias Operately.Support.CliE2E.Documents.HubScopeSteps
+
   alias Operately.Notifications.SubscriptionList
-  alias Operately.Support.CliE2E.Helpers
+  alias Operately.ResourceHubs.Document
 
   step :setup, ctx do
-    previous = Helpers.enable_auth_methods()
+    HubScopeSteps.setup_base(ctx)
+  end
 
-    on_exit(fn ->
-      Helpers.restore_auth_methods(previous)
-    end)
+  step :setup_project, ctx do
+    HubScopeSteps.init_project_scope(ctx)
+  end
 
-    ctx = Factory.setup(ctx)
-    ctx = Factory.add_space(ctx, :engineering, company_id: ctx.company.id)
-    ctx = Factory.add_company_member(ctx, :subscriber)
-    ctx = Factory.add_resource_hub(ctx, :resource_hub, :engineering, :creator)
-    ctx = Factory.add_api_token(ctx, :api_token, :creator, read_only: false)
-
-    result =
-      run_cli(ctx, [
-        "auth",
-        "login",
-        "--token",
-        ctx.api_token,
-        "--base-url",
-        ctx.cli_base_url,
-        "--profile",
-        "e2e"
-      ])
-
-    ctx
-    |> Map.put(:cli_result, result)
-    |> Map.put(:profile, "e2e")
+  step :setup_goal, ctx do
+    HubScopeSteps.init_goal_scope(ctx)
   end
 
   step :create_document_with_defaults, ctx do
@@ -78,10 +62,31 @@ defmodule Operately.Support.CliE2E.Documents.CreateSteps do
     |> Map.put(:document_name, name)
   end
 
-  step :assert_document_created_successfully, ctx do
-    assert ctx.cli_result.exit_code == 0
+  step :create_document_for_parent, ctx do
+    name = "CLI #{ctx.parent_scope} document"
 
-    payload = Jason.decode!(ctx.cli_result.output)
+    result =
+      run_cli(ctx, [
+        "documents",
+        "create_document"
+        | HubScopeSteps.hub_scope_flag(ctx) ++
+            [
+              "--name",
+              name,
+              "--content",
+              "Document created for #{ctx.parent_scope}"
+            ]
+      ])
+
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:document_name, name)
+  end
+
+  step :assert_document_created_successfully, ctx do
+    HubScopeSteps.assert_cli_success!(ctx)
+
+    payload = HubScopeSteps.cli_payload(ctx)
     document = payload["document"]
 
     assert is_map(document)
@@ -90,9 +95,18 @@ defmodule Operately.Support.CliE2E.Documents.CreateSteps do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(document["id"])
     {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
 
+    document_record =
+      Document
+      |> Repo.get!(id)
+      |> Repo.preload(:node)
+
+    assert document_record.node.resource_hub_id == ctx.expected_resource_hub_id
+
     ctx
     |> Map.put(:created_document_id, id)
+    |> Map.put(:created_document_api_id, document["id"])
     |> Map.put(:subscription_list, list)
+    |> Map.put(:created_document, document_record)
   end
 
   step :assert_defaults_were_applied, ctx do

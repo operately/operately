@@ -1,37 +1,21 @@
-defmodule Operately.Support.CliE2E.Links.CreateSteps do
+defmodule Operately.Support.CliE2E.Documents.CreateLinkSteps do
   use Operately.Support.CliE2E
 
+  alias Operately.Support.CliE2E.Documents.HubScopeSteps
+
   alias Operately.Notifications.SubscriptionList
-  alias Operately.Support.CliE2E.Helpers
+  alias Operately.ResourceHubs.Link
 
   step :setup, ctx do
-    previous = Helpers.enable_auth_methods()
+    HubScopeSteps.setup_base(ctx)
+  end
 
-    on_exit(fn ->
-      Helpers.restore_auth_methods(previous)
-    end)
+  step :setup_project, ctx do
+    HubScopeSteps.init_project_scope(ctx)
+  end
 
-    ctx = Factory.setup(ctx)
-    ctx = Factory.add_space(ctx, :engineering, company_id: ctx.company.id)
-    ctx = Factory.add_company_member(ctx, :subscriber)
-    ctx = Factory.add_resource_hub(ctx, :resource_hub, :engineering, :creator)
-    ctx = Factory.add_api_token(ctx, :api_token, :creator, read_only: false)
-
-    result =
-      run_cli(ctx, [
-        "auth",
-        "login",
-        "--token",
-        ctx.api_token,
-        "--base-url",
-        ctx.cli_base_url,
-        "--profile",
-        "e2e"
-      ])
-
-    ctx
-    |> Map.put(:cli_result, result)
-    |> Map.put(:profile, "e2e")
+  step :setup_goal, ctx do
+    HubScopeSteps.init_goal_scope(ctx)
   end
 
   step :create_link_with_defaults, ctx do
@@ -49,8 +33,7 @@ defmodule Operately.Support.CliE2E.Links.CreateSteps do
         "other"
       ])
 
-    ctx
-    |> Map.put(:cli_result, result)
+    Map.put(ctx, :cli_result, result)
   end
 
   step :create_link_with_overrides, ctx do
@@ -71,14 +54,32 @@ defmodule Operately.Support.CliE2E.Links.CreateSteps do
         ctx.subscriber.id
       ])
 
-    ctx
-    |> Map.put(:cli_result, result)
+    Map.put(ctx, :cli_result, result)
+  end
+
+  step :create_link_for_parent, ctx do
+    result =
+      run_cli(ctx, [
+        "documents",
+        "create_link"
+        | HubScopeSteps.hub_scope_flag(ctx) ++
+            [
+              "--name",
+              "CLI #{ctx.parent_scope} link",
+              "--url",
+              "https://example.com/#{ctx.parent_scope}",
+              "--type",
+              "other"
+            ]
+      ])
+
+    Map.put(ctx, :cli_result, result)
   end
 
   step :assert_link_created_successfully, ctx do
-    assert ctx.cli_result.exit_code == 0
+    HubScopeSteps.assert_cli_success!(ctx)
 
-    payload = Jason.decode!(ctx.cli_result.output)
+    payload = HubScopeSteps.cli_payload(ctx)
     link = payload["link"]
 
     assert is_map(link)
@@ -87,9 +88,18 @@ defmodule Operately.Support.CliE2E.Links.CreateSteps do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(link["id"])
     {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
 
+    link_record =
+      Link
+      |> Repo.get!(id)
+      |> Repo.preload(:node)
+
+    assert link_record.node.resource_hub_id == ctx.expected_resource_hub_id
+
     ctx
     |> Map.put(:created_link_id, id)
+    |> Map.put(:created_link_api_id, link["id"])
     |> Map.put(:subscription_list, list)
+    |> Map.put(:created_link, link_record)
   end
 
   step :assert_defaults_were_applied, ctx do
