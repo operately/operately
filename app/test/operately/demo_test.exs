@@ -200,4 +200,29 @@ defmodule Operately.DemoTest do
 
     assert goal.last_update_status == :caution
   end
+
+  test "creates documents and links in project and goal resource hubs" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
+
+    assert {:ok, project} =
+             Operately.Projects.Project.get(:system, company_id: company.id, name: "Ship collaborative docs beta")
+
+    assert {:ok, goal} =
+             Operately.Goals.Goal.get(:system, company_id: company.id, name: "Grow self-serve revenue")
+
+    project_hub = Operately.ResourceHubs.list_resource_hubs(project) |> List.first()
+    goal_hub = Operately.ResourceHubs.list_resource_hubs(goal) |> List.first()
+
+    project_documents = Operately.ResourceHubs.list_documents(project_hub)
+    project_links = Operately.ResourceHubs.list_links(project_hub)
+    goal_documents = Operately.ResourceHubs.list_documents(goal_hub)
+    goal_links = Operately.ResourceHubs.list_links(goal_hub)
+
+    assert Enum.any?(project_documents, &(Operately.Repo.preload(&1, :node).node.name == "Collaborative Docs Beta Release Plan"))
+    assert Enum.any?(project_links, &(&1.type == :figma))
+    assert Enum.any?(goal_documents, &(Operately.Repo.preload(&1, :node).node.name == "Self-Serve Growth Experiments Log"))
+    assert Enum.any?(goal_links, &(&1.type == :google_sheet))
+  end
 end
