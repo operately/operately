@@ -9,7 +9,7 @@ import { useUploadFile } from "../EditorContext";
 // To activate the file chooser, we need to add a hiden input element to the DOM, with the type=file.
 // Then, when the user clicks the button, we trigger a click event on that input element, which will open the file chooser.
 //
-export function AttachmentButton({ editor, iconSize }): JSX.Element {
+export function AttachmentButton({ editor, iconSize }): JSX.Element | null {
   let ref = React.useRef<HTMLInputElement | null>(null);
   const uploadFile = useUploadFile();
 
@@ -19,6 +19,7 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element {
 
   const addBlob = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!uploadFile) return;
       if (!e.target.files) return;
       if (e.target.files.length === 0) return;
 
@@ -39,6 +40,10 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element {
   const markAsTriggered = React.useCallback(() => {
     ref.current!.setAttribute("data-test-upload-triggered", "true");
   }, [ref]);
+
+  if (!uploadFile) {
+    return null;
+  }
 
   return (
     <>

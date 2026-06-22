@@ -69,7 +69,7 @@ export interface EditorState {
   linkEditActive: boolean;
   setLinkEditActive: (active: boolean) => void;
   mentionedPersonLookup?: MentionedPersonLookupFn;
-  uploadFile: UploadFileFn;
+  uploadFile?: UploadFileFn;
   setContent: (content: any) => void;
   setFocused: (focused: boolean) => void;
   getJson: () => any;
@@ -86,12 +86,6 @@ const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
 export function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
 
-  if (props.editable) {
-    if (!props.handlers.peopleSearch) {
-      throw new Error("peopleSearch function is required when editable is true");
-    }
-  }
-
   const [linkEditActive, setLinkEditActive] = React.useState(false);
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
@@ -100,10 +94,6 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent.current));
   const initialContent = restoredDraft ?? props.content;
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
-
-  const mentionPeople = React.useMemo(() => {
-    return MentionPeople.configure(props.handlers.peopleSearch);
-  }, []);
 
   const editor = TipTap.useEditor({
     editable: props.editable,
@@ -134,7 +124,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       }),
       Link.extend({ inclusive: false }).configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: props.placeholder }),
-      mentionPeople,
+      ...(props.handlers.peopleSearch ? [MentionPeople.configure(props.handlers.peopleSearch)] : []),
       Highlight,
       FakeTextSelection,
     ],
@@ -214,7 +204,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     linkEditActive,
     setLinkEditActive,
     mentionedPersonLookup: props.handlers.mentionedPersonLookup,
-    uploadFile: props.handlers.uploadFile!,
+    uploadFile: props.handlers.uploadFile,
     setContent,
     setFocused,
     getJson,
