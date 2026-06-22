@@ -22,6 +22,7 @@ defmodule Operately.Demo do
           |> Projects.create_projects(data[:projects])
           |> Discussions.create_discussions(data[:discussions])
           |> ResourceHubs.create_documents(data[:documents])
+          |> ResourceHubs.create_links(data[:links])
         end)
       end)
 

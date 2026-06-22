@@ -1,7 +1,7 @@
 defmodule Operately.Demo.ResourceHubs do
   alias Operately.Demo.{Resources, PoorMansMarkdown, Comments}
   alias Operately.ResourceHubs.ResourceHub
-  alias Operately.Operations.ResourceHubDocumentCreating
+  alias Operately.Operations.{ResourceHubDocumentCreating, ResourceHubLinkCreating}
 
   def create_documents(resources, nil), do: resources
 
@@ -11,12 +11,19 @@ defmodule Operately.Demo.ResourceHubs do
     end)
   end
 
-  defp create_document(resources, data) do
-    owner = Resources.get(resources, :owner)
-    space = Resources.get(resources, data.space)
-    {:ok, hub} = ResourceHub.get(:system, space_id: space.id)
+  def create_links(resources, nil), do: resources
 
-    {:ok, document} = ResourceHubDocumentCreating.run(owner, hub, %{
+  def create_links(resources, data) do
+    Resources.create(resources, data, fn {resources, data, _index} ->
+      create_link(resources, data)
+    end)
+  end
+
+  defp create_document(resources, data) do
+    author = Resources.get(resources, data[:author] || :owner)
+    hub = get_hub(resources, data)
+
+    {:ok, document} = ResourceHubDocumentCreating.run(author, hub, %{
       name: data.name,
       content: PoorMansMarkdown.from_markdown(data.content, resources),
       post_as_draft: false,
@@ -28,5 +35,48 @@ defmodule Operately.Demo.ResourceHubs do
     Comments.create_comments(resources, document, data[:comments])
 
     document
+  end
+
+  defp create_link(resources, data) do
+    author = Resources.get(resources, data[:author] || :owner)
+    hub = get_hub(resources, data)
+
+    {:ok, link} = ResourceHubLinkCreating.run(author, hub, %{
+      name: data.name,
+      url: data.url,
+      content: link_content(data, resources),
+      type: data.type,
+      send_to_everyone: true,
+      subscription_parent_type: :resource_hub_link,
+      subscriber_ids: [],
+    })
+
+    link
+  end
+
+  defp link_content(%{content: content}, resources) when is_binary(content) do
+    PoorMansMarkdown.from_markdown(content, resources)
+  end
+
+  defp link_content(_, _resources) do
+    PoorMansMarkdown.from_markdown("", %{})
+  end
+
+  defp get_hub(resources, %{project: project_key}) do
+    project = Resources.get(resources, project_key)
+    {:ok, hub} = ResourceHub.get(:system, project_id: project.id)
+    hub
+  end
+
+  defp get_hub(resources, %{goal: goal_key}) do
+    goal = Resources.get(resources, goal_key)
+    {:ok, hub} = ResourceHub.get(:system, goal_id: goal.id)
+    hub
+  end
+
+  defp get_hub(resources, %{space: space_key}) do
+    space = Resources.get(resources, space_key)
+    {:ok, hub} = ResourceHub.get(:system, space_id: space.id)
+    hub
   end
 end
