@@ -24,20 +24,27 @@ export function buildStoredFileName(filePath: string, overrideName: string | nul
 export function readHubScopeInputs(endpointInputs: Record<string, unknown>): Record<string, string> {
   const spaceId = readOptionalString(endpointInputs.space_id, "space_id");
   const projectId = readOptionalString(endpointInputs.project_id, "project_id");
+  const goalId = readOptionalString(endpointInputs.goal_id, "goal_id");
 
-  if (spaceId && projectId) {
-    throw new UsageError("Provide either --space-id or --project-id, not both.");
+  const parentIds = [spaceId, projectId, goalId].filter((id): id is string => id !== null);
+
+  if (parentIds.length > 1) {
+    throw new UsageError("Provide exactly one of --space-id, --project-id, or --goal-id.");
   }
 
-  if (!spaceId && !projectId) {
-    throw new UsageError("Either --space-id or --project-id is required.");
+  if (parentIds.length === 0) {
+    throw new UsageError("One of --space-id, --project-id, or --goal-id is required.");
   }
 
   if (spaceId) {
     return { space_id: spaceId };
   }
 
-  return { project_id: projectId! };
+  if (projectId) {
+    return { project_id: projectId };
+  }
+
+  return { goal_id: goalId! };
 }
 
 function readOptionalString(value: unknown, fieldName: string): string | null {
