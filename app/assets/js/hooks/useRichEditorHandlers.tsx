@@ -22,6 +22,7 @@ export function useRichEditorHandlers(attrs?: Props): RichEditorHandlers {
         return People.parsePersonForTurboUi(paths, p)!;
       }
 
+      // It never executes if paths is not present
       return {
         id: p.id,
         fullName: p.fullName,
@@ -39,7 +40,6 @@ export function useRichEditorHandlers(attrs?: Props): RichEditorHandlers {
 
   return {
     mentionedPersonLookup,
-    peopleSearch,
-    uploadFile,
+    ...(paths ? { peopleSearch, uploadFile } : {}),
   };
 }
