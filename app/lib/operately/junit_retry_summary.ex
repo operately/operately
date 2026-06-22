@@ -12,13 +12,9 @@ defmodule Operately.JUnitRetrySummary do
   def write!(paths, output_path) do
     summary = summarize(paths)
 
-    if summary.flaky == [] and summary.failed_after_retries == [] do
-      if File.exists?(output_path), do: File.rm(output_path)
-    else
-      File.mkdir_p!(Path.dirname(output_path))
-      File.write!(output_path, to_markdown(summary))
-      log_summary(summary)
-    end
+    File.mkdir_p!(Path.dirname(output_path))
+    File.write!(output_path, to_markdown(summary))
+    log_summary(summary)
 
     :ok
   end
@@ -29,6 +25,7 @@ defmodule Operately.JUnitRetrySummary do
       "# Test retries",
       "",
       job_context_section(),
+      empty_summary_section(summary),
       summary_section("Flaky (passed after retry)", summary.flaky),
       summary_section("Failed after all retries", summary.failed_after_retries)
     ]
@@ -45,15 +42,21 @@ defmodule Operately.JUnitRetrySummary do
     end
   end
 
+  defp empty_summary_section(%{flaky: [], failed_after_retries: []}) do
+    "## Summary\n\nNo tests were retried in this job.\n"
+  end
+
+  defp empty_summary_section(_summary), do: nil
+
   defp job_context do
     name = System.get_env("SEMAPHORE_JOB_NAME")
     index = System.get_env("SEMAPHORE_JOB_INDEX")
     total = System.get_env("SEMAPHORE_JOB_COUNT")
 
     cond do
-      is_binary(name) and name != "" and is_binary(index) and index != "" ->
+      is_binary(name) and name != "" ->
         shard =
-          if is_binary(total) and total != "" do
+          if is_binary(index) and index != "" and is_binary(total) and total != "" do
             " (shard #{index}/#{total})"
           else
             ""
@@ -151,6 +154,9 @@ defmodule Operately.JUnitRetrySummary do
         %{status: :pass} ->
           Map.update!(summary, :flaky, &[entry | &1])
 
+        %{status: :skipped} ->
+          summary
+
         _ ->
           Map.update!(summary, :failed_after_retries, &[entry | &1])
       end
@@ -173,19 +179,24 @@ defmodule Operately.JUnitRetrySummary do
   end
 
   defp log_summary(%{flaky: flaky, failed_after_retries: failed}) do
-    flaky_count = length(flaky)
-    failed_count = length(failed)
-
     IO.puts("")
-    IO.puts("Retry summary: #{flaky_count} flaky, #{failed_count} failed after retries")
 
-    Enum.each(flaky, fn test ->
-      IO.puts("  flaky: #{test.classname} #{test.name} (#{test.attempts} attempts)")
-    end)
+    if flaky == [] and failed == [] do
+      IO.puts("Retry summary: no tests were retried")
+    else
+      flaky_count = length(flaky)
+      failed_count = length(failed)
 
-    Enum.each(failed, fn test ->
-      IO.puts("  failed after retries: #{test.classname} #{test.name} (#{test.attempts} attempts)")
-    end)
+      IO.puts("Retry summary: #{flaky_count} flaky, #{failed_count} failed after retries")
+
+      Enum.each(flaky, fn test ->
+        IO.puts("  flaky: #{test.classname} #{test.name} (#{test.attempts} attempts)")
+      end)
+
+      Enum.each(failed, fn test ->
+        IO.puts("  failed after retries: #{test.classname} #{test.name} (#{test.attempts} attempts)")
+      end)
+    end
 
     IO.puts("")
   end

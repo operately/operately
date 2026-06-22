@@ -118,11 +118,7 @@ blocks:
         always:
           commands:
             - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
-            - |
-              if [ -f app/testreports/retries.md ]; then
-                artifact push job -d .semaphore/REPORT.md app/testreports/retries.md
-                artifact push workflow -f "retries-md/${SEMAPHORE_JOB_NAME}-${SEMAPHORE_JOB_INDEX}.md" app/testreports/retries.md
-              fi
+            - ./scripts/publish_retries_report.sh app/testreports/retries.md
             - artifact push workflow screenshots
 
   - name: CLI Tests
@@ -156,11 +152,7 @@ blocks:
         always:
           commands:
             - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
-            - |
-              if [ -f app/testreports/retries.md ]; then
-                artifact push job -d .semaphore/REPORT.md app/testreports/retries.md
-                artifact push workflow -f "retries-md/${SEMAPHORE_JOB_NAME}-${SEMAPHORE_JOB_INDEX}.md" app/testreports/retries.md
-              fi
+            - ./scripts/publish_retries_report.sh app/testreports/retries.md
 
   - name: Docker Build
     dependencies: []
@@ -187,8 +179,8 @@ after_pipeline:
           - checkout
           - mkdir -p /tmp/retries-md
           - artifact pull workflow retries-md -f -d /tmp/retries-md || true
-          - ./scripts/build_retries_report.sh /tmp/retries-md > /tmp/REPORT.md || true
-          - "[ -s /tmp/REPORT.md ] && artifact push workflow -d .semaphore/REPORT.md /tmp/REPORT.md"
+          - ./scripts/build_retries_report.sh /tmp/retries-md > /tmp/REPORT.md
+          - artifact push workflow -d .semaphore/REPORT.md /tmp/REPORT.md
 
 promotions:
   - name: Populate CI Cache

@@ -61,17 +61,24 @@ defmodule Operately.JUnitRetrySummaryTest do
     assert markdown =~ "first failure"
   end
 
-  test "write!/2 removes the output file when there were no retries" do
+  test "write!/2 writes a no-retries report when nothing was retried" do
     output = Path.join(System.tmp_dir!(), "retries-#{System.unique_integer()}.md")
     initial = Path.join(@fixture_dir, "initial_pass.xml")
-
-    File.write!(output, "# Test retries")
 
     on_exit(fn -> File.rm(output) end)
 
     :ok = JUnitRetrySummary.write!([initial], output)
 
-    refute File.exists?(output)
+    markdown = File.read!(output)
+    assert markdown =~ "# Test retries"
+    assert markdown =~ "No tests were retried in this job."
+  end
+
+  test "to_markdown/1 renders the no-retries summary" do
+    markdown = JUnitRetrySummary.to_markdown(%{flaky: [], failed_after_retries: []})
+
+    assert markdown =~ "No tests were retried in this job."
+    refute markdown =~ "Flaky (passed after retry)"
   end
 
   test "to_markdown/1 renders failed after retries" do
@@ -82,6 +89,19 @@ defmodule Operately.JUnitRetrySummaryTest do
     assert markdown =~ "Failed after all retries"
     assert markdown =~ "still broken"
     refute markdown =~ "Flaky (passed after retry)"
+  end
+
+  test "to_markdown/1 includes job name without shard when only job name is set" do
+    summary = %{flaky: [], failed_after_retries: []}
+
+    System.put_env("SEMAPHORE_JOB_NAME", "EE Tests")
+
+    on_exit(fn -> System.delete_env("SEMAPHORE_JOB_NAME") end)
+
+    markdown = JUnitRetrySummary.to_markdown(summary)
+
+    assert markdown =~ "**Job**: EE Tests"
+    refute markdown =~ "shard"
   end
 
   test "to_markdown/1 includes job context when Semaphore env vars are set" do
