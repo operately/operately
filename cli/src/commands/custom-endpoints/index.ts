@@ -40,6 +40,14 @@ const CUSTOM_ENDPOINTS: CatalogEndpoint[] = [
         default: null,
       },
       {
+        name: "goal_id",
+        type: { kind: "named", name: "id" },
+        optional: true,
+        nullable: true,
+        has_default: false,
+        default: null,
+      },
+      {
         name: "file",
         type: { kind: "named", name: "path" },
         optional: false,
