@@ -5,7 +5,7 @@ defmodule Mix.Tasks.TestsWithRetries do
   @limit 5
   @report_dir "testreports"
   @final_report "junit.xml"
-  @retry_summary "retries.json"
+  @retry_summary "retries.md"
 
   def run(args) do
     report_files = [report_file(0)]

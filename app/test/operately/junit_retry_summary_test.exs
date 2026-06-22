@@ -45,8 +45,8 @@ defmodule Operately.JUnitRetrySummaryTest do
            ]
   end
 
-  test "write!/2 writes retries.json when retries occurred" do
-    output = Path.join(System.tmp_dir!(), "retries-#{System.unique_integer()}.json")
+  test "write!/2 writes retries.md when retries occurred" do
+    output = Path.join(System.tmp_dir!(), "retries-#{System.unique_integer()}.md")
     initial = Path.join(@fixture_dir, "initial_with_failure.xml")
     retry = Path.join(@fixture_dir, "retry_pass.xml")
 
@@ -54,22 +54,52 @@ defmodule Operately.JUnitRetrySummaryTest do
 
     :ok = JUnitRetrySummary.write!([initial, retry], output)
 
-    content = Jason.decode!(File.read!(output))
-    assert length(content["flaky"]) == 1
-    assert content["failed_after_retries"] == []
+    markdown = File.read!(output)
+    assert markdown =~ "# Test retries"
+    assert markdown =~ "Flaky (passed after retry)"
+    assert markdown =~ "test two"
+    assert markdown =~ "first failure"
   end
 
   test "write!/2 removes the output file when there were no retries" do
-    output = Path.join(System.tmp_dir!(), "retries-#{System.unique_integer()}.json")
+    output = Path.join(System.tmp_dir!(), "retries-#{System.unique_integer()}.md")
     initial = Path.join(@fixture_dir, "initial_pass.xml")
 
-    File.write!(output, "{}")
+    File.write!(output, "# Test retries")
 
     on_exit(fn -> File.rm(output) end)
 
     :ok = JUnitRetrySummary.write!([initial], output)
 
     refute File.exists?(output)
+  end
+
+  test "to_markdown/1 renders failed after retries" do
+    summary = summarize(["initial_with_failure.xml", "retry_still_failing.xml"])
+
+    markdown = JUnitRetrySummary.to_markdown(summary)
+
+    assert markdown =~ "Failed after all retries"
+    assert markdown =~ "still broken"
+    refute markdown =~ "Flaky (passed after retry)"
+  end
+
+  test "to_markdown/1 includes job context when Semaphore env vars are set" do
+    summary = summarize(["initial_with_failure.xml", "retry_pass.xml"])
+
+    System.put_env("SEMAPHORE_JOB_NAME", "Features")
+    System.put_env("SEMAPHORE_JOB_INDEX", "3")
+    System.put_env("SEMAPHORE_JOB_COUNT", "18")
+
+    on_exit(fn ->
+      System.delete_env("SEMAPHORE_JOB_NAME")
+      System.delete_env("SEMAPHORE_JOB_INDEX")
+      System.delete_env("SEMAPHORE_JOB_COUNT")
+    end)
+
+    markdown = JUnitRetrySummary.to_markdown(summary)
+
+    assert markdown =~ "**Job**: Features (shard 3/18)"
   end
 
   defp summarize(filenames) do
