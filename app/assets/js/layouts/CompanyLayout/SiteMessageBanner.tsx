@@ -4,7 +4,7 @@ import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as People from "@/models/people";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
-import { IconInfoCircleFilled, IconX, RichContent } from "turboui";
+import { IconX, RichContent } from "turboui";
 
 const STORAGE_NAMESPACE = "announcements";
 const STORAGE_KEY = "dismissed-site-message-ids";
@@ -45,10 +45,6 @@ export function SiteMessageBanner() {
     >
       <div className="mx-auto flex max-w-7xl items-start justify-between gap-4 px-4 py-3">
         <div className="flex min-w-0 flex-1 items-start gap-3">
-          <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-yellow-200 bg-yellow-100 text-yellow-700 shadow-sm">
-            <IconInfoCircleFilled size={18} />
-          </div>
-
           <div className="min-w-0 flex-1">
             <div className="text-sm font-semibold text-yellow-950">{visibleMessage.title}</div>
             <MessageDescription description={visibleMessage.description} />
