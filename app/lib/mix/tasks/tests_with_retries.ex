@@ -1,9 +1,11 @@
 defmodule Mix.Tasks.TestsWithRetries do
   alias Operately.JUnitReportMerger
+  alias Operately.JUnitRetrySummary
 
   @limit 5
   @report_dir "testreports"
   @final_report "junit.xml"
+  @retry_summary "retries.md"
 
   def run(args) do
     report_files = [report_file(0)]
@@ -57,6 +59,7 @@ defmodule Mix.Tasks.TestsWithRetries do
     output_path = Path.join(@report_dir, final_report())
 
     :ok = JUnitReportMerger.merge!(input_paths, output_path)
+    :ok = JUnitRetrySummary.write!(input_paths, Path.join(@report_dir, @retry_summary))
 
     Enum.each(input_paths, fn path ->
       if path != output_path, do: File.rm(path)
