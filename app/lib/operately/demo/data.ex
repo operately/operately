@@ -3328,6 +3328,548 @@ defmodule Operately.Demo.Data do
           - Compliance requirements
           """
         },
+        %{
+          key: :collaborative_docs_beta_plan,
+          project: :develop_collaborative_features,
+          author: :walter_baker,
+          name: "Collaborative Docs Beta Release Plan",
+          content: """
+          Plan for rolling out the collaborative docs beta to power users and collecting structured feedback before the wider release.
+
+          ### Beta cohort
+
+          - 12 accounts with active document workflows
+          - Weekly office hours with product and engineering
+          - Shared Slack channel for fast feedback
+
+          ### Release milestones
+
+          1. Enable presence and inline comments for the beta cohort
+          2. Ship release notes template and onboarding checklist
+          3. Review adoption metrics and decide on general availability timing
+          """,
+          comments: [
+            %{
+              author: :frank_miller,
+              content: """
+              Let's make sure the onboarding checklist covers how teams invite collaborators outside the beta cohort.
+              """
+            }
+          ]
+        },
+        %{
+          key: :beta_feedback_summary,
+          project: :develop_collaborative_features,
+          author: :diego_ramirez,
+          name: "Beta Customer Feedback Summary",
+          content: """
+          Summary of feedback collected during the collaborative docs beta.
+
+          ### Top themes
+
+          - Real-time presence is the most requested improvement
+          - Comment resolution needs clearer status indicators
+          - Teams want export options for release notes
+
+          ### Next actions
+
+          - Prioritize resolved-comment filtering in the next sprint
+          - Add a lightweight export flow for published docs
+          """
+        },
+        %{
+          key: :enterprise_research_synthesis,
+          project: :conduct_market_research_enterprise,
+          author: :paul_young,
+          name: "Enterprise Segment Research Synthesis",
+          content: """
+          Synthesis of interviews and pipeline data for the enterprise segment validation workstream.
+
+          ### Findings
+
+          - Security review and procurement timelines are the main blockers
+          - Teams want clearer admin controls before expanding seat counts
+          - Case studies from similar SaaS companies accelerate trust
+
+          ### Recommended next steps
+
+          - Publish a security FAQ for sales calls
+          - Package admin controls into a single onboarding guide
+          """
+        },
+        %{
+          key: :collaboration_adoption_playbook,
+          goal: :enhance_product_functionality,
+          author: :liam_harris,
+          name: "Collaboration Feature Adoption Playbook",
+          content: """
+          Playbook for driving adoption of new collaboration workflows across customer accounts.
+
+          ### Adoption signals
+
+          - Weekly active collaborators per account
+          - Documents with more than one editor in a 7-day window
+          - Comment threads resolved within 48 hours
+
+          ### Enablement assets
+
+          - In-app checklist for first collaborative edit
+          - Customer success call script for rollout planning
+          - Sample workspace template for cross-functional teams
+          """
+        },
+        %{
+          key: :self_serve_growth_experiments,
+          goal: :accelerate_user_growth,
+          author: :emily_davis,
+          name: "Self-Serve Growth Experiments Log",
+          content: """
+          Running log of experiments supporting self-serve revenue growth.
+
+          ### Active experiments
+
+          - Referral incentive test for annual plans
+          - Trial onboarding email sequence refresh
+          - Paid search landing page variant for product-led buyers
+
+          ### Learnings
+
+          - Shorter onboarding paths improved trial activation
+          - Referral prompts work best after the first completed workflow
+          """
+        },
+        %{
+          key: :referral_program_rollout_guide,
+          project: :implement_in_app_referral_program,
+          author: :olivia_hall,
+          name: "Referral Program Rollout Guide",
+          content: """
+          Internal guide for launching and supporting the in-app referral program.
+
+          ### Pilot scope
+
+          - 50 accounts with high NPS scores
+          - Account credit rewards approved by finance
+          - Support macros for common referral questions
+
+          ### Launch checklist
+
+          1. Enable referral CTA in settings and post-onboarding
+          2. Verify reward fulfillment workflow with billing
+          3. Monitor invite-to-paid conversion daily for the first two weeks
+          """,
+          comments: [
+            %{
+              author: :emily_davis,
+              content: """
+              Can we add a section on how support should handle duplicate invites from the same domain?
+              """
+            }
+          ]
+        },
+        %{
+          key: :eu_onboarding_localization_notes,
+          project: :develop_international_expansion,
+          author: :rachel_king,
+          name: "EU Onboarding Localization Notes",
+          content: """
+          Working notes for the first EU onboarding launch in Germany and France.
+
+          ### Localization priorities
+
+          - Welcome email sequence and in-app onboarding tips
+          - Support article links for billing and data residency questions
+          - Customer proof points localized for DACH and France
+
+          ### Open items
+
+          - Legal review of GDPR language in trial signup flow
+          - Final approval on French microcopy for the first-run checklist
+          """
+        },
+        %{
+          key: :series_a_narrative_draft,
+          project: :prepare_series_a,
+          author: :martin_smith,
+          name: "Series A Narrative Draft",
+          content: """
+          Draft investor narrative for the Series A process.
+
+          ### Story pillars
+
+          - Strong product-led growth with improving trial conversion
+          - Expanding enterprise pipeline with repeatable onboarding
+          - Clear path from collaboration beta to broader platform adoption
+
+          ### Supporting metrics
+
+          - ARR growth and net revenue retention trends
+          - CAC payback improvements from paid acquisition work
+          - Runway extension plan tied to expansion revenue
+          """
+        },
+        %{
+          key: :paid_acquisition_test_log,
+          project: :refine_ad_targeting,
+          author: :noah_lewis,
+          name: "Paid Acquisition Test Log",
+          content: """
+          Running log of paid acquisition experiments and audience tests.
+
+          ### Current tests
+
+          - Operations leader lookalike audiences on LinkedIn
+          - Founder-led team creative vs. department-head creative
+          - Landing page variant with customer proof above the fold
+
+          ### Early results
+
+          - Operations audiences convert at 1.4x the baseline
+          - Shorter headlines outperform feature-heavy copy on mobile
+          """
+        },
+        %{
+          key: :process_template_library_spec,
+          project: :create_process_templates,
+          author: :karen_martinez,
+          name: "Process Template Library Spec",
+          content: """
+          Specification for the shared process template library rollout.
+
+          ### Template categories
+
+          - Quarterly planning and OKR setup
+          - Project kickoff and milestone review
+          - Customer onboarding and handoff
+
+          ### Quality bar
+
+          - Each template includes owner, reviewer, and example tasks
+          - Templates must be usable without customization for common workflows
+          """
+        },
+        %{
+          key: :ux_designer_interview_scorecard,
+          project: :hire_ux_designer,
+          author: :diego_ramirez,
+          name: "UX Designer Interview Scorecard",
+          content: """
+          Scorecard and interview plan for the senior UX designer search.
+
+          ### Evaluation criteria
+
+          - Systems thinking across complex workflows
+          - Collaboration with product and engineering in prior roles
+          - Portfolio depth in B2B SaaS onboarding and admin experiences
+
+          ### Interview stages
+
+          1. Portfolio review with design and product
+          2. Workflow critique using a real Operately scenario
+          3. Cross-functional collaboration panel
+          """
+        },
+        %{
+          key: :market_expansion_playbook,
+          goal: :expand_into_new_markets,
+          author: :paul_young,
+          name: "Market Expansion Playbook",
+          content: """
+          Playbook for validating and launching repeatable market segments.
+
+          ### Segment validation checklist
+
+          - Clear buyer persona and budget owner
+          - Repeatable sales motion without custom implementation
+          - Onboarding path that works without heavy services support
+
+          ### Current focus segments
+
+          - Mid-market operations teams in North America
+          - EU product-led growth companies entering their first international market
+          """
+        },
+        %{
+          key: :trial_conversion_optimization_notes,
+          goal: :increase_user_acquisition,
+          author: :rachel_king,
+          name: "Trial Conversion Optimization Notes",
+          content: """
+          Notes on improving trial-to-paid conversion across acquisition channels.
+
+          ### Friction points
+
+          - Teams stall after creating their first project
+          - Invite flows are unclear for cross-functional onboarding
+          - Pricing page visits happen late in the trial window
+
+          ### Experiments in flight
+
+          - Guided first-week checklist in the product
+          - Trial extension prompt tied to completed core workflow
+          """
+        },
+        %{
+          key: :runway_and_revenue_review,
+          goal: :ensure_financial_stability,
+          author: :martin_smith,
+          name: "Runway and Revenue Review",
+          content: """
+          Monthly review of runway, MRR growth, and spend controls ahead of Series A.
+
+          ### Current snapshot
+
+          - Runway below target; hiring pace under review
+          - MRR trending up but behind the quarterly plan
+          - Expansion revenue from annual upgrades offsetting some churn
+
+          ### Actions
+
+          - Tighten discretionary marketing spend until CAC stabilizes
+          - Prioritize accounts with expansion potential in customer success outreach
+          """
+        },
+        %{
+          key: :activation_retention_review,
+          goal: :improve_product,
+          author: :frank_miller,
+          name: "Activation and Retention Review",
+          content: """
+          Quarterly review of activation and retention drivers across core workflows.
+
+          ### Positive signals
+
+          - Faster time to first completed task after onboarding refresh
+          - Lower early churn among teams that invite collaborators in week one
+
+          ### Risks
+
+          - Power users want deeper collaboration features before renewal
+          - Admin setup still blocks some mid-market rollouts
+          """
+        },
+        %{
+          key: :idp_rollout_guide,
+          goal: :expand_team_capabilities,
+          author: :grace_wilson,
+          name: "Individual Development Plan Rollout Guide",
+          content: """
+          Guide for managers rolling out individual development plans across the company.
+
+          ### Rollout phases
+
+          1. Manager training on goal-setting conversations
+          2. Template distribution and first draft deadlines
+          3. Quarterly check-ins tied to team development goals
+
+          ### Success measures
+
+          - Percentage of team members with approved plans
+          - Manager completion of development check-ins each quarter
+          """
+        },
+        %{
+          key: :core_process_documentation_index,
+          goal: :document_core_business_processes,
+          author: :karen_martinez,
+          name: "Core Process Documentation Index",
+          content: """
+          Index of priority business processes being documented company-wide.
+
+          ### In progress
+
+          - Customer onboarding and handoff
+          - Quarterly planning and goal alignment
+          - Incident response and support escalation
+
+          ### Standards
+
+          - Each process doc lists owner, triggers, steps, and tools
+          - Review cadence is quarterly unless the workflow changes sooner
+          """
+        },
+      ],
+      links: [
+        %{
+          key: :collaboration_wireframes,
+          project: :develop_collaborative_features,
+          author: :diego_ramirez,
+          name: "Collaboration Wireframes",
+          url: "https://www.figma.com/file/collaborative-docs-wireframes",
+          type: :figma,
+          content: "Latest wireframes for comments, presence, and release notes flows."
+        },
+        %{
+          key: :beta_feedback_tracker,
+          project: :develop_collaborative_features,
+          author: :walter_baker,
+          name: "Beta Tester Feedback Tracker",
+          url: "https://www.notion.so/beta-feedback-tracker",
+          type: :notion,
+          content: "Shared tracker for beta issues, requests, and rollout decisions."
+        },
+        %{
+          key: :enterprise_account_scoring,
+          project: :conduct_market_research_enterprise,
+          author: :paul_young,
+          name: "Qualified Account Scoring Matrix",
+          url: "https://docs.google.com/spreadsheets/d/enterprise-account-scoring",
+          type: :google_sheet,
+          content: "Scoring model for ranking enterprise prospects by fit and urgency."
+        },
+        %{
+          key: :feature_adoption_dashboard,
+          goal: :enhance_product_functionality,
+          author: :liam_harris,
+          name: "Feature Adoption Dashboard",
+          url: "https://docs.google.com/document/d/collaboration-adoption-dashboard",
+          type: :google_doc,
+          content: "Weekly dashboard tracking collaboration workflow adoption across beta accounts."
+        },
+        %{
+          key: :pipeline_conversion_tracker,
+          goal: :accelerate_user_growth,
+          author: :rachel_king,
+          name: "Pipeline and Conversion Tracker",
+          url: "https://docs.google.com/spreadsheets/d/pipeline-conversion-tracker",
+          type: :google_sheet,
+          content: "Live view of trial starts, qualified pipeline, and conversion experiments."
+        },
+        %{
+          key: :referral_reward_rules,
+          project: :implement_in_app_referral_program,
+          author: :olivia_hall,
+          name: "Referral Reward Rules",
+          url: "https://docs.google.com/document/d/referral-reward-rules",
+          type: :google_doc,
+          content: "Approved reward structure, eligibility rules, and finance sign-off notes."
+        },
+        %{
+          key: :referral_pilot_dashboard,
+          project: :implement_in_app_referral_program,
+          author: :emily_davis,
+          name: "Referral Pilot Dashboard",
+          url: "https://docs.google.com/spreadsheets/d/referral-pilot-metrics",
+          type: :google_sheet,
+          content: "Daily invite, signup, and paid conversion metrics for the referral pilot."
+        },
+        %{
+          key: :eu_localization_copy_deck,
+          project: :develop_international_expansion,
+          author: :rachel_king,
+          name: "EU Localization Copy Deck",
+          url: "https://docs.google.com/presentation/d/eu-onboarding-copy",
+          type: :google_slides,
+          content: "German and French onboarding copy with legal review comments."
+        },
+        %{
+          key: :series_a_financial_model,
+          project: :prepare_series_a,
+          author: :martin_smith,
+          name: "Series A Financial Model",
+          url: "https://docs.google.com/spreadsheets/d/series-a-financial-model",
+          type: :google_sheet,
+          content: "Three-year revenue, hiring, and runway model for investor conversations."
+        },
+        %{
+          key: :investor_meeting_deck,
+          project: :prepare_series_a,
+          author: :owner,
+          name: "Investor Meeting Deck",
+          url: "https://docs.google.com/presentation/d/series-a-investor-deck",
+          type: :google_slides,
+          content: "Working deck for advisor reviews and initial investor meetings."
+        },
+        %{
+          key: :paid_ads_creative_board,
+          project: :refine_ad_targeting,
+          author: :sasha_park,
+          name: "Paid Ads Creative Board",
+          url: "https://www.figma.com/file/paid-acquisition-creative",
+          type: :figma,
+          content: "Creative variants and audience notes for current acquisition tests."
+        },
+        %{
+          key: :process_template_examples,
+          project: :create_process_templates,
+          author: :karen_martinez,
+          name: "Process Template Examples",
+          url: "https://www.notion.so/process-template-examples",
+          type: :notion,
+          content: "Example templates and usage notes for the shared library rollout."
+        },
+        %{
+          key: :ux_candidate_pipeline,
+          project: :hire_ux_designer,
+          author: :grace_wilson,
+          name: "UX Candidate Pipeline",
+          url: "https://airtable.com/ux-designer-pipeline",
+          type: :airtable,
+          content: "Candidate stages, interview feedback, and reference check status."
+        },
+        %{
+          key: :enterprise_interview_recordings,
+          project: :conduct_market_research_enterprise,
+          author: :paul_young,
+          name: "Enterprise Interview Recordings",
+          url: "https://www.dropbox.com/enterprise-interview-recordings",
+          type: :dropbox,
+          content: "Recorded prospect interviews and annotated notes for the enterprise segment."
+        },
+        %{
+          key: :eu_market_research_folder,
+          goal: :expand_into_new_markets,
+          author: :paul_young,
+          name: "EU Market Research Folder",
+          url: "https://www.dropbox.com/eu-market-research",
+          type: :dropbox,
+          content: "Interview notes, competitor scans, and localization research for EU expansion."
+        },
+        %{
+          key: :conversion_experiment_tracker,
+          goal: :increase_user_acquisition,
+          author: :rachel_king,
+          name: "Conversion Experiment Tracker",
+          url: "https://www.notion.so/trial-conversion-experiments",
+          type: :notion,
+          content: "Experiment backlog, results, and next tests for trial-to-paid conversion."
+        },
+        %{
+          key: :board_metrics_dashboard,
+          goal: :ensure_financial_stability,
+          author: :martin_smith,
+          name: "Board Metrics Dashboard",
+          url: "https://docs.google.com/spreadsheets/d/board-metrics-dashboard",
+          type: :google_sheet,
+          content: "Monthly runway, MRR, and operating metric view for leadership reviews."
+        },
+        %{
+          key: :churn_analysis_doc,
+          goal: :improve_product,
+          author: :frank_miller,
+          name: "Churn Analysis Doc",
+          url: "https://docs.google.com/document/d/churn-analysis-q2",
+          type: :google_doc,
+          content: "Cohort churn patterns and product friction themes from recent exits."
+        },
+        %{
+          key: :idp_template_library,
+          goal: :expand_team_capabilities,
+          author: :grace_wilson,
+          name: "IDP Template Library",
+          url: "https://docs.google.com/document/d/idp-template-library",
+          type: :google_doc,
+          content: "Manager templates and examples for individual development plans."
+        },
+        %{
+          key: :process_docs_backlog,
+          goal: :document_core_business_processes,
+          author: :karen_martinez,
+          name: "Process Docs Backlog",
+          url: "https://www.notion.so/process-documentation-backlog",
+          type: :notion,
+          content: "Prioritized backlog of business processes to document and their owners."
+        },
       ]
     }
   end
