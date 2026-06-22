@@ -16,7 +16,7 @@ import { StrikeButton } from "./StrikeButton";
 import { UndoButton } from "./UndoButton";
 
 import { useWindowSizeBreakpoints } from "../../utils/useWindowSizeBreakpoint";
-import { useTipTapEditor } from "../EditorContext";
+import { useTipTapEditor, useUploadFile } from "../EditorContext";
 import { LinkEditForm } from "../LinkEditForm";
 import { CodeBlockButton } from "./CodeBlockButton";
 import { ColorPicker } from "./ColorPicker";
@@ -34,6 +34,7 @@ export function Toolbar(): JSX.Element {
 
 function DesktopToolbar() {
   const editor = useTipTapEditor();
+  const uploadFile = useUploadFile();
   const border = "border-b";
 
   return (
@@ -65,8 +66,12 @@ function DesktopToolbar() {
           </div>
 
           <div className="flex items-center gap-1">
-            <AttachmentButton editor={editor} iconSize={20} />
-            <Separator />
+            {uploadFile ? (
+              <>
+                <AttachmentButton editor={editor} iconSize={20} />
+                <Separator />
+              </>
+            ) : null}
             <UndoButton editor={editor} iconSize={20} />
             <RedoButton editor={editor} iconSize={20} />
           </div>
@@ -81,6 +86,7 @@ function DesktopToolbar() {
 function MobileToolbar() {
   const border = "border-y";
   const editor = useTipTapEditor();
+  const uploadFile = useUploadFile();
 
   return (
     <div className="sticky bg-surface-base z-10 rounded-t-lg top-0">
@@ -94,7 +100,7 @@ function MobileToolbar() {
             <H2Button editor={editor} iconSize={20} />
             <ColorPicker editor={editor} iconSize={18} />
             <BulletListButton editor={editor} iconSize={20} />
-            <AttachmentButton editor={editor} iconSize={20} />
+            {uploadFile ? <AttachmentButton editor={editor} iconSize={20} /> : null}
           </div>
 
           <MobilePopupTools>
