@@ -114,22 +114,28 @@ defmodule Operately.Support.Features.UI do
     query = Query.css(".ProseMirror[contenteditable=true]")
 
     execute("mention_person_in_rich_text", state, fn session ->
-      session
-      |> Browser.find(query, fn element ->
-        element
-        |> Browser.send_keys(["@", name])
-        |> sleep(500)
-        |> Browser.send_keys([:enter])
+      session =
+        session
+        |> Browser.find(query, fn element ->
+          element |> Browser.send_keys(["@", name])
+        end)
+
+      session =
+        case Wallaby.Browser.retry(fn ->
+               if Browser.has_text?(session, name), do: {:ok, session}, else: {:error, :not_yet}
+             end) do
+          {:ok, session} -> session
+          {:error, _} -> sleep(session, 500)
+        end
+
+      Browser.find(session, query, fn element ->
+        element |> Browser.send_keys([:enter])
       end)
     end)
   end
 
   defp mention_name(%Person{} = person), do: Person.first_name(person)
   defp mention_name(name) when is_binary(name), do: name
-
-  defp mention_name(value) do
-    raise ArgumentError, "Unsupported mention target: #{inspect(value)}"
-  end
 
   def assert_has(state, testid: id) do
     assert_has(state, query(testid: id))

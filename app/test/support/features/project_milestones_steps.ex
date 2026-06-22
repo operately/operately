@@ -412,10 +412,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :assert_comment, ctx, comment do
-    ctx
-    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
-      UI.assert_text(el, comment)
-    end)
+    UI.wait_until_text(ctx, comment, testid: "timeline-section")
   end
 
   step :assert_project_milestones_zero_state, ctx do
@@ -592,34 +589,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :assert_comment_visible_in_feed, ctx, comment do
+    author = Operately.People.Person.first_name(ctx.champion)
+    title = "commented on the #{ctx.milestone.title} milestone"
+
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el
-      |> FeedSteps.assert_project_milestone_commented(
-        author: ctx.champion,
-        milestone_tile: ctx.milestone.title,
-        comment: comment
-      )
-    end)
+    |> assert_milestone_comment_in_feed("project-feed", author, title, comment)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.find(UI.query(testid: "space-feed"), fn el ->
-      el
-      |> FeedSteps.assert_project_milestone_commented(
-        author: ctx.champion,
-        milestone_tile: ctx.milestone.title,
-        comment: comment
-      )
-    end)
+    |> assert_milestone_comment_in_feed("space-feed", author, title, comment)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.find(UI.query(testid: "company-feed"), fn el ->
-      el
-      |> FeedSteps.assert_project_milestone_commented(
-        author: ctx.champion,
-        milestone_tile: ctx.milestone.title,
-        comment: comment
-      )
-    end)
+    |> assert_milestone_comment_in_feed("company-feed", author, title, comment)
   end
 
   step :assert_comment_visible_in_feed_after_deletion, ctx, comment do
@@ -988,5 +967,12 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       ctx.comment
     end
     |> OperatelyWeb.Paths.comment_id()
+  end
+
+  defp assert_milestone_comment_in_feed(ctx, testid, author, title, comment) do
+    ctx
+    |> UI.wait_until_text(author, testid: testid)
+    |> UI.wait_until_text(title, testid: testid)
+    |> UI.wait_until_text(comment, testid: testid)
   end
 end
