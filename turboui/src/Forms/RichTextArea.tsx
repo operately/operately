@@ -48,7 +48,7 @@ export function RichTextArea({
     }
 
     editor.editor.commands.setContent(value);
-  }, [editor.editor, editor.localDraftRestored, value]);
+  }, [editor.editor, editor.localDraftRestored]);
 
   React.useEffect(() => {
     if (!editor.editor || !editor.localDraftRestored) {
