@@ -17,7 +17,9 @@ function MessageDescription({ description }: { description: string }) {
       content={description}
       mentionedPersonLookup={mentionedPersonLookup}
       parseContent
-      className="mt-1 text-sm leading-6 text-yellow-900 [&_a]:text-yellow-950 [&_a]:underline [&_p+p]:mt-2"
+      // RichContent renders block wrappers; contents + inline <p> lets the description
+      // flow after the bold title as one paragraph instead of a separate column.
+      className="contents text-yellow-900 [&_div]:contents [&_p]:inline [&_p]:m-0 [&_a]:text-yellow-950 [&_a]:underline"
     />
   );
 }
@@ -45,8 +47,9 @@ export function SiteMessageBanner() {
     >
       <div className="mx-auto flex max-w-7xl items-start justify-between gap-4 px-4 py-3">
         <div className="flex min-w-0 flex-1 items-start gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-semibold text-yellow-950">{visibleMessage.title}</div>
+          <div className="min-w-0 flex-1 text-sm leading-6 text-yellow-950">
+            <span className="font-semibold">{visibleMessage.title}</span>
+            {": "}
             <MessageDescription description={visibleMessage.description} />
           </div>
         </div>
