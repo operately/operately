@@ -10,7 +10,15 @@ defmodule Operately.CliE2E.Documents.CreateFileTest do
   test "documents create_file uploads a file by project_id", ctx do
     ctx
     |> Steps.setup_project()
-    |> Steps.create_file_for_project()
+    |> Steps.create_file_for_parent()
+    |> Steps.assert_file_created_successfully()
+    |> Steps.assert_defaults_were_applied()
+  end
+
+  test "documents create_file uploads a file by goal_id", ctx do
+    ctx
+    |> Steps.setup_goal()
+    |> Steps.create_file_for_parent()
     |> Steps.assert_file_created_successfully()
     |> Steps.assert_defaults_were_applied()
   end
