@@ -55,6 +55,29 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
     assert hd(res.files).id == Paths.file_id(hd(files))
   end
 
+  test "creates file by goal_id", ctx do
+    ctx =
+      ctx
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.fetch_default_goal_resource_hub(:goal_hub, :goal)
+
+    assert {200, res} =
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{
+               goal_id: Paths.goal_id(ctx.goal),
+               files: [
+                 %{
+                   blob_id: ctx.blob.id,
+                   name: "Goal file",
+                   description: RichText.rich_text("description", :as_string)
+                 }
+               ]
+             })
+
+    files = ResourceHubs.list_files(ctx.goal_hub)
+    assert length(files) == 1
+    assert hd(res.files).id == Paths.file_id(hd(files))
+  end
+
   test "requires hub scope", ctx do
     assert {400, _} =
              external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{

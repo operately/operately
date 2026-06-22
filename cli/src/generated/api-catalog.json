@@ -1051,6 +1051,17 @@
           },
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "parent_folder",
             "type": {
               "name": "resource_hub_folder",
@@ -2674,6 +2685,17 @@
           },
           {
             "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "parent_folder",
             "type": {
               "name": "resource_hub_folder",
@@ -3042,6 +3064,17 @@
             "name": "project",
             "type": {
               "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
               "kind": "named"
             },
             "optional": true,
@@ -7045,6 +7078,17 @@
             "name": "project",
             "type": {
               "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
               "kind": "named"
             },
             "optional": true,
@@ -18877,6 +18921,17 @@
         },
         {
           "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
           "name": "folder_id",
           "type": {
             "name": "id",
@@ -19004,6 +19059,17 @@
         },
         {
           "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
           "name": "folder_id",
           "type": {
             "name": "id",
@@ -19063,6 +19129,17 @@
         {
           "default": null,
           "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "goal_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -19968,6 +20045,17 @@
         {
           "default": null,
           "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "goal_id",
           "type": {
             "name": "id",
             "kind": "named"

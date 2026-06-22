@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLink do
   inputs do
     field? :space_id, :id, null: true
     field? :project_id, :id, null: true
+    field? :goal_id, :id, null: true
     field? :folder_id, :id, null: true
     field :name, :string, null: false
     field :url, :string, null: false

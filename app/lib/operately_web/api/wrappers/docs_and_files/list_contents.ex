@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents do
   inputs do
     field? :space_id, :id, null: true
     field? :project_id, :id, null: true
+    field? :goal_id, :id, null: true
     field? :folder_id, :id, null: true
     field? :include_comments_count, :boolean, null: true
     field? :include_children_count, :boolean, null: true

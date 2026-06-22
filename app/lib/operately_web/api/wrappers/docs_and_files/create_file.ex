@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFile do
   inputs do
     field? :space_id, :id, null: true
     field? :project_id, :id, null: true
+    field? :goal_id, :id, null: true
     field? :folder_id, :id, null: true
     field :files, list_of(:resource_hub_uploaded_file), null: false
     field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true

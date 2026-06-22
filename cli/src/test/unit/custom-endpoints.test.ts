@@ -199,7 +199,7 @@ describe("documents/create_file", () => {
       executeCustomEndpointCommand(buildInput("documents/create_file", { file: "./report.pdf" }), {}),
       (error: unknown) => {
         assert.ok(error instanceof UsageError);
-        assert.equal(error.message, "Either --space-id or --project-id is required.");
+        assert.equal(error.message, "One of --space-id, --project-id, or --goal-id is required.");
         return true;
       },
     );
@@ -217,7 +217,7 @@ describe("documents/create_file", () => {
       ),
       (error: unknown) => {
         assert.ok(error instanceof UsageError);
-        assert.equal(error.message, "Provide either --space-id or --project-id, not both.");
+        assert.equal(error.message, "Provide exactly one of --space-id, --project-id, or --goal-id.");
         return true;
       },
     );

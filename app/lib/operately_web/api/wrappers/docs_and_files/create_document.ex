@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateDocument do
   inputs do
     field? :space_id, :id, null: true
     field? :project_id, :id, null: true
+    field? :goal_id, :id, null: true
     field? :folder_id, :id, null: true
     field :name, :string, null: false
     field :content, :json, null: false

@@ -44,6 +44,24 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateDocumentTest do
     assert res.document.id == Paths.document_id(hd(documents))
   end
 
+  test "creates document by goal_id", ctx do
+    ctx =
+      ctx
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.fetch_default_goal_resource_hub(:goal_hub, :goal)
+
+    assert {200, res} =
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_document", %{
+               goal_id: Paths.goal_id(ctx.goal),
+               name: "Goal document",
+               content: RichText.rich_text("content", :as_string)
+             })
+
+    documents = ResourceHubs.list_documents(ctx.goal_hub)
+    assert length(documents) == 1
+    assert res.document.id == Paths.document_id(hd(documents))
+  end
+
   test "requires hub scope", ctx do
     assert {400, _} =
              external_mutation(ctx.conn, ctx.api_token, "documents/create_document", %{
