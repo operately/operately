@@ -18,6 +18,7 @@ import { ProjectPermissions } from "../ProjectPage/types";
 import { MoveModal } from "./MoveModal";
 import { SpaceField } from "../SpaceField";
 import { ProjectField } from "../ProjectField";
+import type { FormattedTimePreferences } from "../FormattedTime";
 
 export namespace TaskPage {
   export type MoveDestinationType = "project" | "space";
@@ -140,6 +141,7 @@ export namespace TaskPage {
     onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
     onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
     timelineFilters?: TimelineFilters;
+    formattedTimePreferences: FormattedTimePreferences;
   };
 
   export type ContentProps = Pick<
@@ -184,6 +186,7 @@ export namespace TaskPage {
     | "onAddReaction"
     | "onRemoveReaction"
     | "timelineFilters"
+    | "formattedTimePreferences"
   >;
 
   export interface ContentState extends ContentProps {
@@ -262,6 +265,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     onAddReaction: props.onAddReaction,
     onRemoveReaction: props.onRemoveReaction,
     timelineFilters: props.timelineFilters,
+    formattedTimePreferences: props.formattedTimePreferences,
 
     ...deleteModalState,
     ...moveModalState,

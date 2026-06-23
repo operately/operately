@@ -25,6 +25,7 @@ import { fetchAll } from "../../utils/async";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import {
   folders,
   getDraftEditPath,
@@ -236,6 +237,7 @@ function Page() {
   const spaceSearch = useSpaceSearch();
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const checklists = useChecklists({ goalId: goal.id, initialChecklist: goal.checklist || [] });
   const goalDocsAndFilesProps = useGoalDocsAndFilesProps({ docsAndFiles, goalId: goal.id, onRefresh: refresh });
@@ -349,6 +351,7 @@ function Page() {
     updateChecklistItemIndex: checklists.updateIndex,
 
     activityFeed: <GoalFeedItems goalId={goal.id} />,
+    formattedTimePreferences,
   };
 
   return <GoalPage key={goal.id} {...props} />;

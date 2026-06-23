@@ -6,6 +6,7 @@ import { ToasterBar } from "../src/Toasts";
 import { RouterDecorator } from "./router";
 
 import "./global.css";
+import "../src/i18n";
 
 window.STORYBOOK_ENV = true;
 

@@ -6,6 +6,7 @@ import { Person } from "../CommentSection/types";
 import { Page } from "../Page";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
 const meta: Meta<typeof Timeline> = {
   title: "Components/Timeline",
@@ -187,6 +188,7 @@ const createMockProps = (items: TimelineItem[]): TimelineProps => ({
     console.log("Remove reaction:", commentId, reactionId);
   },
   richTextHandlers: createMockRichEditorHandlers(),
+  formattedTimePreferences: defaultFormattedTimePreferences,
 });
 
 export const Default: Story = {

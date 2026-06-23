@@ -10,11 +10,10 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PageModule } from "@/routes/types";
-import { Avatar, IconEdit, CurrentSubscriptions } from "turboui";
+import { Avatar, IconEdit, CurrentSubscriptions, RichContent, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import Api from "@/api";
-import FormattedTime from "@/components/FormattedTime";
-import { RichContent } from "turboui";
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { compareIds, usePaths } from "../../routes/paths";
 import { useCurrentSubscriptionsAdapter, isSubscribedToResource } from "@/models/subscriptions";
@@ -128,6 +127,7 @@ function Nav() {
 
 function Title() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <div className="flex items-center gap-3">
@@ -136,7 +136,7 @@ function Title() {
         <div className="text-content-accent text-2xl font-bold leading-tight">{discussion.title}</div>
         <div className="inline-flex items-center gap-1">
           <span>{discussion.author?.fullName}</span>
-          on <FormattedTime time={discussion.insertedAt} format="long-date" />
+          on <FormattedTime {...formattedTimePreferences} time={discussion.insertedAt} format="long-date" />
         </div>
       </div>
     </div>

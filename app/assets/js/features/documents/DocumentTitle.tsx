@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as People from "@/models/people";
-import { Avatar } from "turboui";
-import FormattedTime from "@/components/FormattedTime";
+import { Avatar, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { BulletDot } from "@/components/TextElements";
 
 const validStates = ["draft", "published"];
@@ -15,6 +15,7 @@ interface TitleProps {
 }
 
 export function DocumentTitle({ title, author, state, publishedAt, modifiedAt }: TitleProps) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   verifyState(state);
   verifyPublishedAt(state, publishedAt);
   const showModifiedAt = shouldShowModifiedAt(publishedAt, modifiedAt);
@@ -33,7 +34,7 @@ export function DocumentTitle({ title, author, state, publishedAt, modifiedAt }:
           <>
             {author && <BulletDot margin="mx-0.5" />}
             <span>Posted</span>
-            <FormattedTime time={publishedAt!} format="relative-time-or-date" />
+            <FormattedTime {...formattedTimePreferences} time={publishedAt!} format="relative-time-or-date" />
           </>
         )}
 
@@ -41,7 +42,7 @@ export function DocumentTitle({ title, author, state, publishedAt, modifiedAt }:
           <>
             <BulletDot margin="mx-0.5" />
             <span>Edited</span>
-            <FormattedTime time={modifiedAt!} format="relative-time-or-date" />
+            <FormattedTime {...formattedTimePreferences} time={modifiedAt!} format="relative-time-or-date" />
           </>
         )}
       </div>

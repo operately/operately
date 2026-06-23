@@ -5,6 +5,7 @@ import WorkMap from "../components";
 import { WorkMapTable } from "../components";
 import { closedParentWithOngoingChildren, mockItems, mockSingleItem, mockTasksTabItems } from "../tests/mockData";
 import * as Steps from "../tests/steps";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 /**
  * WorkMap is a comprehensive component for displaying and interacting with
@@ -18,6 +19,9 @@ const meta = {
   },
   argTypes: {
     items: { control: "object" },
+  },
+  args: {
+    formattedTimePreferences: defaultFormattedTimePreferences,
   },
 } satisfies Meta<typeof WorkMap>;
 
@@ -84,6 +88,7 @@ export const TasksTab: Story = {
             tab="all"
             columnOptions={{ hideOwner: true, hideProgress: true, hideSpace: true }}
             type="personal"
+            formattedTimePreferences={defaultFormattedTimePreferences}
           />
         </Page>
       </div>

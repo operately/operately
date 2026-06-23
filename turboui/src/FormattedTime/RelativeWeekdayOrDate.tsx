@@ -1,18 +1,23 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+
 import * as Time from "../utils/time";
+import { formatDate } from "../utils/formatting";
 import ShortDateWithWeekday from "./ShortDateWithWeekday";
 
-export default function RelativeWeekdayOrDate({ time }: { time: Date }) {
+export default function RelativeWeekdayOrDate({ time, locale }: { time: Date; locale: string }): JSX.Element {
+  const { t } = useTranslation();
+
   if (Time.isToday(time)) {
-    return <>Today</>;
+    return <>{t("Today")}</>;
   }
 
   if (Time.isYesterday(time)) {
-    return <>Yesterday</>;
+    return <>{t("Yesterday")}</>;
   }
 
   if (Time.isTomorrow(time)) {
-    return <>Tomorrow</>;
+    return <>{t("Tomorrow")}</>;
   }
 
   if (Time.isFuture(time) && Time.isThisWeek(time)) {
@@ -20,8 +25,8 @@ export default function RelativeWeekdayOrDate({ time }: { time: Date }) {
       weekday: "long",
     };
 
-    return <>this {time.toLocaleDateString("en-US", options)}</>;
+    return <>this {formatDate(time, locale, options)}</>;
   }
 
-  return <ShortDateWithWeekday time={time} />;
+  return <ShortDateWithWeekday time={time} locale={locale} />;
 }

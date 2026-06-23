@@ -3,17 +3,14 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Notifications from "@/models/notifications";
 import * as Signals from "@/signals";
-import { IconSparkles, IconX } from "turboui";
 import * as React from "react";
-
-import FormattedTime from "@/components/FormattedTime";
+import { IconSparkles, IconX, Avatar, SecondaryButton, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
-import { Avatar } from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { SecondaryButton } from "turboui";
 import { usePaths } from "../../routes/paths";
 
 export default { name: "NotificationsPage", loader, Page } as PageModule;
@@ -111,6 +108,7 @@ function PreviousNotifications() {
 
 function NotificationItem({ notification }: any) {
   const paths = usePaths();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const author = notification.activity.author;
   const testId = "notification-item" + "-" + notification.activity.action;
 
@@ -149,7 +147,7 @@ function NotificationItem({ notification }: any) {
           <TextSeparator />
           {author.fullName}
           <TextSeparator />
-          <FormattedTime time={notification.activity.insertedAt} format="long-date" />
+          <FormattedTime {...formattedTimePreferences} time={notification.activity.insertedAt} format="long-date" />
         </div>
       </div>
 

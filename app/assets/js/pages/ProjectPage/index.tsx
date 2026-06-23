@@ -21,6 +21,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import {
   folders,
@@ -228,6 +229,7 @@ function Page() {
 
   const parentGoalSearch = useParentGoalSearch(project);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
     id: project.id,
@@ -407,6 +409,7 @@ function Page() {
 
     subscriptions,
     docsAndFiles: projectDocsAndFilesProps,
+    formattedTimePreferences,
   };
 
   return <ProjectPage key={project.id!} {...props} />;

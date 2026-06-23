@@ -9,6 +9,7 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
 import { generatePermissions } from "../utils/storybook/permissions";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
 const DEFAULT_STATUS_OPTIONS: StatusSelector.StatusOption[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
@@ -134,6 +135,7 @@ export function InProjectContextStory() {
       onAddComment={(content: any) => console.log("Add comment:", content)}
       onEditComment={(id: string, content: any) => console.log("Edit comment:", id, content)}
       onDeleteComment={(id: string) => console.log("Delete comment:", id)}
+      formattedTimePreferences={defaultFormattedTimePreferences}
     />
   );
 }

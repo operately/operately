@@ -8,11 +8,11 @@ import { useNavigate } from "react-router-dom";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useDeleteProjectCheckIn } from "@/models/projectCheckIns";
 
-import FormattedTime from "@/components/FormattedTime";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 import {
   Avatar,
+  FormattedTime,
   IconEdit,
   IconSquareCheckFilled,
   IconTrash,
@@ -39,6 +39,7 @@ import { assertPresent } from "@/utils/assertions";
 import { banner } from "./Banner";
 import { useLoadedData, useRefresh } from "./loader";
 
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { usePaths } from "@/routes/paths";
 
 export function Page() {
@@ -131,12 +132,13 @@ function SubscriptionsSection() {
 
 function Title() {
   const { checkIn } = useLoadedData();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-2xl font-extrabold text-center">
         <span>
-          Check-In from <FormattedTime time={checkIn.insertedAt!} format="long-date" />
+          Check-In from <FormattedTime {...formattedTimePreferences} time={checkIn.insertedAt!} format="long-date" />
         </span>
         {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
       </div>

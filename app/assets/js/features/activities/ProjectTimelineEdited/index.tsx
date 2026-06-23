@@ -1,10 +1,8 @@
 import * as Time from "@/utils/time";
-import { IconFlag3Filled } from "turboui";
+import { FormattedTime, IconFlag3Filled, Link } from "turboui";
 import * as React from "react";
 
-import FormattedTime from "@/components/FormattedTime";
-
-import { Link } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectTimelineEdited, ActivityMilestone } from "@/api";
@@ -83,17 +81,21 @@ function content(activity: Activity): ActivityContentProjectTimelineEdited {
 export default ProjectTimelineEdited;
 
 function NewStartDate({ content }: { content: Content }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   if (!content.startDateChanged || !content.newStartDate) return null;
 
-  const date = <FormattedTime time={content.newStartDate} format="long-date" />;
+  const date = <FormattedTime {...formattedTimePreferences} time={content.newStartDate} format="long-date" />;
 
   return <div>The start date was set to {date}.</div>;
 }
 
 function NewEndDate({ content }: { content: Content }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   if (!content.dueDateChanged || !content.newDueDate) return null;
 
-  const date = <FormattedTime time={content.newDueDate} format="long-date" />;
+  const date = <FormattedTime {...formattedTimePreferences} time={content.newDueDate} format="long-date" />;
 
   return <div>The due date was set to {date}.</div>;
 }
@@ -158,6 +160,7 @@ function UpdatedMilestones({ content }: { content: Content }) {
 
 function MilestoneLink({ milestone }: { milestone: ActivityMilestone }) {
   const paths = usePaths();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const path = paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
 
@@ -165,7 +168,7 @@ function MilestoneLink({ milestone }: { milestone: ActivityMilestone }) {
     <div className="font-medium">
       <IconFlag3Filled size={14} className="inline-block mr-1" />
       <Link to={path}>{title}</Link> <span className="">&middot;</span> Due date on{" "}
-      <FormattedTime time={milestone.deadlineAt!} format="long-date" />
+      <FormattedTime {...formattedTimePreferences} time={milestone.deadlineAt!} format="long-date" />
     </div>
   );
 }

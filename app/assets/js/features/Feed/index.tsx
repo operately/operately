@@ -4,12 +4,12 @@ import * as React from "react";
 
 import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ConfirmDialog, DivLink, IconDots, IconTrash, Menu, MenuActionItem } from "turboui";
+import { ConfirmDialog, DivLink, FormattedTime, IconDots, IconTrash, Menu, MenuActionItem } from "turboui";
 
 import Api from "@/api";
-import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
 import { FeedZeroState } from "@/features/Feed/FeedZeroState";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
@@ -124,10 +124,12 @@ function ActivityGroup(
 }
 
 function ActivityGroupDate({ group }: { group: Activities.ActivityGroup }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div className="w-1/5 shrink-0 mb-2">
       <div className="text-sm text-content-accent font-bold whitespace-nowrap">
-        <FormattedTime time={group.date} format="long-date" />
+        <FormattedTime {...formattedTimePreferences} time={group.date} format="long-date" />
       </div>
       <div className="whitespace-nowrap text-content-dimmed text-sm">{Time.relativeDay(group.date)}</div>
     </div>
@@ -174,6 +176,7 @@ function ActivityItem({
   onDeleteItem?: (activity: Activity) => void;
 }) {
   const paths = usePaths();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const author = activity.author!;
   const time = activity.insertedAt!;
   const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} />;
@@ -198,7 +201,7 @@ function ActivityItem({
 
       <div className="shrink-0 flex items-center gap-1">
         <div className="text-xs text-content-dimmed whitespace-nowrap text-right">
-          <FormattedTime time={time} format="time-only" />
+          <FormattedTime {...formattedTimePreferences} time={time} format="time-only" />
         </div>
 
         {canDeleteItem && onDeleteItem && <ActivityItemOptions activity={activity} onDeleteItem={onDeleteItem} />}

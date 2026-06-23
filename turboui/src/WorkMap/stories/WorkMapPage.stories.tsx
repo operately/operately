@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { WorkMapPage, WorkMap } from "../components";
 import { closedParentWithOngoingChildren, mockItems, mockSingleItem } from "../tests/mockData";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 const mockSpaces = [
   { id: "space1", name: "Space 1", link: "/spaces/space1" },
@@ -34,6 +35,9 @@ const meta = {
   },
   argTypes: {
     items: { control: "object" },
+  },
+  args: {
+    formattedTimePreferences: defaultFormattedTimePreferences,
   },
 } satisfies Meta<typeof WorkMapPage>;
 

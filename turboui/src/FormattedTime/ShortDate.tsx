@@ -1,7 +1,20 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+
+import { formatDate } from "../utils/formatting";
 import * as Time from "../utils/time";
 
-export default function ShortDate({ time, weekday }: { time: Date; weekday: boolean }) {
+export default function ShortDate({
+  time,
+  weekday,
+  locale,
+}: {
+  time: Date;
+  weekday: boolean;
+  locale: string;
+}): JSX.Element {
+  const { t } = useTranslation();
+
   const options: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "short",
@@ -15,13 +28,13 @@ export default function ShortDate({ time, weekday }: { time: Date; weekday: bool
 
   if (weekday) {
     if (Time.isToday(time)) {
-      prefix = "Today, ";
+      prefix = `${t("Today")}, `;
     } else if (Time.isYesterday(time)) {
-      prefix = "Yesterday, ";
+      prefix = `${t("Yesterday")}, `;
     } else {
       options.weekday = "long";
     }
   }
 
-  return <>{prefix + time.toLocaleDateString("en-US", options)}</>;
+  return <>{prefix + formatDate(time, locale, options)}</>;
 }

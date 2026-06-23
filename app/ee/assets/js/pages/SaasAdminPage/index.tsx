@@ -6,12 +6,12 @@ import { useDebouncedValue } from "@/ee/hooks/useDebouncedValue";
 import * as React from "react";
 
 import { AccountActionsMenu, PendingAccountAction, useAccountActions } from "./AccountActionsMenu";
-import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 import {
   AvatarList,
   ConfirmDialog,
   DivLink,
+  FormattedTime,
   IconBuilding,
   IconBuildingCommunity,
   IconInfoCircle,
@@ -24,6 +24,8 @@ import {
   Tooltip,
   useTabs,
 } from "turboui";
+
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 const SEARCH_DEBOUNCE_MS = 250;
 
@@ -228,6 +230,8 @@ function ActiveCompanyList({ searchQuery }: { searchQuery: string }) {
 }
 
 function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div>
       <TableRow header gridTemplateColumns="0.5fr 4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr">
@@ -256,11 +260,15 @@ function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
           </div>
 
           <div className="text-right">
-            {company.lastActivityAt && <FormattedTime time={company.lastActivityAt} format="relative" />}
+            {company.lastActivityAt && (
+              <FormattedTime {...formattedTimePreferences} time={company.lastActivityAt} format="relative" />
+            )}
           </div>
 
           <div className="text-right">
-            {company.insertedAt && <FormattedTime time={company.insertedAt} format="relative" />}
+            {company.insertedAt && (
+              <FormattedTime {...formattedTimePreferences} time={company.insertedAt} format="relative" />
+            )}
           </div>
         </TableRow>
       ))}
@@ -271,6 +279,7 @@ function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
 }
 
 function AccountTable({ accounts, refetch }: { accounts: AdminApi.Account[]; refetch: () => void }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const [pendingAction, setPendingAction] = React.useState<PendingAccountAction | null>(null);
 
   const closeDialog = () => setPendingAction(null);
@@ -301,7 +310,7 @@ function AccountTable({ accounts, refetch }: { accounts: AdminApi.Account[]; ref
             <span>{account.siteAdmin ? "Yes" : "No"}</span>
           </div>
           <div className="text-center">
-            <FormattedTime time={account.insertedAt} format="relative" />
+            <FormattedTime {...formattedTimePreferences} time={account.insertedAt} format="relative" />
           </div>
           <div className="flex justify-end">
             <AccountActionsMenu

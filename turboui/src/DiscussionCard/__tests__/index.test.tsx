@@ -2,8 +2,10 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
+import "../../i18n";
 
 import { DiscussionCard } from "..";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 describe("DiscussionCard", () => {
   it("renders a discussion without an author placeholder", () => {
@@ -11,6 +13,7 @@ describe("DiscussionCard", () => {
       <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <DiscussionCard
           mentionedPersonLookup={() => null}
+          formattedTimePreferences={defaultFormattedTimePreferences}
           discussion={{
             id: "discussion-1",
             title: "Imported discussion",

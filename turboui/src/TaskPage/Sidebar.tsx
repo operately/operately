@@ -335,6 +335,7 @@ function Milestone(props: TaskPage.ContentState) {
         onSearch={props.onMilestoneSearch}
         emptyStateMessage="Select milestone"
         emptyStateReadOnlyMessage="No milestone"
+        formattedTimePreferences={props.formattedTimePreferences}
       />
     </SidebarSection>
   );
@@ -349,7 +350,7 @@ function CreatedBy(props: TaskPage.ContentState) {
         <AvatarWithName person={props.createdBy} size={"tiny"} nameFormat="short" link={props.createdBy.profileLink} />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
           <IconCalendar size={14} />
-          <FormattedTime time={props.createdAt} format="short-date" />
+          <FormattedTime {...props.formattedTimePreferences} time={props.createdAt} format="short-date" />
         </div>
       </div>
     </SidebarSection>

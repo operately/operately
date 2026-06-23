@@ -67,6 +67,7 @@ export function TaskBoard({
   canCreateTask,
   displayMode = "list",
   onDisplayModeChange,
+  formattedTimePreferences,
 }: Types.TaskBoardProps) {
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
@@ -285,6 +286,7 @@ export function TaskBoard({
         assigneePersonSearch={assigneePersonSearch}
         onMilestoneSearch={onMilestoneSearch}
         richTextHandlers={richTextHandlers}
+        formattedTimePreferences={formattedTimePreferences}
       />
 
       <MilestoneCreationModal
@@ -365,6 +367,7 @@ export function TaskBoard({
                   onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
                   onInlineCreateOpen={clearTaskSelection}
                   richTextHandlers={richTextHandlers}
+                  formattedTimePreferences={formattedTimePreferences}
                 />
               ))}
 
@@ -461,6 +464,7 @@ export function TaskBoard({
                   placeholderHeight={draggedItemDimensions?.height ?? null}
                   onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
                   richTextHandlers={richTextHandlers}
+                  formattedTimePreferences={formattedTimePreferences}
                 />
               ))}
             </ul>

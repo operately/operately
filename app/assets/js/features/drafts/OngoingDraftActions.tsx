@@ -5,9 +5,9 @@ import { ResourceHubDocument } from "@/models/resourceHubs";
 
 import { match } from "ts-pattern";
 
-import FormattedTime from "@/components/FormattedTime";
+import { ActionLink, FormattedTime, GhostButton, IconX, PrimaryButton } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { GhostButton, PrimaryButton, IconX, ActionLink } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 type Resource = Discussion | ResourceHubDocument;
 type State = "actions" | "link";
@@ -44,12 +44,14 @@ interface ContinueProps {
 }
 
 function ContinueEditingActions({ resource, setLinkVisible, editResourcePath, publish }: ContinueProps) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div className="mb-4 bg-surface-dimmed p-4 rounded-2xl">
       <div className="text-center">
         <span className="font-bold">This is an unpublished draft.</span>{" "}
         <span className="">
-          Last edit was made <FormattedTime time={resource.updatedAt!} format="relative-time-or-date" />.
+          Last edit was made <FormattedTime {...formattedTimePreferences} time={resource.updatedAt!} format="relative-time-or-date" />.
         </span>
       </div>
       <div className="flex items-center justify-center gap-2 mt-4">

@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { ReviewPage } from "../index";
 import * as data from "./mockData";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 const meta = {
   title: "Pages/ReviewPage",
@@ -22,6 +23,9 @@ const meta = {
     dueSoon: { control: "object" },
     needsReview: { control: "object" },
     upcoming: { control: "object" },
+  },
+  args: {
+    formattedTimePreferences: defaultFormattedTimePreferences,
   },
 } satisfies Meta<typeof ReviewPage>;
 

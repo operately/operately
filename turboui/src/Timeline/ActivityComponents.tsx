@@ -4,7 +4,7 @@ import FormattedTime from "../FormattedTime";
 import { IconSquareCheckFilled, IconSquareChevronsLeftFilled, IconFlag, IconFileText } from "../icons";
 import { ActivityProps, AcknowledgmentProps } from "./types";
 
-export function MilestoneCompletedActivity({ activity }: ActivityProps) {
+export function MilestoneCompletedActivity({ activity, formattedTimePreferences }: ActivityProps) {
   return (
     <div className="flex items-center justify-between gap-3 py-3 px-4 not-first:border-t border-stroke-base text-content-accent relative">
       <div className="flex-1">
@@ -23,7 +23,7 @@ export function MilestoneCompletedActivity({ activity }: ActivityProps) {
 
           <div className="flex items-center justify-between gap-2">
             <span className="text-content-dimmed text-sm">
-              <FormattedTime time={activity.insertedAt} format="relative" />
+              <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="relative" />
             </span>
           </div>
         </div>
@@ -32,7 +32,7 @@ export function MilestoneCompletedActivity({ activity }: ActivityProps) {
   );
 }
 
-export function MilestoneReopenedActivity({ activity }: ActivityProps) {
+export function MilestoneReopenedActivity({ activity, formattedTimePreferences }: ActivityProps) {
   return (
     <div className="flex items-center justify-between gap-3 py-3 px-4 not-first:border-t border-stroke-base text-content-accent relative">
       <div className="flex-1">
@@ -51,7 +51,7 @@ export function MilestoneReopenedActivity({ activity }: ActivityProps) {
 
           <div className="flex items-center justify-between gap-2">
             <span className="text-content-dimmed text-sm">
-              <FormattedTime time={activity.insertedAt} format="relative" />
+              <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="relative" />
             </span>
           </div>
         </div>
@@ -60,7 +60,7 @@ export function MilestoneReopenedActivity({ activity }: ActivityProps) {
   );
 }
 
-export function MilestoneCreatedActivity({ activity }: ActivityProps) {
+export function MilestoneCreatedActivity({ activity, formattedTimePreferences }: ActivityProps) {
   return (
     <div className="flex gap-3 py-1.5 px-4 text-content-subtle text-sm relative">
       <div className="shrink-0 mt-0.5">
@@ -84,14 +84,14 @@ export function MilestoneCreatedActivity({ activity }: ActivityProps) {
 
       <div className="shrink-0 mt-0.5">
         <span className="text-content-subtle text-xs">
-          <FormattedTime time={activity.insertedAt} format="relative" />
+          <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="relative" />
         </span>
       </div>
     </div>
   );
 }
 
-export function MilestoneDescriptionActivity({ activity }: ActivityProps) {
+export function MilestoneDescriptionActivity({ activity, formattedTimePreferences }: ActivityProps) {
   return (
     <div className="flex gap-3 py-1.5 px-4 text-content-subtle text-sm relative">
       <div className="shrink-0 mt-0.5">
@@ -115,14 +115,14 @@ export function MilestoneDescriptionActivity({ activity }: ActivityProps) {
 
       <div className="shrink-0 mt-0.5">
         <span className="text-content-subtle text-xs">
-          <FormattedTime time={activity.insertedAt} format="relative" />
+          <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="relative" />
         </span>
       </div>
     </div>
   );
 }
 
-export function MilestoneUpdateActivity({ activity }: ActivityProps) {
+export function MilestoneUpdateActivity({ activity, formattedTimePreferences }: ActivityProps) {
   return (
     <div className="flex gap-3 py-1.5 px-4 text-content-subtle text-sm relative">
       <div className="shrink-0 mt-0.5">
@@ -146,14 +146,14 @@ export function MilestoneUpdateActivity({ activity }: ActivityProps) {
 
       <div className="shrink-0 mt-0.5">
         <span className="text-content-subtle text-xs">
-          <FormattedTime time={activity.insertedAt} format="relative" />
+          <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="relative" />
         </span>
       </div>
     </div>
   );
 }
 
-export function AcknowledgmentActivity({ person, ackAt }: AcknowledgmentProps) {
+export function AcknowledgmentActivity({ person, ackAt, formattedTimePreferences }: AcknowledgmentProps) {
   return (
     <div className="flex items-center justify-between gap-3 py-6 px-4 not-first:border-t border-stroke-base text-content-accent">
       <div className="flex items-center justify-between flex-1">
@@ -171,7 +171,7 @@ export function AcknowledgmentActivity({ person, ackAt }: AcknowledgmentProps) {
 
         <div className="flex items-center justify-between">
           <span className="text-content-dimmed text-sm">
-            <FormattedTime time={ackAt} format="relative" />
+            <FormattedTime {...formattedTimePreferences} time={ackAt} format="relative" />
           </span>
         </div>
       </div>

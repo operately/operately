@@ -30,6 +30,7 @@ export function CheckIns(props: GoalPage.State) {
             checkIn={checkIn}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
             type="goal"
+            formattedTimePreferences={props.formattedTimePreferences}
           />
         ))}
       </div>

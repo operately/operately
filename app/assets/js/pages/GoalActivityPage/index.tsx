@@ -9,8 +9,8 @@ import { usePaths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 
-import { Avatar, CurrentSubscriptions } from "turboui";
-import FormattedTime from "@/components/FormattedTime";
+import { Avatar, CurrentSubscriptions, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
@@ -72,6 +72,8 @@ function Nav() {
 }
 
 function Title({ activity }: { activity: Activities.Activity }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div className="flex items-center gap-3">
       <Avatar person={activity.author!} size={50} />
@@ -81,7 +83,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
         </div>
         <div className="inline-flex items-center gap-1">
           <span>{activity.author!.fullName!}</span>
-          on <FormattedTime time={activity.insertedAt!} format="long-date" />
+          on <FormattedTime {...formattedTimePreferences} time={activity.insertedAt!} format="long-date" />
         </div>
       </div>
     </div>

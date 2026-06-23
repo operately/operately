@@ -2,7 +2,8 @@ import type { ActivityContentProjectStartDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import FormattedTime from "@/components/FormattedTime";
+import { FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { feedTitle, projectLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
@@ -28,11 +29,12 @@ const ProjectStartDateUpdating: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
+    const formattedTimePreferences = useFormattedTimePreferences();
     const { project, newStartDate } = content(props.activity);
 
     const message = newStartDate ? (
       <>
-        changed the start date to <FormattedTime time={newStartDate} format="short-date" />
+        changed the start date to <FormattedTime {...formattedTimePreferences} time={newStartDate} format="short-date" />
       </>
     ) : (
       "cleared the start date"
@@ -46,10 +48,11 @@ const ProjectStartDateUpdating: ActivityHandler = {
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
+    const formattedTimePreferences = useFormattedTimePreferences();
     const { oldStartDate } = content(props.activity);
 
     if (oldStartDate) {
-      const time = <FormattedTime time={oldStartDate} format="short-date" />;
+      const time = <FormattedTime {...formattedTimePreferences} time={oldStartDate} format="short-date" />;
 
       return <>Previously the start date was {time}</>;
     } else {

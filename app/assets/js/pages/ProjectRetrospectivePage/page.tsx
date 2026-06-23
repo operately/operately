@@ -4,15 +4,13 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
 import * as React from "react";
 
-import FormattedTime from "@/components/FormattedTime";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
-import { AvatarWithName, IconEdit, StatusBadge } from "turboui";
-
-import { CurrentSubscriptions, parseContent, RichContent } from "turboui";
+import { AvatarWithName, IconEdit, StatusBadge, CurrentSubscriptions, parseContent, RichContent, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
@@ -71,6 +69,7 @@ function Options() {
 
 function Header() {
   const { retrospective } = useLoadedData();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   assertPresent(retrospective.closedAt, "closedAt must be present in retrospective");
 
@@ -81,7 +80,7 @@ function Header() {
       <div className="flex items-center gap-1.5 font-medium justify-center mt-2">
         {retrospective.author && <AvatarWithName person={retrospective.author!} size={20} />}
         {retrospective.author && <span>&middot;</span>}
-        <FormattedTime time={retrospective.closedAt} format="long-date" />
+        <FormattedTime {...formattedTimePreferences} time={retrospective.closedAt} format="long-date" />
       </div>
     </>
   );

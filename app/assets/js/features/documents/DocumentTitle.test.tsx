@@ -1,13 +1,20 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { DocumentTitle } from "./DocumentTitle";
-
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
+jest.mock("@/hooks/useFormattedTimePreferences", () => ({
+  useFormattedTimePreferences: () => ({
+    locale: "en-US",
+    timezone: "UTC",
+    timeFormat: "automatic",
   }),
 }));
+
+jest.mock("turboui", () => ({
+  Avatar: ({ person }: { person: { fullName: string } }) => <span>{person.fullName}</span>,
+  FormattedTime: ({ time }: { time: string }) => <time dateTime={time} />,
+}));
+
+import { DocumentTitle } from "./DocumentTitle";
 
 describe("DocumentTitle", () => {
   it("renders without an author", () => {

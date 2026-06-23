@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { CompanyImportPage } from "./index";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
 const now = new Date().toISOString();
 
@@ -28,6 +29,7 @@ const defaultArgs: CompanyImportPage.Props = {
   onStartImport: () => {},
   onSelectPackageFile: () => {},
   onClearPackageFile: () => {},
+  formattedTimePreferences: defaultFormattedTimePreferences,
   packageFile: {
     blobId: "blob-package",
     fileName: "operately.zip",

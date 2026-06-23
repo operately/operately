@@ -1,7 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "entry": ["assets/js/app.tsx", "assets/build.js", "assets/codegen.ts"],
-  "project": ["assets/js/**/*.ts", "assets/js/**/*.tsx", "ee/assets/js/**/*.ts", "ee/assets/js/**/*.tsx"],
+  "project": [
+    "assets/js/**/*.ts",
+    "assets/js/**/*.tsx",
+    "assets/js/i18n.js",
+    "ee/assets/js/**/*.ts",
+    "ee/assets/js/**/*.tsx"
+  ],
   "ignore": [
     "vite.config.mjs",
 

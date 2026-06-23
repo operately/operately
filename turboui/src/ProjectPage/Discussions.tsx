@@ -41,6 +41,7 @@ function DiscussionsList({ props }: { props: ProjectPage.Props }) {
           key={discussion.id}
           discussion={discussion}
           mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+          formattedTimePreferences={props.formattedTimePreferences}
         />
       ))}
     </div>
