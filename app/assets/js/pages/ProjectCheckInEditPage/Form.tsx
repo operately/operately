@@ -5,10 +5,9 @@ import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns"
 import { useNavigate } from "react-router-dom";
 
 import Forms, { FormState } from "@/components/Forms";
-import { Spacer } from "@/components/Spacer";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { assertPresent } from "@/utils/assertions";
-import { FormattedTime, GhostButton, PrimaryButton } from "turboui";
+import { FormattedTime, GhostButton, PrimaryButton, Spacer } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
