@@ -3,9 +3,8 @@ import React from "react";
 import * as People from "@/models/people";
 import * as Reactions from "@/models/reactions";
 
-import { Avatar } from "turboui";
-import FormattedTime from "@/components/FormattedTime";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { Avatar, FormattedTime, PrimaryButton, SecondaryButton } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useClearNotificationOnIntersection } from "@/features/notifications";
 
 import { FormState } from "./form";
@@ -140,6 +139,8 @@ function EditComment({ comment, onCancel, form }) {
 }
 
 function MilestoneCompleted({ comment }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
       <div className="shrink-0 mt-1">
@@ -155,7 +156,7 @@ function MilestoneCompleted({ comment }) {
 
           <div className="flex items-center justify-between gap-2">
             <span className="text-content-dimmed text-sm">
-              <FormattedTime time={comment.insertedAt} format="relative" />
+              <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
             </span>
           </div>
         </div>
@@ -165,6 +166,8 @@ function MilestoneCompleted({ comment }) {
 }
 
 function MilestoneReopened({ comment }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
       <div className="shrink-0 mt-1">
@@ -180,7 +183,7 @@ function MilestoneReopened({ comment }) {
 
           <div className="flex items-center justify-between gap-2">
             <span className="text-content-dimmed text-sm">
-              <FormattedTime time={comment.insertedAt} format="relative" />
+              <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
             </span>
           </div>
         </div>
@@ -190,6 +193,7 @@ function MilestoneReopened({ comment }) {
 }
 
 function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const commentRef = useClearNotificationOnIntersection(comment.notification);
   useScrollIntoViewOnLoad(comment.id);
 
@@ -218,7 +222,7 @@ function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment 
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-content-dimmed text-sm">
-                <FormattedTime time={comment.insertedAt} format="relative" />
+                <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
               </span>
 
               <CommentDropdownMenu comment={comment} onEdit={onEdit} onDelete={onDelete} />
@@ -275,6 +279,8 @@ function CommentDropdownMenu({ comment, onEdit, onDelete }) {
 }
 
 function AckComment({ person, ackAt }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
       <div className="shrink-0">
@@ -289,7 +295,7 @@ function AckComment({ person, ackAt }) {
 
         <div className="flex items-center justify-between">
           <span className="text-content-dimmed text-sm">
-            <FormattedTime time={ackAt} format="relative" />
+            <FormattedTime {...formattedTimePreferences} time={ackAt} format="relative" />
           </span>
         </div>
       </div>

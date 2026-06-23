@@ -2,7 +2,8 @@ import type { ActivityContentGoalDueDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import FormattedTime from "@/components/FormattedTime";
+import { FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
@@ -28,11 +29,12 @@ const GoalDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
+    const formattedTimePreferences = useFormattedTimePreferences();
     const { goal, newDueDate } = content(props.activity);
 
     const message = newDueDate ? (
       <>
-        changed the due date to <FormattedTime time={newDueDate} format="short-date" />
+        changed the due date to <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
       </>
     ) : (
       "cleared the due date"
@@ -46,10 +48,11 @@ const GoalDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
+    const formattedTimePreferences = useFormattedTimePreferences();
     const { oldDueDate } = content(props.activity);
 
     if (oldDueDate) {
-      const time = <FormattedTime time={oldDueDate} format="short-date" />;
+      const time = <FormattedTime {...formattedTimePreferences} time={oldDueDate} format="short-date" />;
 
       return <>Previously the due date was {time}</>;
     } else {

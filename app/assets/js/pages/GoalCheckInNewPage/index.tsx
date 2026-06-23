@@ -8,7 +8,8 @@ import { banner } from "@/features/goals/GoalPageHeader/Banner";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { PageModule } from "@/routes/types";
 
-import FormattedTime from "@/components/FormattedTime";
+import { FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { loader, useLoadedData } from "./loader";
 import { Navigation } from "./navigation";
@@ -32,10 +33,12 @@ function Page() {
 }
 
 function Header() {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div>
       <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
-        Check-In for <FormattedTime time={new Date()} format="long-date" />
+        Check-In for <FormattedTime {...formattedTimePreferences} time={new Date()} format="long-date" />
       </h1>
       <p className="text-center mt-1">Share the progress with the team</p>
     </div>

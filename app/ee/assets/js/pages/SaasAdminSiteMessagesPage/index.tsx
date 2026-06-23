@@ -3,10 +3,10 @@ import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
-import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 import {
   ConfirmDialog,
+  FormattedTime,
   IconEdit,
   IconPlus,
   IconTrash,
@@ -16,6 +16,8 @@ import {
   richContentToString,
   SecondaryButton,
 } from "turboui";
+
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { SiteMessageModal } from "./SiteMessageModal";
 
@@ -111,6 +113,8 @@ function MessageTable({
   onEdit: (message: AdminApi.SiteMessage) => void;
   onDelete: (message: AdminApi.SiteMessage) => void;
 }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div className="mt-6">
       <TableRow header gridTemplateColumns="2fr 1fr 0.75fr 1fr 1fr 0.5fr">
@@ -132,8 +136,8 @@ function MessageTable({
           </div>
           <div>{audienceLabel(message)}</div>
           <div>{message.active ? "Active" : "Inactive"}</div>
-          <div>{message.expiresAt ? <FormattedTime time={message.expiresAt} format="long-date" /> : "Never"}</div>
-          <div>{message.insertedAt ? <FormattedTime time={message.insertedAt} format="long-date" /> : null}</div>
+          <div>{message.expiresAt ? <FormattedTime {...formattedTimePreferences} time={message.expiresAt} format="long-date" /> : "Never"}</div>
+          <div>{message.insertedAt ? <FormattedTime {...formattedTimePreferences} time={message.insertedAt} format="long-date" /> : null}</div>
           <div className="flex justify-end">
             <Menu>
               <MenuActionItem icon={IconEdit} onClick={() => onEdit(message)}>

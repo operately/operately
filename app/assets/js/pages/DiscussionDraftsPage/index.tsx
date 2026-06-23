@@ -9,11 +9,9 @@ import * as React from "react";
 import { Discussion } from "@/models/discussions";
 import { truncateString } from "@/utils/strings";
 import { createTestId } from "@/utils/testid";
-import { DivLink, PrimaryButton, richContentToString } from "turboui";
-
-import FormattedTime from "@/components/FormattedTime";
+import { DivLink, PrimaryButton, richContentToString, Avatar, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import classNames from "classnames";
-import { Avatar } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;
@@ -117,6 +115,7 @@ function DiscussionList() {
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
   const path = paths.discussionEditPath(discussion.id!);
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const className = classNames(
     "flex items-start gap-4",
@@ -142,7 +141,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
         <div className="font-semibold leading-none mb-1">{discussion.title}</div>
         <div className="break-words line-clamp-2">
           <span className="font-medium text-content-dimmed">
-            Last edited on <FormattedTime time={discussion.updatedAt!} format="relative-time-or-date" /> &mdash;{" "}
+            Last edited on <FormattedTime {...formattedTimePreferences} time={discussion.updatedAt!} format="relative-time-or-date" /> &mdash;{" "}
           </span>
           {truncateString(contentSnippet, 60)}
         </div>
