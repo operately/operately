@@ -40,10 +40,7 @@ export function Page() {
   return (
     <Pages.Page title={link.name!}>
       <Paper.Root>
-        <ResourcePageNavigation
-          resource={navigationLink}
-          paths={resourceHubNavigationPaths(paths)}
-        />
+        <ResourcePageNavigation resource={navigationLink} paths={resourceHubNavigationPaths(paths)} />
 
         <Paper.Body className="lg:px-28">
           <Options showDeleteModal={toggleDeleteModal} />
