@@ -12,6 +12,7 @@ export * from "./ConfirmDialog";
 export * from "./FormattedTime";
 export * as Forms from "./Forms";
 export * from "./BrandIcons";
+export { BulletDot } from "./BulletDot";
 export * from "./icons";
 export * from "./Link";
 export * from "./Menu";
