@@ -143,3 +143,15 @@ Read the testing guide at app/test/AGENTS.md.
 
 - Local env: run `make dev.seed.env` to scaffold `.env` and certs. Never commit secrets.
 - Use `./devenv` wrapper (Docker-based) for consistent tooling and DB.
+
+## Cursor Cloud specific instructions
+
+The entire dev environment runs inside Docker via the `./devenv` wrapper (docker-in-docker). Standard build/run/test commands live in the `Makefile` and `docs/dev-env.md`; the notes below only cover non-obvious caveats for this environment.
+
+- **Docker daemon**: the VM has no systemd, so `dockerd` is launched directly (the startup/update script starts it in the background and `chmod 666 /var/run/docker.sock`). If `docker ps` fails with a socket/permission error, run `sudo chmod 666 /var/run/docker.sock`; if the daemon is not running, start it with `sudo bash -c 'nohup dockerd >/tmp/dockerd.log 2>&1 &'`.
+- **Bring up containers**: only `db` and `pgweb` have `restart: always`, so they auto-start when `dockerd` starts. The `app`, `mailhog`, and `s3mock` containers do NOT auto-restart — run `./devenv up` to (re)create them before doing anything. Compose project name is `workspace` (containers like `workspace-app-1`, `workspace-db-1`).
+- **Refresh deps after pulling**: `make dev.build` is idempotent (deps.get/compile, lockfile-hash-guarded `npm ci`, turboui build, DB create/migrate); rerun it if `mix.lock` / `package-lock.json` / migrations changed. It requires the containers to be up.
+- **Run the app**: `make dev.server` (Phoenix at http://localhost:4000, Vite watcher at :4005). It runs `iex -S mix phx.server`, so run it in a background/tmux session.
+- **First-run onboarding (fastest hello-world)**: visit `http://localhost:4000/setup` to create the first company + admin account in one form (company name, full name, title, email, password ≥12 chars with upper/lower/number). No email code is needed for this path.
+- **Email signup/login code**: `ALLOW_LOGIN_WITH_EMAIL`/`ALLOW_SIGNUP_WITH_EMAIL` are enabled by `dev.seed.env`. In dev, email delivery is always treated as "configured", and the 6-character activation code is stored in the DB rather than shown in the UI. MailHog's UI is NOT published to the host (the `mailhog` service defines no host ports), so fetch codes from Postgres: `docker exec workspace-db-1 psql -U postgres -d operately_dev -c "SELECT email, code FROM email_activation_codes ORDER BY inserted_at DESC LIMIT 5;"`.
+- **Inspect dev data**: `docker exec workspace-db-1 psql -U postgres -d operately_dev -c '<SQL>'` (dev DB is `operately_dev`, test DB is `operately_test`; password `keyboard-cat`).
