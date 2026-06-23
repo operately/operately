@@ -1,6 +1,7 @@
 import { MilestoneActivity } from "../Timeline/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { Reactions } from "../Reactions";
+import type { AvatarPerson } from "../Avatar";
 import type { FormattedTimePreferences } from "../FormattedTime";
 
 export interface Person {

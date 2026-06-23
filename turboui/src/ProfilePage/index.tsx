@@ -14,6 +14,7 @@ import { PageNew } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
 import { AboutMe, Colleagues, Contact, PageHeader } from "./components";
 
+import type { FormattedTimePreferences } from "../FormattedTime";
 import { WorkMap, WorkMapTable } from "../WorkMap";
 import { processPersonalItems } from "../WorkMap/utils/itemProcessor";
 import { sortItemsByClosedDate, sortItemsByDueDate } from "../WorkMap/utils/sort";
@@ -45,6 +46,7 @@ export namespace ProfilePage {
 
     aboutMe?: string | null;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    formattedTimePreferences: FormattedTimePreferences;
   }
 
   export type TabOptions = "tasks" | "assigned" | "reviewing" | "paused" | "completed" | "activity" | "about";
@@ -78,6 +80,7 @@ export function ProfilePage(props: ProfilePage.Props) {
           viewer={props.viewer || undefined}
           columnOptions={workMapColumnOptions}
           zeroStateMessage={zeroStateMessage}
+          formattedTimePreferences={props.formattedTimePreferences}
         />
       )}
       {tabs.active === "activity" && <ActivityFeed {...props} />}

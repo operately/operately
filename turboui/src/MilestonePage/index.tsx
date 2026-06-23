@@ -264,6 +264,7 @@ export function MilestonePage(props: MilestonePage.Props) {
         onMilestoneSearch={async () => {}} // No-op: milestone is read-only
         milestoneReadOnly={true}
         richTextHandlers={state.richTextHandlers}
+        formattedTimePreferences={state.formattedTimePreferences}
       />
       <DeleteModal {...state} />
     </ProjectPageLayout>

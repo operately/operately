@@ -12,6 +12,7 @@ import { loader, useLoadedData } from "./loader";
 import { compareIds, usePaths } from "@/routes/paths";
 import { convertToWorkMapItems } from "../../models/workMap";
 import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export default { name: "ProfilePage", loader, Page } as PageModule;
 
@@ -19,6 +20,7 @@ function Page() {
   const paths = usePaths();
   const me = useMe();
   const mentionedPersonLookup = useMentionedPersonLookupFn();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const { person, workMap, reviewerWorkMap } = useLoadedData();
 
   const parsedPerson = People.parsePersonForTurboUi(paths, person);
@@ -45,6 +47,7 @@ function Page() {
     activityFeed: <ActivityFeed personId={person.id} />,
     aboutMe: person.description,
     mentionedPersonLookup,
+    formattedTimePreferences,
   };
 
   return <ProfilePage {...props} />;

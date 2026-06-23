@@ -251,6 +251,7 @@ export const InteractiveDemo: Story = {
             readonly={readonly}
             milestones={milestones}
             onSearch={handleSearch}
+            formattedTimePreferences={defaultFormattedTimePreferences}
           />
         </div>
 

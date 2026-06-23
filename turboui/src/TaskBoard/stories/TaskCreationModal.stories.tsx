@@ -6,6 +6,7 @@ import { createContextualDate } from "../../DateField/mockData";
 
 import * as Types from "../types";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 const sampleMilestones: Types.Milestone[] = [
   { id: "milestone-1", name: "Sprint 1", dueDate: createContextualDate("2025-06-20", "day"), status: "pending", link: "#", kanbanLink: "#" },
@@ -83,6 +84,7 @@ export const Default: Story = {
           milestones={sampleMilestones}
           onMilestoneSearch={async () => {}}
           onCreateTask={handleCreateTask}
+          formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </div>
     );
