@@ -4,11 +4,9 @@ import * as Paper from "@/components/PaperContainer";
 import * as Notifications from "@/models/notifications";
 import * as Signals from "@/signals";
 import * as React from "react";
-import { IconSparkles, IconX, Avatar, SecondaryButton, FormattedTime } from "turboui";
+import { IconSparkles, IconX, Avatar, SecondaryButton, FormattedTime, TextSeparator } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
-
-import { TextSeparator } from "@/components/TextSeparator";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { usePaths } from "../../routes/paths";

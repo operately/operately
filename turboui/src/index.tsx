@@ -21,6 +21,7 @@ export * from "./ProgressBar";
 export * from "./RichContent";
 export * from "./ResourceHub";
 export * from "./StatusBadge";
+export * from "./TextSeparator";
 export * from "./TimeframeSelector";
 export * from "./Timeline";
 export * from "./ViewToggle";

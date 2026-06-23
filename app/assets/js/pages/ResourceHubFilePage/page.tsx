@@ -18,9 +18,7 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import { Avatar, CurrentSubscriptions, FormattedTime, richContentToString, RichContent } from "turboui";
-import { TextSeparator } from "@/components/TextSeparator";
-import { ResourcePageNavigation } from "turboui";
+import { Avatar, CurrentSubscriptions, FormattedTime, ResourcePageNavigation, richContentToString, RichContent, TextSeparator } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 

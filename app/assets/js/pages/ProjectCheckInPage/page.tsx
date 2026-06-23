@@ -19,9 +19,8 @@ import {
   CurrentSubscriptions,
   showSuccessToast,
   StatusBadge,
+  TextSeparator,
 } from "turboui";
-
-import { TextSeparator } from "@/components/TextSeparator";
 import { compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 
