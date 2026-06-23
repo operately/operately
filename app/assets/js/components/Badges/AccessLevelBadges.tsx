@@ -1,11 +1,11 @@
 import React from "react";
-import { Tooltip } from "@/components/Tooltip";
 import { PermissionLevels } from "@/features/Permissions";
 import { joinStr } from "@/utils/strings";
 import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
 import { TestableElement } from "@/utils/testid";
 import { AccessOptionsInt } from "@/models/permissions";
+import { Tooltip } from "turboui";
 
 // Public interface
 
