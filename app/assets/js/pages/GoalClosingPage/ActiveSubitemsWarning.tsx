@@ -1,7 +1,6 @@
 import * as React from "react";
 
-import { BlackLink } from "turboui";
-import { WarningCallout } from "@/components/Callouts";
+import { BlackLink, WarningCallout } from "turboui";
 import { ActiveSubitem, useLoadedData } from "./loader";
 
 import plurarize from "@/utils/plurarize";
