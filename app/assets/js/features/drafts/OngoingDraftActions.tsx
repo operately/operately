@@ -5,8 +5,7 @@ import { ResourceHubDocument } from "@/models/resourceHubs";
 
 import { match } from "ts-pattern";
 
-import { ActionLink, FormattedTime, GhostButton, IconX, PrimaryButton } from "turboui";
-import { CopyToClipboard } from "@/components/CopyToClipboard";
+import { ActionLink, CopyToClipboard, FormattedTime, GhostButton, IconX, PrimaryButton } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 type Resource = Discussion | ResourceHubDocument;
@@ -84,7 +83,7 @@ function ContinueEditingLink({ setActionsVisible }: { setActionsVisible: () => v
         <div className="text-content-primary border border-surface-outline rounded-lg px-3 py-1 font-medium flex items-center justify-between bg-surface-base">
           {window.location.href}
 
-          <CopyToClipboard text={window.location.href} size={25} padding={1} containerClass="" />
+          <CopyToClipboard text={window.location.href} size={25} padding={1} className="" />
         </div>
       </div>
     </div>
