@@ -6,7 +6,6 @@ import * as React from "react";
 import { SubscriptionsState } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 
-import { InfoCallout } from "@/components/Callouts";
 import Forms, { FormState } from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
@@ -19,6 +18,7 @@ import {
   FormattedTime,
   GhostButton,
   IconInfoCircle,
+  InfoCallout,
   Link,
   PrimaryButton,
   RichContent,
