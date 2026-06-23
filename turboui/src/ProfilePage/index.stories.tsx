@@ -8,6 +8,7 @@ import { WorkMap } from "../WorkMap";
 import { genPeople } from "../utils/storybook/genPeople";
 import { mockItems, mockTasksTabItems } from "../WorkMap/tests/mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { asRichText } from "../utils/storybook/richContent";
 
 const meta = {
@@ -67,6 +68,7 @@ const defaultArgs: ProfilePage.Props = {
 
   aboutMe: asRichText("Coffee nerd, jazz fan, and always happy to share shortcuts."),
   mentionedPersonLookup: createMockRichEditorHandlers().mentionedPersonLookup,
+  formattedTimePreferences: defaultFormattedTimePreferences,
 };
 
 export const Default: Story = {

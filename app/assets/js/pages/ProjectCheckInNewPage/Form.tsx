@@ -1,6 +1,5 @@
 import React from "react";
 
-import FormattedTime from "@/components/FormattedTime";
 import { Person } from "@/models/people";
 import { parseCheckInsForTurboUi, usePostProjectCheckIn, ProjectCheckInStatus } from "@/models/projectCheckIns";
 import { Project } from "@/models/projects";
@@ -10,7 +9,8 @@ import Forms, { FormState } from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
-import { ActionLink, GhostButton, Link, PrimaryButton, RichContent, StatusBadge, SubscribersSelector } from "turboui";
+import { ActionLink, FormattedTime, GhostButton, Link, PrimaryButton, RichContent, StatusBadge, SubscribersSelector } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
@@ -203,6 +203,7 @@ function PreviousCheckIn({
   checkIns: ReturnType<typeof parseCheckInsForTurboUi>;
   mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
 }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const checkIn = checkIns[0];
   if (!checkIn) return null;
 
@@ -213,7 +214,7 @@ function PreviousCheckIn({
           <div className="text-sm font-semibold text-content-accent">Previous check-in</div>
           <div className="mt-0.5 text-sm text-content-dimmed">
             Posted by {checkIn.author?.fullName || "Unknown"} on{" "}
-            <FormattedTime time={checkIn.date} format="long-date" />
+            <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="long-date" />
           </div>
         </div>
 

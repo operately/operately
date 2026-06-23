@@ -1,4 +1,6 @@
-export type TimeFormat = "automatic" | "hour_12" | "hour_24";
+import type { TimeFormat } from "../ApiTypes";
+
+export type { TimeFormat };
 
 export function browserLocale(): string {
   if (typeof navigator === "undefined") {
@@ -33,6 +35,13 @@ export function formatTime(
   return formatted.replace(" AM", "am").replace(" PM", "pm");
 }
 
+export function formatDate(
+  value: Date,
+  locale: string = browserLocale(),
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  return new Intl.DateTimeFormat(locale, options).format(value);
+}
 
 function hour12Option(timeFormat: TimeFormat): boolean | undefined {
   switch (timeFormat) {

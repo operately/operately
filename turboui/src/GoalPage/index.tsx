@@ -22,6 +22,7 @@ import { PageHeader } from "./PageHeader";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { StatusBanner } from "../ProjectPageLayout/StatusBanner";
 import { GoalPermissions } from "./types";
+import type { FormattedTimePreferences } from "../FormattedTime";
 
 export namespace GoalPage {
   export interface Space {
@@ -170,6 +171,7 @@ export namespace GoalPage {
     // Rich text support
     richTextHandlers: RichEditorHandlers;
     localDraftKeyBase?: string;
+    formattedTimePreferences: FormattedTimePreferences;
   }
 
   export type Props = CommonProps & SpaceProps;

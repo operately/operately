@@ -22,7 +22,7 @@ import { TaskActivityProps, TaskActivity, TaskStatus } from "./types";
 import { DateField } from "../DateField";
 import { capitalizeFirstLetter } from "../utils/strings";
 
-export function TaskActivityItem({ activity }: TaskActivityProps) {
+export function TaskActivityItem({ activity, formattedTimePreferences }: TaskActivityProps) {
   return (
     <div className="flex gap-3 py-1.5 px-4 text-content-subtle text-sm relative">
       <div className="shrink-0 mt-0.5">
@@ -52,7 +52,7 @@ export function TaskActivityItem({ activity }: TaskActivityProps) {
 
       <div className="shrink-0 mt-0.5">
         <span className="text-content-subtle text-xs">
-          <FormattedTime time={activity.insertedAt} format="relative" />
+          <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="relative" />
         </span>
       </div>
     </div>

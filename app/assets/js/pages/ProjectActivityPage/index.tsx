@@ -9,8 +9,8 @@ import { usePaths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 
-import { Avatar, CurrentSubscriptions } from "turboui";
-import FormattedTime from "@/components/FormattedTime";
+import { Avatar, CurrentSubscriptions, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PageModule } from "@/routes/types";
@@ -63,6 +63,7 @@ function Nav() {
 
 function Title({ activity }: { activity: Activities.Activity }) {
   const author = activity.author;
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   if (!author) {
     return null;
@@ -80,7 +81,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
           {activity.insertedAt && (
             <>
               <span>on</span>
-              <FormattedTime time={activity.insertedAt} format="long-date" />
+              <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="long-date" />
             </>
           )}
         </div>

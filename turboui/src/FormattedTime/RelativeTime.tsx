@@ -1,13 +1,17 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+
 import { useRenderInterval } from "./useRenderInterval";
 import { useWindowSizeBiggerOrEqualTo } from "../utils/useWindowSizeBreakpoint";
 import { Tooltip } from "../Tooltip";
 
 interface RelativeTimeProps {
   time: Date;
+  locale: string;
 }
 
-export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
+export default function RelativeTime({ time, locale }: RelativeTimeProps): JSX.Element {
+  const { t } = useTranslation();
   const lastRender = useRenderInterval(time);
   const isLargeScreen = useWindowSizeBiggerOrEqualTo("sm");
 
@@ -21,7 +25,7 @@ export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   const months = Math.floor(days / 30);
   const years = Math.floor(days / 365);
 
-  const precision = new Intl.DateTimeFormat("en-US", {
+  const precision = new Intl.DateTimeFormat(locale, {
     weekday: "long",
     year: "numeric",
     month: "short",
@@ -33,22 +37,25 @@ export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   let label = "";
 
   if (seconds < 10) {
-    label = "just now";
+    label = t("intlRelativeDateTimeJustNow");
   } else if (seconds < 60) {
-    label = `${seconds} seconds ago`;
+    label = t("intlRelativeDateTime", { val: -seconds, range: "second" });
   } else if (minutes < 60) {
-    const unit = isLargeScreen ? (minutes === 1 ? "minute" : "minutes") : "min.";
-    label = `${minutes} ${unit} ago`;
+    const useAbbreviatedMinutes = !isLargeScreen && locale.toLowerCase().startsWith("en");
+
+    label = useAbbreviatedMinutes
+      ? `${minutes} min. ago`
+      : t("intlRelativeDateTime", { val: -minutes, range: "minute" });
   } else if (hours < 24) {
-    label = `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
+    label = t("intlRelativeDateTime", { val: -hours, range: "hour" });
   } else if (days < 7) {
-    label = `${days} ${days === 1 ? "day" : "days"} ago`;
+    label = t("intlRelativeDateTime", { val: -days, range: "day" });
   } else if (days < 30) {
-    label = `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
+    label = t("intlRelativeDateTime", { val: -weeks, range: "week" });
   } else if (months < 12) {
-    label = `${months} ${months === 1 ? "month" : "months"} ago`;
+    label = t("intlRelativeDateTime", { val: -months, range: "month" });
   } else {
-    label = `${years} ${years === 1 ? "year" : "years"} ago`;
+    label = t("intlRelativeDateTime", { val: -years, range: "year" });
   }
 
   return (

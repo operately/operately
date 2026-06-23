@@ -9,6 +9,7 @@ import {
   showErrorToast,
   showSuccessToast,
 } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export default { name: "AccountApiTokensPage", loader, Page } as PageModule;
 
@@ -28,6 +29,7 @@ async function loader(): Promise<LoaderResult> {
 
 function Page() {
   const paths = usePaths();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const refresh = Pages.useRefresh();
   const { apiTokens } = Pages.useLoadedData<LoaderResult>();
   const [tokens, setTokens] = React.useState<Accounts.ApiToken[]>(apiTokens);
@@ -170,6 +172,7 @@ function Page() {
       homePath={paths.homePath()}
       securityPath={paths.accountSecurityPath()}
       usagePath={paths.accountApiTokensUsagePath()}
+      formattedTimePreferences={formattedTimePreferences}
     />
   );
 }

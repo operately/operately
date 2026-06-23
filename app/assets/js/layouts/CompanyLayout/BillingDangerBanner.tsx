@@ -1,15 +1,16 @@
 import * as React from "react";
 
-import FormattedTime from "@/components/FormattedTime";
 import * as Billing from "@/models/billing";
 import { useHasSupportSessionCookie } from "@/features/SupportSessions";
 import { usePaths } from "@/routes/paths";
 import { useLocation } from "react-router-dom";
-import { IconAlertTriangleFilled, SecondaryButton } from "turboui";
+import { FormattedTime, IconAlertTriangleFilled, SecondaryButton } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 export function BillingDangerBanner() {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const { company, billingAccessState } = useCompanyLoaderData();
   const paths = usePaths();
   const location = useLocation();
@@ -51,7 +52,7 @@ export function BillingDangerBanner() {
 
           <div className="min-w-0 flex-1">
             <div className="text-sm font-bold text-white-1">{banner.title}</div>
-            <p className="mt-1 text-sm text-white-1">{renderDescription(banner)}</p>
+            <p className="mt-1 text-sm text-white-1">{renderDescription(banner, formattedTimePreferences)}</p>
 
             {banner.kind === "over_limit" && (
               <div className="mt-2 flex flex-wrap gap-2">
@@ -90,7 +91,12 @@ export function BillingDangerBanner() {
   );
 }
 
-function renderDescription(banner: ReturnType<typeof Billing.buildBillingDangerBanner>) {
+import type { FormattedTimePreferences } from "turboui";
+
+function renderDescription(
+  banner: ReturnType<typeof Billing.buildBillingDangerBanner>,
+  formattedTimePreferences: FormattedTimePreferences,
+) {
   if (!banner) return null;
 
   if (banner.kind === "payment_default") {
@@ -101,7 +107,7 @@ function renderDescription(banner: ReturnType<typeof Billing.buildBillingDangerB
           {banner.deadline ? (
             <>
               {" by "}
-              <FormattedTime time={banner.deadline} format="long-date" />
+              <FormattedTime {...formattedTimePreferences} time={banner.deadline} format="long-date" />
             </>
           ) : (
             " soon"

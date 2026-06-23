@@ -4,7 +4,7 @@ import { DateField } from "../../DateField";
 import { AvatarWithName } from "../../Avatar";
 import { GhostButton, SecondaryButton } from "../../Button";
 import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag, IconCircleCheckFilled } from "../../icons";
-import FormattedTime from "../../FormattedTime";
+import FormattedTime, { type FormattedTimePreferences } from "../../FormattedTime";
 import { MilestonePage } from "..";
 import { SidebarSection, SidebarNotificationSection } from "../../SidebarSection";
 import { showSuccessToast, showErrorToast } from "../../Toasts";
@@ -20,6 +20,7 @@ export function MilestoneSidebar({
   subscriptions,
   openDeleteModal,
   permissions,
+  formattedTimePreferences,
 }: MilestonePage.State) {
   return (
     <div className="sm:col-span-4 hidden sm:block sm:pl-8">
@@ -27,9 +28,11 @@ export function MilestoneSidebar({
         <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={permissions.canEdit || false} />
         <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={permissions.canEdit || false} />
         {milestone.completedAt && milestone.status === "done" && (
-          <SidebarCompletedOn completedAt={milestone.completedAt} />
+          <SidebarCompletedOn completedAt={milestone.completedAt} formattedTimePreferences={formattedTimePreferences} />
         )}
-        {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
+        {createdBy && (
+          <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} formattedTimePreferences={formattedTimePreferences} />
+        )}
         <SidebarNotificationSection {...subscriptions} />
         <SidebarActions onDelete={openDeleteModal} canEdit={permissions.canEdit || false} />
       </div>
@@ -138,25 +141,39 @@ function SidebarStatus({
   );
 }
 
-function SidebarCompletedOn({ completedAt }: { completedAt: Date }) {
+function SidebarCompletedOn({
+  completedAt,
+  formattedTimePreferences,
+}: {
+  completedAt: Date;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   return (
     <SidebarSection title="Completed on">
       <div className="flex items-center gap-1.5 text-sm">
         <IconCircleCheckFilled size={16} className="text-accent-1" />
-        <FormattedTime time={completedAt} format="short-date" />
+        <FormattedTime {...formattedTimePreferences} time={completedAt} format="short-date" />
       </div>
     </SidebarSection>
   );
 }
 
-function SidebarCreatedBy({ createdBy, createdAt }: { createdBy: MilestonePage.Person; createdAt: Date }) {
+function SidebarCreatedBy({
+  createdBy,
+  createdAt,
+  formattedTimePreferences,
+}: {
+  createdBy: MilestonePage.Person;
+  createdAt: Date;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   return (
     <SidebarSection title="Created">
       <div className="space-y-2 text-sm">
         <AvatarWithName person={createdBy} size="tiny" nameFormat="short" link={createdBy.profileLink} />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
           <IconCalendar size={14} />
-          <FormattedTime time={createdAt} format="short-date" />
+          <FormattedTime {...formattedTimePreferences} time={createdAt} format="short-date" />
         </div>
       </div>
     </SidebarSection>

@@ -42,6 +42,7 @@ function DiscussionsList({ props }: { props: GoalPage.State }) {
           key={discussion.id}
           discussion={discussion}
           mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+          formattedTimePreferences={props.formattedTimePreferences}
         />
       ))}
     </div>

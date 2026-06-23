@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 
 import { DateField } from "../../DateField";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 import * as Types from "../types";
 import { TaskBoard } from "./index";
 
@@ -131,6 +132,7 @@ function renderTaskBoard() {
         canCreateTask={false}
         displayMode="list"
         onDisplayModeChange={jest.fn()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />
     </MemoryRouter>,
   );

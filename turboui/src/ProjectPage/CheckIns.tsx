@@ -34,6 +34,7 @@ export function CheckIns(props: ProjectPage.State) {
             checkIn={checkIn}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
             type="project"
+            formattedTimePreferences={props.formattedTimePreferences}
           />
         ))}
       </div>

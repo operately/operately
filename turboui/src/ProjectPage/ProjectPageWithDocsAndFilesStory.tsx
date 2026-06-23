@@ -17,6 +17,7 @@ import * as TaskBoardTypes from "../TaskBoard/types";
 import { useMockMilestoneOrdering } from "../utils/storybook/milestones";
 import { generatePermissions } from "../utils/storybook/permissions";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { asRichText } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
@@ -188,6 +189,7 @@ export function ProjectPageWithDocsAndFilesStory({
       onMilestoneUpdate={handleMilestoneUpdate}
       onMilestoneReorder={reorderMilestones}
       richTextHandlers={createMockRichEditorHandlers()}
+      formattedTimePreferences={defaultFormattedTimePreferences}
       filters={filters}
       onFiltersChange={setFilters}
       statuses={statuses}

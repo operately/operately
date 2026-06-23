@@ -14,6 +14,7 @@ import { RowContainer } from "./RowContainer";
 import { SpaceCell } from "./SpaceCell";
 import { StatusCell } from "./StatusCell";
 import { RoleCell } from "./RoleCell";
+import type { FormattedTimePreferences } from "../../../FormattedTime";
 
 export type IsItemExpandedFn = (id: string) => boolean;
 export type SetItemExpandedFn = (id: string, value: boolean | ((prev: boolean) => boolean)) => void;
@@ -32,6 +33,7 @@ interface Props {
   isExpanded: IsItemExpandedFn;
   setItemExpanded: SetItemExpandedFn;
   profileUser?: WorkMap.Person;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export function TableRow(props: Props) {
@@ -71,6 +73,7 @@ export function TableRow(props: Props) {
           timeframe={item.timeframe}
           status={item.status}
           hide={columnOptions?.hideDueDate}
+          formattedTimePreferences={props.formattedTimePreferences}
         />
         <SpaceCell item={item} hide={columnOptions?.hideSpace} />
         <ProjectCell item={item} hide={columnOptions?.hideProject} />

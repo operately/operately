@@ -85,6 +85,7 @@ function CheckInsSection(props: ProjectPage.State) {
             checkIns={checkIns}
             state={lastCheckInState}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+            formattedTimePreferences={props.formattedTimePreferences}
           />
         ) : (
           <p className="text-sm text-content-dimmed">{zeroStateCopy}</p>

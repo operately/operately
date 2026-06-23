@@ -3,9 +3,8 @@ import * as Projects from "@/models/projects";
 import * as React from "react";
 
 import { match } from "ts-pattern";
-import { Link, PrimaryButton } from "turboui";
-
-import FormattedTime from "@/components/FormattedTime";
+import { FormattedTime, Link, PrimaryButton } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { usePaths } from "@/routes/paths";
 export function banner(project: Projects.Project) {
@@ -17,11 +16,12 @@ export function banner(project: Projects.Project) {
 
 function ProjectClosedBanner({ project }: { project: Projects.Project }) {
   const paths = usePaths();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const retroPath = paths.projectRetrospectivePath(project.id!);
 
   return (
     <Paper.Banner testId="project-closed-banner">
-      This project was closed on <FormattedTime time={project.closedAt!} format="long-date" />. View the{" "}
+      This project was closed on <FormattedTime {...formattedTimePreferences} time={project.closedAt!} format="long-date" />. View the{" "}
       <Link to={retroPath} testId="project-retrospective-link" className="font-bold ml-1">
         retrospective
       </Link>

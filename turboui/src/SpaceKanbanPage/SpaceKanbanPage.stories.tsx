@@ -17,6 +17,7 @@ import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import type { TimelineItem as TimelineItemType } from "../Timeline/types";
 import { Reactions } from "../Reactions";
 import {
@@ -158,6 +159,7 @@ const buildTaskPageProps = (
     onAddReaction: (commentId, emoji) => opts.onAddReaction(taskId, commentId, emoji),
     onRemoveReaction: (commentId, reactionId) => opts.onRemoveReaction(taskId, commentId, reactionId),
     timelineFilters: undefined,
+    formattedTimePreferences: defaultFormattedTimePreferences,
   };
 };
 

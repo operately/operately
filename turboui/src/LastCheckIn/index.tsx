@@ -1,5 +1,5 @@
 import React from "react";
-import FormattedTime from "../FormattedTime";
+import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import classNames from "../utils/classnames";
 import { Avatar, AvatarPerson } from "../Avatar";
 import { DivLink } from "../Link";
@@ -12,6 +12,7 @@ export interface LastCheckInProps {
   checkIns: CheckIn[];
   state?: "active" | "closed";
   mentionedPersonLookup?: MentionedPersonLookupFn;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export interface CheckIn {
@@ -24,7 +25,7 @@ export interface CheckIn {
   status: BadgeStatus;
 }
 
-export function LastCheckIn({ checkIns, state, mentionedPersonLookup }: LastCheckInProps) {
+export function LastCheckIn({ checkIns, state, mentionedPersonLookup, formattedTimePreferences }: LastCheckInProps) {
   if (checkIns.length === 0) return null;
   if (state === "closed") return null;
 
@@ -53,7 +54,7 @@ export function LastCheckIn({ checkIns, state, mentionedPersonLookup }: LastChec
     <div className="text-sm">
       <DivLink to={checkIn.link} className={className}>
         <div className="flex items-center font-semibold">
-          <FormattedTime time={checkIn.date} format="short-date" />
+          <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="short-date" />
         </div>
 
         <Summary

@@ -3,7 +3,7 @@ import React from "react";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import { WarningCallout } from "../Callouts";
 import { CopyToClipboard } from "../CopyToClipboard";
-import { FormattedTime } from "../FormattedTime";
+import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
 import { IconPencil, IconSwitch, IconTrash } from "../icons";
 import { Link } from "../Link";
 import { Menu, MenuActionItem } from "../Menu";
@@ -42,6 +42,7 @@ export namespace AccountApiTokensPage {
     homePath: string;
     securityPath: string;
     usagePath: string;
+    formattedTimePreferences: FormattedTimePreferences;
   }
 }
 
@@ -109,6 +110,7 @@ export function AccountApiTokensPage(props: AccountApiTokensPage.Props) {
               onToggleReadOnly={props.onToggleReadOnly}
               onDeleteToken={props.onDeleteToken}
               onUpdateName={props.onUpdateName}
+              formattedTimePreferences={props.formattedTimePreferences}
             />
           )}
         </section>
@@ -209,12 +211,14 @@ function TokenList({
   onToggleReadOnly,
   onDeleteToken,
   onUpdateName,
+  formattedTimePreferences,
 }: {
   tokens: AccountApiTokensPage.Token[];
   pendingTokenActions: Record<string, AccountApiTokensPage.PendingAction | undefined>;
   onToggleReadOnly: (tokenId: string, readOnly: boolean) => void;
   onDeleteToken: (tokenId: string) => void;
   onUpdateName: (tokenId: string, name: string) => Promise<boolean>;
+  formattedTimePreferences: FormattedTimePreferences;
 }) {
   const hasUsageMetadata = tokens.some((token) => token.insertedAt !== undefined || token.lastUsedAt !== undefined);
 
@@ -247,6 +251,7 @@ function TokenList({
                   onToggleReadOnly={onToggleReadOnly}
                   onDeleteToken={onDeleteToken}
                   onUpdateName={onUpdateName}
+                  formattedTimePreferences={formattedTimePreferences}
                 />
               );
             })}
@@ -270,6 +275,7 @@ function TokenRow({
   onToggleReadOnly,
   onDeleteToken,
   onUpdateName,
+  formattedTimePreferences,
 }: {
   token: AccountApiTokensPage.Token;
   index: number;
@@ -277,6 +283,7 @@ function TokenRow({
   onToggleReadOnly: (tokenId: string, readOnly: boolean) => void;
   onDeleteToken: (tokenId: string) => void;
   onUpdateName: (tokenId: string, name: string) => Promise<boolean>;
+  formattedTimePreferences: FormattedTimePreferences;
 }) {
   const [isRenameModalOpen, setIsRenameModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
@@ -325,11 +332,11 @@ function TokenRow({
         </td>
 
         <td className="px-3 py-3 text-content-dimmed whitespace-nowrap">
-          <Timestamp value={token.insertedAt} emptyLabel="Not available" />
+          <Timestamp value={token.insertedAt} emptyLabel="Not available" formattedTimePreferences={formattedTimePreferences} />
         </td>
 
         <td className="px-3 py-3 text-content-dimmed">
-          <Timestamp value={token.lastUsedAt} emptyLabel="Never" />
+          <Timestamp value={token.lastUsedAt} emptyLabel="Never" formattedTimePreferences={formattedTimePreferences} />
         </td>
 
         <td className="px-3 py-3 text-right">
@@ -482,11 +489,19 @@ function displayTokenName(token: AccountApiTokensPage.Token, index: number) {
   return `token ${index + 1}`;
 }
 
-function Timestamp({ value, emptyLabel }: { value?: string | null; emptyLabel: string }) {
+function Timestamp({
+  value,
+  emptyLabel,
+  formattedTimePreferences,
+}: {
+  value?: string | null;
+  emptyLabel: string;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   if (value === null) return <span>{emptyLabel}</span>;
   if (value === undefined) return <span>-</span>;
 
-  return <FormattedTime time={value} format="relative-time-or-date" />;
+  return <FormattedTime {...formattedTimePreferences} time={value} format="relative-time-or-date" />;
 }
 
 export default AccountApiTokensPage;

@@ -7,6 +7,7 @@ import { TableHeader } from "../components/WorkMapTable";
 
 import * as data from "../tests/mockData";
 import * as Steps from "../tests/steps";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 type TableRowProps = React.ComponentProps<typeof TableRow>;
 
@@ -90,6 +91,7 @@ const meta = {
     showIndentation: true,
     isExpanded: () => true,
     setItemExpanded: () => undefined,
+    formattedTimePreferences: defaultFormattedTimePreferences,
   },
 } satisfies Meta<typeof TableRow>;
 

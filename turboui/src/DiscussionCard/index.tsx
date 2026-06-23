@@ -5,7 +5,7 @@ import { MentionedPersonLookupFn } from "../RichEditor";
 import classNames from "../utils/classnames";
 import { DivLink } from "../Link";
 import { Summary } from "../RichContent";
-import FormattedTime from "../FormattedTime";
+import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import { CommentCountIndicator } from "../CommentCountIndicator";
 
 namespace DiscussionCard {
@@ -22,10 +22,11 @@ namespace DiscussionCard {
   export interface Props {
     discussion: Discussion;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    formattedTimePreferences: FormattedTimePreferences;
   }
 }
 
-export function DiscussionCard({ discussion, mentionedPersonLookup }: DiscussionCard.Props) {
+export function DiscussionCard({ discussion, mentionedPersonLookup, formattedTimePreferences }: DiscussionCard.Props) {
   const className = classNames(
     "flex gap-4 items-center",
     "py-3 px-3",
@@ -56,7 +57,7 @@ export function DiscussionCard({ discussion, mentionedPersonLookup }: Discussion
               </>
             )}
             <div className="text-sm text-content-dimmed">
-              <FormattedTime time={discussion.date!} format="relative-weekday-or-date" />
+              <FormattedTime {...formattedTimePreferences} time={discussion.date!} format="relative-weekday-or-date" />
             </div>
           </div>
         </div>

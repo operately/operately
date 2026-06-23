@@ -1,6 +1,6 @@
 import React from "react";
 
-import { FormattedTime } from "../FormattedTime";
+import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
 import { Page } from "../Page";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { ProgressBar } from "../ProgressBar";
@@ -43,6 +43,7 @@ export namespace CompanyImportPage {
     onStartImport: () => void | Promise<void>;
     onSelectPackageFile: (file: File) => void | Promise<void>;
     onClearPackageFile: () => void;
+    formattedTimePreferences: FormattedTimePreferences;
   }
 }
 
@@ -100,7 +101,7 @@ export function CompanyImportPage(props: CompanyImportPage.Props) {
           ) : (
             <div className="space-y-3 mt-3">
               {props.runs.map((run, index) => (
-                <ImportRunCard key={run.id} run={run} latest={index === 0} />
+                <ImportRunCard key={run.id} run={run} latest={index === 0} formattedTimePreferences={props.formattedTimePreferences} />
               ))}
             </div>
           )}
@@ -212,7 +213,15 @@ function ArtifactUploadCard({
   );
 }
 
-function ImportRunCard({ run, latest }: { run: CompanyImportPage.Run; latest: boolean }) {
+function ImportRunCard({
+  run,
+  latest,
+  formattedTimePreferences,
+}: {
+  run: CompanyImportPage.Run;
+  latest: boolean;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   const latestStatusTestId = latest ? "latest-import-run-status" : undefined;
   const latestProgressTestId = latest ? "latest-import-run-progress" : undefined;
 
@@ -224,12 +233,12 @@ function ImportRunCard({ run, latest }: { run: CompanyImportPage.Run; latest: bo
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Tooltip content={<RunStatusTooltip run={run} />} size="sm" testId={latestStatusTestId}>
+            <Tooltip content={<RunStatusTooltip run={run} formattedTimePreferences={formattedTimePreferences} />} size="sm" testId={latestStatusTestId}>
               <RunStatus status={run.status} />
             </Tooltip>
 
             <div className="text-xs text-content-dimmed">
-              <FormattedTime time={run.completedAt || run.insertedAt} format="short-date-with-weekday" />
+              <FormattedTime {...formattedTimePreferences} time={run.completedAt || run.insertedAt} format="short-date-with-weekday" />
             </div>
           </div>
 
@@ -278,16 +287,22 @@ function RunStatus({ status }: { status: string }) {
   return <span className={statusClassName(status)}>{status}</span>;
 }
 
-function RunStatusTooltip({ run }: { run: CompanyImportPage.Run }) {
+function RunStatusTooltip({
+  run,
+  formattedTimePreferences,
+}: {
+  run: CompanyImportPage.Run;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   return (
     <div className="space-y-1 text-left">
       <div>
-        Requested: <FormattedTime time={run.insertedAt} format="relative-time-or-date" />
+        Requested: <FormattedTime {...formattedTimePreferences} time={run.insertedAt} format="relative-time-or-date" />
       </div>
 
       {run.completedAt && (
         <div>
-          Completed: <FormattedTime time={run.completedAt} format="relative-time-or-date" />
+          Completed: <FormattedTime {...formattedTimePreferences} time={run.completedAt} format="relative-time-or-date" />
         </div>
       )}
 

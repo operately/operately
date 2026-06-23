@@ -137,6 +137,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         onSaveCustomStatuses={state.onSaveCustomStatuses}
         displayMode={taskDisplayMode}
         onDisplayModeChange={handleDisplayModeChange}
+        formattedTimePreferences={state.formattedTimePreferences}
       />
     </div>
   );

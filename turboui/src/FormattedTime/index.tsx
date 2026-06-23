@@ -9,6 +9,10 @@ import RelativeWeekdayOrDate from "./RelativeWeekdayOrDate";
 import ShortDate from "./ShortDate";
 import ShortDateWithWeekday from "./ShortDateWithWeekday";
 import TimeOnly from "./TimeOnly";
+import type { FormattedTimePreferences } from "./types";
+
+export type { FormattedTimePreferences } from "./types";
+export { defaultFormattedTimePreferences } from "./types";
 
 export type Format =
   | "relative"
@@ -31,45 +35,46 @@ export type Format =
 // long-date: "April 5, 2021"
 //
 
-export interface FormattedTimeProps {
+export interface FormattedTimeProps extends FormattedTimePreferences {
   time: string | Date;
   format: Format;
-  timezone?: string;
 }
 
 export function FormattedTime(props: FormattedTimeProps): JSX.Element {
-  const timezone = props.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const { locale, timezone, timeFormat, time, format } = props;
 
-  const parsedTime = match(props.format)
-    .with("relative", () => Time.parse(props.time))
-    .with("time-only", () => Time.parse(props.time))
-    .with("relative-time-or-date", () => Time.parse(props.time))
-    .otherwise(() => Time.parseDate(props.time));
+  const parsedTime = match(format)
+    .with("relative", () => Time.parse(time))
+    .with("time-only", () => Time.parse(time))
+    .with("relative-time-or-date", () => Time.parse(time))
+    .otherwise(() => Time.parseDate(time));
 
-  if (!parsedTime) throw new Error("Invalid date " + props.time);
+  if (!parsedTime) throw new Error("Invalid date " + time);
 
-  const time = applyTimezone(parsedTime, timezone);
+  const localizedTime = applyTimezone(parsedTime, timezone);
 
-  switch (props.format) {
+  switch (format) {
     case "relative":
-      return <RelativeTime time={time} />;
+      return <RelativeTime time={localizedTime} locale={locale} />;
     case "relative-weekday-or-date":
-      return <RelativeWeekdayOrDate time={time} />;
+      return <RelativeWeekdayOrDate time={localizedTime} locale={locale} />;
     case "relative-time-or-date":
-      return <RelativeTimeOrDate time={time} />;
+      return <RelativeTimeOrDate time={localizedTime} locale={locale} />;
     case "short-date":
-      return <ShortDate time={time} weekday={false} />;
+      return <ShortDate time={localizedTime} weekday={false} locale={locale} />;
     case "short-date-with-weekday":
-      return <ShortDateWithWeekday time={time} />;
+      return <ShortDateWithWeekday time={localizedTime} locale={locale} />;
     case "time-only":
-      return <TimeOnly time={time} />;
+      return <TimeOnly time={localizedTime} locale={locale} timeFormat={timeFormat} />;
     case "long-date":
-      return <LongDate time={time} />;
+      return <LongDate time={localizedTime} locale={locale} />;
     default:
-      throw new Error(`Unknown format ${props.format}`);
+      throw new Error(`Unknown format ${format}`);
   }
 }
 
+// Shift wall-clock fields into the target timezone. en-US is fine to hardcode here: this string
+// is never shown, only parsed, and en-US gives a format new Date() accepts reliably; locale applies in sub-components.
 function applyTimezone(time: Date, timezone: string): Date {
   return new Date(time.toLocaleString("en-US", { timeZone: timezone }));
 }

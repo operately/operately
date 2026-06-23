@@ -8,6 +8,7 @@ import { Paths } from "@/routes/paths";
 import { CompanyImportPage, showErrorToast, showSuccessToast } from "turboui";
 
 import { useLoadedData, loader } from "./loader";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export default { name: "CompanyImportPage", loader, Page } as PageModule;
 
@@ -22,6 +23,7 @@ const EMPTY_UPLOAD_STATE: CompanyImportPage.UploadedFileState = {
 
 function Page() {
   const { importRuns } = useLoadedData();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const [runs, setRuns] = React.useState(() => CompanyExports.sortRuns(importRuns));
   const [packageFile, setPackageFile] = React.useState<CompanyImportPage.UploadedFileState>(EMPTY_UPLOAD_STATE);
   const [starting, setStarting] = React.useState(false);
@@ -112,6 +114,7 @@ function Page() {
       onSelectPackageFile={uploadArtifact}
       onClearPackageFile={handleClearPackageFile}
       onStartImport={handleStartImport}
+      formattedTimePreferences={formattedTimePreferences}
     />
   );
 }

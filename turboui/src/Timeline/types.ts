@@ -2,6 +2,7 @@ import { DateField } from "../DateField";
 import { Person, Comment, CommentNotificationInfo } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { FormattedTimePreferences } from "../FormattedTime";
 
 export type { Comment } from "../CommentSection/types";
 
@@ -182,6 +183,7 @@ export interface TimelineProps {
   richTextHandlers: RichEditorHandlers;
   commentNotificationInfo?: CommentNotificationInfo;
   commentDraftKey?: string;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export interface TimelineFilters {
@@ -205,18 +207,22 @@ export interface TimelineItemProps {
   commentDraftKey?: string;
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 // Activity component props
 export interface TaskActivityProps {
   activity: TaskActivity;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export interface ActivityProps {
   activity: MilestoneActivity;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export interface AcknowledgmentProps {
   person: Person;
   ackAt: string;
+  formattedTimePreferences: FormattedTimePreferences;
 }

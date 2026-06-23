@@ -6,6 +6,7 @@ import { WorkMapPage } from "turboui";
 import { convertToWorkMapItems, useWorkMapItems } from "../../models/workMap";
 import { usePaths } from "../../routes/paths";
 import { useLoadedData } from "./loader";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export function Page() {
   const paths = usePaths();
@@ -16,6 +17,7 @@ export function Page() {
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
   const canAddItem = spacesCount > 0;
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <WorkMapPage
@@ -26,6 +28,7 @@ export function Page() {
       addingEnabled={canAddItem}
       addItemDefaultSpace={company.generalSpace && Spaces.parseSpaceForTurboUI(paths, company.generalSpace)}
       columnOptions={{ hideProject: true }}
+      formattedTimePreferences={formattedTimePreferences}
     />
   );
 }

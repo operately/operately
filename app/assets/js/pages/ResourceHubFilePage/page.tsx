@@ -18,10 +18,10 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import { Avatar, richContentToString, RichContent, CurrentSubscriptions } from "turboui";
-import FormattedTime from "@/components/FormattedTime";
+import { Avatar, CurrentSubscriptions, FormattedTime, richContentToString, RichContent } from "turboui";
 import { TextSeparator } from "@/components/TextSeparator";
 import { ResourcePageNavigation } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
@@ -66,6 +66,7 @@ export function Page() {
 
 function Title() {
   const { file } = useLoadedData();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   assertPresent(file.author, "author must be present in file");
 
@@ -78,7 +79,7 @@ function Title() {
         </div>
 
         <TextSeparator />
-        <FormattedTime time={file.insertedAt!} format="relative-time-or-date" />
+        <FormattedTime {...formattedTimePreferences} time={file.insertedAt!} format="relative-time-or-date" />
       </div>
     </div>
   );

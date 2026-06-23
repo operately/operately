@@ -10,6 +10,7 @@ import { AddItemModal } from "./AddItemModal";
 import { IsItemExpandedFn, SetItemExpandedFn, TableRow } from "./TableRow";
 import { ZeroState } from "./ZeroState";
 import { compareIds } from "../../utils/ids";
+import type { FormattedTimePreferences } from "../../FormattedTime";
 
 interface Props {
   items: WorkMap.Item[];
@@ -24,6 +25,7 @@ interface Props {
   profileUser?: WorkMap.Person;
   hideCompanyAccessInQuickAdd?: boolean;
   zeroStateMessage?: string;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export function WorkMapTable({
@@ -39,6 +41,7 @@ export function WorkMapTable({
   profileUser,
   hideCompanyAccessInQuickAdd = false,
   zeroStateMessage,
+  formattedTimePreferences,
 }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
@@ -115,6 +118,7 @@ export function WorkMapTable({
                 isExpanded={getItemExpanded}
                 setItemExpanded={setItemExpanded}
                 profileUser={profileUser}
+                formattedTimePreferences={formattedTimePreferences}
               />
             ))}
 

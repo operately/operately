@@ -1,7 +1,8 @@
 import type { ActivityContentProjectDueDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import React from "react";
-import FormattedTime from "@/components/FormattedTime";
+import { FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { feedTitle, projectLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
@@ -27,11 +28,12 @@ const ProjectDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
+    const formattedTimePreferences = useFormattedTimePreferences();
     const { project, newDueDate } = content(props.activity);
 
     const message = newDueDate ? (
       <>
-        changed the due date to <FormattedTime time={newDueDate} format="short-date" />
+        changed the due date to <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
       </>
     ) : (
       "cleared the due date"
@@ -45,10 +47,11 @@ const ProjectDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
+    const formattedTimePreferences = useFormattedTimePreferences();
     const { oldDueDate } = content(props.activity);
 
     if (oldDueDate) {
-      const time = <FormattedTime time={oldDueDate} format="short-date" />;
+      const time = <FormattedTime {...formattedTimePreferences} time={oldDueDate} format="short-date" />;
 
       return <>Previously the due date was {time}</>;
     } else {
@@ -69,13 +72,14 @@ const ProjectDueDateUpdating: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
+    const formattedTimePreferences = useFormattedTimePreferences();
     const { project, newDueDate } = content(activity);
     const projectName = project?.name ?? "the project";
 
     if (newDueDate) {
       return (
         <>
-          Updated due date for {projectName} to <FormattedTime time={newDueDate} format="short-date" />
+          Updated due date for {projectName} to <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
         </>
       );
     } else {
