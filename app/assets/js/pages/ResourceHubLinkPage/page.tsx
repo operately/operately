@@ -24,8 +24,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
 import { buildNavigationLink } from "./navigation";
-import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions } from "turboui";
-import { BulletDot } from "@/components/TextElements";
+import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions, BulletDot } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
