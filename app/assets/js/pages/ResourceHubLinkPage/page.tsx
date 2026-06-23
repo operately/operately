@@ -12,13 +12,12 @@ import * as Paper from "@/components/PaperContainer";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
-import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { FormattedTime, LinkIcon, ResourcePageNavigation, type ResourceHubLinkType } from "turboui";
+import { FormattedTime, LinkIcon, ResourcePageNavigation, Spacer, type ResourceHubLinkType } from "turboui";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";

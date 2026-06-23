@@ -6,10 +6,9 @@ import { Project } from "@/models/projects";
 import { useNavigate } from "react-router-dom";
 
 import Forms, { FormState } from "@/components/Forms";
-import { Spacer } from "@/components/Spacer";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
-import { ActionLink, FormattedTime, GhostButton, Link, PrimaryButton, RichContent, StatusBadge, SubscribersSelector } from "turboui";
+import { ActionLink, FormattedTime, GhostButton, Link, PrimaryButton, RichContent, Spacer, StatusBadge, SubscribersSelector } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { assertPresent } from "@/utils/assertions";
 
