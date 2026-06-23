@@ -11,7 +11,6 @@ import { documents } from "@/models/resourceHubs";
 import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
-import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { OngoingDraftActions } from "@/features/drafts";
@@ -23,7 +22,7 @@ import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
 import { assertPresent } from "@/utils/assertions";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { RichContent, CurrentSubscriptions } from "turboui";
+import { RichContent, CurrentSubscriptions, Spacer } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { buildNavigationDocument } from "./navigation";

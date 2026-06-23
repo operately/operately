@@ -5,12 +5,12 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import Forms from "@/components/Forms";
 
-import { Spacer } from "@/components/Spacer";
 import * as Companies from "@/models/companies";
 import { logIn } from "@/routes/auth";
 import { PasswordStrength } from "@/features/auth/PasswordStrength";
 import { validatePassword } from "@/features/auth/validatePassword";
 import { validateEmail } from "@/features/auth/validateEmail";
+import { Spacer } from "turboui";
 import { OperatelyLogo } from "turboui/Logo";
 
 export function Page() {

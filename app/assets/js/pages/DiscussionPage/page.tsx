@@ -5,7 +5,6 @@ import * as Discussions from "@/models/discussions";
 import * as Reactions from "@/models/reactions";
 import * as React from "react";
 
-import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
@@ -19,7 +18,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
-import { IconEdit, IconTrash, RichContent, CurrentSubscriptions } from "turboui";
+import { IconEdit, IconTrash, RichContent, CurrentSubscriptions, Spacer } from "turboui";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";

@@ -20,6 +20,7 @@ export * from "./PieChart";
 export * from "./ProgressBar";
 export * from "./RichContent";
 export * from "./ResourceHub";
+export * from "./Spacer";
 export * from "./StatusBadge";
 export * from "./TimeframeSelector";
 export * from "./Timeline";
