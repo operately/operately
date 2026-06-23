@@ -1,8 +1,7 @@
 import * as React from "react";
 import * as People from "@/models/people";
-import { Avatar, FormattedTime } from "turboui";
+import { Avatar, BulletDot, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { BulletDot } from "@/components/TextElements";
 
 const validStates = ["draft", "published"];
 
