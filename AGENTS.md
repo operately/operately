@@ -144,7 +144,7 @@ Read the testing guide at app/test/AGENTS.md.
 - Local env: run `make dev.seed.env` to scaffold `.env` and certs. Never commit secrets.
 - Use `./devenv` wrapper (Docker-based) for consistent tooling and DB.
 
-## Cursor Cloud specific instructions
+## Cursor Cloud-specific instructions
 
 The entire dev environment runs inside Docker via the `./devenv` wrapper (docker-in-docker). Standard build/run/test commands live in the `Makefile` and `docs/dev-env.md`; the notes below only cover non-obvious caveats for this environment.
 
