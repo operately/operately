@@ -6,6 +6,7 @@ import { useLoadedData } from "./loader";
 import { usePaths } from "@/routes/paths";
 import { useSpaceSearch } from "../../models/spaces";
 import { convertToWorkMapItems, useWorkMapItems } from "../../models/workMap";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export function Page() {
   const paths = usePaths();
@@ -15,6 +16,7 @@ export function Page() {
 
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <WorkMapPage
@@ -26,6 +28,7 @@ export function Page() {
       columnOptions={{ hideSpace: true, hideProject: true }}
       navigation={[{ to: paths.spacePath(space.id), label: space.name }]}
       hideCompanyAccessInQuickAdd={hideCompanyAccessInQuickAdd}
+      formattedTimePreferences={formattedTimePreferences}
       addItemDefaultSpace={{
         id: space.id,
         name: space.name,

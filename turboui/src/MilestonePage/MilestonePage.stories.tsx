@@ -7,6 +7,7 @@ import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { generatePermissions } from "../utils/storybook/permissions";
 
@@ -279,6 +280,7 @@ export const Default: Story = {
           return true;
         }}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         statusOptions={DEFAULT_STATUS_OPTIONS}
       />
     );
@@ -387,6 +389,7 @@ export const EmptyMilestone: Story = {
           return true;
         }}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         statusOptions={DEFAULT_STATUS_OPTIONS}
       />
     );
@@ -606,6 +609,7 @@ export const CompletedMilestone: Story = {
           return true;
         }}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         statusOptions={DEFAULT_STATUS_OPTIONS}
       />
     );

@@ -27,6 +27,7 @@ export function Timeline({
   filters,
   commentNotificationInfo,
   commentDraftKey,
+  formattedTimePreferences,
 }: Timeline.Props) {
   if (isLoading) {
     return <TimelineSkeleton />;
@@ -98,6 +99,7 @@ export function Timeline({
             commentDraftKey={commentDraftKey}
             onAddReaction={onAddReaction}
             onRemoveReaction={onRemoveReaction}
+            formattedTimePreferences={formattedTimePreferences}
           />
         ))
       )}

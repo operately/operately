@@ -22,6 +22,7 @@ import { SidebarNotificationSection } from "../SidebarSection";
 import { TasksSection } from "./TasksSection";
 import { getTaskCompletionStats } from "./taskCompletion";
 import { ProjectPermissions } from "./types";
+import type { FormattedTimePreferences } from "../FormattedTime";
 
 export namespace ProjectPage {
   export interface Space {
@@ -194,6 +195,7 @@ export namespace ProjectPage {
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;
     docsAndFiles?: DocsAndFiles;
+    formattedTimePreferences: FormattedTimePreferences;
   }
 
   export type Props = CommonProps & SpaceProps;

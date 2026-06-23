@@ -9,6 +9,7 @@ import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople } from "../utils/storybook/genPeople";
 import { useMockMilestoneOrdering } from "../utils/storybook/milestones";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
@@ -419,6 +420,7 @@ export const Default: Story = {
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={reorderMilestones}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         filters={filters}
         onFiltersChange={setFilters}
         statuses={statuses}
@@ -536,6 +538,7 @@ export const OverdueCheckIn: Story = {
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={async () => {}}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         filters={filters}
         onFiltersChange={setFilters}
         statuses={statuses}
@@ -651,6 +654,7 @@ export const ReadOnly: Story = {
         onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
         getTaskPageProps={taskActions.getTaskPageProps}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         filters={[]}
         onFiltersChange={() => {}}
         statuses={DEFAULT_STATUSES}
@@ -792,6 +796,7 @@ export const EmptyTasks: Story = {
         onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
         getTaskPageProps={taskActions.getTaskPageProps}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         filters={filters}
         onFiltersChange={setFilters}
         statuses={statuses}
@@ -932,6 +937,7 @@ export const EmptyProject: Story = {
         onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
         getTaskPageProps={taskActions.getTaskPageProps}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         filters={[]}
         onFiltersChange={() => {}}
         statuses={statuses}
@@ -1034,6 +1040,7 @@ export const EmptyProjectReadOnly: Story = {
         onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
         getTaskPageProps={taskActions.getTaskPageProps}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         filters={[]}
         onFiltersChange={() => {}}
         statuses={statuses}
@@ -1193,6 +1200,7 @@ export const PausedProject: Story = {
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={async () => {}}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         filters={filters}
         onFiltersChange={setFilters}
         statuses={statuses}
@@ -1314,6 +1322,7 @@ export const ClosedProject: Story = {
         statuses={DEFAULT_STATUSES}
         onSaveCustomStatuses={() => {}}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         parentGoal={parentGoal}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -1496,6 +1505,7 @@ export const ProjectWithoutSpace: Story = {
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={reorderMilestones}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
         filters={filters}
         onFiltersChange={setFilters}
         statuses={statuses}

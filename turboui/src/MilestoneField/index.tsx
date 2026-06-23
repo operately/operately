@@ -2,7 +2,7 @@ import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
 import { DateField } from "../DateField";
-import FormattedTime from "../FormattedTime";
+import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import { IconCircleX, IconExternalLink, IconFlag, IconSearch } from "../icons";
 import { DivLink } from "../Link";
 import classNames from "../utils/classnames";
@@ -40,6 +40,7 @@ export interface MilestoneFieldProps extends TestableElement {
   milestones: Milestone[];
   onSearch: (query: string) => Promise<void>;
   extraDialogMenuOptions?: DialogMenuOptionProps[];
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export interface State {
@@ -62,6 +63,7 @@ export interface State {
   milestones: Milestone[];
 
   testId: string;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export function MilestoneField(props: MilestoneFieldProps) {
@@ -131,6 +133,7 @@ export function useState(props: MilestoneFieldProps): State {
     milestones: props.milestones,
 
     testId: props.testId || "milestone-field",
+    formattedTimePreferences: props.formattedTimePreferences,
   };
 }
 
@@ -163,7 +166,7 @@ function Trigger({ state }: { state: State }) {
             </div>
             {state.milestone.dueDate?.date && (
               <div className="text-xs text-content-dimmed">
-                Due <FormattedTime time={state.milestone.dueDate.date} format="short-date" />
+                Due <FormattedTime {...state.formattedTimePreferences} time={state.milestone.dueDate.date} format="short-date" />
               </div>
             )}
           </div>
@@ -380,7 +383,7 @@ function DialogSearch({ state }: { state: State }) {
                 <div className="text-sm truncate">{milestone.name || milestone.title}</div>
                 {milestone.dueDate?.date && (
                   <div className="text-xs text-content-dimmed">
-                    Due <FormattedTime time={milestone.dueDate.date} format="short-date" />
+                    Due <FormattedTime {...state.formattedTimePreferences} time={milestone.dueDate.date} format="short-date" />
                   </div>
                 )}
               </div>

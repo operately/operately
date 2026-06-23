@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { CompanyExportPage } from "./index";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
 const now = new Date().toISOString();
 
@@ -25,6 +26,7 @@ const defaultArgs: CompanyExportPage.Props = {
   downloading: null,
   onStartExport: () => {},
   onDownload: (_runId: string) => {},
+  formattedTimePreferences: defaultFormattedTimePreferences,
   runs: [
     {
       id: "run-1",

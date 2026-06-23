@@ -9,6 +9,7 @@ import { useTaskTimelineItems } from "./useTaskTimelineItems";
 import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 import Api, { type Person as ApiPerson, type Task as BackendTask } from "@/api";
 import { useSubscription } from "@/models/subscriptions";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 type TimelinePerson = NonNullable<TaskPage.ContentProps["currentUser"]>;
 
@@ -37,6 +38,7 @@ export function useTaskSlideInProps(opts: {
   spaceSearch: TaskPage.ContentProps["spaceSearch"];
 }) {
   const { backendTasks, paths, currentUser, tasks, canEdit, canComment, hideMilestone, commentEntityType } = opts;
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
@@ -414,6 +416,7 @@ export function useTaskSlideInProps(opts: {
           if (activeTaskId !== taskId) return;
           removeReaction(commentId, reactionId);
         },
+        formattedTimePreferences,
       };
     },
     [
@@ -437,6 +440,7 @@ export function useTaskSlideInProps(opts: {
       subscriptions,
       opts.projectSearch,
       opts.spaceSearch,
+      formattedTimePreferences,
     ],
   );
 

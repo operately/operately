@@ -22,6 +22,7 @@ export function TimelineItem({
   commentDraftKey,
   onAddReaction,
   onRemoveReaction,
+  formattedTimePreferences,
 }: TimelineItemProps) {
   switch (item.type) {
     case "comment":
@@ -43,28 +44,35 @@ export function TimelineItem({
           richTextHandlers={richTextHandlers}
           onAddReaction={onAddReaction}
           onRemoveReaction={onRemoveReaction}
+          formattedTimePreferences={formattedTimePreferences}
         />
       );
 
     case "task-activity":
-      return <TaskActivityItem activity={item.value} />;
+      return <TaskActivityItem activity={item.value} formattedTimePreferences={formattedTimePreferences} />;
 
     case "milestone-activity":
       if (item.value.type === "milestone-completed") {
-        return <MilestoneCompletedActivity activity={item.value} />;
+        return <MilestoneCompletedActivity activity={item.value} formattedTimePreferences={formattedTimePreferences} />;
       } else if (item.value.type === "milestone-reopened") {
-        return <MilestoneReopenedActivity activity={item.value} />;
+        return <MilestoneReopenedActivity activity={item.value} formattedTimePreferences={formattedTimePreferences} />;
       } else if (item.value.type === "project_milestone_creation") {
-        return <MilestoneCreatedActivity activity={item.value} />;
+        return <MilestoneCreatedActivity activity={item.value} formattedTimePreferences={formattedTimePreferences} />;
       } else if (item.value.type === "milestone_description_updating") {
-        return <MilestoneDescriptionActivity activity={item.value} />;
+        return <MilestoneDescriptionActivity activity={item.value} formattedTimePreferences={formattedTimePreferences} />;
       } else if (item.value.type === "milestone_update") {
-        return <MilestoneUpdateActivity activity={item.value} />;
+        return <MilestoneUpdateActivity activity={item.value} formattedTimePreferences={formattedTimePreferences} />;
       }
       return null;
 
     case "acknowledgment":
-      return <AcknowledgmentActivity person={item.value} ackAt={item.insertedAt} />;
+      return (
+        <AcknowledgmentActivity
+          person={item.value}
+          ackAt={item.insertedAt}
+          formattedTimePreferences={formattedTimePreferences}
+        />
+      );
 
     default:
       return null;

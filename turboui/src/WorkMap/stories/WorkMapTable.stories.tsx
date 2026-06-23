@@ -3,6 +3,7 @@ import { WorkMapTable } from "../components/WorkMapTable";
 import * as Steps from "../tests/steps";
 import { mockItems, onlyGoals, onlyProjects, onlyCompleted, mockItemsWithReviewers } from "../tests/mockData";
 import { people } from "../tests/mockData";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 const meta = {
   title: "Components/WorkMap/WorkMapTable",
@@ -21,6 +22,9 @@ const meta = {
       description: "WorkMap items to display",
       control: "object",
     },
+  },
+  args: {
+    formattedTimePreferences: defaultFormattedTimePreferences,
   },
 } satisfies Meta<typeof WorkMapTable>;
 

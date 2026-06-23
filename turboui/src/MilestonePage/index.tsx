@@ -28,6 +28,7 @@ import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { PageDescription } from "../PageDescription";
 import { SidebarNotificationSection } from "../SidebarSection";
 import { ProjectPermissions } from "../ProjectPage/types";
+import type { FormattedTimePreferences } from "../FormattedTime";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -125,6 +126,7 @@ export namespace MilestonePage {
     // Rich editor support for description and comments
     richTextHandlers: RichEditorHandlers;
     localDraftKeyBase?: string;
+    formattedTimePreferences: FormattedTimePreferences;
   };
 
   export type State = Props & {
@@ -364,6 +366,7 @@ function TimelineSection(props: MilestonePage.State) {
           isCurrentUserSubscribed: props.subscriptions.isSubscribed,
           currentUserId: props.currentUser.id,
         }}
+        formattedTimePreferences={props.formattedTimePreferences}
       />
     </div>
   );

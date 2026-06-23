@@ -1,7 +1,7 @@
 import { MilestoneActivity } from "../Timeline/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { Reactions } from "../Reactions";
-import type { AvatarPerson } from "../Avatar";
+import type { FormattedTimePreferences } from "../FormattedTime";
 
 export interface Person {
   id: string;
@@ -55,6 +55,7 @@ export interface CommentItemProps {
   currentUserId?: string;
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export interface CommentInputProps {

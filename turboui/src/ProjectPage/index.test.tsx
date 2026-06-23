@@ -65,6 +65,7 @@ jest.mock("../icons", () => {
 import { ProjectPage } from "./index";
 import { asRichText } from "../utils/storybook/richContent";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import {
   createMockDocumentNode,
@@ -270,6 +271,7 @@ function ProjectPageHarness({
         onResourceRemove={() => undefined}
         subscriptions={subscriptions}
         docsAndFiles={docsAndFiles}
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />
     </MemoryRouter>
   );

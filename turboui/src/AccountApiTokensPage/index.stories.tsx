@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AccountApiTokensPage } from "./index";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
 const meta = {
   title: "Pages/AccountApiTokensPage",
@@ -44,6 +45,7 @@ const defaultArgs: AccountApiTokensPage.Props = {
   homePath: "#",
   securityPath: "#",
   usagePath: "#",
+  formattedTimePreferences: defaultFormattedTimePreferences,
 };
 
 export const Default: Story = {

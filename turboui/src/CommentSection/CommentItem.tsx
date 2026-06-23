@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
-import { FormattedTime } from "../FormattedTime";
+import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
 import RichContent from "../RichContent";
 import { parseContent } from "../RichContent/contentOps";
 import { IconEdit, IconTrash, IconLink } from "../icons";
@@ -48,6 +48,7 @@ export function CommentItem({
   richTextHandlers,
   onAddReaction,
   onRemoveReaction,
+  formattedTimePreferences,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const parsedContent = parseContent(comment.content);
@@ -110,7 +111,7 @@ export function CommentItem({
 
           <div className="flex items-center gap-2">
             <span className="text-content-dimmed text-sm">
-              <FormattedTime time={comment.insertedAt} format="relative" />
+              <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
             </span>
 
             {!isEditing && (

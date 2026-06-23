@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 
 import { LastCheckIn } from "..";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 describe("LastCheckIn", () => {
   function renderCheckIn(author = null) {
@@ -11,6 +12,7 @@ describe("LastCheckIn", () => {
       <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <LastCheckIn
           mentionedPersonLookup={() => null}
+          formattedTimePreferences={defaultFormattedTimePreferences}
           checkIns={[
             {
               id: "1",

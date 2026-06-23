@@ -15,6 +15,7 @@ import { AddItemModal } from "./AddItemModal";
 import { WorkMapTimeline } from "./WorkMapTimeline";
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
+import type { FormattedTimePreferences } from "../../FormattedTime";
 
 export { WorkMapTable };
 
@@ -41,6 +42,7 @@ export function WorkMap({
   profileUser,
   hideCompanyAccessInQuickAdd,
   zeroStateMessage,
+  formattedTimePreferences,
 }: WorkMap.Props) {
   const location = useLocation();
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
@@ -78,6 +80,7 @@ export function WorkMap({
             profileUser={profileUser}
             hideCompanyAccessInQuickAdd={Boolean(hideCompanyAccessInQuickAdd)}
             zeroStateMessage={zeroStateMessage}
+            formattedTimePreferences={formattedTimePreferences}
           />
         )}
       </div>
@@ -216,5 +219,6 @@ export namespace WorkMap {
     hideCompanyAccessInQuickAdd?: boolean;
 
     zeroStateMessage?: string;
+    formattedTimePreferences: FormattedTimePreferences;
   }
 }

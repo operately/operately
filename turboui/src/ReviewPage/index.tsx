@@ -7,6 +7,7 @@ import { Tooltip } from "../Tooltip";
 
 import { AssignmentGroups } from "./AssignmentsList";
 import { mergeUrgentGroups } from "./utils";
+import type { FormattedTimePreferences } from "../FormattedTime";
 
 export namespace ReviewPageV2 {
   export type AssignmentRole = "owner" | "reviewer";
@@ -50,6 +51,7 @@ export namespace ReviewPageV2 {
     dueSoon: AssignmentGroup[];
     needsReview: AssignmentGroup[];
     upcoming: AssignmentGroup[];
+    formattedTimePreferences: FormattedTimePreferences;
   }
 }
 
@@ -79,7 +81,7 @@ export function ReviewPage(props: ReviewPageV2.Props) {
         <div className="flex flex-col mt-8 gap-6">
           {hasAnyAssignments ? (
             <>
-              {hasUrgent && <AssignmentGroups groups={urgentGroups} />}
+              {hasUrgent && <AssignmentGroups groups={urgentGroups} formattedTimePreferences={props.formattedTimePreferences} />}
 
               {hasUpcoming && (
                 <Section
@@ -87,6 +89,7 @@ export function ReviewPage(props: ReviewPageV2.Props) {
                   description="Work assigned to you with future due dates, sorted chronologically."
                   groups={upcoming}
                   testId="upcoming-section"
+                  formattedTimePreferences={props.formattedTimePreferences}
                 />
               )}
             </>
@@ -131,9 +134,10 @@ interface SectionProps extends TestableElement {
   description?: string;
   infoTooltip?: string;
   groups: ReviewPageV2.AssignmentGroup[];
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
-function Section({ title, description, infoTooltip, groups, testId }: SectionProps) {
+function Section({ title, description, infoTooltip, groups, testId, formattedTimePreferences }: SectionProps) {
   if (groups.length === 0) {
     return null;
   }
@@ -159,7 +163,7 @@ function Section({ title, description, infoTooltip, groups, testId }: SectionPro
           {description ? <p className="text-sm text-content-base mb-4">{description}</p> : null}
         </div>
 
-        <AssignmentGroups groups={groups} />
+        <AssignmentGroups groups={groups} formattedTimePreferences={formattedTimePreferences} />
       </div>
     </section>
   );

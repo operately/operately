@@ -19,6 +19,7 @@ import {
 
 import { PageModule } from "@/routes/types";
 import { State, usePageState } from "./state";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export default { name: "CompanyManageAiAgentsPage", loader, Page } as PageModule;
 
@@ -247,6 +248,8 @@ function EditInstructionsModal({
 }
 
 function AgentRunList({ state }: { state: State }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   if (state.runs.length === 0) {
     return <div className="text-sm text-surface-text-secondary">No runs yet</div>;
   }
@@ -266,7 +269,7 @@ function AgentRunList({ state }: { state: State }) {
                 {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
               </div>
               <div className="text-xs text-surface-text-secondary">
-                <FormattedTime time={run.startedAt} format="relative" />
+                <FormattedTime {...formattedTimePreferences} time={run.startedAt} format="relative" />
               </div>
             </div>
           </li>
@@ -277,6 +280,8 @@ function AgentRunList({ state }: { state: State }) {
 }
 
 function AgentRunView({ state }: { state: State }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   if (!state.expandedRun) return null;
 
   React.useEffect(() => {
@@ -302,7 +307,7 @@ function AgentRunView({ state }: { state: State }) {
         </div>
 
         <div className="text-xs text-surface-text-secondary flex items-center gap-2">
-          <FormattedTime time={run.startedAt} format="relative" />
+          <FormattedTime {...formattedTimePreferences} time={run.startedAt} format="relative" />
           <FullscreenButton state={state} />
           <IconX onClick={() => state.closeRun()} className="cursor-pointer" size={16} />
         </div>
