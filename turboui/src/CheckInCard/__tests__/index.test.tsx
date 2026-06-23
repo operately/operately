@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
+import "../../i18n";
 
 import { CheckInCard } from "..";
 import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
