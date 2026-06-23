@@ -11,6 +11,7 @@ jest.mock("@/hooks/useFormattedTimePreferences", () => ({
 
 jest.mock("turboui", () => ({
   Avatar: ({ person }: { person: { fullName: string } }) => <span>{person.fullName}</span>,
+  BulletDot: () => <span>&bull;</span>,
   FormattedTime: ({ time }: { time: string }) => <time dateTime={time} />,
 }));
 
