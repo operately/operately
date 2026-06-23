@@ -3,6 +3,7 @@ export * from "./TestableElement";
 export { AssigneesField } from "./AssigneesField";
 export * from "./Avatar";
 export * from "./Button";
+export * from "./BorderedRow";
 export * from "./Chronometer";
 export * from "./CommentSection";
 export { useDraftActivatedInput } from "./CommentSection/useDraftActivatedInput";
