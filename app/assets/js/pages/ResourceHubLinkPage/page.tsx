@@ -18,8 +18,7 @@ import { assertPresent } from "@/utils/assertions";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { ResourcePageNavigation } from "turboui";
-import { LinkIcon, type ResourceHubLinkType } from "turboui";
+import { FormattedTime, LinkIcon, ResourcePageNavigation, type ResourceHubLinkType } from "turboui";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
@@ -27,7 +26,7 @@ import { useLoadedData } from "./loader";
 import { buildNavigationLink } from "./navigation";
 import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions } from "turboui";
 import { BulletDot } from "@/components/TextElements";
-import FormattedTime from "@/components/FormattedTime";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export function Page() {
@@ -85,6 +84,7 @@ function Actions() {
 
 function Title() {
   const { link } = useLoadedData();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   assertPresent(link.name, "name must be present in link");
   assertPresent(link.url, "url must be present in link");
@@ -99,7 +99,7 @@ function Title() {
         <span>{link.author.fullName}</span>
         <BulletDot />
         <span>Posted</span>
-        <FormattedTime time={link.insertedAt} format="relative-time-or-date" />
+        <FormattedTime {...formattedTimePreferences} time={link.insertedAt} format="relative-time-or-date" />
       </div>
     </div>
   );

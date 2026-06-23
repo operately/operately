@@ -7,7 +7,6 @@ import { SubscriptionsState } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 
 import { InfoCallout } from "@/components/Callouts";
-import FormattedTime from "@/components/FormattedTime";
 import Forms, { FormState } from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
@@ -17,6 +16,7 @@ import {
   ActionLink,
   Checklist,
   DateField,
+  FormattedTime,
   GhostButton,
   IconInfoCircle,
   Link,
@@ -27,6 +27,7 @@ import {
   SubscribersSelector,
 } from "turboui";
 import { StatusSelector } from "./StatusSelector";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 interface Props {
@@ -316,6 +317,7 @@ function PreviousCheckIn({
   checkIns: ReturnType<typeof parseCheckInsForTurboUi>;
   mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
 }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const checkIn = checkIns[0];
   if (!checkIn) return null;
 
@@ -326,7 +328,7 @@ function PreviousCheckIn({
           <div className="text-sm font-semibold text-content-accent">Previous check-in</div>
           <div className="mt-0.5 text-sm text-content-dimmed">
             Posted by {checkIn.author?.fullName || "Unknown"} on{" "}
-            <FormattedTime time={checkIn.date} format="long-date" />
+            <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="long-date" />
           </div>
         </div>
 

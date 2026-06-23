@@ -40,6 +40,8 @@ export { Conversations, useConversations } from "./Conversations";
 export { DateDisplay, DateField } from "./DateField";
 export { FloatingActionButton } from "./FloatingActionButton";
 export { FormattedTime } from "./FormattedTime";
+export type { FormattedTimePreferences, FormattedTimeProps, Format as FormattedTimeFormat } from "./FormattedTime";
+export { defaultFormattedTimePreferences } from "./FormattedTime/types";
 export type { FormState } from "./Forms";
 export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";

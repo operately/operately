@@ -24,6 +24,7 @@ import { milestoneKanbanPageCacheKey } from "../MilestoneKanbanPage";
 import { spaceKanbanPageCacheKey } from "../SpaceKanbanPage";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useSubscription } from "@/models/subscriptions";
 import { useMilestones as useProjectMilestones } from "@/models/milestones/useMilestones";
 
@@ -166,6 +167,7 @@ function Page() {
   }, [milestone.id]);
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
+  const formattedTimePreferences = useFormattedTimePreferences();
   const { milestones: searchableMilestones, search: searchMilestones } = useProjectMilestones(milestone.project.id);
   const taskProjectSearch = Projects.useProjectSearch({
     accessLevel: "edit_access",
@@ -335,6 +337,7 @@ function Page() {
 
     // Rich text editor support
     richTextHandlers: richEditorHandlers,
+    formattedTimePreferences,
   };
 
   return <MilestonePage key={milestone.id!} {...props} />;

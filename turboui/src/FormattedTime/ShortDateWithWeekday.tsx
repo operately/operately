@@ -1,7 +1,9 @@
 import React from "react";
+
+import { formatDate } from "../utils/formatting";
 import * as Time from "../utils/time";
 
-export default function ShortDateWithWeekday({ time }: { time: Date }) {
+export default function ShortDateWithWeekday({ time, locale }: { time: Date; locale: string }): JSX.Element {
   const options: Intl.DateTimeFormatOptions = {
     month: "short",
     day: "numeric",
@@ -12,5 +14,5 @@ export default function ShortDateWithWeekday({ time }: { time: Date }) {
     options.year = "numeric";
   }
 
-  return <>{time.toLocaleDateString("en-US", options)}</>;
+  return <>{formatDate(time, locale, options)}</>;
 }

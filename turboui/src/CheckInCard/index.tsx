@@ -5,7 +5,7 @@ import classNames from "../utils/classnames";
 import { DivLink } from "../Link";
 import { Avatar, AvatarPerson } from "../Avatar";
 import { Summary } from "../RichContent";
-import FormattedTime from "../FormattedTime";
+import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import { CommentCountIndicator } from "../CommentCountIndicator";
 import { StatusBadge, BadgeStatus } from "../StatusBadge";
 
@@ -24,10 +24,11 @@ namespace CheckInCard {
     checkIn: CheckIn;
     mentionedPersonLookup: MentionedPersonLookupFn;
     type: "goal" | "project";
+    formattedTimePreferences: FormattedTimePreferences;
   }
 }
 
-export function CheckInCard({ checkIn, mentionedPersonLookup, type }: CheckInCard.Props) {
+export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTimePreferences }: CheckInCard.Props) {
   const className = classNames(
     "flex gap-4 items-center",
     "py-3 px-3",
@@ -66,7 +67,7 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type }: CheckInCar
               </>
             )}
             <div className="text-sm text-content-dimmed">
-              <FormattedTime time={checkIn.date} format="relative-weekday-or-date" />
+              <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="relative-weekday-or-date" />
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { BlackLink, DivLink } from "../Link";
-import { FormattedTime } from "../FormattedTime";
+import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
 import { IconCalendar, IconFlag, IconGoalPlain, IconMessage, IconProjectPlain, IconSquare, IconTent } from "../icons";
 import { createTestId } from "../TestableElement";
 
@@ -20,12 +20,18 @@ const ORIGIN_ICON: Record<ReviewPageV2.AssignmentOrigin["type"], typeof IconSqua
   space: IconTent,
 };
 
-export function AssignmentGroups({ groups }: { groups: ReviewPageV2.AssignmentGroup[] }) {
+export function AssignmentGroups({
+  groups,
+  formattedTimePreferences,
+}: {
+  groups: ReviewPageV2.AssignmentGroup[];
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   return (
     <div className="flex flex-col gap-8">
       {groups.map((group, index) => (
         <div key={`${group.origin.type}:${group.origin.id}`} className="relative">
-          <AssignmentGroup group={group} />
+          <AssignmentGroup group={group} formattedTimePreferences={formattedTimePreferences} />
           {index < groups.length - 1 && <div className="absolute -bottom-4 left-0 right-0 h-px bg-stroke-base" />}
         </div>
       ))}
@@ -33,7 +39,13 @@ export function AssignmentGroups({ groups }: { groups: ReviewPageV2.AssignmentGr
   );
 }
 
-function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
+function AssignmentGroup({
+  group,
+  formattedTimePreferences,
+}: {
+  group: ReviewPageV2.AssignmentGroup;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   const relationship = getGroupRelationshipLabel(group.assignments);
 
   return (
@@ -42,7 +54,7 @@ function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
 
       <div className="flex flex-col gap-1">
         {group.assignments.map((assignment) => (
-          <AssignmentItem key={assignment.resourceId} assignment={assignment} />
+          <AssignmentItem key={assignment.resourceId} assignment={assignment} formattedTimePreferences={formattedTimePreferences} />
         ))}
       </div>
     </div>
@@ -72,7 +84,13 @@ function GroupHeader({ origin, relationship }: { origin: ReviewPageV2.Assignment
   );
 }
 
-function AssignmentItem({ assignment }: { assignment: ReviewPageV2.Assignment }) {
+function AssignmentItem({
+  assignment,
+  formattedTimePreferences,
+}: {
+  assignment: ReviewPageV2.Assignment;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   const displayLabel = assignment.actionLabel ?? assignment.name;
   const urgencyDetails = getUrgencyDetails(assignment.dueStatus, assignment.dueDate);
 
@@ -92,7 +110,7 @@ function AssignmentItem({ assignment }: { assignment: ReviewPageV2.Assignment })
           {assignment.dueDate && (
             <span className="flex items-center gap-1 text-xs text-content-dimmed">
               <IconCalendar size={12} />
-              <FormattedTime time={assignment.dueDate} format="short-date" />
+              <FormattedTime {...formattedTimePreferences} time={assignment.dueDate} format="short-date" />
             </span>
           )}
           {urgencyDetails ? (

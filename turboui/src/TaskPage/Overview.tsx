@@ -37,6 +37,7 @@ function ActivitySection(props: TaskPage.ContentState) {
           richTextHandlers={props.richTextHandlers}
           commentDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:new-comment` : undefined}
           filters={props.timelineFilters}
+          formattedTimePreferences={props.formattedTimePreferences}
           commentNotificationInfo={{
             entityLabel: "task",
             subscribedPeople: props.subscriptions.subscribedPeople ?? [],

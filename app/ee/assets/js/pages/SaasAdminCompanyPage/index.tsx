@@ -5,8 +5,8 @@ import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 import { EnableFeatureModal } from "./EnableFeatureModal";
 
-import FormattedTime from "@/components/FormattedTime";
-import { Avatar, IconFlare, SecondaryButton } from "turboui";
+import { Avatar, IconFlare, SecondaryButton, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useStartSupportSession } from "@/features/SupportSessions";
 import { useBoolState } from "@/hooks/useBoolState";
@@ -125,6 +125,7 @@ function OwnersSection({ company }: { company: AdminApi.Company }) {
 }
 
 function ActivitySection({ company }: { company: AdminApi.Company }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const { data } = AdminApi.useGetActivities({ companyId: company.id! });
 
   if (!data || !data.activities) return null;
@@ -141,7 +142,7 @@ function ActivitySection({ company }: { company: AdminApi.Company }) {
       {activities!.map((activity: AdminApi.Activity) => (
         <div key={activity.id} className="border-b border-stroke-base py-2 flex items-center gap-4">
           <div className="px-4 text-sm text-content-dimmed w-32">
-            <FormattedTime time={activity.insertedAt!} format="relative" />
+            <FormattedTime {...formattedTimePreferences} time={activity.insertedAt!} format="relative" />
           </div>
           <div className="px-4 text-sm">{activity.action!.split("_").join(" ")}</div>
         </div>

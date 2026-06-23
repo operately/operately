@@ -221,8 +221,6 @@ Rules:
 
 Examples of deprecated patterns that should be migrated over time, not copied:
 
-- `app/assets/js/components/FormattedTime/` — duplicate of `turboui/src/FormattedTime/` with app context baked in
-- `app/assets/js/features/activities/GoalDueDateUpdating/` — activity feed UI in app features
 - `app/assets/js/features/CommentSection/` — should live in TurboUI
 - `parse*ForTurboUi` / `prepare*` helpers in `app/assets/js/models/` — replaced by `ApiTypes` and TurboUI-side typing
 

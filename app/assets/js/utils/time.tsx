@@ -12,10 +12,6 @@ export function daysAgo(days: number) {
   return datefsn.subDays(today(), days);
 }
 
-export function isThisWeek(date: Date) {
-  return datefsn.isThisWeek(date);
-}
-
 export function isThisQuarter(date: Date) {
   return datefsn.isThisQuarter(date);
 }
@@ -104,20 +100,8 @@ export function isToday(date: Date) {
   return datefsn.isToday(date);
 }
 
-export function isYesterday(date: Date) {
-  return datefsn.isYesterday(date);
-}
-
-export function isTomorrow(date: Date) {
-  return datefsn.isTomorrow(date);
-}
-
 export function isPast(date: Date) {
   return datefsn.isPast(date);
-}
-
-export function isFuture(date: Date) {
-  return datefsn.isFuture(date);
 }
 
 export function toDateWithoutTime(date: Date) {
@@ -128,20 +112,12 @@ export function toDateWithoutTime(date: Date) {
   return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 }
 
-export function isCurrentYear(date: Date) {
-  return date.getFullYear() === new Date().getFullYear();
-}
-
 function weeksBetween(start: Date, end: Date) {
   return datefsn.differenceInWeeks(end, start);
 }
 
 export function daysBetween(start: Date, end: Date) {
   return datefsn.differenceInDays(end, start);
-}
-
-export function hoursBetween(start: Date, end: Date) {
-  return datefsn.differenceInHours(end, start);
 }
 
 export function isSameDay(date1: Date, date2: Date) {

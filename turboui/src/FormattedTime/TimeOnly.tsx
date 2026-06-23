@@ -1,13 +1,13 @@
 import React from "react";
 
-interface Props {
+import { formatTime, type TimeFormat } from "../utils/formatting";
+
+interface TimeOnlyProps {
   time: Date;
+  locale: string;
+  timeFormat: TimeFormat;
 }
 
-export default function TimeOnly({ time }: Props) {
-  return (
-    <>
-      {time.toLocaleTimeString("en-US", { timeStyle: "short", hour12: true }).replace(" AM", "am").replace(" PM", "pm")}
-    </>
-  );
+export default function TimeOnly({ time, locale, timeFormat }: TimeOnlyProps): JSX.Element {
+  return <>{formatTime(time, locale, timeFormat)}</>;
 }

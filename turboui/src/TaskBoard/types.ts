@@ -6,6 +6,7 @@ import type { RichTextJSON } from "../RichContent";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { SpaceField } from "../SpaceField";
 import type { TaskPage } from "../TaskPage";
+import type { FormattedTimePreferences } from "../FormattedTime";
 
 /**
  * TaskBoard component types
@@ -218,4 +219,5 @@ export interface TaskBoardProps {
 
   displayMode: TaskDisplayMode;
   onDisplayModeChange: (mode: TaskDisplayMode) => void;
+  formattedTimePreferences: FormattedTimePreferences;
 }

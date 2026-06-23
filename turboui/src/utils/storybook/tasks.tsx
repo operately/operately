@@ -3,6 +3,7 @@ import * as React from "react";
 import { SidebarNotificationSection } from "../../SidebarSection";
 import type { DateField } from "../../DateField";
 import type { TaskPage } from "../../TaskPage";
+import { defaultFormattedTimePreferences } from "./formattedTime";
 import type * as TaskBoard from "../../TaskBoard/types";
 import type { KanbanBoardProps, KanbanState, KanbanStatus, TaskSlideInContext } from "../../TaskBoard/KanbanView/types";
 
@@ -232,6 +233,7 @@ export function useMockTaskBoardActions(opts: {
         onAddReaction: undefined,
         onRemoveReaction: undefined,
         timelineFilters: undefined,
+        formattedTimePreferences: defaultFormattedTimePreferences,
       };
     },
     [currentUser, subscriptions],

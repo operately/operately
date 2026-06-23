@@ -11,6 +11,7 @@ import { Editor, useEditor } from "../../RichEditor";
 import { isContentEmpty } from "../../RichContent";
 import type { RichTextJSON } from "../../RichContent";
 import type { RichEditorHandlers } from "../../RichEditor/useEditor";
+import type { FormattedTimePreferences } from "../../FormattedTime";
 import * as Types from "../types";
 
 interface TaskCreationModalProps {
@@ -23,6 +24,7 @@ interface TaskCreationModalProps {
   onMilestoneSearch: (query: string) => Promise<void>;
   milestoneReadOnly?: boolean;
   richTextHandlers?: RichEditorHandlers;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 export function TaskCreationModal({
@@ -35,6 +37,7 @@ export function TaskCreationModal({
   onMilestoneSearch,
   milestoneReadOnly,
   richTextHandlers,
+  formattedTimePreferences,
 }: TaskCreationModalProps) {
   // Form state
   const [title, setTitle] = useState("");
@@ -181,6 +184,7 @@ export function TaskCreationModal({
                 onSearch={onMilestoneSearch}
                 emptyStateMessage="Select milestone"
                 readonly={milestoneReadOnly}
+                formattedTimePreferences={formattedTimePreferences}
               />
             </div>
           </div>

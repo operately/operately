@@ -7,6 +7,7 @@ import * as CompanyExports from "@/models/companyExports";
 
 import { CompanyExportPage as TurboCompanyExportPage, showErrorToast, showSuccessToast } from "turboui";
 import { useLoadedData, loader } from "./loader";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export default { name: "CompanyExportPage", loader, Page } as PageModule;
 
@@ -14,6 +15,7 @@ const POLL_INTERVAL_MS = 2_000;
 
 function Page() {
   const paths = usePaths();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const { exportRuns } = useLoadedData();
 
   const [runs, setRuns] = React.useState(() => CompanyExports.sortRuns(exportRuns));
@@ -85,6 +87,7 @@ function Page() {
       backPath={paths.companyAdminPath()}
       onStartExport={handleStartExport}
       onDownload={handleDownload}
+      formattedTimePreferences={formattedTimePreferences}
     />
   );
 }

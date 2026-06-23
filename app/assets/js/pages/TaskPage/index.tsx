@@ -23,6 +23,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMilestones } from "@/models/milestones/useMilestones";
 import { useSubscription } from "@/models/subscriptions";
 import { StatusSelector } from "turboui";
@@ -209,6 +210,7 @@ function Page() {
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const projectSearch = Projects.useProjectSearch({
     accessLevel: "edit_access",
@@ -290,6 +292,7 @@ function Page() {
 
     richTextHandlers: richEditorHandlers,
     localDraftKeyBase: `task:${task.id}`,
+    formattedTimePreferences,
   };
 
   return <TaskPage key={task.id} {...props} />;

@@ -2,6 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { WorkMapPage } from "../components";
 import { singleSpaceWorkMap, mockSingleItem, closedParentWithOngoingChildren } from "../tests/mockData";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 /**
  * WorkMapSpacePage is a comprehensive page for displaying and interacting with
@@ -22,6 +23,9 @@ const meta = {
   ],
   argTypes: {
     items: { control: "object" },
+  },
+  args: {
+    formattedTimePreferences: defaultFormattedTimePreferences,
   },
 } satisfies Meta<typeof WorkMapPage>;
 

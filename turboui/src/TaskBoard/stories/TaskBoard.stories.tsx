@@ -6,6 +6,7 @@ import { createContextualDate } from "../../DateField/mockData";
 import { DONE_STATUS, mockMilestones, mockTasks, PENDING_STATUS } from "../tests/mockData";
 import { Page } from "../../Page";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 const DEFAULT_STATUSES: Types.Status[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
@@ -147,6 +148,7 @@ export const Default: Story = {
         canCreateTask={true}
         displayMode={displayMode}
         onDisplayModeChange={setDisplayMode}
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />
     );
   },
@@ -255,6 +257,7 @@ export const CompletedMilestonesAtEnd: Story = {
         canCreateTask={true}
         displayMode={displayMode}
         onDisplayModeChange={setDisplayMode}
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />
     );
   },

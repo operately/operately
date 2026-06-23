@@ -3,7 +3,7 @@ import { isPast, isToday } from "../../../utils/time";
 
 import { WorkMap } from "..";
 import { DateField } from "../../../DateField";
-import FormattedTime from "../../../FormattedTime";
+import FormattedTime, { type FormattedTimePreferences } from "../../../FormattedTime";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
 
@@ -13,9 +13,10 @@ interface Props {
   timeframe: WorkMap.Item["timeframe"];
   status: WorkMap.Item["status"];
   hide?: boolean;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
-export function DueDateCell({ tab, status, completedOn, timeframe, hide }: Props) {
+export function DueDateCell({ tab, status, completedOn, timeframe, hide, formattedTimePreferences }: Props) {
   const { isCompleted, isFailed, isPending } = useItemStatus(status);
 
   if (hide) return null;
@@ -34,7 +35,7 @@ export function DueDateCell({ tab, status, completedOn, timeframe, hide }: Props
     <td className={containerClassName}>
       {tab === "completed" && completedOn ? (
         <span className="text-xs sm:text-sm whitespace-nowrap text-content-base">
-          <FormattedTime time={completedOn} format="short-date" />
+          <FormattedTime {...formattedTimePreferences} time={completedOn} format="short-date" />
         </span>
       ) : (
         <span className={textClassName}>

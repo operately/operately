@@ -7,6 +7,7 @@ import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
 import { createContextualDate } from "../../DateField/mockData";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 /**
  * MilestoneCard displays a milestone with its tasks, combining a header with progress
@@ -15,6 +16,9 @@ import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch
 const meta: Meta<typeof MilestoneCard> = {
   title: "Components/TaskBoard/MilestoneCard",
   component: MilestoneCard,
+  args: {
+    formattedTimePreferences: defaultFormattedTimePreferences,
+  },
   parameters: {
     layout: "padded",
   },
@@ -115,6 +119,7 @@ const meta: Meta<typeof MilestoneCard> = {
             draggedItemId={draggedItemId}
             targetLocation={destination}
             placeholderHeight={draggedItemDimensions?.height ?? null}
+            formattedTimePreferences={defaultFormattedTimePreferences}
           />
         );
       };

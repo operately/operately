@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 
 import { CheckInCard } from "..";
+import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 describe("CheckInCard", () => {
   function renderCard(author = null) {
@@ -12,6 +13,7 @@ describe("CheckInCard", () => {
         <CheckInCard
           type="goal"
           mentionedPersonLookup={() => null}
+          formattedTimePreferences={defaultFormattedTimePreferences}
           checkIn={{
             link: "/goals/check-ins/1",
             author,

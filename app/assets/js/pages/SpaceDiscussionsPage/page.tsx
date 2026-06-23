@@ -5,15 +5,14 @@ import * as React from "react";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Discussion } from "@/models/discussions";
 import { usePaths } from "@/routes/paths";
-import { DivLink, Link, PrimaryButton } from "turboui";
+import { DivLink, Link, PrimaryButton, Avatar, Summary, FormattedTime } from "turboui";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
 
-import FormattedTime from "@/components/FormattedTime";
 import { CommentsCountIndicator } from "@/features/Comments";
 import classNames from "classnames";
-import { Avatar, Summary } from "turboui";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export function Page() {
   const { space, discussions } = useLoadedData();
@@ -105,6 +104,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
   const path = paths.discussionPath(discussion.id!);
   const { mentionedPersonLookup } = useRichEditorHandlers();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const className = classNames(
     "flex gap-4",
@@ -136,7 +136,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
             </>
           )}
           <div className="text-sm text-content-dimmed">
-            <FormattedTime time={discussion.publishedAt!} format="relative-weekday-or-date" />
+            <FormattedTime {...formattedTimePreferences} time={discussion.publishedAt!} format="relative-weekday-or-date" />
           </div>
         </div>
       </div>

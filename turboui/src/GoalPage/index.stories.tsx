@@ -16,6 +16,7 @@ import { genPeople, genPerson } from "../utils/storybook/genPeople";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { asRichText } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { storyPath } from "../utils/storybook/storypath";
@@ -178,6 +179,7 @@ function Component(props: Partial<GoalPage.Props>) {
       {...checklistHandlers}
       deleteGoal={deleteGoal}
       richTextHandlers={createMockRichEditorHandlers()}
+      formattedTimePreferences={defaultFormattedTimePreferences}
       currentUser={currentUser}
     />
   );

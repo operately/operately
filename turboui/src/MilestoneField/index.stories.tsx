@@ -3,12 +3,16 @@ import React from "react";
 
 import { MilestoneField, Milestone } from "./index";
 import { createContextualDate } from "../DateField/mockData";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
 const meta: Meta<typeof MilestoneField> = {
   title: "Components/TaskBoard/MilestoneField",
   component: MilestoneField,
   parameters: {
     layout: "padded",
+  },
+  args: {
+    formattedTimePreferences: defaultFormattedTimePreferences,
   },
   argTypes: {
     readonly: { control: "boolean" },
@@ -247,6 +251,7 @@ export const InteractiveDemo: Story = {
             readonly={readonly}
             milestones={milestones}
             onSearch={handleSearch}
+            formattedTimePreferences={defaultFormattedTimePreferences}
           />
         </div>
 

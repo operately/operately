@@ -21,6 +21,7 @@ import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
 import { generatePermissions } from "../utils/storybook/permissions";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
 const DEFAULT_STATUS_OPTIONS: StatusSelector.StatusOption[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
@@ -205,6 +206,7 @@ function Component(props: Partial<TaskPage.Props>) {
       console.log("Remove reaction:", commentId, reactionId);
     },
 
+    formattedTimePreferences: defaultFormattedTimePreferences,
     statusOptions: props.statusOptions ?? DEFAULT_STATUS_OPTIONS,
   };
 
