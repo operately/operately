@@ -1,8 +1,7 @@
 import * as React from "react";
 import * as Spaces from "@/models/spaces";
 
-import { IconWorld, IconLockFilled } from "turboui";
-import { Tooltip } from "@/components/Tooltip";
+import { IconWorld, IconLockFilled, Tooltip } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 
 interface PrivacyIndicatorProps {

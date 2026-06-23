@@ -5,8 +5,7 @@ import Forms from "@/components/Forms";
 import * as AdminApi from "@/ee/admin_api";
 import classNames from "classnames";
 import { Spacer } from "@/components/Spacer";
-import { Tooltip } from "@/components/Tooltip";
-import { IconInfoCircle } from "turboui";
+import { IconInfoCircle, Tooltip } from "turboui";
 import { TestEmailAction } from "./TestEmailModal";
 
 interface Props {
