@@ -92,11 +92,7 @@ function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
-        <Forms.TextInput
-          field="notificationEmail"
-          label="Notification Email"
-          placeholder="noreply@yourcompany.com"
-        />
+        <Forms.TextInput field="notificationEmail" label="Notification Email" placeholder="noreply@yourcompany.com" />
         <Forms.RadioButtons
           field="provider"
           label="Provider"
@@ -155,7 +151,9 @@ function SecretPasswordInput({
   const error = Forms.useFieldError(field);
   const [isFocused, setIsFocused] = React.useState(false);
 
-  const helperText = <div className="text-xs text-content-dimmed">{label} already set. Leave blank to keep the current value</div>
+  const helperText = (
+    <div className="text-xs text-content-dimmed">{label} already set. Leave blank to keep the current value</div>
+  );
   const placeholderValue = isSet && !isFocused && value === "" ? "••••••••" : placeholder;
 
   const labelNode = (

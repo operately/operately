@@ -135,10 +135,7 @@ const permissionData: PermissionData = {
         "Cannot edit, close, or archive the project.",
       ),
       space: "Can comment all resources in the space, but cannot add or remove members or resources in the space.",
-      goal: joinStr(
-        "Can comment on the goal updates and discussions. ",
-        "Cannot edit, close, or archive the goal.",
-      ),
+      goal: joinStr("Can comment on the goal updates and discussions. ", "Cannot edit, close, or archive the goal."),
     },
   },
 
