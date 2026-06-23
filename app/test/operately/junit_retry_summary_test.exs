@@ -10,6 +10,11 @@ defmodule Operately.JUnitRetrySummaryTest do
              summarize(["initial_pass.xml"])
   end
 
+  test "summarize/1 ignores tests that passed on every run" do
+    assert %{flaky: [], failed_after_retries: []} =
+             summarize(["initial_pass.xml", "retry_all_pass.xml"])
+  end
+
   test "summarize/1 records flaky tests that pass after a retry" do
     summary = summarize(["initial_with_failure.xml", "retry_pass.xml"])
 
@@ -81,14 +86,63 @@ defmodule Operately.JUnitRetrySummaryTest do
     refute markdown =~ "Flaky (passed after retry)"
   end
 
-  test "to_markdown/1 renders failed after retries" do
+  test "to_markdown/1 renders failed after retries as a list" do
     summary = summarize(["initial_with_failure.xml", "retry_still_failing.xml"])
 
     markdown = JUnitRetrySummary.to_markdown(summary)
 
     assert markdown =~ "Failed after all retries"
-    assert markdown =~ "still broken"
+    assert markdown =~ "- **test two**"
+    assert markdown =~ "`test/operately/example_test.exs:2`"
+    assert markdown =~ "error (attempt 1): first failure"
+    assert markdown =~ "error (attempt 2): still broken"
+    refute markdown =~ "| Test |"
     refute markdown =~ "Flaky (passed after retry)"
+  end
+
+  test "to_markdown/1 deduplicates identical failure messages across attempts" do
+    summary = %{
+      flaky: [],
+      failed_after_retries: [
+        %{
+          classname: "Elixir.Operately.ExampleTest",
+          name: "test flaky",
+          file: "test/operately/example_test.exs:1",
+          attempts: 3,
+          failures: [
+            %{run: 0, message: "same error"},
+            %{run: 1, message: "same error"}
+          ]
+        }
+      ]
+    }
+
+    markdown = JUnitRetrySummary.to_markdown(summary)
+
+    assert markdown =~ "error (attempts 1-2): same error"
+    refute markdown =~ "same error; same error"
+  end
+
+  test "to_markdown/1 truncates long failure messages" do
+    long_message = String.duplicate("x", 400)
+
+    summary = %{
+      flaky: [
+        %{
+          classname: "Elixir.Operately.ExampleTest",
+          name: "test long error",
+          file: "test/operately/example_test.exs:1",
+          attempts: 2,
+          failures: [%{run: 0, message: long_message}]
+        }
+      ],
+      failed_after_retries: []
+    }
+
+    markdown = JUnitRetrySummary.to_markdown(summary)
+
+    assert markdown =~ "…"
+    refute markdown =~ long_message
   end
 
   test "to_markdown/1 includes job name without shard when only job name is set" do
