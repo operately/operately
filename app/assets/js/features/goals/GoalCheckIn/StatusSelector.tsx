@@ -1,12 +1,11 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as React from "react";
 
-import { Circle } from "@/components/Circle";
 import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { AddErrorFn } from "@/components/Forms/useForm/errors";
 import { useValidation } from "@/components/Forms/validations/hook";
 import { createTestId } from "@/utils/testid";
-import { IconCheck } from "turboui";
+import { Circle, IconCheck } from "turboui";
 import classNames from "classnames";
 
 type Status = "on_track" | "caution" | "off_track";
