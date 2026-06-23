@@ -58,18 +58,16 @@ operately companies get_work_map
 
 ## Current CLI Shape
 
-The current bundled API catalog exposes **198 endpoint commands** across **12 namespaces**:
+The current bundled API catalog exposes **199 endpoint commands** across **10 namespaces**:
 
 - `comments`
 - `companies`
 - `documents`
 - `goals`
-- `links`
 - `notifications`
 - `people`
 - `projects`
 - `reactions`
-- `resource_hubs`
 - `spaces`
 - `tasks`
 
@@ -231,10 +229,19 @@ operately projects update_task_statuses \
 Many fields shown as `<markdown>` in `--help` accept markdown text directly:
 
 ```bash
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --name "Guide" \
   --content "# Getting Started\n\nWelcome to the team."
+```
+
+Prefer `--<field>-file` for multiline markdown content:
+
+```bash
+operately documents create_document \
+  --space-id s1 \
+  --name "Guide" \
+  --content-file ./guide.md
 ```
 
 The same markdown fields also accept a file path via `--<field>-file`:
@@ -337,10 +344,14 @@ operately tasks create \
   --assignee-ids person2 \
   --due-date 2026-06-30
 
-# Resource hubs and documents
-operately resource_hubs list_nodes --resource-hub-id rh1
-operately documents create --resource-hub-id rh1 --name "Guide" --content "# Guide"
+# Docs & Files
+operately documents list_contents --space-id s1
+operately documents create_document --space-id s1 --name "Guide" --content "# Guide"
+operately documents create_link --space-id s1 --name "Handbook" --url "https://example.com" --type other
+operately documents create_file --space-id s1 --file ./report.pdf
 ```
+
+Docs & Files commands scope a hub with exactly one of `--space-id`, `--project-id`, or `--goal-id`. For folder listing, `--folder-id` alone is enough.
 
 Many create and update commands have additional required fields. Use `--help` on the specific command before scripting it.
 
