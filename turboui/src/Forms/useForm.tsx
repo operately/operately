@@ -1,5 +1,4 @@
 import * as React from "react";
-import type { AxiosError } from "axios";
 
 import { cloneFormValue, getValueAtPath, setValueAtPath } from "./path";
 import type {
@@ -154,7 +153,7 @@ export function useForm<T extends FormValues>(options: UseFormOptions<T>): FormS
         setLastSubmitSucceededAt(Date.now());
       } catch (error) {
         console.error(error);
-        options.onError?.(error as AxiosError);
+        options.onError?.(error);
       } finally {
         setState("idle");
       }

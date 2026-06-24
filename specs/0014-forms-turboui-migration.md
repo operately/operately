@@ -57,13 +57,13 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 
 **Core gaps vs TurboUI:**
 
-- [ ] `useForm`: `trigger` / `setTrigger`, `addErrors` / `removeErrors`, `onError` (AxiosError)
+- [x] `useForm`: `trigger` / `setTrigger`, `addErrors` / `removeErrors`, `onError` (AxiosError)
 - [x] `FieldGroup`: `horizontal` and `grid` layouts
-- [ ] `Submit`: `layout`, `submitOnEnter`, `buttonSize`, `testId`, `containerClassName`
+- [x] `Submit`: `layout`, `submitOnEnter`, `buttonSize`, `testId`, `containerClassName`
 - [ ] `SubmitButton`: multi-action submit (check-in forms)
 - [x] Validations: `textLength`, `isNumber`
 - [x] Inputs: `PasswordInput`, `NumberInput`, `CheckboxInput`, `RadioButtons`, `TitleInput`
-- [ ] Feedback: `FormError`
+- [x] Feedback: `FormError`
 - [x] Feedback: `ErrorMessage`
 - [x] Primitives: `Elements/Input`, `Elements/Label` (GoalTargetsV2)
 
@@ -82,11 +82,11 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 
 ## Implementation Status
 
-Phases 0 and 2–8 are not yet implemented. **Phase 1 is complete.** Each remaining phase should land as one or more focused PRs following the checklists below.
+**Phases 0 and 1 are complete.** Phases 2–8 are not yet implemented. Each remaining phase should land as one or more focused PRs following the checklists below.
 
 | Phase | Status |
 | ----- | ------ |
-| 0 — API Parity Foundation | [ ] Not started |
+| 0 — API Parity Foundation | [x] Complete |
 | 1 — Input Primitives and FieldGroup Layouts | [x] Complete |
 | 2 — Auth and Account Forms | [ ] Not started |
 | 3 — Standard CRUD Forms | [ ] Not started |
@@ -142,29 +142,29 @@ flowchart TB
 
 ## Phase 0 — API Parity Foundation
 
-**Phase complete:** [ ]
+**Phase complete:** [x]
 
 **Goal:** Extend TurboUI `useForm` and shared primitives so simple migrations do not regress.
 
 ### TurboUI work
 
-- [ ] `useForm`: `addErrors`, `removeErrors`, `trigger`, `setTrigger`, optional `onError`
+- [x] `useForm`: `addErrors`, `removeErrors`, `trigger`, `setTrigger`, optional `onError`
 - [x] Validations: `validateTextLength`, `validateIsNumber` *(landed in Phase 1)*
-- [ ] `TextInput`: `hidden`, `minLength`, `maxLength`, `onEnter`, `okSign`
-- [ ] `Submit`: `layout`, `submitOnEnter`, `buttonSize`, `testId`, `containerClassName`
-- [ ] `FormError` presentational component
+- [x] `TextInput`: `hidden`, `minLength`, `maxLength`, `onEnter`, `okSign`
+- [x] `Submit`: `layout`, `submitOnEnter`, `buttonSize`, `testId`, `containerClassName`
+- [x] `FormError` presentational component
 - [x] `ErrorMessage` presentational component *(landed in Phase 1)*
 
 ### Storybook
 
-- [ ] `Forms.stories.tsx`: basic form, validation errors, cancel flow, nested paths
+- [x] `Forms.stories.tsx`: basic form, validation errors, cancel flow, nested paths
 
 ### Acceptance
 
-- [ ] SiteMessageModal still works
-- [ ] No app call-site changes
-- [ ] `make turboui.build && make turboui.test`
-- [ ] `make test.tsc.lint`
+- [x] SiteMessageModal still works
+- [x] No app call-site changes
+- [x] `make turboui.build && make turboui.test`
+- [x] `make test.tsc.lint`
 
 ---
 
@@ -415,7 +415,7 @@ import { Forms } from "turboui";
 
 | File | Contents | Status |
 | ---- | -------- | ------ |
-| `Forms.stories.tsx` | Basic form, validation, cancel, nested paths | [ ] |
+| `Forms.stories.tsx` | Basic form, validation, cancel, nested paths | [x] |
 | `Inputs.stories.tsx` | TextInput, Password, Number, Checkbox, Radio, Title | [x] |
 | `FieldGroup.stories.tsx` | vertical / horizontal / grid | [x] |
 | `RichTextArea.stories.tsx` | editable + readonly | [ ] |

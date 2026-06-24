@@ -1,5 +1,4 @@
 import type * as React from "react";
-import type { AxiosError } from "axios";
 
 import type { BaseButtonProps } from "../Button";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
@@ -41,7 +40,7 @@ export interface UseFormOptions<T extends FormValues> {
   submit: (attrs?: unknown) => Promise<void> | void;
   cancel?: () => Promise<void> | void;
   onChange?: (args: { newValues: T; field: string | null }) => void;
-  onError?: (error: AxiosError) => void;
+  onError?: (error: any) => void;
 }
 
 export interface FormProps<T extends FormValues = FormValues> {

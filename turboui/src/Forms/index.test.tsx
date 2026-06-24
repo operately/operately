@@ -30,6 +30,10 @@ jest.mock("../RichEditor", () => ({
   }),
 }));
 
+jest.mock("../icons", () => ({
+  IconCheck: () => <svg data-testid="icon-check" />,
+}));
+
 jest.mock("react-select", () => {
   return function MockSelect({
     options,
@@ -411,9 +415,9 @@ describe("Forms", () => {
       );
     }
 
-    const { container } = render(<Harness />);
+    render(<Harness />);
 
-    expect(container.querySelector("svg")).toBeInTheDocument();
+    expect(screen.getByTestId("icon-check")).toBeInTheDocument();
   });
 
   describe("validateTextLength", () => {
