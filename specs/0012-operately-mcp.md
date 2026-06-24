@@ -10,7 +10,7 @@ This becomes Operately's third integration path:
 - token-authenticated external API for the CLI and scripts
 - OAuth-authenticated MCP for ChatGPT and Claude
 
-The MCP layer should reuse the existing endpoint handlers in `OperatelyWeb.Api` as the business-logic source of truth. It should add MCP-specific auth, company resolution, tool definitions, and review hardening without changing existing endpoint signatures.
+The MCP layer uses MCP wrapper modules over shared Operately domain/query/service modules. MCP-specific auth, company resolution, tool definitions, and review hardening live in the MCP layer, while shared operations remain the execution source of truth across the web app, CLI, and MCP.
 
 ---
 
@@ -18,29 +18,33 @@ The MCP layer should reuse the existing endpoint handlers in `OperatelyWeb.Api` 
 
 ### 1. New auth mode: `:mcp_oauth`
 
-Session cookies are wrong for remote hosts. CLI API tokens are too narrow because they are person/company scoped and do not fit the "connect once, use across contexts" UX. MCP should use delegated per-user OAuth and resolve company context at request time.
+Session cookies are wrong for remote hosts. CLI API tokens are too narrow because they are person/company scoped and do not fit the "connect once, use across contexts" UX. MCP should use delegated per-user OAuth and bind each MCP connection to one selected company during authorization.
 
-### 2. Existing endpoint signatures stay unchanged
+### 2. Prepared request context
 
-No existing API endpoint should gain a `company_id` input. Company selection happens before endpoint dispatch. By the time a request reaches an existing handler, `current_company` and `current_person` are already assigned.
+MCP request dispatch resolves company context before calling an MCP wrapper. By the time wrapper execution starts, `current_company` and `current_person` are already resolved and available in the request context.
 
-### 3. Company selection belongs in a plug / request context resolver
+### 3. Company selection happens at connect time, not in tool arguments
 
-Company handling must be declared explicitly per MCP tool. Only tools marked as company-context tools may expose `company_id`, and that field is consumed by MCP-specific request plumbing, not by the existing API endpoints.
+MCP tools should not ask the user or client for `company_id`. During first authorization, the user should either:
 
-### 4. One OAuth connection may cover multiple companies
+- have their only company selected automatically, or
+- choose one company for this MCP connection
 
-The MCP equivalent of CLI profiles is:
+That selected company is persisted on the MCP grant and assigned onto the request before wrapper execution.
+
+### 4. One OAuth connection is bound to one company
+
+The MCP equivalent of a CLI profile is:
 
 - one OAuth grant per connected ChatGPT / Claude account
-- many allowed companies on that grant
-- one default company on that grant
+- one selected company on that grant
 
-This avoids depending on the host product to support multiple simultaneous Operately connections.
+If a user wants to use a different company, they reconnect and authorize that company. This keeps tool schemas simple and predictable across ChatGPT, Claude, and IDE MCP clients.
 
 ### 5. Curated MCP tools, not a full endpoint mirror
 
-The public MCP surface should be small, legible, and reviewable. Existing robust endpoints remain the implementation primitives, but they should not all become public MCP tools automatically.
+The public MCP surface should be small, legible, and reviewable. MCP tools are a curated subset built on top of shared Operately operations rather than a full mirror of the app API.
 
 ### 6. Read-first submission
 
@@ -54,7 +58,7 @@ Start with a high-quality read surface for search, lookup, and citations. Add wr
 
 - Add a hosted MCP endpoint, e.g. `/mcp`
 - Add OAuth endpoints and metadata required for remote MCP auth
-- Add an MCP tool catalog and executor in the Phoenix app
+- Add an MCP tool catalog, registry, and dispatcher in the Phoenix app
 
 ### New persisted state
 
@@ -63,21 +67,20 @@ Add MCP grant storage that records:
 - connected account
 - provider / client identity
 - granted scopes
-- allowed companies
-- default company
+- selected company
 - token / refresh-token lineage and revocation state
 
 Suggested modules:
 
 - `Operately.Mcp.Grants`
 - `Operately.Mcp.Grant`
-- `Operately.Mcp.GrantCompany`
 
 ### New MCP request pipeline
 
 Suggested modules:
 
 - `OperatelyWeb.Mcp`
+- `OperatelyWeb.Mcp.Catalog`
 - `OperatelyWeb.Mcp.Plugs.RequireMcpAuth`
 - `OperatelyWeb.Mcp.Plugs.ResolveCompany`
 - `OperatelyWeb.Mcp.Companies`
@@ -85,52 +88,56 @@ Suggested modules:
 - `OperatelyWeb.Mcp.Tools`
 - `OperatelyWeb.Mcp.Resources`
 
-### Existing business logic reuse
+### Shared business logic
 
-The executor maps each MCP tool to one or more existing `OperatelyWeb.Api.*` handlers and calls them with a prepared `conn` carrying:
+Each MCP tool is implemented as a wrapper module that:
+
+- declares MCP-facing metadata such as name, schemas, scopes, and company mode
+- adapts MCP arguments into shared Operately domain/query/service calls
+- shapes shared operation results into MCP-friendly outputs
+
+Wrappers execute with a prepared context carrying:
 
 - `current_account`
 - `current_company`
 - `current_person`
 - auth mode / scope metadata
 
-This keeps one business-logic path instead of forking API behavior.
+This keeps one shared execution path across Operately integrations while allowing MCP-specific schemas, examples, and output contracts.
 
 ---
 
 ## Company Resolution
 
-Company context is resolved before existing endpoint dispatch. The selected company is assigned on the connection, and any MCP-only selector fields are removed from the payload passed into the existing handler.
+Company context is resolved before wrapper execution. The selected company from the MCP grant is assigned into the MCP request context, and MCP tools never accept `company_id`.
 
 Each MCP tool must declare one company mode in the tool registry:
 
 - `none`: no company context and no `company_id`
-- `resource_derived`: company is inferred from the referenced resource and `company_id` is not accepted
-- `optional`: `company_id` may be supplied, otherwise resolution falls back to the default / single allowed company
-- `required`: `company_id` must be supplied
+- `authenticated`: use the company selected on the MCP grant
+- `resource_derived`: company is inferred from the referenced resource and must match the company selected on the MCP grant
 
-Only `optional` and `required` tools include `company_id` in their MCP input schema.
+No company mode includes `company_id` in the MCP input schema.
 
-Resolution order for `optional` tools:
+Resolution order for `authenticated` tools:
 
-1. Explicit `company_id` in MCP tool arguments, if provided
-2. Default company on the MCP grant
-3. The only allowed company on the grant, if there is exactly one
-4. Otherwise return a structured `company_required` error with eligible companies
+1. Load the selected company from the MCP grant
+2. Load the matching `current_person` membership for that account and company
+3. If access has been revoked, return a structured auth / access error that requires reconnect or reauthorization
 
 Resolution order for `resource_derived` tools:
 
 1. Derive company from the referenced resource
-2. Verify the company is in the grant's allowed companies
+2. Verify it matches the selected company on the MCP grant
 3. Otherwise return a structured access / mismatch error
 
 Notes:
 
-- Existing endpoints do not receive a `company_id` field
-- Existing handlers continue to rely on `current_company`
+- Wrappers receive company context through the prepared MCP context rather than a `company_id` input
+- Shared operations should rely on prepared current-company/current-person context or equivalent explicit arguments supplied by the wrapper
 - Tools such as `get_project(project_id)`, `get_space(space_id)`, and `get_goal(goal_id)` should use `resource_derived`
-- Tools using `resource_derived` should not accept `company_id` at all
-- Which tools are `none`, `resource_derived`, `optional`, or `required` must be declared explicitly in the MCP tool registry
+- Tools using `resource_derived` should reject resources outside the authenticated company
+- Which tools are `none`, `authenticated`, or `resource_derived` must be declared explicitly in the MCP tool registry
 
 ---
 
@@ -143,11 +150,12 @@ Use per-user OAuth for ChatGPT and Claude connections.
 During authorization:
 
 1. authenticate the user in Operately
-2. show the companies they belong to
-3. let them pick:
-   - default company
-   - additional allowed companies, if desired
-4. persist that selection on the MCP grant
+2. load the companies they belong to
+3. if there is exactly one company, select it automatically
+4. if there are many companies, ask the user to choose the company for this MCP connection
+5. persist that selection on the MCP grant
+
+Switch companies by reconnecting / reauthorizing the MCP connection.
 
 ### Scope model
 
@@ -158,17 +166,29 @@ Define MCP scopes separately from CLI token modes. Suggested first split:
 
 Later, this can expand into narrower scopes if needed, but the first version should stay simple.
 
+### Client registration
+
+The first release should accept only pre-registered OAuth clients configured on the Operately server.
+
+That means:
+
+- each supported client has an explicit `client_id`
+- each supported redirect URI is pinned in config
+- the server does not fetch remote client metadata documents during authorization
+
+This keeps the first release simpler and avoids client-metadata fetch complexity while the hosted remote MCP surface is being established.
+
+Future expansion can add support for non-registered clients through Client ID Metadata Documents and, if useful later, Dynamic Client Registration.
+
 ---
 
 ## MCP Surface
 
 ### Phase 1: read-only tools
 
-Start with a small set of high-signal tools backed by existing handlers:
+Start with a small set of high-signal tools backed by MCP wrappers over shared Operately operations:
 
-- `list_companies`
 - `get_current_company`
-- `set_default_company`
 - `get_me`
 - `list_projects`
 - `get_project`
@@ -181,12 +201,14 @@ Start with a small set of high-signal tools backed by existing handlers:
 
 Notes:
 
-- `list_companies`, `get_current_company`, and `set_default_company` should be backed by MCP-specific modules/endpoints, not by changing the behavior of the existing `companies/list` endpoint
+- `get_current_company` should be served by an MCP wrapper over shared company-loading logic
+- Company-browsing tools such as `list_projects`, `list_goals`, and `list_tasks` should always operate on the authenticated company
 - `get_project`, `get_goal`, and similar resource-specific lookups should be `resource_derived` tools and should not accept `company_id`
-- Company-browsing tools such as `list_projects`, `list_goals`, and `list_tasks` should have their company mode declared explicitly in the MCP tool registry
+- No MCP tool should expose `company_id` in its schema
 - `search` and `fetch` should be first-class MCP tools, not thin aliases
 - `fetch` should return citation-friendly content and canonical Operately URLs
-- project and goal markdown support can reuse existing markdown-capable endpoints
+- `fetch` should prefer `resource_link` style outputs for canonical Operately resources and only embed full payloads inline when the content itself must travel in the tool response
+- project and goal markdown support can be served through shared markdown renderers reused by wrappers and existing API surfaces
 
 ### Phase 2: write tools
 
@@ -207,35 +229,115 @@ Interactive app surfaces are explicitly out of scope for the first MCP implement
 
 ---
 
+## Protocol Compatibility
+
+To maximize compatibility with ChatGPT, Claude, and IDE clients, the first release should explicitly target standard remote MCP behavior:
+
+- implement Streamable HTTP as the primary transport
+- implement OAuth-protected remote MCP discovery correctly, including Protected Resource Metadata and Authorization Server Metadata
+- bind access tokens to the MCP server correctly, including resource indicators and audience validation
+- support pre-registered OAuth clients only in the first release
+- validate the `Origin` header on Streamable HTTP requests
+- honor protocol version negotiation and required MCP HTTP headers
+- keep tool schemas strict and portable by using standards-compliant JSON Schema
+- return structured tool output where possible, with text fallbacks for older or less capable clients
+
+---
+
+## Implementation Notes
+
+### Tool descriptors and catalog
+
+- Each tool descriptor should declare accurate MCP annotations where possible, especially `readOnlyHint`, `destructiveHint`, and `openWorldHint`
+- The catalog should declare `securitySchemes` explicitly, even when the whole first-release server is OAuth-protected
+- The catalog should stay machine-readable enough to generate discovery output, docs, fixtures, and future client helpers from one source of truth
+- Keep examples close to wrapper definitions so usage guidance stays synchronized with implementation
+
+### Tool responses
+
+- Tool responses should prefer a three-part response shape:
+  - `structuredContent` for machine-readable payloads
+  - `content` for short human-readable summaries and compatibility with clients that rely on text blocks
+  - `_meta` only for host-specific data that should not be treated as model-visible business output
+- Tool responses should be normalized consistently so wrappers can return structured data without repeating serialization logic
+
+### Auth and request context
+
+- Bearer auth should be enforced at the transport layer before tool dispatch
+- Host-provided request hints such as locale, user agent, user location, and anonymous session identifiers should be treated only as optional presentation or analytics hints, never as authorization context
+
+### Shared execution across surfaces
+
+- Keep one source of truth for high-level operations so the web app, CLI, MCP tools, docs, examples, and tests describe the same capabilities
+- Prefer a curated MCP surface even when other Operately surfaces expose a broader command tree
+- Shared operations should stay side-effect safe for in-process reuse across multiple surfaces
+- Exclude long-running watch, poll, or stream flows from MCP unless they are redesigned as non-blocking MCP-native tools
+- Operately's hosted remote MCP should remain a first-class backend surface, not a generic wrapper around the CLI
+
+---
+
 ## Implementation Plan
 
-### PR 1: MCP foundations
+### PR 1: MCP foundations (Implemented)
 
-- Add router entries for MCP and OAuth
+- Add router entries for MCP transport, OAuth, and auth-discovery metadata
 - Add MCP grant tables and schemas
 - Implement `:mcp_oauth` auth mode
 - Implement `RequireMcpAuth`
 - Implement `ResolveCompany`
+- Add first-time company selection during OAuth authorization
 - Add MCP-focused company context modules/endpoints
+- Implement Streamable HTTP transport and required MCP/OAuth HTTP headers
+- Validate `Origin` on Streamable HTTP requests
+- Validate token audience and return spec-compliant auth discovery errors
 
 Outcome: authenticated MCP requests can resolve an account and company before dispatch.
 
-### PR 2: Internal executor and tool registry
+Status: implemented.
 
-- Add MCP tool registry
-- Add executor that maps tools to existing handlers
+### PR 2A: Wrapper-driven tool registry foundation (Implemented)
+
+- Add an MCP tool behavior and one wrapper module per MCP tool
+- Keep concrete wrapper modules under `OperatelyWeb.Mcp.Tools`
+- Keep catalog infrastructure such as `Definition`, `JsonSchema`, and `Registry` under `OperatelyWeb.Mcp.Catalog`
+- Require each wrapper to declare MCP-facing metadata: `name`, `description`, `input_schema`, `output_schema`, `required_scopes`, and `company_mode`
+- Keep optional MCP presentation metadata on wrappers as well: `title`, examples, annotations, `securitySchemes`, safety classification, and discovery metadata
+- Generate the registry and `tools/list` descriptors dynamically from compiled wrapper modules instead of maintaining a separate hand-authored catalog
+- Keep descriptor ordering deterministic and curated through wrapper metadata rather than module discovery order
+- Enforce catalog invariants through tests over the full wrapper set rather than runtime validation inside the definition struct
+- Keep the registry structured enough to power future CLI/MCP discovery and shared documentation
+
+Outcome: Operately can describe MCP tools from the same wrapper modules that will later execute them.
+
+Status: implemented.
+
+### PR 2B: Wrapper runtime and first shared execution path
+
+- Add `tools/call` dispatch that resolves a wrapper module from the registry and invokes `call(context, arguments)`
+- Build prepared request context for wrapper execution
+- Enforce company mode rules per tool before wrapper dispatch
+- Validate MCP inputs before wrapper execution
+- For each implemented tool, call shared domain/query/service modules directly; when logic currently lives only inside `OperatelyWeb.Api`, extract a shared module and make both the API handler and MCP wrapper use it
+- Add one minimal end-to-end tool path to prove dispatch works through the wrapper runtime and shared execution layer
+
+Outcome: one MCP tool wrapper can invoke shared Operately logic through the MCP runtime.
+
+### PR 2C: MCP output contracts and discovery
+
 - Build request/response normalization for MCP
-- Strip MCP-only `company_id` fields before calling existing handlers
-- Declare company mode per tool and generate MCP input schemas accordingly
+- Add structured outputs and `outputSchema` for the initial tool set where practical
+- Normalize `structuredContent`, `content`, and `_meta` consistently across tool handlers
+- Add a machine-readable discovery surface for tools, arguments, and examples generated from the registry
 
-Outcome: one MCP tool can invoke one existing endpoint handler without endpoint changes.
+Outcome: Operately has a stable MCP runtime contract for tool descriptors, execution, and structured responses.
 
 ### PR 3: Read-only MVP
 
 - Implement the initial read tool set
 - Add `search` and `fetch`
 - Add canonical URL generation
-- Add integration tests for multi-company resolution and ambiguity
+- Add a consistent `fetch` strategy for resource links versus inline embedded content
+- Add integration tests for company selection at auth time and cross-company resource rejection
 
 Outcome: a reviewable, useful read-only MCP suitable for custom connection testing in ChatGPT and Claude.
 
@@ -244,6 +346,7 @@ Outcome: a reviewable, useful read-only MCP suitable for custom connection testi
 - Add limited write tools
 - Add scope checks and tool-level permission metadata
 - Add confirmation-safe behavior and clear failure modes
+- Keep long-running or polling operations out of MCP v1 unless they are redesigned as non-blocking MCP-native tools
 
 Outcome: a minimal but credible action surface without exposing the full endpoint catalog.
 
@@ -252,9 +355,18 @@ Outcome: a minimal but credible action surface without exposing the full endpoin
 - Privacy policy / support URLs / branding assets
 - Reviewer test accounts and test companies
 - Rate limiting, audit logging, and operational visibility
-- Final validation in ChatGPT and Claude custom connector flows
+- Other remote-MCP security hardening
+- Final validation in ChatGPT, Claude, and at least one generic MCP client / IDE
 
 Outcome: the MCP is ready for directory submission.
+
+### Future step: open client onboarding
+
+- Add support for non-registered clients through Client ID Metadata Documents
+- Reintroduce SSRF protections and client-metadata validation for remote client resolution
+- Consider Dynamic Client Registration if it materially improves compatibility across clients
+
+Outcome: Operately can move from a curated client allowlist to broader standards-based client onboarding.
 
 ---
 
@@ -264,25 +376,36 @@ Add tests at three layers:
 
 - auth and grant tests
 - company resolution tests
-- tool-to-handler integration tests
+- wrapper registry tests
+- tool-wrapper integration tests
 
 Critical scenarios:
 
-- one grant with one company
-- one grant with many companies and a default
-- explicit company override on `optional` and `required` tools
-- ambiguous request with no company specified
+- one grant with one company that is auto-selected
+- one grant with many companies where the user selects one during authorization
+- authenticated-company tools never require company selectors
+- tool descriptors expose the expected annotations, `securitySchemes`, and `outputSchema`
+- wrapper discovery stays synchronized with the compiled wrapper set
 - resource-specific tool that infers company correctly
-- resource-specific tool rejects unexpected `company_id`
-- `required` company tools fail when `company_id` is omitted
+- resource-specific tool rejects resources from another company
+- structured outputs, text content, and `_meta` are separated correctly
+- `fetch` returns canonical resource links or inline content according to the declared strategy
+- discovery output stays synchronized with the actual wrapper registry
+- ambiguous auto-detection paths fail with structured disambiguation instead of guessing
+- grant remains usable across normal refresh-token rotation
+- revoked membership or revoked grant fails safely
 - grant scope blocks write tools
-- existing endpoint handlers receive the same assigns shape they expect today
+- protocol-version and auth-discovery behavior match the MCP spec
+- 401 responses advertise auth metadata correctly and tokens for other audiences are rejected
+- MCP wrappers receive `current_account`, `current_company`, `current_person`, and auth metadata
+- shared operations reused by wrappers and API handlers behave consistently for the same resource-access scenarios
 
 ---
 
 ## Out of Scope
 
-- changing existing endpoint signatures to accept company parameters
+- API handler inputs that carry MCP company selection
+- selecting or switching companies via MCP tool arguments
 - exposing the full external API catalog as MCP tools
 - making local `stdio` the primary integration path
 - interactive app UI work for the first release
@@ -294,6 +417,6 @@ Critical scenarios:
 If implemented this way, Operately gets:
 
 - one MCP surface suitable for both OpenAI and Anthropic distribution
-- one new auth mode without disturbing the existing session and token flows
-- multi-company support without pushing company parameters into existing endpoints
-- reuse of the current robust, tested API handlers instead of rebuilding business logic
+- one new auth mode alongside the session and token flows
+- one-company-per-connection UX with request-time company context
+- shared use of Operately domain/query/service modules across the web app, CLI, and MCP

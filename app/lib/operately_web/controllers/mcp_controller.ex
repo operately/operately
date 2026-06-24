@@ -3,17 +3,19 @@ defmodule OperatelyWeb.McpController do
   Streamable HTTP transport for the hosted MCP server at `/mcp`.
 
   Handles JSON-RPC requests for the foundation protocol methods (`initialize`,
-  `notifications/initialized`, and `ping`). Tool dispatch is added in a later layer.
+  `notifications/initialized`, `ping`, and `tools/list`). Tool execution is added
+  in a later layer.
   """
   use OperatelyWeb, :controller
 
   alias Operately.Mcp
+  alias OperatelyWeb.Mcp.Tools
   alias OperatelyWeb.Mcp.Auth
 
   @jsonrpc_version "2.0"
 
   @doc """
-  Handles MCP JSON-RPC POST requests (initialize, notifications, ping, and future tools).
+  Handles MCP JSON-RPC POST requests (initialize, notifications, tool discovery, and future tools).
   """
   def post(conn, _params) do
     with :ok <- validate_post_headers(conn),
@@ -79,7 +81,7 @@ defmodule OperatelyWeb.McpController do
         id: request["id"],
         result: %{
           protocolVersion: negotiate_protocol_version(protocol_version),
-          capabilities: %{},
+          capabilities: %{"tools" => Tools.capabilities()},
           serverInfo: %{
             name: "operately",
             title: "Operately MCP",
@@ -123,6 +125,23 @@ defmodule OperatelyWeb.McpController do
     end
   end
 
+  defp dispatch_request(conn, request, "tools/list") do
+    with {:ok, _session} <- require_active_session(conn),
+         :ok <- require_protocol_version(conn) do
+      json(conn, %{
+        jsonrpc: @jsonrpc_version,
+        id: request["id"],
+        result: %{
+          tools: Tools.list_descriptors()
+        }
+      })
+    else
+      {:error, :missing_session} -> send_resp(conn, 400, "")
+      {:error, :unknown_session} -> send_resp(conn, 404, "")
+      {:error, :unsupported_protocol_version} -> send_resp(conn, 400, "")
+    end
+  end
+
   defp dispatch_request(conn, request, _method) do
     jsonrpc_http_error(conn, 200, -32601, "Method not found", request["id"])
   end
@@ -133,6 +152,7 @@ defmodule OperatelyWeb.McpController do
         "initialize" -> ["mcp:read"]
         "notifications/initialized" -> ["mcp:read"]
         "ping" -> ["mcp:read"]
+        "tools/list" -> ["mcp:read"]
         _ -> ["mcp:read"]
       end
 
@@ -219,7 +239,8 @@ defmodule OperatelyWeb.McpController do
           {:error, :unsupported_protocol_version}
         end
 
-      _ -> {:error, :unsupported_protocol_version}
+      _ ->
+        {:error, :unsupported_protocol_version}
     end
   end
 
