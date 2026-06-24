@@ -37,6 +37,16 @@ defmodule Operately.People do
     Repo.one(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)
   end
 
+  def list_active_companies(account = %Account{}) do
+    Repo.all(
+      from(c in Company,
+        join: p in assoc(c, :people),
+        where: p.account_id == ^account.id and p.suspended == false and is_nil(p.suspended_at),
+        distinct: c.id
+      )
+    )
+  end
+
   def get_person!(account = %Account{}, company = %Company{}) do
     Repo.one!(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)
   end
