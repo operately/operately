@@ -74,6 +74,7 @@ defmodule OperatelyWeb.McpControllerTest do
 
     assert initialize_conn.status == 200
     assert initialize_body["result"]["protocolVersion"] == Mcp.latest_protocol_version()
+    assert initialize_body["result"]["capabilities"] == %{"tools" => %{"listChanged" => false}}
     assert is_binary(session_id)
 
     initialized_conn =
@@ -102,6 +103,56 @@ defmodule OperatelyWeb.McpControllerTest do
     assert ping_conn.status == 200
     assert Jason.decode!(ping_conn.resp_body)["result"] == %{}
 
+    tools_list_conn =
+      build_conn()
+      |> authenticated_mcp_headers(access_token)
+      |> put_req_header("mcp-session-id", session_id)
+      |> put_req_header("mcp-protocol-version", Mcp.latest_protocol_version())
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "3",
+        "method" => "tools/list"
+      })
+
+    tools_list_body = Jason.decode!(tools_list_conn.resp_body)
+    tool_names = tools_list_body["result"]["tools"] |> Enum.map(& &1["name"])
+    search_tool = Enum.find(tools_list_body["result"]["tools"], &(&1["name"] == "search"))
+
+    assert tools_list_conn.status == 200
+
+    assert tool_names == [
+             "get_current_company",
+             "get_me",
+             "list_projects",
+             "get_project",
+             "list_goals",
+             "get_goal",
+             "list_tasks",
+             "get_task",
+             "search",
+             "fetch"
+           ]
+
+    assert search_tool["outputSchema"]["type"] == "object"
+
+    tools_call_conn =
+      build_conn()
+      |> authenticated_mcp_headers(access_token)
+      |> put_req_header("mcp-session-id", session_id)
+      |> put_req_header("mcp-protocol-version", Mcp.latest_protocol_version())
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_current_company",
+          "arguments" => %{}
+        }
+      })
+
+    assert tools_call_conn.status == 200
+    assert Jason.decode!(tools_call_conn.resp_body)["error"]["code"] == -32601
+
     get_conn =
       build_conn()
       |> put_req_header("authorization", "Bearer #{access_token}")
@@ -127,7 +178,7 @@ defmodule OperatelyWeb.McpControllerTest do
       |> put_req_header("mcp-protocol-version", Mcp.latest_protocol_version())
       |> post("/mcp", %{
         "jsonrpc" => "2.0",
-        "id" => "3",
+        "id" => "5",
         "method" => "ping"
       })
 
