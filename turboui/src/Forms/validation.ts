@@ -40,3 +40,37 @@ export function validateRichContentPresence(required?: boolean, message = "Can't
     }
   };
 }
+
+export function validateTextLength(minLength?: number, maxLength?: number): FieldValidation {
+  return (field: string, value: unknown, addError: AddErrorFn) => {
+    if (typeof value !== "string") {
+      return;
+    }
+
+    if (minLength && maxLength && minLength > maxLength) {
+      throw new Error("minLength must be less than or equal to maxLength");
+    }
+
+    if (minLength && value.length < minLength) {
+      addError(field, `Must be at least ${minLength} characters long`);
+    }
+
+    if (maxLength && value.length > maxLength) {
+      addError(field, `Must be at most ${maxLength} characters long`);
+    }
+  };
+}
+
+export function validateIsNumber(message = "Must be a valid number"): FieldValidation {
+  return (field: string, value: unknown, addError: AddErrorFn) => {
+    if (value === null || value === undefined || value === "") {
+      return;
+    }
+
+    const num = Number(value);
+
+    if (isNaN(num) || !isFinite(num)) {
+      addError(field, message);
+    }
+  };
+}

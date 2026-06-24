@@ -4,7 +4,18 @@ import "@testing-library/jest-dom";
 
 import { emptyContent } from "../RichContent/contentOps";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
-import { Form, RichTextArea, SelectBox, Submit, TextInput, useForm } from ".";
+import {
+  Form,
+  NumberInput,
+  PasswordInput,
+  RichTextArea,
+  SelectBox,
+  Submit,
+  TextInput,
+  useForm,
+  validateIsNumber,
+  validateTextLength,
+} from ".";
 
 jest.mock("../RichEditor", () => ({
   Editor: () => <div data-testid="rich-editor" />,
@@ -225,6 +236,93 @@ describe("Forms", () => {
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     expect(await screen.findByText("Can't be empty")).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  describe("validateTextLength", () => {
+    test("adds error when value is shorter than minLength", () => {
+      const addError = jest.fn();
+      const validation = validateTextLength(8);
+
+      validation("password", "short", addError);
+
+      expect(addError).toHaveBeenCalledWith("password", "Must be at least 8 characters long");
+    });
+
+    test("adds error when value exceeds maxLength", () => {
+      const addError = jest.fn();
+      const validation = validateTextLength(undefined, 5);
+
+      validation("name", "too long", addError);
+
+      expect(addError).toHaveBeenCalledWith("name", "Must be at most 5 characters long");
+    });
+
+    test("passes when value is within bounds", () => {
+      const addError = jest.fn();
+      const validation = validateTextLength(3, 10);
+
+      validation("name", "valid", addError);
+
+      expect(addError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("validateIsNumber", () => {
+    test("passes for valid numbers", () => {
+      const addError = jest.fn();
+      const validation = validateIsNumber();
+
+      validation("port", "587", addError);
+
+      expect(addError).not.toHaveBeenCalled();
+    });
+
+    test("allows empty values", () => {
+      const addError = jest.fn();
+      const validation = validateIsNumber();
+
+      validation("port", "", addError);
+
+      expect(addError).not.toHaveBeenCalled();
+    });
+
+    test("adds error for invalid strings", () => {
+      const addError = jest.fn();
+      const validation = validateIsNumber();
+
+      validation("port", "abc", addError);
+
+      expect(addError).toHaveBeenCalledWith("port", "Must be a valid number");
+    });
+  });
+
+  test("shows validation errors for password and number inputs", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { password: "", port: "abc" },
+        submit: async () => {
+          onSubmit();
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <PasswordInput field="password" label="Password" minLength={8} />
+          <NumberInput field="port" label="Port" />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Can't be empty")).toBeInTheDocument();
+    expect(await screen.findByText("Must be a valid number")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 });
