@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import { Avatar, AvatarList, AvatarWithName } from ".";
+import { Avatar, AvatarList, AvatarWithName, ContributorAvatar, PlaceholderAvatar } from ".";
 import { genPeople } from "./../utils/storybook/genPeople";
-import { AvatarProps, AvatarSize } from "./types";
+import { AvatarProps, AvatarSize, PlaceholderAvatarSize } from "./types";
 
 const meta = {
   title: "Components/Avatar",
@@ -411,6 +411,36 @@ export const AvatarListExample: StoryObj<{}> = {
       </div>
     );
   },
+};
+
+export const ContributorRoles: StoryObj<{}> = {
+  render: () => (
+    <div className="flex items-end gap-8">
+      {[
+        { label: "Champion", role: "champion", person: EXAMPLE_PEOPLE[0]! },
+        { label: "Reviewer", role: "reviewer", person: EXAMPLE_PEOPLE[1]! },
+        { label: "Contributor", role: "contributor", person: EXAMPLE_PEOPLE[2]! },
+      ].map((example) => (
+        <div key={example.role} className="flex flex-col items-center gap-2">
+          <ContributorAvatar person={example.person} role={example.role} />
+          <span className="text-xs">{example.label}</span>
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+export const PlaceholderSizes: StoryObj<{}> = {
+  render: () => (
+    <div className="flex items-end gap-6">
+      {(["xs", "md", "base", "lg"] as PlaceholderAvatarSize[]).map((size) => (
+        <div key={size} className="flex flex-col items-center gap-2">
+          <PlaceholderAvatar size={size} />
+          <span className="text-xs">{size}</span>
+        </div>
+      ))}
+    </div>
+  ),
 };
 
 /**
