@@ -9,7 +9,8 @@ import Config
 
 config :operately,
   ecto_repos: [Operately.Repo],
-  generators: [binary_id: true]
+  generators: [binary_id: true],
+  mcp_oauth_clients: []
 
 # Configures the endpoint
 config :operately, OperatelyWeb.Endpoint,

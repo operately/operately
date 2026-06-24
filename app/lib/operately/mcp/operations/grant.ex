@@ -1,0 +1,107 @@
+defmodule Operately.Mcp.Operations.Grant do
+  import Ecto.Query, warn: false
+
+  alias Operately.Mcp.{AccessToken, AuthorizationCode, Grant, RefreshToken, Session, Token}
+  alias Operately.Repo
+
+  @authorization_code_ttl_seconds 5 * 60
+  @authorization_code_prefix "opmc_"
+
+  @doc """
+  Creates or updates a grant for the account, company, and authorized client.
+  """
+  def upsert_grant(account, company, auth_request) do
+    now = Token.now()
+
+    Repo.get_by(Grant, account_id: account.id, company_id: company.id, client_id: auth_request.client_id)
+    |> case do
+      nil ->
+        %Grant{}
+        |> Grant.changeset(%{
+          account_id: account.id,
+          company_id: company.id,
+          client_id: auth_request.client_id,
+          client_name: auth_request.client.client_name,
+          client_uri: auth_request.client.client_uri,
+          redirect_uri: auth_request.redirect_uri,
+          resource: auth_request.resource,
+          scopes: auth_request.scopes,
+          revoked_at: nil
+        })
+        |> Repo.insert()
+
+      %Grant{} = grant ->
+        Repo.transaction(fn ->
+          revoke_grant_lineage(grant, now, false)
+
+          grant
+          |> Grant.changeset(%{
+            client_name: auth_request.client.client_name,
+            client_uri: auth_request.client.client_uri,
+            redirect_uri: auth_request.redirect_uri,
+            resource: auth_request.resource,
+            scopes: auth_request.scopes,
+            revoked_at: nil
+          })
+          |> Repo.update!()
+        end)
+        |> case do
+          {:ok, grant} -> {:ok, grant}
+          {:error, _step, reason, _changes} -> {:error, reason}
+        end
+    end
+  end
+
+  @doc """
+  Issues a short-lived authorization code for the token endpoint.
+  """
+  def issue_authorization_code(%Grant{} = grant, auth_request) do
+    raw_code = Token.generate(@authorization_code_prefix)
+
+    %AuthorizationCode{}
+    |> AuthorizationCode.changeset(%{
+      grant_id: grant.id,
+      code_hash: Token.hash(raw_code),
+      redirect_uri: auth_request.redirect_uri,
+      resource: auth_request.resource,
+      scopes: auth_request.scopes,
+      code_challenge: auth_request.code_challenge,
+      code_challenge_method: auth_request.code_challenge_method,
+      expires_at: Token.expires_in(@authorization_code_ttl_seconds, :second)
+    })
+    |> Repo.insert()
+    |> case do
+      {:ok, code} -> {:ok, code, raw_code}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  @doc """
+  Revokes a grant and all active tokens and sessions before a client reconnects.
+  """
+  def revoke_grant_for_reconnect(%Grant{} = grant) do
+    now = Token.now()
+    revoke_grant_lineage(grant, now, true)
+    :ok
+  end
+
+  @doc """
+  Revokes active tokens and sessions for a grant, optionally marking the grant revoked.
+  """
+  def revoke_grant_lineage(%Grant{} = grant, now, revoke_grant?) do
+    if revoke_grant? do
+      grant
+      |> Grant.changeset(%{revoked_at: now})
+      |> Repo.update!()
+    end
+
+    from(t in AccessToken, where: t.grant_id == ^grant.id and is_nil(t.revoked_at))
+    |> Repo.update_all(set: [revoked_at: now, updated_at: now])
+
+    from(t in RefreshToken, where: t.grant_id == ^grant.id and is_nil(t.revoked_at))
+    |> Repo.update_all(set: [revoked_at: now, updated_at: now])
+
+    from(s in Session, where: s.grant_id == ^grant.id and is_nil(s.closed_at))
+    |> Repo.update_all(set: [closed_at: now, last_seen_at: now, updated_at: now])
+  end
+end
