@@ -7,9 +7,8 @@ import { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
-import { Link, richContentToString } from "turboui";
+import { Link, SmallStatusIndicator, richContentToString } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
-import { SmallStatusIndicator } from "@/components/status";
 
 const GoalCheckIn: ActivityHandler = {
   pagePath(paths, activity: Activity): string {

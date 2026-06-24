@@ -4,10 +4,8 @@ import type { ActivityContentProjectCheckInSubmitted } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { SmallStatusIndicator } from "@/components/status";
-
 import { usePaths } from "@/routes/paths";
-import { Link, Summary } from "turboui";
+import { Link, SmallStatusIndicator, Summary } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
