@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= @title %> - Operately</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg, #f6f8fb 0%, #eef3fb 100%);
+        color: #12233d;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      }
+      .card {
+        width: min(620px, 92vw);
+        background: #fff;
+        border: 1px solid #dbe5f3;
+        border-radius: 18px;
+        box-shadow: 0 24px 80px rgba(2, 79, 172, 0.10);
+        padding: 32px;
+      }
+      h1 { margin: 0 0 10px; font-size: 24px; }
+      p { margin: 0 0 24px; color: #4b5d78; line-height: 1.5; }
+      dl {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 10px 16px;
+        margin: 0 0 24px;
+      }
+      dt { color: #4b5d78; font-weight: 600; }
+      dd { margin: 0; }
+      .warning {
+        margin-bottom: 24px;
+        border: 1px solid #f2d17d;
+        background: #fff8df;
+        color: #7a5600;
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+      .actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+      }
+      button {
+        appearance: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 12px 18px;
+        cursor: pointer;
+      }
+      .approve {
+        border: 0;
+        background: #024fac;
+        color: white;
+      }
+      .deny {
+        border: 1px solid #d0dbea;
+        background: #fff;
+        color: #12233d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1><%= @title %></h1>
+      <p><strong><%= @request.client.client_name %></strong> is requesting access to your Operately workspace through MCP.</p>
+
+      <%= if @localhost_warning do %>
+        <div class="warning">
+          This client uses a localhost redirect URI. Confirm that you trust the local application before approving.
+        </div>
+      <% end %>
+
+      <dl>
+        <dt>Client</dt>
+        <dd><%= @request.client.client_name %></dd>
+
+        <dt>Client Host</dt>
+        <dd><%= @client_host %></dd>
+
+        <dt>Redirect Host</dt>
+        <dd><%= @redirect_host %></dd>
+
+        <dt>Company</dt>
+        <dd><%= @company.name %></dd>
+
+        <dt>Scopes</dt>
+        <dd><%= Enum.join(@request.scopes, ", ") %></dd>
+      </dl>
+
+      <form method="post" action="/oauth/authorize">
+        <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+        <%= for {key, value} <- @hidden_fields do %>
+          <%= if value do %>
+            <input type="hidden" name={key} value={value} />
+          <% end %>
+        <% end %>
+
+        <div class="actions">
+          <button class="deny" type="submit" name="decision" value="deny">Deny</button>
+          <button class="approve" type="submit" name="decision" value="approve">Authorize</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
