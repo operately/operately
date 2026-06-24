@@ -8,10 +8,9 @@ import { PageModule } from "@/routes/types";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ProjectContributor } from "@/models/projectContributors";
-import { BorderedRow, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
+import { BorderedRow, ContributorAvatar, Menu, MenuActionItem, MenuLinkItem, PlaceholderAvatar, PrimaryButton, SecondaryButton } from "turboui";
 
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
-import { ContributorAvatar, PlaceholderAvatar } from "@/components/ContributorAvatar";
 import { AccessLevel } from "@/features/projects/AccessLevel";
 import { createTestId } from "@/utils/testid";
 import { match } from "ts-pattern";
@@ -106,7 +105,7 @@ function Champion() {
     <Paper.Section title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
-          <ContributorAvatar contributor={champion} />
+          <ContributorAvatar person={champion.person!} role={champion.role!} />
           <ContributorNameAndResponsibility contributor={champion} />
         </div>
 
@@ -128,7 +127,7 @@ function Reviewer() {
     <Paper.Section title="Reviewer">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
-          <ContributorAvatar contributor={reviewer} />
+          <ContributorAvatar person={reviewer.person!} role={reviewer.role!} />
           <ContributorNameAndResponsibility contributor={reviewer} />
         </div>
 
@@ -243,7 +242,7 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
   return (
     <BorderedRow testId={createTestId("contributor-row", contributor.person?.fullName!)}>
       <div className="flex items-center gap-2">
-        <ContributorAvatar contributor={contributor} />
+        <ContributorAvatar person={contributor.person!} role={contributor.role!} />
         <ContributotNameAndResponsibility contributor={contributor} />
       </div>
       <div className="flex items-center gap-4">

@@ -15,6 +15,12 @@ export interface AvatarProps {
   testId?: string;
 }
 
+export interface ContributorAvatarProps {
+  person: AvatarPerson;
+  role: string;
+  size?: AvatarSize;
+}
+
 export interface AvatarListProps {
   people: AvatarPerson[];
   size: AvatarSize;
@@ -28,3 +34,5 @@ export interface AvatarListProps {
 }
 
 export type NameFormat = "first" | "short" | "full";
+
+export type PlaceholderAvatarSize = "xs" | "md" | "base" | "lg";
