@@ -24,10 +24,27 @@ export function useForm<T extends FormValues>(options: UseFormOptions<T>): FormS
   });
   const [errors, setErrors] = React.useState<FormErrors>({});
   const [state, setState] = React.useState<FormState<T>["state"]>("idle");
+  const [trigger, setTrigger] = React.useState<string | undefined>(undefined);
   const [lastSubmitSucceededAt, setLastSubmitSucceededAt] = React.useState<number | undefined>(undefined);
 
   const clearErrors = React.useCallback(() => {
     setErrors({});
+  }, []);
+
+  const addErrors = React.useCallback((nextErrors: FormErrors) => {
+    setErrors((currentErrors) => ({ ...nextErrors, ...currentErrors }));
+  }, []);
+
+  const removeErrors = React.useCallback((keys: string[]) => {
+    setErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+
+      keys.forEach((key) => {
+        delete nextErrors[key];
+      });
+
+      return nextErrors;
+    });
   }, []);
 
   const addValidation = React.useCallback((field: string, validation: FieldValidation) => {
@@ -136,6 +153,7 @@ export function useForm<T extends FormValues>(options: UseFormOptions<T>): FormS
         setLastSubmitSucceededAt(Date.now());
       } catch (error) {
         console.error(error);
+        options.onError?.(error);
       } finally {
         setState("idle");
       }
@@ -146,12 +164,15 @@ export function useForm<T extends FormValues>(options: UseFormOptions<T>): FormS
   return {
     values,
     state,
+    trigger,
     errors,
     hasErrors: Object.keys(errors).length > 0,
     hasCancel: Boolean(options.cancel),
     lastSubmitSucceededAt,
     actions: {
       clearErrors,
+      addErrors,
+      removeErrors,
       submit,
       cancel,
       reset,
@@ -160,6 +181,7 @@ export function useForm<T extends FormValues>(options: UseFormOptions<T>): FormS
       getValue,
       setValue,
       setState,
+      setTrigger,
     },
   };
 }

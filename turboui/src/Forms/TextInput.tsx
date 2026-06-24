@@ -1,32 +1,44 @@
 import * as React from "react";
 
 import { createTestId } from "../TestableElement";
+import { Input } from "./Input";
 import { useFieldError, useFieldValue } from "./context";
 import { InputField } from "./FieldGroup";
-import { useValidation, validatePresence } from "./validation";
+import { useValidation, validatePresence, validateTextLength } from "./validation";
 import type { TextInputProps } from "./types";
 
-export function TextInput({ field, label, testId, autoFocus, required, placeholder }: TextInputProps) {
+const DEFAULT_VALIDATION_PROPS = {
+  required: false,
+  minLength: undefined,
+  maxLength: undefined,
+};
+
+export function TextInput(props: TextInputProps) {
+  const { field, label, hidden, testId, autoFocus, placeholder, onEnter, okSign } = props;
+  const { required, minLength, maxLength } = { ...DEFAULT_VALIDATION_PROPS, ...props };
   const [value, setValue] = useFieldValue<string>(field);
   const error = useFieldError(field);
 
   useValidation(field, validatePresence(required));
+  useValidation(field, validateTextLength(minLength, maxLength));
 
   return (
-    <InputField field={field} label={label} error={error} required={required}>
-      <input
+    <InputField field={field} label={label} error={error} hidden={hidden} required={required}>
+      <Input
         id={field}
-        name={field}
+        field={field}
+        testId={testId ?? createTestId(field)}
+        error={!!error}
         type="text"
         value={value ?? ""}
         autoFocus={autoFocus}
         placeholder={placeholder}
-        data-test-id={testId ?? createTestId(field)}
+        required={required}
+        minLength={minLength}
+        maxLength={maxLength}
+        onEnter={onEnter}
+        okSign={okSign}
         onChange={(event) => setValue(event.target.value)}
-        className={[
-          "w-full rounded-lg border bg-surface-base px-3 py-1.5 text-content-accent placeholder-content-subtle",
-          error ? "border-red-500" : "border-surface-outline",
-        ].join(" ")}
       />
     </InputField>
   );

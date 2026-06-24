@@ -3,6 +3,7 @@ export { FieldGroup, InputField } from "./FieldGroup";
 export { Input } from "./Input";
 export { Label } from "./Label";
 export { ErrorMessage } from "./ErrorMessage";
+export { FormError } from "./FormError";
 export { PasswordInput } from "./PasswordInput";
 export { NumberInput } from "./NumberInput";
 export { CheckboxInput } from "./CheckboxInput";
@@ -24,6 +25,7 @@ export type {
   FieldGroupProps,
   FieldGroupVerticalOptions,
   FieldValidation,
+  FormErrorProps,
   FormErrors,
   FormOption,
   FormProps,
