@@ -3,7 +3,6 @@ defmodule Operately.People.CliAuthSession do
 
   import Ecto.Query, warn: false
 
-  alias Operately.Companies.Company
   alias Operately.People.{Account, ApiToken, CliAuthSession}
   alias Operately.Repo
 
@@ -166,13 +165,7 @@ defmodule Operately.People.CliAuthSession do
   end
 
   def eligible_companies(%Account{} = account) do
-    Repo.all(
-      from(c in Company,
-        join: p in assoc(c, :people),
-        where: p.account_id == ^account.id and p.suspended == false and is_nil(p.suspended_at),
-        distinct: c.id
-      )
-    )
+    Operately.People.list_active_companies(account)
   end
 
   def poll_interval_ms, do: @poll_interval_ms
