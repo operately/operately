@@ -1,8 +1,7 @@
 import * as React from "react";
 import * as Spaces from "@/models/spaces";
 
-import { IconWorld, IconLockFilled } from "turboui";
-import { Tooltip } from "@/components/Tooltip";
+import { IconWorld, IconLockFilled, Tooltip } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 
 interface PrivacyIndicatorProps {
@@ -40,7 +39,9 @@ function PublicSpace({ size }: { size: number }) {
 
   return (
     <Tooltip content={content} testId="public-project-tooltip" delayDuration={100}>
-      <IconWorld size={size} />
+      <span data-test-id="public-project-tooltip">
+        <IconWorld size={size} />
+      </span>
     </Tooltip>
   );
 }
@@ -55,7 +56,9 @@ function InviteOnly({ size }: { size: number }) {
 
   return (
     <Tooltip content={content} testId="secret-space-tooltip" delayDuration={100} className="z-50">
-      <IconLockFilled size={size} />
+      <span data-test-id="secret-space-tooltip">
+        <IconLockFilled size={size} />
+      </span>
     </Tooltip>
   );
 }

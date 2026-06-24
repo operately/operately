@@ -1,11 +1,11 @@
 import React from "react";
-import { Tooltip } from "@/components/Tooltip";
 import { PermissionLevels } from "@/features/Permissions";
 import { joinStr } from "@/utils/strings";
 import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
 import { TestableElement } from "@/utils/testid";
 import { AccessOptionsInt } from "@/models/permissions";
+import { Tooltip } from "turboui";
 
 // Public interface
 
@@ -135,10 +135,7 @@ const permissionData: PermissionData = {
         "Cannot edit, close, or archive the project.",
       ),
       space: "Can comment all resources in the space, but cannot add or remove members or resources in the space.",
-      goal: joinStr(
-        "Can comment on the goal updates and discussions. ",
-        "Cannot edit, close, or archive the goal.",
-      ),
+      goal: joinStr("Can comment on the goal updates and discussions. ", "Cannot edit, close, or archive the goal."),
     },
   },
 
