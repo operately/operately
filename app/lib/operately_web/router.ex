@@ -25,6 +25,12 @@ defmodule OperatelyWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  pipeline :mcp do
+    plug OperatelyWeb.Mcp.Plugs.ValidateOrigin
+    plug OperatelyWeb.Mcp.Plugs.RequireMcpAuth
+    plug OperatelyWeb.Mcp.Plugs.ResolveCompany
+  end
+
   #
   # Health check endpoint
   #
@@ -76,6 +82,24 @@ defmodule OperatelyWeb.Router do
 
     get("/accounts/auth/:provider", AccountOauthController, :request)
     get("/accounts/auth/:provider/callback", AccountOauthController, :callback)
+
+    get("/oauth/authorize", McpOAuthController, :authorize)
+    post("/oauth/authorize", McpOAuthController, :submit_authorization)
+  end
+
+  scope "/", OperatelyWeb do
+    get("/.well-known/oauth-protected-resource", McpMetadataController, :protected_resource)
+    get("/.well-known/oauth-protected-resource/mcp", McpMetadataController, :protected_resource)
+    get("/.well-known/oauth-authorization-server", McpMetadataController, :authorization_server)
+    post("/oauth/token", McpOAuthController, :token)
+  end
+
+  scope "/", OperatelyWeb do
+    pipe_through([:mcp])
+
+    post("/mcp", McpController, :post)
+    get("/mcp", McpController, :get)
+    delete("/mcp", McpController, :delete)
   end
 
   scope "/billing", OperatelyWeb do
