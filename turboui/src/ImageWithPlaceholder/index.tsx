@@ -1,13 +1,25 @@
-import React, { useState } from "react";
+import * as React from "react";
 
-interface Props {
+export interface ImageWithPlaceholderProps {
   src: string;
   alt?: string;
   ratio: number;
 }
 
-export function ImageWithPlaceholder({ src, alt, ratio }: Props) {
-  const [loaded, setLoaded] = useState(false);
+const LOADING_ANIMATION_NAME = "turboui-image-with-placeholder-loading";
+const LOADING_KEYFRAMES = `
+  @keyframes ${LOADING_ANIMATION_NAME} {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+`;
+
+export function ImageWithPlaceholder({ src, alt, ratio }: ImageWithPlaceholderProps) {
+  const [loaded, setLoaded] = React.useState(false);
 
   return (
     <div
@@ -25,10 +37,11 @@ export function ImageWithPlaceholder({ src, alt, ratio }: Props) {
             inset: 0,
             background: "linear-gradient(90deg, #f5f5f5 25%, #e0e0e0 50%, #f5f5f5 75%)",
             backgroundSize: "200% 100%",
-            animation: "loading 3.5s infinite",
+            animation: `${LOADING_ANIMATION_NAME} 3.5s infinite`,
           }}
         />
       )}
+
       <img
         src={src}
         alt={alt}
@@ -44,18 +57,8 @@ export function ImageWithPlaceholder({ src, alt, ratio }: Props) {
         }}
         onLoad={() => setLoaded(true)}
       />
-      <style>
-        {`
-          @keyframes loading {
-            0% {
-              background-position: -200% 0;
-            }
-            100% {
-              background-position: 200% 0;
-            }
-          }
-        `}
-      </style>
+
+      <style>{LOADING_KEYFRAMES}</style>
     </div>
   );
 }

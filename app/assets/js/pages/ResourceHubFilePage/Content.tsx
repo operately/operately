@@ -1,7 +1,7 @@
 import React from "react";
+import { ImageWithPlaceholder } from "turboui";
 
 import { assertPresent } from "@/utils/assertions";
-import { ImageWithPlaceholder } from "@/components/Image";
 import { useLoadedData } from "./loader";
 
 export function Content() {
@@ -18,10 +18,14 @@ export function Content() {
 function Image() {
   const { file } = useLoadedData();
   assertPresent(file.blob, "blob must be present in file");
+  assertPresent(file.blob.height, "image height must be present");
+  assertPresent(file.blob.width, "image width must be present");
+  assertPresent(file.blob.url, "image url must be present");
+  assertPresent(file.name, "file name must be present");
 
-  const imgRatio = file.blob.height! / file.blob.width!;
+  const imgRatio = file.blob.height / file.blob.width;
 
-  return <ImageWithPlaceholder src={file.blob.url!} alt={file.name!} ratio={imgRatio} />;
+  return <ImageWithPlaceholder src={file.blob.url} alt={file.name} ratio={imgRatio} />;
 }
 
 function Video() {
