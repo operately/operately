@@ -1,14 +1,13 @@
 import React from "react";
-import { useLayoutOptions } from "./Context";
-import { InputFieldProps } from "../FieldGroup";
 import { match } from "ts-pattern";
-import { ErrorMessage } from "../ErrorMessage";
-import { Label } from "../Elements";
 
-export interface Options {
-  ratio: "1:1" | "1:2" | "1:3" | "1:4" | "1:5" | "2:1" | "3:1" | "4:1" | "5:1";
-  dividers: boolean;
-}
+import { ErrorMessage } from "../ErrorMessage";
+import { Label } from "../Label";
+import type { InputFieldProps } from "../types";
+import { useLayoutOptions } from "./Context";
+import type { HorizontalLayoutOptions } from "./layoutTypes";
+
+export type Options = HorizontalLayoutOptions;
 
 const DEFAULT_OPTIONS: Options = {
   ratio: "1:3",
@@ -29,7 +28,9 @@ export function Container({ children }: { children: React.ReactNode }) {
 export function Input(props: InputFieldProps) {
   const options = useLayoutOptions<Options>();
 
-  const label = props.label ? <Label field={props.field} label={props.label} icon={props.labelIcon} required={props.required} /> : null;
+  const label = props.label ? (
+    <Label field={props.field} label={props.label} icon={props.labelIcon} required={props.required} />
+  ) : null;
   const error = props.error ? <ErrorMessage error={props.error} /> : null;
 
   const [leftSize, rightSize] = match(options.ratio)

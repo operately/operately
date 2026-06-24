@@ -1,26 +1,50 @@
-import * as React from "react";
+import React from "react";
+import { match } from "ts-pattern";
 
+import * as Context from "./FieldGroup/Context";
+import * as Grid from "./FieldGroup/Grid";
+import * as Horizontal from "./FieldGroup/Horizontal";
+import * as Vertical from "./FieldGroup/Vertical";
 import type { FieldGroupProps, InputFieldProps } from "./types";
 
-export function FieldGroup({ children }: FieldGroupProps) {
-  return <div className="flex flex-col gap-4">{children}</div>;
+const DEFAULT_LAYOUT = "vertical";
+
+export function FieldGroup(props: FieldGroupProps) {
+  const layout = props.layout || DEFAULT_LAYOUT;
+
+  const layoutOptions = match(layout)
+    .with("horizontal", () => Horizontal.initializeOptions(props.layoutOptions as Horizontal.Options))
+    .with("grid", () => Grid.initializeOptions(props.layoutOptions as Grid.Options))
+    .with("vertical", () => Vertical.initializeOptions(props.layoutOptions as Vertical.Options))
+    .run();
+
+  return (
+    <Context.Context.Provider value={{ layout, layoutOptions }}>
+      <Container>{props.children}</Container>
+    </Context.Context.Provider>
+  );
 }
 
-export function InputField({ field, label, required, hidden, error, children }: InputFieldProps) {
-  if (hidden) {
+function Container({ children }: { children: React.ReactNode }) {
+  const layoutType = Context.useLayoutType();
+
+  return match(layoutType)
+    .with("vertical", () => <Vertical.Container>{children}</Vertical.Container>)
+    .with("horizontal", () => <Horizontal.Container>{children}</Horizontal.Container>)
+    .with("grid", () => <Grid.Container>{children}</Grid.Container>)
+    .exhaustive();
+}
+
+export function InputField(props: InputFieldProps) {
+  const layoutType = Context.useLayoutType();
+
+  if (props.hidden) {
     return null;
   }
 
-  return (
-    <div className="flex flex-col gap-0.5">
-      {label ? (
-        <label className="flex items-center gap-2 font-semibold" htmlFor={field}>
-          {label}
-          {required && <span className="text-xs text-red-500">*</span>}
-        </label>
-      ) : null}
-      {children}
-      {error ? <div className="block text-sm text-content-error">{error}</div> : null}
-    </div>
-  );
+  return match(layoutType)
+    .with("vertical", () => <Vertical.Input {...props} />)
+    .with("horizontal", () => <Horizontal.Input {...props} />)
+    .with("grid", () => <Grid.Input {...props} />)
+    .exhaustive();
 }
