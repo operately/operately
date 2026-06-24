@@ -44,14 +44,35 @@ export interface FormProps<T extends FormValues = FormValues> {
 }
 
 export interface FieldGroupProps {
-  layout?: "vertical";
+  layout?: FieldGroupLayoutType;
+  layoutOptions?: FieldGroupLayoutOptions;
   children: React.ReactNode;
 }
+
+export type FieldGroupLayoutType = "horizontal" | "vertical" | "grid";
+
+export interface FieldGroupVerticalOptions {}
+
+export interface FieldGroupHorizontalOptions {
+  ratio: "1:1" | "1:2" | "1:3" | "1:4" | "1:5" | "2:1" | "3:1" | "4:1" | "5:1";
+  dividers: boolean;
+}
+
+export interface FieldGroupGridOptions {
+  columns: number;
+  gridTemplateColumns?: string;
+}
+
+export type FieldGroupLayoutOptions =
+  | FieldGroupHorizontalOptions
+  | FieldGroupVerticalOptions
+  | FieldGroupGridOptions;
 
 export interface InputFieldProps {
   field: string;
   children: React.ReactNode;
   label?: string | React.ReactNode;
+  labelIcon?: React.ReactNode;
   required?: boolean;
   hidden?: boolean;
   error?: string;
@@ -92,4 +113,60 @@ export interface RichTextAreaProps {
   placeholder?: string;
   required?: boolean;
   height?: string;
+}
+
+export interface PasswordInputProps {
+  field: string;
+  label?: string | React.ReactNode;
+  required?: boolean;
+  placeholder?: string;
+  minLength?: number;
+  maxLength?: number;
+  noAutofill?: boolean;
+  okSign?: boolean;
+  testId?: string;
+}
+
+export interface NumberInputProps {
+  field: string;
+  label?: string;
+  autoFocus?: boolean;
+  placeholder?: string;
+  hidden?: boolean;
+  required?: boolean;
+  onEnter?: (event: React.KeyboardEvent) => void;
+  testId?: string;
+  okSign?: boolean;
+}
+
+export interface FormOption {
+  value: string;
+  label: string;
+}
+
+export interface CheckboxInputProps {
+  field: string;
+  label?: string;
+  hidden?: boolean;
+  options: FormOption[];
+}
+
+export interface RadioButtonsProps {
+  field: string;
+  label?: string;
+  hidden?: boolean;
+  options: FormOption[];
+  containerClass?: string;
+}
+
+export interface TitleInputProps {
+  field: string;
+  autoFocus?: boolean;
+  placeholder?: string;
+  minLength?: number;
+  maxLength?: number;
+  testId?: string;
+  readonly?: boolean;
+  errorMessage?: string;
+  fontBold?: boolean;
 }
