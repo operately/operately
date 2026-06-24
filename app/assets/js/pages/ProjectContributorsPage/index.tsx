@@ -8,16 +8,13 @@ import { PageModule } from "@/routes/types";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ProjectContributor } from "@/models/projectContributors";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { BorderedRow, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
 
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { ContributorAvatar, PlaceholderAvatar } from "@/components/ContributorAvatar";
 import { AccessLevel } from "@/features/projects/AccessLevel";
 import { createTestId } from "@/utils/testid";
 import { match } from "ts-pattern";
-import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
-
-import { BorderedRow } from "@/components/BorderedRow";
 import { OtherPeople } from "./OtherPeople";
 import { loader, useLoadedData } from "./loader";
 

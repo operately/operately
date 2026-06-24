@@ -12,20 +12,18 @@ import * as Paper from "@/components/PaperContainer";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
-import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { FormattedTime, LinkIcon, ResourcePageNavigation, type ResourceHubLinkType } from "turboui";
+import { FormattedTime, LinkIcon, ResourcePageNavigation, Spacer, type ResourceHubLinkType } from "turboui";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
 import { buildNavigationLink } from "./navigation";
-import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions } from "turboui";
-import { BulletDot } from "@/components/TextElements";
+import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions, BulletDot } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -41,10 +39,7 @@ export function Page() {
   return (
     <Pages.Page title={link.name!}>
       <Paper.Root>
-        <ResourcePageNavigation
-          resource={navigationLink}
-          paths={resourceHubNavigationPaths(paths)}
-        />
+        <ResourcePageNavigation resource={navigationLink} paths={resourceHubNavigationPaths(paths)} />
 
         <Paper.Body className="lg:px-28">
           <Options showDeleteModal={toggleDeleteModal} />

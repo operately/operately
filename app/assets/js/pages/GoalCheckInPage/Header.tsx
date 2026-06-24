@@ -6,8 +6,8 @@ import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
 
 import { Update } from "@/models/goalCheckIns";
-import { BulletDot } from "@/components/TextElements";
 import { Person } from "@/api";
+import { BulletDot } from "turboui";
 
 export function Header() {
   const { update } = useLoadedData();

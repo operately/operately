@@ -17,14 +17,13 @@ import {
   IconSquareCheckFilled,
   IconTrash,
   CurrentSubscriptions,
+  Spacer,
   showSuccessToast,
   StatusBadge,
   TextSeparator,
 } from "turboui";
 import { compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
-
-import { Spacer } from "@/components/Spacer";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 

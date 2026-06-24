@@ -69,97 +69,150 @@ defmodule Operately.JUnitRetrySummary do
     end
   end
 
+  @max_message_length 300
+
   defp summary_section(_title, []), do: nil
 
   defp summary_section(title, tests) do
     [
       "## #{title}",
       "",
-      "| Test | File | Attempts | Failures |",
-      "| --- | --- | ---: | --- |",
-      Enum.map(tests, &test_row/1)
+      Enum.map(tests, &test_entry/1)
     ]
     |> List.flatten()
     |> Enum.join("\n")
   end
 
-  defp test_row(test) do
-    test_label = "#{test.classname} — #{test.name}"
-    failures = format_failures(test.failures)
+  defp test_entry(test) do
+    lines =
+      [
+        "- **#{test.name}** — `#{test.file}` (#{test.attempts} attempts)"
+      ] ++ Enum.map(failure_lines(test.failures), &("  - " <> &1))
 
-    "| #{escape_table_cell(test_label)} | #{escape_table_cell(test.file)} | #{test.attempts} | #{escape_table_cell(failures)} |"
+    Enum.join(lines, "\n")
   end
 
-  defp format_failures(failures) do
+  defp failure_lines(failures) do
     failures
-    |> Enum.map(fn failure ->
-      message = failure.message || "unknown failure"
-      "run #{failure.run}: #{message}"
+    |> Enum.group_by(& &1.message)
+    |> Enum.sort_by(fn {_message, attempts} ->
+      attempts |> Enum.map(& &1.run) |> Enum.min()
     end)
-    |> Enum.join("; ")
+    |> Enum.map(fn {message, attempts} ->
+      runs = attempts |> Enum.map(& &1.run) |> Enum.sort()
+      "error#{format_run_label(runs)}: #{truncate_message(message)}"
+    end)
   end
 
-  defp escape_table_cell(value) do
-    value
-    |> to_string()
-    |> String.replace("|", "\\|")
-    |> String.replace("\n", " ")
+  defp format_run_label([run]), do: " (attempt #{run + 1})"
+
+  defp format_run_label(runs) do
+    first = Enum.min(runs) + 1
+    last = Enum.max(runs) + 1
+
+    if first == last do
+      " (attempt #{first})"
+    else
+      " (attempts #{first}-#{last})"
+    end
   end
+
+  defp truncate_message(nil), do: "unknown failure"
+
+  defp truncate_message(message) do
+    message
+    |> to_string()
+    |> String.trim()
+    |> String.split("\n", parts: 2)
+    |> hd()
+    |> truncate_string(@max_message_length)
+  end
+
+  defp truncate_string(text, max) when byte_size(text) <= max, do: text
+  defp truncate_string(text, max), do: String.slice(text, 0, max) <> "…"
 
   @spec summarize([Path.t()]) :: summary()
   def summarize(paths) do
-    paths
-    |> Enum.filter(&File.exists?/1)
-    |> Enum.with_index()
-    |> Enum.reduce(%{}, &collect_run/2)
-    |> Map.values()
-    |> Enum.reduce(%{flaky: [], failed_after_retries: []}, &classify_test/2)
-    |> sort_summary()
+    paths = Enum.filter(paths, &File.exists?/1)
+
+    case paths do
+      [] ->
+        sort_summary(%{flaky: [], failed_after_retries: []})
+
+      [_initial] ->
+        sort_summary(%{flaky: [], failed_after_retries: []})
+
+      paths ->
+        paths
+        |> Enum.with_index()
+        |> Enum.reduce(%{}, &collect_run/2)
+        |> Map.values()
+        |> Enum.reduce(%{flaky: [], failed_after_retries: []}, &classify_test/2)
+        |> sort_summary()
+    end
   end
 
   defp collect_run({path, run_index}, tests) do
     path
     |> JUnitReportMerger.read_testcases()
     |> Enum.reduce(tests, fn {key, testcase}, acc ->
-      attempt = %{
-        run: run_index,
-        status: testcase.status,
-        message: testcase.failure_message
-      }
+      if skip_attempt?(run_index, testcase.status) do
+        acc
+      else
+        record_attempt(acc, key, testcase, run_index)
+      end
+    end)
+  end
 
-      Map.update(acc, key, %{
-        classname: testcase.classname,
-        name: testcase.name,
-        file: testcase.file,
-        attempts: [attempt]
-      }, fn existing ->
-        %{existing | attempts: existing.attempts ++ [attempt]}
-      end)
+  defp skip_attempt?(0, status), do: status not in [:failures, :errors]
+  defp skip_attempt?(_, _), do: false
+
+  defp record_attempt(tests, key, testcase, run_index) do
+    attempt = %{
+      run: run_index,
+      status: testcase.status,
+      message: testcase.failure_message
+    }
+
+    Map.update(tests, key, %{
+      classname: testcase.classname,
+      name: testcase.name,
+      file: testcase.file,
+      attempts: [attempt]
+    }, fn existing ->
+      %{existing | attempts: existing.attempts ++ [attempt]}
     end)
   end
 
   defp classify_test(%{attempts: attempts} = test, summary) do
-    if length(attempts) <= 1 do
-      summary
-    else
-      entry = %{
-        classname: test.classname,
-        name: test.name,
-        file: test.file,
-        attempts: length(attempts),
-        failures: failure_attempts(attempts)
-      }
+    failures = failure_attempts(attempts)
 
-      case List.last(attempts) do
-        %{status: :pass} ->
-          Map.update!(summary, :flaky, &[entry | &1])
+    cond do
+      failures == [] ->
+        summary
 
-        %{status: :skipped} ->
-          summary
+      length(attempts) <= 1 ->
+        summary
 
-        _ ->
-          Map.update!(summary, :failed_after_retries, &[entry | &1])
-      end
+      true ->
+        entry = %{
+          classname: test.classname,
+          name: test.name,
+          file: test.file,
+          attempts: length(attempts),
+          failures: failures
+        }
+
+        case List.last(attempts) do
+          %{status: :pass} ->
+            Map.update!(summary, :flaky, &[entry | &1])
+
+          %{status: :skipped} ->
+            summary
+
+          _ ->
+            Map.update!(summary, :failed_after_retries, &[entry | &1])
+        end
     end
   end
 
