@@ -5,21 +5,18 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 
 import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
-import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
 import { AccessLevel } from "@/features/spaces";
 import { AccessOptionsInt } from "@/models/permissions";
 import { Space } from "@/models/spaces";
 import { usePaths } from "@/routes/paths";
-import { Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
+import { Avatar, BorderedRow, Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
 import { OtherPeople } from "./OtherPeople";
 
 import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
-
-import { Avatar } from "turboui";
 
 export function Page() {
   const { space } = useLoadedData();

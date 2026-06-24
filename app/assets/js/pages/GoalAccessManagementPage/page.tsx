@@ -8,12 +8,10 @@ import { AccessOptionsInt } from "@/models/permissions";
 import Api from "@/api";
 import { GoalAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { AccessLevel } from "@/features/goals/AccessLevel";
-import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
 import { createTestId } from "@/utils/testid";
 import { compareIds, usePaths } from "@/routes/paths";
-import { Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
-import { Avatar } from "turboui";
+import { Avatar, BorderedRow, Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
 import { OtherPeople } from "./OtherPeople";
 import { useLoadedData } from "./loader";
 
