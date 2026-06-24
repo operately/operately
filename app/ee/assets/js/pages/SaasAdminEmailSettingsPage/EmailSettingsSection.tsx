@@ -4,8 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import Forms from "@/components/Forms";
 import * as AdminApi from "@/ee/admin_api";
 import classNames from "classnames";
-import { Spacer } from "@/components/Spacer";
-import { IconInfoCircle, Tooltip } from "turboui";
+import { IconInfoCircle, Spacer, Tooltip } from "turboui";
 import { TestEmailAction } from "./TestEmailModal";
 
 interface Props {

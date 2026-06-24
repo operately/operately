@@ -5,11 +5,10 @@ import * as Reactions from "@/models/reactions";
 import * as React from "react";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
-import { AvatarWithName, IconEdit, StatusBadge, CurrentSubscriptions, parseContent, RichContent, FormattedTime } from "turboui";
+import { AvatarWithName, IconEdit, StatusBadge, CurrentSubscriptions, parseContent, RichContent, FormattedTime, Spacer } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useClearNotificationsOnLoad } from "@/features/notifications";

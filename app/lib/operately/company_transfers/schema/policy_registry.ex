@@ -10,6 +10,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
      - `schema_migrations`, `oban_*` - System/infrastructure
      - `company_export_runs`, `company_import_runs` - Transfer metadata
      - `accounts_tokens`, `api_tokens`, `cli_auth_sessions`, `email_activation_codes`, `invite_links` - Authentication/invitation tokens
+     - `mcp_*` - OAuth grants, tokens, and transport sessions for remote MCP clients
      - `notification_email_batches`, `system_settings` - Transient
 
   2. **Polymorphic tables** - Tables whose own rows are discovered through a type/id
@@ -77,6 +78,11 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "company_billing_accounts",
     "email_activation_codes",
     "invite_links",
+    "mcp_access_tokens",
+    "mcp_authorization_codes",
+    "mcp_grants",
+    "mcp_refresh_tokens",
+    "mcp_sessions",
     "notification_email_batches",
     "site_message_companies",
     "site_messages",
