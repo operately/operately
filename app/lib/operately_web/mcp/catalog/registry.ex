@@ -2,7 +2,13 @@ defmodule OperatelyWeb.Mcp.Catalog.Registry do
   alias OperatelyWeb.Mcp.Tool
   alias OperatelyWeb.Mcp.Catalog.Definition
 
-  @tool_namespace "Elixir.OperatelyWeb.Mcp.Tools."
+  @tools_dir Path.expand("../tools", __DIR__)
+  @tool_base OperatelyWeb.Mcp.Tools
+  @tool_files Path.wildcard(Path.join(@tools_dir, "**/*.ex"))
+
+  for file <- @tool_files do
+    @external_resource file
+  end
 
   def list_definitions do
     tool_modules()
@@ -24,24 +30,26 @@ defmodule OperatelyWeb.Mcp.Catalog.Registry do
   end
 
   defp tool_modules do
-    case :application.get_key(:operately, :modules) do
-      {:ok, modules} -> Enum.filter(modules, &tool_module?/1)
-      :undefined -> []
-    end
+    @tool_files
+    |> Enum.map(&module_for_tool_file/1)
+    |> Enum.filter(&tool_module?/1)
+    |> Enum.sort()
+  end
+
+  defp module_for_tool_file(file) do
+    file
+    |> Path.relative_to(@tools_dir)
+    |> Path.rootname()
+    |> Path.split()
+    |> Enum.map(&Macro.camelize/1)
+    |> then(&Module.concat([@tool_base | &1]))
   end
 
   defp tool_module?(module) do
     Code.ensure_loaded?(module) and
-      mcp_tool_namespace?(module) and
       implements_tool_behavior?(module) and
       function_exported?(module, :definition, 0) and
       function_exported?(module, :call, 2)
-  end
-
-  defp mcp_tool_namespace?(module) do
-    module
-    |> Atom.to_string()
-    |> String.starts_with?(@tool_namespace)
   end
 
   defp implements_tool_behavior?(module) do
