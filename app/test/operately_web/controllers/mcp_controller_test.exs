@@ -2,8 +2,11 @@ defmodule OperatelyWeb.McpControllerTest do
   use OperatelyWeb.ConnCase
 
   import Operately.CompaniesFixtures
+  import Operately.GoalsFixtures
+  import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
+  alias Operately.People
   alias Operately.Mcp
 
   setup do
@@ -129,6 +132,8 @@ defmodule OperatelyWeb.McpControllerTest do
            ]
 
     assert search_tool["outputSchema"]["type"] == "object"
+    assert search_tool["_meta"]["examples"] != []
+    assert search_tool["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:read"]}]
 
     get_conn =
       build_conn()
@@ -181,9 +186,10 @@ defmodule OperatelyWeb.McpControllerTest do
     body = Jason.decode!(conn.resp_body)
 
     assert conn.status == 200
-    assert body["result"]["content"] == []
     assert body["result"]["structuredContent"]["company"]["id"] == OperatelyWeb.Paths.company_id(company)
     assert body["result"]["structuredContent"]["company"]["name"] == company.name
+    assert [%{"type" => "text", "text" => text}] = body["result"]["content"]
+    assert Jason.decode!(text) == body["result"]["structuredContent"]
   end
 
   test "returns a tool-level error for stubbed tools", %{account: account, company: company, client: client} do
@@ -301,6 +307,39 @@ defmodule OperatelyWeb.McpControllerTest do
 
     assert conn.status == 200
     assert body["error"]["code"] == -32602
+  end
+
+  test "returns a tool-level error for cross-company get_goal access", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    other_account = account_fixture()
+    other_company = company_fixture(%{company_name: "Other Company"}, other_account)
+    other_person = People.get_person(other_account, other_company)
+    other_space = group_fixture(other_person, company_id: other_company.id)
+    other_goal = goal_fixture(other_person, %{company_id: other_company.id, space_id: other_space.id})
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_goal",
+          "arguments" => %{"goal_id" => OperatelyWeb.Paths.goal_id(other_goal)}
+        }
+      })
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert conn.status == 200
+    assert body["result"]["isError"] == true
+    assert body["result"]["content"] == [
+             %{"type" => "text", "text" => "The requested resource was not found or is not accessible."}
+           ]
+    refute Map.has_key?(body["result"], "structuredContent")
   end
 
   test "requires session and protocol version for tools/call", %{account: account, company: company, client: client} do
