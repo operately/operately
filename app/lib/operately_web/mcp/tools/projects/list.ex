@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Mcp.Tools.Projects.List do
   use OperatelyWeb.Mcp.Tool
 
+  alias OperatelyWeb.Mcp.Helpers
+  alias OperatelyWeb.Api.Projects.List, as: ProjectsList
+
   @impl true
   def definition do
     Definition.new!(
@@ -23,8 +26,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.List do
           "space_id" => JsonSchema.string("Optional space identifier used to filter projects."),
           "goal_id" => JsonSchema.string("Optional goal identifier used to filter projects."),
           "only_my_projects" => JsonSchema.boolean("When true, return only projects where I am a champion or contributor."),
-          "only_reviewed_by_me" => JsonSchema.boolean("When true, return only projects where I am the reviewer."),
-          "include_archived" => JsonSchema.boolean("When true, include archived or closed projects.")
+          "only_reviewed_by_me" => JsonSchema.boolean("When true, return only projects where I am the reviewer.")
         }),
       output_schema:
         JsonSchema.object(
@@ -37,5 +39,17 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.List do
   end
 
   @impl true
-  def call(_context, _arguments), do: not_implemented()
+  def call(conn, arguments) do
+    with {:ok, space_id} <- Helpers.decode_optional_id(arguments["space_id"]),
+         {:ok, goal_id} <- Helpers.decode_optional_id(arguments["goal_id"]) do
+      ProjectsList.call(
+        conn,
+        %{}
+        |> Helpers.put_optional(:space_id, space_id)
+        |> Helpers.put_optional(:goal_id, goal_id)
+        |> Helpers.put_optional(:only_my_projects, arguments["only_my_projects"])
+        |> Helpers.put_optional(:only_reviewed_by_me, arguments["only_reviewed_by_me"])
+      )
+    end
+  end
 end
