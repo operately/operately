@@ -223,6 +223,39 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
       assert res.goal.closed_by == Serializer.serialize(ctx.person, level: :essential)
     end
 
+    test "include_markdown loads the resources required by the markdown renderer", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Growth")
+      reviewer = person_fixture(company_id: ctx.company.id, full_name: "Robin Reviewer", title: "VP Sales")
+
+      goal =
+        goal_fixture(ctx.person,
+          company_id: ctx.company.id,
+          space_id: space.id,
+          name: "Increase Revenue",
+          champion_id: ctx.person.id,
+          reviewer_id: reviewer.id
+        )
+
+      project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.person.id,
+        group_id: space.id,
+        goal_id: goal.id,
+        name: "Funnel Optimization"
+      })
+
+      _update = goal_update_fixture(ctx.person, goal)
+
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_markdown: true})
+
+      assert res.markdown =~ "Space: #{space.name}"
+      assert res.markdown =~ "Champion: #{ctx.person.full_name}"
+      assert res.markdown =~ "Reviewer: #{reviewer.full_name}"
+      assert res.markdown =~ "## Related Projects"
+      assert res.markdown =~ project.name
+      assert res.markdown =~ "## Check-ins"
+    end
+
     test "include_last_check_in", ctx do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 

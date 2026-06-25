@@ -17,10 +17,12 @@ defmodule OperatelyWeb.Api.Spaces.Get do
     field? :include_members_access_levels, :boolean, null: true
     field? :include_potential_subscribers, :boolean, null: true
     field? :include_unread_notifications, :boolean, null: true
+    field? :include_markdown, :boolean, default: false
   end
 
   outputs do
     field :space, :space, null: false
+    field? :markdown, :string
   end
 
   def call(conn, inputs) do
@@ -28,8 +30,20 @@ defmodule OperatelyWeb.Api.Spaces.Get do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
-    |> run(:serialized, fn ctx -> {:ok, %{space: Serializer.serialize(ctx.space, level: :full)}} end)
+    |> run(:serialized, fn ctx -> serialize(ctx.space, inputs[:include_markdown]) end)
     |> respond()
+  end
+
+  defp serialize(space, include_md) do
+    json = Serializer.serialize(space, level: :full)
+
+    if include_md do
+      markdown = Operately.MD.Space.render(space)
+
+      {:ok, %{space: json, markdown: markdown}}
+    else
+      {:ok, %{space: json}}
+    end
   end
 
   defp respond(result) do

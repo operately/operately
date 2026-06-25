@@ -58,10 +58,10 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
 
     test "member has access to space they are NOT part of", ctx do
       space =
-        group_fixture(ctx.creator, [
+        group_fixture(ctx.creator,
           company_id: ctx.company.id,
-          company_permissions: Binding.view_access(),
-        ])
+          company_permissions: Binding.view_access()
+        )
         |> Repo.preload(:company)
         |> Groups.Group.load_is_member(ctx.person)
         |> serialize_space()
@@ -92,11 +92,12 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
 
     test "get_space when not a member", ctx do
       creator = person_fixture(company_id: ctx.company.id)
+
       space =
-        group_fixture(creator, [
+        group_fixture(creator,
           company_id: ctx.company.id,
-          company_permissions: Binding.view_access(),
-        ])
+          company_permissions: Binding.view_access()
+        )
         |> Repo.preload(:company)
         |> Groups.Group.load_is_member(ctx.person)
 
@@ -119,17 +120,18 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
     end
 
     test "include_unread_notifications", ctx do
-      space = group_fixture(ctx.person, [company_id: ctx.company.id])
+      space = group_fixture(ctx.person, company_id: ctx.company.id)
       a = activity_fixture(author_id: ctx.company_creator.id, action: "space_members_added", content: %{space_id: space.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
       assert {200, res} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(space)})
       assert res.space.notifications == []
 
-      assert {200, res} = query(ctx.conn, [:spaces, :get], %{
-        id: Paths.space_id(space),
-        include_unread_notifications: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, [:spaces, :get], %{
+                 id: Paths.space_id(space),
+                 include_unread_notifications: true
+               })
 
       assert length(res.space.notifications) == 1
       assert Serializer.serialize(n) == hd(res.space.notifications)
@@ -146,7 +148,8 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
       Operately.Groups.add_members(ctx.person, space.id, members)
 
       assert {200, res} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(space), include_members: true})
-      assert length(res.space.members) == 4 # 3 members + current user
+      # 3 members + current user
+      assert length(res.space.members) == 4
 
       [m1, m2, m3, ctx.person]
       |> Enum.sort_by(fn m -> m.full_name end)
@@ -155,6 +158,23 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
       |> Enum.each(fn {m, res} ->
         assert res == Serializer.serialize(m)
       end)
+    end
+
+    test "include_markdown", ctx do
+      space =
+        group_fixture(ctx.person, company_id: ctx.company.id, name: "Roadmap Space", mission: "Coordinate roadmap work")
+
+      assert {200, res} =
+               query(ctx.conn, [:spaces, :get], %{
+                 id: Paths.space_id(space),
+                 include_markdown: true
+               })
+
+      assert res.space.id == Paths.space_id(space)
+      assert res.markdown =~ "# #{space.name}"
+      assert res.markdown =~ "Coordinate roadmap work"
+      assert res.markdown =~ "## Members"
+      refute res.markdown =~ "## Tasks"
     end
 
     test "includes guests and excludes ai members", ctx do
@@ -169,7 +189,8 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
 
       assert {200, res} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(ctx.space), include_members: true})
 
-      assert length(res.space.members) == 3 # 1 creator (ctx.person) + 1 added human + 1 guest
+      # 1 creator (ctx.person) + 1 added human + 1 guest
+      assert length(res.space.members) == 3
       assert Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.human)))
       assert Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.guest)))
       refute Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.ai)))
@@ -213,7 +234,8 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
     end
 
     test "include_potential_subscribers", ctx do
-      ctx = Factory.add_company_member(ctx, :creator)
+      ctx =
+        Factory.add_company_member(ctx, :creator)
         |> Factory.log_in_person(:creator)
         |> Factory.add_space(:space)
         |> Factory.add_space_member(:member1, :space)
@@ -224,10 +246,11 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
 
       refute res.space.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, [:spaces, :get], %{
-        id: Paths.space_id(ctx.space),
-        include_potential_subscribers: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, [:spaces, :get], %{
+                 id: Paths.space_id(ctx.space),
+                 include_potential_subscribers: true
+               })
 
       assert length(res.space.potential_subscribers) == 4
 
@@ -240,7 +263,8 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
     end
 
     test "include_potential_subscribers includes guests and excludes ai", ctx do
-      ctx = Factory.add_company_member(ctx, :creator)
+      ctx =
+        Factory.add_company_member(ctx, :creator)
         |> Factory.log_in_person(:creator)
         |> Factory.add_space(:space)
         |> Factory.add_space_member(:member1, :space)
@@ -248,10 +272,11 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
         |> Factory.add_space_member(:guest, :space, person_type: :guest)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
 
-      assert {200, res} = query(ctx.conn, [:spaces, :get], %{
-        id: Paths.space_id(ctx.space),
-        include_potential_subscribers: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, [:spaces, :get], %{
+                 id: Paths.space_id(ctx.space),
+                 include_potential_subscribers: true
+               })
 
       subs = res.space.potential_subscribers
 
@@ -269,10 +294,12 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
   #
 
   defp add_person_to_space(ctx, space) do
-    Operately.Groups.add_members(ctx.person, space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.view_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.view_access()
+      }
+    ])
   end
 
   defp serialize_space(space) do

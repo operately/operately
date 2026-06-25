@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Projects.GetMilestoneTest do
   import Operately.ProjectsFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
+  import Operately.TasksFixtures
 
   alias Operately.Repo
   alias Operately.Access.Binding
@@ -87,7 +88,6 @@ defmodule OperatelyWeb.Api.Projects.GetMilestoneTest do
     end
   end
 
-
   describe "project_milestones/get functionality" do
     setup ctx do
       ctx
@@ -103,10 +103,11 @@ defmodule OperatelyWeb.Api.Projects.GetMilestoneTest do
 
       refute res.milestone.project
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestone], %{
-        id: Paths.milestone_id(ctx.milestone),
-        include_project: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestone], %{
+                 id: Paths.milestone_id(ctx.milestone),
+                 include_project: true
+               })
 
       assert res.milestone.project.id == Paths.project_id(ctx.project)
     end
@@ -116,29 +117,32 @@ defmodule OperatelyWeb.Api.Projects.GetMilestoneTest do
 
       refute res.milestone.permissions
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestone], %{
-        id: Paths.milestone_id(ctx.milestone),
-        include_permissions: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestone], %{
+                 id: Paths.milestone_id(ctx.milestone),
+                 include_permissions: true
+               })
 
       assert res.milestone.permissions.can_edit
     end
 
     test "include_comments", ctx do
       person = person_fixture(%{company_id: ctx.company.id})
+
       Operately.Comments.create_milestone_comment(person, ctx.milestone, "none", %{
         content: RichText.rich_text("some message"),
-        author_id: person.id,
+        author_id: person.id
       })
 
       assert {200, res} = query(ctx.conn, [:projects, :get_milestone], %{id: Paths.milestone_id(ctx.milestone)})
 
       refute res.milestone.comments
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestone], %{
-        id: Paths.milestone_id(ctx.milestone),
-        include_comments: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestone], %{
+                 id: Paths.milestone_id(ctx.milestone),
+                 include_comments: true
+               })
 
       assert length(res.milestone.comments) == 1
 
@@ -149,6 +153,41 @@ defmodule OperatelyWeb.Api.Projects.GetMilestoneTest do
       assert comment.comment.content
       assert comment.comment.notification
       assert comment.comment.notification.read == false
+    end
+
+    test "include_markdown", ctx do
+      {:ok, milestone} =
+        Operately.Projects.update_milestone(ctx.milestone, %{
+          description: RichText.rich_text("Milestone details")
+        })
+
+      task = task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id, project_id: ctx.project.id, name: "Milestone Task"})
+
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestone], %{
+                 id: Paths.milestone_id(milestone),
+                 include_markdown: true
+               })
+
+      assert res.milestone.id == Paths.milestone_id(milestone)
+      assert res.markdown =~ "# #{milestone.title}"
+      assert res.markdown =~ "Milestone details"
+      assert res.markdown =~ "## Tasks"
+      assert res.markdown =~ task.name
+    end
+
+    test "include_markdown distinguishes loaded resources from missing ones", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestone], %{
+                 id: Paths.milestone_id(ctx.milestone),
+                 include_markdown: true
+               })
+
+      assert res.markdown =~ "Project: #{ctx.project.name}"
+      assert res.markdown =~ "Space: #{ctx.space.name}"
+      assert res.markdown =~ "Creator: None"
+      assert res.markdown =~ "_No tasks yet._"
+      refute res.markdown =~ "_Not loaded._"
     end
   end
 
@@ -162,27 +201,30 @@ defmodule OperatelyWeb.Api.Projects.GetMilestoneTest do
   end
 
   defp create_milestone(ctx, opts) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      name: "Project",
-      creator_id: ctx.creator.id,
-      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
-      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
-      group_id: Keyword.get(opts, :space_id, ctx.space.id),
-      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        name: "Project",
+        creator_id: ctx.creator.id,
+        champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+        reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+        group_id: Keyword.get(opts, :space_id, ctx.space.id),
+        company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+        space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
+      })
 
-    milestone_fixture(%{ project_id: project.id })
+    milestone_fixture(%{project_id: project.id})
     |> Serializer.serialize(level: :essential)
     |> Jason.encode!()
     |> Jason.decode!(keys: :atoms)
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end

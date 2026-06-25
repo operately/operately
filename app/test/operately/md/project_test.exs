@@ -24,7 +24,7 @@ defmodule Operately.MD.ProjectTest do
         inserted_at: ~N[2024-01-15 14:30:00]
       })
 
-    result = Operately.MD.Project.render(ctx.project)
+    result = render_project(ctx.project)
 
     assert result =~ "### Timeframe History"
     assert result =~ "**2024-01-15** - #{ctx.creator.full_name} updated the project timeline"
@@ -33,7 +33,7 @@ defmodule Operately.MD.ProjectTest do
   test "it renders discussions in the markdown", ctx do
     ctx = Factory.add_project_discussion(ctx, :discussion, :project)
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     assert rendered =~ "## Discussions"
     assert rendered =~ ctx.discussion.title
@@ -43,7 +43,7 @@ defmodule Operately.MD.ProjectTest do
   test "it includes timestamps for discussion messages", ctx do
     ctx = Factory.add_project_discussion(ctx, :discussion, :project)
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     # Check that timestamp is included in the discussions section
     assert rendered =~ "Posted on:"
@@ -59,7 +59,7 @@ defmodule Operately.MD.ProjectTest do
     ctx = Factory.preload(ctx, :check_in, :project)
     ctx = Factory.add_comment(ctx, :comment, :check_in, content: comment_content)
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     # Check that the check-in is rendered
     assert rendered =~ "## Check-ins"
@@ -79,7 +79,7 @@ defmodule Operately.MD.ProjectTest do
   test "it renders check-ins without comments correctly", ctx do
     ctx = Factory.add_project_check_in(ctx, :check_in, :project, :creator)
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     # Check that the check-in is rendered
     assert rendered =~ "## Check-ins"
@@ -91,7 +91,7 @@ defmodule Operately.MD.ProjectTest do
   test "it renders milestones in the markdown", ctx do
     ctx = Factory.add_project_milestone(ctx, :milestone, :project)
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     assert rendered =~ "## Milestones"
     assert rendered =~ ctx.milestone.title
@@ -102,7 +102,7 @@ defmodule Operately.MD.ProjectTest do
     ctx = Factory.add_project_milestone(ctx, :milestone, :project)
     ctx = Factory.close_project_milestone(ctx, :milestone)
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     # Check that the milestone is rendered
     assert rendered =~ "## Milestones"
@@ -121,7 +121,7 @@ defmodule Operately.MD.ProjectTest do
   test "it does not include completion timestamp for pending milestones", ctx do
     ctx = Factory.add_project_milestone(ctx, :milestone, :project)
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     # Check that the milestone is rendered
     assert rendered =~ "## Milestones"
@@ -136,21 +136,21 @@ defmodule Operately.MD.ProjectTest do
     ctx = Factory.add_goal(ctx, :goal, :marketing, name: "Marketing Goal")
     ctx = Factory.add_project(ctx, :project_with_goal, :marketing, goal: :goal)
 
-    rendered = Operately.MD.Project.render(ctx.project_with_goal)
+    rendered = render_project(ctx.project_with_goal)
 
     assert rendered =~ "Parent Goal: Marketing Goal"
     refute rendered =~ "Company-wide project"
   end
 
   test "it renders company-wide project when no goal is linked", ctx do
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     assert rendered =~ "Parent Goal: None (Company-wide project)"
     refute rendered =~ "Parent Goal: Marketing Goal"
   end
 
   test "it renders project overview information", ctx do
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     assert rendered =~ "# #{ctx.project.name}"
     assert rendered =~ "Status:"
@@ -170,7 +170,7 @@ defmodule Operately.MD.ProjectTest do
       |> Factory.add_company_member(:teammate, name: "Jordan Teammate")
       |> Factory.add_task_assignee(:assignee, :task_one, :teammate)
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     refute rendered =~ "## Tasks"
     assert rendered =~ "## Milestones"
@@ -185,10 +185,38 @@ defmodule Operately.MD.ProjectTest do
       ctx
       |> Factory.add_project_task(:standalone_task, nil, project_id: ctx.project.id, name: "General prep task")
 
-    rendered = Operately.MD.Project.render(ctx.project)
+    rendered = render_project(ctx.project)
 
     assert rendered =~ "## Milestones"
     assert rendered =~ "### Tasks Without Milestone"
     assert rendered =~ "General prep task"
+  end
+
+  test "it distinguishes unloaded resources from loaded ones", ctx do
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    assert rendered =~ "Status:"
+    assert rendered =~ "Progress:"
+    assert rendered =~ "Space: #{ctx.marketing.name}"
+    assert rendered =~ "Created:"
+    assert rendered =~ "Last Updated:"
+    assert rendered =~ "Parent Goal: None (Company-wide project)"
+    assert rendered =~ "## Contributors"
+    assert rendered =~ "## Milestones"
+    assert rendered =~ "## Check-ins"
+  end
+
+  defp render_project(project) do
+    project
+    |> Repo.preload([
+      :group,
+      :goal,
+      :retrospective,
+      :milestones,
+      [check_ins: [:author]],
+      [contributors: [:person]],
+      [tasks: [:assigned_people, :milestone]]
+    ])
+    |> Operately.MD.Project.render()
   end
 end
