@@ -29,4 +29,20 @@ defmodule Operately.Demo.Resources do
       add(resources, d.key, fun.({resources, d, index}))
     end)
   end
+
+  def mention_resolver(resources) do
+    fn label ->
+      person = get(resources, String.to_atom(label))
+
+      %{
+        id: OperatelyWeb.Paths.person_id(person),
+        label: person.full_name
+      }
+    end
+  end
+
+  def rich_text!(resources, content) do
+    {:ok, rich_text} = Operately.RichContent.FromMarkdown.to_rich_text(content, mention_resolver: mention_resolver(resources))
+    rich_text
+  end
 end
