@@ -186,25 +186,48 @@ Start with a small set of high-signal tools backed by MCP wrappers over shared O
 
 - `get_current_company`
 - `get_me`
+- `list_people`
+- `get_person`
+- `list_spaces`
+- `get_space`
 - `list_projects`
 - `get_project`
+- `get_milestone`
+- `list_milestone_tasks`
+- `list_project_discussions`
+- `get_project_discussion`
+- `list_project_check_ins`
+- `get_project_check_in`
 - `list_goals`
+- `list_goal_discussions`
+- `list_goal_check_ins`
 - `get_goal`
+- `get_goal_check_in`
 - `list_tasks`
 - `get_task`
+- `list_space_discussions`
+- `get_space_discussion`
+- `list_docs_and_files`
+- `get_document`
+- `get_file`
+- `get_link`
 - `search`
 - `fetch`
 
 Notes:
 
 - `get_current_company` should be served by an MCP wrapper over the existing company API handler
-- Company-browsing tools such as `list_projects`, `list_goals`, and `list_tasks` should always operate on the authenticated company
+- Company-browsing tools such as `list_people`, `list_spaces`, `list_projects`, and `list_goals` should always operate on the authenticated company
+- `list_tasks` should accept exactly one of `project_id` or `space_id`
+- `list_docs_and_files` should accept exactly one of `space_id`, `project_id`, `goal_id`, or `folder_id`
 - `get_project`, `get_goal`, and similar resource-specific lookups should be `resource_derived` tools and should not accept `company_id`
 - No MCP tool should expose `company_id` in its schema
 - `search` and `fetch` should be first-class MCP tools, not thin aliases
+- Structured discussions and check-ins should be exposed through dedicated read-only tools rather than flattened into search results
+- Resource-hub browsing should start with `list_docs_and_files` plus focused getters for documents, files, and links
 - `fetch` should return citation-friendly content and canonical Operately URLs
-- `fetch` should prefer `resource_link` style outputs for canonical Operately resources and only embed full payloads inline when the content itself must travel in the tool response
-- project and goal markdown support can be served through existing API handlers and shared markdown renderers already used by those surfaces
+- `fetch` should stay tool-first in the MVP and return inline content; MCP resources and `resource_link` blocks can be added later if they prove useful
+- markdown support for project, goal, milestone, and space fetches should be served through existing API handlers plus shared `Operately.MD.*` renderers
 
 ### Phase 2: write tools
 
@@ -335,15 +358,52 @@ Outcome: Operately has a stable MCP runtime contract for tool descriptors, execu
 
 Status: implemented.
 
-### PR 3: Read-only MVP
+### PR 3: Read-only MVP (Implemented)
 
-- Expand the initial read tool set beyond the first runtime proof
-- Add `search` and `fetch`
-- Add canonical URL generation
-- Add a consistent `fetch` strategy for resource links versus inline embedded content
-- Add integration tests for company selection at auth time and cross-company resource rejection
+- Turn the remaining read wrappers live on top of existing `OperatelyWeb.Api.*` handlers:
+  - `get_me`
+  - `list_people`
+  - `get_person`
+  - `list_spaces`
+  - `get_space`
+  - `list_projects`
+  - `get_project`
+  - `get_milestone`
+  - `list_milestone_tasks`
+  - `list_project_discussions`
+  - `get_project_discussion`
+  - `list_project_check_ins`
+  - `get_project_check_in`
+  - `list_goals`
+  - `list_goal_discussions`
+  - `list_goal_check_ins`
+  - `list_tasks`
+  - `get_task`
+  - `list_space_discussions`
+  - `get_space_discussion`
+  - `list_docs_and_files`
+  - `get_document`
+  - `get_file`
+  - `get_link`
+  - `search`
+- Narrow `list_tasks` so it accepts exactly one of `project_id` or `space_id`
+- Add first-class milestone tools instead of making milestone access fetch-only
+- Add structured discussion and check-in tools for project, goal, and space flows
+- Add resource-hub browsing plus focused getters for documents, files, and links
+- Add canonical URL generation for fetched resources without exposing `company_id` in tool inputs
+- Add the first live `fetch` tool for these URL families:
+  - project
+  - goal
+  - milestone
+  - space
+- Keep `fetch` inline-content based in this phase:
+  - project, goal, milestone, and space fetches return markdown text content from existing API handlers
+  - MCP resources and `resource_link` blocks remain deferred
+- Add integration tests for company selection at auth time, cross-company resource rejection, and live tool execution through `tools/call`
 
-Outcome: a reviewable, useful read-only MCP suitable for custom connection testing in ChatGPT and Claude.
+Outcome: a reviewable, useful read-only MCP where the initial tool set executes end to end through existing Operately API handlers.
+
+Status: implemented.
 
 ### PR 4: Write tool expansion
 
@@ -393,7 +453,7 @@ Critical scenarios:
 - resource-specific wrapper forwards the authenticated conn into the intended existing API handler
 - resource-specific tool rejects resources from another company through existing endpoint behavior
 - structured outputs, text content, and `_meta` are separated correctly
-- `fetch` returns canonical resource links or inline content according to the declared strategy
+- `fetch` returns canonical URLs plus inline markdown content for the supported resource families
 - discovery output stays synchronized with the actual wrapper registry
 - ambiguous auto-detection paths fail with structured disambiguation instead of guessing
 - grant remains usable across normal refresh-token rotation
