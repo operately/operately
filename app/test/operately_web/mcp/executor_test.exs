@@ -33,8 +33,9 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     assert {:ok, definition} = Executor.fetch_definition("get_current_company")
     assert {:ok, result} = Executor.execute(conn, definition, %{})
 
-    assert result["content"] == []
+    assert [%{"type" => "text", "text" => text}] = result["content"]
     assert result["structuredContent"]["company"]["name"] == company.name
+    assert Jason.decode!(text) == result["structuredContent"]
   end
 
   test "returns a tool-level error for stubbed wrappers", %{conn: conn} do

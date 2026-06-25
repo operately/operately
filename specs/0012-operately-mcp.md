@@ -323,14 +323,17 @@ Outcome: one MCP tool wrapper can invoke existing Operately API logic through th
 
 Status: implemented.
 
-### PR 2C: MCP output contracts and discovery
+### PR 2C: MCP output contracts and discovery (Implemented)
 
-- Build request/response normalization for MCP
-- Add structured outputs and `outputSchema` for the initial tool set where practical
-- Normalize `structuredContent`, `content`, and `_meta` consistently across tool handlers
-- Add a machine-readable discovery surface for tools, arguments, and examples generated from the registry
+- Keep `tools/list` as the machine-readable discovery surface generated from the wrapper registry
+- Return both `structuredContent` and a JSON text fallback for successful structured tool results
+- Normalize tool/business errors such as `not_found` and `internal_server_error` into tool-level `isError: true` results
+- Keep runtime result `_meta` omitted in this phase
+- Defer runtime `outputSchema` validation; schemas remain declaration-level contracts for now
 
-Outcome: Operately has a stable MCP runtime contract for tool descriptors, execution, and structured responses.
+Outcome: Operately has a stable MCP runtime contract for tool descriptors, execution, and structured responses without introducing a heavier result framework.
+
+Status: implemented.
 
 ### PR 3: Read-only MVP
 
