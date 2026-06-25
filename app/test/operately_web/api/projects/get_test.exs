@@ -233,6 +233,34 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert res.project.retrospective == Serializer.serialize(retrospective)
     end
 
+    test "include_markdown loads the resources required by the markdown renderer", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Growth")
+      goal = goal_fixture(ctx.person, %{company_id: ctx.company.id, space_id: space.id, name: "Increase Revenue"})
+      project = create_project(ctx, %{group_id: space.id, goal_id: goal.id, name: "Paid Acquisition"})
+      milestone = milestone_fixture(%{project_id: project.id, creator_id: ctx.person.id, title: "Landing Page"})
+      _check_in = check_in_fixture(%{project_id: project.id, author_id: ctx.person.id})
+
+      contributor = person_fixture(company_id: ctx.company.id, full_name: "Jordan Contributor")
+
+      {:ok, _} =
+        Operately.Projects.create_contributor(contributor, %{
+          person_id: contributor.id,
+          responsibility: "Growth Engineer",
+          project_id: project.id,
+          permissions: Binding.edit_access()
+        })
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_markdown: true})
+
+      assert res.markdown =~ "Space: #{space.name}"
+      assert res.markdown =~ "Parent Goal: #{goal.name}"
+      assert res.markdown =~ "## Contributors"
+      assert res.markdown =~ contributor.full_name
+      assert res.markdown =~ "## Milestones"
+      assert res.markdown =~ milestone.title
+      assert res.markdown =~ "## Check-ins"
+    end
+
     test "include_contributors", ctx do
       project = create_project(ctx)
 

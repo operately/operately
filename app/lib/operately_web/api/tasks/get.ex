@@ -19,19 +19,33 @@ defmodule OperatelyWeb.Api.Tasks.Get do
     field? :include_permissions, :boolean, null: false
     field? :include_subscription_list, :boolean, null: false
     field? :include_available_statuses, :boolean, null: false
+    field? :include_markdown, :boolean, default: false
   end
 
   outputs do
     field? :task, :task, null: true
+    field? :markdown, :string
   end
 
   def call(conn, inputs) do
     with {:ok, task} <- load(me(conn), inputs, company_read_only(conn)),
-      {:ok, :allowed} <- Permissions.check(task.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) do
-        {:ok, %{task: Serializer.serialize(task, level: :full)}}
+         {:ok, :allowed} <- Permissions.check(task.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) do
+      serialize(task, inputs[:include_markdown])
     else
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, _} -> {:error, :not_found}
+    end
+  end
+
+  defp serialize(task, include_md) do
+    json = Serializer.serialize(task, level: :full)
+
+    if include_md do
+      markdown = Operately.MD.Task.render(task)
+
+      {:ok, %{task: json, markdown: markdown}}
+    else
+      {:ok, %{task: json}}
     end
   end
 

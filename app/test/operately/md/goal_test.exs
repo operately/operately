@@ -9,17 +9,7 @@ defmodule Operately.MD.GoalTest do
   end
 
   test "it renders the goal as a markdown", ctx do
-    goal =
-      Operately.Repo.preload(ctx.goal,
-        updates: [:author],
-        targets: [],
-        checks: [],
-        group: [],
-        parent_goal: [],
-        projects: [],
-        champion: [],
-        reviewer: []
-      )
+    goal = preload_markdown(ctx.goal)
 
     rendered = Operately.MD.Goal.render(goal)
 
@@ -35,7 +25,7 @@ defmodule Operately.MD.GoalTest do
   test "it renders discussions in the markdown", ctx do
     ctx = Factory.add_goal_discussion(ctx, :discussion, :goal, title: "Discussion Title", message: Operately.Support.RichText.rich_text("This is a discussion about the goal."))
 
-    rendered = Operately.MD.Goal.render(ctx.goal)
+    rendered = render_goal(ctx.goal)
     expected_date = Operately.Time.as_date(ctx.discussion.inserted_at) |> Date.to_iso8601()
 
     assert rendered =~ "## Discussions"
@@ -49,7 +39,7 @@ defmodule Operately.MD.GoalTest do
     ctx = Factory.add_goal_check(ctx, :check1, :goal, name: "Checklist Item 1", completed: false)
     ctx = Factory.add_goal_check(ctx, :check2, :goal, name: "Checklist Item 2", completed: true)
 
-    rendered = Operately.MD.Goal.render(ctx.goal)
+    rendered = render_goal(ctx.goal)
 
     assert rendered =~ "## Checklist"
     assert rendered =~ "- [ ] Checklist Item 1"
@@ -61,7 +51,7 @@ defmodule Operately.MD.GoalTest do
     ctx = Factory.add_goal_check(ctx, :check1, :goal, name: "Pending Item", completed: false)
     ctx = Factory.add_goal_check(ctx, :check2, :goal, name: "Completed Item", completed: true, completed_at: completed_at)
 
-    rendered = Operately.MD.Goal.render(ctx.goal)
+    rendered = render_goal(ctx.goal)
 
     assert rendered =~ "## Checklist"
     assert rendered =~ "- [ ] Pending Item"
@@ -76,7 +66,7 @@ defmodule Operately.MD.GoalTest do
     ctx = Factory.add_goal_discussion(ctx, :discussion, :goal, title: "Discussion Title", message: message)
     ctx = Factory.add_reactions(ctx, :reaction, :discussion, emoji: "👍")
 
-    rendered = Operately.MD.Goal.render(ctx.goal)
+    rendered = render_goal(ctx.goal)
 
     assert rendered =~ "## Discussions"
     assert rendered =~ "Discussion Title"
@@ -91,7 +81,7 @@ defmodule Operately.MD.GoalTest do
     ctx = Factory.add_comment(ctx, :comment, :discussion, content: comment_content)
     ctx = Factory.add_reactions(ctx, :reaction, :comment, emoji: "👍")
 
-    rendered = Operately.MD.Goal.render(ctx.goal)
+    rendered = render_goal(ctx.goal)
 
     assert rendered =~ "## Discussions"
     assert rendered =~ "Discussion Title"
@@ -108,7 +98,7 @@ defmodule Operately.MD.GoalTest do
     ctx = Factory.preload(ctx, :update, :goal)
     ctx = Factory.add_comment(ctx, :comment, :update, content: comment_content)
 
-    rendered = Operately.MD.Goal.render(ctx.goal)
+    rendered = render_goal(ctx.goal)
 
     expected_date = Operately.Time.as_date(ctx.comment.inserted_at) |> Date.to_iso8601()
 
@@ -116,5 +106,40 @@ defmodule Operately.MD.GoalTest do
     assert rendered =~ "#### Comments"
     assert rendered =~ "**#{ctx.creator.full_name}** on #{expected_date}:"
     assert rendered =~ "Rendered goal check-in comment"
+  end
+
+  test "it distinguishes unloaded resources from loaded ones", ctx do
+    rendered = Operately.MD.Goal.render(ctx.goal)
+
+    assert rendered =~ "Status:"
+    assert rendered =~ "Progress:"
+    assert rendered =~ "Space: #{ctx.marketing.name}"
+    assert rendered =~ "Created:"
+    assert rendered =~ "Last Updated:"
+    assert rendered =~ "Parent Goal: None (Top Level Goal)"
+    assert rendered =~ "Champion:"
+    assert rendered =~ "Reviewer:"
+    assert rendered =~ "## Targets"
+    assert rendered =~ "## Checklist"
+    assert rendered =~ "## Check-ins"
+  end
+
+  defp render_goal(goal) do
+    goal
+    |> preload_markdown()
+    |> Operately.MD.Goal.render()
+  end
+
+  defp preload_markdown(goal) do
+    Operately.Repo.preload(goal,
+      updates: [:author],
+      targets: [],
+      checks: [],
+      group: [],
+      parent_goal: [],
+      projects: [],
+      champion: [],
+      reviewer: []
+    )
   end
 end

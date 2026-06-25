@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Tasks.GetTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Support.RichText
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
@@ -137,6 +138,50 @@ defmodule OperatelyWeb.Api.Tasks.GetTest do
       assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       refute res.task.project
     end
+
+    test "include_markdown", ctx do
+      task =
+        create_task(ctx, company_access: Binding.view_access())
+        |> Operately.Tasks.update_task(%{
+          description: RichText.rich_text("Task details")
+        })
+        |> elem(1)
+
+      assert {200, res} =
+               query(ctx.conn, [:tasks, :get], %{
+                 id: Paths.task_id(task),
+                 include_markdown: true
+               })
+
+      assert res.task.id == Paths.task_id(task)
+      assert res.markdown =~ "# #{task.name}"
+      assert res.markdown =~ "Task details"
+      assert res.markdown =~ "## People"
+    end
+
+    test "include_markdown for a space task", ctx do
+      add_person_to_space(ctx)
+
+      task =
+        task_fixture(%{
+          creator_id: ctx.creator.id,
+          space_id: ctx.space.id,
+          name: "Space Task",
+          description: RichText.rich_text("Space task details")
+        })
+
+      assert {200, res} =
+               query(ctx.conn, [:tasks, :get], %{
+                 id: Paths.task_id(task),
+                 include_markdown: true
+               })
+
+      assert res.task.id == Paths.task_id(task)
+      assert res.markdown =~ "Type: Space Task"
+      refute res.markdown =~ "Project:"
+      refute res.markdown =~ "Milestone:"
+      assert res.markdown =~ "Space task details"
+    end
   end
 
   #
@@ -144,26 +189,30 @@ defmodule OperatelyWeb.Api.Tasks.GetTest do
   #
 
   defp create_task(ctx, opts) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      name: "Project",
-      creator_id: ctx.creator.id,
-      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
-      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
-      group_id: Keyword.get(opts, :space_id, ctx.space.id),
-      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
-    })
-    milestone = milestone_fixture(%{ project_id: project.id })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        name: "Project",
+        creator_id: ctx.creator.id,
+        champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+        reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+        group_id: Keyword.get(opts, :space_id, ctx.space.id),
+        company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+        space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
+      })
+
+    milestone = milestone_fixture(%{project_id: project.id})
 
     task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id, project_id: project.id})
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp serialize_milestone(milestone) do
