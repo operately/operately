@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Mcp.Tools.Projects.Get do
   use OperatelyWeb.Mcp.Tool
 
+  alias OperatelyWeb.Api.Helpers
+  alias OperatelyWeb.Api.Projects.Get, as: ProjectGet
+
   @impl true
   def definition do
     Definition.new!(
@@ -33,5 +36,16 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.Get do
   end
 
   @impl true
-  def call(_context, _arguments), do: not_implemented()
+  def call(conn, %{"project_id" => project_id}) do
+    with {:ok, project_id} <- decode_project_id(project_id) do
+      ProjectGet.call(conn, %{id: project_id, include_markdown: false})
+    end
+  end
+
+  defp decode_project_id(project_id) do
+    case Helpers.decode_id(project_id) do
+      {:ok, decoded_project_id} -> {:ok, decoded_project_id}
+      {:error, _reason} -> {:error, :invalid_arguments}
+    end
+  end
 end

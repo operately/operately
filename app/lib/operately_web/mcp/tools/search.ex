@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Mcp.Tools.Search do
   use OperatelyWeb.Mcp.Tool
 
+  alias OperatelyWeb.Api.Companies.GlobalSearch
+
   @impl true
   def definition do
     Definition.new!(
@@ -38,5 +40,5 @@ defmodule OperatelyWeb.Mcp.Tools.Search do
   end
 
   @impl true
-  def call(_context, _arguments), do: not_implemented()
+  def call(conn, %{"query" => query}), do: GlobalSearch.call(conn, %{query: query})
 end

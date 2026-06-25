@@ -1,12 +1,16 @@
 defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
   use OperatelyWeb.Mcp.Tool
 
+  alias OperatelyWeb.Api.Helpers
+  alias OperatelyWeb.Api.Spaces.ListTasks, as: SpaceTasksList
+  alias OperatelyWeb.Api.Tasks.List, as: ProjectTasksList
+
   @impl true
   def definition do
     Definition.new!(
       name: "list_tasks",
       title: "List Tasks",
-      description: "Lists tasks in the authenticated company with optional filters.",
+      description: "Lists tasks for exactly one project or one space in the authenticated company.",
       company_mode: :authenticated,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -15,16 +19,13 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
       security_schemes: read_security_schemes(),
       discovery_metadata: %{"category" => "tasks"},
       examples: [
-        %{"title" => "List visible tasks", "arguments" => %{}},
-        %{"title" => "List tasks related to a goal", "arguments" => %{"goal_id" => "goal_123"}}
+        %{"title" => "List tasks for a project", "arguments" => %{"project_id" => "project_123"}},
+        %{"title" => "List tasks for a space", "arguments" => %{"space_id" => "space_123"}}
       ],
       input_schema:
         JsonSchema.object(%{
           "space_id" => JsonSchema.string("Optional space identifier used to filter tasks."),
-          "project_id" => JsonSchema.string("Optional project identifier used to filter tasks."),
-          "goal_id" => JsonSchema.string("Optional goal identifier used to filter tasks."),
-          "query" => JsonSchema.string("Optional text query used to narrow matching tasks."),
-          "only_completed" => JsonSchema.boolean("When true, return only completed tasks.")
+          "project_id" => JsonSchema.string("Optional project identifier used to filter tasks.")
         }),
       output_schema:
         JsonSchema.object(
@@ -37,5 +38,30 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
   end
 
   @impl true
-  def call(_context, _arguments), do: not_implemented()
+  def call(conn, arguments) do
+    case {arguments["project_id"], arguments["space_id"]} do
+      {nil, nil} ->
+        {:error, :invalid_arguments}
+
+      {project_id, nil} ->
+        with {:ok, project_id} <- decode_id(project_id) do
+          ProjectTasksList.call(conn, %{project_id: project_id})
+        end
+
+      {nil, space_id} ->
+        with {:ok, space_id} <- decode_id(space_id) do
+          SpaceTasksList.call(conn, %{space_id: space_id})
+        end
+
+      {_project_id, _space_id} ->
+        {:error, :invalid_arguments}
+    end
+  end
+
+  defp decode_id(id) do
+    case Helpers.decode_id(id) do
+      {:ok, decoded_id} -> {:ok, decoded_id}
+      {:error, _reason} -> {:error, :invalid_arguments}
+    end
+  end
 end

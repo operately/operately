@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Mcp.Tools.Tasks.Get do
   use OperatelyWeb.Mcp.Tool
 
+  alias OperatelyWeb.Api.Helpers
+  alias OperatelyWeb.Api.Tasks.Get, as: TaskGet
+
   @impl true
   def definition do
     Definition.new!(
@@ -33,5 +36,16 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.Get do
   end
 
   @impl true
-  def call(_context, _arguments), do: not_implemented()
+  def call(conn, %{"task_id" => task_id}) do
+    with {:ok, task_id} <- decode_task_id(task_id) do
+      TaskGet.call(conn, %{id: task_id})
+    end
+  end
+
+  defp decode_task_id(task_id) do
+    case Helpers.decode_id(task_id) do
+      {:ok, decoded_task_id} -> {:ok, decoded_task_id}
+      {:error, _reason} -> {:error, :invalid_arguments}
+    end
+  end
 end
