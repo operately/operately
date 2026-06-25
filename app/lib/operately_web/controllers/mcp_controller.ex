@@ -3,14 +3,14 @@ defmodule OperatelyWeb.McpController do
   Streamable HTTP transport for the hosted MCP server at `/mcp`.
 
   Handles JSON-RPC requests for the foundation protocol methods (`initialize`,
-  `notifications/initialized`, `ping`, and `tools/list`). Tool execution is added
-  in a later layer.
+  `notifications/initialized`, `ping`, `tools/list`, and `tools/call`).
   """
   use OperatelyWeb, :controller
 
   alias Operately.Mcp
   alias OperatelyWeb.Mcp.Tools
   alias OperatelyWeb.Mcp.Auth
+  alias OperatelyWeb.Mcp.Executor
 
   @jsonrpc_version "2.0"
 
@@ -21,11 +21,11 @@ defmodule OperatelyWeb.McpController do
     with :ok <- validate_post_headers(conn),
          {:ok, request} <- parse_jsonrpc_request(conn.body_params),
          {:ok, method} <- fetch_method(request),
-         :ok <- ensure_required_scope(conn, method),
+         :ok <- ensure_method_scope(conn, method),
          response <- dispatch_request(conn, request, method) do
       response
     else
-      # `ensure_required_scope/2` returns a halted conn instead of `{:error, _}`.
+      # Scope checks return a halted conn instead of `{:error, _}`.
       %Plug.Conn{} = conn -> conn
       {:error, :invalid_request} -> jsonrpc_http_error(conn, 400, -32600, "Invalid Request")
       {:error, :unsupported_media_type} -> send_resp(conn, 415, "")
@@ -142,20 +142,47 @@ defmodule OperatelyWeb.McpController do
     end
   end
 
+  defp dispatch_request(conn, request, "tools/call") do
+    with {:ok, _session} <- require_active_session(conn),
+         :ok <- require_protocol_version(conn),
+         {:ok, name, arguments} <- fetch_tool_call_params(request),
+         {:ok, definition} <- Executor.fetch_definition(name),
+         :ok <- ensure_scopes(conn, definition.required_scopes),
+         {:ok, result} <- Executor.execute(conn, definition, arguments) do
+      json(conn, %{
+        jsonrpc: @jsonrpc_version,
+        id: request["id"],
+        result: result
+      })
+    else
+      {:error, :missing_session} -> send_resp(conn, 400, "")
+      {:error, :unknown_session} -> send_resp(conn, 404, "")
+      {:error, :unsupported_protocol_version} -> send_resp(conn, 400, "")
+      {:error, :unknown_tool} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, :invalid_arguments} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, :invalid_params} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, {:missing_required_key, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, {:unexpected_key, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, {:invalid_type, _key, _type}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, {:invalid_format, _key, _format}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, :invalid_schema} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
+      {:error, :authenticated_conn_required} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
+      {:error, _reason} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
+      %Plug.Conn{} = halted_conn -> halted_conn
+    end
+  end
+
   defp dispatch_request(conn, request, _method) do
     jsonrpc_http_error(conn, 200, -32601, "Method not found", request["id"])
   end
 
-  defp ensure_required_scope(conn, method) do
-    required_scopes =
-      case method do
-        "initialize" -> ["mcp:read"]
-        "notifications/initialized" -> ["mcp:read"]
-        "ping" -> ["mcp:read"]
-        "tools/list" -> ["mcp:read"]
-        _ -> ["mcp:read"]
-      end
+  defp ensure_method_scope(_conn, "tools/call"), do: :ok
 
+  defp ensure_method_scope(conn, _method) do
+    ensure_scopes(conn, ["mcp:read"])
+  end
+
+  defp ensure_scopes(conn, required_scopes) do
     if Enum.all?(required_scopes, &(&1 in (conn.assigns[:mcp_scopes] || []))) do
       :ok
     else
@@ -194,6 +221,14 @@ defmodule OperatelyWeb.McpController do
     end
   end
 
+  defp optional_arguments(map, key) do
+    case Map.get(map, key) do
+      nil -> {:ok, %{}}
+      value when is_map(value) -> {:ok, stringify_keys(value)}
+      _ -> {:error, :invalid_params}
+    end
+  end
+
   defp optional_map(map, key) do
     case Map.get(map, key) do
       nil -> {:ok, %{}}
@@ -206,6 +241,14 @@ defmodule OperatelyWeb.McpController do
     case Map.get(map, key) do
       value when is_binary(value) and value != "" -> {:ok, value}
       _ -> {:error, :invalid_params}
+    end
+  end
+
+  defp fetch_tool_call_params(request) do
+    with {:ok, params} <- fetch_map(request, "params"),
+         {:ok, name} <- fetch_required(params, "name"),
+         {:ok, arguments} <- optional_arguments(params, "arguments") do
+      {:ok, name, arguments}
     end
   end
 
