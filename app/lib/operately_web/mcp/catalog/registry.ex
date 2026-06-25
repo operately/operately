@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Mcp.Catalog.Registry do
     file
     |> Path.relative_to(@tools_dir)
     |> Path.rootname()
-    |> String.split("/")
+    |> Path.split()
     |> Enum.map(&Macro.camelize/1)
     |> then(&Module.concat([@tool_base | &1]))
   end
