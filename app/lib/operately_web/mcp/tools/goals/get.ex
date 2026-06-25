@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Mcp.Tools.Goals.Get do
   use OperatelyWeb.Mcp.Tool
 
+  alias OperatelyWeb.Api.Goals.Get, as: GoalGet
+  alias OperatelyWeb.Api.Helpers
+
   @impl true
   def definition do
     Definition.new!(
@@ -33,5 +36,16 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Get do
   end
 
   @impl true
-  def call(_context, _arguments), do: not_implemented()
+  def call(conn, %{"goal_id" => goal_id}) do
+    with {:ok, goal_id} <- decode_goal_id(goal_id) do
+      GoalGet.call(conn, %{id: goal_id, include_markdown: false})
+    end
+  end
+
+  defp decode_goal_id(goal_id) do
+    case Helpers.decode_id(goal_id) do
+      {:ok, decoded_goal_id} -> {:ok, decoded_goal_id}
+      {:error, _reason} -> {:error, :invalid_arguments}
+    end
+  end
 end

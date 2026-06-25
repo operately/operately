@@ -64,13 +64,8 @@ defmodule OperatelyWeb.McpControllerTest do
   test "initializes a session, accepts initialized notifications, and responds to ping", %{account: account, company: company, client: client} do
     %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
 
-    initialize_conn =
-      build_conn()
-      |> authenticated_mcp_headers(access_token)
-      |> post("/mcp", initialize_request())
-
+    {initialize_conn, session_id} = initialize_session(access_token)
     initialize_body = Jason.decode!(initialize_conn.resp_body)
-    session_id = initialize_conn |> get_resp_header("mcp-session-id") |> List.first()
 
     assert initialize_conn.status == 200
     assert initialize_body["result"]["protocolVersion"] == Mcp.latest_protocol_version()
@@ -135,24 +130,6 @@ defmodule OperatelyWeb.McpControllerTest do
 
     assert search_tool["outputSchema"]["type"] == "object"
 
-    tools_call_conn =
-      build_conn()
-      |> authenticated_mcp_headers(access_token)
-      |> put_req_header("mcp-session-id", session_id)
-      |> put_req_header("mcp-protocol-version", Mcp.latest_protocol_version())
-      |> post("/mcp", %{
-        "jsonrpc" => "2.0",
-        "id" => "4",
-        "method" => "tools/call",
-        "params" => %{
-          "name" => "get_current_company",
-          "arguments" => %{}
-        }
-      })
-
-    assert tools_call_conn.status == 200
-    assert Jason.decode!(tools_call_conn.resp_body)["error"]["code"] == -32601
-
     get_conn =
       build_conn()
       |> put_req_header("authorization", "Bearer #{access_token}")
@@ -185,6 +162,201 @@ defmodule OperatelyWeb.McpControllerTest do
     assert closed_ping_conn.status == 404
   end
 
+  test "executes get_current_company through tools/call", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_current_company"
+        }
+      })
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert conn.status == 200
+    assert body["result"]["content"] == []
+    assert body["result"]["structuredContent"]["company"]["id"] == OperatelyWeb.Paths.company_id(company)
+    assert body["result"]["structuredContent"]["company"]["name"] == company.name
+  end
+
+  test "returns a tool-level error for stubbed tools", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_me",
+          "arguments" => %{}
+        }
+      })
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert conn.status == 200
+    assert body["result"]["isError"] == true
+    assert body["result"]["content"] == [%{"type" => "text", "text" => "The get_me tool is not implemented yet."}]
+    refute Map.has_key?(body["result"], "structuredContent")
+  end
+
+  test "returns invalid params for unknown tool names", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "missing_tool",
+          "arguments" => %{}
+        }
+      })
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert conn.status == 200
+    assert body["error"]["code"] == -32602
+  end
+
+  test "returns invalid params for malformed tools/call params", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "",
+          "arguments" => "not-a-map"
+        }
+      })
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert conn.status == 200
+    assert body["error"]["code"] == -32602
+  end
+
+  test "returns invalid params for invalid tool arguments", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_current_company",
+          "arguments" => %{"unexpected" => true}
+        }
+      })
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert conn.status == 200
+    assert body["error"]["code"] == -32602
+  end
+
+  test "returns invalid params for malformed goal identifiers", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_goal",
+          "arguments" => %{"goal_id" => "definitely-not-a-valid-operately-id-%%%"}
+        }
+      })
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert conn.status == 200
+    assert body["error"]["code"] == -32602
+  end
+
+  test "requires session and protocol version for tools/call", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    missing_session_conn =
+      build_conn()
+      |> authenticated_mcp_headers(access_token)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_current_company"
+        }
+      })
+
+    missing_protocol_conn =
+      build_conn()
+      |> authenticated_mcp_headers(access_token)
+      |> put_req_header("mcp-session-id", session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "5",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_current_company"
+        }
+      })
+
+    assert missing_session_conn.status == 400
+    assert missing_protocol_conn.status == 400
+  end
+
+  test "uses tool-definition scopes for tools/call", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client, "mcp:write")
+    session_id = create_session(access_token).id
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_current_company"
+        }
+      })
+
+    assert conn.status == 403
+    assert get_resp_header(conn, "www-authenticate") |> List.first() =~ ~s(error="insufficient_scope")
+    assert get_resp_header(conn, "www-authenticate") |> List.first() =~ ~s(scope="mcp:read")
+  end
+
   defp initialize_request do
     %{
       "jsonrpc" => "2.0",
@@ -201,6 +373,15 @@ defmodule OperatelyWeb.McpControllerTest do
     }
   end
 
+  defp initialize_session(access_token) do
+    conn =
+      build_conn()
+      |> authenticated_mcp_headers(access_token)
+      |> post("/mcp", initialize_request())
+
+    {conn, conn |> get_resp_header("mcp-session-id") |> List.first()}
+  end
+
   defp authenticated_mcp_headers(conn, access_token) do
     conn
     |> put_req_header("accept", "application/json, text/event-stream")
@@ -208,14 +389,21 @@ defmodule OperatelyWeb.McpControllerTest do
     |> put_req_header("authorization", "Bearer #{access_token}")
   end
 
-  defp authorize_and_issue_tokens(account, company, client) do
+  defp session_headers(conn, access_token, session_id) do
+    conn
+    |> authenticated_mcp_headers(access_token)
+    |> put_req_header("mcp-session-id", session_id)
+    |> put_req_header("mcp-protocol-version", Mcp.latest_protocol_version())
+  end
+
+  defp authorize_and_issue_tokens(account, company, client, scope \\ "mcp:read") do
     conn = build_conn() |> log_in_account(account, company)
 
     params = %{
       "client_id" => client.client_id,
       "redirect_uri" => hd(client.redirect_uris),
       "resource" => Mcp.canonical_resource_uri(),
-      "scope" => "mcp:read",
+      "scope" => scope,
       "state" => "mcp-state",
       "code_challenge" => pkce_challenge(),
       "code_challenge_method" => "S256"
@@ -248,6 +436,19 @@ defmodule OperatelyWeb.McpControllerTest do
       })
 
     Jason.decode!(token_conn.resp_body, keys: :atoms)
+  end
+
+  defp create_session(raw_access_token) do
+    {:ok, %{access_token: access_token, grant: grant}} = Mcp.authenticate_access_token(raw_access_token, Mcp.canonical_resource_uri())
+
+    {:ok, session} =
+      Mcp.create_session(grant, access_token, %{
+        protocol_version: Mcp.latest_protocol_version(),
+        client_info: %{"name" => "Example Client", "version" => "1.0.0"},
+        client_capabilities: %{}
+      })
+
+    session
   end
 
   defp csrf_token(conn) do
