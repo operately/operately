@@ -1,5 +1,6 @@
 defmodule Operately.Demo.ResourceHubs do
-  alias Operately.Demo.{Resources, PoorMansMarkdown, Comments}
+  alias Operately.Demo.{Resources, Comments}
+  alias Operately.RichContent.Builder
   alias Operately.ResourceHubs.ResourceHub
   alias Operately.Operations.{ResourceHubDocumentCreating, ResourceHubLinkCreating}
 
@@ -25,7 +26,7 @@ defmodule Operately.Demo.ResourceHubs do
 
     {:ok, document} = ResourceHubDocumentCreating.run(author, hub, %{
       name: data.name,
-      content: PoorMansMarkdown.from_markdown(data.content, resources),
+      content: Resources.rich_text!(resources, data.content),
       post_as_draft: false,
       send_to_everyone: true,
       subscription_parent_type: :resource_hub_document,
@@ -55,11 +56,11 @@ defmodule Operately.Demo.ResourceHubs do
   end
 
   defp link_content(%{content: content}, resources) when is_binary(content) do
-    PoorMansMarkdown.from_markdown(content, resources)
+    Resources.rich_text!(resources, content)
   end
 
   defp link_content(_, _resources) do
-    PoorMansMarkdown.from_markdown("", %{})
+    Builder.empty_content()
   end
 
   defp get_hub(resources, %{project: project_key}) do

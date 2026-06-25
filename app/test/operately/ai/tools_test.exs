@@ -32,6 +32,14 @@ defmodule Operately.AI.ToolsTest do
       assert message = Operately.Activities.get_activity(id) |> Repo.preload(:comment_thread)
       assert message.comment_thread.title == "Test Message"
     end
+
+    test "returns an error for blank message", ctx do
+      tool = Tools.post_goal_message()
+      context = %{person: ctx.creator, agent_run: ctx.agent_run}
+      args = %{"goal_id" => Paths.goal_id(ctx.goal), "title" => "Test Message", "message" => "   "}
+
+      assert {:error, "message cannot be empty"} = tool.function.(args, context)
+    end
   end
 
   describe "post_project_message/0" do
@@ -54,6 +62,15 @@ defmodule Operately.AI.ToolsTest do
 
       assert {:ok, result} = tool.function.(args, context)
       assert {:ok, _id} = OperatelyWeb.Api.Helpers.decode_id(Jason.decode!(result)["discussion"]["id"])
+    end
+
+    test "returns an error for blank message", ctx do
+      tool = Tools.post_project_message()
+      context = %{person: ctx.creator, agent_run: ctx.agent_run}
+      id = OperatelyWeb.Paths.project_id(ctx.project)
+      args = %{"project_id" => id, "title" => "Test Message", "message" => ""}
+
+      assert {:error, "message cannot be empty"} = tool.function.(args, context)
     end
   end
 end
