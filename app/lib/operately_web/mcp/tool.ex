@@ -8,12 +8,12 @@ defmodule OperatelyWeb.Mcp.Tool do
 
   alias OperatelyWeb.Mcp.Catalog.Definition
 
-  @type context :: map()
+  @type conn :: Plug.Conn.t()
   @type arguments :: map()
   @type result :: {:ok, map()} | {:error, term()}
 
   @callback definition() :: Definition.t()
-  @callback call(context(), arguments()) :: result()
+  @callback call(conn(), arguments()) :: result()
 
   defmacro __using__(_) do
     quote do

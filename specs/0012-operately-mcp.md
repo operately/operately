@@ -10,7 +10,7 @@ This becomes Operately's third integration path:
 - token-authenticated external API for the CLI and scripts
 - OAuth-authenticated MCP for ChatGPT and Claude
 
-The MCP layer uses MCP wrapper modules over shared Operately domain/query/service modules. MCP-specific auth, company resolution, tool definitions, and review hardening live in the MCP layer, while shared operations remain the execution source of truth across the web app, CLI, and MCP.
+The MCP layer uses MCP wrapper modules over the existing Operately API handlers. MCP-specific auth, company resolution, tool definitions, and review hardening live in the MCP layer, while the existing `OperatelyWeb.Api` handlers remain the first execution source of truth for the initial MCP surface. Wrappers forward an authenticated request conn into those handlers and only do small MCP-specific input/output adaptation when necessary.
 
 ---
 
@@ -93,50 +93,46 @@ Suggested modules:
 Each MCP tool is implemented as a wrapper module that:
 
 - declares MCP-facing metadata such as name, schemas, scopes, and company mode
-- adapts MCP arguments into shared Operately domain/query/service calls
-- shapes shared operation results into MCP-friendly outputs
+- adapts MCP arguments into the inputs expected by an existing `OperatelyWeb.Api.*` or `OperatelyWeb.Api.Wrappers.*` handler
+- forwards the authenticated request conn into that handler
+- shapes handler results into MCP-friendly outputs only when needed
 
-Wrappers execute with a prepared context carrying:
+Wrappers execute with an authenticated request conn carrying:
 
 - `current_account`
 - `current_company`
 - `current_person`
 - auth mode / scope metadata
 
-This keeps one shared execution path across Operately integrations while allowing MCP-specific schemas, examples, and output contracts.
+This keeps one shared execution path across the web app and MCP while allowing MCP-specific schemas, examples, and output contracts. If logic is later extracted below an API handler, both the handler and the MCP wrapper should use the extracted module, but that extraction is not a prerequisite for the first MCP tools.
 
 ---
 
 ## Company Resolution
 
-Company context is resolved before wrapper execution. The selected company from the MCP grant is assigned into the MCP request context, and MCP tools never accept `company_id`.
+Company context is resolved before wrapper execution. The selected company from the MCP grant is assigned into the authenticated request conn, and MCP tools never accept `company_id`.
 
 Each MCP tool must declare one company mode in the tool registry:
 
 - `none`: no company context and no `company_id`
 - `authenticated`: use the company selected on the MCP grant
-- `resource_derived`: company is inferred from the referenced resource and must match the company selected on the MCP grant
+- `resource_derived`: the primary resource is identified by a resource-specific input such as `goal_id`, `project_id`, `task_id`, or URL
 
 No company mode includes `company_id` in the MCP input schema.
 
-Resolution order for `authenticated` tools:
+Resolution order for authenticated MCP requests:
 
 1. Load the selected company from the MCP grant
 2. Load the matching `current_person` membership for that account and company
-3. If access has been revoked, return a structured auth / access error that requires reconnect or reauthorization
-
-Resolution order for `resource_derived` tools:
-
-1. Derive company from the referenced resource
-2. Verify it matches the selected company on the MCP grant
-3. Otherwise return a structured access / mismatch error
+3. Assign `current_account`, `current_company`, and `current_person` onto the request conn before wrapper execution
+4. If access has been revoked, return a structured auth / access error that requires reconnect or reauthorization
 
 Notes:
 
-- Wrappers receive company context through the prepared MCP context rather than a `company_id` input
-- Shared operations should rely on prepared current-company/current-person context or equivalent explicit arguments supplied by the wrapper
+- Wrappers receive company context through `conn.assigns` rather than a `company_id` input
 - Tools such as `get_project(project_id)`, `get_space(space_id)`, and `get_goal(goal_id)` should use `resource_derived`
-- Tools using `resource_derived` should reject resources outside the authenticated company
+- Resource-specific tools should rely on the existing API handler they call to enforce resource access and cross-company rejection
+- In the current runtime, `company_mode` is catalog metadata, not a separate executor dispatch policy
 - Which tools are `none`, `authenticated`, or `resource_derived` must be declared explicitly in the MCP tool registry
 
 ---
@@ -201,14 +197,14 @@ Start with a small set of high-signal tools backed by MCP wrappers over shared O
 
 Notes:
 
-- `get_current_company` should be served by an MCP wrapper over shared company-loading logic
+- `get_current_company` should be served by an MCP wrapper over the existing company API handler
 - Company-browsing tools such as `list_projects`, `list_goals`, and `list_tasks` should always operate on the authenticated company
 - `get_project`, `get_goal`, and similar resource-specific lookups should be `resource_derived` tools and should not accept `company_id`
 - No MCP tool should expose `company_id` in its schema
 - `search` and `fetch` should be first-class MCP tools, not thin aliases
 - `fetch` should return citation-friendly content and canonical Operately URLs
 - `fetch` should prefer `resource_link` style outputs for canonical Operately resources and only embed full payloads inline when the content itself must travel in the tool response
-- project and goal markdown support can be served through shared markdown renderers reused by wrappers and existing API surfaces
+- project and goal markdown support can be served through existing API handlers and shared markdown renderers already used by those surfaces
 
 ### Phase 2: write tools
 
@@ -269,6 +265,8 @@ To maximize compatibility with ChatGPT, Claude, and IDE clients, the first relea
 ### Shared execution across surfaces
 
 - Keep one source of truth for high-level operations so the web app, CLI, MCP tools, docs, examples, and tests describe the same capabilities
+- For the first MCP read surface, prefer existing `OperatelyWeb.Api` handlers and `OperatelyWeb.Api.Wrappers` modules as that source of truth
+- If a capability later needs extraction below `OperatelyWeb.Api`, both the API handler and the MCP wrapper should use the extracted module, but that extraction is not required up front
 - Prefer a curated MCP surface even when other Operately surfaces expose a broader command tree
 - Shared operations should stay side-effect safe for in-process reuse across multiple surfaces
 - Exclude long-running watch, poll, or stream flows from MCP unless they are redesigned as non-blocking MCP-native tools
@@ -311,16 +309,19 @@ Outcome: Operately can describe MCP tools from the same wrapper modules that wil
 
 Status: implemented.
 
-### PR 2B: Wrapper runtime and first shared execution path
+### PR 2B: Wrapper runtime and first endpoint-backed execution path (Implemented)
 
-- Add `tools/call` dispatch that resolves a wrapper module from the registry and invokes `call(context, arguments)`
-- Build prepared request context for wrapper execution
-- Enforce company mode rules per tool before wrapper dispatch
+- Add `tools/call` dispatch that resolves a wrapper module from the registry and invokes `call(conn, arguments)`
+- Execute wrappers with the authenticated request conn and the MCP auth/company assigns already loaded
 - Validate MCP inputs before wrapper execution
-- For each implemented tool, call shared domain/query/service modules directly; when logic currently lives only inside `OperatelyWeb.Api`, extract a shared module and make both the API handler and MCP wrapper use it
-- Add one minimal end-to-end tool path to prove dispatch works through the wrapper runtime and shared execution layer
+- Require callers to resolve a tool definition before execution
+- For each implemented tool, delegate from the wrapper to an existing `OperatelyWeb.Api.*` or `OperatelyWeb.Api.Wrappers.*` handler and pass only the inputs relevant to MCP
+- Allow wrappers to do small MCP-specific preprocessing or postprocessing when necessary, for example decoding external IDs or supplying defaults normally injected by TurboConnect
+- Add one minimal end-to-end tool path to prove dispatch works through the wrapper runtime and existing API execution layer
 
-Outcome: one MCP tool wrapper can invoke shared Operately logic through the MCP runtime.
+Outcome: one MCP tool wrapper can invoke existing Operately API logic through the MCP runtime.
+
+Status: implemented.
 
 ### PR 2C: MCP output contracts and discovery
 
@@ -333,7 +334,7 @@ Outcome: Operately has a stable MCP runtime contract for tool descriptors, execu
 
 ### PR 3: Read-only MVP
 
-- Implement the initial read tool set
+- Expand the initial read tool set beyond the first runtime proof
 - Add `search` and `fetch`
 - Add canonical URL generation
 - Add a consistent `fetch` strategy for resource links versus inline embedded content
@@ -386,8 +387,8 @@ Critical scenarios:
 - authenticated-company tools never require company selectors
 - tool descriptors expose the expected annotations, `securitySchemes`, and `outputSchema`
 - wrapper discovery stays synchronized with the compiled wrapper set
-- resource-specific tool that infers company correctly
-- resource-specific tool rejects resources from another company
+- resource-specific wrapper forwards the authenticated conn into the intended existing API handler
+- resource-specific tool rejects resources from another company through existing endpoint behavior
 - structured outputs, text content, and `_meta` are separated correctly
 - `fetch` returns canonical resource links or inline content according to the declared strategy
 - discovery output stays synchronized with the actual wrapper registry
@@ -397,8 +398,8 @@ Critical scenarios:
 - grant scope blocks write tools
 - protocol-version and auth-discovery behavior match the MCP spec
 - 401 responses advertise auth metadata correctly and tokens for other audiences are rejected
-- MCP wrappers receive `current_account`, `current_company`, `current_person`, and auth metadata
-- shared operations reused by wrappers and API handlers behave consistently for the same resource-access scenarios
+- MCP wrappers receive `current_account`, `current_company`, `current_person`, and auth metadata on `conn.assigns`
+- existing API handlers called by wrappers behave consistently when invoked through MCP
 
 ---
 
@@ -419,4 +420,4 @@ If implemented this way, Operately gets:
 - one MCP surface suitable for both OpenAI and Anthropic distribution
 - one new auth mode alongside the session and token flows
 - one-company-per-connection UX with request-time company context
-- shared use of Operately domain/query/service modules across the web app, CLI, and MCP
+- MCP wrapper reuse of existing Operately API handlers and the shared modules those handlers already depend on
