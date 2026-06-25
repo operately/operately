@@ -160,6 +160,7 @@ defmodule OperatelyWeb.McpController do
       {:error, :unsupported_protocol_version} -> send_resp(conn, 400, "")
       {:error, :unknown_tool} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
       {:error, :invalid_arguments} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, :bad_request} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
       {:error, :invalid_params} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
       {:error, {:missing_required_key, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
       {:error, {:unexpected_key, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])

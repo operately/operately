@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Mcp.Executor do
   Resolves catalog entries, validates arguments, and executes MCP tool wrappers.
   """
 
+  alias Jason.EncodeError
   alias Plug.Conn
   alias OperatelyWeb.Mcp.Catalog.Definition
   alias OperatelyWeb.Mcp.{InputValidator, Tools}
@@ -33,9 +34,14 @@ defmodule OperatelyWeb.Mcp.Executor do
 
   defp execute_definition(conn, definition, arguments) do
     case definition.implementation.call(conn, arguments) do
-      {:ok, payload} -> {:ok, success_result(payload)}
+      {:ok, payload} when is_map(payload) -> {:ok, success_result(payload)}
+      {:ok, _payload} -> {:ok, internal_error_result()}
+      {:error, :invalid_arguments} = error -> error
+      {:error, :bad_request} = error -> error
       {:error, :not_implemented} -> {:ok, not_implemented_result(definition.name)}
-      error -> error
+      {:error, :not_found} -> {:ok, not_found_result()}
+      {:error, :internal_server_error} -> {:ok, internal_error_result()}
+      {:error, _reason} -> {:ok, internal_error_result()}
     end
   end
 
@@ -48,22 +54,46 @@ defmodule OperatelyWeb.Mcp.Executor do
   end
 
   defp success_result(payload) when is_map(payload) do
+    structured_content = stringify_keys(payload)
+
     %{
-      "structuredContent" => stringify_keys(payload),
-      "content" => []
+      "structuredContent" => structured_content,
+      "content" => [text_content(encode_json!(structured_content))]
     }
   end
 
   defp not_implemented_result(name) do
     %{
       "isError" => true,
-      "content" => [
-        %{
-          "type" => "text",
-          "text" => "The #{name} tool is not implemented yet."
-        }
-      ]
+      "content" => [text_content("The #{name} tool is not implemented yet.")]
     }
+  end
+
+  defp not_found_result do
+    %{
+      "isError" => true,
+      "content" => [text_content("The requested resource was not found or is not accessible.")]
+    }
+  end
+
+  defp internal_error_result do
+    %{
+      "isError" => true,
+      "content" => [text_content("The tool could not complete the request.")]
+    }
+  end
+
+  defp text_content(text) do
+    %{
+      "type" => "text",
+      "text" => text
+    }
+  end
+
+  defp encode_json!(value) do
+    Jason.encode!(value)
+  rescue
+    EncodeError -> "{}"
   end
 
   defp stringify_keys(value) when is_map(value) do
