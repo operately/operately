@@ -14,6 +14,14 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     def call(_conn, _arguments), do: {:error, :not_implemented}
   end
 
+  defmodule ForbiddenTool do
+    def call(_conn, _arguments), do: {:error, :forbidden}
+  end
+
+  defmodule BadRequestTool do
+    def call(_conn, _arguments), do: {:error, :bad_request}
+  end
+
   setup do
     account = account_fixture()
     company = company_fixture(%{company_name: "MCP Company"}, account)
@@ -55,6 +63,32 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
 
     assert result["isError"] == true
     assert result["content"] == [%{"type" => "text", "text" => "The stub_tool tool is not implemented yet."}]
+  end
+
+  test "returns a tool-level error for forbidden wrappers", %{conn: conn} do
+    definition =
+      Definition.new!(
+        name: "forbidden_tool",
+        input_schema: %{"type" => "object", "properties" => %{}, "additionalProperties" => false},
+        implementation: ForbiddenTool
+      )
+
+    assert {:ok, result} = Executor.execute(conn, definition, %{})
+    assert result["isError"] == true
+    assert result["content"] == [%{"type" => "text", "text" => "You do not have permission to perform this operation, or the company is read-only."}]
+  end
+
+  test "returns a tool-level error for bad request wrappers", %{conn: conn} do
+    definition =
+      Definition.new!(
+        name: "bad_request_tool",
+        input_schema: %{"type" => "object", "properties" => %{}, "additionalProperties" => false},
+        implementation: BadRequestTool
+      )
+
+    assert {:ok, result} = Executor.execute(conn, definition, %{})
+    assert result["isError"] == true
+    assert result["content"] == [%{"type" => "text", "text" => "The tool could not complete the request with the provided data."}]
   end
 
   test "returns unknown tool for missing wrappers" do

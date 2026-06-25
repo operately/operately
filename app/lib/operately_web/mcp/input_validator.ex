@@ -57,6 +57,9 @@ defmodule OperatelyWeb.Mcp.InputValidator do
       not is_binary(value) ->
         {:error, {:invalid_type, key, "string"}}
 
+      is_list(schema["enum"]) and value not in schema["enum"] ->
+        {:error, {:invalid_enum, key}}
+
       Map.get(schema, "format") == "uri" and not valid_uri?(value) ->
         {:error, {:invalid_format, key, "uri"}}
 
