@@ -51,14 +51,6 @@ defmodule Operately.MD.Milestone do
     end
   end
 
-  defp render_tasks(tasks) when not is_list(tasks) do
-    """
-    ## Tasks
-
-    _Not loaded._
-    """
-  end
-
   defp render_tasks([]) do
     """
     ## Tasks
@@ -86,7 +78,6 @@ defmodule Operately.MD.Milestone do
   end
 
   defp render_task_assignees(people) when is_list(people), do: "Unassigned"
-  defp render_task_assignees(_), do: "Not loaded"
 
   defp render_task_due_date(nil), do: "Not set"
   defp render_task_due_date(%Operately.ContextualDates.ContextualDate{date: date}), do: render_date(date)
@@ -113,16 +104,7 @@ defmodule Operately.MD.Milestone do
   defp render_association(nil, _association, _formatter), do: "None"
 
   defp render_association(_id, association, formatter) do
-    cond do
-      not Ecto.assoc_loaded?(association) ->
-        "Not loaded"
-
-      is_nil(association) ->
-        "None"
-
-      true ->
-        formatter.(association)
-    end
+    if is_nil(association), do: "None", else: formatter.(association)
   end
 
   defp render_date(d), do: Operately.Time.as_date(d) |> Date.to_iso8601()

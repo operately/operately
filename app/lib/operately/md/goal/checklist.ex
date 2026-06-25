@@ -1,6 +1,4 @@
 defmodule Operately.MD.Goal.Checklist do
-  def render(goal) when not is_list(goal.checks), do: ""
-
   def render(goal) do
     if goal.checks == [] do
       """

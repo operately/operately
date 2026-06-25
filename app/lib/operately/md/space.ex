@@ -43,14 +43,6 @@ defmodule Operately.MD.Space do
     end
   end
 
-  defp render_members(members) when not is_list(members) do
-    """
-    ## Members
-
-    _Not loaded._
-    """
-  end
-
   defp render_members([]) do
     """
     ## Members
@@ -86,7 +78,6 @@ defmodule Operately.MD.Space do
 
   defp render_space_type(space) do
     cond do
-      not Ecto.assoc_loaded?(space.company) -> "Not loaded"
       is_nil(space.company) -> "Unknown"
       space.company.company_space_id == space.id -> "General Space"
       true -> "Space"
@@ -97,7 +88,6 @@ defmodule Operately.MD.Space do
   defp render_member_title(%{title: ""}), do: ""
   defp render_member_title(member), do: " (#{member.title})"
 
-  defp render_members_count(members) when not is_list(members), do: "Not loaded"
   defp render_members_count(members), do: members |> active_members() |> length()
 
   defp active_members(members) do
@@ -107,16 +97,7 @@ defmodule Operately.MD.Space do
   defp render_association(nil, _association, _formatter), do: "None"
 
   defp render_association(_id, association, formatter) do
-    cond do
-      not Ecto.assoc_loaded?(association) ->
-        "Not loaded"
-
-      is_nil(association) ->
-        "None"
-
-      true ->
-        formatter.(association)
-    end
+    if is_nil(association), do: "None", else: formatter.(association)
   end
 
   defp render_date(d), do: Operately.Time.as_date(d) |> Date.to_iso8601()

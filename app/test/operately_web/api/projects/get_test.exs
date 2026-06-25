@@ -230,7 +230,17 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       retrospective = retrospective_fixture(%{author_id: ctx.person.id, project_id: project.id})
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_retrospective: true})
-      assert res.project.retrospective == Serializer.serialize(retrospective)
+
+      expected =
+        retrospective
+        |> Serializer.serialize()
+        |> Map.update!(:content, &Jason.decode!/1)
+
+      actual =
+        res.project.retrospective
+        |> Map.update!(:content, &Jason.decode!/1)
+
+      assert actual == expected
     end
 
     test "include_markdown loads the resources required by the markdown renderer", ctx do

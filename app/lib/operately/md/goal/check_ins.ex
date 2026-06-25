@@ -1,6 +1,4 @@
 defmodule Operately.MD.Goal.CheckIns do
-  def render(check_ins) when not is_list(check_ins), do: ""
-
   def render(check_ins) do
     check_ins_with_comments = load_check_ins_with_comments(check_ins)
 

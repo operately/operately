@@ -136,7 +136,6 @@ defmodule Operately.MD.Task do
   end
 
   defp render_assignees(people) when is_list(people), do: "Unassigned"
-  defp render_assignees(_), do: "Not loaded"
 
   defp task_kind(task) do
     case {task.project_id, task.space_id} do
@@ -149,16 +148,7 @@ defmodule Operately.MD.Task do
   defp render_association(nil, _association, _formatter), do: "None"
 
   defp render_association(_id, association, formatter) do
-    cond do
-      not Ecto.assoc_loaded?(association) ->
-        "Not loaded"
-
-      is_nil(association) ->
-        "None"
-
-      true ->
-        formatter.(association)
-    end
+    if is_nil(association), do: "None", else: formatter.(association)
   end
 
   defp render_date(d), do: Operately.Time.as_date(d) |> Date.to_iso8601()
