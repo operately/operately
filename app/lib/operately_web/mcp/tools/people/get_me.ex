@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Mcp.Tools.People.GetMe do
   use OperatelyWeb.Mcp.Tool
 
+  alias OperatelyWeb.Api.People.GetMe, as: PeopleGetMe
+
   @impl true
   def definition do
     Definition.new!(
@@ -27,5 +29,5 @@ defmodule OperatelyWeb.Mcp.Tools.People.GetMe do
   end
 
   @impl true
-  def call(_context, _arguments), do: not_implemented()
+  def call(conn, _arguments), do: PeopleGetMe.call(conn, %{})
 end
