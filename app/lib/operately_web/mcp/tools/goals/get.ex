@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Get do
   defp decode_goal_id(goal_id) do
     case Helpers.decode_id(goal_id) do
       {:ok, decoded_goal_id} -> {:ok, decoded_goal_id}
-      {:error, _reason} -> {:error, :invalid_goal_id}
+      {:error, _reason} -> {:error, :invalid_arguments}
     end
   end
 end

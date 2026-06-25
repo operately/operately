@@ -280,6 +280,29 @@ defmodule OperatelyWeb.McpControllerTest do
     assert body["error"]["code"] == -32602
   end
 
+  test "returns invalid params for malformed goal identifiers", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn =
+      build_conn()
+      |> session_headers(access_token, session_id)
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "4",
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_goal",
+          "arguments" => %{"goal_id" => "definitely-not-a-valid-operately-id-%%%"}
+        }
+      })
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert conn.status == 200
+    assert body["error"]["code"] == -32602
+  end
+
   test "requires session and protocol version for tools/call", %{account: account, company: company, client: client} do
     %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
     {_initialize_conn, session_id} = initialize_session(access_token)

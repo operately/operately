@@ -54,14 +54,14 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.GetTest do
       assert {:error, :not_found} = Get.call(conn, %{"goal_id" => Paths.goal_id(other_goal)})
     end
 
-    test "returns invalid_goal_id for malformed identifiers" do
+    test "returns invalid_arguments for malformed identifiers" do
       account = account_fixture()
       company = company_fixture(%{company_name: "MCP Company"}, account)
       person = People.get_person(account, company)
 
       conn = conn_with_assigns(account, company, person)
 
-      assert {:error, :invalid_goal_id} = Get.call(conn, %{"goal_id" => "definitely-not-a-valid-operately-id-%%%"})
+      assert {:error, :invalid_arguments} = Get.call(conn, %{"goal_id" => "definitely-not-a-valid-operately-id-%%%"})
     end
   end
 
