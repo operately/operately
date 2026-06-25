@@ -19,9 +19,10 @@ defmodule Operately.Operations.GoalCheckIn do
         status: attrs.status,
         message: attrs.content,
         state: state(attrs),
-        subscription_list_id: changes.subscription_list.id,
-        timeframe: to_timeframe(goal, attrs.due_date)
+        subscription_list_id: changes.subscription_list.id
       }
+
+      changeset_attrs = maybe_put_timeframe(changeset_attrs, goal, attrs)
 
       changeset_attrs =
         if target_values != nil do
@@ -54,12 +55,15 @@ defmodule Operately.Operations.GoalCheckIn do
 
   defp maybe_update_goal(multi, goal, attrs) do
     Multi.update(multi, :goal, fn changes ->
-      Goal.changeset(goal, %{
+      goal_attrs = %{
         next_update_scheduled_at: calc_next_check_in_time(goal),
         last_check_in_id: changes.update.id,
-        last_update_status: changes.update.status,
-        timeframe: to_timeframe(goal, attrs.due_date)
-      })
+        last_update_status: changes.update.status
+      }
+
+      goal_attrs = maybe_put_timeframe(goal_attrs, goal, attrs)
+
+      Goal.changeset(goal, goal_attrs)
     end)
   end
 
@@ -145,23 +149,29 @@ defmodule Operately.Operations.GoalCheckIn do
     Operately.Time.calculate_next_monthly_check_in(goal.next_update_scheduled_at, DateTime.utc_now())
   end
 
-  defp to_timeframe(goal, due_date) do
-    if due_date == nil do
-      nil
+  defp maybe_put_timeframe(attrs, goal, operation_attrs) do
+    if Map.has_key?(operation_attrs, :due_date) do
+      Map.put(attrs, :timeframe, to_timeframe(goal, operation_attrs.due_date))
     else
-      contextual_start_date = %{
-        date_type: :day,
-        value: Calendar.strftime(goal.inserted_at, "%b %d, %Y"),
-        date: goal.inserted_at
-      }
-
-      %{
-        type: "days",
-        start_date: goal.inserted_at,
-        end_date: due_date.date,
-        contextual_start_date: contextual_start_date,
-        contextual_end_date: due_date
-      }
+      attrs
     end
+  end
+
+  defp to_timeframe(_goal, nil), do: nil
+
+  defp to_timeframe(goal, due_date) do
+    contextual_start_date = %{
+      date_type: :day,
+      value: Calendar.strftime(goal.inserted_at, "%b %d, %Y"),
+      date: goal.inserted_at
+    }
+
+    %{
+      type: "days",
+      start_date: goal.inserted_at,
+      end_date: due_date.date,
+      contextual_start_date: contextual_start_date,
+      contextual_end_date: due_date
+    }
   end
 end

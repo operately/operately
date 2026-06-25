@@ -23,6 +23,7 @@ defmodule OperatelyWeb.Mcp.Catalog.JsonSchema do
   def string(description, opts \\ []) when is_binary(description) do
     %{"type" => "string", "description" => description}
     |> put_if_present("format", Keyword.get(opts, :format))
+    |> put_if_present("enum", Keyword.get(opts, :enum), Keyword.has_key?(opts, :enum))
   end
 
   def boolean(description, opts \\ []) when is_binary(description) do

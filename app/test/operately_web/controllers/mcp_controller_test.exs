@@ -6,8 +6,10 @@ defmodule OperatelyWeb.McpControllerTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.ProjectsFixtures
+  import Operately.ResourceHubsFixtures
   import Operately.TasksFixtures
 
+  alias Operately.Billing
   alias Operately.People
   alias Operately.Mcp
 
@@ -150,7 +152,10 @@ defmodule OperatelyWeb.McpControllerTest do
              "get_document",
              "get_file",
              "get_link",
-             "fetch"
+             "fetch",
+             "create_comment",
+             "create_project_check_in",
+             "create_goal_check_in"
            ]
 
     assert search_tool["outputSchema"]["type"] == "object"
@@ -172,6 +177,31 @@ defmodule OperatelyWeb.McpControllerTest do
              "/:company_id/milestones/:milestone_id",
              "/:company_id/spaces/:space_id"
            ]
+
+    create_comment_tool = Enum.find(tools_list_body["result"]["tools"], &(&1["name"] == "create_comment"))
+
+    assert create_comment_tool["annotations"] == %{
+             "readOnlyHint" => false,
+             "destructiveHint" => false,
+             "openWorldHint" => false
+           }
+
+    assert Enum.sort(create_comment_tool["inputSchema"]["properties"]["parent_type"]["enum"]) == Enum.sort([
+             "goal_check_in",
+             "project_check_in",
+             "goal_discussion",
+             "project_discussion",
+             "space_discussion",
+             "milestone",
+             "document",
+             "file",
+             "link",
+             "project_task",
+             "space_task"
+           ])
+
+    assert create_comment_tool["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
+    assert create_comment_tool["_meta"]["safetyClassification"] == "write"
 
     get_conn =
       build_conn()
@@ -314,6 +344,57 @@ defmodule OperatelyWeb.McpControllerTest do
     assert Jason.decode!(outer_text) == fetch_body["result"]["structuredContent"]
   end
 
+  test "executes the live write tools through tools/call", %{account: account, company: company, client: client} do
+    person = People.get_person(account, company)
+    space = group_fixture(person, %{company_id: company.id, name: "Roadmap Space"})
+    project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: space.id, name: "Roadmap Project"})
+    goal = goal_fixture(person, %{company_id: company.id, space_id: space.id, name: "Roadmap Goal"})
+    resource_hub = default_resource_hub_for_space(space)
+    document = document_fixture(resource_hub.id, person.id)
+
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client, "mcp:read mcp:write")
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    create_comment_body =
+      access_token
+      |> call_tool(session_id, "create_comment", %{
+        "resource_id" => OperatelyWeb.Paths.document_id(document),
+        "parent_type" => "document",
+        "content" => "Comment from MCP"
+      })
+      |> json_body()
+
+    assert create_comment_body["result"]["structuredContent"]["comment"]["id"]
+    assert [%{"type" => "text", "text" => create_comment_text}] = create_comment_body["result"]["content"]
+    assert Jason.decode!(create_comment_text) == create_comment_body["result"]["structuredContent"]
+
+    create_project_check_in_body =
+      access_token
+      |> call_tool(session_id, "create_project_check_in", %{
+        "project_id" => OperatelyWeb.Paths.project_id(project),
+        "status" => "on_track",
+        "content" => "Project update from MCP"
+      })
+      |> json_body()
+
+    assert create_project_check_in_body["result"]["structuredContent"]["check_in"]["status"] == "on_track"
+    assert [%{"type" => "text", "text" => project_check_in_text}] = create_project_check_in_body["result"]["content"]
+    assert Jason.decode!(project_check_in_text) == create_project_check_in_body["result"]["structuredContent"]
+
+    create_goal_check_in_body =
+      access_token
+      |> call_tool(session_id, "create_goal_check_in", %{
+        "goal_id" => OperatelyWeb.Paths.goal_id(goal),
+        "status" => "caution",
+        "content" => "Goal update from MCP"
+      })
+      |> json_body()
+
+    assert create_goal_check_in_body["result"]["structuredContent"]["check_in"]["status"] == "caution"
+    assert [%{"type" => "text", "text" => goal_check_in_text}] = create_goal_check_in_body["result"]["content"]
+    assert Jason.decode!(goal_check_in_text) == create_goal_check_in_body["result"]["structuredContent"]
+  end
+
   test "returns invalid params for unknown tool names", %{account: account, company: company, client: client} do
     %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
     {_initialize_conn, session_id} = initialize_session(access_token)
@@ -381,6 +462,35 @@ defmodule OperatelyWeb.McpControllerTest do
 
     assert conn.status == 200
     assert body["error"]["code"] == -32602
+  end
+
+  test "returns invalid params for invalid write-tool arguments", %{account: account, company: company, client: client} do
+    person = People.get_person(account, company)
+    project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: company.company_space_id})
+
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client, "mcp:read mcp:write")
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    invalid_status_body =
+      access_token
+      |> call_tool(session_id, "create_project_check_in", %{
+        "project_id" => OperatelyWeb.Paths.project_id(project),
+        "status" => "blocked",
+        "content" => "Update"
+      })
+      |> json_body()
+
+    blank_content_body =
+      access_token
+      |> call_tool(session_id, "create_comment", %{
+        "resource_id" => OperatelyWeb.Paths.project_id(project),
+        "parent_type" => "project_discussion",
+        "content" => "   "
+      })
+      |> json_body()
+
+    assert invalid_status_body["error"]["code"] == -32602
+    assert blank_content_body["error"]["code"] == -32602
   end
 
   test "returns invalid params when list_tasks receives none or both identifiers", %{account: account, company: company, client: client} do
@@ -565,6 +675,79 @@ defmodule OperatelyWeb.McpControllerTest do
 
     assert missing_session_conn.status == 400
     assert missing_protocol_conn.status == 400
+  end
+
+  test "returns insufficient_scope for write tools when the token only has mcp:read", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client, "mcp:read")
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    Enum.each(["create_comment", "create_project_check_in", "create_goal_check_in"], fn tool_name ->
+      conn =
+        access_token
+        |> call_tool(session_id, tool_name, %{})
+
+      assert conn.status == 403
+      assert get_resp_header(conn, "www-authenticate") |> List.first() =~ ~s(error="insufficient_scope")
+      assert get_resp_header(conn, "www-authenticate") |> List.first() =~ ~s(scope="mcp:write")
+    end)
+  end
+
+  test "returns tool-level errors for write-tool business rejections", %{account: account, company: company, client: client} do
+    person = People.get_person(account, company)
+    current_project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: company.company_space_id, name: "Current Project"})
+
+    other_account = account_fixture()
+    other_company = company_fixture(%{company_name: "Other Company"}, other_account)
+    other_person = People.get_person(other_account, other_company)
+    other_space = group_fixture(other_person, company_id: other_company.id)
+    other_goal = goal_fixture(other_person, %{company_id: other_company.id, space_id: other_space.id})
+    other_update = goal_update_fixture(other_person, other_goal)
+
+    {:ok, billing_account} = Billing.get_or_create_billing_account(company)
+
+    {:ok, _billing_account} =
+      Billing.update_billing_account(billing_account, %{
+        access_state: :read_only,
+        access_state_reason: :past_due,
+        access_state_started_at: DateTime.utc_now(),
+        access_state_ends_at: nil
+      })
+
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client, "mcp:read mcp:write")
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    cross_company_comment_body =
+      access_token
+      |> call_tool(session_id, "create_comment", %{
+        "resource_id" => OperatelyWeb.Paths.goal_update_id(other_update),
+        "parent_type" => "goal_check_in",
+        "content" => "Comment from MCP"
+      })
+      |> json_body()
+
+    read_only_company_body =
+      access_token
+      |> call_tool(session_id, "create_project_check_in", %{
+        "project_id" => OperatelyWeb.Paths.project_id(current_project),
+        "status" => "on_track",
+        "content" => "Project update from MCP"
+      })
+      |> json_body()
+
+    assert cross_company_comment_body["result"]["isError"] == true
+
+    assert cross_company_comment_body["result"]["content"] == [
+             %{"type" => "text", "text" => "The requested resource was not found or is not accessible."}
+           ]
+
+    assert read_only_company_body["result"]["isError"] == true
+
+    assert read_only_company_body["result"]["content"] == [
+             %{
+               "type" => "text",
+               "text" => "You do not have permission to perform this operation, or the company is read-only."
+             }
+           ]
   end
 
   test "uses tool-definition scopes for tools/call", %{account: account, company: company, client: client} do

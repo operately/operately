@@ -130,6 +130,24 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
       assert length(updates) == 1
       assert res.update.timeframe == nil
     end
+
+    test "does not change goal timeframe when due_date is omitted", ctx do
+      original_timeframe = ctx.goal.timeframe
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 checklist: []
+               })
+
+      goal = Repo.reload(ctx.goal)
+
+      assert res.update.timeframe == nil
+      assert goal.timeframe == original_timeframe
+    end
   end
 
   describe "subscriptions to notifications" do

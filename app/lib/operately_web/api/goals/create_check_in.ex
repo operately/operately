@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
   inputs do
     field :goal_id, :id, null: false
     field :status, :goal_check_in_status, null: false
-    field :due_date, :contextual_date, null: true
+    field? :due_date, :contextual_date, null: true
     field? :checklist, list_of(:goal_check_update), null: false
 
     field :content, :json, null: false
@@ -78,12 +78,20 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
        target_values: target_values,
        content: inputs.content,
        status: inputs.status,
-       due_date: inputs.due_date,
        checklist: inputs[:checklist],
        post_as_draft: inputs[:post_as_draft],
        send_to_everyone: inputs[:send_notifications_to_everyone],
        subscription_parent_type: :goal_update,
        subscriber_ids: inputs[:subscriber_ids]
-     }}
+     }
+     |> maybe_put_due_date(inputs)}
+  end
+
+  defp maybe_put_due_date(attrs, inputs) do
+    if Map.has_key?(inputs, :due_date) do
+      Map.put(attrs, :due_date, inputs[:due_date])
+    else
+      attrs
+    end
   end
 end
