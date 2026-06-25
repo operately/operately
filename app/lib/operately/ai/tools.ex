@@ -81,33 +81,34 @@ defmodule Operately.AI.Tools do
 
         log(context, Enum.join(log_details, "\n") <> "\n")
 
-        me = Map.get(context, :person)
-        title = Map.get(args, "title")
-        goal_id = Map.get(args, "goal_id")
-        {:ok, message} = Operately.RichContent.FromMarkdown.to_rich_text(Map.get(args, "message"))
+        with {:ok, message} <- parse_message(Map.get(args, "message")) do
+          me = Map.get(context, :person)
+          title = Map.get(args, "title")
+          goal_id = Map.get(args, "goal_id")
 
-        conn = %{
-          assigns: %{
-            current_person: me
-          }
-        }
-
-        {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(goal_id)
-
-        args =
-          %{
-            goal_id: id,
-            title: title,
-            message: message,
-            send_notifications_to_everyone: true,
-            subscriber_ids: []
+          conn = %{
+            assigns: %{
+              current_person: me
+            }
           }
 
-        if context.agent_run.sandbox_mode do
-          {:ok, "posted"}
-        else
-          {:ok, resp} = OperatelyWeb.Api.Goals.CreateDiscussion.call(conn, args)
-          Jason.encode(resp)
+          {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(goal_id)
+
+          args =
+            %{
+              goal_id: id,
+              title: title,
+              message: message,
+              send_notifications_to_everyone: true,
+              subscriber_ids: []
+            }
+
+          if context.agent_run.sandbox_mode do
+            {:ok, "posted"}
+          else
+            {:ok, resp} = OperatelyWeb.Api.Goals.CreateDiscussion.call(conn, args)
+            Jason.encode(resp)
+          end
         end
       end
     })
@@ -156,33 +157,34 @@ defmodule Operately.AI.Tools do
 
         log(context, Enum.join(log_details, "\n") <> "\n")
 
-        me = Map.get(context, :person)
-        title = Map.get(args, "title")
-        project_id = Map.get(args, "project_id")
-        {:ok, message} = Operately.RichContent.FromMarkdown.to_rich_text(Map.get(args, "message"))
+        with {:ok, message} <- parse_message(Map.get(args, "message")) do
+          me = Map.get(context, :person)
+          title = Map.get(args, "title")
+          project_id = Map.get(args, "project_id")
 
-        conn = %{
-          assigns: %{
-            current_person: me
-          }
-        }
-
-        {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(project_id)
-
-        args =
-          %{
-            project_id: id,
-            title: title,
-            message: message,
-            send_notifications_to_everyone: true,
-            subscriber_ids: []
+          conn = %{
+            assigns: %{
+              current_person: me
+            }
           }
 
-        if context.agent_run.sandbox_mode do
-          {:ok, "posted"}
-        else
-          {:ok, resp} = OperatelyWeb.Api.Projects.Discussions.Create.call(conn, args)
-          Jason.encode(resp)
+          {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(project_id)
+
+          args =
+            %{
+              project_id: id,
+              title: title,
+              message: message,
+              send_notifications_to_everyone: true,
+              subscriber_ids: []
+            }
+
+          if context.agent_run.sandbox_mode do
+            {:ok, "posted"}
+          else
+            {:ok, resp} = OperatelyWeb.Api.Projects.Discussions.Create.call(conn, args)
+            Jason.encode(resp)
+          end
         end
       end
     })
@@ -195,6 +197,13 @@ defmodule Operately.AI.Tools do
   defp log(context, msg) do
     if Map.has_key?(context, :agent_run) do
       Operately.People.AgentRun.append_log(context.agent_run.id, msg)
+    end
+  end
+
+  defp parse_message(content) do
+    case Operately.RichContent.FromMarkdown.to_rich_text(content) do
+      {:ok, message} -> {:ok, message}
+      {:error, :invalid_arguments} -> {:error, "message cannot be empty"}
     end
   end
 
