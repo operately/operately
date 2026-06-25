@@ -7,7 +7,12 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
   alias Plug.Conn
   alias Operately.Mcp.{AccessToken, Grant}
   alias Operately.People
+  alias OperatelyWeb.Mcp.Catalog.Definition
   alias OperatelyWeb.Mcp.Executor
+
+  defmodule StubTool do
+    def call(_conn, _arguments), do: {:error, :not_implemented}
+  end
 
   setup do
     account = account_fixture()
@@ -39,15 +44,17 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
   end
 
   test "returns a tool-level error for stubbed wrappers", %{conn: conn} do
-    assert {:ok, definition} = Executor.fetch_definition("fetch")
+    definition =
+      Definition.new!(
+        name: "stub_tool",
+        input_schema: %{"type" => "object", "properties" => %{}, "additionalProperties" => false},
+        implementation: StubTool
+      )
 
-    assert {:ok, result} =
-             Executor.execute(conn, definition, %{
-               "url" => "https://app.operately.com/acme/projects/project_123"
-             })
+    assert {:ok, result} = Executor.execute(conn, definition, %{})
 
     assert result["isError"] == true
-    assert result["content"] == [%{"type" => "text", "text" => "The fetch tool is not implemented yet."}]
+    assert result["content"] == [%{"type" => "text", "text" => "The stub_tool tool is not implemented yet."}]
   end
 
   test "returns unknown tool for missing wrappers" do
