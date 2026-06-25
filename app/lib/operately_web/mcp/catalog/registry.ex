@@ -4,11 +4,6 @@ defmodule OperatelyWeb.Mcp.Catalog.Registry do
 
   @tools_dir Path.expand("../tools", __DIR__)
   @tool_base OperatelyWeb.Mcp.Tools
-  @tool_files Path.wildcard(Path.join(@tools_dir, "**/*.ex"))
-
-  for file <- @tool_files do
-    @external_resource file
-  end
 
   def list_definitions do
     tool_modules()
@@ -30,10 +25,14 @@ defmodule OperatelyWeb.Mcp.Catalog.Registry do
   end
 
   defp tool_modules do
-    @tool_files
+    tool_files()
     |> Enum.map(&module_for_tool_file/1)
     |> Enum.filter(&tool_module?/1)
     |> Enum.sort()
+  end
+
+  defp tool_files do
+    Path.wildcard(Path.join(@tools_dir, "**/*.ex"))
   end
 
   defp module_for_tool_file(file) do
