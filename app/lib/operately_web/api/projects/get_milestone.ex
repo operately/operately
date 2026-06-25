@@ -17,10 +17,12 @@ defmodule OperatelyWeb.Api.Projects.GetMilestone do
     field? :include_space, :boolean, null: false
     field? :include_subscription_list, :boolean, null: false
     field? :include_available_statuses, :boolean, null: false
+    field? :include_markdown, :boolean, default: false
   end
 
   outputs do
     field :milestone, :milestone, null: false
+    field? :markdown, :string
   end
 
   def call(conn, inputs) do
@@ -28,8 +30,20 @@ defmodule OperatelyWeb.Api.Projects.GetMilestone do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:milestone, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.milestone.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
-    |> run(:serialized, fn ctx -> {:ok, %{milestone: Serializer.serialize(ctx.milestone)}} end)
+    |> run(:serialized, fn ctx -> serialize(ctx, inputs[:include_markdown]) end)
     |> respond()
+  end
+
+  defp serialize(ctx, include_md) do
+    json = Serializer.serialize(ctx.milestone)
+
+    if include_md do
+      markdown = Operately.MD.Milestone.render(ctx.milestone)
+
+      {:ok, %{milestone: json, markdown: markdown}}
+    else
+      {:ok, %{milestone: json}}
+    end
   end
 
   defp respond(result) do
