@@ -405,14 +405,50 @@ Outcome: a reviewable, useful read-only MCP where the initial tool set executes 
 
 Status: implemented.
 
-### PR 4: Write tool expansion
+### PR 4: Safe write MCP tools
 
-- Add limited write tools
-- Add scope checks and tool-level permission metadata
-- Add confirmation-safe behavior and clear failure modes
-- Keep long-running or polling operations out of MCP v1 unless they are redesigned as non-blocking MCP-native tools
+- Add exactly three live write tools on top of existing API handlers:
+  - `create_comment`
+  - `create_project_check_in`
+  - `create_goal_check_in`
+- Require `mcp:write` for those tools and expose write-oriented metadata in `tools/list`
+- Keep MCP-authored content plain text / simple markdown and convert it into Operately rich content before calling the underlying handlers
+- Keep notification fan-out off by default:
+  - project check-ins use `post_as_draft: false`, `send_notifications_to_everyone: false`, `subscriber_ids: []`
+  - goal check-ins use `due_date: nil`, `checklist: []`, `new_target_values: "[]"`, `post_as_draft: false`, `send_notifications_to_everyone: false`, `subscriber_ids: []`
+- `create_comment` accepts:
+  - `resource_id`
+  - `parent_type`
+- supported `parent_type` values:
+  - `goal_check_in`
+  - `project_check_in`
+  - `goal_discussion`
+  - `project_discussion`
+  - `space_discussion`
+  - `milestone`
+  - `project_task`
+  - `space_task`
+  - `document`
+  - `file`
+  - `link`
+- malformed IDs or unsupported `parent_type` values return invalid params
+- well-formed but inaccessible or cross-company targets return tool-level not-found errors
+- Keep write-tool failures confirmation-safe:
+  - input-shaping failures stay protocol-level invalid params
+  - permission and read-only-company rejections return tool-level `isError`
+  - business not-found cases return tool-level `isError`
+  - unexpected failures return safe generic tool-level errors
+- Defer broader mutation surfaces:
+  - task mutations
+  - discussion creation and updates
+  - close / reopen flows
+  - document / file / link creation
+  - destructive operations
+  - long-running or polling flows
 
-Outcome: a minimal but credible action surface without exposing the full endpoint catalog.
+Outcome: a small, safe mutation surface that reuses the existing Operately APIs and remains easy for MCP clients to use.
+
+Status: implemented.
 
 ### PR 5: Submission hardening
 

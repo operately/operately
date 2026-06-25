@@ -55,4 +55,14 @@ defmodule OperatelyWeb.Mcp.InputValidatorTest do
     assert {:error, {:invalid_format, "url", "uri"}} ==
              InputValidator.validate(schema, %{"url" => "not-a-uri"})
   end
+
+  test "rejects invalid enum values" do
+    schema =
+      JsonSchema.object(%{
+        "status" => JsonSchema.string("Check-in status.", enum: ["on_track", "caution", "off_track"])
+      })
+
+    assert {:error, {:invalid_enum, "status"}} ==
+             InputValidator.validate(schema, %{"status" => "blocked"})
+  end
 end

@@ -166,6 +166,7 @@ defmodule OperatelyWeb.McpController do
       {:error, {:unexpected_key, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
       {:error, {:invalid_type, _key, _type}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
       {:error, {:invalid_format, _key, _format}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+      {:error, {:invalid_enum, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
       {:error, :invalid_schema} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
       {:error, :authenticated_conn_required} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
       {:error, _reason} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])

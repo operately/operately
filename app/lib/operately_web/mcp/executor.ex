@@ -37,9 +37,10 @@ defmodule OperatelyWeb.Mcp.Executor do
       {:ok, payload} when is_map(payload) -> {:ok, success_result(payload)}
       {:ok, _payload} -> {:ok, internal_error_result()}
       {:error, :invalid_arguments} = error -> error
-      {:error, :bad_request} = error -> error
       {:error, :not_implemented} -> {:ok, not_implemented_result(definition.name)}
       {:error, :not_found} -> {:ok, not_found_result()}
+      {:error, :forbidden} -> {:ok, forbidden_result()}
+      {:error, :bad_request} -> {:ok, bad_request_result()}
       {:error, :internal_server_error} -> {:ok, internal_error_result()}
       {:error, _reason} -> {:ok, internal_error_result()}
     end
@@ -73,6 +74,20 @@ defmodule OperatelyWeb.Mcp.Executor do
     %{
       "isError" => true,
       "content" => [text_content("The requested resource was not found or is not accessible.")]
+    }
+  end
+
+  defp forbidden_result do
+    %{
+      "isError" => true,
+      "content" => [text_content("You do not have permission to perform this operation, or the company is read-only.")]
+    }
+  end
+
+  defp bad_request_result do
+    %{
+      "isError" => true,
+      "content" => [text_content("The tool could not complete the request with the provided data.")]
     }
   end
 

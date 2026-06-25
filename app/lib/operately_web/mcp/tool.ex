@@ -21,26 +21,42 @@ defmodule OperatelyWeb.Mcp.Tool do
 
       alias OperatelyWeb.Mcp.Catalog.{Definition, JsonSchema}
 
-      import OperatelyWeb.Mcp.Tool, only: [not_implemented: 0, read_annotations: 0, read_security_schemes: 0]
+      import OperatelyWeb.Mcp.Tool, only: [not_implemented: 0, read_annotations: 0, write_annotations: 0, read_security_schemes: 0, write_security_schemes: 0]
     end
   end
 
   def read_annotations do
+    annotations(read_only: true, destructive: false)
+  end
+
+  def write_annotations do
+    annotations(read_only: false, destructive: false)
+  end
+
+  def read_security_schemes do
+    security_schemes(["mcp:read"])
+  end
+
+  def write_security_schemes do
+    security_schemes(["mcp:write"])
+  end
+
+  def not_implemented, do: {:error, :not_implemented}
+
+  defp annotations(opts) do
     %{
-      "readOnlyHint" => true,
-      "destructiveHint" => false,
+      "readOnlyHint" => Keyword.fetch!(opts, :read_only),
+      "destructiveHint" => Keyword.fetch!(opts, :destructive),
       "openWorldHint" => false
     }
   end
 
-  def read_security_schemes do
+  defp security_schemes(scopes) do
     [
       %{
         "type" => "oauth2",
-        "scopes" => ["mcp:read"]
+        "scopes" => scopes
       }
     ]
   end
-
-  def not_implemented, do: {:error, :not_implemented}
 end
