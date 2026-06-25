@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.List do
   use OperatelyWeb.Mcp.Tool
 
   alias OperatelyWeb.Api.Goals.List, as: GoalsList
-  alias OperatelyWeb.Api.Helpers
+  alias OperatelyWeb.Mcp.Helpers
 
   @impl true
   def definition do
@@ -37,20 +37,8 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.List do
 
   @impl true
   def call(conn, arguments) do
-    with {:ok, space_id} <- decode_optional_id(arguments["space_id"]) do
-      GoalsList.call(conn, put_optional(%{}, :space_id, space_id))
+    with {:ok, space_id} <- Helpers.decode_optional_id(arguments["space_id"]) do
+      GoalsList.call(conn, Helpers.put_optional(%{}, :space_id, space_id))
     end
   end
-
-  defp decode_optional_id(nil), do: {:ok, nil}
-
-  defp decode_optional_id(id) do
-    case Helpers.decode_id(id) do
-      {:ok, decoded_id} -> {:ok, decoded_id}
-      {:error, _reason} -> {:error, :invalid_arguments}
-    end
-  end
-
-  defp put_optional(map, _key, nil), do: map
-  defp put_optional(map, key, value), do: Map.put(map, key, value)
 end

@@ -16,9 +16,9 @@ defmodule OperatelyWeb.Mcp.Helpers do
   def put_optional(map, key, value), do: Map.put(map, key, value)
 
   def load_comments(conn, entity_id, entity_type) do
-    {:ok, %{comments: comments}} =
-      CommentsList.call(conn, %{entity_id: entity_id, entity_type: entity_type})
-
-    comments
+    case CommentsList.call(conn, %{entity_id: entity_id, entity_type: entity_type}) do
+      {:ok, %{comments: comments}} -> comments
+      _unexpected -> []
+    end
   end
 end

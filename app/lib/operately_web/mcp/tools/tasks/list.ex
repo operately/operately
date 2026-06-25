@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
   use OperatelyWeb.Mcp.Tool
 
-  alias OperatelyWeb.Api.Helpers
+  alias OperatelyWeb.Mcp.Helpers
   alias OperatelyWeb.Api.Spaces.ListTasks, as: SpaceTasksList
   alias OperatelyWeb.Api.Tasks.List, as: ProjectTasksList
 
@@ -44,24 +44,17 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
         {:error, :invalid_arguments}
 
       {project_id, nil} ->
-        with {:ok, project_id} <- decode_id(project_id) do
+        with {:ok, project_id} <- Helpers.decode_id(project_id) do
           ProjectTasksList.call(conn, %{project_id: project_id})
         end
 
       {nil, space_id} ->
-        with {:ok, space_id} <- decode_id(space_id) do
+        with {:ok, space_id} <- Helpers.decode_id(space_id) do
           SpaceTasksList.call(conn, %{space_id: space_id})
         end
 
       {_project_id, _space_id} ->
         {:error, :invalid_arguments}
-    end
-  end
-
-  defp decode_id(id) do
-    case Helpers.decode_id(id) do
-      {:ok, decoded_id} -> {:ok, decoded_id}
-      {:error, _reason} -> {:error, :invalid_arguments}
     end
   end
 end
