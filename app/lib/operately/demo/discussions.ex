@@ -1,7 +1,6 @@
 defmodule Operately.Demo.Discussions do
   alias Operately.Demo.{Comments, Resources}
   alias Operately.Operations.DiscussionPosting
-  alias Operately.Demo.PoorMansMarkdown
 
   # no discussions to create
   def create_discussions(resources, nil), do: resources
@@ -20,7 +19,7 @@ defmodule Operately.Demo.Discussions do
     {:ok, discussion} = DiscussionPosting.run(author, space, %{
       messages_board_id: board.id,
       title: data.title,
-      content: PoorMansMarkdown.from_markdown(data.content, resources),
+      content: Resources.rich_text!(resources, data.content),
       post_as_draft: false,
       send_to_everyone: true,
       subscription_parent_type: :message,

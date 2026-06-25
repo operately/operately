@@ -1,6 +1,6 @@
 defmodule Operately.Demo.Comments do
   alias Operately.Repo
-  alias Operately.Demo.{PoorMansMarkdown, Resources}
+  alias Operately.Demo.Resources
 
   alias Operately.Updates.Comment
   alias Operately.Messages.Message
@@ -19,7 +19,7 @@ defmodule Operately.Demo.Comments do
     author = Resources.get(resources, data.author)
     parent = preload(parent)
     parent_type = find_parent_type(parent)
-    content = PoorMansMarkdown.from_markdown(data.content, resources)
+    content = Resources.rich_text!(resources, data.content)
 
     {:ok, comment} = Operately.Operations.CommentAdding.run(author, parent, parent_type, content)
 

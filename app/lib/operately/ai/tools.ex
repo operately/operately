@@ -84,7 +84,7 @@ defmodule Operately.AI.Tools do
         me = Map.get(context, :person)
         title = Map.get(args, "title")
         goal_id = Map.get(args, "goal_id")
-        message = Map.get(args, "message") |> Operately.Demo.PoorMansMarkdown.from_markdown(%{})
+        {:ok, message} = Operately.RichContent.FromMarkdown.to_rich_text(Map.get(args, "message"))
 
         conn = %{
           assigns: %{
@@ -159,7 +159,7 @@ defmodule Operately.AI.Tools do
         me = Map.get(context, :person)
         title = Map.get(args, "title")
         project_id = Map.get(args, "project_id")
-        message = Map.get(args, "message") |> Operately.Demo.PoorMansMarkdown.from_markdown(%{})
+        {:ok, message} = Operately.RichContent.FromMarkdown.to_rich_text(Map.get(args, "message"))
 
         conn = %{
           assigns: %{
