@@ -1,6 +1,7 @@
 import React from "react";
 import { match } from "ts-pattern";
 
+import "../i18n";
 import * as Time from "../utils/time";
 import LongDate from "./LongDate";
 import RelativeTime from "./RelativeTime";
