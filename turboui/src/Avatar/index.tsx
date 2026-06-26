@@ -4,7 +4,8 @@ import { AvatarProps, AvatarSize } from "./types";
 
 export { AvatarList } from "./AvatarList";
 export { AvatarWithName } from "./AvatarWithName";
-export type { AvatarPerson, AvatarProps } from "./types";
+export { ContributorAvatar, PlaceholderAvatar } from "./ContributorAvatar";
+export type { AvatarPerson, AvatarProps, ContributorAvatarProps, PlaceholderAvatarSize } from "./types";
 
 function calculateSize(size: AvatarSize): number {
   if (size.constructor.name === "Number") {
