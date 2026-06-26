@@ -2,6 +2,7 @@ defmodule Operately.Mcp.ToolsTest do
   use ExUnit.Case, async: true
 
   alias Operately.Mcp.Resources
+  alias OperatelyWeb.Mcp.Catalog.JsonSchema
   alias OperatelyWeb.Mcp.Tools
 
   @expected_tool_names [
@@ -141,15 +142,33 @@ defmodule Operately.Mcp.ToolsTest do
     assert Enum.empty?(Enum.filter(Map.values(tools), &(&1.safety_classification == :destructive)))
   end
 
+  test "any_object schemas include an empty properties map" do
+    assert JsonSchema.any_object() == %{
+             "type" => "object",
+             "properties" => %{},
+             "additionalProperties" => true
+           }
+  end
+
   test "serializes descriptors for MCP clients" do
     descriptors = Tools.list_descriptors()
     assert Enum.map(descriptors, & &1["name"]) == @expected_tool_names
+
+    assert Enum.all?(descriptors, fn descriptor ->
+             match?([_ | _], descriptor["securitySchemes"])
+           end)
+
+    assert Enum.all?(descriptors, fn descriptor ->
+             schemas_have_object_properties?(descriptor["inputSchema"]) and
+               schemas_have_object_properties?(descriptor["outputSchema"])
+           end)
 
     assert %{
              "title" => "Search Operately",
              "description" => _description,
              "inputSchema" => %{"type" => "object"},
              "outputSchema" => %{"type" => "object"},
+             "securitySchemes" => [%{"type" => "oauth2", "scopes" => ["mcp:read"]}],
              "annotations" => %{
                "readOnlyHint" => true,
                "destructiveHint" => false,
@@ -170,6 +189,8 @@ defmodule Operately.Mcp.ToolsTest do
              "destructiveHint" => false,
              "openWorldHint" => false
            }
+
+    assert create_comment["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
 
     assert Enum.sort(create_comment["inputSchema"]["properties"]["parent_type"]["enum"]) == Enum.sort([
              "goal_check_in",
@@ -229,4 +250,21 @@ defmodule Operately.Mcp.ToolsTest do
   end
 
   defp valid_object_schema?(_schema, _opts), do: false
+
+  defp schemas_have_object_properties?(%{"type" => "object"} = schema) do
+    is_map(Map.get(schema, "properties", %{})) and
+      Enum.all?(Map.get(schema, "properties", %{}), fn {_key, nested} ->
+        schemas_have_object_properties?(nested)
+      end) and
+      case Map.get(schema, "items") do
+        %{} = items -> schemas_have_object_properties?(items)
+        _ -> true
+      end
+  end
+
+  defp schemas_have_object_properties?(%{"type" => "array", "items" => items}) when is_map(items) do
+    schemas_have_object_properties?(items)
+  end
+
+  defp schemas_have_object_properties?(_schema), do: true
 end

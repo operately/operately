@@ -140,6 +140,7 @@ defmodule OperatelyWeb.McpControllerTest do
 
     assert search_tool["outputSchema"]["type"] == "object"
     assert search_tool["_meta"]["examples"] != []
+    assert search_tool["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:read"]}]
     assert search_tool["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:read"]}]
     assert fetch_tool["description"] =~ "/:company_id/projects/:project_id"
     assert fetch_tool["description"] =~ "/:company_id/goals/:goal_id"
@@ -180,6 +181,7 @@ defmodule OperatelyWeb.McpControllerTest do
              "space_task"
            ])
 
+    assert create_comment_tool["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
     assert create_comment_tool["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
     assert create_comment_tool["_meta"]["safetyClassification"] == "write"
 
