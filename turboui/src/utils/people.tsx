@@ -1,3 +1,3 @@
-export function firstName(fullName: string) {
-  return fullName.split(" ")[0];
+export function firstName(fullName: string): string {
+  return fullName.trim().split(/\s+/)[0] || "";
 }

@@ -2,6 +2,7 @@ import * as TipTap from "@tiptap/react";
 import React from "react";
 
 import { Avatar } from "../../../Avatar";
+import { firstName } from "../../../utils/people";
 import { usePerson } from "../../EditorContext";
 
 interface Person {
@@ -48,21 +49,10 @@ export const NodeView: React.FC<TipTap.NodeViewProps> = (props) => {
         <Avatar person={person} size={avatarsize} />
       </span>
 
-      {firstName(person)}
+      {firstName(person.fullName)}
     </TipTap.NodeViewWrapper>
   );
 };
-
-function firstName(person: Person): string {
-  if (!person) return "";
-  const name = person.fullName || "";
-  const parts = name.split(" ");
-  if (parts.length > 1) {
-    return parts.slice(0, -1).join(" ");
-  } else {
-    return name;
-  }
-}
 
 function getFontSize(element: HTMLElement): number {
   const style = window.getComputedStyle(element, null);
