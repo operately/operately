@@ -1,4 +1,4 @@
-import { areRichTextObjectsEqual, countCharacters, shortenContent } from "./contentOps";
+import { areRichTextObjectsEqual, countCharacters, richContentToString, shortenContent } from "./contentOps";
 
 describe("shortenContent", () => {
   it("few words in a single line", () => {
@@ -73,6 +73,35 @@ describe("countCharacters", () => {
     const input = `{"content":[{"content":[{"text":"Some very long text ","type":"text"},{"attrs":{"id":"fred-williams-H8bQVAffZB6ddLrgofhWL","label":"Fred Williams"},"type":"mention"},{"text":" more text.","type":"text"}],"type":"paragraph"},{"content":[{"text":"Contrary to popular belief, Lorem Ipsum is not simply random text.","type":"text"}],"type":"paragraph"}],"type":"doc"}`;
 
     expect(countCharacters(input)).toEqual(110);
+  });
+});
+
+describe("richContentToString", () => {
+  it("uses the full single-part mention label", () => {
+    const input = {
+      type: "mention",
+      attrs: { id: "madonna", label: "Madonna" },
+    };
+
+    expect(richContentToString(input)).toBe("Madonna");
+  });
+
+  it("uses the first token from a two-part mention label", () => {
+    const input = {
+      type: "mention",
+      attrs: { id: "john-smith", label: "John Smith" },
+    };
+
+    expect(richContentToString(input)).toBe("John");
+  });
+
+  it("uses the first token from a multi-part mention label", () => {
+    const input = {
+      type: "mention",
+      attrs: { id: "john-michael-smith", label: "John Michael Smith" },
+    };
+
+    expect(richContentToString(input)).toBe("John");
   });
 });
 
