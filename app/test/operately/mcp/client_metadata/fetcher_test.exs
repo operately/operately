@@ -96,6 +96,17 @@ defmodule Operately.Mcp.ClientMetadata.FetcherTest do
     end
   end
 
+  test "returns invalid_response for oversized bodies" do
+    oversized_body = String.duplicate("a", 32_769)
+
+    with_mocks [
+      {Operately.Mcp.ClientMetadata.SafeUrl, [], [validate: fn _url -> :ok end]},
+      {Req, [], [get: fn _url, _opts -> {:ok, %{status: 200, body: oversized_body, headers: %{}}} end]}
+    ] do
+      assert {:error, :invalid_response} = Fetcher.fetch(@client_id)
+    end
+  end
+
   test "returns fetch_failed for transport errors" do
     with_mocks [
       {Operately.Mcp.ClientMetadata.SafeUrl, [], [validate: fn _url -> :ok end]},
