@@ -49,6 +49,28 @@ defmodule Operately.Mcp.ClientMetadata.FetcherTest do
     end
   end
 
+  test "does not cache documents when max-age is zero" do
+    body = Jason.encode!(@document)
+
+    with_mocks [
+      {Operately.Mcp.ClientMetadata.SafeUrl, [], [validate: fn _url -> :ok end]},
+      {Req, [],
+       [
+         get: fn _url, _opts ->
+           {:ok,
+            %{
+              status: 200,
+              body: body,
+              headers: %{"cache-control" => "max-age=0"}
+            }}
+         end
+       ]}
+    ] do
+      assert {:ok, @document} = Fetcher.fetch(@client_id)
+      assert :miss = Cache.get(@client_id)
+    end
+  end
+
   test "returns unsafe_url when validation fails" do
     with_mock Operately.Mcp.ClientMetadata.SafeUrl, [],
       validate: fn _url -> {:error, :unsafe_url} end do

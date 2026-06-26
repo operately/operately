@@ -18,10 +18,15 @@ defmodule Operately.Mcp.ClientMetadata.Cache do
 
   @doc """
   Stores a document for the given TTL in seconds.
+
+  Non-positive TTLs are ignored so dead entries are not kept in ETS.
   """
   def put(url, document, ttl_seconds) when is_binary(url) and is_map(document) and is_integer(ttl_seconds) do
-    ensure_table()
-    :ets.insert(@table, {url, document, now() + ttl_seconds})
+    if ttl_seconds > 0 do
+      ensure_table()
+      :ets.insert(@table, {url, document, now() + ttl_seconds})
+    end
+
     :ok
   end
 

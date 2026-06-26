@@ -31,4 +31,10 @@ defmodule Operately.Mcp.ClientMetadata.CacheTest do
     assert :ok = Cache.clear()
     assert :miss = Cache.get(@url)
   end
+
+  test "skips caching for non-positive ttls" do
+    assert :ok = Cache.put(@url, @document, 0)
+    assert :ok = Cache.put(@url, @document, -1)
+    assert :miss = Cache.get(@url)
+  end
 end
