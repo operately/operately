@@ -5,7 +5,7 @@ import * as React from "react";
 import { useProfileUpdatedSignal } from "@/signals";
 import { throttle } from "@/utils/throttle";
 
-import { useOptionalPaths } from "@/routes/paths";
+import { compareIds, useOptionalPaths } from "@/routes/paths";
 
 interface CurrentCompanyContextProps {
   company: Companies.Company | null;
@@ -73,7 +73,7 @@ export function useMentionedPersonLookupFn(): (
   }
 
   return async (id: string) => {
-    const person = ctx.people?.find((p) => p.id === id);
+    const person = ctx.people?.find((p) => compareIds(p.id, id));
     if (person) {
       return { ...person, profileLink: paths.profilePath(person.id) };
     }
