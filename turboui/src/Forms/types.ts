@@ -1,23 +1,27 @@
 import type * as React from "react";
 
+import type { BaseButtonProps } from "../Button";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export type FormStatus = "idle" | "uploading" | "validating" | "submitting";
 export type FormValues = Record<string, unknown>;
 export type FormErrors = Record<string, string>;
 export type AddErrorFn = (field: string, message: string) => void;
-export type FormValueUpdater<T> = T | ((currentValue: T) => T);
+export type FormValueUpdater<T> = T | ((currentValue: T | undefined) => T);
 export type FieldValidation = (field: string, value: unknown, addError: AddErrorFn) => void;
 
 export interface FormState<T extends FormValues = FormValues> {
   values: T;
   state: FormStatus;
+  trigger?: string;
   errors: FormErrors;
   hasErrors: boolean;
   hasCancel: boolean;
   lastSubmitSucceededAt?: number;
   actions: {
     clearErrors: () => void;
+    addErrors: (errors: FormErrors) => void;
+    removeErrors: (keys: string[]) => void;
     submit: (attrs?: unknown) => Promise<void>;
     cancel: () => Promise<void>;
     reset: () => void;
@@ -26,6 +30,7 @@ export interface FormState<T extends FormValues = FormValues> {
     getValue: <TValue = unknown>(field: string) => TValue | undefined;
     setValue: <TValue = unknown>(field: string, value: FormValueUpdater<TValue>) => void;
     setState: (state: FormStatus) => void;
+    setTrigger: React.Dispatch<React.SetStateAction<string | undefined>>;
   };
 }
 
@@ -35,6 +40,7 @@ export interface UseFormOptions<T extends FormValues> {
   submit: (attrs?: unknown) => Promise<void> | void;
   cancel?: () => Promise<void> | void;
   onChange?: (args: { newValues: T; field: string | null }) => void;
+  onError?: (error: any) => void;
 }
 
 export interface FormProps<T extends FormValues = FormValues> {
@@ -83,13 +89,24 @@ export interface TextInputProps {
   label?: string;
   testId?: string;
   autoFocus?: boolean;
+  hidden?: boolean;
   required?: boolean;
+  minLength?: number;
+  maxLength?: number;
   placeholder?: string;
+  onEnter?: (event: React.KeyboardEvent) => void;
+  okSign?: boolean;
 }
 
 export interface SubmitProps {
   saveText?: string;
   cancelText?: string;
+  layout?: "left" | "centered";
+  buttonSize?: BaseButtonProps["size"];
+  submitOnEnter?: boolean;
+  className?: string;
+  containerClassName?: string;
+  testId?: string;
 }
 
 export interface SelectBoxOption {
@@ -169,4 +186,10 @@ export interface TitleInputProps {
   readonly?: boolean;
   errorMessage?: string;
   fontBold?: boolean;
+}
+
+export interface FormErrorProps {
+  message?: string;
+  when?: boolean;
+  className?: string;
 }

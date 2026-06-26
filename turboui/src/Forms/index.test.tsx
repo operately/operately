@@ -6,6 +6,7 @@ import { emptyContent } from "../RichContent/contentOps";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import {
   Form,
+  FormError,
   NumberInput,
   PasswordInput,
   RichTextArea,
@@ -27,6 +28,10 @@ jest.mock("../RichEditor", () => ({
     localDraftRestored: false,
     clearLocalDraft: () => undefined,
   }),
+}));
+
+jest.mock("../icons", () => ({
+  IconCheck: () => <svg data-testid="icon-check" />,
 }));
 
 jest.mock("react-select", () => {
@@ -138,6 +143,66 @@ describe("Forms", () => {
     expect(container.querySelector('[data-test-id="items-0-name"]')).toBeInTheDocument();
   });
 
+  test("supports adding and removing submit errors through form actions", async () => {
+    function Harness() {
+      const form = useForm({
+        fields: { name: "" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="name" label="Name" />
+          <FormError when={!!form.errors._submit} message={form.errors._submit} />
+          <button type="button" onClick={() => form.actions.addErrors({ _submit: "Save failed" })}>
+            Add submit error
+          </button>
+          <button type="button" onClick={() => form.actions.removeErrors(["_submit"])}>
+            Remove submit error
+          </button>
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Add submit error" }));
+    expect(await screen.findByText("Save failed")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove submit error" }));
+    await waitFor(() => expect(screen.queryByText("Save failed")).not.toBeInTheDocument());
+  });
+
+  test("calls onError when submit fails", async () => {
+    const onError = jest.fn();
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Roadmap" },
+        onError,
+        submit: async () => {
+          throw new Error("submit failed");
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="name" label="Name" />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onError).toHaveBeenCalledTimes(1));
+
+    consoleErrorSpy.mockRestore();
+  });
+
   test("updates select box values", async () => {
     const onSubmit = jest.fn();
 
@@ -174,6 +239,32 @@ describe("Forms", () => {
         status: "false",
       }),
     );
+  });
+
+  test("updates the trigger through form actions", async () => {
+    function Harness() {
+      const form = useForm({
+        fields: { name: "" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <div data-testid="trigger-value">{form.trigger ?? "none"}</div>
+          <button type="button" onClick={() => form.actions.setTrigger("draft")}>
+            Set draft trigger
+          </button>
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.getByTestId("trigger-value")).toHaveTextContent("none");
+
+    fireEvent.click(screen.getByRole("button", { name: "Set draft trigger" }));
+
+    expect(await screen.findByTestId("trigger-value")).toHaveTextContent("draft");
   });
 
   test("resets field values before invoking cancel", () => {
@@ -237,6 +328,96 @@ describe("Forms", () => {
 
     expect(await screen.findByText("Can't be empty")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  test("supports text input min and max length validation", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { name: "hi", code: "toolong" },
+        submit: async () => {
+          onSubmit();
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="name" label="Name" minLength={3} />
+          <TextInput field="code" label="Code" maxLength={4} />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Must be at least 3 characters long")).toBeInTheDocument();
+    expect(await screen.findByText("Must be at most 4 characters long")).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  test("supports hidden text inputs", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { secret: "hidden value" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="secret" label="Secret" hidden />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.queryByLabelText("Secret")).not.toBeInTheDocument();
+  });
+
+  test("calls the text input onEnter handler", () => {
+    const onEnter = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { name: "" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="name" label="Name" onEnter={onEnter} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.keyDown(screen.getByLabelText("Name"), { key: "Enter" });
+
+    expect(onEnter).toHaveBeenCalledTimes(1);
+  });
+
+  test("renders the text input ok sign when the field has no error", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Ready" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="name" label="Name" okSign />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.getByTestId("icon-check")).toBeInTheDocument();
   });
 
   describe("validateTextLength", () => {
@@ -324,5 +505,85 @@ describe("Forms", () => {
     expect(await screen.findByText("Can't be empty")).toBeInTheDocument();
     expect(await screen.findByText("Must be a valid number")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  test("shows the default form error when the form has validation errors", async () => {
+    function Harness() {
+      const form = useForm({
+        fields: { name: "" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="name" label="Name" required />
+          <FormError />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Please fix the errors above.")).toBeInTheDocument();
+  });
+
+  test("supports submit layout, sizing, and custom ids", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Roadmap" },
+        cancel: async () => undefined,
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="name" label="Name" />
+          <Submit
+            saveText="Publish"
+            layout="centered"
+            buttonSize="base"
+            containerClassName="custom-submit-container"
+            testId="publish-button"
+          />
+        </Form>
+      );
+    }
+
+    const { container } = render(<Harness />);
+
+    const saveButton = container.querySelector('[data-test-id="publish-button"]');
+    const cancelButton = container.querySelector('[data-test-id="cancel"]');
+
+    expect(saveButton).toBeInTheDocument();
+    expect(cancelButton).toBeInTheDocument();
+    const submitContainer = saveButton?.parentElement;
+
+    expect(saveButton).toHaveAttribute("type", "button");
+    expect(saveButton).toHaveClass("px-4", "py-2");
+    expect(cancelButton).toHaveClass("px-4", "py-2");
+    expect(submitContainer).toHaveClass("justify-center", "custom-submit-container");
+  });
+
+  test("uses submit button type when submitOnEnter is enabled", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Roadmap" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <TextInput field="name" label="Name" />
+          <Submit submitOnEnter />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute("type", "submit");
   });
 });
