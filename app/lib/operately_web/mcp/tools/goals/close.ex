@@ -40,10 +40,11 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Close do
   @impl true
   def call(conn, %{"goal_id" => goal_id, "success_status" => success_status, "retrospective" => retrospective}) do
     with {:ok, goal_id} <- Helpers.decode_id(goal_id),
+         {:ok, success_status} <- decode_success_status(success_status),
          {:ok, retrospective} <- Helpers.markdown_to_rich_text(retrospective) do
       GoalClose.call(conn, %{
         goal_id: goal_id,
-        success_status: String.to_existing_atom(success_status),
+        success_status: success_status,
         success: success_text(success_status),
         retrospective: retrospective,
         subscriber_ids: []
@@ -51,6 +52,10 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Close do
     end
   end
 
-  defp success_text("achieved"), do: "yes"
-  defp success_text("missed"), do: "no"
+  defp decode_success_status("achieved"), do: {:ok, :achieved}
+  defp decode_success_status("missed"), do: {:ok, :missed}
+  defp decode_success_status(_), do: {:error, :invalid_arguments}
+
+  defp success_text(:achieved), do: "yes"
+  defp success_text(:missed), do: "no"
 end
