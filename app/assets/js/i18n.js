@@ -407,5 +407,3 @@ i18n.use(initReactI18next).init({
 });
 
 setI18n(i18n);
-
-export default i18n;
