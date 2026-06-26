@@ -48,6 +48,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.ResourceHubs.ListNodes,
       Queries.Spaces.ListTools,
       Queries.Tasks.ListPotentialAssignees,
+      Queries.Tasks.ListTaskStatuses,
       Queries.Spaces.GetDiscussion,
       Queries.Spaces.ListDiscussions,
       Queries.Projects.ListMilestoneTasks,

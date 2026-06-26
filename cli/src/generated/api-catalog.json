@@ -17392,8 +17392,8 @@
       ]
     }
   },
-  "endpoint_count": 199,
-  "query_count": 63,
+  "endpoint_count": 200,
+  "query_count": 64,
   "mutation_count": 136,
   "endpoints": [
     {
@@ -20994,7 +20994,7 @@
             "name": "contextual_date",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "has_default": false,
           "nullable": true
         },
@@ -25842,6 +25842,17 @@
           "optional": false,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "markdown",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -25932,6 +25943,17 @@
           },
           "optional": true,
           "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_markdown",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
           "nullable": false
         }
       ],
@@ -28398,6 +28420,17 @@
           "optional": false,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "markdown",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
         }
       ],
       "namespace": "spaces",
@@ -28478,6 +28511,17 @@
           "optional": true,
           "has_default": false,
           "nullable": true
+        },
+        {
+          "default": "false",
+          "name": "include_markdown",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": "Retrieves a space by ID with optional related data.",
@@ -29673,6 +29717,17 @@
           "optional": true,
           "has_default": false,
           "nullable": true
+        },
+        {
+          "default": null,
+          "name": "markdown",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
         }
       ],
       "namespace": "tasks",
@@ -29774,6 +29829,17 @@
           },
           "optional": true,
           "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_markdown",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
           "nullable": false
         }
       ],
@@ -29893,6 +29959,45 @@
       ],
       "docstring": "Lists potential assignees for a task in a project or space.",
       "full_name": "tasks/list_potential_assignees",
+      "method": "GET"
+    },
+    {
+      "name": "list_task_statuses",
+      "type": "query",
+      "path": "/api/external/v1/tasks/list_task_statuses",
+      "handler": "OperatelyWeb.Api.Tasks.ListTaskStatuses",
+      "outputs": [
+        {
+          "default": null,
+          "name": "task_statuses",
+          "type": {
+            "item": {
+              "name": "task_status",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "tasks",
+      "inputs": [
+        {
+          "default": null,
+          "name": "task_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Lists the task statuses available for one task's project or space scope.",
+      "full_name": "tasks/list_task_statuses",
       "method": "GET"
     },
     {

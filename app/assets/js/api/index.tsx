@@ -3152,10 +3152,12 @@ export interface ProjectsGetMilestoneInput {
   includeSpace?: boolean;
   includeSubscriptionList?: boolean;
   includeAvailableStatuses?: boolean;
+  includeMarkdown?: boolean;
 }
 
 export interface ProjectsGetMilestoneResult {
   milestone: Milestone;
+  markdown?: string;
 }
 
 export interface ProjectsGetRetrospectiveInput {
@@ -3334,10 +3336,12 @@ export interface SpacesGetInput {
   includeMembersAccessLevels?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
+  includeMarkdown?: boolean;
 }
 
 export interface SpacesGetResult {
   space: Space;
+  markdown?: string;
 }
 
 export interface SpacesGetDiscussionInput {
@@ -3436,10 +3440,12 @@ export interface TasksGetInput {
   includePermissions?: boolean;
   includeSubscriptionList?: boolean;
   includeAvailableStatuses?: boolean;
+  includeMarkdown?: boolean;
 }
 
 export interface TasksGetResult {
   task?: Task | null;
+  markdown?: string;
 }
 
 export interface TasksListInput {
@@ -3459,6 +3465,14 @@ export interface TasksListPotentialAssigneesInput {
 
 export interface TasksListPotentialAssigneesResult {
   people: Person[];
+}
+
+export interface TasksListTaskStatusesInput {
+  taskId: Id;
+}
+
+export interface TasksListTaskStatusesResult {
+  taskStatuses: TaskStatus[];
 }
 
 export interface AddCompanyOwnersInput {
@@ -4181,7 +4195,7 @@ export interface GoalsCreateCheckResult {
 export interface GoalsCreateCheckInInput {
   goalId: Id;
   status: GoalCheckInStatus;
-  dueDate: ContextualDate | null;
+  dueDate?: ContextualDate | null;
   checklist?: GoalCheckUpdate[];
   content: Json;
   newTargetValues?: string;
@@ -6140,6 +6154,10 @@ class ApiNamespaceTasks {
     return this.client.get("/tasks/list_potential_assignees", input);
   }
 
+  async listTaskStatuses(input: TasksListTaskStatusesInput): Promise<TasksListTaskStatusesResult> {
+    return this.client.get("/tasks/list_task_statuses", input);
+  }
+
   async create(input: TasksCreateInput): Promise<TasksCreateResult> {
     return this.client.post("/tasks/create", input);
   }
@@ -7824,6 +7842,10 @@ export default {
   },
 
   tasks: {
+    listTaskStatuses: (input: TasksListTaskStatusesInput) => defaultApiClient.apiNamespaceTasks.listTaskStatuses(input),
+    useListTaskStatuses: (input: TasksListTaskStatusesInput) =>
+      useQuery<TasksListTaskStatusesResult>(() => defaultApiClient.apiNamespaceTasks.listTaskStatuses(input)),
+
     listPotentialAssignees: (input: TasksListPotentialAssigneesInput) =>
       defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
     useListPotentialAssignees: (input: TasksListPotentialAssigneesInput) =>

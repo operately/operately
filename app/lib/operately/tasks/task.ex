@@ -215,17 +215,23 @@ defmodule Operately.Tasks.Task do
     Map.put(task, :permissions, perms)
   end
 
-  def preload_available_statuses(task = %__MODULE__{}) do
+  def available_statuses(task = %__MODULE__{}) do
     task =
-      if Ecto.assoc_loaded?(task.project) do
-        Operately.Repo.preload(task, :project)
-      else
+      if Ecto.assoc_loaded?(task.project) and Ecto.assoc_loaded?(task.space) do
         task
+      else
+        Operately.Repo.preload(task, [:project, :space])
       end
 
-    statuses = if task.project, do: task.project.task_statuses || [], else: []
+    cond do
+      task.project -> task.project.task_statuses || []
+      task.space -> task.space.task_statuses || []
+      true -> []
+    end
+  end
 
-    Map.put(task, :available_statuses, statuses)
+  def preload_available_statuses(task = %__MODULE__{}) do
+    Map.put(task, :available_statuses, available_statuses(task))
   end
 
   defmodule Getter do

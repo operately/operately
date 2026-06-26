@@ -27,6 +27,7 @@ defmodule Operately.Mcp.ToolsTest do
     "list_tasks",
     "get_task",
     "list_space_discussions",
+    "list_task_statuses",
     "get_space_discussion",
     "search",
     "list_docs_and_files",
@@ -51,6 +52,13 @@ defmodule Operately.Mcp.ToolsTest do
     "acknowledge_goal_check_in",
     "create_goal_discussion",
     "update_goal_discussion",
+    "create_task",
+    "update_task_name",
+    "update_task_description",
+    "update_task_status",
+    "update_task_due_date",
+    "update_task_assignee",
+    "update_task_milestone",
     "create_space",
     "update_space",
     "create_space_discussion",
@@ -113,6 +121,7 @@ defmodule Operately.Mcp.ToolsTest do
     assert tools["create_project_check_in"].company_mode == :resource_derived
     assert tools["create_goal_check_in"].company_mode == :resource_derived
     assert tools["create_goal"].company_mode == :resource_derived
+    assert tools["create_task"].company_mode == :resource_derived
     assert tools["create_space"].company_mode == :authenticated
 
     read_only_tools =
@@ -189,6 +198,17 @@ defmodule Operately.Mcp.ToolsTest do
 
     assert create_goal["_meta"]["requiredScopes"] == ["mcp:write"]
     assert create_goal["inputSchema"]["required"] == ["space_id", "name"]
+
+    create_task = Enum.find(descriptors, &(&1["name"] == "create_task"))
+
+    assert create_task["annotations"] == %{
+             "readOnlyHint" => false,
+             "destructiveHint" => false,
+             "openWorldHint" => false
+           }
+
+    assert create_task["_meta"]["requiredScopes"] == ["mcp:write"]
+    assert create_task["inputSchema"]["required"] == ["name"]
   end
 
   defp valid_example?(%{"title" => title, "arguments" => arguments}) when is_binary(title) and title != "" and is_map(arguments), do: true
