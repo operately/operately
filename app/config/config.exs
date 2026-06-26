@@ -10,7 +10,11 @@ import Config
 config :operately,
   ecto_repos: [Operately.Repo],
   generators: [binary_id: true],
-  mcp_oauth_clients: []
+  mcp_oauth_clients: [],
+  mcp_cimd_fetch_timeout_ms: 5_000,
+  mcp_cimd_max_response_bytes: 32_768,
+  mcp_cimd_cache_ttl_seconds: 86_400,
+  mcp_cimd_cache_max_age_cap_seconds: 604_800
 
 # Configures the endpoint
 config :operately, OperatelyWeb.Endpoint,
