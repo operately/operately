@@ -95,7 +95,7 @@ defmodule Operately.RichContent do
   end
 
   def rich_content_to_string(%{"type" => "mention", "attrs" => %{"label" => label}}) when is_binary(label) do
-    label
+    first_name(label)
   end
 
   def rich_content_to_string(%{"content" => content}) when is_list(content) do
@@ -103,6 +103,13 @@ defmodule Operately.RichContent do
   end
 
   def rich_content_to_string(_), do: ""
+
+  defp first_name(full_name) when is_binary(full_name) do
+    full_name
+    |> String.split()
+    |> List.first()
+    |> Kernel.||("")
+  end
 
   defmodule Blob do
     def find_ids(nil), do: []

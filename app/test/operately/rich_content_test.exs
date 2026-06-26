@@ -231,6 +231,26 @@ defmodule Operately.RichContentTest do
     assert Operately.RichContent.find_blob_ids(document) == [blob.id]
   end
 
+  describe ".rich_content_to_string/1" do
+    test "uses the full single-part mention label" do
+      mention = %{"type" => "mention", "attrs" => %{"label" => "Madonna"}}
+
+      assert Operately.RichContent.rich_content_to_string(mention) == "Madonna"
+    end
+
+    test "uses the first token from a two-part mention label" do
+      mention = %{"type" => "mention", "attrs" => %{"label" => "John Smith"}}
+
+      assert Operately.RichContent.rich_content_to_string(mention) == "John"
+    end
+
+    test "uses the first token from a multi-part mention label" do
+      mention = %{"type" => "mention", "attrs" => %{"label" => "John Michael Smith"}}
+
+      assert Operately.RichContent.rich_content_to_string(mention) == "John"
+    end
+  end
+
   describe ".tiptap_document?/1" do
     test "returns true for an empty TipTap document" do
       assert Operately.RichContent.tiptap_document?(%{"type" => "doc", "content" => []})
