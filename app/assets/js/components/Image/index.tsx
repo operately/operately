@@ -1,1 +1,0 @@
-export { ImageWithPlaceholder } from "./ImageWithPlaceholder";
