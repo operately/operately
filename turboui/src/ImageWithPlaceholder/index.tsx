@@ -6,6 +6,7 @@ export interface ImageWithPlaceholderProps {
   ratio: number;
 }
 
+const DEFAULT_RATIO = 1;
 const LOADING_ANIMATION_NAME = "turboui-image-with-placeholder-loading";
 const LOADING_KEYFRAMES = `
   @keyframes ${LOADING_ANIMATION_NAME} {
@@ -18,15 +19,24 @@ const LOADING_KEYFRAMES = `
   }
 `;
 
+export function calculateImageRatio(width?: number | null, height?: number | null) {
+  if (!isPositiveNumber(width) || !isPositiveNumber(height)) {
+    return DEFAULT_RATIO;
+  }
+
+  return normalizeImageRatio(height / width);
+}
+
 export function ImageWithPlaceholder({ src, alt, ratio }: ImageWithPlaceholderProps) {
   const [loaded, setLoaded] = React.useState(false);
+  const safeRatio = normalizeImageRatio(ratio);
 
   return (
     <div
       style={{
         position: "relative",
         width: "100%",
-        paddingBottom: `${ratio * 100}%`,
+        paddingBottom: `${safeRatio * 100}%`,
         overflow: "hidden",
       }}
     >
@@ -61,4 +71,12 @@ export function ImageWithPlaceholder({ src, alt, ratio }: ImageWithPlaceholderPr
       <style>{LOADING_KEYFRAMES}</style>
     </div>
   );
+}
+
+function normalizeImageRatio(ratio: number) {
+  return Number.isFinite(ratio) && ratio > 0 ? ratio : DEFAULT_RATIO;
+}
+
+function isPositiveNumber(value?: number | null): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0;
 }

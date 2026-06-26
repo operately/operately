@@ -1,6 +1,6 @@
 import * as React from "react";
+import { calculateImageRatio, ImageWithPlaceholder } from "../ImageWithPlaceholder";
 import classNames from "../utils/classnames";
-import { ImageWithPlaceholder } from "../ImageWithPlaceholder";
 import { IconAlignJustified, IconChartColumn, IconFolderFilled, IconLink, IconLogs, IconVideo } from "../icons";
 import { getNodeLinkType, getNodeThumbnail, getNodeType, hasNodeContentType, isNodeMovFile, isNodeVideoFile } from "./selectors";
 import type { ResourceHubNode } from "./types";
@@ -82,7 +82,7 @@ function FileIconBadge({ size, filetype, color }: FileIconProps) {
 
 function Thumbnail({ url, alt, width, height, size }: { url: string; alt: string; width: number; height: number; size: number }) {
   const padding = 1;
-  const imgRatio = height / width;
+  const imgRatio = calculateImageRatio(width, height);
   const thumbnailWidth = size - padding * 2;
   const thumbnailHeight = thumbnailWidth * imgRatio;
 
