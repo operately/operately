@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Mcp.Catalog.JsonSchema do
   def any_object(description \\ nil) do
     %{
       "type" => "object",
+      "properties" => %{},
       "additionalProperties" => true
     }
     |> put_if_present("description", description)
