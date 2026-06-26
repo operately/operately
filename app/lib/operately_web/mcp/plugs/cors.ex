@@ -13,6 +13,8 @@ defmodule OperatelyWeb.Mcp.Plugs.Cors do
     /.well-known/oauth-protected-resource/mcp
     /.well-known/oauth-authorization-server
     /.well-known/oauth-authorization-server/mcp
+    /.well-known/openid-configuration
+    /.well-known/openid-configuration/mcp
   )
 
   @mcp_path "/mcp"

@@ -99,10 +99,17 @@ defmodule OperatelyWeb.Router do
     options("/.well-known/oauth-protected-resource", McpMetadataController, :cors_preflight)
     get("/.well-known/oauth-protected-resource/mcp", McpMetadataController, :protected_resource)
     options("/.well-known/oauth-protected-resource/mcp", McpMetadataController, :cors_preflight)
+
     get("/.well-known/oauth-authorization-server", McpMetadataController, :authorization_server)
     options("/.well-known/oauth-authorization-server", McpMetadataController, :cors_preflight)
     get("/.well-known/oauth-authorization-server/mcp", McpMetadataController, :authorization_server)
     options("/.well-known/oauth-authorization-server/mcp", McpMetadataController, :cors_preflight)
+
+    get("/.well-known/openid-configuration", McpMetadataController, :openid_configuration)
+    options("/.well-known/openid-configuration", McpMetadataController, :cors_preflight)
+    get("/.well-known/openid-configuration/mcp", McpMetadataController, :openid_configuration)
+    options("/.well-known/openid-configuration/mcp", McpMetadataController, :cors_preflight)
+
     post("/oauth/token", McpOAuthController, :token)
   end
 
