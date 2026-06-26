@@ -10,8 +10,9 @@ defmodule OperatelyWeb.McpControllerTest do
   import Operately.TasksFixtures
 
   alias Operately.Billing
-  alias Operately.People
   alias Operately.Mcp
+  alias Operately.People
+  alias OperatelyWeb.Mcp.Tools, as: McpTools
 
   setup do
     client = %{
@@ -123,40 +124,7 @@ defmodule OperatelyWeb.McpControllerTest do
 
     assert tools_list_conn.status == 200
 
-    assert tool_names == [
-             "get_current_company",
-             "get_me",
-             "list_people",
-             "get_person",
-             "list_spaces",
-             "get_space",
-             "list_projects",
-             "get_project",
-             "get_milestone",
-             "list_milestone_tasks",
-             "list_project_discussions",
-             "get_project_discussion",
-             "list_project_check_ins",
-             "get_project_check_in",
-             "list_goals",
-             "list_goal_discussions",
-             "list_goal_check_ins",
-             "get_goal",
-             "get_goal_check_in",
-             "list_tasks",
-             "get_task",
-             "list_space_discussions",
-             "get_space_discussion",
-             "search",
-             "list_docs_and_files",
-             "get_document",
-             "get_file",
-             "get_link",
-             "fetch",
-             "create_comment",
-             "create_project_check_in",
-             "create_goal_check_in"
-           ]
+    assert tool_names == expected_tool_names()
 
     assert search_tool["outputSchema"]["type"] == "object"
     assert search_tool["_meta"]["examples"] != []
@@ -681,7 +649,7 @@ defmodule OperatelyWeb.McpControllerTest do
     %{access_token: access_token} = authorize_and_issue_tokens(account, company, client, "mcp:read")
     {_initialize_conn, session_id} = initialize_session(access_token)
 
-    Enum.each(["create_comment", "create_project_check_in", "create_goal_check_in"], fn tool_name ->
+    Enum.each(write_tool_names(), fn tool_name ->
       conn =
         access_token
         |> call_tool(session_id, tool_name, %{})
@@ -905,5 +873,16 @@ defmodule OperatelyWeb.McpControllerTest do
       nil -> params
       company_id -> Map.put(params, "selected_company_id", company_id)
     end
+  end
+
+  defp expected_tool_names do
+    McpTools.list_definitions()
+    |> Enum.map(& &1.name)
+  end
+
+  defp write_tool_names do
+    McpTools.list_definitions()
+    |> Enum.filter(&(&1.required_scopes == ["mcp:write"]))
+    |> Enum.map(& &1.name)
   end
 end
