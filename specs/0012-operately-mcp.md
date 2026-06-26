@@ -409,7 +409,7 @@ Outcome: a reviewable, useful read-only MCP where the initial tool set executes 
 
 Status: implemented.
 
-### PR 4: Safe write MCP tools
+### PR 4: Safe write MCP tools (Implemented)
 
 - Add exactly three live write tools on top of existing API handlers:
   - `create_comment`
@@ -454,7 +454,7 @@ Outcome: a small, safe mutation surface that reuses the existing Operately APIs 
 
 Status: implemented.
 
-### PR 5A: CIMD discovery and document parsing
+### PR 5A: CIMD discovery and document parsing (Implemented)
 
 - Add configuration for CIMD (fetch timeout, max response size, cache TTL)
 - Advertise `client_id_metadata_document_supported: true` in authorization server metadata
@@ -465,7 +465,9 @@ Status: implemented.
 
 Outcome: Operately can recognize and validate CIMD documents locally; clients can discover CIMD support via OAuth metadata.
 
-### PR 5B: CIMD safe fetching and caching
+Status: implemented.
+
+### PR 5B: CIMD safe fetching and caching (Implemented)
 
 - Add `Operately.Mcp.ClientMetadata.SafeUrl` for SSRF protections (block private/reserved IPs, restrict schemes and ports, require HTTPS)
 - Add `Operately.Mcp.ClientMetadata.Fetcher` to fetch metadata documents over HTTPS with timeout, size limits, and no unsafe redirects
@@ -473,6 +475,8 @@ Outcome: Operately can recognize and validate CIMD documents locally; clients ca
 - Add unit tests for SSRF blocking, fetch failures, oversized responses, and cache behavior
 
 Outcome: Operately can safely retrieve and cache remote client metadata documents.
+
+Status: implemented.
 
 ### PR 5C: CIMD authorization integration
 
