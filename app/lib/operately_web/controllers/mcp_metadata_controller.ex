@@ -11,6 +11,10 @@ defmodule OperatelyWeb.McpMetadataController do
     json(conn, authorization_server_metadata())
   end
 
+  def openid_configuration(conn, _params) do
+    json(conn, authorization_server_metadata())
+  end
+
   def cors_preflight(conn, _params) do
     send_resp(conn, 204, "")
   end
