@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 
 import classNames from "classnames";
 import { ColorOptions, StatusOptions } from ".";
-import { COLORS, TITLES, CIRCLE_BORDER_COLORS, CIRCLE_BACKGROUND_COLORS } from "./constants";
+import { COLORS, TITLES, CIRCLE_BORDER_COLORS, CIRCLE_BACKGROUND_COLORS } from "turboui";
 
 interface StatusProps {
   status: StatusOptions;

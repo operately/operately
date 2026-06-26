@@ -26,6 +26,7 @@ export * from "./RichContent";
 export * from "./ResourceHub";
 export * from "./Spacer";
 export * from "./StatusBadge";
+export * from "./SmallStatusIndicator";
 export * from "./TextSeparator";
 export * from "./TimeframeSelector";
 export * from "./Timeline";
