@@ -2,24 +2,26 @@ defmodule Operately.Mcp.ClientMetadata do
   @moduledoc """
   Resolves OAuth client metadata for the MCP authorization flow.
 
-  Pre-registered clients come from `:mcp_oauth_clients`. CIMD document parsing
-  lives in `Operately.Mcp.ClientMetadata.Document`; resolution wiring for fetched
-  documents comes in a later phase.
+  Pre-registered clients come from `:mcp_oauth_clients`. CIMD clients are
+  resolved by fetching and parsing a Client ID Metadata Document.
   """
+
+  require Logger
 
   defstruct [:client_id, :client_name, :client_uri, :logo_uri, :token_endpoint_auth_method, redirect_uris: []]
 
   alias __MODULE__
+  alias Operately.Mcp.ClientMetadata.{Document, Fetcher}
 
   @localhost_hosts ["localhost", "127.0.0.1", "::1"]
 
   @doc """
-  Resolves one OAuth client definition from the configured pre-registered client list.
+  Resolves one OAuth client definition from the allowlist or a CIMD document.
   """
   def resolve(client_id) when is_binary(client_id) do
     case configured_clients() |> Enum.find_value(&match_client(&1, client_id)) do
       %ClientMetadata{} = metadata -> validate_auth_method(metadata)
-      nil -> {:error, :invalid_client}
+      nil -> resolve_cimd(client_id)
     end
   end
 
@@ -73,6 +75,24 @@ defmodule Operately.Mcp.ClientMetadata do
 
   defp configured_clients do
     Application.get_env(:operately, :mcp_oauth_clients, [])
+  end
+
+  defp resolve_cimd(client_id) do
+    if Document.cimd_client_id?(client_id) do
+      with {:ok, document} <- Fetcher.fetch(client_id),
+           {:ok, metadata} <- Document.parse(client_id, document) do
+        validate_auth_method(metadata)
+      else
+        {:error, :unsupported_client_authentication} = error ->
+          error
+
+        {:error, reason} ->
+          Logger.warning("MCP CIMD client resolution failed: #{inspect(%{client_id: client_id, reason: reason})}")
+          {:error, :invalid_client}
+      end
+    else
+      {:error, :invalid_client}
+    end
   end
 
   defp match_client(client, client_id) do
