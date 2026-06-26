@@ -25,11 +25,14 @@ defmodule Operately.Mcp.ClientMetadata.Fetcher do
     case Req.get(url,
            redirect: false,
            decode_body: false,
-           receive_timeout: fetch_timeout_ms(),
-           max_body_size: max_response_bytes()
+           receive_timeout: fetch_timeout_ms()
          ) do
       {:ok, %{status: 200, body: body, headers: headers}} when is_binary(body) ->
-        {:ok, body, headers}
+        if byte_size(body) > max_response_bytes() do
+          {:error, :invalid_response}
+        else
+          {:ok, body, headers}
+        end
 
       {:ok, %{status: _status}} ->
         {:error, :invalid_response}
