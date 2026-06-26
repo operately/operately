@@ -210,6 +210,7 @@ Start with a small set of high-signal tools backed by MCP wrappers over shared O
 - `list_tasks`
 - `get_task`
 - `list_space_discussions`
+- `list_task_statuses`
 - `get_space_discussion`
 - `list_docs_and_files`
 - `get_document`
@@ -384,6 +385,7 @@ Status: implemented.
   - `list_tasks`
   - `get_task`
   - `list_space_discussions`
+  - `list_task_statuses`
   - `get_space_discussion`
   - `list_docs_and_files`
   - `get_document`
@@ -487,6 +489,8 @@ Status: implemented.
 - Add regression tests for redirect-uri mismatch, document `client_id` mismatch, and allowlist precedence over CIMD
 
 Outcome: arbitrary standards-compliant MCP clients can complete OAuth and call tools without a server-side config entry.
+
+Status: implemented.
 
 ### PR 5D: CIMD operational guardrails
 
