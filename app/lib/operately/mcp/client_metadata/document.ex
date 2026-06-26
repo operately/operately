@@ -2,8 +2,8 @@ defmodule Operately.Mcp.ClientMetadata.Document do
   @moduledoc """
   Detects and parses Client ID Metadata Documents (CIMD) for MCP OAuth clients.
 
-  Fetched document bodies are validated locally here; remote fetching is handled
-  in a later phase.
+  Fetched document bodies are validated in this module; remote fetching lives in
+  `Operately.Mcp.ClientMetadata.Fetcher`.
   """
 
   alias Operately.Mcp.ClientMetadata
