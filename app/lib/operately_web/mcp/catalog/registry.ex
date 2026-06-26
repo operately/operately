@@ -2,13 +2,18 @@ defmodule OperatelyWeb.Mcp.Catalog.Registry do
   alias OperatelyWeb.Mcp.Tool
   alias OperatelyWeb.Mcp.Catalog.Definition
 
-  @tools_dir Path.expand("../tools", __DIR__)
-  @tool_base OperatelyWeb.Mcp.Tools
-
   def list_definitions do
-    tool_modules()
+    list_tool_modules()
     |> Enum.map(&definition_for/1)
     |> Enum.sort_by(&{&1.sort_order, &1.name})
+  end
+
+  @doc false
+  def list_tool_modules do
+    (Application.spec(:operately, :modules) || [])
+    |> Enum.filter(&tool_namespace_module?/1)
+    |> Enum.filter(&tool_module?/1)
+    |> Enum.sort()
   end
 
   def find_definition(name) when is_binary(name) do
@@ -24,24 +29,11 @@ defmodule OperatelyWeb.Mcp.Catalog.Registry do
     %{definition | implementation: module}
   end
 
-  defp tool_modules do
-    tool_files()
-    |> Enum.map(&module_for_tool_file/1)
-    |> Enum.filter(&tool_module?/1)
-    |> Enum.sort()
-  end
-
-  defp tool_files do
-    Path.wildcard(Path.join(@tools_dir, "**/*.ex"))
-  end
-
-  defp module_for_tool_file(file) do
-    file
-    |> Path.relative_to(@tools_dir)
-    |> Path.rootname()
-    |> Path.split()
-    |> Enum.map(&Macro.camelize/1)
-    |> then(&Module.concat([@tool_base | &1]))
+  defp tool_namespace_module?(module) when is_atom(module) do
+    case Module.split(module) do
+      ["OperatelyWeb", "Mcp", "Tools", _module | _rest] -> true
+      _ -> false
+    end
   end
 
   defp tool_module?(module) do
