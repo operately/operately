@@ -27,6 +27,7 @@ defmodule OperatelyWeb.Mcp.Tools do
       "inputSchema" => definition.input_schema,
       "outputSchema" => definition.output_schema,
       "annotations" => definition.annotations,
+      "securitySchemes" => definition.security_schemes,
       "_meta" => %{
         "securitySchemes" => definition.security_schemes,
         "examples" => definition.examples,
