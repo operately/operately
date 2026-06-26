@@ -36,7 +36,26 @@ defmodule Operately.Mcp.ToolsTest do
     "fetch",
     "create_comment",
     "create_project_check_in",
-    "create_goal_check_in"
+    "create_goal_check_in",
+    "create_goal",
+    "update_goal_name",
+    "update_goal_description",
+    "update_goal_start_date",
+    "update_goal_due_date",
+    "update_goal_parent",
+    "move_goal_to_space",
+    "update_goal_champion",
+    "update_goal_reviewer",
+    "close_goal",
+    "reopen_goal",
+    "acknowledge_goal_check_in",
+    "create_goal_discussion",
+    "update_goal_discussion",
+    "create_space",
+    "update_space",
+    "create_space_discussion",
+    "update_space_discussion",
+    "publish_space_discussion"
   ]
   @company_modes [:none, :authenticated, :resource_derived]
   @safety_classifications [:read_only, :write, :destructive]
@@ -93,21 +112,24 @@ defmodule Operately.Mcp.ToolsTest do
     assert tools["create_comment"].company_mode == :resource_derived
     assert tools["create_project_check_in"].company_mode == :resource_derived
     assert tools["create_goal_check_in"].company_mode == :resource_derived
-
-    assert tools["create_comment"].required_scopes == ["mcp:write"]
-    assert tools["create_project_check_in"].required_scopes == ["mcp:write"]
-    assert tools["create_goal_check_in"].required_scopes == ["mcp:write"]
-
-    assert tools["create_comment"].safety_classification == :write
-    assert tools["create_project_check_in"].safety_classification == :write
-    assert tools["create_goal_check_in"].safety_classification == :write
+    assert tools["create_goal"].company_mode == :resource_derived
+    assert tools["create_space"].company_mode == :authenticated
 
     read_only_tools =
       tools
-      |> Map.drop(["create_comment", "create_project_check_in", "create_goal_check_in"])
       |> Map.values()
+      |> Enum.filter(&(&1.safety_classification == :read_only))
+
+    write_tools =
+      tools
+      |> Map.values()
+      |> Enum.filter(&(&1.safety_classification == :write))
 
     assert Enum.all?(read_only_tools, &(&1.required_scopes == ["mcp:read"]))
+    assert Enum.all?(read_only_tools, &(&1.annotations["readOnlyHint"] == true))
+    assert Enum.all?(write_tools, &(&1.required_scopes == ["mcp:write"]))
+    assert Enum.all?(write_tools, &(&1.annotations["readOnlyHint"] == false))
+    assert Enum.empty?(Enum.filter(Map.values(tools), &(&1.safety_classification == :destructive)))
   end
 
   test "serializes descriptors for MCP clients" do
@@ -156,6 +178,17 @@ defmodule Operately.Mcp.ToolsTest do
 
     assert create_comment["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
     assert create_comment["_meta"]["safetyClassification"] == "write"
+
+    create_goal = Enum.find(descriptors, &(&1["name"] == "create_goal"))
+
+    assert create_goal["annotations"] == %{
+             "readOnlyHint" => false,
+             "destructiveHint" => false,
+             "openWorldHint" => false
+           }
+
+    assert create_goal["_meta"]["requiredScopes"] == ["mcp:write"]
+    assert create_goal["inputSchema"]["required"] == ["space_id", "name"]
   end
 
   defp valid_example?(%{"title" => title, "arguments" => arguments}) when is_binary(title) and title != "" and is_map(arguments), do: true
