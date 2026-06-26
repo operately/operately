@@ -3,6 +3,7 @@ defmodule Operately.Mcp.ToolsTest do
 
   alias Operately.Mcp.Resources
   alias OperatelyWeb.Mcp.Catalog.JsonSchema
+  alias OperatelyWeb.Mcp.Catalog.Registry
   alias OperatelyWeb.Mcp.Tools
 
   @expected_tool_names [
@@ -71,6 +72,21 @@ defmodule Operately.Mcp.ToolsTest do
 
   test "registers the MCP tool catalog" do
     assert Tools.list_definitions() |> Enum.map(& &1.name) == @expected_tool_names
+  end
+
+  test "loads tool modules from the compiled application" do
+    compiled_modules = Application.spec(:operately, :modules) || []
+    tool_modules = Registry.list_tool_modules()
+
+    assert tool_modules != []
+    assert Enum.all?(tool_modules, &(&1 in compiled_modules))
+
+    tool_names =
+      tool_modules
+      |> Enum.map(& &1.definition().name)
+      |> Enum.sort()
+
+    assert tool_names == Enum.sort(@expected_tool_names)
   end
 
   test "tool catalog satisfies definition invariants" do
