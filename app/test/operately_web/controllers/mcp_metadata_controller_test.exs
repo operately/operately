@@ -38,4 +38,24 @@ defmodule OperatelyWeb.McpMetadataControllerTest do
     assert code_challenge_methods_supported == ["S256"]
     assert client_id_metadata_document_supported == true
   end
+
+  test "serves authorization server metadata on the mcp-scoped discovery path", %{conn: conn} do
+    root_conn = get(conn, "/.well-known/oauth-authorization-server")
+    mcp_conn = get(build_conn(), "/.well-known/oauth-authorization-server/mcp")
+
+    assert mcp_conn.status == 200
+    assert Jason.decode!(mcp_conn.resp_body) == Jason.decode!(root_conn.resp_body)
+  end
+
+  test "responds to discovery OPTIONS preflight", %{conn: conn} do
+    conn =
+      conn
+      |> put_req_header("origin", "https://chatgpt.com")
+      |> put_req_header("access-control-request-method", "GET")
+      |> options("/.well-known/oauth-authorization-server/mcp")
+
+    assert conn.status == 204
+    assert get_resp_header(conn, "access-control-allow-origin") == ["https://chatgpt.com"]
+    assert get_resp_header(conn, "access-control-allow-methods") == ["GET, OPTIONS"]
+  end
 end
