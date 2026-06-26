@@ -72,7 +72,18 @@ defmodule OperatelyWeb.Mcp.InputValidator do
     if is_boolean(value), do: :ok, else: {:error, {:invalid_type, key, "boolean"}}
   end
 
+  defp validate_property(key, value, %{"type" => "array", "items" => items_schema}) do
+    if is_list(value) and Enum.all?(value, &valid_array_item?(&1, items_schema)) do
+      :ok
+    else
+      {:error, {:invalid_type, key, "array"}}
+    end
+  end
+
   defp validate_property(_key, _value, _schema), do: {:error, :invalid_schema}
+
+  defp valid_array_item?(value, %{"type" => "string"}), do: is_binary(value)
+  defp valid_array_item?(_value, _schema), do: false
 
   defp valid_uri?(value) do
     uri = URI.parse(value)

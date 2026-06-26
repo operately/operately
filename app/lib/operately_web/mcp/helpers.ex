@@ -36,6 +36,24 @@ defmodule OperatelyWeb.Mcp.Helpers do
   def decode_optional_id(nil), do: {:ok, nil}
   def decode_optional_id(id), do: decode_id(id)
 
+  def decode_id_list(nil), do: {:ok, []}
+
+  def decode_id_list(ids) when is_list(ids) do
+    ids
+    |> Enum.reduce_while({:ok, []}, fn id, {:ok, acc} ->
+      case decode_id(id) do
+        {:ok, decoded_id} -> {:cont, {:ok, [decoded_id | acc]}}
+        {:error, _} = error -> {:halt, error}
+      end
+    end)
+    |> case do
+      {:ok, decoded_ids} -> {:ok, Enum.reverse(decoded_ids)}
+      error -> error
+    end
+  end
+
+  def decode_id_list(_ids), do: {:error, :invalid_arguments}
+
   def put_optional(map, _key, nil), do: map
   def put_optional(map, key, value), do: Map.put(map, key, value)
 
@@ -145,16 +163,5 @@ defmodule OperatelyWeb.Mcp.Helpers do
     comments
   end
 
-  defp task_statuses(task) do
-    cond do
-      Ecto.assoc_loaded?(task.project) and task.project ->
-        task.project.task_statuses || []
-
-      Ecto.assoc_loaded?(task.space) and task.space ->
-        task.space.task_statuses || []
-
-      true ->
-        []
-    end
-  end
+  defp task_statuses(task), do: Task.available_statuses(task)
 end

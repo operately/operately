@@ -123,6 +123,7 @@ defmodule OperatelyWeb.Api do
         query(:get, OperatelyWeb.Api.Tasks.Get)
         query(:list, OperatelyWeb.Api.Tasks.List)
         query(:list_potential_assignees, OperatelyWeb.Api.Tasks.ListPotentialAssignees)
+        query(:list_task_statuses, OperatelyWeb.Api.Tasks.ListTaskStatuses)
 
         mutation(:create, OperatelyWeb.Api.Tasks.Create)
         mutation(:delete, OperatelyWeb.Api.Tasks.Delete)

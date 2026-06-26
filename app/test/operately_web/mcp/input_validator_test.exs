@@ -65,4 +65,17 @@ defmodule OperatelyWeb.Mcp.InputValidatorTest do
     assert {:error, {:invalid_enum, "status"}} ==
              InputValidator.validate(schema, %{"status" => "blocked"})
   end
+
+  test "accepts string arrays" do
+    schema =
+      JsonSchema.object(%{
+        "assignee_ids" => JsonSchema.array(JsonSchema.string("A person identifier."))
+      })
+
+    assert :ok == InputValidator.validate(schema, %{"assignee_ids" => ["person_123", "person_456"]})
+    assert :ok == InputValidator.validate(schema, %{"assignee_ids" => []})
+
+    assert {:error, {:invalid_type, "assignee_ids", "array"}} ==
+             InputValidator.validate(schema, %{"assignee_ids" => "person_123"})
+  end
 end
