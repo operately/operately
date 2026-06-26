@@ -11,6 +11,10 @@ defmodule OperatelyWeb.McpMetadataController do
     json(conn, authorization_server_metadata())
   end
 
+  def cors_preflight(conn, _params) do
+    send_resp(conn, 204, "")
+  end
+
   defp protected_resource_metadata do
     %{
       resource: Mcp.canonical_resource_uri(),
