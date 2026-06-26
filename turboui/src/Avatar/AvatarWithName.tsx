@@ -1,5 +1,6 @@
 import React from "react";
 import { BlackLink } from "../Link";
+import { firstName } from "../utils/people";
 import { Avatar } from ".";
 import { AvatarProps, AvatarSizeString, NameFormat } from "./types";
 import classNames from "../utils/classnames";
@@ -41,10 +42,6 @@ export function AvatarWithName({
       </div>
     </div>
   );
-}
-
-function firstName(fullName: string): string {
-  return fullName.split(" ")[0]!;
 }
 
 export function shortName(fullName: string): string {

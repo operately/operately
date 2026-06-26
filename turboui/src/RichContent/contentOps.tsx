@@ -1,3 +1,5 @@
+import { firstName } from "../utils/people";
+
 // ShortenContent truncates the text content of a rich text object to a given character limit.
 // It does not remove non-text content.
 //
@@ -121,7 +123,7 @@ export function richContentToString(node: any): string {
   if (node.type === "text") {
     result.push(node.text);
   } else if (node.type === "mention") {
-    result.push(node.attrs.label);
+    result.push(firstName(node.attrs.label || ""));
   } else if (node.content) {
     node.content.forEach((child: any) => {
       result.push(richContentToString(child));
