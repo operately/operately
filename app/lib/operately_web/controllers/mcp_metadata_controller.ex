@@ -30,7 +30,8 @@ defmodule OperatelyWeb.McpMetadataController do
       response_types_supported: ["code"],
       scopes_supported: Mcp.supported_scopes(),
       code_challenge_methods_supported: ["S256"],
-      token_endpoint_auth_methods_supported: ["none"]
+      token_endpoint_auth_methods_supported: ["none"],
+      client_id_metadata_document_supported: true
     }
   end
 end

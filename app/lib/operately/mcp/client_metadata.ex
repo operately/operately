@@ -1,10 +1,10 @@
 defmodule Operately.Mcp.ClientMetadata do
   @moduledoc """
-  Resolves pre-registered OAuth client metadata for the MCP authorization flow.
+  Resolves OAuth client metadata for the MCP authorization flow.
 
-  Operately accepts only clients explicitly configured in `:mcp_oauth_clients`.
-  This module validates that the client exists, exposes its registered redirect
-  URIs, and flags loopback redirect URIs for consent-screen warnings.
+  Pre-registered clients come from `:mcp_oauth_clients`. CIMD document parsing
+  lives in `Operately.Mcp.ClientMetadata.Document`; resolution wiring for fetched
+  documents comes in a later phase.
   """
 
   defstruct [:client_id, :client_name, :client_uri, :logo_uri, :token_endpoint_auth_method, redirect_uris: []]
@@ -18,8 +18,32 @@ defmodule Operately.Mcp.ClientMetadata do
   """
   def resolve(client_id) when is_binary(client_id) do
     case configured_clients() |> Enum.find_value(&match_client(&1, client_id)) do
-      %ClientMetadata{} = metadata -> validate_token_endpoint_auth_method(metadata)
+      %ClientMetadata{} = metadata -> validate_auth_method(metadata)
       nil -> {:error, :invalid_client}
+    end
+  end
+
+  @doc """
+  Builds validated client metadata from attributes.
+  """
+  def build(attrs) when is_map(attrs) do
+    metadata = %ClientMetadata{
+      client_id: fetch_value(attrs, :client_id),
+      client_name: fetch_value(attrs, :client_name),
+      client_uri: fetch_value(attrs, :client_uri),
+      logo_uri: fetch_value(attrs, :logo_uri),
+      redirect_uris: fetch_value(attrs, :redirect_uris) || [],
+      token_endpoint_auth_method: fetch_value(attrs, :token_endpoint_auth_method) || "none"
+    }
+
+    validate_auth_method(metadata)
+  end
+
+  def validate_auth_method(%ClientMetadata{token_endpoint_auth_method: method} = metadata) do
+    if method in [nil, "none"] do
+      {:ok, %ClientMetadata{metadata | token_endpoint_auth_method: method || "none"}}
+    else
+      {:error, :unsupported_client_authentication}
     end
   end
 
@@ -54,14 +78,6 @@ defmodule Operately.Mcp.ClientMetadata do
   defp match_client(client, client_id) do
     if fetch_value(client, :client_id) == client_id do
       build_metadata(client)
-    end
-  end
-
-  defp validate_token_endpoint_auth_method(%ClientMetadata{token_endpoint_auth_method: method} = metadata) do
-    if method in [nil, "none"] do
-      {:ok, %ClientMetadata{metadata | token_endpoint_auth_method: method || "none"}}
-    else
-      {:error, :unsupported_client_authentication}
     end
   end
 
