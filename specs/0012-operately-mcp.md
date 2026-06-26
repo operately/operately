@@ -164,17 +164,21 @@ Later, this can expand into narrower scopes if needed, but the first version sho
 
 ### Client registration
 
-The first release should accept only pre-registered OAuth clients configured on the Operately server.
-
-That means:
+PRs 1–4 accept only pre-registered OAuth clients configured on the Operately server:
 
 - each supported client has an explicit `client_id`
 - each supported redirect URI is pinned in config
 - the server does not fetch remote client metadata documents during authorization
 
-This keeps the first release simpler and avoids client-metadata fetch complexity while the hosted remote MCP surface is being established.
+PR 5 adds Client ID Metadata Documents (CIMD) so arbitrary MCP clients can onboard without a server-side config entry, while keeping the `:mcp_oauth_clients` allowlist as the fast path for directory partners.
 
-Future expansion can add support for non-registered clients through Client ID Metadata Documents and, if useful later, Dynamic Client Registration.
+Resolution order after PR 5:
+
+1. match `:mcp_oauth_clients` config
+2. if `client_id` is a valid HTTPS metadata URL, fetch and validate the document
+3. reject unknown clients
+
+Dynamic Client Registration remains out of scope unless a later client ecosystem need justifies it.
 
 ---
 
@@ -255,7 +259,7 @@ To maximize compatibility with ChatGPT, Claude, and IDE clients, the first relea
 - implement Streamable HTTP as the primary transport
 - implement OAuth-protected remote MCP discovery correctly, including Protected Resource Metadata and Authorization Server Metadata
 - bind access tokens to the MCP server correctly, including resource indicators and audience validation
-- support pre-registered OAuth clients only in the first release
+- support pre-registered OAuth clients in PRs 1–4; add Client ID Metadata Documents in PR 5
 - validate the `Origin` header on Streamable HTTP requests
 - honor protocol version negotiation and required MCP HTTP headers
 - keep tool schemas strict and portable by using standards-compliant JSON Schema
@@ -450,23 +454,60 @@ Outcome: a small, safe mutation surface that reuses the existing Operately APIs 
 
 Status: implemented.
 
-### PR 5: Submission hardening
+### PR 5A: CIMD discovery and document parsing
+
+- Add configuration for CIMD (fetch timeout, max response size, cache TTL)
+- Advertise `client_id_metadata_document_supported: true` in authorization server metadata
+- Add `Operately.Mcp.ClientMetadata.Document` to detect CIMD `client_id` URLs and parse/validate fetched JSON into `%ClientMetadata{}`
+- Require `client_id`, `client_name`, and `redirect_uris` in metadata documents; require the document's `client_id` to exactly match its hosting URL
+- Keep `token_endpoint_auth_method: "none"` as the only supported method in this phase; defer `private_key_jwt` / JWKS verification
+- Add unit tests for document parsing and validation without outbound HTTP
+
+Outcome: Operately can recognize and validate CIMD documents locally; clients can discover CIMD support via OAuth metadata.
+
+### PR 5B: CIMD safe fetching and caching
+
+- Add `Operately.Mcp.ClientMetadata.SafeUrl` for SSRF protections (block private/reserved IPs, restrict schemes and ports, require HTTPS)
+- Add `Operately.Mcp.ClientMetadata.Fetcher` to fetch metadata documents over HTTPS with timeout, size limits, and no unsafe redirects
+- Add `Operately.Mcp.ClientMetadata.Cache` with in-memory TTL caching; honor `Cache-Control: max-age` when present with a sane upper bound
+- Add unit tests for SSRF blocking, fetch failures, oversized responses, and cache behavior
+
+Outcome: Operately can safely retrieve and cache remote client metadata documents.
+
+### PR 5C: CIMD authorization integration
+
+- Extend `Operately.Mcp.ClientMetadata.resolve/1` resolution order: config allowlist → cached/fetched CIMD document → `invalid_client`
+- Keep `validate_redirect_uri/2` as exact-match against registered `redirect_uris` for both allowlisted and CIMD clients
+- Map fetch/parse failures to existing OAuth `invalid_client` responses without leaking internals; log details server-side
+- Add OAuth and MCP integration tests for a CIMD client completing authorize → token → `tools/list`
+- Add regression tests for redirect-uri mismatch, document `client_id` mismatch, and allowlist precedence over CIMD
+
+Outcome: arbitrary standards-compliant MCP clients can complete OAuth and call tools without a server-side config entry.
+
+### PR 5D: CIMD operational guardrails
+
+- Add rate limiting for metadata fetches and OAuth endpoints (per IP and per `client_id` URL)
+- Add structured logging and basic metrics for CIMD fetch outcomes, cache hit rate, and invalid-client rate
+- Validate against at least one real URL-based MCP client before production rollout
+- Keep known directory clients in `:mcp_oauth_clients` as overrides
+
+Outcome: CIMD runs in production without opening an unbounded SSRF or abuse surface.
+
+Defer unless needed:
+
+- Dynamic Client Registration (RFC 7591)
+- DB-persisted metadata cache
+- confidential-client auth methods beyond `none`
+
+### PR 6: Submission hardening
 
 - Privacy policy / support URLs / branding assets
 - Reviewer test accounts and test companies
-- Rate limiting, audit logging, and operational visibility
+- Rate limiting, audit logging, and operational visibility beyond CIMD-specific guardrails
 - Other remote-MCP security hardening
 - Final validation in ChatGPT, Claude, and at least one generic MCP client / IDE
 
 Outcome: the MCP is ready for directory submission.
-
-### Future step: open client onboarding
-
-- Add support for non-registered clients through Client ID Metadata Documents
-- Reintroduce SSRF protections and client-metadata validation for remote client resolution
-- Consider Dynamic Client Registration if it materially improves compatibility across clients
-
-Outcome: Operately can move from a curated client allowlist to broader standards-based client onboarding.
 
 ---
 
@@ -499,6 +540,11 @@ Critical scenarios:
 - 401 responses advertise auth metadata correctly and tokens for other audiences are rejected
 - MCP wrappers receive `current_account`, `current_company`, `current_person`, and auth metadata on `conn.assigns`
 - existing API handlers called by wrappers behave consistently when invoked through MCP
+- authorization server metadata advertises `client_id_metadata_document_supported`
+- CIMD clients with valid metadata documents complete OAuth and MCP tool discovery without an allowlist entry
+- allowlisted clients still resolve through config alongside CIMD resolution
+- CIMD metadata fetch blocks SSRF targets and rejects redirect URIs not listed in the fetched document
+- CIMD cache respects TTL and does not serve stale metadata past expiry
 
 ---
 
@@ -520,3 +566,4 @@ If implemented this way, Operately gets:
 - one new auth mode alongside the session and token flows
 - one-company-per-connection UX with request-time company context
 - MCP wrapper reuse of existing Operately API handlers and the shared modules those handlers already depend on
+- standards-based open client onboarding through Client ID Metadata Documents, with a curated allowlist override for directory partners
