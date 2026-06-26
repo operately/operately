@@ -15,7 +15,8 @@ import {
   readLocalDraft,
   writeLocalDraft,
 } from "./localDrafts";
-import MentionPeople, { SearchFn } from "./extensions/MentionPeople";
+import { SearchFn } from "./extensions/MentionPeople";
+import { mentionExtensions } from "./mentionExtensions";
 
 export interface Person {
   id: string;
@@ -124,7 +125,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       }),
       Link.extend({ inclusive: false }).configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: props.placeholder }),
-      ...(props.handlers.peopleSearch ? [MentionPeople.configure(props.handlers.peopleSearch)] : []),
+      ...mentionExtensions(props.handlers, props.editable),
       Highlight,
       FakeTextSelection,
     ],
