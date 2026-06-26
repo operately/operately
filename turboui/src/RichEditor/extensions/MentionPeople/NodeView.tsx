@@ -5,12 +5,6 @@ import { Avatar } from "../../../Avatar";
 import { firstName } from "../../../utils/people";
 import { usePerson } from "../../EditorContext";
 
-interface Person {
-  id: string;
-  fullName: string;
-  avatarUrl: string | null;
-}
-
 //
 // The node view is responsible for rendering the node as a DOM element.
 // It behaves like a React component, but it needs to be wrapped in a
