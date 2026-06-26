@@ -25,7 +25,12 @@ defmodule OperatelyWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  pipeline :mcp_discovery do
+    plug OperatelyWeb.Mcp.Plugs.Cors
+  end
+
   pipeline :mcp do
+    plug OperatelyWeb.Mcp.Plugs.Cors
     plug OperatelyWeb.Mcp.Plugs.ValidateOrigin
     plug OperatelyWeb.Mcp.Plugs.RequireMcpAuth
     plug OperatelyWeb.Mcp.Plugs.ResolveCompany
@@ -88,9 +93,16 @@ defmodule OperatelyWeb.Router do
   end
 
   scope "/", OperatelyWeb do
+    pipe_through(:mcp_discovery)
+
     get("/.well-known/oauth-protected-resource", McpMetadataController, :protected_resource)
+    options("/.well-known/oauth-protected-resource", McpMetadataController, :cors_preflight)
     get("/.well-known/oauth-protected-resource/mcp", McpMetadataController, :protected_resource)
+    options("/.well-known/oauth-protected-resource/mcp", McpMetadataController, :cors_preflight)
     get("/.well-known/oauth-authorization-server", McpMetadataController, :authorization_server)
+    options("/.well-known/oauth-authorization-server", McpMetadataController, :cors_preflight)
+    get("/.well-known/oauth-authorization-server/mcp", McpMetadataController, :authorization_server)
+    options("/.well-known/oauth-authorization-server/mcp", McpMetadataController, :cors_preflight)
     post("/oauth/token", McpOAuthController, :token)
   end
 
@@ -100,6 +112,7 @@ defmodule OperatelyWeb.Router do
     post("/mcp", McpController, :post)
     get("/mcp", McpController, :get)
     delete("/mcp", McpController, :delete)
+    options("/mcp", McpController, :cors_preflight)
   end
 
   scope "/billing", OperatelyWeb do

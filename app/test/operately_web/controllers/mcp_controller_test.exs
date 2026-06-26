@@ -55,6 +55,18 @@ defmodule OperatelyWeb.McpControllerTest do
     assert get_resp_header(conn, "www-authenticate") |> List.first() =~ "resource_metadata="
   end
 
+  test "responds to OPTIONS preflight for browser connector setup" do
+    conn =
+      build_conn()
+      |> put_req_header("origin", "https://chatgpt.com")
+      |> put_req_header("access-control-request-method", "POST")
+      |> options("/mcp")
+
+    assert conn.status == 204
+    assert get_resp_header(conn, "access-control-allow-origin") == ["https://chatgpt.com"]
+    assert get_resp_header(conn, "access-control-allow-methods") == ["GET, POST, DELETE, OPTIONS"]
+  end
+
   test "rejects invalid origins", %{account: account, company: company, client: client} do
     %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
 

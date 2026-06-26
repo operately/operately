@@ -62,6 +62,10 @@ defmodule OperatelyWeb.McpController do
     end
   end
 
+  def cors_preflight(conn, _params) do
+    send_resp(conn, 204, "")
+  end
+
   # `initialize` creates the transport session and returns `mcp-session-id` for later calls.
   defp dispatch_request(conn, request, "initialize") do
     with {:ok, params} <- fetch_map(request, "params"),
