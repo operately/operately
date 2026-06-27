@@ -36,6 +36,30 @@ defmodule OperatelyWeb.Mcp.Helpers do
   def decode_optional_id(nil), do: {:ok, nil}
   def decode_optional_id(id), do: decode_id(id)
 
+  def decode_hub_scope(%{"space_id" => _space_id, "project_id" => _project_id}), do: {:error, :invalid_arguments}
+  def decode_hub_scope(%{"space_id" => _space_id, "goal_id" => _goal_id}), do: {:error, :invalid_arguments}
+  def decode_hub_scope(%{"project_id" => _project_id, "goal_id" => _goal_id}), do: {:error, :invalid_arguments}
+
+  def decode_hub_scope(%{"space_id" => space_id}) do
+    with {:ok, space_id} <- decode_id(space_id) do
+      {:ok, %{space_id: space_id}}
+    end
+  end
+
+  def decode_hub_scope(%{"project_id" => project_id}) do
+    with {:ok, project_id} <- decode_id(project_id) do
+      {:ok, %{project_id: project_id}}
+    end
+  end
+
+  def decode_hub_scope(%{"goal_id" => goal_id}) do
+    with {:ok, goal_id} <- decode_id(goal_id) do
+      {:ok, %{goal_id: goal_id}}
+    end
+  end
+
+  def decode_hub_scope(_arguments), do: {:error, :invalid_arguments}
+
   def decode_id_list(nil), do: {:ok, []}
 
   def decode_id_list(ids) when is_list(ids) do

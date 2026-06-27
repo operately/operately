@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateLink do
 
   @impl true
   def call(conn, arguments) do
-    with {:ok, scope_inputs} <- decode_hub_scope(arguments),
+    with {:ok, scope_inputs} <- Helpers.decode_hub_scope(arguments),
          {:ok, folder_id} <- Helpers.decode_optional_id(arguments["folder_id"]),
          {:ok, type} <- decode_link_type(arguments["type"]),
          {:ok, description} <- decode_optional_description(arguments["description"]) do
@@ -59,30 +59,6 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateLink do
       }))
     end
   end
-
-  defp decode_hub_scope(%{"space_id" => _space_id, "project_id" => _project_id}), do: {:error, :invalid_arguments}
-  defp decode_hub_scope(%{"space_id" => _space_id, "goal_id" => _goal_id}), do: {:error, :invalid_arguments}
-  defp decode_hub_scope(%{"project_id" => _project_id, "goal_id" => _goal_id}), do: {:error, :invalid_arguments}
-
-  defp decode_hub_scope(%{"space_id" => space_id}) do
-    with {:ok, space_id} <- Helpers.decode_id(space_id) do
-      {:ok, %{space_id: space_id}}
-    end
-  end
-
-  defp decode_hub_scope(%{"project_id" => project_id}) do
-    with {:ok, project_id} <- Helpers.decode_id(project_id) do
-      {:ok, %{project_id: project_id}}
-    end
-  end
-
-  defp decode_hub_scope(%{"goal_id" => goal_id}) do
-    with {:ok, goal_id} <- Helpers.decode_id(goal_id) do
-      {:ok, %{goal_id: goal_id}}
-    end
-  end
-
-  defp decode_hub_scope(_arguments), do: {:error, :invalid_arguments}
 
   defp decode_link_type(type) when type in @valid_link_types, do: {:ok, String.to_existing_atom(type)}
   defp decode_link_type(_), do: {:error, :invalid_arguments}
