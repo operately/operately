@@ -86,7 +86,16 @@ defmodule Operately.Mcp.ToolsTest do
     "update_space",
     "create_space_discussion",
     "update_space_discussion",
-    "publish_space_discussion"
+    "publish_space_discussion",
+    "create_document",
+    "update_document",
+    "publish_document",
+    "create_link",
+    "update_link",
+    "create_folder",
+    "rename_folder",
+    "move_resource_hub_item",
+    "update_comment"
   ]
   @company_modes [:none, :authenticated, :resource_derived]
   @safety_classifications [:read_only, :write, :destructive]
