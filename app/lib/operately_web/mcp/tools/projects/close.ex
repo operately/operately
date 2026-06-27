@@ -40,13 +40,18 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.Close do
   @impl true
   def call(conn, %{"project_id" => project_id, "success_status" => success_status, "retrospective" => retrospective}) do
     with {:ok, project_id} <- Helpers.decode_id(project_id),
+         {:ok, success_status} <- decode_success_status(success_status),
          {:ok, retrospective} <- Helpers.markdown_to_rich_text(retrospective) do
       ProjectClose.call(conn, %{
         project_id: project_id,
-        success_status: String.to_existing_atom(success_status),
+        success_status: success_status,
         retrospective: retrospective,
         subscriber_ids: []
       })
     end
   end
+
+  defp decode_success_status("achieved"), do: {:ok, :achieved}
+  defp decode_success_status("missed"), do: {:ok, :missed}
+  defp decode_success_status(_), do: {:error, :invalid_arguments}
 end
