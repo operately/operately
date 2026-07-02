@@ -25,7 +25,12 @@ export function useClearNotificationOnIntersection(notification: Notification) {
     if (ref.current && notification && !notification.read) {
       // setTimeout prevents the callback function from being fired when IntersectionObserver
       // is instantiated, which is its default behavior.
-      setTimeout(() => observer.observe(ref.current!), 500);
+      const element = ref.current;
+      setTimeout(() => {
+        if (element.isConnected) {
+          observer.observe(element);
+        }
+      }, 500);
     }
 
     return () => {
