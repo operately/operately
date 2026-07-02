@@ -6,6 +6,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.RichText
 
   @status_to_on_screen %{
     "on_track" => "On Track",
@@ -355,6 +356,64 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
       author: author,
       title: "commented on Check-In"
     })
+  end
+
+  step :given_submitted_acknowledged_commented_check_in, ctx, params \\ %{} do
+    description = Map.get(params, :description, "Check-in for feed resilience test")
+    comment_content = Map.get(params, :comment_content, "Reviewer comment on check-in")
+    reviewer = Operately.People.get_person!(ctx.reviewer.person_id)
+
+    ctx
+    |> Factory.submit_project_check_in(:check_in, :project, :champion,
+      description: RichText.rich_text(description)
+    )
+    |> Factory.acknowledge_project_check_in(:check_in, :reviewer)
+    |> Factory.add_comment(:comment, :check_in,
+      creator: reviewer,
+      content: RichText.rich_text(comment_content)
+    )
+    |> Map.put(:check_in_comment_content, comment_content)
+  end
+
+  step :visit_check_in_page, ctx do
+    check_in = Map.fetch!(ctx, :check_in)
+    comment_content = Map.fetch!(ctx, :check_in_comment_content)
+
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, check_in))
+    |> UI.assert_has(testid: "project-check-in-page")
+    |> UI.assert_text(comment_content)
+  end
+
+  step :delete_check_in, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "delete-check-in")
+    |> UI.click_button("Delete")
+    |> UI.assert_location(Paths.project_path(ctx.company, ctx.project, tab: "check-ins"))
+  end
+
+  step :assert_company_feed_loads_after_check_in_deleted, ctx do
+    reviewer = Operately.People.get_person!(ctx.reviewer.person_id)
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-activity")
+    |> UI.refute_text("Ooops, something went wrong")
+    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a Check-In", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a Check-In", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on Check-In", "")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.refute_text("Ooops, something went wrong")
+    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a Check-In in the #{ctx.project.name} project", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a Check-In in the #{ctx.project.name} project", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on Check-In", "")
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_has(testid: "company-feed")
+    |> UI.refute_text("Ooops, something went wrong")
+    |> FeedSteps.assert_feed_item_exists(ctx.champion, "submitted a Check-In in the #{ctx.project.name} project", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "acknowledged a Check-In in the #{ctx.project.name} project", "")
+    |> FeedSteps.assert_feed_item_exists(reviewer, "commented on Check-In", "")
   end
 
   step :copy_comment_link, ctx do

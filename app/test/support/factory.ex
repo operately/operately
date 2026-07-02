@@ -61,7 +61,9 @@ defmodule Operately.Support.Factory do
   defdelegate add_project_reviewer(ctx, testid, project_name, opts \\ []), to: Factory.Projects
   defdelegate add_project_contributor(ctx, testid, project_name, opts \\ []), to: Factory.Projects
   defdelegate add_project_retrospective(ctx, testid, project_name, author_name), to: Factory.Projects
-  defdelegate add_project_check_in(ctx, testid, project_name, author_name, opts \\ []), to: Factory.Projects
+  defdelegate add_project_check_in(ctx, testid, project_name, author_name, opts \\ []), to: Factory.Projects # creates check-in via fixture
+  defdelegate submit_project_check_in(ctx, testid, project_name, author_name, opts \\ []), to: Factory.Projects # creates check-in via operation
+  defdelegate acknowledge_project_check_in(ctx, check_in_name, person_name), to: Factory.Projects
   defdelegate add_project_milestone(ctx, testid, project_name, opts \\ []), to: Factory.Projects
   defdelegate edit_project_company_members_access(ctx, project_name, access_level), to: Factory.Projects
   defdelegate edit_project_space_members_access(ctx, project_name, access_level), to: Factory.Projects
