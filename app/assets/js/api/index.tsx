@@ -507,7 +507,7 @@ export interface ActivityContentProjectCheckInAcknowledged {
 
 export interface ActivityContentProjectCheckInCommented {
   project: Project;
-  checkIn: ProjectCheckIn;
+  checkIn?: ProjectCheckIn | null;
   comment: Comment | null;
 }
 

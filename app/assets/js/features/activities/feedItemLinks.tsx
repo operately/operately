@@ -65,6 +65,18 @@ export const goalCheckInLink = (checkIn?: api.GoalProgressUpdate | null) => {
   return <Link to={path}>Check-In</Link>;
 };
 
+export const projectCheckInLink = (checkIn?: api.ProjectCheckIn | null) => {
+  const paths = usePaths();
+
+  if (!checkIn?.id) {
+    return "Check-In";
+  }
+
+  const path = paths.projectCheckInPath(checkIn.id);
+
+  return <Link to={path}>Check-In</Link>;
+};
+
 export const spaceLink = (space: api.Space) => {
   const paths = usePaths();
   const path = paths.spacePath(space!.id!);
