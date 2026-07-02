@@ -5,8 +5,8 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { usePaths } from "@/routes/paths";
-import { Link, Summary } from "turboui";
-import { commentPath, commentedLink, feedTitle, projectLink } from "./../feedItemLinks";
+import { Summary } from "turboui";
+import { commentPath, commentedLink, feedTitle, projectCheckInLink, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -16,9 +16,13 @@ const ProjectCheckInCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const { checkIn, comment } = content(activity);
+    const { checkIn, comment, project } = content(activity);
 
-    return commentPath(paths.projectCheckInPath(checkIn.id), comment);
+    if (checkIn?.id) {
+      return commentPath(paths.projectCheckInPath(checkIn.id), comment);
+    } else {
+      return paths.projectPath(project.id);
+    }
   },
 
   PageTitle(_props: { activity: any }) {
@@ -36,10 +40,8 @@ const ProjectCheckInCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
     const { checkIn, comment, project } = content(activity);
-
-    const checkInPath = paths.projectCheckInPath(checkIn.id);
-    const action = commentedLink(checkInPath, comment);
-    const checkInLink = <Link to={checkInPath}>Check-In</Link>;
+    const action = checkIn?.id ? commentedLink(paths.projectCheckInPath(checkIn.id), comment) : "commented";
+    const checkInLink = projectCheckInLink(checkIn);
 
     if (page === "project") {
       return feedTitle(activity, action, "on", checkInLink);

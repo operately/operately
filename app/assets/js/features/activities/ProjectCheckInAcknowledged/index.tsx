@@ -1,12 +1,8 @@
-import * as React from "react";
-
 import type { ActivityContentProjectCheckInAcknowledged } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
-import { feedTitle, projectLink } from "./../feedItemLinks";
+import { feedTitle, projectCheckInLink, projectLink } from "./../feedItemLinks";
 
 const ProjectCheckInAcknowledged: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -14,7 +10,13 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    return paths.projectCheckInPath(content(activity).checkIn!.id!);
+    const { checkIn, project } = content(activity);
+
+    if (checkIn?.id) {
+      return paths.projectCheckInPath(checkIn.id);
+    } else {
+      return paths.projectPath(project!.id);
+    }
   },
 
   PageTitle(_props: { activity: any }) {
@@ -30,12 +32,8 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
     const project = content(activity).project!;
-    const checkIn = content(activity).checkIn!;
-
-    const checkInPath = paths.projectCheckInPath(checkIn.id!);
-    const checkInLink = <Link to={checkInPath}>Check-In</Link>;
+    const checkInLink = projectCheckInLink(content(activity).checkIn);
 
     if (page === "project") {
       return feedTitle(activity, "acknowledged a", checkInLink);

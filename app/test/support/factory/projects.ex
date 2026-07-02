@@ -146,6 +146,39 @@ defmodule Operately.Support.Factory.Projects do
     |> Map.put(project_name, project)
   end
 
+  def submit_project_check_in(ctx, testid, project_name, author_name, opts \\ []) do
+    project = Map.fetch!(ctx, project_name)
+    author = person_from_ctx(ctx, author_name)
+    status = Keyword.get(opts, :status, "on_track")
+    description = Keyword.get(opts, :description, RichText.rich_text("Check-in description"))
+
+    {:ok, check_in} =
+      Operately.Operations.ProjectCheckIn.run(author, project, %{
+        status: status,
+        content: description,
+        send_to_everyone: false,
+        subscriber_ids: [],
+        subscription_parent_type: :project_check_in
+      })
+
+    ctx
+    |> Map.put(testid, check_in)
+    |> Map.put(project_name, Operately.Repo.reload(project))
+  end
+
+  def acknowledge_project_check_in(ctx, check_in_name, person_name) do
+    check_in =
+      ctx
+      |> Map.fetch!(check_in_name)
+      |> Operately.Repo.preload(:project)
+
+    person = person_from_ctx(ctx, person_name)
+
+    {:ok, check_in} = Operately.Operations.ProjectCheckInAcknowledgement.run(person, check_in)
+
+    Map.put(ctx, check_in_name, check_in)
+  end
+
   def add_project_milestone(ctx, testid, project_name, opts \\ []) do
     project = Map.fetch!(ctx, project_name)
     status = Keyword.get(opts, :status, :pending)
@@ -351,6 +384,13 @@ defmodule Operately.Support.Factory.Projects do
       Map.put(map, key, value)
     else
       map
+    end
+  end
+
+  defp person_from_ctx(ctx, name) do
+    case Map.fetch!(ctx, name) do
+      %Operately.Projects.Contributor{person_id: id} -> Operately.People.get_person!(id)
+      %Operately.People.Person{} = person -> person
     end
   end
 
