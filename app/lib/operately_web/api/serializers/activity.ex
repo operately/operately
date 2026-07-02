@@ -171,7 +171,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_content("project_check_in_acknowledged", content) do
     %{
       project_id: OperatelyWeb.Paths.project_id(content["project"]),
-      check_in_id: OperatelyWeb.Paths.project_check_in_id(content["check_in"]),
+      check_in_id: serialize_check_in_id(content),
       project: Serializer.serialize(content["project"], level: :essential),
       check_in: serialize_check_in(content["check_in"])
     }
@@ -351,13 +351,32 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     end)
   end
 
+  def serialize_check_in(nil), do: nil
+
   def serialize_check_in(check_in) do
-    %{
-      id: OperatelyWeb.Paths.project_check_in_id(check_in),
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
-      status: check_in.status,
-      description: check_in.description
-    }
+    if Ecto.assoc_loaded?(check_in) do
+      %{
+        id: OperatelyWeb.Paths.project_check_in_id(check_in),
+        inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
+        status: check_in.status,
+        description: check_in.description
+      }
+    end
+  end
+
+  defp serialize_check_in_id(content) do
+    check_in = content["check_in"]
+
+    cond do
+      is_map(check_in) and Ecto.assoc_loaded?(check_in) ->
+        OperatelyWeb.Paths.project_check_in_id(check_in)
+
+      is_binary(content["check_in_id"]) ->
+        Operately.ShortUuid.encode!(content["check_in_id"])
+
+      true ->
+        nil
+    end
   end
 
   defp serialize_comment(nil), do: nil
