@@ -133,9 +133,7 @@ defmodule Operately.Mcp.Observability do
   defp normalize_string(_, default), do: default
 
   defp telemetry_metadata(metadata) do
-    metadata
-    |> reject_nil_values()
-    |> Map.new()
+    reject_nil_values(metadata)
   end
 
   defp reject_nil_values(metadata) do

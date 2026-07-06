@@ -273,7 +273,7 @@ defmodule OperatelyWeb.McpController do
   end
 
   defp dispatch_request(conn, request, _method) do
-    observe_rpc(conn, request["method"], "invalid_params")
+    observe_rpc(conn, request["method"], "method_not_found")
     jsonrpc_http_error(conn, 200, -32601, "Method not found", request["id"])
   end
 
