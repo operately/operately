@@ -5,10 +5,9 @@ import * as React from "react";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Discussion } from "@/models/discussions";
 import { usePaths } from "@/routes/paths";
-import { DivLink, Link, PrimaryButton, Avatar, Summary, FormattedTime } from "turboui";
+import { DivLink, Link, PrimaryButton, Avatar, Summary, FormattedTime, displayDate } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { displayDate } from "@/utils/drafts";
 
 import { useLoadedData } from "./loader";
 

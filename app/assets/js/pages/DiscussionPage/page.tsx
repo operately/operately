@@ -18,11 +18,10 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
-import { IconEdit, IconTrash, RichContent, CurrentSubscriptions, Spacer } from "turboui";
+import { IconEdit, IconTrash, RichContent, CurrentSubscriptions, Spacer, displayDate } from "turboui";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
-import { displayDate } from "@/utils/drafts";
 
 export function Page() {
   const { discussion } = useLoadedData();

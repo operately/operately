@@ -1,6 +1,6 @@
 import * as Spaces from "@/models/spaces";
 import * as Time from "@/utils/time";
-import { displayDate } from "@/utils/drafts";
+import { displayDate } from "turboui";
 
 import { ProjectCheckIn } from "@/api";
 import { Project, ProjectRetrospective } from "@/models/projects";

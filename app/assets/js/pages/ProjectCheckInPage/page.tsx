@@ -21,6 +21,7 @@ import {
   showSuccessToast,
   StatusBadge,
   TextSeparator,
+  displayDate,
 } from "turboui";
 import { compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
@@ -33,7 +34,6 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { displayDate } from "@/utils/drafts";
 import { assertPresent } from "@/utils/assertions";
 import { banner } from "./Banner";
 import { useLoadedData, useRefresh } from "./loader";

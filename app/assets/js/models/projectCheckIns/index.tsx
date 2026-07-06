@@ -4,7 +4,7 @@ import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { parsePersonForTurboUi } from "../people";
 import * as Time from "@/utils/time";
-import { displayDate } from "@/utils/drafts";
+import { displayDate } from "turboui";
 
 export type ProjectCheckIn = api.ProjectCheckIn;
 export type ProjectCheckInStatus = api.ProjectCheckInStatus;

@@ -1,14 +1,12 @@
 import * as React from "react";
-import { IconSquareCheckFilled, StatusBadge, Avatar, FormattedTime } from "turboui";
+import { IconSquareCheckFilled, StatusBadge, Avatar, FormattedTime, BulletDot, displayDate } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
-import { displayDate } from "@/utils/drafts";
 
 import { Update } from "@/models/goalCheckIns";
 import { Person } from "@/api";
-import { BulletDot } from "turboui";
 
 export function Header() {
   const { update } = useLoadedData();

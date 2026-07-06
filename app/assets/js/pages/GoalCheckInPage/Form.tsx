@@ -5,7 +5,7 @@ import * as Pages from "@/components/Pages";
 import { useForm, Form as CheckInForm } from "@/features/goals/GoalCheckIn";
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
-import { displayDate } from "@/utils/drafts";
+import { displayDate } from "turboui";
 import { compareIds } from "@/routes/paths";
 import { isWithinTimeframe } from "@/utils/time";
 

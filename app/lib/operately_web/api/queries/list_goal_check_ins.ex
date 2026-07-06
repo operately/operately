@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
       preload: [:author]
     )
     |> Repo.all()
-    |> Enum.sort_by(&Drafts.display_date/1, {:desc, NaiveDateTime})
+    |> Drafts.sort_by_display_date_desc()
     |> Update.preload_comment_count()
   end
 end

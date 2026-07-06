@@ -4,7 +4,7 @@ import { Paths } from "@/routes/paths";
 import { isPresent } from "@/utils/isPresent";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-import { displayDate } from "@/utils/drafts";
+import { displayDate } from "turboui";
 
 export type Update = api.GoalProgressUpdate;
 export type Target = api.GoalTargetUpdates;

@@ -6,7 +6,7 @@ import { Node } from "./node";
 
 import * as Spaces from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
-import { displayDate } from "@/utils/drafts";
+import { displayDate } from "turboui";
 import * as Time from "@/utils/time";
 
 export class GoalNode extends Node {
