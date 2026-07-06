@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { createTestId } from "@/utils/testid";
 import { usePaths } from "@/routes/paths";
-import { ResourceHubSortBy, sortNodesWithFoldersFirst } from "turboui";
+import { ResourceHubSortBy, sortNodesWithFoldersFirst, withNodeDisplayInsertedAt } from "turboui";
 
 import { getNodePath } from "./nodeUtils";
 import { useResourceHubNodesListContext, type NodesProps } from "./useResourceHubNodesListContext";
@@ -17,7 +17,7 @@ export function useResourceHubNodesListProps(props: NodesProps | null | undefine
 
   const sortOrder = sortBy === "name" ? "asc" : "desc";
   const sortedApiNodes = useMemo(
-    () => sortNodesWithFoldersFirst(nodes, sortBy, sortOrder),
+    () => sortNodesWithFoldersFirst(nodes.map(withNodeDisplayInsertedAt), sortBy, sortOrder),
     [nodes, sortBy, sortOrder],
   );
 

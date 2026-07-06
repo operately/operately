@@ -4,6 +4,7 @@ import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { parsePersonForTurboUi } from "../people";
 import * as Time from "@/utils/time";
+import { displayDate } from "turboui";
 
 export type ProjectCheckIn = api.ProjectCheckIn;
 export type ProjectCheckInStatus = api.ProjectCheckInStatus;
@@ -21,7 +22,7 @@ export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.ProjectCheck
     return {
       id: checkIn.id,
       author: parsePersonForTurboUi(paths, checkIn.author)!,
-      date: Time.parse(checkIn.insertedAt)!,
+      date: Time.parse(displayDate(checkIn))!,
       link: paths.projectCheckInPath(checkIn.id),
       content: JSON.parse(checkIn.description || "{}"),
       commentCount: checkIn.commentsCount || 0,

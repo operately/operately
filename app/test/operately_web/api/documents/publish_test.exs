@@ -79,7 +79,9 @@ defmodule OperatelyWeb.Api.Documents.PublishTest do
       document = Repo.reload(ctx.document) |> Repo.preload(:node)
 
       assert document.state == :published
+      assert document.published_at
       assert res.document == Serializer.serialize(document)
+      assert res.document.published_at
     end
 
     test "activity is created", ctx do

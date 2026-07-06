@@ -6,6 +6,7 @@ defmodule Operately.Assignments.Assignment do
   Categorizer (which enriches assignments with due status metadata).
   """
 
+  alias Operately.Drafts
   alias Operately.Projects.{Project, CheckIn, Milestone}
   alias Operately.Goals.{Goal, Update}
   alias Operately.Tasks.Task
@@ -132,7 +133,7 @@ defmodule Operately.Assignments.Assignment do
     build_with_enrichment(%{
       resource_id: Paths.project_check_in_id(check_in),
       name: "#{check_in.project.name} - Check-in",
-      due: Operately.Time.as_datetime(check_in.inserted_at),
+      due: Operately.Time.as_datetime(Drafts.display_date(check_in)),
       type: :check_in,
       role: :reviewer,
       action_label: "Review weekly check-in",
@@ -166,7 +167,7 @@ defmodule Operately.Assignments.Assignment do
     build_with_enrichment(%{
       resource_id: Paths.goal_update_id(update),
       name: "#{update.goal.name} – Goal Update",
-      due: Operately.Time.as_datetime(update.inserted_at),
+      due: Operately.Time.as_datetime(Drafts.display_date(update)),
       type: :goal_update,
       role: :reviewer,
       action_label: "Review goal progress update",

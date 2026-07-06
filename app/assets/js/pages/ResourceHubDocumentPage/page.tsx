@@ -16,13 +16,12 @@ import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { OngoingDraftActions } from "@/features/drafts";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CopyDocumentModalWrapper, ResourcePageNavigation } from "turboui";
+import { CopyDocumentModalWrapper, ResourcePageNavigation, RichContent, CurrentSubscriptions, Spacer, displayDate } from "turboui";
 import { useCopyDocumentListContext } from "@/models/resourceHubs";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
 import { assertPresent } from "@/utils/assertions";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { RichContent, CurrentSubscriptions, Spacer } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { buildNavigationDocument } from "./navigation";
@@ -82,11 +81,11 @@ function Title() {
 
   return (
     <DocumentTitle
-      title={document.name!}
+      title={document.name}
       author={document.author}
-      publishedAt={document.insertedAt!}
+      publishedAt={displayDate(document)}
       modifiedAt={document.updatedAt}
-      state="published"
+      state={document.state}
     />
   );
 }
