@@ -21,7 +21,16 @@ defmodule OperatelyWeb.Mcp.Tool do
 
       alias OperatelyWeb.Mcp.Catalog.{Definition, JsonSchema}
 
-      import OperatelyWeb.Mcp.Tool, only: [not_implemented: 0, read_annotations: 0, write_annotations: 0, read_security_schemes: 0, write_security_schemes: 0]
+      import OperatelyWeb.Mcp.Tool,
+        only: [
+          not_implemented: 0,
+          read_annotations: 0,
+          write_annotations: 0,
+          destructive_annotations: 0,
+          read_security_schemes: 0,
+          write_security_schemes: 0,
+          destructive_security_schemes: 0
+        ]
     end
   end
 
@@ -33,11 +42,19 @@ defmodule OperatelyWeb.Mcp.Tool do
     annotations(read_only: false, destructive: false)
   end
 
+  def destructive_annotations do
+    annotations(read_only: false, destructive: true)
+  end
+
   def read_security_schemes do
     security_schemes(["mcp:read"])
   end
 
   def write_security_schemes do
+    security_schemes(["mcp:write"])
+  end
+
+  def destructive_security_schemes do
     security_schemes(["mcp:write"])
   end
 

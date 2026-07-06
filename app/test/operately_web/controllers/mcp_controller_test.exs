@@ -185,6 +185,16 @@ defmodule OperatelyWeb.McpControllerTest do
     assert create_comment_tool["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
     assert create_comment_tool["_meta"]["safetyClassification"] == "write"
 
+    delete_task_tool = Enum.find(tools_list_body["result"]["tools"], &(&1["name"] == "delete_task"))
+
+    assert delete_task_tool["annotations"] == %{
+             "readOnlyHint" => false,
+             "destructiveHint" => true,
+             "openWorldHint" => false
+           }
+
+    assert delete_task_tool["_meta"]["safetyClassification"] == "destructive"
+
     get_conn =
       build_conn()
       |> put_req_header("authorization", "Bearer #{access_token}")

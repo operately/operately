@@ -95,7 +95,20 @@ defmodule Operately.Mcp.ToolsTest do
     "create_folder",
     "rename_folder",
     "move_resource_hub_item",
-    "update_comment"
+    "update_comment",
+    "delete_comment",
+    "delete_task",
+    "delete_project_check_in",
+    "delete_goal_check_in",
+    "archive_space_discussion",
+    "delete_milestone",
+    "delete_project",
+    "delete_goal",
+    "delete_space",
+    "delete_document",
+    "delete_file",
+    "delete_link",
+    "delete_folder"
   ]
   @company_modes [:none, :authenticated, :resource_derived]
   @safety_classifications [:read_only, :write, :destructive]
@@ -185,7 +198,16 @@ defmodule Operately.Mcp.ToolsTest do
     assert Enum.all?(read_only_tools, &(&1.annotations["readOnlyHint"] == true))
     assert Enum.all?(write_tools, &(&1.required_scopes == ["mcp:write"]))
     assert Enum.all?(write_tools, &(&1.annotations["readOnlyHint"] == false))
-    assert Enum.empty?(Enum.filter(Map.values(tools), &(&1.safety_classification == :destructive)))
+    assert Enum.all?(write_tools, &(&1.annotations["destructiveHint"] == false))
+
+    destructive_tools =
+      tools
+      |> Map.values()
+      |> Enum.filter(&(&1.safety_classification == :destructive))
+
+    assert Enum.all?(destructive_tools, &(&1.required_scopes == ["mcp:write"]))
+    assert Enum.all?(destructive_tools, &(&1.annotations["destructiveHint"] == true))
+    assert Enum.all?(destructive_tools, &(&1.annotations["readOnlyHint"] == false))
   end
 
   test "any_object schemas include an empty properties map" do
@@ -276,6 +298,18 @@ defmodule Operately.Mcp.ToolsTest do
 
     assert create_task["_meta"]["requiredScopes"] == ["mcp:write"]
     assert create_task["inputSchema"]["required"] == ["name"]
+
+    delete_task = Enum.find(descriptors, &(&1["name"] == "delete_task"))
+
+    assert delete_task["annotations"] == %{
+             "readOnlyHint" => false,
+             "destructiveHint" => true,
+             "openWorldHint" => false
+           }
+
+    assert delete_task["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
+    assert delete_task["_meta"]["safetyClassification"] == "destructive"
+    assert delete_task["inputSchema"]["required"] == ["task_id"]
   end
 
   defp valid_example?(%{"title" => title, "arguments" => arguments}) when is_binary(title) and title != "" and is_map(arguments), do: true
