@@ -21,6 +21,7 @@ import { useCopyDocumentListContext } from "@/models/resourceHubs";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
 import { assertPresent } from "@/utils/assertions";
+import { displayDate } from "@/utils/drafts";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { RichContent, CurrentSubscriptions, Spacer } from "turboui";
 
@@ -82,11 +83,11 @@ function Title() {
 
   return (
     <DocumentTitle
-      title={document.name!}
+      title={document.name}
       author={document.author}
-      publishedAt={document.insertedAt!}
+      publishedAt={displayDate(document)}
       modifiedAt={document.updatedAt}
-      state="published"
+      state={document.state}
     />
   );
 }

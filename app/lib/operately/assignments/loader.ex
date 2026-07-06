@@ -208,7 +208,7 @@ defmodule Operately.Assignments.Loader do
       where:
         (reviewer.id == ^person.id and author.id != reviewer.id) or
           (champion.id == ^person.id and author.id != champion.id),
-      where: is_nil(reviewer_change.inserted_at) or c.inserted_at > reviewer_change.inserted_at
+      where: is_nil(reviewer_change.inserted_at) or c.published_at > reviewer_change.inserted_at
     )
   end
 
@@ -298,7 +298,7 @@ defmodule Operately.Assignments.Loader do
       where:
         (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or
           (goal.champion_id == ^person.id and author.id != goal.champion_id),
-      where: is_nil(reviewer_change.inserted_at) or u.inserted_at > reviewer_change.inserted_at
+      where: is_nil(reviewer_change.inserted_at) or u.published_at > reviewer_change.inserted_at
     )
   end
 

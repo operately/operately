@@ -88,6 +88,22 @@ defmodule Operately.MD.ProjectTest do
     refute rendered =~ "#### Comments"
   end
 
+  test "renders published_at instead of inserted_at for published check-ins", ctx do
+    ctx = Factory.add_project_check_in(ctx, :check_in, :project, :creator)
+
+    {:ok, _check_in} =
+      Ecto.Changeset.change(ctx.check_in, %{
+        inserted_at: ~N[2026-01-01 10:00:00],
+        published_at: ~U[2026-01-05 10:00:00Z]
+      })
+      |> Operately.Repo.update()
+
+    rendered = render_project(ctx.project)
+
+    assert rendered =~ "### Check-in on 2026-01-05"
+    refute rendered =~ "### Check-in on 2026-01-01"
+  end
+
   test "it renders milestones in the markdown", ctx do
     ctx = Factory.add_project_milestone(ctx, :milestone, :project)
 

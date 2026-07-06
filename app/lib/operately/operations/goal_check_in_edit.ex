@@ -1,6 +1,7 @@
 defmodule Operately.Operations.GoalCheckInEdit do
   alias Ecto.Multi
   alias Operately.{Repo, Activities}
+  alias Operately.Drafts
   alias Operately.Goals.{Goal, Update, Target}
   alias Operately.Notifications.SubscriptionList
 
@@ -24,7 +25,8 @@ defmodule Operately.Operations.GoalCheckInEdit do
   # Otherwise, only the message can be edited.
   #
   defp set_if_full_edit_allowed(multi, goal, check_in) do
-    edit_deadline = NaiveDateTime.add(check_in.inserted_at, 3, :day)
+    edit_start = Drafts.display_date(check_in)
+    edit_deadline = NaiveDateTime.add(edit_start, 3, :day)
 
     is_latest = goal.last_check_in_id == check_in.id
     is_in_edit_deadline = NaiveDateTime.compare(NaiveDateTime.utc_now(), edit_deadline) == :lt

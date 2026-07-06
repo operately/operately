@@ -742,13 +742,14 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:discussion_state, values: Operately.Messages.Message.valid_states())
+  enum(:document_state, values: Operately.ResourceHubs.Document.valid_states())
 
   object :discussion do
     field :id, :string, null: false
-    field? :inserted_at, :date, null: true
-    field? :updated_at, :date, null: true
+    field :inserted_at, :date, null: false
+    field :updated_at, :date, null: false
     field? :published_at, :date, null: true
-    field :state, :string, null: false
+    field :state, :discussion_state, null: false
     field? :author, :person, null: true
     field :title, :string, null: false
     field? :body, :string, null: true
@@ -1390,9 +1391,10 @@ defmodule OperatelyWeb.Api.Types do
     field :parent_folder_id, :string, null: false
     field :name, :string, null: false
     field :content, :string, null: false
-    field :state, :string, null: false
-    field? :inserted_at, :string, null: true
-    field? :updated_at, :date, null: true
+    field :state, :document_state, null: false
+    field :inserted_at, :string, null: false
+    field :published_at, :datetime, null: true
+    field :updated_at, :date, null: false
     field? :permissions, :resource_hub_permissions, null: true
     field? :reactions, list_of(:reaction), null: true
     field? :comments_count, :integer, null: true
@@ -2196,8 +2198,9 @@ defmodule OperatelyWeb.Api.Types do
   object :project_check_in do
     field :id, :string
     field :status, :project_check_in_status
-    field :state, :check_in_state
-    field :inserted_at, :date, null: true
+    field :state, :check_in_state, null: false
+    field :inserted_at, :date, null: false
+    field :updated_at, :date, null: false
     field :published_at, :datetime, null: true
     field :description, :string, null: true
     field :author, :person, null: true
@@ -2312,9 +2315,10 @@ defmodule OperatelyWeb.Api.Types do
   object :goal_progress_update do
     field :id, :string, null: false
     field? :status, :goal_check_in_status, null: true
-    field? :state, :check_in_state, null: true
+    field :state, :check_in_state, null: false
     field? :message, :string, null: true
-    field? :inserted_at, :datetime, null: true
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
     field? :published_at, :datetime, null: true
     field? :author, :person, null: true
     field? :acknowledged, :boolean, null: true

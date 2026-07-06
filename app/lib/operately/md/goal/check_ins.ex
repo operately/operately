@@ -1,4 +1,5 @@
 defmodule Operately.MD.Goal.CheckIns do
+  alias Operately.Drafts
   def render(check_ins) do
     check_ins_with_comments = load_check_ins_with_comments(check_ins)
 
@@ -19,7 +20,7 @@ defmodule Operately.MD.Goal.CheckIns do
 
   defp render_check_in(check_in) do
     """
-    ### Check-in on #{render_date(check_in.inserted_at)}
+    ### Check-in on #{render_date(Drafts.display_date(check_in))}
 
     Author: #{check_in.author.full_name}
 

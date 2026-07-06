@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
   use OperatelyWeb.Api.Helpers
   alias Operately.Repo
   alias Operately.Goals.{Goal, Update}
+  alias Operately.Drafts
 
   inputs do
     field :goal_id, :id, null: false
@@ -33,11 +34,11 @@ defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
   defp load(goal_id, person) do
     from(u in Update,
       where: u.goal_id == ^goal_id,
-      where: u.state == :published or u.author_id == ^person.id,
-      order_by: [desc: u.inserted_at],
+      where: u.state == :published or (u.state == :draft and u.author_id == ^person.id),
       preload: [:author]
     )
     |> Repo.all()
+    |> Enum.sort_by(&Drafts.display_date/1, {:desc, NaiveDateTime})
     |> Update.preload_comment_count()
   end
 end
