@@ -8,6 +8,7 @@ import { usePaths } from "@/routes/paths";
 import { DivLink, Link, PrimaryButton, Avatar, Summary, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { displayDate } from "@/utils/drafts";
 
 import { useLoadedData } from "./loader";
 
@@ -136,7 +137,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
             </>
           )}
           <div className="text-sm text-content-dimmed">
-            <FormattedTime {...formattedTimePreferences} time={discussion.publishedAt!} format="relative-weekday-or-date" />
+            <FormattedTime {...formattedTimePreferences} time={displayDate(discussion)} format="relative-weekday-or-date" />
           </div>
         </div>
       </div>

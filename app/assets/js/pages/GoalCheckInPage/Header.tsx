@@ -4,6 +4,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
+import { displayDate } from "@/utils/drafts";
 
 import { Update } from "@/models/goalCheckIns";
 import { Person } from "@/api";
@@ -22,13 +23,12 @@ export function Header() {
 
 function Title({ update }: { update: Update }) {
   const formattedTimePreferences = useFormattedTimePreferences();
-  assertPresent(update.insertedAt, "Update insertedAt must be defined");
 
   return (
     <div className="flex flex-col items-center">
       <h1 className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-xl sm:text-3xl font-extrabold text-center">
         <span>
-          Check-In for <FormattedTime {...formattedTimePreferences} time={update.insertedAt} format="long-date" />
+          Check-In for <FormattedTime {...formattedTimePreferences} time={displayDate(update)} format="long-date" />
         </span>
         {update.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
       </h1>

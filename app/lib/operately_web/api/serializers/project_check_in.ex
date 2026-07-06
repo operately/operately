@@ -6,6 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.CheckIn do
       state: Atom.to_string(check_in.state),
       description: check_in.description && Jason.encode!(check_in.description),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(check_in.updated_at),
       published_at: OperatelyWeb.Api.Serializer.serialize(check_in.published_at),
       acknowledged_at: OperatelyWeb.Api.Serializer.serialize(check_in.acknowledged_at),
       acknowledged_by: OperatelyWeb.Api.Serializer.serialize(check_in.acknowledged_by),

@@ -1263,10 +1263,10 @@ export interface DeletedStatusReplacement {
 
 export interface Discussion {
   id: string;
-  insertedAt?: string | null;
-  updatedAt?: string | null;
+  insertedAt: string;
+  updatedAt: string;
   publishedAt?: string | null;
-  state: string;
+  state: DiscussionState;
   author?: Person | null;
   title: string;
   body?: string | null;
@@ -1387,9 +1387,10 @@ export interface GoalPermissions {
 export interface GoalProgressUpdate {
   id: string;
   status?: GoalCheckInStatus | null;
-  state?: CheckInState | null;
+  state: CheckInState;
   message?: string | null;
-  insertedAt?: string | null;
+  insertedAt: string;
+  updatedAt: string;
   publishedAt?: string | null;
   author?: Person | null;
   acknowledged?: boolean | null;
@@ -1579,7 +1580,8 @@ export interface ProjectCheckIn {
   id: string;
   status: ProjectCheckInStatus;
   state: CheckInState;
-  insertedAt: string | null;
+  insertedAt: string;
+  updatedAt: string;
   publishedAt: string | null;
   description: string | null;
   author: Person | null;
@@ -1710,9 +1712,10 @@ export interface ResourceHubDocument {
   parentFolderId: string;
   name: string;
   content: string;
-  state: string;
-  insertedAt?: string | null;
-  updatedAt?: string | null;
+  state: DocumentState;
+  insertedAt: string;
+  publishedAt: string | null;
+  updatedAt: string;
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
   commentsCount?: number | null;
@@ -2298,6 +2301,8 @@ export type ContextualDateType = "day" | "month" | "quarter" | "year";
 export type CreateConversationContextType = "goal" | "project";
 
 export type DiscussionState = "draft" | "published";
+
+export type DocumentState = "draft" | "published";
 
 export type EmailPreferenceValues = "buffered";
 

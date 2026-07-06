@@ -1,4 +1,6 @@
 defmodule Operately.MD.Project do
+  alias Operately.Drafts
+
   def render(project) do
     project =
       Operately.Repo.preload(project, [
@@ -12,7 +14,12 @@ defmodule Operately.MD.Project do
         [tasks: [:assigned_people, :milestone]]
       ])
 
-    check_ins_with_comments = load_check_ins_with_comments(project.check_ins)
+    check_ins_with_comments =
+      project.check_ins
+      |> Enum.filter(&(&1.state == :published))
+      |> Drafts.sort_by_display_date_desc()
+      |> load_check_ins_with_comments()
+
     discussions = Operately.Projects.Project.list_discussions(project.id)
 
     """
@@ -175,8 +182,6 @@ defmodule Operately.MD.Project do
     render_date(date)
   end
 
-  defp render_check_ins(check_ins) when not is_list(check_ins), do: ""
-
   defp render_check_ins([]) do
     """
     ## Check-ins
@@ -195,7 +200,7 @@ defmodule Operately.MD.Project do
 
   defp render_check_in(check_in) do
     [
-      "### Check-in on #{render_date(check_in.inserted_at)}",
+      "### Check-in on #{render_date(Drafts.display_date(check_in))}",
       render_check_in_author_line(check_in.author),
       Operately.MD.RichText.render(check_in.description),
       render_check_in_comments(check_in.comments || [])
@@ -286,14 +291,12 @@ defmodule Operately.MD.Project do
     """
   end
 
-  defp load_check_ins_with_comments(check_ins) when is_list(check_ins) do
+  defp load_check_ins_with_comments(check_ins) do
     Enum.map(check_ins, fn check_in ->
       comments = load_comments_for_check_in(check_in.id)
       Map.put(check_in, :comments, comments)
     end)
   end
-
-  defp load_check_ins_with_comments(check_ins), do: check_ins
 
   defp load_comments_for_check_in(check_in_id) do
     import Ecto.Query
