@@ -6,12 +6,11 @@ defmodule Operately.Mcp.ClientMetadata do
   resolved by fetching and parsing a Client ID Metadata Document.
   """
 
-  require Logger
-
   defstruct [:client_id, :client_name, :client_uri, :logo_uri, :token_endpoint_auth_method, redirect_uris: []]
 
   alias __MODULE__
   alias Operately.Mcp.ClientMetadata.{Document, Fetcher}
+  alias Operately.Mcp.Observability
 
   @localhost_hosts ["localhost", "127.0.0.1", "::1"]
 
@@ -87,7 +86,14 @@ defmodule Operately.Mcp.ClientMetadata do
           error
 
         {:error, reason} ->
-          Logger.warning("MCP CIMD client resolution failed: #{inspect(%{client_id: client_id, reason: reason})}")
+          unless reason in [:fetch_failed, :invalid_response, :unsafe_url] do
+            Observability.cimd_fetch(%{
+              client_id: client_id,
+              result: Observability.cimd_result(reason),
+              cache: "miss"
+            })
+          end
+
           {:error, :invalid_client}
       end
     else
