@@ -33,6 +33,7 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { displayDate } from "@/utils/drafts";
 import { assertPresent } from "@/utils/assertions";
 import { banner } from "./Banner";
 import { useLoadedData, useRefresh } from "./loader";
@@ -136,7 +137,7 @@ function Title() {
     <div className="flex flex-col items-center">
       <div className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-2xl font-extrabold text-center">
         <span>
-          Check-In from <FormattedTime {...formattedTimePreferences} time={checkIn.insertedAt!} format="long-date" />
+          Check-In from <FormattedTime {...formattedTimePreferences} time={displayDate(checkIn)} format="long-date" />
         </span>
         {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
       </div>

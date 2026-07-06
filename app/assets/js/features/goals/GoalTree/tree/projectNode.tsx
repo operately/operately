@@ -1,5 +1,6 @@
 import * as Spaces from "@/models/spaces";
 import * as Time from "@/utils/time";
+import { displayDate } from "@/utils/drafts";
 
 import { ProjectCheckIn } from "@/api";
 import { Project, ProjectRetrospective } from "@/models/projects";
@@ -35,7 +36,7 @@ export class ProjectNode extends Node {
     this.isPaused = project.status === "paused";
 
     this.progress = this.calculateProgress();
-    this.lastCheckInDate = Time.parseDate(project.lastCheckIn?.insertedAt);
+    this.lastCheckInDate = project.lastCheckIn ? Time.parseDate(displayDate(project.lastCheckIn)) : null;
 
     this.retrospective = project.retrospective;
     this.lastCheckIn = project.lastCheckIn;

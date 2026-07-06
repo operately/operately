@@ -4,6 +4,7 @@ import { Paths } from "@/routes/paths";
 import { isPresent } from "@/utils/isPresent";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
+import { displayDate } from "@/utils/drafts";
 
 export type Update = api.GoalProgressUpdate;
 export type Target = api.GoalTargetUpdates;
@@ -19,7 +20,7 @@ export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.GoalProgress
     return {
       id: checkIn.id,
       author: People.parsePersonForTurboUi(paths, checkIn.author),
-      date: Time.parse(checkIn.insertedAt)!,
+      date: Time.parse(displayDate(checkIn))!,
       link: paths.goalCheckInPath(checkIn.id),
       content: JSON.parse(checkIn.message!),
       commentCount: checkIn.commentsCount!,

@@ -22,6 +22,7 @@ import { IconEdit, IconTrash, RichContent, CurrentSubscriptions, Spacer } from "
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
+import { displayDate } from "@/utils/drafts";
 
 export function Page() {
   const { discussion } = useLoadedData();
@@ -122,7 +123,7 @@ function DiscussionTitle() {
       title={discussion.title}
       author={discussion.author || null}
       state={discussion.state}
-      publishedAt={discussion.publishedAt!}
+      publishedAt={displayDate(discussion)}
     />
   );
 }

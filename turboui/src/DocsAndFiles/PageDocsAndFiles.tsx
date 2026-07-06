@@ -31,6 +31,7 @@ import {
   isNodeVideoFile,
 } from "../ResourceHub/selectors";
 import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
+import { nodeDisplayInsertedAt } from "../utils/drafts";
 import { plurarize } from "../utils/plurarize";
 import { truncate } from "../utils/strings";
 
@@ -127,7 +128,7 @@ function mapNodeToItem(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles): D
       name: getNodeName(node),
       type,
       link: docsAndFiles.nodesListProps.getNodePath(node),
-      insertedAt: node.insertedAt,
+      insertedAt: nodeDisplayInsertedAt(node),
       updatedAt: node.updatedAt,
       commentsCount: getNodeCommentsCount(node),
       details: buildNodeDetails(node, docsAndFiles),

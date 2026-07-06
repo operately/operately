@@ -6,6 +6,7 @@ import * as React from "react";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
+import { displayDate } from "@/utils/drafts";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import {
@@ -422,7 +423,7 @@ function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage
     return {
       id: checkIn.id,
       author: People.parsePersonForTurboUi(paths, checkIn.author),
-      date: Time.parse(checkIn.insertedAt)!,
+      date: Time.parse(displayDate(checkIn))!,
       link: paths.goalCheckInPath(checkIn.id),
       content: JSON.parse(checkIn.message!),
       commentCount: checkIn.commentsCount!,
