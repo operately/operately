@@ -6,12 +6,25 @@ import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
+import { DiscardDiscussionDraftModal } from "@/features/discussions/DiscardDiscussionDraftModal";
+import { useBoolState } from "@/hooks/useBoolState";
 import { Discussion } from "@/models/discussions";
 import { truncateString } from "@/utils/strings";
 import { createTestId } from "@/utils/testid";
-import { DivLink, PrimaryButton, richContentToString, Avatar, FormattedTime } from "turboui";
+import {
+  DivLink,
+  PrimaryButton,
+  richContentToString,
+  Avatar,
+  FormattedTime,
+  IconDots,
+  IconTrash,
+  Menu,
+  MenuActionItem,
+} from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import classNames from "classnames";
+import { useNavigate } from "react-router-dom";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;
@@ -121,7 +134,6 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
     "flex items-start gap-4",
     "py-3",
     "last:border-b not-first:border-t border-stroke-base",
-    "cursor-pointer",
     "hover:bg-surface-highlight",
     "px-1",
   );
@@ -130,22 +142,71 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const contentSnippet = richContentToString(JSON.parse(discussion.body!));
 
   return (
-    <DivLink to={path} className={className} testId={testId}>
-      {discussion.author && (
-        <div className="shrink-0">
-          <Avatar person={discussion.author} size="large" />
-        </div>
-      )}
+    <div className={className}>
+      <DivLink to={path} className="flex flex-1 items-start gap-4 min-w-0 cursor-pointer" testId={testId}>
+        {discussion.author && (
+          <div className="shrink-0">
+            <Avatar person={discussion.author} size="large" />
+          </div>
+        )}
 
-      <div className="flex-1 h-full">
-        <div className="font-semibold leading-none mb-1">{discussion.title}</div>
-        <div className="break-words line-clamp-2">
-          <span className="font-medium text-content-dimmed">
-            Last edited on <FormattedTime {...formattedTimePreferences} time={discussion.updatedAt!} format="relative-time-or-date" /> &mdash;{" "}
-          </span>
-          {truncateString(contentSnippet, 60)}
+        <div className="flex-1 h-full min-w-0">
+          <div className="font-semibold leading-none mb-1">{discussion.title}</div>
+          <div className="break-words line-clamp-2">
+            <span className="font-medium text-content-dimmed">
+              Last edited on <FormattedTime {...formattedTimePreferences} time={discussion.updatedAt!} format="relative-time-or-date" /> &mdash;{" "}
+            </span>
+            {truncateString(contentSnippet, 60)}
+          </div>
         </div>
+      </DivLink>
+
+      <DiscussionDraftOptions discussion={discussion} />
+    </div>
+  );
+}
+
+function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
+  const paths = usePaths();
+  const navigate = useNavigate();
+  const { space } = Pages.useLoadedData<LoadedData>();
+  const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
+
+  return (
+    <>
+      <div className="shrink-0">
+        <Menu
+          size="tiny"
+          align="end"
+          testId={createTestId("discussion-draft-options", discussion.title!)}
+          customTrigger={
+            <button
+              type="button"
+              title="Draft actions"
+              aria-label="Draft actions"
+              className="w-6 h-6 flex items-center justify-center rounded-full text-content-dimmed hover:text-content-base hover:bg-surface-dimmed focus:text-content-base focus:bg-surface-dimmed focus:outline-none"
+            >
+              <IconDots size={16} />
+            </button>
+          }
+        >
+          <MenuActionItem
+            onClick={toggleDiscardModal}
+            testId={createTestId("discard-draft", discussion.title!)}
+            icon={IconTrash}
+            danger
+          >
+            Discard draft
+          </MenuActionItem>
+        </Menu>
       </div>
-    </DivLink>
+
+      <DiscardDiscussionDraftModal
+        isOpen={showDiscardModal}
+        toggleModal={toggleDiscardModal}
+        discussionId={discussion.id!}
+        onSuccess={() => navigate(paths.discussionDraftsPath(space.id!), { replace: true })}
+      />
+    </>
   );
 }
