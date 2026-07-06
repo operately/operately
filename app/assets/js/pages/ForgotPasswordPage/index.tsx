@@ -3,10 +3,9 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import Forms from "@/components/Forms";
 import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { ActionLink } from "turboui";
+import { Forms, ActionLink, type FormState } from "turboui";
 
 import { PageModule } from "@/routes/types";
 
@@ -46,7 +45,7 @@ function Page() {
   );
 }
 
-function Form({ form }) {
+function Form({ form }: { form: FormState<{ email: string }> }) {
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>

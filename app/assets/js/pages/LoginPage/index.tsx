@@ -4,7 +4,6 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
-import Forms from "@/components/Forms";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
@@ -12,7 +11,7 @@ import { logIn } from "@/routes/auth";
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import classNames from "classnames";
-import { DimmedLink, Link } from "turboui";
+import { Forms, DimmedLink, Link, type FormState } from "turboui";
 
 export default { name: "LoginPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -93,7 +92,7 @@ function isSignupEnabled(): boolean {
   return window.appConfig.allowSignupWithEmail || window.appConfig.allowSignupWithGoogle;
 }
 
-function EmailLogin({ form, error }: { form: any; error: string | null }) {
+function EmailLogin({ form, error }: { form: FormState<{ email: string; password: string }>; error: string | null }) {
   return (
     <div>
       <Forms.FieldGroup>
