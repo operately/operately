@@ -252,6 +252,67 @@ defmodule OperatelyWeb.McpControllerTest do
     assert Jason.decode!(text) == body["result"]["structuredContent"]
   end
 
+  test "emits tools/call observability with tool name and outcome", %{account: account, company: company, client: client} do
+    handler_id = "mcp-controller-tools-call-#{System.unique_integer([:positive])}"
+    test_pid = self()
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:operately, :mcp, :tools_call, :stop],
+        fn _event, measurements, metadata, pid ->
+          send(pid, {:tools_call_telemetry, measurements, metadata})
+        end,
+        test_pid
+      )
+
+    on_exit(fn -> :telemetry.detach(handler_id) end)
+
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn = call_tool(access_token, session_id, "get_current_company")
+
+    assert conn.status == 200
+
+    assert_receive {:tools_call_telemetry, %{count: 1}, metadata}
+    assert metadata.tool == "get_current_company"
+    assert metadata.outcome == "ok"
+    assert metadata.safety_classification == "read_only"
+    assert metadata.client_id == client.client_id
+    assert metadata.company_id == company.id
+  end
+
+  test "emits insufficient_scope observability for write tools with read-only token", %{account: account, company: company, client: client} do
+    handler_id = "mcp-controller-insufficient-scope-#{System.unique_integer([:positive])}"
+    test_pid = self()
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:operately, :mcp, :tools_call, :stop],
+        fn _event, measurements, metadata, pid ->
+          send(pid, {:tools_call_telemetry, measurements, metadata})
+        end,
+        test_pid
+      )
+
+    on_exit(fn -> :telemetry.detach(handler_id) end)
+
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client, "mcp:read")
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    conn = call_tool(access_token, session_id, "create_comment", %{})
+
+    assert conn.status == 403
+
+    assert_receive {:tools_call_telemetry, %{count: 1},
+                    %{
+                      tool: "create_comment",
+                      outcome: "insufficient_scope"
+                    }}
+  end
+
   test "executes the live read-only tools through tools/call", %{account: account, company: company, client: client} do
     person = People.get_person(account, company)
     coworker = person_fixture(company_id: company.id, full_name: "Taylor Coworker")

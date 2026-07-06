@@ -2,6 +2,7 @@ defmodule OperatelyWeb.McpOAuthController do
   use OperatelyWeb, :controller
 
   alias Operately.Mcp
+  alias Operately.Mcp.Observability
   alias OperatelyWeb.Paths
 
   def authorize(conn, params) do
@@ -159,6 +160,11 @@ defmodule OperatelyWeb.McpOAuthController do
   end
 
   defp render_authorization_error(conn, reason) do
+    Observability.oauth_authorize(%{
+      result: reason,
+      client_id: conn.params["client_id"]
+    })
+
     case reason do
       :invalid_redirect_uri -> render_error(conn, 400, "Invalid Redirect URI", "The requested redirect URI is not registered for this client.")
       :invalid_target_resource -> render_error(conn, 400, "Invalid Resource", "The authorization request must target this server's canonical MCP endpoint.")
@@ -189,6 +195,12 @@ defmodule OperatelyWeb.McpOAuthController do
         :invalid_request -> {400, "invalid_request", "The token request is missing required parameters or contains invalid values."}
         _ -> {400, "invalid_request", "The token request could not be completed."}
       end
+
+    Observability.oauth_token(%{
+      result: reason,
+      client_id: conn.params["client_id"],
+      grant_type: conn.params["grant_type"]
+    })
 
     conn
     |> put_status(status)

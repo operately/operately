@@ -1,5 +1,6 @@
 defmodule Operately.Mcp.ClientMetadata.Fetcher do
   alias Operately.Mcp.ClientMetadata.{Cache, SafeUrl}
+  alias Operately.Mcp.Observability
 
   @doc """
   Fetches and caches a decoded CIMD metadata document.
@@ -7,6 +8,7 @@ defmodule Operately.Mcp.ClientMetadata.Fetcher do
   def fetch(client_id) when is_binary(client_id) do
     case Cache.get(client_id) do
       {:ok, document} ->
+        Observability.cimd_fetch(%{client_id: client_id, result: "ok", cache: "hit"})
         {:ok, document}
 
       :miss ->
@@ -14,7 +16,17 @@ defmodule Operately.Mcp.ClientMetadata.Fetcher do
              {:ok, body, headers} <- http_get(client_id),
              {:ok, document} <- decode_json(body),
              :ok <- Cache.put(client_id, document, cache_ttl(headers)) do
+          Observability.cimd_fetch(%{client_id: client_id, result: "ok", cache: "miss"})
           {:ok, document}
+        else
+          {:error, reason} = error ->
+            Observability.cimd_fetch(%{
+              client_id: client_id,
+              result: Observability.cimd_result(reason),
+              cache: "miss"
+            })
+
+            error
         end
     end
   end
