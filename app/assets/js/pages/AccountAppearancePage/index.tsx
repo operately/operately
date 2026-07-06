@@ -3,9 +3,8 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { IconSun, IconMoon, IconDeviceLaptop, showErrorToast } from "turboui";
+import { IconSun, IconMoon, IconDeviceLaptop, Forms, showErrorToast } from "turboui";
 
-import Forms from "@/components/Forms";
 import classnames from "classnames";
 
 import { useSetTheme, useTheme } from "@/contexts/ThemeContext";

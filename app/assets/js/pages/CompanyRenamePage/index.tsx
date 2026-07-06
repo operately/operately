@@ -3,7 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
 import * as React from "react";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 import { PageModule } from "@/routes/types";
 import { useNavigate, useRevalidator } from "react-router-dom";
 
