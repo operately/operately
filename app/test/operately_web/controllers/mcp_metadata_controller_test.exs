@@ -9,13 +9,15 @@ defmodule OperatelyWeb.McpMetadataControllerTest do
     assert %{
              "resource" => resource,
              "authorization_servers" => authorization_servers,
-             "scopes_supported" => scopes_supported
+             "scopes_supported" => scopes_supported,
+             "default_scopes" => default_scopes
            } = Jason.decode!(conn.resp_body)
 
     assert conn.status == 200
     assert resource == Mcp.canonical_resource_uri()
     assert authorization_servers == [OperatelyWeb.Endpoint.url()]
     assert scopes_supported == Mcp.supported_scopes()
+    assert default_scopes == Mcp.default_scopes()
   end
 
   test "serves authorization server metadata", %{conn: conn} do
@@ -27,7 +29,8 @@ defmodule OperatelyWeb.McpMetadataControllerTest do
              "token_endpoint" => token_endpoint,
              "grant_types_supported" => grant_types_supported,
              "code_challenge_methods_supported" => code_challenge_methods_supported,
-             "client_id_metadata_document_supported" => client_id_metadata_document_supported
+             "client_id_metadata_document_supported" => client_id_metadata_document_supported,
+             "default_scopes" => default_scopes
            } = Jason.decode!(conn.resp_body)
 
     assert conn.status == 200
@@ -37,6 +40,7 @@ defmodule OperatelyWeb.McpMetadataControllerTest do
     assert grant_types_supported == ["authorization_code", "refresh_token"]
     assert code_challenge_methods_supported == ["S256"]
     assert client_id_metadata_document_supported == true
+    assert default_scopes == Mcp.default_scopes()
   end
 
   test "serves authorization server metadata on the mcp-scoped discovery path", %{conn: conn} do

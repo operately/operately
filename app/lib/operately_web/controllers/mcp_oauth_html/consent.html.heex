@@ -112,6 +112,12 @@
         </div>
       <% end %>
 
+      <%= if "mcp:write" in @request.scopes do %>
+        <div class="warning">
+          Write access lets this client create, update, delete, and archive content in your workspace.
+        </div>
+      <% end %>
+
       <dl>
         <dt>Client</dt>
         <dd><%= @request.client.client_name %></dd>
@@ -125,8 +131,14 @@
         <dt>Company</dt>
         <dd><%= @company.name %></dd>
 
-        <dt>Scopes</dt>
-        <dd><%= Enum.join(@request.scopes, ", ") %></dd>
+        <dt>Permissions</dt>
+        <dd>
+          <ul style="margin: 0; padding-left: 20px;">
+            <%= for scope <- @request.scopes do %>
+              <li><%= Operately.Mcp.scope_label(scope) %></li>
+            <% end %>
+          </ul>
+        </dd>
       </dl>
 
       <form method="post" action="/oauth/authorize">

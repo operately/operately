@@ -43,9 +43,70 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
 
     conn = get(conn, "/oauth/authorize", authorize_params(client, hd(client.redirect_uris)))
 
-    assert html_response(conn, 200) =~ "Authorize MCP Client"
-    assert html_response(conn, 200) =~ "Solo Company"
-    refute html_response(conn, 200) =~ "localhost redirect URI"
+    body = html_response(conn, 200)
+    assert body =~ "Authorize MCP Client"
+    assert body =~ "Solo Company"
+    assert body =~ "View workspace data"
+    refute body =~ "localhost redirect URI"
+    refute body =~ "create, update, delete, and archive"
+  end
+
+  test "shows write scope warning on consent when mcp:write is requested", %{conn: conn, client: client} do
+    account = account_fixture()
+    company = company_fixture(%{company_name: "Write Company"}, account)
+    conn = log_in_account(conn, account, company)
+
+    conn =
+      get(conn, "/oauth/authorize", authorize_params(client, hd(client.redirect_uris), "mcp:read mcp:write"))
+
+    body = html_response(conn, 200)
+    assert body =~ "View workspace data"
+    assert body =~ "Create, update, delete, and archive workspace content"
+    assert body =~ "Write access lets this client create, update, delete, and archive content in your workspace."
+  end
+
+  test "defaults to read-only scope when scope is omitted", %{conn: conn, client: client} do
+    account = account_fixture()
+    company = company_fixture(%{company_name: "Default Scope Co"}, account)
+    conn = log_in_account(conn, account, company)
+    params = authorize_params(client, hd(client.redirect_uris)) |> Map.delete("scope")
+
+    consent_conn = get(conn, "/oauth/authorize", params)
+    body = html_response(consent_conn, 200)
+    assert body =~ "View workspace data"
+    refute body =~ "Create, update, delete, and archive workspace content"
+
+    csrf_token = csrf_token(consent_conn)
+
+    redirect_conn =
+      consent_conn
+      |> recycle()
+      |> post("/oauth/authorize", Map.merge(params, %{"decision" => "approve", "_csrf_token" => csrf_token}))
+
+    code =
+      redirect_conn
+      |> redirected_to()
+      |> URI.parse()
+      |> Map.fetch!(:query)
+      |> URI.decode_query()
+      |> Map.fetch!("code")
+
+    token_conn =
+      redirect_conn
+      |> recycle()
+      |> post("/oauth/token", %{
+        "grant_type" => "authorization_code",
+        "client_id" => client.client_id,
+        "redirect_uri" => hd(client.redirect_uris),
+        "resource" => Mcp.canonical_resource_uri(),
+        "code" => code,
+        "code_verifier" => "test-verifier"
+      })
+
+    token_body = Jason.decode!(token_conn.resp_body)
+
+    assert token_conn.status == 200
+    assert token_body["scope"] == "mcp:read"
   end
 
   test "shows a company picker when the account belongs to multiple companies", %{conn: conn, client: client} do
@@ -189,12 +250,12 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     assert replay_body["error"] == "invalid_grant"
   end
 
-  defp authorize_params(client, redirect_uri) do
+  defp authorize_params(client, redirect_uri, scope \\ "mcp:read") do
     %{
       "client_id" => client.client_id,
       "redirect_uri" => redirect_uri,
       "resource" => Mcp.canonical_resource_uri(),
-      "scope" => "mcp:read",
+      "scope" => scope,
       "state" => "oauth-state",
       "code_challenge" => pkce_challenge(),
       "code_challenge_method" => "S256"

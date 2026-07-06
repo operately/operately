@@ -1,7 +1,14 @@
 defmodule Operately.Mcp.Resources do
   @supported_scopes ~w(mcp:read mcp:write)
+  @default_scopes ~w(mcp:read)
 
   def supported_scopes, do: @supported_scopes
+
+  def default_scopes, do: @default_scopes
+
+  def scope_label("mcp:read"), do: "View workspace data"
+  def scope_label("mcp:write"), do: "Create, update, delete, and archive workspace content"
+  def scope_label(scope) when is_binary(scope), do: scope
 
   def canonical_resource_uri do
     normalize_resource_uri(OperatelyWeb.Endpoint.url() <> "/mcp")
@@ -25,8 +32,8 @@ defmodule Operately.Mcp.Resources do
 
   def scopes_to_string(scopes) when is_list(scopes), do: Enum.join(scopes, " ")
 
-  def parse_scopes(nil), do: {:ok, @supported_scopes}
-  def parse_scopes(""), do: {:ok, @supported_scopes}
+  def parse_scopes(nil), do: {:ok, @default_scopes}
+  def parse_scopes(""), do: {:ok, @default_scopes}
 
   def parse_scopes(scopes) when is_binary(scopes) do
     scopes
@@ -38,7 +45,7 @@ defmodule Operately.Mcp.Resources do
     scopes = scopes |> Enum.map(&to_string/1) |> Enum.uniq()
 
     if scopes == [] do
-      {:ok, @supported_scopes}
+      {:ok, @default_scopes}
     else
       invalid_scopes = Enum.reject(scopes, &(&1 in @supported_scopes))
 
