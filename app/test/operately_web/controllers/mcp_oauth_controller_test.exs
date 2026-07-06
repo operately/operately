@@ -215,6 +215,45 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     assert html_response(conn, 400) =~ "Invalid Resource"
   end
 
+  test "emits oauth observability for authorization failures", %{conn: conn, client: client} do
+    handler_id = "mcp-oauth-authorize-#{System.unique_integer([:positive])}"
+    test_pid = self()
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:operately, :mcp, :oauth, :stop],
+        fn _event, measurements, metadata, pid ->
+          send(pid, {:oauth_telemetry, measurements, metadata})
+        end,
+        test_pid
+      )
+
+    on_exit(fn -> :telemetry.detach(handler_id) end)
+
+    account = account_fixture()
+    company = company_fixture(%{company_name: "Target Co"}, account)
+    conn = log_in_account(conn, account, company)
+
+    conn =
+      get(conn, "/oauth/authorize", %{
+        "client_id" => client.client_id,
+        "redirect_uri" => hd(client.redirect_uris),
+        "resource" => "https://evil.example.com/mcp",
+        "scope" => "mcp:read",
+        "state" => "bad-resource",
+        "code_challenge" => "abc123",
+        "code_challenge_method" => "S256"
+      })
+
+    assert conn.status == 400
+
+    assert_receive {:oauth_telemetry, %{count: 1}, metadata}
+    assert metadata.action == "authorize"
+    assert metadata.result == "invalid_target_resource"
+    assert metadata.client_id == client.client_id
+  end
+
   test "rotates refresh tokens and rejects replay", %{conn: conn, client: client} do
     account = account_fixture()
     company = company_fixture(%{company_name: "Rotations LLC"}, account)

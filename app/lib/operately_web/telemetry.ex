@@ -67,6 +67,24 @@ defmodule OperatelyWeb.Telemetry do
         tags: [:provider, :event_type]
       ),
 
+      # MCP Metrics
+      counter("operately.mcp.rpc.count",
+        event_name: [:operately, :mcp, :rpc, :stop],
+        tags: [:method, :outcome]
+      ),
+      counter("operately.mcp.tools_call.count",
+        event_name: [:operately, :mcp, :tools_call, :stop],
+        tags: [:tool, :outcome, :safety_classification]
+      ),
+      counter("operately.mcp.oauth.count",
+        event_name: [:operately, :mcp, :oauth, :stop],
+        tags: [:action, :result]
+      ),
+      counter("operately.mcp.cimd.fetch.count",
+        event_name: [:operately, :mcp, :cimd, :fetch, :stop],
+        tags: [:result, :cache]
+      ),
+
       # Database Metrics
       summary("operately.repo.query.total_time",
         unit: {:native, :millisecond},

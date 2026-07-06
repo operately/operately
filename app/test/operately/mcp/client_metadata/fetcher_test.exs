@@ -17,6 +17,21 @@ defmodule Operately.Mcp.ClientMetadata.FetcherTest do
   end
 
   test "returns a cached document without making an http request" do
+    handler_id = "cimd-fetcher-cache-hit-#{System.unique_integer([:positive])}"
+    test_pid = self()
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:operately, :mcp, :cimd, :fetch, :stop],
+        fn _event, measurements, metadata, pid ->
+          send(pid, {:cimd_fetch_telemetry, measurements, metadata})
+        end,
+        test_pid
+      )
+
+    on_exit(fn -> :telemetry.detach(handler_id) end)
+
     assert :ok = Cache.put(@client_id, @document, 60)
 
     with_mock Req, [],
@@ -25,9 +40,27 @@ defmodule Operately.Mcp.ClientMetadata.FetcherTest do
       end do
       assert {:ok, @document} = Fetcher.fetch(@client_id)
     end
+
+    assert_receive {:cimd_fetch_telemetry, %{count: 1},
+                    %{client_id: @client_id, result: "ok", cache: "hit"}}
   end
 
   test "fetches, decodes, and caches a metadata document" do
+    handler_id = "cimd-fetcher-cache-miss-#{System.unique_integer([:positive])}"
+    test_pid = self()
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:operately, :mcp, :cimd, :fetch, :stop],
+        fn _event, measurements, metadata, pid ->
+          send(pid, {:cimd_fetch_telemetry, measurements, metadata})
+        end,
+        test_pid
+      )
+
+    on_exit(fn -> :telemetry.detach(handler_id) end)
+
     body = Jason.encode!(@document)
 
     with_mocks [
@@ -47,6 +80,9 @@ defmodule Operately.Mcp.ClientMetadata.FetcherTest do
       assert {:ok, @document} = Fetcher.fetch(@client_id)
       assert {:ok, @document} = Cache.get(@client_id)
     end
+
+    assert_receive {:cimd_fetch_telemetry, %{count: 1},
+                    %{client_id: @client_id, result: "ok", cache: "miss"}}
   end
 
   test "does not cache documents when max-age is zero" do
