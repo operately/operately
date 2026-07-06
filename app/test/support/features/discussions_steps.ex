@@ -352,6 +352,52 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     UI.assert_text(ctx, Paths.message_path(ctx.company, last_message(ctx)))
   end
 
+  step :discard_draft_from_edit_page, ctx do
+    ctx
+    |> UI.click(testid: "continue-editing")
+    |> UI.assert_has(testid: "discussion-edit-page")
+    |> UI.click(testid: "discard-draft")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "discussions-page")
+  end
+
+  step :discard_draft_from_options_menu, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "discard-draft")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "discussions-page")
+  end
+
+  step :discard_draft_from_drafts_list, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_drafts_path(ctx.company, ctx.marketing_space))
+    |> UI.click(testid: "discussion-draft-options-this-is-a-discussion")
+    |> UI.click(testid: "discard-draft-this-is-a-discussion")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "discussions-page")
+  end
+
+  step :assert_draft_discussion_is_discarded, ctx, message_name \\ :draft_discussion do
+    import Ecto.Query
+
+    message =
+      Operately.Repo.one(
+        from m in Operately.Messages.Message,
+          where: m.id == ^ctx[message_name].id
+      )
+
+    assert message.deleted_at != nil
+
+    ctx
+  end
+
+  step :assert_draft_is_not_in_drafts_list, ctx, title \\ @title do
+    ctx
+    |> UI.visit(Paths.space_discussions_drafts_path(ctx.company, ctx.marketing_space))
+    |> UI.refute_text(title)
+  end
+
   step :archive_discussion, ctx do
     message = last_message(ctx)
 
