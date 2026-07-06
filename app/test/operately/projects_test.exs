@@ -340,4 +340,107 @@ defmodule Operately.ProjectsTest do
       assert %Ecto.Changeset{} = Projects.change_key_resource(ctx.key_resource)
     end
   end
+
+  describe "Project.set_next_milestone/1 and next_step/1" do
+    alias Operately.Projects.{Milestone, Project}
+    alias OperatelyWeb.Paths
+
+    defp milestone_without_due_date(project, title) do
+      milestone_fixture(%{
+        project_id: project.id,
+        creator_id: project.creator_id,
+        title: title,
+        timeframe: %{}
+      })
+    end
+
+    defp milestone_with_due_date(project, title, due_date) do
+      milestone_fixture(%{
+        project_id: project.id,
+        creator_id: project.creator_id,
+        title: title,
+        timeframe: %{
+          contextual_end_date: ContextualDate.create_day_date(due_date)
+        }
+      })
+    end
+
+    defp load_project_with_milestones(project, ordering_state) do
+      {:ok, project} = Projects.update_project(project, %{milestones_ordering_state: ordering_state})
+
+      project
+      |> Operately.Repo.preload(:milestones)
+      |> Project.after_load_hooks()
+    end
+
+    test "picks first pending milestone by ordering state when milestones have no due dates", ctx do
+      first = milestone_without_due_date(ctx.project, "First")
+      second = milestone_without_due_date(ctx.project, "Second")
+      third = milestone_without_due_date(ctx.project, "Third")
+
+      ordering = [Paths.milestone_id(third), Paths.milestone_id(first), Paths.milestone_id(second)]
+
+      project =
+        load_project_with_milestones(ctx.project, ordering)
+
+      assert Project.next_step(project) == "Third"
+      assert project.next_milestone.id == third.id
+    end
+
+    test "picks first pending milestone when earlier milestones are done", ctx do
+      first = milestone_without_due_date(ctx.project, "First")
+      second = milestone_without_due_date(ctx.project, "Second")
+      {:ok, _} = Milestone.set_status(second, :done)
+
+      ordering = [Paths.milestone_id(second), Paths.milestone_id(first)]
+
+      project =
+        load_project_with_milestones(ctx.project, ordering)
+
+      assert Project.next_step(project) == "First"
+      assert project.next_milestone.id == first.id
+    end
+
+    test "dated milestones sort by due date and undated milestones use ordering state", ctx do
+      undated_first = milestone_without_due_date(ctx.project, "Undated First")
+      dated_later = milestone_with_due_date(ctx.project, "Dated Later", ~D[2025-06-01])
+      undated_second = milestone_without_due_date(ctx.project, "Undated Second")
+
+      ordering = [
+        Paths.milestone_id(undated_first),
+        Paths.milestone_id(dated_later),
+        Paths.milestone_id(undated_second)
+      ]
+
+      project =
+        load_project_with_milestones(ctx.project, ordering)
+
+      assert Project.next_step(project) == "Dated Later"
+      assert project.next_milestone.id == dated_later.id
+    end
+
+    test "breaks ties on equal due dates using ordering state", ctx do
+      later_in_order = milestone_with_due_date(ctx.project, "Later in order", ~D[2025-06-01])
+      earlier_in_order = milestone_with_due_date(ctx.project, "Earlier in order", ~D[2025-06-01])
+
+      ordering = [Paths.milestone_id(earlier_in_order), Paths.milestone_id(later_in_order)]
+
+      project =
+        load_project_with_milestones(ctx.project, ordering)
+
+      assert Project.next_step(project) == "Earlier in order"
+      assert project.next_milestone.id == earlier_in_order.id
+    end
+
+    test "returns empty string when all milestones are done", ctx do
+      first = milestone_without_due_date(ctx.project, "First")
+      {:ok, _} = Milestone.set_status(first, :done)
+
+      project =
+        load_project_with_milestones(ctx.project, [Paths.milestone_id(first)])
+
+      assert Project.next_step(project) == ""
+      assert is_nil(project.next_milestone)
+    end
+  end
 end
