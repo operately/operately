@@ -384,9 +384,11 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     message =
       Operately.Repo.one(
         from m in Operately.Messages.Message,
-          where: m.id == ^ctx[message_name].id
+          where: m.id == ^ctx[message_name].id,
+        with_deleted: true
       )
 
+    assert message != nil
     assert message.deleted_at != nil
 
     ctx

@@ -131,7 +131,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const className = classNames(
-    "group flex items-start gap-4",
+    "flex items-start gap-4",
     "py-3",
     "last:border-b not-first:border-t border-stroke-base",
     "hover:bg-surface-highlight",
@@ -172,16 +172,9 @@ function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
   const { space } = Pages.useLoadedData<LoadedData>();
   const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
 
-  const triggerClassName = classNames(
-    "shrink-0 w-7 flex justify-end opacity-100 pointer-events-auto transition-opacity",
-    "sm:opacity-0 sm:pointer-events-none",
-    "sm:group-hover:opacity-100 sm:group-hover:pointer-events-auto",
-    "sm:group-focus-within:opacity-100 sm:group-focus-within:pointer-events-auto",
-  );
-
   return (
     <>
-      <div className={triggerClassName}>
+      <div className="shrink-0">
         <Menu
           size="tiny"
           align="end"
