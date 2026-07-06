@@ -524,6 +524,7 @@ Outcome: the MCP is ready for directory submission.
 ### Security hardening follow-on
 
 - **Read-only default scope (implemented):** OAuth defaults to `mcp:read` when `scope` is omitted; consent screen scope labels and write warning; `default_scopes` in discovery metadata
+- **MCP observability (implemented):** structured logs and StatsD metrics for JSON-RPC method, `tools/call` tool name/outcome, OAuth failures, and CIMD fetch/cache; searchable in Grafana via `MCP tools/call:` / `operately.mcp.*` metrics
 - **Pending:** rate limits, audit logging, grant revocation UI, optional company policy, submission hardening
 
 ---
@@ -555,6 +556,7 @@ Critical scenarios:
 - grant scope blocks write tools
 - missing `scope` on authorize defaults grant to `mcp:read` only
 - consent screen explains requested scopes and warns when `mcp:write` is requested
+- MCP `tools/call` emits structured log lines and metrics with tool name and outcome (not only generic `POST /mcp` access logs)
 - protocol-version and auth-discovery behavior match the MCP spec
 - 401 responses advertise auth metadata correctly and tokens for other audiences are rejected
 - MCP wrappers receive `current_account`, `current_company`, `current_person`, and auth metadata on `conn.assigns`

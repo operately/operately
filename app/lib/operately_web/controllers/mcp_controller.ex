@@ -11,6 +11,7 @@ defmodule OperatelyWeb.McpController do
   alias OperatelyWeb.Mcp.Tools
   alias OperatelyWeb.Mcp.Auth
   alias OperatelyWeb.Mcp.Executor
+  alias Operately.Mcp.Observability
 
   @jsonrpc_version "2.0"
 
@@ -26,6 +27,10 @@ defmodule OperatelyWeb.McpController do
       response
     else
       # Scope checks return a halted conn instead of `{:error, _}`.
+      %Plug.Conn{status: 403} = conn ->
+        observe_method_scope_denied(conn, conn.body_params["method"])
+        conn
+
       %Plug.Conn{} = conn -> conn
       {:error, :invalid_request} -> jsonrpc_http_error(conn, 400, -32600, "Invalid Request")
       {:error, :unsupported_media_type} -> send_resp(conn, 415, "")
@@ -78,6 +83,8 @@ defmodule OperatelyWeb.McpController do
              client_info: client_info,
              client_capabilities: capabilities
            }) do
+      observe_rpc(conn, "initialize", "ok")
+
       conn
       |> put_resp_header("mcp-session-id", session.id)
       |> json(%{
@@ -95,7 +102,9 @@ defmodule OperatelyWeb.McpController do
         }
       })
     else
-      {:error, _} -> jsonrpc_http_error(conn, 400, -32602, "Invalid params", request["id"])
+      {:error, _} ->
+        observe_rpc(conn, "initialize", "invalid_params")
+        jsonrpc_http_error(conn, 400, -32602, "Invalid params", request["id"])
     end
   end
 
@@ -103,12 +112,24 @@ defmodule OperatelyWeb.McpController do
     with {:ok, session} <- require_active_session(conn),
          :ok <- require_protocol_version(conn),
          {:ok, _session} <- Mcp.mark_session_initialized(session) do
+      observe_rpc(conn, "notifications/initialized", "ok")
       send_resp(conn, 202, "")
     else
-      {:error, :missing_session} -> send_resp(conn, 400, "")
-      {:error, :unknown_session} -> send_resp(conn, 404, "")
-      {:error, :unsupported_protocol_version} -> send_resp(conn, 400, "")
-      _ -> jsonrpc_http_error(conn, 400, -32602, "Invalid params", request["id"])
+      {:error, :missing_session} ->
+        observe_rpc(conn, "notifications/initialized", "protocol_error")
+        send_resp(conn, 400, "")
+
+      {:error, :unknown_session} ->
+        observe_rpc(conn, "notifications/initialized", "protocol_error")
+        send_resp(conn, 404, "")
+
+      {:error, :unsupported_protocol_version} ->
+        observe_rpc(conn, "notifications/initialized", "protocol_error")
+        send_resp(conn, 400, "")
+
+      _ ->
+        observe_rpc(conn, "notifications/initialized", "invalid_params")
+        jsonrpc_http_error(conn, 400, -32602, "Invalid params", request["id"])
     end
   end
 
@@ -116,6 +137,7 @@ defmodule OperatelyWeb.McpController do
     with {:ok, session} <- require_active_session(conn),
          :ok <- require_protocol_version(conn) do
       Mcp.touch_session(session)
+      observe_rpc(conn, "ping", "ok")
 
       json(conn, %{
         jsonrpc: @jsonrpc_version,
@@ -123,15 +145,25 @@ defmodule OperatelyWeb.McpController do
         result: %{}
       })
     else
-      {:error, :missing_session} -> send_resp(conn, 400, "")
-      {:error, :unknown_session} -> send_resp(conn, 404, "")
-      {:error, :unsupported_protocol_version} -> send_resp(conn, 400, "")
+      {:error, :missing_session} ->
+        observe_rpc(conn, "ping", "protocol_error")
+        send_resp(conn, 400, "")
+
+      {:error, :unknown_session} ->
+        observe_rpc(conn, "ping", "protocol_error")
+        send_resp(conn, 404, "")
+
+      {:error, :unsupported_protocol_version} ->
+        observe_rpc(conn, "ping", "protocol_error")
+        send_resp(conn, 400, "")
     end
   end
 
   defp dispatch_request(conn, request, "tools/list") do
     with {:ok, _session} <- require_active_session(conn),
          :ok <- require_protocol_version(conn) do
+      observe_rpc(conn, "tools/list", "ok")
+
       json(conn, %{
         jsonrpc: @jsonrpc_version,
         id: request["id"],
@@ -140,45 +172,108 @@ defmodule OperatelyWeb.McpController do
         }
       })
     else
-      {:error, :missing_session} -> send_resp(conn, 400, "")
-      {:error, :unknown_session} -> send_resp(conn, 404, "")
-      {:error, :unsupported_protocol_version} -> send_resp(conn, 400, "")
+      {:error, :missing_session} ->
+        observe_rpc(conn, "tools/list", "protocol_error")
+        send_resp(conn, 400, "")
+
+      {:error, :unknown_session} ->
+        observe_rpc(conn, "tools/list", "protocol_error")
+        send_resp(conn, 404, "")
+
+      {:error, :unsupported_protocol_version} ->
+        observe_rpc(conn, "tools/list", "protocol_error")
+        send_resp(conn, 400, "")
     end
   end
 
   defp dispatch_request(conn, request, "tools/call") do
+    start_time = System.monotonic_time()
+
     with {:ok, _session} <- require_active_session(conn),
          :ok <- require_protocol_version(conn),
          {:ok, name, arguments} <- fetch_tool_call_params(request),
          {:ok, definition} <- Executor.fetch_definition(name),
          :ok <- ensure_scopes(conn, definition.required_scopes),
          {:ok, result} <- Executor.execute(conn, definition, arguments) do
+      observe_tools_call(conn, name, Observability.tools_call_outcome(result), definition, start_time)
+
       json(conn, %{
         jsonrpc: @jsonrpc_version,
         id: request["id"],
         result: result
       })
     else
-      {:error, :missing_session} -> send_resp(conn, 400, "")
-      {:error, :unknown_session} -> send_resp(conn, 404, "")
-      {:error, :unsupported_protocol_version} -> send_resp(conn, 400, "")
-      {:error, :unknown_tool} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, :invalid_arguments} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, :bad_request} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, :invalid_params} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, {:missing_required_key, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, {:unexpected_key, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, {:invalid_type, _key, _type}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, {:invalid_format, _key, _format}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, {:invalid_enum, _key}} -> jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
-      {:error, :invalid_schema} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
-      {:error, :authenticated_conn_required} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
-      {:error, _reason} -> jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
-      %Plug.Conn{} = halted_conn -> halted_conn
+      {:error, :missing_session} ->
+        observe_tools_call(conn, tool_name_from_request(request), "protocol_error", nil, start_time)
+        send_resp(conn, 400, "")
+
+      {:error, :unknown_session} ->
+        observe_tools_call(conn, tool_name_from_request(request), "protocol_error", nil, start_time)
+        send_resp(conn, 404, "")
+
+      {:error, :unsupported_protocol_version} ->
+        observe_tools_call(conn, tool_name_from_request(request), "protocol_error", nil, start_time)
+        send_resp(conn, 400, "")
+
+      {:error, :unknown_tool} ->
+        observe_tools_call(conn, tool_name_from_request(request), "unknown_tool", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, :invalid_arguments} ->
+        observe_tools_call(conn, tool_name_from_request(request), "invalid_params", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, :bad_request} ->
+        observe_tools_call(conn, tool_name_from_request(request), "invalid_params", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, :invalid_params} ->
+        observe_tools_call(conn, tool_name_from_request(request), "invalid_params", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, {:missing_required_key, _key}} ->
+        observe_tools_call(conn, tool_name_from_request(request), "invalid_params", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, {:unexpected_key, _key}} ->
+        observe_tools_call(conn, tool_name_from_request(request), "invalid_params", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, {:invalid_type, _key, _type}} ->
+        observe_tools_call(conn, tool_name_from_request(request), "invalid_params", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, {:invalid_format, _key, _format}} ->
+        observe_tools_call(conn, tool_name_from_request(request), "invalid_params", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, {:invalid_enum, _key}} ->
+        observe_tools_call(conn, tool_name_from_request(request), "invalid_params", nil, start_time)
+        jsonrpc_http_error(conn, 200, -32602, "Invalid params", request["id"])
+
+      {:error, :invalid_schema} ->
+        observe_tools_call(conn, tool_name_from_request(request), "internal_error", nil, start_time)
+        jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
+
+      {:error, :authenticated_conn_required} ->
+        observe_tools_call(conn, tool_name_from_request(request), "internal_error", nil, start_time)
+        jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
+
+      {:error, _reason} ->
+        observe_tools_call(conn, tool_name_from_request(request), "internal_error", nil, start_time)
+        jsonrpc_http_error(conn, 500, -32603, "Internal error", request["id"])
+
+      %Plug.Conn{status: 403} = halted_conn ->
+        observe_tools_call(conn, tool_name_from_request(request), "insufficient_scope", nil, start_time)
+        halted_conn
+
+      %Plug.Conn{} = halted_conn ->
+        halted_conn
     end
   end
 
   defp dispatch_request(conn, request, _method) do
+    observe_rpc(conn, request["method"], "invalid_params")
     jsonrpc_http_error(conn, 200, -32601, "Method not found", request["id"])
   end
 
@@ -316,4 +411,44 @@ defmodule OperatelyWeb.McpController do
       }
     end)
   end
+
+  defp observe_rpc(conn, method, outcome) do
+    Observability.rpc_request(Map.merge(grant_context(conn), %{method: method, outcome: outcome}))
+  end
+
+  defp observe_method_scope_denied(_conn, "tools/call"), do: :ok
+
+  defp observe_method_scope_denied(conn, method) do
+    observe_rpc(conn, method || "unknown", "insufficient_scope")
+  end
+
+  defp observe_tools_call(conn, tool, outcome, definition, start_time) do
+    duration_ms = System.convert_time_unit(System.monotonic_time() - start_time, :native, :millisecond)
+
+    attrs =
+      grant_context(conn)
+      |> Map.merge(%{tool: tool, outcome: outcome, duration_ms: duration_ms})
+      |> maybe_put_safety_classification(definition)
+
+    Observability.tools_call(attrs)
+  end
+
+  defp maybe_put_safety_classification(attrs, nil), do: attrs
+
+  defp maybe_put_safety_classification(attrs, definition) do
+    Map.put(attrs, :safety_classification, definition.safety_classification)
+  end
+
+  defp grant_context(conn) do
+    case conn.assigns[:current_mcp_grant] do
+      %{id: grant_id, client_id: client_id, company_id: company_id} ->
+        %{grant_id: grant_id, client_id: client_id, company_id: company_id}
+
+      _ ->
+        %{}
+    end
+  end
+
+  defp tool_name_from_request(%{"params" => %{"name" => name}}) when is_binary(name), do: name
+  defp tool_name_from_request(_), do: "unknown"
 end
