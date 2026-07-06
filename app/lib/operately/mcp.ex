@@ -13,6 +13,8 @@ defmodule Operately.Mcp do
   def latest_protocol_version, do: @latest_protocol_version
 
   defdelegate supported_scopes, to: Resources
+  defdelegate default_scopes, to: Resources
+  defdelegate scope_label(scope), to: Resources
   defdelegate scopes_to_string(scopes), to: Resources
   defdelegate canonical_resource_uri, to: Resources
   defdelegate localhost_redirect?(uri), to: ClientMetadata
