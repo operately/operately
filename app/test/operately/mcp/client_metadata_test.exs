@@ -131,4 +131,25 @@ defmodule Operately.Mcp.ClientMetadataTest do
       assert {:error, :invalid_redirect_uri} = ClientMetadata.validate_redirect_uri(metadata, "https://evil.example.com/callback")
     end
   end
+
+  test "rejects cimd documents with non-https redirect uris when https is required" do
+    previous = Application.get_env(:operately, :mcp_cimd_require_https_redirect_uris)
+    Application.put_env(:operately, :mcp_cimd_require_https_redirect_uris, true)
+
+    on_exit(fn ->
+      if previous == nil do
+        Application.delete_env(:operately, :mcp_cimd_require_https_redirect_uris)
+      else
+        Application.put_env(:operately, :mcp_cimd_require_https_redirect_uris, previous)
+      end
+    end)
+
+    insecure_document =
+      Map.put(@cimd_document, "redirect_uris", ["http://client.example.com/callback"])
+
+    with_mock Operately.Mcp.ClientMetadata.Fetcher, [],
+      fetch: fn _client_id -> {:ok, insecure_document} end do
+      assert {:error, :invalid_client} = ClientMetadata.resolve(@cimd_client_id)
+    end
+  end
 end

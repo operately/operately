@@ -87,7 +87,10 @@ defmodule Operately.Mcp.ClientMetadata.Document do
     case Map.get(document, "redirect_uris") do
       uris when is_list(uris) and uris != [] ->
         if Enum.all?(uris, &is_binary/1) do
-          {:ok, uris}
+          case validate_redirect_uri_schemes(uris) do
+            :ok -> {:ok, uris}
+            error -> error
+          end
         else
           {:error, :invalid_client_metadata}
         end
@@ -95,5 +98,34 @@ defmodule Operately.Mcp.ClientMetadata.Document do
       _ ->
         {:error, :invalid_client_metadata}
     end
+  end
+
+  defp validate_redirect_uri_schemes(uris) do
+    if Enum.all?(uris, &redirect_uri_allowed?/1) do
+      :ok
+    else
+      {:error, :invalid_client_metadata}
+    end
+  end
+
+  defp redirect_uri_allowed?(uri) do
+    case URI.parse(uri) do
+      %URI{scheme: "https", host: host} when is_binary(host) and host != "" ->
+        true
+
+      %URI{scheme: "http", host: host} when is_binary(host) and host != "" ->
+        not require_https_redirect_uris?() and ClientMetadata.localhost_redirect?(uri)
+
+      _ ->
+        false
+    end
+  end
+
+  defp require_https_redirect_uris? do
+    Application.get_env(
+      :operately,
+      :mcp_cimd_require_https_redirect_uris,
+      Application.get_env(:operately, :app_env) == :prod
+    )
   end
 end
