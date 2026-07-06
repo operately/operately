@@ -379,16 +379,8 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   end
 
   step :assert_draft_discussion_is_discarded, ctx, message_name \\ :draft_discussion do
-    import Ecto.Query
+    message = Operately.Repo.get!(Operately.Messages.Message, ctx[message_name].id, with_deleted: true)
 
-    message =
-      Operately.Repo.one(
-        from m in Operately.Messages.Message,
-          where: m.id == ^ctx[message_name].id,
-        with_deleted: true
-      )
-
-    assert message != nil
     assert message.deleted_at != nil
 
     ctx
