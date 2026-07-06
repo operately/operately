@@ -137,4 +137,59 @@ defmodule Operately.Mcp.ClientMetadata.DocumentTest do
                })
     end
   end
+
+  describe "redirect_uris scheme validation" do
+    setup do
+      previous = Application.get_env(:operately, :mcp_cimd_require_https_redirect_uris)
+
+      on_exit(fn ->
+        if previous == nil do
+          Application.delete_env(:operately, :mcp_cimd_require_https_redirect_uris)
+        else
+          Application.put_env(:operately, :mcp_cimd_require_https_redirect_uris, previous)
+        end
+      end)
+
+      :ok
+    end
+
+    test "requires https redirect uris in production mode" do
+      Application.put_env(:operately, :mcp_cimd_require_https_redirect_uris, true)
+
+      base = %{
+        "client_id" => @client_id,
+        "client_name" => "Example MCP Client"
+      }
+
+      assert {:error, :invalid_client_metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["http://client.example.com/callback"]))
+
+      assert {:error, :invalid_client_metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["http://localhost:4567/callback"]))
+
+      assert {:ok, _metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["https://client.example.com/callback"]))
+    end
+
+    test "allows localhost http redirect uris outside production mode" do
+      Application.put_env(:operately, :mcp_cimd_require_https_redirect_uris, false)
+
+      base = %{
+        "client_id" => @client_id,
+        "client_name" => "Example MCP Client"
+      }
+
+      assert {:ok, _metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["http://localhost:4567/callback"]))
+
+      assert {:ok, _metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["http://127.0.0.1/callback"]))
+
+      assert {:ok, _metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["https://client.example.com/callback"]))
+
+      assert {:error, :invalid_client_metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["http://client.example.com/callback"]))
+    end
+  end
 end
