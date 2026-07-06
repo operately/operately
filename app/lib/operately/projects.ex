@@ -35,7 +35,9 @@ defmodule Operately.Projects do
   end
 
   def get_check_ins!(project_id) do
-    Repo.all(from c in CheckIn, where: c.project_id == ^project_id, order_by: [desc: c.inserted_at])
+    from(c in CheckIn, where: c.project_id == ^project_id)
+    |> Repo.all()
+    |> Operately.Drafts.sort_by_display_date_desc()
   end
 
   def get_check_in_with_access_level(check_in_id, person_id) do

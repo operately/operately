@@ -29,13 +29,30 @@ defmodule Operately.MD.Goal.CheckInsTest do
       update = Operately.Repo.preload(ctx.update, [:author])
 
       result = CheckIns.render([update])
-      expected_date = Operately.Time.as_date(ctx.update.inserted_at) |> Date.to_iso8601()
+      expected_date = Operately.Time.as_date(Operately.Drafts.display_date(update)) |> Date.to_iso8601()
 
       assert result =~ "## Check-ins"
       assert result =~ "### Check-in on #{expected_date}"
       assert result =~ "Author: #{ctx.creator.full_name}"
       assert result =~ "#### Overview"
       assert result =~ "#### Key wins, obstacles and needs"
+    end
+
+    test "renders published_at instead of inserted_at for published drafts", ctx do
+      ctx = Factory.add_goal_update(ctx, :update, :goal, :creator)
+
+      {:ok, update} =
+        Ecto.Changeset.change(ctx.update, %{
+          inserted_at: ~N[2026-01-01 10:00:00],
+          published_at: ~U[2026-01-05 10:00:00Z]
+        })
+        |> Operately.Repo.update()
+
+      update = Operately.Repo.preload(update, [:author])
+      result = CheckIns.render([update])
+
+      assert result =~ "### Check-in on 2026-01-05"
+      refute result =~ "### Check-in on 2026-01-01"
     end
 
     test "renders check-in with on_track status", ctx do

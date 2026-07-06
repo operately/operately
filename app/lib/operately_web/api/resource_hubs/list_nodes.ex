@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Access.{Binding, Context}
+  alias Operately.Drafts
   alias Operately.ResourceHubs.{Folder, Node}
 
   inputs do
@@ -59,13 +60,13 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
         left_join: hub in assoc(n, :resource_hub), as: :hub,
         left_join: goal in assoc(hub, :goal), as: :goal,
         left_join: project in assoc(hub, :project), as: :project,
-        left_join: space in assoc(hub, :space), as: :space,
-        order_by: [desc: n.inserted_at]
+        left_join: space in assoc(hub, :space), as: :space
       )
       |> filter_nodes(filter_inputs)
       |> Node.preload_content(me)
       |> filter_by_parent_view_access(me.id)
       |> Repo.all()
+      |> Drafts.sort_by_display_date_desc(&Drafts.node_display_date/1)
       |> load_comments_count(inputs[:include_comments_count])
       |> set_folders_children_count(inputs[:include_children_count])
 

@@ -1,4 +1,5 @@
 import type { ResourceHubNode } from "../ResourceHub/types";
+import { nodeDisplayInsertedAt } from "../utils/drafts";
 import { NAME_AND_DATE_SORT_OPTIONS, sortWithFoldersFirst } from "../utils/sortWithFoldersFirst";
 
 export const DOCS_AND_FILES_SORT_OPTIONS = NAME_AND_DATE_SORT_OPTIONS;
@@ -28,5 +29,5 @@ function compareNodesByUpdatedAt(left: ResourceHubNode, right: ResourceHubNode) 
 }
 
 function getNodeTimestamp(node: ResourceHubNode) {
-  return Date.parse(node.updatedAt || node.insertedAt || "") || 0;
+  return Date.parse(node.updatedAt || nodeDisplayInsertedAt(node) || "") || 0;
 }

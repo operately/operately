@@ -5,6 +5,7 @@ import * as Pages from "@/components/Pages";
 import { useForm, Form as CheckInForm } from "@/features/goals/GoalCheckIn";
 import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
+import { displayDate } from "turboui";
 import { compareIds } from "@/routes/paths";
 import { isWithinTimeframe } from "@/utils/time";
 
@@ -17,7 +18,7 @@ export function Form() {
   const allowFullEdit =
     update.state === "draft" ||
     (goal.lastCheckInId
-      ? compareIds(goal.lastCheckInId, update.id) && isWithinTimeframe(update.insertedAt, 72)
+      ? compareIds(goal.lastCheckInId, update.id) && isWithinTimeframe(displayDate(update), 72)
       : false);
   const form = useForm({ mode: "edit", goal, update });
 

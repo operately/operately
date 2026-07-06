@@ -6,9 +6,10 @@ defmodule OperatelyWeb.Api.Projects.ListCheckIns do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters
+  import Operately.Access.Filters, only: [filter_by_view_access: 3]
 
   alias Operately.Projects.CheckIn
+  alias Operately.Drafts
 
   inputs do
     field :project_id, :id
@@ -30,33 +31,24 @@ defmodule OperatelyWeb.Api.Projects.ListCheckIns do
     requested = extract_include_filters(inputs)
 
     published =
-      from p in CheckIn,
-        where: p.project_id == ^id,
-        where: p.state == :published,
-        preload: [:acknowledged_by],
-        order_by: [desc: p.inserted_at]
-
-    drafts =
-      from p in CheckIn,
-        where: p.project_id == ^id,
-        where: p.state == :draft and p.author_id == ^person.id,
-        preload: [:acknowledged_by],
-        order_by: [desc: p.inserted_at]
-
-    published =
-      published
+      from(p in CheckIn,
+        where: p.project_id == ^id and p.state == :published,
+        preload: [:acknowledged_by]
+      )
       |> include_requested(requested)
       |> filter_by_view_access(person.id, join_parent: :project)
       |> Repo.all()
 
     drafts =
-      drafts
+      from(p in CheckIn,
+        where: p.project_id == ^id and p.state == :draft and p.author_id == ^person.id,
+        preload: [:acknowledged_by]
+      )
       |> include_requested(requested)
-      # Drafts are private to the author and stay recoverable even when normal history access hides published check-ins.
       |> Repo.all()
 
     (published ++ drafts)
-    |> Enum.sort_by(& &1.inserted_at, {:desc, NaiveDateTime})
+    |> Drafts.sort_by_display_date_desc()
     |> CheckIn.preload_comment_count()
   end
 

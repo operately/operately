@@ -88,6 +88,50 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckInsTest do
       assert {200, res} = request(viewer_ctx, %{goal_id: goal_id})
       refute Enum.map(res.check_ins, & &1.id) |> Enum.member?(Paths.goal_update_id(draft))
     end
+
+    test "published check-ins are sorted by published_at desc", ctx do
+      {goal_id, [older_update, middle_update, newer_update]} =
+        create_goal_and_updates(ctx, company_access: Binding.view_access())
+
+      older_published_at = Operately.Time.days_ago(5)
+      middle_published_at = Operately.Time.days_ago(2)
+      newer_published_at = Operately.Time.utc_datetime_now()
+      old_inserted_at = NaiveDateTime.utc_now() |> NaiveDateTime.add(-10, :day) |> NaiveDateTime.truncate(:second)
+
+      {:ok, older_update} =
+        Ecto.Changeset.change(older_update, %{
+          inserted_at: old_inserted_at,
+          published_at: older_published_at
+        })
+        |> Repo.update()
+
+      {:ok, middle_update} =
+        Ecto.Changeset.change(middle_update, %{
+          inserted_at: old_inserted_at,
+          published_at: middle_published_at
+        })
+        |> Repo.update()
+
+      {:ok, newer_update} =
+        Ecto.Changeset.change(newer_update, %{
+          inserted_at: old_inserted_at,
+          published_at: newer_published_at
+        })
+        |> Repo.update()
+
+      assert {200, res} = request(ctx, %{goal_id: goal_id})
+
+      published_ids =
+        res.check_ins
+        |> Enum.reject(fn check_in -> check_in.state == "draft" end)
+        |> Enum.map(& &1.id)
+
+      assert published_ids == [
+               Paths.goal_update_id(newer_update),
+               Paths.goal_update_id(middle_update),
+               Paths.goal_update_id(older_update)
+             ]
+    end
   end
 
   #

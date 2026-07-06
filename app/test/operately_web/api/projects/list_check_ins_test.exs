@@ -102,6 +102,62 @@ defmodule OperatelyWeb.Api.Projects.ListCheckInsTest do
       assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert Enum.map(res.project_check_ins, & &1.id) == [Paths.project_check_in_id(draft)]
     end
+
+    test "authors see their own drafts alongside published check-ins when they have view access", ctx do
+      {project_id, [published_check_in | _]} = create_project_and_check_ins(ctx, company_access: Binding.view_access())
+      draft = check_in_fixture(%{author_id: ctx.person.id, project_id: published_check_in.project_id, state: :draft})
+
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
+
+      ids = Enum.map(res.project_check_ins, & &1.id)
+      assert Paths.project_check_in_id(draft) in ids
+      assert Paths.project_check_in_id(published_check_in) in ids
+      assert length(ids) == 4
+    end
+
+    test "published check-ins are sorted by published_at desc", ctx do
+      {project_id, [older_check_in, middle_check_in, newer_check_in]} =
+        create_project_and_check_ins(ctx, company_access: Binding.view_access())
+
+      older_published_at = Operately.Time.days_ago(5)
+      middle_published_at = Operately.Time.days_ago(2)
+      newer_published_at = Operately.Time.utc_datetime_now()
+      old_inserted_at = NaiveDateTime.utc_now() |> NaiveDateTime.add(-10, :day) |> NaiveDateTime.truncate(:second)
+
+      {:ok, older_check_in} =
+        Ecto.Changeset.change(older_check_in, %{
+          inserted_at: old_inserted_at,
+          published_at: older_published_at
+        })
+        |> Repo.update()
+
+      {:ok, middle_check_in} =
+        Ecto.Changeset.change(middle_check_in, %{
+          inserted_at: old_inserted_at,
+          published_at: middle_published_at
+        })
+        |> Repo.update()
+
+      {:ok, newer_check_in} =
+        Ecto.Changeset.change(newer_check_in, %{
+          inserted_at: old_inserted_at,
+          published_at: newer_published_at
+        })
+        |> Repo.update()
+
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
+
+      published_ids =
+        res.project_check_ins
+        |> Enum.reject(fn check_in -> check_in.state == "draft" end)
+        |> Enum.map(& &1.id)
+
+      assert published_ids == [
+               Paths.project_check_in_id(newer_check_in),
+               Paths.project_check_in_id(middle_check_in),
+               Paths.project_check_in_id(older_check_in)
+             ]
+    end
   end
 
   #

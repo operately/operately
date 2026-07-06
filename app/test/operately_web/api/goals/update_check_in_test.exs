@@ -154,11 +154,58 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckInTest do
     end
   end
 
+  describe "full edit window after publish" do
+    setup :register_and_log_in_account
+
+    test "allows status and target edits within 3 days of published_at for a late-published check-in", ctx do
+      update =
+        create_goal_update(ctx)
+        |> set_update_dates(
+          inserted_at: days_ago_naive(10),
+          published_at: Operately.Time.utc_datetime_now()
+        )
+
+      assert {200, _} = request_update(ctx.conn, update, status: "off_track")
+
+      update = Repo.reload(update)
+      assert update.status == :off_track
+
+      Enum.each(update.targets, fn target ->
+        assert target.value == 75
+      end)
+    end
+
+    test "limits edits to message only outside the 3-day window from published_at", ctx do
+      update =
+        create_goal_update(ctx)
+        |> set_update_dates(
+          inserted_at: days_ago_naive(1),
+          published_at: Operately.Time.days_ago(4)
+        )
+
+      assert {200, _} = request_update(ctx.conn, update, status: "off_track")
+
+      update = Repo.reload(update)
+      assert update.status == :on_track
+      assert update.message == RichText.rich_text("Edited content")
+
+      Enum.each(update.targets, fn target ->
+        assert target.value == 50
+      end)
+    end
+  end
+
   #
   # Helpers
   #
 
   defp request(conn, update) do
+    request_update(conn, update, status: "on_track")
+  end
+
+  defp request_update(conn, update, opts) do
+    status = Keyword.get(opts, :status, "on_track")
+
     targets =
       Enum.map(Goals.list_targets(update.goal_id), fn t ->
         %{"id" => t.id, "value" => 75}
@@ -167,7 +214,7 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckInTest do
 
     mutation(conn, [:goals, :update_check_in], %{
       id: Paths.goal_update_id(update),
-      status: "on_track",
+      status: status,
       content: RichText.rich_text("Edited content", :as_string),
       new_target_values: targets,
       due_date: nil,
@@ -223,5 +270,20 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckInTest do
     Enum.each(update.targets, fn t ->
       assert t.value == 75
     end)
+  end
+
+  defp set_update_dates(update, dates) do
+    {:ok, update} =
+      Ecto.Changeset.change(update, %{
+        inserted_at: dates[:inserted_at],
+        published_at: dates[:published_at]
+      })
+      |> Repo.update()
+
+    update
+  end
+
+  defp days_ago_naive(days) do
+    NaiveDateTime.utc_now() |> NaiveDateTime.add(-days, :day) |> NaiveDateTime.truncate(:second)
   end
 end

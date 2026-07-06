@@ -6,8 +6,7 @@ import * as React from "react";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-
-import { Feed, useItemsQuery } from "@/features/Feed";
+import { GoalPage, showErrorToast, showSuccessToast, displayDate } from "turboui";
 import {
   accessLevelsAsNumbers,
   accessLevelsAsStrings,
@@ -18,11 +17,11 @@ import {
 } from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
 import { useNavigate } from "react-router-dom";
-import { GoalPage, showErrorToast, showSuccessToast } from "turboui";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
+import { Feed, useItemsQuery } from "@/features/Feed";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -422,7 +421,7 @@ function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage
     return {
       id: checkIn.id,
       author: People.parsePersonForTurboUi(paths, checkIn.author),
-      date: Time.parse(checkIn.insertedAt)!,
+      date: Time.parse(displayDate(checkIn))!,
       link: paths.goalCheckInPath(checkIn.id),
       content: JSON.parse(checkIn.message!),
       commentCount: checkIn.commentsCount!,

@@ -343,7 +343,10 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   end
 
   defp update_check_in_timestamp(update, timestamp) do
-    {:ok, _} = Operately.Repo.update(Ecto.Changeset.change(update, %{inserted_at: timestamp}))
+    {:ok, _} =
+      Operately.Repo.update(
+        Ecto.Changeset.change(update, %{inserted_at: timestamp, published_at: timestamp})
+      )
   end
 
   step :given_multiple_check_ins_exist, ctx do
