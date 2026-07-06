@@ -1,4 +1,6 @@
 defmodule Operately.MD.Goal do
+  alias Operately.Drafts
+
   def render(goal) do
     goal = Operately.Repo.preload(goal, updates: [:author], targets: [], checks: [], group: [], parent_goal: [], projects: [], champion: [], reviewer: [])
     discussions = Operately.Goals.Discussion.list(goal.id)
@@ -13,7 +15,7 @@ defmodule Operately.MD.Goal do
     #{render_targets(goal.targets)}
     #{Operately.MD.Goal.Checklist.render(goal)}
     #{render_projects(goal.projects)}
-    #{Operately.MD.Goal.CheckIns.render(goal.updates)}
+    #{Operately.MD.Goal.CheckIns.render(published_updates(goal.updates))}
     #{Operately.MD.Goal.Discussions.render(discussions)}
     #{render_retrospective(goal.retrospective)}
     """
@@ -151,5 +153,11 @@ defmodule Operately.MD.Goal do
 
   defp compact_empty_lines(text) do
     text |> String.replace(~r/\n{3,}/, "\n\n")
+  end
+
+  defp published_updates(updates) when is_list(updates) do
+    updates
+    |> Enum.filter(&(&1.state == :published))
+    |> Drafts.sort_by_display_date_desc()
   end
 end

@@ -145,6 +145,7 @@ export { SubscribersSelector, CurrentSubscriptions } from "./Subscriptions";
 export { SpaceKanbanPage } from "./SpaceKanbanPage";
 
 export { Summary } from "./RichContent";
+export { displayDate, nodeDisplayInsertedAt, withNodeDisplayInsertedAt, type DraftableResource } from "./utils/drafts";
 export { Editor, hasLocalDraft, useEditor } from "./RichEditor";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
 export { RichContent };

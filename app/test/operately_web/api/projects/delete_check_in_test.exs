@@ -2,7 +2,6 @@ defmodule OperatelyWeb.Api.Projects.DeleteCheckInTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access.Binding
-  alias Operately.Notifications.SubscriptionList
 
   import Operately.CommentsFixtures
   import Operately.GroupsFixtures
@@ -129,6 +128,67 @@ defmodule OperatelyWeb.Api.Projects.DeleteCheckInTest do
     end
   end
 
+  describe "delete_project_check_in previous check-in selection" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+    end
+
+    test "restores project's last check-in using published_at, not inserted_at", ctx do
+      check_in_b =
+        check_in_fixture(%{
+          author_id: ctx.creator.id,
+          project_id: ctx.project.id,
+          status: :caution
+        })
+        |> set_check_in_dates(
+          inserted_at: days_ago_naive(1),
+          published_at: Operately.Time.days_ago(4)
+        )
+
+      check_in_c =
+        check_in_fixture(%{
+          author_id: ctx.creator.id,
+          project_id: ctx.project.id,
+          status: :off_track
+        })
+        |> set_check_in_dates(
+          inserted_at: days_ago_naive(5),
+          published_at: Operately.Time.days_ago(3)
+        )
+
+      latest_check_in =
+        check_in_fixture(%{
+          author_id: ctx.creator.id,
+          project_id: ctx.project.id,
+          status: :on_track
+        })
+        |> set_check_in_dates(
+          inserted_at: days_ago_naive(10),
+          published_at: Operately.Time.utc_datetime_now()
+        )
+
+      {:ok, _} =
+        Operately.Projects.update_project(ctx.project, %{
+          last_check_in_id: latest_check_in.id,
+          last_check_in_status: latest_check_in.status
+        })
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :delete_check_in], %{
+                 check_in_id: Paths.project_check_in_id(latest_check_in)
+               })
+
+      project = Repo.reload(ctx.project)
+      assert project.last_check_in_id == check_in_c.id
+      assert project.last_check_in_status == check_in_c.status
+      refute project.last_check_in_id == check_in_b.id
+    end
+  end
+
   #
   # Helpers
   #
@@ -168,5 +228,20 @@ defmodule OperatelyWeb.Api.Projects.DeleteCheckInTest do
 
   defp create_check_in(creator, project) do
     check_in_fixture(%{author_id: creator.id, project_id: project.id})
+  end
+
+  defp set_check_in_dates(check_in, dates) do
+    {:ok, check_in} =
+      Ecto.Changeset.change(check_in, %{
+        inserted_at: dates[:inserted_at],
+        published_at: dates[:published_at]
+      })
+      |> Repo.update()
+
+    check_in
+  end
+
+  defp days_ago_naive(days) do
+    NaiveDateTime.utc_now() |> NaiveDateTime.add(-days, :day) |> NaiveDateTime.truncate(:second)
   end
 end

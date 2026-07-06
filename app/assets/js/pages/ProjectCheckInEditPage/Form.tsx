@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Forms, { FormState } from "@/components/Forms";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { assertPresent } from "@/utils/assertions";
-import { FormattedTime, GhostButton, PrimaryButton, Spacer } from "turboui";
+import { FormattedTime, GhostButton, PrimaryButton, Spacer, displayDate } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
@@ -110,7 +110,7 @@ function Header({ checkIn }: { checkIn: ProjectCheckIn }) {
   return (
     <div>
       <div className="text-2xl font-bold mx-auto">
-        Editing the Check-In from <FormattedTime {...formattedTimePreferences} time={checkIn.insertedAt!} format="long-date" />
+        Editing the Check-In from <FormattedTime {...formattedTimePreferences} time={displayDate(checkIn)} format="long-date" />
       </div>
     </div>
   );

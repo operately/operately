@@ -18,7 +18,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
-import { IconEdit, IconTrash, RichContent, CurrentSubscriptions, Spacer } from "turboui";
+import { IconEdit, IconTrash, RichContent, CurrentSubscriptions, Spacer, displayDate } from "turboui";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
@@ -122,7 +122,7 @@ function DiscussionTitle() {
       title={discussion.title}
       author={discussion.author || null}
       state={discussion.state}
-      publishedAt={discussion.publishedAt!}
+      publishedAt={displayDate(discussion)}
     />
   );
 }

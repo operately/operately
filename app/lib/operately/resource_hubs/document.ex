@@ -7,6 +7,8 @@ defmodule Operately.ResourceHubs.Document do
   alias Operately.ResourceHubs.{Getter, Parent}
   alias Operately.StateMachine
 
+  @valid_states [:draft, :published]
+
   schema "resource_documents" do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -20,7 +22,7 @@ defmodule Operately.ResourceHubs.Document do
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
 
     field :content, :map
-    field :state, Ecto.Enum, values: [:draft, :published]
+    field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
 
     # populated with after load hooks
@@ -68,6 +70,8 @@ defmodule Operately.ResourceHubs.Document do
   defp set_published_at(changeset) do
     put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
   end
+
+  def valid_states, do: @valid_states
 
   #
   # After load hooks

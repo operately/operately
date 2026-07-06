@@ -25,7 +25,7 @@ defmodule Operately.Operations.ProjectCheckInDeleting do
     Repo.one(
       from c in CheckIn,
         where: c.project_id == ^check_in.project_id and c.id != ^check_in.id and c.state == :published,
-        order_by: [desc: c.inserted_at],
+        order_by: [desc: c.published_at],
         limit: 1
     )
   end
