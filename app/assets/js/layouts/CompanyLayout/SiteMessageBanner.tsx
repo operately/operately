@@ -48,8 +48,8 @@ export function SiteMessageBanner() {
       <div className="mx-auto flex max-w-7xl items-start justify-between gap-4 px-4 py-3">
         <div className="flex min-w-0 flex-1 items-start gap-3">
           <div className="min-w-0 flex-1 text-sm leading-6 text-yellow-950">
-            <span className="font-semibold">{visibleMessage.title}</span>
-            {": "}
+            <span className="font-semibold text-black opacity-95">{visibleMessage.title}:</span>
+            {" "}
             <MessageDescription description={visibleMessage.description} />
           </div>
         </div>
