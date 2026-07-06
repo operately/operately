@@ -160,7 +160,11 @@ Define MCP scopes separately from CLI token modes. Suggested first split:
 - `mcp:read`
 - `mcp:write`
 
-Later, this can expand into narrower scopes if needed, but the first version should stay simple.
+### Default scope behavior (implemented)
+
+When the authorization request omits `scope` or passes an empty value, Operately grants **`mcp:read` only**. Clients that need write or destructive access must request `mcp:write` explicitly.
+
+Discovery metadata advertises supported scopes and the read-only default via `scopes_supported` and `default_scopes` on Protected Resource Metadata and Authorization Server Metadata.
 
 ### Client registration
 
@@ -517,6 +521,11 @@ Defer unless needed:
 
 Outcome: the MCP is ready for directory submission.
 
+### Security hardening follow-on
+
+- **Read-only default scope (implemented):** OAuth defaults to `mcp:read` when `scope` is omitted; consent screen scope labels and write warning; `default_scopes` in discovery metadata
+- **Pending:** rate limits, audit logging, grant revocation UI, optional company policy, submission hardening
+
 ---
 
 ## Testing
@@ -544,6 +553,8 @@ Critical scenarios:
 - grant remains usable across normal refresh-token rotation
 - revoked membership or revoked grant fails safely
 - grant scope blocks write tools
+- missing `scope` on authorize defaults grant to `mcp:read` only
+- consent screen explains requested scopes and warns when `mcp:write` is requested
 - protocol-version and auth-discovery behavior match the MCP spec
 - 401 responses advertise auth metadata correctly and tokens for other audiences are rejected
 - MCP wrappers receive `current_account`, `current_company`, `current_person`, and auth metadata on `conn.assigns`

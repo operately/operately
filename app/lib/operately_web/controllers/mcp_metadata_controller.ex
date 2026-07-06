@@ -23,7 +23,8 @@ defmodule OperatelyWeb.McpMetadataController do
     %{
       resource: Mcp.canonical_resource_uri(),
       authorization_servers: [OperatelyWeb.Endpoint.url()],
-      scopes_supported: Mcp.supported_scopes()
+      scopes_supported: Mcp.supported_scopes(),
+      default_scopes: Mcp.default_scopes()
     }
   end
 
@@ -37,6 +38,7 @@ defmodule OperatelyWeb.McpMetadataController do
       grant_types_supported: ["authorization_code", "refresh_token"],
       response_types_supported: ["code"],
       scopes_supported: Mcp.supported_scopes(),
+      default_scopes: Mcp.default_scopes(),
       code_challenge_methods_supported: ["S256"],
       token_endpoint_auth_methods_supported: ["none"],
       client_id_metadata_document_supported: true
