@@ -210,10 +210,10 @@ flowchart TB
 - [ ] `app/assets/js/pages/ForgotPasswordPage/index.tsx`
 - [ ] `app/assets/js/pages/ResetPasswordPage/index.tsx`
 - [ ] `app/assets/js/pages/AccountChangePasswordPage/index.tsx`
-- [ ] `app/assets/js/pages/CompanyRenamePage/index.tsx`
-- [ ] `app/assets/js/pages/AccountAppearancePage/index.tsx`
-- [ ] `app/assets/js/pages/NewCompanyPage/index.tsx`
-- [ ] `app/assets/js/pages/JoinPage/index.tsx` (text/password fields only)
+- [x] `app/assets/js/pages/CompanyRenamePage/index.tsx`
+- [x] `app/assets/js/pages/AccountAppearancePage/index.tsx`
+- [x] `app/assets/js/pages/NewCompanyPage/index.tsx`
+- [x] `app/assets/js/pages/JoinPage/index.tsx` (text/password fields only)
 
 ### Pattern
 

@@ -3,10 +3,9 @@ import * as Paper from "@/components/PaperContainer";
 import * as Accounts from "@/models/accounts";
 import * as React from "react";
 
-import Forms from "@/components/Forms";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
-import { showSuccessToast, showErrorToast } from "turboui";
+import { Forms, showSuccessToast, showErrorToast } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "AccountChangePasswordPage", loader: Pages.emptyLoader, Page } as PageModule;

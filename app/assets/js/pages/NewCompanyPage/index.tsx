@@ -7,9 +7,8 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 
-import Forms from "@/components/Forms";
+import { Forms, Link } from "turboui";
 import { PageModule } from "@/routes/types";
-import { Link } from "turboui";
 import { BillingCatalog, parseBillingIntent } from "./billingIntent";
 
 export default { name: "NewCompanyPage", loader, Page } as PageModule;

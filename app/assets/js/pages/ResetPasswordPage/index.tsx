@@ -3,7 +3,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { useNavigate } from "react-router-dom";
