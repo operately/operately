@@ -84,6 +84,10 @@ defmodule OperatelyWeb.Telemetry do
         event_name: [:operately, :mcp, :cimd, :fetch, :stop],
         tags: [:result, :cache]
       ),
+      counter("operately.mcp.rate_limit.count",
+        event_name: [:operately, :mcp, :rate_limit, :stop],
+        tags: [:action]
+      ),
 
       # Database Metrics
       summary("operately.repo.query.total_time",

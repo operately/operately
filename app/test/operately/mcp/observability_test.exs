@@ -14,7 +14,8 @@ defmodule Operately.Mcp.ObservabilityTest do
           [:operately, :mcp, :rpc, :stop],
           [:operately, :mcp, :tools_call, :stop],
           [:operately, :mcp, :oauth, :stop],
-          [:operately, :mcp, :cimd, :fetch, :stop]
+          [:operately, :mcp, :cimd, :fetch, :stop],
+          [:operately, :mcp, :rate_limit, :stop]
         ],
         fn event, measurements, metadata, pid ->
           send(pid, {:telemetry_event, event, measurements, metadata})
@@ -101,5 +102,20 @@ defmodule Operately.Mcp.ObservabilityTest do
   test "cimd_result maps unsafe_url to ssrf_blocked" do
     assert Observability.cimd_result(:unsafe_url) == "ssrf_blocked"
     assert Observability.cimd_result(:fetch_failed) == "fetch_failed"
+    assert Observability.cimd_result(:rate_limited) == "rate_limited"
+  end
+
+  test "rate_limited emits telemetry with action and retry_after" do
+    Observability.rate_limited(%{
+      action: "oauth_token",
+      retry_after: 42,
+      ip: "127.0.0.1",
+      client_id: "chatgpt"
+    })
+
+    assert_receive {:telemetry_event, [:operately, :mcp, :rate_limit, :stop], %{count: 1}, metadata}
+    assert metadata[:action] == "oauth_token"
+    assert metadata[:retry_after] == 42
+    assert metadata[:ip] == "127.0.0.1"
   end
 end

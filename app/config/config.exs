@@ -14,7 +14,14 @@ config :operately,
   mcp_cimd_fetch_timeout_ms: 5_000,
   mcp_cimd_max_response_bytes: 32_768,
   mcp_cimd_cache_ttl_seconds: 86_400,
-  mcp_cimd_cache_max_age_cap_seconds: 604_800
+  mcp_cimd_cache_max_age_cap_seconds: 604_800,
+  mcp_rate_limits_enabled: true,
+  mcp_rate_limits: %{
+    oauth_authorize: %{limit: 30, period_seconds: 60, keys: [:ip]},
+    oauth_token: %{limit: 60, period_seconds: 60, keys: [:ip, :client_id]},
+    cimd_fetch_url: %{limit: 10, period_seconds: 60, keys: [:client_id]},
+    tools_call: %{limit: 240, period_seconds: 60, keys: [:grant_id]}
+  }
 
 # Configures the endpoint
 config :operately, OperatelyWeb.Endpoint,

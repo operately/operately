@@ -59,6 +59,13 @@ config :junit_formatter,
 config :operately, notification_email: "test@localhost"
 config :operately, :sandbox, Ecto.Adapters.SQL.Sandbox
 
+config :operately, :mcp_rate_limits, %{
+  oauth_authorize: %{limit: 10_000, period_seconds: 60, keys: [:ip]},
+  oauth_token: %{limit: 10_000, period_seconds: 60, keys: [:ip, :client_id]},
+  cimd_fetch_url: %{limit: 10_000, period_seconds: 60, keys: [:client_id]},
+  tools_call: %{limit: 10_000, period_seconds: 60, keys: [:grant_id]}
+}
+
 config :wallaby, screenshot_on_failure: true
 config :wallaby, otp_app: :operately
 config :wallaby, hackney_options: [timeout: 3_000]

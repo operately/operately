@@ -16,6 +16,7 @@ defmodule Operately.Application do
     children = [
       OperatelyWeb.Telemetry,
       Operately.Repo,
+      Operately.Mcp.RateLimit,
       OperatelyWeb.Endpoint,
       Operately.Ai.Prompts,
       {Oban, Application.fetch_env!(:operately, Oban)},

@@ -3,6 +3,7 @@ defmodule Operately.Mcp.ClientMetadata.FetcherTest do
   import Mock
 
   alias Operately.Mcp.ClientMetadata.{Cache, Fetcher}
+  alias OperatelyWeb.Mcp.ToolConnHelper
 
   @client_id "https://client.example.com/oauth/client.json"
   @document %{
@@ -150,5 +151,43 @@ defmodule Operately.Mcp.ClientMetadata.FetcherTest do
     ] do
       assert {:error, :fetch_failed} = Fetcher.fetch(@client_id)
     end
+  end
+
+  test "returns rate_limited when url fetch quota is exceeded" do
+    ToolConnHelper.with_rate_limits(%{cimd_fetch_url: %{limit: 1, period_seconds: 60, keys: [:client_id]}}, fn ->
+      body = Jason.encode!(@document)
+
+      with_mocks [
+        {Operately.Mcp.ClientMetadata.SafeUrl, [], [validate: fn _url -> :ok end]},
+        {Req, [],
+         [
+           get: fn _url, _opts ->
+             {:ok,
+              %{
+                status: 200,
+                body: body,
+                headers: %{"cache-control" => "max-age=0"}
+              }}
+           end
+         ]}
+      ] do
+        assert {:ok, @document} = Fetcher.fetch(@client_id)
+        assert {:error, :rate_limited} = Fetcher.fetch(@client_id)
+      end
+    end)
+  end
+
+  test "cache hits do not consume fetch rate limit quota" do
+    ToolConnHelper.with_rate_limits(%{cimd_fetch_url: %{limit: 1, period_seconds: 60, keys: [:client_id]}}, fn ->
+      assert :ok = Cache.put(@client_id, @document, 60)
+
+      with_mock Req, [],
+        get: fn _url, _opts ->
+          flunk("expected cache hit to skip HTTP and rate limit")
+        end do
+        assert {:ok, @document} = Fetcher.fetch(@client_id)
+        assert {:ok, @document} = Fetcher.fetch(@client_id)
+      end
+    end)
   end
 end
