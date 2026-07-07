@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 
 import { DateField } from "../DateField";
+import { PrivacyField } from "../PrivacyField";
 import { createContextualDate } from "../DateField/mockData";
 import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
@@ -26,6 +27,11 @@ const DEFAULT_STATUSES: TaskBoardTypes.Status[] = [
   { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 3 },
   { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 4 },
 ];
+
+const defaultProjectAccessLevels: PrivacyField.AccessLevels = {
+  company: "view",
+  space: "view",
+};
 
 // Date helpers for dynamic, credible timelines
 function addDays(date: Date, days: number): Date {
@@ -441,6 +447,9 @@ export const Default: Story = {
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -566,6 +575,9 @@ export const OverdueCheckIn: Story = {
           setResources(resources.filter((resource) => resource.id !== id));
         }}
         contributors={mockContributors}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -675,6 +687,9 @@ export const ReadOnly: Story = {
         onResourceEdit={() => {}}
         onResourceRemove={() => {}}
         contributors={mockContributors}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -817,6 +832,9 @@ export const EmptyTasks: Story = {
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -958,6 +976,9 @@ export const EmptyProject: Story = {
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
         contributors={[]}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -1057,6 +1078,9 @@ export const EmptyProjectReadOnly: Story = {
         onResourceEdit={() => {}}
         onResourceRemove={() => {}}
         contributors={[]}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -1221,6 +1245,9 @@ export const PausedProject: Story = {
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -1335,6 +1362,9 @@ export const ClosedProject: Story = {
         onResourceEdit={() => {}}
         onResourceRemove={() => {}}
         contributors={mockContributors}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/1/team"
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -1526,6 +1556,9 @@ export const ProjectWithoutSpace: Story = {
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
+
         manageTeamLink="/projects/no-space/team"
         newCheckInLink="#"
         checkIns={mockCheckIns}

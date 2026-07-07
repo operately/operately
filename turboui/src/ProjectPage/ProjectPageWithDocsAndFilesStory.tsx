@@ -23,7 +23,13 @@ import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
+import { PrivacyField } from "../PrivacyField";
 import { ProjectPage } from "./index";
+
+const defaultProjectAccessLevels: PrivacyField.AccessLevels = {
+  company: "view",
+  space: "view",
+};
 
 export interface ProjectPageWithDocsAndFilesStoryData {
   currentViewer: ProjectPage.Person;
@@ -215,6 +221,8 @@ export function ProjectPageWithDocsAndFilesStory({
         setResources(resources.filter((resource) => resource.id !== id));
       }}
       contributors={storyData.mockContributors}
+      accessLevels={defaultProjectAccessLevels}
+      setAccessLevels={() => undefined}
       manageTeamLink="/projects/1/team"
       championSearch={championSearch}
       reviewerSearch={reviewerSearch}
