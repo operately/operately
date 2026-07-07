@@ -111,6 +111,8 @@ defmodule OperatelyWeb.Router do
     options("/.well-known/openid-configuration/mcp", McpMetadataController, :cors_preflight)
 
     post("/oauth/token", McpOAuthController, :token)
+    post("/oauth/register", McpOAuthController, :register)
+    options("/oauth/register", McpMetadataController, :cors_preflight)
   end
 
   scope "/", OperatelyWeb do
