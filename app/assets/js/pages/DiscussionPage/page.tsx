@@ -14,11 +14,20 @@ import { compareIds } from "@/routes/paths";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { OngoingDraftActions } from "@/features/drafts";
+import { useBoolState } from "@/hooks/useBoolState";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
-import { IconEdit, IconTrash, RichContent, CurrentSubscriptions, Spacer, displayDate } from "turboui";
+import {
+  DiscardDiscussionDraftModal,
+  IconEdit,
+  IconTrash,
+  RichContent,
+  CurrentSubscriptions,
+  Spacer,
+  displayDate,
+} from "turboui";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
@@ -145,26 +154,58 @@ function Options() {
   const navigate = useNavigate();
   const { discussion } = useLoadedData();
   const [archive] = Discussions.useArchiveMessage();
+  const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
+
+  const isDraft = discussion.state === "draft";
 
   const handleArchive = async () => {
-    await archive({ id: discussion.id! });
-    navigate(paths.spaceDiscussionsPath(discussion.space!.id!));
+    await archive({ id: discussion.id });
+
+    handleRedirect();
+  };
+
+  const handleRedirect = () => {
+    if (discussion.space) {
+      navigate(paths.spaceDiscussionsPath(discussion.space.id));
+    } else {
+      navigate(paths.homePath());
+    }
   };
 
   if (!discussion.author || !me || !compareIds(me.id, discussion.author.id)) return null;
 
   return (
-    <PageOptions.Root testId="options-button">
-      <PageOptions.Link
-        icon={IconEdit}
-        title="Edit"
-        to={paths.discussionEditPath(discussion.id!)}
-        testId="edit-discussion"
-        keepOutsideOnBigScreen
-      />
+    <>
+      <PageOptions.Root testId="options-button">
+        <PageOptions.Link
+          icon={IconEdit}
+          title="Edit"
+          to={paths.discussionEditPath(discussion.id!)}
+          testId="edit-discussion"
+          keepOutsideOnBigScreen
+        />
 
-      <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleArchive} testId="archive-discussion" />
-    </PageOptions.Root>
+        {isDraft ? (
+          <PageOptions.Action
+            icon={IconTrash}
+            title="Discard draft"
+            onClick={toggleDiscardModal}
+            testId="discard-draft"
+          />
+        ) : (
+          <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleArchive} testId="archive-discussion" />
+        )}
+      </PageOptions.Root>
+
+      {isDraft && (
+        <DiscardDiscussionDraftModal
+          isOpen={showDiscardModal}
+          onClose={toggleDiscardModal}
+          onDiscard={() => archive({ id: discussion.id })}
+          onSuccess={handleRedirect}
+        />
+      )}
+    </>
   );
 }
 
