@@ -10,7 +10,9 @@ defmodule Operately.Mcp.ClientMetadata do
 
   alias __MODULE__
   alias Operately.Mcp.ClientMetadata.{Document, Fetcher}
+  alias Operately.Mcp.OAuthClient
   alias Operately.Mcp.Observability
+  alias Operately.Repo
 
   @localhost_hosts ["localhost", "127.0.0.1", "::1"]
 
@@ -19,8 +21,14 @@ defmodule Operately.Mcp.ClientMetadata do
   """
   def resolve(client_id) when is_binary(client_id) do
     case configured_clients() |> Enum.find_value(&match_client(&1, client_id)) do
-      %ClientMetadata{} = metadata -> validate_auth_method(metadata)
-      nil -> resolve_cimd(client_id)
+      %ClientMetadata{} = metadata ->
+        validate_auth_method(metadata)
+
+      nil ->
+        cond do
+          Document.cimd_client_id?(client_id) -> resolve_cimd(client_id)
+          true -> resolve_registered(client_id)
+        end
     end
   end
 
@@ -74,6 +82,31 @@ defmodule Operately.Mcp.ClientMetadata do
 
   defp configured_clients do
     Application.get_env(:operately, :mcp_oauth_clients, [])
+  end
+
+  defp resolve_registered(client_id) do
+    if registered_client_id?(client_id) do
+      case Repo.get(OAuthClient, client_id) do
+        %OAuthClient{} = client ->
+          build(%{
+            client_id: client.id,
+            client_name: client.client_name,
+            client_uri: client.client_uri,
+            logo_uri: client.logo_uri,
+            redirect_uris: client.redirect_uris,
+            token_endpoint_auth_method: client.token_endpoint_auth_method
+          })
+
+        nil ->
+          {:error, :invalid_client}
+      end
+    else
+      {:error, :invalid_client}
+    end
+  end
+
+  defp registered_client_id?(client_id) when is_binary(client_id) do
+    match?({:ok, _}, Ecto.UUID.cast(client_id))
   end
 
   defp resolve_cimd(client_id) do

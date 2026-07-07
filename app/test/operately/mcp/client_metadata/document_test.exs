@@ -153,7 +153,7 @@ defmodule Operately.Mcp.ClientMetadata.DocumentTest do
       :ok
     end
 
-    test "requires https redirect uris in production mode" do
+    test "requires https redirect uris for public hosts" do
       Application.put_env(:operately, :mcp_cimd_require_https_redirect_uris, true)
 
       base = %{
@@ -164,11 +164,17 @@ defmodule Operately.Mcp.ClientMetadata.DocumentTest do
       assert {:error, :invalid_client_metadata} =
                Document.parse(@client_id, Map.put(base, "redirect_uris", ["http://client.example.com/callback"]))
 
-      assert {:error, :invalid_client_metadata} =
+      assert {:ok, _metadata} =
                Document.parse(@client_id, Map.put(base, "redirect_uris", ["http://localhost:4567/callback"]))
 
       assert {:ok, _metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["http://127.0.0.1:54321/callback/id"]))
+
+      assert {:ok, _metadata} =
                Document.parse(@client_id, Map.put(base, "redirect_uris", ["https://client.example.com/callback"]))
+
+      assert {:ok, _metadata} =
+               Document.parse(@client_id, Map.put(base, "redirect_uris", ["cursor://anysphere.cursor-mcp/oauth/callback"]))
     end
 
     test "allows localhost http redirect uris outside production mode" do

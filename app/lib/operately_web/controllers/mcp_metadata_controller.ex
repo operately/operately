@@ -37,6 +37,7 @@ defmodule OperatelyWeb.McpMetadataController do
       token_endpoint: base_url <> "/oauth/token",
       grant_types_supported: ["authorization_code", "refresh_token"],
       response_types_supported: ["code"],
+      registration_endpoint: base_url <> "/oauth/register",
       scopes_supported: Mcp.supported_scopes(),
       default_scopes: Mcp.default_scopes(),
       code_challenge_methods_supported: ["S256"],
