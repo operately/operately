@@ -289,6 +289,36 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     assert replay_body["error"] == "invalid_grant"
   end
 
+  test "registers a dynamic oauth client", %{conn: conn} do
+    conn =
+      post(conn, "/oauth/register", %{
+        "client_name" => "Cursor",
+        "redirect_uris" => ["cursor://anysphere.cursor-mcp/oauth/callback"],
+        "token_endpoint_auth_method" => "none"
+      })
+
+    assert conn.status == 201
+
+    body = Jason.decode!(conn.resp_body)
+
+    assert body["client_name"] == "Cursor"
+    assert is_binary(body["client_id"])
+    assert body["redirect_uris"] == ["cursor://anysphere.cursor-mcp/oauth/callback"]
+    assert body["token_endpoint_auth_method"] == "none"
+  end
+
+  test "rejects dynamic registration with insecure redirect uris", %{conn: conn} do
+    conn =
+      post(conn, "/oauth/register", %{
+        "client_name" => "Bad Client",
+        "redirect_uris" => ["http://client.example.com/callback"],
+        "token_endpoint_auth_method" => "none"
+      })
+
+    assert conn.status == 400
+    assert %{"error" => "invalid_redirect_uri"} = Jason.decode!(conn.resp_body)
+  end
+
   defp authorize_params(client, redirect_uri, scope \\ "mcp:read") do
     %{
       "client_id" => client.client_id,

@@ -84,6 +84,24 @@ defmodule OperatelyWeb.McpOAuthController do
     end
   end
 
+  def register(conn, params) do
+    conn =
+      conn
+      |> put_resp_header("cache-control", "no-store")
+      |> put_resp_header("pragma", "no-cache")
+
+    case Mcp.register_oauth_client(params) do
+      {:ok, response} ->
+        conn
+        |> put_status(201)
+        |> json(response)
+
+      {:error, reason} ->
+        Observability.oauth_register(%{result: reason})
+        registration_json_error(conn, reason)
+    end
+  end
+
   defp oauth_token_response(response) do
     %{
       access_token: response.access_token,
@@ -201,6 +219,27 @@ defmodule OperatelyWeb.McpOAuthController do
       client_id: conn.params["client_id"],
       grant_type: conn.params["grant_type"]
     })
+
+    conn
+    |> put_status(status)
+    |> json(%{error: error, error_description: description})
+  end
+
+  defp registration_json_error(conn, reason) do
+    {status, error, description} =
+      case reason do
+        :invalid_redirect_uri ->
+          {400, "invalid_redirect_uri", "One or more redirect URIs are not allowed for this MCP server."}
+
+        :unsupported_client_authentication ->
+          {400, "invalid_client_metadata", "Only public OAuth clients using token_endpoint_auth_method=none are supported."}
+
+        :invalid_client_metadata ->
+          {400, "invalid_client_metadata", "The client registration request is missing required fields or contains invalid values."}
+
+        _ ->
+          {400, "invalid_client_metadata", "The client registration request could not be completed."}
+      end
 
     conn
     |> put_status(status)

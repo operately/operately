@@ -55,6 +55,19 @@ defmodule Operately.Mcp.Observability do
   end
 
   @doc """
+  Records a dynamic client registration attempt.
+  """
+  def oauth_register(attrs) when is_map(attrs) do
+    metadata =
+      attrs
+      |> Map.put(:action, "register")
+      |> normalize_oauth_metadata()
+
+    :telemetry.execute(@oauth_event, %{count: 1}, telemetry_metadata(metadata))
+    log_oauth(metadata)
+  end
+
+  @doc """
   Records a CIMD metadata fetch attempt.
   """
   def cimd_fetch(attrs) when is_map(attrs) do
