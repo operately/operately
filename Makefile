@@ -1,7 +1,7 @@
 SHELL := /bin/bash  # Use bash syntax
 MAKEFLAGS += -s     # Silent mode
 
-.PHONY: test cli.build cli.test cli.test.unit cli.test.e2e app.node_modules turboui.node_modules cli.node_modules
+.PHONY: test cli.build cli.test cli.test.unit cli.test.e2e mcp.test.e2e app.node_modules turboui.node_modules cli.node_modules
 
 REPORTS_DIR ?= $(PWD)/app/testreports
 SCREENSHOTS_DIR ?= $(PWD)/app/screenshots
@@ -108,9 +108,10 @@ cli.test.unit:
 	npm --prefix cli test
 
 cli.test.e2e: test.init
-	$(MAKE) test.build
-	$(MAKE) cli.build
 	./devenv bash -c "cd app && mix test test/cli_e2e"
+
+mcp.test.e2e: test.init
+	./devenv bash -c "cd app && mix test test/mcp_e2e"
 
 gen.cli.catalog:
 	$(MAKE) gen.api.catalog
@@ -201,6 +202,13 @@ test.setup.js:
 
 test.setup.features:
 	$(MAKE) test.build
+
+test.setup.cli_e2e:
+	$(MAKE) test.build
+	$(MAKE) cli.build
+
+test.setup.mcp_e2e:
+	$(MAKE) test.setup.unit
 
 test.up:
 	$(MAKE) test.init

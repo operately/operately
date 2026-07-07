@@ -526,7 +526,8 @@ Outcome: the MCP is ready for directory submission.
 - **Read-only default scope (implemented):** OAuth defaults to `mcp:read` when `scope` is omitted; consent screen scope labels and write warning; `default_scopes` in discovery metadata
 - **MCP observability (implemented):** structured logs and StatsD metrics for JSON-RPC method, `tools/call` tool name/outcome, OAuth failures, and CIMD fetch/cache; searchable in Grafana via `MCP tools/call:` / `operately.mcp.*` metrics
 - **CIMD redirect URI hardening (implemented):** production requires `https` redirect URIs in fetched CIMD metadata; dev/test allows `http` only on localhost/loopback
-- **Pending:** rate limits, audit logging, grant revocation UI, optional company policy, submission hardening
+- **CIMD integration test (implemented):** step-based E2E suite in `app/test/mcp_e2e/` — CIMD OAuth onboarding plus `get_me`, `search`, `fetch`, and `create_project_check_in` over HTTP
+- **Pending (in order):** grant revocation UI (PR 4), optional company policy (PR 5), submission hardening (PR 6), rate limits (PR 7), audit logging (PR 3 — deferred to last)
 
 ---
 
@@ -559,6 +560,7 @@ Critical scenarios:
 - consent screen explains requested scopes and warns when `mcp:write` is requested
 - MCP `tools/call` emits structured log lines and metrics with tool name and outcome (not only generic `POST /mcp` access logs)
 - CIMD metadata with non-HTTPS redirect URIs is rejected in production
+- URL-as-`client_id` completes authorize → token → `tools/list` without allowlist entry (`app/test/mcp_e2e/`)
 - protocol-version and auth-discovery behavior match the MCP spec
 - 401 responses advertise auth metadata correctly and tokens for other audiences are rejected
 - MCP wrappers receive `current_account`, `current_company`, `current_person`, and auth metadata on `conn.assigns`
