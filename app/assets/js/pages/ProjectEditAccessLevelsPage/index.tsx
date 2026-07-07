@@ -6,7 +6,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";

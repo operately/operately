@@ -13,7 +13,7 @@ export { RichTextArea } from "./RichTextArea";
 export { SelectBox } from "./SelectBox";
 export { Submit } from "./Submit";
 export { TextInput } from "./TextInput";
-export { useFieldError, useFieldValue } from "./context";
+export { useFieldError, useFieldValue, useFormContext } from "./context";
 export { useForm } from "./useForm";
 export { validateTextLength, validateIsNumber } from "./validation";
 export type {

@@ -50,6 +50,7 @@ export { FormattedTime } from "./FormattedTime";
 export type { FormattedTimePreferences, FormattedTimeProps, Format as FormattedTimeFormat } from "./FormattedTime";
 export { defaultFormattedTimePreferences } from "./FormattedTime/types";
 export type { FormState } from "./Forms";
+export { useFormContext } from "./Forms";
 export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
