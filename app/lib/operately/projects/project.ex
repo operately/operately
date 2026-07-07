@@ -343,10 +343,15 @@ defmodule Operately.Projects.Project do
   end
 
   defp compare_by_ordering_position(milestone1, milestone2, ordering_positions) do
-    pos1 = Map.get(ordering_positions, milestone1.id, :infinity)
-    pos2 = Map.get(ordering_positions, milestone2.id, :infinity)
+    pos1 = Map.get(ordering_positions, milestone1.id)
+    pos2 = Map.get(ordering_positions, milestone2.id)
 
-    pos1 < pos2
+    case {pos1, pos2} do
+      {nil, nil} -> false
+      {nil, _} -> false
+      {_, nil} -> true
+      {p1, p2} -> p1 < p2
+    end
   end
 
   def load_contributor_access_levels(project) do
