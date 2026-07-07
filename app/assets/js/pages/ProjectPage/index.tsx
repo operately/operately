@@ -3,7 +3,7 @@ import { PageModule } from "@/routes/types";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 
-import * as Goals from "@/models/goals";
+import { accessLevelsAsNumbers, accessLevelsAsStrings, parseParentGoalForTurboUi } from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 import * as Tasks from "@/models/tasks";
@@ -37,7 +37,7 @@ export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
 
 function pageCacheKey(id: string): string {
-  return `v6-ProjectV2Page.project-${id}`;
+  return `v7-ProjectV2Page.project-${id}`;
 }
 
 type ProjectDocsAndFilesData = {
@@ -76,6 +76,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeMilestones: true,
           includeLastCheckIn: true,
           includePrivacy: true,
+          includeAccessLevels: true,
           includeRetrospective: true,
           includeUnreadNotifications: true,
           includeSubscriptionList: true,
@@ -167,13 +168,22 @@ function Page() {
   });
 
   const [parentGoal, setParentGoal] = usePageField({
-    value: (data: { project: Projects.Project }) => Goals.parseParentGoalForTurboUi(paths, data.project.goal),
+    value: (data: { project: Projects.Project }) => parseParentGoalForTurboUi(paths, data.project.goal),
     update: (v) =>
       Api.projects.updateParentGoal({
         projectId: project.id,
         goalId: v && v.id,
       }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
+  });
+
+  const [accessLevels, setAccessLevels] = usePageField({
+    value: (data) => accessLevelsAsStrings(data.project.accessLevels!),
+    update: (v) =>
+      Api.projects
+        .updatePermissions({ projectId: project.id, accessLevels: accessLevelsAsNumbers(v) })
+        .then(() => true),
+    onError: () => showErrorToast("Network Error", "Reverted the access levels to their previous values."),
   });
 
   const [dueDate, setDueDate] = usePageField({
@@ -362,6 +372,9 @@ function Page() {
 
     permissions: project.permissions || {},
     manageTeamLink: paths.projectContributorsPath(project.id),
+    manageAccessLink: paths.projectContributorsPath(project.id),
+    accessLevels,
+    setAccessLevels,
 
     onProjectDelete: deleteProject,
 
@@ -661,7 +674,7 @@ function useParentGoalSearch(project: Projects.Project): ProjectPage.Props["pare
 
   return async ({ query }: { query: string }): Promise<ProjectPage.ParentGoal[]> => {
     const data = await Api.projects.searchParentGoal({ query: query.trim(), projectId: project.id });
-    const goals = data.goals.map((g) => Goals.parseParentGoalForTurboUi(paths, g));
+    const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
 
     return goals.map((g) => g!);
   };

@@ -10,6 +10,7 @@ import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
 import { BadgeStatus } from "../StatusBadge/types";
 import { PersonField } from "../PersonField";
+import { PrivacyField } from "../PrivacyField";
 import { useTabs } from "../Tabs";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import type { KanbanBoardProps, KanbanState } from "../TaskBoard/KanbanView/types";
@@ -132,6 +133,10 @@ export namespace ProjectPage {
     retrospectiveLink?: string;
 
     manageTeamLink: string;
+    manageAccessLink?: string;
+
+    accessLevels: PrivacyField.AccessLevels;
+    setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
 
     updateProjectName: (name: string) => Promise<boolean>;
 
