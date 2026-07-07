@@ -1450,6 +1450,16 @@ export interface InviteLink {
   allowedDomains?: string[] | null;
 }
 
+export interface McpGrant {
+  id: Id;
+  clientId: string;
+  clientName: string;
+  clientUri?: string | null;
+  scopes: string[];
+  insertedAt: string;
+  lastUsedAt?: string | null;
+}
+
 export interface MessagesBoard {
   id?: string | null;
   name?: string | null;

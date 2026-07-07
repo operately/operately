@@ -385,6 +385,11 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.ApiTokens.Delete)
       end
 
+      namespace(:mcp_grants) do
+        query(:list, OperatelyWeb.Api.McpGrants.List)
+        mutation(:revoke, OperatelyWeb.Api.McpGrants.Revoke)
+      end
+
       namespace(:cli_auth) do
         query(:status, OperatelyWeb.Api.CliAuth.Status)
         query(:company_creation_status, OperatelyWeb.Api.CliAuth.CompanyCreationStatus)

@@ -8,6 +8,56 @@ defmodule Operately.Mcp.Operations.Grant do
   @authorization_code_prefix "opmc_"
 
   @doc """
+  Lists active MCP grants for an account and company with last-used timestamps.
+  """
+  def list_grants_for_company(account, company) do
+    grants =
+      from(g in Grant,
+        where: g.account_id == ^account.id and g.company_id == ^company.id and is_nil(g.revoked_at)
+      )
+      |> Repo.all()
+
+    grant_ids = Enum.map(grants, & &1.id)
+
+    last_used_by_grant_id =
+      if grant_ids == [] do
+        %{}
+      else
+        from(t in AccessToken,
+          where: t.grant_id in ^grant_ids,
+          group_by: t.grant_id,
+          select: {t.grant_id, max(t.last_used_at)}
+        )
+        |> Repo.all()
+        |> Map.new()
+      end
+
+    Enum.map(grants, fn grant ->
+      %{grant | last_used_at: Map.get(last_used_by_grant_id, grant.id)}
+    end)
+  end
+
+  @doc """
+  Revokes a grant owned by the account in the given company and invalidates its token lineage.
+  """
+  def revoke_grant_for_company(account, company, grant_id) when is_binary(grant_id) do
+    with {:ok, grant_id} <- Ecto.UUID.cast(grant_id),
+         %Grant{} = grant <- Repo.get(Grant, grant_id),
+         true <- grant.account_id == account.id,
+         true <- grant.company_id == company.id,
+         true <- is_nil(grant.revoked_at) do
+      revoke_grant_lineage(grant, Token.now(), true)
+      :ok
+    else
+      :error -> {:error, :not_found}
+      nil -> {:error, :not_found}
+      false -> {:error, :not_found}
+    end
+  end
+
+  def revoke_grant_for_company(_account, _company, _grant_id), do: {:error, :not_found}
+
+  @doc """
   Creates or updates a grant for the account, company, and authorized client.
   """
   def upsert_grant(account, company, auth_request) do
