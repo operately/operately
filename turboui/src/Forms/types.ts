@@ -117,6 +117,7 @@ export interface SelectBoxOption {
 export interface SelectBoxProps {
   field: string;
   label?: string;
+  labelIcon?: React.ReactNode;
   hidden?: boolean;
   placeholder?: string;
   options: SelectBoxOption[];

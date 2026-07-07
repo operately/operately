@@ -101,7 +101,7 @@ function TextareaField({
   placeholder?: string;
   rows?: number;
 }) {
-  const [value, setValue] = Forms.useFieldValue(field);
+  const [value, setValue] = Forms.useFieldValue<string>(field);
   const error = Forms.useFieldError(field);
 
   return (

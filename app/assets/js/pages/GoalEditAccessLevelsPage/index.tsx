@@ -117,7 +117,7 @@ function AccessSelectors({ showSpaceAccess }: { showSpaceAccess: boolean }) {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={companyMembersOptions}
+          options={(companyMembersOptions ?? []) as unknown as { label: string; value: string }[]}
         />
       </div>
     );
@@ -130,13 +130,13 @@ function AccessSelectors({ showSpaceAccess }: { showSpaceAccess: boolean }) {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={companyMembersOptions}
+          options={(companyMembersOptions ?? []) as unknown as { label: string; value: string }[]}
         />
         <Forms.SelectBox
           field={"access.spaceMembers"}
           label="Space members"
           labelIcon={<IconTent size={20} />}
-          options={spaceMembersOptions}
+          options={(spaceMembersOptions ?? []) as unknown as { label: string; value: string }[]}
         />
       </Forms.FieldGroup>
     </div>

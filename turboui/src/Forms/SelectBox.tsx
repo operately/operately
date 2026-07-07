@@ -8,11 +8,11 @@ import { InputField } from "./FieldGroup";
 import type { SelectBoxProps } from "./types";
 
 export function SelectBox(props: SelectBoxProps) {
-  const { field, label, hidden, required } = props;
+  const { field, label, labelIcon, hidden, required } = props;
   const error = useFieldError(field);
 
   return (
-    <InputField field={field} label={label} error={error} hidden={hidden} required={required}>
+    <InputField field={field} label={label} labelIcon={labelIcon} error={error} hidden={hidden} required={required}>
       <SelectBoxInput {...props} />
     </InputField>
   );
