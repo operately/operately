@@ -12,7 +12,7 @@ import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { logIn } from "@/routes/auth";
 import { redirect } from "react-router-dom";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 
 export default { name: "JoinPage", loader, Page } as PageModule;
 
