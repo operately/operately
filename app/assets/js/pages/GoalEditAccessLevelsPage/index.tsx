@@ -5,13 +5,12 @@ import * as Goals from "@/models/goals";
 import * as Permissions from "@/models/permissions";
 
 import Api from "@/api";
-import Forms from "@/components/Forms";
 import { applyAccessLevelConstraints, initialAccessLevels, Option } from "@/features/Permissions/AccessFields";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
-import { IconBuilding, IconTent } from "turboui";
+import { Forms, IconBuilding, IconTent } from "turboui";
 
 export default { name: "GoalEditAccessLevelsPage", loader, Page } as PageModule;
 

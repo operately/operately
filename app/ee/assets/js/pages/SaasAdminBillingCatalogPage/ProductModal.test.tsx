@@ -24,12 +24,11 @@ jest.mock("@/components/Modal", () => ({
     ) : null,
 }));
 
-jest.mock("@/components/Forms", () => {
+jest.mock("turboui", () => {
   const React = require("react");
 
   return {
-    __esModule: true,
-    default: {
+    Forms: {
       useForm: jest.fn((config: any) => {
         mockCurrentValues = mockCurrentValues ?? { ...config.fields };
 

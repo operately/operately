@@ -6,7 +6,7 @@ import * as React from "react";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "SpaceEditPage", loader, Page } as PageModule;
