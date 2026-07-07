@@ -25,12 +25,13 @@ jest.mock("@/components/Modal", () => ({
     ) : null,
 }));
 
-jest.mock("@/components/Forms", () => {
+jest.mock("turboui", () => {
   const React = require("react");
+  const { formatStorageBytes } = jest.requireActual("turboui/CompanyBilling");
 
   return {
-    __esModule: true,
-    default: {
+    formatStorageBytes,
+    Forms: {
       useForm: jest.fn((config: any) => {
         mockCapturedConfig = config;
         mockCurrentValues = mockCurrentValues ?? { ...config.fields };
@@ -85,11 +86,6 @@ jest.mock("@/components/Forms", () => {
       ),
     },
   };
-});
-
-jest.mock("turboui", () => {
-  const { formatStorageBytes } = jest.requireActual("turboui/CompanyBilling");
-  return { formatStorageBytes };
 });
 
 const teamPlanDefinition = {

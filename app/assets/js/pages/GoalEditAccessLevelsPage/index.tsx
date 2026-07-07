@@ -5,13 +5,12 @@ import * as Goals from "@/models/goals";
 import * as Permissions from "@/models/permissions";
 
 import Api from "@/api";
-import Forms from "@/components/Forms";
 import { applyAccessLevelConstraints, initialAccessLevels, Option } from "@/features/Permissions/AccessFields";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
-import { IconBuilding, IconTent } from "turboui";
+import { Forms, IconBuilding, IconTent } from "turboui";
 
 export default { name: "GoalEditAccessLevelsPage", loader, Page } as PageModule;
 
@@ -118,7 +117,7 @@ function AccessSelectors({ showSpaceAccess }: { showSpaceAccess: boolean }) {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={companyMembersOptions}
+          options={(companyMembersOptions ?? []) as unknown as { label: string; value: string }[]}
         />
       </div>
     );
@@ -131,13 +130,13 @@ function AccessSelectors({ showSpaceAccess }: { showSpaceAccess: boolean }) {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={companyMembersOptions}
+          options={(companyMembersOptions ?? []) as unknown as { label: string; value: string }[]}
         />
         <Forms.SelectBox
           field={"access.spaceMembers"}
           label="Space members"
           labelIcon={<IconTent size={20} />}
-          options={spaceMembersOptions}
+          options={(spaceMembersOptions ?? []) as unknown as { label: string; value: string }[]}
         />
       </Forms.FieldGroup>
     </div>
