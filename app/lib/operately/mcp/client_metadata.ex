@@ -119,7 +119,7 @@ defmodule Operately.Mcp.ClientMetadata do
           error
 
         {:error, reason} ->
-          unless reason in [:fetch_failed, :invalid_response, :unsafe_url] do
+          unless reason in [:fetch_failed, :invalid_response, :unsafe_url, :rate_limited] do
             Observability.cimd_fetch(%{
               client_id: client_id,
               result: Observability.cimd_result(reason),

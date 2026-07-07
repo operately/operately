@@ -5,6 +5,9 @@ defmodule OperatelyWeb.McpOAuthController do
   alias Operately.Mcp.Observability
   alias OperatelyWeb.Paths
 
+  plug OperatelyWeb.Mcp.Plugs.RateLimitOAuth, :oauth_authorize when action in [:authorize, :submit_authorization]
+  plug OperatelyWeb.Mcp.Plugs.RateLimitOAuth, :oauth_token when action in [:token]
+
   def authorize(conn, params) do
     with {:ok, account} <- require_account(conn),
          {:ok, request} <- Mcp.authorize_client_request(params) do

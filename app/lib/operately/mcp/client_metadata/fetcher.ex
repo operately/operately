@@ -1,6 +1,6 @@
 defmodule Operately.Mcp.ClientMetadata.Fetcher do
   alias Operately.Mcp.ClientMetadata.{Cache, SafeUrl}
-  alias Operately.Mcp.Observability
+  alias Operately.Mcp.{Observability, RateLimit}
 
   @doc """
   Fetches and caches a decoded CIMD metadata document.
@@ -12,7 +12,8 @@ defmodule Operately.Mcp.ClientMetadata.Fetcher do
         {:ok, document}
 
       :miss ->
-        with :ok <- SafeUrl.validate(client_id),
+        with :ok <- check_rate_limit(client_id),
+             :ok <- SafeUrl.validate(client_id),
              {:ok, body, headers} <- http_get(client_id),
              {:ok, document} <- decode_json(body),
              :ok <- Cache.put(client_id, document, cache_ttl(headers)) do
@@ -32,6 +33,22 @@ defmodule Operately.Mcp.ClientMetadata.Fetcher do
   end
 
   def fetch(_), do: {:error, :fetch_failed}
+
+  defp check_rate_limit(client_id) do
+    case RateLimit.check(:cimd_fetch_url, client_id: client_id) do
+      :ok ->
+        :ok
+
+      {:error, retry_after} ->
+        Observability.rate_limited(%{
+          action: "cimd_fetch_url",
+          retry_after: retry_after,
+          client_id: client_id
+        })
+
+        {:error, :rate_limited}
+    end
+  end
 
   defp http_get(url) do
     case Req.get(url,

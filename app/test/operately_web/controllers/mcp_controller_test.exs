@@ -11,6 +11,7 @@ defmodule OperatelyWeb.McpControllerTest do
 
   alias Operately.Billing
   alias Operately.Mcp
+  alias OperatelyWeb.Mcp.ToolConnHelper
   alias Operately.People
   alias OperatelyWeb.Mcp.Tools, as: McpTools
 
@@ -801,6 +802,21 @@ defmodule OperatelyWeb.McpControllerTest do
                "text" => "You do not have permission to perform this operation, or the company is read-only."
              }
            ]
+  end
+
+  test "returns 429 when tools/call exceeds the rate limit", %{account: account, company: company, client: client} do
+    ToolConnHelper.with_rate_limits(%{tools_call: %{limit: 1, period_seconds: 60, keys: [:grant_id]}}, fn ->
+      %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+      session_id = create_session(access_token).id
+
+      assert call_tool(access_token, session_id, "get_current_company").status == 200
+
+      limited_conn = call_tool(access_token, session_id, "get_current_company")
+
+      assert limited_conn.status == 429
+      assert get_resp_header(limited_conn, "retry-after") != []
+      assert %{"error" => %{"message" => "Rate limit exceeded"}} = Jason.decode!(limited_conn.resp_body)
+    end)
   end
 
   test "uses tool-definition scopes for tools/call", %{account: account, company: company, client: client} do
