@@ -4,11 +4,10 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Discussions from "@/models/discussions";
 
-import { DiscardDiscussionDraftModal } from "@/features/discussions/DiscardDiscussionDraftModal";
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { useBoolState } from "@/hooks/useBoolState";
 import { PageModule } from "@/routes/types";
-import { GhostButton, Link, PrimaryButton } from "turboui";
+import { DiscardDiscussionDraftModal, GhostButton, Link, PrimaryButton } from "turboui";
 import { useNavigate } from "react-router-dom";
 
 import { usePaths } from "@/routes/paths";
@@ -108,7 +107,16 @@ function CancelLink({ form }: { form: FormState }) {
 function DiscardDraftLink({ discussion }: { discussion: Discussions.Discussion }) {
   const paths = usePaths();
   const navigate = useNavigate();
+  const [archive] = Discussions.useArchiveMessage();
   const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
+
+  const handleRedirect = () => {
+    if (discussion.space) {
+      navigate(paths.spaceDiscussionsPath(discussion.space.id));
+    } else {
+      navigate(paths.homePath());
+    }
+  };
 
   return (
     <>
@@ -117,9 +125,9 @@ function DiscardDraftLink({ discussion }: { discussion: Discussions.Discussion }
       </button>
       <DiscardDiscussionDraftModal
         isOpen={showDiscardModal}
-        toggleModal={toggleDiscardModal}
-        discussionId={discussion.id!}
-        onSuccess={() => navigate(paths.spaceDiscussionsPath(discussion.space!.id!))}
+        onClose={toggleDiscardModal}
+        onDiscard={() => archive({ id: discussion.id! })}
+        onSuccess={handleRedirect}
       />
     </>
   );

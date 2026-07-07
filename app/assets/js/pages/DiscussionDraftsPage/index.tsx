@@ -6,12 +6,12 @@ import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
-import { DiscardDiscussionDraftModal } from "@/features/discussions/DiscardDiscussionDraftModal";
 import { useBoolState } from "@/hooks/useBoolState";
 import { Discussion } from "@/models/discussions";
 import { truncateString } from "@/utils/strings";
 import { createTestId } from "@/utils/testid";
 import {
+  DiscardDiscussionDraftModal,
   DivLink,
   PrimaryButton,
   richContentToString,
@@ -170,6 +170,7 @@ function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
   const navigate = useNavigate();
   const { space } = Pages.useLoadedData<LoadedData>();
+  const [archive] = Discussions.useArchiveMessage();
   const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
 
   return (
@@ -203,9 +204,9 @@ function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
 
       <DiscardDiscussionDraftModal
         isOpen={showDiscardModal}
-        toggleModal={toggleDiscardModal}
-        discussionId={discussion.id!}
-        onSuccess={() => navigate(paths.discussionDraftsPath(space.id!), { replace: true })}
+        onClose={toggleDiscardModal}
+        onDiscard={() => archive({ id: discussion.id })}
+        onSuccess={() => navigate(paths.discussionDraftsPath(space.id), { replace: true })}
       />
     </>
   );
