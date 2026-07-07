@@ -1564,6 +1564,16 @@ export interface InviteLink {
   allowedDomains?: string[] | null;
 }
 
+export interface McpGrant {
+  id: Id;
+  clientId: string;
+  clientName: string;
+  clientUri?: string | null;
+  scopes: string[];
+  insertedAt: string;
+  lastUsedAt?: string | null;
+}
+
 export interface MessagesBoard {
   id?: string | null;
   name?: string | null;
@@ -2952,6 +2962,12 @@ export interface LinksGetInput {
 
 export interface LinksGetResult {
   link: ResourceHubLink;
+}
+
+export interface McpGrantsListInput {}
+
+export interface McpGrantsListResult {
+  mcpGrants: McpGrant[];
 }
 
 export interface NotificationsGetUnreadCountInput {}
@@ -4558,6 +4574,14 @@ export interface MarkBlobUploadedResult {
   blob: Blob;
 }
 
+export interface McpGrantsRevokeInput {
+  id: Id;
+}
+
+export interface McpGrantsRevokeResult {
+  success: boolean;
+}
+
 export interface NotificationsMarkAllAsReadInput {}
 
 export interface NotificationsMarkAllAsReadResult {}
@@ -5451,6 +5475,18 @@ class ApiNamespaceCliAuth {
 
   async startGoogleSignup(input: CliAuthStartGoogleSignupInput): Promise<CliAuthStartGoogleSignupResult> {
     return this.client.post("/cli_auth/start_google_signup", input);
+  }
+}
+
+class ApiNamespaceMcpGrants {
+  constructor(private client: ApiClient) {}
+
+  async list(input: McpGrantsListInput): Promise<McpGrantsListResult> {
+    return this.client.get("/mcp_grants/list", input);
+  }
+
+  async revoke(input: McpGrantsRevokeInput): Promise<McpGrantsRevokeResult> {
+    return this.client.post("/mcp_grants/revoke", input);
   }
 }
 
@@ -6633,6 +6669,7 @@ export class ApiClient {
   private headers: any;
   public apiNamespaceCompanyTransfers: ApiNamespaceCompanyTransfers;
   public apiNamespaceCliAuth: ApiNamespaceCliAuth;
+  public apiNamespaceMcpGrants: ApiNamespaceMcpGrants;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceSiteMessages: ApiNamespaceSiteMessages;
@@ -6656,6 +6693,7 @@ export class ApiClient {
   constructor() {
     this.apiNamespaceCompanyTransfers = new ApiNamespaceCompanyTransfers(this);
     this.apiNamespaceCliAuth = new ApiNamespaceCliAuth(this);
+    this.apiNamespaceMcpGrants = new ApiNamespaceMcpGrants(this);
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceSiteMessages = new ApiNamespaceSiteMessages(this);
@@ -7087,6 +7125,18 @@ export default {
     useSignup: () =>
       useMutation<CliAuthSignupInput, CliAuthSignupResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.signup(input),
+      ),
+  },
+
+  mcp_grants: {
+    list: (input: McpGrantsListInput) => defaultApiClient.apiNamespaceMcpGrants.list(input),
+    useList: (input: McpGrantsListInput) =>
+      useQuery<McpGrantsListResult>(() => defaultApiClient.apiNamespaceMcpGrants.list(input)),
+
+    revoke: (input: McpGrantsRevokeInput) => defaultApiClient.apiNamespaceMcpGrants.revoke(input),
+    useRevoke: () =>
+      useMutation<McpGrantsRevokeInput, McpGrantsRevokeResult>((input) =>
+        defaultApiClient.apiNamespaceMcpGrants.revoke(input),
       ),
   },
 
