@@ -17,7 +17,7 @@ async function loader(): Promise<LoaderResult> {
   const data = await Accounts.listMcpGrants();
 
   return {
-    mcpGrants: (data.mcpGrants || []) as Accounts.McpGrant[],
+    mcpGrants: sortMcpGrants((data.mcpGrants || []) as Accounts.McpGrant[]),
   };
 }
 
@@ -29,15 +29,13 @@ function Page() {
   const [pendingRevokeIds, setPendingRevokeIds] = React.useState<Record<string, boolean>>({});
 
   React.useEffect(() => {
-    setGrants(mcpGrants);
+    setGrants(sortMcpGrants(mcpGrants));
   }, [mcpGrants]);
 
   const handleRevokeGrant = React.useCallback(async (grantId: string) => {
     if (pendingRevokeIds[grantId]) return;
 
-    const previousIndex = grants.findIndex((grant) => grant.id === grantId);
-    if (previousIndex === -1) return;
-    const revokedGrant = grants[previousIndex];
+    const revokedGrant = grants.find((grant) => grant.id === grantId);
     if (!revokedGrant) return;
 
     setPendingRevokeIds((prev) => ({ ...prev, [grantId]: true }));
@@ -47,11 +45,7 @@ function Page() {
       await Accounts.revokeMcpGrant(grantId);
       showSuccessToast("Connection Revoked", "The MCP client can no longer access your account.");
     } catch {
-      setGrants((prev) => {
-        const next = [...prev];
-        next.splice(previousIndex, 0, revokedGrant);
-        return next;
-      });
+      setGrants((prev) => restoreGrant(prev, revokedGrant));
       showErrorToast("Failed To Revoke Connection", "Please try again.");
     } finally {
       setPendingRevokeIds((prev) => {
@@ -72,4 +66,18 @@ function Page() {
       formattedTimePreferences={formattedTimePreferences}
     />
   );
+}
+
+function sortMcpGrants(grants: Accounts.McpGrant[]) {
+  return [...grants].sort(
+    (a, b) => new Date(b.insertedAt).getTime() - new Date(a.insertedAt).getTime(),
+  );
+}
+
+function restoreGrant(grants: Accounts.McpGrant[], revokedGrant: Accounts.McpGrant) {
+  if (grants.some((grant) => grant.id === revokedGrant.id)) {
+    return grants;
+  }
+
+  return sortMcpGrants([...grants, revokedGrant]);
 }

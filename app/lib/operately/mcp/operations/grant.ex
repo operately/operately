@@ -13,8 +13,7 @@ defmodule Operately.Mcp.Operations.Grant do
   def list_grants_for_company(account, company) do
     grants =
       from(g in Grant,
-        where: g.account_id == ^account.id and g.company_id == ^company.id and is_nil(g.revoked_at),
-        order_by: [desc: g.inserted_at]
+        where: g.account_id == ^account.id and g.company_id == ^company.id and is_nil(g.revoked_at)
       )
       |> Repo.all()
 
