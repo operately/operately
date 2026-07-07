@@ -1,9 +1,8 @@
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
-import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
-import { formatStorageBytes } from "turboui";
+import { Forms, formatStorageBytes } from "turboui";
 
 interface PlanDefinitionModalProps {
   isOpen: boolean;

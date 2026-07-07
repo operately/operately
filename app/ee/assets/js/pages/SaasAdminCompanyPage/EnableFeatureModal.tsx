@@ -1,7 +1,7 @@
 import React from "react";
 
-import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
+import { Forms } from "turboui";
 import * as AdminApi from "@/ee/admin_api";
 import { useLoadedData } from "./loader";
 

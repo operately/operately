@@ -88,7 +88,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | ----- | ------ |
 | 0 — API Parity Foundation | [x] Complete |
 | 1 — Input Primitives and FieldGroup Layouts | [x] Complete |
-| 2 — Auth and Account Forms | [ ] Not started |
+| 2 — Auth and Account Forms | [x] Complete |
 | 3 — Standard CRUD Forms | [ ] Not started |
 | 4 — RichTextArea Cohort | [ ] Not started |
 | 5 — Multi-Action Submit and Check-Ins | [ ] Not started |
@@ -200,16 +200,16 @@ flowchart TB
 
 ## Phase 2 — Auth and Account Forms
 
-**Phase complete:** [ ]
+**Phase complete:** [x]
 
 **Goal:** First call-site cohort (~8 pages).
 
 ### Migrate (~8 files)
 
-- [ ] `app/assets/js/pages/LoginPage/index.tsx`
-- [ ] `app/assets/js/pages/ForgotPasswordPage/index.tsx`
-- [ ] `app/assets/js/pages/ResetPasswordPage/index.tsx`
-- [ ] `app/assets/js/pages/AccountChangePasswordPage/index.tsx`
+- [x] `app/assets/js/pages/LoginPage/index.tsx`
+- [x] `app/assets/js/pages/ForgotPasswordPage/index.tsx`
+- [x] `app/assets/js/pages/ResetPasswordPage/index.tsx`
+- [x] `app/assets/js/pages/AccountChangePasswordPage/index.tsx`
 - [x] `app/assets/js/pages/CompanyRenamePage/index.tsx`
 - [x] `app/assets/js/pages/AccountAppearancePage/index.tsx`
 - [x] `app/assets/js/pages/NewCompanyPage/index.tsx`
@@ -227,8 +227,8 @@ import { Forms } from "turboui";
 
 ### Acceptance
 
-- [ ] `rg '@/components/Forms'` empty for Phase 2 files
-- [ ] `make test.tsc.lint`
+- [x] `rg '@/components/Forms'` empty for Phase 2 files
+- [x] `make test.tsc.lint`
 
 ---
 
@@ -242,21 +242,21 @@ import { Forms } from "turboui";
 
 - [ ] `app/assets/js/pages/SpaceAddPage/index.tsx`
 - [ ] `app/assets/js/pages/SpaceAddMembersPage/index.tsx`
-- [ ] `app/assets/js/pages/SpaceEditPage/index.tsx`
+- [x] `app/assets/js/pages/SpaceEditPage/index.tsx`
 - [ ] `app/assets/js/pages/SpaceEditGeneralAccessPage/index.tsx`
 - [ ] `app/assets/js/pages/ProjectAddPage/page.tsx`
 - [ ] `app/assets/js/pages/ProjectEditAccessLevelsPage/index.tsx`
 - [ ] `app/assets/js/pages/GoalAccessAddPage/index.tsx`
-- [ ] `app/assets/js/pages/GoalEditAccessLevelsPage/index.tsx`
+- [x] `app/assets/js/pages/GoalEditAccessLevelsPage/index.tsx`
 - [ ] `app/assets/js/pages/ProjectResumePage/Form.tsx`
 - [ ] `app/assets/js/pages/ProjectContributorsAddPage/*`
 - [ ] `app/assets/js/pages/ProjectContributorsEditPage/ChangeChampion.tsx`
 - [ ] `app/assets/js/pages/ProjectContributorsEditPage/ChangeReviewer.tsx`
 - [ ] `app/assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx`
-- [ ] `app/ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx`
-- [ ] `app/ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx`
-- [ ] `app/ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx`
-- [ ] `app/ee/assets/js/pages/SaasAdminCompanyPage/EnableFeatureModal.tsx`
+- [x] `app/ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx`
+- [x] `app/ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx`
+- [x] `app/ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx`
+- [x] `app/ee/assets/js/pages/SaasAdminCompanyPage/EnableFeatureModal.tsx`
 
 ### Storybook
 

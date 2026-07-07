@@ -1,11 +1,10 @@
 import * as React from "react";
 
-import Forms from "@/components/Forms";
 import classNames from "classnames";
 import * as AdminApi from "@/ee/admin_api";
 import Modal from "@/components/Modal";
 import { useBoolState } from "@/hooks/useBoolState";
-import { SecondaryButton } from "turboui";
+import { Forms, SecondaryButton } from "turboui";
 
 interface TestEmailModalProps {
   isOpen: boolean;
@@ -102,7 +101,7 @@ function TextareaField({
   placeholder?: string;
   rows?: number;
 }) {
-  const [value, setValue] = Forms.useFieldValue(field);
+  const [value, setValue] = Forms.useFieldValue<string>(field);
   const error = Forms.useFieldError(field);
 
   return (
