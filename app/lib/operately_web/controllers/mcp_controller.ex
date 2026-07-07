@@ -15,6 +15,8 @@ defmodule OperatelyWeb.McpController do
 
   @jsonrpc_version "2.0"
 
+  plug OperatelyWeb.Mcp.Plugs.RateLimitToolsCall when action in [:post]
+
   @doc """
   Handles MCP JSON-RPC POST requests (initialize, notifications, tool discovery, and future tools).
   """

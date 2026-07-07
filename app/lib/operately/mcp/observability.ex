@@ -7,6 +7,7 @@ defmodule Operately.Mcp.Observability do
   @tools_call_event [:operately, :mcp, :tools_call, :stop]
   @oauth_event [:operately, :mcp, :oauth, :stop]
   @cimd_fetch_event [:operately, :mcp, :cimd, :fetch, :stop]
+  @rate_limit_event [:operately, :mcp, :rate_limit, :stop]
 
   @doc """
   Records an MCP JSON-RPC request (all methods except tools/call detail).
@@ -78,6 +79,16 @@ defmodule Operately.Mcp.Observability do
   end
 
   @doc """
+  Records a rate-limit rejection.
+  """
+  def rate_limited(attrs) when is_map(attrs) do
+    metadata = normalize_rate_limit_metadata(attrs)
+
+    :telemetry.execute(@rate_limit_event, %{count: 1}, telemetry_metadata(metadata))
+    Logger.warning("MCP rate limit: #{inspect(metadata)}")
+  end
+
+  @doc """
   Classifies a tools/call result map into an observability outcome.
   """
   def tools_call_outcome(result) when is_map(result) do
@@ -93,6 +104,7 @@ defmodule Operately.Mcp.Observability do
   def cimd_result(:unsafe_url), do: "ssrf_blocked"
   def cimd_result(:fetch_failed), do: "fetch_failed"
   def cimd_result(:invalid_response), do: "invalid_response"
+  def cimd_result(:rate_limited), do: "rate_limited"
   def cimd_result(result) when is_atom(result), do: Atom.to_string(result)
   def cimd_result(result) when is_binary(result), do: result
   def cimd_result(_), do: "unknown"
@@ -128,6 +140,13 @@ defmodule Operately.Mcp.Observability do
     |> Map.take([:client_id, :result, :cache])
     |> Map.put(:result, normalize_string(Map.get(attrs, :result), "unknown"))
     |> Map.put(:cache, normalize_string(Map.get(attrs, :cache), "miss"))
+    |> reject_nil_values()
+  end
+
+  defp normalize_rate_limit_metadata(attrs) do
+    attrs
+    |> Map.take([:action, :retry_after, :ip, :client_id, :grant_id])
+    |> Map.put(:action, normalize_string(Map.get(attrs, :action), "unknown"))
     |> reject_nil_values()
   end
 

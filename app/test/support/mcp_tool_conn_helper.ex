@@ -3,10 +3,18 @@ defmodule OperatelyWeb.Mcp.ToolConnHelper do
   import Operately.PeopleFixtures
 
   alias Plug.Conn
+  alias Operately.Mcp.RateLimit
   alias Operately.People
   alias Operately.Repo
   alias Operately.RichContent
   alias OperatelyWeb.Api.Helpers, as: ApiHelpers
+
+  @default_rate_limits %{
+    oauth_authorize: %{limit: 10_000, period_seconds: 60, keys: [:ip]},
+    oauth_token: %{limit: 10_000, period_seconds: 60, keys: [:ip, :client_id]},
+    cimd_fetch_url: %{limit: 10_000, period_seconds: 60, keys: [:client_id]},
+    tools_call: %{limit: 10_000, period_seconds: 60, keys: [:grant_id]}
+  }
 
   def conn_with_assigns(account, company, person, scopes \\ ["mcp:read"]) do
     %Conn{}
@@ -72,6 +80,21 @@ defmodule OperatelyWeb.Mcp.ToolConnHelper do
     text
     |> String.replace(~r/\s+/, " ")
     |> String.trim()
+  end
+
+  def with_rate_limits(overrides, fun) when is_map(overrides) and is_function(fun, 0) do
+    previous_limits = Application.get_env(:operately, :mcp_rate_limits)
+    limits = Map.merge(@default_rate_limits, previous_limits || %{}) |> Map.merge(overrides)
+
+    Application.put_env(:operately, :mcp_rate_limits, limits)
+    RateLimit.clear()
+
+    try do
+      fun.()
+    after
+      Application.put_env(:operately, :mcp_rate_limits, previous_limits)
+      RateLimit.clear()
+    end
   end
 
   defp default_person(ctx) do

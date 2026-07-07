@@ -5,6 +5,7 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
   import Operately.PeopleFixtures
 
   alias Operately.Mcp
+  alias OperatelyWeb.Mcp.ToolConnHelper
 
   setup do
     client = %{
@@ -317,6 +318,43 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
 
     assert conn.status == 400
     assert %{"error" => "invalid_redirect_uri"} = Jason.decode!(conn.resp_body)
+  end
+
+  test "returns 429 when authorize requests exceed the rate limit", %{conn: conn, client: client} do
+    ToolConnHelper.with_rate_limits(%{oauth_authorize: %{limit: 1, period_seconds: 60, keys: [:ip]}}, fn ->
+      account = account_fixture()
+      company = company_fixture(%{company_name: "Rate Limit Co"}, account)
+      conn = log_in_account(conn, account, company)
+      params = authorize_params(client, hd(client.redirect_uris))
+
+      assert get(conn, "/oauth/authorize", params).status == 200
+
+      limited_conn = get(conn, "/oauth/authorize", params)
+
+      assert limited_conn.status == 429
+      assert get_resp_header(limited_conn, "retry-after") != []
+      body = html_response(limited_conn, 429)
+      assert body =~ "Too Many Requests"
+    end)
+  end
+
+  test "returns 429 when token requests exceed the rate limit", %{client: client} do
+    ToolConnHelper.with_rate_limits(%{oauth_token: %{limit: 1, period_seconds: 60, keys: [:ip, :client_id]}}, fn ->
+      token_params = %{
+        "grant_type" => "refresh_token",
+        "client_id" => client.client_id,
+        "refresh_token" => "invalid-token",
+        "resource" => Mcp.canonical_resource_uri()
+      }
+
+      assert post(build_conn(), "/oauth/token", token_params).status == 400
+      limited_conn = post(build_conn(), "/oauth/token", token_params)
+
+      assert limited_conn.status == 429
+      assert get_resp_header(limited_conn, "retry-after") != []
+
+      assert %{"error" => "temporarily_unavailable"} = Jason.decode!(limited_conn.resp_body)
+    end)
   end
 
   defp authorize_params(client, redirect_uri, scope \\ "mcp:read") do
