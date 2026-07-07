@@ -108,12 +108,9 @@ cli.test.unit:
 	npm --prefix cli test
 
 cli.test.e2e: test.init
-	$(MAKE) test.build
-	$(MAKE) cli.build
 	./devenv bash -c "cd app && mix test test/cli_e2e"
 
 mcp.test.e2e: test.init
-	$(MAKE) test.setup.unit
 	./devenv bash -c "cd app && mix test test/mcp_e2e"
 
 gen.cli.catalog:
@@ -205,6 +202,13 @@ test.setup.js:
 
 test.setup.features:
 	$(MAKE) test.build
+
+test.setup.cli_e2e:
+	$(MAKE) test.build
+	$(MAKE) cli.build
+
+test.setup.mcp_e2e:
+	$(MAKE) test.setup.unit
 
 test.up:
 	$(MAKE) test.init

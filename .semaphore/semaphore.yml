@@ -146,10 +146,12 @@ blocks:
 
         - name: CLI E2E Tests
           commands:
+            - make test.setup.cli_e2e
             - make cli.test.e2e
 
         - name: MCP E2E Tests
           commands:
+            - make test.setup.mcp_e2e
             - make mcp.test.e2e
 
       epilogue:
