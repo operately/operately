@@ -3,8 +3,8 @@ defmodule OperatelyWeb.Mcp.Plugs.RequireMcpAuthTest do
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+  import OperatelyWeb.Mcp.ToolConnHelper
 
-  alias Operately.Mcp
   alias OperatelyWeb.Mcp.Plugs.{RequireMcpAuth, ResolveCompany}
 
   setup do
@@ -43,61 +43,5 @@ defmodule OperatelyWeb.Mcp.Plugs.RequireMcpAuthTest do
     assert conn.assigns.current_person.account_id == account.id
     assert conn.assigns.mcp_scopes == ["mcp:read"]
     assert conn.assigns.current_mcp_grant.company_id == company.id
-  end
-
-  defp authorize_and_issue_tokens(account, company, client) do
-    conn = build_conn() |> log_in_account(account, company)
-
-    params = %{
-      "client_id" => client.client_id,
-      "redirect_uri" => hd(client.redirect_uris),
-      "resource" => Mcp.canonical_resource_uri(),
-      "scope" => "mcp:read",
-      "state" => "plug-state",
-      "code_challenge" => pkce_challenge(),
-      "code_challenge_method" => "S256"
-    }
-
-    consent_conn = get(conn, "/oauth/authorize", params)
-    csrf_token = csrf_token(consent_conn)
-
-    redirect_conn =
-      consent_conn
-      |> recycle()
-      |> post("/oauth/authorize", Map.merge(params, %{"decision" => "approve", "_csrf_token" => csrf_token}))
-
-    code =
-      redirect_conn
-      |> redirected_to()
-      |> URI.parse()
-      |> Map.fetch!(:query)
-      |> URI.decode_query()
-      |> Map.fetch!("code")
-
-    token_conn =
-      post(build_conn(), "/oauth/token", %{
-        "grant_type" => "authorization_code",
-        "client_id" => client.client_id,
-        "redirect_uri" => hd(client.redirect_uris),
-        "resource" => Mcp.canonical_resource_uri(),
-        "code" => code,
-        "code_verifier" => "test-verifier"
-      })
-
-    Jason.decode!(token_conn.resp_body, keys: :atoms)
-  end
-
-  defp csrf_token(conn) do
-    {:ok, document} = Floki.parse_document(conn.resp_body)
-
-    document
-    |> Floki.find("input[name=\"_csrf_token\"]")
-    |> Floki.attribute("value")
-    |> List.first()
-  end
-
-  defp pkce_challenge do
-    :crypto.hash(:sha256, "test-verifier")
-    |> Base.url_encode64(padding: false)
   end
 end

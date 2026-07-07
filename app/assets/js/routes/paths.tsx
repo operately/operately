@@ -102,6 +102,10 @@ export class Paths {
     return this.createCompanyPath(["account", "security", "api-tokens", "usage"]);
   }
 
+  accountMcpConnectionsPath() {
+    return this.createCompanyPath(["account", "security", "mcp-connections"]);
+  }
+
   accountChangePasswordPath() {
     return this.createCompanyPath(["account", "security", "change-password"]);
   }

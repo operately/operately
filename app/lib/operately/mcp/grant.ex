@@ -10,6 +10,8 @@ defmodule Operately.Mcp.Grant do
     field :scopes, {:array, :string}, default: []
     field :revoked_at, :utc_datetime
 
+    field :last_used_at, :utc_datetime, virtual: true
+
     belongs_to :account, Operately.People.Account
     belongs_to :company, Operately.Companies.Company
 
