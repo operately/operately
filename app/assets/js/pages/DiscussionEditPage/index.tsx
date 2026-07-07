@@ -5,8 +5,10 @@ import * as Paper from "@/components/PaperContainer";
 import * as Discussions from "@/models/discussions";
 
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
+import { useBoolState } from "@/hooks/useBoolState";
 import { PageModule } from "@/routes/types";
-import { GhostButton, Link, PrimaryButton } from "turboui";
+import { DiscardDiscussionDraftModal, GhostButton, Link, PrimaryButton } from "turboui";
+import { useNavigate } from "react-router-dom";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionEditPage", loader, Page } as PageModule;
@@ -49,6 +51,8 @@ function Page() {
 }
 
 function Submit({ form }: { form: FormState }) {
+  const { discussion } = Pages.useLoadedData<LoaderResult>();
+
   return (
     <Paper.DimmedSection>
       <div className="flex flex-col gap-8">
@@ -60,6 +64,12 @@ function Submit({ form }: { form: FormState }) {
 
           <div className="mt-4">
             Or, <CancelLink form={form} />
+            {discussion.state === "draft" && (
+              <>
+                {" "}
+                or <DiscardDraftLink discussion={discussion} />
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -91,6 +101,35 @@ function CancelLink({ form }: { form: FormState }) {
     <Link to={form.cancelPath} testId="cancel-edit" className="font-medium">
       Cancel
     </Link>
+  );
+}
+
+function DiscardDraftLink({ discussion }: { discussion: Discussions.Discussion }) {
+  const paths = usePaths();
+  const navigate = useNavigate();
+  const [archive] = Discussions.useArchiveMessage();
+  const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
+
+  const handleRedirect = () => {
+    if (discussion.space) {
+      navigate(paths.spaceDiscussionsPath(discussion.space.id));
+    } else {
+      navigate(paths.homePath());
+    }
+  };
+
+  return (
+    <>
+      <button type="button" onClick={toggleDiscardModal} className="font-medium" data-test-id="discard-draft">
+        Discard draft
+      </button>
+      <DiscardDiscussionDraftModal
+        isOpen={showDiscardModal}
+        onClose={toggleDiscardModal}
+        onDiscard={() => archive({ id: discussion.id! })}
+        onSuccess={handleRedirect}
+      />
+    </>
   );
 }
 

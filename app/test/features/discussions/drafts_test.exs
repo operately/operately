@@ -61,4 +61,28 @@ defmodule Operately.Features.Discussions.DraftsTest do
     |> Steps.assert_discussion_feed_on_space_page()
     |> Steps.assert_discussion_notification_sent()
   end
+
+  feature "discard a draft discussion from the edit page", ctx do
+    ctx
+    |> Steps.post_a_draft_discussion()
+    |> Steps.discard_draft_from_edit_page()
+    |> Steps.assert_draft_discussion_is_discarded()
+    |> Steps.assert_draft_is_not_in_drafts_list()
+  end
+
+  feature "discard a draft discussion from the options menu", ctx do
+    ctx
+    |> Steps.post_a_draft_discussion()
+    |> Steps.discard_draft_from_options_menu()
+    |> Steps.assert_draft_discussion_is_discarded()
+    |> Steps.assert_draft_is_not_in_drafts_list()
+  end
+
+  feature "discard a draft discussion from the drafts list", ctx do
+    ctx
+    |> Steps.post_a_draft_discussion()
+    |> Steps.discard_draft_from_drafts_list()
+    |> Steps.assert_draft_discussion_is_discarded()
+    |> Steps.assert_draft_is_not_in_drafts_list()
+  end
 end
