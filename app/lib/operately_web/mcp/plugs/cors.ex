@@ -17,6 +17,8 @@ defmodule OperatelyWeb.Mcp.Plugs.Cors do
     /.well-known/openid-configuration/mcp
   )
 
+  @oauth_paths ~w(/oauth/register /oauth/token)
+
   @mcp_path "/mcp"
   @allow_headers "authorization, content-type, accept, mcp-session-id, mcp-protocol-version, origin"
   @max_age "86400"
@@ -44,10 +46,12 @@ defmodule OperatelyWeb.Mcp.Plugs.Cors do
   end
 
   defp cors_path?(path) when path in @discovery_paths, do: true
+  defp cors_path?(path) when path in @oauth_paths, do: true
   defp cors_path?(@mcp_path), do: true
   defp cors_path?(_), do: false
 
   defp allowed_methods(@mcp_path), do: "GET, POST, DELETE, OPTIONS"
+  defp allowed_methods(path) when path in @oauth_paths, do: "POST, OPTIONS"
   defp allowed_methods(_discovery_path), do: "GET, OPTIONS"
 
   defp put_cors_origin(conn) do

@@ -82,6 +82,8 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "mcp_authorization_codes",
     "mcp_grants",
     "mcp_refresh_tokens",
+    "mcp_registered_clients",
+    "mcp_registered_oauth_clients",
     "mcp_sessions",
     "notification_email_batches",
     "site_message_companies",
