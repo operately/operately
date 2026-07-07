@@ -5,7 +5,7 @@ const { execSync } = require("child_process");
 const { findTestFiles, parseSplitArgs, splitFiles } = require("./test_file_splitter");
 
 function findUnitTests() {
-  const excludedSuites = ["test/features", "test/cli_e2e"];
+  const excludedSuites = ["test/features", "test/cli_e2e", "test/mcp_e2e"];
   const split = parseSplitArgs(process.argv);
   const files = findTestFiles(["app/test"], (file) => !excludedSuites.some((suite) => file.includes(suite)));
 
