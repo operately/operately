@@ -6,7 +6,7 @@ defmodule Operately.Projects.Project do
   alias Operately.Access.AccessLevels
   alias Operately.WorkMaps.WorkMapItem
   alias Operately.ContextualDates.Timeframe
-  alias Operately.Projects.{Contributor, Permissions, CheckIn}
+  alias Operately.Projects.{Contributor, OrderingState, Permissions, CheckIn}
 
   @behaviour WorkMapItem
 
@@ -303,24 +303,50 @@ defmodule Operately.Projects.Project do
         project
 
       milestones ->
+        ordering_positions = OrderingState.positions(project.milestones_ordering_state, milestones)
+
         next =
           milestones
           |> Enum.filter(fn milestone -> milestone.status == :pending end)
           |> Enum.sort(fn milestone1, milestone2 ->
-            date1 = Timeframe.end_date(milestone1.timeframe)
-            date2 = Timeframe.end_date(milestone2.timeframe)
-
-            case {date1, date2} do
-              {nil, nil} -> false
-              {nil, _} -> false
-              {_, nil} -> true
-              {d1, d2} -> Date.compare(d1, d2) != :gt
-            end
+            compare_pending_milestones(milestone1, milestone2, ordering_positions)
           end)
           |> List.first()
 
         Map.put(project, :next_milestone, next)
     end
+  end
+
+  # Sort comparator for picking the next pending milestone: earliest due date wins,
+  # undated milestones sort last, and ties fall back to the project's milestone ordering.
+  defp compare_pending_milestones(milestone1, milestone2, ordering_positions) do
+    date1 = Timeframe.end_date(milestone1.timeframe)
+    date2 = Timeframe.end_date(milestone2.timeframe)
+
+    case {date1, date2} do
+      {nil, nil} ->
+        compare_by_ordering_position(milestone1, milestone2, ordering_positions)
+
+      {nil, _} ->
+        false
+
+      {_, nil} ->
+        true
+
+      {d1, d2} ->
+        case Date.compare(d1, d2) do
+          :eq -> compare_by_ordering_position(milestone1, milestone2, ordering_positions)
+          :gt -> false
+          :lt -> true
+        end
+    end
+  end
+
+  defp compare_by_ordering_position(milestone1, milestone2, ordering_positions) do
+    pos1 = Map.get(ordering_positions, milestone1.id, :infinity)
+    pos2 = Map.get(ordering_positions, milestone2.id, :infinity)
+
+    pos1 < pos2
   end
 
   def load_contributor_access_levels(project) do
