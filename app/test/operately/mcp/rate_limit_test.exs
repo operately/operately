@@ -39,6 +39,37 @@ defmodule Operately.Mcp.RateLimitTest do
     assert {:error, _} = RateLimit.check(:oauth_authorize, ip: @ip)
   end
 
+  test "keeps counters after the caller process exits" do
+    put_limits(oauth_authorize: %{limit: 1, period_seconds: 60, keys: [:ip]})
+
+    parent = self()
+    child = spawn(fn -> send(parent, {:child_result, RateLimit.check(:oauth_authorize, ip: @ip)}) end)
+    ref = Process.monitor(child)
+
+    assert_receive {:child_result, :ok}
+    assert_receive {:DOWN, ^ref, :process, ^child, _reason}
+    assert {:error, _} = RateLimit.check(:oauth_authorize, ip: @ip)
+  end
+
+  test "allows only the configured number of concurrent requests" do
+    put_limits(oauth_authorize: %{limit: 3, period_seconds: 60, keys: [:ip]})
+
+    tasks =
+      for _ <- 1..20 do
+        Task.async(fn ->
+          receive do
+            :go -> RateLimit.check(:oauth_authorize, ip: @ip)
+          end
+        end)
+      end
+
+    Enum.each(tasks, fn task -> send(task.pid, :go) end)
+    results = Enum.map(tasks, &Task.await(&1, 5_000))
+
+    assert Enum.count(results, &(&1 == :ok)) == 3
+    assert Enum.count(results, fn result -> match?({:error, _}, result) end) == 17
+  end
+
   test "tracks separate buckets per key dimension" do
     put_limits(oauth_authorize: %{limit: 1, period_seconds: 60, keys: [:ip]})
 
@@ -53,6 +84,14 @@ defmodule Operately.Mcp.RateLimitTest do
     assert :ok = RateLimit.check(:oauth_token, ip: @ip, client_id: @client_id)
     assert {:error, _} = RateLimit.check(:oauth_token, ip: @ip, client_id: "other-client")
     assert {:error, _} = RateLimit.check(:oauth_token, ip: "203.0.113.99", client_id: @client_id)
+  end
+
+  test "does not consume allowed buckets when another configured bucket is exhausted" do
+    put_limits(oauth_token: %{limit: 1, period_seconds: 60, keys: [:ip, :client_id]})
+
+    assert :ok = RateLimit.check(:oauth_token, ip: "203.0.113.1", client_id: @client_id)
+    assert {:error, _} = RateLimit.check(:oauth_token, ip: "203.0.113.2", client_id: @client_id)
+    assert :ok = RateLimit.check(:oauth_token, ip: "203.0.113.2", client_id: "other-client")
   end
 
   test "skips blank optional key values" do

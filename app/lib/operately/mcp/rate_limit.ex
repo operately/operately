@@ -2,11 +2,26 @@ defmodule Operately.Mcp.RateLimit do
   @moduledoc """
   Per-instance fixed-window rate limiting for MCP OAuth, CIMD fetch, and tools/call.
 
-  Uses a public ETS table. It should be replaced with a solution such as Redis when
-  cluster-wide limits are needed.
+  Uses an ETS table owned by this supervised process. It should be replaced with
+  a solution such as Redis when cluster-wide limits are needed.
   """
 
+  use GenServer
+
   @table :operately_mcp_rate_limit
+  @prune_interval_ms :timer.minutes(5)
+
+  def start_link(_opts \\ []) do
+    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+  end
+
+  @impl GenServer
+  def init(_opts) do
+    :ets.new(@table, [:named_table, :protected, read_concurrency: true])
+    schedule_prune()
+
+    {:ok, %{}}
+  end
 
   @doc """
   Checks all configured buckets for `action`. Returns `:ok` or `{:error, retry_after_seconds}`.
@@ -17,7 +32,13 @@ defmodule Operately.Mcp.RateLimit do
   def check(action, opts) when is_atom(action) and is_list(opts) do
     if enabled?() do
       config = bucket_config(action)
-      check_buckets(action, config, opts)
+      bucket_keys = bucket_keys(action, config, opts)
+
+      if bucket_keys == [] do
+        :ok
+      else
+        GenServer.call(__MODULE__, {:check, bucket_keys, config.limit, config.period_seconds})
+      end
     else
       :ok
     end
@@ -35,9 +56,38 @@ defmodule Operately.Mcp.RateLimit do
   end
 
   def clear do
-    ensure_table()
+    GenServer.call(__MODULE__, :clear)
+  end
+
+  @impl GenServer
+  def handle_call({:check, bucket_keys, limit, period_seconds}, _from, state) do
+    now = now()
+
+    result =
+      case rejected_bucket(bucket_keys, limit, period_seconds, now) do
+        {:error, _retry_after} = error ->
+          error
+
+        :ok ->
+          increment_buckets(bucket_keys, period_seconds, now)
+          :ok
+      end
+
+    {:reply, result, state}
+  end
+
+  def handle_call(:clear, _from, state) do
     :ets.delete_all_objects(@table)
-    :ok
+
+    {:reply, :ok, state}
+  end
+
+  @impl GenServer
+  def handle_info(:prune_expired, state) do
+    prune_expired()
+    schedule_prune()
+
+    {:noreply, state}
   end
 
   defp enabled? do
@@ -50,23 +100,54 @@ defmodule Operately.Mcp.RateLimit do
     |> Map.fetch!(action)
   end
 
-  defp check_buckets(action, %{limit: limit, period_seconds: period_seconds, keys: keys}, opts) do
-    # Every configured key must pass (e.g. oauth_token checks both IP and client_id).
-    Enum.reduce_while(keys, :ok, fn key, _acc ->
+  defp bucket_keys(action, %{keys: keys}, opts) do
+    keys
+    |> Enum.flat_map(fn key ->
       case bucket_value(opts, key) do
         # Optional dimensions (e.g. missing client_id) are not rate-limited.
-        nil ->
-          {:cont, :ok}
-
-        value ->
-          bucket_key = build_bucket_key(action, key, value)
-
-          case allow(bucket_key, limit, period_seconds) do
-            :ok -> {:cont, :ok}
-            {:error, _} = error -> {:halt, error}
-          end
+        nil -> []
+        value -> [build_bucket_key(action, key, value)]
       end
     end)
+    |> Enum.uniq()
+  end
+
+  defp rejected_bucket(bucket_keys, limit, period_seconds, now) do
+    Enum.reduce_while(bucket_keys, :ok, fn bucket_key, _acc ->
+      case current_bucket(bucket_key, period_seconds, now) do
+        {:current, window_start, count} when count >= limit ->
+          {:halt, {:error, retry_after(window_start, period_seconds, now)}}
+
+        _ ->
+          {:cont, :ok}
+      end
+    end)
+  end
+
+  defp increment_buckets(bucket_keys, period_seconds, now) do
+    Enum.each(bucket_keys, fn bucket_key ->
+      case current_bucket(bucket_key, period_seconds, now) do
+        {:current, window_start, count} ->
+          insert_bucket(bucket_key, window_start, count + 1, period_seconds)
+
+        :expired_or_missing ->
+          insert_bucket(bucket_key, now, 1, period_seconds)
+      end
+    end)
+  end
+
+  defp current_bucket(bucket_key, period_seconds, now) do
+    case :ets.lookup(@table, bucket_key) do
+      [{^bucket_key, window_start, count, _expires_at}] when now - window_start < period_seconds ->
+        {:current, window_start, count}
+
+      _ ->
+        :expired_or_missing
+    end
+  end
+
+  defp insert_bucket(bucket_key, window_start, count, period_seconds) do
+    :ets.insert(@table, {bucket_key, window_start, count, window_start + period_seconds})
   end
 
   defp bucket_value(opts, :ip), do: present_value(Keyword.get(opts, :ip))
@@ -84,41 +165,19 @@ defmodule Operately.Mcp.RateLimit do
     "#{action}:#{dimension}:#{value}"
   end
 
-  defp allow(bucket_key, limit, period_seconds) do
-    ensure_table()
-    now = now()
-
-    case :ets.lookup(@table, bucket_key) do
-      [{^bucket_key, window_start, count}] when now - window_start < period_seconds ->
-        # Fixed window: reject when count reaches limit, otherwise increment in place.
-        if count >= limit do
-          {:error, retry_after(window_start, period_seconds, now)}
-        else
-          :ets.insert(@table, {bucket_key, window_start, count + 1})
-          :ok
-        end
-
-      _ ->
-        # New or expired window — start counting from 1.
-        :ets.insert(@table, {bucket_key, now, 1})
-        :ok
-    end
-  end
-
   defp retry_after(window_start, period_seconds, now) do
     max(period_seconds - (now - window_start), 1)
   end
 
-  defp ensure_table do
-    # Lazy-init; public so any process on this node can check/increment counters.
-    case :ets.info(@table) do
-      :undefined ->
-        :ets.new(@table, [:named_table, :public, read_concurrency: true, write_concurrency: true])
+  defp prune_expired do
+    now = now()
 
-      _ ->
-        :ok
-    end
+    :ets.select_delete(@table, [
+      {{:"$1", :"$2", :"$3", :"$4"}, [{:<, :"$4", now}], [true]}
+    ])
   end
+
+  defp schedule_prune, do: Process.send_after(self(), :prune_expired, @prune_interval_ms)
 
   defp now, do: System.system_time(:second)
 end
