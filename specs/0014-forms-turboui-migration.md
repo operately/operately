@@ -89,7 +89,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | 0 — API Parity Foundation | [x] Complete |
 | 1 — Input Primitives and FieldGroup Layouts | [x] Complete |
 | 2 — Auth and Account Forms | [x] Complete |
-| 3 — Standard CRUD Forms | [ ] Not started |
+| 3 — Standard CRUD Forms | [ ] In progress (3a + 3b done) |
 | 4 — RichTextArea Cohort | [ ] Not started |
 | 5 — Multi-Action Submit and Check-Ins | [ ] Not started |
 | 6 — Domain Selector Bridges | [ ] Not started |
@@ -240,12 +240,14 @@ import { Forms } from "turboui";
 
 ### Migrate (~15 files)
 
-- [ ] `app/assets/js/pages/SpaceAddPage/index.tsx`
+**Phase 3b (access selectors + access-level pages):** [x] `Forms.AccessSelectors` in TurboUI, `SpaceAddPage`, `SpaceEditGeneralAccessPage`, `ProjectEditAccessLevelsPage`, `GoalEditAccessLevelsPage`. TurboUI now exports `useFormContext`. `features/projects/AccessSelectors` stays on legacy Forms until `ProjectAddPage` migrates in Phase 6. Remaining Phase 3 files blocked on SelectPerson/SelectGoal (Phase 6) or RichTextArea (Phase 4).
+
+- [x] `app/assets/js/pages/SpaceAddPage/index.tsx`
 - [ ] `app/assets/js/pages/SpaceAddMembersPage/index.tsx`
 - [x] `app/assets/js/pages/SpaceEditPage/index.tsx`
-- [ ] `app/assets/js/pages/SpaceEditGeneralAccessPage/index.tsx`
+- [x] `app/assets/js/pages/SpaceEditGeneralAccessPage/index.tsx`
 - [ ] `app/assets/js/pages/ProjectAddPage/page.tsx`
-- [ ] `app/assets/js/pages/ProjectEditAccessLevelsPage/index.tsx`
+- [x] `app/assets/js/pages/ProjectEditAccessLevelsPage/index.tsx`
 - [ ] `app/assets/js/pages/GoalAccessAddPage/index.tsx`
 - [x] `app/assets/js/pages/GoalEditAccessLevelsPage/index.tsx`
 - [ ] `app/assets/js/pages/ProjectResumePage/Form.tsx`

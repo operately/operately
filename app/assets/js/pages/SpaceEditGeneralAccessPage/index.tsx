@@ -3,9 +3,9 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 
-import { AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
+import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
@@ -67,7 +67,7 @@ function Form() {
 
   return (
     <Forms.Form form={form}>
-      <AccessSelectors />
+      <Forms.AccessSelectors showSpaceAccess={false} />
       <Forms.Submit />
     </Forms.Form>
   );

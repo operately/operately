@@ -4,13 +4,15 @@ import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
-import * as Spaces from "@/models/spaces";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
-import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
-import { AccessSelectors } from "@/features/projects/AccessSelectors";
+import {
+  applyAccessLevelConstraints,
+  initialAccessLevels,
+  UNRESTRICTED_PARENT_ACCESS,
+} from "@/features/Permissions/AccessFields";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
@@ -19,7 +21,6 @@ export default { name: "ProjectEditAccessLevelsPage", loader, Page } as PageModu
 
 interface LoaderResult {
   project: Projects.Project;
-  space: Spaces.Space;
 }
 
 async function loader({ params }): Promise<LoaderResult> {
@@ -29,13 +30,11 @@ async function loader({ params }): Promise<LoaderResult> {
     includeAccessLevels: true,
   }).then((data) => data.project!);
 
-  const space = await Spaces.getSpace({ id: project.space!.id, includeAccessLevels: true });
-
-  return { project: project, space: space };
+  return { project };
 }
 
 function Page() {
-  const { project } = Pages.useLoadedData();
+  const { project } = Pages.useLoadedData<LoaderResult>();
 
   return (
     <Pages.Page title={["Edit General Access", project.name!]}>
@@ -53,18 +52,17 @@ function Page() {
 
 function Form() {
   const paths = usePaths();
-  const { project, space } = Pages.useLoadedData();
-  const parentAccessLevel = space.accessLevels!;
+  const { project } = Pages.useLoadedData<LoaderResult>();
 
   const navigateToContributorsPath = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [updatePermissions] = Api.projects.useUpdatePermissions();
 
   const form = Forms.useForm({
     fields: {
-      access: initialAccessLevels(project.accessLevels!, parentAccessLevel),
+      access: initialAccessLevels(project.accessLevels!, UNRESTRICTED_PARENT_ACCESS),
     },
     onChange: ({ newValues }) => {
-      newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
+      newValues.access = applyAccessLevelConstraints(newValues.access, UNRESTRICTED_PARENT_ACCESS);
     },
     submit: async () => {
       await updatePermissions({
@@ -85,7 +83,7 @@ function Form() {
 
   return (
     <Forms.Form form={form}>
-      <AccessSelectors />
+      <Forms.AccessSelectors />
       <Forms.Submit />
     </Forms.Form>
   );
