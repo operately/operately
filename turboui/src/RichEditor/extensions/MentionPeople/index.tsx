@@ -27,6 +27,7 @@ export default {
       },
     }).configure({
       suggestion: {
+        placement: "bottom-start",
         render: () => new MentionPopup(),
         items: searchFn,
         allowedPrefixes: [",", "\\s"],

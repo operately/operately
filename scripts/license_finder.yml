@@ -133,6 +133,20 @@
     :versions: []
     :when: 2023-09-25 14:53:54.571898618 Z
 - - :approve
+  - "@tiptap/extensions"
+  - :who: Adriano Lazzaretti
+    :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the
+      package is licensed under MIT
+    :versions: []
+    :when: 2026-07-08 21:00:00.000000000 Z
+- - :approve
+  - "@floating-ui/dom"
+  - :who: Adriano Lazzaretti
+    :why: Based on https://github.com/floating-ui/floating-ui/blob/master/LICENSE the
+      package is licensed under MIT
+    :versions: []
+    :when: 2026-07-08 21:00:00.000000000 Z
+- - :approve
   - "@tiptap/extension-placeholder"
   - :who: Igor Sarcevic
     :why: Based on https://github.com/ueberdosis/tiptap/blob/develop/LICENSE.md the

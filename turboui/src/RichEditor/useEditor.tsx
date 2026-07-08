@@ -3,7 +3,7 @@ import React from "react";
 import * as TipTap from "@tiptap/react";
 
 import Link from "@tiptap/extension-link";
-import Placeholder from "@tiptap/extension-placeholder";
+import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import Blob, { isUploadInProgress } from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
@@ -97,6 +97,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
   const editor = TipTap.useEditor({
+    shouldRerenderOnTransaction: true,
     editable: props.editable,
     content: initialContent,
     autofocus: props.autoFocus,
@@ -109,6 +110,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     },
     extensions: [
       StarterKit.configure({
+        link: false,
         bulletList: {
           keepMarks: true,
           keepAttributes: false,
@@ -174,7 +176,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(content);
+      editor.commands.setContent(content, { emitUpdate: false });
     },
     [editor],
   );

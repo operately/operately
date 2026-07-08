@@ -83,7 +83,7 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
       return;
     }
 
-    editor.editor.commands.setContent(value);
+    editor.editor.commands.setContent(value, { emitUpdate: false });
   }, [editor.editor, editor.localDraftRestored, value]);
 
   React.useEffect(() => {
