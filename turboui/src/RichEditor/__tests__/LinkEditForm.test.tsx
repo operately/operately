@@ -10,8 +10,9 @@ import FakeTextSelection from "../extensions/FakeTextSelection";
 // Wrapper component to provide the editor context
 function TestEditor({ content, onEditorReady }: { content: string; onEditorReady: (editor: Editor) => void }) {
   const editor = useEditor({
+    shouldRerenderOnTransaction: true,
     extensions: [
-      StarterKit,
+      StarterKit.configure({ link: false }),
       Link.extend({ inclusive: false }).configure({ openOnClick: false }),
       FakeTextSelection,
     ],

@@ -28,10 +28,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@tiptap/core": "^2.1.13",
-    "@tiptap/extension-highlight": "^2.1.13",
-    "@tiptap/extension-link": "^2.1.13",
-    "@tiptap/starter-kit": "^2.1.13",
+    "@tiptap/core": "^3.27.3",
+    "@tiptap/extension-highlight": "^3.27.3",
+    "@tiptap/extension-link": "^3.27.3",
+    "@tiptap/starter-kit": "^3.27.3",
     "axios": "^1.7.3",
     "jsdom": "^23.0.1",
     "marked": "^11.1.1",
