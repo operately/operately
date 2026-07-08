@@ -240,7 +240,7 @@ import { Forms } from "turboui";
 
 ### Migrate (~15 files)
 
-**Phase 3b (access selectors + access-level pages):** [x] `features/spaces/AccessSelectors`, `SpaceAddPage`, `SpaceEditGeneralAccessPage`, `ProjectEditAccessLevelsPage` (inline AccessSelectors). TurboUI now exports `useFormContext`. `features/projects/AccessSelectors` stays on legacy Forms until `ProjectAddPage` migrates in Phase 6 (shared bridge would break legacy Form context). Remaining Phase 3 files blocked on SelectPerson/SelectGoal (Phase 6) or RichTextArea (Phase 4).
+**Phase 3b (access selectors + access-level pages):** [x] `Forms.AccessSelectors` in TurboUI, `SpaceAddPage`, `SpaceEditGeneralAccessPage`, `ProjectEditAccessLevelsPage`, `GoalEditAccessLevelsPage`. TurboUI now exports `useFormContext`. `features/projects/AccessSelectors` stays on legacy Forms until `ProjectAddPage` migrates in Phase 6. Remaining Phase 3 files blocked on SelectPerson/SelectGoal (Phase 6) or RichTextArea (Phase 4).
 
 - [x] `app/assets/js/pages/SpaceAddPage/index.tsx`
 - [ ] `app/assets/js/pages/SpaceAddMembersPage/index.tsx`

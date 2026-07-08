@@ -6,7 +6,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
-import { AccessLevel, AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
+import { AccessLevel, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { Forms, SecondaryButton, useFormContext } from "turboui";
@@ -119,7 +119,7 @@ function PrivacyLevel() {
         <PrivacyEdit />
       </div>
 
-      {isAdvanced && <AccessSelectors />}
+      {isAdvanced && <Forms.AccessSelectors showSpaceAccess={false} />}
     </Paper.DimmedSection>
   );
 }

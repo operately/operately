@@ -5,6 +5,7 @@ import "@testing-library/jest-dom";
 import { emptyContent } from "../RichContent/contentOps";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import {
+  AccessSelectors,
   Form,
   FormError,
   NumberInput,
@@ -32,6 +33,8 @@ jest.mock("../RichEditor", () => ({
 
 jest.mock("../icons", () => ({
   IconCheck: () => <svg data-testid="icon-check" />,
+  IconBuilding: () => <svg data-testid="icon-building" />,
+  IconTent: () => <svg data-testid="icon-tent" />,
 }));
 
 jest.mock("react-select", () => {
@@ -623,5 +626,60 @@ describe("Forms", () => {
     render(<Harness />);
 
     expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute("type", "submit");
+  });
+
+  test("renders company-only access selectors for spaces", () => {
+    function Harness() {
+      const form = useForm({
+        fields: {
+          access: {
+            companyMembers: 100,
+            companyMembersOptions: [
+              { value: 0, label: "No Access" },
+              { value: 100, label: "Full Access" },
+            ],
+          },
+        },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <AccessSelectors showSpaceAccess={false} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.getByText("Company members")).toBeInTheDocument();
+    expect(screen.queryByText("Space members")).not.toBeInTheDocument();
+  });
+
+  test("hides the company selector when no access is the only option", () => {
+    function Harness() {
+      const form = useForm({
+        fields: {
+          access: {
+            companyMembers: 0,
+            spaceMembers: 70,
+            companyMembersOptions: [{ value: 0, label: "No Access" }],
+            spaceMembersOptions: [{ value: 70, label: "Edit Access" }],
+          },
+        },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <AccessSelectors />
+        </Form>
+      );
+    }
+
+    const { container } = render(<Harness />);
+
+    expect(container.querySelector('[data-test-id="access-companyMembers"]')).not.toBeInTheDocument();
+    expect(screen.getByText("Space members")).toBeInTheDocument();
   });
 });

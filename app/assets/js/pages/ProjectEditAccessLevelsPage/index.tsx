@@ -6,11 +6,10 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
 
-import { Forms, IconBuilding, IconTent } from "turboui";
+import { Forms } from "turboui";
 
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
-import { applyAccessLevelConstraints, initialAccessLevels, Option } from "@/features/Permissions/AccessFields";
-import { PermissionLevels } from "@/features/Permissions";
+import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
@@ -85,39 +84,8 @@ function Form() {
 
   return (
     <Forms.Form form={form}>
-      <AccessSelectors />
+      <Forms.AccessSelectors />
       <Forms.Submit />
     </Forms.Form>
   );
-}
-
-function AccessSelectors() {
-  const [companyMembersOptions] = Forms.useFieldValue<Option[]>("access.companyMembersOptions");
-  const [spaceMembersOptions] = Forms.useFieldValue<Option[]>("access.spaceMembersOptions");
-  const companyOptions = companyMembersOptions ?? [];
-  const spaceOptions = spaceMembersOptions ?? [];
-
-  return (
-    <div className="mt-6">
-      <Forms.FieldGroup layout="horizontal" layoutOptions={{ dividers: true, ratio: "1:1" }}>
-        <Forms.SelectBox
-          field={"access.companyMembers"}
-          label="Company members"
-          labelIcon={<IconBuilding size={20} />}
-          options={companyOptions}
-          hidden={shouldHide(companyOptions)}
-        />
-        <Forms.SelectBox
-          field={"access.spaceMembers"}
-          label="Space members"
-          labelIcon={<IconTent size={20} />}
-          options={spaceOptions}
-        />
-      </Forms.FieldGroup>
-    </div>
-  );
-}
-
-function shouldHide(options: Option[]) {
-  return options.length === 1 && options[0]!.value === PermissionLevels.NO_ACCESS;
 }

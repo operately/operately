@@ -194,3 +194,9 @@ export interface FormErrorProps {
   when?: boolean;
   className?: string;
 }
+
+export interface AccessSelectorsProps {
+  fieldPrefix?: string;
+  showSpaceAccess?: boolean;
+  noAccessValue?: number;
+}
