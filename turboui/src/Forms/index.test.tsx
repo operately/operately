@@ -20,7 +20,13 @@ import {
 } from ".";
 
 jest.mock("../RichEditor", () => ({
-  Editor: () => <div data-testid="rich-editor" />,
+  Editor: (props: { hideBorder?: boolean; className?: string }) => (
+    <div
+      data-testid="rich-editor"
+      data-hide-border={props.hideBorder ? "true" : "false"}
+      className={props.className}
+    />
+  ),
   useEditor: (props: { content?: unknown }) => ({
     editor: {
       commands: { setContent: jest.fn() },
@@ -337,6 +343,44 @@ describe("Forms", () => {
 
     expect(input).toHaveValue("Roadmap");
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  test("hides editor border when hideBorder is set", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { body: emptyContent() },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <RichTextArea field="body" hideBorder richTextHandlers={createMockRichEditorHandlers()} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.getByTestId("rich-editor")).toHaveAttribute("data-hide-border", "true");
+  });
+
+  test("shows editor border by default", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { body: emptyContent() },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <RichTextArea field="body" richTextHandlers={createMockRichEditorHandlers()} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.getByTestId("rich-editor")).toHaveAttribute("data-hide-border", "false");
   });
 
   test("shows required validation errors for rich text areas", async () => {

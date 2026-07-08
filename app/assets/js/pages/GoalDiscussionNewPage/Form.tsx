@@ -1,7 +1,7 @@
 import React from "react";
 
-import Forms from "@/components/Forms";
-import { DimmedLink, SubscribersSelector } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { DimmedLink, Forms, SubscribersSelector } from "turboui";
 import * as Goals from "@/models/goals";
 
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
@@ -22,7 +22,7 @@ export function Form({ goal }: { goal: Goals.Goal }) {
     ...opts
   });
   const form = useForm({ goal, subscriptionsState });
-  const mentionSearchScope = { type: "goal", id: goal.id } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
 
   return (
     <Forms.Form form={form}>
@@ -38,7 +38,7 @@ export function Form({ goal }: { goal: Goals.Goal }) {
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
             <Forms.RichTextArea
               field="message"
-              mentionSearchScope={mentionSearchScope}
+              richTextHandlers={richTextHandlers}
               placeholder="Start a new discussion..."
               hideBorder
               height="min-h-[350px]"

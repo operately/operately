@@ -286,14 +286,14 @@ import { Forms } from "turboui";
 
 - [ ] `app/assets/js/pages/ResourceHubNewDocumentPage/form.tsx`
 - [ ] `app/assets/js/pages/ResourceHubEditDocumentPage/form.tsx`
-- [ ] `app/assets/js/pages/ResourceHubEditFilePage/form.tsx`
+- [x] `app/assets/js/pages/ResourceHubEditFilePage/form.tsx`
 - [x] `app/assets/js/pages/ResourceHubEditLinkPage/form.tsx`
 - [x] `app/assets/js/pages/ResourceHubNewLinkPage/form.tsx`
-- [ ] `app/assets/js/features/DiscussionForm/Form.tsx`
-- [ ] `app/assets/js/pages/ProjectDiscussionNewPage/index.tsx`
-- [ ] `app/assets/js/pages/ProjectDiscussionEditPage/index.tsx`
-- [ ] `app/assets/js/pages/GoalDiscussionNewPage/Form.tsx`
-- [ ] `app/assets/js/pages/GoalDiscussionEditPage/index.tsx`
+- [x] `app/assets/js/features/DiscussionForm/Form.tsx`
+- [x] `app/assets/js/pages/ProjectDiscussionNewPage/index.tsx`
+- [x] `app/assets/js/pages/ProjectDiscussionEditPage/index.tsx`
+- [x] `app/assets/js/pages/GoalDiscussionNewPage/Form.tsx`
+- [x] `app/assets/js/pages/GoalDiscussionEditPage/index.tsx`
 - [x] `app/assets/js/features/ProjectRetrospective/Form.tsx`
 - [x] `app/assets/js/pages/GoalClosingPage/Form.tsx`
 - [x] `app/assets/js/pages/ProjectResumePage/Form.tsx`

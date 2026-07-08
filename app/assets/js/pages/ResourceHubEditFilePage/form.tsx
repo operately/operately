@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import { ResourceHubFile, files } from "@/models/resourceHubs";
 
-import Forms from "@/components/Forms";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
-import { areRichTextObjectsEqual, findNameAndExtension } from "turboui";
+import { Forms, areRichTextObjectsEqual, findNameAndExtension } from "turboui";
 
 export function Form({ file }: { file: ResourceHubFile }) {
   const paths = usePaths();
@@ -46,7 +46,7 @@ export function Form({ file }: { file: ResourceHubFile }) {
     },
   });
 
-  const mentionSearchScope = { type: "resource_hub", id: file.resourceHubId! } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "resource_hub", id: file.resourceHubId! } });
 
   return (
     <Forms.Form form={form}>
@@ -54,7 +54,7 @@ export function Form({ file }: { file: ResourceHubFile }) {
         <Forms.TitleInput field="title" placeholder="Title..." />
         <Forms.RichTextArea
           field="description"
-          mentionSearchScope={mentionSearchScope}
+          richTextHandlers={richTextHandlers}
           placeholder="Write here..."
           hideBorder
         />
