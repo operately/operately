@@ -217,7 +217,7 @@ function AboutMeEditor({
 
   React.useEffect(() => {
     if (editor.editor && !editor.localDraftRestored) {
-      editor.editor.commands.setContent(value);
+      editor.editor.commands.setContent(value, { emitUpdate: false });
     }
   }, [editor.editor, editor.localDraftRestored]);
 
