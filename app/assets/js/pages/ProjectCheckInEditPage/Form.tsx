@@ -5,15 +5,27 @@ import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns"
 import { useNavigate } from "react-router-dom";
 
 import Forms, { FormState } from "@/components/Forms";
+import { Status, StatusOptions } from "@/components/status";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { assertPresent } from "@/utils/assertions";
-import { FormattedTime, GhostButton, PrimaryButton, Spacer, displayDate } from "turboui";
+import { compareIds } from "@/routes/paths";
+import { isWithinTimeframe } from "@/utils/time";
+import { FormattedTime, GhostButton, InfoCallout, PrimaryButton, Spacer, displayDate } from "turboui";
 
 import { usePaths } from "@/routes/paths";
+
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
   const paths = usePaths();
   const [edit] = useEditProjectCheckIn();
   const navigate = useNavigate();
+
+  assertPresent(checkIn.project, "project must be present in checkIn");
+
+  const allowFullEdit =
+    checkIn.state === "draft" ||
+    (checkIn.project.lastCheckIn?.id
+      ? compareIds(checkIn.project.lastCheckIn.id, checkIn.id) && isWithinTimeframe(displayDate(checkIn), 72)
+      : false);
 
   const form = Forms.useForm({
     fields: {
@@ -21,7 +33,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
       description: JSON.parse(checkIn.description!),
     },
     validate: (addError) => {
-      if (!form.values.status) {
+      if (allowFullEdit && !form.values.status) {
         addError("status", "Status is required");
       }
       if (!form.values.description) {
@@ -51,8 +63,14 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
     <Forms.Form form={form}>
       <Header checkIn={checkIn} />
 
+      <FullEditDisabledMessage allowFullEdit={allowFullEdit} isDraft={checkIn.state === "draft"} />
+
       <Forms.FieldGroup>
-        <StatusSection reviewer={checkIn.project?.reviewer || undefined} />
+        <StatusSection
+          reviewer={checkIn.project?.reviewer || undefined}
+          allowFullEdit={allowFullEdit}
+          checkIn={checkIn}
+        />
         <DescriptionSection checkIn={checkIn} />
       </Forms.FieldGroup>
 
@@ -60,6 +78,17 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
 
       <SubmitButtons form={form} isDraft={checkIn.state === "draft"} />
     </Forms.Form>
+  );
+}
+
+function FullEditDisabledMessage({ allowFullEdit, isDraft }: { allowFullEdit: boolean; isDraft: boolean }) {
+  if (isDraft || allowFullEdit) return null;
+
+  return (
+    <InfoCallout
+      message="Editing locked after 3 days"
+      description="You can edit the status for up to 3 days after submitting your check-in. After that, it's locked in to keep the history clear and decisions accountable. Need to make a change? Leave a comment or create a new check-in."
+    />
   );
 }
 
@@ -116,15 +145,34 @@ function Header({ checkIn }: { checkIn: ProjectCheckIn }) {
   );
 }
 
-function StatusSection({ reviewer }: { reviewer?: Person }) {
+function StatusSection({
+  reviewer,
+  allowFullEdit,
+  checkIn,
+}: {
+  reviewer?: Person;
+  allowFullEdit: boolean;
+  checkIn: ProjectCheckIn;
+}) {
+  if (allowFullEdit) {
+    return (
+      <div className="mt-8 mb-4">
+        <Forms.SelectStatus
+          label="1. How's the project going?"
+          field="status"
+          reviewer={reviewer}
+          options={["on_track", "caution", "off_track"]}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="mt-8 mb-4">
-      <Forms.SelectStatus
-        label="1. How's the project going?"
-        field="status"
-        reviewer={reviewer}
-        options={["on_track", "caution", "off_track"]}
-      />
+      <div className="font-bold">1. How's the project going?</div>
+      <div className="mt-2 flex flex-col gap-2 rounded-lg border border-stroke-base p-2">
+        <Status status={checkIn.status as StatusOptions} reviewer={reviewer} />
+      </div>
     </div>
   );
 }

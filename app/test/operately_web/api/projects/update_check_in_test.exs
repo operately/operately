@@ -158,6 +158,74 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckInTest do
     end
   end
 
+  describe "full edit window after publish" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_check_in(:check_in, :project, :creator)
+    end
+
+    test "allows status edits within 3 days of published_at for a late-published check-in", ctx do
+      check_in =
+        ctx.check_in
+        |> set_check_in_dates(
+          inserted_at: days_ago_naive(10),
+          published_at: Operately.Time.utc_datetime_now()
+        )
+
+      {:ok, project} =
+        Operately.Projects.update_project(ctx.project, %{
+          last_check_in_id: check_in.id,
+          last_check_in_status: check_in.status
+        })
+
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_check_in], %{
+                 check_in_id: Paths.project_check_in_id(check_in),
+                 status: "off_track",
+                 description: RichText.rich_text("Edited description", :as_string)
+               })
+
+      check_in = Repo.reload(check_in)
+      project = Repo.reload(project)
+
+      assert check_in.status == :off_track
+      assert project.last_check_in_status == :off_track
+    end
+
+    test "limits edits to description only outside the 3-day window from published_at", ctx do
+      check_in =
+        ctx.check_in
+        |> set_check_in_dates(
+          inserted_at: days_ago_naive(1),
+          published_at: Operately.Time.days_ago(4)
+        )
+
+      {:ok, project} =
+        Operately.Projects.update_project(ctx.project, %{
+          last_check_in_id: check_in.id,
+          last_check_in_status: check_in.status
+        })
+
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_check_in], %{
+                 check_in_id: Paths.project_check_in_id(check_in),
+                 status: "off_track",
+                 description: RichText.rich_text("Edited description", :as_string)
+               })
+
+      check_in = Repo.reload(check_in)
+      project = Repo.reload(project)
+
+      assert check_in.status == :on_track
+      assert check_in.description == RichText.rich_text("Edited description")
+      assert project.last_check_in_status == :on_track
+    end
+  end
+
   #
   # Helpers
   #
@@ -202,5 +270,20 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckInTest do
 
   defp create_check_in(creator, project) do
     check_in_fixture(%{author_id: creator.id, project_id: project.id})
+  end
+
+  defp set_check_in_dates(check_in, dates) do
+    {:ok, check_in} =
+      Ecto.Changeset.change(check_in, %{
+        inserted_at: dates[:inserted_at],
+        published_at: dates[:published_at]
+      })
+      |> Repo.update()
+
+    check_in
+  end
+
+  defp days_ago_naive(days) do
+    NaiveDateTime.utc_now() |> NaiveDateTime.add(-days, :day) |> NaiveDateTime.truncate(:second)
   end
 end
