@@ -4,6 +4,8 @@ import Forms from "@/components/Forms";
 import * as Goals from "@/models/goals";
 
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
+import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
+import { PageCache } from "@/routes/PageCache";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
@@ -43,6 +45,7 @@ export function Form() {
         sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
+      PageCache.invalidate(goalPageCacheKey(goal.id));
       navigateToGoal();
     },
     cancel: navigateToGoal,
