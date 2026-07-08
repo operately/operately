@@ -67,7 +67,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
     end)
   end
 
-  defp maybe_update_project(multi, project, check_in, attrs, next_check_in) do
+  defp maybe_update_project(multi, project, check_in, next_check_in) do
     Multi.update(multi, :project, fn changes ->
       cond do
         changes.check_in.state == :draft ->
