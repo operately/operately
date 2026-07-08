@@ -189,6 +189,7 @@ test.setup.dialyzer:
 test.setup.unit:
 	$(MAKE) test.up
 	$(MAKE) test.app.elixir.build
+	$(MAKE) test.app.js.build
 	$(MAKE) test.db.create
 	$(MAKE) test.db.migrate
 
