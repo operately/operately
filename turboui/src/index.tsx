@@ -40,6 +40,8 @@ export { AccountApiTokensPage } from "./AccountApiTokensPage";
 export { AccountMcpConnectionsPage } from "./AccountMcpConnectionsPage";
 export { AccountApiTokensUsagePage } from "./AccountApiTokensUsagePage";
 export { AccountNotificationSettingsPage } from "./AccountNotificationSettingsPage";
+export { AccountSettingsPage } from "./AccountSettingsPage";
+export { AccountSecurityPage } from "./AccountSecurityPage";
 export { InfoCallout, WarningCallout } from "./Callouts";
 export { Checkbox } from "./Checkbox";
 export { CommentCountIndicator } from "./CommentCountIndicator";
