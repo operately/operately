@@ -28,9 +28,24 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
     end)
   end
 
+  def serialize(%{access_group: %{bindings: bindings}} = data, level: :full, me: true) do
+    serialize_full(data, me: true)
+    |> Map.put(:access_level, find_access_level(bindings))
+  end
+
   def serialize(%{access_group: %{bindings: bindings}} = data, level: :full) do
     serialize_full(data)
     |> Map.put(:access_level, find_access_level(bindings))
+  end
+
+  def serialize(data, level: :full, me: true) do
+    serialize_full(data, me: true)
+    |> then(fn map ->
+      case data.access_level do
+        nil -> map
+        level -> Map.put(map, :access_level, level)
+      end
+    end)
   end
 
   def serialize(data, level: :full) do
@@ -43,12 +58,13 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
     end)
   end
 
-  defp serialize_full(data) do
+  defp serialize_full(data, opts \\ []) do
     %{
       id: OperatelyWeb.Paths.person_id(data),
       full_name: data.full_name,
       email: data.email,
       avatar_url: data.avatar_url,
+      avatar_blob_id: data.avatar_blob_id,
       title: data.title,
       type: Atom.to_string(data.type),
       suspended: data.suspended,
@@ -69,7 +85,14 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       notify_about_assignments: Operately.People.Person.notify_about_assignments?(data),
       description: encode_description(data.description)
     }
+    |> maybe_put_show_dev_bar(opts)
   end
+
+  defp maybe_put_show_dev_bar(map, me: true) do
+    Map.put(map, :show_dev_bar, Application.get_env(:operately, :app_env) == :dev)
+  end
+
+  defp maybe_put_show_dev_bar(map, _opts), do: map
 
   defp find_access_level([]), do: nil
   defp find_access_level(bindings), do: Enum.max_by(bindings, & &1.access_level).access_level
