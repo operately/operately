@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { PageNew } from "../Page";
+import { PrivacyField } from "../PrivacyField";
 import { Tabs, TabsState } from "../Tabs";
 import { StatusBanner } from "./StatusBanner";
 import { PageHeader } from "./PageHeader";
@@ -43,6 +44,7 @@ export namespace ProjectPageLayout {
     status: BadgeStatus;
     updateProjectName: (name: string) => Promise<boolean>;
     permissions: ProjectPermissions;
+    accessLevels?: PrivacyField.AccessLevels;
 
     state?: "paused" | "closed" | "active";
     closedAt: Date | null;

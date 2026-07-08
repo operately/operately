@@ -2,6 +2,7 @@ import React from "react";
 import { IconChevronRight, IconProject } from "../icons";
 import { BlackLink } from "../Link";
 import { PieChart } from "../PieChart";
+import { PrivacyIndicator } from "../PrivacyIndicator";
 import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
 import { ProjectPageLayout } from ".";
@@ -14,6 +15,9 @@ export function PageHeader(props: ProjectPageLayout.Props) {
           { to: props.workmapLink, label: "Projects" },
         ]
       : [{ to: props.homeLink, label: "Home" }];
+
+  const isInviteOnly =
+    props.accessLevels?.company === "no_access" && props.accessLevels?.space === "no_access";
 
   return (
     <div className="mt-4 px-4 flex items-center gap-3">
@@ -31,6 +35,16 @@ export function PageHeader(props: ProjectPageLayout.Props) {
             trimBeforeSave
             testId="project-name-field"
           />
+
+          {isInviteOnly && (
+            <PrivacyIndicator
+              privacyLevel="secret"
+              resourceType="project"
+              spaceName={"space" in props ? props.space.name : ""}
+              iconSize={16}
+              testId="privacy-indicator"
+            />
+          )}
 
           <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />
 
