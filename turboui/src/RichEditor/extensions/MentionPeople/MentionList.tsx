@@ -15,8 +15,8 @@ import { Avatar } from "../../../Avatar";
  *  It is used in the Mention extension.
  *  https://tiptap.dev/api/nodes/mention
  *
- *  When active, the MentionList component will be rendered in a tippy popup.
- *  https://atomiks.github.io/tippyjs/
+ *  When active, the MentionList component will be rendered in a floating popup
+ *  positioned with Floating UI via TipTap's suggestion mount API.
  *
  *  The component allows the user to navigate the list using the arrow keys.
  *  When the user presses enter, the selected item will be inserted into the editor.

@@ -7,6 +7,7 @@ import { marked } from "marked";
 
 const extensions = [
   StarterKit.configure({
+    link: false,
     bulletList: {
       keepMarks: true,
       keepAttributes: false,

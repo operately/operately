@@ -3,7 +3,7 @@ import React from "react";
 import * as TipTap from "@tiptap/react";
 
 import Link from "@tiptap/extension-link";
-import Placeholder from "@tiptap/extension-placeholder";
+import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import Blob, { isUploadInProgress } from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
@@ -84,6 +84,21 @@ const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
   tabindex: "",
 };
 
+const starterKitExtension = StarterKit.configure({
+  link: false,
+  bulletList: {
+    keepMarks: true,
+    keepAttributes: false,
+  },
+  orderedList: {
+    keepMarks: true,
+    keepAttributes: false,
+  },
+  dropcursor: false,
+});
+
+const linkExtension = Link.extend({ inclusive: false }).configure({ openOnClick: false });
+
 export function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
 
@@ -96,39 +111,40 @@ export function useEditor(props: UseEditorProps): EditorState {
   const initialContent = restoredDraft ?? props.content;
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
-  const editor = TipTap.useEditor({
-    editable: props.editable,
-    content: initialContent,
-    autofocus: props.autoFocus,
-    injectCSS: false,
-    editorProps: {
-      attributes: {
-        class: "focus:outline-none" + " " + props.className,
-        tabindex: props.tabindex!,
-      },
-    },
-    extensions: [
-      StarterKit.configure({
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false,
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false,
-        },
-        dropcursor: false,
-      }),
+  const extensions = React.useMemo(
+    () => [
+      starterKitExtension,
       Blob.configure({
         uploadFile: props.handlers.uploadFile,
         editable: props.editable,
       }),
-      Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+      linkExtension,
       Placeholder.configure({ placeholder: props.placeholder }),
       ...mentionExtensions(props.handlers, props.editable),
       Highlight,
       FakeTextSelection,
     ],
+    [props.handlers.uploadFile, props.handlers.peopleSearch, props.editable, props.placeholder],
+  );
+
+  const editorProps = React.useMemo(
+    () => ({
+      attributes: {
+        class: "focus:outline-none" + " " + props.className,
+        tabindex: props.tabindex!,
+      },
+    }),
+    [props.className, props.tabindex],
+  );
+
+  const editor = TipTap.useEditor({
+    shouldRerenderOnTransaction: true,
+    editable: props.editable,
+    content: initialContent,
+    autofocus: props.autoFocus,
+    injectCSS: false,
+    editorProps,
+    extensions,
     onFocus({ editor }) {
       editor.chain().unsetFakeTextSelection().run();
 
@@ -174,7 +190,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(content);
+      editor.commands.setContent(content, { emitUpdate: false });
     },
     [editor],
   );
