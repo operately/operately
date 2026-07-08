@@ -73,4 +73,15 @@ describe("applyAccessLevelConstraints", () => {
     applyAccessLevelConstraints(values, parentAccessLevels);
     expect(values.spaceMembers).toBe(PermissionLevels.VIEW_ACCESS);
   });
+
+  test("company members cannot exceed the parent space company access", () => {
+    values.anonymous = PermissionLevels.NO_ACCESS;
+    values.spaceMembers = PermissionLevels.FULL_ACCESS;
+    values.companyMembers = PermissionLevels.FULL_ACCESS;
+    parentAccessLevels.company = PermissionLevels.NO_ACCESS;
+
+    applyAccessLevelConstraints(values, parentAccessLevels);
+    expect(values.companyMembers).toBe(PermissionLevels.NO_ACCESS);
+    expect(values.companyMembersOptions.map((o: any) => o.value)).toEqual([PermissionLevels.NO_ACCESS]);
+  });
 });

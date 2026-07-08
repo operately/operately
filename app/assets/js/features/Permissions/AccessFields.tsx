@@ -38,6 +38,8 @@ export type AccessLevels = {
 // 2. Space members access cannot be less than anonymous access.
 // 3. Company members access cannot be less than anonymous access.
 // 4. Company members access cannot exceed space members access.
+// 5. Company members access cannot exceed the parent space's company access level
+//    (relevant when creating nested resources in a private space).
 //
 
 //
@@ -49,8 +51,8 @@ const SPACE = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS]
 
 //
 // Edit forms for goals/projects do not expose anonymous access (always no-access).
-// Parent company/space no longer constrain nested resource options. Use this parent
-// so company/space selectors are limited only by the resource's own values.
+// Use this parent so company/space selectors are limited by the resource's own
+// space members value, not by an external parent cap.
 //
 export const UNRESTRICTED_PARENT_ACCESS: Api.AccessLevels = {
   public: PermissionLevels.NO_ACCESS,
@@ -94,7 +96,9 @@ export function applyAccessLevelConstraints(vals: AccessLevels, parent: Api.Acce
   vals.spaceMembersOptions = SPACE.filter((option) => option.value >= vals.anonymous);
   vals.spaceMembers = clamp(vals.spaceMembers, vals.spaceMembersOptions);
 
-  vals.companyMembersOptions = COMPANY.filter((o) => o.value >= vals.anonymous && o.value <= vals.spaceMembers);
+  vals.companyMembersOptions = COMPANY.filter(
+    (o) => o.value >= vals.anonymous && o.value <= vals.spaceMembers && o.value <= parent.company!,
+  );
   vals.companyMembers = clamp(vals.companyMembers, vals.companyMembersOptions);
 
   return vals;
