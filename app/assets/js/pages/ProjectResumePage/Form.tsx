@@ -1,12 +1,12 @@
 import * as React from "react";
 
-import Forms from "@/components/Forms";
+import { Forms, DimmedLink, emptyContent, PrimaryButton, SubscribersSelector } from "turboui";
 import * as Projects from "@/models/projects";
 
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { usePaths } from "@/routes/paths";
-import { DimmedLink, emptyContent, PrimaryButton, SubscribersSelector } from "turboui";
 
 export function Form({ project }: { project: Projects.Project }) {
   const paths = usePaths();
@@ -23,6 +23,8 @@ export function Form({ project }: { project: Projects.Project }) {
     notifyPrioritySubscribers: true,
     projectName: projectName,
   });
+
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: projectId } });
 
   const [resume] = Projects.useResumeProject();
   const onSuccess = useNavigateTo(paths.projectPath(projectId));
@@ -52,7 +54,7 @@ export function Form({ project }: { project: Projects.Project }) {
         <Forms.RichTextArea
           field="message"
           label="Why are you resuming this project?"
-          mentionSearchScope={{ type: "project", id: projectId }}
+          richTextHandlers={richTextHandlers}
           placeholder="Write here..."
         />
       </Forms.FieldGroup>
