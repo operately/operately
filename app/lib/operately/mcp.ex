@@ -33,6 +33,8 @@ defmodule Operately.Mcp do
   defdelegate upsert_grant(account, company, auth_request), to: GrantOps
   defdelegate issue_authorization_code(grant, auth_request), to: GrantOps
   defdelegate revoke_grant_for_reconnect(grant), to: GrantOps
+  defdelegate list_grants_for_company(account, company), to: GrantOps
+  defdelegate revoke_grant_for_company(account, company, grant_id), to: GrantOps
   defdelegate register_oauth_client(params), to: Operately.Mcp.Operations.ClientRegistration, as: :register
 
   defdelegate create_session(grant, access_token, params), to: SessionOps

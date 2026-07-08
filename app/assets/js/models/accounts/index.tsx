@@ -7,6 +7,9 @@ export type {
   ApiTokensListResult,
   ApiTokensSetReadOnlyResult,
   ApiTokensUpdateNameResult,
+  McpGrant,
+  McpGrantsListResult,
+  McpGrantsRevokeResult,
   Account,
 } from "@/api";
 
@@ -30,4 +33,12 @@ export function setApiTokenReadOnly(id: string, readOnly: boolean) {
 
 export function updateApiTokenName(id: string, name?: string | null) {
   return Api.api_tokens.updateName({ id, name });
+}
+
+export function listMcpGrants() {
+  return Api.mcp_grants.list({});
+}
+
+export function revokeMcpGrant(id: string) {
+  return Api.mcp_grants.revoke({ id });
 }

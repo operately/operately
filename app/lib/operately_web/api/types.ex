@@ -28,6 +28,16 @@ defmodule OperatelyWeb.Api.Types do
     field? :last_used_at, :datetime, null: true
   end
 
+  object :mcp_grant do
+    field :id, :id
+    field :client_id, :string, null: false
+    field :client_name, :string, null: false
+    field? :client_uri, :string, null: true
+    field :scopes, list_of(:string), null: false
+    field :inserted_at, :datetime, null: false
+    field? :last_used_at, :datetime, null: true
+  end
+
   enum(:cli_auth_status, values: [:pending, :authenticated, :failed, :no_companies, :expired])
 
   enum(:account_theme, values: Operately.People.Account.valid_themes())

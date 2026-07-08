@@ -28,6 +28,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "account", "security", "api-tokens", "usage"])
   end
 
+  def account_mcp_connections_path(company = %Company{}) do
+    create_path([company_id(company), "account", "security", "mcp-connections"])
+  end
+
   def account_notification_settings_path(company = %Company{}) do
     create_path([company_id(company), "account", "settings", "notifications"])
   end
@@ -591,6 +595,10 @@ defmodule OperatelyWeb.Paths do
 
   def token_id(token) do
     Operately.ShortUuid.encode!(token.id)
+  end
+
+  def mcp_grant_id(grant) do
+    Operately.ShortUuid.encode!(grant.id)
   end
 
   def billing_plan_definition_id(plan_definition_id) when is_binary(plan_definition_id) do

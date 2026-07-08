@@ -7,6 +7,7 @@ import AccountApiTokensPage from "./AccountApiTokensPage";
 import AccountApiTokensUsagePage from "./AccountApiTokensUsagePage";
 import AccountAppearancePage from "./AccountAppearancePage";
 import AccountChangePasswordPage from "./AccountChangePasswordPage";
+import AccountMcpConnectionsPage from "./AccountMcpConnectionsPage";
 import AccountNotificationSettingsPage from "./AccountNotificationSettingsPage";
 import AccountPage from "./AccountPage";
 import AccountSecurityPage from "./AccountSecurityPage";
@@ -120,6 +121,7 @@ export default {
   AccountApiTokensUsagePage,
   AccountAppearancePage,
   AccountChangePasswordPage,
+  AccountMcpConnectionsPage,
   AccountNotificationSettingsPage,
   AccountPage,
   AccountSecurityPage,

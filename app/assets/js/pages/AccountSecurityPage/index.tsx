@@ -29,6 +29,11 @@ function Page() {
           <Link to={paths.accountApiTokensPath()} testId="manage-api-tokens-link">
             Manage your API tokens
           </Link>
+
+          <div className="mt-8">Connected an AI client through MCP?</div>
+          <Link to={paths.accountMcpConnectionsPath()} testId="manage-mcp-connections-link">
+            Manage your MCP connections
+          </Link>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

@@ -8,6 +8,7 @@ defmodule OperatelyWeb.McpControllerTest do
   import Operately.ProjectsFixtures
   import Operately.ResourceHubsFixtures
   import Operately.TasksFixtures
+  import OperatelyWeb.Mcp.ToolConnHelper
 
   alias Operately.Billing
   alias Operately.Mcp
@@ -840,92 +841,6 @@ defmodule OperatelyWeb.McpControllerTest do
     assert get_resp_header(conn, "www-authenticate") |> List.first() =~ ~s(scope="mcp:read")
   end
 
-  defp initialize_request do
-    %{
-      "jsonrpc" => "2.0",
-      "id" => "1",
-      "method" => "initialize",
-      "params" => %{
-        "protocolVersion" => Mcp.latest_protocol_version(),
-        "capabilities" => %{},
-        "clientInfo" => %{
-          "name" => "Example Client",
-          "version" => "1.0.0"
-        }
-      }
-    }
-  end
-
-  defp initialize_session(access_token) do
-    conn =
-      build_conn()
-      |> authenticated_mcp_headers(access_token)
-      |> post("/mcp", initialize_request())
-
-    {conn, conn |> get_resp_header("mcp-session-id") |> List.first()}
-  end
-
-  defp authenticated_mcp_headers(conn, access_token) do
-    conn
-    |> put_req_header("accept", "application/json, text/event-stream")
-    |> put_req_header("content-type", "application/json")
-    |> put_req_header("authorization", "Bearer #{access_token}")
-  end
-
-  defp session_headers(conn, access_token, session_id) do
-    conn
-    |> authenticated_mcp_headers(access_token)
-    |> put_req_header("mcp-session-id", session_id)
-    |> put_req_header("mcp-protocol-version", Mcp.latest_protocol_version())
-  end
-
-  defp authorize_and_issue_tokens(account, company, client, scope \\ "mcp:read", opts \\ []) do
-    conn = build_conn() |> log_in_account(account, company)
-
-    params = %{
-      "client_id" => client.client_id,
-      "redirect_uri" => hd(client.redirect_uris),
-      "resource" => Mcp.canonical_resource_uri(),
-      "scope" => scope,
-      "state" => "mcp-state",
-      "code_challenge" => pkce_challenge(),
-      "code_challenge_method" => "S256"
-    }
-
-    consent_conn = get(conn, "/oauth/authorize", params)
-    csrf_token = csrf_token(consent_conn)
-
-    redirect_conn =
-      consent_conn
-      |> recycle()
-      |> post(
-        "/oauth/authorize",
-        params
-        |> Map.merge(%{"decision" => "approve", "_csrf_token" => csrf_token})
-        |> maybe_put_selected_company_id(opts)
-      )
-
-    code =
-      redirect_conn
-      |> redirected_to()
-      |> URI.parse()
-      |> Map.fetch!(:query)
-      |> URI.decode_query()
-      |> Map.fetch!("code")
-
-    token_conn =
-      post(build_conn(), "/oauth/token", %{
-        "grant_type" => "authorization_code",
-        "client_id" => client.client_id,
-        "redirect_uri" => hd(client.redirect_uris),
-        "resource" => Mcp.canonical_resource_uri(),
-        "code" => code,
-        "code_verifier" => "test-verifier"
-      })
-
-    Jason.decode!(token_conn.resp_body, keys: :atoms)
-  end
-
   defp create_session(raw_access_token) do
     {:ok, %{access_token: access_token, grant: grant}} = Mcp.authenticate_access_token(raw_access_token, Mcp.canonical_resource_uri())
 
@@ -937,43 +852,6 @@ defmodule OperatelyWeb.McpControllerTest do
       })
 
     session
-  end
-
-  defp csrf_token(conn) do
-    {:ok, document} = Floki.parse_document(conn.resp_body)
-
-    document
-    |> Floki.find("input[name=\"_csrf_token\"]")
-    |> Floki.attribute("value")
-    |> List.first()
-  end
-
-  defp pkce_challenge do
-    :crypto.hash(:sha256, "test-verifier")
-    |> Base.url_encode64(padding: false)
-  end
-
-  defp call_tool(access_token, session_id, name, arguments \\ %{}) do
-    build_conn()
-    |> session_headers(access_token, session_id)
-    |> post("/mcp", %{
-      "jsonrpc" => "2.0",
-      "id" => "4",
-      "method" => "tools/call",
-      "params" => %{
-        "name" => name,
-        "arguments" => arguments
-      }
-    })
-  end
-
-  defp json_body(conn), do: Jason.decode!(conn.resp_body)
-
-  defp maybe_put_selected_company_id(params, opts) do
-    case Keyword.get(opts, :selected_company_id) do
-      nil -> params
-      company_id -> Map.put(params, "selected_company_id", company_id)
-    end
   end
 
   defp expected_tool_names do
