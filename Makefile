@@ -252,6 +252,7 @@ test.app.node_modules:
 
 test.app.js.build:
 	$(MAKE) test.app.node_modules
+	$(MAKE) test.turboui.node_modules
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
 	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
 
