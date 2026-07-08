@@ -5,6 +5,7 @@ import "@testing-library/jest-dom";
 import { emptyContent } from "../RichContent/contentOps";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import {
+  AccessSelectors,
   Form,
   FormError,
   NumberInput,
@@ -32,6 +33,8 @@ jest.mock("../RichEditor", () => ({
 
 jest.mock("../icons", () => ({
   IconCheck: () => <svg data-testid="icon-check" />,
+  IconBuilding: () => <svg data-testid="icon-building" />,
+  IconTent: () => <svg data-testid="icon-tent" />,
 }));
 
 jest.mock("react-select", () => {
@@ -40,16 +43,16 @@ jest.mock("react-select", () => {
     value,
     onChange,
   }: {
-    options: { label: string; value: string }[];
-    value?: { label: string; value: string };
-    onChange: (option: { label: string; value: string } | null) => void;
+    options: { label: string; value: string | number }[];
+    value?: { label: string; value: string | number };
+    onChange: (option: { label: string; value: string | number } | null) => void;
   }) {
     return (
       <select
         aria-label="select-box"
         value={value?.value ?? ""}
         onChange={(event) => {
-          const option = options.find((item) => item.value === event.target.value) ?? null;
+          const option = options.find((item) => String(item.value) === event.target.value) ?? null;
           onChange(option);
         }}
       >
@@ -237,6 +240,44 @@ describe("Forms", () => {
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         status: "false",
+      }),
+    );
+  });
+
+  test("updates select box values with numeric options", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { accessLevel: 10 },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectBox
+            field="accessLevel"
+            label="Access"
+            options={[
+              { value: 10, label: "View Access" },
+              { value: 100, label: "Full Access" },
+            ]}
+          />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.change(screen.getByLabelText("select-box"), { target: { value: "100" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        accessLevel: 100,
       }),
     );
   });
@@ -585,5 +626,88 @@ describe("Forms", () => {
     render(<Harness />);
 
     expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute("type", "submit");
+  });
+
+  test("renders company-only access selectors for spaces", () => {
+    function Harness() {
+      const form = useForm({
+        fields: {
+          access: {
+            companyMembers: 100,
+            companyMembersOptions: [
+              { value: 0, label: "No Access" },
+              { value: 100, label: "Full Access" },
+            ],
+          },
+        },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <AccessSelectors showSpaceAccess={false} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.getByText("Company members")).toBeInTheDocument();
+    expect(screen.queryByText("Space members")).not.toBeInTheDocument();
+  });
+
+  test("hides the company selector when no access is the only option on company-only forms", () => {
+    function Harness() {
+      const form = useForm({
+        fields: {
+          access: {
+            companyMembers: 0,
+            companyMembersOptions: [{ value: 0, label: "No Access" }],
+          },
+        },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <AccessSelectors showSpaceAccess={false} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.queryByText("Company members")).not.toBeInTheDocument();
+    expect(screen.queryByText("Space members")).not.toBeInTheDocument();
+  });
+
+  test("keeps the company selector visible when space access is also shown", () => {
+    function Harness() {
+      const form = useForm({
+        fields: {
+          access: {
+            companyMembers: 0,
+            spaceMembers: 0,
+            companyMembersOptions: [{ value: 0, label: "No Access" }],
+            spaceMembersOptions: [
+              { value: 100, label: "Full Access" },
+              { value: 0, label: "No Access" },
+            ],
+          },
+        },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <AccessSelectors />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.getByText("Company members")).toBeInTheDocument();
+    expect(screen.getByText("Space members")).toBeInTheDocument();
   });
 });

@@ -111,7 +111,7 @@ export interface SubmitProps {
 
 export interface SelectBoxOption {
   label: string;
-  value: string;
+  value: string | number;
 }
 
 export interface SelectBoxProps {
@@ -193,4 +193,10 @@ export interface FormErrorProps {
   message?: string;
   when?: boolean;
   className?: string;
+}
+
+export interface AccessSelectorsProps {
+  fieldPrefix?: string;
+  showSpaceAccess?: boolean;
+  noAccessValue?: number;
 }
