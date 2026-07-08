@@ -6,11 +6,10 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
-import { AccessSelectors } from "@/features/projects/AccessSelectors";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
@@ -85,7 +84,7 @@ function Form() {
 
   return (
     <Forms.Form form={form}>
-      <AccessSelectors />
+      <Forms.AccessSelectors />
       <Forms.Submit />
     </Forms.Form>
   );

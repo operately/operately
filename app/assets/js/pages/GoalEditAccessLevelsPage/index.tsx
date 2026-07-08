@@ -5,12 +5,12 @@ import * as Goals from "@/models/goals";
 import * as Permissions from "@/models/permissions";
 
 import Api from "@/api";
-import { applyAccessLevelConstraints, initialAccessLevels, Option } from "@/features/Permissions/AccessFields";
+import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
-import { Forms, IconBuilding, IconTent } from "turboui";
+import { Forms } from "turboui";
 
 export default { name: "GoalEditAccessLevelsPage", loader, Page } as PageModule;
 
@@ -100,45 +100,8 @@ function Form() {
 
   return (
     <Forms.Form form={form}>
-      <AccessSelectors showSpaceAccess={showSpaceAccess} />
+      <Forms.AccessSelectors showSpaceAccess={showSpaceAccess} />
       <Forms.Submit />
     </Forms.Form>
-  );
-}
-
-function AccessSelectors({ showSpaceAccess }: { showSpaceAccess: boolean }) {
-  const [companyMembersOptions] = Forms.useFieldValue<Option[]>("access.companyMembersOptions");
-  const [spaceMembersOptions] = Forms.useFieldValue<Option[]>("access.spaceMembersOptions");
-
-  if (!showSpaceAccess) {
-    return (
-      <div className="mt-6">
-        <Forms.SelectBox
-          field={"access.companyMembers"}
-          label="Company members"
-          labelIcon={<IconBuilding size={20} />}
-          options={(companyMembersOptions ?? []) as unknown as { label: string; value: string }[]}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-6">
-      <Forms.FieldGroup layout="horizontal" layoutOptions={{ dividers: true, ratio: "1:1" }}>
-        <Forms.SelectBox
-          field={"access.companyMembers"}
-          label="Company members"
-          labelIcon={<IconBuilding size={20} />}
-          options={(companyMembersOptions ?? []) as unknown as { label: string; value: string }[]}
-        />
-        <Forms.SelectBox
-          field={"access.spaceMembers"}
-          label="Space members"
-          labelIcon={<IconTent size={20} />}
-          options={(spaceMembersOptions ?? []) as unknown as { label: string; value: string }[]}
-        />
-      </Forms.FieldGroup>
-    </div>
   );
 }

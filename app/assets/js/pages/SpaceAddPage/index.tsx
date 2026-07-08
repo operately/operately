@@ -6,13 +6,10 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
-import Forms from "@/components/Forms";
-import { useFormContext } from "@/components/Forms/FormContext";
-
-import { AccessLevel, AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
+import { AccessLevel, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { SecondaryButton } from "turboui";
+import { Forms, SecondaryButton, useFormContext } from "turboui";
 
 export default { name: "SpaceAddPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -122,7 +119,7 @@ function PrivacyLevel() {
         <PrivacyEdit />
       </div>
 
-      {isAdvanced && <AccessSelectors />}
+      {isAdvanced && <Forms.AccessSelectors showSpaceAccess={false} />}
     </Paper.DimmedSection>
   );
 }
@@ -130,6 +127,10 @@ function PrivacyLevel() {
 function PrivacyLevelTitle({ field }: { field: string }) {
   const [anonymous] = Forms.useFieldValue<number>(`${field}.anonymous`);
   const [company] = Forms.useFieldValue<number>(`${field}.companyMembers`);
+
+  if (anonymous === undefined || company === undefined) {
+    return null;
+  }
 
   return <AccessLevel anonymous={anonymous} company={company} tense="future" hideIcon={true} />;
 }
