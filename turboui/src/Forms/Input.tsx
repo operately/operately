@@ -16,7 +16,7 @@ export function Input(props: InputProps) {
   const { field, testId, error, onEnter, okSign, className, ...rest } = props;
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <input
         {...rest}
         name={field}
