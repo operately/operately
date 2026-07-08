@@ -1,12 +1,13 @@
 defmodule OperatelyWeb.Api.Serializer do
   @valid_levels [:essential, :full]
 
-  def serialize(data, opts \\ [level: :essential])
+  def serialize(data) do
+    OperatelyWeb.Api.Serializable.serialize(data, level: :essential)
+  end
 
-  def serialize(data, opts) when is_list(opts) do
-    level = Keyword.fetch!(opts, :level)
+  def serialize(data, level: level) do
     validate_level(level)
-    OperatelyWeb.Api.Serializable.serialize(data, opts)
+    OperatelyWeb.Api.Serializable.serialize(data, level: level)
   end
 
   defp validate_level(level) do

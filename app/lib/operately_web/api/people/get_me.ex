@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.People.GetMe do
     conn
     |> me()
     |> preload_manager(inputs[:include_manager])
-    |> then(fn me -> %{me: Serializer.serialize(me, level: :full, me: true)} end)
+    |> then(fn me -> %{me: Serializer.serialize(me, level: :full)} end)
     |> ok_tuple()
   end
 
