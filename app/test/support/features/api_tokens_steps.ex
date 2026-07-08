@@ -26,7 +26,7 @@ defmodule Operately.Support.Features.ApiTokensSteps do
   end
 
   step :click_manage_api_tokens_link, ctx do
-    ctx |> UI.click(testid: "manage-api-tokens-link")
+    ctx |> UI.click(testid: "api-tokens")
   end
 
   step :visit_api_tokens_page, ctx do
