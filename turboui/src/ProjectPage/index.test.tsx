@@ -62,7 +62,13 @@ jest.mock("../icons", () => {
   };
 });
 
+import { PrivacyField } from "../PrivacyField";
 import { ProjectPage } from "./index";
+
+const defaultProjectAccessLevels: PrivacyField.AccessLevels = {
+  company: "view",
+  space: "view",
+};
 import { asRichText } from "../utils/storybook/richContent";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
@@ -234,6 +240,8 @@ function ProjectPageHarness({
         status="on_track"
         state="active"
         closedAt={null}
+        accessLevels={defaultProjectAccessLevels}
+        setAccessLevels={() => undefined}
         manageTeamLink="#"
         updateProjectName={async () => true}
         description={asRichText("A concise project summary.")}
