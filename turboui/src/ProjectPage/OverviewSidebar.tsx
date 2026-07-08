@@ -243,12 +243,12 @@ function Privacy(props: ProjectPage.State) {
         accessLevels={props.accessLevels}
         setAccessLevels={props.setAccessLevels}
         resourceType={"project"}
-        readonly={!props.permissions.canEdit}
+        readonly={!props.permissions.hasFullAccess}
       />
-      {props.permissions.hasFullAccess && props.manageAccessLink && (
+      {props.permissions.canEdit && props.manageAccessLink && (
         <div className="mt-3">
           <SecondaryButton linkTo={props.manageAccessLink} size="xs" testId="manage-project-access-button">
-            Manage access
+            Manage team & access
           </SecondaryButton>
         </div>
       )}
@@ -268,13 +268,6 @@ function Contributors(props: ProjectPage.State) {
           ))
         ) : (
           <div className="text-sm text-content-dimmed">No contributors</div>
-        )}
-        {props.permissions.canEdit && (
-          <div className="mt-3">
-            <SecondaryButton linkTo={props.manageTeamLink} size="xs" testId="manage-team-button">
-              Manage team & access
-            </SecondaryButton>
-          </div>
         )}
       </div>
     </SidebarSection>
