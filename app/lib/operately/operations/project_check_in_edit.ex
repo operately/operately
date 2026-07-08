@@ -1,7 +1,8 @@
 defmodule Operately.Operations.ProjectCheckInEdit do
   alias Ecto.Multi
 
-  alias Operately.{Repo, Activities}
+  alias Operately.{Repo, Activities, Time}
+  alias Operately.Drafts
   alias Operately.Projects.Project
   alias Operately.Projects.CheckIn
   alias Operately.Notifications.SubscriptionList
@@ -16,14 +17,9 @@ defmodule Operately.Operations.ProjectCheckInEdit do
       )
 
     Multi.new()
-    |> Multi.update(:check_in, fn _ ->
-      CheckIn.changeset(check_in, %{
-        status: attrs.status,
-        description: attrs.description,
-        state: state(check_in, attrs)
-      })
-    end)
-    |> maybe_update_project(project, check_in, attrs, next_check_in)
+    |> set_if_full_edit_allowed(project, check_in)
+    |> update_check_in(check_in, attrs)
+    |> maybe_update_project(project, check_in, next_check_in)
     |> Multi.run(:subscription_list, fn _, changes ->
       SubscriptionList.get(:system,
         parent_id: changes.check_in.id,
@@ -39,7 +35,39 @@ defmodule Operately.Operations.ProjectCheckInEdit do
     |> broadcast_if_published(author)
   end
 
-  defp maybe_update_project(multi, project, check_in, attrs, next_check_in) do
+  #
+  # Edits to the status are allowed within 3 days of the check-in display date
+  # and only if it is the latest check-in. Otherwise, only the description can
+  # be edited.
+  #
+  defp set_if_full_edit_allowed(multi, project, check_in) do
+    edit_start = Drafts.display_date(check_in)
+    edit_deadline = DateTime.add(edit_start, 3, :day)
+
+    is_latest = project.last_check_in_id == check_in.id
+    is_in_edit_deadline = DateTime.compare(Time.utc_datetime_now(), edit_deadline) == :lt
+
+    Multi.put(multi, :full_edit_allowed, check_in.state == :draft or (is_latest and is_in_edit_deadline))
+  end
+
+  defp update_check_in(multi, check_in, attrs) do
+    Multi.update(multi, :check_in, fn changes ->
+      if changes.full_edit_allowed do
+        CheckIn.changeset(check_in, %{
+          status: attrs.status,
+          description: attrs.description,
+          state: state(check_in, attrs)
+        })
+      else
+        CheckIn.changeset(check_in, %{
+          description: attrs.description,
+          state: state(check_in, attrs)
+        })
+      end
+    end)
+  end
+
+  defp maybe_update_project(multi, project, check_in, next_check_in) do
     Multi.update(multi, :project, fn changes ->
       cond do
         changes.check_in.state == :draft ->
@@ -52,10 +80,13 @@ defmodule Operately.Operations.ProjectCheckInEdit do
             next_check_in_scheduled_at: next_check_in
           })
 
-        true ->
+        changes.full_edit_allowed ->
           Project.changeset(project, %{
-            last_check_in_status: attrs.status
+            last_check_in_status: changes.check_in.status
           })
+
+        true ->
+          Project.changeset(project, %{})
       end
     end)
   end
