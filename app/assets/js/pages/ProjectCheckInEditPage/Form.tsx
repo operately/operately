@@ -88,7 +88,6 @@ function FullEditDisabledMessage({ allowFullEdit, isDraft }: { allowFullEdit: bo
     <InfoCallout
       message="Editing locked after 3 days"
       description="You can edit the status for up to 3 days after submitting your check-in. After that, it's locked in to keep the history clear and decisions accountable. Need to make a change? Leave a comment or create a new check-in."
-      className="mt-8"
     />
   );
 }
