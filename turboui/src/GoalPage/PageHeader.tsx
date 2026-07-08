@@ -3,6 +3,7 @@ import React from "react";
 import { GoalPage } from ".";
 import { IconChevronRight, IconGoal } from "../icons";
 import { BlackLink } from "../Link";
+import { PrivacyIndicator } from "../PrivacyIndicator";
 import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
 
@@ -14,6 +15,8 @@ export function PageHeader(props: GoalPage.State) {
           { to: props.workmapLink, label: "Goals" },
         ]
       : [{ to: props.companyWorkMapLink, label: "Work Map" }];
+
+  const isInviteOnly = props.accessLevels.company === "no_access" && props.accessLevels.space === "no_access";
 
   return (
     <div className="mt-4 px-4 flex items-center gap-3" data-test-id="page-header">
@@ -31,6 +34,16 @@ export function PageHeader(props: GoalPage.State) {
             trimBeforeSave
             testId="goal-name-field"
           />
+
+          {isInviteOnly && (
+            <PrivacyIndicator
+              privacyLevel="secret"
+              resourceType="goal"
+              spaceName={"space" in props ? props.space.name : ""}
+              iconSize={16}
+              testId="privacy-indicator"
+            />
+          )}
 
           <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />
         </div>

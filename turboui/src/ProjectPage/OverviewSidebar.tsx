@@ -15,6 +15,7 @@ import {
 } from "../icons";
 import { LastCheckIn } from "../LastCheckIn";
 import { PersonField } from "../PersonField";
+import { PrivacyField } from "../PrivacyField";
 import { Tooltip } from "../Tooltip";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { showSuccessToast, showErrorToast } from "../Toasts";
@@ -35,6 +36,7 @@ export function OverviewSidebar(props: ProjectPage.State) {
         <Champion {...props} />
         <Reviewer {...props} />
         <Contributors {...props} />
+        <Privacy {...props} />
       </div>
 
       <SidebarNotificationSection {...props.subscriptions} className="pt-6 mt-6 border-t border-surface-outline" />
@@ -233,6 +235,27 @@ function Reviewer(props: ProjectPage.State) {
   );
 }
 
+function Privacy(props: ProjectPage.State) {
+  return (
+    <SidebarSection title="Privacy">
+      <PrivacyField
+        testId="project-privacy-field"
+        accessLevels={props.accessLevels}
+        setAccessLevels={props.setAccessLevels}
+        resourceType={"project"}
+        readonly={!props.permissions.hasFullAccess}
+      />
+      {props.permissions.canEdit && props.manageAccessLink && (
+        <div className="mt-3">
+          <SecondaryButton linkTo={props.manageAccessLink} size="xs" testId="manage-project-access-button">
+            Manage team & access
+          </SecondaryButton>
+        </div>
+      )}
+    </SidebarSection>
+  );
+}
+
 function Contributors(props: ProjectPage.State) {
   const contributors = props.contributors.filter((c) => ![props.champion?.id, props.reviewer?.id].includes(c.id));
 
@@ -245,13 +268,6 @@ function Contributors(props: ProjectPage.State) {
           ))
         ) : (
           <div className="text-sm text-content-dimmed">No contributors</div>
-        )}
-        {props.permissions.canEdit && (
-          <div className="mt-3">
-            <SecondaryButton linkTo={props.manageTeamLink} size="xs" testId="manage-team-button">
-              Manage team & access
-            </SecondaryButton>
-          </div>
         )}
       </div>
     </SidebarSection>

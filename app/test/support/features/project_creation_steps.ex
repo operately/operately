@@ -131,7 +131,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
   step :assert_creator_is_contributor, ctx, fields do
     ctx
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.find(UI.query(testid: "contributors-section"), fn el ->
       UI.assert_text(el, fields.creator.full_name)
     end)
@@ -197,7 +197,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
   step :assert_project_has_reviewer, ctx, fields do
     ctx
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.assert_has(testid: "project-contributors-page")
     |> UI.assert_text(ctx.reviewer.full_name)
     |> then(fn ctx ->

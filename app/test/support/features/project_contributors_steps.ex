@@ -34,7 +34,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :visit_project_contributors_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.assert_has(testid: "project-contributors-page")
   end
 
@@ -93,13 +93,13 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
   step :start_adding_contributors, ctx do
     ctx
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.click(testid: "add-contributors-button")
   end
 
   step :add_contributors, ctx, people do
     ctx
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.click(testid: "add-contributors-button")
 
     ctx = Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
@@ -358,7 +358,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :assert_contributor_removed, ctx, name: name do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.refute_has(Query.text("Michael Scott"))
 
     contributors = Operately.Projects.list_project_contributors(ctx.project)
@@ -376,7 +376,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.refute_has(Query.text(ctx.reviewer.full_name))
     |> UI.assert_text("No Reviewer")
     |> UI.assert_has(testid: "add-reviewer-button")
@@ -384,7 +384,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
   step :convert_reviewer_to_contributor, ctx, params do
     ctx
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.click(testid: UI.testid(["contributor-menu", params.name]))
     |> UI.click(testid: "convert-to-contributor")
     |> UI.fill(testid: "responsibility", with: params.responsibility)
@@ -394,7 +394,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
   step :convert_champion_to_contributor, ctx, params do
     ctx
-    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "manage-project-access-button")
     |> UI.click(testid: UI.testid(["contributor-menu", params.name]))
     |> UI.click(testid: "convert-to-contributor")
     |> UI.fill(testid: "responsibility", with: params.responsibility)

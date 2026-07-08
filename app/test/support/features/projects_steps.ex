@@ -1344,12 +1344,12 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_manage_access_visible, ctx do
     ctx
-    |> UI.assert_has(testid: "manage-team-button")
+    |> UI.assert_has(testid: "manage-project-access-button")
   end
 
   step :refute_manage_access_visible, ctx do
     ctx
-    |> UI.refute_has(testid: "manage-team-button")
+    |> UI.refute_has(testid: "manage-project-access-button")
   end
 
   step :assert_pause_and_close_actions_visible, ctx do
