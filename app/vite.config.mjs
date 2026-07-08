@@ -1,5 +1,5 @@
 import react from "@vitejs/plugin-react";
-import { copyFileSync, existsSync, readdirSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { defineConfig, splitVendorChunkPlugin } from "vite";
@@ -11,14 +11,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Plugin to copy static assets from assets/static to build output
 const copyStaticAssetsPlugin = () => ({
   name: "copy-static-assets",
-  generateBundle() {
+  writeBundle() {
     const staticDir = path.resolve(__dirname, "assets/static");
     const outDir = path.resolve(__dirname, "priv/static");
 
     if (existsSync(staticDir)) {
-      const files = readdirSync(staticDir);
+      mkdirSync(outDir, { recursive: true });
 
-      files.forEach((file) => {
+      readdirSync(staticDir).forEach((file) => {
         const src = path.join(staticDir, file);
         const dest = path.join(outDir, file);
         copyFileSync(src, dest);
