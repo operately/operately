@@ -20,6 +20,7 @@ export async function loader({ params }): Promise<LoaderData> {
     includeContributors: true,
     includeAccessLevels: true,
     includeContributorsAccessLevels: true,
+    includeSpace: true,
   }).then((data) => data.project!);
 
   const { champion, reviewer, contributors } = ProjectContributors.splitByRole(project.contributors!);

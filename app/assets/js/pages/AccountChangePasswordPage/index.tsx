@@ -45,6 +45,8 @@ function Page() {
   return (
     <Pages.Page title={"Change Password"} testId="change-password-page">
       <Paper.Root size="small">
+        <Navigation />
+
         <Paper.Body>
           <Paper.Header title="Change Password" />
 
@@ -74,5 +76,18 @@ function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Navigation() {
+  const paths = usePaths();
+
+  return (
+    <Paper.Navigation
+      items={[
+        { to: paths.homePath(), label: "Home" },
+        { to: paths.accountSecurityPath(), label: "Password & Security" },
+      ]}
+    />
   );
 }
