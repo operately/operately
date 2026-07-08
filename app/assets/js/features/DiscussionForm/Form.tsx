@@ -1,10 +1,11 @@
 import * as React from "react";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { FormState } from "./useForm";
 
 export function Form({ form, children }: { form: FormState; children?: React.ReactNode }) {
-  const mentionSearchScope = { type: "space", id: form.space.id } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: form.space.id } });
 
   return (
     <Forms.Form form={form}>
@@ -19,7 +20,7 @@ export function Form({ form, children }: { form: FormState; children?: React.Rea
           />
           <Forms.RichTextArea
             field="body"
-            mentionSearchScope={mentionSearchScope}
+            richTextHandlers={richTextHandlers}
             placeholder="Write here..."
             hideBorder
             height="min-h-[350px]"

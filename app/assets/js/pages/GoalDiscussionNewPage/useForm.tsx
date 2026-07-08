@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 import { SubscriptionsState } from "@/models/subscriptions";
 import * as Goals from "@/models/goals";
 

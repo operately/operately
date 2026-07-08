@@ -4,8 +4,8 @@ import * as Projects from "@/models/projects";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
-import Forms from "@/components/Forms";
-import { DimmedLink, SubscribersSelector } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { DimmedLink, Forms, SubscribersSelector } from "turboui";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
 import { useForm } from "./useForm";
@@ -71,7 +71,7 @@ function Form() {
   });
 
   const form = useForm({ project, subscriptionsState });
-  const mentionSearchScope = { type: "project", id: project.id } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
 
   return (
     <Forms.Form form={form}>
@@ -87,7 +87,7 @@ function Form() {
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
             <Forms.RichTextArea
               field="message"
-              mentionSearchScope={mentionSearchScope}
+              richTextHandlers={richTextHandlers}
               placeholder="Start a new discussion..."
               hideBorder
               height="min-h-[350px]"
