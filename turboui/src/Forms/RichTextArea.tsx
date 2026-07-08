@@ -14,7 +14,7 @@ const DEFAULTS = {
   verticalPadding: "py-2",
   fontSize: "text-base",
   fontWeight: "font-medium",
-  height: "min-h-[80px]",
+  height: "min-h-[250px]",
 };
 
 type ResolvedRichTextAreaProps = RichTextAreaProps & typeof DEFAULTS;
