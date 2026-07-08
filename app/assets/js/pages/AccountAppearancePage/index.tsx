@@ -8,7 +8,6 @@ import { IconSun, IconMoon, IconDeviceLaptop, Forms, showErrorToast } from "turb
 import classnames from "classnames";
 
 import { useSetTheme, useTheme } from "@/contexts/ThemeContext";
-import { PageNavigation } from "@/features/accounts/PageNavigation";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 
@@ -19,12 +18,25 @@ function Page() {
   return (
     <Pages.Page title={["Apperance", "Account"]}>
       <Paper.Root size="small">
-        <PageNavigation />
+        <Navigation />
         <Paper.Body>
           <Form />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function Navigation() {
+  const paths = usePaths();
+
+  return (
+    <Paper.Navigation
+      items={[
+        { to: paths.homePath(), label: "Home" },
+        { to: paths.accountSettingsPath(), label: "Settings" },
+      ]}
+    />
   );
 }
 

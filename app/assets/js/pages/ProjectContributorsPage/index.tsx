@@ -6,7 +6,6 @@ import * as ProjectContributors from "@/models/projectContributors";
 import * as Projects from "@/models/projects";
 import { PageModule } from "@/routes/types";
 
-import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ProjectContributor } from "@/models/projectContributors";
 import { BorderedRow, ContributorAvatar, Menu, MenuActionItem, MenuLinkItem, PlaceholderAvatar, PrimaryButton, SecondaryButton } from "turboui";
 
@@ -25,9 +24,9 @@ function Page() {
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["Team & Access", project.name!]} testId="project-contributors-page">
+    <Pages.Page title={["Team & Access", project.name]} testId="project-contributors-page">
       <Paper.Root>
-        <ProjectPageNavigation project={project} />
+        <Navigation />
 
         <Paper.Body>
           <Title />
@@ -40,6 +39,22 @@ function Page() {
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function Navigation() {
+  const { project } = useLoadedData();
+  const paths = usePaths();
+  const items: Paper.NavigationItem[] = [];
+
+  if (project.space) {
+    items.push({ to: paths.spacePath(project.space.id), label: project.space.name });
+    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects"), label: "Work Map" });
+  } else {
+    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
+  }
+  items.push({ to: paths.projectPath(project.id), label: project.name });
+
+  return <Paper.Navigation items={items} />;
 }
 
 function Title() {
@@ -62,7 +77,7 @@ function AddContribsButton() {
   const { project } = useLoadedData();
 
   if (!project.permissions?.canEdit) return null;
-  const path = paths.projectContributorsAddPath(project.id!, { type: "contributor" });
+  const path = paths.projectContributorsAddPath(project.id, { type: "contributor" });
 
   return (
     <PrimaryButton linkTo={path} testId="add-contributors-button" size="sm">
@@ -74,7 +89,7 @@ function AddContribsButton() {
 function GeneralAccess() {
   const paths = usePaths();
   const { project } = useLoadedData();
-  const editPath = paths.projectEditPermissionsPath(project.id!);
+  const editPath = paths.projectEditPermissionsPath(project.id);
 
   return (
     <Paper.Section title="General Access">

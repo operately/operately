@@ -7,7 +7,6 @@ import * as Projects from "@/models/projects";
 
 import { Forms } from "turboui";
 
-import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import {
   applyAccessLevelConstraints,
   initialAccessLevels,
@@ -28,7 +27,7 @@ async function loader({ params }): Promise<LoaderResult> {
     id: params.projectID,
     includeSpace: true,
     includeAccessLevels: true,
-  }).then((data) => data.project!);
+  }).then((data) => data.project);
 
   return { project };
 }
@@ -37,9 +36,9 @@ function Page() {
   const { project } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={["Edit General Access", project.name!]}>
+    <Pages.Page title={["Edit General Access", project.name]}>
       <Paper.Root size="small">
-        <ProjectContribsSubpageNavigation project={project} />
+        <Navigation />
 
         <Paper.Body>
           <h1 className="text-2xl font-extrabold">Edit General Access</h1>
@@ -50,11 +49,28 @@ function Page() {
   );
 }
 
+function Navigation() {
+  const paths = usePaths();
+  const { project } = Pages.useLoadedData<LoaderResult>();
+  const items: Paper.NavigationItem[] = [];
+
+  if (project.space) {
+    items.push({ to: paths.spacePath(project.space.id), label: project.space.name });
+    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects"), label: "Work Map" });
+  } else {
+    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
+  }
+  items.push({ to: paths.projectPath(project.id), label: project.name });
+  items.push({ to: paths.projectContributorsPath(project.id), label: "Team & Access" });
+
+  return <Paper.Navigation items={items} />;
+}
+
 function Form() {
   const paths = usePaths();
   const { project } = Pages.useLoadedData<LoaderResult>();
 
-  const navigateToContributorsPath = useNavigateTo(paths.projectContributorsPath(project.id!));
+  const navigateToContributorsPath = useNavigateTo(paths.projectContributorsPath(project.id));
   const [updatePermissions] = Api.projects.useUpdatePermissions();
 
   const form = Forms.useForm({
