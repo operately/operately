@@ -60,6 +60,7 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
   const [value, setValue] = useFieldValue(props.field);
   const formState = React.useRef(form.state);
   const clearLocalDraft = React.useRef<() => void>(() => undefined);
+  const skipNextContentSync = React.useRef(false);
 
   const editor = useEditor({
     content: value,
@@ -68,9 +69,11 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
     handlers: props.richTextHandlers,
     localDraft: { key: localDraftKey(props.field) },
     onBlur: ({ json }) => {
+      skipNextContentSync.current = true;
       setValue(json);
     },
     onUpdate: ({ json }) => {
+      skipNextContentSync.current = true;
       setValue(json);
     },
     onUploadStatusChange: (uploading) => {
@@ -80,6 +83,11 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
 
   React.useEffect(() => {
     if (!editor.editor || editor.localDraftRestored) {
+      return;
+    }
+
+    if (skipNextContentSync.current) {
+      skipNextContentSync.current = false;
       return;
     }
 

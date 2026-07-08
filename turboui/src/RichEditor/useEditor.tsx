@@ -84,6 +84,21 @@ const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
   tabindex: "",
 };
 
+const starterKitExtension = StarterKit.configure({
+  link: false,
+  bulletList: {
+    keepMarks: true,
+    keepAttributes: false,
+  },
+  orderedList: {
+    keepMarks: true,
+    keepAttributes: false,
+  },
+  dropcursor: false,
+});
+
+const linkExtension = Link.extend({ inclusive: false }).configure({ openOnClick: false });
+
 export function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
 
@@ -96,41 +111,40 @@ export function useEditor(props: UseEditorProps): EditorState {
   const initialContent = restoredDraft ?? props.content;
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
+  const extensions = React.useMemo(
+    () => [
+      starterKitExtension,
+      Blob.configure({
+        uploadFile: props.handlers.uploadFile,
+        editable: props.editable,
+      }),
+      linkExtension,
+      Placeholder.configure({ placeholder: props.placeholder }),
+      ...mentionExtensions(props.handlers, props.editable),
+      Highlight,
+      FakeTextSelection,
+    ],
+    [props.handlers.uploadFile, props.handlers.peopleSearch, props.editable, props.placeholder],
+  );
+
+  const editorProps = React.useMemo(
+    () => ({
+      attributes: {
+        class: "focus:outline-none" + " " + props.className,
+        tabindex: props.tabindex!,
+      },
+    }),
+    [props.className, props.tabindex],
+  );
+
   const editor = TipTap.useEditor({
     shouldRerenderOnTransaction: true,
     editable: props.editable,
     content: initialContent,
     autofocus: props.autoFocus,
     injectCSS: false,
-    editorProps: {
-      attributes: {
-        class: "focus:outline-none" + " " + props.className,
-        tabindex: props.tabindex!,
-      },
-    },
-    extensions: [
-      StarterKit.configure({
-        link: false,
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false,
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false,
-        },
-        dropcursor: false,
-      }),
-      Blob.configure({
-        uploadFile: props.handlers.uploadFile,
-        editable: props.editable,
-      }),
-      Link.extend({ inclusive: false }).configure({ openOnClick: false }),
-      Placeholder.configure({ placeholder: props.placeholder }),
-      ...mentionExtensions(props.handlers, props.editable),
-      Highlight,
-      FakeTextSelection,
-    ],
+    editorProps,
+    extensions,
     onFocus({ editor }) {
       editor.chain().unsetFakeTextSelection().run();
 
