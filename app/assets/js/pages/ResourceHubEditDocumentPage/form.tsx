@@ -3,14 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 import { ResourceHubDocument, documents } from "@/models/resourceHubs";
 
-import Forms from "@/components/Forms";
-import { useFormContext } from "@/components/Forms/FormContext";
-
-import { usePaths } from "@/routes/paths";
-import { areRichTextObjectsEqual, SubscribersSelector } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { DimmedSection } from "@/components/PaperContainer";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { areRichTextObjectsEqual, Forms, SubscribersSelector } from "turboui";
 
 export function Form({ document }: { document: ResourceHubDocument }) {
   const paths = usePaths();
@@ -88,7 +86,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
     },
   });
 
-  const mentionSearchScope = { type: "resource_hub", id: document.resourceHubId! } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "resource_hub", id: document.resourceHubId! } });
 
   return (
     <Forms.Form form={form}>
@@ -96,7 +94,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         <Forms.TitleInput field="title" placeholder="Title..." />
         <Forms.RichTextArea
           field="content"
-          mentionSearchScope={mentionSearchScope}
+          richTextHandlers={richTextHandlers}
           placeholder="Write here..."
           hideBorder
         />
@@ -116,7 +114,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
 }
 
 function FormActions({ document }: { document: ResourceHubDocument }) {
-  const form = useFormContext();
+  const form = Forms.useFormContext();
 
   return (
     <div className="flex items-center justify-start gap-4 mt-8">

@@ -13,6 +13,7 @@ export { TitleInput } from "./TitleInput";
 export { RichTextArea } from "./RichTextArea";
 export { SelectBox } from "./SelectBox";
 export { Submit } from "./Submit";
+export { SubmitButton } from "./SubmitButton";
 export { TextInput } from "./TextInput";
 export { useFieldError, useFieldValue, useFormContext } from "./context";
 export { useForm } from "./useForm";
@@ -41,6 +42,7 @@ export type {
   RichTextAreaProps,
   SelectBoxOption,
   SelectBoxProps,
+  SubmitButtonProps,
   SubmitProps,
   TextInputProps,
   TitleInputProps,

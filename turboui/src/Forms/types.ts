@@ -109,6 +109,15 @@ export interface SubmitProps {
   testId?: string;
 }
 
+export interface SubmitButtonProps {
+  name: string;
+  text: string;
+  onClick: (attrs: unknown) => void;
+  buttonSize?: BaseButtonProps["size"];
+  primary?: boolean;
+  className?: string;
+}
+
 export interface SelectBoxOption {
   label: string;
   value: string | number;
