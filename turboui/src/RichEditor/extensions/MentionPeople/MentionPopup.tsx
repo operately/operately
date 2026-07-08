@@ -1,9 +1,7 @@
 import { ReactRenderer } from "@tiptap/react";
-import tippy, { Instance, Props } from "tippy.js";
 
 import { MentionList } from "./MentionList";
 
-type PopupInstance = Instance<Props>[] | null;
 type MentionPopupProps = Record<string, any>;
 
 /**
@@ -12,11 +10,11 @@ type MentionPopupProps = Record<string, any>;
  */
 export class MentionPopup {
   component: ReactRenderer | null;
-  popup: PopupInstance | null;
+  unmount: (() => void) | null;
 
   constructor() {
     this.component = null;
-    this.popup = null;
+    this.unmount = null;
   }
 
   onStart(props: MentionPopupProps) {
@@ -29,45 +27,20 @@ export class MentionPopup {
       return;
     }
 
-    this.popup = tippy("body", {
-      getReferenceClientRect: props.clientRect,
-      appendTo: () => document.body,
-      content: this.component.element,
-      showOnCreate: true,
-      interactive: true,
-      trigger: "manual",
-      placement: "bottom-start",
-    });
+    this.unmount = props.mount(this.component.element);
   }
 
   onUpdate(props: MentionPopupProps) {
     if (!this.component) return;
-    if (!this.popup) return;
 
     this.component.updateProps(props);
-
-    if (!props.clientRect) {
-      return;
-    }
-
-    if (!this.popup[0]) {
-      return;
-    }
-
-    this.popup[0].setProps({
-      getReferenceClientRect: props.clientRect,
-    });
   }
 
   onKeyDown(props: MentionPopupProps) {
     if (!this.component) return;
-    if (!this.popup) return;
 
     if (props.event.key === "Escape") {
-      if (!this.popup[0]) return;
-
-      this.popup[0].hide();
-
+      this.unmount?.();
       return true;
     }
 
@@ -77,12 +50,13 @@ export class MentionPopup {
   }
 
   onExit() {
+    this.unmount?.();
+
     if (this.component !== null) {
       this.component.destroy();
     }
 
-    if (this.popup !== null && this.popup[0]) {
-      this.popup[0].destroy();
-    }
+    this.unmount = null;
+    this.component = null;
   }
 }

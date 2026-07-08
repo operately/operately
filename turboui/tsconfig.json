@@ -38,13 +38,23 @@
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     
-    // Paths for dependencies
+    // Paths for dependencies — app paths first for local dev parity, turboui paths as CI fallback
     "paths": {
-      "*": ["../app/node_modules/*"],
-      "react": ["../app/node_modules/react", "../app/node_modules/@types/react"],
-      "react/*": ["../app/node_modules/react/*", "../app/node_modules/@types/react/*"]
+      "*": ["../app/node_modules/*", "./node_modules/*"],
+      "react": [
+        "../app/node_modules/react",
+        "./node_modules/react",
+        "../app/node_modules/@types/react",
+        "./node_modules/@types/react"
+      ],
+      "react/*": [
+        "../app/node_modules/react/*",
+        "./node_modules/react/*",
+        "../app/node_modules/@types/react/*",
+        "./node_modules/@types/react/*"
+      ]
     },
-    "typeRoots": ["../app/node_modules/@types", "./src/types"]
+    "typeRoots": ["../app/node_modules/@types", "./node_modules/@types", "./src/types"]
   },
   "include": ["src/**/*", "src/types/**/*.d.ts"],
   "exclude": ["node_modules/**/*", "dist", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
