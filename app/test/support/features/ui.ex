@@ -362,29 +362,31 @@ defmodule Operately.Support.Features.UI do
 
   def wait_until_text(state, text) do
     execute("wait_until_text", state, fn session ->
-      Wallaby.Browser.retry(fn ->
-        if Browser.has_text?(session, text) do
-          {:ok, session}
-        else
-          {:error, :not_yet}
-        end
-      end)
-
-      session
+      case Wallaby.Browser.retry(fn ->
+             if Browser.has_text?(session, text) do
+               {:ok, session}
+             else
+               {:error, :not_yet}
+             end
+           end) do
+        {:ok, session} -> session
+        {:error, _} -> raise "Timed out waiting for text '#{text}'"
+      end
     end)
   end
 
   def wait_until_text(state, text, testid: id) do
     execute("wait_until_text", state, fn session ->
-      Wallaby.Browser.retry(fn ->
-        if Browser.has_text?(session, query(testid: id), text) do
-          {:ok, session}
-        else
-          {:error, :not_yet}
-        end
-      end)
-
-      session
+      case Wallaby.Browser.retry(fn ->
+             if Browser.has_text?(session, query(testid: id), text) do
+               {:ok, session}
+             else
+               {:error, :not_yet}
+             end
+           end) do
+        {:ok, session} -> session
+        {:error, _} -> raise "Timed out waiting for text '#{text}' in [data-test-id=\"#{id}\"]"
+      end
     end)
   end
 
@@ -557,40 +559,45 @@ defmodule Operately.Support.Features.UI do
 
   def wait_until_has(state, %Wallaby.Query{} = query) do
     execute("wait_until_has", state, fn session ->
-      Wallaby.Browser.retry(fn ->
-        case Browser.execute_query(session, query) do
-          {:ok, _} -> {:ok, session}
-          _ -> {:error, :not_yet}
-        end
-      end)
-
-      session
+      case Wallaby.Browser.retry(fn ->
+             case Browser.execute_query(session, query) do
+               {:ok, _} -> {:ok, session}
+               _ -> {:error, :not_yet}
+             end
+           end) do
+        {:ok, session} -> session
+        {:error, _} -> raise "Timed out waiting for element matching '#{inspect(query)}'"
+      end
     end)
   end
 
   def wait_for_page_to_load(state, path) do
     execute("wait_for_page_load", state, fn session ->
-      Wallaby.Browser.retry(fn ->
-        if Wallaby.Browser.current_path(session) == path do
-          {:ok, session}
-        else
-          {:error, :not_yet}
-        end
-      end)
-
-      session
+      case Wallaby.Browser.retry(fn ->
+             if Wallaby.Browser.current_path(session) == path do
+               {:ok, session}
+             else
+               {:error, :not_yet}
+             end
+           end) do
+        {:ok, session} -> session
+        {:error, _} -> raise "Timed out waiting for page '#{path}'"
+      end
     end)
   end
 
   # Wallaby's current_path/1 can miss query-string state in feature tests.
   defp wait_for_location_to_load(session, path) do
-    Wallaby.Browser.retry(fn ->
-      if browser_location(session) == path do
-        {:ok, session}
-      else
-        {:error, :not_yet}
-      end
-    end)
+    case Wallaby.Browser.retry(fn ->
+           if browser_location(session) == path do
+             {:ok, session}
+           else
+             {:error, :not_yet}
+           end
+         end) do
+      {:ok, session} -> session
+      {:error, _} -> raise "Timed out waiting for location '#{path}'"
+    end
   end
 
   # Read the browser's real location so tab/query-param navigation is preserved.
