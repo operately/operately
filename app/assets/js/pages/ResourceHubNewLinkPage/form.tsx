@@ -2,10 +2,9 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { links, resourceHubLandingPath } from "@/models/resourceHubs";
-import { emptyContent, LinkIcon, SubscribersSelector, type ResourceHubLinkType } from "turboui";
+import { Forms, emptyContent, LinkIcon, SubscribersSelector, type ResourceHubLinkType } from "turboui";
 
-import Forms from "@/components/Forms";
-import { useFieldValue } from "@/components/Forms/FormContext";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -78,7 +77,7 @@ export function Form() {
 
 function FormFields() {
   const { resourceHub } = useLoadedData();
-  const mentionSearchScope = { type: "resource_hub", id: resourceHub.id! } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "resource_hub", id: resourceHub.id! } });
 
   return (
     <Forms.FieldGroup>
@@ -90,7 +89,7 @@ function FormFields() {
       <Forms.RichTextArea
         label="Description (optional)"
         field="description"
-        mentionSearchScope={mentionSearchScope}
+        richTextHandlers={richTextHandlers}
         placeholder="Add any notes here..."
       />
     </Forms.FieldGroup>
@@ -98,8 +97,11 @@ function FormFields() {
 }
 
 function SelectTypeField() {
-  const [type, _] = useFieldValue<ResourceHubLinkType>("type");
-  const isGoogleOption = useMemo(() => GOOGLE_OPTIONS.map((x) => x.value).includes(type), [type]);
+  const [type, _] = Forms.useFieldValue<ResourceHubLinkType>("type");
+  const isGoogleOption = useMemo(
+    () => type != null && GOOGLE_OPTIONS.map((x) => x.value).includes(type),
+    [type],
+  );
 
   if (isGoogleOption) {
     return (

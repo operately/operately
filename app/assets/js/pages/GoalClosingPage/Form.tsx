@@ -1,8 +1,9 @@
 import React from "react";
 
-import Forms from "@/components/Forms";
+import { Forms, emptyContent, SubscribersSelector } from "turboui";
 import * as Goals from "@/models/goals";
 
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { PageCache } from "@/routes/PageCache";
@@ -11,7 +12,6 @@ import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
-import { emptyContent, SubscribersSelector } from "turboui";
 
 export function Form() {
   const paths = usePaths();
@@ -80,12 +80,13 @@ function AccomplishedOrDropped() {
 
 function RetrospectiveNotes() {
   const { goal } = useLoadedData();
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id! } });
 
   return (
     <Forms.RichTextArea
       field="retrospective"
       label="Retrospective notes"
-      mentionSearchScope={{ type: "goal", id: goal.id! }}
+      richTextHandlers={richTextHandlers}
       placeholder="What went well? What didn't? What did you learn?"
       required
     />

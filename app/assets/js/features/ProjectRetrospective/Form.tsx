@@ -1,11 +1,11 @@
 import React from "react";
 
-import Forms from "@/components/Forms";
+import { Forms, emptyContent, SubscribersSelector } from "turboui";
 import * as Projects from "@/models/projects";
 
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { useNavigate } from "react-router-dom";
-import { emptyContent, SubscribersSelector } from "turboui";
 import { usePaths } from "@/routes/paths";
 
 type Mode = "create" | "edit";
@@ -83,12 +83,14 @@ function AccomplishedOrDropped() {
 }
 
 function RetrospectiveNotes({ project }: { project: Projects.Project }) {
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
+
   return (
     <div data-test-id="retrospective-notes">
       <Forms.RichTextArea
         field="retrospective"
         label="Retrospective notes"
-        mentionSearchScope={{ type: "project", id: project.id }}
+        richTextHandlers={richTextHandlers}
         placeholder="What went well? What didn't? What did you learn?"
         required
       />

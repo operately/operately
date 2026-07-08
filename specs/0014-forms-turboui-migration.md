@@ -90,7 +90,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | 1 — Input Primitives and FieldGroup Layouts | [x] Complete |
 | 2 — Auth and Account Forms | [x] Complete |
 | 3 — Standard CRUD Forms | [ ] In progress (3a + 3b done) |
-| 4 — RichTextArea Cohort | [ ] Not started |
+| 4 — RichTextArea Cohort | [ ] In progress |
 | 5 — Multi-Action Submit and Check-Ins | [ ] Not started |
 | 6 — Domain Selector Bridges | [ ] Not started |
 | 7 — GoalTargetsV2 and Stragglers | [ ] Not started |
@@ -250,7 +250,7 @@ import { Forms } from "turboui";
 - [x] `app/assets/js/pages/ProjectEditAccessLevelsPage/index.tsx`
 - [ ] `app/assets/js/pages/GoalAccessAddPage/index.tsx`
 - [x] `app/assets/js/pages/GoalEditAccessLevelsPage/index.tsx`
-- [ ] `app/assets/js/pages/ProjectResumePage/Form.tsx`
+- [x] `app/assets/js/pages/ProjectResumePage/Form.tsx` *(Phase 4)*
 - [ ] `app/assets/js/pages/ProjectContributorsAddPage/*`
 - [ ] `app/assets/js/pages/ProjectContributorsEditPage/ChangeChampion.tsx`
 - [ ] `app/assets/js/pages/ProjectContributorsEditPage/ChangeReviewer.tsx`
@@ -279,23 +279,24 @@ import { Forms } from "turboui";
 
 ### TurboUI work
 
-- [ ] `readonly` mode + styling props on TurboUI `RichTextArea`
-- [ ] Call sites: `richTextHandlers={useRichEditorHandlers({ scope })}`
+- [x] `readonly` mode + styling props on TurboUI `RichTextArea`
+- [x] Call sites: `richTextHandlers={useRichEditorHandlers({ scope })}`
 
 ### Migrate (~12 files)
 
 - [ ] `app/assets/js/pages/ResourceHubNewDocumentPage/form.tsx`
 - [ ] `app/assets/js/pages/ResourceHubEditDocumentPage/form.tsx`
 - [ ] `app/assets/js/pages/ResourceHubEditFilePage/form.tsx`
-- [ ] `app/assets/js/pages/ResourceHubEditLinkPage/form.tsx`
-- [ ] `app/assets/js/pages/ResourceHubNewLinkPage/form.tsx`
+- [x] `app/assets/js/pages/ResourceHubEditLinkPage/form.tsx`
+- [x] `app/assets/js/pages/ResourceHubNewLinkPage/form.tsx`
 - [ ] `app/assets/js/features/DiscussionForm/Form.tsx`
 - [ ] `app/assets/js/pages/ProjectDiscussionNewPage/index.tsx`
 - [ ] `app/assets/js/pages/ProjectDiscussionEditPage/index.tsx`
 - [ ] `app/assets/js/pages/GoalDiscussionNewPage/Form.tsx`
 - [ ] `app/assets/js/pages/GoalDiscussionEditPage/index.tsx`
-- [ ] `app/assets/js/features/ProjectRetrospective/Form.tsx`
-- [ ] `app/assets/js/pages/GoalClosingPage/Form.tsx`
+- [x] `app/assets/js/features/ProjectRetrospective/Form.tsx`
+- [x] `app/assets/js/pages/GoalClosingPage/Form.tsx`
+- [x] `app/assets/js/pages/ProjectResumePage/Form.tsx`
 - [ ] Grep `Forms.RichTextArea` for any remaining call sites
 
 ### Storybook

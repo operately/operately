@@ -3,14 +3,15 @@ import { useNavigate } from "react-router-dom";
 
 import { ResourceHubLink, links } from "@/models/resourceHubs";
 
-import Forms from "@/components/Forms";
+import { Forms, areRichTextObjectsEqual } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
 
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
-import { areRichTextObjectsEqual } from "turboui";
+
 export function Form() {
   const paths = usePaths();
   const { link } = useLoadedData();
@@ -20,6 +21,8 @@ export function Form() {
   assertPresent(link.name, "name must be present in link");
   assertPresent(link.url, "url must be present in link");
   assertPresent(link.resourceHubId, "resourceHubId must be present in link");
+
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "resource_hub", id: link.resourceHubId } });
 
   const form = Forms.useForm({
     fields: {
@@ -59,8 +62,6 @@ export function Form() {
     },
   });
 
-  const mentionSearchScope = { type: "resource_hub", id: link.resourceHubId } as const;
-
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
@@ -76,7 +77,7 @@ export function Form() {
         <Forms.RichTextArea
           label="Notes (optional)"
           field="description"
-          mentionSearchScope={mentionSearchScope}
+          richTextHandlers={richTextHandlers}
           placeholder="Add any notes here..."
         />
       </Forms.FieldGroup>
