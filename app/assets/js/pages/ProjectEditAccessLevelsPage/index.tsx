@@ -104,14 +104,14 @@ function AccessSelectors() {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={companyOptions as unknown as { label: string; value: string }[]}
+          options={companyOptions}
           hidden={shouldHide(companyOptions)}
         />
         <Forms.SelectBox
           field={"access.spaceMembers"}
           label="Space members"
           labelIcon={<IconTent size={20} />}
-          options={spaceOptions as unknown as { label: string; value: string }[]}
+          options={spaceOptions}
         />
       </Forms.FieldGroup>
     </div>

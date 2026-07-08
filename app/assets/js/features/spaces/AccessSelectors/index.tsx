@@ -17,7 +17,7 @@ export function AccessSelectors() {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={options as unknown as { label: string; value: string }[]}
+          options={options}
           hidden={shouldHide(options)}
         />
       </Forms.FieldGroup>

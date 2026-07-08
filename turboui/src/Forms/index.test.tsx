@@ -40,16 +40,16 @@ jest.mock("react-select", () => {
     value,
     onChange,
   }: {
-    options: { label: string; value: string }[];
-    value?: { label: string; value: string };
-    onChange: (option: { label: string; value: string } | null) => void;
+    options: { label: string; value: string | number }[];
+    value?: { label: string; value: string | number };
+    onChange: (option: { label: string; value: string | number } | null) => void;
   }) {
     return (
       <select
         aria-label="select-box"
         value={value?.value ?? ""}
         onChange={(event) => {
-          const option = options.find((item) => item.value === event.target.value) ?? null;
+          const option = options.find((item) => String(item.value) === event.target.value) ?? null;
           onChange(option);
         }}
       >
@@ -237,6 +237,44 @@ describe("Forms", () => {
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         status: "false",
+      }),
+    );
+  });
+
+  test("updates select box values with numeric options", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { accessLevel: 10 },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectBox
+            field="accessLevel"
+            label="Access"
+            options={[
+              { value: 10, label: "View Access" },
+              { value: 100, label: "Full Access" },
+            ]}
+          />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.change(screen.getByLabelText("select-box"), { target: { value: "100" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        accessLevel: 100,
       }),
     );
   });

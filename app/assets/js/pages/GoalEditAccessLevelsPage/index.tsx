@@ -109,6 +109,8 @@ function Form() {
 function AccessSelectors({ showSpaceAccess }: { showSpaceAccess: boolean }) {
   const [companyMembersOptions] = Forms.useFieldValue<Option[]>("access.companyMembersOptions");
   const [spaceMembersOptions] = Forms.useFieldValue<Option[]>("access.spaceMembersOptions");
+  const companyOptions = companyMembersOptions ?? [];
+  const spaceOptions = spaceMembersOptions ?? [];
 
   if (!showSpaceAccess) {
     return (
@@ -117,7 +119,7 @@ function AccessSelectors({ showSpaceAccess }: { showSpaceAccess: boolean }) {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={(companyMembersOptions ?? []) as unknown as { label: string; value: string }[]}
+          options={companyOptions}
         />
       </div>
     );
@@ -130,13 +132,13 @@ function AccessSelectors({ showSpaceAccess }: { showSpaceAccess: boolean }) {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={(companyMembersOptions ?? []) as unknown as { label: string; value: string }[]}
+          options={companyOptions}
         />
         <Forms.SelectBox
           field={"access.spaceMembers"}
           label="Space members"
           labelIcon={<IconTent size={20} />}
-          options={(spaceMembersOptions ?? []) as unknown as { label: string; value: string }[]}
+          options={spaceOptions}
         />
       </Forms.FieldGroup>
     </div>

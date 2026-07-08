@@ -111,7 +111,7 @@ export interface SubmitProps {
 
 export interface SelectBoxOption {
   label: string;
-  value: string;
+  value: string | number;
 }
 
 export interface SelectBoxProps {
