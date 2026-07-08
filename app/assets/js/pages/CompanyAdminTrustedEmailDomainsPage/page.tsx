@@ -1,12 +1,10 @@
-import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
-import { IconTrash } from "turboui";
+import { Forms, GhostButton, IconTrash } from "turboui";
 
 import { createTestId } from "@/utils/testid";
-import { GhostButton } from "turboui";
 import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
 
@@ -88,17 +86,13 @@ function AddTrustedEmailDomain({ form }: { form: FormState }) {
       <div className="text-content-accent font-bold text-lg mb-2">Add Trusted Email Domain</div>
 
       <div className="flex items-center gap-4">
-        <Forms.TextInputNoLabel
+        <Forms.Input
           id="domain"
           value={domain}
-          onChange={setDomain}
+          onChange={(e) => setDomain(e.target.value)}
           placeholder="example.com"
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === "Enter") {
-              submit();
-            }
-          }}
-          data-test-id="add-trusted-email-domain-input"
+          onEnter={submit}
+          testId="add-trusted-email-domain-input"
         />
 
         <GhostButton onClick={submit} size="sm" testId="add-trusted-email-domain-button">
