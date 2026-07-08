@@ -7,8 +7,8 @@ import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 
 import Api from "@/api";
-import Forms from "@/components/Forms";
-import { DimmedLink, SubscribersSelector, emptyContent, isContentEmpty } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { DimmedLink, Forms, SubscribersSelector, emptyContent, isContentEmpty } from "turboui";
 import { useSubscriptionsAdapter, SubscriptionsState } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
 
@@ -81,7 +81,7 @@ function Form() {
   });
 
   const form = useForm({ discussion, subscriptionsState });
-  const mentionSearchScope = { type: "project", id: discussion.project.id } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: discussion.project.id } });
 
   return (
     <Forms.Form form={form}>
@@ -97,7 +97,7 @@ function Form() {
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
             <Forms.RichTextArea
               field="message"
-              mentionSearchScope={mentionSearchScope}
+              richTextHandlers={richTextHandlers}
               placeholder="Write here..."
               hideBorder
               height="min-h-[350px]"

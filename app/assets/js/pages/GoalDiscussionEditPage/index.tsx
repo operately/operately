@@ -8,8 +8,8 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import Forms from "@/components/Forms";
-import { DimmedLink, emptyContent, isContentEmpty } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { DimmedLink, Forms, emptyContent, isContentEmpty } from "turboui";
 
 import { match } from "ts-pattern";
 
@@ -31,7 +31,7 @@ function Page() {
   const { activity } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ activity: activity });
   const goal = Activities.getGoal(activity);
-  const mentionSearchScope = { type: "goal", id: findGoalId(activity) } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: findGoalId(activity) } });
 
   return (
     <Pages.Page title={["New Discussion", goal.name!]}>
@@ -52,7 +52,7 @@ function Page() {
                 <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
                   <Forms.RichTextArea
                     field="message"
-                    mentionSearchScope={mentionSearchScope}
+                    richTextHandlers={richTextHandlers}
                     placeholder="Start a new discussion..."
                     hideBorder
                     height="min-h-[350px]"

@@ -3,7 +3,7 @@ import * as Projects from "@/models/projects";
 import Api from "@/api";
 import { useNavigate } from "react-router-dom";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 import { SubscriptionsState } from "@/models/subscriptions";
 import { emptyContent, isContentEmpty } from "turboui";
 

@@ -1,7 +1,7 @@
 import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
 
-import Forms, { FormState as FormsFormState } from "@/components/Forms";
+import { Forms, type FormState as FormsFormState } from "turboui";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { Subscriber } from "@/models/notifications";
 import { usePaths } from "@/routes/paths";

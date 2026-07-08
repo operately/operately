@@ -128,9 +128,15 @@ function Editor(props: RichTextAreaProps & { error: boolean }) {
   }, []);
 
   return (
-    <div className={wrapperClassName(props)}>
-      <RichTextEditor editor={editor} hideToolbar={props.hideToolbar} hideBorder padding="p-0" />
-    </div>
+    <RichTextEditor
+      editor={editor}
+      hideToolbar={props.hideToolbar}
+      hideBorder={props.hideBorder}
+      padding="p-0"
+      className={classNames({
+        "border-red-500": props.error && !props.hideBorder,
+      })}
+    />
   );
 }
 
@@ -142,14 +148,4 @@ function localDraftKey(field: string): string | undefined {
 
 function contentClassName(props: RichTextAreaProps) {
   return classNames(props.horizontalPadding, props.verticalPadding, props.fontSize, props.fontWeight, props.height);
-}
-
-function wrapperClassName(props: RichTextAreaProps & { error: boolean }) {
-  return classNames({
-    "w-full": true,
-    "bg-surface-base text-content-accent placeholder-content-subtle": true,
-    "border rounded-lg": !props.hideBorder,
-    "border-surface-outline": !props.error,
-    "border-red-500": props.error,
-  });
 }
