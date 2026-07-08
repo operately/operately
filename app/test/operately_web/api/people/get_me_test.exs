@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
     test "it returns the current account's information", ctx do
       assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
 
-      assert data == Serializer.serialize(ctx.person, level: :full, me: true)
+      assert data == Serializer.serialize(ctx.person, level: :full)
     end
 
     test "includes manager information when requested", ctx do
@@ -25,14 +25,14 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
 
       assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{include_manager: true})
 
-      assert data == Serializer.serialize(me, level: :full, me: true)
+      assert data == Serializer.serialize(me, level: :full)
       assert data.manager == Serializer.serialize(manager, level: :essential)
     end
 
     test "when the account has no manager, it returns null even when requested", ctx do
       assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{include_manager: true})
 
-      assert data == Serializer.serialize(ctx.person, level: :full, me: true)
+      assert data == Serializer.serialize(ctx.person, level: :full)
       assert data.manager == nil
     end
 
