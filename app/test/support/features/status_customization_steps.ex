@@ -82,7 +82,7 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
   step :save_status_changes, ctx do
     ctx
     |> UI.click_button("Save changes")
-    |> UI.sleep(500)
+    |> UI.refute_has(css: "div[role=\"dialog\"]")
   end
 
   step :assert_status_exists, ctx, label: label, color: color do
@@ -90,9 +90,7 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
   end
 
   step :assert_status_absent, ctx, label: label do
-    project = reload_project(ctx)
-
-    refute Enum.any?(project.task_statuses, &(&1.label == label))
+    project = wait_until_project(ctx, fn project -> !Enum.any?(project.task_statuses, &(&1.label == label)) end)
 
     Map.put(ctx, :project, project)
   end
@@ -193,13 +191,32 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
   end
 
   defp assert_status(ctx, label, color) do
-    project = reload_project(ctx)
+    project =
+      wait_until_project(ctx, fn project ->
+        Enum.any?(project.task_statuses, &(&1.label == label && (is_nil(color) || &1.color == color)))
+      end)
+
     status = Enum.find(project.task_statuses, &(&1.label == label))
-
     assert status, "Expected to find status #{label} but none matched"
-
     if color, do: assert(status.color == color)
 
     Map.put(ctx, :project, project)
+  end
+
+  defp wait_until_project(ctx, condition, attempts \\ [50, 100, 200, 400, 800, 1600]) do
+    project = reload_project(ctx)
+
+    cond do
+      condition.(project) ->
+        project
+
+      attempts == [] ->
+        flunk("Timed out waiting for project status change")
+
+      true ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_project(ctx, condition, remaining)
+    end
   end
 end
