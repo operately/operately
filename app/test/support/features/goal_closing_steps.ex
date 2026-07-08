@@ -69,22 +69,32 @@ defmodule Operately.Support.Features.GoalClosingSteps do
   end
 
   step :close_goal, ctx do
+    goal_path = OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal)
+
     ctx
     |> UI.click(testid: "close-goal-button")
     |> UI.wait_until_testid(testid: "goal-closing-page")
     |> UI.fill_rich_text("We are closing the goal.")
     |> UI.click_button("Close Goal")
+    |> wait_until_goal_closed()
+    |> UI.visit(goal_path)
     |> UI.wait_until_testid(testid: "goal-page")
+    |> UI.wait_until_has(testid: "page-header")
     |> UI.wait_until_has(testid: "closed-status-banner")
   end
 
   step :reopen_goal, ctx do
+    goal_path = OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal)
+
     ctx
     |> UI.click(testid: "reopen-goal-button")
     |> UI.wait_until_text("Reopening Goal")
     |> UI.fill_rich_text("We are reopening the goal.")
     |> UI.click_button("Reopen Goal")
+    |> wait_until_goal_open()
+    |> UI.visit(goal_path)
     |> UI.wait_until_testid(testid: "goal-page")
+    |> UI.wait_until_has(testid: "page-header")
     |> UI.wait_until_has(testid: "close-goal-button")
     |> UI.refute_has(testid: "closed-status-banner")
     |> UI.wait_until_text("On track", testid: "page-header")
@@ -202,5 +212,43 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> UI.visit(OperatelyWeb.Paths.work_map_path(ctx.company, tab: :goals))
     |> UI.assert_text("#{ctx.company.name} Work Map")
     |> UI.refute_text(ctx.goal.name)
+  end
+
+  defp wait_until_goal_closed(ctx, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    goal = reload_goal(ctx.goal)
+
+    cond do
+      goal.closed_at ->
+        Map.put(ctx, :goal, goal)
+
+      attempts == [] ->
+        flunk("Timed out waiting for goal to close")
+
+      true ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_goal_closed(ctx, remaining)
+    end
+  end
+
+  defp wait_until_goal_open(ctx, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    goal = reload_goal(ctx.goal)
+
+    cond do
+      is_nil(goal.closed_at) ->
+        Map.put(ctx, :goal, goal)
+
+      attempts == [] ->
+        flunk("Timed out waiting for goal to reopen")
+
+      true ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_goal_open(ctx, remaining)
+    end
+  end
+
+  defp reload_goal(goal) do
+    Operately.Repo.get!(Operately.Goals.Goal, goal.id)
   end
 end
