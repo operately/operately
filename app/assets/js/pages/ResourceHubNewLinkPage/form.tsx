@@ -98,7 +98,10 @@ function FormFields() {
 
 function SelectTypeField() {
   const [type, _] = Forms.useFieldValue<ResourceHubLinkType>("type");
-  const isGoogleOption = useMemo(() => GOOGLE_OPTIONS.map((x) => x.value).includes(type), [type]);
+  const isGoogleOption = useMemo(
+    () => type != null && GOOGLE_OPTIONS.map((x) => x.value).includes(type),
+    [type],
+  );
 
   if (isGoogleOption) {
     return (
