@@ -34,7 +34,7 @@ defmodule Operately.Support.Features.McpConnectionsSteps do
   end
 
   step :click_manage_mcp_connections_link, ctx do
-    ctx |> UI.click(testid: "manage-mcp-connections-link")
+    ctx |> UI.click(testid: "mcp-connections")
   end
 
   step :assert_on_mcp_connections_page, ctx do
