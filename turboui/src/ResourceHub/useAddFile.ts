@@ -17,6 +17,7 @@ export function useAddFile(): AddFileProps {
   const selectFiles = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
+    fileInput.multiple = true;
 
     fileInput.onchange = (e: Event) => {
       const target = e.target as HTMLInputElement;
