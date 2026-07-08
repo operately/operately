@@ -128,9 +128,18 @@ export interface RichTextAreaProps {
   field: string;
   richTextHandlers: RichEditorHandlers;
   label?: string;
+  hidden?: boolean;
   placeholder?: string;
+  hideBorder?: boolean;
   required?: boolean;
   height?: string;
+  horizontalPadding?: string;
+  verticalPadding?: string;
+  fontSize?: string;
+  fontWeight?: string;
+  showToolbarTopBorder?: boolean;
+  readonly?: boolean;
+  hideToolbar?: boolean;
 }
 
 export interface PasswordInputProps {
