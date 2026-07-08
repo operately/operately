@@ -1,15 +1,14 @@
 import * as React from "react";
 
-import { IconBuilding } from "turboui";
+import { Forms, IconBuilding } from "turboui";
 
 import { PermissionLevels } from "@/features/Permissions";
-
-import Forms from "@/components/Forms";
 
 type Option = { value: PermissionLevels; label: string };
 
 export function AccessSelectors() {
   const [companyMembersOptions] = Forms.useFieldValue<Option[]>("access.companyMembersOptions");
+  const options = companyMembersOptions ?? [];
 
   return (
     <div className="mt-6">
@@ -18,8 +17,8 @@ export function AccessSelectors() {
           field={"access.companyMembers"}
           label="Company members"
           labelIcon={<IconBuilding size={20} />}
-          options={companyMembersOptions}
-          hidden={shouldHide(companyMembersOptions)}
+          options={options}
+          hidden={shouldHide(options)}
         />
       </Forms.FieldGroup>
     </div>
