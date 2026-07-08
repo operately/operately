@@ -1,15 +1,12 @@
+const React = require("react");
+
 // Mock for @tabler/icons-react
 const createMockIcon = (name) => {
   const component = (props) => {
-    return {
-      type: 'svg',
-      props: {
-        ...props,
-        'data-testid': `mock-icon-${name}`,
-      },
-      key: null,
-      ref: null,
-    };
+    return React.createElement("svg", {
+      ...props,
+      "data-testid": `mock-icon-${name}`,
+    });
   };
   component.displayName = name;
   return component;
@@ -19,8 +16,12 @@ const createMockIcon = (name) => {
 module.exports = new Proxy(
   {},
   {
-    get: function(target, prop) {
+    get: function (target, prop) {
+      if (prop === "__esModule") {
+        return true;
+      }
+
       return createMockIcon(prop);
-    }
-  }
+    },
+  },
 );

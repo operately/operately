@@ -656,15 +656,43 @@ describe("Forms", () => {
     expect(screen.queryByText("Space members")).not.toBeInTheDocument();
   });
 
-  test("hides the company selector when no access is the only option", () => {
+  test("hides the company selector when no access is the only option on company-only forms", () => {
     function Harness() {
       const form = useForm({
         fields: {
           access: {
             companyMembers: 0,
-            spaceMembers: 70,
             companyMembersOptions: [{ value: 0, label: "No Access" }],
-            spaceMembersOptions: [{ value: 70, label: "Edit Access" }],
+          },
+        },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <AccessSelectors showSpaceAccess={false} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(screen.queryByText("Company members")).not.toBeInTheDocument();
+    expect(screen.queryByText("Space members")).not.toBeInTheDocument();
+  });
+
+  test("keeps the company selector visible when space access is also shown", () => {
+    function Harness() {
+      const form = useForm({
+        fields: {
+          access: {
+            companyMembers: 0,
+            spaceMembers: 0,
+            companyMembersOptions: [{ value: 0, label: "No Access" }],
+            spaceMembersOptions: [
+              { value: 100, label: "Full Access" },
+              { value: 0, label: "No Access" },
+            ],
           },
         },
         submit: async () => undefined,
@@ -677,9 +705,9 @@ describe("Forms", () => {
       );
     }
 
-    const { container } = render(<Harness />);
+    render(<Harness />);
 
-    expect(container.querySelector('[data-test-id="access-companyMembers"]')).not.toBeInTheDocument();
+    expect(screen.getByText("Company members")).toBeInTheDocument();
     expect(screen.getByText("Space members")).toBeInTheDocument();
   });
 });

@@ -2,10 +2,13 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
-import * as Permissions from "@/models/permissions";
 
 import Api from "@/api";
-import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
+import {
+  applyAccessLevelConstraints,
+  initialAccessLevels,
+  UNRESTRICTED_PARENT_ACCESS,
+} from "@/features/Permissions/AccessFields";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -23,7 +26,7 @@ async function loader({ params }): Promise<LoaderResult> {
     id: params.goalId,
     includeAccessLevels: true,
     includeSpace: true,
-  }).then(data => data.goal);
+  }).then((data) => data.goal!);
 
   return { goal };
 }
@@ -54,14 +57,12 @@ function Navigation() {
     items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
     items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
   } else {
-    items.push({ to: paths.workMapPath("goals"), label: "Work Map" })
+    items.push({ to: paths.workMapPath("goals"), label: "Work Map" });
   }
   items.push({ to: paths.goalPath(goal.id), label: goal.name });
   items.push({ to: paths.goalAccessManagementPath(goal.id), label: "Team & Access" });
 
-  return (
-    <Paper.Navigation items={items} />
-  );
+  return <Paper.Navigation items={items} />;
 }
 
 function Form() {
@@ -70,18 +71,16 @@ function Form() {
 
   assertPresent(goal.accessLevels, "Goal access levels must be present");
 
-
   const navigateBack = useNavigateTo(paths.goalAccessManagementPath(goal.id));
   const [edit] = Api.goals.useUpdateAccessLevels();
   const showSpaceAccess = Boolean(goal.space);
-  const fullAccessLevels: Permissions.AccessLevels = { public: 0, company: 100, space: 100 };
 
   const form = Forms.useForm({
     fields: {
-      access: initialAccessLevels(goal.accessLevels, fullAccessLevels),
+      access: initialAccessLevels(goal.accessLevels, UNRESTRICTED_PARENT_ACCESS),
     },
     onChange: ({ newValues }) => {
-      newValues.access = applyAccessLevelConstraints(newValues.access, fullAccessLevels);
+      newValues.access = applyAccessLevelConstraints(newValues.access, UNRESTRICTED_PARENT_ACCESS);
     },
     submit: async () => {
       await edit({

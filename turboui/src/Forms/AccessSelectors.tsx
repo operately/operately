@@ -18,13 +18,18 @@ export function AccessSelectors({
   const companyOptions = companyMembersOptions ?? [];
   const spaceOptions = spaceMembersOptions ?? [];
 
+  // Only hide the company selector on company-only forms (e.g. space general access),
+  // where the sole available option is no-access. When the space selector is shown,
+  // keep company visible so users can raise space access and then company access.
+  const hideCompany = !showSpaceAccess && shouldHideCompanySelector(companyOptions, noAccessValue);
+
   const companySelect = (
     <SelectBox
       field={`${fieldPrefix}.companyMembers`}
       label="Company members"
       labelIcon={<IconBuilding size={20} />}
       options={companyOptions}
-      hidden={shouldHideCompanySelector(companyOptions, noAccessValue)}
+      hidden={hideCompany}
     />
   );
 

@@ -34,10 +34,10 @@ export type AccessLevels = {
 //
 // On every change the following constraints will be applied:
 //
-// 1. The annonynousMembers should not be greater than the parent access level's public access level.
-// 2. The companyMembers should not be greater than the parent access level's company access level.
-// 3. The access level for companyMembers should be greater than or equal to the access level for annonynousMembers.
-// 4. The access level for spaceMembers should be greater than or equal to the access level for companyMembers.
+// 1. Anonymous access cannot exceed the parent space's public access level.
+// 2. Space members access cannot be less than anonymous access.
+// 3. Company members access cannot be less than anonymous access.
+// 4. Company members access cannot exceed space members access.
 //
 
 //
@@ -47,6 +47,17 @@ const ANNON = [VIEW_ACCESS, NO_ACCESS];
 const COMPANY = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
 const SPACE = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS];
 
+//
+// Edit forms for goals/projects do not expose anonymous access (always no-access).
+// Parent company/space no longer constrain nested resource options. Use this parent
+// so company/space selectors are limited only by the resource's own values.
+//
+export const UNRESTRICTED_PARENT_ACCESS: Api.AccessLevels = {
+  public: PermissionLevels.NO_ACCESS,
+  company: PermissionLevels.FULL_ACCESS,
+  space: PermissionLevels.FULL_ACCESS,
+};
+
 export function initialAccessLevels(current: Api.AccessLevels | null, parent: Api.AccessLevels): AccessLevels {
   let annonymous: PermissionLevels;
   let company: PermissionLevels;
@@ -55,32 +66,36 @@ export function initialAccessLevels(current: Api.AccessLevels | null, parent: Ap
   if (current === null) {
     annonymous = parent.public!;
     company = parent.company!;
-    space = COMMENT_ACCESS.value;
+    // Default space access is at least comment, and always at least company access.
+    space = Math.max(COMMENT_ACCESS.value, company) as PermissionLevels;
   } else {
     annonymous = current.public!;
     company = current.company!;
     space = current.space!;
   }
 
-  return {
-    anonymous: annonymous,
-    anonymousOptions: ANNON.filter((o) => o.value <= parent.public!),
-    companyMembers: company,
-    companyMembersOptions: COMPANY.filter((o) => o.value >= parent.public! && o.value <= parent.company!),
-    spaceMembers: space,
-    spaceMembersOptions: SPACE,
-  };
+  return applyAccessLevelConstraints(
+    {
+      anonymous: annonymous,
+      anonymousOptions: ANNON,
+      companyMembers: company,
+      companyMembersOptions: COMPANY,
+      spaceMembers: space,
+      spaceMembersOptions: SPACE,
+    },
+    parent,
+  );
 }
 
 export function applyAccessLevelConstraints(vals: AccessLevels, parent: Api.AccessLevels): AccessLevels {
   vals.anonymousOptions = ANNON.filter((o) => o.value <= parent.public!);
   vals.anonymous = clamp(vals.anonymous, vals.anonymousOptions);
 
-  vals.companyMembersOptions = COMPANY.filter((o) => o.value >= vals.anonymous && o.value <= parent.company!);
-  vals.companyMembers = clamp(vals.companyMembers, vals.companyMembersOptions);
-
-  vals.spaceMembersOptions = SPACE.filter((option) => option.value >= vals.companyMembers);
+  vals.spaceMembersOptions = SPACE.filter((option) => option.value >= vals.anonymous);
   vals.spaceMembers = clamp(vals.spaceMembers, vals.spaceMembersOptions);
+
+  vals.companyMembersOptions = COMPANY.filter((o) => o.value >= vals.anonymous && o.value <= vals.spaceMembers);
+  vals.companyMembers = clamp(vals.companyMembers, vals.companyMembersOptions);
 
   return vals;
 }
@@ -88,7 +103,13 @@ export function applyAccessLevelConstraints(vals: AccessLevels, parent: Api.Acce
 function clamp(val: PermissionLevels, options: Option[]): PermissionLevels {
   if (options.some((o) => o.value === val)) {
     return val;
-  } else {
-    return options[0]!.value;
   }
+
+  const max = options[0]!.value;
+  const min = options[options.length - 1]!.value;
+
+  if (val > max) return max;
+  if (val < min) return min;
+
+  return max;
 }
