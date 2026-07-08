@@ -19,7 +19,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
     Multi.new()
     |> set_if_full_edit_allowed(project, check_in)
     |> update_check_in(check_in, attrs)
-    |> maybe_update_project(project, check_in, attrs, next_check_in)
+    |> maybe_update_project(project, check_in, next_check_in)
     |> Multi.run(:subscription_list, fn _, changes ->
       SubscriptionList.get(:system,
         parent_id: changes.check_in.id,

@@ -139,7 +139,8 @@ function Header({ checkIn }: { checkIn: ProjectCheckIn }) {
   return (
     <div>
       <div className="text-2xl font-bold mx-auto">
-        Editing the Check-In from <FormattedTime {...formattedTimePreferences} time={displayDate(checkIn)} format="long-date" />
+        Editing the Check-In from{" "}
+        <FormattedTime {...formattedTimePreferences} time={displayDate(checkIn)} format="long-date" />
       </div>
     </div>
   );
