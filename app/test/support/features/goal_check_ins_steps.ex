@@ -72,7 +72,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> update_targets(targets)
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "goal-check-in-page")
+    |> assert_check_in_page_loaded()
   end
 
   step :assert_check_in_feed_item, ctx, %{message: message} do
@@ -269,7 +269,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> select_status("on_track")
     |> UI.fill_rich_text("Check-in by reviewer")
     |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "goal-check-in-page")
+    |> assert_check_in_page_loaded()
   end
 
   step :acknowledge_check_in_from_email_as_champion, ctx do
@@ -329,6 +329,32 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     ctx
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: UI.testid(["status", "option", status]))
+  end
+
+  defp assert_check_in_page_loaded(ctx) do
+    update = wait_for_last_update(ctx)
+
+    ctx
+    |> UI.assert_page(Paths.goal_check_in_path(ctx.company, update))
+    |> UI.assert_has(testid: "goal-check-in-page")
+    |> Map.put(:check_in, update)
+  end
+
+  defp wait_for_last_update(ctx, attempts \\ 20)
+
+  defp wait_for_last_update(_ctx, 0) do
+    raise "Timed out waiting for goal check-in to be created"
+  end
+
+  defp wait_for_last_update(ctx, attempts) do
+    case find_last_update(ctx) do
+      nil ->
+        :timer.sleep(100)
+        wait_for_last_update(ctx, attempts - 1)
+
+      update ->
+        update
+    end
   end
 
   defp find_last_update(ctx) do
