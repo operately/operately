@@ -361,6 +361,15 @@ export interface DemoteAccountFromSiteAdminResult {
   error?: string;
 }
 
+export interface DisableFeaturesInput {
+  companyId: CompanyId;
+  features: string[];
+}
+
+export interface DisableFeaturesResult {
+  success: boolean;
+}
+
 export interface EnableFeatureInput {
   companyId: CompanyId;
   feature: string;
@@ -545,6 +554,10 @@ class ApiNamespaceRoot {
     return this.client.post("/demote_account_from_site_admin", input);
   }
 
+  async disableFeatures(input: DisableFeaturesInput): Promise<DisableFeaturesResult> {
+    return this.client.post("/disable_features", input);
+  }
+
   async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.client.post("/enable_feature", input);
   }
@@ -711,6 +724,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.demoteAccountFromSiteAdmin(input);
   }
 
+  disableFeatures(input: DisableFeaturesInput): Promise<DisableFeaturesResult> {
+    return this.apiNamespaceRoot.disableFeatures(input);
+  }
+
   enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.apiNamespaceRoot.enableFeature(input);
   }
@@ -814,6 +831,9 @@ export async function demoteAccountFromSiteAdmin(
   input: DemoteAccountFromSiteAdminInput,
 ): Promise<DemoteAccountFromSiteAdminResult> {
   return defaultApiClient.demoteAccountFromSiteAdmin(input);
+}
+export async function disableFeatures(input: DisableFeaturesInput): Promise<DisableFeaturesResult> {
+  return defaultApiClient.disableFeatures(input);
 }
 export async function enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
   return defaultApiClient.enableFeature(input);
@@ -955,6 +975,10 @@ export function useDemoteAccountFromSiteAdmin(): UseMutationHookResult<
   );
 }
 
+export function useDisableFeatures(): UseMutationHookResult<DisableFeaturesInput, DisableFeaturesResult> {
+  return useMutation<DisableFeaturesInput, DisableFeaturesResult>((input) => defaultApiClient.disableFeatures(input));
+}
+
 export function useEnableFeature(): UseMutationHookResult<EnableFeatureInput, EnableFeatureResult> {
   return useMutation<EnableFeatureInput, EnableFeatureResult>((input) => defaultApiClient.enableFeature(input));
 }
@@ -1066,6 +1090,8 @@ export default {
   useDeleteSiteMessage,
   demoteAccountFromSiteAdmin,
   useDemoteAccountFromSiteAdmin,
+  disableFeatures,
+  useDisableFeatures,
   enableFeature,
   useEnableFeature,
   promoteAccountToSiteAdmin,
