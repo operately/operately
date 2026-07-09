@@ -6,7 +6,7 @@ import * as React from "react";
 import { EnableFeatureModal } from "./EnableFeatureModal";
 import { RemoveFeatureFlagsModal } from "./RemoveFeatureFlagsModal";
 
-import { Avatar, IconFlare, IconTrash, SecondaryButton, FormattedTime } from "turboui";
+import { Avatar, IconFlare, IconTrash, SecondaryButton, FormattedTime, formatStorageBytes } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useStartSupportSession } from "@/features/SupportSessions";
@@ -89,11 +89,12 @@ function Info({ company }: { company: AdminApi.Company }) {
 function StatsSection({ company }: { company: AdminApi.Company }) {
   return (
     <div className="border-y border-stroke-base py-3 mt-2">
-      <div className="grid grid-cols-4 gap-4 w-full">
+      <div className="grid grid-cols-5 gap-4 w-full">
         <Stat title="People" value={company.peopleCount!} />
         <Stat title="Spaces" value={company.spacesCount!} />
         <Stat title="Goals" value={company.goalsCount!} />
         <Stat title="Projects" value={company.projectsCount!} />
+        <Stat title="Storage" value={formatStorageBytes(company.storageUsageBytes)} />
       </div>
     </div>
   );

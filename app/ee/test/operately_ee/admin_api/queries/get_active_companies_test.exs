@@ -1,6 +1,8 @@
 defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
   use Operately.DataCase
 
+  import Operately.BlobsFixtures
+
   alias OperatelyEE.AdminApi.Queries.GetActiveCompanies
   alias Operately.Support.Factory
 
@@ -190,6 +192,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
       assert Map.has_key?(company_data, :goals_count)
       assert Map.has_key?(company_data, :spaces_count)
       assert Map.has_key?(company_data, :projects_count)
+      assert Map.has_key?(company_data, :storage_usage_bytes)
       assert Map.has_key?(company_data, :owners)
       assert Map.has_key?(company_data, :last_activity_at)
       assert Map.has_key?(company_data, :inserted_at)
@@ -201,7 +204,33 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
       assert is_integer(company_data.goals_count)
       assert is_integer(company_data.spaces_count)
       assert is_integer(company_data.projects_count)
+      assert is_integer(company_data.storage_usage_bytes)
       assert is_list(company_data.owners)
+    end
+
+    test "sums uploaded company blobs and ignores pending ones", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)
+        |> Factory.add_goal(:goal2, :space, creator: :member2)
+        |> Factory.add_project(:project1, :space, creator: :member1)
+        |> Factory.add_project(:project2, :space, creator: :member2)
+
+      create_recent_activity(ctx.company)
+
+      blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id, status: :uploaded, size: 1024})
+      blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id, status: :uploaded, size: 2048})
+      blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id, status: :pending, size: 4096})
+
+      {:ok, result} = GetActiveCompanies.call(nil, %{})
+
+      assert length(result.companies) == 1
+      company_data = hd(result.companies)
+      assert company_data.storage_usage_bytes == 3072
     end
   end
 

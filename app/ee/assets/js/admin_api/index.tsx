@@ -174,6 +174,7 @@ export interface Company {
   goalsCount?: number;
   spacesCount?: number;
   projectsCount?: number;
+  storageUsageBytes?: number;
   lastActivityAt?: string;
   insertedAt?: string;
   uuid?: string;

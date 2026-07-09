@@ -22,6 +22,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompanies do
     |> Company.load_people_count()
     |> Company.load_goals_count()
     |> Company.load_projects_count()
+    |> Company.load_storage_usage_bytes()
     |> Company.load_last_activity_event()
 
     # Filter based on our activity criteria
@@ -76,6 +77,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompanies do
       goals_count: company.goals_count,
       spaces_count: company.spaces_count,
       projects_count: company.projects_count,
+      storage_usage_bytes: company.storage_usage_bytes,
       owners: OperatelyWeb.Api.Serializer.serialize(company.owners, level: :full),
       last_activity_at: OperatelyWeb.Api.Serializer.serialize(company.last_activity_at, level: :essential),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(company.inserted_at, level: :essential)
