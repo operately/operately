@@ -4,13 +4,13 @@ defmodule Operately.Support.Features.UI do
   alias Wallaby.Query
 
   alias Wallaby.{Browser, Element}
-  alias Operately.People.Person
 
   def init_ctx(ctx, state \\ %{}) do
     Map.merge(ctx, state)
   end
 
   defdelegate debug(ctx, params), to: Operately.Support.Features.UI.Debug
+  defdelegate mention_person_in_rich_text(state, person_or_name), to: Operately.Support.Features.UI.RichText
 
   def login_based_on_tag(state) do
     field = state[:login_as]
@@ -108,34 +108,6 @@ defmodule Operately.Support.Features.UI do
       session |> Browser.send_keys(keys)
     end)
   end
-
-  def mention_person_in_rich_text(state, person_or_name) do
-    name = mention_name(person_or_name)
-    query = Query.css(".ProseMirror[contenteditable=true]")
-
-    execute("mention_person_in_rich_text", state, fn session ->
-      session =
-        session
-        |> Browser.find(query, fn element ->
-          element |> Browser.send_keys(["@", name])
-        end)
-
-      session =
-        case Wallaby.Browser.retry(fn ->
-               if Browser.has_text?(session, name), do: {:ok, session}, else: {:error, :not_yet}
-             end) do
-          {:ok, session} -> session
-          {:error, _} -> sleep(session, 500)
-        end
-
-      Browser.find(session, query, fn element ->
-        element |> Browser.send_keys([:enter])
-      end)
-    end)
-  end
-
-  defp mention_name(%Person{} = person), do: Person.first_name(person)
-  defp mention_name(name) when is_binary(name), do: name
 
   def assert_has(state, testid: id) do
     assert_has(state, query(testid: id))
@@ -639,7 +611,8 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  defp execute(action, state, callback) do
+  @doc false
+  def execute(action, state, callback) do
     if state[:trace] do
       start_time = System.monotonic_time(:microsecond)
       result = Map.update!(state, :session, callback)
@@ -743,6 +716,8 @@ defmodule Operately.Support.Features.UI do
     ctx
     |> click(testid: testid)
     |> click(testid: "#{testid}-clear")
+    |> sleep(50)
+    |> refute_has(testid: "#{testid}-clear")
   end
 
   def select_date(ctx, testid: testid, date: date) do
