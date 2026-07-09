@@ -5,7 +5,6 @@ import { parseCheckInsForTurboUi, usePostProjectCheckIn, ProjectCheckInStatus } 
 import { Project } from "@/models/projects";
 import { useNavigate } from "react-router-dom";
 
-import { SelectStatus } from "@/features/forms/SelectStatus";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import {
@@ -144,7 +143,7 @@ function Header() {
 function StatusSection({ reviewer }: { reviewer?: Person }) {
   return (
     <div className="mt-8 mb-4">
-      <SelectStatus
+      <Forms.SelectStatus
         label="1. How's the project going?"
         field="status"
         reviewer={reviewer}

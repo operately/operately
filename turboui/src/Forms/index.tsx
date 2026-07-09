@@ -12,6 +12,7 @@ export { RadioButtons } from "./RadioButtons";
 export { TitleInput } from "./TitleInput";
 export { RichTextArea } from "./RichTextArea";
 export { SelectBox } from "./SelectBox";
+export { SelectStatus } from "./SelectStatus";
 export { Submit } from "./Submit";
 export { SubmitButton } from "./SubmitButton";
 export { TextInput } from "./TextInput";
@@ -42,6 +43,8 @@ export type {
   RichTextAreaProps,
   SelectBoxOption,
   SelectBoxProps,
+  SelectStatusOption,
+  SelectStatusProps,
   SubmitButtonProps,
   SubmitProps,
   TextInputProps,

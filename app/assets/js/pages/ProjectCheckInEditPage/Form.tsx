@@ -4,7 +4,6 @@ import { Person } from "@/models/people";
 import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns";
 import { useNavigate } from "react-router-dom";
 
-import { SelectStatus } from "@/features/forms/SelectStatus";
 import { Status, StatusOptions } from "@/components/status";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -168,7 +167,7 @@ function StatusSection({
   if (allowFullEdit) {
     return (
       <div className="mt-8 mb-4">
-        <SelectStatus
+        <Forms.SelectStatus
           label="1. How's the project going?"
           field="status"
           reviewer={reviewer}

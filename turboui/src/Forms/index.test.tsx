@@ -12,6 +12,7 @@ import {
   PasswordInput,
   RichTextArea,
   SelectBox,
+  SelectStatus,
   Submit,
   SubmitButton,
   TextInput,
@@ -38,6 +39,7 @@ jest.mock("../icons", () => ({
   IconCheck: () => <svg data-testid="icon-check" />,
   IconBuilding: () => <svg data-testid="icon-building" />,
   IconTent: () => <svg data-testid="icon-tent" />,
+  IconChevronDown: () => <svg data-testid="icon-chevron-down" />,
 }));
 
 jest.mock("react-select", () => {
@@ -269,6 +271,38 @@ describe("Forms", () => {
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         status: "false",
+      }),
+    );
+  });
+
+  test("updates select status values", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { status: null as "on_track" | "caution" | "off_track" | null },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectStatus field="status" options={["on_track", "caution", "off_track"]} />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(document.querySelector('[data-test-id="status-dropdown"]')!);
+    fireEvent.click(document.querySelector('[data-test-id="status-dropdown-on_track"]')!);
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        status: "on_track",
       }),
     );
   });
