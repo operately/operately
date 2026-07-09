@@ -20,7 +20,10 @@ jest.mock("@/components/Modal", () => ({
     ) : null,
 }));
 
+const mockShowErrorToast = jest.fn();
+
 jest.mock("turboui", () => ({
+  showErrorToast: (...args: unknown[]) => mockShowErrorToast(...args),
   IconTrash: () => <span>trash</span>,
   PrimaryButton: ({
     children,
@@ -43,6 +46,7 @@ jest.mock("turboui", () => ({
 describe("RemoveFeatureFlagsModal", () => {
   beforeEach(() => {
     mockDisableFeatures.mockReset().mockResolvedValue({ success: true });
+    mockShowErrorToast.mockReset();
   });
 
   it("renders all enabled features", () => {
@@ -121,5 +125,21 @@ describe("saveRemoveFeatureFlags", () => {
     });
     expect(onSaved).toHaveBeenCalledTimes(1);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("propagates API errors to the caller", async () => {
+    const apiError = new Error("Network error");
+    mockDisableFeatures.mockRejectedValue(apiError);
+
+    await expect(
+      saveRemoveFeatureFlags({
+        companyId: "company-1",
+        originalFeatures: ["feature_a", "feature_b"],
+        localFeatures: ["feature_a"],
+        disableFeatures: mockDisableFeatures,
+        onClose: jest.fn(),
+        onSaved: jest.fn(),
+      }),
+    ).rejects.toThrow("Network error");
   });
 });

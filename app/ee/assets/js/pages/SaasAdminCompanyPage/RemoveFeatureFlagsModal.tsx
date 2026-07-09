@@ -2,7 +2,7 @@ import React from "react";
 
 import Modal from "@/components/Modal";
 import * as AdminApi from "@/ee/admin_api";
-import { IconTrash, PrimaryButton, SecondaryButton } from "turboui";
+import { IconTrash, PrimaryButton, SecondaryButton, showErrorToast } from "turboui";
 
 interface RemoveFeatureFlagsModalProps {
   isOpen: boolean;
@@ -83,6 +83,9 @@ export function RemoveFeatureFlagsModal({
         onClose: handleClose,
         onSaved,
       });
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Failed to remove feature flags. Please try again.";
+      showErrorToast("Failed to remove feature flags", message);
     } finally {
       setSaving(false);
     }
