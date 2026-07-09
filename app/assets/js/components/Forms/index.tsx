@@ -9,7 +9,6 @@ import { SelectGoal } from "./SelectGoal";
 import { InputField } from "./FieldGroup";
 import { RadioButtons } from "./RadioButtons";
 import { SelectPerson } from "./SelectPerson";
-import { RichTextArea } from "./RichTextArea";
 import { PasswordInput } from "./PasswordInput";
 import { CheckboxInput } from "./CheckboxInput";
 import { SelectStatus } from "./SelectStatus";
@@ -38,7 +37,6 @@ export default {
   SelectGoal,
   InputField,
   RadioButtons,
-  RichTextArea,
   SelectPerson,
   PasswordInput,
   CheckboxInput,

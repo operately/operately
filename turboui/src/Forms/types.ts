@@ -47,6 +47,7 @@ export interface FormProps<T extends FormValues = FormValues> {
   form: FormState<T>;
   testId?: string;
   children: React.ReactNode;
+  preventSubmitOnEnter?: boolean;
 }
 
 export interface FieldGroupProps {

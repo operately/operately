@@ -17,7 +17,7 @@ export { SubmitButton } from "./SubmitButton";
 export { TextInput } from "./TextInput";
 export { useFieldError, useFieldValue, useFormContext } from "./context";
 export { useForm } from "./useForm";
-export { validateTextLength, validateIsNumber } from "./validation";
+export { useValidation, validateTextLength, validateIsNumber } from "./validation";
 export type {
   AccessSelectorsProps,
   AddErrorFn,
