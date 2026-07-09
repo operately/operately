@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useFieldValue } from "@/components/Forms/FormContext";
+import { Forms } from "turboui";
 import { Target, TargetNumericFields, TargetTextFields } from "./types";
 import { useTargetsValidator } from "./targetErrors";
 
@@ -23,7 +23,8 @@ interface TargetsContextValue {
 }
 
 export function TargetsContextProvider({ children, field }: Props) {
-  const [targets, setTargets] = useFieldValue<Target[]>(field);
+  const [targetsValue, setTargets] = Forms.useFieldValue<Target[]>(field);
+  const targets = targetsValue ?? [];
   const [targetOpen, setTargetOpen] = React.useState<string>();
   const originalTargets = React.useRef(targets);
   const validate = useTargetsValidator(targets);

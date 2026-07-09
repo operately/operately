@@ -73,7 +73,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | --------- | -------- |
 | `SelectPerson` | `@/models/people`, `@/components/PeopleSearch` — accepts `searchFn` |
 | `SelectGoal` | `@/models/goals`, `@/features/goals/GoalTree/GoalSelectorDropdown` |
-| `SelectStatus` | `@/components/status`, `@/models/people` |
+| `SelectStatus` | ~~`@/components/status`~~ → TurboUI `Forms.SelectStatus` |
 | App `RichTextArea` | `mentionSearchScope` + internal `useRichEditorHandlers` |
 
 **Scale:** ~55 app/ee files import `@/components/Forms`. Migration is import-style change (`import Forms from "@/components/Forms"` → `import { Forms } from "turboui"`) plus API adjustments per cohort.
@@ -109,7 +109,7 @@ flowchart TB
     handlers[useRichEditorHandlers]
     peopleSearch[PeopleSearch / searchFn]
     goalSelect[SelectGoal wrapper]
-    statusSelect[SelectStatus wrapper]
+    statusSelect[SelectStatus in TurboUI]
   end
 
   subgraph legacy [Legacy - delete last]
@@ -305,7 +305,7 @@ import { Forms } from "turboui";
 
 ### Acceptance
 
-- [ ] App `RichTextArea.tsx` deleted
+- [x] App `RichTextArea.tsx` deleted
 - [ ] `make test.tsc.lint`
 
 ---
@@ -314,23 +314,20 @@ import { Forms } from "turboui";
 
 **Phase complete:** [ ]
 
-**Goal:** `SubmitButton`, `setTrigger`, `SelectStatus` bridge.
+**Goal:** `SubmitButton`, `setTrigger`, `SelectStatus` in TurboUI.
 
 ### TurboUI work
 
 - [x] Port `SubmitButton`
-
-### App bridge
-
-- [ ] `app/assets/js/features/forms/SelectStatus.tsx`
+- [x] Port `SelectStatus` (pure; accepts optional `reviewer` with `fullName`)
 
 ### Migrate (~6 files)
 
-- [ ] `app/assets/js/pages/ProjectCheckInNewPage/Form.tsx`
-- [ ] `app/assets/js/pages/ProjectCheckInEditPage/Form.tsx`
-- [ ] `app/assets/js/pages/ProjectCheckInPage/page.tsx`
-- [ ] `app/assets/js/features/goals/GoalCheckIn/Form.tsx`
-- [ ] `app/assets/js/pages/GoalCheckInPage/Options.tsx`
+- [x] `app/assets/js/pages/ProjectCheckInNewPage/Form.tsx`
+- [x] `app/assets/js/pages/ProjectCheckInEditPage/Form.tsx`
+- [x] `app/assets/js/pages/ProjectCheckInPage/page.tsx`
+- [x] `app/assets/js/features/goals/GoalCheckIn/Form.tsx`
+- [x] `app/assets/js/pages/GoalCheckInPage/Options.tsx`
 - [x] `app/assets/js/pages/ResourceHubNewDocumentPage/form.tsx` (SubmitButton draft/publish)
 
 ### Storybook
@@ -340,7 +337,7 @@ import { Forms } from "turboui";
 ### Acceptance
 
 - [ ] Check-in flows work; `SubmitButton` only in TurboUI
-- [ ] `make test.tsc.lint`
+- [x] `make test.tsc.lint`
 
 ---
 
@@ -357,7 +354,6 @@ import { Forms } from "turboui";
 ### App bridge
 
 - [ ] `app/assets/js/features/forms/SelectGoal.tsx`
-- [ ] `app/assets/js/features/forms/SelectStatus.tsx`
 
 ### Migrate (~10 files)
 
@@ -437,7 +433,8 @@ Stories use `Forms.useForm` and mock handlers from `turboui/src/utils/storybook/
 | `form.actions.setTrigger(name)` | TurboUI `form.actions.setTrigger(name)` (Phase 0) |
 | `form.actions.addErrors({ _submit: msg })` | TurboUI `form.actions.addErrors(...)` (Phase 0) |
 | `Forms.FieldGroup layout="grid"` | TurboUI FieldGroup (Phase 1) |
-| `SelectGoal` / `SelectStatus` | App bridge in `features/forms/` |
+| `SelectGoal` | App bridge in `features/forms/` |
+| `SelectStatus` | TurboUI `Forms.SelectStatus` |
 
 ---
 

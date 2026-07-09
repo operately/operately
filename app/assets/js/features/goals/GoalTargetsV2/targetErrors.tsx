@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 
-import { useFieldError, useFormContext } from "@/components/Forms/FormContext";
-import { ErrorMap } from "@/components/Forms/useForm/errors";
+import { Forms } from "turboui";
 import { REQUIRED_FIELDS, Target, TargetFields } from "./types";
+
+type ErrorMap = Record<string, string>;
 
 export function validateTargets(targets: Target[], addError: (field: string, message: string) => void) {
   targets.forEach((target) => {
@@ -12,7 +13,7 @@ export function validateTargets(targets: Target[], addError: (field: string, mes
 }
 
 export function useTargetsValidator(targets: Target[]) {
-  const form = useFormContext();
+  const form = Forms.useFormContext();
   useClearTargetErrors(targets);
 
   const validate = (id: string | undefined) => {
@@ -33,11 +34,11 @@ export function useTargetsValidator(targets: Target[]) {
 }
 
 export function useTargetError(target: Target, field: TargetFields) {
-  return useFieldError(getErrorKey(target.id!, field));
+  return Forms.useFieldError(getErrorKey(target.id!, field));
 }
 
 function useClearTargetErrors(targets: Target[]) {
-  const form = useFormContext();
+  const form = Forms.useFormContext();
 
   useEffect(() => {
     if (Object.keys(form.errors).length > 0) {
@@ -75,5 +76,5 @@ function collectErrors(target: Target): ErrorMap {
     }
 
     return acc;
-  }, {});
+  }, {} as ErrorMap);
 }
