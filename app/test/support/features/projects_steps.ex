@@ -744,25 +744,29 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :pause_project, ctx do
     ctx
-    |> UI.click_text("Pause project")
+    |> UI.click(testid: "pause-project")
     |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
     |> UI.fill_rich_text("Pausing the project.")
-    |> UI.click_button("Pause project")
+    |> UI.click(testid: "pause-project-button")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+    |> wait_until_project("to pause", fn project -> project.status == "paused" end)
   end
 
   step :pause_project_without_description, ctx do
     ctx
-    |> UI.click_text("Pause project")
+    |> UI.click(testid: "pause-project")
     |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
-    |> UI.click_button("Pause project")
+    |> UI.click(testid: "pause-project-button")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+    |> wait_until_project("to pause", fn project -> project.status == "paused" end)
   end
 
   step :pause_project_mentioning, ctx, person do
     ctx
-    |> UI.click_text("Pause project")
+    |> UI.click(testid: "pause-project")
     |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
     |> UI.mention_person_in_rich_text(person)
-    |> UI.click_button("Pause project")
+    |> UI.click(testid: "pause-project-button")
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> wait_until_project("to pause", fn project -> project.status == "paused" end)
   end
@@ -863,10 +867,10 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :resume_project, ctx do
     ctx
-    |> UI.click_text("Resume project")
+    |> UI.click(testid: "resume-project")
     |> UI.assert_page(Paths.resume_project_path(ctx.company, ctx.project))
     |> UI.fill_rich_text("Resuming the project.")
-    |> UI.click_button("Resume project")
+    |> UI.click(testid: "resume-project-button")
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> wait_until_project("to resume", fn project -> project.status != "paused" end)
   end
