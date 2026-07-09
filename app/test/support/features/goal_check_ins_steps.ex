@@ -45,9 +45,9 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   step :assert_check_in_navigation_without_space, ctx do
     ctx
     |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
-    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.goal.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_goal.name]))
     |> UI.assert_has(testid: UI.testid(["nav-item", "Check-ins"]))
-    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.space.name]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
   end
 
   step :visit_check_in, ctx do
@@ -65,14 +65,16 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.assert_text(status_label(status))
   end
 
-  step :check_in, ctx, %{status: status, targets: targets, message: message} do
+  step :check_in, ctx, %{status: status, targets: targets, message: message} = params do
+    goal_key = Map.get(params, :goal_key, :goal)
+
     ctx
     |> UI.click(testid: "check-in-button")
     |> select_status(status)
-    |> update_targets(targets)
+    |> update_targets(targets, goal_key)
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "submit")
-    |> assert_check_in_page_loaded()
+    |> assert_check_in_page_loaded(goal_key)
   end
 
   step :assert_check_in_feed_item, ctx, %{message: message} do
@@ -156,8 +158,8 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     UI.visit(ctx, link)
   end
 
-  step :given_a_check_in_exists, ctx do
-    ctx |> Factory.add_goal_update(:check_in, :goal, :champion)
+  step :given_a_check_in_exists, ctx, goal_key \\ :goal do
+    ctx |> Factory.add_goal_update(:check_in, goal_key, :champion)
   end
 
   step :assert_check_in_commented_in_feed, ctx, message do
@@ -301,18 +303,18 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     UI.testid(["target", "input", name])
   end
 
-  defp find_target_by_name(ctx, name) do
-    Repo.preload(ctx.goal, :targets).targets |> Enum.find(&(&1.name == name))
+  defp find_target_by_name(ctx, name, goal_key) do
+    Repo.preload(ctx[goal_key], :targets).targets |> Enum.find(&(&1.name == name))
   end
 
-  defp update_targets(ctx, targets) do
+  defp update_targets(ctx, targets, goal_key \\ :goal) do
     Enum.reduce(targets, ctx, fn {name, value}, ctx ->
-      update_target(ctx, %{name: name, change: value})
+      update_target(ctx, %{name: name, change: value}, goal_key)
     end)
   end
 
-  defp update_target(ctx, %{name: name, change: change}) do
-    target = find_target_by_name(ctx, name)
+  defp update_target(ctx, %{name: name, change: change}, goal_key) do
+    target = find_target_by_name(ctx, name, goal_key)
     testid = target_input_test_id(name)
     value = target.from + change
 
@@ -331,8 +333,8 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.click(testid: UI.testid(["status", "option", status]))
   end
 
-  defp assert_check_in_page_loaded(ctx) do
-    update = wait_for_last_update(ctx)
+  defp assert_check_in_page_loaded(ctx, goal_key \\ :goal) do
+    update = wait_for_last_update(ctx, goal_key)
 
     ctx
     |> UI.assert_page(Paths.goal_check_in_path(ctx.company, update))
@@ -340,25 +342,25 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> Map.put(:check_in, update)
   end
 
-  defp wait_for_last_update(ctx, attempts \\ 20)
+  defp wait_for_last_update(ctx, goal_key, attempts \\ 20)
 
-  defp wait_for_last_update(_ctx, 0) do
+  defp wait_for_last_update(_ctx, _goal_key, 0) do
     raise "Timed out waiting for goal check-in to be created"
   end
 
-  defp wait_for_last_update(ctx, attempts) do
-    case find_last_update(ctx) do
+  defp wait_for_last_update(ctx, goal_key, attempts) do
+    case find_last_update(ctx, goal_key) do
       nil ->
         :timer.sleep(100)
-        wait_for_last_update(ctx, attempts - 1)
+        wait_for_last_update(ctx, goal_key, attempts - 1)
 
       update ->
         update
     end
   end
 
-  defp find_last_update(ctx) do
-    goal = Factory.reload(ctx, :goal).goal
+  defp find_last_update(ctx, goal_key \\ :goal) do
+    goal = Factory.reload(ctx, goal_key) |> Map.fetch!(goal_key)
     goal = Operately.Repo.preload(goal, :last_update)
 
     goal.last_update
