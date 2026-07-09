@@ -319,6 +319,7 @@ function Actions(props: ProjectPage.State) {
       label: "Resume project",
       link: props.reopenLink,
       icon: IconRotateDot,
+      testId: "resume-project",
       hidden: !props.permissions.canEdit || props.state !== "paused",
     },
     {

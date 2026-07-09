@@ -7,6 +7,8 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { usePaths } from "@/routes/paths";
+import { PageCache } from "@/routes/PageCache";
+import { projectPageCacheKey } from "../ProjectPage";
 
 export function Form({ project }: { project: Projects.Project }) {
   const paths = usePaths();
@@ -42,6 +44,7 @@ export function Form({ project }: { project: Projects.Project }) {
         sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
+      PageCache.invalidate(projectPageCacheKey(projectId));
       onSuccess();
     },
   });
