@@ -14,5 +14,5 @@
     "noEmit": true,
     "baseUrl": ".."
   },
-  "include": ["./main.ts", "./preview.tsx", "./preview.d.ts", "./vite.config.ts"]
+  "include": ["./main.ts", "./preview.tsx", "./preview.d.ts", "./router.tsx", "./vite.config.ts"]
 }

@@ -1,4 +1,4 @@
-import { expect, within, userEvent } from "@storybook/test";
+import { expect, within, userEvent } from "storybook/test";
 
 export const selectTab = async (canvasElement, step, tab) => {
   const canvas = within(canvasElement);

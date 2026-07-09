@@ -1,9 +1,20 @@
 FROM elixir:1.18.0-alpine
 
+ARG NODE_VERSION=22.12.0
+
 RUN apk update && apk add --no-cache \
-  bash git openssh nodejs npm inotify-tools \
+  bash git openssh curl xz inotify-tools \
   chromium chromium-chromedriver postgresql-client \
   make gcc musl-dev build-base htop ca-certificates \
-  && update-ca-certificates
+  && update-ca-certificates \
+  && ARCH="$(apk --print-arch)" \
+  && case "$ARCH" in \
+       x86_64) NODE_ARCH=x64 ;; \
+       aarch64) NODE_ARCH=arm64 ;; \
+       *) echo "unsupported arch: $ARCH"; exit 1 ;; \
+     esac \
+  && curl -fsSLO "https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODE_ARCH}-musl.tar.xz" \
+  && tar -xJf "node-v${NODE_VERSION}-linux-${NODE_ARCH}-musl.tar.xz" -C /usr/local --strip-components=1 \
+  && rm "node-v${NODE_VERSION}-linux-${NODE_ARCH}-musl.tar.xz"
 
 CMD ["sleep", "infinity"]

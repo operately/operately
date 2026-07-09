@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { Editor, useEditor } from "./index";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";

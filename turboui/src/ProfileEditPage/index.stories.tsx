@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState } from "react";
 import { ProfileEditPage } from "./index";
 import { genPerson, genPeople } from "../utils/storybook/genPeople";
