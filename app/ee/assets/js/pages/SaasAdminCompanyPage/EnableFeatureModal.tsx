@@ -8,9 +8,10 @@ import { useLoadedData } from "./loader";
 interface EnableFeatureModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSaved?: () => void;
 }
 
-export function EnableFeatureModal({ isOpen, onClose }: EnableFeatureModalProps) {
+export function EnableFeatureModal({ isOpen, onClose, onSaved }: EnableFeatureModalProps) {
   const { company } = useLoadedData();
   const [enableFeature] = AdminApi.useEnableFeature();
 
@@ -25,6 +26,7 @@ export function EnableFeatureModal({ isOpen, onClose }: EnableFeatureModalProps)
         feature: form.values.feature,
       });
 
+      onSaved?.();
       onClose();
       form.actions.reset();
     },
