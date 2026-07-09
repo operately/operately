@@ -4,13 +4,22 @@ import { Person } from "@/models/people";
 import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns";
 import { useNavigate } from "react-router-dom";
 
-import Forms, { FormState } from "@/components/Forms";
 import { Status, StatusOptions } from "@/components/status";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { assertPresent } from "@/utils/assertions";
 import { compareIds } from "@/routes/paths";
 import { isWithinTimeframe } from "@/utils/time";
-import { FormattedTime, GhostButton, InfoCallout, PrimaryButton, Spacer, displayDate } from "turboui";
+import {
+  FormattedTime,
+  Forms,
+  GhostButton,
+  InfoCallout,
+  PrimaryButton,
+  Spacer,
+  displayDate,
+  type FormState,
+} from "turboui";
 
 import { usePaths } from "@/routes/paths";
 
@@ -181,13 +190,13 @@ function StatusSection({
 function DescriptionSection({ checkIn }: { checkIn: ProjectCheckIn }) {
   assertPresent(checkIn.project, "project must be present in checkIn");
 
-  const mentionSearchScope = { type: "project", id: checkIn.project.id! } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: checkIn.project.id! } });
 
   return (
     <Forms.RichTextArea
       label="2. What's new since the last check-in?"
       field="description"
-      mentionSearchScope={mentionSearchScope}
+      richTextHandlers={richTextHandlers}
       placeholder="Write your check-in here..."
     />
   );
