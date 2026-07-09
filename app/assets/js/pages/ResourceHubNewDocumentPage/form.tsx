@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 import { ResourceHub, ResourceHubFolder, documents, resourceHubLandingPath } from "@/models/resourceHubs";
 
-import Forms from "@/components/Forms";
-import { useFormContext } from "@/components/Forms/FormContext";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { DimmedSection } from "@/components/PaperContainer";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { Link, Spacer, SubscribersSelector } from "turboui";
+import { Forms, Link, Spacer, SubscribersSelector } from "turboui";
 
 import { useLoadedData } from "./loader";
 
@@ -52,9 +51,8 @@ export function Form() {
       navigate(paths.resourceHubDocumentPath(res.document.id));
     },
   });
-  form.actions.setState;
 
-  const mentionSearchScope = { type: "resource_hub", id: resourceHub.id! } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "resource_hub", id: resourceHub.id! } });
 
   return (
     <Forms.Form form={form}>
@@ -63,7 +61,7 @@ export function Form() {
 
         <Forms.RichTextArea
           field="content"
-          mentionSearchScope={mentionSearchScope}
+          richTextHandlers={richTextHandlers}
           placeholder="Write here..."
           hideBorder
           showToolbarTopBorder
@@ -85,7 +83,7 @@ export function Form() {
 
 function FormActions({ resourceHub }: { resourceHub: ResourceHub }) {
   const { folder } = useLoadedData();
-  const form = useFormContext();
+  const form = Forms.useFormContext();
 
   return (
     <div>

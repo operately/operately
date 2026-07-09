@@ -13,6 +13,7 @@ import {
   RichTextArea,
   SelectBox,
   Submit,
+  SubmitButton,
   TextInput,
   useForm,
   validateIsNumber,
@@ -312,6 +313,67 @@ describe("Forms", () => {
     fireEvent.click(screen.getByRole("button", { name: "Set draft trigger" }));
 
     expect(await screen.findByTestId("trigger-value")).toHaveTextContent("draft");
+  });
+
+  test("sets the trigger when a submit button is clicked", async () => {
+    const onClick = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { name: "" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <div data-testid="trigger-value">{form.trigger ?? "none"}</div>
+          <SubmitButton name="draft" text="Save draft" onClick={onClick} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+
+    expect(await screen.findByTestId("trigger-value")).toHaveTextContent("draft");
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  test("shows loading on the triggered submit button while submitting", async () => {
+    let resolveSubmit: (() => void) | undefined;
+
+    function Harness() {
+      const form = useForm({
+        fields: { name: "" },
+        submit: async () => {
+          await new Promise<void>((resolve) => {
+            resolveSubmit = resolve;
+          });
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SubmitButton name="submit" text="Publish" primary onClick={() => form.actions.submit()} />
+          <SubmitButton name="draft" text="Save draft" onClick={() => form.actions.submit()} />
+        </Form>
+      );
+    }
+
+    const { container } = render(<Harness />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Publish" }));
+
+    await waitFor(() => {
+      const publishButton = container.querySelector('[data-test-id="submit"]');
+      const draftButton = container.querySelector('[data-test-id="draft"]');
+
+      expect(publishButton).toHaveClass("cursor-default");
+      expect(draftButton).toHaveClass("cursor-pointer");
+    });
+
+    resolveSubmit?.();
   });
 
   test("resets field values before invoking cancel", () => {

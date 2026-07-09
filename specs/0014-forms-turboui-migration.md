@@ -60,7 +60,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 - [x] `useForm`: `trigger` / `setTrigger`, `addErrors` / `removeErrors`, `onError` (AxiosError)
 - [x] `FieldGroup`: `horizontal` and `grid` layouts
 - [x] `Submit`: `layout`, `submitOnEnter`, `buttonSize`, `testId`, `containerClassName`
-- [ ] `SubmitButton`: multi-action submit (check-in forms)
+- [x] `SubmitButton`: multi-action submit (check-in forms)
 - [x] Validations: `textLength`, `isNumber`
 - [x] Inputs: `PasswordInput`, `NumberInput`, `CheckboxInput`, `RadioButtons`, `TitleInput`
 - [x] Feedback: `FormError`
@@ -90,7 +90,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | 1 — Input Primitives and FieldGroup Layouts | [x] Complete |
 | 2 — Auth and Account Forms | [x] Complete |
 | 3 — Standard CRUD Forms | [ ] In progress (3a + 3b done) |
-| 4 — RichTextArea Cohort | [ ] In progress |
+| 4 — RichTextArea Cohort | [x] Complete |
 | 5 — Multi-Action Submit and Check-Ins | [ ] Not started |
 | 6 — Domain Selector Bridges | [ ] Not started |
 | 7 — GoalTargetsV2 and Stragglers | [ ] Not started |
@@ -273,7 +273,7 @@ import { Forms } from "turboui";
 
 ## Phase 4 — RichTextArea Cohort
 
-**Phase complete:** [ ]
+**Phase complete:** [x]
 
 **Goal:** All rich text on TurboUI; delete app `RichTextArea.tsx`.
 
@@ -284,8 +284,8 @@ import { Forms } from "turboui";
 
 ### Migrate (~12 files)
 
-- [ ] `app/assets/js/pages/ResourceHubNewDocumentPage/form.tsx`
-- [ ] `app/assets/js/pages/ResourceHubEditDocumentPage/form.tsx`
+- [x] `app/assets/js/pages/ResourceHubNewDocumentPage/form.tsx`
+- [x] `app/assets/js/pages/ResourceHubEditDocumentPage/form.tsx`
 - [x] `app/assets/js/pages/ResourceHubEditFilePage/form.tsx`
 - [x] `app/assets/js/pages/ResourceHubEditLinkPage/form.tsx`
 - [x] `app/assets/js/pages/ResourceHubNewLinkPage/form.tsx`
@@ -297,7 +297,7 @@ import { Forms } from "turboui";
 - [x] `app/assets/js/features/ProjectRetrospective/Form.tsx`
 - [x] `app/assets/js/pages/GoalClosingPage/Form.tsx`
 - [x] `app/assets/js/pages/ProjectResumePage/Form.tsx`
-- [ ] Grep `Forms.RichTextArea` for any remaining call sites
+- [x] Grep `Forms.RichTextArea` for any remaining call sites
 
 ### Storybook
 
@@ -318,7 +318,7 @@ import { Forms } from "turboui";
 
 ### TurboUI work
 
-- [ ] Port `SubmitButton`
+- [x] Port `SubmitButton`
 
 ### App bridge
 
@@ -331,7 +331,7 @@ import { Forms } from "turboui";
 - [ ] `app/assets/js/pages/ProjectCheckInPage/page.tsx`
 - [ ] `app/assets/js/features/goals/GoalCheckIn/Form.tsx`
 - [ ] `app/assets/js/pages/GoalCheckInPage/Options.tsx`
-- [ ] `app/assets/js/pages/ResourceHubNewDocumentPage/form.tsx` (SubmitButton draft/publish)
+- [x] `app/assets/js/pages/ResourceHubNewDocumentPage/form.tsx` (SubmitButton draft/publish)
 
 ### Storybook
 
