@@ -1,12 +1,10 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Projects from "@/models/projects";
 import * as React from "react";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 
-import { DimmedLink, PrimaryButton } from "turboui";
+import { Form } from "./Form";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
@@ -15,7 +13,7 @@ export function Page() {
 
   return (
     <Pages.Page title={["Pausing", project.name!]}>
-      <Paper.Root size="small">
+      <Paper.Root size="medium">
         <Paper.Navigation items={[{ to: paths.projectPath(project.id!), label: project.name! }]} />
 
         <Paper.Body minHeight="none">
@@ -30,31 +28,11 @@ export function Page() {
             <p className="mt-4">Note: You can resume the project at any time.</p>
           </div>
 
-          <div className="flex items-center gap-6 mt-8">
-            <PauseProject project={project} />
-            <DimmedLink to={paths.projectPath(project.id!)}>Keep it active</DimmedLink>
+          <div className="mt-8">
+            <Form project={project} />
           </div>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function PauseProject({ project }) {
-  const paths = usePaths();
-  const path = paths.projectPath(project.id);
-  const onSuccess = useNavigateTo(path);
-
-  const [pause, { loading }] = Projects.usePauseProject();
-
-  const handleClick = async () => {
-    await pause({ projectId: project.id });
-    onSuccess();
-  };
-
-  return (
-    <PrimaryButton onClick={handleClick} testId="pause-project-button" loading={loading}>
-      Pause project
-    </PrimaryButton>
   );
 }

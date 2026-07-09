@@ -4820,6 +4820,9 @@ export interface ProjectsMoveToSpaceResult {}
 
 export interface ProjectsPauseInput {
   projectId: Id;
+  message: Json;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface ProjectsPauseResult {

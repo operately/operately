@@ -43,6 +43,9 @@ const CommentAdded: ActivityHandler = {
       .with("project_resuming", () => {
         return commentPath(paths.projectActivityPath(commentedActivity.id), comment);
       })
+      .with("project_pausing", () => {
+        return commentPath(paths.projectActivityPath(commentedActivity.id), comment);
+      })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -152,6 +155,18 @@ const CommentAdded: ActivityHandler = {
           return feedTitle(activity, action, "on", activityLink, "in the", projectLink(project), "project");
         }
       })
+      .with("project_pausing", () => {
+        const path = paths.projectActivityPath(commentedActivity.id);
+        const action = commentedLink(path, comment);
+        const activityLink = <Link to={path}>project pausing</Link>;
+        const project = Activities.getProject(commentedActivity);
+
+        if (page === "project") {
+          return feedTitle(activity, action, "on", activityLink);
+        } else {
+          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(project), "project");
+        }
+      })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -190,6 +205,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_reopening", () => "goal reopening")
       .with("project_discussion_submitted", () => commentedActivity.commentThread!.title)
       .with("project_resuming", () => "project resuming")
+      .with("project_pausing", () => "project pausing")
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -222,6 +238,10 @@ const CommentAdded: ActivityHandler = {
         return c.title!;
       })
       .with("project_resuming", () => {
+        const project = Activities.getProject(commentedActivity);
+        return project.name!;
+      })
+      .with("project_pausing", () => {
         const project = Activities.getProject(commentedActivity);
         return project.name!;
       })

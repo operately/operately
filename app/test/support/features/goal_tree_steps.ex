@@ -22,9 +22,16 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   end
 
   step :given_project_is_paused, ctx, project do
-    Operately.Operations.ProjectPausing.run(ctx.creator, project)
+    Operately.Operations.ProjectPausing.run(ctx.creator, project, %{
+      content: Operately.Support.RichText.rich_text(""),
+      subscription_parent_type: :comment_thread,
+      send_to_everyone: false,
+      subscriber_ids: []
+    })
+
     ctx
   end
+
 
   step :given_project_is_closed, ctx, project_name do
     {:ok, _} =
