@@ -4,8 +4,9 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 import { EnableFeatureModal } from "./EnableFeatureModal";
+import { RemoveFeatureFlagsModal } from "./RemoveFeatureFlagsModal";
 
-import { Avatar, IconFlare, SecondaryButton, FormattedTime } from "turboui";
+import { Avatar, IconFlare, IconTrash, SecondaryButton, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useStartSupportSession } from "@/features/SupportSessions";
@@ -152,7 +153,10 @@ function ActivitySection({ company }: { company: AdminApi.Company }) {
 }
 
 function Options() {
+  const { company } = useLoadedData();
+  const refresh = Pages.useRefresh();
   const [showEnableFeatureModal, toggleEnableFeatureModal] = useBoolState(false);
+  const [showRemoveFeatureFlagsModal, toggleRemoveFeatureFlagsModal] = useBoolState(false);
 
   return (
     <>
@@ -163,9 +167,22 @@ function Options() {
           onClick={toggleEnableFeatureModal}
           testId="enable-feature"
         />
+        <PageOptions.Action
+          icon={IconTrash}
+          title="Remove Feature Flags"
+          onClick={toggleRemoveFeatureFlagsModal}
+          testId="remove-feature-flags"
+        />
       </PageOptions.Root>
 
       <EnableFeatureModal isOpen={showEnableFeatureModal} onClose={toggleEnableFeatureModal} />
+      <RemoveFeatureFlagsModal
+        isOpen={showRemoveFeatureFlagsModal}
+        onClose={toggleRemoveFeatureFlagsModal}
+        companyId={company.id!}
+        enabledFeatures={company.enabledFeatures ?? []}
+        onSaved={refresh}
+      />
     </>
   );
 }

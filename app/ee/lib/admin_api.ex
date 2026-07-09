@@ -22,6 +22,7 @@ defmodule OperatelyEE.AdminApi do
   mutation :promote_account_to_site_admin, M.PromoteAccountToSiteAdmin
   mutation :demote_account_from_site_admin, M.DemoteAccountFromSiteAdmin
   mutation :enable_feature, M.EnableFeature
+  mutation :disable_features, M.DisableFeatures
   mutation :update_email_settings, M.UpdateEmailSettings
   mutation :send_test_email, M.SendTestEmail
   mutation :create_billing_plan_definition, M.CreateBillingPlanDefinition
