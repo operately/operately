@@ -131,6 +131,15 @@ export interface SelectBoxProps {
   required?: boolean;
 }
 
+export type SelectStatusOption = "on_track" | "caution" | "pending" | "off_track";
+
+export interface SelectStatusProps {
+  field: string;
+  options: SelectStatusOption[];
+  reviewer?: { fullName: string } | null;
+  label?: string;
+}
+
 export interface RichTextAreaProps {
   field: string;
   richTextHandlers: RichEditorHandlers;
