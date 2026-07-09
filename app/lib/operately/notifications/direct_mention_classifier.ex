@@ -115,7 +115,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "project_milestone_creation",
     "project_milestone_updating",
     "project_moved",
-    "project_pausing",
     "project_permissions_edited",
     "project_renamed",
     "project_retrospective_edited",
