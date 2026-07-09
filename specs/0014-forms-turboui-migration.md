@@ -340,7 +340,7 @@ import { Forms } from "turboui";
 ### Acceptance
 
 - [ ] Check-in flows work; `SubmitButton` only in TurboUI
-- [ ] `make test.tsc.lint`
+- [x] `make test.tsc.lint`
 
 ---
 
