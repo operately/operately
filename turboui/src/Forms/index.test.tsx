@@ -134,6 +134,32 @@ describe("Forms", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  test("preventSubmitOnEnter only prevents default and does not submit", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Launch" },
+        submit: async () => {
+          onSubmit();
+        },
+      });
+
+      return (
+        <Form form={form} preventSubmitOnEnter>
+          <TextInput field="name" label="Name" />
+          <button type="submit">Enter submit</button>
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.submit(screen.getByRole("button", { name: "Enter submit" }).closest("form")!);
+
+    await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
+  });
+
   test("assigns a default sanitized test id from the field name", () => {
     function Harness() {
       const form = useForm({

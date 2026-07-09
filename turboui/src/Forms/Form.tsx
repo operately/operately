@@ -3,10 +3,12 @@ import * as React from "react";
 import { FormsProvider } from "./context";
 import type { FormProps, FormValues } from "./types";
 
-export function Form<T extends FormValues>({ form, testId, children }: FormProps<T>) {
+export function Form<T extends FormValues>({ form, testId, children, preventSubmitOnEnter }: FormProps<T>) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await form.actions.submit();
+    if (!preventSubmitOnEnter) {
+      await form.actions.submit();
+    }
   };
 
   return (

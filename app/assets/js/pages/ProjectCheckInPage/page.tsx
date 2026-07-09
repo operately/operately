@@ -9,10 +9,10 @@ import { useBoolState } from "@/hooks/useBoolState";
 import { useDeleteProjectCheckIn } from "@/models/projectCheckIns";
 
 import Modal from "@/components/Modal";
-import Forms from "@/components/Forms";
 import {
   Avatar,
   FormattedTime,
+  Forms,
   IconEdit,
   IconSquareCheckFilled,
   IconTrash,

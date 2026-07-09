@@ -1,11 +1,8 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as React from "react";
 
-import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
-import { AddErrorFn } from "@/components/Forms/useForm/errors";
-import { useValidation } from "@/components/Forms/validations/hook";
 import { createTestId } from "@/utils/testid";
-import { Circle, IconCheck } from "turboui";
+import { Circle, Forms, IconCheck } from "turboui";
 import classNames from "classnames";
 
 type Status = "on_track" | "caution" | "off_track";
@@ -46,24 +43,24 @@ const DEFAULT_PROPS = {
 export function StatusSelector(props: SelectGoalStatusProps) {
   props = { ...DEFAULT_PROPS, ...props };
 
-  const [value, setValue] = useFieldValue(props.field);
-  const error = useFieldError(props.field);
+  const [value, setValue] = Forms.useFieldValue<Status | null>(props.field);
+  const error = Forms.useFieldError(props.field);
 
-  assertValidStatus(value);
+  assertValidStatus(value ?? null);
   assertReviewer(props.reviewerFirstName, props.noReviewer);
 
-  const normalizedValue = normalizeStatus(value);
+  const normalizedValue = normalizeStatus(value ?? null);
   const reviewer = props.noReviewer ? "Reviewer" : props.reviewerFirstName;
 
-  useValidation(props.field, validateStatus(props.required));
+  Forms.useValidation(props.field, validateStatus(props.required));
 
   return (
     <div>
       <SelectDropdown
         value={normalizedValue}
-        rawValue={value}
-        setValue={setValue}
-        reviewerFirstName={reviewer}
+        rawValue={value ?? null}
+        setValue={(next) => setValue(next)}
+        reviewerFirstName={reviewer!}
         error={!!error}
       />
       {error && <div className="text-red-500 text-xs">{error}</div>}
@@ -73,8 +70,8 @@ export function StatusSelector(props: SelectGoalStatusProps) {
 
 type StatusPickerProps = {
   value: Status | null;
-  rawValue: Status;
-  setValue: (value: Status) => void;
+  rawValue: Status | null;
+  setValue: (value: Status | null) => void;
   reviewerFirstName: string;
   error: boolean;
 };
@@ -207,7 +204,7 @@ function assertReviewer(reviewer: string | undefined, noReviewer: boolean | unde
 }
 
 function validateStatus(required?: boolean) {
-  return (field: string, value: string, addError: AddErrorFn) => {
+  return (field: string, value: unknown, addError: (field: string, message: string) => void) => {
     if (required && !STATUS_OPTIONS.includes(value as Status)) {
       return addError(field, `Status is required`);
     }
