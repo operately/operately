@@ -125,6 +125,78 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolderTest do
     end
   end
 
+  describe "folder hierarchy cycle prevention" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_folder(:folder, :hub)
+    end
+
+    test "rejects moving a folder into itself", ctx do
+      assert_cycle_rejected(ctx, ctx.folder, ctx.folder)
+    end
+
+    test "rejects a direct cycle between two folders", ctx do
+      ctx = Factory.add_folder(ctx, :child_folder, :hub, :folder)
+
+      assert_cycle_rejected(ctx, ctx.folder, ctx.child_folder)
+    end
+
+    test "rejects an indirect cycle in a multi-level hierarchy", ctx do
+      ctx =
+        ctx
+        |> Factory.add_folder(:child_folder, :hub, :folder)
+        |> Factory.add_folder(:grandchild_folder, :hub, :child_folder)
+
+      assert_cycle_rejected(ctx, ctx.folder, ctx.grandchild_folder)
+    end
+
+    test "allows removing a folder parent", ctx do
+      ctx = Factory.add_folder(ctx, :child_folder, :hub, :folder)
+
+      node = Repo.preload(ctx.child_folder, :node).node
+      assert node.parent_folder_id == ctx.folder.id
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:resource_hubs, :update_parent_folder], %{
+                 resource_id: Paths.folder_id(ctx.child_folder),
+                 resource_type: "folder",
+                 new_folder_id: nil
+               })
+
+      node = Repo.reload(node)
+      assert node.parent_folder_id == nil
+    end
+
+    test "allows changing parent after breaking the chain", ctx do
+      ctx =
+        ctx
+        |> Factory.add_folder(:child_folder, :hub, :folder)
+        |> Factory.add_folder(:grandchild_folder, :hub, :child_folder)
+        |> Factory.add_folder(:other_folder, :hub)
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:resource_hubs, :update_parent_folder], %{
+                 resource_id: Paths.folder_id(ctx.grandchild_folder),
+                 resource_type: "folder",
+                 new_folder_id: Paths.folder_id(ctx.other_folder)
+               })
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:resource_hubs, :update_parent_folder], %{
+                 resource_id: Paths.folder_id(ctx.folder),
+                 resource_type: "folder",
+                 new_folder_id: Paths.folder_id(ctx.other_folder)
+               })
+
+      node = Repo.preload(ctx.folder, :node).node |> Repo.reload()
+      assert node.parent_folder_id == ctx.other_folder.id
+    end
+  end
+
   #
   # Helpers
   #
@@ -140,5 +212,17 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolderTest do
     end
 
     space
+  end
+
+  defp assert_cycle_rejected(ctx, folder, new_parent_folder) do
+    assert {400, %{message: "This item can't be moved into one of its subfolders"}} =
+             mutation(ctx.conn, [:resource_hubs, :update_parent_folder], %{
+               resource_id: Paths.folder_id(folder),
+               resource_type: "folder",
+               new_folder_id: Paths.folder_id(new_parent_folder)
+             })
+
+    node = Repo.preload(folder, :node).node |> Repo.reload()
+    refute node.parent_folder_id == new_parent_folder.id
   end
 end
