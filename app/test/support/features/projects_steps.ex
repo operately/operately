@@ -753,6 +753,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click_button("Pause project")
   end
 
+  step :pause_project_mentioning, ctx, person do
+    ctx
+    |> UI.click_text("Pause project")
+    |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
+    |> UI.mention_person_in_rich_text(person)
+    |> UI.click_button("Pause project")
+  end
+
   step :assert_project_paused, ctx do
     ctx
     |> UI.find(UI.query(testid: "paused-status-banner"), fn el ->
@@ -778,6 +786,42 @@ defmodule Operately.Support.Features.ProjectSteps do
       action: "paused the project",
       author: ctx.contributor
     })
+  end
+
+  step :assert_pause_email_contains_description, ctx, description do
+    email = UI.Emails.last_sent_email(to: ctx.reviewer.email)
+    assert email.html =~ description
+    ctx
+  end
+
+  step :assert_pause_notification_sent_to_space_member, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.contributor,
+      action: "Paused the #{ctx.project.name} project"
+    })
+  end
+
+  step :assert_pause_email_sent_to_space_member, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      action: "paused the project",
+      author: ctx.contributor
+    })
+  end
+
+  step :assert_pause_mention_visible_on_feed, ctx, person do
+    person_first_name = Person.first_name(person)
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.contributor, content: person_first_name)
+    end)
   end
 
   step :assert_pause_visible_on_feed, ctx do

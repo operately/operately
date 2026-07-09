@@ -4,6 +4,7 @@ defmodule Operately.Notifications.BulkCreateTest do
 
   import Operately.ActivitiesFixtures
   import Operately.CompaniesFixtures
+  import Operately.CommentsFixtures
   import Operately.PeopleFixtures
 
   alias Operately.Notifications
@@ -169,6 +170,66 @@ defmodule Operately.Notifications.BulkCreateTest do
 
     description = RichText.rich_text("No mentions in this update")
     activity = activity_fixture(author_id: ctx.person.id, action: "project_description_changed", content: %{"description" => description})
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, [_notification]} =
+               Notifications.bulk_create([
+                 %{person_id: ctx.person.id, activity_id: activity.id, should_send_email: true}
+               ])
+
+      refute_enqueued worker: EmailWorker
+      assert_enqueued worker: BufferedEmailWorker
+    end)
+
+    assert length(Repo.all(EmailBatch)) == 1
+  end
+
+  test "notify_on_mention sends project_pausing mentions immediately", ctx do
+    {:ok, _person} =
+      Operately.People.update_person(ctx.person, %{
+        preferences: %{notifications: %{notify_on_mention: true}}
+      })
+
+    mention_message = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
+    thread = comment_thread_fixture(%{parent_id: Ecto.UUID.generate(), message: mention_message})
+
+    activity =
+      activity_fixture(%{
+        author_id: ctx.person.id,
+        action: "project_pausing",
+        content: %{"project_id" => Ecto.UUID.generate()},
+        comment_thread_id: thread.id
+      })
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, notifications} =
+               Notifications.bulk_create([
+                 %{person_id: ctx.person.id, activity_id: activity.id, should_send_email: true}
+               ])
+
+      assert_enqueued worker: EmailWorker, args: %{notification_id: hd(notifications).id}
+      refute_enqueued worker: BufferedEmailWorker
+    end)
+
+    assert Repo.all(EmailBatch) == []
+  end
+
+  test "notify_on_mention keeps non-mentioned project_pausing notifications buffered", ctx do
+    {:ok, _person} =
+      Operately.People.update_person(ctx.person, %{
+        preferences: %{notifications: %{notify_on_mention: true}}
+      })
+
+    plain_message = RichText.rich_text("Pausing without mentions")
+    thread = comment_thread_fixture(%{parent_id: Ecto.UUID.generate(), message: plain_message})
+
+    activity =
+      activity_fixture(%{
+        author_id: ctx.person.id,
+        action: "project_pausing",
+        content: %{"project_id" => Ecto.UUID.generate()},
+        comment_thread_id: thread.id
+      })
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, [_notification]} =

@@ -103,6 +103,27 @@ defmodule Operately.Operations.ProjectPausingTest do
 
     activity = get_activity(project, "project_pausing")
     assert activity.comment_thread_id
+
+    thread = Operately.Repo.get!(Operately.Comments.CommentThread, activity.comment_thread_id)
+    assert thread.message == RichText.rich_text("Pausing comments")
+  end
+
+  test "ProjectPausing operation subscribes mentioned people", ctx do
+    mentioned = ctx.member1
+
+    {:ok, project} =
+      ProjectPausing.run(ctx.creator, ctx.project, %{
+        content: RichText.rich_text(mentioned_people: [mentioned]) |> Jason.decode!(),
+        subscription_parent_type: :comment_thread,
+        send_to_everyone: false,
+        subscriber_ids: []
+      })
+
+    activity = get_activity(project, "project_pausing")
+    thread = Operately.Repo.preload(activity, :comment_thread).comment_thread
+    subscriptions = Operately.Notifications.list_subscriptions(thread.subscription_list_id)
+
+    assert Enum.any?(subscriptions, &(&1.person_id == mentioned.id))
   end
 
   defp pause_project(ctx, send_to_everyone, subscriber_ids) do
