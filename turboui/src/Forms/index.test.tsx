@@ -22,11 +22,7 @@ import {
 
 jest.mock("../RichEditor", () => ({
   Editor: (props: { hideBorder?: boolean; className?: string }) => (
-    <div
-      data-testid="rich-editor"
-      data-hide-border={props.hideBorder ? "true" : "false"}
-      className={props.className}
-    />
+    <div data-testid="rich-editor" data-hide-border={props.hideBorder ? "true" : "false"} className={props.className} />
   ),
   useEditor: (props: { content?: unknown }) => ({
     editor: {
@@ -132,6 +128,32 @@ describe("Forms", () => {
 
     expect(await screen.findByText("Can't be empty")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  test("preventSubmitOnEnter only prevents default and does not submit", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Launch" },
+        submit: async () => {
+          onSubmit();
+        },
+      });
+
+      return (
+        <Form form={form} preventSubmitOnEnter>
+          <TextInput field="name" label="Name" />
+          <button type="submit">Enter submit</button>
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.submit(screen.getByRole("button", { name: "Enter submit" }).closest("form")!);
+
+    await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
   });
 
   test("assigns a default sanitized test id from the field name", () => {

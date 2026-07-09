@@ -305,7 +305,7 @@ import { Forms } from "turboui";
 
 ### Acceptance
 
-- [ ] App `RichTextArea.tsx` deleted
+- [x] App `RichTextArea.tsx` deleted
 - [ ] `make test.tsc.lint`
 
 ---
@@ -322,15 +322,15 @@ import { Forms } from "turboui";
 
 ### App bridge
 
-- [ ] `app/assets/js/features/forms/SelectStatus.tsx`
+- [x] `app/assets/js/features/forms/SelectStatus.tsx`
 
 ### Migrate (~6 files)
 
-- [ ] `app/assets/js/pages/ProjectCheckInNewPage/Form.tsx`
-- [ ] `app/assets/js/pages/ProjectCheckInEditPage/Form.tsx`
-- [ ] `app/assets/js/pages/ProjectCheckInPage/page.tsx`
-- [ ] `app/assets/js/features/goals/GoalCheckIn/Form.tsx`
-- [ ] `app/assets/js/pages/GoalCheckInPage/Options.tsx`
+- [x] `app/assets/js/pages/ProjectCheckInNewPage/Form.tsx`
+- [x] `app/assets/js/pages/ProjectCheckInEditPage/Form.tsx`
+- [x] `app/assets/js/pages/ProjectCheckInPage/page.tsx`
+- [x] `app/assets/js/features/goals/GoalCheckIn/Form.tsx`
+- [x] `app/assets/js/pages/GoalCheckInPage/Options.tsx`
 - [x] `app/assets/js/pages/ResourceHubNewDocumentPage/form.tsx` (SubmitButton draft/publish)
 
 ### Storybook
@@ -340,7 +340,7 @@ import { Forms } from "turboui";
 ### Acceptance
 
 - [ ] Check-in flows work; `SubmitButton` only in TurboUI
-- [ ] `make test.tsc.lint`
+- [x] `make test.tsc.lint`
 
 ---
 

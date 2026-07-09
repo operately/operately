@@ -47,6 +47,7 @@ export interface FormProps<T extends FormValues = FormValues> {
   form: FormState<T>;
   testId?: string;
   children: React.ReactNode;
+  preventSubmitOnEnter?: boolean;
 }
 
 export interface FieldGroupProps {
@@ -69,10 +70,7 @@ export interface FieldGroupGridOptions {
   gridTemplateColumns?: string;
 }
 
-export type FieldGroupLayoutOptions =
-  | FieldGroupHorizontalOptions
-  | FieldGroupVerticalOptions
-  | FieldGroupGridOptions;
+export type FieldGroupLayoutOptions = FieldGroupHorizontalOptions | FieldGroupVerticalOptions | FieldGroupGridOptions;
 
 export interface InputFieldProps {
   field: string;
