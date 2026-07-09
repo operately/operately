@@ -16,13 +16,17 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  typescript: {
+    // Avoid Babel/lru-cache clash in react-docgen during static builds (Cloudflare Pages).
+    reactDocgen: false,
+  },
   core: {
     builder: "@storybook/builder-vite",
   },
   viteFinal: async (config) => {
-    config.css = {
-      postcss: true,
-    };
+    // Storybook enables PostCSS with a boolean; Vite's CSS options type expects an object.
+    // @ts-expect-error Storybook PostCSS boolean flag
+    config.css = { postcss: true };
 
     return config;
   },
