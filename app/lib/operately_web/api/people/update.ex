@@ -60,6 +60,9 @@ defmodule OperatelyWeb.Api.People.Update do
       {:error, :inputs, _} -> {:error, :bad_request}
       {:error, :person, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :updated_person, %{error: %Ecto.Changeset{} = changeset}} ->
+        {:error, :bad_request, changeset_error_message(changeset)}
+
       {:error, :updated_person, _} -> {:error, :bad_request}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
@@ -112,5 +115,12 @@ defmodule OperatelyWeb.Api.People.Update do
 
   defp put_preference(inputs, key, value) do
     put_preferences(inputs, %{key => value})
+  end
+
+  defp changeset_error_message(%Ecto.Changeset{} = changeset) do
+    case changeset.errors do
+      [{:manager_id, {message, _}} | _] -> message
+      _ -> "Invalid profile update"
+    end
   end
 end
