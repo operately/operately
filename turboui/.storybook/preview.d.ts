@@ -1,7 +1,3 @@
-export {};
+/// <reference path="../src/global.d.ts" />
 
-declare global {
-  interface Window {
-    STORYBOOK_ENV?: boolean;
-  }
-}
+export {};
