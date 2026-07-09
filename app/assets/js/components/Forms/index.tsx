@@ -11,7 +11,6 @@ import { RadioButtons } from "./RadioButtons";
 import { SelectPerson } from "./SelectPerson";
 import { PasswordInput } from "./PasswordInput";
 import { CheckboxInput } from "./CheckboxInput";
-import { SelectStatus } from "./SelectStatus";
 import { NumberInput } from "./NumberInput";
 import { ErrorMessage } from "./ErrorMessage";
 import { FormError } from "./FormError";
@@ -40,7 +39,6 @@ export default {
   SelectPerson,
   PasswordInput,
   CheckboxInput,
-  SelectStatus,
   NumberInput,
   ErrorMessage,
   FormError,
