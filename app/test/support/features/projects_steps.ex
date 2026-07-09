@@ -185,11 +185,11 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :visit_project_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_has(testid: "project-page")
+    |> UI.wait_until_has(testid: "project-page")
   end
 
   step :assert_project_page_loaded, ctx do
-    ctx |> UI.assert_has(testid: "project-page")
+    ctx |> UI.wait_until_has(testid: "project-page")
   end
 
   step :given_project_is_paused, ctx do
@@ -276,15 +276,15 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :choose_new_goal, ctx, goal_name: goal_name do
     ctx
     |> UI.click_text("Set parent goal")
+    |> UI.wait_until_has(testid: UI.testid(["parent-goal-field", goal_name]))
     |> UI.click(testid: UI.testid(["parent-goal-field", goal_name]))
+    |> UI.wait_until_text(goal_name, testid: "parent-goal-field")
+    |> UI.sleep(100)
     |> wait_until_project("parent goal to be #{goal_name}", fn project -> project.goal_id == ctx.goal.id end)
   end
 
   step :assert_goal_connected, ctx, goal_name: goal_name do
-    ctx
-    |> UI.wait_until_text(goal_name, testid: "parent-goal-field")
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.wait_until_text(goal_name, testid: "parent-goal-field")
+    ctx |> UI.wait_until_text(goal_name, testid: "parent-goal-field")
   end
 
   step :assert_parent_goal_field_not_rendered, ctx do
@@ -294,9 +294,13 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :assert_goal_link_on_project_page, ctx, goal_name: goal_name do
     ctx
     |> UI.click(testid: "parent-goal-field")
+    |> UI.wait_until_has(testid: "parent-goal-field-dialog")
+    |> UI.wait_until_has(testid: "parent-goal-field-view-goal")
     |> UI.click(testid: "parent-goal-field-view-goal")
+    |> UI.sleep(100)
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text(goal_name)
+    |> UI.sleep(150)
   end
 
   step :assert_goal_connected_email_sent_to_champion, ctx, goal_name: goal_name do
@@ -591,8 +595,12 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :edit_project_start_date, ctx, date do
+    formatted_date = Operately.Support.Time.format_month_day(date)
+
     ctx
     |> UI.select_day_in_date_field(testid: "project-start-date", date: date)
+    |> UI.wait_until_text(formatted_date, testid: "project-start-date")
+    |> UI.sleep(100)
     |> wait_until_project("start date to be #{Date.to_iso8601(date)}", fn project -> Timeframe.start_date(project.timeframe) == date end)
   end
 
@@ -620,14 +628,20 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :edit_project_due_date, ctx, date do
+    formatted_date = Operately.Support.Time.format_month_day(date)
+
     ctx
     |> UI.select_day_in_date_field(testid: "project-due-date", date: date)
+    |> UI.wait_until_text(formatted_date, testid: "project-due-date")
+    |> UI.sleep(100)
     |> wait_until_project("due date to be #{Date.to_iso8601(date)}", fn project -> Timeframe.end_date(project.timeframe) == date end)
   end
 
   step :remove_project_due_date, ctx do
     ctx
     |> UI.clear_date_in_date_field(testid: "project-due-date")
+    |> UI.wait_until_text("Set due date", testid: "project-due-date")
+    |> UI.sleep(100)
     |> wait_until_project("due date to be cleared", fn project -> is_nil(Timeframe.end_date(project.timeframe)) end)
   end
 
@@ -640,7 +654,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_project_overdue_message, ctx, expected_message do
-    ctx |> UI.assert_text(expected_message)
+    ctx |> UI.wait_until_text(expected_message)
   end
 
   step :assert_project_due_date_change_visible_in_feed, ctx, date_text do
@@ -744,29 +758,39 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :pause_project, ctx do
     ctx
+    |> UI.wait_until_has(testid: "pause-project")
     |> UI.click(testid: "pause-project")
     |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
+    |> UI.wait_until_has(testid: "pause-project-button")
     |> UI.fill_rich_text("Pausing the project.")
     |> UI.click(testid: "pause-project-button")
+    |> UI.sleep(100)
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> wait_until_project("to pause", fn project -> project.status == "paused" end)
   end
 
   step :pause_project_without_description, ctx do
     ctx
+    |> UI.wait_until_has(testid: "pause-project")
     |> UI.click(testid: "pause-project")
     |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
+    |> UI.wait_until_has(testid: "pause-project-button")
     |> UI.click(testid: "pause-project-button")
+    |> UI.sleep(100)
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> wait_until_project("to pause", fn project -> project.status == "paused" end)
   end
 
   step :pause_project_mentioning, ctx, person do
     ctx
+    |> UI.wait_until_has(testid: "pause-project")
     |> UI.click(testid: "pause-project")
     |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
+    |> UI.wait_until_has(testid: "pause-project-button")
     |> UI.mention_person_in_rich_text(person)
+    |> UI.sleep(50)
     |> UI.click(testid: "pause-project-button")
+    |> UI.sleep(100)
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> wait_until_project("to pause", fn project -> project.status == "paused" end)
   end
@@ -867,10 +891,13 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :resume_project, ctx do
     ctx
+    |> UI.wait_until_has(testid: "resume-project")
     |> UI.click(testid: "resume-project")
     |> UI.assert_page(Paths.resume_project_path(ctx.company, ctx.project))
+    |> UI.wait_until_has(testid: "resume-project-button")
     |> UI.fill_rich_text("Resuming the project.")
     |> UI.click(testid: "resume-project-button")
+    |> UI.sleep(100)
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
     |> wait_until_project("to resume", fn project -> project.status != "paused" end)
   end
@@ -914,6 +941,8 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :rename_project, ctx, new_name: new_name do
     ctx
     |> UI.fill_text_field(testid: "project-name-field", with: new_name, submit: true)
+    |> UI.wait_until_text(new_name)
+    |> UI.sleep(100)
     |> wait_until_project("name to be #{new_name}", fn project -> project.name == new_name end)
   end
 
@@ -956,6 +985,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       author: ctx.contributor,
       project_name: ctx.project.name
     )
+    |> UI.sleep(150)
   end
 
   step :assert_project_description_absent, ctx do

@@ -123,6 +123,7 @@ defmodule Operately.Support.Features.FeedSteps do
   def assert_project_pausing_commented(ctx, author: author, comment: comment, project_name: project_name) do
     assert_feed_item_exists(ctx, author, "commented on project pausing in the #{project_name} project", comment)
   end
+
   def assert_project_milestone_commented(ctx, author: author, milestone_tile: milestone_title, comment: comment) do
     ctx |> assert_feed_item_exists(author, "commented on the #{milestone_title} milestone", comment)
   end
@@ -229,14 +230,18 @@ defmodule Operately.Support.Features.FeedSteps do
 
   def assert_feed_item_exists(ctx, author, title) do
     ctx
-    |> UI.assert_text(Person.first_name(author))
-    |> UI.assert_text(title)
+    |> UI.wait_until_text(Person.first_name(author))
+    |> UI.wait_until_text(title)
+  end
+
+  def assert_feed_item_exists(ctx, author, title, "") do
+    ctx |> assert_feed_item_exists(author, title)
   end
 
   def assert_feed_item_exists(ctx, author, title, subtitle) do
     ctx
-    |> UI.assert_text(Person.first_name(author))
-    |> UI.assert_text(title)
-    |> UI.assert_text(subtitle)
+    |> UI.wait_until_text(Person.first_name(author))
+    |> UI.wait_until_text(title)
+    |> UI.wait_until_text(subtitle)
   end
 end

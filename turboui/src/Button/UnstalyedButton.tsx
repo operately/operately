@@ -90,8 +90,10 @@ function hasVisibleTextLabel(children: React.ReactNode): boolean {
 }
 
 function UnstyledActionButton(props: UnstyledButtonProps) {
+  const disabled = props.disabled || props.loading;
+
   const handleClick = (e: any) => {
-    if (props.loading) return;
+    if (disabled) return;
     if (props.onClick) props.onClick(e);
   };
 
@@ -120,7 +122,13 @@ function UnstyledActionButton(props: UnstyledButtonProps) {
   }
 
   return (
-    <button type={type} className={props.className} onClick={handleClick} data-test-id={props.testId}>
+    <button
+      type={type}
+      className={props.className}
+      onClick={handleClick}
+      disabled={disabled}
+      data-test-id={props.testId}
+    >
       {children}
       {props.spinner}
     </button>
