@@ -22,6 +22,7 @@ import {
   IconX,
   Tabs,
   Tooltip,
+  formatStorageBytes,
   useTabs,
 } from "turboui";
 
@@ -231,29 +232,32 @@ function ActiveCompanyList({ searchQuery }: { searchQuery: string }) {
 
 function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
   const formattedTimePreferences = useFormattedTimePreferences();
+  const gridTemplateColumns = "0.5fr 4fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr";
 
   return (
     <div>
-      <TableRow header gridTemplateColumns="0.5fr 4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr">
+      <TableRow header gridTemplateColumns={gridTemplateColumns}>
         <div>#</div>
         <div>Company</div>
         <div className="text-right">People</div>
         <div className="text-right">Spaces</div>
         <div className="text-right">Goals</div>
         <div className="text-right">Projects</div>
+        <div className="text-right">Storage</div>
         <div className="text-right">Owners</div>
         <div className="text-right">Last Activity</div>
         <div className="text-right">Created At</div>
       </TableRow>
 
       {companies.map((company, index) => (
-        <TableRow key={company.id} linkTo={`/admin/companies/${company.id}`} gridTemplateColumns="0.5fr 4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr">
+        <TableRow key={company.id} linkTo={`/admin/companies/${company.id}`} gridTemplateColumns={gridTemplateColumns}>
           <div>{index + 1}</div>
           <div>{company.name}</div>
           <div className="text-right">{company.peopleCount}</div>
           <div className="text-right">{company.spacesCount}</div>
           <div className="text-right">{company.goalsCount}</div>
           <div className="text-right">{company.projectsCount}</div>
+          <div className="text-right">{formatStorageBytes(company.storageUsageBytes)}</div>
 
           <div className="flex justify-end -mt-0.5">
             <AvatarList people={company.owners ?? []} size={20} maxElements={3} stacked />
