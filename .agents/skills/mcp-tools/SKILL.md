@@ -41,6 +41,35 @@ flowchart TD
 
 Product rationale: `specs/0012-operately-mcp.md` § "Shared execution across surfaces".
 
+## OAuth scopes
+
+MCP grants use two scopes. There is no `mcp:destructive` scope — destructive tools stay on
+`mcp:write`, matching the CLI write-token model.
+
+| Scope | `safety_classification` | Tool access |
+| ----- | ----------------------- | ----------- |
+| `mcp:read` | `:read_only` | Read-only tools |
+| `mcp:write` | `:write` or `:destructive` | All write and destructive tools |
+
+### Default scope on connect
+
+`Operately.Mcp.Resources.parse_scopes/1` defaults **nil, empty string, or empty list** to
+`mcp:read` only. Clients that need write or destructive access must request `mcp:write`
+explicitly in the OAuth `scope` parameter.
+
+When authoring tools:
+
+- Read-only → `required_scopes: ["mcp:read"]`, `safety_classification: :read_only`,
+  `read_annotations()` (`readOnlyHint: true`)
+- Write → `required_scopes: ["mcp:write"]`, `safety_classification: :write`,
+  `write_annotations()`
+- Destructive → `required_scopes: ["mcp:write"]`, `safety_classification: :destructive`,
+  `write_annotations()` plus `destructiveHint: true` in descriptors (client UX only —
+  not a third scope)
+
+Runtime enforcement in `OperatelyWeb.McpController` checks token scopes against each tool's
+`required_scopes` before dispatch.
+
 ## Scope
 
 This skill covers adding, changing, and reviewing MCP tool wrappers.
