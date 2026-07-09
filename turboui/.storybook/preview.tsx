@@ -1,4 +1,3 @@
-/// <reference path="./preview.d.ts" />
 import type { Decorator, Preview } from "@storybook/react-vite";
 import React from "react";
 
