@@ -118,9 +118,12 @@ defmodule OperatelyWeb.Api.People.Update do
   end
 
   defp changeset_error_message(%Ecto.Changeset{} = changeset) do
-    case changeset.errors do
-      [{:manager_id, {message, _}} | _] -> message
-      _ -> "Invalid profile update"
+    case Enum.find_value(changeset.errors, fn
+           {:manager_id, {message, _}} -> message
+           _ -> nil
+         end) do
+      nil -> "Invalid profile update"
+      message -> message
     end
   end
 end
