@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AccountPage } from "./index";
 
 const meta = {
@@ -55,18 +55,20 @@ export const LongName: Story = {
 
 export const Mobile: Story = {
   args: defaultArgs,
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: "mobile1",
-    },
+      value: "mobile1",
+      isRotated: false
+    }
   },
 };
 
 export const Tablet: Story = {
   args: defaultArgs,
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: "tablet",
-    },
+      value: "tablet",
+      isRotated: false
+    }
   },
 };

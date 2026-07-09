@@ -1,5 +1,8 @@
-interface Window {
-  STORYBOOK_ENV?: boolean;
+export {};
 
-  __tests?: any;
+declare global {
+  interface Window {
+    STORYBOOK_ENV?: boolean;
+    __tests?: unknown;
+  }
 }

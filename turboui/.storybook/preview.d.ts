@@ -1,3 +1,3 @@
-interface Window {
-  STORYBOOK_ENV?: boolean;
-}
+/// <reference path="../src/global.d.ts" />
+
+export {};

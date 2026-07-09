@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 import { OptionsMenuItem } from "./index";
 import { IconPalette, IconBell, IconTrash } from "../icons";
