@@ -496,38 +496,48 @@ Outcome: arbitrary standards-compliant MCP clients can complete OAuth and call t
 
 Status: implemented.
 
-### PR 5D: CIMD operational guardrails
+### PR 5D: CIMD operational guardrails (Implemented)
 
-- Add rate limiting for metadata fetches and OAuth endpoints (per IP and per `client_id` URL)
-- Add structured logging and basic metrics for CIMD fetch outcomes, cache hit rate, and invalid-client rate
-- Validate against at least one real URL-based MCP client before production rollout
+Implemented in [`0016-mcp-security-hardening.md`](0016-mcp-security-hardening.md) (PRs 2a, 2b, 2c, 7):
+
+- Rate limiting for metadata fetches, OAuth endpoints, and `tools/call` (`Operately.Mcp.RateLimit`)
+- Structured logging and StatsD metrics (`Operately.Mcp.Observability`)
+- HTTPS-only CIMD redirect URIs in production
+- Step-based E2E CIMD suite in `app/test/mcp_e2e/`
 - Keep known directory clients in `:mcp_oauth_clients` as overrides
 
 Outcome: CIMD runs in production without opening an unbounded SSRF or abuse surface.
+
+Status: implemented.
 
 Defer unless needed:
 
 - Dynamic Client Registration (RFC 7591)
 - DB-persisted metadata cache
 - confidential-client auth methods beyond `none`
+- Cluster-wide rate limits (current limits are per-node ETS)
 
-### PR 6: Submission hardening
+### PR 6: Submission hardening (Operational — out of repo)
 
-- Privacy policy / support URLs / branding assets
-- Reviewer test accounts and test companies
-- Rate limiting, audit logging, and operational visibility beyond CIMD-specific guardrails
-- Other remote-MCP security hardening
-- Final validation in ChatGPT, Claude, and at least one generic MCP client / IDE
+Directory submission paperwork and go-to-market items, not application code:
+
+- Privacy policy / support URLs / branding assets — Operately product docs (separate repo)
+- Reviewer test accounts and test companies — credentials and sample data for platform reviewers during directory review
+- Final validation in ChatGPT, Claude, and at least one generic MCP client / IDE — manually verified (ChatGPT, Claude, Codex desktop, Cursor IDE)
 
 Outcome: the MCP is ready for directory submission.
 
-### Security hardening follow-on
+Status: security hardening complete in-app; remaining items are submission ops (see 0016 PR 6).
+
+### Security hardening follow-on (from 0016)
 
 - **Read-only default scope (implemented):** OAuth defaults to `mcp:read` when `scope` is omitted; consent screen scope labels and write warning; `default_scopes` in discovery metadata
 - **MCP observability (implemented):** structured logs and StatsD metrics for JSON-RPC method, `tools/call` tool name/outcome, OAuth failures, and CIMD fetch/cache; searchable in Grafana via `MCP tools/call:` / `operately.mcp.*` metrics
 - **CIMD redirect URI hardening (implemented):** production requires `https` redirect URIs in fetched CIMD metadata; dev/test allows `http` only on localhost/loopback
 - **CIMD integration test (implemented):** step-based E2E suite in `app/test/mcp_e2e/` — CIMD OAuth onboarding plus `get_me`, `search`, `fetch`, and `create_project_check_in` over HTTP
-- **Pending (in order):** grant revocation UI (PR 4), optional company policy (PR 5), submission hardening (PR 6), rate limits (PR 7), audit logging (PR 3 — deferred to last)
+- **Grant management (implemented):** `account/security/mcp-connections` UI + `mcp_grants/list` / `mcp_grants/revoke` API
+- **Rate limiting (implemented):** OAuth, CIMD fetch, and per-grant `tools/call` limits
+- **Out of scope / deferred:** company-level MCP policy; persistent tool-call audit logging; shorter access-token TTL (under consideration); `private_key_jwt` confidential-client auth
 
 ---
 
