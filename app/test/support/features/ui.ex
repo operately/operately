@@ -110,32 +110,55 @@ defmodule Operately.Support.Features.UI do
   end
 
   def mention_person_in_rich_text(state, person_or_name) do
-    name = mention_name(person_or_name)
+    search_text = mention_search_text(person_or_name)
+    expected_text = mention_expected_text(person_or_name)
     query = Query.css(".ProseMirror[contenteditable=true]")
 
     execute("mention_person_in_rich_text", state, fn session ->
       session =
         session
         |> Browser.find(query, fn element ->
-          element |> Browser.send_keys(["@", name])
+          element |> Browser.send_keys(["@", search_text])
         end)
 
       session =
-        case Wallaby.Browser.retry(fn ->
-               if Browser.has_text?(session, name), do: {:ok, session}, else: {:error, :not_yet}
-             end) do
-          {:ok, session} -> session
-          {:error, _} -> sleep(session, 500)
+        case person_or_name do
+          %Person{} = person ->
+            option_query = query(testid: testid(["mention-person", person.full_name]))
+
+            case Wallaby.Browser.retry(fn ->
+                   case Browser.execute_query(session, option_query) do
+                     {:ok, _} -> {:ok, session}
+                     _ -> {:error, :not_yet}
+                   end
+                 end) do
+              {:ok, session} -> Browser.click(session, option_query)
+              {:error, _} -> sleep(session, 500)
+            end
+
+          _ ->
+            case Wallaby.Browser.retry(fn ->
+                   if Browser.has_text?(session, expected_text), do: {:ok, session}, else: {:error, :not_yet}
+                 end) do
+              {:ok, session} -> Browser.find(session, query, fn element -> element |> Browser.send_keys([:enter]) end)
+              {:error, _} -> sleep(session, 500)
+            end
         end
 
-      Browser.find(session, query, fn element ->
-        element |> Browser.send_keys([:enter])
-      end)
+      case Wallaby.Browser.retry(fn ->
+             if Browser.has_text?(session, query, expected_text), do: {:ok, session}, else: {:error, :not_yet}
+           end) do
+        {:ok, session} -> session
+        {:error, _} -> session
+      end
     end)
   end
 
-  defp mention_name(%Person{} = person), do: Person.first_name(person)
-  defp mention_name(name) when is_binary(name), do: name
+  defp mention_search_text(%Person{} = person), do: Person.first_name(person)
+  defp mention_search_text(name) when is_binary(name), do: name
+
+  defp mention_expected_text(%Person{} = person), do: person.full_name
+  defp mention_expected_text(name) when is_binary(name), do: name
 
   def assert_has(state, testid: id) do
     assert_has(state, query(testid: id))
@@ -743,6 +766,7 @@ defmodule Operately.Support.Features.UI do
     ctx
     |> click(testid: testid)
     |> click(testid: "#{testid}-clear")
+    |> refute_has(testid: "#{testid}-clear")
   end
 
   def select_date(ctx, testid: testid, date: date) do

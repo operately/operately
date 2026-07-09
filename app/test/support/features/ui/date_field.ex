@@ -1,16 +1,18 @@
 defmodule Operately.Support.Features.UI.DateField do
   alias Wallaby.Browser
+  alias Operately.Support.Features.UI
 
   def select_day_in_date_field(ctx, testid: testid, date: date) do
     day_number = date.day
 
     ctx
-    |> Operately.Support.Features.UI.click(testid: testid)
+    |> UI.click(testid: testid)
     |> then(fn ctx ->
       ctx
       |> navigate_date_field_to_month(date)
-      |> Operately.Support.Features.UI.click(testid: "date-field-day-#{day_number}")
-      |> Operately.Support.Features.UI.click(testid: "date-field-confirm")
+      |> UI.click(testid: "date-field-day-#{day_number}")
+      |> UI.click(testid: "date-field-confirm")
+      |> UI.refute_has(testid: "date-field-confirm")
     end)
   end
 
@@ -30,12 +32,12 @@ defmodule Operately.Support.Features.UI.DateField do
 
       current_year < target_year or (current_year == target_year and current_month < target_month) ->
         ctx
-        |> Operately.Support.Features.UI.click(css: "[data-testid='date-field-next-month']")
+        |> UI.click(css: "[data-testid='date-field-next-month']")
         |> navigate_date_field_to_month_recursive(target_month, target_year, iterations_left - 1)
 
       true ->
         ctx
-        |> Operately.Support.Features.UI.click(css: "[data-testid='date-field-prev-month']")
+        |> UI.click(css: "[data-testid='date-field-prev-month']")
         |> navigate_date_field_to_month_recursive(target_month, target_year, iterations_left - 1)
     end
   end

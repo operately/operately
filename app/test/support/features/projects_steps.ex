@@ -294,6 +294,8 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :assert_goal_link_on_project_page, ctx, goal_name: goal_name do
     ctx
     |> UI.click(testid: "parent-goal-field")
+    |> UI.wait_until_has(testid: "parent-goal-field-dialog")
+    |> UI.wait_until_has(testid: "parent-goal-field-view-goal")
     |> UI.click(testid: "parent-goal-field-view-goal")
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text(goal_name)
