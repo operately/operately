@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { AccountMcpConnectionsPage } from "./index";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";

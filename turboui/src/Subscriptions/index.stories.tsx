@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SubscribersSelector } from "./SubscribersSelector";
 import { CurrentSubscriptions } from "./CurrentSubscriptions";
 import { genPeople } from "../utils/storybook/genPeople";

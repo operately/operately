@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { StatusCustomizationModal } from "./index";
 import { PrimaryButton } from "../Button";
 import { StatusSelector } from "../StatusSelector";
