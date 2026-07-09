@@ -7,7 +7,7 @@ This guide explains how to create effective Storybook stories for React componen
 ### 1. Basic File Setup
 
 ```tsx
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { Page } from "../Page";
 import { ComponentName } from "./index";

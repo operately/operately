@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { IconHome, IconUser, IconSettings, IconBell, IconHeart, IconStar } from "../icons";
 import { Page } from "../Page";
 
