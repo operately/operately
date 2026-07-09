@@ -9,6 +9,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   alias Operately.Support.Features.FeedSteps
   alias Operately.People.Person
   alias Operately.ContextualDates.ContextualDate
+  alias Operately.ContextualDates.Timeframe
   alias OperatelyWeb.Paths
   alias Wallaby.QueryError
 
@@ -276,14 +277,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.click_text("Set parent goal")
     |> UI.click(testid: UI.testid(["parent-goal-field", goal_name]))
-    |> UI.sleep(300)
+    |> wait_until_project("parent goal to be #{goal_name}", fn project -> project.goal_id == ctx.goal.id end)
   end
 
   step :assert_goal_connected, ctx, goal_name: goal_name do
     ctx
-    |> UI.assert_text(goal_name, testid: "parent-goal-field")
+    |> UI.wait_until_text(goal_name, testid: "parent-goal-field")
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text(goal_name, testid: "parent-goal-field")
+    |> UI.wait_until_text(goal_name, testid: "parent-goal-field")
   end
 
   step :assert_parent_goal_field_not_rendered, ctx do
@@ -399,6 +400,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "space-field")
     |> UI.click(testid: "space-field-search-result-new-space")
     |> UI.click_button("Move")
+    |> wait_until_project("space to be #{ctx.new_space.name}", fn project -> project.group_id == ctx.new_space.id end)
   end
 
   step :assert_project_moved_notification_sent, ctx do
@@ -591,11 +593,11 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :edit_project_start_date, ctx, date do
     ctx
     |> UI.select_day_in_date_field(testid: "project-start-date", date: date)
-    |> UI.sleep(300)
+    |> wait_until_project("start date to be #{Date.to_iso8601(date)}", fn project -> Timeframe.start_date(project.timeframe) == date end)
   end
 
   step :assert_project_start_date, ctx, formatted_date do
-    ctx |> UI.assert_text(formatted_date, testid: "project-start-date")
+    ctx |> UI.wait_until_text(formatted_date, testid: "project-start-date")
   end
 
   step :assert_project_start_date_change_visible_in_feed, ctx, date_text do
@@ -620,19 +622,21 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :edit_project_due_date, ctx, date do
     ctx
     |> UI.select_day_in_date_field(testid: "project-due-date", date: date)
-    |> UI.sleep(300)
+    |> wait_until_project("due date to be #{Date.to_iso8601(date)}", fn project -> Timeframe.end_date(project.timeframe) == date end)
   end
 
   step :remove_project_due_date, ctx do
-    UI.clear_date_in_date_field(ctx, testid: "project-due-date")
+    ctx
+    |> UI.clear_date_in_date_field(testid: "project-due-date")
+    |> wait_until_project("due date to be cleared", fn project -> is_nil(Timeframe.end_date(project.timeframe)) end)
   end
 
   step :assert_project_due_date, ctx, formatted_date do
-    ctx |> UI.assert_text(formatted_date, testid: "project-due-date")
+    ctx |> UI.wait_until_text(formatted_date, testid: "project-due-date")
   end
 
   step :assert_no_project_due_date, ctx do
-    ctx |> UI.assert_text("Set due date", testid: "project-due-date")
+    ctx |> UI.wait_until_text("Set due date", testid: "project-due-date")
   end
 
   step :assert_project_overdue_message, ctx, expected_message do
@@ -759,13 +763,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
     |> UI.mention_person_in_rich_text(person)
     |> UI.click_button("Pause project")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+    |> wait_until_project("to pause", fn project -> project.status == "paused" end)
   end
 
   step :assert_project_paused, ctx do
     ctx
-    |> UI.find(UI.query(testid: "paused-status-banner"), fn el ->
-      UI.assert_text(el, "This project is paused")
-    end)
+    |> UI.wait_until_has(testid: "paused-status-banner")
+    |> UI.wait_until_text("This project is paused", testid: "paused-status-banner")
   end
 
   step :assert_pause_notification_sent_to_reviewer, ctx do
@@ -862,6 +867,8 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.assert_page(Paths.resume_project_path(ctx.company, ctx.project))
     |> UI.fill_rich_text("Resuming the project.")
     |> UI.click_button("Resume project")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+    |> wait_until_project("to resume", fn project -> project.status != "paused" end)
   end
 
   step :assert_project_active, ctx do
@@ -903,13 +910,13 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :rename_project, ctx, new_name: new_name do
     ctx
     |> UI.fill_text_field(testid: "project-name-field", with: new_name, submit: true)
-    |> UI.sleep(300)
+    |> wait_until_project("name to be #{new_name}", fn project -> project.name == new_name end)
   end
 
   step :assert_project_renamed, ctx, new_name: new_name do
     assert Operately.Projects.get_project!(ctx.project.id).name == new_name
 
-    ctx |> UI.assert_text(new_name)
+    ctx |> UI.wait_until_text(new_name)
   end
 
   step :assert_project_renamed_visible_on_feed, ctx do
@@ -1174,6 +1181,23 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.assert_location(activity_path)
     |> UI.wait_until_testid(testid: "project-feed")
     |> UI.wait_until_text(title, testid: "project-feed")
+  end
+
+  defp wait_until_project(ctx, description, condition, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    project = Operately.Projects.get_project!(ctx.project.id)
+
+    cond do
+      condition.(project) ->
+        ctx
+
+      attempts == [] ->
+        flunk("Timed out waiting for project #{description}")
+
+      true ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_project(ctx, description, condition, remaining)
+    end
   end
 
   step :assert_reviewer_changed_feed_posted, ctx, reviewer: reviewer do
