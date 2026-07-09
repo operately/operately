@@ -73,7 +73,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | --------- | -------- |
 | `SelectPerson` | `@/models/people`, `@/components/PeopleSearch` — accepts `searchFn` |
 | `SelectGoal` | `@/models/goals`, `@/features/goals/GoalTree/GoalSelectorDropdown` |
-| `SelectStatus` | `@/components/status`, `@/models/people` |
+| `SelectStatus` | ~~`@/components/status`~~ → TurboUI `Forms.SelectStatus` |
 | App `RichTextArea` | `mentionSearchScope` + internal `useRichEditorHandlers` |
 
 **Scale:** ~55 app/ee files import `@/components/Forms`. Migration is import-style change (`import Forms from "@/components/Forms"` → `import { Forms } from "turboui"`) plus API adjustments per cohort.
@@ -109,7 +109,7 @@ flowchart TB
     handlers[useRichEditorHandlers]
     peopleSearch[PeopleSearch / searchFn]
     goalSelect[SelectGoal wrapper]
-    statusSelect[SelectStatus wrapper]
+    statusSelect[SelectStatus in TurboUI]
   end
 
   subgraph legacy [Legacy - delete last]
@@ -314,15 +314,12 @@ import { Forms } from "turboui";
 
 **Phase complete:** [ ]
 
-**Goal:** `SubmitButton`, `setTrigger`, `SelectStatus` bridge.
+**Goal:** `SubmitButton`, `setTrigger`, `SelectStatus` in TurboUI.
 
 ### TurboUI work
 
 - [x] Port `SubmitButton`
-
-### App bridge
-
-- [x] `app/assets/js/features/forms/SelectStatus.tsx`
+- [x] Port `SelectStatus` (pure; accepts optional `reviewer` with `fullName`)
 
 ### Migrate (~6 files)
 
@@ -357,7 +354,6 @@ import { Forms } from "turboui";
 ### App bridge
 
 - [ ] `app/assets/js/features/forms/SelectGoal.tsx`
-- [ ] `app/assets/js/features/forms/SelectStatus.tsx`
 
 ### Migrate (~10 files)
 
@@ -437,7 +433,8 @@ Stories use `Forms.useForm` and mock handlers from `turboui/src/utils/storybook/
 | `form.actions.setTrigger(name)` | TurboUI `form.actions.setTrigger(name)` (Phase 0) |
 | `form.actions.addErrors({ _submit: msg })` | TurboUI `form.actions.addErrors(...)` (Phase 0) |
 | `Forms.FieldGroup layout="grid"` | TurboUI FieldGroup (Phase 1) |
-| `SelectGoal` / `SelectStatus` | App bridge in `features/forms/` |
+| `SelectGoal` | App bridge in `features/forms/` |
+| `SelectStatus` | TurboUI `Forms.SelectStatus` |
 
 ---
 
