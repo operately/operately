@@ -74,5 +74,17 @@ defmodule Operately.CompaniesTest do
       company = company_fixture(%{}, ctx.account)
       assert %Ecto.Changeset{} = Companies.change_company(company)
     end
+
+    test "disable_experimental_feature/2 removes the flag and leaves others intact", ctx do
+      company = company_fixture(%{}, ctx.account)
+
+      {:ok, company} = Companies.enable_experimental_feature(company, "feature_a")
+      {:ok, company} = Companies.enable_experimental_feature(company, "feature_b")
+      {:ok, company} = Companies.enable_experimental_feature(company, "feature_c")
+
+      assert {:ok, company} = Companies.disable_experimental_feature(company, "feature_b")
+      assert Enum.sort(company.enabled_experimental_features) == ["feature_a", "feature_c"]
+    end
   end
 end
+
