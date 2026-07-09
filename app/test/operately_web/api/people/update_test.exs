@@ -195,6 +195,16 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
                  daily_summary_delivery_time: "18:45"
                })
     end
+
+    test "it rejects a manager that would create a reporting cycle", ctx do
+      report = person_fixture(%{company_id: ctx.company.id, full_name: "Report Person", manager_id: ctx.person.id})
+
+      assert {400, %{message: "This would create a circular reporting relationship"}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 manager_id: Paths.person_id(report)
+               })
+    end
   end
 
   defp promote_me_to_admin(ctx) do
