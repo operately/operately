@@ -15,7 +15,8 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.PauseTest do
 
     assert {:ok, %{project: project}} =
              Pause.call(ToolConnHelper.conn(ctx), %{
-               "project_id" => Paths.project_id(ctx.project)
+               "project_id" => Paths.project_id(ctx.project),
+               "message" => "Putting this on hold for now"
              })
 
     assert project.id == Paths.project_id(ctx.project)

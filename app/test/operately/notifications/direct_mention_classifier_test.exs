@@ -187,6 +187,33 @@ defmodule Operately.Notifications.DirectMentionClassifierTest do
     refute mentions_recipient?(non_mentioned_notification)
   end
 
+  test "project_pausing checks mentions from comment thread message via activity comment_thread_id", ctx do
+    mention_message = RichText.rich_text(mentioned_people: [ctx.recipient]) |> Jason.decode!()
+    plain_message = RichText.rich_text("No one mentioned here")
+
+    mentioned_thread = comment_thread_fixture(%{parent_id: Ecto.UUID.generate(), message: mention_message})
+    plain_thread = comment_thread_fixture(%{parent_id: Ecto.UUID.generate(), message: plain_message})
+
+    mentioned_notification =
+      notification_struct(
+        ctx.recipient,
+        "project_pausing",
+        %{},
+        %{comment_thread_id: mentioned_thread.id}
+      )
+
+    non_mentioned_notification =
+      notification_struct(
+        ctx.recipient,
+        "project_pausing",
+        %{},
+        %{comment_thread_id: plain_thread.id}
+      )
+
+    assert mentions_recipient?(mentioned_notification)
+    refute mentions_recipient?(non_mentioned_notification)
+  end
+
   test "goal_closing checks mentions from comment thread message via activity comment_thread_id", ctx do
     mention_message = RichText.rich_text(mentioned_people: [ctx.recipient]) |> Jason.decode!()
     plain_message = RichText.rich_text("No one mentioned here")

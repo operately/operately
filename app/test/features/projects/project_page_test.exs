@@ -41,6 +41,33 @@ defmodule Operately.Features.Projects.ProjectPageTest do
     |> Steps.assert_pause_notification_sent_to_reviewer()
     |> Steps.assert_pause_visible_on_feed()
     |> Steps.assert_pause_email_sent_to_reviewer()
+    |> Steps.assert_pause_email_contains_description("Pausing the project.")
+  end
+
+  @tag login_as: :contributor
+  feature "pausing a project without a description", ctx do
+    ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
+    |> Steps.visit_project_page()
+    |> Steps.pause_project_without_description()
+    |> Steps.assert_project_paused()
+    |> Steps.assert_pause_without_description_visible_on_feed()
+    |> Steps.assert_pause_notification_sent_to_reviewer()
+    |> Steps.assert_pause_email_sent_to_reviewer()
+  end
+
+  @tag login_as: :contributor
+  feature "mentioning a person when pausing a project sends notification and email", ctx do
+    ctx = Steps.given_space_member_exists(ctx)
+
+    ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
+    |> Steps.visit_project_page()
+    |> Steps.pause_project_mentioning(ctx.space_member)
+    |> Steps.assert_project_paused()
+    |> Steps.assert_pause_mention_visible_on_feed(ctx.space_member)
+    |> Steps.assert_pause_notification_sent_to_space_member()
+    |> Steps.assert_pause_email_sent_to_space_member()
   end
 
   @tag login_as: :contributor
@@ -81,6 +108,18 @@ defmodule Operately.Features.Projects.ProjectPageTest do
     |> Steps.assert_comment_on_resumption_visible_on_feed()
     |> Steps.assert_comment_on_resumption_received_in_notifications()
     |> Steps.assert_comment_on_resumption_received_in_email()
+  end
+
+  @tag login_as: :commenter
+  feature "comment on project pausing", ctx do
+    ctx
+    |> Steps.assert_logged_in_contributor_has_comment_access()
+    |> Steps.visit_project_page()
+    |> Steps.given_project_is_paused()
+    |> Steps.leave_comment_on_project_pausing()
+    |> Steps.assert_comment_on_pausing_visible_on_feed()
+    |> Steps.assert_comment_on_pausing_received_in_notifications()
+    |> Steps.assert_comment_on_pausing_received_in_email()
   end
 
   @tag login_as: :contributor

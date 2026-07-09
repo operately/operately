@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Projects.PauseTest do
   import Operately.ProjectsFixtures
 
   alias Operately.Access.Binding
+  alias Operately.Support.RichText
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -40,7 +41,11 @@ defmodule OperatelyWeb.Api.Projects.PauseTest do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
 
-        assert {code, res} = mutation(ctx.conn, [:projects, :pause], %{project_id: Paths.project_id(project)})
+        assert {code, res} = mutation(ctx.conn, [:projects, :pause], %{
+          project_id: Paths.project_id(project),
+          message: RichText.rich_text("test message", :as_string),
+        })
+
         assert code == @test.expected
 
         project = Operately.Repo.reload(project)
