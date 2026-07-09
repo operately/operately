@@ -22,6 +22,7 @@ defmodule OperatelyEE.AdminApi.Types do
     field? :goals_count, :integer
     field? :spaces_count, :integer
     field? :projects_count, :integer
+    field? :storage_usage_bytes, :integer
     field? :last_activity_at, :datetime
     field? :inserted_at, :datetime
 

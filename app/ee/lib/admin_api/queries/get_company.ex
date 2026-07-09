@@ -28,6 +28,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompany do
         &Company.load_goals_count/1,
         &Company.load_spaces_count/1,
         &Company.load_projects_count/1,
+        &Company.load_storage_usage_bytes/1,
         &Company.load_last_activity_event/1
       ]
     ])
@@ -42,6 +43,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompany do
         goals_count: company.goals_count,
         spaces_count: company.spaces_count,
         projects_count: company.projects_count,
+        storage_usage_bytes: company.storage_usage_bytes,
         owners: OperatelyWeb.Api.Serializer.serialize(company.owners, level: :full),
         last_activity_at: OperatelyWeb.Api.Serializer.serialize(company.last_activity_at, level: :essential),
         uuid: company.id,

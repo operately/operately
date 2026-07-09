@@ -32,6 +32,7 @@ defmodule Operately.Companies.Company do
     field :goals_count, :integer, virtual: true
     field :spaces_count, :integer, virtual: true
     field :projects_count, :integer, virtual: true
+    field :storage_usage_bytes, :integer, virtual: true
     field :last_activity_at, :utc_datetime, virtual: true
 
     timestamps()
@@ -248,6 +249,25 @@ defmodule Operately.Companies.Company do
     [company] |> load_projects_count() |> hd()
   end
 
+  def load_storage_usage_bytes(companies) when is_list(companies) do
+    query =
+      from(b in Operately.Blobs.Blob,
+        where: b.company_id in ^ids(companies) and b.purpose == :company_file and b.status == :uploaded,
+        group_by: b.company_id,
+        select: {b.company_id, sum(b.size)}
+      )
+
+    companies
+    |> load_aggregate(query, :storage_usage_bytes)
+    |> Enum.map(fn company ->
+      Map.update!(company, :storage_usage_bytes, &normalize_aggregate_sum/1)
+    end)
+  end
+
+  def load_storage_usage_bytes(company) do
+    [company] |> load_storage_usage_bytes() |> hd()
+  end
+
   def load_last_activity_event(companies) when is_list(companies) do
     ids = Enum.map(companies, fn c -> to_string(c.id) end)
 
@@ -257,7 +277,14 @@ defmodule Operately.Companies.Company do
         group_by: fragment("?->> ?", a.content, "company_id"),
         select: {fragment("?->>?", a.content, "company_id"), max(a.inserted_at)}
 
-    load_aggregate(companies, query, :last_activity_at, nil)
+    results = Operately.Repo.all(query)
+
+    Enum.map(companies, fn company ->
+      case Enum.find(results, fn {id, _} -> id == to_string(company.id) end) do
+        {_, last_activity_at} -> Map.put(company, :last_activity_at, last_activity_at)
+        nil -> Map.put(company, :last_activity_at, nil)
+      end
+    end)
   end
 
   def load_last_activity_event(company) do
@@ -274,6 +301,10 @@ defmodule Operately.Companies.Company do
       end
     end)
   end
+
+  defp normalize_aggregate_sum(nil), do: 0
+  defp normalize_aggregate_sum(%Decimal{} = value), do: Decimal.to_integer(value)
+  defp normalize_aggregate_sum(value) when is_integer(value), do: value
 
   defp ids(companies) do
     Enum.map(companies, fn c -> c.id end)
