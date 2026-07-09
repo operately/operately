@@ -7,7 +7,7 @@ defmodule Operately.People do
   alias Operately.Billing
   alias Operately.Companies
   alias Operately.Companies.Company
-  alias Operately.People.{Account, AccountToken, ApiToken, Person}
+  alias Operately.People.{Account, AccountToken, ApiToken, ManagerCycle, Person}
   alias Operately.Access.Binding
   alias Operately.Access.Fetch
 
@@ -137,9 +137,18 @@ defmodule Operately.People do
   end
 
   def update_person(%Person{} = person, attrs) do
-    person
-    |> Person.changeset(attrs)
-    |> Repo.update()
+    changeset = Person.changeset(person, attrs)
+
+    try do
+      Repo.update(changeset)
+    rescue
+      e in Postgrex.Error ->
+        if ManagerCycle.postgres_cycle_error?(e) do
+          {:error, ManagerCycle.add_changeset_error(changeset)}
+        else
+          reraise e, __STACKTRACE__
+        end
+    end
   end
 
   def get_manager(%Person{} = person) do
