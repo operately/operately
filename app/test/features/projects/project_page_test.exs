@@ -44,6 +44,16 @@ defmodule Operately.Features.Projects.ProjectPageTest do
   end
 
   @tag login_as: :contributor
+  feature "pausing a project without a description", ctx do
+    ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
+    |> Steps.visit_project_page()
+    |> Steps.pause_project_without_description()
+    |> Steps.assert_project_paused()
+    |> Steps.assert_pause_without_description_visible_on_feed()
+  end
+
+  @tag login_as: :contributor
   feature "resuming a project", ctx do
     ctx
     |> Steps.assert_logged_in_contributor_has_edit_access()
@@ -81,6 +91,18 @@ defmodule Operately.Features.Projects.ProjectPageTest do
     |> Steps.assert_comment_on_resumption_visible_on_feed()
     |> Steps.assert_comment_on_resumption_received_in_notifications()
     |> Steps.assert_comment_on_resumption_received_in_email()
+  end
+
+  @tag login_as: :commenter
+  feature "comment on project pausing", ctx do
+    ctx
+    |> Steps.assert_logged_in_contributor_has_comment_access()
+    |> Steps.visit_project_page()
+    |> Steps.given_project_is_paused()
+    |> Steps.leave_comment_on_project_pausing()
+    |> Steps.assert_comment_on_pausing_visible_on_feed()
+    |> Steps.assert_comment_on_pausing_received_in_notifications()
+    |> Steps.assert_comment_on_pausing_received_in_email()
   end
 
   @tag login_as: :contributor

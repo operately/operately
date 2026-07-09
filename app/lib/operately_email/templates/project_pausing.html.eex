@@ -3,5 +3,11 @@
 <%= spacer() %>
 
 <%= row do %>
+  <%= rich_text(@message) %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
   <%= cta_button(@link, "View Project") %>
 <% end %>

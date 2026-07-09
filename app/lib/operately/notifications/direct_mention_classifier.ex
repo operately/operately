@@ -44,6 +44,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     {"goal_reopening", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
     {"goal_timeframe_editing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
     {"project_resuming", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
+    {"project_pausing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
     {"project_closed", %{resource: :project_retrospective, resource_id: {:content, "retrospective_id"}}},
     {"resource_hub_document_created", %{resource: :resource_hub_document, resource_id: {:content, "document_id"}}},
     {"resource_hub_document_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
