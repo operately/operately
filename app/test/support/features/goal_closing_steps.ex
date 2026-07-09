@@ -21,9 +21,16 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> Factory.add_project(:project_paused, :product, goal: :goal, name: "Paused Project")
     |> then(fn ctx ->
       # Pause one project
-      Operately.Operations.ProjectPausing.run(ctx.creator, ctx.project_paused)
+      Operately.Operations.ProjectPausing.run(ctx.creator, ctx.project_paused, %{
+        content: RichText.rich_text(""),
+        subscription_parent_type: :comment_thread,
+        send_to_everyone: false,
+        subscriber_ids: []
+      })
+
       ctx
     end)
+
   end
 
   step :given_closed_goal_exists, ctx do

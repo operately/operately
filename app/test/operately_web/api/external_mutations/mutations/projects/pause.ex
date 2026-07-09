@@ -11,12 +11,16 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Pause do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
+    |> Factory.add_company_member(:member)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      project_id: Paths.project_id(ctx.project)
+      project_id: Paths.project_id(ctx.project),
+      message: rich_text_string("Updated content"),
+      send_notifications_to_everyone: false,
+      subscriber_ids: [Paths.person_id(ctx.member)]
     }
   end
 
@@ -25,4 +29,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Pause do
     assert response.project.id
     refute Map.has_key?(response, :error)
   end
+
+  defp rich_text_string(text), do: Operately.Support.RichText.rich_text(text, :as_string)
 end

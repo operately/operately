@@ -265,10 +265,17 @@ defmodule Operately.Support.Factory.Projects do
   def pause_project(ctx, project_name) do
     project = Map.fetch!(ctx, project_name)
 
-    {:ok, project} = Operately.Operations.ProjectPausing.run(ctx.creator, project)
+    {:ok, project} =
+      Operately.Operations.ProjectPausing.run(ctx.creator, project, %{
+        content: Operately.Support.RichText.rich_text(""),
+        subscription_parent_type: :comment_thread,
+        send_to_everyone: false,
+        subscriber_ids: []
+      })
 
     Map.put(ctx, project_name, project)
   end
+
 
   def close_project_milestone(ctx, milestone_name, creator_name \\ :creator) do
     creator = Map.fetch!(ctx, creator_name)

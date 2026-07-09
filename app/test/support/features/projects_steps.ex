@@ -192,9 +192,17 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :given_project_is_paused, ctx do
-    {:ok, project} = Operately.Operations.ProjectPausing.run(ctx.champion, ctx.project)
+    {:ok, project} =
+      Operately.Operations.ProjectPausing.run(ctx.champion, ctx.project, %{
+        content: Operately.Support.RichText.rich_text("Pausing project"),
+        subscription_parent_type: :comment_thread,
+        send_to_everyone: true,
+        subscriber_ids: []
+      })
+
     Map.put(ctx, :project, project)
   end
+
 
   step :given_project_is_resumed, ctx do
     {:ok, project} =
@@ -734,6 +742,22 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.click_text("Pause project")
     |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
+    |> UI.fill_rich_text("Pausing the project.")
+    |> UI.click_button("Pause project")
+  end
+
+  step :pause_project_without_description, ctx do
+    ctx
+    |> UI.click_text("Pause project")
+    |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
+    |> UI.click_button("Pause project")
+  end
+
+  step :pause_project_mentioning, ctx, person do
+    ctx
+    |> UI.click_text("Pause project")
+    |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
+    |> UI.mention_person_in_rich_text(person)
     |> UI.click_button("Pause project")
   end
 
@@ -764,7 +788,59 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
+  step :assert_pause_email_contains_description, ctx, description do
+    email = UI.Emails.last_sent_email(to: ctx.reviewer.email)
+    assert email.html =~ description
+    ctx
+  end
+
+  step :assert_pause_notification_sent_to_space_member, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.contributor,
+      action: "Paused the #{ctx.project.name} project"
+    })
+  end
+
+  step :assert_pause_email_sent_to_space_member, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      action: "paused the project",
+      author: ctx.contributor
+    })
+  end
+
+  step :assert_pause_mention_visible_on_feed, ctx, person do
+    person_first_name = Person.first_name(person)
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.contributor, content: person_first_name)
+    end)
+  end
+
   step :assert_pause_visible_on_feed, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.contributor, content: "Pausing the project.")
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.contributor, project_name: ctx.project.name, content: "Pausing the project.")
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      el |> FeedSteps.assert_project_paused(author: ctx.contributor, project_name: ctx.project.name, content: "Pausing the project.")
+    end)
+  end
+
+  step :assert_pause_without_description_visible_on_feed, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
@@ -1496,6 +1572,50 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.champion,
       action: "commented on the project resumption",
+      author: ctx.commenter
+    })
+  end
+
+  step :leave_comment_on_project_pausing, ctx do
+    activity = Operately.Repo.one!(from a in Operately.Activities.Activity, where: a.action == "project_pausing" and a.content["project_id"] == ^ctx.project.id)
+    path = Paths.project_activity_path(ctx.company, activity)
+
+    ctx
+    |> UI.visit(path)
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment on pausing.")
+    |> UI.click(testid: "post-comment")
+    |> UI.refute_has(testid: "post-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_on_pausing_visible_on_feed, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> FeedSteps.assert_project_pausing_commented(author: ctx.commenter, comment: "This is a comment on pausing.")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_pausing_commented(author: ctx.commenter, comment: "This is a comment on pausing.", project_name: ctx.project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_pausing_commented(author: ctx.commenter, comment: "This is a comment on pausing.", project_name: ctx.project.name)
+  end
+
+  step :assert_comment_on_pausing_received_in_notifications, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.commenter,
+      action: "Re: project pausing"
+    })
+  end
+
+  step :assert_comment_on_pausing_received_in_email, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      action: "commented on the project pausing",
       author: ctx.commenter
     })
   end
