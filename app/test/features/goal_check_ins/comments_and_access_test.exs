@@ -34,19 +34,10 @@ defmodule Operately.Features.GoalChecksIns.CommentsAndAccessTest do
     end
 
     feature "goal check-in page hides space navigation when space is not accessible", ctx do
-      params = %{
-        status: "on_track",
-        message: "Checking-in on my goal",
-        targets: %{
-          "First response time" => 20,
-          "Increase feedback score to 90%" => 80
-        }
-      }
-
       ctx
       |> Steps.given_goal_in_secret_space_for_champion()
-      |> Steps.visit_check_ins_tab(:secret_goal)
-      |> Steps.check_in(params)
+      |> Steps.given_a_check_in_exists(:secret_goal)
+      |> Steps.visit_check_in()
       |> Steps.assert_check_in_navigation_without_space()
     end
   end
