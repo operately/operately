@@ -34,6 +34,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
       {:ok, ctx} -> {:ok, ctx.result}
       {:error, :resource, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: %Ecto.Changeset{} = changeset}} ->
+        {:error, :bad_request, changeset_error_message(changeset)}
+
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
@@ -53,5 +56,15 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
 
   defp find_resource(me, id, "link") do
     Link.get(me, id: id, opts: [preload: [:node, :resource_hub]])
+  end
+
+  defp changeset_error_message(%Ecto.Changeset{} = changeset) do
+    case Enum.find_value(changeset.errors, fn
+           {:parent_folder_id, {message, _}} -> message
+           _ -> nil
+         end) do
+      nil -> "Invalid folder move"
+      message -> message
+    end
   end
 end
