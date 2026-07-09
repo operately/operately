@@ -22,11 +22,7 @@ import {
 
 jest.mock("../RichEditor", () => ({
   Editor: (props: { hideBorder?: boolean; className?: string }) => (
-    <div
-      data-testid="rich-editor"
-      data-hide-border={props.hideBorder ? "true" : "false"}
-      className={props.className}
-    />
+    <div data-testid="rich-editor" data-hide-border={props.hideBorder ? "true" : "false"} className={props.className} />
   ),
   useEditor: (props: { content?: unknown }) => ({
     editor: {

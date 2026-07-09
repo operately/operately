@@ -70,10 +70,7 @@ export interface FieldGroupGridOptions {
   gridTemplateColumns?: string;
 }
 
-export type FieldGroupLayoutOptions =
-  | FieldGroupHorizontalOptions
-  | FieldGroupVerticalOptions
-  | FieldGroupGridOptions;
+export type FieldGroupLayoutOptions = FieldGroupHorizontalOptions | FieldGroupVerticalOptions | FieldGroupGridOptions;
 
 export interface InputFieldProps {
   field: string;
