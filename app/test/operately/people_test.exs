@@ -564,9 +564,8 @@ defmodule Operately.PeopleTest do
     end
 
     test "cannot set a person as their own manager", %{alice: alice} do
-      assert_raise Postgrex.Error, ~r/Cycle detected: setting this manager would create a circular reference/, fn ->
-        People.update_person(alice, %{manager_id: alice.id})
-      end
+      assert {:error, changeset} = People.update_person(alice, %{manager_id: alice.id})
+      assert "This would create a circular reporting relationship" in errors_on(changeset).manager_id
     end
 
     test "cannot create a cycle in the management chain", %{alice: alice, bob: bob, carol: carol} do
@@ -575,9 +574,8 @@ defmodule Operately.PeopleTest do
       {:ok, _carol_with_manager} = People.update_person(carol, %{manager_id: bob.id})
 
       # Now try to create a cycle by setting Alice's manager to Carol
-      assert_raise Postgrex.Error, ~r/Cycle detected: setting this manager would create a circular reference/, fn ->
-        People.update_person(alice, %{manager_id: carol.id})
-      end
+      assert {:error, changeset} = People.update_person(alice, %{manager_id: carol.id})
+      assert "This would create a circular reporting relationship" in errors_on(changeset).manager_id
     end
 
     test "can change manager to someone else without creating a cycle", %{alice: alice, bob: bob, carol: carol, dave: dave} do
