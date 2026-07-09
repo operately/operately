@@ -7,6 +7,7 @@ interface Person {
 }
 
 import { Avatar } from "../../../Avatar";
+import { createTestId } from "../../../TestableElement";
 
 /**
  *  This is a custom mention list component for tiptap.
@@ -118,6 +119,7 @@ function ItemList({ items, selectItem, selectedIndex }: ItemListProps): JSX.Elem
           key={index}
           className={index === selectedIndex ? selectedClass : unselectedClass}
           onClick={() => selectItem(index)}
+          data-test-id={createTestId("mention-person", item.fullName)}
         >
           <div className="flex items-center gap-2 text-sm font-medium">
             <Avatar person={item} size="tiny" />
