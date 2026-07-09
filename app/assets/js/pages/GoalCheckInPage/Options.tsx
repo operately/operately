@@ -11,7 +11,7 @@ import { useBoolState } from "@/hooks/useBoolState";
 import { useDeleteGoalProgressUpdate } from "@/models/goalCheckIns";
 import { usePaths } from "@/routes/paths";
 import Modal from "@/components/Modal";
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 
 export function Options() {
   const { update, goal } = useLoadedData();
