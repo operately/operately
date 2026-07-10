@@ -5,7 +5,7 @@ defmodule Operately.Projects.CheckIn do
   alias Operately.Notifications
 
   @valid_statuses [:on_track, :caution, :off_track]
-  @valid_states [:draft, :published]
+  @valid_states [:draft, :scheduled, :published]
 
   schema "project_check_ins" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -14,8 +14,9 @@ defmodule Operately.Projects.CheckIn do
 
     field :status, Ecto.Enum, values: @valid_statuses
     field :description, :map
-    field :state, Ecto.Enum, values: @valid_states, default: :published
+    field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
+    field :scheduled_at, :utc_datetime
 
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
     field :acknowledged_at, :utc_datetime
@@ -41,26 +42,20 @@ defmodule Operately.Projects.CheckIn do
 
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:author_id, :project_id, :description, :status, :state, :published_at, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
+    |> cast(attrs, [:author_id, :project_id, :description, :status, :state, :published_at, :scheduled_at, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
+    |> Operately.StateMachine.cast_and_validate(:state, %{
+      initial: :draft,
+      states: [
+        %{name: :draft, allow_transition_to: [:scheduled, :published]},
+        %{name: :scheduled, allow_transition_to: [:draft, :published]},
+        %{name: :published, allow_transition_to: [], on_enter: &set_published_at/1}
+      ]
+    })
     |> validate_required([:author_id, :project_id, :description, :status, :state, :subscription_list_id])
-    |> validate_state_transition()
-    |> set_published_at()
-  end
-
-  defp validate_state_transition(changeset) do
-    if changeset.data.__meta__.state == :loaded and changeset.data.state == :published and get_change(changeset, :state) == :draft do
-      add_error(changeset, :state, "cannot move a published check-in back to draft")
-    else
-      changeset
-    end
   end
 
   defp set_published_at(changeset) do
-    if get_field(changeset, :state) == :published and is_nil(get_field(changeset, :published_at)) do
-      put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
-    else
-      changeset
-    end
+    put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
   end
 
   # After load hooks
