@@ -45,7 +45,10 @@ function SelectPersonInput(props: SelectPersonProps) {
     if (props.default) {
       setValue(props.default.id);
     }
-  }, [props.default, setValue]);
+    // Only re-apply when the default person changes. `setValue` identity is not
+    // stable across form re-renders, so including it would reset user selections.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.default?.id]);
 
   useValidation(field, validatePresence(required));
 
@@ -152,20 +155,20 @@ function emptySelectionOption(label: string): Option {
   };
 }
 
-function personAsOption(person: SelectPersonPerson): Option {
+function personAsOption(person: SelectPersonPerson, showTitle = false): Option {
   return {
     value: person.id,
-    label: <PersonLabel person={person} />,
+    label: <PersonLabel person={person} showTitle={showTitle} />,
     person,
   };
 }
 
-function PersonLabel({ person }: { person: SelectPersonPerson }) {
+function PersonLabel({ person, showTitle }: { person: SelectPersonPerson; showTitle: boolean }) {
   return (
     <div className="flex items-center gap-2" data-test-id={createTestId("person-option", person.fullName)}>
       <Avatar person={person} size="tiny" />
       {person.fullName}
-      {person.title ? <>&middot; {person.title}</> : null}
+      {showTitle && person.title ? <>&middot; {person.title}</> : null}
     </div>
   );
 }

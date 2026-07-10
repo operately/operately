@@ -390,6 +390,48 @@ describe("Forms", () => {
     );
   });
 
+  test("keeps a selected person after form re-renders when default is set", async () => {
+    const onSubmit = jest.fn();
+    const defaultPerson = { id: "person-1", fullName: "Alice", avatarUrl: null, title: "Engineer" };
+    const people = [
+      defaultPerson,
+      { id: "person-2", fullName: "Bob", avatarUrl: null, title: "Designer" },
+    ];
+    const searchFn = jest.fn(async () => people);
+
+    function Harness() {
+      const form = useForm({
+        fields: { person: "", note: "" },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectPerson field="person" label="Person" searchFn={searchFn} default={defaultPerson} />
+          <TextInput field="note" label="Note" />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    await waitFor(() => expect(searchFn).toHaveBeenCalled());
+
+    fireEvent.change(screen.getByLabelText("select-person"), { target: { value: "person-2" } });
+    fireEvent.change(screen.getByLabelText("Note"), { target: { value: "updated" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        person: "person-2",
+        note: "updated",
+      }),
+    );
+  });
+
   test("shows required validation errors for select person", async () => {
     const onSubmit = jest.fn();
     const searchFn = jest.fn(async () => []);
