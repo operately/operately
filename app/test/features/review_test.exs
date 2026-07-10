@@ -78,6 +78,26 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_acknowledged_goal_is_no_longer_displayed()
     end
 
+    feature "viewing and acknowledging project retrospectives", ctx do
+      ctx
+      |> Steps.given_there_is_a_project_retrospective_pending_acknowledgement()
+      |> Steps.visit_review_page()
+      |> Steps.assert_project_retrospective_review_is_listed()
+      |> Steps.when_a_project_retrospective_is_acknowledged()
+      |> Steps.assert_the_acknowledged_project_retrospective_is_no_longer_displayed()
+      |> Steps.assert_all_catch_up()
+    end
+
+    feature "viewing and acknowledging goal retrospectives", ctx do
+      ctx
+      |> Steps.given_there_is_a_goal_retrospective_pending_acknowledgement()
+      |> Steps.visit_review_page()
+      |> Steps.assert_goal_retrospective_review_is_listed()
+      |> Steps.when_a_goal_retrospective_is_acknowledged()
+      |> Steps.assert_the_acknowledged_goal_retrospective_is_no_longer_displayed()
+      |> Steps.assert_all_catch_up()
+    end
+
     feature "acknowledging goal updates clears reassigned reviewer obligations", ctx do
       ctx
       |> Steps.given_there_are_goal_updates_pending_acknowledgement()
@@ -144,12 +164,16 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.given_there_are_due_goal_updates()
       |> Steps.given_there_are_submitted_project_check_ins()
       |> Steps.given_there_are_submitted_goal_updates()
+      |> Steps.given_there_is_a_project_retrospective_pending_acknowledgement()
       |> Steps.visit_review_page()
-      |> Steps.assert_the_review_item_count(is: 4)
+      |> Steps.assert_the_review_item_count(is: 5)
       |> Steps.when_a_project_check_in_is_acknowledged()
-      |> Steps.assert_the_review_item_count(is: 3)
+      |> Steps.assert_the_review_item_count(is: 4)
       |> Steps.visit_review_page()
       |> Steps.when_a_goal_update_is_acknowledged()
+      |> Steps.assert_the_review_item_count(is: 3)
+      |> Steps.visit_review_page()
+      |> Steps.when_a_project_retrospective_is_acknowledged()
       |> Steps.assert_the_review_item_count(is: 2)
     end
 

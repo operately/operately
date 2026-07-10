@@ -295,6 +295,80 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       assert length(upcoming) == 0
     end
 
+    test "get pending project retrospective acknowledgements", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:champion, :space)
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :person, name: "Closed Project")
+        |> Factory.close_project(:project, author: :champion)
+
+      assert {200, %{needs_review: needs_review} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+
+      assert length(needs_review) == 1
+
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      assert length(all_assignments) == 1
+
+      [assignment] = all_assignments
+
+      assert assignment.resource_id == Paths.project_retrospective_id(ctx.retrospective)
+      assert assignment.type == "project_retrospective"
+      assert assignment.role == "reviewer"
+      assert assignment.action_label == "Review project retrospective"
+      assert assignment.author_id == Paths.person_id(ctx.champion)
+      assert assignment.origin.type == "project"
+      assert assignment.origin.name == "Closed Project"
+    end
+
+    test "ignores pending acknowledgements of own project retrospectives", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:reviewer, :space)
+        |> Factory.add_project(:project, :space, champion: :person, reviewer: :reviewer)
+        |> Factory.close_project(:project, author: :person)
+
+      assert {200, %{needs_review: needs_review} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert needs_review == []
+    end
+
+    test "get pending goal retrospective acknowledgements", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:champion, :space)
+        |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :person, name: "Closed Goal")
+        |> Factory.close_goal(:goal, author: :champion)
+
+      activity = latest_goal_closing(ctx.goal)
+
+      assert {200, %{needs_review: needs_review} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+
+      assert length(needs_review) == 1
+
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      assert length(all_assignments) == 1
+
+      [assignment] = all_assignments
+
+      assert assignment.resource_id == Paths.activity_id(activity)
+      assert assignment.type == "goal_retrospective"
+      assert assignment.role == "reviewer"
+      assert assignment.action_label == "Review goal retrospective"
+      assert assignment.author_id == Paths.person_id(ctx.champion)
+      assert assignment.origin.type == "goal"
+      assert assignment.origin.name == "Closed Goal"
+    end
+
+    test "ignores pending acknowledgements of own goal retrospectives", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:reviewer, :space)
+        |> Factory.add_goal(:goal, :space, champion: :person, reviewer: :reviewer)
+        |> Factory.close_goal(:goal, author: :person)
+
+      assert {200, %{needs_review: needs_review} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert needs_review == []
+    end
+
     test "get pending tasks", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
@@ -910,6 +984,18 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       |> Repo.update()
 
     goal
+  end
+
+  defp latest_goal_closing(goal) do
+    import Ecto.Query, only: [from: 2]
+
+    from(a in Operately.Activities.Activity,
+      where: a.action == "goal_closing",
+      where: a.content["goal_id"] == ^goal.id,
+      order_by: [desc: a.inserted_at],
+      limit: 1
+    )
+    |> Repo.one!()
   end
 
   defp create_check_in(project) do

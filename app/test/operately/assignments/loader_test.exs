@@ -60,11 +60,11 @@ defmodule Operately.Assignments.LoaderTest do
       assert length(assignments) == 2
 
       ctx
-      |> Factory.close_project(:closed_project)
+      |> Factory.close_project(:closed_project, author: :champion)
       |> Factory.pause_project(:paused_project)
 
       assignments = Loader.load(ctx.champion, ctx.company)
-      assert assignments == []
+      refute Enum.any?(assignments, &(&1.type == :check_in and &1.role == :owner))
     end
 
     test "when the project has not started yet, does not return as assignment", ctx do
@@ -160,11 +160,82 @@ defmodule Operately.Assignments.LoaderTest do
       assert length(assignments) == 2
 
       ctx
-      |> Factory.close_project(:closed_project)
+      |> Factory.close_project(:closed_project, author: :champion)
       |> Factory.pause_project(:paused_project)
 
       assignments = Loader.load(ctx.reviewer, ctx.company)
+      refute Enum.any?(assignments, &(&1.type == :check_in and &1.role == :reviewer))
+    end
+  end
+
+  describe "project retrospective acknowledgements" do
+    test "when the retrospective is not acknowledged, returns as assignment for the reviewer", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_project(:project, author: :champion)
+
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+
+      assert length(assignments) == 1
+      assignment = hd(assignments)
+
+      assert assignment.resource_id == Paths.project_retrospective_id(ctx.retrospective)
+      assert assignment.type == :project_retrospective
+      assert assignment.role == :reviewer
+      assert assignment.action_label == "Review project retrospective"
+      assert assignment.author_id == Paths.person_id(ctx.champion)
+      assert assignment.origin.name == ctx.project.name
+    end
+
+    test "when the retrospective is acknowledged, does not return as assignment", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_project(:project, author: :champion)
+
+      acknowledge_project_retrospective(ctx, :retrospective, :reviewer)
+
+      assignments = Loader.load(ctx.reviewer, ctx.company)
       assert assignments == []
+    end
+
+    test "when the reviewer closed the project, the champion gets an assignment", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_project(:project, author: :reviewer)
+
+      champion_assignments = Loader.load(ctx.champion, ctx.company)
+      assert length(champion_assignments) == 1
+
+      assignment = hd(champion_assignments)
+      assert assignment.resource_id == Paths.project_retrospective_id(ctx.retrospective)
+      assert assignment.type == :project_retrospective
+      assert assignment.role == :reviewer
+
+      reviewer_assignments = Loader.load(ctx.reviewer, ctx.company)
+      assert reviewer_assignments == []
+    end
+
+    test "does not return an assignment for the retrospective author", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_project(:project, author: :champion)
+
+      assignments = Loader.load(ctx.champion, ctx.company)
+      assert assignments == []
+    end
+
+    test "count includes pending project retrospective acknowledgements", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_project(:project, author: :champion)
+
+      assert Loader.count(ctx.reviewer) == 1
+      assert Loader.count(ctx.champion) == 0
     end
   end
 
@@ -216,10 +287,84 @@ defmodule Operately.Assignments.LoaderTest do
       assignments = Loader.load(ctx.reviewer, ctx.company)
       assert length(assignments) == 1
 
-      Factory.close_goal(ctx, :goal)
+      Factory.close_goal(ctx, :goal, author: :champion)
+
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+      refute Enum.any?(assignments, &(&1.type == :goal_update and &1.role == :reviewer))
+    end
+  end
+
+  describe "goal retrospective acknowledgements" do
+    test "when the retrospective is not acknowledged, returns as assignment for the reviewer", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer, name: "Grow revenue")
+        |> Factory.close_goal(:goal, author: :champion)
+
+      activity = latest_goal_closing(ctx.goal)
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+
+      assert length(assignments) == 1
+      assignment = hd(assignments)
+
+      assert assignment.resource_id == Paths.activity_id(activity)
+      assert assignment.type == :goal_retrospective
+      assert assignment.role == :reviewer
+      assert assignment.action_label == "Review goal retrospective"
+      assert assignment.author_id == Paths.person_id(ctx.champion)
+      assert assignment.origin.name == ctx.goal.name
+    end
+
+    test "when the retrospective is acknowledged, does not return as assignment", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_goal(:goal, author: :champion)
+
+      activity = latest_goal_closing(ctx.goal)
+      acknowledge_goal_retrospective(ctx, activity, :reviewer)
 
       assignments = Loader.load(ctx.reviewer, ctx.company)
       assert assignments == []
+    end
+
+    test "when the reviewer closed the goal, the champion gets an assignment", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_goal(:goal, author: :reviewer)
+
+      activity = latest_goal_closing(ctx.goal)
+      champion_assignments = Loader.load(ctx.champion, ctx.company)
+      assert length(champion_assignments) == 1
+
+      assignment = hd(champion_assignments)
+      assert assignment.resource_id == Paths.activity_id(activity)
+      assert assignment.type == :goal_retrospective
+      assert assignment.role == :reviewer
+
+      reviewer_assignments = Loader.load(ctx.reviewer, ctx.company)
+      assert reviewer_assignments == []
+    end
+
+    test "does not return an assignment for the retrospective author", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_goal(:goal, author: :champion)
+
+      assignments = Loader.load(ctx.champion, ctx.company)
+      assert assignments == []
+    end
+
+    test "count includes pending goal retrospective acknowledgements", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.close_goal(:goal, author: :champion)
+
+      assert Loader.count(ctx.reviewer) == 1
+      assert Loader.count(ctx.champion) == 0
     end
   end
 
@@ -264,10 +409,10 @@ defmodule Operately.Assignments.LoaderTest do
       assignments = Loader.load(ctx.champion, ctx.company)
       assert length(assignments) == 1
 
-      Factory.close_goal(ctx, :goal)
+      Factory.close_goal(ctx, :goal, author: :champion)
 
       assignments = Loader.load(ctx.champion, ctx.company)
-      assert assignments == []
+      refute Enum.any?(assignments, &(&1.type == :goal_update and &1.role == :owner))
     end
   end
 
@@ -525,6 +670,43 @@ defmodule Operately.Assignments.LoaderTest do
       |> Repo.update()
 
     Map.put(ctx, update_key, update)
+  end
+
+  defp acknowledge_project_retrospective(ctx, retrospective_key, person_key) do
+    retrospective = Repo.preload(ctx[retrospective_key], :project)
+
+    {:ok, retrospective} =
+      Operately.Operations.ProjectRetrospectiveAcknowledgement.run(ctx[person_key], retrospective)
+
+    Map.put(ctx, retrospective_key, retrospective)
+  end
+
+  defp acknowledge_goal_retrospective(ctx, activity, person_key) do
+    activity = Repo.preload(activity, :comment_thread)
+    goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+
+    {:ok, _} =
+      Operately.Operations.GoalRetrospectiveAcknowledgement.run(
+        ctx[person_key],
+        activity,
+        activity.comment_thread,
+        goal
+      )
+
+    ctx
+  end
+
+  defp latest_goal_closing(goal) do
+    import Ecto.Query, only: [from: 2]
+
+    from(a in Operately.Activities.Activity,
+      where: a.action == "goal_closing",
+      where: a.content["goal_id"] == ^goal.id,
+      order_by: [desc: a.inserted_at],
+      limit: 1,
+      preload: [:comment_thread, :author]
+    )
+    |> Repo.one!()
   end
 
   defp set_next_goal_update_date(ctx, key, date) do
