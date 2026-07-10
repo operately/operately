@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { GoalPage } from ".";
 import { DateField } from "../DateField";
+import { createContextualDate } from "../DateField/mockData";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { PrivacyField } from "../PrivacyField";
 import {
@@ -770,7 +771,7 @@ export const ClosedGoal: Story = {
     status: "achieved",
     state: "closed",
     closedAt: new Date(2025, 3, 30), // Apr 30th, 2025
-    dueDate: startOfCurrentYear(),
+    dueDate: createContextualDate(startOfCurrentYear(), "day"),
     retrospective: {
       date: new Date(2025, 4, 1), // May 1st, 2025
       content: asRichText(
@@ -806,7 +807,7 @@ export const NeglectedGoalReadOnly: Story = {
 
 export const OverdueGoal: Story = {
   args: {
-    dueDate: startOfCurrentYear(),
+    dueDate: createContextualDate(startOfCurrentYear(), "day"),
   },
 };
 

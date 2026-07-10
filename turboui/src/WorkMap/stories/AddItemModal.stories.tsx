@@ -43,15 +43,17 @@ export const HideCompanyAccess: Story = {
     hideCompanyAccess: true,
   },
   play: async ({ canvasElement, step }) => {
-    const canvas = within(canvasElement);
+    const body = canvasElement.ownerDocument.body;
 
     await step("Open privacy settings", async () => {
-      await userEvent.click(canvas.getByTestId("privacy-field"));
+      const privacyField = body.querySelector('[data-test-id="privacy-field"]');
+      expect(privacyField).not.toBeNull();
+      await userEvent.click(privacyField!);
     });
 
     await step("Verify company access controls are hidden", async () => {
-      expect(canvas.queryByText("Company Members")).toBeNull();
-      expect(canvas.queryByTestId("privacy-field-company-select")).toBeNull();
+      expect(within(body).queryByText("Company Members")).toBeNull();
+      expect(body.querySelector('[data-test-id="privacy-field-company-select"]')).toBeNull();
     });
   },
 };

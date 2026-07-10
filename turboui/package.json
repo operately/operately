@@ -15,12 +15,15 @@
     "clean": "rm -rf node_modules && rm -rf dist",
     "storybook": "storybook dev -p $PORT_STORYBOOK_SERVER",
     "build-storybook": "storybook build",
-    "test": "jest"
+    "test": "jest",
+    "test-storybook": "test-storybook",
+    "test-storybook:ci": "npm run build-storybook -- --quiet && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && test-storybook --ci --junit\""
   },
   "devDependencies": {
     "@storybook/addon-docs": "10.4.6",
     "@storybook/addon-themes": "10.4.6",
     "@storybook/react-vite": "10.4.6",
+    "@storybook/test-runner": "^0.24.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/jest": "^29.5.12",
@@ -39,9 +42,12 @@
     "react-router": "^7.6.3",
     "ts-pattern": "^5.0.8",
     "autoprefixer": "^10.4.21",
+    "concurrently": "^9.1.2",
     "esbuild": "0.25.2",
+    "http-server": "^14.1.1",
     "jest": "^29.6.1",
     "jest-environment-jsdom": "^29.7.0",
+    "playwright": "^1.52.0",
     "postcss": "^8.4.14",
     "react-select": "^5.8.0",
     "react-spinners": "^0.13.8",
@@ -50,12 +56,17 @@
     "tailwindcss": "^3.4.17",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3",
-    "vite": "6.3.5"
+    "vite": "6.3.5",
+    "wait-on": "^8.0.3"
   },
   "overrides": {
     "@types/react": "18.3.5",
     "rollup": "4.41.1",
     "vite": "6.3.5"
+  },
+  "jest-junit": {
+    "outputDirectory": "testreports",
+    "outputName": "junit-storybook.xml"
   },
   "peerDependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.1",

@@ -260,9 +260,9 @@ export const InteractiveDemo: Story = {
             <div>
               <strong>Selected:</strong> {milestone ? (milestone.name || milestone.title) : "None"}
             </div>
-            {milestone?.dueDate && (
+            {milestone?.dueDate?.date && (
               <div>
-                <strong>Due:</strong> {milestone.dueDate.toLocaleDateString()}
+                <strong>Due:</strong> {milestone.dueDate.date.toLocaleDateString()}
               </div>
             )}
             {milestone?.status && (
