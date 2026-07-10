@@ -7,7 +7,10 @@ defmodule Operately.Goals.Retrospective do
     :author,
     :comment_count,
     :inserted_at,
-    :content
+    :content,
+    :acknowledged_at,
+    :acknowledged_by,
+    :comment_thread_id
   ]
 
   import Ecto.Query, only: [from: 2]
@@ -17,6 +20,7 @@ defmodule Operately.Goals.Retrospective do
     from(activity in Operately.Activities.Activity,
       join: thread in assoc(activity, :comment_thread),
       join: author in assoc(activity, :author),
+      left_join: acknowledged_by in assoc(thread, :acknowledged_by),
       where: activity.action == "goal_closing",
       where: activity.content["goal_id"] == ^goal_id,
       order_by: [desc: activity.inserted_at],
@@ -26,7 +30,10 @@ defmodule Operately.Goals.Retrospective do
         author: author,
         inserted_at: thread.inserted_at,
         content: thread.message,
-        comment_count: fragment("SELECT COUNT(*) FROM comments WHERE entity_id = ? AND entity_type = 'comment_thread'", thread.id)
+        comment_count: fragment("SELECT COUNT(*) FROM comments WHERE entity_id = ? AND entity_type = 'comment_thread'", thread.id),
+        acknowledged_at: thread.acknowledged_at,
+        acknowledged_by: acknowledged_by,
+        comment_thread_id: thread.id
       }
     )
     |> Repo.one()

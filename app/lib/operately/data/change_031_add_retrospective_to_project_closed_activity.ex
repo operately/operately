@@ -3,13 +3,11 @@ defmodule Operately.Data.Change031AddRetrospectiveToProjectClosedActivity do
 
   alias Operately.Repo
   alias Operately.Activities.Activity
-  alias Operately.Projects.Project
+  alias __MODULE__.{Project, Retrospective}
 
   def run do
     Repo.transaction(fn ->
-      from(a in Activity,
-        where: a.action == "project_closed"
-      )
+      from(a in Activity, where: a.action == "project_closed")
       |> Repo.all()
       |> update_activities()
     end)
@@ -22,22 +20,49 @@ defmodule Operately.Data.Change031AddRetrospectiveToProjectClosedActivity do
   end
 
   defp update_activities(activity) do
-    {:ok, project} = Project.get(:system, id: activity.content["project_id"], opts: [
-      with_deleted: true,
-      preload: :retrospective
-    ])
+    project_id = activity.content["project_id"]
 
-    case project.retrospective do
-      %{id: id} ->
+    project =
+      from(p in Project, where: p.id == ^project_id)
+      |> Repo.one()
+
+    retrospective =
+      from(r in Retrospective, where: r.project_id == ^project_id)
+      |> Repo.one()
+
+    case {project, retrospective} do
+      {%{group_id: group_id}, %{id: id}} ->
         content =
           activity.content
           |> Map.put(:retrospective_id, id)
-          |> Map.put(:space_id, project.group_id)
+          |> Map.put(:space_id, group_id)
 
-        Activity.changeset(activity, %{content: content})
+        activity
+        |> Activity.changeset(%{content: content})
         |> Repo.update()
 
-      _ -> :ok
+      _ ->
+        :ok
+    end
+  end
+
+  defmodule Project do
+    use Operately.Schema
+
+    schema "projects" do
+      field :group_id, :binary_id
+
+      timestamps()
+    end
+  end
+
+  defmodule Retrospective do
+    use Operately.Schema
+
+    schema "project_retrospectives" do
+      field :project_id, :binary_id
+
+      timestamps()
     end
   end
 end
