@@ -3,19 +3,29 @@ defmodule Operately.Support.Features.UI.DateField do
   alias Operately.Support.Features.UI
 
   def select_day_in_date_field(ctx, testid: testid, date: date) do
-    day_number = date.day
+    day_selector = day_selector(date)
+    selected_day_selector = selected_day_selector(date)
 
     ctx
     |> UI.click(testid: testid)
     |> then(fn ctx ->
       ctx
       |> navigate_date_field_to_month(date)
-      |> UI.click(testid: "date-field-day-#{day_number}")
+      |> UI.click(css: day_selector)
+      |> UI.wait_until_has(css: selected_day_selector)
       |> UI.wait_until_has(css: "[data-test-id='date-field-confirm']:not([disabled])")
       |> UI.click(testid: "date-field-confirm")
       |> UI.sleep(50)
       |> UI.refute_has(testid: "date-field-confirm")
     end)
+  end
+
+  defp day_selector(date) do
+    "button[data-test-id='date-field-day-#{date.day}'][data-date='#{Date.to_iso8601(date)}']:not([disabled])"
+  end
+
+  defp selected_day_selector(date) do
+    "button[data-test-id='date-field-day-#{date.day}'][data-date='#{Date.to_iso8601(date)}'][aria-pressed='true']"
   end
 
   defp navigate_date_field_to_month(ctx, date) do
