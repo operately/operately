@@ -2,3 +2,5 @@ dist
 
 *storybook.log
 storybook-static
+junit.xml
+testreports/*.xml

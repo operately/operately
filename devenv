@@ -116,6 +116,9 @@ export PORT_ACME_TEST=$((PORT_OFFSET + 10))
 if [ "$FIRST_ARG" = "shell" ]; then
   docker compose exec app bash
 elif [ "$FIRST_ARG" = "up" ]; then
+  if [ "$CI" = "true" ]; then
+    docker compose --profile ${PROFILE} pull app
+  fi
   docker compose --profile ${PROFILE} up -d
   docker compose exec -u root app sh -c "addgroup -g $GROUP_ID usergroup 2>/dev/null || true"
   docker compose exec -u root app sh -c "adduser -D -u $USER_ID -G usergroup -s /bin/bash dev 2>/dev/null || true"
