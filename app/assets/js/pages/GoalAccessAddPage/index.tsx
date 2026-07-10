@@ -5,10 +5,9 @@ import * as Goals from "@/models/goals";
 import * as React from "react";
 
 import Api from "@/api";
-import { IconPlus, IconX, SecondaryButton } from "turboui";
+import { Forms, IconPlus, IconX, SecondaryButton } from "turboui";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
-import Forms from "@/components/Forms";
 import { compareIds, usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
@@ -29,7 +28,7 @@ async function loader({ params }): Promise<LoaderResult> {
       includeReviewer: true,
     }).then((res) => res.goal),
     Api.goals.listAccessMembers({ goalId: params.goalId }).then((res) => res.people ?? []),
-  ])
+  ]);
 
   return { goal, accessMembers };
 }
@@ -171,7 +170,10 @@ function useSearch() {
   return React.useCallback((query: string) => search(query), [search]);
 }
 
-function uniqueMemberList(members: MemberField[], excluded: People.Person[]): { id: string; accessLevel: PermissionLevels }[] {
+function uniqueMemberList(
+  members: MemberField[],
+  excluded: People.Person[],
+): { id: string; accessLevel: PermissionLevels }[] {
   const excludedIds = excluded.flatMap((person) => (person.id ? [person.id] : []));
   let res = [] as { id: string; accessLevel: PermissionLevels }[];
 

@@ -4,8 +4,7 @@ import * as People from "@/models/people";
 import * as Permissions from "@/models/permissions";
 import * as ProjectContributors from "@/models/projectContributors";
 
-import Forms from "@/components/Forms";
-import { FieldObject } from "@/components/Forms";
+import { Forms } from "turboui";
 import { PageTitle } from "./PageTitle";
 import { useGotoProjectContributors, useLoadedData } from "./loader";
 import { accessLevelAsEnumValue, PermissionLevels } from "@/features/Permissions";
@@ -45,7 +44,7 @@ export function EditContributor() {
   );
 }
 
-interface FormContributor extends FieldObject {
+interface FormContributor {
   responsibility: string;
   permissions: Permissions.AccessOptions | null;
 }

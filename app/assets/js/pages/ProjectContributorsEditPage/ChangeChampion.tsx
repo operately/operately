@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as ProjectContributors from "@/models/projectContributors";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 import { PageTitle } from "./PageTitle";
 import { LoaderResult, useGotoProjectContributors } from "./loader";
 import { joinStr } from "@/utils/strings";
@@ -14,6 +14,7 @@ export function ChangeChampion() {
   const { contributor } = Pages.useLoadedData() as LoaderResult;
 
   const form = useForm(contributor);
+  const search = People.usePeopleSearch(People.CompanyWideSearchScope);
 
   const name = People.firstName(contributor.person!);
   const title = `Edit project champion`;
@@ -29,7 +30,12 @@ export function ChangeChampion() {
         <PageTitle title={title} subtitle={subtitle} />
 
         <Forms.FieldGroup>
-          <Forms.SelectPerson field={"person"} label="Project Champion" default={contributor.person} />
+          <Forms.SelectPerson
+            field={"person"}
+            label="Project Champion"
+            searchFn={search}
+            default={contributor.person}
+          />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Save" />

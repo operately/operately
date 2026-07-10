@@ -1,12 +1,8 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
 
-import { InputField } from "./FieldGroup";
+import { Forms } from "turboui";
 import { GoalSelectorDropdown } from "@/features/goals/GoalTree/GoalSelectorDropdown";
-
-import { useFieldValue, useFieldError } from "./FormContext";
-import { useValidation } from "./validations/hook";
-import { validatePresence } from "./validations/presence";
 
 interface SelectGoalProps {
   field: string;
@@ -23,14 +19,14 @@ const DEFAULT_VALIDATION_PROPS = {
 export function SelectGoal(props: SelectGoalProps) {
   const { field, label, goals, required } = { ...DEFAULT_VALIDATION_PROPS, ...props };
 
-  const [value, setValue] = useFieldValue<Goals.Goal>(field);
-  const error = useFieldError(field);
+  const [value, setValue] = Forms.useFieldValue<Goals.Goal>(field);
+  const error = Forms.useFieldError(field);
 
   const onSelect = React.useCallback((goal: Goals.Goal) => setValue(goal), [setValue]);
-  useValidation(field, validatePresence(required));
+  Forms.useValidation(field, Forms.validatePresence(required));
 
   return (
-    <InputField field={field} label={label} error={error}>
+    <Forms.InputField field={field} label={label} error={error}>
       <GoalSelectorDropdown
         selected={value}
         goals={goals}
@@ -38,6 +34,6 @@ export function SelectGoal(props: SelectGoalProps) {
         error={!!error}
         allowCompanyWide={props.allowCompanyWide}
       />
-    </InputField>
+    </Forms.InputField>
   );
 }
