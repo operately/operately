@@ -219,7 +219,7 @@ function CodeMessage() {
 }
 
 function CodeInput({ field }: { field: string }) {
-  const [value, setValue] = Forms.useFieldValue(field);
+  const [value, setValue] = Forms.useFieldValue<string>(field);
 
   return (
     <input
