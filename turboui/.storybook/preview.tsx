@@ -1,4 +1,4 @@
-import type { Decorator, Preview } from "@storybook/react";
+import type { Decorator, Preview } from "@storybook/react-vite";
 import React from "react";
 
 import { withThemeByClassName } from "@storybook/addon-themes";
@@ -28,14 +28,10 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
-    backgrounds: {
-      default: "dark",
-    },
     layout: "fullscreen",
-    viewport: {
-      defaultViewport: "reset", // reset the viewport to the default when navigating to a new story
-    },
+    viewport: {},
   },
+
   decorators: [
     RouterDecorator,
     withThemeByClassName({
@@ -48,6 +44,13 @@ const preview: Preview = {
     }),
     App,
   ],
+
+  initialGlobals: {
+    viewport: {
+      value: "reset",
+      isRotated: false,
+    },
+  },
 };
 
 export default preview;

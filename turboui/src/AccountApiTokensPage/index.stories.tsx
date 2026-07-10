@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AccountApiTokensPage } from "./index";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
