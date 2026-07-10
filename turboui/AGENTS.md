@@ -73,6 +73,7 @@ Always run before committing:
 
 ```bash
 make turboui.build && make turboui.test
+make turboui.test.storybook   # Storybook interaction + smoke tests
 ```
 
 ### Common Issues

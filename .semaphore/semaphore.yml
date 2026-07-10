@@ -53,10 +53,16 @@ blocks:
             - make test.setup.turboui
             - make turboui.test
 
+        - name: Turbo Storybook Test
+          commands:
+            - make test.setup.turboui
+            - make turboui.test.storybook
+
       epilogue:
         always:
           commands:
             - "[ -f turboui/testreports/junit.xml ] && test-results publish turboui/testreports/junit.xml"
+            - "[ -f turboui/testreports/junit-storybook.xml ] && test-results publish turboui/testreports/junit-storybook.xml"
 
   - name: App Tests
     run:

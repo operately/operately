@@ -82,6 +82,8 @@ export const CollapseGoal: Story = {
     },
   },
   play: async ({ canvasElement, step }) => {
+    await Steps.resetWorkMapExpandedState(canvasElement, step);
+
     const parentGoal = "Reduce onboarding time by 30%";
     const children = [
       "Automate user account setup",
@@ -108,6 +110,8 @@ export const ToggleGoal: Story = {
     },
   },
   play: async ({ canvasElement, step }) => {
+    await Steps.resetWorkMapExpandedState(canvasElement, step);
+
     const parentGoal = "Acquire the first users of Operately outside Semaphore";
     const children = [
       "Document features in Help Center",
@@ -139,6 +143,10 @@ export const Indentation: Story = {
     },
   },
   play: async ({ canvasElement, step }) => {
+    await Steps.ensureItemExpanded(canvasElement, step, "Reduce onboarding time by 30%", [
+      "Automate user account setup",
+    ]);
+
     await Steps.assertIndentation(canvasElement, step, "Improve customer onboarding experience", 0, "0px");
 
     await Steps.assertIndentation(canvasElement, step, "Reduce onboarding time by 30%", 1, "20px");
