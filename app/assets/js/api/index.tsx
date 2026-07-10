@@ -382,6 +382,11 @@ export interface ActivityContentGoalReparent {
   newParentGoal?: Goal | null;
 }
 
+export interface ActivityContentGoalRetrospectiveAcknowledged {
+  goal?: Goal | null;
+  retrospectiveId?: string | null;
+}
+
 export interface ActivityContentGoalReviewerUpdating {
   company: Company;
   space: Space;
@@ -664,6 +669,13 @@ export interface ActivityContentProjectResuming {
   companyId?: string | null;
   projectId?: string | null;
   project?: Project | null;
+}
+
+export interface ActivityContentProjectRetrospectiveAcknowledged {
+  projectId?: string | null;
+  retrospectiveId?: string | null;
+  project?: Project | null;
+  retrospective?: ProjectRetrospective | null;
 }
 
 export interface ActivityContentProjectRetrospectiveCommented {
@@ -1054,6 +1066,7 @@ export interface ActivityMilestone {
 export interface ActivityPermissions {
   canCommentOnThread?: boolean | null;
   canView?: boolean | null;
+  canAcknowledge?: boolean | null;
 }
 
 export interface AddMemberInput {
@@ -1287,6 +1300,8 @@ export interface CommentThread {
   projectPermissions?: ProjectPermissions;
   space?: Space;
   canComment?: boolean;
+  acknowledgedAt?: string | null;
+  acknowledgedBy?: Person | null;
 }
 
 export interface Company {
@@ -1529,6 +1544,8 @@ export interface GoalRetrospective {
   commentCount: number;
   author: Person;
   content: string;
+  acknowledgedAt?: string | null;
+  acknowledgedBy?: Person | null;
 }
 
 export interface GoalTargetUpdates {
@@ -1778,6 +1795,8 @@ export interface ProjectRetrospective {
   id: string;
   author: Person;
   project: Project;
+  champion: Person | null;
+  reviewer: Person | null;
   content: string;
   closedAt: string;
   permissions: ProjectPermissions;
@@ -1785,6 +1804,8 @@ export interface ProjectRetrospective {
   subscriptionList: SubscriptionList;
   potentialSubscribers: Subscriber[];
   notifications: Notification[];
+  acknowledgedAt?: string | null;
+  acknowledgedBy?: Person | null;
 }
 
 export interface ProjectReviewRequest {
@@ -2279,6 +2300,7 @@ export type ActivityContent =
   | ActivityContentGoalCheckInAcknowledgement
   | ActivityContentGoalCheckInEdit
   | ActivityContentGoalClosing
+  | ActivityContentGoalRetrospectiveAcknowledged
   | ActivityContentGoalCreated
   | ActivityContentGoalDiscussionCreation
   | ActivityContentGoalDiscussionEditing
@@ -2293,6 +2315,7 @@ export type ActivityContent =
   | ActivityContentProjectCheckInEdit
   | ActivityContentProjectCheckInSubmitted
   | ActivityContentProjectClosed
+  | ActivityContentProjectRetrospectiveAcknowledged
   | ActivityContentProjectContributorAddition
   | ActivityContentProjectContributorsAddition
   | ActivityContentProjectContributorEdited
@@ -2498,7 +2521,14 @@ export type ReviewAssignmentOriginTypes = "project" | "goal" | "space";
 
 export type ReviewAssignmentRoles = "owner" | "reviewer";
 
-export type ReviewAssignmentTypes = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone";
+export type ReviewAssignmentTypes =
+  | "check_in"
+  | "goal_update"
+  | "space_task"
+  | "project_task"
+  | "milestone"
+  | "project_retrospective"
+  | "goal_retrospective";
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
 
@@ -4144,6 +4174,14 @@ export interface GoalsAcknowledgeCheckInResult {
   update?: GoalProgressUpdate | null;
 }
 
+export interface GoalsAcknowledgeRetrospectiveInput {
+  id: Id;
+}
+
+export interface GoalsAcknowledgeRetrospectiveResult {
+  activity: Activity;
+}
+
 export interface GoalsChangeParentInput {
   goalId: Id;
   parentGoalId: Id | null;
@@ -4654,6 +4692,14 @@ export interface ProjectsAcknowledgeCheckInInput {
 
 export interface ProjectsAcknowledgeCheckInResult {
   checkIn: ProjectCheckIn;
+}
+
+export interface ProjectsAcknowledgeRetrospectiveInput {
+  id: Id;
+}
+
+export interface ProjectsAcknowledgeRetrospectiveResult {
+  retrospective: ProjectRetrospective;
 }
 
 export interface ProjectsCloseInput {
@@ -6283,6 +6329,12 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/acknowledge_check_in", input);
   }
 
+  async acknowledgeRetrospective(
+    input: ProjectsAcknowledgeRetrospectiveInput,
+  ): Promise<ProjectsAcknowledgeRetrospectiveResult> {
+    return this.client.post("/projects/acknowledge_retrospective", input);
+  }
+
   async close(input: ProjectsCloseInput): Promise<ProjectsCloseResult> {
     return this.client.post("/projects/close", input);
   }
@@ -6469,6 +6521,12 @@ class ApiNamespaceGoals {
 
   async acknowledgeCheckIn(input: GoalsAcknowledgeCheckInInput): Promise<GoalsAcknowledgeCheckInResult> {
     return this.client.post("/goals/acknowledge_check_in", input);
+  }
+
+  async acknowledgeRetrospective(
+    input: GoalsAcknowledgeRetrospectiveInput,
+  ): Promise<GoalsAcknowledgeRetrospectiveResult> {
+    return this.client.post("/goals/acknowledge_retrospective", input);
   }
 
   async changeParent(input: GoalsChangeParentInput): Promise<GoalsChangeParentResult> {
@@ -8096,6 +8154,13 @@ export default {
         defaultApiClient.apiNamespaceProjects.close(input),
       ),
 
+    acknowledgeRetrospective: (input: ProjectsAcknowledgeRetrospectiveInput) =>
+      defaultApiClient.apiNamespaceProjects.acknowledgeRetrospective(input),
+    useAcknowledgeRetrospective: () =>
+      useMutation<ProjectsAcknowledgeRetrospectiveInput, ProjectsAcknowledgeRetrospectiveResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.acknowledgeRetrospective(input),
+      ),
+
     updateContributor: (input: ProjectsUpdateContributorInput) =>
       defaultApiClient.apiNamespaceProjects.updateContributor(input),
     useUpdateContributor: () =>
@@ -8300,6 +8365,13 @@ export default {
     useUpdateAccessLevels: () =>
       useMutation<GoalsUpdateAccessLevelsInput, GoalsUpdateAccessLevelsResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
+      ),
+
+    acknowledgeRetrospective: (input: GoalsAcknowledgeRetrospectiveInput) =>
+      defaultApiClient.apiNamespaceGoals.acknowledgeRetrospective(input),
+    useAcknowledgeRetrospective: () =>
+      useMutation<GoalsAcknowledgeRetrospectiveInput, GoalsAcknowledgeRetrospectiveResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.acknowledgeRetrospective(input),
       ),
 
     createDiscussion: (input: GoalsCreateDiscussionInput) => defaultApiClient.apiNamespaceGoals.createDiscussion(input),
