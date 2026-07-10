@@ -43,25 +43,19 @@ defmodule Operately.Projects.CheckIn do
   def changeset(project, attrs) do
     project
     |> cast(attrs, [:author_id, :project_id, :description, :status, :state, :published_at, :scheduled_at, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
+    |> Operately.StateMachine.cast_and_validate(:state, %{
+      initial: :draft,
+      states: [
+        %{name: :draft, allow_transition_to: [:scheduled, :published]},
+        %{name: :scheduled, allow_transition_to: [:draft, :published]},
+        %{name: :published, on_enter: &set_published_at/1}
+      ]
+    })
     |> validate_required([:author_id, :project_id, :description, :status, :state, :subscription_list_id])
-    |> validate_state_transition()
-    |> set_published_at()
-  end
-
-  defp validate_state_transition(changeset) do
-    if changeset.data.__meta__.state == :loaded and changeset.data.state == :published and get_change(changeset, :state) in [:draft, :scheduled] do
-      add_error(changeset, :state, "cannot move a published check-in back to draft or scheduled")
-    else
-      changeset
-    end
   end
 
   defp set_published_at(changeset) do
-    if get_field(changeset, :state) == :published and is_nil(get_field(changeset, :published_at)) do
-      put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
-    else
-      changeset
-    end
+    put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
   end
 
   # After load hooks
