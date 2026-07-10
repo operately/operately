@@ -1,7 +1,7 @@
 import * as Billing from "@/models/billing";
 
 import { Paths } from "@/routes/paths";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 import { isCompanyBillingPaidStatus } from "turboui/CompanyBilling";
 import { loader as companyBillingLoader, useLoadedData as useCompanyBillingLoadedData } from "../CompanyBillingPage/loader";
 

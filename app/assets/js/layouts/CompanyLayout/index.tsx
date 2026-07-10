@@ -17,7 +17,7 @@ import {
 } from "turboui";
 
 import { logOut } from "@/routes/auth";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { DivLink } from "turboui";

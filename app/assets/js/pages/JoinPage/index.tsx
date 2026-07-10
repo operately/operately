@@ -10,7 +10,7 @@ import * as React from "react";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { logIn } from "@/routes/auth";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 
 import { Forms } from "turboui";
 

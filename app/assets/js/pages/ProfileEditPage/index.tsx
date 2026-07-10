@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Timezones } from "./timezones";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";

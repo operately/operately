@@ -40,6 +40,7 @@
     
     // Paths for dependencies — app paths first for local dev parity, turboui paths as CI fallback
     "paths": {
+      "react-router": ["./node_modules/react-router", "../app/node_modules/react-router"],
       "*": ["../app/node_modules/*", "./node_modules/*"],
       "react": [
         "../app/node_modules/react",

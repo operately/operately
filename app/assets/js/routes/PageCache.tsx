@@ -1,7 +1,7 @@
 import { useLoadedData } from "@/components/Pages";
 import { getLocalStorage, safeGetItem, safeRemoveItem, safeSetItem } from "@/utils/safeLocalStorage";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 type PageLoaderFn<T> = (attrs: { params: any; request?: Request; refreshCache?: boolean }) => Promise<T>;
 

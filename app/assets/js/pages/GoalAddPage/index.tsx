@@ -5,7 +5,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { GoalAddPage, SpaceField } from "turboui";
 
 import { PageModule } from "@/routes/types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { GoalAddForm } from "turboui/src/GoalAddForm";
 import { accessLevelAsNumber } from "../../models/goals";
 

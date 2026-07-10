@@ -12,7 +12,7 @@ import Forms from "@/components/Forms";
 import { compareIds, usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export default { name: "GoalAccessAddPage", loader, Page } as PageModule;
 
