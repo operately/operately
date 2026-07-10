@@ -73,6 +73,14 @@ defmodule Operately.Support.Features.GoalRetrospectiveAcknowledgementSteps do
   end
 
   step :acknowledge_retrospective_from_email, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: ctx.reviewer,
+      action: "closed the #{ctx.goal.name} goal",
+      author: ctx.champion
+    })
+
     email = UI.Emails.last_sent_email(to: ctx.reviewer.email)
     path = UI.Emails.find_link(email, "Acknowledge")
 

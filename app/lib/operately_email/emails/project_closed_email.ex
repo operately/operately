@@ -2,14 +2,16 @@ defmodule OperatelyEmail.Emails.ProjectClosedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
-  alias Operately.Projects.Project
+  alias Operately.Projects
   alias OperatelyWeb.Paths
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
-    {:ok, project} = Project.get(:system, id: activity.content["project_id"], opts: [
-      preload: [:company, :retrospective, :champion, :reviewer]
-    ])
+
+    project =
+      activity.content["project_id"]
+      |> Projects.get_project!()
+      |> Repo.preload([:company, :retrospective, :champion, :reviewer])
 
     {cta_text, cta_url} = construct_cta_text_and_url(person, project, author)
 

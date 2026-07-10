@@ -1,18 +1,23 @@
 defmodule Operately.Support.Features.ProjectRetrospectiveAcknowledgementSteps do
   use Operately.FeatureCase
 
-  alias Operately.Support.Features.{ProjectSteps, EmailSteps, NotificationsSteps, FeedSteps}
+  alias Operately.Support.Factory
+  alias Operately.Support.Features.{EmailSteps, NotificationsSteps, FeedSteps}
 
   step :setup, ctx do
     ctx
-    |> ProjectSteps.create_project(name: "Test Project")
-    |> ProjectSteps.login()
+    |> Factory.setup()
+    |> Factory.add_space(:space)
+    |> Factory.add_space_member(:champion, :space)
+    |> Factory.add_space_member(:reviewer, :space)
+    |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer, name: "Test Project")
+    |> then(fn ctx -> UI.login_as(ctx, ctx.champion) end)
   end
 
   step :close_project_as_champion, ctx do
     ctx
     |> UI.login_as(ctx.champion)
-    |> ProjectSteps.visit_project_page()
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.find(UI.query(testid: "actions-section"), fn el ->
       UI.click_text(el, "Close project")
     end)
@@ -65,6 +70,14 @@ defmodule Operately.Support.Features.ProjectRetrospectiveAcknowledgementSteps do
   end
 
   step :acknowledge_retrospective_from_email, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "closed the project and submitted a retrospective",
+      author: ctx.champion
+    })
+
     email = UI.Emails.last_sent_email(to: ctx.reviewer.email)
     path = UI.Emails.find_link(email, "Acknowledge")
 

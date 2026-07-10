@@ -37,7 +37,8 @@ defmodule Operately.Permissions.ReadOnlyTest do
     assert ActivityPermissions.calculate_permissions(Binding.full_access(), company_read_only: true) == %ActivityPermissions{
              can_view: true,
              can_edit_comment_thread: false,
-             can_comment_on_thread: false
+             can_comment_on_thread: false,
+             can_acknowledge: false
            }
   end
 
