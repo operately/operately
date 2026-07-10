@@ -189,6 +189,11 @@ after_pipeline:
           - artifact push workflow -d .semaphore/REPORT.md /tmp/REPORT.md
 
 promotions:
+  - name: Publish Dev Image
+    pipeline_file: devimage.yml
+    auto_promote:
+      when: "result = 'passed' and branch = 'main'"
+
   - name: Populate CI Cache
     pipeline_file: cache.yml
     auto_promote:
