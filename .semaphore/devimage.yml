@@ -16,6 +16,8 @@ blocks:
         commands:
           - checkout
           - cache restore
+          - docker buildx create --name devimage-builder --driver docker-container --use
+          - docker buildx inspect --bootstrap
       jobs:
         - name: Publish Dev Image
           commands:
