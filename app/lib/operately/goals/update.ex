@@ -20,7 +20,7 @@ defmodule Operately.Goals.Update do
 
     field :message, :map
     field :status, Ecto.Enum, values: @valid_statuses
-    field :state, Ecto.Enum, values: @valid_states
+    field :state, Ecto.Enum, values: @valid_states, default: :published
     field :published_at, :utc_datetime
     field :scheduled_at, :utc_datetime
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete

@@ -14,7 +14,7 @@ defmodule Operately.Projects.CheckIn do
 
     field :status, Ecto.Enum, values: @valid_statuses
     field :description, :map
-    field :state, Ecto.Enum, values: @valid_states
+    field :state, Ecto.Enum, values: @valid_states, default: :published
     field :published_at, :utc_datetime
     field :scheduled_at, :utc_datetime
 
