@@ -1,6 +1,6 @@
 FROM elixir:1.18.0-alpine
 
-ARG NODE_VERSION=22.12.0
+ARG NODE_VERSION=22.22.1
 
 RUN apk update && apk add --no-cache \
   bash git openssh curl xz inotify-tools \
