@@ -12,13 +12,14 @@ export { RadioButtons } from "./RadioButtons";
 export { TitleInput } from "./TitleInput";
 export { RichTextArea } from "./RichTextArea";
 export { SelectBox } from "./SelectBox";
+export { SelectPerson } from "./SelectPerson";
 export { SelectStatus } from "./SelectStatus";
 export { Submit } from "./Submit";
 export { SubmitButton } from "./SubmitButton";
 export { TextInput } from "./TextInput";
 export { useFieldError, useFieldValue, useFormContext } from "./context";
 export { useForm } from "./useForm";
-export { useValidation, validateTextLength, validateIsNumber } from "./validation";
+export { useValidation, validatePresence, validateTextLength, validateIsNumber } from "./validation";
 export type {
   AccessSelectorsProps,
   AddErrorFn,
@@ -43,6 +44,9 @@ export type {
   RichTextAreaProps,
   SelectBoxOption,
   SelectBoxProps,
+  SelectPersonPerson,
+  SelectPersonProps,
+  SelectPersonSearchFn,
   SelectStatusOption,
   SelectStatusProps,
   SubmitButtonProps,

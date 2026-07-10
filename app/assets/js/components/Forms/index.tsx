@@ -5,10 +5,8 @@ import { TextInput } from "./TextInput";
 import { TitleInput } from "./TitleInput";
 import { SelectBox } from "./SelectBox";
 import { FieldGroup } from "./FieldGroup";
-import { SelectGoal } from "./SelectGoal";
 import { InputField } from "./FieldGroup";
 import { RadioButtons } from "./RadioButtons";
-import { SelectPerson } from "./SelectPerson";
 import { PasswordInput } from "./PasswordInput";
 import { CheckboxInput } from "./CheckboxInput";
 import { NumberInput } from "./NumberInput";
@@ -33,10 +31,8 @@ export default {
   TitleInput,
   SelectBox,
   FieldGroup,
-  SelectGoal,
   InputField,
   RadioButtons,
-  SelectPerson,
   PasswordInput,
   CheckboxInput,
   NumberInput,
