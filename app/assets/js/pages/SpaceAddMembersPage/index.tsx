@@ -4,16 +4,14 @@ import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
-import { IconPlus, IconX } from "turboui";
+import { Forms, IconPlus, IconX, Link, SecondaryButton } from "turboui";
 
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
-import Forms from "@/components/Forms";
 import { compareIds, usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router-dom";
-import { Link, SecondaryButton } from "turboui";
 
 export default { name: "SpaceAddMembersPage", loader, Page } as PageModule;
 
@@ -86,8 +84,8 @@ function Page() {
 function Members() {
   const search = useSearch();
 
-  const [members] = Forms.useFieldValue<MemberField[]>("members");
-  const [value, setValue] = Forms.useFieldValue<MemberField[]>("members");
+  const [members = []] = Forms.useFieldValue<MemberField[]>("members");
+  const [value = [], setValue] = Forms.useFieldValue<MemberField[]>("members");
 
   const addMore = React.useCallback(() => {
     setValue([...value, newMember()]);
@@ -132,7 +130,7 @@ function AddMoreMembersButton({ onClick }: { onClick: () => void }) {
 }
 
 function RemoveMemberButton({ index }) {
-  const [value, setValue] = Forms.useFieldValue<MemberField[]>("members");
+  const [value = [], setValue] = Forms.useFieldValue<MemberField[]>("members");
 
   const onClick = () => {
     const newValue = value.filter((_, i) => i !== index);

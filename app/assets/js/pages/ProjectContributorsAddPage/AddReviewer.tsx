@@ -6,7 +6,7 @@ import * as React from "react";
 import { useAddProjectContributor } from "@/models/projectContributors";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 
-import Forms from "@/components/Forms";
+import { Forms } from "turboui";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { LoaderResult } from "./loader";
 

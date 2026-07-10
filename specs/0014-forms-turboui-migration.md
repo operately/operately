@@ -89,10 +89,10 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | 0 — API Parity Foundation | [x] Complete |
 | 1 — Input Primitives and FieldGroup Layouts | [x] Complete |
 | 2 — Auth and Account Forms | [x] Complete |
-| 3 — Standard CRUD Forms | [ ] In progress (3a + 3b done) |
+| 3 — Standard CRUD Forms | [x] Complete |
 | 4 — RichTextArea Cohort | [x] Complete |
-| 5 — Multi-Action Submit and Check-Ins | [ ] Not started |
-| 6 — Domain Selector Bridges | [ ] Not started |
+| 5 — Multi-Action Submit and Check-Ins | [x] Complete |
+| 6 — Domain Selector Bridges | [x] Complete |
 | 7 — GoalTargetsV2 and Stragglers | [ ] Not started |
 | 8 — Delete Legacy App Forms | [ ] Not started |
 
@@ -240,20 +240,20 @@ import { Forms } from "turboui";
 
 ### Migrate (~15 files)
 
-**Phase 3b (access selectors + access-level pages):** [x] `Forms.AccessSelectors` in TurboUI, `SpaceAddPage`, `SpaceEditGeneralAccessPage`, `ProjectEditAccessLevelsPage`, `GoalEditAccessLevelsPage`. TurboUI now exports `useFormContext`. `features/projects/AccessSelectors` stays on legacy Forms until `ProjectAddPage` migrates in Phase 6. Remaining Phase 3 files blocked on SelectPerson/SelectGoal (Phase 6) or RichTextArea (Phase 4).
+**Phase 3b (access selectors + access-level pages):** [x] `Forms.AccessSelectors` in TurboUI, `SpaceAddPage`, `SpaceEditGeneralAccessPage`, `ProjectEditAccessLevelsPage`, `GoalEditAccessLevelsPage`. TurboUI now exports `useFormContext`. Selector-blocked Phase 3 files completed in Phase 6.
 
 - [x] `app/assets/js/pages/SpaceAddPage/index.tsx`
-- [ ] `app/assets/js/pages/SpaceAddMembersPage/index.tsx`
+- [x] `app/assets/js/pages/SpaceAddMembersPage/index.tsx`
 - [x] `app/assets/js/pages/SpaceEditPage/index.tsx`
 - [x] `app/assets/js/pages/SpaceEditGeneralAccessPage/index.tsx`
-- [ ] `app/assets/js/pages/ProjectAddPage/page.tsx`
+- [x] `app/assets/js/pages/ProjectAddPage/page.tsx`
 - [x] `app/assets/js/pages/ProjectEditAccessLevelsPage/index.tsx`
-- [ ] `app/assets/js/pages/GoalAccessAddPage/index.tsx`
+- [x] `app/assets/js/pages/GoalAccessAddPage/index.tsx`
 - [x] `app/assets/js/pages/GoalEditAccessLevelsPage/index.tsx`
 - [x] `app/assets/js/pages/ProjectResumePage/Form.tsx` *(Phase 4)*
-- [ ] `app/assets/js/pages/ProjectContributorsAddPage/*`
-- [ ] `app/assets/js/pages/ProjectContributorsEditPage/ChangeChampion.tsx`
-- [ ] `app/assets/js/pages/ProjectContributorsEditPage/ChangeReviewer.tsx`
+- [x] `app/assets/js/pages/ProjectContributorsAddPage/*`
+- [x] `app/assets/js/pages/ProjectContributorsEditPage/ChangeChampion.tsx`
+- [x] `app/assets/js/pages/ProjectContributorsEditPage/ChangeReviewer.tsx`
 - [ ] `app/assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx`
 - [x] `app/ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx`
 - [x] `app/ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx`
@@ -266,8 +266,8 @@ import { Forms } from "turboui";
 
 ### Acceptance
 
-- [ ] Phase 3 cohort grep clean
-- [ ] `make test.tsc.lint`
+- [x] Phase 3 selector-blocked files complete *(Phase 6)*
+- [x] `make test.tsc.lint`
 
 ---
 
@@ -343,30 +343,33 @@ import { Forms } from "turboui";
 
 ## Phase 6 — Domain Selector Bridges
 
-**Phase complete:** [ ]
+**Phase complete:** [x]
 
 **Goal:** Pure `SelectPerson` in TurboUI; goal/status bridges in app.
 
 ### TurboUI work
 
-- [ ] `SelectPerson` with `searchFn` prop (no PeopleSearch import)
+- [x] `SelectPerson` with `searchFn` prop (no PeopleSearch import)
 
 ### App bridge
 
-- [ ] `app/assets/js/features/forms/SelectGoal.tsx`
+- [x] `app/assets/js/features/forms/SelectGoal.tsx`
 
 ### Migrate (~10 files)
 
-- [ ] `app/assets/js/pages/ProjectContributorsAddPage/*`
-- [ ] `app/assets/js/pages/ProjectContributorsEditPage/*`
-- [ ] `app/assets/js/pages/ProjectAddPage/page.tsx`
-- [ ] `app/assets/js/pages/SignUpWithEmailPage/index.tsx`
-- [ ] Grep `Forms.SelectPerson` and `Forms.SelectGoal` for remaining call sites
+- [x] `app/assets/js/pages/ProjectContributorsAddPage/*`
+- [x] `app/assets/js/pages/ProjectContributorsEditPage/*`
+- [x] `app/assets/js/pages/ProjectAddPage/page.tsx`
+- [x] `app/assets/js/features/projects/AccessSelectors.tsx`
+- [x] `app/assets/js/pages/SpaceAddMembersPage/index.tsx`
+- [x] `app/assets/js/pages/GoalAccessAddPage/index.tsx`
+- [ ] `app/assets/js/pages/SignUpWithEmailPage/index.tsx` *(deferred to Phase 7 — no selectors)*
+- [x] Grep `Forms.SelectPerson` and `Forms.SelectGoal` for remaining call sites
 
 ### Acceptance
 
-- [ ] No SelectPerson/SelectGoal/SelectStatus under `app/components/Forms/`
-- [ ] `make test.tsc.lint`
+- [x] No SelectPerson/SelectGoal/SelectStatus under `app/components/Forms/`
+- [x] `make test.tsc.lint`
 
 ---
 
