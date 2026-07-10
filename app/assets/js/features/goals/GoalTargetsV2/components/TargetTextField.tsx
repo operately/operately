@@ -1,6 +1,6 @@
 import React from "react";
 
-import { InputElement, Label } from "@/components/Forms/Elements";
+import { Forms } from "turboui";
 import { useTargetsContext } from "../TargetsContext";
 import { Target, TargetTextFields } from "../types";
 import { useTargetError } from "../targetErrors";
@@ -18,11 +18,9 @@ export function TargetTextField({ target, field, testid, placeholder, label }: P
   const value = React.useMemo(() => target[field]?.toString() || "", [target]);
   const isError = useTargetError(target, field);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      e.currentTarget.blur();
-    }
+  const handleEnter = (e: React.KeyboardEvent) => {
+    e.preventDefault();
+    (e.currentTarget as HTMLInputElement).blur();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,14 +29,14 @@ export function TargetTextField({ target, field, testid, placeholder, label }: P
 
   return (
     <div>
-      {label && <Label label={label} />}
-      <InputElement
+      {label && <Forms.Label label={label} />}
+      <Forms.Input
         placeholder={placeholder}
         type="text"
         testId={testid}
         value={value}
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
+        onEnter={handleEnter}
         error={Boolean(isError)}
       />
     </div>
