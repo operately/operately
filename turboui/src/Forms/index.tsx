@@ -12,6 +12,7 @@ export { RadioButtons } from "./RadioButtons";
 export { TitleInput } from "./TitleInput";
 export { RichTextArea } from "./RichTextArea";
 export { SelectBox } from "./SelectBox";
+export { SelectGoal } from "./SelectGoal";
 export { SelectPerson } from "./SelectPerson";
 export { SelectStatus } from "./SelectStatus";
 export { Submit } from "./Submit";
@@ -44,6 +45,8 @@ export type {
   RichTextAreaProps,
   SelectBoxOption,
   SelectBoxProps,
+  SelectGoalGoal,
+  SelectGoalProps,
   SelectPersonPerson,
   SelectPersonProps,
   SelectPersonSearchFn,
