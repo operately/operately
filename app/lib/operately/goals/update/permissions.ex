@@ -1,8 +1,10 @@
 defmodule Operately.Goals.Update.Permissions do
   import Ecto.Query, only: [from: 2]
+
   alias Operately.Access.Binding
   alias Operately.Goals.Update
   alias Operately.Permissions.ReadOnly
+  alias Operately.Repo
 
   defstruct [
     :can_view,
@@ -17,7 +19,7 @@ defmodule Operately.Goals.Update.Permissions do
       can_view: can_view(access_level),
       can_edit: can_edit(access_level),
       can_delete: can_delete(access_level),
-      can_acknowledge: can_acknowledge(update, user_id),
+      can_acknowledge: can_acknowledge(access_level, update, user_id),
       can_comment: can_comment(access_level)
     }
 
@@ -29,15 +31,8 @@ defmodule Operately.Goals.Update.Permissions do
   def can_delete(access_level), do: access_level >= Binding.edit_access()
   def can_comment(access_level), do: access_level >= Binding.comment_access()
 
-  def can_acknowledge(update, user_id) when is_binary(user_id) do
-    update = preload_goal_and_update(update)
-    goal = update.goal
-
-    cond do
-      update.author_id == goal.champion_id && goal.reviewer_id == user_id -> true
-      update.author_id == goal.reviewer_id && goal.champion_id == user_id -> true
-      true -> user_id == goal.reviewer_id
-    end
+  def can_acknowledge(access_level, update, user_id) when is_binary(user_id) do
+    can_edit(access_level) and author_id(update) != user_id
   end
 
   def check_can_edit(access_level, company_read_only: company_read_only) do
@@ -58,16 +53,9 @@ defmodule Operately.Goals.Update.Permissions do
     end
   end
 
-  #
-  # Helpers
-  #
+  defp author_id(%Update{author_id: author_id}), do: author_id
 
-  defp preload_goal_and_update(update = %Update{}) do
-    Operately.Repo.preload(update, :goal)
-  end
-
-  defp preload_goal_and_update(update_id) when is_binary(update_id) do
-    from(u in Update, join: g in assoc(u, :goal), preload: [goal: g], where: u.id == ^update_id)
-    |> Operately.Repo.one()
+  defp author_id(update_id) when is_binary(update_id) do
+    Repo.one(from(u in Update, where: u.id == ^update_id, select: u.author_id))
   end
 end
