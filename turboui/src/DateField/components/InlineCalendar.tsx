@@ -48,6 +48,7 @@ export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, ma
   // Days of the month
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(currentYear, currentMonth, day);
+    const isoDate = formatCalendarDate(date);
 
     const isSelected = isSelectedDay(day, currentMonth, currentYear, selectedDate);
     const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
@@ -75,6 +76,8 @@ export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, ma
         onClick={() => handleDayClick(date)}
         className={className}
         disabled={isDisabled}
+        aria-pressed={isSelected}
+        data-date={isoDate}
         data-test-id={`date-field-day-${day}`}
       >
         {day}
@@ -115,6 +118,14 @@ export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, ma
       <div className="grid grid-cols-7 gap-0.5">{days}</div>
     </div>
   );
+}
+
+function formatCalendarDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 function isSelectedDay(

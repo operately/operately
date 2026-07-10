@@ -43,8 +43,8 @@ defmodule Operately.Support.Features.NotificationsSteps do
     ctx
     |> UI.sleep(100)
     |> visit_notifications_page()
-    |> UI.assert_text(author.full_name)
-    |> UI.assert_text(subject)
+    |> UI.wait_until_text(author.full_name)
+    |> UI.wait_until_text(subject)
   end
 
   def assert_notification_count(ctx, count) do
