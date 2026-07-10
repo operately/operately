@@ -2,9 +2,7 @@
 
 ## Summary
 
-Incrementally migrate `app/assets/js/components/Forms/` to `turboui/src/Forms/`. Work has already started: TurboUI Forms exists and one EE page (`SiteMessageModal`) uses it end-to-end. ~55 app/ee files still import the legacy module.
-
-This spec defines phased steps so each PR is reviewable. TurboUI is extended first; call sites switch cohort-by-cohort; app Forms is deleted last.
+Migrate `app/assets/js/components/Forms/` to `turboui/src/Forms/`. **Migration complete:** legacy app Forms is deleted; all call sites use `import { Forms } from "turboui"`. App pages bridge backend/API concerns (e.g. `useRichEditorHandlers`, people `searchFn`) via props — no `@/` imports inside TurboUI.
 
 Follow [`.agents/skills/components-architecture/SKILL.md`](../.agents/skills/components-architecture/SKILL.md) for TurboUI purity and the app-bridge pattern.
 
@@ -14,25 +12,30 @@ Follow [`.agents/skills/components-architecture/SKILL.md`](../.agents/skills/com
 
 - Pure form primitives and state management live in `turboui/src/Forms/`.
 - App pages bridge backend/API concerns (e.g. `useRichEditorHandlers`, people search) via props — no `@/` imports inside TurboUI.
-- Storybook documents form patterns at each phase.
-- Legacy `app/assets/js/components/Forms/` is deleted when grep shows zero imports.
+- Storybook documents form patterns.
+- Legacy `app/assets/js/components/Forms/` is deleted when grep shows zero imports. **[x] Done.**
 
 ---
 
 ## Current State
 
-### Already in TurboUI (`turboui/src/Forms/`)
+### In TurboUI (`turboui/src/Forms/`)
 
 | Piece | Notes |
 | ----- | ----- |
-| `useForm`, `Form`, `context` | Nested field paths via `path.ts` |
+| `useForm`, `Form`, `context` | Nested field paths via `path.ts`; `preventSubmitOnEnter` |
 | `TextInput`, `SelectBox`, `Submit`, `FieldGroup`, `InputField` | `FieldGroup`: vertical, horizontal, grid |
-| `Input`, `Label`, `ErrorMessage` | Primitives (Phase 1) |
-| `PasswordInput`, `NumberInput`, `CheckboxInput`, `RadioButtons`, `TitleInput` | Field components (Phase 1) |
-| `RichTextArea` | Pure: accepts `richTextHandlers` prop |
+| `Input`, `Label`, `ErrorMessage` | Primitives |
+| `PasswordInput`, `NumberInput`, `CheckboxInput`, `RadioButtons`, `TitleInput` | Field components |
+| `RichTextArea` | Pure: accepts `richTextHandlers` prop; readonly + styling props |
+| `SubmitButton` | Multi-action submit with `setTrigger` |
+| `SelectStatus` | Pure; optional `reviewer` with `fullName` |
+| `SelectPerson` | Pure; required `searchFn` prop |
+| `SelectGoal` | Pure hierarchical goal selector; `goals` + optional `allowCompanyWide` |
+| `AccessSelectors` | Company/space access select boxes |
 | `validation.ts` | `validatePresence`, `validateRichContentPresence`, `validateTextLength`, `validateIsNumber`, `useValidation` |
 | Tests | `index.test.tsx` |
-| Storybook | `Inputs.stories.tsx`, `FieldGroup.stories.tsx` (Phase 1) |
+| Storybook | `Forms`, `Inputs`, `FieldGroup`, `AccessSelectors`, `RichTextArea`, `Composed` |
 
 Exported as `import { Forms } from "turboui"`.
 
@@ -53,36 +56,15 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 </Forms.Form>
 ```
 
-### Still in app only (`app/assets/js/components/Forms/`)
+### Out of scope
 
-**Core gaps vs TurboUI:**
-
-- [x] `useForm`: `trigger` / `setTrigger`, `addErrors` / `removeErrors`, `onError` (AxiosError)
-- [x] `FieldGroup`: `horizontal` and `grid` layouts
-- [x] `Submit`: `layout`, `submitOnEnter`, `buttonSize`, `testId`, `containerClassName`
-- [x] `SubmitButton`: multi-action submit (check-in forms)
-- [x] Validations: `textLength`, `isNumber`
-- [x] Inputs: `PasswordInput`, `NumberInput`, `CheckboxInput`, `RadioButtons`, `TitleInput`
-- [x] Feedback: `FormError`
-- [x] Feedback: `ErrorMessage`
-- [x] Primitives: `Elements/Input`, `Elements/Label` (GoalTargetsV2)
-
-**App-coupled fields (bridge, not pure TurboUI):**
-
-| Component | Coupling |
-| --------- | -------- |
-| `SelectPerson` | `@/models/people`, `@/components/PeopleSearch` — accepts `searchFn` |
-| `SelectGoal` | `@/models/goals`, `@/features/goals/GoalTree/GoalSelectorDropdown` |
-| `SelectStatus` | ~~`@/components/status`~~ → TurboUI `Forms.SelectStatus` |
-| App `RichTextArea` | `mentionSearchScope` + internal `useRichEditorHandlers` |
-
-**Scale:** ~55 app/ee files import `@/components/Forms`. Migration is import-style change (`import Forms from "@/components/Forms"` → `import { Forms } from "turboui"`) plus API adjustments per cohort.
+- `CompanyAdminTrustedEmailDomainsPage` uses `@/components/Form` (singular), not Forms — not part of this migration.
 
 ---
 
 ## Implementation Status
 
-**Phases 0 and 1 are complete.** Phases 2–8 are not yet implemented. Each remaining phase should land as one or more focused PRs following the checklists below.
+**All phases complete.**
 
 | Phase | Status |
 | ----- | ------ |
@@ -95,6 +77,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | 6 — Domain Selector Bridges | [x] Complete |
 | 7 — GoalTargetsV2 and Stragglers | [x] Complete |
 | 8 — Delete Legacy App Forms | [x] Complete |
+| Wrap-up — SelectGoal in TurboUI + Storybook | [x] Complete |
 
 ```mermaid
 flowchart TB
@@ -102,28 +85,21 @@ flowchart TB
     useForm[useForm + context]
     primitives[TextInput SelectBox Submit FieldGroup]
     richText[RichTextArea with richTextHandlers prop]
+    selectors[SelectPerson SelectGoal SelectStatus]
   end
 
   subgraph appBridge [App bridge layer]
     pages[Pages and features]
     handlers[useRichEditorHandlers]
-    peopleSearch[PeopleSearch / searchFn]
-    goalSelect[SelectGoal wrapper]
-    statusSelect[SelectStatus in TurboUI]
-  end
-
-  subgraph legacy [Legacy - delete last]
-    appForms[app/components/Forms]
+    peopleSearch[searchFn from PeopleSearch]
   end
 
   pages --> useForm
   pages --> primitives
   pages --> richText
+  pages --> selectors
   richText --> handlers
   pages --> peopleSearch
-  pages --> goalSelect
-  pages --> statusSelect
-  appForms -.->|phased replacement| turboui
 ```
 
 ---
@@ -132,7 +108,7 @@ flowchart TB
 
 1. **One cohort per PR** — migrate a logical group of call sites, not the whole tree.
 2. **TurboUI first, then switch imports** — extend TurboUI before moving call sites.
-3. **App-coupled fields stay in app** as thin wrappers using TurboUI `InputField`. No `@/` imports in TurboUI.
+3. **App-coupled fields stay in app** as thin wrappers using TurboUI `InputField`. No `@/` imports in TurboUI. *(SelectPerson / SelectGoal / SelectStatus are now pure TurboUI.)*
 4. **RichTextArea:** TurboUI accepts `richTextHandlers`; app pages call `useRichEditorHandlers()` and pass the result.
 5. **No big-bang** — legacy app Forms stays until Phase 8.
 6. **Storybook is part of done** for each phase.
@@ -223,7 +199,7 @@ import { Forms } from "turboui";
 
 ### Storybook
 
-- [ ] `Composed.stories.tsx`: AuthForm, RenameCompanyForm
+- [x] `Composed.stories.tsx`: AuthForm, RenameCompanyForm
 
 ### Acceptance
 
@@ -234,7 +210,7 @@ import { Forms } from "turboui";
 
 ## Phase 3 — Standard CRUD Forms
 
-**Phase complete:** [ ]
+**Phase complete:** [x]
 
 **Goal:** Text + select + submit, no RichTextArea or domain selectors (~15 files).
 
@@ -254,7 +230,7 @@ import { Forms } from "turboui";
 - [x] `app/assets/js/pages/ProjectContributorsAddPage/*`
 - [x] `app/assets/js/pages/ProjectContributorsEditPage/ChangeChampion.tsx`
 - [x] `app/assets/js/pages/ProjectContributorsEditPage/ChangeReviewer.tsx`
-- [ ] `app/assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx`
+- [x] `app/assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx` *(out of scope — uses `@/components/Form`, not Forms)*
 - [x] `app/ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx`
 - [x] `app/ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx`
 - [x] `app/ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx`
@@ -262,7 +238,7 @@ import { Forms } from "turboui";
 
 ### Storybook
 
-- [ ] AccessLevelForm, AddSpaceForm, BillingCatalogForm
+- [x] AccessLevelForm, AddSpaceForm, BillingCatalogForm *(covered in `Composed.stories.tsx` / AccessSelectors stories)*
 
 ### Acceptance
 
@@ -301,18 +277,18 @@ import { Forms } from "turboui";
 
 ### Storybook
 
-- [ ] `RichTextArea.stories.tsx` with `createMockRichEditorHandlers()`
+- [x] `RichTextArea.stories.tsx` with `createMockRichEditorHandlers()`
 
 ### Acceptance
 
 - [x] App `RichTextArea.tsx` deleted
-- [ ] `make test.tsc.lint`
+- [x] `make test.tsc.lint`
 
 ---
 
 ## Phase 5 — Multi-Action Submit and Check-Ins
 
-**Phase complete:** [ ]
+**Phase complete:** [x]
 
 **Goal:** `SubmitButton`, `setTrigger`, `SelectStatus` in TurboUI.
 
@@ -332,11 +308,11 @@ import { Forms } from "turboui";
 
 ### Storybook
 
-- [ ] MultiSubmitForm, CheckInForm composition
+- [x] MultiSubmitForm, CheckInForm composition *(in `Composed.stories.tsx`)*
 
 ### Acceptance
 
-- [ ] Check-in flows work; `SubmitButton` only in TurboUI
+- [x] Check-in flows work; `SubmitButton` only in TurboUI
 - [x] `make test.tsc.lint`
 
 ---
@@ -345,15 +321,12 @@ import { Forms } from "turboui";
 
 **Phase complete:** [x]
 
-**Goal:** Pure `SelectPerson` in TurboUI; goal/status bridges in app.
+**Goal:** Pure `SelectPerson` and `SelectGoal` in TurboUI.
 
 ### TurboUI work
 
 - [x] `SelectPerson` with `searchFn` prop (no PeopleSearch import)
-
-### App bridge
-
-- [x] `app/assets/js/features/forms/SelectGoal.tsx`
+- [x] `SelectGoal` with hierarchical dropdown (no GoalTree / `useMe` import) — wrap-up
 
 ### Migrate (~10 files)
 
@@ -363,8 +336,9 @@ import { Forms } from "turboui";
 - [x] `app/assets/js/features/projects/AccessSelectors.tsx`
 - [x] `app/assets/js/pages/SpaceAddMembersPage/index.tsx`
 - [x] `app/assets/js/pages/GoalAccessAddPage/index.tsx`
-- [ ] `app/assets/js/pages/SignUpWithEmailPage/index.tsx` *(deferred to Phase 7 — no selectors)*
+- [x] `app/assets/js/pages/SignUpWithEmailPage/index.tsx` *(Phase 7)*
 - [x] Grep `Forms.SelectPerson` and `Forms.SelectGoal` for remaining call sites
+- [x] Deleted app bridge `features/forms/SelectGoal.tsx` after TurboUI port
 
 ### Acceptance
 
@@ -384,8 +358,8 @@ import { Forms } from "turboui";
 - [x] `app/assets/js/features/goals/GoalTargetsV2/components/TargetTextField.tsx` — import `Input`, `Label` from turboui Forms
 - [x] `app/assets/js/features/goals/GoalTargetsV2/components/TargetNumericField.tsx`
 - [x] `app/assets/js/features/goals/GoalTargetsV2/targetErrors.tsx` — TurboUI form context types
-- [x] Remaining pages: `SetupPage`, `SignUpWithEmailPage` (if not done in Phase 2/6), `AccessSelectors`, resource hub page-level forms, EE stragglers
-- [x] `app/ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx` (FieldGroup grid — requires Phase 1)
+- [x] Remaining pages: `SetupPage`, `SignUpWithEmailPage`, resource hub page-level forms, EE stragglers
+- [x] `app/ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx` (FieldGroup grid)
 
 ### Acceptance
 
@@ -420,8 +394,9 @@ import { Forms } from "turboui";
 | `Forms.stories.tsx` | Basic form, validation, cancel, nested paths | [x] |
 | `Inputs.stories.tsx` | TextInput, Password, Number, Checkbox, Radio, Title | [x] |
 | `FieldGroup.stories.tsx` | vertical / horizontal / grid | [x] |
-| `RichTextArea.stories.tsx` | editable + readonly | [ ] |
-| `Composed.stories.tsx` | AuthForm, AccessForm, MultiSubmitForm, SelectPersonForm | [ ] |
+| `AccessSelectors.stories.tsx` | company / space access | [x] |
+| `RichTextArea.stories.tsx` | editable + readonly | [x] |
+| `Composed.stories.tsx` | AuthForm, RenameCompanyForm, AccessForm, MultiSubmitForm, SelectPersonForm, SelectGoalForm, CheckInForm | [x] |
 
 Stories use `Forms.useForm` and mock handlers from `turboui/src/utils/storybook/richEditor`.
 
@@ -433,20 +408,21 @@ Stories use `Forms.useForm` and mock handlers from `turboui/src/utils/storybook/
 | ------- | ------------------ |
 | `import Forms from "@/components/Forms"` | `import { Forms } from "turboui"` |
 | `mentionSearchScope` on RichTextArea | `richTextHandlers={useRichEditorHandlers({ scope })}` |
-| `form.actions.setTrigger(name)` | TurboUI `form.actions.setTrigger(name)` (Phase 0) |
-| `form.actions.addErrors({ _submit: msg })` | TurboUI `form.actions.addErrors(...)` (Phase 0) |
-| `Forms.FieldGroup layout="grid"` | TurboUI FieldGroup (Phase 1) |
-| `SelectGoal` | App bridge in `features/forms/` |
+| `form.actions.setTrigger(name)` | TurboUI `form.actions.setTrigger(name)` |
+| `form.actions.addErrors({ _submit: msg })` | TurboUI `form.actions.addErrors(...)` |
+| `Forms.FieldGroup layout="grid"` | TurboUI FieldGroup |
+| `SelectPerson` | TurboUI `Forms.SelectPerson` (`searchFn` required) |
+| `SelectGoal` | TurboUI `Forms.SelectGoal` |
 | `SelectStatus` | TurboUI `Forms.SelectStatus` |
 
 ---
 
 ## Risks
 
-- **useForm API drift** — Phase 0 before check-in cohorts (Phase 5).
-- **FieldGroup grid** — required for EE email/billing; Phase 1 before Phase 3 EE files.
-- **Modal autoFocus** — preserve `data-autofocus` on Input primitive.
-- **Parallel work** — Phases 2–7 can split by file list; Phase 0→1 sequential.
+- **useForm API drift** — Phase 0 before check-in cohorts (Phase 5). *(Mitigated.)*
+- **FieldGroup grid** — required for EE email/billing; Phase 1 before Phase 3 EE files. *(Mitigated.)*
+- **Modal autoFocus** — preserve `data-autofocus` on Input primitive. *(Mitigated.)*
+- **Parallel work** — Phases 2–7 can split by file list; Phase 0→1 sequential. *(Complete.)*
 
 ---
 

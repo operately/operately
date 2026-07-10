@@ -10,7 +10,6 @@ import { compareIds } from "@/routes/paths";
 import { useNavigate } from "react-router";
 import { useLoadedData } from "./loader";
 
-import { SelectGoal } from "@/features/forms/SelectGoal";
 import { PermissionLevels } from "@/features/Permissions";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { AccessLevel } from "@/features/projects/AccessLevel";
@@ -104,7 +103,7 @@ function Form() {
         <Forms.FieldGroup>
           <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" autoFocus required />
           <Forms.SelectBox label="Space" field="space" options={spaceOptions} required />
-          <SelectGoal label="Goal" field="goal" goals={goals} required={false} />
+          <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
 
           <Forms.FieldGroup layout="grid">
             <SelectChampion me={me} search={search} />

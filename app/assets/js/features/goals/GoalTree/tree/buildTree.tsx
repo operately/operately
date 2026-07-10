@@ -30,16 +30,10 @@ export interface TreeOptions {
   goalId?: string;
 }
 
-export type Tree = Node[];
+type Tree = Node[];
 
 export function buildTree(me: Person, allGoals: Goal[], allProjects: Project[], options: TreeOptions): Node[] {
   return new TreeBuilder(me, allGoals, allProjects, options).build();
-}
-
-export function getAllIds(nodes: Node[]): string[] {
-  return nodes.reduce((acc, n) => {
-    return [...acc, n.id, ...getAllIds(n.children)];
-  }, []);
 }
 
 class TreeBuilder {
