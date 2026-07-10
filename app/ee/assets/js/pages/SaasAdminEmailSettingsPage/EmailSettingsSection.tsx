@@ -1,10 +1,9 @@
 import * as React from "react";
 
 import * as Paper from "@/components/PaperContainer";
-import Forms from "@/components/Forms";
 import * as AdminApi from "@/ee/admin_api";
 import classNames from "classnames";
-import { IconInfoCircle, Spacer, Tooltip } from "turboui";
+import { Forms, IconInfoCircle, Spacer, Tooltip } from "turboui";
 import { TestEmailAction } from "./TestEmailModal";
 
 interface Props {
