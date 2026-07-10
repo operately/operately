@@ -20,7 +20,7 @@ defmodule Operately.Goals.Update do
 
     field :message, :map
     field :status, Ecto.Enum, values: @valid_statuses
-    field :state, Ecto.Enum, values: @valid_states, default: :published
+    field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
     field :scheduled_at, :utc_datetime
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
@@ -67,7 +67,7 @@ defmodule Operately.Goals.Update do
       states: [
         %{name: :draft, allow_transition_to: [:scheduled, :published]},
         %{name: :scheduled, allow_transition_to: [:draft, :published]},
-        %{name: :published, on_enter: &set_published_at/1}
+        %{name: :published, allow_transition_to: [], on_enter: &set_published_at/1}
       ]
     })
     |> validate_required([

@@ -14,7 +14,7 @@ defmodule Operately.Projects.CheckIn do
 
     field :status, Ecto.Enum, values: @valid_statuses
     field :description, :map
-    field :state, Ecto.Enum, values: @valid_states, default: :published
+    field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
     field :scheduled_at, :utc_datetime
 
@@ -48,7 +48,7 @@ defmodule Operately.Projects.CheckIn do
       states: [
         %{name: :draft, allow_transition_to: [:scheduled, :published]},
         %{name: :scheduled, allow_transition_to: [:draft, :published]},
-        %{name: :published, on_enter: &set_published_at/1}
+        %{name: :published, allow_transition_to: [], on_enter: &set_published_at/1}
       ]
     })
     |> validate_required([:author_id, :project_id, :description, :status, :state, :subscription_list_id])

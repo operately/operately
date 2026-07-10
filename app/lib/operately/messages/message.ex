@@ -47,7 +47,7 @@ defmodule Operately.Messages.Message do
       states: [
         %{name: :draft, allow_transition_to: [:scheduled, :published]},
         %{name: :scheduled, allow_transition_to: [:draft, :published]},
-        %{name: :published, on_enter: &set_published_at/1}
+        %{name: :published, allow_transition_to: [], on_enter: &set_published_at/1}
       ]
     })
     |> validate_required([:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state])
