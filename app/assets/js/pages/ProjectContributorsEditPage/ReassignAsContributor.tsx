@@ -5,7 +5,7 @@ import * as People from "@/models/people";
 import * as Permissions from "@/models/permissions";
 import * as ProjectContributors from "@/models/projectContributors";
 
-import Forms, { FieldObject } from "@/components/Forms";
+import { Forms } from "turboui";
 import { PageTitle } from "./PageTitle";
 import { LoaderResult, useGotoProjectContributors } from "./loader";
 import { joinStr } from "@/utils/strings";
@@ -43,7 +43,7 @@ export function ReassignAsContributor() {
   );
 }
 
-interface FormContributor extends FieldObject {
+interface FormContributor {
   responsibility: string;
   permissions: Permissions.AccessOptions;
 }

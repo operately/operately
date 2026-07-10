@@ -140,6 +140,28 @@ export interface SelectStatusProps {
   label?: string;
 }
 
+export interface SelectPersonPerson {
+  id: string;
+  fullName: string;
+  avatarUrl: string | null;
+  title?: string | null;
+}
+
+export type SelectPersonSearchFn = (query: string) => Promise<SelectPersonPerson[]>;
+
+export interface SelectPersonProps {
+  field: string;
+  searchFn: SelectPersonSearchFn;
+  label?: string;
+  hidden?: boolean;
+  allowEmpty?: boolean;
+  emptyLabel?: string;
+  exclude?: SelectPersonPerson[];
+  default?: SelectPersonPerson | null;
+  required?: boolean;
+  autoFocus?: boolean;
+}
+
 export interface RichTextAreaProps {
   field: string;
   richTextHandlers: RichEditorHandlers;

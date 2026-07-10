@@ -4,21 +4,18 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as Permissions from "@/models/permissions";
-import { IconPlus, IconX, Link } from "turboui";
+import { Forms, IconPlus, IconX, Link, SecondaryButton } from "turboui";
 
 import { useAddProjectContributors } from "@/models/projectContributors";
 import { PERMISSIONS_LIST, PERMISSIONS_LIST_COMPLETE } from "@/models/permissions";
 
-import Forms from "@/components/Forms";
-import { FieldObject } from "@/components/Forms";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
-import { SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
 
-interface ContributorFields extends FieldObject {
+interface ContributorFields {
   key: number;
   personId: string;
   responsibility: string;
@@ -124,14 +121,14 @@ function Contributor({ field, search, index, last, addMore }) {
   const { project } = useLoadedData();
 
   const permissionsList = React.useMemo(() => {
-  if (project.permissions?.hasFullAccess) {
-    return PERMISSIONS_LIST_COMPLETE;
-  }
-  if (project.permissions?.canEdit) {
-    return PERMISSIONS_LIST;
-  }
-  return [];
-}, [project.permissions?.hasFullAccess, project.permissions?.canEdit]);
+    if (project.permissions?.hasFullAccess) {
+      return PERMISSIONS_LIST_COMPLETE;
+    }
+    if (project.permissions?.canEdit) {
+      return PERMISSIONS_LIST;
+    }
+    return [];
+  }, [project.permissions?.hasFullAccess, project.permissions?.canEdit]);
 
   return (
     <div data-test-id={`contributor-${index}`}>
