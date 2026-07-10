@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 interface CardProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;

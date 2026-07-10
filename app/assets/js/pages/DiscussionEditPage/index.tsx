@@ -8,7 +8,7 @@ import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { useBoolState } from "@/hooks/useBoolState";
 import { PageModule } from "@/routes/types";
 import { DiscardDiscussionDraftModal, GhostButton, Link, PrimaryButton } from "turboui";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionEditPage", loader, Page } as PageModule;

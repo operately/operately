@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 import { DateField } from "../../DateField";
 import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";

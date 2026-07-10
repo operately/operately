@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 jest.mock("../LastCheckIn", () => ({
   LastCheckIn: () => <div>Last check-in</div>,

@@ -6,7 +6,7 @@ import * as Spaces from "@/models/spaces";
 
 import { PageModule } from "@/routes/types";
 import { usePaths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { SpaceToolsConfigurationPage } from "turboui";
 

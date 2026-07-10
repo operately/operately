@@ -4,7 +4,7 @@ import React from "react";
 import { GhostButton } from "turboui";
 
 import { usePaths } from "@/routes/paths";
-import { useRouteLoaderData } from "react-router-dom";
+import { useRouteLoaderData } from "react-router";
 export default { name: "NotFoundPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {

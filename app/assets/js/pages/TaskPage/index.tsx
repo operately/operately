@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import Api from "@/api";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import * as Tasks from "@/models/tasks";
 import * as Projects from "@/models/projects";
 import * as People from "@/models/people";

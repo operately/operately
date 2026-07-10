@@ -1,4 +1,4 @@
-import { ShouldRevalidateFunction } from "react-router-dom";
+import { ShouldRevalidateFunction } from "react-router";
 
 export type Loader = ({ params, request }: { params: any; request: any }) => Promise<any>;
 

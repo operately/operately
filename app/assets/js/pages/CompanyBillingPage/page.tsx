@@ -14,7 +14,7 @@ import {
 import { CompanyBillingPage as TurboCompanyBillingPage } from "turboui/CompanyBillingPage";
 import { showErrorToast } from "turboui";
 import { useLoadedData } from "./loader";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { usePaths } from "@/routes/paths";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
