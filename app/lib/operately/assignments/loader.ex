@@ -3,7 +3,9 @@ defmodule Operately.Assignments.Loader do
 
   alias Operately.Repo
   alias Operately.Goals.{Goal, Update}
-  alias Operately.Projects.{Project, CheckIn, Milestone}
+  alias Operately.Projects.{Project, CheckIn, Milestone, Retrospective}
+  alias Operately.Comments.CommentThread
+  alias Operately.Activities.Activity
   alias Operately.Assignments.Assignment
 
   @due_soon_window_in_days 1
@@ -12,8 +14,10 @@ defmodule Operately.Assignments.Loader do
     [
       Task.async(fn -> load_pending_project_check_ins(company, person) end),
       Task.async(fn -> load_pending_project_check_in_acknowledgements(company, person) end),
+      Task.async(fn -> load_pending_project_retrospective_acknowledgements(company, person) end),
       Task.async(fn -> load_pending_goal_updates(company, person) end),
       Task.async(fn -> load_pending_goal_update_acknowledgements(company, person) end),
+      Task.async(fn -> load_pending_goal_retrospective_acknowledgements(company, person) end),
       Task.async(fn -> load_pending_tasks(company, person) end),
       Task.async(fn -> load_pending_space_tasks(company, person) end),
       Task.async(fn -> load_pending_milestones(company, person) end)
@@ -26,8 +30,10 @@ defmodule Operately.Assignments.Loader do
     [
       Task.async(fn -> count_pending_project_check_ins(person) end),
       Task.async(fn -> count_pending_project_check_in_acknowledgements(person) end),
+      Task.async(fn -> count_pending_project_retrospective_acknowledgements(person) end),
       Task.async(fn -> count_pending_goal_updates(person) end),
       Task.async(fn -> count_pending_goal_update_acknowledgements(person) end),
+      Task.async(fn -> count_pending_goal_retrospective_acknowledgements(person) end),
       Task.async(fn -> count_pending_tasks(person) end),
       Task.async(fn -> count_pending_space_tasks(person) end),
       Task.async(fn -> count_pending_milestones(person) end)
@@ -300,6 +306,94 @@ defmodule Operately.Assignments.Loader do
           (goal.champion_id == ^person.id and author.id != goal.champion_id),
       where: is_nil(reviewer_change.inserted_at) or u.published_at > reviewer_change.inserted_at
     )
+  end
+
+  #
+  # Project retrospectives that need acknowledgement (reviewer role)
+  #
+
+  defp load_pending_project_retrospective_acknowledgements(company, person) do
+    base_query = pending_project_retrospective_acknowledgements_query(person)
+
+    from([project: p, author: a] in base_query,
+      join: space in assoc(p, :group),
+      preload: [project: {p, group: space}, author: a]
+    )
+    |> Repo.all()
+    |> Enum.map(&Assignment.build(&1, company))
+  end
+
+  defp count_pending_project_retrospective_acknowledgements(person) do
+    base_query = pending_project_retrospective_acknowledgements_query(person)
+
+    from([retrospective: r] in base_query,
+      select: count(r.id)
+    )
+    |> Repo.one()
+    |> default_zero()
+  end
+
+  defp pending_project_retrospective_acknowledgements_query(person) do
+    from(r in Retrospective,
+      as: :retrospective,
+      join: project in assoc(r, :project),
+      as: :project,
+      join: author in assoc(r, :author),
+      as: :author,
+      left_join: champion in assoc(project, :champion),
+      left_join: reviewer in assoc(project, :reviewer),
+      where: is_nil(r.acknowledged_by_id),
+      where: project.status == "closed" and is_nil(project.deleted_at),
+      where:
+        (reviewer.id == ^person.id and author.id != reviewer.id) or
+          (champion.id == ^person.id and author.id != champion.id)
+    )
+  end
+
+  #
+  # Goal retrospectives that need acknowledgement (reviewer role)
+  #
+
+  defp load_pending_goal_retrospective_acknowledgements(company, person) do
+    from(a in Activity,
+      join: thread in CommentThread,
+      on: thread.id == a.comment_thread_id,
+      join: goal in Goal,
+      on: goal.id == fragment("(?->>'goal_id')::uuid", a.content),
+      join: author in assoc(a, :author),
+      join: space in assoc(goal, :group),
+      where: a.action == "goal_closing",
+      where: is_nil(thread.acknowledged_by_id),
+      where: not is_nil(goal.closed_at) and is_nil(goal.deleted_at),
+      where:
+        (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or
+          (goal.champion_id == ^person.id and author.id != goal.champion_id),
+      select: {a, goal, author, space}
+    )
+    |> Repo.all()
+    |> Enum.map(fn {activity, goal, author, space} ->
+      goal = %{goal | group: space}
+      Assignment.build({:goal_retrospective, activity, goal, author}, company)
+    end)
+  end
+
+  defp count_pending_goal_retrospective_acknowledgements(person) do
+    from(a in Activity,
+      join: thread in CommentThread,
+      on: thread.id == a.comment_thread_id,
+      join: goal in Goal,
+      on: goal.id == fragment("(?->>'goal_id')::uuid", a.content),
+      join: author in assoc(a, :author),
+      where: a.action == "goal_closing",
+      where: is_nil(thread.acknowledged_by_id),
+      where: not is_nil(goal.closed_at) and is_nil(goal.deleted_at),
+      where:
+        (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or
+          (goal.champion_id == ^person.id and author.id != goal.champion_id),
+      select: count(a.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   #

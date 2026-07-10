@@ -69,7 +69,7 @@ defmodule Operately.Support.Factory do
   defdelegate edit_project_space_members_access(ctx, project_name, access_level), to: Factory.Projects
   defdelegate set_project_next_check_in_date(ctx, project_name, date), to: Factory.Projects
   defdelegate set_project_milestone_deadline(ctx, milestone_name, date), to: Factory.Projects
-  defdelegate close_project(ctx, project_name), to: Factory.Projects
+  defdelegate close_project(ctx, project_name, opts \\ []), to: Factory.Projects
   defdelegate pause_project(ctx, project_name), to: Factory.Projects
   defdelegate close_project_milestone(ctx, milestone_name, creator_name \\ :creator), to: Factory.Projects
   defdelegate add_project_discussion(ctx, testid, project_name, opts \\ []), to: Factory.Projects

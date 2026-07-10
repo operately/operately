@@ -75,6 +75,7 @@ defmodule Operately.Support.Features.ReviewSteps do
       reviewer: :my_manager,
       name: "Release Dunder Mifflin Infinity"
     )
+    |> Factory.set_project_next_check_in_date(:project, DateTime.utc_now() |> DateTime.add(7, :day))
     |> Factory.add_project_milestone(:milestone, :project,
       title: "Important Work",
       timeframe: %Operately.ContextualDates.Timeframe{
@@ -433,6 +434,78 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.refute_text(ctx.goal.name)
   end
 
+  #
+  # Project Retrospective Review
+  #
+
+  step :given_there_is_a_project_retrospective_pending_acknowledgement, ctx do
+    ctx
+    |> Factory.add_project(:closed_project, :product_space,
+      champion: :my_report,
+      reviewer: :me,
+      name: "Sunset the old CRM"
+    )
+    |> Factory.close_project(:closed_project, author: :my_report, as: :project_retrospective)
+  end
+
+  step :assert_project_retrospective_review_is_listed, ctx do
+    ctx
+    |> UI.assert_text(ctx.closed_project.name)
+    |> UI.assert_text("Review project retrospective")
+  end
+
+  step :when_a_project_retrospective_is_acknowledged, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["assignment", Paths.project_retrospective_id(ctx.project_retrospective)]))
+    |> UI.click(testid: "acknowledge-retrospective")
+    |> UI.assert_text("Acknowledged by")
+  end
+
+  step :assert_the_acknowledged_project_retrospective_is_no_longer_displayed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text("Review project retrospective")
+    |> UI.refute_text(ctx.closed_project.name)
+  end
+
+  #
+  # Goal Retrospective Review
+  #
+
+  step :given_there_is_a_goal_retrospective_pending_acknowledgement, ctx do
+    ctx
+    |> Factory.add_goal(:closed_goal, :product_space,
+      champion: :my_report,
+      reviewer: :me,
+      name: "Retire legacy onboarding"
+    )
+    |> Factory.close_goal(:closed_goal, author: :my_report)
+    |> then(fn ctx ->
+      activity = latest_goal_closing(ctx.closed_goal)
+      Map.put(ctx, :closing_activity, activity)
+    end)
+  end
+
+  step :assert_goal_retrospective_review_is_listed, ctx do
+    ctx
+    |> UI.assert_text(ctx.closed_goal.name)
+    |> UI.assert_text("Review goal retrospective")
+  end
+
+  step :when_a_goal_retrospective_is_acknowledged, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["assignment", Paths.activity_id(ctx.closing_activity)]))
+    |> UI.click(testid: "acknowledge-retrospective")
+    |> UI.assert_text("Acknowledged by")
+  end
+
+  step :assert_the_acknowledged_goal_retrospective_is_no_longer_displayed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text("Review goal retrospective")
+    |> UI.refute_text(ctx.closed_goal.name)
+  end
+
   step :assert_goal_update_reviews_are_listed, ctx do
     Enum.reduce(ctx.goal_updates_pending_acknowledgement, ctx, fn update_key, acc ->
       update = Map.fetch!(acc, update_key)
@@ -486,11 +559,13 @@ defmodule Operately.Support.Features.ReviewSteps do
   #
 
   step :when_a_project_is_closed, ctx do
-    ctx |> Factory.close_project(:project)
+    # Close as the current user so they don't get a retrospective acknowledgement assignment
+    ctx |> Factory.close_project(:project, author: :me)
   end
 
   step :when_a_goal_is_closed, ctx do
-    ctx |> Factory.close_goal(:goal)
+    # Close as the current user so they don't get a retrospective acknowledgement assignment
+    ctx |> Factory.close_goal(:goal, author: :me)
   end
 
   step :when_a_project_is_deleted, ctx do
@@ -551,5 +626,18 @@ defmodule Operately.Support.Features.ReviewSteps do
     Date.utc_today()
     |> Date.add(-3)
     |> Operately.Time.as_datetime()
+  end
+
+  defp latest_goal_closing(goal) do
+    import Ecto.Query, only: [from: 2]
+
+    from(a in Operately.Activities.Activity,
+      where: a.action == "goal_closing",
+      where: a.content["goal_id"] == ^goal.id,
+      order_by: [desc: a.inserted_at],
+      limit: 1,
+      preload: [:comment_thread]
+    )
+    |> Operately.Repo.one!()
   end
 end

@@ -245,11 +245,13 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, milestone_name, milestone)
   end
 
-  def close_project(ctx, project_name) do
+  def close_project(ctx, project_name, opts \\ []) do
     project = Map.fetch!(ctx, project_name)
+    author = Map.fetch!(ctx, Keyword.get(opts, :author, :creator))
+    retrospective_key = Keyword.get(opts, :as, :retrospective)
 
-    {:ok, _} =
-      Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
+    {:ok, retrospective} =
+      Operately.Operations.ProjectClosed.run(author, project, %{
         retrospective: RichText.rich_text("some content"),
         content: RichText.rich_text("some content"),
         success_status: "achieved",
@@ -259,7 +261,10 @@ defmodule Operately.Support.Factory.Projects do
       })
 
     project = Repo.reload(project)
-    Map.put(ctx, project_name, project)
+
+    ctx
+    |> Map.put(project_name, project)
+    |> Map.put(retrospective_key, retrospective)
   end
 
   def pause_project(ctx, project_name) do
