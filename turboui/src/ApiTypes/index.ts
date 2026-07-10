@@ -268,6 +268,11 @@ export interface ActivityContentGoalReparent {
   newParentGoal?: Goal | null;
 }
 
+export interface ActivityContentGoalRetrospectiveAcknowledged {
+  goal?: Goal | null;
+  retrospectiveId?: string | null;
+}
+
 export interface ActivityContentGoalReviewerUpdating {
   company: Company;
   space: Space;
@@ -550,6 +555,13 @@ export interface ActivityContentProjectResuming {
   companyId?: string | null;
   projectId?: string | null;
   project?: Project | null;
+}
+
+export interface ActivityContentProjectRetrospectiveAcknowledged {
+  projectId?: string | null;
+  retrospectiveId?: string | null;
+  project?: Project | null;
+  retrospective?: ProjectRetrospective | null;
 }
 
 export interface ActivityContentProjectRetrospectiveCommented {
@@ -940,6 +952,7 @@ export interface ActivityMilestone {
 export interface ActivityPermissions {
   canCommentOnThread?: boolean | null;
   canView?: boolean | null;
+  canAcknowledge?: boolean | null;
 }
 
 export interface AddMemberInput {
@@ -1173,6 +1186,8 @@ export interface CommentThread {
   projectPermissions?: ProjectPermissions;
   space?: Space;
   canComment?: boolean;
+  acknowledgedAt?: string | null;
+  acknowledgedBy?: Person | null;
 }
 
 export interface Company {
@@ -1415,6 +1430,8 @@ export interface GoalRetrospective {
   commentCount: number;
   author: Person;
   content: string;
+  acknowledgedAt?: string | null;
+  acknowledgedBy?: Person | null;
 }
 
 export interface GoalTargetUpdates {
@@ -1664,6 +1681,8 @@ export interface ProjectRetrospective {
   id: string;
   author: Person;
   project: Project;
+  champion: Person | null;
+  reviewer: Person | null;
   content: string;
   closedAt: string;
   permissions: ProjectPermissions;
@@ -1671,6 +1690,8 @@ export interface ProjectRetrospective {
   subscriptionList: SubscriptionList;
   potentialSubscribers: Subscriber[];
   notifications: Notification[];
+  acknowledgedAt?: string | null;
+  acknowledgedBy?: Person | null;
 }
 
 export interface ProjectReviewRequest {
@@ -2165,6 +2186,7 @@ export type ActivityContent =
   | ActivityContentGoalCheckInAcknowledgement
   | ActivityContentGoalCheckInEdit
   | ActivityContentGoalClosing
+  | ActivityContentGoalRetrospectiveAcknowledged
   | ActivityContentGoalCreated
   | ActivityContentGoalDiscussionCreation
   | ActivityContentGoalDiscussionEditing
@@ -2179,6 +2201,7 @@ export type ActivityContent =
   | ActivityContentProjectCheckInEdit
   | ActivityContentProjectCheckInSubmitted
   | ActivityContentProjectClosed
+  | ActivityContentProjectRetrospectiveAcknowledged
   | ActivityContentProjectContributorAddition
   | ActivityContentProjectContributorsAddition
   | ActivityContentProjectContributorEdited
@@ -2384,7 +2407,14 @@ export type ReviewAssignmentOriginTypes = "project" | "goal" | "space";
 
 export type ReviewAssignmentRoles = "owner" | "reviewer";
 
-export type ReviewAssignmentTypes = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone";
+export type ReviewAssignmentTypes =
+  | "check_in"
+  | "goal_update"
+  | "space_task"
+  | "project_task"
+  | "milestone"
+  | "project_retrospective"
+  | "goal_retrospective";
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
 

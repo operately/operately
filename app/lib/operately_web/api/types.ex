@@ -733,6 +733,8 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string
     field :author, :person
     field :project, :project
+    field :champion, :person, null: true
+    field :reviewer, :person, null: true
     field :content, :string
     field :closed_at, :date
     field :permissions, :project_permissions

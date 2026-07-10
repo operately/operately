@@ -11,5 +11,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Retrospective") %>
+  <%= cta_button(@link, @cta_text) %>
 <% end %>

@@ -7,7 +7,7 @@ import * as Reactions from "@/models/reactions";
 
 import { usePaths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CommentSection, useComments } from "@/features/CommentSection";
+import { CommentSection, useForGoalRetrospective } from "@/features/CommentSection";
 
 import { Avatar, CurrentSubscriptions, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -18,6 +18,7 @@ import { PageModule } from "@/routes/types";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
 import { loader, useLoaderData } from "./loader";
+import { AckCTA, AcknowledgementStatus } from "./AckCTA";
 
 export default { name: "GoalActivityPage", loader, Page } as PageModule;
 
@@ -40,6 +41,7 @@ function Page() {
             <ActivityHandler.PageContent activity={activity} />
           </div>
 
+          <AckCTA />
           <ActivityReactions />
           <Comments goal={goal} />
 
@@ -84,6 +86,12 @@ function Title({ activity }: { activity: Activities.Activity }) {
         <div className="inline-flex items-center gap-1">
           <span>{activity.author!.fullName!}</span>
           on <FormattedTime {...formattedTimePreferences} time={activity.insertedAt!} format="long-date" />
+          {activity.action === "goal_closing" && (
+            <>
+              <span>&middot;</span>
+              <AcknowledgementStatus />
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -112,7 +120,8 @@ function Comments({ goal }: { goal: Goals.Goal }) {
   assertPresent(activity.commentThread, "commentThread must be present in activity");
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
 
-  const commentsForm = useComments({ thread: activity.commentThread, goal: goal, parentType: "goal_discussion" });
+  const isRetrospective = activity.action === "goal_closing";
+  const commentsForm = useForGoalRetrospective(activity, goal);
 
   return (
     <>
@@ -121,6 +130,7 @@ function Comments({ goal }: { goal: Goals.Goal }) {
         form={commentsForm}
         commentParentType="goal_discussion"
         canComment={activity.permissions.canCommentOnThread}
+        ackLabel={isRetrospective ? "Retrospective" : undefined}
       />
     </>
   );

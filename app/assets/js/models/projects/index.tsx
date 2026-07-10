@@ -19,6 +19,7 @@ export const getProjects = Api.projects.list;
 export const getProjectRetrospective = Api.projects.getRetrospective;
 export const useCreateProject = Api.projects.useCreate;
 export const useEditProjectRetrospective = Api.projects.useUpdateRetrospective;
+export const useAcknowledgeProjectRetrospective = Api.projects.useAcknowledgeRetrospective;
 export const useRemoveProjectContributor = Api.projects.useDeleteContributor;
 export const useCloseProject = Api.projects.useClose;
 export const usePauseProject = Api.projects.usePause;
