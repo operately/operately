@@ -12,6 +12,7 @@ import {
   PasswordInput,
   RichTextArea,
   SelectBox,
+  SelectPerson,
   SelectStatus,
   Submit,
   SubmitButton,
@@ -70,6 +71,50 @@ jest.mock("react-select", () => {
     );
   };
 });
+
+jest.mock("react-select/async", () => {
+  return function MockAsyncSelect({
+    loadOptions,
+    onChange,
+    defaultValue,
+    inputId,
+  }: {
+    loadOptions: (input: string, callback: (options: { label: React.ReactNode; value: string | null }[]) => void) => void;
+    onChange: (option: { label: React.ReactNode; value: string | null } | null) => void;
+    defaultValue?: { label: React.ReactNode; value: string | null };
+    inputId?: string;
+  }) {
+    const [options, setOptions] = React.useState<{ label: React.ReactNode; value: string | null }[]>(
+      defaultValue ? [defaultValue] : [],
+    );
+
+    React.useEffect(() => {
+      loadOptions("", (loaded) => setOptions(loaded));
+    }, [loadOptions]);
+
+    return (
+      <select
+        aria-label="select-person"
+        id={inputId}
+        value={defaultValue?.value ?? ""}
+        onChange={(event) => {
+          const option = options.find((item) => String(item.value) === event.target.value) ?? null;
+          onChange(option);
+        }}
+      >
+        {options.map((option) => (
+          <option key={String(option.value)} value={option.value ?? ""}>
+            {typeof option.label === "string" ? option.label : option.value}
+          </option>
+        ))}
+      </select>
+    );
+  };
+});
+
+jest.mock("../Avatar", () => ({
+  Avatar: () => <span data-testid="avatar" />,
+}));
 
 describe("Forms", () => {
   test("updates nested field paths and submits the latest values", async () => {
@@ -305,6 +350,72 @@ describe("Forms", () => {
         status: "on_track",
       }),
     );
+  });
+
+  test("updates select person values via searchFn", async () => {
+    const onSubmit = jest.fn();
+    const people = [
+      { id: "person-1", fullName: "Alice", avatarUrl: null, title: "Engineer" },
+      { id: "person-2", fullName: "Bob", avatarUrl: null, title: "Designer" },
+    ];
+    const searchFn = jest.fn(async () => people);
+
+    function Harness() {
+      const form = useForm({
+        fields: { person: "" },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectPerson field="person" label="Person" searchFn={searchFn} />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    await waitFor(() => expect(searchFn).toHaveBeenCalled());
+
+    fireEvent.change(screen.getByLabelText("select-person"), { target: { value: "person-2" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        person: "person-2",
+      }),
+    );
+  });
+
+  test("shows required validation errors for select person", async () => {
+    const onSubmit = jest.fn();
+    const searchFn = jest.fn(async () => []);
+
+    function Harness() {
+      const form = useForm({
+        fields: { person: "" },
+        submit: async () => {
+          onSubmit();
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectPerson field="person" label="Person" searchFn={searchFn} />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(screen.getByText("Can't be empty")).toBeInTheDocument());
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 
   test("updates select box values with numeric options", async () => {

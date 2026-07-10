@@ -10,12 +10,12 @@ import { compareIds } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
-import Forms from "@/components/Forms";
+import { SelectGoal } from "@/features/forms/SelectGoal";
 import { PermissionLevels } from "@/features/Permissions";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { AccessLevel } from "@/features/projects/AccessLevel";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
-import { SecondaryButton } from "turboui";
+import { Forms, SecondaryButton } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
@@ -53,6 +53,7 @@ function Form() {
   const navigate = useNavigate();
   const [add] = Projects.useCreateProject();
   const { space, spaces, spaceOptions, goal, goals } = useLoadedData();
+  const search = People.usePeopleSearch(People.CompanyWideSearchScope);
 
   const form = Forms.useForm({
     fields: {
@@ -103,11 +104,11 @@ function Form() {
         <Forms.FieldGroup>
           <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" autoFocus required />
           <Forms.SelectBox label="Space" field="space" options={spaceOptions} required />
-          <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
+          <SelectGoal label="Goal" field="goal" goals={goals} required={false} />
 
           <Forms.FieldGroup layout="grid">
-            <SelectChampion me={me} />
-            <SelectReviewer me={me} />
+            <SelectChampion me={me} search={search} />
+            <SelectReviewer me={me} search={search} />
           </Forms.FieldGroup>
         </Forms.FieldGroup>
 
@@ -119,15 +120,28 @@ function Form() {
   );
 }
 
-function SelectChampion({ me }: { me: People.Person }) {
-  return <Forms.SelectPerson label="Champion" field="champion" default={me} />;
+function SelectChampion({
+  me,
+  search,
+}: {
+  me: People.Person;
+  search: (query: string) => Promise<People.Person[]>;
+}) {
+  return <Forms.SelectPerson label="Champion" field="champion" searchFn={search} default={me} />;
 }
 
-function SelectReviewer({ me }: { me: People.Person }) {
+function SelectReviewer({
+  me,
+  search,
+}: {
+  me: People.Person;
+  search: (query: string) => Promise<People.Person[]>;
+}) {
   return (
     <Forms.SelectPerson
       label="Reviewer"
       field="reviewer"
+      searchFn={search}
       allowEmpty={true}
       emptyLabel="No reviewer"
       default={me?.manager}
@@ -152,9 +166,9 @@ function PrivacyLevel() {
 }
 
 function PrivacyLevelTitle({ field }: { field: string }) {
-  const [anonymous] = Forms.useFieldValue<number>(`${field}.anonymous`);
-  const [company] = Forms.useFieldValue<number>(`${field}.companyMembers`);
-  const [space] = Forms.useFieldValue<number>(`${field}.spaceMembers`);
+  const [anonymous = PermissionLevels.NO_ACCESS] = Forms.useFieldValue<number>(`${field}.anonymous`);
+  const [company = PermissionLevels.NO_ACCESS] = Forms.useFieldValue<number>(`${field}.companyMembers`);
+  const [space = PermissionLevels.NO_ACCESS] = Forms.useFieldValue<number>(`${field}.spaceMembers`);
 
   return <AccessLevel anonymous={anonymous} company={company} space={space} tense="future" hideIcon={true} />;
 }
