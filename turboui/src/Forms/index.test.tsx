@@ -12,6 +12,7 @@ import {
   PasswordInput,
   RichTextArea,
   SelectBox,
+  SelectStatus,
   Submit,
   SubmitButton,
   TextInput,
@@ -22,11 +23,7 @@ import {
 
 jest.mock("../RichEditor", () => ({
   Editor: (props: { hideBorder?: boolean; className?: string }) => (
-    <div
-      data-testid="rich-editor"
-      data-hide-border={props.hideBorder ? "true" : "false"}
-      className={props.className}
-    />
+    <div data-testid="rich-editor" data-hide-border={props.hideBorder ? "true" : "false"} className={props.className} />
   ),
   useEditor: (props: { content?: unknown }) => ({
     editor: {
@@ -42,6 +39,7 @@ jest.mock("../icons", () => ({
   IconCheck: () => <svg data-testid="icon-check" />,
   IconBuilding: () => <svg data-testid="icon-building" />,
   IconTent: () => <svg data-testid="icon-tent" />,
+  IconChevronDown: () => <svg data-testid="icon-chevron-down" />,
 }));
 
 jest.mock("react-select", () => {
@@ -132,6 +130,32 @@ describe("Forms", () => {
 
     expect(await screen.findByText("Can't be empty")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  test("preventSubmitOnEnter only prevents default and does not submit", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Launch" },
+        submit: async () => {
+          onSubmit();
+        },
+      });
+
+      return (
+        <Form form={form} preventSubmitOnEnter>
+          <TextInput field="name" label="Name" />
+          <button type="submit">Enter submit</button>
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.submit(screen.getByRole("button", { name: "Enter submit" }).closest("form")!);
+
+    await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
   });
 
   test("assigns a default sanitized test id from the field name", () => {
@@ -247,6 +271,38 @@ describe("Forms", () => {
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         status: "false",
+      }),
+    );
+  });
+
+  test("updates select status values", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { status: null as "on_track" | "caution" | "off_track" | null },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectStatus field="status" options={["on_track", "caution", "off_track"]} />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(document.querySelector('[data-test-id="status-dropdown"]')!);
+    fireEvent.click(document.querySelector('[data-test-id="status-dropdown-on_track"]')!);
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        status: "on_track",
       }),
     );
   });

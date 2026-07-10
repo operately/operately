@@ -6,8 +6,6 @@ import * as React from "react";
 import { SubscriptionsState } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 
-import Forms, { FormState } from "@/components/Forms";
-import { useFieldValue } from "@/components/Forms/FormContext";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
@@ -16,6 +14,7 @@ import {
   Checklist,
   DateField,
   FormattedTime,
+  Forms,
   GhostButton,
   IconInfoCircle,
   InfoCallout,
@@ -25,6 +24,7 @@ import {
   StatusBadge,
   Tooltip,
   SubscribersSelector,
+  type FormState,
 } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -277,7 +277,7 @@ function DescriptionView() {
 }
 
 function DescriptionEdit({ goal, lastCheckIns, mentionedPersonLookup }: { goal: Goals.Goal } & CheckInReferenceProps) {
-  const mentionSearchScope = { type: "goal", id: goal.id! } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id! } });
   const [showPrevious, setShowPrevious] = React.useState(false);
 
   return (
@@ -302,7 +302,7 @@ function DescriptionEdit({ goal, lastCheckIns, mentionedPersonLookup }: { goal: 
         <Forms.RichTextArea
           field="description"
           placeholder="Write here..."
-          mentionSearchScope={mentionSearchScope}
+          richTextHandlers={richTextHandlers}
           required
         />
       </Forms.FieldGroup>
@@ -365,7 +365,12 @@ function DueDateSelector() {
   return (
     <div>
       <Label text="Due Date" info="Set a new due date for the goal." />
-      <DateField date={value} onDateSelect={setValue} variant="form-field" placeholder="No due date set" />
+      <DateField
+        date={value ?? null}
+        onDateSelect={(date) => setValue(date)}
+        variant="form-field"
+        placeholder="No due date set"
+      />
     </div>
   );
 }
@@ -405,7 +410,8 @@ function targetSectionLabel(targetCount: number, mode: Props["mode"], allowFullE
 }
 
 function useTargetCount(): number {
-  return useFieldValue<any[]>("targets")[0].length;
+  const [targets] = Forms.useFieldValue<any[]>("targets");
+  return targets?.length ?? 0;
 }
 
 function Subscribers(props: Props) {
@@ -422,7 +428,7 @@ function Subscribers(props: Props) {
 function Checks(props: Props) {
   const [items, setItems] = Forms.useFieldValue<Goals.Check[]>("checklist");
 
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return null;
   }
 

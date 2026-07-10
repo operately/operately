@@ -5,10 +5,21 @@ import { parseCheckInsForTurboUi, usePostProjectCheckIn, ProjectCheckInStatus } 
 import { Project } from "@/models/projects";
 import { useNavigate } from "react-router-dom";
 
-import Forms, { FormState } from "@/components/Forms";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
-import { ActionLink, FormattedTime, GhostButton, Link, PrimaryButton, RichContent, Spacer, StatusBadge, SubscribersSelector } from "turboui";
+import {
+  ActionLink,
+  FormattedTime,
+  Forms,
+  GhostButton,
+  Link,
+  PrimaryButton,
+  RichContent,
+  Spacer,
+  StatusBadge,
+  SubscribersSelector,
+  type FormState,
+} from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { assertPresent } from "@/utils/assertions";
 
@@ -151,7 +162,7 @@ function DescriptionSection({
   lastCheckIns: ReturnType<typeof parseCheckInsForTurboUi>;
   mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
 }) {
-  const mentionSearchScope = { type: "project", id: project.id! } as const;
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id! } });
   const [showPrevious, setShowPrevious] = React.useState(false);
 
   return (
@@ -166,7 +177,7 @@ function DescriptionSection({
 
       <Forms.RichTextArea
         field="description"
-        mentionSearchScope={mentionSearchScope}
+        richTextHandlers={richTextHandlers}
         placeholder="Write your check-in here..."
       />
     </div>
