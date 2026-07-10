@@ -3,7 +3,7 @@ import React from "react";
 
 import { setDevData } from "@/features/DevBar/useDevBarData";
 import nprogress from "nprogress";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 import { Loader, PageModule } from "./types";
 
 interface Options {

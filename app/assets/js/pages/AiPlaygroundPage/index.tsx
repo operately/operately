@@ -5,7 +5,7 @@ import * as React from "react";
 import * as Turboui from "turboui";
 
 import { PageModule } from "@/routes/types";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 
 import { Paths } from "@/routes/paths";
 export default { name: "AiPlaygroundPage", loader, Page } as PageModule;

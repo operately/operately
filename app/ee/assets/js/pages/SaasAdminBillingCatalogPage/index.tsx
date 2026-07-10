@@ -2,7 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 
 import classNames from "classnames";
 import {

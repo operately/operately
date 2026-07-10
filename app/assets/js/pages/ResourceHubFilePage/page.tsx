@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useBoolState } from "@/hooks/useBoolState";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { files } from "@/models/resourceHubs";
 import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";

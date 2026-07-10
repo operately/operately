@@ -24,7 +24,7 @@ import {
 } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import classNames from "classnames";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;

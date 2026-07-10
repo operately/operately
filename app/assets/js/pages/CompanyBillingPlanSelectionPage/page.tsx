@@ -12,7 +12,7 @@ import {
 import { CompanyBillingPlanSelectionPage as TurboCompanyBillingPlanSelectionPage } from "turboui/CompanyBillingPlanSelectionPage";
 import { showErrorToast } from "turboui";
 import { useLoadedData } from "../CompanyBillingPage/loader";
-import { useLocation, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useLocation, useNavigate, useRouteLoaderData } from "react-router";
 import { usePaths } from "@/routes/paths";
 
 interface CompanyRootData {

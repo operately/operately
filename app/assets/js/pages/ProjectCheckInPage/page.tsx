@@ -4,7 +4,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
 import * as React from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useDeleteProjectCheckIn } from "@/models/projectCheckIns";
 

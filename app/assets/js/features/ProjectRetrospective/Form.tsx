@@ -5,7 +5,7 @@ import * as Projects from "@/models/projects";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { usePaths } from "@/routes/paths";
 
 type Mode = "create" | "edit";

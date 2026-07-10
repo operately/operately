@@ -6,7 +6,7 @@ import * as Paper from "@/components/PaperContainer";
 import { Forms } from "turboui";
 import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { validateEmail } from "@/features/auth/validateEmail";
 import { validatePassword } from "@/features/auth/validatePassword";

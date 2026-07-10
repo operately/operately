@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import axios from "axios";
 
 import { Paths } from "@/routes/paths";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 
 interface LoaderResult {
   billing: Billing.BillingOverview;
