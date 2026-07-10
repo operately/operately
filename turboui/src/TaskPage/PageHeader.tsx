@@ -41,6 +41,7 @@ export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
                 size={isLargeScreen ? "md" : "sm"}
                 readonly={!props.canEdit}
                 showFullBadge={true}
+                testId="task-status"
               />
             </div>
           )}
