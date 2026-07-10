@@ -1,6 +1,15 @@
 import { expect, within, userEvent, waitFor } from "storybook/test";
 
-export const ensureItemExpanded = async (canvasElement, step, parentName, childNames) => {
+type StoryCanvas = HTMLElement;
+type StoryStep = (label: string, play: () => Promise<void> | void) => Promise<void> | void;
+type WorkMapTab = "all" | "goals" | "projects" | "completed" | "paused";
+
+export const ensureItemExpanded = async (
+  canvasElement: StoryCanvas,
+  step: StoryStep,
+  parentName: string,
+  childNames: string[],
+) => {
   const canvas = within(canvasElement);
   const childVisible = childNames.some((name) => canvas.queryByText(name));
 
@@ -9,7 +18,7 @@ export const ensureItemExpanded = async (canvasElement, step, parentName, childN
   }
 };
 
-export const resetWorkMapExpandedState = async (_canvasElement, step) => {
+export const resetWorkMapExpandedState = async (_canvasElement: StoryCanvas, step: StoryStep) => {
   await step("Reset work map expanded state", async () => {
     for (const key of Object.keys(localStorage)) {
       if (key.startsWith("workmap:")) {
@@ -19,7 +28,7 @@ export const resetWorkMapExpandedState = async (_canvasElement, step) => {
   });
 };
 
-export const selectTab = async (canvasElement, step, tab) => {
+export const selectTab = async (canvasElement: StoryCanvas, step: StoryStep, tab: WorkMapTab) => {
   await step("Select the " + tab + " tab", async () => {
     let tabLabel: string;
 
@@ -54,7 +63,7 @@ export const selectTab = async (canvasElement, step, tab) => {
   });
 };
 
-export const assertRowsNumber = async (canvasElement, step, count) => {
+export const assertRowsNumber = async (canvasElement: StoryCanvas, step: StoryStep, count: number) => {
   const canvas = within(canvasElement);
 
   await step(`Verify there are ${count} rows`, async () => {
@@ -68,7 +77,7 @@ export const assertRowsNumber = async (canvasElement, step, count) => {
   });
 };
 
-export const assertItemName = async (canvasElement, step, name) => {
+export const assertItemName = async (canvasElement: StoryCanvas, step: StoryStep, name: string) => {
   const canvas = within(canvasElement);
 
   await step("Verify the item name", async () => {
@@ -77,7 +86,7 @@ export const assertItemName = async (canvasElement, step, name) => {
   });
 };
 
-export const refuteItemName = async (canvasElement, step, name) => {
+export const refuteItemName = async (canvasElement: StoryCanvas, step: StoryStep, name: string) => {
   const canvas = within(canvasElement);
 
   await step("Verify the item name is not present", async () => {
@@ -86,7 +95,7 @@ export const refuteItemName = async (canvasElement, step, name) => {
   });
 };
 
-export const toggleItem = async (canvasElement, step, name) => {
+export const toggleItem = async (canvasElement: StoryCanvas, step: StoryStep, name: string) => {
   const canvas = within(canvasElement);
 
   await step(`Toggle "${name}"`, async () => {
@@ -99,7 +108,13 @@ export const toggleItem = async (canvasElement, step, name) => {
   });
 };
 
-export const assertIndentation = async (canvasElement, step, name, level, indentation) => {
+export const assertIndentation = async (
+  canvasElement: StoryCanvas,
+  step: StoryStep,
+  name: string,
+  level: number,
+  indentation: string,
+) => {
   const canvas = within(canvasElement);
 
   await step(`Verify indentation of level ${level} items is ${indentation}`, async () => {
@@ -111,7 +126,7 @@ export const assertIndentation = async (canvasElement, step, name, level, indent
   });
 };
 
-export const assertItemVisible = async (canvasElement, step, name) => {
+export const assertItemVisible = async (canvasElement: StoryCanvas, step: StoryStep, name: string) => {
   const canvas = within(canvasElement);
 
   await step(`Assert that "${name}" is visible`, async () => {
@@ -120,7 +135,7 @@ export const assertItemVisible = async (canvasElement, step, name) => {
   });
 };
 
-export const assertChildrenVisible = async (canvasElement, step, names) => {
+export const assertChildrenVisible = async (canvasElement: StoryCanvas, step: StoryStep, names: string[]) => {
   const canvas = within(canvasElement);
 
   await step(`Assert that children are visible`, async () => {
@@ -131,7 +146,7 @@ export const assertChildrenVisible = async (canvasElement, step, names) => {
   });
 };
 
-export const assertChildrenHidden = async (canvasElement, step, names) => {
+export const assertChildrenHidden = async (canvasElement: StoryCanvas, step: StoryStep, names: string[]) => {
   const canvas = within(canvasElement);
 
   await step(`Assert that children are hidden`, async () => {
@@ -142,7 +157,7 @@ export const assertChildrenHidden = async (canvasElement, step, names) => {
   });
 };
 
-export const assertZeroState = async (canvasElement, step) => {
+export const assertZeroState = async (canvasElement: StoryCanvas, step: StoryStep) => {
   await step("Assert that the zero state guidance is visible", async () => {
     const canvas = within(canvasElement);
     const headline = canvas.getByText("Start by adding a goal or project");
@@ -150,7 +165,7 @@ export const assertZeroState = async (canvasElement, step) => {
   });
 };
 
-export const assertItemHasLineThrough = async (canvasElement, step, name) => {
+export const assertItemHasLineThrough = async (canvasElement: StoryCanvas, step: StoryStep, name: string) => {
   const canvas = within(canvasElement);
 
   await step(`Assert that "${name}" has line-through style`, async () => {
@@ -159,7 +174,7 @@ export const assertItemHasLineThrough = async (canvasElement, step, name) => {
   });
 };
 
-export const refuteItemHasLineThrough = async (canvasElement, step, name) => {
+export const refuteItemHasLineThrough = async (canvasElement: StoryCanvas, step: StoryStep, name: string) => {
   const canvas = within(canvasElement);
 
   await step(`Assert that "${name}" does not have line-through style`, async () => {
@@ -170,7 +185,12 @@ export const refuteItemHasLineThrough = async (canvasElement, step, name) => {
 
 type LabelColor = "green" | "amber" | "red" | "gray";
 
-export const assertStatusBadge = async (canvasElement, step, label, color: LabelColor) => {
+export const assertStatusBadge = async (
+  canvasElement: StoryCanvas,
+  step: StoryStep,
+  label: string,
+  color: LabelColor,
+) => {
   const canvas = within(canvasElement);
 
   await step("Verify status badge has correct styles", async () => {
@@ -201,7 +221,12 @@ export const assertStatusBadge = async (canvasElement, step, label, color: Label
   });
 };
 
-export const assertProgressBar = async (canvasElement, step, progress, color: LabelColor) => {
+export const assertProgressBar = async (
+  canvasElement: StoryCanvas,
+  step: StoryStep,
+  progress: number,
+  color: LabelColor,
+) => {
   const canvas = within(canvasElement);
 
   await step("Verify progress bar shows correct progress", async () => {
@@ -233,7 +258,12 @@ export const assertProgressBar = async (canvasElement, step, progress, color: La
   });
 };
 
-export const assertPrivacyIndicator = async (canvasElement, step, name, message) => {
+export const assertPrivacyIndicator = async (
+  canvasElement: StoryCanvas,
+  step: StoryStep,
+  name: string,
+  message: string,
+) => {
   const canvas = within(canvasElement);
 
   await step("Assert privacy indicator", async () => {
@@ -254,7 +284,7 @@ export const assertPrivacyIndicator = async (canvasElement, step, name, message)
   });
 };
 
-export const refutePrivacyIndicator = async (canvasElement, step, name) => {
+export const refutePrivacyIndicator = async (canvasElement: StoryCanvas, step: StoryStep, name: string) => {
   const canvas = within(canvasElement);
 
   await step("Refute privacy indicator", async () => {

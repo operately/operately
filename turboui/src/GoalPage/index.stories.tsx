@@ -23,15 +23,19 @@ import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
 import { generateGoalPermissions } from "../utils/storybook/permissions";
+import type { Checklist } from "../Checklist";
 
-const meta: Meta<typeof GoalPage> = {
+type GoalPageStoryArgs = Partial<Omit<GoalPage.Props, "description">> & {
+  description?: string | null;
+};
+
+const meta = {
   title: "Pages/GoalPage",
-  component: GoalPage,
   parameters: {
     layout: "fullscreen",
   },
-  render: (args) => <Component {...args} />,
-} satisfies Meta<typeof GoalPage>;
+  render: (args: GoalPageStoryArgs) => <Component {...args} />,
+} satisfies Meta<GoalPageStoryArgs>;
 
 const addTarget = (): Promise<{ id: string; success: boolean }> =>
   new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
@@ -51,21 +55,19 @@ const defaultSpace: GoalPage.Space = {
   link: "/spaces/1",
 };
 
-function Component(props: Partial<GoalPage.Props>) {
+function Component(props: GoalPageStoryArgs) {
   const mockPeople = genPeople(10);
   const championSearch = usePersonFieldSearch(mockPeople);
   const reviewerSearch = usePersonFieldSearch(mockPeople);
 
   const [goalName, setGoalName] = React.useState<string>(props.goalName || "Launch AI Platform");
-  const [space, setSpace] = React.useState<GoalPage.Space>(
-    "space" in props && props.space ? props.space : defaultSpace,
-  );
-  const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(props.dueDate || null);
-  const [startDate, setStartDate] = React.useState<DateField.ContextualDate | null>(props.startDate || null);
-  const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
-  const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer || null);
-  const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal || defaultParentGoal);
-  const [checklistItems, setChecklistItems] = React.useState(props.checklistItems || []);
+  const [space, setSpace] = React.useState<GoalPage.Space>(defaultSpace);
+  const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(props.dueDate ?? null);
+  const [startDate, setStartDate] = React.useState<DateField.ContextualDate | null>(props.startDate ?? null);
+  const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion ?? null);
+  const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer ?? null);
+  const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal ?? defaultParentGoal);
+  const [checklistItems, setChecklistItems] = React.useState<Checklist.ChecklistItem[]>(props.checklistItems ?? []);
   const [accessLevels, setAccessLevels] = React.useState<PrivacyField.AccessLevels>(
     props.accessLevels || {
       company: "view",
@@ -187,7 +189,9 @@ function Component(props: Partial<GoalPage.Props>) {
 }
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, "args"> & {
+  args?: GoalPageStoryArgs;
+};
 
 // Mock Data
 
@@ -662,7 +666,7 @@ export const Default: Story = {
     discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,
-    canEdit: true,
+    permissions: generateGoalPermissions(true),
   },
 };
 
@@ -677,7 +681,7 @@ export const DefaultReadOnly: Story = {
     discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,
-    canEdit: false,
+    permissions: generateGoalPermissions(false),
   },
 };
 
@@ -692,7 +696,7 @@ export const OnlyTargets: Story = {
     discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,
-    canEdit: true,
+    permissions: generateGoalPermissions(true),
   },
 };
 
@@ -707,18 +711,18 @@ export const OnlyChecklists: Story = {
     discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,
-    canEdit: true,
+    permissions: generateGoalPermissions(true),
   },
 };
 
 export const ZeroStateForChampions: Story = {
   args: {
-    canEdit: true,
+    permissions: generateGoalPermissions(true),
     description: null,
     reviewer: null,
     status: "pending",
     dueDate: null,
-  },
+  } satisfies GoalPageStoryArgs,
 };
 
 export const ZeroStateReadOnly: Story = {
@@ -727,12 +731,12 @@ export const ZeroStateReadOnly: Story = {
     discussions: [],
     contributors: [],
     relatedWorkItems: [],
-    canEdit: false,
+    permissions: generateGoalPermissions(false),
     description: null,
     reviewer: null,
     status: "pending",
     dueDate: null,
-  },
+  } satisfies GoalPageStoryArgs,
 };
 
 export const Mobile: Story = {
@@ -801,7 +805,7 @@ export const NeglectedGoal: Story = {
 export const NeglectedGoalReadOnly: Story = {
   args: {
     neglectedGoal: true,
-    canEdit: false,
+    permissions: generateGoalPermissions(false),
   },
 };
 
@@ -826,7 +830,7 @@ export const DeleteGoalWithSubitem: Story = {
 
 export const MoveGoal: Story = {
   args: {
-    moveModalOpen: true,
+    moveModealOpen: true,
   },
 };
 
