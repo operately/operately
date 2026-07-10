@@ -43,10 +43,10 @@ export function ReassignAsContributor() {
   );
 }
 
-interface FormContributor {
+type FormContributor = {
   responsibility: string;
   permissions: Permissions.AccessOptions;
-}
+};
 
 function useForm(contributor: ProjectContributors.ProjectContributor) {
   const [update] = ProjectContributors.useUpdateContributor();

@@ -166,9 +166,9 @@ function PrivacyLevel() {
 }
 
 function PrivacyLevelTitle({ field }: { field: string }) {
-  const [anonymous] = Forms.useFieldValue<number>(`${field}.anonymous`);
-  const [company] = Forms.useFieldValue<number>(`${field}.companyMembers`);
-  const [space] = Forms.useFieldValue<number>(`${field}.spaceMembers`);
+  const [anonymous = PermissionLevels.NO_ACCESS] = Forms.useFieldValue<number>(`${field}.anonymous`);
+  const [company = PermissionLevels.NO_ACCESS] = Forms.useFieldValue<number>(`${field}.companyMembers`);
+  const [space = PermissionLevels.NO_ACCESS] = Forms.useFieldValue<number>(`${field}.spaceMembers`);
 
   return <AccessLevel anonymous={anonymous} company={company} space={space} tense="future" hideIcon={true} />;
 }

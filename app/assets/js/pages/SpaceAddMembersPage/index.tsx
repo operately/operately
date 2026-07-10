@@ -84,8 +84,8 @@ function Page() {
 function Members() {
   const search = useSearch();
 
-  const [members] = Forms.useFieldValue<MemberField[]>("members");
-  const [value, setValue] = Forms.useFieldValue<MemberField[]>("members");
+  const [members = []] = Forms.useFieldValue<MemberField[]>("members");
+  const [value = [], setValue] = Forms.useFieldValue<MemberField[]>("members");
 
   const addMore = React.useCallback(() => {
     setValue([...value, newMember()]);
@@ -130,7 +130,7 @@ function AddMoreMembersButton({ onClick }: { onClick: () => void }) {
 }
 
 function RemoveMemberButton({ index }) {
-  const [value, setValue] = Forms.useFieldValue<MemberField[]>("members");
+  const [value = [], setValue] = Forms.useFieldValue<MemberField[]>("members");
 
   const onClick = () => {
     const newValue = value.filter((_, i) => i !== index);

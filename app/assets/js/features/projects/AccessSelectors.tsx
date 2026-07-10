@@ -5,8 +5,8 @@ import { PermissionLevels } from "../Permissions";
 import { Option } from "../Permissions/AccessFields";
 
 export function AccessSelectors() {
-  const [companyMembersOptions] = Forms.useFieldValue<Option[]>("access.companyMembersOptions");
-  const [spaceMembersOptions] = Forms.useFieldValue<Option[]>("access.spaceMembersOptions");
+  const [companyMembersOptions = []] = Forms.useFieldValue<Option[]>("access.companyMembersOptions");
+  const [spaceMembersOptions = []] = Forms.useFieldValue<Option[]>("access.spaceMembersOptions");
 
   return (
     <div className="mt-6">

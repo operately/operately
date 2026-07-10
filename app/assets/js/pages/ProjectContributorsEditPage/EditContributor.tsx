@@ -44,10 +44,10 @@ export function EditContributor() {
   );
 }
 
-interface FormContributor {
+type FormContributor = {
   responsibility: string;
   permissions: Permissions.AccessOptions | null;
-}
+};
 
 function useForm(contributor: ProjectContributors.ProjectContributor) {
   const [update] = ProjectContributors.useUpdateContributor();

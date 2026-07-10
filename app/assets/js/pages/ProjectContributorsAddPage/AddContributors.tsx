@@ -88,10 +88,10 @@ export function AddContributors() {
 }
 
 function Contributors({ project }) {
-  const [contribs] = Forms.useFieldValue<ContributorFields[]>("contributors");
+  const [contribs = []] = Forms.useFieldValue<ContributorFields[]>("contributors");
   const search = Projects.useContributorSearchFn(project);
 
-  const [value, setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
+  const [value = [], setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
 
   const addMore = React.useCallback(() => {
     setValue([...value, newContributor()]);
@@ -164,7 +164,7 @@ function AddMoreContributorsButton({ onClick }: { onClick: () => void }) {
 }
 
 function RemoveContributorButton({ index }) {
-  const [value, setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
+  const [value = [], setValue] = Forms.useFieldValue<ContributorFields[]>("contributors");
 
   const onClick = () => {
     const newValue = value.filter((_, i) => i !== index);
