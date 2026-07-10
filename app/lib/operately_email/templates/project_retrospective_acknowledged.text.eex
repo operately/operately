@@ -1,0 +1,3 @@
+<%= short_name(@author) %> acknowledged your retrospective for <%= @project.name %> project
+
+<%= @cta_text %>: <%= @cta_url %>
