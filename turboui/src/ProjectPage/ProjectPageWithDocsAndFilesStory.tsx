@@ -3,7 +3,6 @@ import { useState } from "react";
 
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
-import { ResourceManager } from "../ResourceManager";
 import {
   createMockDocumentNode,
   createMockDraftNode,
@@ -39,7 +38,6 @@ export interface ProjectPageWithDocsAndFilesStoryData {
   mockContributors: ProjectPage.Person[];
   mockDiscussions: ProjectPage.Discussion[];
   mockPeople: TaskBoardTypes.Person[];
-  mockResources: ResourceManager.Resource[];
   parentGoalSearch: ({ query }: { query: string }) => Promise<ProjectPage.ParentGoal[]>;
   people: ProjectPage.Person[];
 }
@@ -102,7 +100,6 @@ export function ProjectPageWithDocsAndFilesStory({
   const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() =>
     createContextualDate(addDays(new Date(), 21), "day"),
   );
-  const [resources, setResources] = useState<ResourceManager.Resource[]>([...storyData.mockResources]);
   const [space, setSpace] = useState(storyData.defaultSpace);
   const subscriptions = useMockSubscriptions({ entityType: "project" });
   const docsAndFiles = useMockProjectDocsAndFiles(
@@ -209,17 +206,6 @@ export function ProjectPageWithDocsAndFilesStory({
       setStartedAt={setStartedAt}
       dueAt={dueAt}
       setDueAt={setDueAt}
-      resources={resources}
-      onResourceAdd={(resource) => {
-        const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-        setResources([...resources, { id: resourceId, ...resource }]);
-      }}
-      onResourceEdit={(updates) => {
-        setResources(resources.map((resource) => (resource.id === updates.id ? { ...resource, ...updates } : resource)));
-      }}
-      onResourceRemove={(id) => {
-        setResources(resources.filter((resource) => resource.id !== id));
-      }}
       contributors={storyData.mockContributors}
       accessLevels={defaultProjectAccessLevels}
       setAccessLevels={() => undefined}

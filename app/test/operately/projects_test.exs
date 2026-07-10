@@ -282,65 +282,6 @@ defmodule Operately.ProjectsTest do
     end
   end
 
-  describe "project_key_resources" do
-    alias Operately.Projects.KeyResource
-
-    import Operately.ProjectsFixtures
-
-    @invalid_attrs %{link: nil, title: nil}
-
-    setup ctx do
-      key_resource = key_resource_fixture(%{project_id: ctx.project.id})
-
-      {:ok, key_resource: key_resource}
-    end
-
-    test "list_key_resources/0 returns all project_key_resources", ctx do
-      assert Projects.list_key_resources(ctx.project) == [ctx.key_resource]
-    end
-
-    test "get_key_resource!/1 returns the key_resource with given id", ctx do
-      assert Projects.get_key_resource!(ctx.key_resource.id) == ctx.key_resource
-    end
-
-    test "create_key_resource/1 with valid data creates a key_resource", ctx do
-      valid_attrs = %{link: "some link", title: "some title", project_id: ctx.project.id, resource_type: "slack-channel"}
-
-      assert {:ok, %KeyResource{} = key_resource} = Projects.create_key_resource(valid_attrs)
-      assert key_resource.link == "some link"
-      assert key_resource.title == "some title"
-      assert key_resource.project_id == ctx.project.id
-      assert key_resource.resource_type == "slack-channel"
-    end
-
-    test "create_key_resource/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Projects.create_key_resource(@invalid_attrs)
-    end
-
-    test "update_key_resource/2 with valid data updates the key_resource", ctx do
-      update_attrs = %{link: "some updated link", title: "some updated title"}
-
-      assert {:ok, %KeyResource{} = key_resource} = Projects.update_key_resource(ctx.key_resource, update_attrs)
-      assert key_resource.link == "some updated link"
-      assert key_resource.title == "some updated title"
-      assert key_resource.project_id == ctx.project.id
-    end
-
-    test "update_key_resource/2 with invalid data returns error changeset", ctx do
-      assert {:error, %Ecto.Changeset{}} = Projects.update_key_resource(ctx.key_resource, @invalid_attrs)
-      assert ctx.key_resource == Projects.get_key_resource!(ctx.key_resource.id)
-    end
-
-    test "delete_key_resource/1 deletes the key_resource", ctx do
-      assert {:ok, %KeyResource{}} = Projects.delete_key_resource(ctx.key_resource)
-      assert_raise Ecto.NoResultsError, fn -> Projects.get_key_resource!(ctx.key_resource.id) end
-    end
-
-    test "change_key_resource/1 returns a key_resource changeset", ctx do
-      assert %Ecto.Changeset{} = Projects.change_key_resource(ctx.key_resource)
-    end
-  end
-
   describe "Project.set_next_milestone/1 and next_step/1" do
     alias Operately.Projects.{Milestone, Project}
     alias OperatelyWeb.Paths

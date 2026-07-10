@@ -379,18 +379,6 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Binding.view_access(), company_read_only: true))
     end
 
-    test "include_key_resources", ctx do
-      project = create_project(ctx)
-
-      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
-      assert res.project.key_resources == nil
-
-      key_resource = key_resource_fixture(project_id: project.id)
-      key_resource = Operately.Repo.preload(key_resource, :project)
-      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_key_resources: true})
-      assert res.project.key_resources == [Serializer.serialize(key_resource, level: :essential)]
-    end
-
     test "include_access_levels", ctx do
       space = group_fixture(ctx.person)
       project = create_project(ctx, %{

@@ -74,7 +74,6 @@ defmodule OperatelyWeb.Api.Projects.List do
         :include_space -> from p in q, preload: [:group]
         :include_contributors -> from p in q, preload: [contributors: :person]
         :include_last_check_in -> from p in q, preload: [last_check_in: :author]
-        :include_key_resources -> from p in q, preload: [:key_resources]
         :include_champion -> from p in q, preload: [:champion]
         :include_reviewer -> from p in q, preload: [:reviewer]
         :include_milestones -> from p in q, preload: [milestones: :project]

@@ -20,7 +20,6 @@ async function loader({ params }): Promise<LoaderResult> {
     includeReviewer: true,
     includePermissions: true,
     includeContributors: true,
-    includeKeyResources: true,
     includeMilestones: true,
     includeLastCheckIn: true,
     includePrivacy: true,
