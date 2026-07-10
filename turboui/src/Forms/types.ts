@@ -47,6 +47,7 @@ export interface FormProps<T extends FormValues = FormValues> {
   form: FormState<T>;
   testId?: string;
   children: React.ReactNode;
+  preventSubmitOnEnter?: boolean;
 }
 
 export interface FieldGroupProps {
@@ -69,10 +70,7 @@ export interface FieldGroupGridOptions {
   gridTemplateColumns?: string;
 }
 
-export type FieldGroupLayoutOptions =
-  | FieldGroupHorizontalOptions
-  | FieldGroupVerticalOptions
-  | FieldGroupGridOptions;
+export type FieldGroupLayoutOptions = FieldGroupHorizontalOptions | FieldGroupVerticalOptions | FieldGroupGridOptions;
 
 export interface InputFieldProps {
   field: string;
@@ -131,6 +129,15 @@ export interface SelectBoxProps {
   placeholder?: string;
   options: SelectBoxOption[];
   required?: boolean;
+}
+
+export type SelectStatusOption = "on_track" | "caution" | "pending" | "off_track";
+
+export interface SelectStatusProps {
+  field: string;
+  options: SelectStatusOption[];
+  reviewer?: { fullName: string } | null;
+  label?: string;
 }
 
 export interface RichTextAreaProps {
