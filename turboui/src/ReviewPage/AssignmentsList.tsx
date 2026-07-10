@@ -7,11 +7,12 @@ import { createTestId } from "../TestableElement";
 
 import { ReviewPageV2 } from ".";
 
-const TYPE_ICON: Partial<Record<ReviewPageV2.AssignmentType, typeof IconSquare>> = {
+const TYPE_ICON: Record<ReviewPageV2.AssignmentType, typeof IconSquare> = {
   check_in: IconMessage,
   goal_update: IconMessage,
-  milestone: IconFlag,
+  space_task: IconSquare,
   project_task: IconSquare,
+  milestone: IconFlag,
   project_retrospective: IconMessage,
   goal_retrospective: IconMessage,
 };
@@ -125,7 +126,7 @@ function AssignmentItem({
 }
 
 function renderLeadingIndicator(assignment: ReviewPageV2.Assignment) {
-  const Icon = TYPE_ICON[assignment.type] ?? IconSquare;
+  const Icon = TYPE_ICON[assignment.type] ?? IconMessage;
   return <Icon size={16} className="text-content-base" />;
 }
 

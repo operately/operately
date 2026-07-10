@@ -7,10 +7,11 @@ defmodule Operately.Assignments.Assignment do
   """
 
   alias Operately.Drafts
-  alias Operately.Projects.{Project, CheckIn, Milestone}
+  alias Operately.Projects.{Project, CheckIn, Milestone, Retrospective}
   alias Operately.Goals.{Goal, Update}
   alias Operately.Tasks.Task
   alias Operately.Groups.Group
+  alias Operately.Activities.Activity
   alias Operately.ContextualDates.{ContextualDate, Timeframe}
   alias OperatelyWeb.Paths
 
@@ -175,6 +176,42 @@ defmodule Operately.Assignments.Assignment do
       origin: origin,
       author_id: Paths.person_id(update.author),
       author_name: update.author.full_name
+    })
+  end
+
+  # Project retrospective acknowledgement (reviewer role)
+  def build(%Retrospective{} = retrospective, company) do
+    origin = build_project_origin(company, retrospective.project)
+
+    build_with_enrichment(%{
+      resource_id: Paths.project_retrospective_id(retrospective),
+      name: "#{retrospective.project.name} - Retrospective",
+      due: Operately.Time.as_datetime(retrospective.inserted_at),
+      type: :project_retrospective,
+      role: :reviewer,
+      action_label: "Review project retrospective",
+      path: Paths.project_retrospective_path(company, retrospective.project),
+      origin: origin,
+      author_id: Paths.person_id(retrospective.author),
+      author_name: retrospective.author.full_name
+    })
+  end
+
+  # Goal retrospective acknowledgement (reviewer role)
+  def build({:goal_retrospective, %Activity{} = activity, %Goal{} = goal, author}, company) do
+    origin = build_goal_origin(company, goal)
+
+    build_with_enrichment(%{
+      resource_id: Paths.activity_id(activity),
+      name: "#{goal.name} - Retrospective",
+      due: Operately.Time.as_datetime(activity.inserted_at),
+      type: :goal_retrospective,
+      role: :reviewer,
+      action_label: "Review goal retrospective",
+      path: Paths.goal_activity_path(company, activity),
+      origin: origin,
+      author_id: Paths.person_id(author),
+      author_name: author.full_name
     })
   end
 
