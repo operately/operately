@@ -246,14 +246,13 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
   end
 
   step :change_task_status, ctx, opts do
-    prev_status = Keyword.fetch!(opts, :prev_status)
     next_status = Keyword.fetch!(opts, :next_status)
 
     ctx
     |> UI.find(UI.query(testid: "task-header"), fn el ->
-      UI.click_text(el, prev_status)
+      UI.click(el, testid: "task-status")
     end)
-    |> UI.sleep(150)
+    |> UI.wait_until_has(testid: UI.testid(["status-option", next_status]))
     |> UI.click(testid: UI.testid(["status-option", next_status]))
     |> UI.sleep(300)
   end

@@ -12,13 +12,7 @@ interface Props {
 }
 
 export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, maxDateLimit }: Props) {
-  const [calendarDate, setCalendarDate] = React.useState(() => selectedDate?.date ?? new Date());
-
-  React.useEffect(() => {
-    if (selectedDate?.dateType === "day") {
-      setCalendarDate(selectedDate.date);
-    }
-  }, [selectedDate?.date, selectedDate?.dateType]);
+  const [calendarDate, setCalendarDate] = React.useState(new Date());
 
   const today = new Date();
   const currentMonth = calendarDate.getMonth();
