@@ -1,6 +1,6 @@
 import React from "react";
 
-import { InputElement, Label } from "@/components/Forms/Elements";
+import { Forms } from "turboui";
 import { useTargetsContext } from "../TargetsContext";
 import { Target, TargetNumericFields } from "../types";
 import { useTargetError } from "../targetErrors";
@@ -29,12 +29,10 @@ export function TargetNumericField({ target, field, testid, placeholder, label, 
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleBlur();
-      e.currentTarget.blur();
-    }
+  const handleEnter = (e: React.KeyboardEvent) => {
+    e.preventDefault();
+    handleBlur();
+    (e.currentTarget as HTMLInputElement).blur();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,15 +41,15 @@ export function TargetNumericField({ target, field, testid, placeholder, label, 
 
   return (
     <div>
-      {label && <Label label={label} />}
-      <InputElement
+      {label && <Forms.Label label={label} />}
+      <Forms.Input
         placeholder={placeholder}
         type="text"
         testId={testid}
         value={value}
         onChange={handleChange}
         onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
+        onEnter={handleEnter}
         error={Boolean(isError)}
         className={className}
       />

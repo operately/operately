@@ -5,7 +5,6 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Reactions from "@/models/reactions";
 import Modal from "@/components/Modal";
-import Forms from "@/components/Forms";
 
 import { documents } from "@/models/resourceHubs";
 import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
@@ -16,7 +15,7 @@ import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { OngoingDraftActions } from "@/features/drafts";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CopyDocumentModalWrapper, ResourcePageNavigation, RichContent, CurrentSubscriptions, Spacer, displayDate } from "turboui";
+import { CopyDocumentModalWrapper, Forms, ResourcePageNavigation, RichContent, CurrentSubscriptions, Spacer, displayDate } from "turboui";
 import { useCopyDocumentListContext } from "@/models/resourceHubs";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";

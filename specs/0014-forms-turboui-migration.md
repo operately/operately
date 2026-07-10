@@ -93,7 +93,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | 4 — RichTextArea Cohort | [x] Complete |
 | 5 — Multi-Action Submit and Check-Ins | [x] Complete |
 | 6 — Domain Selector Bridges | [x] Complete |
-| 7 — GoalTargetsV2 and Stragglers | [ ] Not started |
+| 7 — GoalTargetsV2 and Stragglers | [x] Complete |
 | 8 — Delete Legacy App Forms | [ ] Not started |
 
 ```mermaid
@@ -375,22 +375,22 @@ import { Forms } from "turboui";
 
 ## Phase 7 — GoalTargetsV2 and Stragglers
 
-**Phase complete:** [ ]
+**Phase complete:** [x]
 
 **Goal:** Zero `@/components/Forms` imports repo-wide.
 
 ### Work
 
-- [ ] `app/assets/js/features/goals/GoalTargetsV2/components/TargetTextField.tsx` — import `Input`, `Label` from turboui Forms
-- [ ] `app/assets/js/features/goals/GoalTargetsV2/components/TargetNumericField.tsx`
-- [ ] `app/assets/js/features/goals/GoalTargetsV2/targetErrors.tsx` — TurboUI form context types
-- [ ] Remaining pages: `SetupPage`, `SignUpWithEmailPage` (if not done in Phase 2/6), `AccessSelectors`, resource hub page-level forms, EE stragglers
-- [ ] `app/ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx` (FieldGroup grid — requires Phase 1)
+- [x] `app/assets/js/features/goals/GoalTargetsV2/components/TargetTextField.tsx` — import `Input`, `Label` from turboui Forms
+- [x] `app/assets/js/features/goals/GoalTargetsV2/components/TargetNumericField.tsx`
+- [x] `app/assets/js/features/goals/GoalTargetsV2/targetErrors.tsx` — TurboUI form context types
+- [x] Remaining pages: `SetupPage`, `SignUpWithEmailPage` (if not done in Phase 2/6), `AccessSelectors`, resource hub page-level forms, EE stragglers
+- [x] `app/ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx` (FieldGroup grid — requires Phase 1)
 
 ### Acceptance
 
-- [ ] `rg '@/components/Forms'` returns no matches in app/ee
-- [ ] `make test.tsc.lint`
+- [x] `rg '@/components/Forms'` returns no matches in app/ee
+- [x] `make test.tsc.lint`
 
 ---
 
