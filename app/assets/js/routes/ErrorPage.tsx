@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { captureException } from "@sentry/react";
 import axios, { AxiosError } from "axios";
-import { useRouteError, useRouteLoaderData } from "react-router-dom";
+import { useRouteError, useRouteLoaderData } from "react-router";
 import { GhostButton } from "turboui";
 
 import { usePaths } from "@/routes/paths";

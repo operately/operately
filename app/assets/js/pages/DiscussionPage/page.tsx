@@ -17,7 +17,7 @@ import { OngoingDraftActions } from "@/features/drafts";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useLoadedData } from "./loader";
 import {
   DiscardDiscussionDraftModal,

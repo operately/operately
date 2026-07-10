@@ -2,7 +2,7 @@ import React from "react";
 
 import { Person } from "@/models/people";
 import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { Status, StatusOptions } from "@/components/status";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";

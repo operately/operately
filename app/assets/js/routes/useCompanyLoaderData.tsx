@@ -1,4 +1,4 @@
-import { useRouteLoaderData } from "react-router-dom";
+import { useRouteLoaderData } from "react-router";
 import { CompanyLoadedData } from "./companyLoader";
 
 export function useCompanyLoaderData() {

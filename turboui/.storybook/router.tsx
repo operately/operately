@@ -1,6 +1,6 @@
 import { Decorator, StoryContext } from "@storybook/react-vite";
 import React from "react";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 
 interface RouterDecoratorParams {
   path?: string;

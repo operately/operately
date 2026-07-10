@@ -10,7 +10,7 @@ import {
 
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {
   buildNotificationSettingsUpdateInput,
   getNotificationSettingsFormState,

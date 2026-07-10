@@ -6,7 +6,7 @@ import * as Paper from "@/components/PaperContainer";
 
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 import { PrimaryButton, SecondaryButton } from "turboui";
 
 export default { name: "InviteLinkFullPage", loader, Page } as PageModule;

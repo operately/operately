@@ -3,7 +3,7 @@ import * as api from "@/api";
 import * as Companies from "@/models/companies";
 import { Paths } from "@/routes/paths";
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "turboui/CompanyBillingPage";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 
 export { useBillingUpdatedSignal } from "@/signals";
 export type BillingCompanyAccessState = api.BillingCompanyAccessState;

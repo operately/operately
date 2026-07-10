@@ -6,7 +6,7 @@ import * as Pages from "@/components/Pages";
 
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { redirect, useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router";
 import { InviteLinkJoinPage } from "turboui";
 
 export default { name: "InviteLinkJoinPage", loader, Page } as PageModule;

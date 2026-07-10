@@ -8,12 +8,13 @@ import * as Signals from "@/signals";
 import * as Sentry from "@sentry/react";
 import axios from "axios";
 import {
+  createBrowserRouter,
   createRoutesFromChildren,
   matchRoutes,
   RouterProvider,
   useLocation,
   useNavigationType,
-} from "react-router-dom";
+} from "react-router";
 
 import { createAppRoutes } from "./routes";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -37,24 +38,26 @@ if (window.appConfig.sentry.enabled) {
     dsn: window.appConfig.sentry.dsn,
     release: window.appConfig.version,
     integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          React.useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes,
-        ),
+      Sentry.reactRouterV7BrowserTracingIntegration({
+        useEffect: React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
       }),
     ],
-    enableTracing: false,
+    tracesSampleRate: 0,
   });
 
   installSentryAxiosInterceptor(axios);
 }
 
+const createRouter = window.appConfig.sentry.enabled
+  ? Sentry.wrapCreateBrowserRouterV7(createBrowserRouter)
+  : createBrowserRouter;
+const routes = createAppRoutes(createRouter);
+
 const rootElement: HTMLElement | null = document.getElementById("root");
-const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { links, resourceHubLandingPath } from "@/models/resourceHubs";
 import { Forms, emptyContent, LinkIcon, SubscribersSelector, type ResourceHubLinkType } from "turboui";

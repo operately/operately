@@ -1,4 +1,4 @@
-import { ShouldRevalidateFunction } from "react-router-dom";
+import { ShouldRevalidateFunction } from "react-router";
 import { PageModule } from "@/routes/types";
 import { loader } from "./loader";
 import { Page } from "./page";

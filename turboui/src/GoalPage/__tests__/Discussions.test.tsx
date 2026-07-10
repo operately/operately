@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Discussions } from "../Discussions";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import "@testing-library/jest-dom";
 import { generateGoalPermissions } from "../../utils/storybook/permissions";
 

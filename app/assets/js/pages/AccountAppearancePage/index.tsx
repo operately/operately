@@ -9,7 +9,7 @@ import classnames from "classnames";
 
 import { useSetTheme, useTheme } from "@/contexts/ThemeContext";
 import { PageModule } from "@/routes/types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "AccountAppearancePage", loader: Pages.emptyLoader, Page } as PageModule;

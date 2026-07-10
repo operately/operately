@@ -9,7 +9,7 @@ import { PageModule } from "@/routes/types";
 import { Paths } from "@/routes/paths";
 import classnames from "classnames";
 import plurarize from "@/utils/plurarize";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { formatCompanyBillingPlanName } from "turboui/CompanyBilling";
 
 export default { name: "BillingPickCompanyPage", loader, Page } as PageModule;
