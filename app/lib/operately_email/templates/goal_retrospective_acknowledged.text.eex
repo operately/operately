@@ -1,0 +1,3 @@
+<%= short_name(@author) %> acknowledged the retrospective for <%= @goal.name %>.
+
+View Retrospective: <%= @cta_url %>

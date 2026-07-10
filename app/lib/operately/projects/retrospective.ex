@@ -8,11 +8,13 @@ defmodule Operately.Projects.Retrospective do
     belongs_to :author, Operately.People.Person
     belongs_to :project, Operately.Projects.Project
     belongs_to :subscription_list, Notifications.SubscriptionList
+    belongs_to :acknowledged_by, Operately.People.Person
 
     has_one :access_context, through: [:project, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :project_retrospective], foreign_key: :entity_id
 
     field :content, :map
+    field :acknowledged_at, :utc_datetime
 
     # populated with after load hooks
     field :permissions, :any, virtual: true
@@ -30,7 +32,7 @@ defmodule Operately.Projects.Retrospective do
 
   def changeset(retrospective, attrs) do
     retrospective
-    |> cast(attrs, [:author_id, :project_id, :subscription_list_id, :content])
+    |> cast(attrs, [:author_id, :project_id, :subscription_list_id, :content, :acknowledged_by_id, :acknowledged_at])
     |> validate_required([:author_id, :project_id, :subscription_list_id, :content])
   end
 

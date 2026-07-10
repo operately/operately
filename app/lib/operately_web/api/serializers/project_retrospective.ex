@@ -11,6 +11,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Retrospective do
       subscription_list: OperatelyWeb.Api.Serializer.serialize(retrospective.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(retrospective.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(retrospective.notifications),
+      acknowledged_at: OperatelyWeb.Api.Serializer.serialize(retrospective.acknowledged_at),
+      acknowledged_by: OperatelyWeb.Api.Serializer.serialize(retrospective.acknowledged_by),
     }
   end
 end

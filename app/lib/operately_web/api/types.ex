@@ -468,7 +468,9 @@ defmodule OperatelyWeb.Api.Types do
       :goal_update,
       :space_task,
       :project_task,
-      :milestone
+      :milestone,
+      :project_retrospective,
+      :goal_retrospective
     ]
   )
 
@@ -738,6 +740,8 @@ defmodule OperatelyWeb.Api.Types do
     field :subscription_list, :subscription_list
     field :potential_subscribers, list_of(:subscriber)
     field :notifications, list_of(:notification)
+    field? :acknowledged_at, :datetime, null: true
+    field? :acknowledged_by, :person, null: true
   end
 
   object :messages_board do
@@ -794,6 +798,7 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_permissions do
     field? :can_comment_on_thread, :boolean, null: true
     field? :can_view, :boolean, null: true
+    field? :can_acknowledge, :boolean, null: true
   end
 
   object :activity_event_data_project_create do
@@ -883,6 +888,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_goal_check_in_acknowledgement,
       :activity_content_goal_check_in_edit,
       :activity_content_goal_closing,
+      :activity_content_goal_retrospective_acknowledged,
       :activity_content_goal_created,
       :activity_content_goal_discussion_creation,
       :activity_content_goal_discussion_editing,
@@ -897,6 +903,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_check_in_edit,
       :activity_content_project_check_in_submitted,
       :activity_content_project_closed,
+      :activity_content_project_retrospective_acknowledged,
       :activity_content_project_contributor_addition,
       :activity_content_project_contributors_addition,
       :activity_content_project_contributor_edited,
@@ -1285,6 +1292,13 @@ defmodule OperatelyWeb.Api.Types do
     field? :check_in, :project_check_in, null: true
   end
 
+  object :activity_content_project_retrospective_acknowledged do
+    field? :project_id, :string, null: true
+    field? :retrospective_id, :string, null: true
+    field? :project, :project, null: true
+    field? :retrospective, :project_retrospective, null: true
+  end
+
   object :update_content_project_contributor_added do
     field? :contributor_id, :string, null: true
     field? :contributor_role, :string, null: true
@@ -1667,6 +1681,11 @@ defmodule OperatelyWeb.Api.Types do
     field? :update, :goal_progress_update, null: true
   end
 
+  object :activity_content_goal_retrospective_acknowledged do
+    field? :goal, :goal, null: true
+    field? :retrospective_id, :string, null: true
+  end
+
   object :activity_content_project_archived do
     field? :project_id, :string, null: true
     field? :project, :project, null: true
@@ -1758,6 +1777,8 @@ defmodule OperatelyWeb.Api.Types do
     field :comment_count, :integer, null: false
     field :author, :person, null: false
     field :content, :string, null: false
+    field? :acknowledged_at, :datetime, null: true
+    field? :acknowledged_by, :person, null: true
   end
 
   object :activity_content_project_resuming do
@@ -2103,6 +2124,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :project_permissions, :project_permissions
     field? :space, :space
     field? :can_comment, :boolean
+    field? :acknowledged_at, :datetime, null: true
+    field? :acknowledged_by, :person, null: true
   end
 
   enum(:comment_parent_type,

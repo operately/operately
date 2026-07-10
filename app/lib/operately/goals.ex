@@ -13,6 +13,7 @@ defmodule Operately.Goals do
     "goal_check_in_commented",
     "goal_check_in_edit",
     "goal_closing",
+    "goal_retrospective_acknowledged",
     "goal_created",
     "goal_discussion_creation",
     "goal_discussion_editing",
