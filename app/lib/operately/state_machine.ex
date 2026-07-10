@@ -7,37 +7,38 @@ defmodule Operately.StateMachine do
     data = get_in(changeset.data, [Access.key(field)])
     change = get_in(changeset.changes, [Access.key(field)])
 
-    case {data, change} do
-      {nil, nil} ->
-        initialize_state(changeset, field, initial, states)
+    is_insert = Ecto.get_meta(changeset.data, :state) == :built
 
-      {old_state, nil} when old_state != nil ->
-        changeset
+    if is_insert do
+      state_name = change || data || initial
 
-      {nil, state} ->
-        run_on_enter(changeset, state, states)
+      changeset
+      |> Ecto.Changeset.put_change(field, state_name)
+      |> run_on_enter(state_name, states)
+    else
+      case {data, change} do
+        {nil, nil} ->
+          changeset
 
-      {old_state, new_state} when old_state == new_state ->
-        changeset
+        {old_state, nil} when old_state != nil ->
+          changeset
 
-      {old_state, new_state} ->
-        if valid_transition?(old_state, new_state, states) do
-            run_on_enter(changeset, new_state, states)
-        else
-          add_invalid_transition_error(changeset, field, old_state, new_state)
-        end
+        {old_state, new_state} when old_state == new_state ->
+          changeset
+
+        {old_state, new_state} ->
+          if valid_transition?(old_state, new_state, states) do
+              run_on_enter(changeset, new_state, states)
+          else
+            add_invalid_transition_error(changeset, field, old_state, new_state)
+          end
+      end
     end
-  end
-
-  defp initialize_state(changeset, field, initial, states) do
-    changeset
-    |> Ecto.Changeset.put_change(field, initial)
-    |> run_on_enter(initial, states)
   end
 
   defp add_invalid_transition_error(changeset, field, old_state, new_state) do
     msg = "Invalid transition from #{old_state} to #{new_state}"
-   
+
     Ecto.Changeset.add_error(changeset, field, msg)
   end
 
