@@ -64,7 +64,6 @@ defmodule OperatelyWeb.Api do
         query(:list_milestones, OperatelyWeb.Api.Projects.ListMilestones)
         query(:list_contributors, OperatelyWeb.Api.Projects.ListContributors)
         query(:count_children, OperatelyWeb.Api.Projects.CountChildren)
-        query(:get_key_resource, OperatelyWeb.Api.Projects.GetKeyResource)
         query(:get_contributor, OperatelyWeb.Api.Projects.GetContributor)
         query(:get_retrospective, OperatelyWeb.Api.Projects.GetRetrospective)
 
@@ -86,9 +85,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
         mutation(:update_task_statuses, OperatelyWeb.Api.Projects.UpdateTaskStatuses)
         mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
-        mutation(:create_key_resource, OperatelyWeb.Api.Projects.CreateKeyResource)
-        mutation(:update_key_resource, OperatelyWeb.Api.Projects.UpdateKeyResource)
-        mutation(:delete_key_resource, OperatelyWeb.Api.Projects.DeleteKeyResource)
         mutation(:update_contributor, OperatelyWeb.Api.Projects.UpdateContributor)
         mutation(:update_description, OperatelyWeb.Api.Projects.UpdateDescription)
         mutation(:create_contributor, OperatelyWeb.Api.Projects.CreateContributor)

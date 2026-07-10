@@ -1678,7 +1678,6 @@ export interface Project {
   lastCheckIn?: ProjectCheckIn | null;
   milestones?: Milestone[] | null;
   contributors?: ProjectContributor[] | null;
-  keyResources?: ProjectKeyResource[] | null;
   isOutdated?: boolean | null;
   spaceId?: string | null;
   space?: Space | null;
@@ -3091,7 +3090,6 @@ export interface ProjectsGetInput {
   id: Id;
   includeContributors?: boolean | null;
   includeGoal?: boolean | null;
-  includeKeyResources?: boolean | null;
   includeLastCheckIn?: boolean | null;
   includeMilestones?: boolean | null;
   includePermissions?: boolean | null;
@@ -3154,14 +3152,6 @@ export interface ProjectsGetDiscussionInput {
 
 export interface ProjectsGetDiscussionResult {
   discussion: CommentThread;
-}
-
-export interface ProjectsGetKeyResourceInput {
-  id: Id;
-}
-
-export interface ProjectsGetKeyResourceResult {
-  keyResource: ProjectKeyResource;
 }
 
 export interface ProjectsGetMilestoneInput {
@@ -4740,17 +4730,6 @@ export interface ProjectsCreateDiscussionResult {
   discussion: CommentThread;
 }
 
-export interface ProjectsCreateKeyResourceInput {
-  projectId: Id;
-  title: string;
-  link: string;
-  resourceType?: string;
-}
-
-export interface ProjectsCreateKeyResourceResult {
-  keyResource: ProjectKeyResource;
-}
-
 export interface ProjectsCreateMilestoneInput {
   projectId: Id;
   name: string;
@@ -4793,14 +4772,6 @@ export interface ProjectsDeleteContributorInput {
 
 export interface ProjectsDeleteContributorResult {
   projectContributor: ProjectContributor;
-}
-
-export interface ProjectsDeleteKeyResourceInput {
-  id: Id;
-}
-
-export interface ProjectsDeleteKeyResourceResult {
-  keyResource: ProjectKeyResource;
 }
 
 export interface ProjectsDeleteMilestoneInput {
@@ -4911,16 +4882,6 @@ export interface ProjectsUpdateKanbanInput {
 export interface ProjectsUpdateKanbanResult {
   project: Project;
   task: Task;
-}
-
-export interface ProjectsUpdateKeyResourceInput {
-  id: Id;
-  title: string;
-  link: string;
-}
-
-export interface ProjectsUpdateKeyResourceResult {
-  keyResource: ProjectKeyResource;
 }
 
 export interface ProjectsUpdateMilestoneInput {
@@ -6272,10 +6233,6 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/get_discussion", input);
   }
 
-  async getKeyResource(input: ProjectsGetKeyResourceInput): Promise<ProjectsGetKeyResourceResult> {
-    return this.client.get("/projects/get_key_resource", input);
-  }
-
   async getMilestone(input: ProjectsGetMilestoneInput): Promise<ProjectsGetMilestoneResult> {
     return this.client.get("/projects/get_milestone", input);
   }
@@ -6350,10 +6307,6 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/create_discussion", input);
   }
 
-  async createKeyResource(input: ProjectsCreateKeyResourceInput): Promise<ProjectsCreateKeyResourceResult> {
-    return this.client.post("/projects/create_key_resource", input);
-  }
-
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
     return this.client.post("/projects/create_milestone", input);
   }
@@ -6374,10 +6327,6 @@ class ApiNamespaceProjects {
 
   async deleteContributor(input: ProjectsDeleteContributorInput): Promise<ProjectsDeleteContributorResult> {
     return this.client.post("/projects/delete_contributor", input);
-  }
-
-  async deleteKeyResource(input: ProjectsDeleteKeyResourceInput): Promise<ProjectsDeleteKeyResourceResult> {
-    return this.client.post("/projects/delete_key_resource", input);
   }
 
   async deleteMilestone(input: ProjectsDeleteMilestoneInput): Promise<ProjectsDeleteMilestoneResult> {
@@ -6422,10 +6371,6 @@ class ApiNamespaceProjects {
 
   async updateKanban(input: ProjectsUpdateKanbanInput): Promise<ProjectsUpdateKanbanResult> {
     return this.client.post("/projects/update_kanban", input);
-  }
-
-  async updateKeyResource(input: ProjectsUpdateKeyResourceInput): Promise<ProjectsUpdateKeyResourceResult> {
-    return this.client.post("/projects/update_key_resource", input);
   }
 
   async updateMilestone(input: ProjectsUpdateMilestoneInput): Promise<ProjectsUpdateMilestoneResult> {
@@ -7992,10 +7937,6 @@ export default {
     useCountChildren: (input: ProjectsCountChildrenInput) =>
       useQuery<ProjectsCountChildrenResult>(() => defaultApiClient.apiNamespaceProjects.countChildren(input)),
 
-    getKeyResource: (input: ProjectsGetKeyResourceInput) => defaultApiClient.apiNamespaceProjects.getKeyResource(input),
-    useGetKeyResource: (input: ProjectsGetKeyResourceInput) =>
-      useQuery<ProjectsGetKeyResourceResult>(() => defaultApiClient.apiNamespaceProjects.getKeyResource(input)),
-
     list: (input: ProjectsListInput) => defaultApiClient.apiNamespaceProjects.list(input),
     useList: (input: ProjectsListInput) =>
       useQuery<ProjectsListResult>(() => defaultApiClient.apiNamespaceProjects.list(input)),
@@ -8056,13 +7997,6 @@ export default {
     getCheckIn: (input: ProjectsGetCheckInInput) => defaultApiClient.apiNamespaceProjects.getCheckIn(input),
     useGetCheckIn: (input: ProjectsGetCheckInInput) =>
       useQuery<ProjectsGetCheckInResult>(() => defaultApiClient.apiNamespaceProjects.getCheckIn(input)),
-
-    createKeyResource: (input: ProjectsCreateKeyResourceInput) =>
-      defaultApiClient.apiNamespaceProjects.createKeyResource(input),
-    useCreateKeyResource: () =>
-      useMutation<ProjectsCreateKeyResourceInput, ProjectsCreateKeyResourceResult>((input) =>
-        defaultApiClient.apiNamespaceProjects.createKeyResource(input),
-      ),
 
     updateParentGoal: (input: ProjectsUpdateParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
@@ -8229,13 +8163,6 @@ export default {
         defaultApiClient.apiNamespaceProjects.updateMilestoneTitle(input),
       ),
 
-    updateKeyResource: (input: ProjectsUpdateKeyResourceInput) =>
-      defaultApiClient.apiNamespaceProjects.updateKeyResource(input),
-    useUpdateKeyResource: () =>
-      useMutation<ProjectsUpdateKeyResourceInput, ProjectsUpdateKeyResourceResult>((input) =>
-        defaultApiClient.apiNamespaceProjects.updateKeyResource(input),
-      ),
-
     updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
     useUpdateReviewer: () =>
       useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>((input) =>
@@ -8273,13 +8200,6 @@ export default {
     useDelete: () =>
       useMutation<ProjectsDeleteInput, ProjectsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceProjects.delete(input),
-      ),
-
-    deleteKeyResource: (input: ProjectsDeleteKeyResourceInput) =>
-      defaultApiClient.apiNamespaceProjects.deleteKeyResource(input),
-    useDeleteKeyResource: () =>
-      useMutation<ProjectsDeleteKeyResourceInput, ProjectsDeleteKeyResourceResult>((input) =>
-        defaultApiClient.apiNamespaceProjects.deleteKeyResource(input),
       ),
 
     deleteMilestone: (input: ProjectsDeleteMilestoneInput) =>

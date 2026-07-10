@@ -57,7 +57,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Projects.ListMilestones,
       Queries.Projects.SearchParentGoal,
       Queries.Projects.Search,
-      Queries.Projects.GetKeyResource,
       Queries.Projects.GetContributor,
       Queries.Projects.GetRetrospective,
       Queries.Projects.GetCheckIn,

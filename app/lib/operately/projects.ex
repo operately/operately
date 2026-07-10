@@ -13,7 +13,6 @@ defmodule Operately.Projects do
     PhaseHistory,
     Contributor,
     Milestone,
-    KeyResource,
     CheckIn
   }
 
@@ -235,32 +234,6 @@ defmodule Operately.Projects do
 
   def get_control_review(project) do
     Repo.preload(project, :control_review).control_review
-  end
-
-  def list_key_resources(project) do
-    Operately.Repo.preload(project, :key_resources).key_resources
-  end
-
-  def get_key_resource!(id), do: Repo.get!(KeyResource, id)
-
-  def create_key_resource(attrs \\ %{}) do
-    %KeyResource{}
-    |> KeyResource.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_key_resource(%KeyResource{} = key_resource, attrs) do
-    key_resource
-    |> KeyResource.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_key_resource(%KeyResource{} = key_resource) do
-    Repo.delete(key_resource)
-  end
-
-  def change_key_resource(%KeyResource{} = key_resource, attrs \\ %{}) do
-    KeyResource.changeset(key_resource, attrs)
   end
 
   # Phase History

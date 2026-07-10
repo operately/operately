@@ -15,7 +15,6 @@ defmodule OperatelyWeb.Api.Projects.Get do
 
     field? :include_contributors, :boolean, null: true
     field? :include_goal, :boolean, null: true
-    field? :include_key_resources, :boolean, null: true
     field? :include_last_check_in, :boolean, null: true
     field? :include_milestones, :boolean, null: true
     field? :include_permissions, :boolean, null: true
@@ -73,7 +72,6 @@ defmodule OperatelyWeb.Api.Projects.Get do
   def preload(inputs) do
     Inputs.parse_includes(inputs,
       include_contributors: [contributors: [:person]],
-      include_key_resources: [key_resources: :project],
       include_champion: [:champion],
       include_reviewer: [:reviewer],
       include_last_check_in: [last_check_in: :author],

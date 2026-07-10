@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 200
+- Endpoints: 196
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -119,19 +119,16 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects create_contributor` | `op projects create_contributor` | `POST` | `/api/external/v1/projects/create_contributor` |
 | `projects create_contributors` | `op projects create_contributors` | `POST` | `/api/external/v1/projects/create_contributors` |
 | `projects create_discussion` | `op projects create_discussion` | `POST` | `/api/external/v1/projects/create_discussion` |
-| `projects create_key_resource` | `op projects create_key_resource` | `POST` | `/api/external/v1/projects/create_key_resource` |
 | `projects create_milestone` | `op projects create_milestone` | `POST` | `/api/external/v1/projects/create_milestone` |
 | `projects create_milestone_comment` | `op projects create_milestone_comment` | `POST` | `/api/external/v1/projects/create_milestone_comment` |
 | `projects delete` | `op projects delete` | `POST` | `/api/external/v1/projects/delete` |
 | `projects delete_check_in` | `op projects delete_check_in` | `POST` | `/api/external/v1/projects/delete_check_in` |
 | `projects delete_contributor` | `op projects delete_contributor` | `POST` | `/api/external/v1/projects/delete_contributor` |
-| `projects delete_key_resource` | `op projects delete_key_resource` | `POST` | `/api/external/v1/projects/delete_key_resource` |
 | `projects delete_milestone` | `op projects delete_milestone` | `POST` | `/api/external/v1/projects/delete_milestone` |
 | `projects get` | `op projects get` | `GET` | `/api/external/v1/projects/get` |
 | `projects get_check_in` | `op projects get_check_in` | `GET` | `/api/external/v1/projects/get_check_in` |
 | `projects get_contributor` | `op projects get_contributor` | `GET` | `/api/external/v1/projects/get_contributor` |
 | `projects get_discussion` | `op projects get_discussion` | `GET` | `/api/external/v1/projects/get_discussion` |
-| `projects get_key_resource` | `op projects get_key_resource` | `GET` | `/api/external/v1/projects/get_key_resource` |
 | `projects get_milestone` | `op projects get_milestone` | `GET` | `/api/external/v1/projects/get_milestone` |
 | `projects get_retrospective` | `op projects get_retrospective` | `GET` | `/api/external/v1/projects/get_retrospective` |
 | `projects list` | `op projects list` | `GET` | `/api/external/v1/projects/list` |
@@ -152,7 +149,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects update_description` | `op projects update_description` | `POST` | `/api/external/v1/projects/update_description` |
 | `projects update_discussion` | `op projects update_discussion` | `POST` | `/api/external/v1/projects/update_discussion` |
 | `projects update_due_date` | `op projects update_due_date` | `POST` | `/api/external/v1/projects/update_due_date` |
-| `projects update_key_resource` | `op projects update_key_resource` | `POST` | `/api/external/v1/projects/update_key_resource` |
 | `projects update_milestone` | `op projects update_milestone` | `POST` | `/api/external/v1/projects/update_milestone` |
 | `projects update_milestone_description` | `op projects update_milestone_description` | `POST` | `/api/external/v1/projects/update_milestone_description` |
 | `projects update_milestone_due_date` | `op projects update_milestone_due_date` | `POST` | `/api/external/v1/projects/update_milestone_due_date` |

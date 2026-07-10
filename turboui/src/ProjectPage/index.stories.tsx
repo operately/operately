@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { DateField } from "../DateField";
 import { PrivacyField } from "../PrivacyField";
 import { createContextualDate } from "../DateField/mockData";
-import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople } from "../utils/storybook/genPeople";
@@ -56,7 +55,9 @@ const meta: Meta<typeof ProjectPage> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, "args"> & {
+  args?: StoryObj<typeof meta>["args"];
+};
 
 // Mock people data for search
 const mockPeople: TaskBoardTypes.Person[] = [
@@ -226,24 +227,6 @@ const workMapsRolloutDescription = asRichTextWithList(
   ],
 );
 
-// Mock resources data
-const mockResources: ResourceManager.Resource[] = [
-  {
-    id: "resource-1",
-    name: "Sprint Planning Spreadsheet",
-    url: "https://docs.google.com/spreadsheets/d/1234567890",
-  },
-  {
-    id: "resource-2",
-    name: "Project Brief",
-    url: "https://company.notion.site/project-brief",
-  },
-  {
-    id: "resource-3",
-    name: "Design Mockups",
-    url: "https://www.figma.com/file/abc123",
-  },
-];
 
 const docsAndFilesStoryData: ProjectPageWithDocsAndFilesStoryData = {
   currentViewer,
@@ -253,7 +236,6 @@ const docsAndFilesStoryData: ProjectPageWithDocsAndFilesStoryData = {
   mockContributors,
   mockDiscussions,
   mockPeople,
-  mockResources,
   parentGoalSearch: mockParentGoalSearch,
   people,
 };
@@ -312,7 +294,6 @@ export const Default: Story = {
     const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() =>
       createContextualDate(addDays(new Date(), 21), "day"),
     );
-    const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
     const [space, setSpace] = useState(defaultSpace);
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
@@ -343,27 +324,6 @@ export const Default: Story = {
         return task;
       });
       setTasks(updatedTasks);
-    };
-
-    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
-      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newResource = { id: resourceId, ...resource };
-      console.log("Resource added:", newResource);
-      setResources([...resources, newResource]);
-    };
-
-    const handleResourceEdit = (updates: ResourceManager.Resource) => {
-      console.log("Resource edited:", updates);
-      const updatedResources = resources.map((resource) =>
-        resource.id === updates.id ? { ...resource, ...updates } : resource,
-      );
-      setResources(updatedResources);
-    };
-
-    const handleResourceRemove = (id: string) => {
-      console.log("Resource removed:", id);
-      const updatedResources = resources.filter((resource) => resource.id !== id);
-      setResources(updatedResources);
     };
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
@@ -442,10 +402,6 @@ export const Default: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
-        resources={resources}
-        onResourceAdd={handleResourceAdd}
-        onResourceEdit={handleResourceEdit}
-        onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
@@ -485,7 +441,6 @@ export const OverdueCheckIn: Story = {
     const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() =>
       createContextualDate(addDays(new Date(), 14), "day"),
     );
-    const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
     const [space, setSpace] = useState(defaultSpace);
     const subscriptions = useMockSubscriptions({ entityType: "project" });
 
@@ -561,19 +516,6 @@ export const OverdueCheckIn: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
-        resources={resources}
-        onResourceAdd={(resource) => {
-          const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-          setResources([...resources, { id: resourceId, ...resource }]);
-        }}
-        onResourceEdit={(updates) => {
-          setResources(
-            resources.map((resource) => (resource.id === updates.id ? { ...resource, ...updates } : resource)),
-          );
-        }}
-        onResourceRemove={(id) => {
-          setResources(resources.filter((resource) => resource.id !== id));
-        }}
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
@@ -682,10 +624,6 @@ export const ReadOnly: Story = {
         setStartedAt={() => {}}
         dueAt={dueAt}
         setDueAt={() => {}}
-        resources={mockResources}
-        onResourceAdd={() => {}}
-        onResourceEdit={() => {}}
-        onResourceRemove={() => {}}
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
@@ -723,7 +661,6 @@ export const EmptyTasks: Story = {
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
       return createContextualDate(oneMonthFromToday, "day");
     });
-    const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
     const [space, setSpace] = useState(defaultSpace);
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
@@ -733,27 +670,6 @@ export const EmptyTasks: Story = {
 
       // Add the new milestone to the milestones array
       setMilestones((prev) => [...prev, newMilestone]);
-    };
-
-    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
-      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newResource = { id: resourceId, ...resource };
-      console.log("Resource added:", newResource);
-      setResources([...resources, newResource]);
-    };
-
-    const handleResourceEdit = (updates: ResourceManager.Resource) => {
-      console.log("Resource edited:", updates);
-      const updatedResources = resources.map((resource) =>
-        resource.id === updates.id ? { ...resource, ...updates } : resource,
-      );
-      setResources(updatedResources);
-    };
-
-    const handleResourceRemove = (id: string) => {
-      console.log("Resource removed:", id);
-      const updatedResources = resources.filter((resource) => resource.id !== id);
-      setResources(updatedResources);
     };
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
@@ -827,10 +743,6 @@ export const EmptyTasks: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
-        resources={resources}
-        onResourceAdd={handleResourceAdd}
-        onResourceEdit={handleResourceEdit}
-        onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
@@ -859,7 +771,6 @@ export const EmptyProject: Story = {
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(null);
     const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(null);
-    const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
     const [space, setSpace] = useState(defaultSpace);
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
@@ -879,27 +790,6 @@ export const EmptyProject: Story = {
         milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
       );
       setMilestones(updatedMilestones);
-    };
-
-    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
-      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newResource = { id: resourceId, ...resource };
-      console.log("Resource added:", newResource);
-      setResources([...resources, newResource]);
-    };
-
-    const handleResourceEdit = (updates: ResourceManager.Resource) => {
-      console.log("Resource edited:", updates);
-      const updatedResources = resources.map((resource) =>
-        resource.id === updates.id ? { ...resource, ...updates } : resource,
-      );
-      setResources(updatedResources);
-    };
-
-    const handleResourceRemove = (id: string) => {
-      console.log("Resource removed:", id);
-      const updatedResources = resources.filter((resource) => resource.id !== id);
-      setResources(updatedResources);
     };
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
@@ -971,10 +861,6 @@ export const EmptyProject: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
-        resources={resources}
-        onResourceAdd={handleResourceAdd}
-        onResourceEdit={handleResourceEdit}
-        onResourceRemove={handleResourceRemove}
         contributors={[]}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
@@ -1073,10 +959,6 @@ export const EmptyProjectReadOnly: Story = {
         setStartedAt={() => {}}
         dueAt={dueAt}
         setDueAt={() => {}}
-        resources={[]}
-        onResourceAdd={() => {}}
-        onResourceEdit={() => {}}
-        onResourceRemove={() => {}}
         contributors={[]}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
@@ -1119,7 +1001,6 @@ export const PausedProject: Story = {
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
       return createContextualDate(oneMonthFromToday, "day");
     });
-    const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
     const [space, setSpace] = useState(defaultSpace);
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
@@ -1146,27 +1027,6 @@ export const PausedProject: Story = {
         return task;
       });
       setTasks(updatedTasks);
-    };
-
-    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
-      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newResource = { id: resourceId, ...resource };
-      console.log("Resource added:", newResource);
-      setResources([...resources, newResource]);
-    };
-
-    const handleResourceEdit = (updates: ResourceManager.Resource) => {
-      console.log("Resource edited:", updates);
-      const updatedResources = resources.map((resource) =>
-        resource.id === updates.id ? { ...resource, ...updates } : resource,
-      );
-      setResources(updatedResources);
-    };
-
-    const handleResourceRemove = (id: string) => {
-      console.log("Resource removed:", id);
-      const updatedResources = resources.filter((resource) => resource.id !== id);
-      setResources(updatedResources);
     };
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
@@ -1240,10 +1100,6 @@ export const PausedProject: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
-        resources={resources}
-        onResourceAdd={handleResourceAdd}
-        onResourceEdit={handleResourceEdit}
-        onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
@@ -1357,10 +1213,6 @@ export const ClosedProject: Story = {
         setStartedAt={() => {}}
         dueAt={dueAt}
         setDueAt={() => {}}
-        resources={mockResources}
-        onResourceAdd={() => {}}
-        onResourceEdit={() => {}}
-        onResourceRemove={() => {}}
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
@@ -1427,7 +1279,6 @@ export const ProjectWithoutSpace: Story = {
     const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() =>
       createContextualDate(addDays(new Date(), 21), "day"),
     );
-    const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -1457,27 +1308,6 @@ export const ProjectWithoutSpace: Story = {
         return task;
       });
       setTasks(updatedTasks);
-    };
-
-    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
-      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newResource = { id: resourceId, ...resource };
-      console.log("Resource added:", newResource);
-      setResources([...resources, newResource]);
-    };
-
-    const handleResourceEdit = (updates: ResourceManager.Resource) => {
-      console.log("Resource edited:", updates);
-      const updatedResources = resources.map((resource) =>
-        resource.id === updates.id ? { ...resource, ...updates } : resource,
-      );
-      setResources(updatedResources);
-    };
-
-    const handleResourceRemove = (id: string) => {
-      console.log("Resource removed:", id);
-      const updatedResources = resources.filter((resource) => resource.id !== id);
-      setResources(updatedResources);
     };
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
@@ -1551,10 +1381,6 @@ export const ProjectWithoutSpace: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
-        resources={resources}
-        onResourceAdd={handleResourceAdd}
-        onResourceEdit={handleResourceEdit}
-        onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
