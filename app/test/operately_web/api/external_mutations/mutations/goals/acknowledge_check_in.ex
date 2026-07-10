@@ -11,8 +11,9 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.AcknowledgeCheckIn 
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
+    |> Factory.add_space_member(:person, :space)
     |> Factory.add_goal(:goal, :space)
-    |> Factory.add_goal_update(:goal_update, :goal, :creator)
+    |> Factory.add_goal_update(:goal_update, :goal, :person)
   end
 
   @impl true
