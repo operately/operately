@@ -12,6 +12,8 @@ const TYPE_ICON: Partial<Record<ReviewPageV2.AssignmentType, typeof IconSquare>>
   goal_update: IconMessage,
   milestone: IconFlag,
   project_task: IconSquare,
+  project_retrospective: IconMessage,
+  goal_retrospective: IconMessage,
 };
 
 const ORIGIN_ICON: Record<ReviewPageV2.AssignmentOrigin["type"], typeof IconSquare> = {
