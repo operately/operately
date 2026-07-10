@@ -11,7 +11,7 @@ import type { FormattedTimePreferences } from "../FormattedTime";
 
 export namespace ReviewPageV2 {
   export type AssignmentRole = "owner" | "reviewer";
-  export type AssignmentType = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone";
+  export type AssignmentType = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone" | "project_retrospective" | "goal_retrospective";
   export type OriginType = "project" | "goal" | "space";
   export type DueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
