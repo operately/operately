@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 
 import { usePaths } from "@/routes/paths";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { feedTitle } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 

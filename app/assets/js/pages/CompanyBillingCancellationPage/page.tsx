@@ -9,7 +9,7 @@ import { CompanyBillingPage as TurboCompanyBillingPage } from "turboui/CompanyBi
 import { CompanyBillingCancellationPage as TurboCompanyBillingCancellationPage } from "turboui/CompanyBillingCancellationPage";
 import { showErrorToast } from "turboui";
 import { useLoadedData } from "./loader";
-import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useNavigate, useRouteLoaderData } from "react-router";
 import { usePaths } from "@/routes/paths";
 
 interface CompanyRootData {

@@ -48,7 +48,7 @@ export default defineConfig({
   },
 
   resolve: {
-    dedupe: ["react", "react-dom", "react-router", "react-router-dom", "i18next", "react-i18next"],
+    dedupe: ["react", "react-dom", "react-router", "i18next", "react-i18next"],
 
     alias: [
       { find: /^@\/ee\/(.*)$/, replacement: path.resolve(__dirname, "ee/assets/js/$1") },

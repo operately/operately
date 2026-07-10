@@ -6,7 +6,7 @@ import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPag
 import * as React from "react";
 
 import type { ResourceHubLinkType } from "turboui";
-import { useRouteLoaderData } from "react-router-dom";
+import { useRouteLoaderData } from "react-router";
 import { WorkMap } from "turboui";
 
 const UNACCEPTABLE_PATH_CHARACTERS = ["/", "?", "#", "[", "]"];

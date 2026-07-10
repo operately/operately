@@ -12,7 +12,7 @@ import { DimmedLink, Forms, SubscribersSelector, emptyContent, isContentEmpty } 
 import { useSubscriptionsAdapter, SubscriptionsState } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export default { name: "ProjectDiscussionEditPage", loader, Page } as PageModule;
 

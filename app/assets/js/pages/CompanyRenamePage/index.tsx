@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { Forms } from "turboui";
 import { PageModule } from "@/routes/types";
-import { useNavigate, useRevalidator } from "react-router-dom";
+import { useNavigate, useRevalidator } from "react-router";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "CompanyRenamePage", loader, Page } as PageModule;

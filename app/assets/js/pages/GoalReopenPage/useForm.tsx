@@ -3,7 +3,7 @@ import * as Goals from "@/models/goals";
 import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { PageCache } from "@/routes/PageCache";
 import { usePaths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useEditor } from "turboui";

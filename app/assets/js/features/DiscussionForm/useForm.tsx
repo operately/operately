@@ -5,7 +5,7 @@ import { Forms, type FormState as FormsFormState } from "turboui";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { Subscriber } from "@/models/notifications";
 import { usePaths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { emptyContent } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 

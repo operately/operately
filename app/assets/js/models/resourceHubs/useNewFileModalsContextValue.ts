@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { usePaths } from "@/routes/paths";
 import type { NewFileModalsContextValue, ResourceHubLinkType } from "turboui";

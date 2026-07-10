@@ -9,6 +9,7 @@
     "<rootDir>/node_modules"
   ],
   "testEnvironment": "jsdom",
+  "setupFiles": ["<rootDir>/jest.setup.ts"],
   "moduleNameMapper": {
     "\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
     "^@tabler/icons-react/dist/esm/icons/(.+)\\.mjs$": "<rootDir>/src/__mocks__/@tabler/icons-react.js",

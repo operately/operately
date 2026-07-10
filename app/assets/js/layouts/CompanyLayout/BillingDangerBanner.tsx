@@ -3,7 +3,7 @@ import * as React from "react";
 import * as Billing from "@/models/billing";
 import { useHasSupportSessionCookie } from "@/features/SupportSessions";
 import { usePaths } from "@/routes/paths";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { FormattedTime, IconAlertTriangleFilled, SecondaryButton } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 

@@ -1,7 +1,7 @@
 import Api from "@/api";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { accessLevelsAsNumbers, accessLevelsAsStrings, parseParentGoalForTurboUi } from "@/models/goals";
 import * as People from "@/models/people";

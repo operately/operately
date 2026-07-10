@@ -3,7 +3,7 @@ import React from "react";
 import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useBoolState } from "@/hooks/useBoolState";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { links } from "@/models/resourceHubs";
 
 import * as Reactions from "@/models/reactions";
