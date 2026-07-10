@@ -72,7 +72,6 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeReviewer: true,
           includePermissions: true,
           includeContributors: true,
-          includeKeyResources: true,
           includeMilestones: true,
           includeLastCheckIn: true,
           includePrivacy: true,
@@ -207,7 +206,6 @@ function Page() {
     reorderMilestones,
     searchMilestones,
   } = useMilestones(paths, project, refresh);
-  const { resources, createResource, updateResource, removeResource } = useResources(project);
 
   const {
     tasks: baseTasks,
@@ -412,11 +410,6 @@ function Page() {
 
     richTextHandlers: richEditorHandlers,
     localDraftKeyBase: `project:${project.id}`,
-
-    resources,
-    onResourceAdd: createResource,
-    onResourceEdit: updateResource,
-    onResourceRemove: removeResource,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
 
@@ -715,19 +708,6 @@ function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): P
   });
 }
 
-function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[] {
-  return resources.map((r) => prepareResource(r));
-}
-
-function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
-  return {
-    id: resource.id,
-    name: resource.title,
-    url: resource.link,
-    type: resource.resourceType,
-  };
-}
-
 function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
   const parsedMilestones = parseMilestonesForTurboUi(
     paths,
@@ -824,80 +804,4 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
     searchMilestones,
     orderingState,
   };
-}
-
-function useResources(project: Projects.Project) {
-  const [resources, setResources] = React.useState<ProjectPage.Resource[]>(prepareResources(project.keyResources!));
-
-  const createResource = async (resource: ProjectPage.NewResourcePayload) => {
-    return Api.projects
-      .createKeyResource({
-        projectId: project.id,
-        title: resource.name,
-        link: resource.url,
-        resourceType: resource.type,
-      })
-      .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setResources((prev) => [...prev, prepareResource(data.keyResource)]);
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to create resource", e);
-        showErrorToast("Error", "Failed to create resource");
-
-        return { success: false };
-      });
-  };
-
-  const updateResource = async (resource: ProjectPage.UpdateResourcePayload) => {
-    return Api.projects
-      .updateKeyResource({
-        id: resource.id,
-        title: resource.name,
-        link: resource.url,
-      })
-      .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setResources((prev) =>
-          prev.map((r) => {
-            if (r.id === resource.id) {
-              return prepareResource(data.keyResource);
-            }
-            return r;
-          }),
-        );
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to update resource", e);
-        showErrorToast("Error", "Failed to update resource");
-
-        return { success: false };
-      });
-  };
-
-  const removeResource = async (id: string) => {
-    return Api.projects
-      .deleteKeyResource({ id })
-      .then(() => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        const keyResources = project.keyResources || [];
-
-        const updatedResources = keyResources.filter((r) => r.id !== id);
-        setResources(prepareResources(updatedResources));
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to remove resource", e);
-        showErrorToast("Error", "Failed to remove resource");
-
-        return { success: false };
-      });
-  };
-
-  return { resources, createResource, updateResource, removeResource };
 }

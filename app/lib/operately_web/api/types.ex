@@ -700,7 +700,6 @@ defmodule OperatelyWeb.Api.Types do
     field? :last_check_in, :project_check_in, null: true
     field? :milestones, list_of(:milestone), null: true
     field? :contributors, list_of(:project_contributor), null: true
-    field? :key_resources, list_of(:project_key_resource), null: true
     field? :is_outdated, :boolean, null: true
     field? :space_id, :string, null: true
     field? :space, :space, null: true

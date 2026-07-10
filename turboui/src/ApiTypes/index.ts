@@ -1564,7 +1564,6 @@ export interface Project {
   lastCheckIn?: ProjectCheckIn | null;
   milestones?: Milestone[] | null;
   contributors?: ProjectContributor[] | null;
-  keyResources?: ProjectKeyResource[] | null;
   isOutdated?: boolean | null;
   spaceId?: string | null;
   space?: Space | null;

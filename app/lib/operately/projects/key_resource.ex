@@ -1,4 +1,11 @@
 defmodule Operately.Projects.KeyResource do
+  @moduledoc """
+  Deprecated project key resources.
+
+  Legacy links that lived on projects before Docs & Files. New key resources are
+  no longer created; existing rows remain for historical activity and API reads.
+  """
+
   use Operately.Schema
   use Operately.Repo.Getter
 
@@ -13,15 +20,5 @@ defmodule Operately.Projects.KeyResource do
     timestamps()
     request_info()
     requester_access_level()
-  end
-
-  def changeset(attrs) do
-    changeset(%__MODULE__{}, attrs)
-  end
-
-  def changeset(key_resource, attrs) do
-    key_resource
-    |> cast(attrs, [:title, :link, :project_id, :resource_type])
-    |> validate_required([:title, :link, :project_id, :resource_type])
   end
 end

@@ -7,7 +7,6 @@ import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages }
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
-import { ResourceManager } from "../ResourceManager";
 import { BadgeStatus } from "../StatusBadge/types";
 import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
@@ -68,13 +67,10 @@ export namespace ProjectPage {
   }
 
   export type Milestone = TaskBoardTypes.Milestone;
-  export type Resource = ResourceManager.Resource;
   export type Task = TaskBoardTypes.Task;
 
   export type NewMilestonePayload = TaskBoardTypes.NewMilestonePayload;
   export type UpdateMilestonePayload = TaskBoardTypes.UpdateMilestonePayload;
-  export type NewResourcePayload = ResourceManager.NewResourcePayload;
-  export type UpdateResourcePayload = ResourceManager.Resource;
   export type NewTaskPayload = TaskBoardTypes.NewTaskPayload;
   export type TaskStatus = TaskBoardTypes.StatusCustomizationStatus;
 
@@ -190,12 +186,6 @@ export namespace ProjectPage {
 
     onTaskDescriptionChange: (taskId: string, description: any) => Promise<boolean>;
     getTaskPageProps: KanbanBoardProps["getTaskPageProps"];
-
-    // Resource management
-    resources: ResourceManager.Resource[];
-    onResourceAdd: (resource: NewResourcePayload) => void;
-    onResourceEdit: (resource: ResourceManager.Resource) => void;
-    onResourceRemove: (id: string) => void;
 
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;

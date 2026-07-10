@@ -200,17 +200,21 @@ defmodule Operately.Data.Change102MigrateProjectKeyResourcesToResourceHubLinksTe
 
     attrs = Map.merge(base, attrs)
 
-    %KeyResource{}
-    |> KeyResource.changeset(attrs)
+    %KeyResource{
+      project_id: project.id,
+      title: attrs.title,
+      link: attrs.link,
+      resource_type: attrs.resource_type
+    }
     |> put_timestamp_attrs(attrs)
     |> Repo.insert!()
   end
 
-  defp put_timestamp_attrs(changeset, attrs) do
-    Enum.reduce([:inserted_at, :updated_at], changeset, fn field, cs ->
+  defp put_timestamp_attrs(key_resource, attrs) do
+    Enum.reduce([:inserted_at, :updated_at], key_resource, fn field, resource ->
       case Map.fetch(attrs, field) do
-        {:ok, value} -> Ecto.Changeset.put_change(cs, field, to_naive_datetime(value))
-        :error -> cs
+        {:ok, value} -> Map.put(resource, field, to_naive_datetime(value))
+        :error -> resource
       end
     end)
   end

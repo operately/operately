@@ -273,10 +273,6 @@ function ProjectPageHarness({
         richTextHandlers={createMockRichEditorHandlers()}
         onTaskDescriptionChange={async () => true}
         getTaskPageProps={() => ({}) as any}
-        resources={[]}
-        onResourceAdd={() => undefined}
-        onResourceEdit={() => undefined}
-        onResourceRemove={() => undefined}
         subscriptions={subscriptions}
         docsAndFiles={docsAndFiles}
         formattedTimePreferences={defaultFormattedTimePreferences}
