@@ -5,7 +5,7 @@ defmodule Operately.Messages.Message do
   alias Operately.Notifications
   alias Operately.StateMachine
 
-  @valid_states [:draft, :published]
+  @valid_states [:draft, :scheduled, :published]
 
   schema "messages" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -21,6 +21,7 @@ defmodule Operately.Messages.Message do
     field :body, :map
     field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
+    field :scheduled_at, :utc_datetime
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
@@ -40,11 +41,12 @@ defmodule Operately.Messages.Message do
 
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state, :published_at, :inserted_at])
+    |> cast(attrs, [:messages_board_id, :author_id, :title, :body, :subscription_list_id, :state, :published_at, :scheduled_at, :inserted_at])
     |> StateMachine.cast_and_validate(:state, %{
       initial: :draft,
       states: [
-        %{name: :draft, allow_transition_to: [:published]},
+        %{name: :draft, allow_transition_to: [:scheduled, :published]},
+        %{name: :scheduled, allow_transition_to: [:draft, :published]},
         %{name: :published, on_enter: &set_published_at/1}
       ]
     })

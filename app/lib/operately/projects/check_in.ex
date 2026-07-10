@@ -5,7 +5,7 @@ defmodule Operately.Projects.CheckIn do
   alias Operately.Notifications
 
   @valid_statuses [:on_track, :caution, :off_track]
-  @valid_states [:draft, :published]
+  @valid_states [:draft, :scheduled, :published]
 
   schema "project_check_ins" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -16,6 +16,7 @@ defmodule Operately.Projects.CheckIn do
     field :description, :map
     field :state, Ecto.Enum, values: @valid_states, default: :published
     field :published_at, :utc_datetime
+    field :scheduled_at, :utc_datetime
 
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
     field :acknowledged_at, :utc_datetime
@@ -41,15 +42,15 @@ defmodule Operately.Projects.CheckIn do
 
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:author_id, :project_id, :description, :status, :state, :published_at, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
+    |> cast(attrs, [:author_id, :project_id, :description, :status, :state, :published_at, :scheduled_at, :acknowledged_by_id, :acknowledged_at, :subscription_list_id])
     |> validate_required([:author_id, :project_id, :description, :status, :state, :subscription_list_id])
     |> validate_state_transition()
     |> set_published_at()
   end
 
   defp validate_state_transition(changeset) do
-    if changeset.data.__meta__.state == :loaded and changeset.data.state == :published and get_change(changeset, :state) == :draft do
-      add_error(changeset, :state, "cannot move a published check-in back to draft")
+    if changeset.data.__meta__.state == :loaded and changeset.data.state == :published and get_change(changeset, :state) in [:draft, :scheduled] do
+      add_error(changeset, :state, "cannot move a published check-in back to draft or scheduled")
     else
       changeset
     end

@@ -6,7 +6,7 @@ defmodule Operately.Goals.Update do
   alias Operately.Goals.Update.Permissions
 
   @valid_statuses [:on_track, :caution, :off_track]
-  @valid_states [:draft, :published]
+  @valid_states [:draft, :scheduled, :published]
 
   schema "goal_updates" do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
@@ -22,6 +22,7 @@ defmodule Operately.Goals.Update do
     field :status, Ecto.Enum, values: @valid_statuses
     field :state, Ecto.Enum, values: @valid_states, default: :published
     field :published_at, :utc_datetime
+    field :scheduled_at, :utc_datetime
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
 
     field :acknowledged_at, :utc_datetime
@@ -53,6 +54,7 @@ defmodule Operately.Goals.Update do
       :status,
       :state,
       :published_at,
+      :scheduled_at,
       :acknowledged_at,
       :acknowledged_by_id,
       :subscription_list_id
@@ -76,8 +78,8 @@ defmodule Operately.Goals.Update do
   def valid_states, do: @valid_states
 
   defp validate_state_transition(changeset) do
-    if changeset.data.__meta__.state == :loaded and changeset.data.state == :published and get_change(changeset, :state) == :draft do
-      add_error(changeset, :state, "cannot move a published check-in back to draft")
+    if changeset.data.__meta__.state == :loaded and changeset.data.state == :published and get_change(changeset, :state) in [:draft, :scheduled] do
+      add_error(changeset, :state, "cannot move a published check-in back to draft or scheduled")
     else
       changeset
     end
