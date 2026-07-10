@@ -1,7 +1,7 @@
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import { assertPresent } from "@/utils/assertions";
-import { redirect } from "react-router-dom";
+import { redirect } from "react-router";
 
 export async function redirectIfFeatureEnabled(params: any, { feature, path }) {
   assertPresent(params["companyId"], "companyId must be present");

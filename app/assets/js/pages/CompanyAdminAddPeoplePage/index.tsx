@@ -7,7 +7,7 @@ import * as Permissions from "@/models/permissions";
 
 import { PageModule } from "@/routes/types";
 import { includesId, usePaths } from "@/routes/paths";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { CompanyAdminAddPeoplePage, InviteMemberForm, showErrorToast } from "turboui";
 
 import * as Pages from "@/components/Pages";

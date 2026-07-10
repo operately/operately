@@ -5,7 +5,7 @@ import * as Activities from "@/models/activities";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";

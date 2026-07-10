@@ -3,7 +3,7 @@ import ErrorPage from "./ErrorPage";
 
 import pages from "@/pages";
 
-import { createBrowserRouter, ShouldRevalidateFunction } from "react-router-dom";
+import { createBrowserRouter, ShouldRevalidateFunction } from "react-router";
 import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
@@ -31,8 +31,8 @@ function CompanyRoutes() {
   );
 }
 
-export function createAppRoutes() {
-  return createBrowserRouter([
+export function createAppRoutes(createRouter: typeof createBrowserRouter = createBrowserRouter) {
+  return createRouter([
     {
       path: "/",
       element: <NonCompanyRoutes />,

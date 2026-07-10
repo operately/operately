@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useLayoutEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
 import type { BoardMove } from "../../utils/PragmaticDragAndDrop";

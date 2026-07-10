@@ -1,5 +1,5 @@
 // Tabs in this file are controlled by the URL query parameter (e.g., ?tab=tabId).
-// The useTabs hook uses react-router-dom's useLocation to read the current tab query parameter from the URL.
+// The useTabs hook uses react-router's useLocation to read the current tab query parameter from the URL.
 // Whenever the query parameter changes (via navigation, clicking a tab, or browser navigation),
 // useTabs will update the active tab accordingly. This ensures the tab state is always
 // in sync with the URL, and works seamlessly with React Router navigation.
@@ -13,7 +13,7 @@
 // handles location changes and triggers re-renders automatically.
 
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 import { DivLink } from "../Link";
 import classNames from "../utils/classnames";

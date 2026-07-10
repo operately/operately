@@ -5,7 +5,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { IconEdit, IconTrash, showSuccessToast } from "turboui";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useDeleteGoalProgressUpdate } from "@/models/goalCheckIns";

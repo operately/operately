@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Router from "react-router-dom";
+import * as Router from "react-router";
 
 import classNames from "../utils/classnames";
 export { GhostLink } from "./GhostLink";
