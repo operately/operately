@@ -14,7 +14,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Comments.CommentThread do
       subscription_list: OperatelyWeb.Api.Serializer.serialize(thread.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(thread.potential_subscribers),
       comments_count: thread.comments_count,
-      can_comment: thread.can_comment
+      can_comment: thread.can_comment,
+      acknowledged_at: OperatelyWeb.Api.Serializer.serialize(thread.acknowledged_at),
+      acknowledged_by: OperatelyWeb.Api.Serializer.serialize(thread.acknowledged_by),
     }
   end
 

@@ -79,6 +79,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_contributor_edited",
     "project_retrospective_edited",
     "project_retrospective_commented",
+    "project_retrospective_acknowledged",
     "project_key_resource_added",
     "project_key_resource_deleted",
     "project_start_date_updating",

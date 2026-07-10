@@ -6,6 +6,7 @@ defmodule Operately.Comments.CommentThread do
   schema "comment_threads" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
+    belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
 
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :comment_thread]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :comment_thread]
@@ -20,6 +21,7 @@ defmodule Operately.Comments.CommentThread do
     field :has_title, :boolean, default: false
 
     field :message, :map
+    field :acknowledged_at, :utc_datetime
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
@@ -39,7 +41,7 @@ defmodule Operately.Comments.CommentThread do
 
   def changeset(comment_thread, attrs) do
     comment_thread
-    |> cast(attrs, [:message, :parent_id, :parent_type, :title, :has_title, :subscription_list_id, :author_id])
+    |> cast(attrs, [:message, :parent_id, :parent_type, :title, :has_title, :subscription_list_id, :author_id, :acknowledged_by_id, :acknowledged_at])
     |> validate_required([:message, :parent_id, :parent_type, :subscription_list_id])
     |> validate_required_author_id()
   end

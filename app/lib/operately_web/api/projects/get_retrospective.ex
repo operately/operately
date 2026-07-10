@@ -54,10 +54,11 @@ defmodule OperatelyWeb.Api.Projects.GetRetrospective do
   def preload(inputs) do
     Inputs.parse_includes(inputs, [
       include_author: [:author],
-      include_project: [:project],
+      include_project: [project: [:champion, :reviewer]],
       include_closed_at: [:project],
       include_reactions: [reactions: :person],
       include_subscriptions_list: :subscription_list,
+      always_include: [:acknowledged_by],
     ])
   end
 
