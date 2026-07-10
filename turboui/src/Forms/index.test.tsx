@@ -13,6 +13,7 @@ import {
   RichTextArea,
   SelectBox,
   SelectPerson,
+  SelectGoal,
   SelectStatus,
   Submit,
   SubmitButton,
@@ -39,8 +40,11 @@ jest.mock("../RichEditor", () => ({
 jest.mock("../icons", () => ({
   IconCheck: () => <svg data-testid="icon-check" />,
   IconBuilding: () => <svg data-testid="icon-building" />,
+  IconBuildingEstate: () => <svg data-testid="icon-building-estate" />,
   IconTent: () => <svg data-testid="icon-tent" />,
   IconChevronDown: () => <svg data-testid="icon-chevron-down" />,
+  IconChevronRight: () => <svg data-testid="icon-chevron-right" />,
+  IconGoalPlain: () => <svg data-testid="icon-goal-plain" />,
 }));
 
 jest.mock("react-select", () => {
@@ -458,6 +462,75 @@ describe("Forms", () => {
 
     await waitFor(() => expect(screen.getByText("Can't be empty")).toBeInTheDocument());
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  test("selects a goal from the hierarchical dropdown", async () => {
+    const onSubmit = jest.fn();
+    const goals = [
+      { id: "goal-1", name: "Parent Goal", parentGoalId: null },
+      { id: "goal-2", name: "Child Goal", parentGoalId: "goal-1" },
+    ];
+
+    function Harness() {
+      const form = useForm({
+        fields: { goal: null as (typeof goals)[number] | null },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectGoal field="goal" label="Goal" goals={goals} required={false} />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(document.querySelector('[data-test-id="goal-selector"]')!);
+    fireEvent.click(document.querySelector('[data-test-id="goal-parent-goal"]')!);
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        goal: goals[0],
+      }),
+    );
+  });
+
+  test("allows selecting company-wide goal when enabled", async () => {
+    const onSubmit = jest.fn();
+    const goals = [{ id: "goal-1", name: "Parent Goal", parentGoalId: null }];
+
+    function Harness() {
+      const form = useForm({
+        fields: { goal: goals[0] as (typeof goals)[number] | null },
+        submit: async () => {
+          onSubmit(form.values);
+        },
+      });
+
+      return (
+        <Form form={form}>
+          <SelectGoal field="goal" label="Goal" goals={goals} required={false} allowCompanyWide />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.click(document.querySelector('[data-test-id="goal-selector"]')!);
+    fireEvent.click(document.querySelector('[data-test-id="select-company-wide-option"]')!);
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        goal: null,
+      }),
+    );
   });
 
   test("updates select box values with numeric options", async () => {

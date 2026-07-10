@@ -162,6 +162,22 @@ export interface SelectPersonProps {
   autoFocus?: boolean;
 }
 
+export interface SelectGoalGoal {
+  id: string;
+  name: string;
+  parentGoalId?: string | null;
+  isClosed?: boolean | null;
+  isArchived?: boolean | null;
+}
+
+export interface SelectGoalProps {
+  field: string;
+  goals: SelectGoalGoal[];
+  label?: string;
+  required?: boolean;
+  allowCompanyWide?: boolean;
+}
+
 export interface RichTextAreaProps {
   field: string;
   richTextHandlers: RichEditorHandlers;
