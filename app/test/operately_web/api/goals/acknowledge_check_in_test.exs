@@ -16,53 +16,53 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckInTest do
   end
 
   describe "permissions" do
+    @table [
+      %{company: :no_access, space: :no_access, goal: :no_access, expected: 404},
+      %{company: :no_access, space: :no_access, goal: :champion, expected: 200},
+      %{company: :no_access, space: :no_access, goal: :reviewer, expected: 200},
+      %{company: :no_access, space: :comment_access, goal: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, goal: :no_access, expected: 200},
+      %{company: :no_access, space: :full_access, goal: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, goal: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, goal: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, goal: :no_access, expected: 200}
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
-      space = group_fixture(creator, %{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
 
-      Map.merge(ctx, %{creator: creator, space_id: space.id})
+      Map.merge(ctx, %{creator: creator, space: space})
     end
 
-    test "company members without view access can't see an update", ctx do
-      update = create_update(ctx, company_access_level: Binding.no_access())
+    tabletest @table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        goal = create_goal(ctx, @test.company, @test.space, @test.goal)
+        update = goal_update_fixture(ctx.creator, goal)
 
-      assert {404, res} = request(ctx.conn, update)
-      assert res.message == "The requested resource was not found"
+        assert {code, res} = request(ctx.conn, update)
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert_response(res, update)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
     end
 
-    test "company members can't acknowledge an update", ctx do
-      update = create_update(ctx, company_access_level: Binding.edit_access())
+    test "authors cannot acknowledge their own check-ins", ctx do
+      goal = create_goal(ctx, :no_access, :no_access, :champion)
+      update = goal_update_fixture(ctx.person, goal)
 
-      assert {403, res} = request(ctx.conn, update)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "space members without view access can't see an update", ctx do
-      add_person_to_space(ctx)
-      update = create_update(ctx, space_access_level: Binding.no_access())
-
-      assert {404, res} = request(ctx.conn, update)
-      assert res.message == "The requested resource was not found"
-    end
-
-    test "space members can't acknowledge an update", ctx do
-      add_person_to_space(ctx)
-      update = create_update(ctx, space_access_level: Binding.edit_access())
-
-      assert {403, res} = request(ctx.conn, update)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "reviewers can acknowledge an update", ctx do
-      update = create_update(ctx, reviewer_id: ctx.person.id)
-
-      assert {200, res} = request(ctx.conn, update)
-      assert_response(res, update)
+      assert {400, res} = request(ctx.conn, update)
+      assert res.message == "Authors cannot acknowledge their own check-ins"
     end
 
     test "draft updates cannot be acknowledged", ctx do
-      update = create_update(ctx, reviewer_id: ctx.person.id, post_as_draft: true)
+      goal = create_goal(ctx, :no_access, :no_access, :reviewer)
+      update = goal_update_fixture(ctx.creator, goal, post_as_draft: true)
 
       assert {404, res} = request(ctx.conn, update)
       assert res.message == "The requested resource was not found"
@@ -82,13 +82,27 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckInTest do
     end
 
     test "acknowledges goal update", ctx do
-      update = create_update(ctx, reviewer_id: ctx.person.id)
+      goal = goal_fixture(ctx.creator, %{space_id: ctx.company.company_space_id, reviewer_id: ctx.person.id})
+      update = goal_update_fixture(ctx.creator, goal)
 
       refute update.acknowledged_at
       refute update.acknowledged_by_id
 
       assert {200, res} = mutation(ctx.conn, [:goals, :acknowledge_check_in], %{id: Paths.goal_update_id(update)})
       assert_response(res, update)
+    end
+
+    test "idempotency: acknowledging the same check-in multiple times does not change the state", ctx do
+      goal = goal_fixture(ctx.creator, %{space_id: ctx.company.company_space_id, reviewer_id: ctx.person.id})
+      update = goal_update_fixture(ctx.creator, goal)
+
+      assert {200, res} = request(ctx.conn, update)
+      assert_response(res, update)
+      assert acknowledge_activity_count() == 1
+
+      assert {200, res} = request(ctx.conn, update)
+      assert_response(res, update)
+      assert acknowledge_activity_count() == 1
     end
   end
 
@@ -108,33 +122,41 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckInTest do
     assert res.update == Serializer.serialize(update, level: :full)
   end
 
-  defp create_update(ctx, opts) do
-    goal_attrs = Keyword.drop(opts, [:post_as_draft])
+  defp acknowledge_activity_count do
+    import Ecto.Query, only: [from: 2]
+
+    from(a in Operately.Activities.Activity, where: a.action == "goal_check_in_acknowledgement")
+    |> Operately.Repo.aggregate(:count)
+  end
+
+  defp create_goal(ctx, company_members_level, space_members_level, goal_member_level) do
+    attrs =
+      case goal_member_level do
+        :champion -> [champion_id: ctx.person.id]
+        :reviewer -> [reviewer_id: ctx.person.id]
+        _ -> []
+      end
 
     goal =
       goal_fixture(
         ctx.creator,
-        Enum.into(goal_attrs, %{
-          space_id: ctx[:space_id] || ctx.company.company_space_id,
-          company_access_level: Keyword.get(opts, :company_access_level, Binding.no_access()),
-          space_access_level: Keyword.get(opts, :space_access_level, Binding.no_access())
+        Enum.into(attrs, %{
+          space_id: ctx.space.id,
+          company_access_level: Binding.from_atom(company_members_level),
+          space_access_level: Binding.from_atom(space_members_level)
         })
       )
 
-    attrs = Keyword.take(opts, [:post_as_draft])
+    if space_members_level != :no_access do
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, ctx.space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
+    end
 
-    goal_update_fixture(ctx.creator, goal, attrs)
-  end
-
-  defp add_person_to_space(ctx) do
-    space = Operately.Groups.get_group!(ctx.space_id)
-
-    {:ok, _} =
-      Operately.Groups.add_members(ctx.creator, space.id, [
-        %{
-          id: ctx.person.id,
-          access_level: Binding.edit_access()
-        }
-      ])
+    goal
   end
 end
