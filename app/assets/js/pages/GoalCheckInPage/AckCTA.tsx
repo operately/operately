@@ -16,12 +16,10 @@ import { useLoadedData, useRefresh } from "./loader";
 // acknowledge the check-in. When the automatic acknowledgement path is used, the check-in will be
 // acknowledged immediately and the button will not be shown.
 //
-// There are other conditions that must be met for the button to be shown:
+// The button is shown when:
 //
-// - The check-in must not have been acknowledged already.
-// - The user must have the permission to acknowledge the check-in.
-// - The user must be the reviewer of the project.
-// - The project must have a reviewer.
+// - The check-in has not been acknowledged already.
+// - The user has permission to acknowledge (edit access, and not the author).
 // - The acknowledgement is not automatic via the URL parameter.
 //
 

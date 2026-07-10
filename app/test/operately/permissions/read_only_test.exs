@@ -60,6 +60,22 @@ defmodule Operately.Permissions.ReadOnlyTest do
              can_comment: false
            }
 
+    assert GoalUpdatePermissions.calculate(Binding.full_access(), update, "reviewer", company_read_only: false) == %GoalUpdatePermissions{
+             can_view: true,
+             can_edit: true,
+             can_delete: true,
+             can_acknowledge: true,
+             can_comment: true
+           }
+
+    assert GoalUpdatePermissions.calculate(Binding.full_access(), update, "author", company_read_only: false) == %GoalUpdatePermissions{
+             can_view: true,
+             can_edit: true,
+             can_delete: true,
+             can_acknowledge: false,
+             can_comment: true
+           }
+
     assert GoalUpdatePermissions.check_can_edit(Binding.full_access(), company_read_only: true) == {:error, :unauthorized}
   end
 
