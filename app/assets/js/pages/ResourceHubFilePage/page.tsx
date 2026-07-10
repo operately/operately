@@ -16,7 +16,17 @@ import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
-import { Avatar, CurrentSubscriptions, FormattedTime, Forms, ResourcePageNavigation, richContentToString, RichContent, Spacer, TextSeparator } from "turboui";
+import {
+  Avatar,
+  CurrentSubscriptions,
+  FormattedTime,
+  Forms,
+  ResourcePageNavigation,
+  richContentToString,
+  RichContent,
+  Spacer,
+  TextSeparator,
+} from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -34,10 +44,7 @@ export function Page() {
   return (
     <Pages.Page title={file.name!}>
       <Paper.Root>
-        <ResourcePageNavigation
-          resource={navigationFile}
-          paths={resourceHubNavigationPaths(paths)}
-        />
+        <ResourcePageNavigation resource={navigationFile} paths={resourceHubNavigationPaths(paths)} />
 
         <Paper.Body>
           <Title />

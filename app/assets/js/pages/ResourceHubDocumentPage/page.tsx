@@ -15,7 +15,15 @@ import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { OngoingDraftActions } from "@/features/drafts";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CopyDocumentModalWrapper, Forms, ResourcePageNavigation, RichContent, CurrentSubscriptions, Spacer, displayDate } from "turboui";
+import {
+  CopyDocumentModalWrapper,
+  Forms,
+  ResourcePageNavigation,
+  RichContent,
+  CurrentSubscriptions,
+  Spacer,
+  displayDate,
+} from "turboui";
 import { useCopyDocumentListContext } from "@/models/resourceHubs";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
@@ -43,10 +51,7 @@ export function Page() {
   return (
     <Pages.Page title={document.name!}>
       <Paper.Root size="large">
-        <ResourcePageNavigation
-          resource={navigationDocument}
-          paths={resourceHubNavigationPaths(paths)}
-        />
+        <ResourcePageNavigation resource={navigationDocument} paths={resourceHubNavigationPaths(paths)} />
 
         <Paper.Body minHeight="600px" className="lg:px-28">
           <Options showCopyModal={openCopyForm} showDeleteModal={toggleDeleteConfirmModal} />
