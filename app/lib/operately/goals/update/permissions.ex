@@ -1,6 +1,10 @@
 defmodule Operately.Goals.Update.Permissions do
+  import Ecto.Query, only: [from: 2]
+
   alias Operately.Access.Binding
+  alias Operately.Goals.Update
   alias Operately.Permissions.ReadOnly
+  alias Operately.Repo
 
   defstruct [
     :can_view,
@@ -28,7 +32,7 @@ defmodule Operately.Goals.Update.Permissions do
   def can_comment(access_level), do: access_level >= Binding.comment_access()
 
   def can_acknowledge(access_level, update, user_id) when is_binary(user_id) do
-    can_edit(access_level) and update.author_id != user_id
+    can_edit(access_level) and author_id(update) != user_id
   end
 
   def check_can_edit(access_level, company_read_only: company_read_only) do
@@ -47,5 +51,11 @@ defmodule Operately.Goals.Update.Permissions do
       false -> {:error, :unauthorized}
       nil -> raise "Unknown permission: #{permission}"
     end
+  end
+
+  defp author_id(%Update{author_id: author_id}), do: author_id
+
+  defp author_id(update_id) when is_binary(update_id) do
+    Repo.one(from(u in Update, where: u.id == ^update_id, select: u.author_id))
   end
 end
