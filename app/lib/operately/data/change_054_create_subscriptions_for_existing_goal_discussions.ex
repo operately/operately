@@ -1,9 +1,9 @@
 defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions do
   import Ecto.Query, only: [from: 2]
 
-  alias Operately.{Comments, Notifications, Repo}
-  alias Operately.Comments.CommentThread
+  alias Operately.{Notifications, Repo}
   alias Operately.Notifications.{SubscriptionList, Subscription}
+  alias __MODULE__.CommentThread
 
   def run do
     Repo.transaction(fn ->
@@ -11,8 +11,7 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions 
         join: a in assoc(t, :activity),
         preload: [activity: a],
         where: is_nil(t.subscription_list_id),
-        where: a.action in ["goal_discussion_creation", "goal_closing", "goal_reopening", "goal_timeframe_editing"],
-        select: ^(CommentThread.__schema__(:fields) -- [:author_id])
+        where: a.action in ["goal_discussion_creation", "goal_closing", "goal_reopening", "goal_timeframe_editing"]
       )
       |> Repo.all()
       |> create_lists()
@@ -44,11 +43,7 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions 
   end
 
   defp update_thread(list, thread) do
-    {:ok, _} =
-      Comments.update_comment_thread(thread, %{
-        subscription_list_id: list.id
-      })
-
+    {:ok, _} = CommentThread.update(thread, %{subscription_list_id: list.id})
     list
   end
 
@@ -75,6 +70,35 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions 
     case Operately.Goals.Goal.get(:system, id: goal_id, opts: [with_deleted: true, preload: :access_context]) do
       {:ok, goal} -> Operately.Access.BindedPeopleLoader.load(goal.access_context.id)
       {:error, _} -> []
+    end
+  end
+
+  defmodule CommentThread do
+    use Operately.Schema
+
+    schema "comment_threads" do
+      belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
+
+      has_one :activity, Operately.Activities.Activity, foreign_key: :comment_thread_id
+
+      field :parent_id, :binary_id
+      field :parent_type, Ecto.Enum, values: [:activity]
+      field :title, :string
+      field :has_title, :boolean, default: false
+      field :message, :map
+
+      timestamps()
+    end
+
+    def changeset(thread, attrs) do
+      thread
+      |> cast(attrs, [:subscription_list_id])
+    end
+
+    def update(thread, attrs) do
+      thread
+      |> changeset(attrs)
+      |> Operately.Repo.update()
     end
   end
 end
