@@ -94,7 +94,7 @@ const form = Forms.useForm({ fields: { ... }, submit: async () => { ... } });
 | 5 — Multi-Action Submit and Check-Ins | [x] Complete |
 | 6 — Domain Selector Bridges | [x] Complete |
 | 7 — GoalTargetsV2 and Stragglers | [x] Complete |
-| 8 — Delete Legacy App Forms | [ ] Not started |
+| 8 — Delete Legacy App Forms | [x] Complete |
 
 ```mermaid
 flowchart TB
@@ -396,20 +396,20 @@ import { Forms } from "turboui";
 
 ## Phase 8 — Delete Legacy App Forms
 
-**Phase complete:** [ ]
+**Phase complete:** [x]
 
 **Goal:** Remove deprecated module.
 
 ### Work
 
-- [ ] Delete `app/assets/js/components/Forms/`
-- [ ] Update EE jest mocks to mock `turboui` Forms
-- [ ] Update `.agents/skills/components-architecture/reference.md`
+- [x] Delete `app/assets/js/components/Forms/`
+- [x] Update EE jest mocks to mock `turboui` Forms *(no remaining Forms mocks)*
+- [x] Update `.agents/skills/components-architecture/reference.md` *(no Forms references remaining)*
 
 ### Acceptance
 
-- [ ] Folder gone; CI green
-- [ ] `make test.tsc.lint`
+- [x] Folder gone; CI green
+- [x] `make test.tsc.lint`
 
 ---
 
