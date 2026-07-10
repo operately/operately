@@ -33,7 +33,9 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeRetrospective do
     |> run(:check_not_the_author, fn ctx -> check_not_the_author(ctx.me, ctx.retrospective) end)
     |> run(:operation, fn ctx -> ProjectRetrospectiveAcknowledgement.run(ctx.me, ctx.retrospective) end)
     |> run(:serialized, fn ctx ->
-      retrospective = Repo.preload(ctx.operation, [:project, :author, :acknowledged_by])
+      retrospective =
+        Repo.preload(ctx.operation, [:project, :author, :acknowledged_by], force: true)
+
       {:ok, %{retrospective: Serializer.serialize(retrospective)}}
     end)
     |> respond()
@@ -45,7 +47,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeRetrospective do
         {:ok, ctx.serialized}
 
       {:error, :check_already_acknowledged, e} ->
-        retrospective = Repo.preload(e.context.retrospective, [:project, :author, :acknowledged_by])
+        retrospective = Repo.preload(e.context.retrospective, [:project, :author, :acknowledged_by], force: true)
         {:ok, %{retrospective: Serializer.serialize(retrospective)}}
 
       {:error, :retrospective, _} ->

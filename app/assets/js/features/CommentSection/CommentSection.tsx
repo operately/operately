@@ -36,6 +36,7 @@ interface CommentSectionProps {
   form: FormState;
   commentParentType: CommentParentType;
   canComment: boolean;
+  ackLabel?: string;
 }
 
 export function CommentSection(props: CommentSectionProps) {
@@ -58,7 +59,7 @@ export function CommentSection(props: CommentSectionProps) {
           } else if (item.type === "milestone-reopened") {
             return <MilestoneReopened key={index} comment={item.value} />;
           } else {
-            return <AckComment key={index} person={item.value} ackAt={item.insertedAt} />;
+            return <AckComment key={index} person={item.value} ackAt={item.insertedAt} label={props.ackLabel} />;
           }
         })}
 
@@ -278,8 +279,9 @@ function CommentDropdownMenu({ comment, onEdit, onDelete }) {
   );
 }
 
-function AckComment({ person, ackAt }) {
+function AckComment({ person, ackAt, label }: { person: People.Person; ackAt: Date; label?: string }) {
   const formattedTimePreferences = useFormattedTimePreferences();
+  const ackLabel = label || "Check-In";
 
   return (
     <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
@@ -289,7 +291,7 @@ function AckComment({ person, ackAt }) {
 
       <div className="flex items-center justify-between flex-1">
         <div className="flex items-center gap-2 font-bold flex-1">
-          {person.fullName} acknowledged this Check-In
+          {person.fullName} acknowledged this {ackLabel}
           <IconSquareCheckFilled size={24} className="text-accent-1" />
         </div>
 
