@@ -1,14 +1,28 @@
-import { expect, within, userEvent } from "storybook/test";
+import { expect, within, userEvent, waitFor } from "storybook/test";
+
+export const ensureItemExpanded = async (canvasElement, step, parentName, childNames) => {
+  const canvas = within(canvasElement);
+  const childVisible = childNames.some((name) => canvas.queryByText(name));
+
+  if (!childVisible) {
+    await toggleItem(canvasElement, step, parentName);
+  }
+};
+
+export const resetWorkMapExpandedState = async (_canvasElement, step) => {
+  await step("Reset work map expanded state", async () => {
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith("workmap:")) {
+        localStorage.removeItem(key);
+      }
+    }
+  });
+};
 
 export const selectTab = async (canvasElement, step, tab) => {
-  const canvas = within(canvasElement);
-
   await step("Select the " + tab + " tab", async () => {
-    // Find the tab by its label text, which corresponds to the tab ID in most cases
-    // For example, "all" tab has label "All work", "goals" tab has label "Goals"
     let tabLabel: string;
 
-    // Map the tab ID to its display label
     switch (tab) {
       case "all":
         tabLabel = "All work";
@@ -26,12 +40,17 @@ export const selectTab = async (canvasElement, step, tab) => {
         tabLabel = "Paused";
         break;
       default:
-        tabLabel = tab; // Fallback to using the ID directly
+        tabLabel = tab;
     }
 
-    // Use role=link because DivLink renders as an anchor tag
-    const tabElement = canvas.getByRole("link", { name: new RegExp(tabLabel, "i") });
-    await userEvent.click(tabElement);
+    const tabTestId = `tab-${tabLabel.toLowerCase()}`;
+    const tabElement = canvasElement.querySelector(`[data-test-id="${tabTestId}"]`);
+    expect(tabElement).not.toBeNull();
+    await userEvent.click(tabElement!);
+
+    await waitFor(() => {
+      expect(tabElement!.className).toContain("text-white");
+    });
   });
 };
 
@@ -74,8 +93,9 @@ export const toggleItem = async (canvasElement, step, name) => {
     const goalRowElement = canvas.getByText(name);
     const goalRow = goalRowElement.closest("tr") as HTMLElement;
 
-    const expandButton = within(goalRow).getByTestId("chevron-icon");
-    await userEvent.click(expandButton);
+    const expandButton = goalRow.querySelector('[data-test-id^="chevron-icon"]');
+    expect(expandButton).not.toBeNull();
+    await userEvent.click(expandButton!);
   });
 };
 
@@ -125,7 +145,7 @@ export const assertChildrenHidden = async (canvasElement, step, names) => {
 export const assertZeroState = async (canvasElement, step) => {
   await step("Assert that the zero state guidance is visible", async () => {
     const canvas = within(canvasElement);
-    const headline = canvas.getByText("Track company goals and projects");
+    const headline = canvas.getByText("Start by adding a goal or project");
     expect(headline).toBeInTheDocument();
   });
 };
