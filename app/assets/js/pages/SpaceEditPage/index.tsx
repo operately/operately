@@ -4,7 +4,7 @@ import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { Forms } from "turboui";
 

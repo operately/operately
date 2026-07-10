@@ -7,7 +7,7 @@ import * as React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useLoadedData } from "./loader";
 
 import { SelectGoal } from "@/features/forms/SelectGoal";

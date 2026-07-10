@@ -16,7 +16,7 @@ import {
   Target,
 } from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";

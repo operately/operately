@@ -11,7 +11,7 @@ import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 import { compareIds, usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export default { name: "SpaceAddMembersPage", loader, Page } as PageModule;
 

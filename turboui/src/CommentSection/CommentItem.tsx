@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
 import { FormattedTime } from "../FormattedTime";

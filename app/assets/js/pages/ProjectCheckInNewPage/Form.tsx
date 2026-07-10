@@ -3,7 +3,7 @@ import React from "react";
 import { Person } from "@/models/people";
 import { parseCheckInsForTurboUi, usePostProjectCheckIn, ProjectCheckInStatus } from "@/models/projectCheckIns";
 import { Project } from "@/models/projects";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";

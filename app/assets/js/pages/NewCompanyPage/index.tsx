@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { Forms, Link } from "turboui";
 import { PageModule } from "@/routes/types";

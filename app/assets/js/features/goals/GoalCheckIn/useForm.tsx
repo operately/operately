@@ -1,7 +1,7 @@
 import type { CheckInState } from "@/api";
 import { Update, useEditGoalProgressUpdate, usePostGoalProgressUpdate } from "@/models/goalCheckIns";
 import { Goal } from "@/models/goals";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import * as Pages from "@/components/Pages";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";

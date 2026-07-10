@@ -27,7 +27,7 @@ import { useJoinSpace } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
 

@@ -168,6 +168,7 @@ dev.teardown:
 
 test.build:
 	$(MAKE) test.up
+	$(MAKE) test.app.node_modules
 	$(MAKE) test.turboui.build
 	$(MAKE) test.app.build
 	$(MAKE) test.db.create

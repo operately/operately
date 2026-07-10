@@ -9,7 +9,7 @@ import { BlackLink } from "../../Link";
 import { PageNew } from "../../Page";
 import { SpaceField } from "../../SpaceField";
 import type { StatusSelector } from "../../StatusSelector";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 import { AddItemModal } from "./AddItemModal";
 import { WorkMapTimeline } from "./WorkMapTimeline";
