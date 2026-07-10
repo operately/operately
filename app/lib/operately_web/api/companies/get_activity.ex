@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.Companies.GetActivity do
 
   defp preload(inputs) do
     Inputs.parse_includes(inputs, [
-      always_include: [:author, comment_thread: [reactions: :person]],
+      always_include: [:author, comment_thread: [:acknowledged_by, reactions: :person]],
       include_subscriptions_list: [comment_thread: :subscription_list],
     ])
   end

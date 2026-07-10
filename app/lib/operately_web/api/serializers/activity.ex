@@ -47,7 +47,9 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
             }
           end),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(comment_thread.subscription_list),
-      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(comment_thread.potential_subscribers)
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(comment_thread.potential_subscribers),
+      acknowledged_at: OperatelyWeb.Api.Serializer.serialize(comment_thread.acknowledged_at),
+      acknowledged_by: OperatelyWeb.Api.Serializer.serialize(comment_thread.acknowledged_by)
     }
   end
 
@@ -174,6 +176,15 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       check_in_id: serialize_check_in_id(content),
       project: Serializer.serialize(content["project"], level: :essential),
       check_in: serialize_check_in(content["check_in"])
+    }
+  end
+
+  def serialize_content("project_retrospective_acknowledged", content) do
+    %{
+      project_id: OperatelyWeb.Paths.project_id(content["project"]),
+      retrospective_id: content["retrospective"] && OperatelyWeb.Paths.project_retrospective_id(content["retrospective"]),
+      project: Serializer.serialize(content["project"], level: :essential),
+      retrospective: Serializer.serialize(content["retrospective"], level: :essential)
     }
   end
 

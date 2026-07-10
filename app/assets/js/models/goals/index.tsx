@@ -16,6 +16,7 @@ export const getGoal = Api.goals.get;
 export const getGoals = Api.goals.list;
 export const useCloseGoal = Api.goals.useClose;
 export const useReopenGoal = Api.goals.useReopen;
+export const useAcknowledgeGoalRetrospective = Api.goals.useAcknowledgeRetrospective;
 
 export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
   const from = target.from!;

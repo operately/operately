@@ -91,7 +91,13 @@ defmodule Operately.Activities.Activity do
   end
 
   def set_permissions(activity, company_read_only \\ false) do
-    permissions = Operately.Activities.Permissions.calculate_permissions(activity.request_info.access_level, company_read_only: company_read_only)
+    permissions =
+      Operately.Activities.Permissions.calculate_permissions(
+        activity,
+        activity.request_info.access_level,
+        company_read_only: company_read_only
+      )
+
     Map.put(activity, :permissions, permissions)
   end
 end

@@ -99,6 +99,7 @@ export const DISPLAYED_IN_FEED = [
   "goal_archived",
   "goal_check_in",
   "goal_check_in_acknowledgement",
+  "goal_retrospective_acknowledged",
   "goal_check_in_commented",
   "goal_closing",
   "goal_created",
@@ -109,6 +110,7 @@ export const DISPLAYED_IN_FEED = [
   "goal_timeframe_editing",
   "project_archived",
   "project_check_in_acknowledged",
+  "project_retrospective_acknowledged",
   "project_check_in_commented",
   "project_check_in_submitted",
   "project_closed",
@@ -199,6 +201,7 @@ import DiscussionPosting from "@/features/activities/DiscussionPosting";
 import GoalArchived from "@/features/activities/GoalArchived";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
 import GoalCheckInAcknowledgement from "@/features/activities/GoalCheckInAcknowledgement";
+import GoalRetrospectiveAcknowledged from "@/features/activities/GoalRetrospectiveAcknowledged";
 import GoalCheckInCommented from "@/features/activities/GoalCheckInCommented";
 import GoalClosing from "@/features/activities/GoalClosing";
 import GoalCreated from "@/features/activities/GoalCreated";
@@ -210,6 +213,7 @@ import GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
 import MessageArchiving from "@/features/activities/MessageArchiving";
 import ProjectArchived from "@/features/activities/ProjectArchived";
 import ProjectCheckInAcknowledged from "@/features/activities/ProjectCheckInAcknowledged";
+import ProjectRetrospectiveAcknowledged from "@/features/activities/ProjectRetrospectiveAcknowledged";
 import ProjectCheckInCommented from "@/features/activities/ProjectCheckInCommented";
 import ProjectCheckInSubmitted from "@/features/activities/ProjectCheckInSubmitted";
 import ProjectClosed from "@/features/activities/ProjectClosed";
@@ -311,6 +315,7 @@ function handler(activity: Activity) {
     .with("goal_archived", () => GoalArchived)
     .with("goal_check_in", () => GoalCheckIn)
     .with("goal_check_in_acknowledgement", () => GoalCheckInAcknowledgement)
+    .with("goal_retrospective_acknowledged", () => GoalRetrospectiveAcknowledged)
     .with("goal_check_in_commented", () => GoalCheckInCommented)
     .with("goal_closing", () => GoalClosing)
     .with("goal_created", () => GoalCreated)
@@ -321,6 +326,7 @@ function handler(activity: Activity) {
     .with("goal_timeframe_editing", () => GoalTimeframeEditing)
     .with("project_archived", () => ProjectArchived)
     .with("project_check_in_acknowledged", () => ProjectCheckInAcknowledged)
+    .with("project_retrospective_acknowledged", () => ProjectRetrospectiveAcknowledged)
     .with("project_check_in_commented", () => ProjectCheckInCommented)
     .with("project_check_in_submitted", () => ProjectCheckInSubmitted)
     .with("project_closed", () => ProjectClosed)

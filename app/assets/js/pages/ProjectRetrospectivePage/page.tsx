@@ -5,15 +5,26 @@ import * as Reactions from "@/models/reactions";
 import * as React from "react";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { CommentSection, useComments } from "@/features/CommentSection";
+import { CommentSection, useForProjectRetrospective } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
-import { AvatarWithName, IconEdit, StatusBadge, CurrentSubscriptions, parseContent, RichContent, FormattedTime, Spacer } from "turboui";
+import {
+  AvatarWithName,
+  IconEdit,
+  IconSquareCheckFilled,
+  StatusBadge,
+  CurrentSubscriptions,
+  parseContent,
+  RichContent,
+  FormattedTime,
+  Spacer,
+} from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
+import { AckCTA } from "./AckCTA";
 
 import { usePaths } from "@/routes/paths";
 
@@ -34,6 +45,8 @@ export function Page() {
           <Header />
           <Status />
           <RetrospectiveContent />
+
+          <AckCTA />
 
           <Spacer size={2} />
           <RetroReactions />
@@ -80,9 +93,26 @@ function Header() {
         {retrospective.author && <AvatarWithName person={retrospective.author!} size={20} />}
         {retrospective.author && <span>&middot;</span>}
         <FormattedTime {...formattedTimePreferences} time={retrospective.closedAt} format="long-date" />
+        <span>&middot;</span>
+        <Acknowledgement />
       </div>
     </>
   );
+}
+
+function Acknowledgement() {
+  const { retrospective } = useLoadedData();
+
+  if (retrospective.acknowledgedAt) {
+    return (
+      <span className="flex items-center gap-1">
+        <IconSquareCheckFilled size={16} className="text-accent-1" />
+        Acknowledged by {retrospective.acknowledgedBy?.fullName}
+      </span>
+    );
+  }
+
+  return <span className="flex items-center gap-1">Not yet acknowledged</span>;
 }
 
 function Status() {
@@ -127,7 +157,7 @@ function RetroReactions() {
 
 function Comments() {
   const { retrospective } = useLoadedData();
-  const commentsForm = useComments({ retrospective: retrospective, parentType: "project_retrospective" });
+  const commentsForm = useForProjectRetrospective(retrospective);
 
   return (
     <>
@@ -136,6 +166,7 @@ function Comments() {
         form={commentsForm}
         commentParentType="project_retrospective"
         canComment={retrospective.permissions.canComment}
+        ackLabel="Retrospective"
       />
     </>
   );
