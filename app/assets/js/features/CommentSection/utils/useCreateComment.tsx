@@ -35,9 +35,18 @@ export function useCreateComment({ setComments, entityId, entityType }: UseCreat
       const resComment = await post(content);
 
       setComments((comments) => {
+        const alreadyPersisted = comments.some((c) => c.value.id === resComment.id);
+        if (alreadyPersisted) {
+          return comments.filter((c) => c.value.id !== tempId);
+        }
+
         return comments.map((c) => {
           if (c.value.id === tempId) {
-            const comment = { ...c.value, id: resComment.id };
+            const comment = {
+              ...c.value,
+              id: resComment.id,
+              insertedAt: resComment.insertedAt ?? c.value.insertedAt,
+            };
             return parseComment(comment);
           } else {
             return c;
