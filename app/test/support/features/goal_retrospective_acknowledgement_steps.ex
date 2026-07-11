@@ -22,9 +22,9 @@ defmodule Operately.Support.Features.GoalRetrospectiveAcknowledgementSteps do
     |> UI.wait_until_testid(testid: "goal-closing-page")
     |> UI.fill_rich_text("We achieved the goal")
     |> UI.click_button("Close Goal")
-    |> UI.sleep(500)
+    |> wait_until_goal_closed()
     |> then(fn ctx ->
-      activity = latest_goal_closing(ctx.goal)
+      activity = wait_until_goal_closing_activity(ctx.goal)
       Map.put(ctx, :closing_activity, activity)
     end)
   end
@@ -100,6 +100,38 @@ defmodule Operately.Support.Features.GoalRetrospectiveAcknowledgementSteps do
       limit: 1,
       preload: [:comment_thread]
     )
-    |> Operately.Repo.one!()
+    |> Operately.Repo.one()
+  end
+
+  defp wait_until_goal_closed(ctx, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    goal = Operately.Repo.get!(Operately.Goals.Goal, ctx.goal.id)
+
+    cond do
+      goal.closed_at ->
+        Map.put(ctx, :goal, goal)
+
+      attempts == [] ->
+        flunk("Timed out waiting for goal to close")
+
+      true ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_goal_closed(ctx, remaining)
+    end
+  end
+
+  defp wait_until_goal_closing_activity(goal, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    case latest_goal_closing(goal) do
+      nil when attempts == [] ->
+        flunk("Timed out waiting for goal_closing activity")
+
+      nil ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_goal_closing_activity(goal, remaining)
+
+      activity ->
+        activity
+    end
   end
 end
