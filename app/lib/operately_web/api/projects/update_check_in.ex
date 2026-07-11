@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
     field :status, :project_check_in_status, null: false
     field :description, :json, null: false
     field? :state, :check_in_state, null: true
+    field? :scheduled_at, :datetime, null: true
   end
 
   outputs do
@@ -50,7 +51,8 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
      %{
        status: inputs.status,
        description: inputs.description,
-       state: inputs[:state]
+       state: inputs[:state],
+       scheduled_at: inputs[:scheduled_at]
      }}
   end
 end

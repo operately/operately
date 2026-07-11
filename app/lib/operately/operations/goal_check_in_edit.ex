@@ -14,6 +14,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> update_subscriptions(attrs.content)
     |> maybe_update_goal(goal, attrs)
     |> record_activity(author, goal, check_in)
+    |> handle_oban_jobs(check_in, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
     |> broadcast_if_published(author)
@@ -31,7 +32,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     is_latest = goal.last_check_in_id == check_in.id
     is_in_edit_deadline = DateTime.compare(Time.utc_datetime_now(), edit_deadline) == :lt
 
-    Multi.put(multi, :full_edit_allowed, check_in.state == :draft or (is_latest and is_in_edit_deadline))
+    Multi.put(multi, :full_edit_allowed, check_in.state in [:draft, :scheduled] or (is_latest and is_in_edit_deadline))
   end
 
   defp update_check_in(multi, check_in, attrs) do
@@ -41,6 +42,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
           status: attrs.status,
           message: attrs.content,
           state: state(check_in, attrs),
+          scheduled_at: scheduled_at(check_in, attrs),
           targets: encode_new_target_values(attrs.new_target_values, check_in),
           checks: attrs.checklist,
           timeframe: to_timeframe(check_in.goal, attrs[:due_date])
@@ -116,7 +118,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
   defp maybe_update_goal(multi, goal, attrs) do
     Multi.update(multi, :goal, fn changes ->
       cond do
-        changes.check_in.state == :draft ->
+        changes.check_in.state in [:draft, :scheduled] ->
           Goal.changeset(goal, %{})
 
         changes.full_edit_allowed and changes.check_in.state == :published ->
@@ -131,10 +133,10 @@ defmodule Operately.Operations.GoalCheckInEdit do
   defp record_activity(multi, author, goal, check_in) do
     Multi.merge(multi, fn changes ->
       cond do
-        check_in.state == :draft and changes.check_in.state == :draft ->
+        check_in.state in [:draft, :scheduled] and changes.check_in.state in [:draft, :scheduled] ->
           Multi.new()
 
-        check_in.state == :draft and changes.check_in.state == :published ->
+        check_in.state in [:draft, :scheduled] and changes.check_in.state == :published ->
           Activities.insert_sync(Multi.new(), author.id, :goal_check_in, fn _ ->
             %{
               company_id: goal.company_id,
@@ -176,7 +178,51 @@ defmodule Operately.Operations.GoalCheckInEdit do
     end)
   end
 
-  defp state(check_in, attrs), do: attrs[:state] || check_in.state
+  defp state(check_in, attrs) do
+    if Map.has_key?(attrs, :state) do
+      attrs.state
+    else
+      if attrs[:scheduled_at], do: :scheduled, else: check_in.state
+    end
+  end
+
+  defp scheduled_at(check_in, attrs) do
+    if Map.has_key?(attrs, :scheduled_at) do
+      attrs.scheduled_at
+    else
+      check_in.scheduled_at
+    end
+  end
+
+  defp handle_oban_jobs(multi, check_in, attrs) do
+    new_state = state(check_in, attrs)
+    new_time = scheduled_at(check_in, attrs)
+
+    if check_in.state == :scheduled or new_state == :scheduled do
+      multi
+      |> Multi.delete_all(:delete_oban_job, fn _ ->
+        import Ecto.Query
+
+        from j in Oban.Job,
+          where: j.worker == "Operately.AsyncPublishing.Worker",
+          where: fragment("args->>'type' = ?", "goal_update"),
+          where: fragment("args->>'id' = ?", ^check_in.id)
+      end)
+      |> Multi.run(:insert_oban_job, fn repo, changes ->
+        if new_state == :scheduled and not is_nil(new_time) do
+          Operately.AsyncPublishing.Worker.new(
+            %{"type" => "goal_update", "id" => changes.check_in.id},
+            scheduled_at: new_time
+          )
+          |> Oban.insert()
+        else
+          {:ok, nil}
+        end
+      end)
+    else
+      multi
+    end
+  end
 
   defp to_timeframe(goal, due_date) do
     if due_date == nil do
