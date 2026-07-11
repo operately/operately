@@ -418,6 +418,28 @@
             "optional": false,
             "has_default": false,
             "nullable": false
+          },
+          {
+            "default": null,
+            "name": "acknowledged_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "acknowledged_by",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -897,6 +919,17 @@
           {
             "default": null,
             "name": "published_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "scheduled_at",
             "type": {
               "name": "datetime",
               "kind": "named"
@@ -1888,6 +1921,17 @@
           {
             "default": null,
             "name": "published_at",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "scheduled_at",
             "type": {
               "name": "date",
               "kind": "named"
@@ -9054,6 +9098,17 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          },
+          {
+            "default": null,
+            "name": "can_acknowledge",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -10762,6 +10817,54 @@
           }
         ]
       },
+      "activity_content_project_retrospective_acknowledged": {
+        "fields": [
+          {
+            "default": null,
+            "name": "project_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "retrospective_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "retrospective",
+            "type": {
+              "name": "project_retrospective",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "resource_hub_uploaded_file": {
         "fields": [
           {
@@ -11618,6 +11721,28 @@
             "optional": true,
             "has_default": false,
             "nullable": false
+          },
+          {
+            "default": null,
+            "name": "acknowledged_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "acknowledged_by",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -13127,6 +13252,32 @@
           }
         ]
       },
+      "activity_content_goal_retrospective_acknowledged": {
+        "fields": [
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "retrospective_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "work_map_item_milestone": {
         "fields": [
           {
@@ -13673,6 +13824,28 @@
           },
           {
             "default": null,
+            "name": "champion",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "reviewer",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "content",
             "type": {
               "name": "string",
@@ -13756,6 +13929,28 @@
             "optional": false,
             "has_default": false,
             "nullable": false
+          },
+          {
+            "default": null,
+            "name": "acknowledged_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "acknowledged_by",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -14620,6 +14815,17 @@
               "kind": "named"
             },
             "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "scheduled_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
             "has_default": false,
             "nullable": true
           },
@@ -16823,6 +17029,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_goal_retrospective_acknowledged",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_goal_created",
           "kind": "named"
         },
@@ -16876,6 +17086,10 @@
         },
         {
           "name": "activity_content_project_closed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_retrospective_acknowledged",
           "kind": "named"
         },
         {
@@ -17212,7 +17426,9 @@
         "goal_update",
         "space_task",
         "project_task",
-        "milestone"
+        "milestone",
+        "project_retrospective",
+        "goal_retrospective"
       ],
       "agent_message_status": [
         "pending",
@@ -17261,6 +17477,7 @@
       ],
       "discussion_state": [
         "draft",
+        "scheduled",
         "published"
       ],
       "goal_privacy_values": [
@@ -17327,6 +17544,7 @@
       ],
       "check_in_state": [
         "draft",
+        "scheduled",
         "published"
       ],
       "review_assignment_roles": [
@@ -17499,9 +17717,9 @@
       ]
     }
   },
-  "endpoint_count": 196,
+  "endpoint_count": 198,
   "query_count": 63,
-  "mutation_count": 133,
+  "mutation_count": 135,
   "endpoints": [
     {
       "name": "create",
@@ -20655,6 +20873,42 @@
       "method": "POST"
     },
     {
+      "name": "acknowledge_retrospective",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/acknowledge_retrospective",
+      "handler": "OperatelyWeb.Api.Goals.AcknowledgeRetrospective",
+      "outputs": [
+        {
+          "default": null,
+          "name": "activity",
+          "type": {
+            "name": "activity",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Acknowledges a goal retrospective (goal_closing activity).",
+      "full_name": "goals/acknowledge_retrospective",
+      "method": "POST"
+    },
+    {
       "name": "change_parent",
       "type": "mutation",
       "path": "/api/external/v1/goals/change_parent",
@@ -21176,6 +21430,17 @@
           "optional": true,
           "has_default": true,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "scheduled_at",
+          "type": {
+            "name": "datetime",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         }
       ],
       "docstring": "Creates a new check-in for a goal.",
@@ -22717,6 +22982,17 @@
               "kind": "named"
             },
             "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "scheduled_at",
+          "type": {
+            "name": "datetime",
+            "kind": "named"
           },
           "optional": true,
           "has_default": false,
@@ -24410,6 +24686,42 @@
       "method": "POST"
     },
     {
+      "name": "acknowledge_retrospective",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/acknowledge_retrospective",
+      "handler": "OperatelyWeb.Api.Projects.AcknowledgeRetrospective",
+      "outputs": [
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "project_retrospective",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Acknowledges a project retrospective.",
+      "full_name": "projects/acknowledge_retrospective",
+      "method": "POST"
+    },
+    {
       "name": "close",
       "type": "mutation",
       "path": "/api/external/v1/projects/close",
@@ -24762,6 +25074,17 @@
           "optional": true,
           "has_default": true,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "scheduled_at",
+          "type": {
+            "name": "datetime",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         }
       ],
       "docstring": "Creates a new project check-in.",
@@ -26950,6 +27273,17 @@
           "optional": true,
           "has_default": false,
           "nullable": true
+        },
+        {
+          "default": null,
+          "name": "scheduled_at",
+          "type": {
+            "name": "datetime",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         }
       ],
       "docstring": "Updates an existing project check-in's status and/or description.",
@@ -28260,6 +28594,17 @@
           "optional": true,
           "has_default": true,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "scheduled_at",
+          "type": {
+            "name": "datetime",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         }
       ],
       "docstring": "Creates a new space discussion.",
@@ -29197,6 +29542,17 @@
           "name": "state",
           "type": {
             "name": "discussion_state",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "scheduled_at",
+          "type": {
+            "name": "datetime",
             "kind": "named"
           },
           "optional": true,

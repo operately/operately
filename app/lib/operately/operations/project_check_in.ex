@@ -23,12 +23,14 @@ defmodule Operately.Operations.ProjectCheckIn do
         status: attrs.status,
         description: attrs.content,
         state: state(attrs),
+        scheduled_at: attrs[:scheduled_at],
         subscription_list_id: changes.subscription_list.id
       })
     end)
     |> SubscriptionList.update(:check_in)
     |> maybe_update_project(project, next_check_in, attrs)
     |> maybe_record_activity(author, project, attrs)
+    |> maybe_enqueue_oban_job(attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
     |> case do
@@ -45,6 +47,7 @@ defmodule Operately.Operations.ProjectCheckIn do
   end
 
   defp maybe_update_project(multi, _project, _next_check_in, %{post_as_draft: true}), do: multi
+  defp maybe_update_project(multi, _project, _next_check_in, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: multi
 
   defp maybe_update_project(multi, project, next_check_in, _attrs) do
     Multi.update(multi, :project, fn changes ->
@@ -57,6 +60,7 @@ defmodule Operately.Operations.ProjectCheckIn do
   end
 
   defp maybe_record_activity(multi, _author, _project, %{post_as_draft: true}), do: multi
+  defp maybe_record_activity(multi, _author, _project, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: multi
 
   defp maybe_record_activity(multi, author, project, _attrs) do
     Activities.insert_sync(multi, author.id, :project_check_in_submitted, fn changes ->
@@ -70,5 +74,17 @@ defmodule Operately.Operations.ProjectCheckIn do
   end
 
   defp state(%{post_as_draft: true}), do: :draft
+  defp state(%{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: :scheduled
   defp state(_attrs), do: :published
+
+  defp maybe_enqueue_oban_job(multi, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at) do
+    Multi.insert(multi, :oban_job, fn changes ->
+      Operately.AsyncPublishing.Worker.new(
+        %{"type" => "project_check_in", "id" => changes.check_in.id},
+        scheduled_at: scheduled_at
+      )
+    end)
+  end
+
+  defp maybe_enqueue_oban_job(multi, _attrs), do: multi
 end

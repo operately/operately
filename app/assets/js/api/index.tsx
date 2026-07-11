@@ -1395,6 +1395,7 @@ export interface Discussion {
   insertedAt: string;
   updatedAt: string;
   publishedAt?: string | null;
+  scheduledAt?: string | null;
   state: DiscussionState;
   author?: Person | null;
   title: string;
@@ -1521,6 +1522,7 @@ export interface GoalProgressUpdate {
   insertedAt: string;
   updatedAt: string;
   publishedAt?: string | null;
+  scheduledAt?: string | null;
   author?: Person | null;
   acknowledged?: boolean | null;
   acknowledgedAt?: string | null;
@@ -1723,6 +1725,7 @@ export interface ProjectCheckIn {
   insertedAt: string;
   updatedAt: string;
   publishedAt: string | null;
+  scheduledAt?: string | null;
   description: string | null;
   author: Person | null;
   project: Project | null;
@@ -2374,9 +2377,7 @@ export type ActivityContent =
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -2400,13 +2401,7 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
@@ -2424,7 +2419,7 @@ export type BillingInterval = "monthly" | "yearly";
 
 export type BillingStatus = "free" | "active" | "past_due" | "canceled";
 
-export type CheckInState = "draft" | "published";
+export type CheckInState = "draft" | "scheduled" | "published";
 
 export type CliAuthStatus = "pending" | "authenticated" | "failed" | "no_companies" | "expired";
 
@@ -2446,7 +2441,7 @@ export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
 export type CreateConversationContextType = "goal" | "project";
 
-export type DiscussionState = "draft" | "published";
+export type DiscussionState = "draft" | "scheduled" | "published";
 
 export type DocumentState = "draft" | "published";
 
@@ -2457,14 +2452,7 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -2505,15 +2493,7 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -2559,14 +2539,7 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 
@@ -4251,6 +4224,7 @@ export interface GoalsCreateCheckInInput {
   postAsDraft?: boolean;
   sendNotificationsToEveryone?: boolean;
   subscriberIds?: Id[];
+  scheduledAt?: string | null;
 }
 
 export interface GoalsCreateCheckInResult {
@@ -4392,6 +4366,7 @@ export interface GoalsUpdateCheckInInput {
   state?: CheckInState | null;
   newTargetValues?: string | null;
   checklist?: GoalCheckUpdate[] | null;
+  scheduledAt?: string | null;
 }
 
 export interface GoalsUpdateCheckInResult {
@@ -4737,6 +4712,7 @@ export interface ProjectsCreateCheckInInput {
   postAsDraft?: boolean;
   sendNotificationsToEveryone?: boolean;
   subscriberIds?: Id[];
+  scheduledAt?: string | null;
 }
 
 export interface ProjectsCreateCheckInResult {
@@ -4871,6 +4847,7 @@ export interface ProjectsUpdateCheckInInput {
   status: ProjectCheckInStatus;
   description: Json;
   state?: CheckInState | null;
+  scheduledAt?: string | null;
 }
 
 export interface ProjectsUpdateCheckInResult {
@@ -5167,6 +5144,7 @@ export interface SpacesCreateDiscussionInput {
   postAsDraft?: boolean;
   sendNotificationsToEveryone?: boolean;
   subscriberIds?: Id[];
+  scheduledAt?: string | null;
 }
 
 export interface SpacesCreateDiscussionResult {
@@ -5217,6 +5195,7 @@ export interface SpacesUpdateDiscussionInput {
   title?: string | null;
   body?: Json | null;
   state?: DiscussionState | null;
+  scheduledAt?: string | null;
 }
 
 export interface SpacesUpdateDiscussionResult {

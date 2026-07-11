@@ -18,6 +18,7 @@ defmodule OperatelyWeb.Api.Spaces.CreateDiscussion do
 
     field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
     field? :subscriber_ids, list_of(:id), null: false, default: []
+    field? :scheduled_at, :datetime, null: true
   end
 
   outputs do
@@ -49,16 +50,18 @@ defmodule OperatelyWeb.Api.Spaces.CreateDiscussion do
   defp parse_inputs(inputs) do
     board_id = fetch_board_id(inputs.space_id)
 
-    {:ok, %{
-      messages_board_id: board_id,
-      space_id: inputs.space_id,
-      title: inputs.title,
-      content: inputs.body,
-      post_as_draft: inputs[:post_as_draft],
-      send_to_everyone: inputs[:send_notifications_to_everyone],
-      subscription_parent_type: :message,
-      subscriber_ids: inputs[:subscriber_ids]
-    }}
+    {:ok,
+     %{
+       messages_board_id: board_id,
+       space_id: inputs.space_id,
+       title: inputs.title,
+       content: inputs.body,
+       post_as_draft: inputs[:post_as_draft],
+       send_to_everyone: inputs[:send_notifications_to_everyone],
+       subscription_parent_type: :message,
+       subscriber_ids: inputs[:subscriber_ids],
+       scheduled_at: inputs[:scheduled_at]
+     }}
   end
 
   # This is a temporary function.
