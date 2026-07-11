@@ -2,7 +2,6 @@ import { useMemo } from "react";
 
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Comments from "@/models/comments";
-import * as Time from "@/utils/time";
 
 import { FormState } from "./form";
 import { useComments } from "./useComments";
@@ -14,15 +13,7 @@ export function useForGoalCheckIn(update: GoalCheckIns.Update): FormState {
     if (!form.items) return [];
     if (!update.acknowledged || !update.acknowledgedAt) return form.items;
 
-    const { before, after } = Comments.splitComments(form.items, update.acknowledgedAt);
-
-    const acknowledgement = {
-      type: "acknowledgement",
-      insertedAt: Time.parse(update.acknowledgedAt)!,
-      value: update.acknowledgingPerson,
-    } as Comments.CommentItem;
-
-    return [...before, acknowledgement, ...after];
+    return Comments.insertAcknowledgement(form.items, update.acknowledgedAt, update.acknowledgingPerson);
   }, [form.items, update]);
 
   return { ...form, items: comments };

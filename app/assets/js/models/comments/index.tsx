@@ -43,6 +43,34 @@ export function splitComments(
   return { before, after };
 }
 
+export function isOptimisticComment(item: CommentItem): boolean {
+  return typeof item.value?.id === "string" && item.value.id.startsWith("temp-");
+}
+
+/**
+ * Inserts an acknowledgement between comments by timestamp, while keeping
+ * in-flight optimistic comments pinned after the acknowledgement. That avoids
+ * the ack row jumping when a temp comment's client timestamp would otherwise
+ * place it before the acknowledgement.
+ */
+export function insertAcknowledgement(
+  comments: CommentItem[],
+  acknowledgedAt: string,
+  acknowledgingPerson: CommentItem["value"],
+): CommentItem[] {
+  const pending = comments.filter(isOptimisticComment);
+  const confirmed = comments.filter((comment) => !isOptimisticComment(comment));
+  const { before, after } = splitComments(confirmed, acknowledgedAt);
+
+  const acknowledgement: CommentItem = {
+    type: "acknowledgement",
+    insertedAt: Time.parse(acknowledgedAt)!,
+    value: acknowledgingPerson,
+  };
+
+  return [...before, acknowledgement, ...after, ...pending];
+}
+
 export function parseCommentContent(content: string | null | undefined) {
   if (!content || content.trim() === "") {
     return null;
