@@ -126,18 +126,18 @@ defmodule Operately.Operations.ProjectCheckInEdit do
   end
 
   defp state(check_in, attrs) do
-    if Map.has_key?(attrs, :state) do
-      attrs.state
-    else
-      if attrs[:scheduled_at], do: :scheduled, else: check_in.state
+    cond do
+      not is_nil(attrs[:state]) -> attrs[:state]
+      not is_nil(attrs[:scheduled_at]) -> :scheduled
+      true -> check_in.state
     end
   end
 
   defp scheduled_at(check_in, attrs) do
-    if Map.has_key?(attrs, :scheduled_at) do
-      attrs.scheduled_at
-    else
-      check_in.scheduled_at
+    cond do
+      not is_nil(attrs[:scheduled_at]) -> attrs[:scheduled_at]
+      attrs[:state] in [:draft, :published] -> nil
+      true -> check_in.scheduled_at
     end
   end
 
@@ -155,7 +155,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
           where: fragment("args->>'type' = ?", "project_check_in"),
           where: fragment("args->>'id' = ?", ^check_in.id)
       end)
-      |> Multi.run(:insert_oban_job, fn repo, changes ->
+      |> Multi.run(:insert_oban_job, fn _repo, changes ->
         if new_state == :scheduled and not is_nil(new_time) do
           Operately.AsyncPublishing.Worker.new(
             %{"type" => "project_check_in", "id" => changes.check_in.id},

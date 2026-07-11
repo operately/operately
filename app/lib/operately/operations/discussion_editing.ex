@@ -64,7 +64,7 @@ defmodule Operately.Operations.DiscussionEditing do
           where: fragment("args->>'type' = ?", "message"),
           where: fragment("args->>'id' = ?", ^message.id)
       end)
-      |> Multi.run(:insert_oban_job, fn repo, changes ->
+      |> Multi.run(:insert_oban_job, fn _repo, changes ->
         if new_state == :scheduled and not is_nil(new_time) do
           Operately.AsyncPublishing.Worker.new(
             %{"type" => "message", "id" => changes.message.id},
