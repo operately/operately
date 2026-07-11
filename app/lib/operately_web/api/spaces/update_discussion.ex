@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
     field? :title, :string, null: true
     field? :body, :json, null: true
     field? :state, :discussion_state, null: true
+    field? :scheduled_at, :datetime, null: true
   end
 
   outputs do

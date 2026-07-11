@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
     field? :post_as_draft, :boolean, null: false, default: false
     field? :send_notifications_to_everyone, :boolean, null: false, default: false, external_default: true
     field? :subscriber_ids, list_of(:id), null: false, default: []
+    field? :scheduled_at, :datetime, null: true
   end
 
   outputs do
@@ -82,7 +83,8 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
        post_as_draft: inputs[:post_as_draft],
        send_to_everyone: inputs[:send_notifications_to_everyone],
        subscription_parent_type: :goal_update,
-       subscriber_ids: inputs[:subscriber_ids]
+       subscriber_ids: inputs[:subscriber_ids],
+       scheduled_at: inputs[:scheduled_at]
      }
      |> maybe_put_due_date(inputs)}
   end

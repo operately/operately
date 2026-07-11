@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
     field? :state, :check_in_state, null: true
     field? :new_target_values, :string, null: true
     field? :checklist, list_of(:goal_check_update), null: true
+    field? :scheduled_at, :datetime, null: true
   end
 
   outputs do
@@ -63,7 +64,8 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
            %{"id" => id, "value" => t["value"]}
          end),
        due_date: inputs.due_date,
-       checklist: inputs.checklist || []
+       checklist: inputs.checklist || [],
+       scheduled_at: inputs[:scheduled_at]
      }}
   end
 end
