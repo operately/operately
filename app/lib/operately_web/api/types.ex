@@ -764,6 +764,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :date, null: false
     field :updated_at, :date, null: false
     field? :published_at, :date, null: true
+    field? :scheduled_at, :date, null: true
     field :state, :discussion_state, null: false
     field? :author, :person, null: true
     field :title, :string, null: false
@@ -2236,6 +2237,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :date, null: false
     field :updated_at, :date, null: false
     field :published_at, :datetime, null: true
+    field? :scheduled_at, :datetime, null: true
     field :description, :string, null: true
     field :author, :person, null: true
     field :project, :project, null: true
@@ -2354,6 +2356,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :datetime, null: false
     field :updated_at, :datetime, null: false
     field? :published_at, :datetime, null: true
+    field? :scheduled_at, :datetime, null: true
     field? :author, :person, null: true
     field? :acknowledged, :boolean, null: true
     field? :acknowledged_at, :datetime, null: true
