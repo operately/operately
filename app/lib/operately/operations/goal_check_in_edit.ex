@@ -32,7 +32,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     is_latest = goal.last_check_in_id == check_in.id
     is_in_edit_deadline = DateTime.compare(Time.utc_datetime_now(), edit_deadline) == :lt
 
-    Multi.put(multi, :full_edit_allowed, check_in.state in [:draft, :scheduled] or (is_latest and is_in_edit_deadline))
+    Multi.put(multi, :full_edit_allowed, unpublished?(check_in.state) or (is_latest and is_in_edit_deadline))
   end
 
   defp update_check_in(multi, check_in, attrs) do
@@ -118,7 +118,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
   defp maybe_update_goal(multi, goal, attrs) do
     Multi.update(multi, :goal, fn changes ->
       cond do
-        changes.check_in.state in [:draft, :scheduled] ->
+        unpublished?(changes.check_in.state) ->
           Goal.changeset(goal, %{})
 
         changes.full_edit_allowed and changes.check_in.state == :published ->
@@ -133,10 +133,10 @@ defmodule Operately.Operations.GoalCheckInEdit do
   defp record_activity(multi, author, goal, check_in) do
     Multi.merge(multi, fn changes ->
       cond do
-        check_in.state in [:draft, :scheduled] and changes.check_in.state in [:draft, :scheduled] ->
+        unpublished?(check_in.state) and unpublished?(changes.check_in.state) ->
           Multi.new()
 
-        check_in.state in [:draft, :scheduled] and changes.check_in.state == :published ->
+        unpublished?(check_in.state) and changes.check_in.state == :published ->
           Activities.insert_sync(Multi.new(), author.id, :goal_check_in, fn _ ->
             %{
               company_id: goal.company_id,
@@ -198,7 +198,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     new_state = state(check_in, attrs)
     new_time = scheduled_at(check_in, attrs)
 
-    if check_in.state == :scheduled or new_state == :scheduled do
+    if scheduled?(check_in.state) or scheduled?(new_state) do
       multi
       |> Multi.delete_all(:delete_oban_job, fn _ ->
         import Ecto.Query
@@ -209,7 +209,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
           where: fragment("args->>'id' = ?", ^check_in.id)
       end)
       |> Multi.run(:insert_oban_job, fn _repo, changes ->
-        if new_state == :scheduled and not is_nil(new_time) do
+        if scheduled?(new_state) and not is_nil(new_time) do
           Operately.AsyncPublishing.Worker.new(
             %{"type" => "goal_update", "id" => changes.check_in.id},
             scheduled_at: new_time
@@ -223,6 +223,13 @@ defmodule Operately.Operations.GoalCheckInEdit do
       multi
     end
   end
+
+  # Widen to atom() so Dialyzer accepts :scheduled before call sites create those values.
+  @spec unpublished?(atom()) :: boolean()
+  defp unpublished?(state), do: state != :published
+
+  @spec scheduled?(atom()) :: boolean()
+  defp scheduled?(state), do: state == :scheduled
 
   defp to_timeframe(goal, due_date) do
     if due_date == nil do
