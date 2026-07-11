@@ -1189,22 +1189,52 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_reviewer_changed, ctx, name: name do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_has(testid: "project-page")
-    |> assert_reviewer_field_ready(name)
+    |> wait_until_project("reviewer to be #{name}", fn project ->
+      case Operately.Projects.get_reviewer(project) do
+        nil -> false
+        reviewer -> reviewer.full_name == name
+      end
+    end)
+    |> wait_until_reviewer_field(name)
   end
 
   step :assert_reviewer_removed, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_has(testid: "project-page")
-    |> assert_reviewer_field_ready("Set reviewer")
+    |> wait_until_project("reviewer to be removed", fn project ->
+      is_nil(Operately.Projects.get_reviewer(project))
+    end)
+    |> wait_until_reviewer_field("Set reviewer")
   end
 
   defp assert_reviewer_field_ready(ctx, text) do
     ctx
     |> UI.wait_until_has(css: "button[data-test-id=\"reviewer-field\"]")
     |> UI.wait_until_text(text, testid: "reviewer-field")
+  end
+
+  defp wait_until_reviewer_field(ctx, text, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    ctx =
+      ctx
+      |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+      |> UI.wait_until_testid(testid: "project-page")
+      |> UI.wait_until_has(css: "button[data-test-id=\"reviewer-field\"]")
+
+    try do
+      ctx
+      |> UI.find(UI.query(testid: "reviewer-field"), fn el ->
+        UI.assert_text(el, text)
+      end)
+    rescue
+      e in [ExUnit.AssertionError, QueryError, RuntimeError, Wallaby.ExpectationNotMetError] ->
+        case attempts do
+          [] ->
+            raise e
+
+          [delay | remaining] ->
+            :timer.sleep(delay)
+            wait_until_reviewer_field(ctx, text, remaining)
+        end
+    end
   end
 
   defp wait_for_reviewer_activity(ctx, title) do
