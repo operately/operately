@@ -130,10 +130,8 @@ export function MenuActionItem(props: MenuActionItemProps) {
   if (props.hidden) return null;
 
   return (
-    <DropdownMenu.Item asChild>
-      <div className={menuItemClassNames(props)} data-test-id={props.testId} onClick={props.onClick}>
-        <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
-      </div>
+    <DropdownMenu.Item className={menuItemClassNames(props)} data-test-id={props.testId} onSelect={props.onClick}>
+      <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
     </DropdownMenu.Item>
   );
 }
