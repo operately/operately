@@ -72,3 +72,6 @@ export function SecondaryButton(props: BaseButtonProps) {
     />
   );
 }
+
+export { OptionsButton } from "./OptionsButton";
+export type { OptionsButtonProps } from "./OptionsButton";

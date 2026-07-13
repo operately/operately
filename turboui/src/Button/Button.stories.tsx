@@ -1,7 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { IconHome, IconSearch, IconSettings, IconStar, IconUser } from "../icons";
-import { DangerButton, GhostButton, PrimaryButton, SecondaryButton } from "./index";
+import { DangerButton, GhostButton, PrimaryButton, SecondaryButton, OptionsButton } from "./index";
 
 const meta = {
   title: "Components/Button",
@@ -81,6 +81,26 @@ export const Danger: StoryObj = {
   args: {
     size: "base",
     loading: false,
+  },
+};
+
+/**
+ * OptionsButton provides a primary action alongside a dropdown of secondary actions.
+ */
+export const Split: StoryObj = {
+  render: (args) => (
+    <OptionsButton
+      onClick={() => alert("Primary clicked")}
+      options={[{ label: "Secondary Option", action: () => alert("Secondary clicked") }]}
+      {...args}
+    >
+      Split Button
+    </OptionsButton>
+  ),
+  args: {
+    size: "base",
+    loading: false,
+    disabled: false,
   },
 };
 

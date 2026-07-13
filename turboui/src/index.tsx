@@ -161,3 +161,6 @@ export { PasteHtmlImagesPlugin } from "./RichEditor/Blob/PasteHtmlImagesPlugin";
 
 import BlobExtension, { isUploadInProgress } from "./RichEditor/Blob";
 export { BlobExtension, isUploadInProgress };
+
+export { ScheduleModal } from "./ScheduleModal";
+export { ScheduleNotice } from "./ScheduleModal/ScheduleNotice";
