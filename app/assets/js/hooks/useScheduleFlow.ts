@@ -1,21 +1,16 @@
+import type { ScheduleFlowState } from "turboui";
+
 import { useState } from "react";
 
 export interface UseScheduleFlowOptions {
   initialScheduledAt?: string | Date | null;
 }
 
-export interface ScheduleFlow {
-  isModalOpen: boolean;
-  setIsModalOpen: (open: boolean) => void;
-  isScheduledLocally: boolean;
-  scheduledAt: Date | null;
+export interface ScheduleFlow extends ScheduleFlowState {
   scheduledAtIso: string | null;
+  clearSchedule: () => void;
   openScheduleModal: () => void;
   closeScheduleModal: () => void;
-  confirmSchedule: (date: Date) => void;
-  cancelSchedule: () => void;
-  clearSchedule: () => void;
-  primaryButtonLabel: (immediateLabel: string) => string;
 }
 
 function parseScheduledAt(value?: string | Date | null): Date | null {

@@ -5,7 +5,6 @@ import { parseCheckInsForTurboUi, usePostProjectCheckIn, ProjectCheckInStatus } 
 import { Project } from "@/models/projects";
 import { useNavigate } from "react-router";
 
-import { ScheduleFlowControls } from "@/components/ScheduleFlowControls";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useScheduleFlow } from "@/hooks/useScheduleFlow";
@@ -17,6 +16,7 @@ import {
   GhostButton,
   Link,
   RichContent,
+  ScheduleFlowControls,
   Spacer,
   StatusBadge,
   SubscribersSelector,
@@ -113,6 +113,7 @@ function SubmitButtons({
   form: FormState<{ status: ProjectCheckInStatus | null; description: any }>;
   scheduleFlow: ReturnType<typeof useScheduleFlow>;
 }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const submit = (action: "submit" | "draft" | "schedule") => {
     form.actions.setTrigger(action);
     form.actions.submit(action);
@@ -128,6 +129,7 @@ function SubmitButtons({
         onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "submit")}
         loading={isSubmitting && (form.trigger === "submit" || form.trigger === "schedule")}
         testId="submit"
+        formattedTimePreferences={formattedTimePreferences}
         secondaryAction={
           <GhostButton
             loading={isSubmitting && form.trigger === "draft"}

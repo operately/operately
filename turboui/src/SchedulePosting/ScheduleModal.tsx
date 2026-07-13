@@ -32,25 +32,23 @@ export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCanc
     onOpenChange(false);
   };
 
-  const isInvalid = !selectedDate || (() => {
-    if (!selectedDate?.date) return false;
-    const [hours = "09", minutes = "00"] = time.split(":");
-    const finalDate = new Date(selectedDate.date);
-    finalDate.setHours(parseInt(hours, 10));
-    finalDate.setMinutes(parseInt(minutes, 10));
-    return finalDate <= new Date();
-  })();
+  const isInvalid =
+    !selectedDate ||
+    (() => {
+      if (!selectedDate?.date) return false;
+      const [hours = "09", minutes = "00"] = time.split(":");
+      const finalDate = new Date(selectedDate.date);
+      finalDate.setHours(parseInt(hours, 10));
+      finalDate.setMinutes(parseInt(minutes, 10));
+      return finalDate <= new Date();
+    })();
 
   return (
     <>
       {children}
       <Modal isOpen={open} onClose={() => onOpenChange(false)} title="Schedule Post" size="xx-small">
         <div className="mb-4 mt-2">
-          <InlineCalendar
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            minDateLimit={new Date()}
-          />
+          <InlineCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} minDateLimit={new Date()} />
         </div>
 
         <div className="mb-6 flex items-center justify-between">
@@ -64,11 +62,13 @@ export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCanc
         </div>
 
         <div className="flex justify-end gap-2 mt-4 items-center">
-          {isInvalid && selectedDate && (
-            <span className="text-red-500 text-xs mr-auto">Time must be in the future</span>
-          )}
-          <SecondaryButton onClick={handleCancel} size="sm">Cancel</SecondaryButton>
-          <PrimaryButton onClick={handleSchedule} size="sm" disabled={isInvalid}>Schedule</PrimaryButton>
+          {isInvalid && selectedDate && <span className="text-red-500 text-xs mr-auto">Time must be in the future</span>}
+          <SecondaryButton onClick={handleCancel} size="sm">
+            Cancel
+          </SecondaryButton>
+          <PrimaryButton onClick={handleSchedule} size="sm" disabled={isInvalid}>
+            Schedule
+          </PrimaryButton>
         </div>
       </Modal>
     </>

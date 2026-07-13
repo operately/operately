@@ -4,7 +4,6 @@ import { Person } from "@/models/people";
 import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns";
 import { useNavigate } from "react-router";
 
-import { ScheduleFlowControls } from "@/components/ScheduleFlowControls";
 import { Status, StatusOptions } from "@/components/status";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -17,6 +16,7 @@ import {
   Forms,
   GhostButton,
   InfoCallout,
+  ScheduleFlowControls,
   Spacer,
   displayDate,
   type FormState,
@@ -131,6 +131,7 @@ function SubmitButtons({
   canSchedule: boolean;
   scheduleFlow: ReturnType<typeof useScheduleFlow>;
 }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const submit = (action: "save" | "publish" | "schedule") => {
     form.actions.setTrigger(action);
     form.actions.submit(action);
@@ -150,6 +151,7 @@ function SubmitButtons({
         onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "publish")}
         loading={isSubmitting && (form.trigger === "publish" || form.trigger === "schedule")}
         testId="publish-draft"
+        formattedTimePreferences={formattedTimePreferences}
         secondaryAction={
           <GhostButton
             loading={isSubmitting && form.trigger === "save"}

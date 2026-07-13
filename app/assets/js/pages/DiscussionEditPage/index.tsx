@@ -4,11 +4,11 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Discussions from "@/models/discussions";
 
-import { ScheduleFlowControls } from "@/components/ScheduleFlowControls";
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { useBoolState } from "@/hooks/useBoolState";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { PageModule } from "@/routes/types";
-import { DiscardDiscussionDraftModal, GhostButton, Link, PrimaryButton } from "turboui";
+import { DiscardDiscussionDraftModal, GhostButton, Link, PrimaryButton, ScheduleFlowControls } from "turboui";
 import { useNavigate } from "react-router";
 
 import { usePaths } from "@/routes/paths";
@@ -54,6 +54,7 @@ function Page() {
 function Submit({ form }: { form: FormState }) {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
   const isUnpublished = discussion.state === "draft" || discussion.state === "scheduled";
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <Paper.DimmedSection>
@@ -66,6 +67,7 @@ function Submit({ form }: { form: FormState }) {
               onPrimaryClick={form.publishDraft}
               loading={form.publishDraftSubmitting || form.scheduleSubmitting}
               testId="publish-now"
+              formattedTimePreferences={formattedTimePreferences}
               secondaryAction={
                 <GhostButton loading={form.saveChangesSubmitting} testId="save-changes" onClick={form.saveChanges}>
                   Save Changes

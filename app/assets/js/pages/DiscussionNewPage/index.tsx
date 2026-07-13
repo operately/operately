@@ -4,10 +4,10 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
-import { ScheduleFlowControls } from "@/components/ScheduleFlowControls";
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { PageModule } from "@/routes/types";
-import { GhostButton, Link, SubscribersSelector } from "turboui";
+import { GhostButton, Link, ScheduleFlowControls, SubscribersSelector } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionNewPage", loader, Page } as PageModule;
@@ -57,6 +57,8 @@ function Footer({ form }: { form: FormState }) {
 }
 
 function Submit({ form }: { form: FormState }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div>
       <ScheduleFlowControls
@@ -65,6 +67,7 @@ function Submit({ form }: { form: FormState }) {
         onPrimaryClick={form.postMessage}
         loading={form.postMessageSubmitting || form.scheduleSubmitting}
         testId="post-discussion"
+        formattedTimePreferences={formattedTimePreferences}
         secondaryAction={
           <GhostButton loading={form.postAsDraftSubmitting} testId="save-as-draft" onClick={form.postAsDraft}>
             Save as draft

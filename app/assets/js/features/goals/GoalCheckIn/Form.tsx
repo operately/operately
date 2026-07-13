@@ -9,7 +9,6 @@ import { usePaths } from "@/routes/paths";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import { ScheduleFlowControls } from "@/components/ScheduleFlowControls";
 import {
   ActionLink,
   Checklist,
@@ -21,6 +20,7 @@ import {
   InfoCallout,
   Link,
   RichContent,
+  ScheduleFlowControls,
   StatusBadge,
   Tooltip,
   SubscribersSelector,
@@ -79,6 +79,7 @@ export function Form(props: Props) {
 function SubmitSection(props: Props) {
   if (props.mode === "view") return null;
 
+  const formattedTimePreferences = useFormattedTimePreferences();
   const submit = (action: "submit" | "save-draft" | "publish-draft" | "schedule") => {
     props.form.actions.setTrigger(action);
     props.form.actions.submit(action);
@@ -96,6 +97,7 @@ function SubmitSection(props: Props) {
           onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "submit")}
           loading={isSubmitting && (props.form.trigger === "submit" || props.form.trigger === "schedule")}
           testId="submit"
+          formattedTimePreferences={formattedTimePreferences}
           secondaryAction={
             <GhostButton
               loading={isSubmitting && props.form.trigger === "save-draft"}
@@ -120,6 +122,7 @@ function SubmitSection(props: Props) {
           onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "publish-draft")}
           loading={isSubmitting && (props.form.trigger === "publish-draft" || props.form.trigger === "schedule")}
           testId="publish-draft"
+          formattedTimePreferences={formattedTimePreferences}
           secondaryAction={
             <GhostButton
               loading={isSubmitting && props.form.trigger === "save-draft"}
