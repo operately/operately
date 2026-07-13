@@ -84,8 +84,9 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
 
   step :assert_parent_goal, ctx do
     ctx
-    |> UI.assert_has(testid: "goal-page")
-    |> UI.assert_text(ctx.goal.name, testid: "parent-goal-field")
+    |> UI.wait_until_testid(testid: "goal-page")
+    |> UI.wait_until_has(testid: "page-header")
+    |> UI.wait_until_text(ctx.goal.name, testid: "parent-goal-field")
   end
 
   step :assert_subgoal_added, ctx, name do
