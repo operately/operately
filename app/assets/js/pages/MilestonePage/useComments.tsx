@@ -42,8 +42,10 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
 
       try {
         const optimisticComment: Milestones.MilestoneComment = {
+          __typename: "milestone_comment",
           action: "none",
           comment: {
+            __typename: "comment",
             id: tempId,
             insertedAt: new Date().toISOString(),
             content: Comments.stringifyCommentContent(content),

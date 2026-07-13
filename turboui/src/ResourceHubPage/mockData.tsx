@@ -40,6 +40,7 @@ export function createMockPermissions(overrides: Partial<ResourceHubPermissions>
     canCreateLink: true,
     canView: true,
     ...overrides,
+    __typename: "resource_hub_permissions",
   };
 }
 
@@ -50,6 +51,7 @@ export function createMockResourceHub(overrides: Partial<ResourceHub> = {}): Res
     space: { id: "space-1", name: "Operations" } as never,
     permissions: createMockPermissions(),
     ...overrides,
+    __typename: "resource_hub",
   };
 }
 
@@ -64,6 +66,7 @@ export function createMockFolder(overrides: Partial<ResourceHubFolder> = {}): Re
     permissions: createMockPermissions({ canRenameFolder: true }),
     pathToFolder: [],
     ...overrides,
+    __typename: "resource_hub_folder",
   };
 }
 
@@ -88,6 +91,7 @@ export function createMockDocumentNode(
         fullName: author?.fullName ?? "Alex Example",
         avatarUrl: author?.avatarUrl ?? null,
       } as never),
+    __typename: "resource_hub_document" as const,
   } as ResourceHubDocument;
 
   return {
@@ -96,6 +100,7 @@ export function createMockDocumentNode(
     name: overrides.name ?? "Quarterly Planning Notes",
     type: "document",
     document: documentData,
+    __typename: "resource_hub_node",
   };
 }
 
@@ -145,6 +150,7 @@ export function createMockFileNode(
         fullName: reviewer?.fullName ?? "Riley Example",
         avatarUrl: reviewer?.avatarUrl ?? null,
       } as never),
+    __typename: "resource_hub_file" as const,
   } as ResourceHubFile;
 
   return {
@@ -153,6 +159,7 @@ export function createMockFileNode(
     name: overrides.name ?? "Roadmap Screenshot",
     type: "file",
     file: fileData,
+    __typename: "resource_hub_node",
   };
 }
 
@@ -170,6 +177,7 @@ export function createMockFolderNode(
     name: overrides.folder?.name ?? overrides.name ?? "Team Templates",
     permissions: overrides.folder?.permissions ?? createMockPermissions({ canRenameFolder: true }),
     pathToFolder: overrides.folder?.pathToFolder ?? [],
+    __typename: "resource_hub_folder" as const,
   } as ResourceHubFolder;
 
   return {
@@ -178,6 +186,7 @@ export function createMockFolderNode(
     name: overrides.name ?? "Team Templates",
     type: "folder",
     folder: folderData,
+    __typename: "resource_hub_node",
   };
 }
 

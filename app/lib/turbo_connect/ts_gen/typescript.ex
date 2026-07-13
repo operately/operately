@@ -59,7 +59,7 @@ defmodule TurboConnect.TsGen.Typescript do
 
   def ts_interface_field({name, type, opts}, typename) do
     if name == :__typename and is_binary(typename) do
-      "  __typename?: " <> inspect(typename) <> ";"
+      "  __typename: " <> inspect(typename) <> ";"
     else
       optional = Keyword.get(opts, :optional, true)
       null = Keyword.get(opts, :null, true)

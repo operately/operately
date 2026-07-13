@@ -67,6 +67,15 @@ export function parseTaskReminders(reminders: TaskReminder[] | null | undefined)
   }));
 }
 
+export function serializeTaskReminders(reminders: TaskPage.Reminder[]): TaskReminder[] {
+  return reminders.map((reminder) => ({
+    __typename: "task_reminder",
+    type: reminder.type,
+    days: reminder.days,
+    date: reminder.date,
+  }));
+}
+
 export function serializeTaskStatuses(statuses: StatusSelector.StatusOption[] | null | undefined): TaskStatus[] {
   if (!statuses || statuses.length === 0) return [];
 
@@ -82,6 +91,7 @@ export function serializeTaskStatus(status: StatusSelector.StatusOption | null |
   if (!status) return null;
 
   return {
+    __typename: "task_status",
     id: status.id,
     label: status.label,
     color: status.color,

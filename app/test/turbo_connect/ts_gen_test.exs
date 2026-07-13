@@ -363,7 +363,7 @@ defmodule TurboConnect.TsGenTest do
   test "objects with for: emit __typename from TypeNames.resolve/1" do
     types = TurboConnect.TsGen.convert_objects(ForTypedApi.__types__().objects)
 
-    assert types =~ ~s[__typename?: "for_typed_person"]
+    assert types =~ ~s[__typename: "for_typed_person"]
     assert types =~ "export interface Person"
     refute types =~ ~r/export interface PlainNote \{\n  __typename/
     assert types =~ ~r/export interface PlainNote \{\n  body\?: string/

@@ -195,6 +195,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
       plans: [
         ...billingOverviewMock().plans,
         {
+          __typename: "billing_plan_definition",
           key: "enterprise",
           displayName: "Enterprise",
           tierRank: 4,
@@ -206,6 +207,7 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
       catalogProducts: [
         ...billingOverviewMock().catalogProducts,
         {
+          __typename: "billing_catalog_product",
           id: "enterprise-monthly",
           provider: "polar",
           planFamily: "enterprise",

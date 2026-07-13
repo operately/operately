@@ -456,8 +456,10 @@ function useStatusField(
     update: async (v) => {
       const tmpId = `temp-${Date.now()}`;
       const optimisticComment: Milestones.MilestoneComment = {
+        __typename: "milestone_comment",
         action: v === "done" ? "complete" : "reopen",
         comment: {
+          __typename: "comment",
           id: tmpId,
           insertedAt: new Date().toISOString(),
           author: me,

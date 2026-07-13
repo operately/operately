@@ -18,7 +18,10 @@ export const useCloseGoal = Api.goals.useClose;
 export const useReopenGoal = Api.goals.useReopen;
 export const useAcknowledgeGoalRetrospective = Api.goals.useAcknowledgeRetrospective;
 
-export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
+export function targetProgressPercentage(
+  target: Pick<Target, "from" | "to" | "value">,
+  clamped: boolean = true,
+): number {
   const from = target.from!;
   const to = target.to!;
   const value = target.value!;
@@ -94,6 +97,7 @@ export function accessLevelsAsNumbers(levels: {
   space: "no_access" | "view" | "comment" | "edit" | "full";
 }): api.AccessLevels {
   return {
+    __typename: "access_levels",
     company: accessLevelAsNumber(levels.company),
     space: accessLevelAsNumber(levels.space),
   };
