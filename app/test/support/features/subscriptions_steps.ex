@@ -35,6 +35,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   step :submit_check_in_form, ctx do
     ctx
     |> UI.click(testid: "submit")
+    |> UI.wait_until_testid(testid: "project-check-in-page")
   end
 
   step :visit_project_discussions_page, ctx do
@@ -99,6 +100,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   step :submit_goal_update_form, ctx do
     ctx
     |> UI.click(testid: "submit")
+    |> UI.wait_until_testid(testid: "goal-check-in-page")
   end
 
   #
@@ -108,16 +110,19 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   step :select_all_people, ctx do
     ctx
     |> UI.click(testid: "subscribe-all")
+    |> wait_until_subscription_option_selected("subscribe-all")
   end
 
   step :select_specific_people, ctx do
     ctx
     |> UI.click(testid: "subscribe-specific-people")
+    |> wait_until_subscription_option_selected("subscribe-specific-people")
   end
 
   step :select_no_one, ctx do
     ctx
     |> UI.click(testid: "subscribe-no-one")
+    |> wait_until_subscription_option_selected("subscribe-no-one")
   end
 
   step :toggle_person_checkbox, ctx, person do
@@ -181,7 +186,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
       end
 
     ctx
-    |> UI.assert_text("#{text} will be notified when someone comments on this #{attrs.resource}.")
+    |> UI.wait_until_text("#{text} will be notified when someone comments on this #{attrs.resource}.")
   end
 
   step :exercise_current_subscriptions_widget, ctx, resource do
@@ -208,5 +213,9 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
     |> select_everyone()
     |> save_people_selection()
     |> assert_current_subscribers(%{count: 5, resource: resource})
+  end
+
+  defp wait_until_subscription_option_selected(ctx, testid) do
+    UI.wait_until_has(ctx, Query.css("[data-test-id=\"#{testid}\"]:checked"))
   end
 end
