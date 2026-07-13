@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 196
+- Endpoints: 198
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -51,6 +51,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents update_link` | `op documents update_link` | `POST` | `/api/external/v1/documents/update_link` |
 | `documents update_parent_folder` | `op documents update_parent_folder` | `POST` | `/api/external/v1/documents/update_parent_folder` |
 | `goals acknowledge_check_in` | `op goals acknowledge_check_in` | `POST` | `/api/external/v1/goals/acknowledge_check_in` |
+| `goals acknowledge_retrospective` | `op goals acknowledge_retrospective` | `POST` | `/api/external/v1/goals/acknowledge_retrospective` |
 | `goals change_parent` | `op goals change_parent` | `POST` | `/api/external/v1/goals/change_parent` |
 | `goals close` | `op goals close` | `POST` | `/api/external/v1/goals/close` |
 | `goals create` | `op goals create` | `POST` | `/api/external/v1/goals/create` |
@@ -112,6 +113,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
 | `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
 | `projects acknowledge_check_in` | `op projects acknowledge_check_in` | `POST` | `/api/external/v1/projects/acknowledge_check_in` |
+| `projects acknowledge_retrospective` | `op projects acknowledge_retrospective` | `POST` | `/api/external/v1/projects/acknowledge_retrospective` |
 | `projects close` | `op projects close` | `POST` | `/api/external/v1/projects/close` |
 | `projects count_children` | `op projects count_children` | `GET` | `/api/external/v1/projects/count_children` |
 | `projects create` | `op projects create` | `POST` | `/api/external/v1/projects/create` |

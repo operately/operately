@@ -17,7 +17,7 @@ namespace CheckInCard {
     content: string;
     commentCount: number;
     status: BadgeStatus;
-    state?: "draft" | "published" | null;
+    state?: "draft" | "scheduled" | "published" | null;
   }
 
   export interface Props {

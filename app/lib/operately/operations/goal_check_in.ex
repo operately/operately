@@ -19,6 +19,7 @@ defmodule Operately.Operations.GoalCheckIn do
         status: attrs.status,
         message: attrs.content,
         state: state(attrs),
+        scheduled_at: attrs[:scheduled_at],
         subscription_list_id: changes.subscription_list.id
       }
 
@@ -46,12 +47,14 @@ defmodule Operately.Operations.GoalCheckIn do
     |> maybe_update_targets(targets, target_values, attrs)
     |> maybe_update_checklist(goal, checklist, attrs)
     |> maybe_record_activity(author, goal, attrs)
+    |> maybe_enqueue_oban_job(attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
     |> handle_result_broadcast()
   end
 
   defp maybe_update_goal(multi, _goal, %{post_as_draft: true}), do: multi
+  defp maybe_update_goal(multi, _goal, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: multi
 
   defp maybe_update_goal(multi, goal, attrs) do
     Multi.update(multi, :goal, fn changes ->
@@ -68,6 +71,7 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp maybe_update_targets(multi, _targets, _new_target_values, %{post_as_draft: true}), do: multi
+  defp maybe_update_targets(multi, _targets, _new_target_values, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: multi
   defp maybe_update_targets(multi, _targets, nil, _attrs), do: multi
 
   defp maybe_update_targets(multi, targets, new_target_values, _attrs) do
@@ -81,6 +85,7 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp maybe_update_checklist(multi, _goal, _checklist, %{post_as_draft: true}), do: multi
+  defp maybe_update_checklist(multi, _goal, _checklist, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: multi
   defp maybe_update_checklist(multi, _goal, nil, _attrs), do: multi
 
   defp maybe_update_checklist(multi, goal, checklist, _attrs) do
@@ -99,6 +104,7 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp maybe_record_activity(multi, _author, _goal, %{post_as_draft: true}), do: multi
+  defp maybe_record_activity(multi, _author, _goal, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: multi
 
   defp maybe_record_activity(multi, author, goal, _attrs) do
     Activities.insert_sync(multi, author.id, :goal_check_in, fn changes ->
@@ -143,7 +149,19 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp state(%{post_as_draft: true}), do: :draft
+  defp state(%{scheduled_at: scheduled_at}) when not is_nil(scheduled_at), do: :scheduled
   defp state(_attrs), do: :published
+
+  defp maybe_enqueue_oban_job(multi, %{scheduled_at: scheduled_at}) when not is_nil(scheduled_at) do
+    Multi.insert(multi, :oban_job, fn changes ->
+      Operately.AsyncPublishing.Worker.new(
+        %{"type" => "goal_update", "id" => changes.update.id},
+        scheduled_at: scheduled_at
+      )
+    end)
+  end
+
+  defp maybe_enqueue_oban_job(multi, _attrs), do: multi
 
   defp calc_next_check_in_time(goal) do
     Operately.Time.calculate_next_monthly_check_in(goal.next_update_scheduled_at, DateTime.utc_now())
