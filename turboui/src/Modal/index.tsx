@@ -27,7 +27,7 @@ export interface ModalProps {
   /**
    * Size of the modal
    */
-  size?: "small" | "medium" | "large";
+  size?: "xx-small" | "x-small" | "small" | "medium" | "large";
 
   /**
    * Whether to close the modal when clicking the backdrop
@@ -98,6 +98,8 @@ export function Modal({
 
   // Determine modal width based on size
   const sizeClasses = {
+    "xx-small": "max-w-xs",
+    "x-small": "max-w-sm",
     small: "max-w-md",
     medium: "max-w-lg",
     large: "max-w-2xl",
