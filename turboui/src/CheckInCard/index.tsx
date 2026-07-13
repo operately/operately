@@ -53,6 +53,9 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTim
             {checkIn.state === "draft" && (
               <StatusBadge status="pending" customLabel="Draft" hideIcon className="scale-95 inline-block shrink-0" />
             )}
+            {checkIn.state === "scheduled" && (
+              <StatusBadge status="pending" customLabel="Scheduled" hideIcon className="scale-95 inline-block shrink-0" />
+            )}
             <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0" />
           </div>
           <div className="break-words">

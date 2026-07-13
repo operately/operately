@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Spaces.ListDiscussions do
   defp load_messages(me, inputs) do
     from(m in Message,
       join: b in assoc(m, :messages_board),
-      where: b.space_id == ^inputs.space_id and m.state != :draft,
+      where: b.space_id == ^inputs.space_id and m.state == :published,
       preload: ^preload(inputs),
       order_by: [desc: m.published_at]
     )
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.Spaces.ListDiscussions do
   defp load_my_drafts(me, inputs) do
     from(m in Message,
       join: b in assoc(m, :messages_board),
-      where: b.space_id == ^inputs.space_id and m.author_id == ^me.id and m.state == :draft,
+      where: b.space_id == ^inputs.space_id and m.author_id == ^me.id and m.state in [:draft, :scheduled],
       preload: ^preload(inputs),
       order_by: [desc: m.inserted_at]
     )

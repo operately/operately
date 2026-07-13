@@ -9,6 +9,10 @@ defmodule Operately.Drafts do
     Time.as_datetime(inserted_at)
   end
 
+  def display_date(%{state: :scheduled, scheduled_at: scheduled_at, inserted_at: inserted_at}) do
+    (scheduled_at || inserted_at) |> Time.as_datetime()
+  end
+
   def display_date(%{state: :published, published_at: published_at, inserted_at: inserted_at}) do
     (published_at || inserted_at) |> Time.as_datetime()
   end

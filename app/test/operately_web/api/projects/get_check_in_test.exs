@@ -224,6 +224,37 @@ defmodule OperatelyWeb.Api.Projects.GetCheckInTest do
       assert res.project_check_in.project.permissions
     end
 
+    test "scheduled check-ins are not found for non-authors", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:viewer)
+        |> Factory.log_in_person(:viewer)
+
+      scheduled =
+        check_in_fixture(%{
+          author_id: ctx.creator.id,
+          project_id: ctx.project.id,
+          state: :scheduled,
+          scheduled_at: Operately.Time.days_from_now(1)
+        })
+
+      assert {404, _} = query(ctx.conn, [:projects, :get_check_in], %{id: Paths.project_check_in_id(scheduled)})
+    end
+
+    test "authors can get their scheduled check-ins", ctx do
+      scheduled =
+        check_in_fixture(%{
+          author_id: ctx.creator.id,
+          project_id: ctx.project.id,
+          state: :scheduled,
+          scheduled_at: Operately.Time.days_from_now(1)
+        })
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{id: Paths.project_check_in_id(scheduled)})
+      assert res.project_check_in.state == "scheduled"
+      assert res.project_check_in.scheduled_at
+    end
+
     test "include_subscriptions_list", ctx do
       assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{id: Paths.project_check_in_id(ctx.check_in)})
       refute res.project_check_in.subscription_list
