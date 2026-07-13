@@ -1,4 +1,6 @@
 defmodule Operately.Groups.Group do
+  def __api_typename__, do: "space"
+
   use Operately.Schema
   use Operately.Repo.Getter
 

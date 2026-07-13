@@ -1,4 +1,6 @@
 defmodule Operately.Projects.CheckIn do
+  def __api_typename__, do: "project_check_in"
+
   use Operately.Schema
   use Operately.Repo.Getter
 

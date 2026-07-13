@@ -1,4 +1,6 @@
 defmodule Operately.Tasks.Reminder do
+  def __api_typename__, do: "task_reminder"
+
   use Ecto.Schema
   import Ecto.Changeset
 

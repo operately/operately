@@ -1,4 +1,6 @@
 defmodule Operately.Groups.Permissions do
+  def __api_typename__, do: "space_permissions"
+
   alias Operately.Access.Binding
   alias Operately.Permissions.ReadOnly
 

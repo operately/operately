@@ -11,6 +11,8 @@ defmodule Operately.Assignments.Categorizer do
   """
 
   defmodule AssignmentGroup do
+    def __api_typename__, do: "review_assignment_group"
+
     @enforce_keys [:origin, :assignments]
     defstruct [:origin, :assignments]
   end

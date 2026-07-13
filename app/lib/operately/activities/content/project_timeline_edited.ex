@@ -2,6 +2,8 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
   use Operately.Activities.Content
 
   defmodule MilestoneUpdate do
+    def __api_typename__, do: "activity_milestone"
+
     use Operately.Activities.Content
 
     embedded_schema do
@@ -22,6 +24,8 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
   end
 
   defmodule NewMilestones do
+    def __api_typename__, do: "activity_milestone"
+
     use Operately.Activities.Content
 
     embedded_schema do

@@ -1,4 +1,6 @@
 defmodule Operately.Goals.Update do
+  def __api_typename__, do: "goal_progress_update"
+
   use Operately.Schema
   use Operately.Repo.Getter
 

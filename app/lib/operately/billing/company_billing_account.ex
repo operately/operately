@@ -1,4 +1,6 @@
 defmodule Operately.Billing.CompanyBillingAccount do
+  def __api_typename__, do: "billing_account"
+
   use Operately.Schema
   use Operately.Repo.Getter
 
