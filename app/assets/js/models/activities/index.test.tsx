@@ -94,6 +94,7 @@ function documentEditedActivity(
   spaceId = "space-1",
 ): Activity {
   return {
+    __typename: "activity",
     id,
     action: "resource_hub_document_edited",
     insertedAt,
@@ -113,6 +114,7 @@ function fileEditedActivity(
   spaceId = "space-1",
 ): Activity {
   return {
+    __typename: "activity",
     id,
     action: "resource_hub_file_edited",
     insertedAt,
@@ -132,6 +134,7 @@ function linkEditedActivity(
   spaceId = "space-1",
 ): Activity {
   return {
+    __typename: "activity",
     id,
     action: "resource_hub_link_edited",
     insertedAt,
@@ -145,12 +148,13 @@ function linkEditedActivity(
 
 function taskEditedActivity(id: string, insertedAt: string): Activity {
   return {
+    __typename: "activity",
     id,
     action: "task_name_updating",
     insertedAt,
     author: author("author-1"),
     content: {},
-  } as Activity;
+  } as unknown as Activity;
 }
 
 function taskAssigneeActivity(
@@ -161,6 +165,7 @@ function taskAssigneeActivity(
   spaceId = "space-1",
 ): Activity {
   return {
+    __typename: "activity",
     id,
     action: "task_assignee_updating",
     insertedAt,
@@ -174,7 +179,7 @@ function taskAssigneeActivity(
       addedAssignees: [],
       removedAssignees: [],
     },
-  } as Activity;
+  } as unknown as Activity;
 }
 
 function taskAddingActivity(
@@ -185,6 +190,7 @@ function taskAddingActivity(
   spaceId = "space-1",
 ): Activity {
   return {
+    __typename: "activity",
     id,
     action: "task_adding",
     insertedAt,
@@ -206,6 +212,7 @@ function taskStatusActivity(
   spaceId = "space-1",
 ): Activity {
   return {
+    __typename: "activity",
     id,
     action: "task_status_updating",
     insertedAt,

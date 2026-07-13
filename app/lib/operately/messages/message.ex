@@ -1,4 +1,6 @@
 defmodule Operately.Messages.Message do
+  def __api_typename__, do: "discussion"
+
   use Operately.Schema
   use Operately.Repo.Getter
 

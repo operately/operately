@@ -225,7 +225,7 @@ export function useProjectTasksForTurboUi({
     );
 
     try {
-      await Api.tasks.updateReminders({ taskId, reminders, type: "project" });
+      await Api.tasks.updateReminders({ taskId, reminders: Tasks.serializeTaskReminders(reminders), type: "project" });
       await invalidateAndRefresh();
 
       return true;

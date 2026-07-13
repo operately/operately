@@ -4,6 +4,7 @@ import { Target } from "@/api";
 describe("targetProgressPercentage", () => {
   describe("ascending targets (from < to)", () => {
     const makeTarget = (value: number): Target => ({
+      __typename: "target",
       from: 0,
       to: 100,
       value,
@@ -40,6 +41,7 @@ describe("targetProgressPercentage", () => {
 
   describe("descending targets (from > to)", () => {
     const makeTarget = (value: number): Target => ({
+      __typename: "target",
       from: 100,
       to: 0,
       value,
@@ -76,6 +78,7 @@ describe("targetProgressPercentage", () => {
 
   describe("equal targets (from == to)", () => {
     const makeTarget = (from: number, to: number, value: number): Target => ({
+      __typename: "target",
       from,
       to, 
       value,

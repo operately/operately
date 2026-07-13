@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Serializers.Activity do
   alias OperatelyWeb.Paths
   alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Api.TypeNames
 
   def serialize(activities) when is_list(activities) do
     Enum.map(activities, fn activity ->
@@ -9,28 +10,28 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   end
 
   def serialize(activity, comment_thread: comment_thread) do
-    %{
+    TypeNames.tag_module(Operately.Activities.Activity, %{
       id: OperatelyWeb.Paths.activity_id(activity),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(activity.inserted_at),
       action: activity.action,
       author: OperatelyWeb.Api.Serializer.serialize(activity.author, level: :essential),
       comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread, comment_thread),
-      content: serialize_content(activity.action, activity.content),
+      content: tag_content(activity.action, serialize_content(activity.action, activity.content)),
       notifications: OperatelyWeb.Api.Serializer.serialize(activity.notifications),
       permissions: OperatelyWeb.Api.Serializer.serialize(activity.permissions, level: :full)
-    }
+    })
   end
 
   def serialize_comment_thread(comment_thread, :minimal) do
-    %{
+    TypeNames.tag_module(Operately.Comments.CommentThread, %{
       id: Operately.ShortUuid.encode!(comment_thread.id),
       message: Jason.encode!(comment_thread.message),
       title: comment_thread.title
-    }
+    })
   end
 
   def serialize_comment_thread(comment_thread, :full) do
-    %{
+    TypeNames.tag_module(Operately.Comments.CommentThread, %{
       id: Operately.ShortUuid.encode!(comment_thread.id),
       message: Jason.encode!(comment_thread.message),
       title: comment_thread.title,
@@ -38,19 +39,19 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       comments:
         Ecto.assoc_loaded?(comment_thread.comments) &&
           Enum.map(comment_thread.comments, fn c ->
-            %{
+            TypeNames.tag_module(Operately.Updates.Comment, %{
               id: c.id,
               content: Jason.encode!(c.content),
               inserted_at: OperatelyWeb.Api.Serializer.serialize(c.inserted_at),
               author: OperatelyWeb.Api.Serializer.serialize(c.author, level: :essential),
               reactions: OperatelyWeb.Api.Serializer.serialize(c.reactions)
-            }
+            })
           end),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(comment_thread.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(comment_thread.potential_subscribers),
       acknowledged_at: OperatelyWeb.Api.Serializer.serialize(comment_thread.acknowledged_at),
       acknowledged_by: OperatelyWeb.Api.Serializer.serialize(comment_thread.acknowledged_by)
-    }
+    })
   end
 
   #
@@ -322,31 +323,31 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_goal(nil), do: nil
 
   def serialize_goal(goal) do
-    %{
+    TypeNames.tag_module(Operately.Goals.Goal, %{
       id: Paths.goal_id(goal),
       name: goal.name,
       my_role: goal.my_role
-    }
+    })
   end
 
   def serialize_space(space) do
-    %{
+    TypeNames.tag_module(Operately.Groups.Group, %{
       id: OperatelyWeb.Paths.space_id(space),
       name: space.name
-    }
+    })
   end
 
   def serialize_discussion(message) do
-    %{
+    TypeNames.tag_module(Operately.Messages.Message, %{
       id: OperatelyWeb.Paths.message_id(message),
       title: message.title,
       body: message.body
-    }
+    })
   end
 
   def serialize_added_targets(content) do
     Enum.map(content["added_targets"], fn target ->
-      %{id: target["id"], name: target["name"]}
+      TypeNames.tag_module(Operately.Goals.Target, %{id: target["id"], name: target["name"]})
     end)
   end
 
@@ -358,7 +359,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_deleted_targets(content) do
     Enum.map(content["deleted_targets"], fn target ->
-      %{id: target["id"], name: target["name"]}
+      TypeNames.tag_module(Operately.Goals.Target, %{id: target["id"], name: target["name"]})
     end)
   end
 
@@ -366,12 +367,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_check_in(check_in) do
     if Ecto.assoc_loaded?(check_in) do
-      %{
+      TypeNames.tag_module(Operately.Projects.CheckIn, %{
         id: OperatelyWeb.Paths.project_check_in_id(check_in),
         inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
         status: check_in.status,
         description: check_in.description
-      }
+      })
     end
   end
 
@@ -394,13 +395,21 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   defp serialize_comment(comment) do
     if Ecto.assoc_loaded?(comment) do
-      %{
+      TypeNames.tag_module(Operately.Updates.Comment, %{
         id: comment.id,
         content: Jason.encode!(comment.content),
         inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at)
-      }
+      })
     else
       nil
     end
   end
+
+  defp tag_content(_action, %{__typename: _} = content), do: content
+
+  defp tag_content(action, content) when is_map(content) do
+    TypeNames.tag("activity_content_#{action}", content)
+  end
+
+  defp tag_content(_action, content), do: content
 end

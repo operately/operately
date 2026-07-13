@@ -1,4 +1,6 @@
 defmodule Operately.Billing.Overview do
+  def __api_typename__, do: "billing_overview"
+
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.Plans
   alias Operately.Billing.Usage

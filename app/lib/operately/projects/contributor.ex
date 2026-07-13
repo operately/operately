@@ -1,4 +1,6 @@
 defmodule Operately.Projects.Contributor do
+  def __api_typename__, do: "project_contributor"
+
   use Operately.Schema
   use Operately.Repo.Getter
 

@@ -1641,7 +1641,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         due_date: contextual_date
       })
 
-      assert res.milestone.timeframe.contextual_end_date == contextual_date
+      assert res.milestone.timeframe.contextual_end_date == with_typename(contextual_date, "contextual_date")
 
       updated_milestone = Repo.reload(milestone)
       assert Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-01-01]
@@ -1672,7 +1672,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       })
 
       assert res.milestone.title == "Release v2.0"
-      assert res.milestone.timeframe.contextual_end_date == new_contextual_date
+      assert res.milestone.timeframe.contextual_end_date == with_typename(new_contextual_date, "contextual_date")
 
       updated_milestone = Repo.reload(milestone)
       assert updated_milestone.title == "Release v2.0"

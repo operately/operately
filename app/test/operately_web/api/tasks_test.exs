@@ -469,7 +469,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         due_date: due_date
       })
       assert res.task.name == "Task with due date"
-      assert res.task.due_date == due_date
+      assert res.task.due_date == with_typename(due_date, "contextual_date")
     end
 
     test "it creates an activity", ctx do
@@ -873,7 +873,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         due_date: due_date
       })
       assert res.task.name == "Task with due date"
-      assert res.task.due_date == due_date
+      assert res.task.due_date == with_typename(due_date, "contextual_date")
     end
 
     test "it creates an activity for space task", ctx do
@@ -1178,7 +1178,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         type: "project"
       })
 
-      assert res.task.due_date == due_date
+      assert res.task.due_date == with_typename(due_date, "contextual_date")
 
       updated_task = Operately.Repo.reload(ctx.task)
       # Convert struct to map for comparison
@@ -1258,7 +1258,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         type: "project"
       })
 
-      assert res.task.reminders == [%{type: "on_date", days: nil, date: "2026-06-03"}]
+      assert res.task.reminders == with_typename([%{type: "on_date", days: nil, date: "2026-06-03"}], "task_reminder")
 
       updated_task = Operately.Repo.reload(ctx.task)
       assert Enum.map(updated_task.reminders, &Map.take(Map.from_struct(&1), [:type, :days, :date])) == [
@@ -1353,7 +1353,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         type: "space"
       })
 
-      assert res.task.due_date == due_date
+      assert res.task.due_date == with_typename(due_date, "contextual_date")
 
       updated_task = Operately.Repo.reload(ctx.space_task)
       # Convert struct to map for comparison
@@ -1397,7 +1397,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         type: "project"
       })
 
-      assert res.task.reminders == reminders
+      assert res.task.reminders == with_typename(reminders, "task_reminder")
 
       updated_task = Operately.Repo.reload(ctx.task)
 

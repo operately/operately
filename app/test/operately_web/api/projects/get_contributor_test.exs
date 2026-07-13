@@ -91,7 +91,7 @@ defmodule Operately.Api.Projects.GetContributorTest do
         id: Paths.project_contributor_id(ctx.contributor),
         include_permissions: true,
       })
-      assert res.contributor.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Operately.Access.Binding.full_access(), company_read_only: false))
+      assert res.contributor.permissions == Serializer.serialize(Operately.Projects.Permissions.calculate(Operately.Access.Binding.full_access(), company_read_only: false))
     end
 
     test "include_access_level", ctx do

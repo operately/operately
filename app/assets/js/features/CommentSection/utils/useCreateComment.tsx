@@ -21,6 +21,7 @@ export function useCreateComment({ setComments, entityId, entityType }: UseCreat
 
     setComments((comments) => {
       const newComment: Comments.Comment = {
+        __typename: "comment",
         id: tempId,
         insertedAt: new Date().toISOString(),
         content: Comments.stringifyCommentContent(content),

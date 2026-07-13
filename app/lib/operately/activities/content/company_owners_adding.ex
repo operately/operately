@@ -2,6 +2,8 @@ defmodule Operately.Activities.Content.CompanyOwnersAdding do
   use Operately.Activities.Content
 
   defmodule Owner do
+    def __api_typename__, do: "activity_content_company_owners_adding_person"
+
     use Operately.Activities.Content
 
     embedded_schema do

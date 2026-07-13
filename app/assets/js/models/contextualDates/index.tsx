@@ -28,6 +28,7 @@ export function serializeContextualDate(obj: DateField.ContextualDate | undefine
   if (!obj) return null;
 
   return {
+    __typename: "contextual_date",
     date: Time.toDateWithoutTime(obj.date),
     dateType: obj.dateType,
     value: obj.value,

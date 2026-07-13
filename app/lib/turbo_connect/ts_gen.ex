@@ -5,7 +5,7 @@ defmodule TurboConnect.TsGen do
 
   import TurboConnect.TsGen.Typescript,
     only: [
-      ts_interface: 2,
+      ts_interface: 3,
       ts_sum_type: 2,
       ts_type_alias: 2,
       ts_enum: 2,
@@ -208,7 +208,9 @@ defmodule TurboConnect.TsGen do
   def convert_objects(objects) do
     objects
     |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {name, object} -> ts_interface(name, object.fields) end)
+    |> Enum.map_join("\n", fn {name, object} ->
+      ts_interface(name, object.fields, Map.get(object, :typename))
+    end)
   end
 
   def convert_unions(unions) do
@@ -258,7 +260,7 @@ defmodule TurboConnect.TsGen do
         newO = {}
         for (origKey in o) {
           if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
-            newKey = origKey.replace(/_([a-z])/g, function(_a : string, b : string) { return b.toUpperCase() })
+            newKey = origKey === "__typename" ? origKey : origKey.replace(/_([a-z])/g, function(_a : string, b : string) { return b.toUpperCase() })
             value = o[origKey]
             if (value instanceof Array || (value !== null && value.constructor === Object)) {
               value = toCamel(value)
@@ -288,7 +290,7 @@ defmodule TurboConnect.TsGen do
         newO = {}
         for (origKey in o) {
           if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
-            newKey = origKey.replace(/([A-Z])/g, function(a : string) { return "_" + a.toLowerCase() })
+            newKey = origKey === "__typename" ? origKey : origKey.replace(/([A-Z])/g, function(a : string) { return "_" + a.toLowerCase() })
             value = o[origKey]
             if (value instanceof Array || (value !== null && value.constructor === Object)) {
               value = toSnake(value)

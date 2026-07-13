@@ -74,10 +74,11 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
     });
 
     const item: WorkMapItem = {
+      __typename: "work_map_item",
       id: res.goal!.id!,
       type: "goal",
       name: props.name,
-      space: props.space,
+      space: { __typename: "space", id: props.space.id, name: props.space.name },
       spacePath: props.space.link,
       project: null,
       projectPath: null,
@@ -119,10 +120,11 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
     });
 
     const item: WorkMapItem = {
+      __typename: "work_map_item",
       id: res.project!.id!,
       type: "project",
       name: props.name,
-      space: props.space,
+      space: { __typename: "space", id: props.space.id, name: props.space.name },
       spacePath: props.space.link,
       project: null,
       projectPath: null,

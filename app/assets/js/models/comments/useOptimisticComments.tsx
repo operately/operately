@@ -30,6 +30,7 @@ export function useOptimisticComments(opts: {
 
       const tempId = `temp-comment-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const optimisticComment: Comments.Comment = {
+        __typename: "comment",
         id: tempId,
         author: me,
         content: stringifyCommentContent(content),
@@ -139,6 +140,7 @@ export function useOptimisticComments(opts: {
 
       const tempReactionId = `temp-${Date.now()}`;
       const optimisticReaction = {
+        __typename: "reaction" as const,
         id: tempReactionId,
         emoji,
         person: me,
