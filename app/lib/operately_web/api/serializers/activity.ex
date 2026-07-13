@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   end
 
   def serialize(activity, comment_thread: comment_thread) do
-    TypeNames.tag("activity", %{
+    TypeNames.tag_module(Operately.Activities.Activity, %{
       id: OperatelyWeb.Paths.activity_id(activity),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(activity.inserted_at),
       action: activity.action,

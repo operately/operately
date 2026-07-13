@@ -22,6 +22,7 @@ export interface Account {
 }
 
 export interface Activity {
+  __typename?: "activity";
   id: string;
   scopeType?: string | null;
   scopeId?: string | null;
@@ -39,6 +40,7 @@ export interface Activity {
 }
 
 export interface ActivityContentCommentAdded {
+  __typename?: "activity_content_comment_added";
   comment?: Comment | null;
   activity?: Activity | null;
 }
@@ -50,11 +52,13 @@ export interface ActivityContentCompanyAdding {
 }
 
 export interface ActivityContentCompanyAdminAdded {
+  __typename?: "activity_content_company_admin_added";
   company?: Company | null;
   people?: Person[] | null;
 }
 
 export interface ActivityContentCompanyAdminRemoved {
+  __typename?: "activity_content_company_admin_removed";
   company?: Company | null;
   person?: Person | null;
 }
@@ -132,12 +136,14 @@ export interface ActivityContentDiscussionCommentSubmitted {
 }
 
 export interface ActivityContentDiscussionEditing {
+  __typename?: "activity_content_discussion_editing";
   companyId?: string | null;
   spaceId?: string | null;
   discussionId?: string | null;
 }
 
 export interface ActivityContentDiscussionPosting {
+  __typename?: "activity_content_discussion_posting";
   companyId?: string | null;
   spaceId?: string | null;
   title?: string | null;
@@ -147,6 +153,7 @@ export interface ActivityContentDiscussionPosting {
 }
 
 export interface ActivityContentGoalArchived {
+  __typename?: "activity_content_goal_archived";
   goal?: Goal | null;
 }
 
@@ -190,6 +197,7 @@ export interface ActivityContentGoalCheckInCommented {
 }
 
 export interface ActivityContentGoalCheckInEdit {
+  __typename?: "activity_content_goal_check_in_edit";
   companyId?: string | null;
   goalId?: string | null;
   checkInId?: string | null;
@@ -219,6 +227,7 @@ export interface ActivityContentGoalClosing {
 }
 
 export interface ActivityContentGoalCreated {
+  __typename?: "activity_content_goal_created";
   goal?: Goal | null;
 }
 
@@ -232,10 +241,12 @@ export interface ActivityContentGoalDescriptionChanged {
 }
 
 export interface ActivityContentGoalDiscussionCreation {
+  __typename?: "activity_content_goal_discussion_creation";
   goal: Goal;
 }
 
 export interface ActivityContentGoalDiscussionEditing {
+  __typename?: "activity_content_goal_discussion_editing";
   companyId?: string | null;
   spaceId?: string | null;
   goalId?: string | null;
@@ -252,6 +263,7 @@ export interface ActivityContentGoalDueDateUpdating {
 }
 
 export interface ActivityContentGoalEditing {
+  __typename?: "activity_content_goal_editing";
   goal?: Goal | null;
   companyId?: string | null;
   goalId?: string | null;
@@ -280,6 +292,7 @@ export interface ActivityContentGoalNameUpdating {
 }
 
 export interface ActivityContentGoalReopening {
+  __typename?: "activity_content_goal_reopening";
   companyId?: string | null;
   goalId?: string | null;
   message?: string | null;
@@ -353,6 +366,7 @@ export interface ActivityContentGoalTargetUpdating {
 }
 
 export interface ActivityContentGoalTimeframeEditing {
+  __typename?: "activity_content_goal_timeframe_editing";
   goal?: Goal | null;
   oldTimeframe?: Timeframe | null;
   newTimeframe?: Timeframe | null;
@@ -416,6 +430,7 @@ export interface ActivityContentMilestoneTitleUpdating {
 }
 
 export interface ActivityContentProjectArchived {
+  __typename?: "activity_content_project_archived";
   projectId?: string | null;
   project?: Project | null;
 }
@@ -430,6 +445,7 @@ export interface ActivityContentProjectChampionUpdating {
 }
 
 export interface ActivityContentProjectCheckInAcknowledged {
+  __typename?: "activity_content_project_check_in_acknowledged";
   projectId?: string | null;
   checkInId?: string | null;
   project?: Project | null;
@@ -444,12 +460,14 @@ export interface ActivityContentProjectCheckInCommented {
 }
 
 export interface ActivityContentProjectCheckInEdit {
+  __typename?: "activity_content_project_check_in_edit";
   companyId?: string | null;
   projectId?: string | null;
   checkInId?: string | null;
 }
 
 export interface ActivityContentProjectCheckInSubmitted {
+  __typename?: "activity_content_project_check_in_submitted";
   projectId?: string | null;
   checkInId?: string | null;
   project?: Project | null;
@@ -457,6 +475,7 @@ export interface ActivityContentProjectCheckInSubmitted {
 }
 
 export interface ActivityContentProjectClosed {
+  __typename?: "activity_content_project_closed";
   project?: Project | null;
 }
 
@@ -487,6 +506,7 @@ export interface ActivityContentProjectContributorEditedContributor {
 }
 
 export interface ActivityContentProjectContributorRemoved {
+  __typename?: "activity_content_project_contributor_removed";
   companyId?: string | null;
   projectId?: string | null;
   personId?: string | null;
@@ -501,6 +521,7 @@ export interface ActivityContentProjectContributorsAddition {
 }
 
 export interface ActivityContentProjectCreated {
+  __typename?: "activity_content_project_created";
   projectId?: string | null;
   project?: Project | null;
 }
@@ -539,6 +560,7 @@ export interface ActivityContentProjectGoalConnection {
 }
 
 export interface ActivityContentProjectGoalDisconnection {
+  __typename?: "activity_content_project_goal_disconnection";
   project?: Project | null;
   goal?: Goal | null;
 }
@@ -587,30 +609,35 @@ export interface ActivityContentProjectMilestoneUpdating {
 }
 
 export interface ActivityContentProjectMoved {
+  __typename?: "activity_content_project_moved";
   project?: Project | null;
   oldSpace?: Space | null;
   newSpace?: Space | null;
 }
 
 export interface ActivityContentProjectPausing {
+  __typename?: "activity_content_project_pausing";
   companyId?: string | null;
   projectId?: string | null;
   project?: Project | null;
 }
 
 export interface ActivityContentProjectRenamed {
+  __typename?: "activity_content_project_renamed";
   project?: Project | null;
   oldName?: string | null;
   newName?: string | null;
 }
 
 export interface ActivityContentProjectResuming {
+  __typename?: "activity_content_project_resuming";
   companyId?: string | null;
   projectId?: string | null;
   project?: Project | null;
 }
 
 export interface ActivityContentProjectRetrospectiveAcknowledged {
+  __typename?: "activity_content_project_retrospective_acknowledged";
   projectId?: string | null;
   retrospectiveId?: string | null;
   project?: Project | null;
@@ -673,6 +700,7 @@ export interface ActivityContentProjectTaskCommented {
 }
 
 export interface ActivityContentProjectTimelineEdited {
+  __typename?: "activity_content_project_timeline_edited";
   project?: Project | null;
   oldStartDate?: string | null;
   newStartDate?: string | null;
@@ -851,11 +879,13 @@ export interface ActivityContentSpaceJoining {
 }
 
 export interface ActivityContentSpaceMemberRemoved {
+  __typename?: "activity_content_space_member_removed";
   space?: Space | null;
   member?: Person | null;
 }
 
 export interface ActivityContentSpaceMembersAdded {
+  __typename?: "activity_content_space_members_added";
   space?: Space | null;
   members?: Person[] | null;
 }
@@ -877,6 +907,7 @@ export interface ActivityContentTaskAdding {
 }
 
 export interface ActivityContentTaskAssigneeAssignment {
+  __typename?: "activity_content_task_assignee_assignment";
   companyId?: string | null;
   spaceId?: string | null;
   taskId?: string | null;
@@ -895,6 +926,7 @@ export interface ActivityContentTaskAssigneeUpdating {
 }
 
 export interface ActivityContentTaskClosing {
+  __typename?: "activity_content_task_closing";
   companyId?: string | null;
   spaceId?: string | null;
   taskId?: string | null;
@@ -957,6 +989,7 @@ export interface ActivityContentTaskMoving {
 }
 
 export interface ActivityContentTaskNameEditing {
+  __typename?: "activity_content_task_name_editing";
   companyId?: string | null;
   spaceId?: string | null;
   taskId?: string | null;
@@ -974,6 +1007,7 @@ export interface ActivityContentTaskNameUpdating {
 }
 
 export interface ActivityContentTaskPriorityChange {
+  __typename?: "activity_content_task_priority_change";
   companyId?: string | null;
   spaceId?: string | null;
   taskId?: string | null;
@@ -982,12 +1016,14 @@ export interface ActivityContentTaskPriorityChange {
 }
 
 export interface ActivityContentTaskReopening {
+  __typename?: "activity_content_task_reopening";
   companyId?: string | null;
   spaceId?: string | null;
   taskId?: string | null;
 }
 
 export interface ActivityContentTaskSizeChange {
+  __typename?: "activity_content_task_size_change";
   companyId?: string | null;
   spaceId?: string | null;
   taskId?: string | null;
@@ -996,6 +1032,7 @@ export interface ActivityContentTaskSizeChange {
 }
 
 export interface ActivityContentTaskStatusChange {
+  __typename?: "activity_content_task_status_change";
   companyId?: string | null;
   taskId?: string | null;
   status?: string | null;
@@ -1012,6 +1049,7 @@ export interface ActivityContentTaskStatusUpdating {
 }
 
 export interface ActivityContentTaskUpdate {
+  __typename?: "activity_content_task_update";
   companyId?: string | null;
   taskId?: string | null;
   name?: string | null;

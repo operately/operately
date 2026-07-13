@@ -409,27 +409,27 @@ defmodule OperatelyWeb.Api.Types do
     field? :space, :space, null: true
   end
 
-  object :activity_content_space_member_removed do
+  object :activity_content_space_member_removed, for: Operately.Activities.Content.SpaceMemberRemoved do
     field? :space, :space, null: true
     field? :member, :person, null: true
   end
 
-  object :activity_content_space_members_added do
+  object :activity_content_space_members_added, for: Operately.Activities.Content.SpaceMembersAdded do
     field? :space, :space, null: true
     field? :members, list_of(:person), null: true
   end
 
-  object :activity_content_goal_archived do
+  object :activity_content_goal_archived, for: Operately.Activities.Content.GoalArchived do
     field? :goal, :goal, null: true
   end
 
-  object :activity_content_project_check_in_edit do
+  object :activity_content_project_check_in_edit, for: Operately.Activities.Content.ProjectCheckInEdit do
     field? :company_id, :string, null: true
     field? :project_id, :string, null: true
     field? :check_in_id, :string, null: true
   end
 
-  object :activity_content_project_check_in_submitted do
+  object :activity_content_project_check_in_submitted, for: Operately.Activities.Content.ProjectCheckInSubmitted do
     field? :project_id, :string, null: true
     field? :check_in_id, :string, null: true
     field? :project, :project, null: true
@@ -552,7 +552,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_type, :string
   end
 
-  object :activity_content_project_moved do
+  object :activity_content_project_moved, for: Operately.Activities.Content.ProjectMoved do
     field? :project, :project, null: true
     field? :old_space, :space, null: true
     field? :new_space, :space, null: true
@@ -610,7 +610,7 @@ defmodule OperatelyWeb.Api.Types do
     field :person, :person, null: true
   end
 
-  object :activity_content_project_pausing do
+  object :activity_content_project_pausing, for: Operately.Activities.Content.ProjectPausing do
     field? :company_id, :string, null: true
     field? :project_id, :string, null: true
     field? :project, :project, null: true
@@ -628,7 +628,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :title, :string, null: true
   end
 
-  object :activity_content_task_name_editing do
+  object :activity_content_task_name_editing, for: Operately.Activities.Content.TaskNameEditing do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :task_id, :string, null: true
@@ -648,7 +648,7 @@ defmodule OperatelyWeb.Api.Types do
     field :milestone_name, :string, null: false
   end
 
-  object :activity_content_task_priority_change do
+  object :activity_content_task_priority_change, for: Operately.Activities.Content.TaskPriorityChange do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :task_id, :string, null: true
@@ -779,7 +779,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :space_permissions, null: true
   end
 
-  object :activity do
+  object :activity, for: Operately.Activities.Activity do
     field :id, :string, null: false
     field? :scope_type, :string, null: true
     field? :scope_id, :string, null: true
@@ -1117,7 +1117,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :project, :project, null: true
   end
 
-  object :activity_content_project_timeline_edited do
+  object :activity_content_project_timeline_edited, for: Operately.Activities.Content.ProjectTimelineEdited do
     field? :project, :project, null: true
     field? :old_start_date, :date, null: true
     field? :new_start_date, :date, null: true
@@ -1148,7 +1148,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_timeframe, :timeframe, null: true
   end
 
-  object :activity_content_discussion_posting do
+  object :activity_content_discussion_posting, for: Operately.Activities.Content.DiscussionPosting do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :title, :string, null: true
@@ -1284,18 +1284,18 @@ defmodule OperatelyWeb.Api.Types do
     field? :comments_count, :integer, null: true
   end
 
-  object :activity_content_goal_created do
+  object :activity_content_goal_created, for: Operately.Activities.Content.GoalCreated do
     field? :goal, :goal, null: true
   end
 
-  object :activity_content_project_check_in_acknowledged do
+  object :activity_content_project_check_in_acknowledged, for: Operately.Activities.Content.ProjectCheckInAcknowledged do
     field? :project_id, :string, null: true
     field? :check_in_id, :string, null: true
     field? :project, :project, null: true
     field? :check_in, :project_check_in, null: true
   end
 
-  object :activity_content_project_retrospective_acknowledged do
+  object :activity_content_project_retrospective_acknowledged, for: Operately.Activities.Content.ProjectRetrospectiveAcknowledged do
     field? :project_id, :string, null: true
     field? :retrospective_id, :string, null: true
     field? :project, :project, null: true
@@ -1570,7 +1570,7 @@ defmodule OperatelyWeb.Api.Types do
     field :type, :task_type, null: false
   end
 
-  object :activity_content_discussion_editing do
+  object :activity_content_discussion_editing, for: Operately.Activities.Content.DiscussionEditing do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :discussion_id, :string, null: true
@@ -1597,7 +1597,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :project, :project, null: true
   end
 
-  object :activity_content_task_assignee_assignment do
+  object :activity_content_task_assignee_assignment, for: Operately.Activities.Content.TaskAssigneeAssignment do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :task_id, :string, null: true
@@ -1653,7 +1653,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :integer, null: true
   end
 
-  object :activity_content_project_contributor_removed do
+  object :activity_content_project_contributor_removed, for: Operately.Activities.Content.ProjectContributorRemoved do
     field? :company_id, :string, null: true
     field? :project_id, :string, null: true
     field? :person_id, :string, null: true
@@ -1689,7 +1689,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :retrospective_id, :string, null: true
   end
 
-  object :activity_content_project_archived do
+  object :activity_content_project_archived, for: Operately.Activities.Content.ProjectArchived do
     field? :project_id, :string, null: true
     field? :project, :project, null: true
   end
@@ -1784,13 +1784,13 @@ defmodule OperatelyWeb.Api.Types do
     field? :acknowledged_by, :person, null: true
   end
 
-  object :activity_content_project_resuming do
+  object :activity_content_project_resuming, for: Operately.Activities.Content.ProjectResuming do
     field? :company_id, :string, null: true
     field? :project_id, :string, null: true
     field? :project, :project, null: true
   end
 
-  object :activity_content_task_reopening do
+  object :activity_content_task_reopening, for: Operately.Activities.Content.TaskReopening do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :task_id, :string, null: true
@@ -1808,20 +1808,20 @@ defmodule OperatelyWeb.Api.Types do
     field? :champion, :person, null: true
   end
 
-  object :activity_content_goal_discussion_editing do
+  object :activity_content_goal_discussion_editing, for: Operately.Activities.Content.GoalDiscussionEditing do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :goal_id, :string, null: true
     field? :activity_id, :string, null: true
   end
 
-  object :activity_content_task_status_change do
+  object :activity_content_task_status_change, for: Operately.Activities.Content.TaskStatusChange do
     field? :company_id, :string, null: true
     field? :task_id, :string, null: true
     field? :status, :string, null: true
   end
 
-  object :activity_content_task_update do
+  object :activity_content_task_update, for: Operately.Activities.Content.TaskUpdate do
     field? :company_id, :string, null: true
     field? :task_id, :string, null: true
     field? :name, :string, null: true
@@ -1831,7 +1831,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :update_id, :string, null: true
   end
 
-  object :activity_content_project_goal_disconnection do
+  object :activity_content_project_goal_disconnection, for: Operately.Activities.Content.ProjectGoalDisconnection do
     field? :project, :project, null: true
     field? :goal, :goal, null: true
   end
@@ -1934,7 +1934,7 @@ defmodule OperatelyWeb.Api.Types do
     field :goal, :goal
   end
 
-  object :activity_content_goal_editing do
+  object :activity_content_goal_editing, for: Operately.Activities.Content.GoalEditing do
     field? :goal, :goal, null: true
     field? :company_id, :string, null: true
     field? :goal_id, :string, null: true
@@ -1953,7 +1953,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :deleted_targets, list_of(:target), null: true
   end
 
-  object :activity_content_task_closing do
+  object :activity_content_task_closing, for: Operately.Activities.Content.TaskClosing do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :task_id, :string, null: true
@@ -1982,7 +1982,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :health, :project_health, null: true
   end
 
-  object :activity_content_project_closed do
+  object :activity_content_project_closed, for: Operately.Activities.Content.ProjectClosed do
     field? :project, :project, null: true
   end
 
@@ -1999,7 +1999,7 @@ defmodule OperatelyWeb.Api.Types do
     ]
   )
 
-  object :activity_content_goal_discussion_creation do
+  object :activity_content_goal_discussion_creation, for: Operately.Activities.Content.GoalDiscussionCreation do
     field :goal, :goal, null: false
   end
 
@@ -2025,7 +2025,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :available_statuses, list_of(:task_status), null: true
   end
 
-  object :activity_content_goal_check_in_edit do
+  object :activity_content_goal_check_in_edit, for: Operately.Activities.Content.GoalCheckInEdit do
     field? :company_id, :string, null: true
     field? :goal_id, :string, null: true
     field? :check_in_id, :string, null: true
@@ -2071,13 +2071,13 @@ defmodule OperatelyWeb.Api.Types do
     field :description, :string
   end
 
-  object :activity_content_goal_timeframe_editing do
+  object :activity_content_goal_timeframe_editing, for: Operately.Activities.Content.GoalTimeframeEditing do
     field? :goal, :goal, null: true
     field? :old_timeframe, :timeframe, null: true
     field? :new_timeframe, :timeframe, null: true
   end
 
-  object :activity_content_task_size_change do
+  object :activity_content_task_size_change, for: Operately.Activities.Content.TaskSizeChange do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :task_id, :string, null: true
@@ -2164,12 +2164,12 @@ defmodule OperatelyWeb.Api.Types do
     ]
   )
 
-  object :activity_content_comment_added do
+  object :activity_content_comment_added, for: Operately.Activities.Content.CommentAdded do
     field? :comment, :comment, null: true
     field? :activity, :activity, null: true
   end
 
-  object :activity_content_company_admin_added do
+  object :activity_content_company_admin_added, for: Operately.Activities.Content.CompanyAdminAdded do
     field? :company, :company, null: true
     field? :people, list_of(:person), null: true
   end
@@ -2183,12 +2183,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :person, :person, null: true
   end
 
-  object :activity_content_company_admin_removed do
+  object :activity_content_company_admin_removed, for: Operately.Activities.Content.CompanyAdminRemoved do
     field? :company, :company, null: true
     field? :person, :person, null: true
   end
 
-  object :activity_content_project_renamed do
+  object :activity_content_project_renamed, for: Operately.Activities.Content.ProjectRenamed do
     field? :project, :project, null: true
     field? :old_name, :string, null: true
     field? :new_name, :string, null: true
@@ -2209,7 +2209,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_end_time, :string, null: true
   end
 
-  object :activity_content_goal_reopening do
+  object :activity_content_goal_reopening, for: Operately.Activities.Content.GoalReopening do
     field? :company_id, :string, null: true
     field? :goal_id, :string, null: true
     field? :message, :string, null: true
@@ -2222,7 +2222,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_parent_goal, :goal, null: true
   end
 
-  object :activity_content_project_created do
+  object :activity_content_project_created, for: Operately.Activities.Content.ProjectCreated do
     field? :project_id, :string, null: true
     field? :project, :project, null: true
   end

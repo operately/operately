@@ -62,6 +62,31 @@ defmodule OperatelyWeb.Api.TypeNamesTest do
     end)
   end
 
+  test "activity envelope and content objects expose __typename matching runtime tags" do
+    objects = OperatelyWeb.Api.Types.__objects__()
+    content_types = OperatelyWeb.Api.Types.__unions__().activity_content
+
+    # Deprecated project-review activities have no content modules / for: registration.
+    legacy =
+      MapSet.new([
+        :activity_content_project_review_acknowledged,
+        :activity_content_project_review_commented,
+        :activity_content_project_review_request_submitted,
+        :activity_content_project_review_submitted
+      ])
+
+    assert objects.activity.typename == "activity"
+
+    content_types
+    |> Enum.reject(&MapSet.member?(legacy, &1))
+    |> Enum.each(fn name ->
+      object = Map.fetch!(objects, name)
+
+      assert Map.get(object, :typename) == Atom.to_string(name),
+             "expected object :#{name} (activity_content union) to emit __typename #{inspect(Atom.to_string(name))}"
+    end)
+  end
+
   @unmapped_serializable_modules [
     Any,
     List,
