@@ -6,8 +6,15 @@ defmodule Operately.Operations.DiscussionEditing do
   alias Operately.Notifications.SubscriptionList
 
   def run(creator, message, attrs) do
+    update_attrs = %{
+      title: attrs[:title] || message.title,
+      body: attrs[:body] || message.body,
+      state: state(message, attrs),
+      scheduled_at: scheduled_at(message, attrs)
+    }
+
     Multi.new()
-    |> Multi.update(:message, Message.changeset(message, attrs))
+    |> Multi.update(:message, Message.changeset(message, update_attrs))
     |> Multi.run(:subscription_list, fn _, changes ->
       SubscriptionList.get(:system,
         parent_id: changes.message.id,
@@ -16,9 +23,9 @@ defmodule Operately.Operations.DiscussionEditing do
         ]
       )
     end)
-    |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.body)
-    |> record_activity(creator, message, attrs)
-    |> handle_oban_jobs(message, attrs)
+    |> Operately.Operations.Notifications.Subscription.update_mentioned_people(update_attrs.body)
+    |> record_activity(creator, message, update_attrs)
+    |> handle_oban_jobs(message, update_attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:message)
   end
@@ -45,8 +52,25 @@ defmodule Operately.Operations.DiscussionEditing do
         end)
 
       true ->
-        # it is a draft and it is not being published, do nothing
+        # it is a draft/scheduled and it is not being published, do nothing
         multi
+    end
+  end
+
+  defp state(message, attrs) do
+    cond do
+      not is_nil(attrs[:state]) -> attrs[:state]
+      not is_nil(attrs[:scheduled_at]) -> :scheduled
+      true -> message.state
+    end
+  end
+
+  defp scheduled_at(message, attrs) do
+    cond do
+      Map.has_key?(attrs, :scheduled_at) and not is_nil(attrs[:scheduled_at]) -> attrs[:scheduled_at]
+      attrs[:state] in [:draft, :published] -> nil
+      Map.has_key?(attrs, :scheduled_at) -> attrs[:scheduled_at]
+      true -> message.scheduled_at
     end
   end
 

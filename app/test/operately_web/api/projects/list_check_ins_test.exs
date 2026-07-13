@@ -115,6 +115,26 @@ defmodule OperatelyWeb.Api.Projects.ListCheckInsTest do
       assert length(ids) == 4
     end
 
+    test "scheduled check-ins are visible only to their author", ctx do
+      viewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      {project_id, [published_check_in | _]} = create_project_and_check_ins(ctx, company_access: Binding.view_access())
+
+      scheduled =
+        check_in_fixture(%{
+          author_id: ctx.person.id,
+          project_id: published_check_in.project_id,
+          state: :scheduled,
+          scheduled_at: Operately.Time.days_from_now(1)
+        })
+
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
+      assert Enum.map(res.project_check_ins, & &1.id) |> Enum.member?(Paths.project_check_in_id(scheduled))
+
+      viewer_conn = log_in_account(ctx.conn, Repo.preload(viewer, :account).account)
+      assert {200, res} = query(viewer_conn, [:projects, :list_check_ins], %{project_id: project_id})
+      refute Enum.map(res.project_check_ins, & &1.id) |> Enum.member?(Paths.project_check_in_id(scheduled))
+    end
+
     test "published check-ins are sorted by published_at desc", ctx do
       {project_id, [older_check_in, middle_check_in, newer_check_in]} =
         create_project_and_check_ins(ctx, company_access: Binding.view_access())
