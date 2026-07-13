@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.GoalChecksTest do
   use OperatelyWeb.TurboCase
 
+  import Ecto.Query, only: [from: 2]
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -308,8 +310,8 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
     end
 
     defp check_order(goal_id) do
-      Operately.Goals.Check
-      |> Operately.Repo.all(where: [goal_id: goal_id])
+      from(c in Operately.Goals.Check, where: c.goal_id == ^goal_id)
+      |> Operately.Repo.all()
       |> Enum.sort_by(& &1.index)
       |> Enum.map(& &1.id)
     end

@@ -263,6 +263,11 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
   end
 
   defp delete_all_activities(company) do
-    Operately.Repo.delete_all(Operately.Activities.Activity, where: [company_id: company.id])
+    company_id = to_string(company.id)
+
+    from(a in Operately.Activities.Activity,
+      where: fragment("(?->>?)", a.content, "company_id") == ^company_id
+    )
+    |> Operately.Repo.delete_all()
   end
 end
