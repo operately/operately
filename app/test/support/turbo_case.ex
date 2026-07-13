@@ -31,6 +31,18 @@ defmodule OperatelyWeb.TurboCase do
 
   defdelegate register_and_log_in_account(context), to: OperatelyWeb.ConnCase
 
+  @doc """
+  Tags a map (or list of maps) with the `__typename` the API serializer injects.
+  Use when asserting response payloads against fixture maps built without typename.
+  """
+  def with_typename(maps, type) when is_list(maps) and is_binary(type) do
+    Enum.map(maps, &with_typename(&1, type))
+  end
+
+  def with_typename(map, type) when is_map(map) and is_binary(type) do
+    Map.put(map, :__typename, type)
+  end
+
   def log_in_account(ctx, person = %Operately.People.Person{}) do
     company = Map.get(ctx, :company)
     account = person |> Operately.Repo.preload(:account) |> Map.get(:account)

@@ -715,7 +715,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
       })
 
       assert res.milestone.id == Paths.milestone_id(ctx.milestone)
-      assert res.milestone.timeframe.contextual_end_date == contextual_date
+      assert res.milestone.timeframe.contextual_end_date == with_typename(contextual_date, "contextual_date")
 
       updated_milestone = Repo.reload(ctx.milestone)
       assert Operately.ContextualDates.Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-01-01]
@@ -849,7 +849,7 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
         due_date: quarter_date
       })
 
-      assert res.milestone.timeframe.contextual_end_date == quarter_date
+      assert res.milestone.timeframe.contextual_end_date == with_typename(quarter_date, "contextual_date")
     end
 
     test "it works with milestones from different projects", ctx do
