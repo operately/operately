@@ -91,7 +91,7 @@ export function useForm(props: EditProps | NewProps) {
           postAsDraft: action === "save-draft",
           sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
           subscriberIds: subscriptionsState.currentSubscribersList,
-          scheduledAt: shouldSchedule && action !== "save-draft" ? scheduleFlow.scheduledAtIso : undefined,
+          scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : undefined,
         };
 
         const res = await post(payload);

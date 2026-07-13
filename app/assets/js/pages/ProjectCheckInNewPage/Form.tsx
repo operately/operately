@@ -75,7 +75,7 @@ export function Form({ project }: { project: Project }) {
         postAsDraft: action === "draft",
         sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
-        scheduledAt: shouldSchedule && action !== "draft" ? scheduleFlow.scheduledAtIso : undefined,
+        scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : undefined,
       });
 
       navigate(paths.projectCheckInPath(res.checkIn.id));
