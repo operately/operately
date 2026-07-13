@@ -44,10 +44,12 @@ export function CommentSection(props: CommentSectionProps) {
     <>
       <div className="flex flex-col">
         {props.form.items.map((item, index) => {
+          const key = commentItemKey(item, index);
+
           if (item.type === "comment") {
             return (
               <Comment
-                key={index}
+                key={key}
                 comment={item.value}
                 form={props.form}
                 commentParentType={props.commentParentType}
@@ -55,11 +57,11 @@ export function CommentSection(props: CommentSectionProps) {
               />
             );
           } else if (item.type === "milestone-completed") {
-            return <MilestoneCompleted key={index} comment={item.value} />;
+            return <MilestoneCompleted key={key} comment={item.value} />;
           } else if (item.type === "milestone-reopened") {
-            return <MilestoneReopened key={index} comment={item.value} />;
+            return <MilestoneReopened key={key} comment={item.value} />;
           } else {
-            return <AckComment key={index} person={item.value} ackAt={item.insertedAt} label={props.ackLabel} />;
+            return <AckComment key={key} person={item.value} ackAt={item.insertedAt} label={props.ackLabel} />;
           }
         })}
 
@@ -67,6 +69,18 @@ export function CommentSection(props: CommentSectionProps) {
       </div>
     </>
   );
+}
+
+function commentItemKey(item: { type: string; insertedAt: Date; value: { id?: string } }, index: number): string {
+  if (item.type === "acknowledgement") {
+    return `acknowledgement-${item.insertedAt.toISOString()}`;
+  }
+
+  if (item.value?.id) {
+    return `${item.type}-${item.value.id}`;
+  }
+
+  return `${item.type}-${index}`;
 }
 
 function Comment({ comment, form, commentParentType, canComment }) {
@@ -346,11 +360,13 @@ function AddCommentActive({ onBlur, onPost, form }) {
     if (!editor) return;
     if (editor.uploading) return;
 
-    const success = await form.postComment(editor.editor.getJSON());
-    if (success === false) return;
-
+    const content = editor.editor.getJSON();
+    // Close the composer before the optimistic comment lands so the new row
+    // never appears while the active comment box is still open.
     editor.clearLocalDraft();
     onPost();
+
+    await form.postComment(content);
   };
 
   const handleCancel = () => {

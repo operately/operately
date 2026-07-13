@@ -64,7 +64,10 @@ function useLoadAndReloadComments(parentId: string, parentType: Comments.Comment
   useEffect(() => {
     if (!data?.comments) return;
 
-    setItems(parseComments(data.comments));
+    setItems((prev) => {
+      const pending = prev.filter(Comments.isOptimisticComment);
+      return [...parseComments(data.comments), ...pending];
+    });
   }, [data]);
 
   return {

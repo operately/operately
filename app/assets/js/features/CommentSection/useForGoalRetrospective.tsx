@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import * as Activities from "@/models/activities";
 import * as Comments from "@/models/comments";
 import * as Goals from "@/models/goals";
-import * as Time from "@/utils/time";
 
 import { FormState } from "./form";
 import { useComments } from "./useComments";
@@ -15,15 +14,11 @@ export function useForGoalRetrospective(activity: Activities.Activity, goal: Goa
     if (!form.items) return [];
     if (!activity.commentThread?.acknowledgedAt) return form.items;
 
-    const { before, after } = Comments.splitComments(form.items, activity.commentThread.acknowledgedAt);
-
-    const acknowledgement = {
-      type: "acknowledgement",
-      insertedAt: Time.parse(activity.commentThread.acknowledgedAt)!,
-      value: activity.commentThread.acknowledgedBy,
-    } as Comments.CommentItem;
-
-    return [...before, acknowledgement, ...after];
+    return Comments.insertAcknowledgement(
+      form.items,
+      activity.commentThread.acknowledgedAt,
+      activity.commentThread.acknowledgedBy,
+    );
   }, [form.items, activity.commentThread]);
 
   return { ...form, items: comments };
