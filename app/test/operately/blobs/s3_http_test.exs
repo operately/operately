@@ -16,7 +16,7 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [], [request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, [with_body: true] -> {:ok, 200, [], ""} end]}
+      {:hackney, [], [request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, [] -> {:ok, 200, [], ""} end]}
     ]) do
       assert :ok = S3Http.put_file("some/path", source_path, headers)
     end
@@ -24,10 +24,9 @@ defmodule Operately.Blobs.S3HttpTest do
 
   test "download_to_file/2 streams a presigned GET response to disk" do
     dest_path = temp_path("s3-http-download.txt")
-    Process.put(:download_chunks, ["chunk-1", "chunk-2"])
+    caller = self()
 
     on_exit(fn ->
-      Process.delete(:download_chunks)
       cleanup_paths([dest_path])
     end)
 
@@ -35,17 +34,19 @@ defmodule Operately.Blobs.S3HttpTest do
       {Operately.Blobs.S3Config, [], [presigned_url: fn :get, "some/path", [], [], [expires_in: 3600] -> {:ok, "https://storage.example/get"} end]},
       {:hackney, [],
        [
-         request: fn :get, "https://storage.example/get", [], "", [] -> {:ok, 200, [], :download_ref} end,
-         stream_body: fn :download_ref ->
-           case Process.get(:download_chunks) do
-             [chunk | rest] ->
-               Process.put(:download_chunks, rest)
-               {:ok, chunk}
+         request: fn :get, "https://storage.example/get", [], "", opts ->
+           assert :async in opts
+           ref = make_ref()
 
-             [] ->
-               :done
-           end
-         end
+           send(caller, {:hackney_response, ref, {:status, 200, "OK"}})
+           send(caller, {:hackney_response, ref, {:headers, []}})
+           send(caller, {:hackney_response, ref, "chunk-1"})
+           send(caller, {:hackney_response, ref, "chunk-2"})
+           send(caller, {:hackney_response, ref, :done})
+
+           {:ok, ref}
+         end,
+         close: fn _ref -> :ok end
        ]}
     ]) do
       assert :ok = S3Http.download_to_file("some/path", dest_path)
@@ -53,10 +54,41 @@ defmodule Operately.Blobs.S3HttpTest do
     end
   end
 
+  test "download_to_file/2 returns http errors without writing a partial file" do
+    dest_path = temp_path("s3-http-download-error.txt")
+    caller = self()
+
+    on_exit(fn ->
+      cleanup_paths([dest_path])
+    end)
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :get, "some/path", [], [], [expires_in: 3600] -> {:ok, "https://storage.example/get"} end]},
+      {:hackney, [],
+       [
+         request: fn :get, "https://storage.example/get", [], "", opts ->
+           assert :async in opts
+           ref = make_ref()
+
+           send(caller, {:hackney_response, ref, {:status, 404, "Not Found"}})
+           send(caller, {:hackney_response, ref, {:headers, []}})
+           send(caller, {:hackney_response, ref, "missing"})
+           send(caller, {:hackney_response, ref, :done})
+
+           {:ok, ref}
+         end,
+         close: fn _ref -> :ok end
+       ]}
+    ]) do
+      assert {:error, {:http_error, 404, "missing"}} = S3Http.download_to_file("some/path", dest_path)
+      refute File.exists?(dest_path)
+    end
+  end
+
   test "delete_object/1 sends a presigned DELETE request" do
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :delete, "some/path", [], [], [expires_in: 3600] -> {:ok, "https://storage.example/delete"} end]},
-      {:hackney, [], [request: fn :delete, "https://storage.example/delete", [], "", [with_body: true] -> {:ok, 204, [], ""} end]}
+      {:hackney, [], [request: fn :delete, "https://storage.example/delete", [], "", [] -> {:ok, 204, [], ""} end]}
     ]) do
       assert :ok = S3Http.delete_object("some/path")
     end
