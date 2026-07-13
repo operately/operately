@@ -1,4 +1,6 @@
 defmodule Operately.Billing.PlanDefinition do
+  def __api_typename__, do: "billing_plan_definition"
+
   use Operately.Schema
 
   alias Operately.Billing.Plans

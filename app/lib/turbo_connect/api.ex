@@ -81,21 +81,27 @@ defmodule TurboConnect.Api do
       plug TurboConnect.Plugs.Dispatch
 
       def __types__() do
-        Enum.reduce(@typemodules, %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}, int_enums: %{}}, fn module, acc ->
+        Enum.reduce(@typemodules, %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}, int_enums: %{}, object_modules: %{}}, fn module, acc ->
           primitives = apply(module, :__primitives__, [])
           objects = apply(module, :__objects__, [])
           unions = apply(module, :__unions__, [])
           enums = apply(module, :__enums__, [])
           int_enums = apply(module, :__int_enums__, [])
+          object_modules = apply(module, :__object_modules__, [])
 
           primitives = Map.merge(acc.primitives, primitives)
           objects = Map.merge(acc.objects, objects)
           unions = Map.merge(acc.unions, unions)
           enums = Map.merge(acc.enums, enums)
           int_enums = Map.merge(acc.int_enums, int_enums)
+          object_modules = Map.merge(acc.object_modules, object_modules)
 
-          %{objects: objects, unions: unions, primitives: primitives, enums: enums, int_enums: int_enums}
+          %{objects: objects, unions: unions, primitives: primitives, enums: enums, int_enums: int_enums, object_modules: object_modules}
         end)
+      end
+
+      def __object_modules__() do
+        __types__().object_modules
       end
 
       def __queries__() do

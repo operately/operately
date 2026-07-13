@@ -138,7 +138,8 @@ defmodule TurboConnect.ApiTest do
                resource: [:user, :address]
              },
              enums: %{},
-             int_enums: %{}
+             int_enums: %{},
+             object_modules: %{}
            }
   end
 

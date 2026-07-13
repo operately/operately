@@ -1,4 +1,6 @@
 defmodule Operately.People.AgentConvo do
+  def __api_typename__, do: "agent_conversation"
+
   use Operately.Schema
   import Ecto.Changeset
 

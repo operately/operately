@@ -1,4 +1,6 @@
 defmodule Operately.ResourceHubs.Folder do
+  def __api_typename__, do: "resource_hub_folder"
+
   use Operately.Schema
 
   import Ecto.Query

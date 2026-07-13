@@ -1,4 +1,6 @@
 defmodule Operately.ResourceHubs.Link do
+  def __api_typename__, do: "resource_hub_link"
+
   use Operately.Schema
 
   import Operately.Repo.RequestInfo, only: [request_info: 0]

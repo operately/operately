@@ -1,4 +1,6 @@
 defmodule Operately.ResourceHubs.Node do
+  def __api_typename__, do: "resource_hub_node"
+
   import Ecto.Query, only: [from: 2]
   use Operately.Schema
 

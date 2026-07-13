@@ -1,4 +1,6 @@
 defmodule Operately.Projects.Retrospective do
+  def __api_typename__, do: "project_retrospective"
+
   use Operately.Schema
   use Operately.Repo.Getter
 

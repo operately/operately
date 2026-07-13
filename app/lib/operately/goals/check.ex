@@ -1,4 +1,6 @@
 defmodule Operately.Goals.Check do
+  def __api_typename__, do: "goal_check"
+
   use Operately.Schema
   use Operately.Repo.Getter
 

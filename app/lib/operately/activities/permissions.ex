@@ -1,4 +1,6 @@
 defmodule Operately.Activities.Permissions do
+  def __api_typename__, do: "activity_permissions"
+
   alias Operately.Access.Binding
   alias Operately.Permissions.ReadOnly
 
