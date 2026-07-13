@@ -2,7 +2,6 @@ import { useMemo } from "react";
 
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 import * as Comments from "@/models/comments";
-import * as Time from "@/utils/time";
 
 import { FormState } from "./form";
 import { useComments } from "./useComments";
@@ -14,15 +13,7 @@ export function useForProjectCheckIn(checkIn: ProjectCheckIns.ProjectCheckIn): F
     if (!form.items) return [];
     if (!checkIn.acknowledgedAt) return form.items;
 
-    const { before, after } = Comments.splitComments(form.items, checkIn.acknowledgedAt);
-
-    const acknowledgement = {
-      type: "acknowledgement",
-      insertedAt: Time.parse(checkIn.acknowledgedAt)!,
-      value: checkIn.acknowledgedBy,
-    } as Comments.CommentItem;
-
-    return [...before, acknowledgement, ...after];
+    return Comments.insertAcknowledgement(form.items, checkIn.acknowledgedAt, checkIn.acknowledgedBy);
   }, [form.items, checkIn]);
 
   return { ...form, items: comments };
