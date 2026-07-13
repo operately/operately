@@ -424,3 +424,22 @@
     :why: Its MIT
     :versions: []
     :when: 2025-09-08 12:41:19.878304000 Z
+- - :approve
+  - h2
+  - :who: Adriano Lazzaretti
+    :why: Apache-2.0 per Hex metadata and https://github.com/benoitc/erlang_h2
+      (transitive of hackney 4.x)
+    :versions: []
+    :when: 2026-07-13 12:45:00.000000000 Z
+- - :approve
+  - quic
+  - :who: Adriano Lazzaretti
+    :why: Apache-2.0 per Hex metadata and README (transitive of hackney 4.x)
+    :versions: []
+    :when: 2026-07-13 12:45:00.000000000 Z
+- - :approve
+  - webtransport
+  - :who: Adriano Lazzaretti
+    :why: Apache-2.0 per Hex metadata and LICENSE file (transitive of hackney 4.x)
+    :versions: []
+    :when: 2026-07-13 12:45:00.000000000 Z

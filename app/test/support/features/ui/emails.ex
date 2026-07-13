@@ -36,9 +36,11 @@ defmodule Operately.Support.Features.UI.Emails do
   end
 
   def find_link(email, text) do
-    email.html
+    {:ok, document} = Floki.parse_document(email.html || "")
+
+    document
     |> Floki.find("a[href]")
-    |> Enum.filter(fn el -> Floki.text(el) == text end)
+    |> Enum.filter(fn el -> String.trim(Floki.text(el)) == text end)
     |> Floki.attribute("href")
     |> case do
       [] ->

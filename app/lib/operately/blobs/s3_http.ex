@@ -1,9 +1,11 @@
 defmodule Operately.Blobs.S3Http do
   alias Operately.Blobs.S3Config
 
+  @download_recv_timeout_ms 60_000
+
   def put_file(path, source_path, headers) when is_binary(path) and is_binary(source_path) and is_list(headers) do
     with {:ok, url} <- S3Config.presigned_url(:put, path, headers, [], expires_in: 3600),
-         {:ok, status, _resp_headers, body} <- :hackney.request(:put, url, headers, {:file, source_path}, with_body: true) do
+         {:ok, status, _resp_headers, body} <- :hackney.request(:put, url, headers, {:file, source_path}, []) do
       case status do
         status when status in 200..299 -> :ok
         status -> {:error, {:http_error, status, body}}
@@ -17,18 +19,7 @@ defmodule Operately.Blobs.S3Http do
     with {:ok, url} <- S3Config.presigned_url(:get, path, [], [], expires_in: 3600) do
       case File.open(dest_path, [:write, :binary]) do
         {:ok, file} ->
-          result =
-            case :hackney.request(:get, url, [], "", []) do
-              {:ok, status, _resp_headers, ref} when status in 200..299 ->
-                stream_response(ref, file)
-
-              {:ok, status, _resp_headers, ref} ->
-                read_error_body(ref, status)
-
-              {:error, reason} ->
-                {:error, reason}
-            end
-
+          result = stream_download(url, file)
           File.close(file)
 
           case result do
@@ -48,7 +39,7 @@ defmodule Operately.Blobs.S3Http do
 
   def delete_object(path) when is_binary(path) do
     with {:ok, url} <- S3Config.presigned_url(:delete, path, [], [], expires_in: 3600),
-         {:ok, status, _resp_headers, body} <- :hackney.request(:delete, url, [], "", with_body: true) do
+         {:ok, status, _resp_headers, body} <- :hackney.request(:delete, url, [], "", []) do
       case status do
         status when status in 200..299 -> :ok
         status -> {:error, {:http_error, status, body}}
@@ -56,25 +47,109 @@ defmodule Operately.Blobs.S3Http do
     end
   end
 
-  defp stream_response(ref, file) do
-    case :hackney.stream_body(ref) do
-      {:ok, chunk} ->
-        :ok = IO.binwrite(file, chunk)
-        stream_response(ref, file)
+  defp stream_download(url, file) do
+    opts = [:async, {:recv_timeout, @download_recv_timeout_ms}]
 
-      :done ->
-        :ok
+    case :hackney.request(:get, url, [], "", opts) do
+      {:ok, ref} ->
+        await_status(ref, file)
 
       {:error, reason} ->
         {:error, reason}
     end
   end
 
+  defp await_status(ref, file) do
+    receive do
+      {:hackney_response, ^ref, {:status, status, _reason}} when status in 200..299 ->
+        await_headers(ref, file)
+
+      {:hackney_response, ^ref, {:status, status, _reason}} ->
+        read_error_body(ref, status)
+
+      {:hackney_response, ^ref, {:error, reason}} ->
+        {:error, reason}
+    after
+      @download_recv_timeout_ms ->
+        close_request(ref)
+        {:error, :timeout}
+    end
+  end
+
+  defp await_headers(ref, file) do
+    receive do
+      {:hackney_response, ^ref, {:headers, _headers}} ->
+        stream_body(ref, file)
+
+      {:hackney_response, ^ref, chunk} when is_binary(chunk) ->
+        write_chunk(ref, file, chunk)
+
+      {:hackney_response, ^ref, :done} ->
+        :ok
+
+      {:hackney_response, ^ref, {:error, reason}} ->
+        {:error, reason}
+    after
+      @download_recv_timeout_ms ->
+        close_request(ref)
+        {:error, :timeout}
+    end
+  end
+
+  defp stream_body(ref, file) do
+    receive do
+      {:hackney_response, ^ref, chunk} when is_binary(chunk) ->
+        write_chunk(ref, file, chunk)
+
+      {:hackney_response, ^ref, :done} ->
+        :ok
+
+      {:hackney_response, ^ref, {:error, reason}} ->
+        {:error, reason}
+    after
+      @download_recv_timeout_ms ->
+        close_request(ref)
+        {:error, :timeout}
+    end
+  end
+
+  defp write_chunk(ref, file, chunk) do
+    :ok = IO.binwrite(file, chunk)
+    stream_body(ref, file)
+  end
+
   defp read_error_body(ref, status) do
-    case :hackney.body(ref) do
+    case collect_error_body(ref, []) do
       {:ok, body} -> {:error, {:http_error, status, body}}
-      {:error, {:closed, body}} -> {:error, {:http_error, status, body}}
       {:error, reason} -> {:error, {:http_error, status, inspect(reason)}}
+    end
+  end
+
+  defp collect_error_body(ref, chunks) do
+    receive do
+      {:hackney_response, ^ref, {:headers, _headers}} ->
+        collect_error_body(ref, chunks)
+
+      {:hackney_response, ^ref, chunk} when is_binary(chunk) ->
+        collect_error_body(ref, [chunk | chunks])
+
+      {:hackney_response, ^ref, :done} ->
+        {:ok, chunks |> Enum.reverse() |> IO.iodata_to_binary()}
+
+      {:hackney_response, ^ref, {:error, reason}} ->
+        {:error, reason}
+    after
+      @download_recv_timeout_ms ->
+        close_request(ref)
+        {:error, :timeout}
+    end
+  end
+
+  defp close_request(ref) do
+    try do
+      :hackney.close(ref)
+    catch
+      _, _ -> :ok
     end
   end
 end

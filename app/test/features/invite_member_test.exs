@@ -89,21 +89,21 @@ defmodule Operately.Features.InviteMemberTest do
       Steps.log_in_as_admin(ctx)
     end
 
-    test "viewing invitation expiration in minutes", ctx do
+    feature "viewing invitation expiration in minutes", ctx do
       ctx
       |> Steps.given_that_an_invitation_will_expire_in_minutes(%{name: "Minutes User", email: "minutes@example.com"})
       |> Steps.open_company_team_page()
       |> Steps.assert_invitation_expires_in_minutes()
     end
 
-    test "viewing invitation expiration in hours", ctx do
+    feature "viewing invitation expiration in hours", ctx do
       ctx
       |> Steps.given_that_an_invitation_will_expire_in_hours(%{name: "Hours User", email: "hours@example.com"})
       |> Steps.open_company_team_page()
       |> Steps.assert_invitation_expires_in_hours()
     end
 
-    test "viewing invitation expiration in days", ctx do
+    feature "viewing invitation expiration in days", ctx do
       ctx
       |> Steps.given_that_an_invitation_will_expire_in_days(%{name: "Days User", email: "days@example.com"})
       |> Steps.open_company_team_page()
