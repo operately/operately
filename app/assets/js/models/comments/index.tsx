@@ -28,7 +28,7 @@ export interface CommentItem {
   value: any;
 }
 
-export function splitComments(
+function splitComments(
   comments: CommentItem[],
   timestamp: string,
 ): { before: CommentItem[]; after: CommentItem[] } {
