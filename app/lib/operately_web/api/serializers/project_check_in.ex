@@ -8,6 +8,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.CheckIn do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(check_in.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(check_in.updated_at),
       published_at: OperatelyWeb.Api.Serializer.serialize(check_in.published_at),
+      scheduled_at: OperatelyWeb.Api.Serializer.serialize(check_in.scheduled_at),
       acknowledged_at: OperatelyWeb.Api.Serializer.serialize(check_in.acknowledged_at),
       acknowledged_by: OperatelyWeb.Api.Serializer.serialize(check_in.acknowledged_by),
       project: OperatelyWeb.Api.Serializer.serialize(check_in.project, level: :full),

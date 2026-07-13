@@ -1,19 +1,20 @@
 import * as React from "react";
 import * as People from "@/models/people";
-import { Avatar, BulletDot, FormattedTime } from "turboui";
+import { Avatar, BulletDot, FormattedTime, StatusBadge } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
-const validStates = ["draft", "published"];
+const validStates = ["draft", "scheduled", "published"];
 
 interface TitleProps {
   title: string;
   state: string;
   author: People.Person | null;
   publishedAt?: string;
+  scheduledAt?: string | null;
   modifiedAt?: string | null;
 }
 
-export function DocumentTitle({ title, author, state, publishedAt, modifiedAt }: TitleProps) {
+export function DocumentTitle({ title, author, state, publishedAt, scheduledAt, modifiedAt }: TitleProps) {
   const formattedTimePreferences = useFormattedTimePreferences();
   verifyState(state);
   verifyPublishedAt(state, publishedAt);
@@ -21,7 +22,10 @@ export function DocumentTitle({ title, author, state, publishedAt, modifiedAt }:
 
   return (
     <div className="flex flex-col items-center">
-      <div className="text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">{title}</div>
+      <div className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">
+        <span>{title}</span>
+        {state === "scheduled" && <StatusBadge status="pending" customLabel="Scheduled" hideIcon />}
+      </div>
       <div className="flex flex-wrap justify-center gap-1 items-center mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
         {author && (
           <div className="flex items-center gap-1">
@@ -29,7 +33,7 @@ export function DocumentTitle({ title, author, state, publishedAt, modifiedAt }:
           </div>
         )}
 
-        {state !== "draft" && (
+        {state === "published" && (
           <>
             {author && <BulletDot margin="mx-0.5" />}
             <span>Posted</span>
@@ -37,7 +41,17 @@ export function DocumentTitle({ title, author, state, publishedAt, modifiedAt }:
           </>
         )}
 
-        {state !== "draft" && showModifiedAt && (
+        {state === "scheduled" && scheduledAt && (
+          <>
+            {author && <BulletDot margin="mx-0.5" />}
+            <span>Scheduled for</span>
+            <FormattedTime {...formattedTimePreferences} time={scheduledAt} format="long-date" />
+            <span>at</span>
+            <FormattedTime {...formattedTimePreferences} time={scheduledAt} format="time-only" />
+          </>
+        )}
+
+        {state === "published" && showModifiedAt && (
           <>
             <BulletDot margin="mx-0.5" />
             <span>Edited</span>

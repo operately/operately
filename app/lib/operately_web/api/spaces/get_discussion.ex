@@ -31,6 +31,7 @@ defmodule OperatelyWeb.Api.Spaces.GetDiscussion do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:message, fn ctx -> load(ctx, inputs, company_read_only(conn)) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
+    |> run(:check_draft_access, fn ctx -> check_draft_access(ctx.message, ctx.me) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: OperatelyWeb.Api.Serializer.serialize(ctx.message, level: :full)}} end)
     |> respond()
    end
@@ -41,6 +42,7 @@ defmodule OperatelyWeb.Api.Spaces.GetDiscussion do
       {:error, :id, _} -> {:error, :bad_request}
       {:error, :message, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :not_found}
+      {:error, :check_draft_access, _} -> {:error, :not_found}
       _ -> {:error, :not_found}
     end
   end

@@ -5,7 +5,10 @@ import { parseCheckInsForTurboUi, usePostProjectCheckIn, ProjectCheckInStatus } 
 import { Project } from "@/models/projects";
 import { useNavigate } from "react-router";
 
+import { ScheduleFlowControls } from "@/components/ScheduleFlowControls";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useScheduleFlow } from "@/hooks/useScheduleFlow";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import {
   ActionLink,
@@ -13,14 +16,12 @@ import {
   Forms,
   GhostButton,
   Link,
-  PrimaryButton,
   RichContent,
   Spacer,
   StatusBadge,
   SubscribersSelector,
   type FormState,
 } from "turboui";
-import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
@@ -32,6 +33,7 @@ export function Form({ project }: { project: Project }) {
 
   const [post] = usePostProjectCheckIn();
   const navigate = useNavigate();
+  const scheduleFlow = useScheduleFlow();
   const lastCheckIns = project.lastCheckIn ? parseCheckInsForTurboUi(paths, [project.lastCheckIn]) : [];
 
   const subscriptionsState = useSubscriptionsAdapter(project.potentialSubscribers, {
@@ -59,10 +61,12 @@ export function Form({ project }: { project: Project }) {
     cancel: () => {
       navigate(paths.projectCheckInsPath(project.id!));
     },
-    submit: async (action: "submit" | "draft" = "submit") => {
+    submit: async (action: "submit" | "draft" | "schedule" = "submit") => {
       const status = form.values.status;
       const description = form.values.description;
       if (!status || !description) return;
+
+      const shouldSchedule = action === "schedule" || (action === "submit" && scheduleFlow.isScheduledLocally);
 
       const res = await post({
         projectId: project.id,
@@ -71,6 +75,7 @@ export function Form({ project }: { project: Project }) {
         postAsDraft: action === "draft",
         sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
+        scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : undefined,
       });
 
       navigate(paths.projectCheckInPath(res.checkIn.id));
@@ -96,13 +101,19 @@ export function Form({ project }: { project: Project }) {
 
       <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
 
-      <SubmitButtons form={form} />
+      <SubmitButtons form={form} scheduleFlow={scheduleFlow} />
     </Forms.Form>
   );
 }
 
-function SubmitButtons({ form }: { form: FormState<{ status: ProjectCheckInStatus | null; description: any }> }) {
-  const submit = (action: "submit" | "draft") => {
+function SubmitButtons({
+  form,
+  scheduleFlow,
+}: {
+  form: FormState<{ status: ProjectCheckInStatus | null; description: any }>;
+  scheduleFlow: ReturnType<typeof useScheduleFlow>;
+}) {
+  const submit = (action: "submit" | "draft" | "schedule") => {
     form.actions.setTrigger(action);
     form.actions.submit(action);
   };
@@ -110,24 +121,24 @@ function SubmitButtons({ form }: { form: FormState<{ status: ProjectCheckInStatu
   const isSubmitting = form.state === "submitting";
 
   return (
-    <div className="mt-8 flex items-center gap-2">
-      <PrimaryButton
-        loading={isSubmitting && form.trigger === "submit"}
+    <div className="mt-8">
+      <ScheduleFlowControls
+        scheduleFlow={scheduleFlow}
+        primaryLabel="Submit"
+        onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "submit")}
+        loading={isSubmitting && (form.trigger === "submit" || form.trigger === "schedule")}
         testId="submit"
-        size="base"
-        onClick={() => submit("submit")}
-      >
-        Submit
-      </PrimaryButton>
-
-      <GhostButton
-        loading={isSubmitting && form.trigger === "draft"}
-        testId="save-as-draft"
-        size="base"
-        onClick={() => submit("draft")}
-      >
-        Save as draft
-      </GhostButton>
+        secondaryAction={
+          <GhostButton
+            loading={isSubmitting && form.trigger === "draft"}
+            testId="save-as-draft"
+            size="base"
+            onClick={() => submit("draft")}
+          >
+            Save as draft
+          </GhostButton>
+        }
+      />
     </div>
   );
 }

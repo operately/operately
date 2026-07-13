@@ -9,6 +9,7 @@ import { usePaths } from "@/routes/paths";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
+import { ScheduleFlowControls } from "@/components/ScheduleFlowControls";
 import {
   ActionLink,
   Checklist,
@@ -19,24 +20,23 @@ import {
   IconInfoCircle,
   InfoCallout,
   Link,
-  PrimaryButton,
   RichContent,
   StatusBadge,
   Tooltip,
   SubscribersSelector,
-  type FormState,
 } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import type { GoalCheckInFormState } from "./useForm";
 
 interface Props {
-  form: FormState<any>;
+  form: GoalCheckInFormState;
   mode: "new" | "view" | "edit";
   goal: Goals.Goal;
   children?: React.ReactNode;
   subscriptionsState?: SubscriptionsState;
-  isDraft?: boolean;
+  isUnpublished?: boolean;
 
   // Full editing is allowed only for the latest check-in,
   // and allows editing the status, due date, and targets.
@@ -79,57 +79,58 @@ export function Form(props: Props) {
 function SubmitSection(props: Props) {
   if (props.mode === "view") return null;
 
-  const submit = (action: "submit" | "save-draft" | "publish-draft") => {
+  const submit = (action: "submit" | "save-draft" | "publish-draft" | "schedule") => {
     props.form.actions.setTrigger(action);
     props.form.actions.submit(action);
   };
 
   const isSubmitting = props.form.state === "submitting";
+  const { scheduleFlow, canSchedule } = props.form;
 
   if (props.mode === "new") {
     return (
-      <div className="mt-8 flex items-center gap-2">
-        <PrimaryButton
-          loading={isSubmitting && props.form.trigger === "submit"}
+      <div className="mt-8">
+        <ScheduleFlowControls
+          scheduleFlow={scheduleFlow}
+          primaryLabel="Check-in"
+          onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "submit")}
+          loading={isSubmitting && (props.form.trigger === "submit" || props.form.trigger === "schedule")}
           testId="submit"
-          size="base"
-          onClick={() => submit("submit")}
-        >
-          Check-in
-        </PrimaryButton>
-
-        <GhostButton
-          loading={isSubmitting && props.form.trigger === "save-draft"}
-          testId="save-as-draft"
-          size="base"
-          onClick={() => submit("save-draft")}
-        >
-          Save as draft
-        </GhostButton>
+          secondaryAction={
+            <GhostButton
+              loading={isSubmitting && props.form.trigger === "save-draft"}
+              testId="save-as-draft"
+              size="base"
+              onClick={() => submit("save-draft")}
+            >
+              Save as draft
+            </GhostButton>
+          }
+        />
       </div>
     );
   }
 
-  if (props.isDraft) {
+  if (props.isUnpublished && canSchedule) {
     return (
-      <div className="mt-8 flex items-center gap-2">
-        <PrimaryButton
-          loading={isSubmitting && props.form.trigger === "save-draft"}
-          testId="save-draft"
-          size="base"
-          onClick={() => submit("save-draft")}
-        >
-          Save draft
-        </PrimaryButton>
-
-        <GhostButton
-          loading={isSubmitting && props.form.trigger === "publish-draft"}
+      <div className="mt-8">
+        <ScheduleFlowControls
+          scheduleFlow={scheduleFlow}
+          primaryLabel="Submit check-in"
+          onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "publish-draft")}
+          loading={isSubmitting && (props.form.trigger === "publish-draft" || props.form.trigger === "schedule")}
           testId="publish-draft"
-          size="base"
-          onClick={() => submit("publish-draft")}
-        >
-          Submit check-in
-        </GhostButton>
+          secondaryAction={
+            <GhostButton
+              loading={isSubmitting && props.form.trigger === "save-draft"}
+              testId="save-draft"
+              size="base"
+              onClick={() => submit("save-draft")}
+            >
+              Save draft
+            </GhostButton>
+          }
+        />
       </div>
     );
   }

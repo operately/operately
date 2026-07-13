@@ -60,7 +60,7 @@ export function Page() {
           <StatusSection checkIn={checkIn} reviewer={checkIn.project!.reviewer} />
           <DescriptionSection checkIn={checkIn} />
 
-          {checkIn.state !== "draft" && (
+          {checkIn.state === "published" && (
             <>
               <AckCTA />
 
@@ -140,12 +140,13 @@ function Title() {
           Check-In from <FormattedTime {...formattedTimePreferences} time={displayDate(checkIn)} format="long-date" />
         </span>
         {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
+        {checkIn.state === "scheduled" && <StatusBadge status="pending" customLabel="Scheduled" hideIcon />}
       </div>
       <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
         <div className="flex items-center gap-2">
           <Avatar person={checkIn.author!} size="tiny" /> {checkIn.author!.fullName}
         </div>
-        {checkIn.state !== "draft" && (
+        {checkIn.state === "published" && (
           <>
             <TextSeparator />
             <Acknowledgement />
@@ -197,9 +198,9 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const me = useMe()!;
 
   const isAuthor = compareIds(me.id!, checkIn.author!.id!);
-  const isDraft = checkIn.state === "draft";
+  const isUnpublished = checkIn.state === "draft" || checkIn.state === "scheduled";
   const canEdit = isAuthor;
-  const canDelete = isDraft || checkIn.project?.permissions?.hasFullAccess || false;
+  const canDelete = isUnpublished || checkIn.project?.permissions?.hasFullAccess || false;
 
   if (!canEdit && !canDelete) return null;
 
@@ -217,7 +218,7 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
       {canDelete && (
         <PageOptions.Action
           icon={IconTrash}
-          title={isDraft ? "Discard draft" : "Delete check-in"}
+          title={isUnpublished ? "Discard draft" : "Delete check-in"}
           onClick={showDeleteModal}
           testId="delete-check-in"
         />
@@ -244,7 +245,7 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
     cancel: toggleModal,
     submit: async () => {
       await remove({ checkInId: checkIn.id });
-      if (checkIn.state === "draft") {
+      if (checkIn.state === "draft" || checkIn.state === "scheduled") {
         showSuccessToast("Draft discarded", "The draft has been discarded.");
       } else {
         showSuccessToast("Check-in deleted", "The check-in has been successfully deleted.");
@@ -257,11 +258,14 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
     <Modal isOpen={isOpen} hideModal={toggleModal}>
       <Forms.Form form={form}>
         <p>
-          {checkIn.state === "draft"
+          {checkIn.state === "draft" || checkIn.state === "scheduled"
             ? "Are you sure you want to discard this draft?"
             : "Are you sure you want to delete this check-in?"}
         </p>
-        <Forms.Submit saveText={checkIn.state === "draft" ? "Discard draft" : "Delete"} cancelText="Cancel" />
+        <Forms.Submit
+          saveText={checkIn.state === "draft" || checkIn.state === "scheduled" ? "Discard draft" : "Delete"}
+          cancelText="Cancel"
+        />
       </Forms.Form>
     </Modal>
   );
