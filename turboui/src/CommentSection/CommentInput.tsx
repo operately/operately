@@ -79,13 +79,13 @@ function CommentInputActive({
     if (!content || editor.empty) return;
     if (uploading) return;
 
-    try {
-      const success = await form.postComment(content);
-      if (success === false) return;
+    // Close the composer before the optimistic comment lands so the new row
+    // never appears while the active comment box is still open.
+    editor.clearLocalDraft();
+    onPost();
 
-      editor.clearLocalDraft();
-      editor.setContent("");
-      onPost();
+    try {
+      await form.postComment(content);
     } catch (error) {
       console.error("Failed to post comment:", error);
     }
