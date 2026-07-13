@@ -364,7 +364,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert res.project.permissions == nil
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_permissions: true})
-      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Binding.full_access(), company_read_only: false))
+      assert res.project.permissions == Serializer.serialize(Operately.Projects.Permissions.calculate(Binding.full_access(), company_read_only: false))
     end
 
     test "include_permissions returns view-only permissions when the company is read-only", ctx do
@@ -376,7 +376,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
         include_permissions: true,
       })
 
-      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Binding.view_access(), company_read_only: true))
+      assert res.project.permissions == Serializer.serialize(Operately.Projects.Permissions.calculate(Binding.view_access(), company_read_only: true))
     end
 
     test "include_access_levels", ctx do

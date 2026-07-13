@@ -1,4 +1,6 @@
 defmodule Operately.CompanyTransfers.ImportRun do
+  def __api_typename__, do: "company_import_run"
+
   use Operately.Schema
 
   @statuses [:pending, :running, :completed, :failed, :cancelled]

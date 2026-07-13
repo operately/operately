@@ -55,6 +55,7 @@ function Form() {
       await edit({
         spaceId: space.id!,
         accessLevels: {
+          __typename: "access_levels",
           public: form.values.access.anonymous,
           company: form.values.access.companyMembers,
         },

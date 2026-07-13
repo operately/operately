@@ -167,7 +167,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     );
 
     try {
-      await Api.tasks.updateReminders({ taskId, reminders, type: "space" });
+      await Api.tasks.updateReminders({ taskId, reminders: Tasks.serializeTaskReminders(reminders), type: "space" });
       await invalidateAndRefresh();
 
       return true;

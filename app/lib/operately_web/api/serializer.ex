@@ -2,13 +2,25 @@ defmodule OperatelyWeb.Api.Serializer do
   @valid_levels [:essential, :full]
 
   def serialize(data) do
-    OperatelyWeb.Api.Serializable.serialize(data, level: :essential)
+    serialize(data, level: :essential)
   end
 
   def serialize(data, level: level) do
     validate_level(level)
-    OperatelyWeb.Api.Serializable.serialize(data, level: level)
+
+    data
+    |> OperatelyWeb.Api.Serializable.serialize(level: level)
+    |> maybe_put_typename(data)
   end
+
+  defp maybe_put_typename(result, %mod{}) when is_map(result) do
+    case OperatelyWeb.Api.TypeNames.for_module(mod) do
+      nil -> result
+      name -> Map.put(result, :__typename, name)
+    end
+  end
+
+  defp maybe_put_typename(result, _original), do: result
 
   defp validate_level(level) do
     if !Enum.member?(@valid_levels, level) do

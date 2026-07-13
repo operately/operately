@@ -1,4 +1,6 @@
 defmodule Operately.Goals.Retrospective do
+  def __api_typename__, do: "goal_retrospective"
+
   # Ideally this would be a dedicated schema, but for historical reasons
   # we are using the activity table to store retrospectives.
 

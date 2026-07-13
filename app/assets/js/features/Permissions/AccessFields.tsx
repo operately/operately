@@ -55,6 +55,7 @@ const SPACE = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS, NO_ACCESS]
 // space members value, not by an external parent cap.
 //
 export const UNRESTRICTED_PARENT_ACCESS: Api.AccessLevels = {
+  __typename: "access_levels",
   public: PermissionLevels.NO_ACCESS,
   company: PermissionLevels.FULL_ACCESS,
   space: PermissionLevels.FULL_ACCESS,

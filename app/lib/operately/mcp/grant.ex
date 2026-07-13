@@ -1,4 +1,6 @@
 defmodule Operately.Mcp.Grant do
+  def __api_typename__, do: "mcp_grant"
+
   use Operately.Schema
 
   schema "mcp_grants" do

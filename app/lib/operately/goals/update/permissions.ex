@@ -1,4 +1,6 @@
 defmodule Operately.Goals.Update.Permissions do
+  def __api_typename__, do: "goal_update_permissions"
+
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Access.Binding

@@ -143,7 +143,8 @@ function Page() {
 
   const [reminders, setReminders] = usePageField<TaskPage.Reminder[]>({
     value: ({ task }) => Tasks.parseTaskReminders(task.reminders),
-    update: (v) => Api.tasks.updateReminders({ taskId: task.id, reminders: v, type: "project" }),
+    update: (v) =>
+      Api.tasks.updateReminders({ taskId: task.id, reminders: Tasks.serializeTaskReminders(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update task reminders."),
     pageData,
     refreshPageData,
@@ -162,7 +163,7 @@ function Page() {
     refreshPageData,
   });
 
-  const [milestone, setMilestone] = usePageField({
+  const [milestone, setMilestone] = usePageField<TaskPage.Milestone | null>({
     value: ({ task }) => (task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null),
     update: (v) => Api.tasks.updateMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
@@ -257,7 +258,7 @@ function Page() {
     onRemoveReaction: removeReaction,
 
     // Milestone selection
-    milestone: milestone as TaskPage.Milestone | null,
+    milestone,
     onMilestoneChange: setMilestone,
     milestones,
     onMilestoneSearch: searchMilestones,

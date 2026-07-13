@@ -1,4 +1,6 @@
 defmodule Operately.Projects.KeyResource do
+  def __api_typename__, do: "project_key_resource"
+
   @moduledoc """
   Deprecated project key resources.
 

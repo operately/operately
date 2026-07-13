@@ -7,6 +7,7 @@ describe("Timeframes", () => {
     const date = new Date(year, month, day).toISOString().split("T")[0]!;
     const value = customValue !== undefined ? customValue : `${month + 1}/${day}/${year}`;
     return {
+      __typename: "contextual_date",
       dateType: "day" as ContextualDateType,
       date,
       value
@@ -16,6 +17,7 @@ describe("Timeframes", () => {
   // Helper function to create timeframe objects for testing
   const createTimeframe = (start: [number, number, number], end: [number, number, number]): Timeframe => {
     return {
+      __typename: "timeframe",
       contextualStartDate: createContextualDate(start[0], start[1], start[2]),
       contextualEndDate: createContextualDate(end[0], end[1], end[2])
     };
@@ -24,8 +26,8 @@ describe("Timeframes", () => {
   describe("getTimeframeRange", () => {
     it("returns a formatted string with start and end values", () => {
       const timeframe: Partial<Timeframe> = {
-        contextualStartDate: { dateType: "day" as ContextualDateType, value: "Jan 1, 2021", date: "2021-01-01" },
-        contextualEndDate: { dateType: "day" as ContextualDateType, value: "Dec 31, 2021", date: "2021-12-31" }
+        contextualStartDate: { __typename: "contextual_date", dateType: "day" as ContextualDateType, value: "Jan 1, 2021", date: "2021-01-01" },
+        contextualEndDate: { __typename: "contextual_date", dateType: "day" as ContextualDateType, value: "Dec 31, 2021", date: "2021-12-31" }
       };
 
       expect(Timeframes.getTimeframeRange(timeframe as Timeframe)).toBe("Jan 1, 2021 - Dec 31, 2021");

@@ -1,4 +1,6 @@
 defmodule Operately.Billing.ProductCatalogEntry do
+  def __api_typename__, do: "billing_catalog_product"
+
   use Operately.Schema
   use Operately.Repo.Getter
 

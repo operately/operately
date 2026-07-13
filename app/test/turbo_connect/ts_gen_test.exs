@@ -334,6 +334,41 @@ defmodule TurboConnect.TsGenTest do
     assert_same(TurboConnect.TsGen.generate_types(ExampleApi), @ts_types)
   end
 
+  test "toCamel and toSnake preserve __typename" do
+    assert TurboConnect.TsGen.to_camel_case() =~ ~s[origKey === "__typename"]
+    assert TurboConnect.TsGen.to_snake_case() =~ ~s[origKey === "__typename"]
+  end
+
+  defmodule ForTypedPerson do
+    defstruct [:name]
+  end
+
+  defmodule ForTypedTypes do
+    use TurboConnect.Types
+
+    object :person, for: TurboConnect.TsGenTest.ForTypedPerson do
+      field? :name, :string
+    end
+
+    object :plain_note do
+      field? :body, :string
+    end
+  end
+
+  defmodule ForTypedApi do
+    use TurboConnect.Api
+    use_types(ForTypedTypes)
+  end
+
+  test "objects with for: emit __typename from TypeNames.resolve/1" do
+    types = TurboConnect.TsGen.convert_objects(ForTypedApi.__types__().objects)
+
+    assert types =~ ~s[__typename: "for_typed_person"]
+    assert types =~ "export interface Person"
+    refute types =~ ~r/export interface PlainNote \{\n  __typename/
+    assert types =~ ~r/export interface PlainNote \{\n  body\?: string/
+  end
+
   test "generating TypeScript shared types only" do
     result = TurboConnect.TsGen.generate_types_only(ExampleApi)
 

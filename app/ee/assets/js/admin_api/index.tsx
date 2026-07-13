@@ -16,9 +16,12 @@ function toCamel(o: any) {
     newO = {};
     for (origKey in o) {
       if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
-        newKey = origKey.replace(/_([a-z])/g, function (_a: string, b: string) {
-          return b.toUpperCase();
-        });
+        newKey =
+          origKey === "__typename"
+            ? origKey
+            : origKey.replace(/_([a-z])/g, function (_a: string, b: string) {
+                return b.toUpperCase();
+              });
         value = o[origKey];
         if (value instanceof Array || (value !== null && value.constructor === Object)) {
           value = toCamel(value);
@@ -44,9 +47,12 @@ function toSnake(o: any) {
     newO = {};
     for (origKey in o) {
       if (o.hasOwnProperty(origKey) && typeof o[origKey] !== "undefined") {
-        newKey = origKey.replace(/([A-Z])/g, function (a: string) {
-          return "_" + a.toLowerCase();
-        });
+        newKey =
+          origKey === "__typename"
+            ? origKey
+            : origKey.replace(/([A-Z])/g, function (a: string) {
+                return "_" + a.toLowerCase();
+              });
         value = o[origKey];
         if (value instanceof Array || (value !== null && value.constructor === Object)) {
           value = toSnake(value);

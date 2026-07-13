@@ -1,4 +1,6 @@
 defmodule Operately.ResourceHubs.Permissions do
+  def __api_typename__, do: "resource_hub_permissions"
+
   alias Operately.Access.Binding
   alias Operately.Permissions.ReadOnly
 

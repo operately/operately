@@ -1,4 +1,6 @@
 defmodule Operately.Assignments.Assignment do
+  def __api_typename__, do: "review_assignment"
+
   @moduledoc """
   Represents an assignment with metadata for categorization and display.
 
@@ -39,6 +41,8 @@ defmodule Operately.Assignments.Assignment do
   @due_status_values [:overdue, :due_today, :due_soon, :upcoming, :none]
 
   defmodule Origin do
+    def __api_typename__, do: "review_assignment_origin"
+
     @enforce_keys [:id, :name, :type, :path]
     defstruct [:id, :name, :type, :path, :space_name, :due_date]
   end

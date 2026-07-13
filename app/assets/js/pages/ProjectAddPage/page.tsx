@@ -194,6 +194,7 @@ function findParentAccessLevel(
     return space.accessLevels!;
   } else {
     return {
+      __typename: "access_levels" as const,
       public: PermissionLevels.NO_ACCESS,
       company: PermissionLevels.COMMENT_ACCESS,
       space: PermissionLevels.COMMENT_ACCESS,

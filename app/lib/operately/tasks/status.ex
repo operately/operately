@@ -1,4 +1,6 @@
 defmodule Operately.Tasks.Status do
+  def __api_typename__, do: "task_status"
+
   use Ecto.Schema
   import Ecto.Changeset
 

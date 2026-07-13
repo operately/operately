@@ -1,4 +1,6 @@
 defmodule Operately.Goals.Discussion do
+  def __api_typename__, do: "goal_discussion"
+
   # Ideally this would be a dedicated schema, but for historical reasons
   # we are using the activity table to store discussions.
 
