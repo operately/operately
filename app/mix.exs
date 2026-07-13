@@ -10,7 +10,8 @@ defmodule Operately.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      dialyzer: dialyzer()
+      dialyzer: dialyzer(),
+      listeners: [Phoenix.CodeReloader]
     ]
   end
 
