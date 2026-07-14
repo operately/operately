@@ -59,23 +59,30 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
     cancel: () => {
       navigate(paths.projectCheckInPath(checkIn.id!));
     },
-    submit: async (action: "save" | "publish" | "schedule" = "save") => {
+    submit: async (
+      action: "save" | "publish" | "schedule" | "save-changes" | "publish-now" | "save-as-draft" = "save",
+    ) => {
       const status = form.values.status;
       const description = form.values.description;
       if (!status || !description) return;
 
-      const shouldSchedule = action === "schedule" || (action === "publish" && scheduleFlow.isScheduledLocally);
+      const shouldSchedule =
+        action === "schedule" || action === "save-changes" || (action === "publish" && scheduleFlow.isScheduledLocally);
 
       const res = await edit({
         checkInId: checkIn.id,
         status,
         description: JSON.stringify(description),
         ...(isUnpublished
-          ? shouldSchedule
-            ? { state: "scheduled" as const, scheduledAt: scheduleFlow.scheduledAtIso }
-            : action === "publish"
-              ? { state: "published" as const }
-              : { state: "draft" as const, scheduledAt: null }
+          ? action === "publish-now"
+            ? { state: "published" as const, scheduledAt: null }
+            : action === "save-as-draft"
+              ? { state: "draft" as const, scheduledAt: null }
+              : shouldSchedule
+                ? { state: "scheduled" as const, scheduledAt: scheduleFlow.scheduledAtIso }
+                : action === "publish"
+                  ? { state: "published" as const }
+                  : { state: "draft" as const, scheduledAt: null }
           : {}),
       });
 
@@ -100,7 +107,12 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
 
       <Spacer size={4} />
 
-      <SubmitButtons form={form} canSchedule={canSchedule} scheduleFlow={scheduleFlow} />
+      <SubmitButtons
+        form={form}
+        canSchedule={canSchedule}
+        scheduleFlow={scheduleFlow}
+        isScheduled={checkIn.state === "scheduled"}
+      />
     </Forms.Form>
   );
 }
@@ -126,13 +138,15 @@ function SubmitButtons({
   form,
   canSchedule,
   scheduleFlow,
+  isScheduled,
 }: {
   form: FormState<{ status: ProjectCheckIn["status"]; description: any }>;
   canSchedule: boolean;
   scheduleFlow: ReturnType<typeof useScheduleFlow>;
+  isScheduled: boolean;
 }) {
   const formattedTimePreferences = useFormattedTimePreferences();
-  const submit = (action: "save" | "publish" | "schedule") => {
+  const submit = (action: "save" | "publish" | "schedule" | "save-changes" | "publish-now" | "save-as-draft") => {
     form.actions.setTrigger(action);
     form.actions.submit(action);
   };
@@ -147,20 +161,36 @@ function SubmitButtons({
     <div className="mt-8">
       <ScheduleFlowControls
         scheduleFlow={scheduleFlow}
-        primaryLabel="Submit check-in"
-        onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "publish")}
-        loading={isSubmitting && (form.trigger === "publish" || form.trigger === "schedule")}
+        primaryLabel={isScheduled ? "Save Changes" : "Submit check-in"}
+        onPrimaryClick={() =>
+          submit(isScheduled ? "save-changes" : scheduleFlow.isScheduledLocally ? "schedule" : "publish")
+        }
+        loading={
+          isSubmitting && (form.trigger === "save-changes" || form.trigger === "publish" || form.trigger === "schedule")
+        }
         testId="publish-draft"
         formattedTimePreferences={formattedTimePreferences}
+        scheduledPrimaryLabel={isScheduled ? "Save Changes" : undefined}
+        showScheduleOption={!isScheduled}
         secondaryAction={
-          <GhostButton
-            loading={isSubmitting && form.trigger === "save"}
-            testId="save-draft"
-            size="base"
-            onClick={() => submit("save")}
-          >
-            Save draft
-          </GhostButton>
+          !isScheduled && (
+            <GhostButton
+              loading={isSubmitting && form.trigger === "save"}
+              testId="save-draft"
+              size="base"
+              onClick={() => submit("save")}
+            >
+              Save draft
+            </GhostButton>
+          )
+        }
+        options={
+          isScheduled
+            ? [
+                { label: "Publish now", action: () => submit("publish-now"), testId: "publish-now-option" },
+                { label: "Save as draft", action: () => submit("save-as-draft"), testId: "save-as-draft-option" },
+              ]
+            : []
         }
       />
     </div>

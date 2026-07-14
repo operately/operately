@@ -19,6 +19,8 @@ import {
   CurrentSubscriptions,
   Spacer,
   showSuccessToast,
+  ScheduledPostDate,
+  ScheduledPostLabel,
   StatusBadge,
   TextSeparator,
   displayDate,
@@ -140,12 +142,18 @@ function Title() {
           Check-In from <FormattedTime {...formattedTimePreferences} time={displayDate(checkIn)} format="long-date" />
         </span>
         {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
-        {checkIn.state === "scheduled" && <StatusBadge status="pending" customLabel="Scheduled" hideIcon />}
+        {checkIn.state === "scheduled" && <ScheduledPostLabel />}
       </div>
       <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
         <div className="flex items-center gap-2">
           <Avatar person={checkIn.author!} size="tiny" /> {checkIn.author!.fullName}
         </div>
+        {checkIn.state === "scheduled" && checkIn.scheduledAt && (
+          <>
+            <TextSeparator />
+            <ScheduledPostDate scheduledAt={checkIn.scheduledAt} formattedTimePreferences={formattedTimePreferences} />
+          </>
+        )}
         {checkIn.state === "published" && (
           <>
             <TextSeparator />
