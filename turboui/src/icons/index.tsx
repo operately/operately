@@ -50,6 +50,7 @@ import IconCircleX from "@tabler/icons-react/dist/esm/icons/IconCircleX.mjs";
 import IconCircleXFilled from "@tabler/icons-react/dist/esm/icons/IconCircleXFilled.mjs";
 import IconClipboardCheck from "@tabler/icons-react/dist/esm/icons/IconClipboardCheck.mjs";
 import IconClipboardText from "@tabler/icons-react/dist/esm/icons/IconClipboardText.mjs";
+import IconClock from "@tabler/icons-react/dist/esm/icons/IconClock.mjs";
 import IconClockPlay from "@tabler/icons-react/dist/esm/icons/IconClockPlay.mjs";
 import IconCoffee from "@tabler/icons-react/dist/esm/icons/IconCoffee.mjs";
 import IconCopy from "@tabler/icons-react/dist/esm/icons/IconCopy.mjs";
@@ -212,6 +213,7 @@ export {
   IconCircleXFilled,
   IconClipboardCheck,
   IconClipboardText,
+  IconClock,
   IconClockPlay,
   IconCoffee,
   IconCopy,
