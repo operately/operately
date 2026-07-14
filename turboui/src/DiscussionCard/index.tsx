@@ -7,6 +7,7 @@ import { DivLink } from "../Link";
 import { Summary } from "../RichContent";
 import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import { CommentCountIndicator } from "../CommentCountIndicator";
+import { StatusBadge } from "../StatusBadge";
 
 namespace DiscussionCard {
   interface Discussion {
@@ -17,6 +18,7 @@ namespace DiscussionCard {
     link: string;
     content: string;
     commentCount: number;
+    state?: "draft" | "scheduled" | "published" | null;
   }
 
   export interface Props {
@@ -44,7 +46,15 @@ export function DiscussionCard({ discussion, mentionedPersonLookup, formattedTim
         )}
 
         <div className="flex-1 h-full">
-          <div className="font-semibold leading-none mb-1">{discussion.title}</div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="font-semibold leading-none">{discussion.title}</div>
+            {discussion.state === "draft" && (
+              <StatusBadge status="pending" customLabel="Draft" hideIcon className="scale-95 inline-block shrink-0" />
+            )}
+            {discussion.state === "scheduled" && (
+              <StatusBadge status="pending" customLabel="Scheduled" hideIcon className="scale-95 inline-block shrink-0" />
+            )}
+          </div>
           <div className="break-words">
             <Summary content={discussion.content} characterCount={130} mentionedPersonLookup={mentionedPersonLookup} />
           </div>

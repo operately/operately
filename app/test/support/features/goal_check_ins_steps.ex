@@ -263,6 +263,74 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.assert_text("Editing locked after 3 days")
   end
 
+  step :given_a_scheduled_check_in_exists, ctx do
+    {:ok, check_in} =
+      Operately.Operations.GoalCheckIn.run(ctx.champion, ctx.goal, %{
+        status: "on_track",
+        content: Operately.Support.RichText.rich_text("Scheduled goal check-in"),
+        target_values: nil,
+        checklist: nil,
+        post_as_draft: false,
+        send_to_everyone: false,
+        subscription_parent_type: :goal_update,
+        subscriber_ids: [],
+        scheduled_at: Operately.Time.days_from_now(1)
+      })
+
+    Map.put(ctx, :check_in, check_in)
+  end
+
+  step :visit_scheduled_check_in, ctx do
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+  end
+
+  step :assert_scheduled_check_in_details, ctx do
+    ctx
+    |> UI.assert_text("Scheduled")
+    |> UI.assert_text("Will be posted on")
+  end
+
+  step :publish_scheduled_check_in_now, ctx do
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.click(testid: "publish-draft-options")
+    |> UI.click(testid: "publish-now-option")
+  end
+
+  step :save_scheduled_check_in_as_draft, ctx do
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.click(testid: "publish-draft-options")
+    |> UI.click(testid: "save-as-draft-option")
+  end
+
+  step :assert_scheduled_check_in_is_published, ctx do
+    ctx = UI.assert_page(ctx, Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    update = wait_for_update_state(ctx.check_in.id, :published)
+    assert update.state == :published
+
+    ctx
+    |> UI.assert_page(Paths.goal_check_in_path(ctx.company, update))
+    |> UI.assert_text("Scheduled goal check-in")
+  end
+
+  step :assert_scheduled_check_in_is_a_draft, ctx do
+    ctx = UI.assert_page(ctx, Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    update = wait_for_update_state(ctx.check_in.id, :draft)
+    assert update.state == :draft
+    assert update.scheduled_at == nil
+
+    ctx
+    |> UI.assert_page(Paths.goal_check_in_path(ctx.company, update))
+    |> UI.assert_text("Scheduled goal check-in")
+  end
+
   step :given_a_reviewer_submitted_check_in, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
@@ -456,6 +524,23 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   defp last_comment(ctx) do
     Operately.Updates.list_comments(ctx.check_in.id, :goal_update) |> List.last()
+  end
+
+  defp wait_for_update_state(id, expected_state, attempts \\ 10)
+
+  defp wait_for_update_state(id, _expected_state, 0) do
+    Operately.Goals.Update.get!(:system, id: id)
+  end
+
+  defp wait_for_update_state(id, expected_state, attempts) do
+    update = Operately.Goals.Update.get!(:system, id: id)
+
+    if update.state == expected_state do
+      update
+    else
+      Process.sleep(200)
+      wait_for_update_state(id, expected_state, attempts - 1)
+    end
   end
 
   defp status_label("on_track"), do: "On track"

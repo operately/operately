@@ -8,6 +8,7 @@ import { Summary } from "../RichContent";
 import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import { CommentCountIndicator } from "../CommentCountIndicator";
 import { StatusBadge, BadgeStatus } from "../StatusBadge";
+import { ScheduledPostDate, ScheduledPostLabel } from "../SchedulePosting";
 
 namespace CheckInCard {
   interface CheckIn {
@@ -18,6 +19,7 @@ namespace CheckInCard {
     commentCount: number;
     status: BadgeStatus;
     state?: "draft" | "scheduled" | "published" | null;
+    scheduledAt?: string | null;
   }
 
   export interface Props {
@@ -53,6 +55,7 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTim
             {checkIn.state === "draft" && (
               <StatusBadge status="pending" customLabel="Draft" hideIcon className="scale-95 inline-block shrink-0" />
             )}
+            {checkIn.state === "scheduled" && <ScheduledPostLabel />}
             <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0" />
           </div>
           <div className="break-words">
@@ -66,9 +69,16 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTim
                 <div className="text-sm text-content-dimmed">·</div>
               </>
             )}
-            <div className="text-sm text-content-dimmed">
-              <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="relative-weekday-or-date" />
-            </div>
+            {checkIn.state === "scheduled" && checkIn.scheduledAt ? (
+              <ScheduledPostDate
+                scheduledAt={checkIn.scheduledAt}
+                formattedTimePreferences={formattedTimePreferences}
+              />
+            ) : (
+              <div className="text-sm text-content-dimmed">
+                <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="relative-weekday-or-date" />
+              </div>
+            )}
           </div>
         </div>
       </div>

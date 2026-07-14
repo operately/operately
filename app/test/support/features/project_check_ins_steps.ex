@@ -123,6 +123,72 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
   end
 
+  step :given_a_scheduled_check_in_exists, ctx do
+    {:ok, check_in} =
+      Operately.Operations.ProjectCheckIn.run(ctx.champion, ctx.project, %{
+        status: "on_track",
+        content: RichText.rich_text("Scheduled project check-in"),
+        post_as_draft: false,
+        send_to_everyone: false,
+        subscription_parent_type: :project_check_in,
+        subscriber_ids: [],
+        scheduled_at: Operately.Time.days_from_now(1)
+      })
+
+    Map.put(ctx, :check_in, check_in)
+  end
+
+  step :visit_scheduled_check_in, ctx do
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+  end
+
+  step :assert_scheduled_check_in_details, ctx do
+    ctx
+    |> UI.assert_text("Scheduled")
+    |> UI.assert_text("Will be posted on")
+  end
+
+  step :publish_scheduled_check_in_now, ctx do
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.click(testid: "publish-draft-options")
+    |> UI.click(testid: "publish-now-option")
+  end
+
+  step :save_scheduled_check_in_as_draft, ctx do
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.click(testid: "publish-draft-options")
+    |> UI.click(testid: "save-as-draft-option")
+  end
+
+  step :assert_scheduled_check_in_is_published, ctx do
+    ctx = UI.assert_page(ctx, Paths.project_check_in_path(ctx.company, ctx.check_in))
+    check_in = wait_for_check_in_state(ctx.check_in.id, :published)
+    assert check_in.state == :published
+
+    ctx
+    |> UI.assert_page(Paths.project_check_in_path(ctx.company, check_in))
+    |> UI.assert_text("Scheduled project check-in")
+  end
+
+  step :assert_scheduled_check_in_is_a_draft, ctx do
+    ctx = UI.assert_page(ctx, Paths.project_check_in_path(ctx.company, ctx.check_in))
+    check_in = wait_for_check_in_state(ctx.check_in.id, :draft)
+    assert check_in.state == :draft
+    assert check_in.scheduled_at == nil
+
+    ctx
+    |> UI.assert_page(Paths.project_check_in_path(ctx.company, check_in))
+    |> UI.assert_text("Scheduled project check-in")
+  end
+
   step :assert_check_in_visible_on_project_page, ctx, %{description: description} do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
@@ -431,5 +497,22 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   defp last_comment(ctx) do
     Operately.Updates.list_comments(ctx.check_in.id, :project_check_in) |> List.last()
+  end
+
+  defp wait_for_check_in_state(id, expected_state, attempts \\ 10)
+
+  defp wait_for_check_in_state(id, _expected_state, 0) do
+    Operately.Projects.CheckIn.get!(:system, id: id)
+  end
+
+  defp wait_for_check_in_state(id, expected_state, attempts) do
+    check_in = Operately.Projects.CheckIn.get!(:system, id: id)
+
+    if check_in.state == expected_state do
+      check_in
+    else
+      Process.sleep(200)
+      wait_for_check_in_state(id, expected_state, attempts - 1)
+    end
   end
 end

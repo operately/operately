@@ -5,7 +5,17 @@ import * as React from "react";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Discussion } from "@/models/discussions";
 import { usePaths } from "@/routes/paths";
-import { DivLink, Link, PrimaryButton, Avatar, Summary, FormattedTime, displayDate } from "turboui";
+import {
+  DivLink,
+  Link,
+  PrimaryButton,
+  Avatar,
+  Summary,
+  FormattedTime,
+  displayDate,
+  ScheduledPostDate,
+  ScheduledPostLabel,
+} from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -123,7 +133,10 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
       )}
 
       <div className="flex-1 h-full">
-        <div className="font-semibold leading-none mb-1">{discussion.title}</div>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="font-semibold leading-none">{discussion.title}</div>
+          {discussion.state === "scheduled" && <ScheduledPostLabel />}
+        </div>
         <div className="break-words">
           <Summary content={discussion.body!} characterCount={150} mentionedPersonLookup={mentionedPersonLookup} />
         </div>
@@ -135,9 +148,20 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
               <div className="text-sm text-content-dimmed">·</div>
             </>
           )}
-          <div className="text-sm text-content-dimmed">
-            <FormattedTime {...formattedTimePreferences} time={displayDate(discussion)} format="relative-weekday-or-date" />
-          </div>
+          {discussion.state === "scheduled" && discussion.scheduledAt ? (
+            <ScheduledPostDate
+              scheduledAt={discussion.scheduledAt}
+              formattedTimePreferences={formattedTimePreferences}
+            />
+          ) : (
+            <div className="text-sm text-content-dimmed">
+              <FormattedTime
+                {...formattedTimePreferences}
+                time={displayDate(discussion)}
+                format="relative-weekday-or-date"
+              />
+            </div>
+          )}
         </div>
       </div>
 

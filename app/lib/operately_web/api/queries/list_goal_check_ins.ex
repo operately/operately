@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
   defp load(goal_id, person) do
     from(u in Update,
       where: u.goal_id == ^goal_id,
-      where: u.state == :published or (u.state == :draft and u.author_id == ^person.id),
+      where: u.state == :published or (u.state in [:draft, :scheduled] and u.author_id == ^person.id),
       preload: [:author]
     )
     |> Repo.all()

@@ -20,7 +20,9 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   end
 
   step :visit_goal_page, ctx do
-    ctx |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> wait_until_goal_page()
   end
 
   step :click_add_goal_in_related_work, ctx do
@@ -76,7 +78,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
 
   step :assert_subgoal_form_title_and_subtitle, ctx do
     ctx
-    |> UI.wait_until_testid(testid: "goal-add-page")
+    |> wait_until_subgoal_form()
     |> UI.assert_text("Add a subgoal", testid: "goal-add-page")
     |> UI.assert_text("Adding under", testid: "goal-add-page")
     |> UI.assert_text(ctx.goal.name, testid: "goal-add-page")
@@ -144,5 +146,25 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
       goal ->
         goal
     end
+  end
+
+  defp wait_until_subgoal_form(ctx, attempts \\ 2) do
+    wait_until_page(ctx, "goal-add-page", attempts)
+  end
+
+  defp wait_until_goal_page(ctx, attempts \\ 2) do
+    wait_until_page(ctx, "goal-page", attempts)
+  end
+
+  defp wait_until_page(ctx, testid, attempts) do
+    UI.wait_until_testid(ctx, testid: testid)
+  rescue
+    e in RuntimeError ->
+      if attempts == 1 do
+        reraise e, __STACKTRACE__
+      else
+        :timer.sleep(250)
+        wait_until_page(ctx, testid, attempts - 1)
+      end
   end
 end

@@ -28,6 +28,7 @@ export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.ProjectCheck
       commentCount: checkIn.commentsCount || 0,
       status: checkIn.status,
       state: checkIn.state,
+      scheduledAt: checkIn.scheduledAt,
     };
   });
 }

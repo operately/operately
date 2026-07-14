@@ -6,8 +6,15 @@ defmodule Operately.Operations.DiscussionEditing do
   alias Operately.Notifications.SubscriptionList
 
   def run(creator, message, attrs) do
+    update_attrs = %{
+      title: attrs[:title] || message.title,
+      body: attrs[:body] || message.body,
+      state: state(message, attrs),
+      scheduled_at: scheduled_at(message, attrs)
+    }
+
     Multi.new()
-    |> Multi.update(:message, Message.changeset(message, attrs))
+    |> Multi.update(:message, Message.changeset(message, update_attrs))
     |> Multi.run(:subscription_list, fn _, changes ->
       SubscriptionList.get(:system,
         parent_id: changes.message.id,
@@ -16,8 +23,8 @@ defmodule Operately.Operations.DiscussionEditing do
         ]
       )
     end)
-    |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.body)
-    |> record_activity(creator, message, attrs)
+    |> Operately.Operations.Notifications.Subscription.update_mentioned_people(update_attrs.body)
+    |> record_activity(creator, message, update_attrs)
     |> handle_oban_jobs(message, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:message)
@@ -45,16 +52,32 @@ defmodule Operately.Operations.DiscussionEditing do
         end)
 
       true ->
-        # it is a draft and it is not being published, do nothing
+        # it is a draft/scheduled and it is not being published, do nothing
         multi
     end
   end
 
-  defp handle_oban_jobs(multi, message, attrs) do
-    new_state = attrs[:state] || message.state
-    new_time = if Map.has_key?(attrs, :scheduled_at), do: attrs.scheduled_at, else: message.scheduled_at
+  defp state(message, attrs) do
+    cond do
+      not is_nil(attrs[:state]) -> attrs[:state]
+      not is_nil(attrs[:scheduled_at]) -> :scheduled
+      true -> message.state
+    end
+  end
 
-    if message.state == :scheduled or new_state == :scheduled do
+  defp scheduled_at(message, attrs) do
+    cond do
+      not is_nil(attrs[:scheduled_at]) -> attrs[:scheduled_at]
+      attrs[:state] in [:draft, :published] -> nil
+      true -> message.scheduled_at
+    end
+  end
+
+  defp handle_oban_jobs(multi, message, attrs) do
+    new_state = state(message, attrs)
+    new_time = scheduled_at(message, attrs)
+
+    if scheduled?(message.state) or scheduled?(new_state) do
       multi
       |> Multi.delete_all(:delete_oban_job, fn _ ->
         import Ecto.Query
@@ -65,7 +88,7 @@ defmodule Operately.Operations.DiscussionEditing do
           where: fragment("args->>'id' = ?", ^message.id)
       end)
       |> Multi.run(:insert_oban_job, fn _repo, changes ->
-        if new_state == :scheduled and not is_nil(new_time) do
+        if scheduled?(new_state) and not is_nil(new_time) do
           Operately.AsyncPublishing.Worker.new(
             %{"type" => "message", "id" => changes.message.id},
             scheduled_at: new_time
@@ -79,4 +102,8 @@ defmodule Operately.Operations.DiscussionEditing do
       multi
     end
   end
+
+  # Widen to atom() so Dialyzer accepts :scheduled before call sites create those values.
+  @spec scheduled?(atom()) :: boolean()
+  defp scheduled?(state), do: state == :scheduled
 end

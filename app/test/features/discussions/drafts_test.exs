@@ -52,6 +52,29 @@ defmodule Operately.Features.Discussions.DraftsTest do
     |> Steps.assert_draft_edit_is_saved(:draft_discussion_1)
   end
 
+  feature "scheduled discussion is shown in the discussion list for its author", ctx do
+    ctx
+    |> Steps.given_a_scheduled_discussion_exists()
+    |> Steps.visit_the_discussion_board()
+    |> Steps.assert_scheduled_discussion_is_in_the_discussion_list()
+    |> Steps.assert_scheduled_discussion_is_not_in_drafts()
+    |> Steps.assert_scheduled_discussion_is_hidden_from_reader()
+  end
+
+  feature "scheduled discussion can be published immediately", ctx do
+    ctx
+    |> Steps.given_a_scheduled_discussion_exists()
+    |> Steps.publish_scheduled_discussion_now()
+    |> Steps.assert_scheduled_discussion_is_published()
+  end
+
+  feature "scheduled discussion can be saved as a draft", ctx do
+    ctx
+    |> Steps.given_a_scheduled_discussion_exists()
+    |> Steps.save_scheduled_discussion_as_draft()
+    |> Steps.assert_scheduled_discussion_is_a_draft()
+  end
+
   feature "publish a draft discussion (without editing)", ctx do
     ctx
     |> Steps.post_a_draft_discussion()
