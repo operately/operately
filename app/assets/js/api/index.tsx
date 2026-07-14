@@ -1206,44 +1206,6 @@ export interface AddMemberInput {
   accessLevel: AccessOptionsInt;
 }
 
-export interface AgentConversation {
-  __typename: "agent_conversation";
-  id: Id;
-  title: string;
-  messages: AgentMessage[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface AgentDef {
-  __typename: "agent_def";
-  definition: string;
-  sandboxMode: boolean;
-  planningInstructions: string;
-  taskExecutionInstructions: string;
-  dailyRun: boolean;
-  verboseLogs: boolean;
-  provider: string;
-}
-
-export interface AgentMessage {
-  __typename: "agent_message";
-  id: string;
-  content: string;
-  timestamp: string;
-  sender: AgentMessageSender;
-  status: AgentMessageStatus;
-}
-
-export interface AgentRun {
-  __typename: "agent_run";
-  id: string;
-  status: string;
-  startedAt: string;
-  sandboxMode: boolean;
-  logs?: string;
-}
-
 export interface ApiToken {
   __typename: "api_token";
   id: Id;
@@ -1836,7 +1798,6 @@ export interface Person {
   inviteLink?: InviteLink | null;
   showDevBar?: boolean | null;
   permissions?: PersonPermissions | null;
-  agentDef?: AgentDef;
 }
 
 export interface PersonPermissions {
@@ -2574,9 +2535,7 @@ export type ActivityContent =
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -2600,21 +2559,11 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
 export type ActivityScopeType = "person" | "company" | "space" | "project" | "milestone" | "task" | "goal";
-
-export type AgentMessageSender = "user" | "ai";
-
-export type AgentMessageStatus = "pending" | "done";
 
 export type BillingAccessState = "normal" | "payment_grace" | "over_limit_grace" | "read_only";
 
@@ -2644,8 +2593,6 @@ export type CommentParentType =
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
-export type CreateConversationContextType = "goal" | "project";
-
 export type DiscussionState = "draft" | "scheduled" | "published";
 
 export type DocumentState = "draft" | "published";
@@ -2657,14 +2604,7 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -2705,15 +2645,7 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -2759,75 +2691,13 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 
 export type AccessOptionsInt = 0 | 10 | 40 | 70 | 100;
 
 export type EmailWindowMinutes = 5 | 10 | 15 | 30 | 60;
-
-export interface AiGetAgentInput {
-  id: Id;
-}
-
-export interface AiGetAgentResult {
-  agent: Person;
-}
-
-export interface AiGetAgentRunInput {
-  id: Id;
-}
-
-export interface AiGetAgentRunResult {
-  run: AgentRun;
-}
-
-export interface AiGetConversationMessagesInput {
-  convoId: string;
-}
-
-export interface AiGetConversationMessagesResult {
-  messages: AgentMessage[];
-}
-
-export interface AiGetConversationsInput {
-  contextId: Id;
-  contextType: string;
-}
-
-export interface AiGetConversationsResult {
-  conversations: AgentConversation[];
-}
-
-export interface AiListAgentRunsInput {
-  agentId: Id;
-}
-
-export interface AiListAgentRunsResult {
-  runs: AgentRun[];
-}
-
-export interface AiListAgentsInput {}
-
-export interface AiListAgentsResult {
-  agents: Person[];
-}
-
-export interface AiPromptInput {
-  prompt: string;
-}
-
-export interface AiPromptResult {
-  result: string;
-}
 
 export interface ApiTokensListInput {}
 
@@ -3742,107 +3612,6 @@ export interface AddFirstCompanyInput {
 
 export interface AddFirstCompanyResult {
   company?: Company | null;
-}
-
-export interface AiAddAgentInput {
-  title: string;
-  fullName: string;
-}
-
-export interface AiAddAgentResult {
-  success: boolean;
-}
-
-export interface AiCreateConversationInput {
-  actionId: string;
-  contextType: CreateConversationContextType;
-  contextId: Id;
-}
-
-export interface AiCreateConversationResult {
-  success: boolean;
-  conversation: AgentConversation;
-}
-
-export interface AiEditAgentDailyRunInput {
-  id: Id;
-  enabled: boolean;
-}
-
-export interface AiEditAgentDailyRunResult {
-  success: boolean;
-}
-
-export interface AiEditAgentDefinitionInput {
-  id: Id;
-  definition: string;
-}
-
-export interface AiEditAgentDefinitionResult {
-  success: boolean;
-}
-
-export interface AiEditAgentPlanningInstructionsInput {
-  id: Id;
-  instructions: string;
-}
-
-export interface AiEditAgentPlanningInstructionsResult {
-  success: boolean;
-}
-
-export interface AiEditAgentProviderInput {
-  id: Id;
-  provider: string;
-}
-
-export interface AiEditAgentProviderResult {
-  success: boolean;
-}
-
-export interface AiEditAgentSandboxModeInput {
-  id: Id;
-  mode: boolean;
-}
-
-export interface AiEditAgentSandboxModeResult {
-  success: boolean;
-}
-
-export interface AiEditAgentTaskExecutionInstructionsInput {
-  id: Id;
-  instructions: string;
-}
-
-export interface AiEditAgentTaskExecutionInstructionsResult {
-  success: boolean;
-}
-
-export interface AiEditAgentVerbosityInput {
-  id: Id;
-  verbose: boolean;
-}
-
-export interface AiEditAgentVerbosityResult {
-  success: boolean;
-}
-
-export interface AiRunAgentInput {
-  id: Id;
-}
-
-export interface AiRunAgentResult {
-  run: AgentRun;
-}
-
-export interface AiSendMessageInput {
-  conversationId: Id;
-  message: string;
-}
-
-export interface AiSendMessageResult {
-  success: boolean;
-  message: AgentMessage;
 }
 
 export interface ApiTokensCreateInput {
@@ -5838,86 +5607,6 @@ class ApiNamespaceBilling {
   }
 }
 
-class ApiNamespaceAi {
-  constructor(private client: ApiClient) {}
-
-  async getAgent(input: AiGetAgentInput): Promise<AiGetAgentResult> {
-    return this.client.get("/ai/get_agent", input);
-  }
-
-  async getAgentRun(input: AiGetAgentRunInput): Promise<AiGetAgentRunResult> {
-    return this.client.get("/ai/get_agent_run", input);
-  }
-
-  async getConversationMessages(input: AiGetConversationMessagesInput): Promise<AiGetConversationMessagesResult> {
-    return this.client.get("/ai/get_conversation_messages", input);
-  }
-
-  async getConversations(input: AiGetConversationsInput): Promise<AiGetConversationsResult> {
-    return this.client.get("/ai/get_conversations", input);
-  }
-
-  async listAgentRuns(input: AiListAgentRunsInput): Promise<AiListAgentRunsResult> {
-    return this.client.get("/ai/list_agent_runs", input);
-  }
-
-  async listAgents(input: AiListAgentsInput): Promise<AiListAgentsResult> {
-    return this.client.get("/ai/list_agents", input);
-  }
-
-  async prompt(input: AiPromptInput): Promise<AiPromptResult> {
-    return this.client.get("/ai/prompt", input);
-  }
-
-  async addAgent(input: AiAddAgentInput): Promise<AiAddAgentResult> {
-    return this.client.post("/ai/add_agent", input);
-  }
-
-  async createConversation(input: AiCreateConversationInput): Promise<AiCreateConversationResult> {
-    return this.client.post("/ai/create_conversation", input);
-  }
-
-  async editAgentDailyRun(input: AiEditAgentDailyRunInput): Promise<AiEditAgentDailyRunResult> {
-    return this.client.post("/ai/edit_agent_daily_run", input);
-  }
-
-  async editAgentDefinition(input: AiEditAgentDefinitionInput): Promise<AiEditAgentDefinitionResult> {
-    return this.client.post("/ai/edit_agent_definition", input);
-  }
-
-  async editAgentPlanningInstructions(
-    input: AiEditAgentPlanningInstructionsInput,
-  ): Promise<AiEditAgentPlanningInstructionsResult> {
-    return this.client.post("/ai/edit_agent_planning_instructions", input);
-  }
-
-  async editAgentProvider(input: AiEditAgentProviderInput): Promise<AiEditAgentProviderResult> {
-    return this.client.post("/ai/edit_agent_provider", input);
-  }
-
-  async editAgentSandboxMode(input: AiEditAgentSandboxModeInput): Promise<AiEditAgentSandboxModeResult> {
-    return this.client.post("/ai/edit_agent_sandbox_mode", input);
-  }
-
-  async editAgentTaskExecutionInstructions(
-    input: AiEditAgentTaskExecutionInstructionsInput,
-  ): Promise<AiEditAgentTaskExecutionInstructionsResult> {
-    return this.client.post("/ai/edit_agent_task_execution_instructions", input);
-  }
-
-  async editAgentVerbosity(input: AiEditAgentVerbosityInput): Promise<AiEditAgentVerbosityResult> {
-    return this.client.post("/ai/edit_agent_verbosity", input);
-  }
-
-  async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
-    return this.client.post("/ai/run_agent", input);
-  }
-
-  async sendMessage(input: AiSendMessageInput): Promise<AiSendMessageResult> {
-    return this.client.post("/ai/send_message", input);
-  }
-}
-
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -6886,7 +6575,6 @@ export class ApiClient {
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceSiteMessages: ApiNamespaceSiteMessages;
   public apiNamespaceBilling: ApiNamespaceBilling;
-  public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceNotifications: ApiNamespaceNotifications;
   public apiNamespaceFiles: ApiNamespaceFiles;
@@ -6910,7 +6598,6 @@ export class ApiClient {
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceSiteMessages = new ApiNamespaceSiteMessages(this);
     this.apiNamespaceBilling = new ApiNamespaceBilling(this);
-    this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
     this.apiNamespaceFiles = new ApiNamespaceFiles(this);
@@ -7505,102 +7192,6 @@ export default {
     useRefresh: () =>
       useMutation<BillingRefreshInput, BillingRefreshResult>((input) =>
         defaultApiClient.apiNamespaceBilling.refresh(input),
-      ),
-  },
-
-  ai: {
-    getConversations: (input: AiGetConversationsInput) => defaultApiClient.apiNamespaceAi.getConversations(input),
-    useGetConversations: (input: AiGetConversationsInput) =>
-      useQuery<AiGetConversationsResult>(() => defaultApiClient.apiNamespaceAi.getConversations(input)),
-
-    listAgents: (input: AiListAgentsInput) => defaultApiClient.apiNamespaceAi.listAgents(input),
-    useListAgents: (input: AiListAgentsInput) =>
-      useQuery<AiListAgentsResult>(() => defaultApiClient.apiNamespaceAi.listAgents(input)),
-
-    getAgent: (input: AiGetAgentInput) => defaultApiClient.apiNamespaceAi.getAgent(input),
-    useGetAgent: (input: AiGetAgentInput) =>
-      useQuery<AiGetAgentResult>(() => defaultApiClient.apiNamespaceAi.getAgent(input)),
-
-    getAgentRun: (input: AiGetAgentRunInput) => defaultApiClient.apiNamespaceAi.getAgentRun(input),
-    useGetAgentRun: (input: AiGetAgentRunInput) =>
-      useQuery<AiGetAgentRunResult>(() => defaultApiClient.apiNamespaceAi.getAgentRun(input)),
-
-    prompt: (input: AiPromptInput) => defaultApiClient.apiNamespaceAi.prompt(input),
-    usePrompt: (input: AiPromptInput) => useQuery<AiPromptResult>(() => defaultApiClient.apiNamespaceAi.prompt(input)),
-
-    listAgentRuns: (input: AiListAgentRunsInput) => defaultApiClient.apiNamespaceAi.listAgentRuns(input),
-    useListAgentRuns: (input: AiListAgentRunsInput) =>
-      useQuery<AiListAgentRunsResult>(() => defaultApiClient.apiNamespaceAi.listAgentRuns(input)),
-
-    getConversationMessages: (input: AiGetConversationMessagesInput) =>
-      defaultApiClient.apiNamespaceAi.getConversationMessages(input),
-    useGetConversationMessages: (input: AiGetConversationMessagesInput) =>
-      useQuery<AiGetConversationMessagesResult>(() => defaultApiClient.apiNamespaceAi.getConversationMessages(input)),
-
-    addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
-    useAddAgent: () =>
-      useMutation<AiAddAgentInput, AiAddAgentResult>((input) => defaultApiClient.apiNamespaceAi.addAgent(input)),
-
-    editAgentSandboxMode: (input: AiEditAgentSandboxModeInput) =>
-      defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
-    useEditAgentSandboxMode: () =>
-      useMutation<AiEditAgentSandboxModeInput, AiEditAgentSandboxModeResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
-      ),
-
-    editAgentTaskExecutionInstructions: (input: AiEditAgentTaskExecutionInstructionsInput) =>
-      defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
-    useEditAgentTaskExecutionInstructions: () =>
-      useMutation<AiEditAgentTaskExecutionInstructionsInput, AiEditAgentTaskExecutionInstructionsResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
-      ),
-
-    editAgentPlanningInstructions: (input: AiEditAgentPlanningInstructionsInput) =>
-      defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
-    useEditAgentPlanningInstructions: () =>
-      useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
-      ),
-
-    createConversation: (input: AiCreateConversationInput) => defaultApiClient.apiNamespaceAi.createConversation(input),
-    useCreateConversation: () =>
-      useMutation<AiCreateConversationInput, AiCreateConversationResult>((input) =>
-        defaultApiClient.apiNamespaceAi.createConversation(input),
-      ),
-
-    sendMessage: (input: AiSendMessageInput) => defaultApiClient.apiNamespaceAi.sendMessage(input),
-    useSendMessage: () =>
-      useMutation<AiSendMessageInput, AiSendMessageResult>((input) =>
-        defaultApiClient.apiNamespaceAi.sendMessage(input),
-      ),
-
-    editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
-    useEditAgentVerbosity: () =>
-      useMutation<AiEditAgentVerbosityInput, AiEditAgentVerbosityResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
-      ),
-
-    runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
-    useRunAgent: () =>
-      useMutation<AiRunAgentInput, AiRunAgentResult>((input) => defaultApiClient.apiNamespaceAi.runAgent(input)),
-
-    editAgentDefinition: (input: AiEditAgentDefinitionInput) =>
-      defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
-    useEditAgentDefinition: () =>
-      useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
-      ),
-
-    editAgentProvider: (input: AiEditAgentProviderInput) => defaultApiClient.apiNamespaceAi.editAgentProvider(input),
-    useEditAgentProvider: () =>
-      useMutation<AiEditAgentProviderInput, AiEditAgentProviderResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentProvider(input),
-      ),
-
-    editAgentDailyRun: (input: AiEditAgentDailyRunInput) => defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
-    useEditAgentDailyRun: () =>
-      useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
       ),
   },
 

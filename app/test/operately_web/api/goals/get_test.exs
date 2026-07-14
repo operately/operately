@@ -464,7 +464,7 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
       end)
     end
 
-    test "include_potential_subscribers includes guests and excludes ai", ctx do
+    test "include_potential_subscribers includes guests", ctx do
       ctx =
         ctx
         |> Factory.add_company_member(:creator)
@@ -474,7 +474,6 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
         |> Factory.add_space_member(:guest, :space, person_type: :guest)
-        |> Factory.add_space_member(:ai, :space, person_type: :ai)
         |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
@@ -485,11 +484,9 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
       |> Enum.each(fn member ->
         assert Enum.find(subs, &(&1.person.id == Paths.person_id(member)))
       end)
-
-      refute Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.ai)))
     end
 
-    test "include_space_members includes guests and excludes ai", ctx do
+    test "include_space_members includes guests", ctx do
       ctx =
         ctx
         |> Factory.add_company_member(:creator)
@@ -499,7 +496,6 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
         |> Factory.add_space_member(:guest, :space, person_type: :guest)
-        |> Factory.add_space_member(:ai, :space, person_type: :ai)
         |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(ctx.goal), include_space_members: true})
@@ -509,9 +505,6 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
       |> Enum.each(fn member ->
         assert Enum.find(members, &(&1.id == Paths.person_id(member)))
       end)
-
-      # Ensure AI is NOT there
-      refute Enum.find(members, &(&1.id == Paths.person_id(ctx.ai)))
     end
 
     test "auth_preload resources are returned only with permissions", ctx do

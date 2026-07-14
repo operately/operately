@@ -18,7 +18,6 @@ defmodule Operately.Application do
       Operately.Repo,
       Operately.Mcp.RateLimit,
       OperatelyWeb.Endpoint,
-      Operately.Ai.Prompts,
       {Oban, Application.fetch_env!(:operately, Oban)},
       {Finch, name: Operately.Finch},
       {Phoenix.PubSub,

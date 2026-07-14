@@ -17,10 +17,6 @@ defmodule Operately.People do
     Repo.all(from p in Person, where: p.company_id == ^company_id and not p.suspended)
   end
 
-  def list_agents(company_id) do
-    Repo.all(from p in Person, where: p.company_id == ^company_id and p.type == :ai and not p.suspended)
-  end
-
   def count_accounts do
     Repo.aggregate(Account, :count, :id)
   end
@@ -49,10 +45,6 @@ defmodule Operately.People do
 
   def get_person!(account = %Account{}, company = %Company{}) do
     Repo.one!(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)
-  end
-
-  def get_agent_def(%Person{} = person) do
-    Repo.get_by(Operately.People.AgentDef, person_id: person.id)
   end
 
   def get_person_with_access_level(person_id, requester_id) do

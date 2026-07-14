@@ -395,23 +395,11 @@
     :versions: []
     :when: 2025-04-14 08:40:00.000000000 Z
 - - :approve
-  - langchain
-  - :who: Igor Sarcevic
-    :why: Apache 2.0 stated in the docs
-    :versions: []
-    :when: 2025-05-07 15:48:00.150178000 Z
-- - :approve
   - dialyxir
   - :who: Igor Sarcevic
     :why: Its Apache 2.0 https://github.com/jeremyjh/dialyxir?tab=Apache-2.0-1-ov-file#readme
     :versions: []
     :when: 2025-05-25 12:13:59.159469000 Z
-- - :approve
-  - yaml_elixir
-  - :who: Igor Sarcevic
-    :why: It is MIT based on the source
-    :versions: []
-    :when: 2025-08-19 10:34:16.650597000 Z
 - - :approve
   - sentry
   - :who: Igor Sarcevic
