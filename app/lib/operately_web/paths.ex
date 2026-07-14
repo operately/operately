@@ -8,10 +8,6 @@ defmodule OperatelyWeb.Paths do
   alias Operately.Tasks.Task
   alias Operately.Updates.Comment
 
-  def agent_run_id(run = %Operately.People.AgentRun{}) do
-    Operately.ShortUuid.encode!(run.id)
-  end
-
   def account_path(company = %Company{}) do
     create_path([company_id(company), "account"])
   end

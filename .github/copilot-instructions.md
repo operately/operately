@@ -266,7 +266,6 @@ Factory.setup(%{})
 # Companies and people
 Factory.add_company_member(ctx, :john)
 Factory.add_company_admin(ctx, :admin)
-Factory.add_company_agent(ctx, :ai_agent)
 
 # Spaces and projects
 Factory.add_space(ctx, :marketing)

@@ -61,7 +61,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       has_open_invitation: has_open_invitation(data),
       permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions),
       invite_link: OperatelyWeb.Api.Serializer.serialize(data.invite_link),
-      agent_def: data.agent_def && OperatelyWeb.Api.Serializer.serialize(data.agent_def, level: :full),
       email_preference: data |> Operately.People.Person.email_preference() |> Atom.to_string(),
       email_window_minutes: Operately.People.Person.email_window_minutes(data),
       send_daily_summary: Operately.People.Person.send_daily_summary?(data),

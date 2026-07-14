@@ -180,16 +180,6 @@ defmodule Operately.Billing.EnforceLimitsTest do
       assert Billing.active_member_count(ctx.company) == 1
     end
 
-    test "excludes AI people from the billing overview count", ctx do
-      {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
-      person_fixture_with_account(%{company_id: ctx.company.id, type: :ai})
-
-      overview = Overview.build(ctx.company, account, [])
-
-      assert overview.member_count == 1
-      assert Billing.active_member_count(ctx.company) == 1
-    end
-
     test "includes active guests in the billing overview count", ctx do
       {:ok, account} = Billing.get_or_create_billing_account(ctx.company)
       person_fixture_with_account(%{company_id: ctx.company.id, type: :guest})
