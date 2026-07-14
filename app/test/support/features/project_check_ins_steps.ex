@@ -139,7 +139,9 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :visit_scheduled_check_in, ctx do
-    UI.visit(ctx, Paths.project_check_in_path(ctx.company, ctx.check_in))
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
   end
 
   step :assert_scheduled_check_in_details, ctx do
@@ -150,6 +152,8 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   step :publish_scheduled_check_in_now, ctx do
     ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
     |> UI.click(testid: "edit-check-in")
     |> UI.click(testid: "publish-draft-options")
     |> UI.click(testid: "publish-now-option")
@@ -157,13 +161,16 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   step :save_scheduled_check_in_as_draft, ctx do
     ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
     |> UI.click(testid: "edit-check-in")
     |> UI.click(testid: "publish-draft-options")
     |> UI.click(testid: "save-as-draft-option")
   end
 
   step :assert_scheduled_check_in_is_published, ctx do
-    check_in = Operately.Projects.CheckIn.get!(:system, id: ctx.check_in.id)
+    ctx = UI.assert_page(ctx, Paths.project_check_in_path(ctx.company, ctx.check_in))
+    check_in = wait_for_check_in_state(ctx.check_in.id, :published)
     assert check_in.state == :published
 
     ctx
@@ -172,7 +179,8 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :assert_scheduled_check_in_is_a_draft, ctx do
-    check_in = Operately.Projects.CheckIn.get!(:system, id: ctx.check_in.id)
+    ctx = UI.assert_page(ctx, Paths.project_check_in_path(ctx.company, ctx.check_in))
+    check_in = wait_for_check_in_state(ctx.check_in.id, :draft)
     assert check_in.state == :draft
     assert check_in.scheduled_at == nil
 
@@ -489,5 +497,22 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   defp last_comment(ctx) do
     Operately.Updates.list_comments(ctx.check_in.id, :project_check_in) |> List.last()
+  end
+
+  defp wait_for_check_in_state(id, expected_state, attempts \\ 10)
+
+  defp wait_for_check_in_state(id, _expected_state, 0) do
+    Operately.Projects.CheckIn.get!(:system, id: id)
+  end
+
+  defp wait_for_check_in_state(id, expected_state, attempts) do
+    check_in = Operately.Projects.CheckIn.get!(:system, id: id)
+
+    if check_in.state == expected_state do
+      check_in
+    else
+      Process.sleep(200)
+      wait_for_check_in_state(id, expected_state, attempts - 1)
+    end
   end
 end

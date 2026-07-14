@@ -281,7 +281,9 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   end
 
   step :visit_scheduled_check_in, ctx do
-    UI.visit(ctx, Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
   end
 
   step :assert_scheduled_check_in_details, ctx do
@@ -292,6 +294,8 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   step :publish_scheduled_check_in_now, ctx do
     ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
     |> UI.click(testid: "edit-check-in")
     |> UI.click(testid: "publish-draft-options")
     |> UI.click(testid: "publish-now-option")
@@ -299,13 +303,16 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   step :save_scheduled_check_in_as_draft, ctx do
     ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
     |> UI.click(testid: "edit-check-in")
     |> UI.click(testid: "publish-draft-options")
     |> UI.click(testid: "save-as-draft-option")
   end
 
   step :assert_scheduled_check_in_is_published, ctx do
-    update = Operately.Goals.Update.get!(:system, id: ctx.check_in.id)
+    ctx = UI.assert_page(ctx, Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    update = wait_for_update_state(ctx.check_in.id, :published)
     assert update.state == :published
 
     ctx
@@ -314,7 +321,8 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   end
 
   step :assert_scheduled_check_in_is_a_draft, ctx do
-    update = Operately.Goals.Update.get!(:system, id: ctx.check_in.id)
+    ctx = UI.assert_page(ctx, Paths.goal_check_in_path(ctx.company, ctx.check_in))
+    update = wait_for_update_state(ctx.check_in.id, :draft)
     assert update.state == :draft
     assert update.scheduled_at == nil
 
@@ -516,6 +524,23 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   defp last_comment(ctx) do
     Operately.Updates.list_comments(ctx.check_in.id, :goal_update) |> List.last()
+  end
+
+  defp wait_for_update_state(id, expected_state, attempts \\ 10)
+
+  defp wait_for_update_state(id, _expected_state, 0) do
+    Operately.Goals.Update.get!(:system, id: id)
+  end
+
+  defp wait_for_update_state(id, expected_state, attempts) do
+    update = Operately.Goals.Update.get!(:system, id: id)
+
+    if update.state == expected_state do
+      update
+    else
+      Process.sleep(200)
+      wait_for_update_state(id, expected_state, attempts - 1)
+    end
   end
 
   defp status_label("on_track"), do: "On track"
