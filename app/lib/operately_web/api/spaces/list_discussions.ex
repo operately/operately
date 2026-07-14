@@ -38,9 +38,15 @@ defmodule OperatelyWeb.Api.Spaces.ListDiscussions do
   defp load_messages(me, inputs) do
     from(m in Message,
       join: b in assoc(m, :messages_board),
-      where: b.space_id == ^inputs.space_id and m.state != :draft,
+      where:
+        b.space_id == ^inputs.space_id and
+          (m.state == :published or (m.state == :scheduled and m.author_id == ^me.id)),
       preload: ^preload(inputs),
-      order_by: [desc: m.published_at]
+      order_by: [
+        desc: m.state,
+        asc: m.scheduled_at,
+        desc: m.published_at
+      ]
     )
     |> Filters.filter_by_view_access(me.id)
     |> Repo.all()

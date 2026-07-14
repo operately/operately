@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Projects.ListCheckIns do
 
     drafts =
       from(p in CheckIn,
-        where: p.project_id == ^id and p.state == :draft and p.author_id == ^person.id,
+        where: p.project_id == ^id and p.state in [:draft, :scheduled] and p.author_id == ^person.id,
         preload: [:acknowledged_by]
       )
       |> include_requested(requested)

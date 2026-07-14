@@ -11,6 +11,8 @@ import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
 import { usePaths } from "@/routes/paths";
 import { Forms, emptyContent } from "turboui";
+import type { ScheduleFlow } from "@/hooks/useScheduleFlow";
+import { useScheduleFlow } from "@/hooks/useScheduleFlow";
 
 interface NewProps {
   mode: "new";
@@ -33,6 +35,12 @@ export function useForm(props: EditProps | NewProps) {
   const navigate = useNavigate();
   const setPageMode = Pages.useSetPageMode();
 
+  const canSchedule =
+    mode === "new" || (props.mode === "edit" && (props.update.state === "draft" || props.update.state === "scheduled"));
+  const scheduleFlow = useScheduleFlow({
+    initialScheduledAt: mode === "edit" && canSchedule ? props.update.scheduledAt : null,
+  });
+
   const timeframe = props.mode === "edit" ? props.update.timeframe : props.goal.timeframe;
 
   const form = Forms.useForm({
@@ -53,7 +61,16 @@ export function useForm(props: EditProps | NewProps) {
     validate: (addErrors) => {
       validateTargets(form.values.targets || [], addErrors);
     },
-    submit: async (action: "submit" | "save-draft" | "publish-draft" = "submit") => {
+    submit: async (
+      action:
+        | "submit"
+        | "save-draft"
+        | "publish-draft"
+        | "schedule"
+        | "save-changes"
+        | "publish-now"
+        | "save-as-draft" = "submit",
+    ) => {
       const status = form.values.status;
       if (!status) return;
 
@@ -75,25 +92,52 @@ export function useForm(props: EditProps | NewProps) {
 
       if (mode === "new") {
         const { subscriptionsState } = props;
+        const shouldSchedule = action === "schedule" || (action === "submit" && scheduleFlow.isScheduledLocally);
         const payload = {
           ...commonAttrs,
           goalId: goal.id,
           postAsDraft: action === "save-draft",
           sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
           subscriberIds: subscriptionsState.currentSubscribersList,
+          scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : undefined,
         };
 
         const res = await post(payload);
 
         navigate(paths.goalCheckInPath(res.update!.id));
       } else {
-        const state: CheckInState | undefined =
-          props.update.state === "draft" ? (action === "publish-draft" ? "published" : "draft") : undefined;
+        const isUnpublished = props.update.state === "draft" || props.update.state === "scheduled";
+        const shouldSchedule =
+          action === "schedule" ||
+          action === "save-changes" ||
+          (action === "publish-draft" && scheduleFlow.isScheduledLocally);
+
+        let state: CheckInState | undefined;
+        let scheduledAt: string | null | undefined;
+
+        if (action === "publish-now") {
+          state = "published";
+          scheduledAt = null;
+        } else if (action === "save-as-draft") {
+          state = "draft";
+          scheduledAt = null;
+        } else if (isUnpublished) {
+          if (shouldSchedule) {
+            state = "scheduled";
+            scheduledAt = scheduleFlow.scheduledAtIso;
+          } else if (action === "publish-draft") {
+            state = "published";
+          } else {
+            state = "draft";
+            scheduledAt = null;
+          }
+        }
 
         const payload = {
           ...commonAttrs,
           id: props.update.id!,
           state,
+          scheduledAt,
         };
         await edit(payload);
 
@@ -102,9 +146,16 @@ export function useForm(props: EditProps | NewProps) {
     },
   });
 
-  return form;
+  return {
+    ...form,
+    scheduleFlow,
+    canSchedule,
+    isScheduled: mode === "edit" && props.update.state === "scheduled",
+  };
 }
 
 function sortByIndex(items: any[]) {
   return [...items].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
 }
+
+export type GoalCheckInFormState = ReturnType<typeof useForm> & { scheduleFlow: ScheduleFlow; canSchedule: boolean };

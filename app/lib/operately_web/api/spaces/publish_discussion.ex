@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Spaces.PublishDiscussion do
 
   defp authorize(me, discussion) do
     cond do
-      discussion.state != :draft -> {:error, :forbidden}
+      discussion.state not in [:draft, :scheduled] -> {:error, :forbidden}
       discussion.author_id != me.id -> {:error, :forbidden}
       true -> {:ok, :allowed}
     end

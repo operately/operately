@@ -1,5 +1,14 @@
 import * as React from "react";
-import { IconSquareCheckFilled, StatusBadge, Avatar, FormattedTime, BulletDot, displayDate } from "turboui";
+import {
+  IconSquareCheckFilled,
+  StatusBadge,
+  Avatar,
+  FormattedTime,
+  BulletDot,
+  ScheduledPostDate,
+  ScheduledPostLabel,
+  displayDate,
+} from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useLoadedData } from "./loader";
@@ -29,6 +38,7 @@ function Title({ update }: { update: Update }) {
           Check-In for <FormattedTime {...formattedTimePreferences} time={displayDate(update)} format="long-date" />
         </span>
         {update.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
+        {update.state === "scheduled" && <ScheduledPostLabel />}
       </h1>
     </div>
   );
@@ -36,11 +46,18 @@ function Title({ update }: { update: Update }) {
 
 function Subtitle({ update }: { update: Update }) {
   assertPresent(update.author, "Update author must be defined");
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <div className="flex gap-1.5 items-center mt-1 font-medium text-sm sm:text-base">
       <AvatarAndName person={update.author} />
-      {update.state !== "draft" && (
+      {update.state === "scheduled" && update.scheduledAt && (
+        <>
+          <BulletDot />
+          <ScheduledPostDate scheduledAt={update.scheduledAt} formattedTimePreferences={formattedTimePreferences} />
+        </>
+      )}
+      {update.state === "published" && (
         <>
           <BulletDot />
           <Acknowledgement update={update} />

@@ -1207,20 +1207,15 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   defp assert_reviewer_field_ready(ctx, text) do
-    ctx
-    |> UI.wait_until_has(css: "button[data-test-id=\"reviewer-field\"]")
-    |> UI.wait_until_text(text, testid: "reviewer-field")
+    wait_until_reviewer_field(ctx, text)
   end
 
   defp wait_until_reviewer_field(ctx, text, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
-    ctx =
+    try do
       ctx
       |> UI.visit(Paths.project_path(ctx.company, ctx.project))
       |> UI.wait_until_testid(testid: "project-page")
       |> UI.wait_until_has(css: "button[data-test-id=\"reviewer-field\"]")
-
-    try do
-      ctx
       |> UI.find(UI.query(testid: "reviewer-field"), fn el ->
         UI.assert_text(el, text)
       end)

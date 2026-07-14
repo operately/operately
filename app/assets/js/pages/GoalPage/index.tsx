@@ -427,6 +427,7 @@ function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage
       commentCount: checkIn.commentsCount!,
       status: checkIn.status!,
       state: checkIn.state,
+      scheduledAt: checkIn.scheduledAt,
     };
   });
 }
