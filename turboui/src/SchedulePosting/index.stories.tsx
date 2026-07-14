@@ -52,6 +52,7 @@ function ScheduleModalDemo() {
           setOpen(false);
         }}
         onCancel={() => setOpen(false)}
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />
     </div>
   );
