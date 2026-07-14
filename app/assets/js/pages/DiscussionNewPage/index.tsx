@@ -5,8 +5,9 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { PageModule } from "@/routes/types";
-import { GhostButton, Link, PrimaryButton, SubscribersSelector } from "turboui";
+import { GhostButton, Link, ScheduleFlowControls, SubscribersSelector } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionNewPage", loader, Page } as PageModule;
@@ -56,33 +57,28 @@ function Footer({ form }: { form: FormState }) {
 }
 
 function Submit({ form }: { form: FormState }) {
+  const formattedTimePreferences = useFormattedTimePreferences();
+
   return (
     <div>
-      <div className="flex items-center gap-2">
-        <PostButton form={form} />
-        <SaveAsDraftButton form={form} />
-      </div>
+      <ScheduleFlowControls
+        scheduleFlow={form.scheduleFlow}
+        primaryLabel="Post"
+        onPrimaryClick={form.postMessage}
+        loading={form.postMessageSubmitting || form.scheduleSubmitting}
+        testId="post-discussion"
+        formattedTimePreferences={formattedTimePreferences}
+        secondaryAction={
+          <GhostButton loading={form.postAsDraftSubmitting} testId="save-as-draft" onClick={form.postAsDraft}>
+            Save as draft
+          </GhostButton>
+        }
+      />
 
       <div className="mt-4">
         Or, <DiscardLink form={form} />
       </div>
     </div>
-  );
-}
-
-function PostButton({ form }: { form: FormState }) {
-  return (
-    <PrimaryButton loading={form.postMessageSubmitting} testId="post-discussion" onClick={form.postMessage}>
-      Post discussion
-    </PrimaryButton>
-  );
-}
-
-function SaveAsDraftButton({ form }: { form: FormState }) {
-  return (
-    <GhostButton loading={form.postAsDraftSubmitting} testId="save-as-draft" onClick={form.postAsDraft}>
-      Save as draft
-    </GhostButton>
   );
 }
 

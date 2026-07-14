@@ -7,10 +7,11 @@ import { Spinner } from "./Spinner";
 export interface OptionsButtonProps {
   children: React.ReactNode;
   onClick: () => void;
-  options: { label: string; action: () => void }[];
+  options: { label: string; action: () => void; testId?: string }[];
   loading?: boolean;
   disabled?: boolean;
   testId?: string;
+  dropdownTestId?: string;
   size?: "sm" | "base";
 }
 
@@ -21,6 +22,7 @@ export function OptionsButton({
   loading,
   disabled,
   testId,
+  dropdownTestId,
   size = "base",
 }: OptionsButtonProps) {
   const isBase = size === "base";
@@ -35,7 +37,7 @@ export function OptionsButton({
       "hover:bg-blue-600": !loading && !disabled,
       "bg-blue-400 border-blue-400 cursor-default": loading,
       "bg-blue-500 border-blue-500 opacity-50 cursor-not-allowed": disabled,
-    }
+    },
   );
 
   const dropdownClass = classNames(
@@ -48,7 +50,7 @@ export function OptionsButton({
       "hover:bg-blue-600": !loading && !disabled,
       "bg-blue-400 border-blue-400 cursor-default": loading,
       "bg-blue-500 border-blue-500 opacity-50 cursor-not-allowed": disabled,
-    }
+    },
   );
 
   return (
@@ -60,13 +62,19 @@ export function OptionsButton({
 
       <Menu
         customTrigger={
-          <button type="button" className={dropdownClass} disabled={loading || disabled}>
+          <button
+            type="button"
+            className={dropdownClass}
+            disabled={loading || disabled}
+            data-testid={dropdownTestId}
+            data-test-id={dropdownTestId}
+          >
             <IconChevronDown size={isBase ? 16 : 14} />
           </button>
         }
       >
-        {options.map((option, index) => (
-          <MenuActionItem key={index} onClick={option.action}>
+        {options.map((option) => (
+          <MenuActionItem key={option.label} onClick={option.action} testId={option.testId}>
             {option.label}
           </MenuActionItem>
         ))}

@@ -39,7 +39,7 @@ function Body() {
       <Header />
       <Form />
 
-      {mode === "view" && update.state !== "draft" && (
+      {mode === "view" && update.state === "published" && (
         <>
           <AckCTA />
           <CheckInReactions />

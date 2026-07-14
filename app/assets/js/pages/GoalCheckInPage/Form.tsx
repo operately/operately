@@ -15,14 +15,21 @@ export function Form() {
   assertPresent(update.insertedAt, "insertedAt must be present in update");
 
   const mode = Pages.useIsViewMode() ? "view" : "edit";
+  const isUnpublished = update.state === "draft" || update.state === "scheduled";
   const allowFullEdit =
-    update.state === "draft" ||
+    isUnpublished ||
     (goal.lastCheckInId
       ? compareIds(goal.lastCheckInId, update.id) && isWithinTimeframe(displayDate(update), 72)
       : false);
   const form = useForm({ mode: "edit", goal, update });
 
   return (
-    <CheckInForm form={form} goal={goal} mode={mode} allowFullEdit={allowFullEdit} isDraft={update.state === "draft"} />
+    <CheckInForm
+      form={form}
+      goal={goal}
+      mode={mode}
+      allowFullEdit={allowFullEdit}
+      isUnpublished={isUnpublished}
+    />
   );
 }

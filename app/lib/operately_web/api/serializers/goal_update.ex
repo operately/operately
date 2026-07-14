@@ -8,6 +8,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update do
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(update.updated_at),
       published_at: OperatelyWeb.Api.Serializer.serialize(update.published_at),
+      scheduled_at: OperatelyWeb.Api.Serializer.serialize(update.scheduled_at),
       goal_target_updates: serialize_targets(update.targets),
       checklist: serialize_checks(update.checks),
       timeframe: OperatelyWeb.Api.Serializer.serialize(update.timeframe),
