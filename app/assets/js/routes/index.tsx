@@ -13,7 +13,6 @@ import { TimezoneProvider } from "@/contexts/TimezoneContext";
 import { saasAdminRoutes } from "@/ee/routes";
 import CompanyLayout from "@/layouts/CompanyLayout";
 import NonCompanyLayout from "@/layouts/NonCompanyLayout";
-import { AiSidebarContextProvider } from "../features/AiSidebar/context";
 
 function NonCompanyRoutes() {
   return <NonCompanyLayout />;
@@ -23,9 +22,7 @@ function CompanyRoutes() {
   return (
     <CurrentCompanyProvider>
       <TimezoneProvider>
-        <AiSidebarContextProvider>
-          <CompanyLayout />
-        </AiSidebarContextProvider>
+        <CompanyLayout />
       </TimezoneProvider>
     </CurrentCompanyProvider>
   );
@@ -68,7 +65,6 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("invite-people", pages.MemberTypeSelectionPage),
         pageRoute("review", pages.ReviewPage),
         pageRoute("notifications", pages.NotificationsPage),
-        pageRoute("ai", pages.AiPlaygroundPage),
 
         pageRoute("admin", pages.CompanyAdminPage),
         pageRoute("admin/billing", pages.CompanyBillingPage),
@@ -78,8 +74,6 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("admin/manage-admins", pages.CompanyAdminManageAdminsPage),
         pageRoute("admin/manage-people", pages.CompanyAdminManagePeoplePage),
         pageRoute("admin/manage-people/add", pages.CompanyAdminAddPeoplePage),
-        pageRoute("admin/manage-ai-agents", pages.CompanyManageAiAgentsPage),
-        pageRoute("admin/manage-ai-agents/:id", pages.AgentPage),
         pageRoute("admin/manage-trusted-email-domains", pages.CompanyAdminTrustedEmailDomainsPage),
         pageRoute("admin/restore-suspended-people", pages.CompanyAdminRestoreSuspendedPeoplePage),
         pageRoute("admin/permissions", pages.CompanyPermissionsPage),

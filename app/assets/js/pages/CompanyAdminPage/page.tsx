@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
-import { IconFileExport, IconFileText, IconLetterCase, IconLock, IconRobotFace, IconShieldLock, IconUser, IconUsers, OptionsMenuItem } from "turboui";
+import { IconFileExport, IconFileText, IconLetterCase, IconLock, IconShieldLock, IconUser, IconUsers, OptionsMenuItem } from "turboui";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { includesId } from "@/routes/paths";
@@ -65,7 +65,6 @@ function AdminsMenu() {
   }
 
   const managePeople = paths.companyManagePeoplePath();
-  const manageAgents = paths.companyManageAiAgentsPath();
   const manageBilling = paths.companyBillingPath();
   const renameCompanyPath = paths.companyRenamePath();
   const restorePath = paths.companyAdminRestoreSuspendedPeoplePath();
@@ -75,10 +74,6 @@ function AdminsMenu() {
     <Paper.Section title="As an admin or owner, you can:">
       <div>
         <OptionsMenuItem linkTo={managePeople} icon={IconUsers} title="Manage team members" />
-
-        {hasFeature(company, "ai") && (
-          <OptionsMenuItem linkTo={manageAgents} icon={IconRobotFace} title="Manage AI agents" />
-        )}
 
         <OptionsMenuItem linkTo={restorePath} icon={IconUser} title="Restore access for deactivated team members" />
         <OptionsMenuItem hidden={!billingEnabled || !company.permissions?.canManageBilling} linkTo={manageBilling} icon={IconFileText} title="Manage plan" />
