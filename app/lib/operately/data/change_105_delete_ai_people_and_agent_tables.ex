@@ -40,19 +40,19 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTables do
   end
 
   defp delete_agent_messages do
-    Repo.delete_all(from(m in AgentMessage))
+    Repo.delete_all(AgentMessage)
   end
 
   defp delete_agent_convos do
-    Repo.delete_all(from(c in AgentConvo))
+    Repo.delete_all(AgentConvo)
   end
 
   defp delete_agent_runs do
-    Repo.delete_all(from(r in AgentRun))
+    Repo.delete_all(AgentRun)
   end
 
   defp delete_agent_defs do
-    Repo.delete_all(from(d in AgentDef))
+    Repo.delete_all(AgentDef)
   end
 
   defp delete_ai_people_dependents do
