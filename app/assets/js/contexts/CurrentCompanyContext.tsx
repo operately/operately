@@ -1,4 +1,3 @@
-import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
@@ -8,7 +7,6 @@ import { throttle } from "@/utils/throttle";
 import { compareIds, useOptionalPaths } from "@/routes/paths";
 
 interface CurrentCompanyContextProps {
-  company: Companies.Company | null;
   me: People.Person | null;
 
   people: People.Person[] | null;
@@ -19,8 +17,6 @@ interface CurrentCompanyContextProps {
 const CurrentCompanyContext = React.createContext<CurrentCompanyContextProps | null>(null);
 
 export function CurrentCompanyProvider({ children }) {
-  const company = Companies.useGetCompany({});
-
   const { data: meData, refetch: meRefetch } = People.useGetMe({ includeManager: true });
   const {
     data: peopleData,
@@ -36,7 +32,6 @@ export function CurrentCompanyProvider({ children }) {
     people: peopleData?.people?.map((p) => p!) || null,
     peopleLoading,
     peopleRefetch: throttle(peopleRefetch, 60 * 1000),
-    company: company?.data?.company || null,
   };
 
   if (!ctx.me) return null;
@@ -49,13 +44,6 @@ export function useMe(): People.Person | null {
   if (!ctx) return null;
 
   return ctx.me;
-}
-
-export function useCurrentCompany(): Companies.Company | null {
-  const ctx = React.useContext(CurrentCompanyContext);
-  if (!ctx) return null;
-
-  return ctx.company;
 }
 
 export function useMentionedPersonLookupFn(): (
