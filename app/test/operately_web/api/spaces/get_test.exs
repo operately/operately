@@ -177,7 +177,7 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
       refute res.markdown =~ "## Tasks"
     end
 
-    test "includes guests and excludes ai members", ctx do
+    test "includes guests in members", ctx do
       ctx =
         ctx
         |> Factory.add_company_owner(:creator)
@@ -185,7 +185,6 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
         |> Factory.add_space(:space)
         |> Factory.add_space_member(:human, :space, person_type: :human)
         |> Factory.add_space_member(:guest, :space, person_type: :guest)
-        |> Factory.add_space_member(:ai, :space, person_type: :ai)
 
       assert {200, res} = query(ctx.conn, [:spaces, :get], %{id: Paths.space_id(ctx.space), include_members: true})
 
@@ -193,7 +192,6 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
       assert length(res.space.members) == 3
       assert Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.human)))
       assert Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.guest)))
-      refute Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.ai)))
     end
 
     test "include_access_levels", ctx do
@@ -262,7 +260,7 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
       end)
     end
 
-    test "include_potential_subscribers includes guests and excludes ai", ctx do
+    test "include_potential_subscribers includes guests", ctx do
       ctx =
         Factory.add_company_member(ctx, :creator)
         |> Factory.log_in_person(:creator)
@@ -270,7 +268,6 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
         |> Factory.add_space_member(:guest, :space, person_type: :guest)
-        |> Factory.add_space_member(:ai, :space, person_type: :ai)
 
       assert {200, res} =
                query(ctx.conn, [:spaces, :get], %{
@@ -284,8 +281,6 @@ defmodule OperatelyWeb.Api.Spaces.GetTest do
       |> Enum.each(fn member ->
         assert Enum.find(subs, &(&1.person.id == Paths.person_id(member)))
       end)
-
-      refute Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.ai)))
     end
   end
 

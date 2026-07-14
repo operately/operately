@@ -237,14 +237,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     UI.login_as(ctx, ctx.champion)
   end
 
-  step :open_ai_sidebar, ctx do
-    ctx |> UI.click(css: "button[title*=\"Ask Alfred\"]")
-  end
-
-  step :assert_ai_sidebar_not_displayed, ctx do
-    ctx |> UI.refute_has(css: "button[title*=\"Ask Alfred\"]")
-  end
-
   step :assert_logged_in_contributor_has_edit_access, ctx do
     {:ok, project} = Operately.Projects.Project.get(ctx.contributor, id: ctx.project.id)
 
@@ -267,10 +259,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     assert project.request_info.access_level == Binding.view_access()
 
     UI.login_as(ctx, ctx.viewer)
-  end
-
-  step :assert_ai_sidebar_disabled_message, ctx, message: message do
-    ctx |> UI.assert_text(message)
   end
 
   step :choose_new_goal, ctx, goal_name: goal_name do
