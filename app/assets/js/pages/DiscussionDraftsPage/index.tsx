@@ -151,14 +151,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
         )}
 
         <div className="flex-1 h-full min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="font-semibold leading-none">{discussion.title}</div>
-            {discussion.state === "scheduled" && (
-              <span className="text-xs font-medium text-content-dimmed border border-stroke-base rounded px-1.5 py-0.5">
-                Scheduled
-              </span>
-            )}
-          </div>
+          <div className="font-semibold leading-none mb-1">{discussion.title}</div>
           <div className="break-words line-clamp-2">
             <span className="font-medium text-content-dimmed">
               Last edited on <FormattedTime {...formattedTimePreferences} time={discussion.updatedAt!} format="relative-time-or-date" /> &mdash;{" "}
