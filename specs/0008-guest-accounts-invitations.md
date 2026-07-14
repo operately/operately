@@ -18,8 +18,8 @@ This spec defines a multi‑step implementation plan to add guest accounts (exte
 - Adding a company member happens through `AddCompanyMember` and `CompanyMemberAdding`:
   - `AddCompanyMember` sets `skip_invitation` using `People.account_used?/1`, which checks `accounts.first_login_at` to decide whether an invite link should be created.
   - `CompanyMemberAdding` creates or reuses an `Account`, inserts a `Person`, adds them to the company access group, and adds them to the company space/general space. It always inserts an invite link unless `skip_invitation` is `true`.
-- The current person type enum is `[:human, :ai]`.
-- Several associations and queries filter `Person.type == :human` (e.g., `Groups.Member`, `Projects.Contributor`, and Space queries), which would exclude guests from pickers and member lists.
+- The current person type enum is `[:human, :guest]`.
+- Several associations and queries previously filtered `Person.type == :human`, which would exclude guests from pickers and member lists.
 
 ## Target state
 
@@ -76,7 +76,6 @@ This spec defines a multi‑step implementation plan to add guest accounts (exte
 **Changes**
 - Extend `Operately.People.Person` enum to include `:guest`.
 - Update association filters and queries that currently hard‑code `type: :human` so guests can appear in pickers and resource member lists where appropriate (e.g., project contributors, space members).
-- Keep `list_agents/1` and AI‑specific queries scoped to `:ai` only.
 
 **Notes**
 - This PR should not change behavior for existing human members.
