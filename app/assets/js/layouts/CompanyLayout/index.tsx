@@ -33,7 +33,6 @@ import { User } from "./User";
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useRefresh } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { AiSidebar } from "@/features/AiSidebar";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import * as Billing from "@/models/billing";
@@ -258,7 +257,6 @@ export default function CompanyLayout() {
       </div>
 
       <DevBar />
-      <AiSidebar />
       <KeyboardShortcutsModal isOpen={keyboardShortcutsModal.isOpen} onClose={keyboardShortcutsModal.close} />
     </div>
   );

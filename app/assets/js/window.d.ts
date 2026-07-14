@@ -8,13 +8,6 @@ declare global {
     socketToken: string;
   }
 
-  interface AiConvoAction {
-    id: string;
-    label: string;
-    context: string;
-    experimental?: boolean;
-  }
-
   interface AppConfig {
     configured: boolean;
     environment: string;
@@ -35,9 +28,6 @@ declare global {
     account: {
       id: number;
     };
-
-    aiActions: AiConvoAction[];
-    aiConfigured: boolean;
 
     discordUrl: string;
     bookDemoUrl: string;
