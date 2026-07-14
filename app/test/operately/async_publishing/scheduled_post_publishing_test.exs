@@ -26,10 +26,12 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishingTest do
     })
 
     # move to scheduled
-    check_in = 
+    check_in =
       check_in
-      |> Operately.Projects.CheckIn.changeset(%{state: :scheduled})
+      |> Operately.Projects.CheckIn.changeset(%{state: :scheduled, scheduled_at: Operately.Time.days_from_now(1)})
       |> Operately.Repo.update!()
+
+    refute Repo.one(from a in Operately.Activities.Activity, where: a.action == "project_check_in_submitted")
 
     # Run the operation
     assert {:ok, published_check_in} = ScheduledPostPublishing.run("project_check_in", check_in.id)
@@ -37,6 +39,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishingTest do
     # Verify state and published_at
     assert published_check_in.state == :published
     assert published_check_in.published_at != nil
+    assert published_check_in.scheduled_at == nil
 
     # Verify project's last_check_in was updated
     project = Operately.Repo.get!(Operately.Projects.Project, ctx.project.id)
@@ -60,15 +63,18 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishingTest do
       subscriber_ids: []
     })
 
-    update = 
+    update =
       update
-      |> Operately.Goals.Update.changeset(%{state: :scheduled})
+      |> Operately.Goals.Update.changeset(%{state: :scheduled, scheduled_at: Operately.Time.days_from_now(1)})
       |> Operately.Repo.update!()
+
+    refute Repo.one(from a in Operately.Activities.Activity, where: a.action == "goal_check_in")
 
     assert {:ok, published_update} = ScheduledPostPublishing.run("goal_update", update.id)
 
     assert published_update.state == :published
     assert published_update.published_at != nil
+    assert published_update.scheduled_at == nil
 
     goal = Operately.Repo.get!(Operately.Goals.Goal, ctx.goal.id)
     assert goal.last_check_in_id == update.id
@@ -89,15 +95,18 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishingTest do
       subscriber_ids: []
     })
 
-    message = 
+    message =
       message
-      |> Operately.Messages.Message.changeset(%{state: :scheduled})
+      |> Operately.Messages.Message.changeset(%{state: :scheduled, scheduled_at: Operately.Time.days_from_now(1)})
       |> Operately.Repo.update!()
+
+    refute Repo.one(from a in Operately.Activities.Activity, where: a.action == "discussion_posting")
 
     assert {:ok, published_message} = ScheduledPostPublishing.run("message", message.id)
 
     assert published_message.state == :published
     assert published_message.published_at != nil
+    assert published_message.scheduled_at == nil
 
     activity = Operately.Repo.one(from a in Operately.Activities.Activity, where: a.action == "discussion_posting")
     assert activity != nil

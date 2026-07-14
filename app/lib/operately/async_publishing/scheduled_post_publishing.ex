@@ -14,7 +14,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
       )
 
       Multi.new()
-      |> Multi.update(:check_in, Operately.Projects.CheckIn.changeset(check_in, %{state: :published}))
+      |> Multi.update(:check_in, Operately.Projects.CheckIn.changeset(check_in, %{state: :published, scheduled_at: nil}))
       |> Multi.update(:project, fn changes ->
         Operately.Projects.Project.changeset(project, %{
           last_check_in_id: changes.check_in.id,
@@ -51,7 +51,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
       goal = Repo.get!(Operately.Goals.Goal, update.goal_id)
 
       Multi.new()
-      |> Multi.update(:update, Operately.Goals.Update.changeset(update, %{state: :published}))
+      |> Multi.update(:update, Operately.Goals.Update.changeset(update, %{state: :published, scheduled_at: nil}))
       |> Multi.update(:goal, fn changes ->
         Operately.Goals.Goal.changeset(goal, %{
           next_update_scheduled_at: Operately.Time.calculate_next_monthly_check_in(goal.next_update_scheduled_at, DateTime.utc_now()),
@@ -88,7 +88,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
     message = Repo.get(Operately.Messages.Message, id) |> Repo.preload(messages_board: :space)
     if message && message.state == :scheduled do
       Multi.new()
-      |> Multi.update(:message, Operately.Messages.Message.changeset(message, %{state: :published}))
+      |> Multi.update(:message, Operately.Messages.Message.changeset(message, %{state: :published, scheduled_at: nil}))
       |> Activities.insert_sync(message.author_id, :discussion_posting, fn changes ->
         %{
           company_id: message.messages_board.space.company_id,

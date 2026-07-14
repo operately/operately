@@ -103,6 +103,22 @@ defmodule OperatelyWeb.Api.Spaces.CreateDiscussionTest do
       assert {200, res} = request(ctx.conn, space)
       assert_discussion_created(res)
     end
+
+    test "rejects a discussion scheduled for now or earlier", ctx do
+      space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id})
+
+      for scheduled_at <- [DateTime.utc_now(), DateTime.add(DateTime.utc_now(), -1, :second)] do
+        assert {400, res} =
+                 mutation(ctx.conn, [:spaces, :create_discussion], %{
+                   space_id: Paths.space_id(space),
+                   title: "Invalid schedule",
+                   body: RichText.rich_text("Content", :as_string),
+                   scheduled_at: DateTime.to_iso8601(scheduled_at)
+                 })
+
+        assert res.message == "Scheduled time must be in the future"
+      end
+    end
   end
 
   describe "subscriptions to notifications" do

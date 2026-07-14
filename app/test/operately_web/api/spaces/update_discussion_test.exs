@@ -102,6 +102,26 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussionTest do
       assert_discussion_edited(message)
     end
 
+    test "rejects rescheduling a discussion for now or earlier", ctx do
+      message = create_message(ctx.person.id, ctx.company.company_space_id)
+
+      {:ok, draft} =
+        Ecto.Changeset.change(message, %{state: :draft, published_at: nil})
+        |> Repo.update()
+
+      for scheduled_at <- [DateTime.utc_now(), DateTime.add(DateTime.utc_now(), -1, :second)] do
+        assert {400, res} =
+                 mutation(ctx.conn, [:spaces, :update_discussion], %{
+                   id: Paths.message_id(draft),
+                   title: "Invalid schedule",
+                   body: RichText.rich_text("Content", :as_string),
+                   scheduled_at: DateTime.to_iso8601(scheduled_at)
+                 })
+
+        assert res.message == "Scheduled time must be in the future"
+      end
+    end
+
     test "mentioned people are added to subscriptions list", ctx do
       message = create_message(ctx.person.id, ctx.company.company_space_id)
 

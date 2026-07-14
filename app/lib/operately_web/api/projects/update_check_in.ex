@@ -41,6 +41,8 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
       {:error, :check_in, _} -> {:error, :not_found}
       {:error, :check_draft_access, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: :scheduled_at_must_be_in_the_future}} ->
+        {:error, :bad_request, "Scheduled time must be in the future"}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
