@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as People from "@/models/people";
-import { Avatar, BulletDot, FormattedTime, StatusBadge } from "turboui";
+import { Avatar, BulletDot, FormattedTime, ScheduledPostDate, ScheduledPostLabel } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 const validStates = ["draft", "scheduled", "published"];
@@ -24,7 +24,7 @@ export function DocumentTitle({ title, author, state, publishedAt, scheduledAt, 
     <div className="flex flex-col items-center">
       <div className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-xl sm:text-2xl md:text-3xl font-extrabold text-center">
         <span>{title}</span>
-        {state === "scheduled" && <StatusBadge status="pending" customLabel="Scheduled" hideIcon />}
+        {state === "scheduled" && <ScheduledPostLabel />}
       </div>
       <div className="flex flex-wrap justify-center gap-1 items-center mt-2 text-content-accent font-medium text-sm sm:text-[16px]">
         {author && (
@@ -44,10 +44,10 @@ export function DocumentTitle({ title, author, state, publishedAt, scheduledAt, 
         {state === "scheduled" && scheduledAt && (
           <>
             {author && <BulletDot margin="mx-0.5" />}
-            <span>Scheduled for</span>
-            <FormattedTime {...formattedTimePreferences} time={scheduledAt} format="long-date" />
-            <span>at</span>
-            <FormattedTime {...formattedTimePreferences} time={scheduledAt} format="time-only" />
+            <ScheduledPostDate
+              scheduledAt={scheduledAt}
+              formattedTimePreferences={formattedTimePreferences}
+            />
           </>
         )}
 
