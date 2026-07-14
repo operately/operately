@@ -24,7 +24,6 @@ defmodule Operately.Support.Factory do
   defdelegate add_company_member(ctx, testid, opts \\ []), to: Factory.Companies
   defdelegate add_company_admin(ctx, testid, opts \\ []), to: Factory.Companies
   defdelegate add_company_owner(ctx, testid, opts \\ []), to: Factory.Companies
-  defdelegate add_company_agent(ctx, testid, opts \\ []), to: Factory.Companies
   defdelegate add_outside_collaborator(ctx, testid, admin_key, opts \\ []), to: Factory.Companies
   defdelegate set_company_access_level(ctx, person, access_level), to: Factory.Companies
   defdelegate set_person_manager(ctx, testid, manager_key), to: Factory.Companies
@@ -100,7 +99,4 @@ defmodule Operately.Support.Factory do
 
   # blobs
   defdelegate add_blob(ctx, testid, author_name \\ :creator), to: Factory.Blobs
-
-  # agent convos
-  defdelegate add_agent_convo(ctx, testid, author, resource_name), to: Factory.AgentConvos
 end

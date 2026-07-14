@@ -11,7 +11,6 @@ defmodule Operately.People.Person do
 
     belongs_to(:manager, Operately.People.Person, foreign_key: :manager_id)
     has_many(:reports, Operately.People.Person, foreign_key: :manager_id)
-    has_one(:agent_def, Operately.People.AgentDef, foreign_key: :person_id)
 
     has_one(:access_group, Operately.Access.Group, foreign_key: :person_id)
     has_one(:access_context, through: [:company, :access_context])
@@ -32,7 +31,7 @@ defmodule Operately.People.Person do
     field :suspended_at, :utc_datetime
 
     field :avatar_blob_id, :binary_id
-    field :type, Ecto.Enum, values: [:human, :guest, :ai], default: :human
+    field :type, Ecto.Enum, values: [:human, :guest], default: :human
 
     # loaded via hooks
     field :access_level, :any, virtual: true

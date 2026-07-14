@@ -1086,44 +1086,6 @@ export interface AddMemberInput {
   accessLevel: AccessOptionsInt;
 }
 
-export interface AgentConversation {
-  __typename: "agent_conversation";
-  id: Id;
-  title: string;
-  messages: AgentMessage[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface AgentDef {
-  __typename: "agent_def";
-  definition: string;
-  sandboxMode: boolean;
-  planningInstructions: string;
-  taskExecutionInstructions: string;
-  dailyRun: boolean;
-  verboseLogs: boolean;
-  provider: string;
-}
-
-export interface AgentMessage {
-  __typename: "agent_message";
-  id: string;
-  content: string;
-  timestamp: string;
-  sender: AgentMessageSender;
-  status: AgentMessageStatus;
-}
-
-export interface AgentRun {
-  __typename: "agent_run";
-  id: string;
-  status: string;
-  startedAt: string;
-  sandboxMode: boolean;
-  logs?: string;
-}
-
 export interface ApiToken {
   __typename: "api_token";
   id: Id;
@@ -1716,7 +1678,6 @@ export interface Person {
   inviteLink?: InviteLink | null;
   showDevBar?: boolean | null;
   permissions?: PersonPermissions | null;
-  agentDef?: AgentDef;
 }
 
 export interface PersonPermissions {
@@ -2454,9 +2415,7 @@ export type ActivityContent =
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -2480,21 +2439,11 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
 export type ActivityScopeType = "person" | "company" | "space" | "project" | "milestone" | "task" | "goal";
-
-export type AgentMessageSender = "user" | "ai";
-
-export type AgentMessageStatus = "pending" | "done";
 
 export type BillingAccessState = "normal" | "payment_grace" | "over_limit_grace" | "read_only";
 
@@ -2524,8 +2473,6 @@ export type CommentParentType =
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
-export type CreateConversationContextType = "goal" | "project";
-
 export type DiscussionState = "draft" | "scheduled" | "published";
 
 export type DocumentState = "draft" | "published";
@@ -2537,14 +2484,7 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -2585,15 +2525,7 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -2639,14 +2571,7 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 

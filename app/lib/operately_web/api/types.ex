@@ -1870,46 +1870,6 @@ defmodule OperatelyWeb.Api.Types do
     field? :invite_link, :invite_link, null: true
     field? :show_dev_bar, :boolean, null: true
     field? :permissions, :person_permissions, null: true
-    field? :agent_def, :agent_def
-  end
-
-  object :agent_def, for: Operately.People.AgentDef do
-    field :definition, :string
-    field :sandbox_mode, :boolean
-    field :planning_instructions, :string
-    field :task_execution_instructions, :string
-    field :daily_run, :boolean
-    field :verbose_logs, :boolean
-    field :provider, :string
-  end
-
-  object :agent_run, for: Operately.People.AgentRun do
-    field :id, :string
-    field :status, :string
-    field :started_at, :datetime
-    field :sandbox_mode, :boolean
-
-    field? :logs, :string
-  end
-
-  object :agent_conversation, for: Operately.People.AgentConvo do
-    field :id, :id
-    field :title, :string
-    field :messages, list_of(:agent_message)
-    field :created_at, :datetime
-    field :updated_at, :datetime
-  end
-
-  enum(:create_conversation_context_type, values: [:goal, :project])
-  enum(:agent_message_sender, values: [:user, :ai])
-  enum(:agent_message_status, values: [:pending, :done])
-
-  object :agent_message, for: Operately.People.AgentMessage do
-    field :id, :string
-    field :content, :string
-    field :timestamp, :date
-    field :sender, :agent_message_sender
-    field :status, :agent_message_status
   end
 
   object :person_permissions, for: Operately.People.Permissions do
