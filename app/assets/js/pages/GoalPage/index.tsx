@@ -34,7 +34,6 @@ import {
 } from "@/models/resourceHubs";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
-import { useAiSidebar } from "../../features/AiSidebar";
 import type * as Hub from "@/models/resourceHubs";
 import { useChecklists } from "./useChecklists";
 export default { name: "GoalPage", loader, Page } as PageModule;
@@ -139,15 +138,6 @@ function Page() {
 
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
-
-  useAiSidebar({
-    conversationContext: {
-      id: goal.id,
-      type: "goal",
-      title: goal.name,
-      url: paths.goalPath(goal.id),
-    },
-  });
 
   const [goalName, setGoalName] = usePageField({
     value: (data) => data.goal.name,

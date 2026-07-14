@@ -12,8 +12,6 @@ import AccountNotificationSettingsPage from "./AccountNotificationSettingsPage";
 import AccountPage from "./AccountPage";
 import AccountSecurityPage from "./AccountSecurityPage";
 import AccountSettingsPage from "./AccountSettingsPage";
-import AgentPage from "./AgentPage";
-import AiPlaygroundPage from "./AiPlaygroundPage";
 import BillingPickCompanyPage from "./BillingPickCompanyPage";
 import CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
@@ -26,7 +24,6 @@ import CompanyBillingPage from "./CompanyBillingPage";
 import CompanyBillingPlanSelectionPage from "./CompanyBillingPlanSelectionPage";
 import CompanyExportPage from "./CompanyExportPage";
 import CompanyImportPage from "./CompanyImportPage";
-import CompanyManageAiAgentsPage from "./CompanyManageAiAgentsPage";
 import CompanyPermissionsPage from "./CompanyPermissionsPage";
 import CompanyRenamePage from "./CompanyRenamePage";
 import CompanyWorkMapPage from "./CompanyWorkMapPage";
@@ -126,8 +123,6 @@ export default {
   AccountPage,
   AccountSecurityPage,
   AccountSettingsPage,
-  AgentPage,
-  AiPlaygroundPage,
   BillingPickCompanyPage,
   CompanyAdminAddPeoplePage,
   CompanyAdminManageAdminsPage,
@@ -140,7 +135,6 @@ export default {
   CompanyBillingPlanSelectionPage,
   CompanyExportPage,
   CompanyImportPage,
-  CompanyManageAiAgentsPage,
   CompanyPermissionsPage,
   CompanyRenamePage,
   CompanyWorkMapPage,

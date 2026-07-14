@@ -34,7 +34,6 @@ defmodule OperatelyWeb.PageController do
         enabled: Application.get_env(:operately, :js_sentry_enabled),
         dsn: Application.get_env(:operately, :js_sentry_dsn)
       },
-      aiConfigured: ai_configured?(),
       billingEnabled: Application.get_env(:operately, :billing_enabled, false),
       discordUrl: "https://discord.com/invite/2ngnragJYV",
       bookDemoUrl: "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3aS205iUzxYTRPq0sO1fVMbTobKXWGpKxSp26XkALJFnx3LzfB9gcWKQ0kAmj2JoERc0CX70Hg"
@@ -47,28 +46,11 @@ defmodule OperatelyWeb.PageController do
         },
         account: %{
           id: conn.assigns.current_account.id
-        },
-        aiActions: ai_actions()
+        }
       })
     else
       config
     end
-  end
-
-  defp ai_actions do
-    Operately.Ai.Prompts.actions()
-    |> Enum.map(fn action ->
-      %{
-        id: action.id,
-        label: action.label,
-        context: action.context,
-        experimental: action.experimental || false
-      }
-    end)
-  end
-
-  defp ai_configured? do
-    Application.get_env(:operately, :ai_configured, false)
   end
 
   defp vite_url do

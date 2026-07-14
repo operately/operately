@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.Spaces.List do
 
   defp load_spaces(me, inputs) do
     Group.search(me, "", inputs[:access_level])
-    |> Repo.preload([:company, members: from(m in Operately.People.Person, where: m.type != :ai)])
+    |> Repo.preload([:company, :members])
     |> load_access_levels(inputs[:include_access_levels])
   end
 
