@@ -412,6 +412,12 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert Discovery.classify_table("projects") == :included
       assert Discovery.classify_table("milestone_comments") == :included
     end
+
+    test "does not classify removed agent tables as included" do
+      removed_tables = ["agent_convos", "agent_defs", "agent_messages", "agent_runs"]
+
+      refute Enum.any?(removed_tables, &PolicyRegistry.included?/1)
+    end
   end
 
   describe "SchemaDiscovery.validate_schema_coverage/0" do
