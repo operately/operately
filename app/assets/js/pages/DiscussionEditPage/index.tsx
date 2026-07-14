@@ -54,6 +54,7 @@ function Page() {
 function Submit({ form }: { form: FormState }) {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
   const isUnpublished = discussion.state === "draft" || discussion.state === "scheduled";
+  const isScheduled = discussion.state === "scheduled";
   const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
@@ -63,15 +64,29 @@ function Submit({ form }: { form: FormState }) {
           {form.canSchedule ? (
             <ScheduleFlowControls
               scheduleFlow={form.scheduleFlow}
-              primaryLabel="Publish Now"
-              onPrimaryClick={form.publishDraft}
-              loading={form.publishDraftSubmitting || form.scheduleSubmitting}
+              primaryLabel={isScheduled ? "Save Changes" : "Publish Now"}
+              onPrimaryClick={isScheduled ? form.saveChanges : form.publishDraft}
+              loading={
+                isScheduled ? form.saveChangesSubmitting : form.publishDraftSubmitting || form.scheduleSubmitting
+              }
               testId="publish-now"
               formattedTimePreferences={formattedTimePreferences}
+              scheduledPrimaryLabel={isScheduled ? "Save Changes" : undefined}
+              showScheduleOption={!isScheduled}
               secondaryAction={
-                <GhostButton loading={form.saveChangesSubmitting} testId="save-changes" onClick={form.saveChanges}>
-                  Save Changes
-                </GhostButton>
+                !isScheduled && (
+                  <GhostButton loading={form.saveChangesSubmitting} testId="save-changes" onClick={form.saveChanges}>
+                    Save Changes
+                  </GhostButton>
+                )
+              }
+              options={
+                isScheduled
+                  ? [
+                      { label: "Publish now", action: form.publishNow, testId: "publish-now-option" },
+                      { label: "Save as draft", action: form.saveAsDraft, testId: "save-as-draft-option" },
+                    ]
+                  : []
               }
             />
           ) : (

@@ -23,7 +23,14 @@ type FormValues = {
   body: any;
 };
 
-type FormAction = "post-message" | "post-draft" | "save-changes" | "publish-draft" | "schedule";
+type FormAction =
+  | "post-message"
+  | "post-draft"
+  | "save-changes"
+  | "publish-draft"
+  | "publish-now"
+  | "save-as-draft"
+  | "schedule";
 
 export interface FormState extends FormsFormState<FormValues> {
   mode: "create" | "edit";
@@ -38,6 +45,8 @@ export interface FormState extends FormsFormState<FormValues> {
   postAsDraft: () => void;
   saveChanges: () => void;
   publishDraft: () => void;
+  publishNow: () => void;
+  saveAsDraft: () => void;
 
   postMessageSubmitting: boolean;
   postAsDraftSubmitting: boolean;
@@ -136,6 +145,22 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
           navigate(paths.discussionPath(res.discussion.id));
           break;
         }
+        case "publish-now":
+        case "save-as-draft": {
+          assertPresent(discussion, "discussion must be present in edit mode");
+          assertPresent(discussion.id, "discussion id must be present in edit mode");
+
+          const res = await edit({
+            id: discussion.id,
+            title: form.values.title,
+            body: JSON.stringify(form.values.body),
+            state: resolvedAction === "publish-now" ? "published" : "draft",
+            scheduledAt: null,
+          });
+
+          navigate(paths.discussionPath(res.discussion.id));
+          break;
+        }
       }
     },
   });
@@ -180,6 +205,8 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     postAsDraft: () => submitWith("post-draft"),
     saveChanges: () => submitWith("save-changes"),
     publishDraft: () => submitWith("publish-draft"),
+    publishNow: () => submitWith("publish-now"),
+    saveAsDraft: () => submitWith("save-as-draft"),
     postMessageSubmitting,
     postAsDraftSubmitting,
     saveChangesSubmitting,

@@ -29,6 +29,9 @@ export interface ScheduleFlowControlsProps {
   disabled?: boolean;
   testId?: string;
   secondaryAction?: React.ReactNode;
+  options?: { label: string; action: () => void; testId?: string }[];
+  scheduledPrimaryLabel?: string;
+  showScheduleOption?: boolean;
 }
 
 export function ScheduleFlowControls({
@@ -40,7 +43,18 @@ export function ScheduleFlowControls({
   disabled,
   testId,
   secondaryAction,
+  options = [],
+  scheduledPrimaryLabel,
+  showScheduleOption = true,
 }: ScheduleFlowControlsProps) {
+  const buttonLabel =
+    scheduleFlow.isScheduledLocally && scheduledPrimaryLabel
+      ? scheduledPrimaryLabel
+      : scheduleFlow.primaryButtonLabel(primaryLabel);
+  const buttonOptions = showScheduleOption
+    ? [...options, { label: "Schedule for later", action: scheduleFlow.openScheduleModal }]
+    : options;
+
   return (
     <>
       {scheduleFlow.isScheduledLocally && scheduleFlow.scheduledAt && (
@@ -58,9 +72,10 @@ export function ScheduleFlowControls({
           loading={loading}
           disabled={disabled}
           testId={testId}
-          options={[{ label: "Schedule for later", action: scheduleFlow.openScheduleModal }]}
+          dropdownTestId={testId ? `${testId}-options` : undefined}
+          options={buttonOptions}
         >
-          {scheduleFlow.primaryButtonLabel(primaryLabel)}
+          {buttonLabel}
         </OptionsButton>
 
         {secondaryAction}

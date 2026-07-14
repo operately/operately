@@ -162,6 +162,17 @@ export { PasteHtmlImagesPlugin } from "./RichEditor/Blob/PasteHtmlImagesPlugin";
 import BlobExtension, { isUploadInProgress } from "./RichEditor/Blob";
 export { BlobExtension, isUploadInProgress };
 
-export { ScheduleModal, ScheduleNotice, ScheduleFlowControls } from "./SchedulePosting";
-export type { ScheduleModalProps, ScheduleNoticeProps, ScheduleFlowControlsProps, ScheduleFlowState } from "./SchedulePosting";
-
+export {
+  ScheduleModal,
+  ScheduleNotice,
+  ScheduleFlowControls,
+  ScheduledPostDate,
+  ScheduledPostLabel,
+} from "./SchedulePosting";
+export type {
+  ScheduleModalProps,
+  ScheduleNoticeProps,
+  ScheduleFlowControlsProps,
+  ScheduleFlowState,
+  ScheduledPostDateProps,
+} from "./SchedulePosting";
