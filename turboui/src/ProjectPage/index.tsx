@@ -48,6 +48,7 @@ export namespace ProjectPage {
     commentCount: number;
     status: BadgeStatus;
     state?: "draft" | "scheduled" | "published" | null;
+    scheduledAt?: string | null;
   }
 
   export interface Discussion {
