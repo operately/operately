@@ -302,6 +302,77 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     )
   end
 
+  step :given_a_scheduled_discussion_exists, ctx do
+    ctx
+    |> Factory.add_messages_board(:messages_board, :marketing_space)
+    |> Factory.add_message(:scheduled_discussion, :messages_board,
+      state: :scheduled,
+      scheduled_at: Operately.Time.days_from_now(1),
+      creator: ctx.author,
+      title: "Scheduled discussion"
+    )
+  end
+
+  step :assert_scheduled_discussion_is_in_the_discussion_list, ctx do
+    ctx
+    |> UI.assert_text("Scheduled discussion")
+    |> UI.assert_text("Scheduled")
+    |> UI.assert_text("Will be posted on")
+  end
+
+  step :assert_scheduled_discussion_is_not_in_drafts, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_drafts_path(ctx.company, ctx.marketing_space))
+    |> UI.assert_text("You don't have any drafts.")
+    |> UI.refute_text("Scheduled discussion")
+  end
+
+  step :assert_scheduled_discussion_is_hidden_from_reader, ctx do
+    ctx
+    |> UI.login_as(ctx.reader)
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.refute_text("Scheduled discussion")
+  end
+
+  step :publish_scheduled_discussion_now, ctx do
+    ctx
+    |> UI.login_as(ctx.author)
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.click_text("Scheduled discussion")
+    |> UI.click(testid: "edit-discussion")
+    |> UI.click(testid: "publish-now-options")
+    |> UI.click(testid: "publish-now-option")
+  end
+
+  step :save_scheduled_discussion_as_draft, ctx do
+    ctx
+    |> UI.login_as(ctx.author)
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.click_text("Scheduled discussion")
+    |> UI.click(testid: "edit-discussion")
+    |> UI.click(testid: "publish-now-options")
+    |> UI.click(testid: "save-as-draft-option")
+  end
+
+  step :assert_scheduled_discussion_is_published, ctx do
+    {:ok, message} = Message.get(:system, id: ctx.scheduled_discussion.id)
+    assert message.state == :published
+
+    ctx
+    |> UI.assert_page(Paths.message_path(ctx.company, message))
+    |> UI.assert_text("Scheduled discussion")
+  end
+
+  step :assert_scheduled_discussion_is_a_draft, ctx do
+    {:ok, message} = Message.get(:system, id: ctx.scheduled_discussion.id)
+    assert message.state == :draft
+    assert message.scheduled_at == nil
+
+    ctx
+    |> UI.assert_page(Paths.message_path(ctx.company, message))
+    |> UI.assert_text("Scheduled discussion")
+  end
+
   step :click_on_continue_editing_draft, ctx do
     ctx
     |> UI.click(testid: "continue-editing-draft")

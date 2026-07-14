@@ -127,6 +127,36 @@ defmodule OperatelyWeb.Api.Spaces.ListDiscussionsTest do
 
       assert discussion.comments_count == 2
     end
+
+    test "scheduled discussions are listed first for the author and excluded from my_drafts", ctx do
+      scheduled =
+        message_fixture(ctx.creator.id, ctx.messages_board.id, state: :scheduled, scheduled_at: Operately.Time.days_from_now(1))
+
+      draft = message_fixture(ctx.creator.id, ctx.messages_board.id, state: :draft)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_discussions], %{
+        space_id: Paths.space_id(ctx.space),
+        include_my_drafts: true
+      })
+
+      assert hd(res.discussions).id == Paths.message_id(scheduled)
+      assert Enum.any?(res.my_drafts, &(&1.id == Paths.message_id(draft)))
+      refute Enum.any?(res.my_drafts, &(&1.id == Paths.message_id(scheduled)))
+    end
+
+    test "scheduled discussions are hidden from other people", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:other, :space)
+        |> Factory.log_in_person(:other)
+
+      scheduled =
+        message_fixture(ctx.creator.id, ctx.messages_board.id, state: :scheduled, scheduled_at: Operately.Time.days_from_now(1))
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_discussions], %{space_id: Paths.space_id(ctx.space)})
+
+      refute Enum.any?(res.discussions, &(&1.id == Paths.message_id(scheduled)))
+    end
   end
 
   #

@@ -27,6 +27,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:message, fn ctx -> Message.get(ctx.me, id: inputs.id, opts: [preload: :space]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+    |> run(:check_draft_access, fn ctx -> check_draft_access(ctx.message, ctx.me) end)
     |> run(:operation, fn ctx -> DiscussionEditing.run(ctx.me, ctx.message, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
@@ -38,6 +39,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
       {:error, :id, _} -> {:error, :bad_request}
       {:error, :message, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :check_draft_access, _} -> {:error, :not_found}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
