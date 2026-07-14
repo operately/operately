@@ -6,8 +6,9 @@ import * as Discussions from "@/models/discussions";
 
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { useBoolState } from "@/hooks/useBoolState";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { PageModule } from "@/routes/types";
-import { DiscardDiscussionDraftModal, GhostButton, Link, PrimaryButton } from "turboui";
+import { DiscardDiscussionDraftModal, GhostButton, Link, PrimaryButton, ScheduleFlowControls } from "turboui";
 import { useNavigate } from "react-router";
 
 import { usePaths } from "@/routes/paths";
@@ -52,19 +53,38 @@ function Page() {
 
 function Submit({ form }: { form: FormState }) {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
+  const isUnpublished = discussion.state === "draft" || discussion.state === "scheduled";
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <Paper.DimmedSection>
       <div className="flex flex-col gap-8">
         <div>
-          <div className="flex items-center gap-2">
-            <SaveChanges form={form} />
-            <PublishNow form={form} />
-          </div>
+          {form.canSchedule ? (
+            <ScheduleFlowControls
+              scheduleFlow={form.scheduleFlow}
+              primaryLabel="Publish Now"
+              onPrimaryClick={form.publishDraft}
+              loading={form.publishDraftSubmitting || form.scheduleSubmitting}
+              testId="publish-now"
+              formattedTimePreferences={formattedTimePreferences}
+              secondaryAction={
+                <GhostButton loading={form.saveChangesSubmitting} testId="save-changes" onClick={form.saveChanges}>
+                  Save Changes
+                </GhostButton>
+              }
+            />
+          ) : (
+            <div className="flex items-center gap-2">
+              <PrimaryButton loading={form.saveChangesSubmitting} testId="save-changes" onClick={form.saveChanges}>
+                Save Changes
+              </PrimaryButton>
+            </div>
+          )}
 
           <div className="mt-4">
             Or, <CancelLink form={form} />
-            {discussion.state === "draft" && (
+            {isUnpublished && (
               <>
                 {" "}
                 or <DiscardDraftLink discussion={discussion} />
@@ -74,25 +94,6 @@ function Submit({ form }: { form: FormState }) {
         </div>
       </div>
     </Paper.DimmedSection>
-  );
-}
-
-function SaveChanges({ form }: { form: FormState }) {
-  return (
-    <PrimaryButton loading={form.saveChangesSubmitting} testId="save-changes" onClick={form.saveChanges}>
-      Save Changes
-    </PrimaryButton>
-  );
-}
-
-function PublishNow({ form }: { form: FormState }) {
-  const { discussion } = Pages.useLoadedData<LoaderResult>();
-  if (discussion.state !== "draft") return null;
-
-  return (
-    <GhostButton loading={form.publishDraftSubmitting} testId="publish-now" onClick={form.publishDraft}>
-      Publish Now
-    </GhostButton>
   );
 }
 

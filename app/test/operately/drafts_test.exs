@@ -21,6 +21,17 @@ defmodule Operately.DraftsTest do
              }) == published_at
     end
 
+    test "returns scheduled_at for scheduled resources" do
+      inserted_at = ~N[2026-01-01 10:00:00]
+      scheduled_at = ~U[2026-01-10 09:00:00Z]
+
+      assert Drafts.display_date(%{
+               state: :scheduled,
+               inserted_at: inserted_at,
+               scheduled_at: scheduled_at
+             }) == scheduled_at
+    end
+
     test "falls back to inserted_at when published_at is nil" do
       inserted_at = ~N[2026-01-01 10:00:00]
 

@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Projects.CreateCheckInTest do
   use OperatelyWeb.TurboCase
+  use Oban.Testing, repo: Operately.Repo
 
   import Ecto.Query, only: [from: 1]
   import Operately.ProjectsFixtures
@@ -108,6 +109,29 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckInTest do
       refute check_in.published_at
       refute project.last_check_in_id
       refute project.last_check_in_status
+    end
+
+    test "schedules a project check-in for later", ctx do
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+      scheduled_at = DateTime.utc_now() |> DateTime.add(2, :day) |> DateTime.truncate(:second)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :create_check_in], %{
+                 project_id: Paths.project_id(project),
+                 status: "on_track",
+                 description: RichText.rich_text("Scheduled description", :as_string),
+                 scheduled_at: DateTime.to_iso8601(scheduled_at)
+               })
+
+      check_in = Repo.one!(from(p in CheckIn))
+      project = Repo.reload(project)
+
+      assert res.check_in.state == "scheduled"
+      assert check_in.state == :scheduled
+      assert check_in.scheduled_at
+      refute check_in.published_at
+      refute project.last_check_in_id
+      assert_enqueued(worker: Operately.AsyncPublishing.Worker, args: %{"type" => "project_check_in", "id" => check_in.id})
     end
   end
 

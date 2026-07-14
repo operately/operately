@@ -142,7 +142,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
   defp load_messages_boards(space_id, me) do
     subquery =
       from(m in Message,
-        where: m.state != :draft,
+        where: m.state == :published,
         preload: :author,
         order_by: [desc: m.published_at]
       )

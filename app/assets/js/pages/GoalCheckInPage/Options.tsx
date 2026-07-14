@@ -21,10 +21,10 @@ export function Options() {
   const setPageMode = Pages.useSetPageMode();
   const me = useMe()!;
 
-  const isDraft = update.state === "draft";
+  const isUnpublished = update.state === "draft" || update.state === "scheduled";
   const isAuthor = compareIds(me.id, update.author?.id);
   const isEditVisible = isAuthor && mode === "view";
-  const isDiscardVisible = isDraft && mode === "view";
+  const isDiscardVisible = isUnpublished && mode === "view";
 
   if (!isEditVisible && !isDiscardVisible) return null;
 

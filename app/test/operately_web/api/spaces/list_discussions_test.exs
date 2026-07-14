@@ -127,6 +127,20 @@ defmodule OperatelyWeb.Api.Spaces.ListDiscussionsTest do
 
       assert discussion.comments_count == 2
     end
+
+    test "scheduled discussions are excluded from the public list and included in my_drafts for the author", ctx do
+      scheduled =
+        message_fixture(ctx.creator.id, ctx.messages_board.id, state: :scheduled, scheduled_at: Operately.Time.days_from_now(1))
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_discussions], %{
+        space_id: Paths.space_id(ctx.space),
+        include_my_drafts: true
+      })
+
+      refute Enum.any?(res.discussions, &(&1.id == Paths.message_id(scheduled)))
+      assert Enum.any?(res.my_drafts, &(&1.id == Paths.message_id(scheduled)))
+      assert Enum.find(res.my_drafts, &(&1.id == Paths.message_id(scheduled))).state == "scheduled"
+    end
   end
 
   #
