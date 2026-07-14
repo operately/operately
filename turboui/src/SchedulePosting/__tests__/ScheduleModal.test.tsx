@@ -21,7 +21,8 @@ describe("ScheduleModal", () => {
 
     render(<ScheduleModal open={true} onOpenChange={jest.fn()} onSchedule={onSchedule} onCancel={jest.fn()} />);
 
-    const today = screen.getByTestId("date-field-day-14");
+    const today = document.querySelector<HTMLButtonElement>('[data-test-id="date-field-day-14"]');
+    if (!today) throw new Error("Today's date button was not rendered");
     expect(today).toBeEnabled();
 
     await user.click(today);
