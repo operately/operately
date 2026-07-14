@@ -80,13 +80,16 @@ function SubmitSection(props: Props) {
   if (props.mode === "view") return null;
 
   const formattedTimePreferences = useFormattedTimePreferences();
-  const submit = (action: "submit" | "save-draft" | "publish-draft" | "schedule") => {
+  const submit = (
+    action: "submit" | "save-draft" | "publish-draft" | "schedule" | "save-changes" | "publish-now" | "save-as-draft",
+  ) => {
     props.form.actions.setTrigger(action);
     props.form.actions.submit(action);
   };
 
   const isSubmitting = props.form.state === "submitting";
   const { scheduleFlow, canSchedule } = props.form;
+  const isScheduled = props.form.isScheduled;
 
   if (props.mode === "new") {
     return (
@@ -118,20 +121,39 @@ function SubmitSection(props: Props) {
       <div className="mt-8">
         <ScheduleFlowControls
           scheduleFlow={scheduleFlow}
-          primaryLabel="Submit check-in"
-          onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "publish-draft")}
-          loading={isSubmitting && (props.form.trigger === "publish-draft" || props.form.trigger === "schedule")}
+          primaryLabel={isScheduled ? "Save Changes" : "Submit check-in"}
+          onPrimaryClick={() =>
+            submit(isScheduled ? "save-changes" : scheduleFlow.isScheduledLocally ? "schedule" : "publish-draft")
+          }
+          loading={
+            isSubmitting &&
+            (props.form.trigger === "save-changes" ||
+              props.form.trigger === "publish-draft" ||
+              props.form.trigger === "schedule")
+          }
           testId="publish-draft"
           formattedTimePreferences={formattedTimePreferences}
+          scheduledPrimaryLabel={isScheduled ? "Save Changes" : undefined}
+          showScheduleOption={!isScheduled}
           secondaryAction={
-            <GhostButton
-              loading={isSubmitting && props.form.trigger === "save-draft"}
-              testId="save-draft"
-              size="base"
-              onClick={() => submit("save-draft")}
-            >
-              Save draft
-            </GhostButton>
+            !isScheduled && (
+              <GhostButton
+                loading={isSubmitting && props.form.trigger === "save-draft"}
+                testId="save-draft"
+                size="base"
+                onClick={() => submit("save-draft")}
+              >
+                Save draft
+              </GhostButton>
+            )
+          }
+          options={
+            isScheduled
+              ? [
+                  { label: "Publish now", action: () => submit("publish-now"), testId: "publish-now-option" },
+                  { label: "Save as draft", action: () => submit("save-as-draft"), testId: "save-as-draft-option" },
+                ]
+              : []
           }
         />
       </div>

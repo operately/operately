@@ -36,8 +36,7 @@ export function useForm(props: EditProps | NewProps) {
   const setPageMode = Pages.useSetPageMode();
 
   const canSchedule =
-    mode === "new" ||
-    (props.mode === "edit" && (props.update.state === "draft" || props.update.state === "scheduled"));
+    mode === "new" || (props.mode === "edit" && (props.update.state === "draft" || props.update.state === "scheduled"));
   const scheduleFlow = useScheduleFlow({
     initialScheduledAt: mode === "edit" && canSchedule ? props.update.scheduledAt : null,
   });
@@ -62,7 +61,16 @@ export function useForm(props: EditProps | NewProps) {
     validate: (addErrors) => {
       validateTargets(form.values.targets || [], addErrors);
     },
-    submit: async (action: "submit" | "save-draft" | "publish-draft" | "schedule" = "submit") => {
+    submit: async (
+      action:
+        | "submit"
+        | "save-draft"
+        | "publish-draft"
+        | "schedule"
+        | "save-changes"
+        | "publish-now"
+        | "save-as-draft" = "submit",
+    ) => {
       const status = form.values.status;
       if (!status) return;
 
@@ -99,12 +107,21 @@ export function useForm(props: EditProps | NewProps) {
         navigate(paths.goalCheckInPath(res.update!.id));
       } else {
         const isUnpublished = props.update.state === "draft" || props.update.state === "scheduled";
-        const shouldSchedule = action === "schedule" || (action === "publish-draft" && scheduleFlow.isScheduledLocally);
+        const shouldSchedule =
+          action === "schedule" ||
+          action === "save-changes" ||
+          (action === "publish-draft" && scheduleFlow.isScheduledLocally);
 
         let state: CheckInState | undefined;
         let scheduledAt: string | null | undefined;
 
-        if (isUnpublished) {
+        if (action === "publish-now") {
+          state = "published";
+          scheduledAt = null;
+        } else if (action === "save-as-draft") {
+          state = "draft";
+          scheduledAt = null;
+        } else if (isUnpublished) {
           if (shouldSchedule) {
             state = "scheduled";
             scheduledAt = scheduleFlow.scheduledAtIso;
@@ -129,7 +146,12 @@ export function useForm(props: EditProps | NewProps) {
     },
   });
 
-  return { ...form, scheduleFlow, canSchedule };
+  return {
+    ...form,
+    scheduleFlow,
+    canSchedule,
+    isScheduled: mode === "edit" && props.update.state === "scheduled",
+  };
 }
 
 function sortByIndex(items: any[]) {
