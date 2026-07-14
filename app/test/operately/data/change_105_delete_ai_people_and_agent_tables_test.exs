@@ -2,6 +2,7 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTablesTest do
   use Operately.DataCase
 
   import Ecto.Query, only: [from: 2]
+  import Operately.PeopleFixtures
 
   alias Operately.Repo
   alias Operately.Support.Factory
@@ -20,6 +21,7 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTablesTest do
   }
 
   setup do
+    recreate_agent_tables!()
     Factory.setup(%{})
   end
 
@@ -78,29 +80,95 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTablesTest do
     refute "ai" in (company.enabled_experimental_features || [])
   end
 
-  defp insert_ai_person!(company_id, full_name) do
-    insert_row!("people", %{
-      company_id: company_id,
-      full_name: full_name,
-      title: "Agent",
-      email: "ai-#{System.unique_integer()}@example.com",
-      type: "ai",
-      suspended: false
-    })
+  # Agent tables are dropped by the forward schema migration. Recreate a minimal
+  # shape inside the test transaction so Change105 can still be exercised.
+  defp recreate_agent_tables! do
+    Repo.query!("""
+    CREATE TABLE IF NOT EXISTS agent_defs (
+      id uuid PRIMARY KEY,
+      person_id uuid,
+      inserted_at timestamp(0) WITHOUT TIME ZONE NOT NULL,
+      updated_at timestamp(0) WITHOUT TIME ZONE NOT NULL
+    )
+    """)
+
+    Repo.query!("""
+    CREATE TABLE IF NOT EXISTS agent_runs (
+      id uuid PRIMARY KEY,
+      agent_def_id uuid,
+      status varchar(255) NOT NULL,
+      started_at timestamp WITHOUT TIME ZONE NOT NULL,
+      inserted_at timestamp(0) WITHOUT TIME ZONE NOT NULL,
+      updated_at timestamp(0) WITHOUT TIME ZONE NOT NULL
+    )
+    """)
+
+    Repo.query!("""
+    CREATE TABLE IF NOT EXISTS agent_convos (
+      id uuid PRIMARY KEY,
+      author_id uuid,
+      title text,
+      inserted_at timestamp(0) WITHOUT TIME ZONE NOT NULL,
+      updated_at timestamp(0) WITHOUT TIME ZONE NOT NULL
+    )
+    """)
+
+    Repo.query!("""
+    CREATE TABLE IF NOT EXISTS agent_messages (
+      id uuid PRIMARY KEY,
+      convo_id uuid,
+      status varchar(255) NOT NULL DEFAULT 'pending',
+      message text NOT NULL,
+      source varchar(255),
+      index integer DEFAULT 0,
+      inserted_at timestamp(0) WITHOUT TIME ZONE NOT NULL,
+      updated_at timestamp(0) WITHOUT TIME ZONE NOT NULL
+    )
+    """)
   end
 
-  defp insert_row!(table, attrs) do
-    id = Ecto.UUID.generate()
+  defp insert_ai_person!(company_id, full_name) do
     now = NaiveDateTime.utc_now(:second)
 
-    attrs =
-      attrs
-      |> Map.put(:id, id)
-      |> Map.put_new(:inserted_at, now)
-      |> Map.put_new(:updated_at, now)
+    {:ok, person} =
+      %Person{}
+      |> Ecto.Changeset.change(%{
+        id: Ecto.UUID.generate(),
+        company_id: company_id,
+        full_name: full_name,
+        type: "ai",
+        inserted_at: now,
+        updated_at: now
+      })
+      |> Repo.insert()
 
-    {1, _} = Repo.insert_all(table, [attrs])
-    id
+    person.id
+  end
+
+  defp insert_row!("agent_defs", attrs), do: insert_schema!(%AgentDef{}, attrs)
+  defp insert_row!("agent_runs", attrs), do: insert_schema!(%AgentRun{}, attrs)
+  defp insert_row!("agent_convos", attrs), do: insert_schema!(%AgentConvo{}, attrs)
+  defp insert_row!("agent_messages", attrs), do: insert_schema!(%AgentMessage{}, attrs)
+  defp insert_row!("access_group_memberships", attrs), do: insert_schema!(%AccessGroupMembership{}, attrs)
+  defp insert_row!("access_groups", attrs), do: insert_schema!(%AccessGroup{}, attrs)
+  defp insert_row!("access_bindings", attrs), do: insert_schema!(%AccessBinding{}, attrs)
+  defp insert_row!("members", attrs), do: insert_schema!(%Member{}, attrs)
+
+  defp insert_schema!(schema, attrs) do
+    now = NaiveDateTime.utc_now(:second)
+
+    {:ok, record} =
+      schema
+      |> Ecto.Changeset.change(
+        Map.merge(attrs, %{
+          id: Ecto.UUID.generate(),
+          inserted_at: now,
+          updated_at: now
+        })
+      )
+      |> Repo.insert()
+
+    record.id
   end
 
   defp company_space_access_group!(company_id) do

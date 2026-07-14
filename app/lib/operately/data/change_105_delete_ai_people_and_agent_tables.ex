@@ -40,19 +40,26 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTables do
   end
 
   defp delete_agent_messages do
-    Repo.delete_all(AgentMessage)
+    if table_exists?("agent_messages"), do: Repo.delete_all(AgentMessage)
   end
 
   defp delete_agent_convos do
-    Repo.delete_all(AgentConvo)
+    if table_exists?("agent_convos"), do: Repo.delete_all(AgentConvo)
   end
 
   defp delete_agent_runs do
-    Repo.delete_all(AgentRun)
+    if table_exists?("agent_runs"), do: Repo.delete_all(AgentRun)
   end
 
   defp delete_agent_defs do
-    Repo.delete_all(AgentDef)
+    if table_exists?("agent_defs"), do: Repo.delete_all(AgentDef)
+  end
+
+  defp table_exists?(name) do
+    %{rows: [[exists?]]} =
+      Repo.query!("SELECT to_regclass($1) IS NOT NULL", ["public.#{name}"])
+
+    exists?
   end
 
   defp delete_ai_people_dependents do
@@ -133,6 +140,8 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTables do
 
     schema "agent_runs" do
       field :agent_def_id, :binary_id
+      field :status, :string
+      field :started_at, :utc_datetime_usec
 
       timestamps()
     end
@@ -143,6 +152,7 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTables do
 
     schema "agent_convos" do
       field :author_id, :binary_id
+      field :title, :string
 
       timestamps()
     end
@@ -153,6 +163,10 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTables do
 
     schema "agent_messages" do
       field :convo_id, :binary_id
+      field :status, :string
+      field :message, :string
+      field :source, :string
+      field :index, :integer
 
       timestamps()
     end
@@ -185,6 +199,7 @@ defmodule Operately.Data.Change105DeleteAiPeopleAndAgentTables do
     schema "access_bindings" do
       field :group_id, :binary_id
       field :context_id, :binary_id
+      field :access_level, :integer
 
       timestamps()
     end
