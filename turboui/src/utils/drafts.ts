@@ -2,11 +2,16 @@ export type DraftableResource = {
   state?: string | null;
   insertedAt?: string | null;
   publishedAt?: string | null;
+  scheduledAt?: string | null;
 };
 
 export function displayDate(resource: DraftableResource): string {
   if (resource.state === "draft") {
     return resource.insertedAt ?? "";
+  }
+
+  if (resource.state === "scheduled") {
+    return resource.scheduledAt ?? resource.insertedAt ?? "";
   }
 
   return resource.publishedAt ?? resource.insertedAt ?? "";

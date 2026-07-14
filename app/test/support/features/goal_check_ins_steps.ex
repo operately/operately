@@ -263,6 +263,66 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.assert_text("Editing locked after 3 days")
   end
 
+  step :given_a_scheduled_check_in_exists, ctx do
+    {:ok, check_in} =
+      Operately.Operations.GoalCheckIn.run(ctx.champion, ctx.goal, %{
+        status: "on_track",
+        content: Operately.Support.RichText.rich_text("Scheduled goal check-in"),
+        target_values: nil,
+        checklist: nil,
+        post_as_draft: false,
+        send_to_everyone: false,
+        subscription_parent_type: :goal_update,
+        subscriber_ids: [],
+        scheduled_at: Operately.Time.days_from_now(1)
+      })
+
+    Map.put(ctx, :check_in, check_in)
+  end
+
+  step :visit_scheduled_check_in, ctx do
+    UI.visit(ctx, Paths.goal_check_in_path(ctx.company, ctx.check_in))
+  end
+
+  step :assert_scheduled_check_in_details, ctx do
+    ctx
+    |> UI.assert_text("Scheduled")
+    |> UI.assert_text("Will be posted on")
+  end
+
+  step :publish_scheduled_check_in_now, ctx do
+    ctx
+    |> UI.click(testid: "edit-check-in")
+    |> UI.click(testid: "publish-draft-options")
+    |> UI.click(testid: "publish-now-option")
+  end
+
+  step :save_scheduled_check_in_as_draft, ctx do
+    ctx
+    |> UI.click(testid: "edit-check-in")
+    |> UI.click(testid: "publish-draft-options")
+    |> UI.click(testid: "save-as-draft-option")
+  end
+
+  step :assert_scheduled_check_in_is_published, ctx do
+    update = Operately.Goals.Update.get!(:system, id: ctx.check_in.id)
+    assert update.state == :published
+
+    ctx
+    |> UI.assert_page(Paths.goal_check_in_path(ctx.company, update))
+    |> UI.assert_text("Scheduled goal check-in")
+  end
+
+  step :assert_scheduled_check_in_is_a_draft, ctx do
+    update = Operately.Goals.Update.get!(:system, id: ctx.check_in.id)
+    assert update.state == :draft
+    assert update.scheduled_at == nil
+
+    ctx
+    |> UI.assert_page(Paths.goal_check_in_path(ctx.company, update))
+    |> UI.assert_text("Scheduled goal check-in")
+  end
+
   step :given_a_reviewer_submitted_check_in, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)

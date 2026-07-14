@@ -18,7 +18,7 @@ interface Props {
 }
 
 export function OngoingDraftActions({ resource, editResourcePath, publish }: Props) {
-  if (resource.state !== "draft") return null;
+  if (resource.state !== "draft" && resource.state !== "scheduled") return null;
 
   const [state, setState] = React.useState<State>("actions");
 
@@ -44,14 +44,31 @@ interface ContinueProps {
 
 function ContinueEditingActions({ resource, setLinkVisible, editResourcePath, publish }: ContinueProps) {
   const formattedTimePreferences = useFormattedTimePreferences();
+  const isScheduled = resource.state === "scheduled";
 
   return (
     <div className="mb-4 bg-surface-dimmed p-4 rounded-2xl">
       <div className="text-center">
-        <span className="font-bold">This is an unpublished draft.</span>{" "}
-        <span className="">
-          Last edit was made <FormattedTime {...formattedTimePreferences} time={resource.updatedAt!} format="relative-time-or-date" />.
-        </span>
+        {isScheduled ? (
+          <>
+            <span className="font-bold">This post is scheduled.</span>{" "}
+            {"scheduledAt" in resource && resource.scheduledAt && (
+              <span>
+                It will be posted on{" "}
+                <FormattedTime {...formattedTimePreferences} time={resource.scheduledAt} format="long-date" /> at{" "}
+                <FormattedTime {...formattedTimePreferences} time={resource.scheduledAt} format="time-only" />.
+              </span>
+            )}
+          </>
+        ) : (
+          <>
+            <span className="font-bold">This is an unpublished draft.</span>{" "}
+            <span className="">
+              Last edit was made{" "}
+              <FormattedTime {...formattedTimePreferences} time={resource.updatedAt!} format="relative-time-or-date" />.
+            </span>
+          </>
+        )}
       </div>
       <div className="flex items-center justify-center gap-2 mt-4">
         <ContinueEditingButton path={editResourcePath} />

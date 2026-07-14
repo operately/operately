@@ -51,7 +51,7 @@ export function Page() {
           <DiscussionReactions />
           <DicusssionComments />
 
-          {discussion.state !== "draft" && <DiscussionSubscriptions />}
+          {discussion.state === "published" && <DiscussionSubscriptions />}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -107,7 +107,7 @@ function DiscussionSubscriptions() {
 function DiscussionReactions() {
   const { discussion } = useLoadedData();
 
-  if (discussion.state === "draft") return null;
+  if (discussion.state !== "published") return null;
 
   const reactions = discussion.reactions!.map((r) => r!);
   const entity = Reactions.entity(discussion.id!, "message");
@@ -132,6 +132,7 @@ function DiscussionTitle() {
       author={discussion.author || null}
       state={discussion.state}
       publishedAt={displayDate(discussion)}
+      scheduledAt={discussion.scheduledAt}
     />
   );
 }
@@ -156,7 +157,7 @@ function Options() {
   const [archive] = Discussions.useArchiveMessage();
   const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
 
-  const isDraft = discussion.state === "draft";
+  const isUnpublished = discussion.state === "draft" || discussion.state === "scheduled";
 
   const handleArchive = async () => {
     await archive({ id: discussion.id });
@@ -185,7 +186,7 @@ function Options() {
           keepOutsideOnBigScreen
         />
 
-        {isDraft ? (
+        {isUnpublished ? (
           <PageOptions.Action
             icon={IconTrash}
             title="Discard draft"
@@ -197,7 +198,7 @@ function Options() {
         )}
       </PageOptions.Root>
 
-      {isDraft && (
+      {isUnpublished && (
         <DiscardDiscussionDraftModal
           isOpen={showDiscardModal}
           onClose={toggleDiscardModal}
@@ -213,7 +214,7 @@ function DicusssionComments() {
   const { discussion } = useLoadedData();
   const commentsForm = useComments({ discussion: discussion, parentType: "message" });
 
-  if (discussion.state === "draft") return null;
+  if (discussion.state !== "published") return null;
 
   assertPresent(discussion.permissions?.canComment, "permissions must be present in discussion");
 
