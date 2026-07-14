@@ -5,25 +5,27 @@ defmodule Operately.Operations.DiscussionPosting do
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(creator, space, attrs) do
-    Multi.new()
-    |> SubscriptionList.insert(attrs)
-    |> Subscription.insert(creator, attrs)
-    |> Multi.insert(:message, fn changes ->
-      Operately.Messages.Message.changeset(%{
-        author_id: creator.id,
-        messages_board_id: attrs.messages_board_id,
-        title: attrs.title,
-        body: attrs.content,
-        state: state(attrs),
-        scheduled_at: attrs[:scheduled_at],
-        subscription_list_id: changes.subscription_list.id
-      })
-    end)
-    |> SubscriptionList.update(:message)
-    |> record_activity(creator, space, attrs)
-    |> maybe_enqueue_oban_job(attrs)
-    |> Repo.transaction()
-    |> Repo.extract_result(:message)
+    with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
+      Multi.new()
+      |> SubscriptionList.insert(attrs)
+      |> Subscription.insert(creator, attrs)
+      |> Multi.insert(:message, fn changes ->
+        Operately.Messages.Message.changeset(%{
+          author_id: creator.id,
+          messages_board_id: attrs.messages_board_id,
+          title: attrs.title,
+          body: attrs.content,
+          state: state(attrs),
+          scheduled_at: attrs[:scheduled_at],
+          subscription_list_id: changes.subscription_list.id
+        })
+      end)
+      |> SubscriptionList.update(:message)
+      |> record_activity(creator, space, attrs)
+      |> maybe_enqueue_oban_job(attrs)
+      |> Repo.transaction()
+      |> Repo.extract_result(:message)
+    end
   end
 
   defp record_activity(multi, _creator, _space, %{post_as_draft: true}), do: multi
