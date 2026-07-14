@@ -291,14 +291,13 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert res.project.contributors == Serializer.serialize(Operately.Projects.list_project_contributors(project), level: :essential)
     end
 
-    test "include_contributors includes guests and excludes ai", ctx do
+    test "include_contributors includes guests", ctx do
       ctx = Factory.add_company_member(ctx, :creator)
         |> Factory.add_space(:space)
         |> Factory.add_project(:project, :space)
         |> Factory.add_project_contributor(:contrib1, :project)
         |> Factory.add_project_contributor(:contrib2, :project)
         |> Factory.add_project_contributor(:guest, :project, person_type: :guest)
-        |> Factory.add_project_contributor(:ai, :project, person_type: :ai)
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project), include_contributors: true})
 
@@ -308,8 +307,6 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       |> Enum.each(fn contrib ->
         assert Enum.find(contributors, &(equal_ids?(&1.person.id, contrib.person_id)))
       end)
-
-      refute Enum.find(contributors, &(equal_ids?(&1.person.id, ctx.ai.person_id)))
     end
 
     test "include_goal", ctx do
@@ -446,7 +443,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       end)
     end
 
-    test "include_potential_subscribers includes guests and excludes ai", ctx do
+    test "include_potential_subscribers includes guests", ctx do
       ctx = Factory.add_company_member(ctx, :creator)
         |> Factory.add_space(:space)
         |> Factory.add_project(:project, :space)
@@ -455,7 +452,6 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
         |> Factory.add_project_contributor(:contrib1, :project)
         |> Factory.add_project_contributor(:contrib2, :project)
         |> Factory.add_project_contributor(:guest, :project, person_type: :guest)
-        |> Factory.add_project_contributor(:ai, :project, person_type: :ai)
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
 
@@ -466,8 +462,6 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
         candidate = Enum.find(subs, &(equal_ids?(&1.person.id, contrib.person_id)))
         assert candidate
       end)
-
-      refute Enum.find(subs, &(equal_ids?(&1.person.id, ctx.ai.person_id)))
     end
 
     test "include_milestones", ctx do

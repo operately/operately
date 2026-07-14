@@ -18,7 +18,6 @@ import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/mi
 import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
 import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
-import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -138,15 +137,6 @@ function Page() {
   const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles } = data;
   const navigate = useNavigate();
   const currentUser = useMe();
-
-  useAiSidebar({
-    conversationContext: {
-      id: project.id!,
-      type: "project",
-      title: project.name,
-      url: paths.projectPath(project.id!),
-    },
-  });
 
   const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
   const { spaceProps, champion, reviewer } = useSpaceProps({ project, paths, transformPerson });

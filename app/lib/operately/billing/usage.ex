@@ -9,7 +9,7 @@ defmodule Operately.Billing.Usage do
   def active_member_count(%Operately.Companies.Company{} = company) do
     Repo.aggregate(
       from(p in Person,
-        where: p.company_id == ^company.id and p.suspended == false and is_nil(p.suspended_at) and p.type != :ai
+        where: p.company_id == ^company.id and p.suspended == false and is_nil(p.suspended_at)
       ),
       :count,
       :id
