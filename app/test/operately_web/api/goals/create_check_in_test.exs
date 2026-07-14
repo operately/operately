@@ -114,6 +114,22 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
       refute goal.last_update_status
     end
 
+    test "rejects a goal check-in scheduled for now or earlier", ctx do
+      for scheduled_at <- [DateTime.utc_now(), DateTime.add(DateTime.utc_now(), -1, :second)] do
+        assert {400, res} =
+                 mutation(ctx.conn, [:goals, :create_check_in], %{
+                   goal_id: Paths.goal_id(ctx.goal),
+                   status: "on_track",
+                   content: RichText.rich_text("Invalid schedule", :as_string),
+                   new_target_values: new_target_values(ctx.goal),
+                   checklist: [],
+                   scheduled_at: DateTime.to_iso8601(scheduled_at)
+                 })
+
+        assert res.message == "Scheduled time must be in the future"
+      end
+    end
+
     test "clearing the due date", ctx do
       assert {200, res} =
                mutation(ctx.conn, [:goals, :create_check_in], %{

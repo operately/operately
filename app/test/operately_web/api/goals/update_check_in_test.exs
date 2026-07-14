@@ -111,6 +111,29 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckInTest do
       assert goal.last_update_status == update.status
     end
 
+    test "rejects rescheduling a goal check-in for now or earlier", ctx do
+      update = create_goal_update(ctx)
+
+      {:ok, draft} =
+        Ecto.Changeset.change(update, %{state: :draft, published_at: nil})
+        |> Repo.update()
+
+      for scheduled_at <- [DateTime.utc_now(), DateTime.add(DateTime.utc_now(), -1, :second)] do
+        assert {400, res} =
+                 mutation(ctx.conn, [:goals, :update_check_in], %{
+                   id: Paths.goal_update_id(draft),
+                   status: "on_track",
+                   content: RichText.rich_text("Invalid schedule", :as_string),
+                   new_target_values: Jason.encode!([]),
+                   due_date: nil,
+                   checklist: [],
+                   scheduled_at: DateTime.to_iso8601(scheduled_at)
+                 })
+
+        assert res.message == "Scheduled time must be in the future"
+      end
+    end
+
     test "mentioned people are added to subscriptions list", ctx do
       update = create_goal_update(ctx)
 

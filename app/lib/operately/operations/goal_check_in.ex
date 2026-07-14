@@ -5,52 +5,54 @@ defmodule Operately.Operations.GoalCheckIn do
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, goal, attrs) do
-    targets = Operately.Goals.list_targets(goal.id)
-    checklist = attrs.checklist
-    target_values = attrs.target_values
+    with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
+      targets = Operately.Goals.list_targets(goal.id)
+      checklist = attrs.checklist
+      target_values = attrs.target_values
 
-    Multi.new()
-    |> SubscriptionList.insert(attrs)
-    |> Subscription.insert(author, attrs)
-    |> Multi.insert(:update, fn changes ->
-      changeset_attrs = %{
-        goal_id: goal.id,
-        author_id: author.id,
-        status: attrs.status,
-        message: attrs.content,
-        state: state(attrs),
-        scheduled_at: attrs[:scheduled_at],
-        subscription_list_id: changes.subscription_list.id
-      }
+      Multi.new()
+      |> SubscriptionList.insert(attrs)
+      |> Subscription.insert(author, attrs)
+      |> Multi.insert(:update, fn changes ->
+        changeset_attrs = %{
+          goal_id: goal.id,
+          author_id: author.id,
+          status: attrs.status,
+          message: attrs.content,
+          state: state(attrs),
+          scheduled_at: attrs[:scheduled_at],
+          subscription_list_id: changes.subscription_list.id
+        }
 
-      changeset_attrs = maybe_put_timeframe(changeset_attrs, goal, attrs)
+        changeset_attrs = maybe_put_timeframe(changeset_attrs, goal, attrs)
 
-      changeset_attrs =
-        if target_values != nil do
-          encoded_target_values = encode_new_target_values(targets, target_values)
-          Map.put(changeset_attrs, :targets, encoded_target_values)
-        else
-          changeset_attrs
-        end
+        changeset_attrs =
+          if target_values != nil do
+            encoded_target_values = encode_new_target_values(targets, target_values)
+            Map.put(changeset_attrs, :targets, encoded_target_values)
+          else
+            changeset_attrs
+          end
 
-      changeset_attrs =
-        if checklist != nil do
-          Map.put(changeset_attrs, :checks, checklist)
-        else
-          changeset_attrs
-        end
+        changeset_attrs =
+          if checklist != nil do
+            Map.put(changeset_attrs, :checks, checklist)
+          else
+            changeset_attrs
+          end
 
-      Update.changeset(changeset_attrs)
-    end)
-    |> SubscriptionList.update(:update)
-    |> maybe_update_goal(goal, attrs)
-    |> maybe_update_targets(targets, target_values, attrs)
-    |> maybe_update_checklist(goal, checklist, attrs)
-    |> maybe_record_activity(author, goal, attrs)
-    |> maybe_enqueue_oban_job(attrs)
-    |> Repo.transaction()
-    |> Repo.extract_result(:update)
-    |> handle_result_broadcast()
+        Update.changeset(changeset_attrs)
+      end)
+      |> SubscriptionList.update(:update)
+      |> maybe_update_goal(goal, attrs)
+      |> maybe_update_targets(targets, target_values, attrs)
+      |> maybe_update_checklist(goal, checklist, attrs)
+      |> maybe_record_activity(author, goal, attrs)
+      |> maybe_enqueue_oban_job(attrs)
+      |> Repo.transaction()
+      |> Repo.extract_result(:update)
+      |> handle_result_broadcast()
+    end
   end
 
   defp maybe_update_goal(multi, _goal, %{post_as_draft: true}), do: multi

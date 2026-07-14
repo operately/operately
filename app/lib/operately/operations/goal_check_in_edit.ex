@@ -6,18 +6,20 @@ defmodule Operately.Operations.GoalCheckInEdit do
   alias Operately.Notifications.SubscriptionList
 
   def run(author, goal, check_in, attrs) do
-    Multi.new()
-    |> set_if_full_edit_allowed(goal, check_in)
-    |> update_check_in(check_in, attrs)
-    |> maybe_update_targets(goal.targets, attrs.new_target_values)
-    |> maybe_update_checks(goal.checks, attrs.checklist || [])
-    |> update_subscriptions(attrs.content)
-    |> maybe_update_goal(goal, attrs)
-    |> record_activity(author, goal, check_in)
-    |> handle_oban_jobs(check_in, attrs)
-    |> Repo.transaction()
-    |> Repo.extract_result(:check_in)
-    |> broadcast_if_published(author)
+    with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
+      Multi.new()
+      |> set_if_full_edit_allowed(goal, check_in)
+      |> update_check_in(check_in, attrs)
+      |> maybe_update_targets(goal.targets, attrs.new_target_values)
+      |> maybe_update_checks(goal.checks, attrs.checklist || [])
+      |> update_subscriptions(attrs.content)
+      |> maybe_update_goal(goal, attrs)
+      |> record_activity(author, goal, check_in)
+      |> handle_oban_jobs(check_in, attrs)
+      |> Repo.transaction()
+      |> Repo.extract_result(:check_in)
+      |> broadcast_if_published(author)
+    end
   end
 
   #
