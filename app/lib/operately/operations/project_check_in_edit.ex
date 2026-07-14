@@ -8,7 +8,8 @@ defmodule Operately.Operations.ProjectCheckInEdit do
   alias Operately.Notifications.SubscriptionList
 
   def run(author, check_in, attrs) do
-    project = Operately.Projects.get_project!(check_in.project_id)
+    with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
+      project = Operately.Projects.get_project!(check_in.project_id)
 
     next_check_in =
       Operately.Time.calculate_next_weekly_check_in(
@@ -16,24 +17,25 @@ defmodule Operately.Operations.ProjectCheckInEdit do
         DateTime.utc_now()
       )
 
-    Multi.new()
-    |> set_if_full_edit_allowed(project, check_in)
-    |> update_check_in(check_in, attrs)
-    |> maybe_update_project(project, check_in, next_check_in)
-    |> Multi.run(:subscription_list, fn _, changes ->
-      SubscriptionList.get(:system,
-        parent_id: changes.check_in.id,
-        opts: [
-          preload: :subscriptions
-        ]
-      )
-    end)
-    |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.description)
-    |> record_activity(author, project, check_in, attrs)
-    |> handle_oban_jobs(check_in, attrs)
-    |> Repo.transaction()
-    |> Repo.extract_result(:check_in)
-    |> broadcast_if_published(author)
+      Multi.new()
+      |> set_if_full_edit_allowed(project, check_in)
+      |> update_check_in(check_in, attrs)
+      |> maybe_update_project(project, check_in, next_check_in)
+      |> Multi.run(:subscription_list, fn _, changes ->
+        SubscriptionList.get(:system,
+          parent_id: changes.check_in.id,
+          opts: [
+            preload: :subscriptions
+          ]
+        )
+      end)
+      |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.description)
+      |> record_activity(author, project, check_in, attrs)
+      |> handle_oban_jobs(check_in, attrs)
+      |> Repo.transaction()
+      |> Repo.extract_result(:check_in)
+      |> broadcast_if_published(author)
+    end
   end
 
   #

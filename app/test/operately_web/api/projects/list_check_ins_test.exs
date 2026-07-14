@@ -135,6 +135,21 @@ defmodule OperatelyWeb.Api.Projects.ListCheckInsTest do
       refute Enum.map(res.project_check_ins, & &1.id) |> Enum.member?(Paths.project_check_in_id(scheduled))
     end
 
+    test "scheduled check-ins are listed before published check-ins", ctx do
+      {project_id, [published_check_in | _]} = create_project_and_check_ins(ctx, company_access: Binding.view_access())
+
+      scheduled =
+        check_in_fixture(%{
+          author_id: ctx.person.id,
+          project_id: published_check_in.project_id,
+          state: :scheduled,
+          scheduled_at: Operately.Time.days_from_now(1)
+        })
+
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
+      assert hd(res.project_check_ins).id == Paths.project_check_in_id(scheduled)
+    end
+
     test "published check-ins are sorted by published_at desc", ctx do
       {project_id, [older_check_in, middle_check_in, newer_check_in]} =
         create_project_and_check_ins(ctx, company_access: Binding.view_access())

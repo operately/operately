@@ -42,6 +42,8 @@ defmodule OperatelyWeb.Api.Spaces.CreateDiscussion do
       {:error, :space_id, _} -> {:error, :bad_request}
       {:error, :space, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: :scheduled_at_must_be_in_the_future}} ->
+        {:error, :bad_request, "Scheduled time must be in the future"}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end

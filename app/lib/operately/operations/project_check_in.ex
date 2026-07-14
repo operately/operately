@@ -7,42 +7,44 @@ defmodule Operately.Operations.ProjectCheckIn do
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, project, attrs) do
-    next_check_in =
-      Operately.Time.calculate_next_weekly_check_in(
-        project.next_check_in_scheduled_at,
-        DateTime.utc_now()
-      )
+    with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
+      next_check_in =
+        Operately.Time.calculate_next_weekly_check_in(
+          project.next_check_in_scheduled_at,
+          DateTime.utc_now()
+        )
 
-    Multi.new()
-    |> SubscriptionList.insert(attrs)
-    |> Subscription.insert(author, attrs)
-    |> Multi.insert(:check_in, fn changes ->
-      CheckIn.changeset(%{
-        author_id: author.id,
-        project_id: project.id,
-        status: attrs.status,
-        description: attrs.content,
-        state: state(attrs),
-        scheduled_at: attrs[:scheduled_at],
-        subscription_list_id: changes.subscription_list.id
-      })
-    end)
-    |> SubscriptionList.update(:check_in)
-    |> maybe_update_project(project, next_check_in, attrs)
-    |> maybe_record_activity(author, project, attrs)
-    |> maybe_enqueue_oban_job(attrs)
-    |> Repo.transaction()
-    |> Repo.extract_result(:check_in)
-    |> case do
-      {:ok, check_in} ->
-        if check_in.state == :published do
-          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: author.id)
-        end
+      Multi.new()
+      |> SubscriptionList.insert(attrs)
+      |> Subscription.insert(author, attrs)
+      |> Multi.insert(:check_in, fn changes ->
+        CheckIn.changeset(%{
+          author_id: author.id,
+          project_id: project.id,
+          status: attrs.status,
+          description: attrs.content,
+          state: state(attrs),
+          scheduled_at: attrs[:scheduled_at],
+          subscription_list_id: changes.subscription_list.id
+        })
+      end)
+      |> SubscriptionList.update(:check_in)
+      |> maybe_update_project(project, next_check_in, attrs)
+      |> maybe_record_activity(author, project, attrs)
+      |> maybe_enqueue_oban_job(attrs)
+      |> Repo.transaction()
+      |> Repo.extract_result(:check_in)
+      |> case do
+        {:ok, check_in} ->
+          if check_in.state == :published do
+            OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: author.id)
+          end
 
-        {:ok, check_in}
+          {:ok, check_in}
 
-      error ->
-        error
+        error ->
+          error
+      end
     end
   end
 

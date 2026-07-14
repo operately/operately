@@ -114,6 +114,24 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckInTest do
       assert project.last_check_in_status == check_in.status
     end
 
+    test "rejects rescheduling a project check-in for now or earlier", ctx do
+      {:ok, draft} =
+        Ecto.Changeset.change(ctx.check_in, %{state: :draft, published_at: nil})
+        |> Repo.update()
+
+      for scheduled_at <- [DateTime.utc_now(), DateTime.add(DateTime.utc_now(), -1, :second)] do
+        assert {400, res} =
+                 mutation(ctx.conn, [:projects, :update_check_in], %{
+                   check_in_id: Paths.project_check_in_id(draft),
+                   status: "on_track",
+                   description: RichText.rich_text("Invalid schedule", :as_string),
+                   scheduled_at: DateTime.to_iso8601(scheduled_at)
+                 })
+
+        assert res.message == "Scheduled time must be in the future"
+      end
+    end
+
     test "mentioned people are added to subscriptions list", ctx do
       ctx =
         ctx

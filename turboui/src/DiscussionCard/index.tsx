@@ -8,6 +8,7 @@ import { Summary } from "../RichContent";
 import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import { CommentCountIndicator } from "../CommentCountIndicator";
 import { StatusBadge } from "../StatusBadge";
+import { ScheduledPostDate, ScheduledPostLabel } from "../SchedulePosting";
 
 namespace DiscussionCard {
   interface Discussion {
@@ -19,6 +20,7 @@ namespace DiscussionCard {
     content: string;
     commentCount: number;
     state?: "draft" | "scheduled" | "published" | null;
+    scheduledAt?: string | null;
   }
 
   export interface Props {
@@ -51,9 +53,7 @@ export function DiscussionCard({ discussion, mentionedPersonLookup, formattedTim
             {discussion.state === "draft" && (
               <StatusBadge status="pending" customLabel="Draft" hideIcon className="scale-95 inline-block shrink-0" />
             )}
-            {discussion.state === "scheduled" && (
-              <StatusBadge status="pending" customLabel="Scheduled" hideIcon className="scale-95 inline-block shrink-0" />
-            )}
+            {discussion.state === "scheduled" && <ScheduledPostLabel />}
           </div>
           <div className="break-words">
             <Summary content={discussion.content} characterCount={130} mentionedPersonLookup={mentionedPersonLookup} />
@@ -66,9 +66,16 @@ export function DiscussionCard({ discussion, mentionedPersonLookup, formattedTim
                 <div className="text-sm text-content-dimmed">·</div>
               </>
             )}
-            <div className="text-sm text-content-dimmed">
-              <FormattedTime {...formattedTimePreferences} time={discussion.date!} format="relative-weekday-or-date" />
-            </div>
+            {discussion.state === "scheduled" && discussion.scheduledAt ? (
+              <ScheduledPostDate
+                scheduledAt={discussion.scheduledAt}
+                formattedTimePreferences={formattedTimePreferences}
+              />
+            ) : (
+              <div className="text-sm text-content-dimmed">
+                <FormattedTime {...formattedTimePreferences} time={discussion.date} format="relative-weekday-or-date" />
+              </div>
+            )}
           </div>
         </div>
       </div>

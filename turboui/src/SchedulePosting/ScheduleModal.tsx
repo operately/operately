@@ -48,7 +48,11 @@ export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCanc
       {children}
       <Modal isOpen={open} onClose={() => onOpenChange(false)} title="Schedule Post" size="xx-small">
         <div className="mb-4 mt-2">
-          <InlineCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} minDateLimit={new Date()} />
+          <InlineCalendar
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            minDateLimit={startOfToday()}
+          />
         </div>
 
         <div className="mb-6 flex items-center justify-between">
@@ -61,8 +65,13 @@ export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCanc
           />
         </div>
 
+        {isInvalid && selectedDate && (
+          <div className="-mb-2 -mt-2 text-right text-xs text-red-500" role="alert">
+            Time must be in the future
+          </div>
+        )}
+
         <div className="flex justify-end gap-2 mt-4 items-center">
-          {isInvalid && selectedDate && <span className="text-red-500 text-xs mr-auto">Time must be in the future</span>}
           <SecondaryButton onClick={handleCancel} size="sm">
             Cancel
           </SecondaryButton>
@@ -73,4 +82,10 @@ export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCanc
       </Modal>
     </>
   );
+}
+
+function startOfToday(): Date {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
 }

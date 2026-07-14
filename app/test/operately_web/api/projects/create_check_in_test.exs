@@ -133,6 +133,22 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckInTest do
       refute project.last_check_in_id
       assert_enqueued(worker: Operately.AsyncPublishing.Worker, args: %{"type" => "project_check_in", "id" => check_in.id})
     end
+
+    test "rejects a project check-in scheduled for now or earlier", ctx do
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+
+      for scheduled_at <- [DateTime.utc_now(), DateTime.add(DateTime.utc_now(), -1, :second)] do
+        assert {400, res} =
+                 mutation(ctx.conn, [:projects, :create_check_in], %{
+                   project_id: Paths.project_id(project),
+                   status: "on_track",
+                   description: RichText.rich_text("Invalid schedule", :as_string),
+                   scheduled_at: DateTime.to_iso8601(scheduled_at)
+                 })
+
+        assert res.message == "Scheduled time must be in the future"
+      end
+    end
   end
 
   describe "subscriptions to notifications" do

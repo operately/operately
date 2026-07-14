@@ -6,28 +6,30 @@ defmodule Operately.Operations.DiscussionEditing do
   alias Operately.Notifications.SubscriptionList
 
   def run(creator, message, attrs) do
-    update_attrs = %{
-      title: attrs[:title] || message.title,
-      body: attrs[:body] || message.body,
-      state: state(message, attrs),
-      scheduled_at: scheduled_at(message, attrs)
-    }
+    with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
+      update_attrs = %{
+        title: attrs[:title] || message.title,
+        body: attrs[:body] || message.body,
+        state: state(message, attrs),
+        scheduled_at: scheduled_at(message, attrs)
+      }
 
-    Multi.new()
-    |> Multi.update(:message, Message.changeset(message, update_attrs))
-    |> Multi.run(:subscription_list, fn _, changes ->
-      SubscriptionList.get(:system,
-        parent_id: changes.message.id,
-        opts: [
-          preload: :subscriptions
-        ]
-      )
-    end)
-    |> Operately.Operations.Notifications.Subscription.update_mentioned_people(update_attrs.body)
-    |> record_activity(creator, message, update_attrs)
-    |> handle_oban_jobs(message, attrs)
-    |> Repo.transaction()
-    |> Repo.extract_result(:message)
+      Multi.new()
+      |> Multi.update(:message, Message.changeset(message, update_attrs))
+      |> Multi.run(:subscription_list, fn _, changes ->
+        SubscriptionList.get(:system,
+          parent_id: changes.message.id,
+          opts: [
+            preload: :subscriptions
+          ]
+        )
+      end)
+      |> Operately.Operations.Notifications.Subscription.update_mentioned_people(update_attrs.body)
+      |> record_activity(creator, message, update_attrs)
+      |> handle_oban_jobs(message, attrs)
+      |> Repo.transaction()
+      |> Repo.extract_result(:message)
+    end
   end
 
   defp record_activity(multi, creator, message, attrs) do

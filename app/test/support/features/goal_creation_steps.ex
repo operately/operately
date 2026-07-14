@@ -148,23 +148,24 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     end
   end
 
-  defp wait_until_subgoal_form(ctx, attempts \\ 2) do
-    wait_until_page(ctx, "goal-add-page", attempts)
+  defp wait_until_subgoal_form(ctx) do
+    wait_until_page(ctx, "goal-add-page")
   end
 
-  defp wait_until_goal_page(ctx, attempts \\ 2) do
-    wait_until_page(ctx, "goal-page", attempts)
+  defp wait_until_goal_page(ctx) do
+    wait_until_page(ctx, "goal-page")
   end
 
-  defp wait_until_page(ctx, testid, attempts) do
+  defp wait_until_page(ctx, testid, retry_delays \\ [250, 500, 1_000, 2_000]) do
     UI.wait_until_testid(ctx, testid: testid)
   rescue
     e in RuntimeError ->
-      if attempts == 1 do
+      if retry_delays == [] do
         reraise e, __STACKTRACE__
       else
-        :timer.sleep(250)
-        wait_until_page(ctx, testid, attempts - 1)
+        [delay | remaining_delays] = retry_delays
+        :timer.sleep(delay)
+        wait_until_page(ctx, testid, remaining_delays)
       end
   end
 end
