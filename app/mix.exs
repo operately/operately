@@ -64,13 +64,9 @@ defmodule Operately.MixProject do
       {:req, "~> 0.6.1"},
       {:tesla, "~> 1.18"},
       {:telemetry_metrics_statsd, "~> 0.7.0"},
-      {:yaml_elixir, "~> 2.11"},
       {:sentry, "~> 10.0"},
       {:swoosh, "~> 1.26.3"},
       {:gen_smtp, "~> 1.1"},
-
-      # llm
-      {:langchain, "0.4.0-rc.0"},
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},

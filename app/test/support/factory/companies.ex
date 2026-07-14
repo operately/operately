@@ -19,20 +19,6 @@ defmodule Operately.Support.Factory.Companies do
     Map.put(ctx, testid, company)
   end
 
-  def add_company_agent(ctx, testid, opts \\ []) do
-    full_name = Keyword.get(opts, :full_name) || Utils.testid_to_name(testid)
-    title = Keyword.get(opts, :title, "Agent")
-
-    attrs = %{
-      full_name: full_name,
-      title: title
-    }
-
-    {:ok, agent} = Operately.Operations.AgentAdding.run(ctx.creator, attrs)
-
-    Map.put(ctx, testid, agent)
-  end
-
   def add_company_member(ctx, testid, opts \\ []) do
     name = Keyword.get(opts, :name) || Utils.testid_to_name(testid)
     account = Keyword.get(opts, :account) && Map.fetch!(ctx, opts[:account])
