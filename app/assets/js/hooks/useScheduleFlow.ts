@@ -2,7 +2,7 @@ import type { ScheduleFlowState } from "turboui";
 
 import { useState } from "react";
 
-export interface UseScheduleFlowOptions {
+interface UseScheduleFlowOptions {
   initialScheduledAt?: string | Date | null;
 }
 

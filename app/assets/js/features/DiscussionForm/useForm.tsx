@@ -38,7 +38,6 @@ export interface FormState extends FormsFormState<FormValues> {
   postAsDraft: () => void;
   saveChanges: () => void;
   publishDraft: () => void;
-  confirmSchedule: () => void;
 
   postMessageSubmitting: boolean;
   postAsDraftSubmitting: boolean;
@@ -181,7 +180,6 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     postAsDraft: () => submitWith("post-draft"),
     saveChanges: () => submitWith("save-changes"),
     publishDraft: () => submitWith("publish-draft"),
-    confirmSchedule: () => submitWith("schedule"),
     postMessageSubmitting,
     postAsDraftSubmitting,
     saveChangesSubmitting,
