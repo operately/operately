@@ -284,7 +284,6 @@ defmodule OperatelyWeb.Api do
       subscription(:unread_notifications_count, S.UnreadNotificationsCount)
       subscription(:profile_updated, S.ProfileUpdated)
       subscription(:billing_updated, S.BillingUpdated)
-      subscription(:new_agent_message, S.NewAgentMessage)
     end
   end
 
@@ -305,28 +304,6 @@ defmodule OperatelyWeb.Api do
       mutation(:join_company, OperatelyWeb.Api.Mutations.JoinCompany)
 
       query(:get_theme, OperatelyWeb.Api.Queries.GetTheme)
-
-      namespace(:ai) do
-        query(:prompt, OperatelyWeb.Api.Ai.Prompt)
-        query(:get_agent, OperatelyWeb.Api.Ai.GetAgent)
-        query(:get_agent_run, OperatelyWeb.Api.Ai.GetAgentRun)
-        query(:list_agents, OperatelyWeb.Api.Ai.ListAgents)
-        query(:list_agent_runs, OperatelyWeb.Api.Ai.ListAgentRuns)
-        mutation(:add_agent, OperatelyWeb.Api.Ai.AddAgent)
-        mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
-        mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
-        mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
-        mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
-        mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
-        mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
-        mutation(:edit_agent_verbosity, OperatelyWeb.Api.Ai.EditAgentVerbosity)
-        mutation(:edit_agent_provider, OperatelyWeb.Api.Ai.EditAgentProvider)
-
-        query(:get_conversation_messages, OperatelyWeb.Api.Ai.GetConversationMessages)
-        query(:get_conversations, OperatelyWeb.Api.Ai.GetConversations)
-        mutation(:create_conversation, OperatelyWeb.Api.Ai.CreateConversation)
-        mutation(:send_message, OperatelyWeb.Api.Ai.SendMessage)
-      end
 
       namespace(:companies) do
         mutation(:create, OperatelyWeb.Api.Companies.Create)
