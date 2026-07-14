@@ -20,10 +20,10 @@
     "test-storybook:ci": "npm run build-storybook -- --quiet && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && test-storybook --ci --junit\""
   },
   "devDependencies": {
-    "@storybook/addon-docs": "10.4.6",
-    "@storybook/addon-themes": "10.4.6",
-    "@storybook/react-vite": "10.4.6",
-    "@storybook/test-runner": "^0.24.0",
+    "@storybook/addon-docs": "10.5.0",
+    "@storybook/addon-themes": "10.5.0",
+    "@storybook/react-vite": "10.5.0",
+    "@storybook/test-runner": "^0.24.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/jest": "^29.5.12",
@@ -52,17 +52,18 @@
     "react-select": "^5.8.0",
     "react-spinners": "^0.13.8",
     "react-textarea-autosize": "^8.5.9",
-    "storybook": "10.4.6",
+    "storybook": "10.5.0",
     "tailwindcss": "^3.4.17",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3",
-    "vite": "6.3.5",
+    "vite": "6.4.3",
     "wait-on": "^8.0.3"
   },
   "overrides": {
     "@types/react": "18.3.5",
-    "rollup": "4.41.1",
-    "vite": "6.3.5"
+    "rollup": "4.62.2",
+    "uuid": "11.1.1",
+    "vite": "6.4.3"
   },
   "jest-junit": {
     "outputDirectory": "testreports",
