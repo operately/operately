@@ -8,7 +8,7 @@ import { CheckInCard } from "..";
 import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
 describe("CheckInCard", () => {
-  function renderCard(author = null) {
+  function renderCard(author = null, scheduledAt: string | null = null) {
     return render(
       <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <CheckInCard
@@ -22,6 +22,8 @@ describe("CheckInCard", () => {
             content: JSON.stringify({ type: "doc", content: [] }),
             commentCount: 3,
             status: "on_track",
+            state: scheduledAt ? "scheduled" : "published",
+            scheduledAt,
           }}
         />
       </MemoryRouter>
@@ -33,5 +35,12 @@ describe("CheckInCard", () => {
 
     expect(screen.getByText(/Check-In for/)).toBeInTheDocument();
     expect(screen.queryByTitle("?")).not.toBeInTheDocument();
+  });
+
+  it("renders the scheduled label and publication date", () => {
+    renderCard(null, "2026-05-10T12:00:00Z");
+
+    expect(screen.getByText("Scheduled")).toBeInTheDocument();
+    expect(screen.getByText(/Will be posted on/)).toBeInTheDocument();
   });
 });
