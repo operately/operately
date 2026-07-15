@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
@@ -67,6 +67,28 @@ describe("InlineCalendar", () => {
 
     await user.click(screen.getByTestId("date-field-next-month"));
     expect(screen.getByTestId("date-field-current-month")).toHaveTextContent("February 2026");
+  });
+
+  it("preserves every navigation step when several month changes are batched", () => {
+    renderCalendar({
+      selectedDate: {
+        date: new Date(2024, 1, 11),
+        dateType: "day",
+        value: "Feb 11, 2024",
+      },
+    });
+
+    expect(screen.getByTestId("date-field-current-month")).toHaveTextContent("February 2024");
+
+    const nextMonth = screen.getByTestId("date-field-next-month");
+    act(() => {
+      for (let month = 0; month < 29; month++) {
+        nextMonth.click();
+      }
+    });
+
+    expect(screen.getByTestId("date-field-current-month")).toHaveTextContent("July 2026");
+    expect(getDay(14)).toHaveAttribute("data-date", "2026-07-14");
   });
 
   it("returns the selected day as a contextual date", async () => {

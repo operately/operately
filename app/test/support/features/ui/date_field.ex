@@ -23,41 +23,37 @@ defmodule Operately.Support.Features.UI.DateField do
   end
 
   defp navigate_date_field_to_month(ctx, date) do
-    max_iterations = 24
-    navigate_date_field_to_month_recursive(ctx, date.month, date.year, max_iterations)
-  end
-
-  defp navigate_date_field_to_month_recursive(_ctx, target_month, target_year, 0) do
-    raise "Timed out navigating date field to #{target_month}/#{target_year}"
-  end
-
-  defp navigate_date_field_to_month_recursive(ctx, target_month, target_year, iterations_left) do
     {current_month, current_year} = read_date_field_displayed_month_year(ctx)
+    month_offset = month_offset(current_month, current_year, date.month, date.year)
 
-    cond do
-      current_month == target_month and current_year == target_year ->
+    case month_offset do
+      0 ->
         ctx
 
-      current_year < target_year or (current_year == target_year and current_month < target_month) ->
-        {next_month, next_year} = next_month(current_month, current_year)
+      offset when offset > 0 ->
+        navigate_by_months(ctx, "date-field-next-month", offset)
+        |> wait_until_displayed_month(date.month, date.year)
 
-        ctx
-        |> UI.wait_until_has(css: "[data-testid='date-field-next-month']")
-        |> UI.click(css: "[data-testid='date-field-next-month']")
-        |> UI.sleep(100)
-        |> wait_until_displayed_month(next_month, next_year)
-        |> navigate_date_field_to_month_recursive(target_month, target_year, iterations_left - 1)
-
-      true ->
-        {prev_month, prev_year} = previous_month(current_month, current_year)
-
-        ctx
-        |> UI.wait_until_has(css: "[data-testid='date-field-prev-month']")
-        |> UI.click(css: "[data-testid='date-field-prev-month']")
-        |> UI.sleep(100)
-        |> wait_until_displayed_month(prev_month, prev_year)
-        |> navigate_date_field_to_month_recursive(target_month, target_year, iterations_left - 1)
+      offset ->
+        navigate_by_months(ctx, "date-field-prev-month", abs(offset))
+        |> wait_until_displayed_month(date.month, date.year)
     end
+  end
+
+  defp navigate_by_months(ctx, button_testid, number_of_months) do
+    selector = "[data-testid='#{button_testid}']"
+
+    script = """
+      const button = document.querySelector("#{selector}");
+
+      for (let month = 0; month < #{number_of_months}; month++) {
+        button.click();
+      }
+    """
+
+    ctx
+    |> UI.wait_until_has(css: selector)
+    |> Map.update!(:session, &Browser.execute_script(&1, script))
   end
 
   defp wait_until_displayed_month(ctx, month, year) do
@@ -111,11 +107,9 @@ defmodule Operately.Support.Features.UI.DateField do
 
   defp parse_month_year(_), do: :error
 
-  defp next_month(12, year), do: {1, year + 1}
-  defp next_month(month, year), do: {month + 1, year}
-
-  defp previous_month(1, year), do: {12, year - 1}
-  defp previous_month(month, year), do: {month - 1, year}
+  defp month_offset(from_month, from_year, to_month, to_year) do
+    (to_year - from_year) * 12 + to_month - from_month
+  end
 
   defp month_name_to_number("January"), do: {:ok, 1}
   defp month_name_to_number("February"), do: {:ok, 2}

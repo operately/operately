@@ -92,11 +92,11 @@ export function InlineCalendar({
   }
 
   const prevMonth = () => {
-    setCalendarDate(new Date(currentYear, currentMonth - 1, 1));
+    setCalendarDate((date) => new Date(date.getFullYear(), date.getMonth() - 1, 1));
   };
 
   const nextMonth = () => {
-    setCalendarDate(new Date(currentYear, currentMonth + 1, 1));
+    setCalendarDate((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1));
   };
 
   return (
