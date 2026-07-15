@@ -52,7 +52,7 @@ function showAcknowledgeButton(checkIn: ProjectCheckIns.ProjectCheckIn, me: Peop
   const permissions = checkIn.project?.permissions;
   if (!permissions?.canEdit) return false;
 
-  const isAuthor = compareIds(checkIn.author!.id, me.id);
+  const isAuthor = compareIds(checkIn.author?.id, me.id);
   if (isAuthor) return false;
 
   const reviewer = checkIn.project?.reviewer;

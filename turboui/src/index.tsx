@@ -5,6 +5,7 @@ export * from "./Avatar";
 export * from "./Button";
 export * from "./BorderedRow";
 export * from "./Chronometer";
+export * from "./CheckInHeader";
 export * from "./CommentSection";
 export * from "./Circle";
 export { useDraftActivatedInput } from "./CommentSection/useDraftActivatedInput";
