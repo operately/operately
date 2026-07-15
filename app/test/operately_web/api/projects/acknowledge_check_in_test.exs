@@ -95,7 +95,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckInTest do
       assert_response(res, check_in)
     end
 
-    test "idempontency: acknowledging the same check-in multiple times does not change the state", ctx do
+    test "idempotency: acknowledging the same check-in multiple times does not change the state", ctx do
       check_in = check_in_fixture(%{author_id: ctx.creator.id, project_id: ctx.project.id})
 
       assert {200, res} = request(ctx.conn, check_in)
