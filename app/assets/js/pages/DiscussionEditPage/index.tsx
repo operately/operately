@@ -71,6 +71,7 @@ function Submit({ form }: { form: FormState }) {
               }
               testId="publish-now"
               formattedTimePreferences={formattedTimePreferences}
+              modalTitle="Schedule Discussion"
               scheduledPrimaryLabel={isScheduled ? "Save Changes" : undefined}
               showScheduleOption={!isScheduled}
               secondaryAction={

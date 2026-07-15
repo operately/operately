@@ -130,6 +130,7 @@ function SubmitButtons({
         loading={isSubmitting && (form.trigger === "submit" || form.trigger === "schedule")}
         testId="submit"
         formattedTimePreferences={formattedTimePreferences}
+        modalTitle="Schedule Check-in"
         secondaryAction={
           <GhostButton
             loading={isSubmitting && form.trigger === "draft"}
