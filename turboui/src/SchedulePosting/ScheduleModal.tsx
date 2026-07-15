@@ -5,6 +5,7 @@ import { DateField } from "../DateField";
 import { SecondaryButton, PrimaryButton } from "../Button";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import { TimePicker } from "../TimePicker";
+import { formatDate } from "../utils/formatting";
 import { dateInTimezone, zonedDateTimeToDate } from "../utils/timezone";
 
 export interface ScheduleModalProps {
@@ -13,6 +14,7 @@ export interface ScheduleModalProps {
   onOpenChange: (open: boolean) => void;
   onSchedule: (date: Date) => void;
   onCancel: () => void;
+  scheduledAt: Date | null;
   formattedTimePreferences: FormattedTimePreferences;
 }
 
@@ -22,10 +24,15 @@ export function ScheduleModal({
   onOpenChange,
   onSchedule,
   onCancel,
+  scheduledAt,
   formattedTimePreferences,
 }: ScheduleModalProps) {
-  const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(null);
-  const [time, setTime] = useState<Date | null>(() => defaultScheduleTime());
+  const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(() =>
+    contextualDateFromScheduledAt(scheduledAt, formattedTimePreferences),
+  );
+  const [time, setTime] = useState<Date | null>(() =>
+    scheduledAt ? dateInTimezone(scheduledAt, formattedTimePreferences.timezone) : defaultScheduleTime(),
+  );
   const now = new Date();
   const today = dateInTimezone(now, formattedTimePreferences.timezone);
 
@@ -103,6 +110,22 @@ function defaultScheduleTime(): Date {
   const time = new Date();
   time.setHours(9, 0, 0, 0);
   return time;
+}
+
+function contextualDateFromScheduledAt(
+  scheduledAt: Date | null,
+  formattedTimePreferences: FormattedTimePreferences,
+): DateField.ContextualDate | null {
+  if (!scheduledAt) return null;
+
+  const date = dateInTimezone(scheduledAt, formattedTimePreferences.timezone);
+  date.setHours(0, 0, 0, 0);
+
+  return {
+    date,
+    dateType: "day",
+    value: formatDate(date, formattedTimePreferences.locale, { year: "numeric", month: "short", day: "numeric" }),
+  };
 }
 
 function combineDateAndTime(date: Date | undefined, time: Date | null, timezone: string): Date | null {

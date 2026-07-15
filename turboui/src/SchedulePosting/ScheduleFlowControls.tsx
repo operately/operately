@@ -86,6 +86,7 @@ export function ScheduleFlowControls({
         onOpenChange={scheduleFlow.setIsModalOpen}
         onSchedule={scheduleFlow.confirmSchedule}
         onCancel={scheduleFlow.cancelSchedule}
+        scheduledAt={scheduleFlow.scheduledAt}
         formattedTimePreferences={formattedTimePreferences}
       />
     </>

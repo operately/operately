@@ -19,7 +19,7 @@ export function InlineCalendar({
   maxDateLimit,
   today = new Date(),
 }: Props) {
-  const [calendarDate, setCalendarDate] = React.useState(() => new Date(today));
+  const [calendarDate, setCalendarDate] = React.useState(() => new Date(selectedDate?.date ?? today));
 
   const currentMonth = calendarDate.getMonth();
   const currentYear = calendarDate.getFullYear();

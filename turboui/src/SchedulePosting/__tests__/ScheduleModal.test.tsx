@@ -34,6 +34,7 @@ describe("ScheduleModal", () => {
         onOpenChange={jest.fn()}
         onSchedule={onSchedule}
         onCancel={jest.fn()}
+        scheduledAt={null}
         formattedTimePreferences={utcPreferences}
       />,
     );
@@ -75,6 +76,7 @@ describe("ScheduleModal", () => {
         onOpenChange={jest.fn()}
         onSchedule={onSchedule}
         onCancel={jest.fn()}
+        scheduledAt={null}
         formattedTimePreferences={losAngelesPreferences}
       />,
     );
@@ -108,6 +110,7 @@ describe("ScheduleModal", () => {
         onOpenChange={jest.fn()}
         onSchedule={onSchedule}
         onCancel={jest.fn()}
+        scheduledAt={null}
         formattedTimePreferences={losAngelesPreferences}
       />,
     );
@@ -128,5 +131,34 @@ describe("ScheduleModal", () => {
 
     await user.click(scheduleButton);
     expect(onSchedule).not.toHaveBeenCalled();
+  });
+
+  it("preselects an existing schedule when the modal opens for the first time", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+    render(
+      <ScheduleModal
+        open={true}
+        onOpenChange={jest.fn()}
+        onSchedule={jest.fn()}
+        onCancel={jest.fn()}
+        scheduledAt={new Date("2026-08-17T03:00:00.000Z")}
+        formattedTimePreferences={losAngelesPreferences}
+      />,
+    );
+
+    expect(screen.getByTestId("date-field-current-month")).toHaveTextContent("August 2026");
+    expect(document.querySelector('[data-test-id="date-field-day-16"]')).toHaveAttribute("aria-pressed", "true");
+
+    const timePicker = screen.getByRole("button", { name: "Time" });
+    expect(timePicker).toHaveTextContent("20:00");
+    await user.click(timePicker);
+
+    expect(
+      within(screen.getByRole("group", { name: "Hour" })).getByRole("button", { name: "20", pressed: true }),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("group", { name: "Minute" })).getByRole("button", { name: "00", pressed: true }),
+    ).toBeInTheDocument();
   });
 });
