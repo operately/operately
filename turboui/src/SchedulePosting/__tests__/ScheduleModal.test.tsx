@@ -96,4 +96,37 @@ describe("ScheduleModal", () => {
 
     expect(screen.getByText(/Will be posted on July 16th at 20:00/)).toBeInTheDocument();
   });
+
+  it("rejects a wall-clock time that does not exist in the user's timezone", async () => {
+    jest.setSystemTime(new Date("2026-03-07T12:00:00.000Z"));
+    const onSchedule = jest.fn();
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+    render(
+      <ScheduleModal
+        open={true}
+        onOpenChange={jest.fn()}
+        onSchedule={onSchedule}
+        onCancel={jest.fn()}
+        formattedTimePreferences={losAngelesPreferences}
+      />,
+    );
+
+    const daylightSavingDay = document.querySelector<HTMLButtonElement>('[data-test-id="date-field-day-8"]');
+    if (!daylightSavingDay) throw new Error("The daylight-saving date button was not rendered");
+    await user.click(daylightSavingDay);
+    await user.click(screen.getByRole("button", { name: "Time" }));
+
+    const hourOptions = screen.getByRole("group", { name: "Hour" });
+    const minuteOptions = screen.getByRole("group", { name: "Minute" });
+    await user.click(within(hourOptions).getByRole("button", { name: "02", pressed: false }));
+    await user.click(within(minuteOptions).getByRole("button", { name: "30", pressed: false }));
+
+    const scheduleButton = screen.getByRole("button", { name: "Schedule" });
+    expect(scheduleButton).toBeDisabled();
+    expect(screen.getByText("This time does not exist in your timezone")).toBeInTheDocument();
+
+    await user.click(scheduleButton);
+    expect(onSchedule).not.toHaveBeenCalled();
+  });
 });
