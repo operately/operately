@@ -31,6 +31,7 @@ describe("ScheduleFlowControls", () => {
         scheduledPrimaryLabel="Save Changes"
         onPrimaryClick={jest.fn()}
         formattedTimePreferences={defaultFormattedTimePreferences}
+        modalTitle="Schedule Discussion"
         testId="scheduled-post"
         showScheduleOption={false}
         options={[

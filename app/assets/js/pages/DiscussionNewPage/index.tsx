@@ -68,6 +68,7 @@ function Submit({ form }: { form: FormState }) {
         loading={form.postMessageSubmitting || form.scheduleSubmitting}
         testId="post-discussion"
         formattedTimePreferences={formattedTimePreferences}
+        modalTitle="Schedule Discussion"
         secondaryAction={
           <GhostButton loading={form.postAsDraftSubmitting} testId="save-as-draft" onClick={form.postAsDraft}>
             Save as draft

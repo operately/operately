@@ -25,6 +25,7 @@ export interface ScheduleFlowControlsProps {
   primaryLabel: string;
   onPrimaryClick: () => void;
   formattedTimePreferences: FormattedTimePreferences;
+  modalTitle: string;
   loading?: boolean;
   disabled?: boolean;
   testId?: string;
@@ -39,6 +40,7 @@ export function ScheduleFlowControls({
   primaryLabel,
   onPrimaryClick,
   formattedTimePreferences,
+  modalTitle,
   loading,
   disabled,
   testId,
@@ -88,6 +90,7 @@ export function ScheduleFlowControls({
         onCancel={scheduleFlow.cancelSchedule}
         scheduledAt={scheduleFlow.scheduledAt}
         formattedTimePreferences={formattedTimePreferences}
+        title={modalTitle}
       />
     </>
   );

@@ -101,6 +101,7 @@ function SubmitSection(props: Props) {
           loading={isSubmitting && (props.form.trigger === "submit" || props.form.trigger === "schedule")}
           testId="submit"
           formattedTimePreferences={formattedTimePreferences}
+          modalTitle="Schedule Check-in"
           secondaryAction={
             <GhostButton
               loading={isSubmitting && props.form.trigger === "save-draft"}
@@ -133,6 +134,7 @@ function SubmitSection(props: Props) {
           }
           testId="publish-draft"
           formattedTimePreferences={formattedTimePreferences}
+          modalTitle="Schedule Check-in"
           scheduledPrimaryLabel={isScheduled ? "Save Changes" : undefined}
           showScheduleOption={!isScheduled}
           secondaryAction={

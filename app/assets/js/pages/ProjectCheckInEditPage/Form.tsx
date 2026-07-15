@@ -170,6 +170,7 @@ function SubmitButtons({
         }
         testId="publish-draft"
         formattedTimePreferences={formattedTimePreferences}
+        modalTitle="Schedule Check-in"
         scheduledPrimaryLabel={isScheduled ? "Save Changes" : undefined}
         showScheduleOption={!isScheduled}
         secondaryAction={
