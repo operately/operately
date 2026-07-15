@@ -31,7 +31,7 @@ export namespace AccountMcpConnectionsPage {
 
 const SCOPE_LABELS: Record<string, string> = {
   "mcp:read": "View data",
-  "mcp:write": "Create, update, delete, and archive content",
+  "mcp:write": "Edit data",
 };
 
 export function AccountMcpConnectionsPage(props: AccountMcpConnectionsPage.Props) {
@@ -44,7 +44,7 @@ export function AccountMcpConnectionsPage(props: AccountMcpConnectionsPage.Props
   );
 
   return (
-    <Page title="MCP Connections" size="medium" testId="account-mcp-connections-page" navigation={navigation}>
+    <Page title="MCP Connections" size="small" testId="account-mcp-connections-page" navigation={navigation}>
       <div className="px-4 sm:px-10 py-8">
         <header>
           <h1 className="text-2xl font-bold">MCP Connections</h1>
@@ -149,17 +149,12 @@ function GrantRow({
     <>
       <tr className="border-t border-stroke-base" data-test-id={createTestId("mcp-connection-row", grant.id)}>
         <td className="px-3 py-3">
-          <div className="max-w-[220px] sm:max-w-[320px] whitespace-normal break-words">
-            <div className="font-medium">{displayClientName(grant)}</div>
-            <div className="text-xs text-content-dimmed mt-1 break-all">{grant.clientId}</div>
+          <div className="max-w-[220px] sm:max-w-[320px] whitespace-normal break-words font-medium">
+            {displayClientName(grant)}
           </div>
         </td>
 
-        <td className="px-3 py-3">
-          <div className="max-w-[240px] whitespace-normal break-words text-content-dimmed">
-            {formatScopes(grant.scopes)}
-          </div>
-        </td>
+        <td className="px-3 py-3 text-content-dimmed whitespace-nowrap">{formatScopes(grant.scopes)}</td>
 
         <td className="px-3 py-3 text-content-dimmed whitespace-nowrap">
           <Timestamp value={grant.insertedAt} emptyLabel="Not available" formattedTimePreferences={formattedTimePreferences} />
@@ -243,9 +238,12 @@ function displayClientName(grant: AccountMcpConnectionsPage.Grant) {
 }
 
 function formatScopes(scopes: string[]) {
-  if (scopes.length === 0) {
-    return SCOPE_LABELS["mcp:read"];
-  }
+  const hasRead = scopes.includes("mcp:read") || scopes.length === 0;
+  const hasWrite = scopes.includes("mcp:write");
+
+  if (hasRead && hasWrite) return "View and edit";
+  if (hasWrite) return "Edit only";
+  if (hasRead) return "View only";
 
   return scopes.map((scope) => SCOPE_LABELS[scope] || scope).join(" · ");
 }
