@@ -1,90 +1,27 @@
 import * as React from "react";
-import {
-  IconSquareCheckFilled,
-  StatusBadge,
-  Avatar,
-  FormattedTime,
-  BulletDot,
-  ScheduledPostDate,
-  ScheduledPostLabel,
-  displayDate,
-} from "turboui";
+import { CheckInMetadata, CheckInTitle, displayDate } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useLoadedData } from "./loader";
-import { assertPresent } from "@/utils/assertions";
-
-import { Update } from "@/models/goalCheckIns";
-import { Person } from "@/api";
 
 export function Header() {
   const { update } = useLoadedData();
+  const formattedTimePreferences = useFormattedTimePreferences();
+
+  const checkInDate = displayDate(update);
 
   return (
     <div className="flex flex-col items-center">
-      <Title update={update} />
-      <Subtitle update={update} />
+      <CheckInTitle state={update.state} timestamp={checkInDate} formattedTimePreferences={formattedTimePreferences} />
+      <CheckInMetadata
+        resourceType="goal"
+        author={update.author}
+        acknowledgedBy={update.acknowledgingPerson}
+        state={update.state}
+        postedAt={checkInDate}
+        scheduledAt={update.scheduledAt}
+        formattedTimePreferences={formattedTimePreferences}
+      />
     </div>
   );
-}
-
-function Title({ update }: { update: Update }) {
-  const formattedTimePreferences = useFormattedTimePreferences();
-
-  return (
-    <div className="flex flex-col items-center">
-      <h1 className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-xl sm:text-3xl font-extrabold text-center">
-        <span>
-          Check-In for <FormattedTime {...formattedTimePreferences} time={displayDate(update)} format="long-date" />
-        </span>
-        {update.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
-        {update.state === "scheduled" && <ScheduledPostLabel />}
-      </h1>
-    </div>
-  );
-}
-
-function Subtitle({ update }: { update: Update }) {
-  assertPresent(update.author, "Update author must be defined");
-  const formattedTimePreferences = useFormattedTimePreferences();
-
-  return (
-    <div className="flex gap-1.5 items-center mt-1 font-medium text-sm sm:text-base">
-      <AvatarAndName person={update.author} />
-      {update.state === "scheduled" && update.scheduledAt && (
-        <>
-          <BulletDot />
-          <ScheduledPostDate scheduledAt={update.scheduledAt} formattedTimePreferences={formattedTimePreferences} />
-        </>
-      )}
-      {update.state === "published" && (
-        <>
-          <BulletDot />
-          <Acknowledgement update={update} />
-        </>
-      )}
-    </div>
-  );
-}
-
-function AvatarAndName({ person }: { person: Person }) {
-  return (
-    <div className="flex items-center gap-1">
-      <Avatar person={person} size="tiny" /> {person.fullName}
-    </div>
-  );
-}
-
-function Acknowledgement({ update }) {
-  if (update.acknowledgedAt) {
-    return (
-      <span className="flex items-center gap-1">
-        <IconSquareCheckFilled size={16} className="text-accent-1" />
-        <span className="hidden sm:inline">Acknowledged by</span>
-        <span className="truncate">{update.acknowledgingPerson.fullName}</span>
-      </span>
-    );
-  } else {
-    return <span className="flex items-center gap-1">Not yet acknowledged</span>;
-  }
 }

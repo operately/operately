@@ -10,19 +10,14 @@ import { useDeleteProjectCheckIn } from "@/models/projectCheckIns";
 
 import Modal from "@/components/Modal";
 import {
-  Avatar,
-  FormattedTime,
+  CheckInMetadata,
+  CheckInTitle,
   Forms,
   IconEdit,
-  IconSquareCheckFilled,
   IconTrash,
   CurrentSubscriptions,
   Spacer,
   showSuccessToast,
-  ScheduledPostDate,
-  ScheduledPostLabel,
-  StatusBadge,
-  TextSeparator,
   displayDate,
 } from "turboui";
 import { compareIds } from "@/routes/paths";
@@ -135,32 +130,20 @@ function Title() {
   const { checkIn } = useLoadedData();
   const formattedTimePreferences = useFormattedTimePreferences();
 
+  const checkInDate = displayDate(checkIn);
+
   return (
     <div className="flex flex-col items-center">
-      <div className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-2xl font-extrabold text-center">
-        <span>
-          Check-In from <FormattedTime {...formattedTimePreferences} time={displayDate(checkIn)} format="long-date" />
-        </span>
-        {checkIn.state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
-        {checkIn.state === "scheduled" && <ScheduledPostLabel />}
-      </div>
-      <div className="flex gap-0.5 flex-row items-center mt-1 text-content-accent font-medium">
-        <div className="flex items-center gap-2">
-          <Avatar person={checkIn.author!} size="tiny" /> {checkIn.author!.fullName}
-        </div>
-        {checkIn.state === "scheduled" && checkIn.scheduledAt && (
-          <>
-            <TextSeparator />
-            <ScheduledPostDate scheduledAt={checkIn.scheduledAt} formattedTimePreferences={formattedTimePreferences} />
-          </>
-        )}
-        {checkIn.state === "published" && (
-          <>
-            <TextSeparator />
-            <Acknowledgement />
-          </>
-        )}
-      </div>
+      <CheckInTitle state={checkIn.state} timestamp={checkInDate} formattedTimePreferences={formattedTimePreferences} />
+      <CheckInMetadata
+        resourceType="project"
+        author={checkIn.author}
+        acknowledgedBy={checkIn.acknowledgedBy}
+        state={checkIn.state}
+        postedAt={checkInDate}
+        scheduledAt={checkIn.scheduledAt}
+        formattedTimePreferences={formattedTimePreferences}
+      />
     </div>
   );
 }
@@ -185,27 +168,12 @@ function Navigation() {
   return <Paper.Navigation items={items} />;
 }
 
-function Acknowledgement() {
-  const { checkIn } = useLoadedData();
-
-  if (checkIn.acknowledgedAt) {
-    return (
-      <span className="flex items-center gap-1">
-        <IconSquareCheckFilled size={16} className="text-accent-1" />
-        Acknowledged by {checkIn.acknowledgedBy!.fullName}
-      </span>
-    );
-  } else {
-    return <span className="flex items-center gap-1">Not yet acknowledged</span>;
-  }
-}
-
 function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const paths = usePaths();
   const { checkIn } = useLoadedData();
   const me = useMe()!;
 
-  const isAuthor = compareIds(me.id!, checkIn.author!.id!);
+  const isAuthor = compareIds(me.id, checkIn.author?.id);
   const isUnpublished = checkIn.state === "draft" || checkIn.state === "scheduled";
   const canEdit = isAuthor;
   const canDelete = isUnpublished || checkIn.project?.permissions?.hasFullAccess || false;
