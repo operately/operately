@@ -47,6 +47,8 @@ export { Checkbox } from "./Checkbox";
 export { CommentCountIndicator } from "./CommentCountIndicator";
 export { Checklist } from "./Checklist";
 export { DateDisplay, DateField } from "./DateField";
+export { TimePicker } from "./TimePicker";
+export type { TimePickerProps } from "./TimePicker";
 export { DiscardDiscussionDraftModal } from "./DiscardDiscussionDraftModal";
 export { FormattedTime } from "./FormattedTime";
 export type { FormattedTimePreferences, FormattedTimeProps, Format as FormattedTimeFormat } from "./FormattedTime";

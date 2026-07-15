@@ -3,6 +3,7 @@ import { match } from "ts-pattern";
 
 import "../i18n";
 import * as Time from "../utils/time";
+import { dateInTimezone } from "../utils/timezone";
 import LongDate from "./LongDate";
 import RelativeTime from "./RelativeTime";
 import RelativeTimeOrDate from "./RelativeTimeOrDate";
@@ -52,7 +53,7 @@ export function FormattedTime(props: FormattedTimeProps): JSX.Element {
 
   if (!parsedTime) throw new Error("Invalid date " + time);
 
-  const localizedTime = applyTimezone(parsedTime, timezone);
+  const localizedTime = dateInTimezone(parsedTime, timezone);
 
   switch (format) {
     case "relative":
@@ -72,12 +73,6 @@ export function FormattedTime(props: FormattedTimeProps): JSX.Element {
     default:
       throw new Error(`Unknown format ${format}`);
   }
-}
-
-// Shift wall-clock fields into the target timezone. en-US is fine to hardcode here: this string
-// is never shown, only parsed, and en-US gives a format new Date() accepts reliably; locale applies in sub-components.
-function applyTimezone(time: Date, timezone: string): Date {
-  return new Date(time.toLocaleString("en-US", { timeZone: timezone }));
 }
 
 export default FormattedTime;
