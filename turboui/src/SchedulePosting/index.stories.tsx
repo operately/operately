@@ -54,6 +54,7 @@ function ScheduleModalDemo() {
         onCancel={() => setOpen(false)}
         scheduledAt={null}
         formattedTimePreferences={defaultFormattedTimePreferences}
+        title="Schedule Discussion"
       />
     </div>
   );
@@ -69,6 +70,7 @@ function FlowImmediateDemo() {
         primaryLabel="Post"
         onPrimaryClick={() => console.log("Post now")}
         formattedTimePreferences={defaultFormattedTimePreferences}
+        modalTitle="Schedule Discussion"
         testId="post-discussion"
         secondaryAction={<GhostButton onClick={() => console.log("Save draft")}>Save as draft</GhostButton>}
       />
@@ -89,6 +91,7 @@ function FlowScheduledDemo() {
         primaryLabel="Post"
         onPrimaryClick={() => console.log("Confirm schedule", scheduleFlow.scheduledAt)}
         formattedTimePreferences={defaultFormattedTimePreferences}
+        modalTitle="Schedule Discussion"
         testId="post-discussion"
         secondaryAction={<GhostButton onClick={() => console.log("Save draft")}>Save as draft</GhostButton>}
       />
@@ -115,6 +118,7 @@ function FlowInteractiveDemo() {
           }
         }}
         formattedTimePreferences={defaultFormattedTimePreferences}
+        modalTitle="Schedule Check-in"
         secondaryAction={<GhostButton onClick={() => console.log("Save draft")}>Save as draft</GhostButton>}
       />
     </div>

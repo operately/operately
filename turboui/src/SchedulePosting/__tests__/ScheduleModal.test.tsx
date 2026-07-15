@@ -14,6 +14,21 @@ const losAngelesPreferences = {
   timeFormat: "hour_24" as const,
 };
 
+function renderScheduleModal(props: Partial<React.ComponentProps<typeof ScheduleModal>> = {}) {
+  return render(
+    <ScheduleModal
+      open={true}
+      onOpenChange={jest.fn()}
+      onSchedule={jest.fn()}
+      onCancel={jest.fn()}
+      scheduledAt={null}
+      formattedTimePreferences={utcPreferences}
+      title="Schedule Discussion"
+      {...props}
+    />,
+  );
+}
+
 describe("ScheduleModal", () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -24,20 +39,17 @@ describe("ScheduleModal", () => {
     jest.useRealTimers();
   });
 
+  it("shows the provided title", () => {
+    renderScheduleModal({ title: "Schedule Check-in" });
+
+    expect(screen.getByRole("heading", { name: "Schedule Check-in" })).toBeInTheDocument();
+  });
+
   it("allows selecting today while requiring a future time", async () => {
     const onSchedule = jest.fn();
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-    render(
-      <ScheduleModal
-        open={true}
-        onOpenChange={jest.fn()}
-        onSchedule={onSchedule}
-        onCancel={jest.fn()}
-        scheduledAt={null}
-        formattedTimePreferences={utcPreferences}
-      />,
-    );
+    renderScheduleModal({ onSchedule, formattedTimePreferences: utcPreferences });
 
     const today = document.querySelector<HTMLButtonElement>('[data-test-id="date-field-day-14"]');
     if (!today) throw new Error("Today's date button was not rendered");
@@ -70,16 +82,10 @@ describe("ScheduleModal", () => {
     const onSchedule = jest.fn();
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-    const { unmount } = render(
-      <ScheduleModal
-        open={true}
-        onOpenChange={jest.fn()}
-        onSchedule={onSchedule}
-        onCancel={jest.fn()}
-        scheduledAt={null}
-        formattedTimePreferences={losAngelesPreferences}
-      />,
-    );
+    const { unmount } = renderScheduleModal({
+      onSchedule,
+      formattedTimePreferences: losAngelesPreferences,
+    });
 
     const selectedDay = document.querySelector<HTMLButtonElement>('[data-test-id="date-field-day-16"]');
     if (!selectedDay) throw new Error("The selected date button was not rendered");
@@ -104,16 +110,7 @@ describe("ScheduleModal", () => {
     const onSchedule = jest.fn();
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-    render(
-      <ScheduleModal
-        open={true}
-        onOpenChange={jest.fn()}
-        onSchedule={onSchedule}
-        onCancel={jest.fn()}
-        scheduledAt={null}
-        formattedTimePreferences={losAngelesPreferences}
-      />,
-    );
+    renderScheduleModal({ onSchedule, formattedTimePreferences: losAngelesPreferences });
 
     const daylightSavingDay = document.querySelector<HTMLButtonElement>('[data-test-id="date-field-day-8"]');
     if (!daylightSavingDay) throw new Error("The daylight-saving date button was not rendered");
@@ -133,19 +130,37 @@ describe("ScheduleModal", () => {
     expect(onSchedule).not.toHaveBeenCalled();
   });
 
+  it("closes the time picker on outside click while keeping the selected time and modal open", async () => {
+    const onOpenChange = jest.fn();
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+    renderScheduleModal({ onOpenChange, title: "Schedule Check-in" });
+
+    await user.click(screen.getByRole("button", { name: "Time" }));
+    await user.click(
+      within(screen.getByRole("group", { name: "Hour" })).getByRole("button", { name: "14", pressed: false }),
+    );
+
+    expect(screen.getByText("Select time")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Time" })).toHaveTextContent("14:00");
+
+    const tomorrow = document.querySelector<HTMLButtonElement>('[data-test-id="date-field-day-15"]');
+    if (!tomorrow) throw new Error("Tomorrow's date button was not rendered");
+    await user.click(tomorrow);
+
+    expect(screen.queryByText("Select time")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Time" })).toHaveTextContent("14:00");
+    expect(screen.getByRole("heading", { name: "Schedule Check-in" })).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
   it("preselects an existing schedule when the modal opens for the first time", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-    render(
-      <ScheduleModal
-        open={true}
-        onOpenChange={jest.fn()}
-        onSchedule={jest.fn()}
-        onCancel={jest.fn()}
-        scheduledAt={new Date("2026-08-17T03:00:00.000Z")}
-        formattedTimePreferences={losAngelesPreferences}
-      />,
-    );
+    renderScheduleModal({
+      scheduledAt: new Date("2026-08-17T03:00:00.000Z"),
+      formattedTimePreferences: losAngelesPreferences,
+    });
 
     expect(screen.getByTestId("date-field-current-month")).toHaveTextContent("August 2026");
     expect(document.querySelector('[data-test-id="date-field-day-16"]')).toHaveAttribute("aria-pressed", "true");

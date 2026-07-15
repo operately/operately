@@ -16,6 +16,7 @@ export interface ScheduleModalProps {
   onCancel: () => void;
   scheduledAt: Date | null;
   formattedTimePreferences: FormattedTimePreferences;
+  title: string;
 }
 
 export function ScheduleModal({
@@ -26,6 +27,7 @@ export function ScheduleModal({
   onCancel,
   scheduledAt,
   formattedTimePreferences,
+  title,
 }: ScheduleModalProps) {
   const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(() =>
     contextualDateFromScheduledAt(scheduledAt, formattedTimePreferences),
@@ -57,7 +59,7 @@ export function ScheduleModal({
   return (
     <>
       {children}
-      <Modal isOpen={open} onClose={() => onOpenChange(false)} title="Schedule Post" size="xx-small">
+      <Modal isOpen={open} onClose={() => onOpenChange(false)} title={title} size="xx-small">
         <div className="mb-4 mt-2">
           <InlineCalendar
             selectedDate={selectedDate}

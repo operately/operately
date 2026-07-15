@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { IconX } from "../icons";
@@ -62,13 +62,12 @@ export function Modal({
   testId,
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   // Handle mounting the modal in the DOM
   useEffect(() => {
     setMounted(true);
 
-    // Enable trap focus and disable body scroll when modal is open
+    // Disable body scroll when modal is open
     if (isOpen) {
       document.body.style.overflow = "hidden";
 
@@ -89,9 +88,11 @@ export function Modal({
     return;
   }, [isOpen, onClose]);
 
-  // Handle clicks outside the modal
+  // Only close when the backdrop itself is clicked, not when clicks bubble from modal content.
+  // Stopping propagation on the content would break Radix popovers (e.g. TimePicker) that
+  // rely on click events reaching the document to detect outside dismiss.
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (closeOnBackdropClick && modalRef.current && !modalRef.current.contains(e.target as Node)) {
+    if (closeOnBackdropClick && e.target === e.currentTarget) {
       onClose();
     }
   };
@@ -118,9 +119,7 @@ export function Modal({
       data-test-id={testId}
     >
       <div
-        ref={modalRef}
         className={`bg-surface-base rounded-lg shadow-xl w-full max-h-[95vh] overflow-auto ${sizeClasses} ${contentClassName}`}
-        onClick={(e) => e.stopPropagation()}
       >
         {title && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-surface-outline">
