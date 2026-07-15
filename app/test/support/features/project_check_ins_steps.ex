@@ -82,12 +82,12 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
     |> UI.click(testid: "submit")
-    |> UI.assert_text("Check-In from")
+    |> UI.assert_text("Check-In for")
   end
 
   step :assert_check_in_submitted, ctx, %{status: status, description: description} do
     ctx
-    |> UI.assert_text("Check-In from")
+    |> UI.assert_text("Check-In for")
     |> UI.assert_text(description)
     |> UI.assert_text(@status_to_on_screen[status])
   end
