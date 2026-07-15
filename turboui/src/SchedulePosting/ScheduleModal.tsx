@@ -3,6 +3,10 @@ import React, { useState } from "react";
 import { InlineCalendar } from "../DateField/components/InlineCalendar";
 import { DateField } from "../DateField";
 import { SecondaryButton, PrimaryButton } from "../Button";
+import type { FormattedTimePreferences } from "../FormattedTime";
+import { TimePicker } from "../TimePicker";
+import { formatDate } from "../utils/formatting";
+import { dateInTimezone, zonedDateTimeToDate } from "../utils/timezone";
 
 export interface ScheduleModalProps {
   children?: React.ReactNode;
@@ -10,18 +14,32 @@ export interface ScheduleModalProps {
   onOpenChange: (open: boolean) => void;
   onSchedule: (date: Date) => void;
   onCancel: () => void;
+  scheduledAt: Date | null;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
-export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCancel }: ScheduleModalProps) {
-  const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(null);
-  const [time, setTime] = useState("09:00");
+export function ScheduleModal({
+  children,
+  open,
+  onOpenChange,
+  onSchedule,
+  onCancel,
+  scheduledAt,
+  formattedTimePreferences,
+}: ScheduleModalProps) {
+  const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(() =>
+    contextualDateFromScheduledAt(scheduledAt, formattedTimePreferences),
+  );
+  const [time, setTime] = useState<Date | null>(() =>
+    scheduledAt ? dateInTimezone(scheduledAt, formattedTimePreferences.timezone) : defaultScheduleTime(),
+  );
+  const now = new Date();
+  const today = dateInTimezone(now, formattedTimePreferences.timezone);
 
   const handleSchedule = () => {
-    if (selectedDate?.date) {
-      const [hours = "09", minutes = "00"] = time.split(":");
-      const finalDate = new Date(selectedDate.date);
-      finalDate.setHours(parseInt(hours, 10));
-      finalDate.setMinutes(parseInt(minutes, 10));
+    const finalDate = combineDateAndTime(selectedDate?.date, time, formattedTimePreferences.timezone);
+
+    if (finalDate) {
       onSchedule(finalDate);
       onOpenChange(false);
     }
@@ -32,16 +50,9 @@ export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCanc
     onOpenChange(false);
   };
 
-  const isInvalid =
-    !selectedDate ||
-    (() => {
-      if (!selectedDate?.date) return false;
-      const [hours = "09", minutes = "00"] = time.split(":");
-      const finalDate = new Date(selectedDate.date);
-      finalDate.setHours(parseInt(hours, 10));
-      finalDate.setMinutes(parseInt(minutes, 10));
-      return finalDate <= new Date();
-    })();
+  const scheduledDate = combineDateAndTime(selectedDate?.date, time, formattedTimePreferences.timezone);
+  const isNonexistentTime = Boolean(selectedDate && time && !scheduledDate);
+  const isInvalid = !scheduledDate || scheduledDate <= now;
 
   return (
     <>
@@ -51,23 +62,28 @@ export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCanc
           <InlineCalendar
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            minDateLimit={startOfToday()}
+            minDateLimit={startOfDay(today)}
+            today={today}
           />
         </div>
 
-        <div className="mb-6 flex items-center justify-between">
-          <label className="text-sm font-medium text-content-dimmed">Time</label>
-          <input
-            type="time"
+        <div className="mb-6 flex items-center gap-4">
+          <label id="schedule-time-label" className="text-sm font-medium text-content-dimmed" htmlFor="schedule-time">
+            Time
+          </label>
+          <TimePicker
             value={time}
-            onChange={(e) => setTime(e.target.value)}
-            className="border border-stroke-base rounded bg-surface-base px-2 py-1 text-sm focus:outline-none focus:border-brand-1"
+            onChange={setTime}
+            ariaLabelledBy="schedule-time-label"
+            id="schedule-time"
+            wrapperClassName="ml-auto w-36"
+            formattedTimePreferences={formattedTimePreferences}
           />
         </div>
 
         {isInvalid && selectedDate && (
           <div className="-mb-2 -mt-2 text-right text-xs text-red-500" role="alert">
-            Time must be in the future
+            {isNonexistentTime ? "This time does not exist in your timezone" : "Time must be in the future"}
           </div>
         )}
 
@@ -84,8 +100,45 @@ export function ScheduleModal({ children, open, onOpenChange, onSchedule, onCanc
   );
 }
 
-function startOfToday(): Date {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return today;
+function startOfDay(date: Date): Date {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+
+function defaultScheduleTime(): Date {
+  const time = new Date();
+  time.setHours(9, 0, 0, 0);
+  return time;
+}
+
+function contextualDateFromScheduledAt(
+  scheduledAt: Date | null,
+  formattedTimePreferences: FormattedTimePreferences,
+): DateField.ContextualDate | null {
+  if (!scheduledAt) return null;
+
+  const date = dateInTimezone(scheduledAt, formattedTimePreferences.timezone);
+  date.setHours(0, 0, 0, 0);
+
+  return {
+    date,
+    dateType: "day",
+    value: formatDate(date, formattedTimePreferences.locale, { year: "numeric", month: "short", day: "numeric" }),
+  };
+}
+
+function combineDateAndTime(date: Date | undefined, time: Date | null, timezone: string): Date | null {
+  if (!date || !time) return null;
+
+  return zonedDateTimeToDate(
+    {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+      hour: time.getHours(),
+      minute: time.getMinutes(),
+    },
+    timezone,
+  );
 }
