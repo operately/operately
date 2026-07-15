@@ -9,12 +9,18 @@ interface Props {
   setSelectedDate: React.Dispatch<React.SetStateAction<DateField.ContextualDate | null>>;
   minDateLimit?: Date;
   maxDateLimit?: Date;
+  today?: Date;
 }
 
-export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, maxDateLimit }: Props) {
-  const [calendarDate, setCalendarDate] = React.useState(new Date());
+export function InlineCalendar({
+  selectedDate,
+  setSelectedDate,
+  minDateLimit,
+  maxDateLimit,
+  today = new Date(),
+}: Props) {
+  const [calendarDate, setCalendarDate] = React.useState(() => new Date(selectedDate?.date ?? today));
 
-  const today = new Date();
   const currentMonth = calendarDate.getMonth();
   const currentYear = calendarDate.getFullYear();
 
@@ -86,11 +92,11 @@ export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, ma
   }
 
   const prevMonth = () => {
-    setCalendarDate(new Date(currentYear, currentMonth - 1, 1));
+    setCalendarDate((date) => new Date(date.getFullYear(), date.getMonth() - 1, 1));
   };
 
   const nextMonth = () => {
-    setCalendarDate(new Date(currentYear, currentMonth + 1, 1));
+    setCalendarDate((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1));
   };
 
   return (
