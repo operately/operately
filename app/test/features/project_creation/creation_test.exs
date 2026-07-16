@@ -18,6 +18,7 @@ defmodule Operately.Features.ProjectCreation.CreationTest do
     |> Steps.assert_project_created_feed()
   end
 
+  @tag login_as: :reviewer
   feature "add project and assign someone else as champion, myself as reviewer", ctx do
     params = %{name: "Website Redesign", space: ctx.group, creator: ctx.reviewer, champion: ctx.champion, reviewer: ctx.reviewer}
 
@@ -30,6 +31,7 @@ defmodule Operately.Features.ProjectCreation.CreationTest do
     |> Steps.assert_project_created_feed(ctx.reviewer)
   end
 
+  @tag login_as: :non_contributor
   feature "creator is added as contributor when creating a project", ctx do
     params = %{name: "Website Redesign", space: ctx.group, creator: ctx.non_contributor, champion: ctx.champion, reviewer: ctx.reviewer}
 
@@ -40,6 +42,7 @@ defmodule Operately.Features.ProjectCreation.CreationTest do
     |> Steps.assert_creator_is_contributor(params)
   end
 
+  @tag login_as: :champion
   feature "select a parent goal while adding a project", ctx do
     params = %{
       name: "Website Redesign",

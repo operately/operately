@@ -15,6 +15,7 @@ defmodule Operately.Features.ProjectCreation.PermissionsTest do
     |> Steps.assert_validation_error("Can't be the same as the champion")
   end
 
+  @tag login_as: :champion
   feature "creating a project without space is not allowed", ctx do
     params = %{name: "Website Redesign", creator: ctx.champion, champion: ctx.champion}
 
@@ -24,6 +25,7 @@ defmodule Operately.Features.ProjectCreation.PermissionsTest do
     |> Steps.assert_validation_error("Space is required")
   end
 
+  @tag login_as: :champion
   feature "creating a project with no reviewer", ctx do
     params = %{name: "Website Redesign", space: ctx.group, creator: ctx.champion, champion: ctx.champion}
 
@@ -37,6 +39,7 @@ defmodule Operately.Features.ProjectCreation.PermissionsTest do
     |> Steps.assert_project_created_feed()
   end
 
+  @tag login_as: :champion
   feature "creating a project in a confidential space", ctx do
     params = %{name: "Website Redesign", creator: ctx.champion, reviewer: ctx.reviewer, champion: ctx.champion}
 
@@ -52,6 +55,7 @@ defmodule Operately.Features.ProjectCreation.PermissionsTest do
     |> Steps.assert_project_created_feed()
   end
 
+  @tag login_as: :champion
   feature "creating an invite-only project in a confidential space", ctx do
     params = %{name: "Website Redesign", creator: ctx.champion, reviewer: ctx.reviewer, champion: ctx.champion}
 
