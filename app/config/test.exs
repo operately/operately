@@ -68,4 +68,9 @@ config :operately, :mcp_rate_limits, %{
 
 config :wallaby, screenshot_on_failure: true
 config :wallaby, otp_app: :operately
-config :wallaby, hackney_options: [timeout: 3_000]
+
+config :wallaby,
+  hackney_options: [
+    timeout: 3_000,
+    hackney: [pool: :wallaby_pool]
+  ]
