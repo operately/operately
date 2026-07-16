@@ -8,13 +8,13 @@ import { PrimaryButton, IconSquareCheckFilled } from "turboui";
 import { useLoaderData } from "./loader";
 
 export function AckCTA() {
-  const { activity } = useLoaderData();
+  const { activity, goal } = useLoaderData();
 
   if (activity.action !== "goal_closing") return null;
 
   const ackOnLoad = shouldAcknowledgeOnLoad();
   const showButton = showAcknowledgeButton(activity);
-  const ackHandler = useAcknowledgeHandler(activity, ackOnLoad);
+  const ackHandler = useAcknowledgeHandler(activity, goal, ackOnLoad);
 
   if (ackOnLoad || !showButton) return null;
 
@@ -49,7 +49,7 @@ function showAcknowledgeButton(activity: Activities.Activity) {
   return !!activity.permissions?.canAcknowledge;
 }
 
-function useAcknowledgeHandler(activity: Activities.Activity, ackOnLoad: boolean) {
+function useAcknowledgeHandler(activity: Activities.Activity, goal: Goals.Goal, ackOnLoad: boolean) {
   const refresh = Pages.useRefresh();
   const [ack] = Goals.useAcknowledgeGoalRetrospective();
 
@@ -57,7 +57,7 @@ function useAcknowledgeHandler(activity: Activities.Activity, ackOnLoad: boolean
     if (activity.commentThread?.acknowledgedAt) return;
     if (!activity.permissions?.canAcknowledge) return;
 
-    await ack({ id: activity.id });
+    await ack({ goalId: goal.id });
 
     refresh();
   };

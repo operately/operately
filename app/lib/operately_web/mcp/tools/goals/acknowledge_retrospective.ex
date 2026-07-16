@@ -17,11 +17,11 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.AcknowledgeRetrospective do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "goals"},
-      examples: [%{"title" => "Acknowledge a goal retrospective", "arguments" => %{"retrospective_id" => "activity_123"}}],
+      examples: [%{"title" => "Acknowledge a goal retrospective", "arguments" => %{"goal_id" => "goal_123"}}],
       input_schema:
         JsonSchema.object(
-          %{"retrospective_id" => JsonSchema.string("The goal closing activity identifier.")},
-          required: ["retrospective_id"]
+          %{"goal_id" => JsonSchema.string("The goal identifier.")},
+          required: ["goal_id"]
         ),
       output_schema:
         JsonSchema.object(
@@ -32,9 +32,9 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.AcknowledgeRetrospective do
   end
 
   @impl true
-  def call(conn, %{"retrospective_id" => retrospective_id}) do
-    with {:ok, retrospective_id} <- Helpers.decode_id(retrospective_id) do
-      GoalAcknowledgeRetrospective.call(conn, %{id: retrospective_id})
+  def call(conn, %{"goal_id" => goal_id}) do
+    with {:ok, goal_id} <- Helpers.decode_id(goal_id) do
+      GoalAcknowledgeRetrospective.call(conn, %{goal_id: goal_id})
     end
   end
 end

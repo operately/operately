@@ -33,7 +33,7 @@ defmodule Operately.Support.McpE2E.Tools.AcknowledgeGoalRetrospectiveSteps do
   step :call_acknowledge_goal_retrospective, ctx do
     conn =
       call_tool(ctx.access_token, ctx.session_id, "acknowledge_goal_retrospective", %{
-        "retrospective_id" => Paths.activity_id(ctx.closing_activity)
+        "goal_id" => Paths.goal_id(ctx.goal)
       })
 
     Map.put(ctx, :tool_conn, conn)

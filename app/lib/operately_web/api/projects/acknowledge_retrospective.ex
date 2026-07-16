@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.Projects.AcknowledgeRetrospective do
   @moduledoc """
-  Acknowledges a project retrospective.
+  Acknowledges a project retrospective by project ID.
   """
 
   use TurboConnect.Mutation
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeRetrospective do
   require Logger
 
   inputs do
-    field :id, :id, null: false
+    field :project_id, :id, null: false
   end
 
   outputs do
@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeRetrospective do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:retrospective, fn ctx ->
-      Retrospective.get(ctx.me, id: inputs.id, opts: [preload: [:project, :author, :acknowledged_by]])
+      Retrospective.get(ctx.me, project_id: inputs.project_id, opts: [preload: [:project, :author, :acknowledged_by]])
     end)
     |> run(:check_permissions, fn ctx ->
       Permissions.check(ctx.retrospective.request_info.access_level, :can_edit, company_read_only: company_read_only(conn))

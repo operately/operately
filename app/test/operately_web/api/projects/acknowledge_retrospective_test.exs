@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeRetrospectiveTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         retrospective = retrospective_fixture(%{author_id: ctx.creator.id, project_id: project.id})
 
-        assert {code, res} = request(ctx.conn, retrospective)
+        assert {code, res} = request(ctx.conn, project)
         assert code == @test.expected
 
         case @test.expected do
@@ -55,9 +55,9 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeRetrospectiveTest do
     test "authors cannot acknowledge their own retrospectives", ctx do
       space = create_space(ctx)
       project = create_project(ctx, space, :no_access, :no_access, :edit_access)
-      retrospective = retrospective_fixture(%{author_id: ctx.person.id, project_id: project.id})
+      retrospective_fixture(%{author_id: ctx.person.id, project_id: project.id})
 
-      assert {400, res} = request(ctx.conn, retrospective)
+      assert {400, res} = request(ctx.conn, project)
       assert res.message == "Authors cannot acknowledge their own retrospectives"
     end
   end
@@ -78,26 +78,38 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeRetrospectiveTest do
       refute retrospective.acknowledged_at
       refute retrospective.acknowledged_by_id
 
-      assert {200, res} = request(ctx.conn, retrospective)
+      assert {200, res} = request(ctx.conn, ctx.project)
       assert_response(res, retrospective)
+    end
+
+    test "returns not found when the project has no retrospective", ctx do
+      assert {404, _} = request(ctx.conn, ctx.project)
+    end
+
+    test "returns not found for an unknown project", ctx do
+      unknown_project_id = Operately.ShortUuid.encode!(Ecto.UUID.generate())
+
+      assert {404, _} = request_by_project_id(ctx.conn, unknown_project_id)
     end
 
     test "idempotency: acknowledging the same retrospective multiple times does not change the state", ctx do
       retrospective = retrospective_fixture(%{author_id: ctx.creator.id, project_id: ctx.project.id})
 
-      assert {200, res} = request(ctx.conn, retrospective)
+      assert {200, res} = request(ctx.conn, ctx.project)
       assert_response(res, retrospective)
       assert acknowledge_activity_count() == 1
 
-      assert {200, res} = request(ctx.conn, retrospective)
+      assert {200, res} = request(ctx.conn, ctx.project)
       assert_response(res, retrospective)
       assert acknowledge_activity_count() == 1
     end
   end
 
-  defp request(conn, retrospective) do
-    mutation(conn, [:projects, :acknowledge_retrospective], %{id: Paths.project_retrospective_id(retrospective)})
+  defp request(conn, project) do
+    request_by_project_id(conn, Paths.project_id(project))
   end
+
+  defp request_by_project_id(conn, project_id), do: mutation(conn, [:projects, :acknowledge_retrospective], %{project_id: project_id})
 
   defp assert_response(res, retrospective) do
     retrospective = Repo.reload(retrospective) |> Repo.preload([:project, :author, :acknowledged_by])

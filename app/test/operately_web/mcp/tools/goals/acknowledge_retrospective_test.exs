@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.AcknowledgeRetrospectiveTest do
 
     assert {:ok, %{activity: result}} =
              AcknowledgeRetrospective.call(ToolConnHelper.conn_as(ctx, :coworker), %{
-               "retrospective_id" => Paths.activity_id(activity)
+               "goal_id" => Paths.goal_id(ctx.goal)
              })
 
     assert result.id == Paths.activity_id(activity)
