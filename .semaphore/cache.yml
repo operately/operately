@@ -16,9 +16,9 @@ blocks:
             - checkout
             - make test.build
             - make cli.node_modules
-            - cache store app-deps app/deps
-            - cache store app-build app/_build
-            - cache store app-node-modules app/node_modules
-            - cache store turboui-node-modules turboui/node_modules
-            - cache store turboui-dist turboui/dist
-            - cache store cli-node-modules cli/node_modules
+            - cache store app-deps-v2-$(checksum app/mix.lock)-$(checksum app/mix.exs) app/deps
+            - cache store app-build-v2-ubuntu2404-$(checksum app/mix.lock)-$(checksum app/mix.exs) app/_build
+            - cache store app-node-modules-v2-$(checksum app/package-lock.json) app/node_modules
+            - cache store turboui-node-modules-v2-$(checksum turboui/package-lock.json) turboui/node_modules
+            - cache store turboui-dist-v2-$(git rev-parse HEAD:turboui) turboui/dist
+            - cache store cli-node-modules-v2-$(checksum cli/package-lock.json) cli/node_modules
