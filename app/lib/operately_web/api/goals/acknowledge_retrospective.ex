@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospective do
   @moduledoc """
-  Acknowledges a goal retrospective (goal_closing activity).
+  Acknowledges a goal retrospective by goal ID.
   """
 
   use TurboConnect.Mutation
@@ -8,13 +8,13 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospective do
 
   alias Operately.Activities.Activity
   alias Operately.Goals
-  alias Operately.Goals.Permissions
+  alias Operately.Goals.{Permissions, Retrospective}
   alias Operately.Operations.GoalRetrospectiveAcknowledgement
 
   require Logger
 
   inputs do
-    field :id, :id, null: false
+    field :goal_id, :id, null: false
   end
 
   outputs do
@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospective do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:activity, fn ctx ->
-      Activity.get(ctx.me, id: inputs.id, opts: [preload: [:author, :comment_thread]])
+      get_retrospective_activity(ctx.me, inputs.goal_id)
     end)
     |> run(:check_goal_closing, fn ctx -> check_goal_closing(ctx.activity) end)
     |> run(:goal, fn ctx -> load_goal(ctx) end)
@@ -78,6 +78,12 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospective do
       {:ok, :is_goal_closing}
     else
       {:error, :not_a_goal_closing}
+    end
+  end
+
+  defp get_retrospective_activity(me, goal_id) do
+    with {:ok, activity_id} <- Retrospective.get(goal_id: goal_id) do
+      Activity.get(me, id: activity_id, opts: [preload: [:author, :comment_thread]])
     end
   end
 

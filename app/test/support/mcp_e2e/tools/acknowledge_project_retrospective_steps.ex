@@ -14,7 +14,7 @@ defmodule Operately.Support.McpE2E.Tools.AcknowledgeProjectRetrospectiveSteps do
   step :call_acknowledge_project_retrospective, ctx do
     conn =
       call_tool(ctx.access_token, ctx.session_id, "acknowledge_project_retrospective", %{
-        "retrospective_id" => Paths.project_retrospective_id(ctx.retrospective)
+        "project_id" => Paths.project_id(ctx.project)
       })
 
     Map.put(ctx, :tool_conn, conn)
