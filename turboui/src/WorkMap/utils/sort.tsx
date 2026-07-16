@@ -38,6 +38,22 @@ export function sortItemsByDueDate(items: WorkMap.Item[]): WorkMap.Item[] {
 }
 
 /**
+ * Sorts profile task items by due date and then by assignment date.
+ * Tasks without a due date are ordered by their newest assignment first.
+ */
+export function sortTasksByDueDateAndAssignmentDate(items: WorkMap.Item[]): WorkMap.Item[] {
+  return [...items].sort((a, b) => {
+    const dueDateCompare = compareDates(a.timeframe?.endDate?.date, b.timeframe?.endDate?.date);
+    if (dueDateCompare !== 0) return dueDateCompare;
+
+    const assignmentDateCompare = compareDatesDescending(a.assignedAt, b.assignedAt);
+    if (assignmentDateCompare !== 0) return assignmentDateCompare;
+
+    return (a.name || "").localeCompare(b.name || "");
+  });
+}
+
+/**
  * Helper function to sort items by their duration in descending order (longer duration first)
  * If items have the same duration, they are sorted by name
  */
@@ -65,4 +81,29 @@ function getDuration(item: WorkMap.Item): number | null {
 
   // Calculate duration only if both dates exist and are valid (end is after start)
   return start && end && end > start ? end.getTime() - start.getTime() : null;
+}
+
+function compareDates(first: string | Date | null | undefined, second: string | Date | null | undefined): number {
+  const dateA = parse(first);
+  const dateB = parse(second);
+
+  if (!dateA && !dateB) return 0;
+  if (!dateA) return 1;
+  if (!dateB) return -1;
+
+  return dateA.getTime() - dateB.getTime();
+}
+
+function compareDatesDescending(
+  first: string | Date | null | undefined,
+  second: string | Date | null | undefined,
+): number {
+  const dateA = parse(first);
+  const dateB = parse(second);
+
+  if (!dateA && !dateB) return 0;
+  if (!dateA) return 1;
+  if (!dateB) return -1;
+
+  return dateB.getTime() - dateA.getTime();
 }

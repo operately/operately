@@ -17,7 +17,7 @@ import { AboutMe, Colleagues, Contact, PageHeader } from "./components";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import { WorkMap, WorkMapTable } from "../WorkMap";
 import { processPersonalItems } from "../WorkMap/utils/itemProcessor";
-import { sortItemsByClosedDate, sortItemsByDueDate } from "../WorkMap/utils/sort";
+import { sortItemsByClosedDate, sortItemsByDueDate, sortTasksByDueDateAndAssignmentDate } from "../WorkMap/utils/sort";
 import { PersonCard } from "../PersonCard";
 import { isContentEmpty } from "../RichContent";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
@@ -57,8 +57,14 @@ export function ProfilePage(props: ProfilePage.Props) {
 
   const workMapColumnOptions = React.useMemo(() => {
     return match(tabs.active)
-      .with("tasks", () => ({ hideOwner: true, hideProgress: true, hideNextStep: true, hideRole: true }))
-      .otherwise(() => ({ hideOwner: true, hideProject: true }));
+      .with("tasks", () => ({
+        hideOwner: true,
+        hideProgress: true,
+        hideNextStep: true,
+        hideRole: true,
+        hideAssignedDate: false,
+      }))
+      .otherwise(() => ({ hideOwner: true, hideProject: true, hideAssignedDate: true }));
   }, [tabs.active]);
 
   const zeroStateMessage = React.useMemo(() => {
@@ -100,7 +106,7 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
     const reviewerData = processPersonalItems(reviewerWorkMapWithoutTasks);
 
     return {
-      tasks: sortItemsByDueDate(tasks.map((t) => ({ ...t, children: [] }))),
+      tasks: sortTasksByDueDateAndAssignmentDate(tasks.map((t) => ({ ...t, children: [] }))),
       assigned: sortItemsByDueDate(assignedData.ongoingItems),
       reviewing: sortItemsByDueDate(reviewerData.ongoingItems),
       paused: sortItemsByDueDate([...assignedData.pausedItems, ...reviewerData.pausedItems]),
