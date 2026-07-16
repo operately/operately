@@ -18,6 +18,21 @@ defmodule Operately.Goals.Retrospective do
   import Ecto.Query, only: [from: 2]
   alias Operately.Repo
 
+  def get(goal_id: goal_id) do
+    from(activity in Operately.Activities.Activity,
+      where: activity.action == "goal_closing",
+      where: activity.content["goal_id"] == ^goal_id,
+      order_by: [desc: activity.inserted_at],
+      limit: 1,
+      select: activity.id
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      activity_id -> {:ok, activity_id}
+    end
+  end
+
   def find(goal_id) do
     from(activity in Operately.Activities.Activity,
       join: thread in assoc(activity, :comment_thread),

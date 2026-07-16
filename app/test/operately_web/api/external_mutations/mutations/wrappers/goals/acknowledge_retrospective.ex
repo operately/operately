@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.AcknowledgeRetrospective do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Goals.AcknowledgeRetrospective do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.AcknowledgeRetrospe
   @impl true
   def inputs(ctx) do
     %{
-      id: Paths.activity_id(ctx.activity)
+      goal_id: Paths.goal_id(ctx.goal)
     }
   end
 
