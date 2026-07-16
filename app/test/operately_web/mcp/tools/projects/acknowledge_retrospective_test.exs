@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.AcknowledgeRetrospectiveTest do
 
     assert {:ok, %{retrospective: retrospective}} =
              AcknowledgeRetrospective.call(ToolConnHelper.conn_as(ctx, :coworker), %{
-               "retrospective_id" => Paths.project_retrospective_id(ctx.retrospective)
+               "project_id" => Paths.project_id(ctx.project)
              })
 
     assert retrospective.id == Paths.project_retrospective_id(ctx.retrospective)

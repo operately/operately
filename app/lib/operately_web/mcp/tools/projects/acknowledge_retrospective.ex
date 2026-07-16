@@ -17,11 +17,11 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.AcknowledgeRetrospective do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "projects"},
-      examples: [%{"title" => "Acknowledge a project retrospective", "arguments" => %{"retrospective_id" => "retrospective_123"}}],
+      examples: [%{"title" => "Acknowledge a project retrospective", "arguments" => %{"project_id" => "project_123"}}],
       input_schema:
         JsonSchema.object(
-          %{"retrospective_id" => JsonSchema.string("The project retrospective identifier.")},
-          required: ["retrospective_id"]
+          %{"project_id" => JsonSchema.string("The project identifier.")},
+          required: ["project_id"]
         ),
       output_schema:
         JsonSchema.object(
@@ -32,9 +32,9 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.AcknowledgeRetrospective do
   end
 
   @impl true
-  def call(conn, %{"retrospective_id" => retrospective_id}) do
-    with {:ok, retrospective_id} <- Helpers.decode_id(retrospective_id) do
-      ProjectAcknowledgeRetrospective.call(conn, %{id: retrospective_id})
+  def call(conn, %{"project_id" => project_id}) do
+    with {:ok, project_id} <- Helpers.decode_id(project_id) do
+      ProjectAcknowledgeRetrospective.call(conn, %{project_id: project_id})
     end
   end
 end
