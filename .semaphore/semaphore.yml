@@ -19,7 +19,7 @@ blocks:
         commands:
           - checkout
           - cache restore app-deps-v2-$(checksum app/mix.lock)-$(checksum app/mix.exs)
-          - cache restore app-build-v2-ubuntu2404-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-build-v2-$SEMAPHORE_AGENT_MACHINE_OS_IMAGE-$(checksum app/mix.lock)-$(checksum app/mix.exs)
           - cache restore app-node-modules-v2-$(checksum app/package-lock.json)
           - cache restore turboui-node-modules-v2-$(checksum turboui/package-lock.json)
           - cache restore turboui-dist-v2-$(git rev-parse HEAD:turboui)
@@ -75,7 +75,7 @@ blocks:
         commands:
           - checkout
           - cache restore app-deps-v2-$(checksum app/mix.lock)-$(checksum app/mix.exs)
-          - cache restore app-build-v2-ubuntu2404-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-build-v2-$SEMAPHORE_AGENT_MACHINE_OS_IMAGE-$(checksum app/mix.lock)-$(checksum app/mix.exs)
           - cache restore app-node-modules-v2-$(checksum app/package-lock.json)
           - cache restore cli-node-modules-v2-$(checksum cli/package-lock.json)
           - cache restore turboui-node-modules-v2-$(checksum turboui/package-lock.json)
@@ -138,7 +138,7 @@ blocks:
         commands:
           - checkout
           - cache restore app-deps-v2-$(checksum app/mix.lock)-$(checksum app/mix.exs)
-          - cache restore app-build-v2-ubuntu2404-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-build-v2-$SEMAPHORE_AGENT_MACHINE_OS_IMAGE-$(checksum app/mix.lock)-$(checksum app/mix.exs)
           - cache restore app-node-modules-v2-$(checksum app/package-lock.json)
           - cache restore turboui-node-modules-v2-$(checksum turboui/package-lock.json)
           - cache restore turboui-dist-v2-$(git rev-parse HEAD:turboui)
