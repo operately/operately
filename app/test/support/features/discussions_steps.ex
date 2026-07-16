@@ -336,22 +336,33 @@ defmodule Operately.Support.Features.DiscussionsSteps do
 
   step :publish_scheduled_discussion_now, ctx do
     ctx
-    |> UI.login_as(ctx.author)
-    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
-    |> UI.click_text("Scheduled discussion")
-    |> UI.click(testid: "edit-discussion")
+    |> edit_scheduled_discussion()
     |> UI.click(testid: "publish-now-options")
+    |> UI.wait_until_has(testid: "publish-now-option")
     |> UI.click(testid: "publish-now-option")
+    |> UI.assert_page(Paths.message_path(ctx.company, ctx.scheduled_discussion))
   end
 
   step :save_scheduled_discussion_as_draft, ctx do
     ctx
+    |> edit_scheduled_discussion()
+    |> UI.click(testid: "publish-now-options")
+    |> UI.wait_until_has(testid: "save-as-draft-option")
+    |> UI.click(testid: "save-as-draft-option")
+    |> UI.assert_page(Paths.message_path(ctx.company, ctx.scheduled_discussion))
+  end
+
+  defp edit_scheduled_discussion(ctx) do
+    ctx
     |> UI.login_as(ctx.author)
     |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))
+    |> UI.wait_until_text("Scheduled discussion")
     |> UI.click_text("Scheduled discussion")
+    |> UI.assert_page(Paths.message_path(ctx.company, ctx.scheduled_discussion))
+    |> UI.wait_until_has(testid: "edit-discussion")
     |> UI.click(testid: "edit-discussion")
-    |> UI.click(testid: "publish-now-options")
-    |> UI.click(testid: "save-as-draft-option")
+    |> UI.wait_until_has(testid: "discussion-edit-page")
+    |> UI.wait_until_has(testid: "publish-now-options")
   end
 
   step :assert_scheduled_discussion_is_published, ctx do

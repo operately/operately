@@ -22667,7 +22667,7 @@
       "inputs": [
         {
           "default": null,
-          "name": "id",
+          "name": "goal_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -22677,7 +22677,7 @@
           "nullable": false
         }
       ],
-      "docstring": "Acknowledges a goal retrospective (goal_closing activity).",
+      "docstring": "Acknowledges a goal retrospective by goal ID.",
       "full_name": "goals/acknowledge_retrospective",
       "method": "POST"
     },
@@ -26480,7 +26480,7 @@
       "inputs": [
         {
           "default": null,
-          "name": "id",
+          "name": "project_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -26490,7 +26490,7 @@
           "nullable": false
         }
       ],
-      "docstring": "Acknowledges a project retrospective.",
+      "docstring": "Acknowledges a project retrospective by project ID.",
       "full_name": "projects/acknowledge_retrospective",
       "method": "POST"
     },
