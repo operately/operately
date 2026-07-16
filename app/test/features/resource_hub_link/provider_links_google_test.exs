@@ -1,4 +1,4 @@
-defmodule Operately.Features.ResourceHubLink.ProviderLinksTest do
+defmodule Operately.Features.ResourceHubLink.ProviderLinksGoogleTest do
   use Operately.FeatureCase
   use Operately.Support.ResourceHub.Deletion
   use Operately.Support.ResourceHub.Comments
@@ -15,36 +15,36 @@ defmodule Operately.Features.ResourceHubLink.ProviderLinksTest do
   }
 
   describe "Create links" do
-    feature "Airtable link", ctx do
+    feature "Google Doc link", ctx do
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_airtable_link(@link)
+      |> Steps.create_google_doc_link(@link)
       |> Steps.assert_link_content(@link)
-      |> Steps.assert_link_is_airtable(@link.title)
+      |> Steps.assert_link_is_google_doc(@link.title)
     end
 
-    feature "Dropbox link", ctx do
+    feature "Google Sheet link", ctx do
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_dropbox_link(@link)
+      |> Steps.create_google_sheet_link(@link)
       |> Steps.assert_link_content(@link)
-      |> Steps.assert_link_is_dropbox(@link.title)
+      |> Steps.assert_link_is_google_sheet(@link.title)
     end
 
-    feature "Figma link", ctx do
+    feature "Google Slide link", ctx do
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_figma_link(@link)
+      |> Steps.create_google_slide_link(@link)
       |> Steps.assert_link_content(@link)
-      |> Steps.assert_link_is_figma(@link.title)
+      |> Steps.assert_link_is_google_slide(@link.title)
     end
 
-    feature "Notion link", ctx do
+    feature "Google link", ctx do
       ctx
       |> Steps.visit_resource_hub_page()
-      |> Steps.create_notion_link(@link)
+      |> Steps.create_google_link(@link)
       |> Steps.assert_link_content(@link)
-      |> Steps.assert_link_is_notion(@link.title)
+      |> Steps.assert_link_is_google(@link.title)
     end
   end
 end
