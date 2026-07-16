@@ -24,6 +24,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       is_new: item.is_new,
       completed_on: OperatelyWeb.Api.Serializer.serialize(item.completed_on),
       timeframe: OperatelyWeb.Api.Serializer.serialize(item.timeframe),
+      assigned_at: OperatelyWeb.Api.Serializer.serialize(item.assigned_at),
       milestones: serialize_milestones(item),
       children: OperatelyWeb.Api.Serializer.serialize(item.children),
       privacy: OperatelyWeb.Api.Serializer.serialize(item.privacy),

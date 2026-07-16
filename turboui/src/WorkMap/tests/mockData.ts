@@ -49,6 +49,7 @@ function withDefaults(item: any): WorkMap.Item {
     itemPath: "#",
     isNew: false,
     completedOn: null,
+    assignedAt: null,
     nextStep: "",
     taskStatus: null,
     milestones: [],
@@ -116,6 +117,7 @@ export const mockTasksTabItems: WorkMap.Item[] = (() => {
       projectPath: "#",
       space: { id: "space-product", name: "Product", link: "#" },
       nextStep: "Draft structure",
+      assignedAt: "2025-01-05T00:00:00.000Z",
       timeframe: {
         startDate: createContextualDate("2025-01-10T00:00:00.000Z", "day"),
         endDate: createContextualDate("2025-01-20T00:00:00.000Z", "day"),
@@ -133,6 +135,7 @@ export const mockTasksTabItems: WorkMap.Item[] = (() => {
       projectPath: "#",
       space: { id: "space-product", name: "Product", link: "#" },
       nextStep: "Prepare script",
+      assignedAt: "2025-01-15T00:00:00.000Z",
       isNew: true,
       timeframe: {
         startDate: createContextualDate("2025-01-12T00:00:00.000Z", "day"),
@@ -151,6 +154,7 @@ export const mockTasksTabItems: WorkMap.Item[] = (() => {
       projectPath: "#",
       space: { id: "space-marketing", name: "Marketing", link: "#" },
       nextStep: "Publish after review",
+      assignedAt: "2025-01-25T00:00:00.000Z",
       timeframe: {
         startDate: createContextualDate("2025-02-01T00:00:00.000Z", "day"),
         endDate: createContextualDate("2025-02-05T00:00:00.000Z", "day"),
@@ -168,6 +172,7 @@ export const mockTasksTabItems: WorkMap.Item[] = (() => {
       projectPath: "#",
       space: { id: "space-marketing", name: "Marketing", link: "#" },
       nextStep: "Confirm redirects",
+      assignedAt: "2025-01-30T00:00:00.000Z",
       timeframe: {
         startDate: createContextualDate("2025-02-02T00:00:00.000Z", "day"),
         endDate: createContextualDate("2025-02-10T00:00:00.000Z", "day"),

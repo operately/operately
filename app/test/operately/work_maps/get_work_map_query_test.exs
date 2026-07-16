@@ -94,6 +94,9 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       open_task = Map.fetch!(items_by_id, ctx.open_task.id)
       assert open_task.type == :task
       assert open_task.parent_id == ctx.project.id
+
+      assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.open_task.id, person_id: ctx.assignee.id)
+      assert open_task.assigned_at == assignee.inserted_at
     end
 
     test "prioritizes contributor_id over requester when include_tasks is true", ctx do

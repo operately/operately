@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React from "react";
 import { Page } from "../../Page";
 import WorkMap from "../components";
 import { WorkMapTable } from "../components";
@@ -86,7 +85,7 @@ export const TasksTab: Story = {
           <WorkMapTable
             items={mockTasksTabItems}
             tab="all"
-            columnOptions={{ hideOwner: true, hideProgress: true, hideSpace: true }}
+            columnOptions={{ hideOwner: true, hideProgress: true, hideSpace: true, hideAssignedDate: false }}
             type="personal"
             formattedTimePreferences={defaultFormattedTimePreferences}
           />

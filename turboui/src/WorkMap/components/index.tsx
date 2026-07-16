@@ -167,6 +167,7 @@ export namespace WorkMap {
     isNew: boolean;
     children: Item[];
     completedOn: string | null;
+    assignedAt: string | null;
     timeframe: Timeframe | null;
     milestones: Milestone[];
     type: ItemType;
@@ -192,6 +193,7 @@ export namespace WorkMap {
     hideStatus?: boolean;
     hideProgress?: boolean;
     hideDueDate?: boolean;
+    hideAssignedDate?: boolean;
     hideOwner?: boolean;
     hideRole?: boolean;
     hideNextStep?: boolean;

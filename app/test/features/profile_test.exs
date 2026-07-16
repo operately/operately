@@ -159,6 +159,22 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_item_visible(name: task_name)
   end
 
+  feature "shows assigned dates only in the tasks tab", ctx do
+    ctx
+    |> Steps.given_task_assigned_to_person(task_name: "Prepare launch checklist")
+    |> Steps.visit_profile_page()
+    |> Steps.click_tasks_tab()
+    |> Steps.assert_assigned_on_column_visible()
+    |> Steps.click_assigned_tab()
+    |> Steps.refute_assigned_on_column_visible()
+    |> Steps.click_reviewing_tab()
+    |> Steps.refute_assigned_on_column_visible()
+    |> Steps.click_paused_tab()
+    |> Steps.refute_assigned_on_column_visible()
+    |> Steps.click_completed_tab()
+    |> Steps.refute_assigned_on_column_visible()
+  end
+
   feature "view tasks assigned to another person", ctx do
     task_name = "Prepare launch checklist"
 
