@@ -183,6 +183,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> Operately.Tasks.Task.scope_company(company_id)
     |> where([project: p], is_nil(p.id) or p.status == "active")
     |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
+    |> select_merge([assignee: a], %{assigned_at: a.inserted_at})
     |> preload([:project, :space, :company, :assigned_people])
     |> preload_project_space_if_authorized(person)
     |> Repo.all()
