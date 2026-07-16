@@ -23,11 +23,13 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> wait_until_goal_page()
+    |> UI.wait_until_has(testid: "page-header")
   end
 
   step :click_add_goal_in_related_work, ctx do
     ctx
-    |> UI.assert_text("Subgoals & Projects", testid: "goal-page")
+    |> UI.wait_until_text("Subgoals & Projects", testid: "goal-page")
+    |> UI.wait_until_testid(testid: "add-subgoal")
     |> UI.click(testid: "add-subgoal")
   end
 
@@ -39,16 +41,20 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   end
 
   step :fill_in_goal_name, ctx, name do
-    ctx |> UI.fill_text_field(testid: "goal-name", with: name)
+    ctx
+    |> UI.wait_until_testid(testid: "goal-name")
+    |> UI.fill_text_field(testid: "goal-name", with: name)
   end
 
   step :submit, ctx do
-    ctx |> UI.click(testid: "submit")
+    ctx
+    |> UI.click(testid: "submit")
+    |> UI.sleep(300)
   end
 
   step :assert_goal_added, ctx, name do
     ctx
-    |> UI.wait_until_testid(testid: "goal-page")
+    |> wait_until_goal_page()
     |> UI.wait_until_has(testid: "page-header")
     |> UI.assert_text(name)
     |> then(fn ctx ->
@@ -86,7 +92,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
 
   step :assert_parent_goal, ctx do
     ctx
-    |> UI.wait_until_testid(testid: "goal-page")
+    |> wait_until_goal_page()
     |> UI.wait_until_has(testid: "page-header")
     |> UI.wait_until_text(ctx.goal.name, testid: "parent-goal-field")
   end
@@ -156,7 +162,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     wait_until_page(ctx, "goal-page")
   end
 
-  defp wait_until_page(ctx, testid, retry_delays \\ [250, 500, 1_000, 2_000]) do
+  defp wait_until_page(ctx, testid, retry_delays \\ [250, 500, 1_000, 2_000, 2_500, 3_000]) do
     UI.wait_until_testid(ctx, testid: testid)
   rescue
     e in RuntimeError ->
