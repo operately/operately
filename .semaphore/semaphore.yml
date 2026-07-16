@@ -18,13 +18,13 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cache restore app-deps
-          - cache restore app-build
-          - cache restore app-node-modules
-          - cache restore turboui-node-modules
-          - cache restore turboui-dist
+          - cache restore app-deps-v2-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-build-v2-ubuntu2404-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-node-modules-v2-$(checksum app/package-lock.json)
+          - cache restore turboui-node-modules-v2-$(checksum turboui/package-lock.json)
+          - cache restore turboui-dist-v2-$(git rev-parse HEAD:turboui)
           - ./scripts/cache-fix-for-erlang
-          - make test.up
+          - make test.setup.license
       jobs:
         - name: Licence Check
           commands:
@@ -40,7 +40,7 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cache restore turboui-node-modules
+          - cache restore turboui-node-modules-v2-$(checksum turboui/package-lock.json)
 
       jobs:
         - name: Turbo Lint
@@ -74,12 +74,12 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cache restore app-deps
-          - cache restore app-build
-          - cache restore app-node-modules
-          - cache restore cli-node-modules
-          - cache restore turboui-node-modules
-          - cache restore turboui-dist
+          - cache restore app-deps-v2-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-build-v2-ubuntu2404-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-node-modules-v2-$(checksum app/package-lock.json)
+          - cache restore cli-node-modules-v2-$(checksum cli/package-lock.json)
+          - cache restore turboui-node-modules-v2-$(checksum turboui/package-lock.json)
+          - cache restore turboui-dist-v2-$(git rev-parse HEAD:turboui)
           - ./scripts/cache-fix-for-erlang
 
       jobs:
@@ -137,12 +137,12 @@ blocks:
       prologue:
         commands:
           - checkout
-          - cache restore app-deps
-          - cache restore app-build
-          - cache restore app-node-modules
-          - cache restore turboui-node-modules
-          - cache restore turboui-dist
-          - cache restore cli-node-modules
+          - cache restore app-deps-v2-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-build-v2-ubuntu2404-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-node-modules-v2-$(checksum app/package-lock.json)
+          - cache restore turboui-node-modules-v2-$(checksum turboui/package-lock.json)
+          - cache restore turboui-dist-v2-$(git rev-parse HEAD:turboui)
+          - cache restore cli-node-modules-v2-$(checksum cli/package-lock.json)
           - ./scripts/cache-fix-for-erlang
 
       jobs:

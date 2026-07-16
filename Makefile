@@ -181,6 +181,10 @@ test.build:
 test.setup.turboui:
 	$(MAKE) test.up
 
+test.setup.license:
+	$(MAKE) test.up
+	$(MAKE) test.app.elixir.deps
+
 test.setup.lint:
 	$(MAKE) test.up
 	$(MAKE) test.app.elixir.build
@@ -247,9 +251,12 @@ test.app.build:
 	$(MAKE) test.app.elixir.build
 	$(MAKE) test.app.js.build
 
-test.app.elixir.build:
+test.app.elixir.deps:
 	./devenv bash -c "cd app && MIX_ENV=test mix local.hex --force --if-missing"
 	./devenv bash -c "cd app && MIX_ENV=test mix deps.get"
+
+test.app.elixir.build:
+	$(MAKE) test.app.elixir.deps
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
 
 test.app.node_modules:
