@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospectiveTest do
         goal = create_goal(ctx, @test.company, @test.space, @test.goal)
         activity = close_goal_and_get_activity(ctx, goal)
 
-        assert {code, res} = request(ctx.conn, activity)
+        assert {code, res} = request(ctx.conn, goal)
         assert code == @test.expected
 
         case @test.expected do
@@ -67,9 +67,7 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospectiveTest do
           subscription_parent_type: :comment_thread
         })
 
-      activity = latest_goal_closing(goal)
-
-      assert {400, res} = request(ctx.conn, activity)
+      assert {400, res} = request(ctx.conn, goal)
       assert res.message == "Authors cannot acknowledge their own retrospectives"
     end
   end
@@ -91,26 +89,38 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospectiveTest do
       refute thread.acknowledged_at
       refute thread.acknowledged_by_id
 
-      assert {200, res} = request(ctx.conn, activity)
+      assert {200, res} = request(ctx.conn, ctx.goal)
       assert_response(res, activity)
+    end
+
+    test "returns not found when the goal has no retrospective", ctx do
+      assert {404, _} = request(ctx.conn, ctx.goal)
+    end
+
+    test "returns not found for an unknown goal", ctx do
+      unknown_goal_id = Operately.ShortUuid.encode!(Ecto.UUID.generate())
+
+      assert {404, _} = request_by_goal_id(ctx.conn, unknown_goal_id)
     end
 
     test "idempotency: acknowledging the same retrospective multiple times does not change the state", ctx do
       activity = close_goal_and_get_activity(ctx, ctx.goal)
 
-      assert {200, res} = request(ctx.conn, activity)
+      assert {200, res} = request(ctx.conn, ctx.goal)
       assert_response(res, activity)
       assert acknowledge_activity_count() == 1
 
-      assert {200, res} = request(ctx.conn, activity)
+      assert {200, res} = request(ctx.conn, ctx.goal)
       assert_response(res, activity)
       assert acknowledge_activity_count() == 1
     end
   end
 
-  defp request(conn, activity) do
-    mutation(conn, [:goals, :acknowledge_retrospective], %{id: Paths.activity_id(activity)})
+  defp request(conn, goal) do
+    request_by_goal_id(conn, Paths.goal_id(goal))
   end
+
+  defp request_by_goal_id(conn, goal_id), do: mutation(conn, [:goals, :acknowledge_retrospective], %{goal_id: goal_id})
 
   defp assert_response(res, activity) do
     activity = Repo.reload(activity) |> Repo.preload(comment_thread: :acknowledged_by)

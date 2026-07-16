@@ -54,7 +54,7 @@ function useAcknowledgeHandler(retrospective: Projects.ProjectRetrospective, ack
   const handleAck = async () => {
     if (!showAcknowledgeButton(retrospective, me!)) return;
 
-    await ack({ id: retrospective.id });
+    await ack({ projectId: retrospective.project.id });
 
     refresh();
   };
