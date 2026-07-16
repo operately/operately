@@ -16,6 +16,7 @@ defmodule Operately.Features.ProjectTasks.TaskCreationTest do
     |> Steps.assert_task_slide_in_open("Task 1")
   end
 
+  @tag login_as: :contributor
   feature "create task from tasks board", ctx do
     next_friday = Operately.Support.Time.next_friday()
     formatted_date = Operately.Support.Time.format_month_day(next_friday)
@@ -39,6 +40,7 @@ defmodule Operately.Features.ProjectTasks.TaskCreationTest do
     |> Steps.assert_task_milestone(attrs.milestone)
   end
 
+  @tag login_as: :contributor
   feature "create task without assignee", ctx do
     attrs = %{
       name: "My task",

@@ -2,7 +2,6 @@ defmodule Operately.Features.Projects.ProjectPagePauseResumeTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps, as: Steps
-  alias Operately.Support.Features.ReviewSteps
 
   setup ctx do
     ctx
@@ -25,6 +24,7 @@ defmodule Operately.Features.Projects.ProjectPagePauseResumeTest do
     |> Steps.assert_pause_email_contains_description("Pausing the project.")
   end
 
+  @tag login_as: :contributor
   feature "pausing a project without a description", ctx do
     ctx
     |> Steps.assert_logged_in_contributor_has_edit_access()
@@ -36,6 +36,7 @@ defmodule Operately.Features.Projects.ProjectPagePauseResumeTest do
     |> Steps.assert_pause_email_sent_to_reviewer()
   end
 
+  @tag login_as: :contributor
   feature "mentioning a person when pausing a project sends notification and email", ctx do
     ctx = Steps.given_space_member_exists(ctx)
 

@@ -26,6 +26,7 @@ defmodule Operately.Features.Projects.ProjectPageResumeTest do
     |> Steps.assert_resume_email_sent_to_reviewer()
   end
 
+  @tag login_as: :champion
   feature "resuming a paused project clears overdue check-ins", ctx do
     ctx
     |> Steps.given_project_check_in_is_overdue()
@@ -38,6 +39,7 @@ defmodule Operately.Features.Projects.ProjectPageResumeTest do
     |> Steps.assert_next_check_in_scheduled_at_is_next_friday()
   end
 
+  @tag login_as: :commenter
   feature "comment on project resumption", ctx do
     ctx
     |> Steps.assert_logged_in_contributor_has_comment_access()
@@ -50,6 +52,7 @@ defmodule Operately.Features.Projects.ProjectPageResumeTest do
     |> Steps.assert_comment_on_resumption_received_in_email()
   end
 
+  @tag login_as: :commenter
   feature "comment on project pausing", ctx do
     ctx
     |> Steps.assert_logged_in_contributor_has_comment_access()

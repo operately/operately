@@ -24,6 +24,7 @@ defmodule Operately.Features.ProjectTasks.TaskCreationBoardTest do
     |> Steps.assert_no_milestone()
   end
 
+  @tag login_as: :contributor
   feature "create task without due date", ctx do
     attrs = %{
       name: "My task",
@@ -42,6 +43,7 @@ defmodule Operately.Features.ProjectTasks.TaskCreationBoardTest do
     |> Steps.assert_no_due_date()
   end
 
+  @tag login_as: :contributor
   feature "create task with due date, assignee and milestone", ctx do
     next_friday = Operately.Support.Time.next_friday()
     formatted_date = Operately.Support.Time.format_month_day(next_friday)
