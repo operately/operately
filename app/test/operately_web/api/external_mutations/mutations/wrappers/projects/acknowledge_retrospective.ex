@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.AcknowledgeRetrospective do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Wrappers.Projects.AcknowledgeRetrospective do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.AcknowledgeRetro
   @impl true
   def inputs(ctx) do
     %{
-      id: Paths.project_retrospective_id(ctx.project_retrospective)
+      project_id: Paths.project_id(ctx.project)
     }
   end
 

@@ -49,7 +49,6 @@ defmodule OperatelyWeb.Api do
         mutation(:create_check_in, OperatelyWeb.Api.Goals.CreateCheckIn)
         mutation(:update_check_in, OperatelyWeb.Api.Goals.UpdateCheckIn)
         mutation(:acknowledge_check_in, OperatelyWeb.Api.Goals.AcknowledgeCheckIn)
-        mutation(:acknowledge_retrospective, OperatelyWeb.Api.Goals.AcknowledgeRetrospective)
         mutation(:delete_check_in, OperatelyWeb.Api.Goals.DeleteCheckIn)
         mutation(:create_discussion, OperatelyWeb.Api.Goals.CreateDiscussion)
         mutation(:update_discussion, OperatelyWeb.Api.Goals.UpdateDiscussion)
@@ -78,7 +77,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update_name, OperatelyWeb.Api.Projects.UpdateName)
         mutation(:update_permissions, OperatelyWeb.Api.Projects.UpdatePermissions)
         mutation(:update_retrospective, OperatelyWeb.Api.Projects.UpdateRetrospective)
-        mutation(:acknowledge_retrospective, OperatelyWeb.Api.Projects.AcknowledgeRetrospective)
         mutation(:update_start_date, OperatelyWeb.Api.Projects.UpdateStartDate)
         mutation(:update_champion, OperatelyWeb.Api.Projects.UpdateChampion)
         mutation(:update_reviewer, OperatelyWeb.Api.Projects.UpdateReviewer)
@@ -332,8 +330,13 @@ defmodule OperatelyWeb.Api do
         mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
       end
 
+      namespace(:goals) do
+        mutation(:acknowledge_retrospective, OperatelyWeb.Api.Goals.AcknowledgeRetrospective)
+      end
+
       namespace(:projects) do
         mutation(:update_kanban, OperatelyWeb.Api.Projects.UpdateKanban)
+        mutation(:acknowledge_retrospective, OperatelyWeb.Api.Projects.AcknowledgeRetrospective)
       end
 
       namespace(:invitations) do
@@ -399,6 +402,14 @@ defmodule OperatelyWeb.Api do
   defmacro external_endpoints do
     quote do
       common_endpoints()
+
+      namespace(:goals) do
+        mutation(:acknowledge_retrospective, OperatelyWeb.Api.Wrappers.Goals.AcknowledgeRetrospective)
+      end
+
+      namespace(:projects) do
+        mutation(:acknowledge_retrospective, OperatelyWeb.Api.Wrappers.Projects.AcknowledgeRetrospective)
+      end
 
       @doc "Browse and manage Docs & Files"
       namespace(:documents) do
