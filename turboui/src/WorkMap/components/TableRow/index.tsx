@@ -4,6 +4,7 @@ import { WorkMap } from "..";
 
 import { SpaceField } from "../../../SpaceField";
 import { ChildRows } from "./ChildRows";
+import { AssignedDateCell } from "./AssignedDateCell";
 import { DueDateCell } from "./DueDateCell";
 import { ItemNameCell } from "./ItemNameCell";
 import { NextStepCell } from "./NextStepCell";
@@ -73,6 +74,11 @@ export function TableRow(props: Props) {
           timeframe={item.timeframe}
           status={item.status}
           hide={columnOptions?.hideDueDate}
+          formattedTimePreferences={props.formattedTimePreferences}
+        />
+        <AssignedDateCell
+          assignedAt={item.assignedAt}
+          hide={columnOptions?.hideAssignedDate}
           formattedTimePreferences={props.formattedTimePreferences}
         />
         <SpaceCell item={item} hide={columnOptions?.hideSpace} />

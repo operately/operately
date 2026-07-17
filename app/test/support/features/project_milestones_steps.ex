@@ -428,15 +428,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   step :assert_milestone_created, ctx, name: name do
     ctx
     |> UI.find(UI.query(testid: "timeline-section"), fn el ->
-      UI.assert_text(el, name)
+      UI.wait_until_text(el, name)
     end)
   end
 
   step :assert_milestone_created, ctx, name: name, due_date: due_date do
     ctx
     |> UI.find(UI.query(testid: "timeline-section"), fn el ->
-      UI.assert_text(el, name)
-      UI.assert_text(el, due_date)
+      el
+      |> UI.wait_until_text(name)
+      |> UI.wait_until_text(due_date)
     end)
   end
 
@@ -469,8 +470,9 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   step :assert_milestone_updated, ctx, name: name, due_date: due_date do
     ctx
     |> UI.find(UI.query(testid: "timeline-section"), fn el ->
-      UI.assert_text(el, name)
-      UI.assert_text(el, due_date)
+      el
+      |> UI.wait_until_text(name)
+      |> UI.wait_until_text(due_date)
     end)
   end
 

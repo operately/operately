@@ -46,7 +46,8 @@ export const HideCompanyAccess: Story = {
     const body = canvasElement.ownerDocument.body;
 
     await step("Open privacy settings", async () => {
-      const privacyField = body.querySelector('[data-test-id="privacy-field"]');
+      const modal = await within(body).findByRole("dialog");
+      const privacyField = modal.querySelector('[data-test-id="privacy-field"]');
       expect(privacyField).not.toBeNull();
       await userEvent.click(privacyField!);
     });

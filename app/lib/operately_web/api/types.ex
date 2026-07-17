@@ -2426,6 +2426,7 @@ defmodule OperatelyWeb.Api.Types do
     field :is_new, :boolean, null: false
     field :completed_on, :date, null: true
     field :timeframe, :timeframe, null: true
+    field :assigned_at, :datetime, null: true
     field :milestones, list_of(:work_map_item_milestone), null: false
     field :children, list_of(:work_map_item), null: false
     field :type, :work_map_item_type, null: false

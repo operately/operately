@@ -831,13 +831,27 @@ defmodule OperatelyWeb.Api.Tasks do
 
       multi
       |> Ecto.Multi.run(:clear_existing_assignees, fn _repo, %{task: task} ->
-        Operately.Tasks.list_task_assignees(task)
-        |> Enum.each(&Operately.Repo.delete!/1)
+        current_assignees = Operately.Tasks.list_task_assignees(task)
+        new_assignee_set = MapSet.new(new_assignee_ids)
+
+        Enum.each(current_assignees, fn assignee ->
+          if MapSet.member?(new_assignee_set, assignee.person_id) do
+            :ok
+          else
+            Operately.Repo.delete!(assignee)
+          end
+        end)
 
         {:ok, :cleared}
       end)
       |> Ecto.Multi.run(:updated_task, fn _repo, %{task: task} ->
-        Enum.each(new_assignee_ids, fn assignee_id ->
+        current_assignee_ids =
+          Operately.Tasks.list_task_assignees(task)
+          |> MapSet.new(& &1.person_id)
+
+        new_assignee_ids
+        |> Enum.reject(&MapSet.member?(current_assignee_ids, &1))
+        |> Enum.each(fn assignee_id ->
           {:ok, _} =
             Operately.Tasks.Assignee.changeset(%{
               task_id: task.id,

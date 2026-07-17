@@ -374,6 +374,14 @@ defmodule Operately.Support.Features.ProfileSteps do
     UI.refute_text(ctx, name)
   end
 
+  step :assert_assigned_on_column_visible, ctx do
+    UI.assert_text(ctx, "Assigned On")
+  end
+
+  step :refute_assigned_on_column_visible, ctx do
+    UI.refute_text(ctx, "Assigned On")
+  end
+
   step :given_space_task_assigned_to_person, ctx, task_name: task_name do
     ctx
     |> Map.put(:creator, ctx.person)

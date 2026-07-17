@@ -97,6 +97,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       children: [],
       isNew: true,
       completedOn: null,
+      assignedAt: null,
       itemPath: paths.goalPath(res.goal!.id!),
       privacy: calcPrivacyLevel(
         accessLevelAsNumber(props.accessLevels.company),
@@ -143,6 +144,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       children: [],
       isNew: true,
       completedOn: null,
+      assignedAt: null,
       itemPath: paths.projectPath(res.project!.id!),
       privacy: calcPrivacyLevel(
         accessLevelAsNumber(props.accessLevels.company),

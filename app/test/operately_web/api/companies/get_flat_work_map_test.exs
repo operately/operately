@@ -298,6 +298,9 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
       assert open_task
       assert open_task.parent_id == ctx.project.id
 
+      assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.open_task.id, person_id: ctx.assignee.id)
+      assert open_task.assigned_at == OperatelyWeb.Api.Serializer.serialize(assignee.inserted_at)
+
       space_task = Enum.find(task_items, fn item -> item.id == Paths.task_id(ctx.space_task) end)
       assert space_task
       assert is_nil(space_task.parent_id)

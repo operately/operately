@@ -62,6 +62,7 @@ defmodule Operately.Tasks.Task do
     field :permissions, :any, virtual: true
     field :comments_count, :integer, virtual: true
     field :available_statuses, {:array, :map}, virtual: true
+    field :assigned_at, :naive_datetime, virtual: true
 
     timestamps()
     requester_access_level()

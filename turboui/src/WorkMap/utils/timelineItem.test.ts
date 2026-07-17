@@ -73,6 +73,7 @@ function makeItem(overrides: Partial<WorkMap.Item> = {}): WorkMap.Item {
     isNew: false,
     children: [],
     completedOn: null,
+    assignedAt: null,
     timeframe: null,
     milestones: [],
     type: "project",

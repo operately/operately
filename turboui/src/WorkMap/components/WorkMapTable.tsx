@@ -31,7 +31,7 @@ interface Props {
 export function WorkMapTable({
   items,
   tab,
-  columnOptions = {},
+  columnOptions,
   addItem,
   addingEnabled = false,
   spaceSearch,
@@ -45,6 +45,9 @@ export function WorkMapTable({
 }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
+
+  // Default to hide assigned date
+  const resolvedColumnOptions = { hideAssignedDate: true, ...columnOptions };
 
   const storageScope = React.useMemo(() => {
     const path = typeof window !== "undefined" ? window.location.pathname : "unknown";
@@ -100,7 +103,7 @@ export function WorkMapTable({
         />
       ) : (
         <table className="min-w-full divide-y divide-surface-outline">
-          <TableHeader tab={tab} columnOptions={columnOptions} profileUser={profileUser} viewer={viewer} />
+          <TableHeader tab={tab} columnOptions={resolvedColumnOptions} profileUser={profileUser} viewer={viewer} />
           <tbody>
             {items.map((item, idx) => (
               <TableRow
@@ -109,7 +112,7 @@ export function WorkMapTable({
                 level={0}
                 isLast={idx === items.length - 1}
                 tab={tab}
-                columnOptions={columnOptions}
+                columnOptions={resolvedColumnOptions}
                 showIndentation={showIndentation}
                 addItem={addItem}
                 addingEnabled={addingEnabled}
@@ -168,6 +171,9 @@ export function TableHeader({ tab, columnOptions = {}, viewer, profileUser }: He
           className={isCompletedPage ? "md:px-4" : "hidden lg:table-cell md:px-4"}
         >
           {isCompletedPage ? "Completed On" : "Due Date"}
+        </HeaderCell>
+        <HeaderCell hide={columnOptions.hideAssignedDate} className="hidden lg:table-cell md:px-4">
+          Assigned On
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideSpace} className="hidden lg:table-cell md:px-4">
           Space
