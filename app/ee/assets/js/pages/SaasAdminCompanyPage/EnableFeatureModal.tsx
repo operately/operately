@@ -1,7 +1,6 @@
 import React from "react";
 
-import Modal from "@/components/Modal";
-import { Forms } from "turboui";
+import { Forms, Modal } from "turboui";
 import * as AdminApi from "@/ee/admin_api";
 import { useLoadedData } from "./loader";
 
@@ -33,7 +32,7 @@ export function EnableFeatureModal({ isOpen, onClose, onSaved }: EnableFeatureMo
   });
 
   return (
-    <Modal title="Enable Feature Flag" isOpen={isOpen} hideModal={onClose}>
+    <Modal title="Enable Feature Flag" isOpen={isOpen} onClose={onClose}>
       <Forms.Form form={form}>
         <div className="mb-4 text-sm text-content-accent">Enable an experimental feature for this company.</div>
 

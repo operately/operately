@@ -1,8 +1,7 @@
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
-import Modal from "@/components/Modal";
-import { Forms, formatStorageBytes } from "turboui";
+import { Forms, Modal, formatStorageBytes } from "turboui";
 
 interface PlanDefinitionModalProps {
   isOpen: boolean;
@@ -92,7 +91,7 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
   }, [form.actions, form.values.billingBehavior, form.values.customerSelectable]);
 
   return (
-    <Modal title={isEdit ? "Edit plan definition" : "Create plan definition"} isOpen={isOpen} hideModal={onClose}>
+    <Modal title={isEdit ? "Edit plan definition" : "Create plan definition"} isOpen={isOpen} onClose={onClose}>
       <Forms.Form form={form}>
         <Forms.FieldGroup layout="vertical">
           {isEdit ? (

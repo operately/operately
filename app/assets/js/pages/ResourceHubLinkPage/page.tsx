@@ -9,14 +9,20 @@ import { links } from "@/models/resourceHubs";
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import Modal from "@/components/Modal";
-
 import { assertPresent } from "@/utils/assertions";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { FormattedTime, Forms, LinkIcon, ResourcePageNavigation, Spacer, type ResourceHubLinkType } from "turboui";
+import {
+  FormattedTime,
+  Forms,
+  LinkIcon,
+  Modal,
+  ResourcePageNavigation,
+  Spacer,
+  type ResourceHubLinkType,
+} from "turboui";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
@@ -183,7 +189,7 @@ function DeleteLinkModal({ isOpen, hideModal, linkName }: DeleteLinkModalProps) 
   });
 
   return (
-    <Modal isOpen={isOpen} hideModal={hideModal}>
+    <Modal isOpen={isOpen} onClose={hideModal}>
       <Forms.Form form={form}>
         <p>
           Are you sure you want to delete the link "<b>{linkName}</b>"?

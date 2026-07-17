@@ -69,10 +69,6 @@ function useContext(): ThemeContextProps {
   return React.useContext(ThemeContext) as ThemeContextProps;
 }
 
-export function useColorMode() {
-  return useContext().colorMode;
-}
-
 export function useTheme() {
   return useContext().theme;
 }
