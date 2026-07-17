@@ -1,5 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, waitFor } from "storybook/test";
 import { Timeline } from "./Timeline";
 import { TimelineProps, TimelineItem, TaskActivity } from "./types";
 import { Person } from "../CommentSection/types";
@@ -63,6 +64,24 @@ const mockComment: TimelineItem = {
       { id: "reaction-2", emoji: "🎉", person: mockAuthor },
       { id: "reaction-3", emoji: "👍", person: mockAssignee },
     ],
+  },
+};
+
+const longCodeBlockComment: TimelineItem = {
+  type: "comment",
+  value: {
+    ...mockComment.value,
+    id: "comment-with-long-code",
+    content: JSON.stringify({
+      type: "doc",
+      content: [
+        {
+          type: "codeBlock",
+          content: [{ type: "text", text: `const endpoint = "https://example.com/${"a".repeat(200)}";` }],
+        },
+      ],
+    }),
+    reactions: [],
   },
 };
 
@@ -226,6 +245,29 @@ export const CommentsOnly: Story = {
       showComments: true,
       showActivities: false,
     },
+  },
+};
+
+export const LongCodeBlock: Story = {
+  args: {
+    ...createMockProps([longCodeBlockComment]),
+    canComment: false,
+  },
+  play: async ({ canvasElement, step }) => {
+    await step("Keep horizontal scrolling inside the code block", async () => {
+      await waitFor(() => {
+        const commentElement = canvasElement.querySelector('[data-test-id="comment-comment-with-long-code"]');
+        const codeBlock = commentElement?.querySelector("pre");
+
+        expect(commentElement).not.toBeNull();
+        expect(codeBlock).not.toBeNull();
+
+        if (!commentElement || !codeBlock) return;
+
+        expect(commentElement.scrollWidth).toBeLessThanOrEqual(commentElement.clientWidth);
+        expect(codeBlock.scrollWidth).toBeGreaterThan(codeBlock.clientWidth);
+      });
+    });
   },
 };
 
