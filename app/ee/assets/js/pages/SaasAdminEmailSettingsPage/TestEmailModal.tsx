@@ -2,9 +2,8 @@ import * as React from "react";
 
 import classNames from "classnames";
 import * as AdminApi from "@/ee/admin_api";
-import Modal from "@/components/Modal";
 import { useBoolState } from "@/hooks/useBoolState";
-import { Forms, SecondaryButton } from "turboui";
+import { Forms, Modal, SecondaryButton } from "turboui";
 
 interface TestEmailModalProps {
   isOpen: boolean;
@@ -13,7 +12,7 @@ interface TestEmailModalProps {
 
 function TestEmailModal({ isOpen, onClose }: TestEmailModalProps) {
   return (
-    <Modal title="Send Test Email" isOpen={isOpen} hideModal={onClose}>
+    <Modal title="Send Test Email" isOpen={isOpen} onClose={onClose}>
       <TestEmailForm onClose={onClose} />
     </Modal>
   );

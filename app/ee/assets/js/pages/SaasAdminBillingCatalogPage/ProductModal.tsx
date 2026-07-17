@@ -1,8 +1,7 @@
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
-import Modal from "@/components/Modal";
-import { Forms } from "turboui";
+import { Forms, Modal } from "turboui";
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -67,7 +66,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, planDefiniti
   });
 
   return (
-    <Modal title={isEdit ? "Edit product" : "Create product"} isOpen={isOpen} hideModal={onClose}>
+    <Modal title={isEdit ? "Edit product" : "Create product"} isOpen={isOpen} onClose={onClose}>
       <Forms.Form form={form}>
         <Forms.FieldGroup layout="vertical">
           <Forms.TextInput label="Display Name" field="displayName" required autoFocus />

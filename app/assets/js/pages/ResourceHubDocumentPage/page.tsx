@@ -4,8 +4,6 @@ import { useNavigate } from "react-router";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Reactions from "@/models/reactions";
-import Modal from "@/components/Modal";
-
 import { documents } from "@/models/resourceHubs";
 import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
@@ -18,6 +16,7 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import {
   CopyDocumentModalWrapper,
   Forms,
+  Modal,
   ResourcePageNavigation,
   RichContent,
   CurrentSubscriptions,
@@ -173,7 +172,7 @@ function DeleteDocumentModal({ isOpen, toggleModal }: DeleteDocumentModalProps) 
   });
 
   return (
-    <Modal isOpen={isOpen} hideModal={toggleModal}>
+    <Modal isOpen={isOpen} onClose={toggleModal}>
       <Forms.Form form={form}>
         <p>
           Are you sure you want to delete the document "<b>{document.name}</b>"?

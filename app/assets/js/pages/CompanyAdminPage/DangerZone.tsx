@@ -1,10 +1,17 @@
 import React, { useState } from "react";
-import Modal from "@/components/Modal";
 import * as Companies from "@/models/companies";
 import { useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { includesId, Paths } from "@/routes/paths";
-import { showErrorToast, IconTrash, DangerButton, SecondaryButton, WarningCallout, OptionsMenuItem } from "turboui";
+import {
+  showErrorToast,
+  IconTrash,
+  DangerButton,
+  SecondaryButton,
+  WarningCallout,
+  OptionsMenuItem,
+  Modal,
+} from "turboui";
 
 import * as Paper from "@/components/PaperContainer";
 
@@ -69,7 +76,7 @@ function DeleteCompanyModal({
   };
 
   return (
-    <Modal isOpen={isOpen} hideModal={onClose} title="Delete Company" size="base">
+    <Modal isOpen={isOpen} onClose={onClose} title="Delete Company" size="medium" closeOnBackdropClick={!loading}>
       <div className="space-y-4">
         <WarningCallout
           message="This action cannot be undone."
