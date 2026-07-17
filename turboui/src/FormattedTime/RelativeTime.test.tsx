@@ -7,7 +7,7 @@ import * as BreakpointHooks from "../utils/useWindowSizeBreakpoint";
 
 // Mock useRenderInterval to avoid unnecessary re-renders/timers
 jest.mock("./useRenderInterval", () => ({
-  useRenderInterval: () => 0,
+  useRenderInterval: () => Date.now(),
 }));
 
 // Mock useWindowSizeBiggerOrEqualTo to control responsive behavior

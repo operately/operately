@@ -7,7 +7,7 @@ import { defaultFormattedTimePreferences } from "./types";
 import * as BreakpointHooks from "../utils/useWindowSizeBreakpoint";
 
 jest.mock("./useRenderInterval", () => ({
-  useRenderInterval: () => 0,
+  useRenderInterval: () => Date.now(),
 }));
 
 jest.mock("../utils/useWindowSizeBreakpoint", () => ({
@@ -40,13 +40,25 @@ describe("FormattedTime", () => {
 
   it("renders relative time labels without external i18n setup", () => {
     render(
-      <FormattedTime
-        {...defaultFormattedTimePreferences}
-        time={new Date(NOW - 5 * 60 * 1000)}
-        format="relative"
-      />,
+      <FormattedTime {...defaultFormattedTimePreferences} time={new Date(NOW - 5 * 60 * 1000)} format="relative" />,
     );
 
     expect(screen.getByText("5 minutes ago")).toBeInTheDocument();
   });
+
+  it.each(["relative", "relative-time-or-date"] as const)(
+    "calculates %s from the original instant regardless of timezone",
+    (format) => {
+      render(
+        <FormattedTime
+          {...defaultFormattedTimePreferences}
+          timezone="Pacific/Kiritimati"
+          time={new Date(NOW - 5 * 60 * 1000)}
+          format={format}
+        />,
+      );
+
+      expect(screen.getByText("5 minutes ago")).toBeInTheDocument();
+    },
+  );
 });

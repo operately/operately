@@ -6,7 +6,7 @@ import * as People from "@/models/people";
 import { compareIds, Paths } from "@/routes/paths";
 
 import { useTaskTimelineItems } from "./useTaskTimelineItems";
-import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
+import { prepareTaskTimelineItems, sortTaskTimelineItems } from "./prepareTaskTimelineItems";
 import Api, { type Person as ApiPerson, type Task as BackendTask } from "@/api";
 import { useSubscription } from "@/models/subscriptions";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -325,7 +325,7 @@ export function useTaskSlideInProps(opts: {
       const appended = activeTaskId === taskId ? (appendedByTaskId[taskId] ?? []) : [];
       const fetchedTimelineItems = activeTaskId === taskId ? prepareTaskTimelineItems(paths, activities, comments) : [];
       const currentTimelineItems =
-        activeTaskId === taskId ? sortTimelineItems([...fetchedTimelineItems, ...appended]) : [];
+        activeTaskId === taskId ? sortTaskTimelineItems([...fetchedTimelineItems, ...appended]) : [];
       const currentTimelineIsLoading = activeTaskId === taskId ? isTimelineLoading : true;
 
       const milestoneProps = buildMilestoneProps({ hideMilestone, taskId, ctx, taskMilestone: task.milestone });
@@ -473,28 +473,6 @@ function toTimelinePerson(paths: Paths, person: TaskBoard.Person): TimelinePerso
     avatarUrl: person.avatarUrl ?? null,
     profileLink: paths.profilePath(person.id),
   };
-}
-
-function sortTimelineItems(items: TaskPage.TimelineItemType[]) {
-  const sorted = [...items];
-
-  sorted.sort((a, b) => {
-    const aId = a.type === "acknowledgment" ? a.value.id : a.value.id;
-    const bId = b.type === "acknowledgment" ? b.value.id : b.value.id;
-
-    const aIsTemp = aId.startsWith("temp-");
-    const bIsTemp = bId.startsWith("temp-");
-
-    if (aIsTemp && !bIsTemp) return 1;
-    if (!aIsTemp && bIsTemp) return -1;
-
-    const aInsertedAt = a.type === "acknowledgment" ? a.insertedAt : a.value.insertedAt;
-    const bInsertedAt = b.type === "acknowledgment" ? b.insertedAt : b.value.insertedAt;
-
-    return aInsertedAt.localeCompare(bInsertedAt);
-  });
-
-  return sorted;
 }
 
 type MilestoneProps = Pick<

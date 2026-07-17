@@ -8,14 +8,19 @@ import { Tooltip } from "../Tooltip";
 interface RelativeTimeProps {
   time: Date;
   locale: string;
+  timezone?: string;
 }
 
-export default function RelativeTime({ time, locale }: RelativeTimeProps): JSX.Element {
+export default function RelativeTime({
+  time,
+  locale,
+  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+}: RelativeTimeProps): JSX.Element {
   const { t } = useTranslation();
-  const lastRender = useRenderInterval(time);
+  const currentTime = useRenderInterval(time);
   const isLargeScreen = useWindowSizeBiggerOrEqualTo("sm");
 
-  const diff = +new Date() - +time;
+  const diff = currentTime - time.getTime();
 
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -26,6 +31,7 @@ export default function RelativeTime({ time, locale }: RelativeTimeProps): JSX.E
   const years = Math.floor(days / 365);
 
   const precision = new Intl.DateTimeFormat(locale, {
+    timeZone: timezone,
     weekday: "long",
     year: "numeric",
     month: "short",
@@ -60,9 +66,7 @@ export default function RelativeTime({ time, locale }: RelativeTimeProps): JSX.E
 
   return (
     <Tooltip content={precision} size="sm" delayDuration={600}>
-      <span key={lastRender} className="cursor-default">
-        {label}
-      </span>
+      <span className="cursor-default">{label}</span>
     </Tooltip>
   );
 }

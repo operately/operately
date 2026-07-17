@@ -53,15 +53,18 @@ export function FormattedTime(props: FormattedTimeProps): JSX.Element {
 
   if (!parsedTime) throw new Error("Invalid date " + time);
 
+  switch (format) {
+    case "relative":
+      return <RelativeTime time={parsedTime} locale={locale} timezone={timezone} />;
+    case "relative-time-or-date":
+      return <RelativeTimeOrDate time={parsedTime} locale={locale} timezone={timezone} />;
+  }
+
   const localizedTime = dateInTimezone(parsedTime, timezone);
 
   switch (format) {
-    case "relative":
-      return <RelativeTime time={localizedTime} locale={locale} />;
     case "relative-weekday-or-date":
       return <RelativeWeekdayOrDate time={localizedTime} locale={locale} />;
-    case "relative-time-or-date":
-      return <RelativeTimeOrDate time={localizedTime} locale={locale} />;
     case "short-date":
       return <ShortDate time={localizedTime} weekday={false} locale={locale} />;
     case "short-date-with-weekday":
