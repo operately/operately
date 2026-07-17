@@ -16,12 +16,7 @@ export function AddOwnersModal({ form }: { form: FormState }) {
         Add Owner
       </PrimaryButton>
 
-      <Modal
-        title="Add owners"
-        isOpen={state.isModalOpen}
-        onClose={state.hideModal}
-        contentClassName="min-h-[600px]"
-      >
+      <Modal title="Add owners" isOpen={state.isModalOpen} onClose={state.hideModal} contentClassName="min-h-[600px]">
         <SearchField
           onSelect={state.add}
           loader={state.search}

@@ -93,7 +93,13 @@ export function RemoveFeatureFlagsModal({
   const hasEnabledFeatures = enabledFeatures.length > 0;
 
   return (
-    <Modal title="Remove Feature Flags" isOpen={isOpen} onClose={handleClose} size="small" closeOnBackdropClick={!saving}>
+    <Modal
+      title="Remove Feature Flags"
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="small"
+      closeOnBackdropClick={!saving}
+    >
       <div className="mb-4 text-sm text-content-accent">
         Remove experimental feature flags from this company. Changes are saved when you click Save.
       </div>

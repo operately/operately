@@ -36,7 +36,13 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
   const shortcutGroups = React.useMemo(() => buildShortcutGroups(), []);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Keyboard Shortcuts Cheatsheet" size="small" contentPadding="px-[26px] py-6">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Keyboard Shortcuts Cheatsheet"
+      size="small"
+      contentPadding="px-[26px] py-6"
+    >
       <div className="space-y-7">
         {shortcutGroups.map((group) => (
           <section key={group.title}>
