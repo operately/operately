@@ -9,6 +9,12 @@ defmodule Operately.SchemaAuditTest do
     "oban_peers"
   ]
 
+  # Generated database columns are intentionally absent from Ecto schemas because
+  # application writes must never provide values for them.
+  @ignored_columns %{
+    "search_entries" => [:search_vector]
+  }
+
   describe "validate_table_coverage/0" do
     test "all non-framework database tables have a current Ecto schema" do
       assert validate_table_coverage() == {:ok, :schema_tables_match}
@@ -76,6 +82,7 @@ defmodule Operately.SchemaAuditTest do
       extra_columns =
         db_columns
         |> MapSet.difference(schema.column_sources)
+        |> MapSet.difference(MapSet.new(Map.get(@ignored_columns, schema.table, [])))
         |> MapSet.to_list()
         |> Enum.sort()
 
