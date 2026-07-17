@@ -4,7 +4,11 @@ import * as Comments from "@/models/comments";
 import { parseActivitiesForTurboUi } from "@/models/activities/feed";
 import { TaskPage } from "turboui";
 
-export function prepareTaskTimelineItems(paths: Paths, activities: Activities.Activity[], comments: Comments.Comment[]) {
+export function prepareTaskTimelineItems(
+  paths: Paths,
+  activities: Activities.Activity[],
+  comments: Comments.Comment[],
+) {
   const parsedActivities = parseActivitiesForTurboUi(paths, activities, "task").map((activity) => ({
     type: "task-activity",
     value: activity,
@@ -14,20 +18,29 @@ export function prepareTaskTimelineItems(paths: Paths, activities: Activities.Ac
     value: comment,
   }));
 
-  const timelineItems = [...parsedActivities, ...parsedComments] as TaskPage.TimelineItemType[];
+  return sortTaskTimelineItems([...parsedActivities, ...parsedComments] as TaskPage.TimelineItemType[]);
+}
 
-  timelineItems.sort((a, b) => {
-    const aIsTemp = a.value.id.startsWith("temp-");
-    const bIsTemp = b.value.id.startsWith("temp-");
+export function sortTaskTimelineItems(items: TaskPage.TimelineItemType[]) {
+  const sortedItems = [...items];
 
-    if (aIsTemp && !bIsTemp) return 1;
-    if (!aIsTemp && bIsTemp) return -1;
+  sortedItems.sort((a, b) => {
+    const aIsPendingComment = isPendingComment(a);
+    const bIsPendingComment = isPendingComment(b);
 
-    const aInsertedAt = a.type === "acknowledgment" ? a.insertedAt : a.value.insertedAt;
-    const bInsertedAt = b.type === "acknowledgment" ? b.insertedAt : b.value.insertedAt;
+    if (aIsPendingComment && !bIsPendingComment) return 1;
+    if (!aIsPendingComment && bIsPendingComment) return -1;
 
-    return aInsertedAt.localeCompare(bInsertedAt);
+    return timelineItemTimestamp(a).localeCompare(timelineItemTimestamp(b));
   });
 
-  return timelineItems;
+  return sortedItems;
+}
+
+function isPendingComment(item: TaskPage.TimelineItemType) {
+  return item.type === "comment" && item.value.id.startsWith("temp-");
+}
+
+function timelineItemTimestamp(item: TaskPage.TimelineItemType) {
+  return item.type === "acknowledgment" ? item.insertedAt : item.value.insertedAt;
 }
