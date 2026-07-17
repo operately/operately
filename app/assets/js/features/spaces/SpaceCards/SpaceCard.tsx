@@ -4,8 +4,7 @@ import * as Spaces from "@/models/spaces";
 import classnames from "classnames";
 
 import { Card } from "./Card";
-import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
-import { AvatarList } from "turboui";
+import { AvatarList, SpacePrivacyIndicator } from "turboui";
 
 export interface SpaceCardProps {
   space: Spaces.Space;
@@ -46,7 +45,7 @@ export function SpaceCard(props: SpaceCardProps) {
       <div className="flex-1">
         <div className="flex items-center gap-1.5">
           <div className="font-semibold">{name}</div>
-          <PrivacyIndicator space={props.space} size={14} />
+          <SpacePrivacyIndicator accessLevels={props.space.accessLevels} iconSize={14} />
         </div>
         <div className="text-content-dimmed text-xs line-clamp-2">{mission}</div>
       </div>

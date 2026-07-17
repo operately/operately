@@ -1,5 +1,6 @@
 import React from "react";
 import { match } from "ts-pattern";
+import type { AccessLevels } from "../ApiTypes";
 import { Tooltip } from "../Tooltip";
 import { IconLockFilled, IconWorld } from "../icons";
 
@@ -22,12 +23,17 @@ export function PrivacyIndicator(props: PrivacyIndicator.Props) {
   const icon = match(props.privacyLevel)
     .with("public", () => <IconWorld size={props.iconSize!} />)
     .with("confidential", () => <IconLockFilled size={props.iconSize!} />)
-    .with("secret", () => <IconLockFilled size={props.iconSize!} className="text-content-error" />)
+    .with("secret", () => (
+      <IconLockFilled
+        size={props.iconSize!}
+        className={props.resourceType === "space" ? undefined : "text-content-error"}
+      />
+    ))
     .exhaustive();
 
   return (
     <Tooltip content={tooltipContent} delayDuration={100} contentClassName={props.className} testId={props.testId}>
-      {icon}
+      <span data-test-id={props.testId}>{icon}</span>
     </Tooltip>
   );
 }
@@ -61,11 +67,54 @@ export namespace PrivacyIndicator {
 
   export interface Props {
     privacyLevel: PrivacyLevels;
-    resourceType: "goal" | "project";
+    resourceType: "goal" | "project" | "space";
     spaceName: string;
 
     iconSize?: number;
     className?: string;
     testId?: string;
   }
+}
+
+export interface SpacePrivacyIndicatorProps {
+  accessLevels: AccessLevels | null | undefined;
+  iconSize?: number;
+  className?: string;
+}
+
+export function SpacePrivacyIndicator({ accessLevels, iconSize, className }: SpacePrivacyIndicatorProps) {
+  const privacyLevel = privacyLevelFromAccessLevels(accessLevels);
+
+  if (!privacyLevel || privacyLevel === "internal") {
+    return null;
+  }
+
+  return (
+    <PrivacyIndicator
+      privacyLevel={privacyLevel}
+      resourceType="space"
+      spaceName=""
+      iconSize={iconSize}
+      className={className}
+      testId={privacyLevel === "public" ? "public-space-tooltip" : "secret-space-tooltip"}
+    />
+  );
+}
+
+function privacyLevelFromAccessLevels(
+  accessLevels: AccessLevels | null | undefined,
+): PrivacyIndicator.PrivacyLevels | null {
+  if (!accessLevels) {
+    return null;
+  }
+
+  if ((accessLevels.public ?? 0) > 0) {
+    return "public";
+  }
+
+  if ((accessLevels.company ?? 0) > 0) {
+    return "internal";
+  }
+
+  return "secret";
 }
