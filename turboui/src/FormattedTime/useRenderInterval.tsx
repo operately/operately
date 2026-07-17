@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 
 export function useRenderInterval(time: Date) {
-  const [lastRender, setLastRender] = useState(0);
+  const [currentTime, setCurrentTime] = useState(Date.now);
+  const timestamp = time.getTime();
 
   useEffect(() => {
-    const diff = +new Date() - +time;
+    const diff = Date.now() - timestamp;
 
     const seconds = Math.floor(diff / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -12,30 +13,36 @@ export function useRenderInterval(time: Date) {
 
     if (seconds < 60) {
       const interval = setInterval(() => {
-        setLastRender(Date.now());
+        setCurrentTime(Date.now());
       }, 1000 * 15);
 
       return () => clearInterval(interval);
     } else if (minutes < 60) {
       const interval = setInterval(() => {
-        setLastRender(Date.now());
+        setCurrentTime(Date.now());
       }, 1000 * 60);
 
       return () => clearInterval(interval);
     } else if (hours < 24) {
-      const interval = setInterval(() => {
-        setLastRender(Date.now());
-      }, 1000 * 60 * 60);
+      const interval = setInterval(
+        () => {
+          setCurrentTime(Date.now());
+        },
+        1000 * 60 * 60,
+      );
 
       return () => clearInterval(interval);
     } else {
-      const interval = setInterval(() => {
-        setLastRender(Date.now());
-      }, 1000 * 60 * 60 * 24);
+      const interval = setInterval(
+        () => {
+          setCurrentTime(Date.now());
+        },
+        1000 * 60 * 60 * 24,
+      );
 
       return () => clearInterval(interval);
     }
-  }, []);
+  }, [timestamp]);
 
-  return lastRender;
+  return currentTime;
 }
