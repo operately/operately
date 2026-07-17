@@ -56,13 +56,13 @@ defmodule Operately.Search.Entry do
       :project_id,
       :goal_id,
       :title,
-      :normalized_title,
       :body,
       :body_kind,
       :state,
       :source_inserted_at,
       :source_updated_at
     ])
+    |> derive_normalized_title()
     |> validate_required([:source_type, :source_id, :company_id, :access_context_id, :title, :normalized_title])
     |> unique_constraint([:source_type, :source_id])
     |> foreign_key_constraint(:company_id)
@@ -71,6 +71,22 @@ defmodule Operately.Search.Entry do
     |> foreign_key_constraint(:space_id)
     |> foreign_key_constraint(:project_id)
     |> foreign_key_constraint(:goal_id)
+  end
+
+  defp derive_normalized_title(changeset) do
+    case get_field(changeset, :title) do
+      title when is_binary(title) -> put_change(changeset, :normalized_title, normalize_title(title))
+      _ -> changeset
+    end
+  end
+
+  defp normalize_title(title) do
+    title
+    |> String.normalize(:nfkd) # Canonicalize compatibility characters
+    |> String.replace(~r/\p{M}/u, "") # Remove accents
+    |> String.downcase()
+    |> String.replace(~r/\s+/u, " ") # Collapse multiple spaces to a single space
+    |> String.trim()
   end
 
   def source_types, do: @source_types

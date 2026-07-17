@@ -29,7 +29,6 @@ defmodule Operately.Search.SchemaTest do
         company_id: ctx.company.id,
         access_context_id: context.id,
         title: "Café roadmap",
-        normalized_title: "cafe roadmap",
         body: "customer research"
       }
       |> Entry.changeset()
@@ -48,7 +47,7 @@ defmodule Operately.Search.SchemaTest do
              ).rows
 
     entry
-    |> Entry.changeset(%{title: "Launch roadmap", normalized_title: "launch roadmap", body: "delivery plan"})
+    |> Entry.changeset(%{title: "Launch roadmap", body: "delivery plan"})
     |> Repo.update!()
 
     assert [[false, true]] =
@@ -62,6 +61,31 @@ defmodule Operately.Search.SchemaTest do
                """,
                [Ecto.UUID.dump!(entry.id)]
              ).rows
+  end
+
+  test "derives the normalized title instead of trusting caller input", ctx do
+    context = Access.get_context!(project_id: ctx.project.id)
+
+    entry =
+      %{
+        source_type: :project,
+        source_id: ctx.project.id,
+        company_id: ctx.company.id,
+        access_context_id: context.id,
+        title: "  Ｃａｆé   Roadmap  ",
+        normalized_title: "incorrect caller value"
+      }
+      |> Entry.changeset()
+      |> Repo.insert!()
+
+    assert entry.normalized_title == "cafe roadmap"
+
+    updated_entry =
+      entry
+      |> Entry.changeset(%{title: "  Résumé   Plan ", normalized_title: "another incorrect value"})
+      |> Repo.update!()
+
+    assert updated_entry.normalized_title == "resume plan"
   end
 
   test "creates the generated column and expected GIN indexes" do
