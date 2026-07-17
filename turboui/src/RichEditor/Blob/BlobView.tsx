@@ -202,16 +202,18 @@ function ImagePreviewModal({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !event.defaultPrevented) {
+        event.preventDefault();
         onClose();
       }
     };
 
     const unlockBodyScroll = lockBodyScroll();
-    document.addEventListener("keydown", handleKeyDown);
+    // Claim Escape before document listeners belonging to lower UI layers, such as a task slide-in.
+    document.addEventListener("keydown", handleKeyDown, { capture: true });
 
     return () => {
       unlockBodyScroll();
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
   }, [isOpen, onClose]);
 
