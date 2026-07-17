@@ -4,7 +4,7 @@ defmodule Operately.RichContentTest do
   import Operately.CompaniesFixtures
   import Operately.BlobsFixtures
   import Operately.PeopleFixtures
-  
+
   alias OperatelyWeb.Paths
 
   setup do
@@ -248,6 +248,54 @@ defmodule Operately.RichContentTest do
       mention = %{"type" => "mention", "attrs" => %{"label" => "John Michael Smith"}}
 
       assert Operately.RichContent.rich_content_to_string(mention) == "John"
+    end
+  end
+
+  describe ".to_plain_text/1" do
+    test "extracts visible text and preserves full mention labels" do
+      document = %{
+        "type" => "doc",
+        "content" => [
+          %{
+            "type" => "paragraph",
+            "content" => [
+              %{"type" => "text", "text" => "Hello"},
+              %{"type" => "mention", "attrs" => %{"id" => "ignored", "label" => "Jane Doe"}},
+              %{"type" => "text", "text" => "from Operately"}
+            ]
+          },
+          %{
+            "type" => "bulletList",
+            "content" => [
+              %{"type" => "listItem", "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "First item"}]}]},
+              %{"type" => "listItem", "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Second item"}]}]}
+            ]
+          }
+        ]
+      }
+
+      assert Operately.RichContent.to_plain_text(document) == "Hello Jane Doe from Operately First item Second item"
+    end
+
+    test "ignores editor metadata, blob attributes, links, and malformed nodes" do
+      document = %{
+        "type" => "doc",
+        "content" => [
+          %{"type" => "blob", "attrs" => %{"title" => "secret.pdf", "src" => "https://example.com/secret.pdf"}},
+          %{"type" => "mention", "attrs" => %{"id" => "missing-label"}},
+          %{"type" => "text", "text" => "Visible", "marks" => [%{"type" => "link", "attrs" => %{"href" => "https://example.com/private"}}]},
+          %{"content" => "not-a-list"},
+          nil
+        ]
+      }
+
+      assert Operately.RichContent.to_plain_text(document) == "Visible"
+    end
+
+    test "accepts JSON documents and returns an empty string for invalid input" do
+      assert Operately.RichContent.to_plain_text(~s({"type":"doc","content":[{"type":"text","text":"Search me"}]})) == "Search me"
+      assert Operately.RichContent.to_plain_text("not json") == ""
+      assert Operately.RichContent.to_plain_text(nil) == ""
     end
   end
 

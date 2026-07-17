@@ -63,9 +63,11 @@ defmodule Operately.RichContent do
 
   def empty?(rich_content) do
     case rich_content do
-      nil -> false
+      nil ->
+        false
 
-      rich_content when rich_content == %{} -> false
+      rich_content when rich_content == %{} ->
+        false
 
       %{"type" => "doc", "content" => content} when is_list(content) ->
         # Convert TipTap content to string and check if it's meaningful
@@ -77,7 +79,8 @@ defmodule Operately.RichContent do
           _non_empty -> true
         end
 
-      _ -> false
+      _ ->
+        false
     end
   end
 
@@ -103,6 +106,45 @@ defmodule Operately.RichContent do
   end
 
   def rich_content_to_string(_), do: ""
+
+  @doc """
+  Extracts user-visible text from TipTap content for search indexing.
+
+  Unlike `rich_content_to_string/1`, this function keeps complete mention labels
+  and accepts encoded JSON documents. Editor metadata and attachment attributes
+  are intentionally excluded.
+  """
+  def to_plain_text(content) when is_binary(content) do
+    case Jason.decode(content) do
+      {:ok, decoded} -> to_plain_text(decoded)
+      {:error, _} -> ""
+    end
+  end
+
+  def to_plain_text(content) do
+    content
+    |> extract_visible_text()
+    |> Enum.join(" ")
+    |> normalize_whitespace()
+  end
+
+  defp extract_visible_text(content) when is_list(content) do
+    Enum.flat_map(content, &extract_visible_text/1)
+  end
+
+  defp extract_visible_text(%{"type" => "text", "text" => text}) when is_binary(text), do: [text]
+
+  defp extract_visible_text(%{"type" => "mention", "attrs" => %{"label" => label}}) when is_binary(label), do: [label]
+
+  defp extract_visible_text(%{"content" => content}) when is_list(content), do: extract_visible_text(content)
+
+  defp extract_visible_text(_), do: []
+
+  defp normalize_whitespace(text) do
+    text
+    |> String.replace(~r/\s+/u, " ")
+    |> String.trim()
+  end
 
   defp first_name(full_name) when is_binary(full_name) do
     full_name
