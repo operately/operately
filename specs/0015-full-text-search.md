@@ -566,8 +566,8 @@ Reconciliation must use the same Indexer as normal writes and backfills.
 - [x] Install/configure `unaccent` and `pg_trgm`.
 - [x] Add `Operately.Search.Entry` and `search_entries`.
 - [x] Add the weighted generated vector and indexes.
-- [ ] Add plain-text extractor tests for supported rich-content nodes.
-- [ ] Implement `Operately.Search.Indexer` upsert/delete behavior.
+- [x] Add plain-text extractor tests for supported rich-content nodes.
+- [x] Implement `Operately.Search.Indexer` upsert/delete behavior.
 - [ ] Implement the idempotent Oban backfill and reconciliation paths.
 - [ ] Add query-plan and representative-corpus benchmarks.
 
