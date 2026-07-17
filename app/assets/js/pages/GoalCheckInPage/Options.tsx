@@ -6,12 +6,10 @@ import { useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 import { useNavigate } from "react-router";
-import { IconEdit, IconTrash, showSuccessToast } from "turboui";
+import { Forms, IconEdit, IconTrash, Modal, showSuccessToast } from "turboui";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useDeleteGoalProgressUpdate } from "@/models/goalCheckIns";
 import { usePaths } from "@/routes/paths";
-import Modal from "@/components/Modal";
-import { Forms } from "turboui";
 
 export function Options() {
   const { update, goal } = useLoadedData();
@@ -29,31 +27,33 @@ export function Options() {
   if (!isEditVisible && !isDiscardVisible) return null;
 
   return (
-    <PageOptions.Root testId="check-in-options">
-      {isEditVisible && (
-        <PageOptions.Action
-          icon={IconEdit}
-          title={"Edit"}
-          onClick={() => setPageMode("edit")}
-          testId="edit-check-in"
-          keepOutsideOnBigScreen
-        />
-      )}
-      {isDiscardVisible && (
-        <PageOptions.Action
-          icon={IconTrash}
-          title="Discard draft"
-          onClick={toggleDiscardModal}
-          testId="delete-check-in"
-        />
-      )}
+    <>
+      <PageOptions.Root testId="check-in-options">
+        {isEditVisible && (
+          <PageOptions.Action
+            icon={IconEdit}
+            title={"Edit"}
+            onClick={() => setPageMode("edit")}
+            testId="edit-check-in"
+            keepOutsideOnBigScreen
+          />
+        )}
+        {isDiscardVisible && (
+          <PageOptions.Action
+            icon={IconTrash}
+            title="Discard draft"
+            onClick={toggleDiscardModal}
+            testId="delete-check-in"
+          />
+        )}
+      </PageOptions.Root>
       <DiscardDraftModal
         isOpen={showDiscardModal}
         toggleModal={toggleDiscardModal}
         updateId={update.id!}
         goalId={goal.id!}
       />
-    </PageOptions.Root>
+    </>
   );
 }
 
@@ -83,7 +83,7 @@ function DiscardDraftModal({
   });
 
   return (
-    <Modal isOpen={isOpen} hideModal={toggleModal}>
+    <Modal isOpen={isOpen} onClose={toggleModal}>
       <Forms.Form form={form}>
         <p>Are you sure you want to discard this draft?</p>
         <Forms.Submit saveText="Discard draft" cancelText="Cancel" />

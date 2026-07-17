@@ -24,7 +24,6 @@ import AdminApi from "@/ee/admin_api";
 import "./i18n";
 
 import "@/api/socket";
-import ReactModal from "react-modal";
 import { ToasterBar } from "turboui";
 import { installSentryAxiosInterceptor } from "@/utils/axiosErrorReporting";
 
@@ -70,10 +69,6 @@ const App: JSX.Element = (
 
 if (rootElement !== null) {
   createRoot(rootElement).render(App);
-
-  // The app element must be set for all ReactModal instances
-  // read more: https://reactcommunity.org/react-modal/accessibility/#app-element
-  ReactModal.setAppElement(rootElement);
 } else {
   console.error("Root element not found");
 }

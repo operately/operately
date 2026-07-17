@@ -8,7 +8,6 @@ import { useNavigate } from "react-router";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useDeleteProjectCheckIn } from "@/models/projectCheckIns";
 
-import Modal from "@/components/Modal";
 import {
   CheckInMetadata,
   CheckInTitle,
@@ -16,6 +15,7 @@ import {
   IconEdit,
   IconTrash,
   CurrentSubscriptions,
+  Modal,
   Spacer,
   showSuccessToast,
   displayDate,
@@ -231,7 +231,7 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
   });
 
   return (
-    <Modal isOpen={isOpen} hideModal={toggleModal}>
+    <Modal isOpen={isOpen} onClose={toggleModal}>
       <Forms.Form form={form}>
         <p>
           {checkIn.state === "draft" || checkIn.state === "scheduled"

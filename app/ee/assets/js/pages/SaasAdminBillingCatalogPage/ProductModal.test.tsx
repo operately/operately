@@ -13,21 +13,17 @@ jest.mock("@/ee/admin_api", () => ({
   useUpdateBillingProduct: () => [mockUpdate],
 }));
 
-jest.mock("@/components/Modal", () => ({
-  __esModule: true,
-  default: ({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) =>
-    isOpen ? (
-      <section>
-        <h1>{title}</h1>
-        {children}
-      </section>
-    ) : null,
-}));
-
 jest.mock("turboui", () => {
   const React = require("react");
 
   return {
+    Modal: ({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) =>
+      isOpen ? (
+        <section>
+          <h1>{title}</h1>
+          {children}
+        </section>
+      ) : null,
     Forms: {
       useForm: jest.fn((config: any) => {
         mockCurrentValues = mockCurrentValues ?? { ...config.fields };

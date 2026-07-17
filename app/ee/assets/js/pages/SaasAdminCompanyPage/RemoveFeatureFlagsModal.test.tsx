@@ -9,22 +9,18 @@ jest.mock("@/ee/admin_api", () => ({
   useDisableFeatures: () => [mockDisableFeatures, { data: null, loading: false, error: null }],
 }));
 
-jest.mock("@/components/Modal", () => ({
-  __esModule: true,
-  default: ({ isOpen, title, children }: { isOpen: boolean; title?: string; children: React.ReactNode }) =>
+const mockShowErrorToast = jest.fn();
+
+jest.mock("turboui", () => ({
+  showErrorToast: (...args: unknown[]) => mockShowErrorToast(...args),
+  IconTrash: () => <span>trash</span>,
+  Modal: ({ isOpen, title, children }: { isOpen: boolean; title?: string; children: React.ReactNode }) =>
     isOpen ? (
       <div>
         <h1>{title}</h1>
         {children}
       </div>
     ) : null,
-}));
-
-const mockShowErrorToast = jest.fn();
-
-jest.mock("turboui", () => ({
-  showErrorToast: (...args: unknown[]) => mockShowErrorToast(...args),
-  IconTrash: () => <span>trash</span>,
   PrimaryButton: ({
     children,
     disabled,

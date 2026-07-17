@@ -14,23 +14,19 @@ jest.mock("@/ee/admin_api", () => ({
   useUpdateBillingPlanDefinition: () => [mockUpdate],
 }));
 
-jest.mock("@/components/Modal", () => ({
-  __esModule: true,
-  default: ({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) =>
-    isOpen ? (
-      <section>
-        <h1>{title}</h1>
-        {children}
-      </section>
-    ) : null,
-}));
-
 jest.mock("turboui", () => {
   const React = require("react");
   const { formatStorageBytes } = jest.requireActual("turboui/CompanyBilling");
 
   return {
     formatStorageBytes,
+    Modal: ({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) =>
+      isOpen ? (
+        <section>
+          <h1>{title}</h1>
+          {children}
+        </section>
+      ) : null,
     Forms: {
       useForm: jest.fn((config: any) => {
         mockCapturedConfig = config;
