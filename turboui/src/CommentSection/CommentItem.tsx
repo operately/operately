@@ -97,7 +97,7 @@ export function CommentItem({
         <Avatar person={comment.author} size="normal" />
       </div>
 
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between">
           <div className="font-bold -mt-0.5">
             {comment.author.profileLink ? (
