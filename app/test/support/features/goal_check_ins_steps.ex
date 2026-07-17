@@ -310,6 +310,13 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.click(testid: "save-as-draft-option")
   end
 
+  step :open_discard_modal, ctx do
+    ctx
+    |> UI.click(testid: "check-in-options")
+    |> UI.click(testid: "delete-check-in")
+    |> UI.assert_text("Are you sure you want to discard this draft?")
+  end
+
   step :assert_scheduled_check_in_is_published, ctx do
     ctx = UI.assert_page(ctx, Paths.goal_check_in_path(ctx.company, ctx.check_in))
     update = wait_for_update_state(ctx.check_in.id, :published)

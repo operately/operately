@@ -27,31 +27,33 @@ export function Options() {
   if (!isEditVisible && !isDiscardVisible) return null;
 
   return (
-    <PageOptions.Root testId="check-in-options">
-      {isEditVisible && (
-        <PageOptions.Action
-          icon={IconEdit}
-          title={"Edit"}
-          onClick={() => setPageMode("edit")}
-          testId="edit-check-in"
-          keepOutsideOnBigScreen
-        />
-      )}
-      {isDiscardVisible && (
-        <PageOptions.Action
-          icon={IconTrash}
-          title="Discard draft"
-          onClick={toggleDiscardModal}
-          testId="delete-check-in"
-        />
-      )}
+    <>
+      <PageOptions.Root testId="check-in-options">
+        {isEditVisible && (
+          <PageOptions.Action
+            icon={IconEdit}
+            title={"Edit"}
+            onClick={() => setPageMode("edit")}
+            testId="edit-check-in"
+            keepOutsideOnBigScreen
+          />
+        )}
+        {isDiscardVisible && (
+          <PageOptions.Action
+            icon={IconTrash}
+            title="Discard draft"
+            onClick={toggleDiscardModal}
+            testId="delete-check-in"
+          />
+        )}
+      </PageOptions.Root>
       <DiscardDraftModal
         isOpen={showDiscardModal}
         toggleModal={toggleDiscardModal}
         updateId={update.id!}
         goalId={goal.id!}
       />
-    </PageOptions.Root>
+    </>
   );
 }
 
