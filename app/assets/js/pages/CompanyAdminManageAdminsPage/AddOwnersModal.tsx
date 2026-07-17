@@ -1,12 +1,9 @@
 import React from "react";
 
-import Modal from "@/components/Modal";
-import { Avatar } from "turboui";
-import { PrimaryButton } from "turboui";
+import { Avatar, IconX, Modal, PrimaryButton } from "turboui";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
-import { IconX } from "turboui";
 import { FormState } from "./useForm";
 import * as People from "@/models/people";
 
@@ -19,7 +16,12 @@ export function AddOwnersModal({ form }: { form: FormState }) {
         Add Owner
       </PrimaryButton>
 
-      <Modal title="Add owners" isOpen={state.isModalOpen} hideModal={state.hideModal} height="600px">
+      <Modal
+        title="Add owners"
+        isOpen={state.isModalOpen}
+        onClose={state.hideModal}
+        contentClassName="min-h-[600px]"
+      >
         <SearchField
           onSelect={state.add}
           loader={state.search}

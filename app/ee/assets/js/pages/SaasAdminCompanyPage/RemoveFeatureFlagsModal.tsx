@@ -1,8 +1,7 @@
 import React from "react";
 
-import Modal from "@/components/Modal";
 import * as AdminApi from "@/ee/admin_api";
-import { IconTrash, PrimaryButton, SecondaryButton, showErrorToast } from "turboui";
+import { IconTrash, Modal, PrimaryButton, SecondaryButton, showErrorToast } from "turboui";
 
 interface RemoveFeatureFlagsModalProps {
   isOpen: boolean;
@@ -94,7 +93,7 @@ export function RemoveFeatureFlagsModal({
   const hasEnabledFeatures = enabledFeatures.length > 0;
 
   return (
-    <Modal title="Remove Feature Flags" isOpen={isOpen} hideModal={handleClose} size="sm">
+    <Modal title="Remove Feature Flags" isOpen={isOpen} onClose={handleClose} size="small" closeOnBackdropClick={!saving}>
       <div className="mb-4 text-sm text-content-accent">
         Remove experimental feature flags from this company. Changes are saved when you click Save.
       </div>

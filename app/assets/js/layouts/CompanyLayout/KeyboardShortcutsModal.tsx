@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Modal from "@/components/Modal";
+import { Modal } from "turboui";
 
 interface KeyboardShortcutsModalProps {
   isOpen: boolean;
@@ -36,7 +36,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
   const shortcutGroups = React.useMemo(() => buildShortcutGroups(), []);
 
   return (
-    <Modal isOpen={isOpen} hideModal={onClose} title="Keyboard Shortcuts Cheatsheet" size="sm" padding="24px 26px">
+    <Modal isOpen={isOpen} onClose={onClose} title="Keyboard Shortcuts Cheatsheet" size="small" contentPadding="px-[26px] py-6">
       <div className="space-y-7">
         {shortcutGroups.map((group) => (
           <section key={group.title}>
