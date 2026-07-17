@@ -9,8 +9,6 @@ import { usePaths } from "@/routes/paths";
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import Modal from "@/components/Modal";
-
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
@@ -21,6 +19,7 @@ import {
   CurrentSubscriptions,
   FormattedTime,
   Forms,
+  Modal,
   ResourcePageNavigation,
   richContentToString,
   RichContent,
@@ -201,7 +200,7 @@ function DeleteFileModal({ isOpen, hideModal, fileName }: DeleteFileModalProps) 
   });
 
   return (
-    <Modal isOpen={isOpen} hideModal={hideModal}>
+    <Modal isOpen={isOpen} onClose={hideModal}>
       <Forms.Form form={form}>
         <p>
           Are you sure you want to delete the file "<b>{fileName}</b>"?
