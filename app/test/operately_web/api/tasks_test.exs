@@ -1501,6 +1501,9 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       updated_task = Operately.Repo.preload(updated_task, :assigned_people)
       assert length(updated_task.assigned_people) == 1
       assert hd(updated_task.assigned_people).id == ctx.creator.id
+
+      assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.task.id, person_id: ctx.creator.id)
+      assert assignee.inserted_at
     end
 
     test "it assigns multiple people to a task", ctx do
@@ -1525,6 +1528,60 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert ctx.creator.id in db_assignee_ids
       assert ctx.space_member.id in db_assignee_ids
+    end
+
+    test "it preserves assignment timestamps for unchanged assignees", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:first_assignee, :engineering)
+        |> Factory.add_space_member(:second_assignee, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      old_inserted_at = ~N[2024-01-01 12:00:00]
+
+      first_assignee =
+        Operately.Tasks.Assignee.changeset(%{
+          task_id: ctx.task.id,
+          person_id: ctx.first_assignee.id
+        })
+        |> Operately.Repo.insert!()
+
+      Operately.Repo.update_all(
+        from(a in Operately.Tasks.Assignee, where: a.id == ^first_assignee.id),
+        set: [inserted_at: old_inserted_at]
+      )
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_ids: [Paths.person_id(ctx.first_assignee), Paths.person_id(ctx.second_assignee)],
+        type: "project"
+      })
+
+      first_assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.task.id, person_id: ctx.first_assignee.id)
+      second_assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.task.id, person_id: ctx.second_assignee.id)
+
+      assert first_assignee.inserted_at == old_inserted_at
+      assert second_assignee.inserted_at != old_inserted_at
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_ids: [Paths.person_id(ctx.second_assignee)],
+        type: "project"
+      })
+
+      assert Repo.get_by(Operately.Tasks.Assignee, task_id: ctx.task.id, person_id: ctx.first_assignee.id) == nil
+
+      second_assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.task.id, person_id: ctx.second_assignee.id)
+      assert second_assignee.inserted_at != old_inserted_at
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_ids: [Paths.person_id(ctx.first_assignee)],
+        type: "project"
+      })
+
+      readded_assignee = Operately.Repo.get_by!(Operately.Tasks.Assignee, task_id: ctx.task.id, person_id: ctx.first_assignee.id)
+      assert readded_assignee.inserted_at != old_inserted_at
     end
 
     test "it can remove an assignee", ctx do

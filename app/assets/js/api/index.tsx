@@ -2428,6 +2428,7 @@ export interface WorkMapItem {
   isNew: boolean;
   completedOn: string | null;
   timeframe: Timeframe | null;
+  assignedAt: string | null;
   milestones: WorkMapItemMilestone[];
   children: WorkMapItem[];
   type: WorkMapItemType;
