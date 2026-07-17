@@ -7,13 +7,14 @@ defmodule Operately.Search.IndexRun do
   """
 
   use Operately.Schema
+  alias Operately.Search.Entry
 
   @kinds [:backfill, :reconciliation]
   @statuses [:pending, :running, :completed, :completed_with_errors, :failed]
   @phases [:sources, :orphans]
 
   schema "search_index_runs" do
-    field :source_type, :string
+    field :source_type, Ecto.Enum, values: Entry.source_types()
     field :kind, Ecto.Enum, values: @kinds
     field :status, Ecto.Enum, values: @statuses, default: :pending
     field :phase, Ecto.Enum, values: @phases, default: :sources

@@ -72,4 +72,6 @@ defmodule Operately.Search.Entry do
     |> foreign_key_constraint(:project_id)
     |> foreign_key_constraint(:goal_id)
   end
+
+  def source_types, do: @source_types
 end
