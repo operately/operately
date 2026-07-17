@@ -86,6 +86,8 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "mcp_registered_oauth_clients",
     "mcp_sessions",
     "notification_email_batches",
+    "search_entries",
+    "search_index_runs",
     "site_message_companies",
     "site_messages",
     "system_settings"

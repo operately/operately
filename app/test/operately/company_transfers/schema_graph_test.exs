@@ -135,6 +135,8 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert PolicyRegistry.excluded?("schema_migrations")
       assert PolicyRegistry.excluded?("oban_jobs")
       assert PolicyRegistry.excluded?("oban_peers")
+      assert PolicyRegistry.excluded?("search_entries")
+      assert PolicyRegistry.excluded?("search_index_runs")
     end
 
     test "returns true for transfer run tables" do
