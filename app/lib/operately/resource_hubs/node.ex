@@ -10,6 +10,9 @@ defmodule Operately.ResourceHubs.Node do
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
     belongs_to :parent_folder, Operately.ResourceHubs.Folder, foreign_key: :parent_folder_id
 
+    # Readonly leftover: names now live on document/link/file/folder records.
+    # Kept only so we do not lose historical data if a name migration needs re-running;
+    # remove this column once all name backfills are confirmed safe in production.
     field :name, :string
     field :type, Ecto.Enum, values: [:document, :folder, :file, :link]
 
@@ -29,16 +32,8 @@ defmodule Operately.ResourceHubs.Node do
 
   def changeset(node, attrs) do
     node
-    |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type, :updated_at])
+    |> cast(attrs, [:resource_hub_id, :parent_folder_id, :type, :updated_at])
     |> validate_required([:resource_hub_id, :type])
-    |> validate_name_required_unless_migrated()
-  end
-
-  defp validate_name_required_unless_migrated(changeset) do
-    case get_field(changeset, :type) do
-      type when type in [:document, :link, :file] -> changeset
-      _ -> validate_required(changeset, [:name])
-    end
   end
 
   def get(requester, args) do
@@ -131,14 +126,14 @@ defmodule Operately.ResourceHubs.Node do
 
     q = """
       WITH RECURSIVE folder_hierarchy AS (
-        SELECT r.id, n.parent_folder_id, n.name
+        SELECT r.id, n.parent_folder_id, CAST(NULL AS text) AS name
         FROM #{resource_table} r
         JOIN resource_nodes n ON r.node_id = n.id
         WHERE r.id = $1
 
         UNION ALL
 
-        SELECT f.id, n.parent_folder_id, n.name
+        SELECT f.id, n.parent_folder_id, f.name
         FROM resource_folders f
         JOIN resource_nodes n ON f.node_id = n.id
         JOIN folder_hierarchy fh ON f.id = fh.parent_folder_id
@@ -157,7 +152,8 @@ defmodule Operately.ResourceHubs.Node do
 
       %Operately.ResourceHubs.Folder{
         id: str_id,
-        node: %{name: name, parent_folder_id: nil, resource_hub_id: nil}
+        name: name,
+        node: %{name: nil, parent_folder_id: nil, resource_hub_id: nil}
       }
     end)
   end

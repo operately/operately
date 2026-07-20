@@ -3,7 +3,7 @@ defmodule Operately.Data.Change108BackfillFileNamesFromNodesTest do
 
   import Ecto.Query, only: [from: 2]
   alias Operately.Data.Change108BackfillFileNamesFromNodes, as: Change
-  alias Operately.ResourceHubs.File
+  alias Operately.ResourceHubs.{File, Node}
   alias Operately.Support.Factory
 
   setup ctx do
@@ -17,12 +17,7 @@ defmodule Operately.Data.Change108BackfillFileNamesFromNodesTest do
   end
 
   test "copies names from file nodes onto files", ctx do
-    {:ok, node} =
-      Operately.ResourceHubs.create_node(%{
-        resource_hub_id: ctx.hub.id,
-        name: "Legacy file title",
-        type: :file
-      })
+    node = insert_node_with_name(ctx.hub.id, "Legacy file title", :file)
 
     {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
@@ -44,12 +39,7 @@ defmodule Operately.Data.Change108BackfillFileNamesFromNodesTest do
   end
 
   test "is idempotent", ctx do
-    {:ok, node} =
-      Operately.ResourceHubs.create_node(%{
-        resource_hub_id: ctx.hub.id,
-        name: "Another title",
-        type: :file
-      })
+    node = insert_node_with_name(ctx.hub.id, "Another title", :file)
 
     {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
@@ -74,7 +64,6 @@ defmodule Operately.Data.Change108BackfillFileNamesFromNodesTest do
     {:ok, node} =
       Operately.ResourceHubs.create_node(%{
         resource_hub_id: ctx.hub.id,
-        name: "Node title",
         type: :file
       })
 
@@ -94,6 +83,23 @@ defmodule Operately.Data.Change108BackfillFileNamesFromNodesTest do
 
     file = Repo.get!(File, file.id)
     assert file.name == "Existing title"
+  end
+
+  defp insert_node_with_name(hub_id, name, type) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    {:ok, node} =
+      %Node{}
+      |> Ecto.Changeset.change(%{
+        resource_hub_id: hub_id,
+        name: name,
+        type: type,
+        inserted_at: now,
+        updated_at: now
+      })
+      |> Repo.insert()
+
+    node
   end
 
   defp insert_file_without_name(attrs) do

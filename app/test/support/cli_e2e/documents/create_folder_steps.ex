@@ -48,7 +48,7 @@ defmodule Operately.Support.CliE2E.Documents.CreateFolderSteps do
       |> Repo.preload(:node)
 
     assert folder_record.node.resource_hub_id == ctx.expected_resource_hub_id
-    assert folder_record.node.name == ctx.folder_name
+    assert folder_record.name == ctx.folder_name
 
     ctx
     |> Map.put(:created_folder_id, id)

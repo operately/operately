@@ -132,8 +132,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
       new_folder = fetch_folder(res.folder_id)
 
-      refute ctx.folder.node.name == new_folder.node.name
-      assert new_folder.node.name == "Brand new name"
+      refute ctx.folder.name == new_folder.name
+      assert new_folder.name == "Brand new name"
+      assert new_folder.node.name == nil
     end
 
     test "folder is copied and copy has the same name", ctx do
@@ -150,7 +151,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
       assert_folder_copied(ctx, res.folder_id)
 
       new_folder = fetch_folder(res.folder_id)
-      assert ctx.folder.node.name == new_folder.node.name
+      assert ctx.folder.name == new_folder.name
+      assert new_folder.node.name == nil
     end
   end
 

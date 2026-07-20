@@ -47,17 +47,17 @@ defmodule OperatelyWeb.Api.ResourceHubs.RenameFolderTest do
         })
         assert code == @test.expected
 
-        node = Repo.preload(folder, :node).node
+        folder = Repo.reload(folder)
 
         case @test.expected do
           200 ->
-            assert node.name == "New name"
+            assert folder.name == "New name"
             assert res.success
           403 ->
-            assert node.name == "some name"
+            assert folder.name == "some name"
             assert res.message == "You don't have permission to perform this action"
           404 ->
-            assert node.name == "some name"
+            assert folder.name == "some name"
             assert res.message == "The requested resource was not found"
         end
       end
@@ -75,15 +75,19 @@ defmodule OperatelyWeb.Api.ResourceHubs.RenameFolderTest do
     end
 
     test "renames folder", ctx do
-      assert ctx.folder.node.name == "folder"
+      assert ctx.folder.name == "folder"
+      assert ctx.folder.node.name == nil
 
       assert {200, %{success: true}} = mutation(ctx.conn, [:resource_hubs, :rename_folder], %{
         folder_id: Paths.folder_id(ctx.folder),
         new_name: "New name",
       })
 
+      folder = Repo.reload(ctx.folder)
       node = Repo.reload(ctx.folder.node)
-      assert node.name == "New name"
+
+      assert folder.name == "New name"
+      assert node.name == nil
     end
   end
 

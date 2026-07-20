@@ -22,6 +22,6 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.RenameFolderTest do
 
     folder = ToolConnHelper.reload(ctx.folder, [:node])
 
-    assert folder.node.name == "Updated MCP Folder"
+    assert folder.name == "Updated MCP Folder"
   end
 end

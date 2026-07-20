@@ -12,7 +12,7 @@ defmodule Operately.Features.ResourceHubFile.DeletionTest do
     feature "deleting file adds event to feed", ctx do
       ctx
       |> Steps.given_file_exists()
-      |> delete_resource_from_nodes_list("Some File")
+      |> delete_resource_from_nodes_list("Some File", :file)
       |> Steps.assert_file_deleted_on_space_feed()
       |> Steps.assert_file_deleted_on_company_feed()
     end
@@ -20,7 +20,7 @@ defmodule Operately.Features.ResourceHubFile.DeletionTest do
     feature "deleting file sends notifications", ctx do
       ctx
       |> Steps.given_file_exists()
-      |> delete_resource_from_nodes_list("Some File")
+      |> delete_resource_from_nodes_list("Some File", :file)
       |> Steps.assert_file_deleted_notification_sent()
       |> Steps.assert_file_deleted_email_sent()
     end
@@ -28,7 +28,7 @@ defmodule Operately.Features.ResourceHubFile.DeletionTest do
     feature "delete file from content list", ctx do
       ctx
       |> Steps.given_file_exists()
-      |> delete_resource_from_nodes_list("Some File")
+      |> delete_resource_from_nodes_list("Some File", :file)
     end
 
     feature "deleting file from file page redirects to resource hub", ctx do

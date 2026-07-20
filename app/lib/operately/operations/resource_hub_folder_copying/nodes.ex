@@ -35,18 +35,13 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Nodes do
         id: n.new_id,
         resource_hub_id: resource_hub.id,
         parent_folder_id: n.parent_folder_id,
-        name: node_name(n),
+        name: nil,
         type: n.type,
         inserted_at: now,
         updated_at: now,
       }
     end)
   end
-
-  defp node_name(%{type: :document}), do: nil
-  defp node_name(%{type: :link}), do: nil
-  defp node_name(%{type: :file}), do: nil
-  defp node_name(n), do: n.name
 
   defp merge_resources(new_nodes, original_nodes) do
     Enum.map(new_nodes, fn new_node ->
