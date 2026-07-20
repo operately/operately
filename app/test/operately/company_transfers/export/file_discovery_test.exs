@@ -80,6 +80,47 @@ defmodule Operately.CompanyTransfers.Export.FileDiscoveryTest do
     refute Enum.any?(discovery.files, &(&1["blob_id"] == ctx.unused_blob.id))
   end
 
+  test "discover/1 finds blobs referenced only by historical document versions", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:historical_blob)
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:document, :hub, content: %{"type" => "doc", "content" => []})
+
+    assert {:ok, _version} =
+             Operately.ResourceHubs.create_document_version(%{
+               document_id: ctx.document.id,
+               version_number: 1,
+               title: ctx.document.name,
+               content: blob_document(ctx.historical_blob),
+               content_schema_version: 1,
+               editor_id: nil,
+               origin: :migration
+             })
+
+    on_exit(fn ->
+      cleanup_blob_storage([ctx.historical_blob])
+    end)
+
+    upload_blob_payload!(ctx.historical_blob, "historical payload")
+
+    package = Transfers.export!(ctx.company, ctx.account).package
+    discovery = FileDiscovery.discover(package)
+
+    assert Enum.any?(discovery.files, &(&1["blob_id"] == ctx.historical_blob.id))
+
+    assert %{
+             table: "resource_document_versions",
+             row_id: _version_id,
+             column: "content",
+             blob_id: historical_blob_id
+           } =
+             Enum.find(discovery.rich_text_blob_references, &(&1.blob_id == ctx.historical_blob.id))
+
+    assert historical_blob_id == ctx.historical_blob.id
+  end
+
   defp blob_document(blob) do
     %{
       "type" => "doc",

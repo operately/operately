@@ -91,6 +91,53 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
     assert blob_node["attrs"]["src"] == Blob.url(%Blob{id: destination_blob_id})
   end
 
+  test "rewrites mentions and blobs in resource_document_versions content" do
+    source_person = person("Version Mention")
+    destination_person_id = Ecto.UUID.generate()
+    source_blob_id = Ecto.UUID.generate()
+    destination_blob_id = Ecto.UUID.generate()
+
+    row = %{
+      "content" => %{
+        "type" => "doc",
+        "content" => [
+          hd(mention_doc([source_person])["content"]),
+          %{
+            "type" => "blob",
+            "attrs" => %{
+              "id" => ShortUuid.encode!(source_blob_id),
+              "src" => Blob.url(%Blob{id: source_blob_id}),
+              "title" => "attachment.txt"
+            }
+          }
+        ]
+      }
+    }
+
+    plan =
+      translation_plan(%{
+        people: %{source_person.id => destination_person_id},
+        blobs: %{source_blob_id => destination_blob_id}
+      })
+
+    assert map_fields_for("resource_document_versions") == ["content"]
+
+    assert {:ok, rewritten} =
+             RichTextRewriter.rewrite_row_mentions(
+               row,
+               "resource_document_versions",
+               plan,
+               map_fields_for("resource_document_versions")
+             )
+
+    assert RichContent.find_mentioned_ids(rewritten["content"]) == [
+             encoded_person_id("Version Mention", destination_person_id)
+           ]
+
+    [_mention, blob_node] = rewritten["content"]["content"]
+    assert blob_node["attrs"]["id"] == ShortUuid.encode!(destination_blob_id)
+  end
+
   test "rewrites legacy blob src maps in top-level TipTap docs" do
     source_blob_id = Ecto.UUID.generate()
     destination_blob_id = Ecto.UUID.generate()
