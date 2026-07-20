@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.{Document, Folder, Link, ResourceHub, Node}
+  alias Operately.ResourceHubs.{Document, Folder, File, Link, ResourceHub, Node}
   alias Operately.Updates
 
   step :setup, ctx do
@@ -262,8 +262,14 @@ defmodule Operately.Support.Features.ResourceHubSteps do
             Paths.document_id(document)
 
           {:error, :not_found} ->
-            {:ok, link} = Link.get(:system, name: resource_name)
-            Paths.link_id(link)
+            case Link.get(:system, name: resource_name) do
+              {:ok, link} ->
+                Paths.link_id(link)
+
+              {:error, :not_found} ->
+                {:ok, file} = File.get(:system, name: resource_name)
+                Paths.file_id(file)
+            end
         end
     end
   end

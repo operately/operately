@@ -36,7 +36,7 @@ defmodule Operately.ResourceHubs.Node do
 
   defp validate_name_required_unless_migrated(changeset) do
     case get_field(changeset, :type) do
-      type when type in [:document, :link] -> changeset
+      type when type in [:document, :link, :file] -> changeset
       _ -> validate_required(changeset, [:name])
     end
   end

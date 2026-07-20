@@ -59,11 +59,10 @@ defmodule Operately.Operations.ResourceHubFileCreating do
     end)
   end
 
-  defp insert_node(multi, hub, file, index, attrs) do
+  defp insert_node(multi, hub, _file, index, attrs) do
     Multi.insert(multi, node_name(index), Node.changeset(%{
       resource_hub_id: hub.id,
       parent_folder_id: attrs[:folder_id],
-      name: file.name,
       type: :file,
     }))
   end
@@ -73,6 +72,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
       File.changeset(%{
         node_id: changes[node_name(index)].id,
         author_id: author.id,
+        name: file.name,
         blob_id: file.blob_id,
         preview_blob_id: file[:preview_blob_id],
         description: file.description,

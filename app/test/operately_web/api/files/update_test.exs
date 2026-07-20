@@ -77,7 +77,8 @@ defmodule OperatelyWeb.Api.Files.UpdateTest do
     end
 
     test "edits file", ctx do
-      assert ctx.my_file.node.name === "some name"
+      assert ctx.my_file.name === "some name"
+      assert ctx.my_file.node.name == nil
       assert ctx.my_file.description === RichText.rich_text("Content")
 
       assert {200, res} = mutation(ctx.conn, [:files, :update], %{
@@ -90,7 +91,8 @@ defmodule OperatelyWeb.Api.Files.UpdateTest do
       file = Repo.reload(ctx.my_file)
 
       assert res.file.name == "New name"
-      assert node.name === "New name"
+      assert file.name === "New name"
+      assert node.name == nil
       assert file.description === RichText.rich_text("Edited content")
     end
   end

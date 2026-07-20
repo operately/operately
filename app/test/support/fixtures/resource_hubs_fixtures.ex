@@ -91,7 +91,6 @@ defmodule Operately.ResourceHubsFixtures do
     {:ok, node} = Operately.ResourceHubs.create_node(%{
       resource_hub_id: hub.id,
       parent_folder_id: Keyword.get(attrs, :parent_folder_id),
-      name: Keyword.get(attrs, :name, "some name"),
       type: :file,
     })
 
@@ -105,6 +104,7 @@ defmodule Operately.ResourceHubsFixtures do
     {:ok, file} = Operately.ResourceHubs.create_file(%{
       node_id: node.id,
       author_id: author.id,
+      name: Keyword.get(attrs, :name, "some name"),
       blob_id: blob.id,
       subscription_list_id: subscription_list.id,
       description: Keyword.get(attrs, :description, RichText.rich_text("Content")) ,

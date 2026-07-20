@@ -41,7 +41,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
   end
 
   defp find_action(files) when length(files) == 1 do
-    "uploaded the file \"#{hd(files).node.name}\""
+    "uploaded the file \"#{hd(files).name}\""
   end
 
   defp find_action(files) do
