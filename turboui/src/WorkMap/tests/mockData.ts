@@ -53,6 +53,8 @@ function withDefaults(item: any): WorkMap.Item {
     nextStep: "",
     taskStatus: null,
     milestones: [],
+    targets: [],
+    checklist: [],
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     ...item,
     children: (item.children || []).map(withDefaults),
@@ -181,6 +183,50 @@ export const mockTasksTabItems: WorkMap.Item[] = (() => {
   ];
 })();
 
+export const mockGoalTargets = [
+  {
+    __typename: "target" as const,
+    id: "target-revenue",
+    name: "Revenue",
+    from: 0,
+    to: 1000,
+    value: 250,
+    unit: "USD",
+    index: 1,
+  },
+  {
+    __typename: "target" as const,
+    id: "target-retention",
+    name: "Retention",
+    from: 0,
+    to: 100,
+    value: 40,
+    unit: "%",
+    index: 2,
+  },
+];
+
+export const mockGoalChecklist = [
+  {
+    __typename: "goal_check" as const,
+    id: "check-launch",
+    name: "Launch plan",
+    completed: true,
+    index: 1,
+    insertedAt: "2025-01-01",
+    updatedAt: "2025-01-02",
+  },
+  {
+    __typename: "goal_check" as const,
+    id: "check-hire",
+    name: "Hire lead",
+    completed: false,
+    index: 2,
+    insertedAt: "2025-01-01",
+    updatedAt: "2025-01-01",
+  },
+];
+
 export const mockSingleItem: WorkMap.Item = withDefaults({
   id: "goal-standalone",
   parentId: null,
@@ -192,6 +238,8 @@ export const mockSingleItem: WorkMap.Item = withDefaults({
   owner: people.alex,
   nextStep: "Working on this standalone goal",
   timeframe: getTimeframe(currentQuarter()),
+  targets: mockGoalTargets,
+  checklist: mockGoalChecklist,
   children: [],
 });
 
@@ -762,7 +810,11 @@ export const createMockItem = (
 };
 
 // Create mock items for each status
-export const mockGoalOnTrack = createMockItem("goal-1", "Improve customer experience", "goal", "on_track", 45, true);
+export const mockGoalOnTrack = withDefaults({
+  ...createMockItem("goal-1", "Improve customer experience", "goal", "on_track", 45, true),
+  targets: mockGoalTargets,
+  checklist: mockGoalChecklist,
+});
 export const mockGoalCompleted = createMockItem("goal-2", "Launch new marketing campaign", "goal", "achieved", 100);
 export const mockGoalAchieved = createMockItem("goal-3", "Increase website traffic by 50%", "goal", "achieved", 100);
 export const mockGoalPartial = createMockItem("goal-4", "Reduce support tickets by 30%", "goal", "missed", 75);

@@ -2428,6 +2428,8 @@ defmodule OperatelyWeb.Api.Types do
     field :timeframe, :timeframe, null: true
     field :assigned_at, :datetime, null: true
     field :milestones, list_of(:work_map_item_milestone), null: false
+    field :targets, list_of(:target), null: false
+    field :checklist, list_of(:goal_check), null: false
     field :children, list_of(:work_map_item), null: false
     field :type, :work_map_item_type, null: false
     field :item_path, :string, null: false
