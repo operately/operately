@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocumentTest do
       |> then(&Operately.Repo.get!(Document, &1))
       |> Operately.Repo.preload(:node)
 
-    assert document.node.name == "MCP Document"
+    assert document.name == "MCP Document"
     assert ToolConnHelper.rich_text_to_string(document.content) == "Document"
   end
 
@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocumentTest do
       |> then(&Operately.Repo.get!(Document, &1))
       |> Operately.Repo.preload(:node)
 
-    assert document.node.name == "Project MCP Document"
+    assert document.name == "Project MCP Document"
     assert ToolConnHelper.rich_text_to_string(document.content) == "Project body"
   end
 

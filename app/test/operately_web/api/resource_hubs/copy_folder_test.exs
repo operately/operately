@@ -181,7 +181,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
   defp assert_document_created(document, new_document) do
     refute document.node.id == new_document.node.id
-    assert document.node.name == new_document.node.name
+    assert document.name == new_document.name
     assert new_document.node.type == :document
 
     refute document.id == new_document.id
