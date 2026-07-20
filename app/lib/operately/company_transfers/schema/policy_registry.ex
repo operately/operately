@@ -178,6 +178,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "project_retrospectives",
     "projects",
     "resource_documents",
+    "resource_document_versions",
     "resource_files",
     "resource_folders",
     "resource_hubs",

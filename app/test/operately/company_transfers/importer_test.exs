@@ -21,6 +21,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.Project
   alias Operately.ResourceHubs.Document
+  alias Operately.ResourceHubs.DocumentVersion
   alias Operately.Repo
   alias Operately.Support.CompanyTransfer.Helpers, as: Transfers
   alias OperatelyWeb.Paths, as: WebPaths
@@ -603,6 +604,119 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     [blob_node] = imported_document.content["content"]
     assert blob_node["attrs"]["id"] == WebPaths.blob_id(imported_blob)
     assert blob_node["attrs"]["src"] == Blob.url(imported_blob)
+
+    _ = File.rm(storage_path(imported_blob))
+  end
+
+  test "run/1 round-trips document versions including historical-only blobs", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:historical_blob)
+      |> Factory.add_company_member(:editor)
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:document, :hub, name: "Versioned Doc", content: %{"type" => "doc", "content" => []})
+
+    on_exit(fn ->
+      cleanup_blob_storage([ctx.historical_blob])
+    end)
+
+    upload_blob_payload!(ctx.historical_blob, "historical-only payload")
+
+    assert {:ok, _} =
+             Operately.ResourceHubs.create_document_version(%{
+               document_id: ctx.document.id,
+               version_number: 1,
+               title: "Baseline title",
+               content: %{"type" => "doc", "content" => []},
+               content_schema_version: 1,
+               editor_id: nil,
+               origin: :migration,
+               inserted_at: ~U[2024-01-01 10:00:00Z]
+             })
+
+    assert {:ok, _} =
+             Operately.ResourceHubs.create_document_version(%{
+               document_id: ctx.document.id,
+               version_number: 2,
+               title: "Edited title",
+               content: blob_document(ctx.historical_blob),
+               content_schema_version: 1,
+               editor_id: ctx.editor.id,
+               origin: :edited,
+               inserted_at: ~U[2024-01-02 11:00:00Z]
+             })
+
+    assert {:ok, _} =
+             Operately.ResourceHubs.create_document_version(%{
+               document_id: ctx.document.id,
+               version_number: 3,
+               title: "Restored title",
+               content: %{"type" => "doc", "content" => []},
+               content_schema_version: 1,
+               editor_id: ctx.editor.id,
+               origin: :restored,
+               restored_from_version_number: 1,
+               inserted_at: ~U[2024-01-03 12:00:00Z]
+             })
+
+    {:ok, document} =
+      ctx.document
+      |> Ecto.Changeset.change(%{current_version: 3})
+      |> Repo.update()
+
+    ctx = Map.put(ctx, :document, document)
+
+    assert {:ok, export_run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
+    assert {:ok, export_run} = CompanyTransfers.mark_export_run_running(export_run)
+    assert {:ok, export_run} = Exporter.run(export_run)
+
+    assert {:ok, import_run} =
+             CompanyTransfers.create_import_run(
+               ctx.account,
+               %{
+                 package_blob_id: export_run.package_blob_id
+               },
+               dispatch: false
+             )
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_document =
+      Repo.one!(
+        from d in Document,
+          join: n in assoc(d, :node),
+          join: h in assoc(n, :resource_hub),
+          join: s in assoc(h, :space),
+          where: s.company_id == ^completed_run.company_id,
+          where: d.name == "Versioned Doc"
+      )
+
+    assert imported_document.current_version == 3
+    assert imported_document.id != ctx.document.id
+
+    imported_versions =
+      from(v in DocumentVersion,
+        where: v.document_id == ^imported_document.id,
+        order_by: [asc: v.version_number]
+      )
+      |> Repo.all()
+
+    assert length(imported_versions) == 3
+    assert Enum.map(imported_versions, & &1.version_number) == [1, 2, 3]
+    assert Enum.map(imported_versions, & &1.origin) == [:migration, :edited, :restored]
+    assert Enum.at(imported_versions, 2).restored_from_version_number == 1
+    assert Enum.at(imported_versions, 0).content_schema_version == 1
+    assert Enum.at(imported_versions, 0).editor_id == nil
+    assert Enum.at(imported_versions, 1).editor_id != nil
+    assert Enum.at(imported_versions, 1).editor_id != ctx.editor.id
+
+    [imported_blob_id] = Operately.RichContent.Blob.find_ids(Enum.at(imported_versions, 1).content)
+    imported_blob = Blobs.get_blob!(imported_blob_id)
+
+    assert imported_blob.id != ctx.historical_blob.id
+    assert File.read!(storage_path(imported_blob)) == "historical-only payload"
 
     _ = File.rm(storage_path(imported_blob))
   end
