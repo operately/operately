@@ -117,7 +117,8 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
       link = Repo.preload(hd(links), :node)
 
       assert res.link.id == Paths.link_id(link)
-      assert link.node.name == "Link without description"
+      assert link.name == "Link without description"
+      assert link.node.name == nil
       assert link.url == "https://example.com"
       assert link.description == Operately.RichContent.Builder.empty_content()
     end

@@ -190,7 +190,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
   defp assert_link_created(link, new_link) do
     refute link.node.id == new_link.node.id
-    assert link.node.name == new_link.node.name
+    assert link.name == new_link.name
+    assert new_link.node.name == nil
     assert new_link.node.type == :link
 
     refute link.id == new_link.id

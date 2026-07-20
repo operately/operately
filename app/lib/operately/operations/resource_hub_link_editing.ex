@@ -3,16 +3,13 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
-  alias Operately.ResourceHubs.{Link, Node}
+  alias Operately.ResourceHubs.Link
 
   def run(author, link, attrs) do
     Multi.new()
     |> Multi.update(:link, Link.changeset(link, attrs))
-    |> Multi.update(:node, fn changes ->
-      Node.changeset(link.node, %{name: attrs.name, updated_at: changes.link.updated_at})
-    end)
     |> Multi.run(:link_with_node, fn _, changes ->
-      link = Map.put(changes.link, :node, changes.node)
+      link = Map.put(changes.link, :node, link.node)
       {:ok, link}
     end)
     |> Activities.insert_sync(author.id, :resource_hub_link_edited, fn _changes ->
@@ -21,7 +18,7 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
         node_id: link.node_id,
         link_id: link.id,
         previous_link: %{
-          name: link.node.name,
+          name: link.name,
           type: Atom.to_string(link.type),
           url: link.url
         },

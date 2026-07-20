@@ -50,6 +50,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
     data = Enum.map(links, fn l ->
       common_data(l)
       |> Map.merge(%{
+        name: l.name,
         url: l.url,
         description: l.description,
         type: l.type,

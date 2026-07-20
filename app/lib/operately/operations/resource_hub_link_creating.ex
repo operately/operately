@@ -12,13 +12,13 @@ defmodule Operately.Operations.ResourceHubLinkCreating do
     |> Multi.insert(:node, Node.changeset(%{
       resource_hub_id: hub.id,
       parent_folder_id: attrs[:folder_id],
-      name: attrs.name,
       type: :link,
     }))
     |> Multi.insert(:link, fn changes ->
       Link.changeset(%{
         node_id: changes.node.id,
         author_id: author.id,
+        name: attrs.name,
         url: attrs.url,
         description: attrs.content,
         type: attrs.type,

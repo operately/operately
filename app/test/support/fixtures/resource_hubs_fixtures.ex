@@ -122,7 +122,6 @@ defmodule Operately.ResourceHubsFixtures do
     {:ok, node} = Operately.ResourceHubs.create_node(%{
       resource_hub_id: hub.id,
       parent_folder_id: attrs[:parent_folder_id] && attrs.parent_folder_id,
-      name: attrs[:name] || "Link",
       type: :link,
     })
 
@@ -132,6 +131,7 @@ defmodule Operately.ResourceHubsFixtures do
       node_id: node.id,
       author_id: author.id,
       subscription_list_id: subscription_list.id,
+      name: attrs[:name] || "Link",
       url: attrs[:url] || "http://localhost:4000",
       description: attrs[:description] || RichText.rich_text("Description"),
       type: attrs[:type] || :other,

@@ -79,7 +79,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateLinkTest do
     end
 
     test "edits link", ctx do
-      assert ctx.link.node.name === "Link"
+      assert ctx.link.name === "Link"
+      assert ctx.link.node.name == nil
       assert ctx.link.type === :other
       assert ctx.link.url === "http://localhost:4000"
       assert ctx.link.description === RichText.rich_text("Description")
@@ -95,7 +96,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateLinkTest do
       node = Repo.reload(ctx.link.node)
       link = Repo.reload(ctx.link)
 
-      assert node.name === "New name"
+      assert link.name === "New name"
+      assert node.name == nil
       assert link.type === :google_doc
       assert link.url === "http://localhost:3000"
       assert link.description === RichText.rich_text("Brand new description")
@@ -114,7 +116,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateLinkTest do
       node = Repo.reload(ctx.link.node)
       link = Repo.reload(ctx.link)
 
-      assert node.name === "Updated name"
+      assert link.name === "Updated name"
+      assert node.name == nil
       assert link.type === :google_sheet
       assert link.url === "https://updated.example.com"
       assert link.description === original_description
@@ -135,7 +138,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateLinkTest do
       node = Repo.reload(ctx.link.node)
       link = Repo.reload(ctx.link)
 
-      assert node.name === "Just the name changed"
+      assert link.name === "Just the name changed"
+      assert node.name == nil
       assert link.type === original_type
       assert link.url === original_url
       assert link.description === original_description
@@ -146,7 +150,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateLinkTest do
 
       assert {200, _} = mutation(ctx.conn, [:links, :update], %{
         link_id: Paths.link_id(ctx.link),
-        name: ctx.link.node.name,
+        name: ctx.link.name,
         type: Atom.to_string(ctx.link.type),
         url: ctx.link.url,
         description: RichText.rich_text("", :as_string)

@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubLinkSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.Node
+  alias Operately.ResourceHubs.Link
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
@@ -68,8 +68,8 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.click(testid: "submit")
     |> UI.refute_has(testid: "submit")
     |> then(fn ctx ->
-      {:ok, node} = Node.get(:system, name: attrs.title, opts: [preload: :link])
-      Map.put(ctx, :link, node.link)
+      {:ok, link} = Link.get(:system, name: attrs.title)
+      Map.put(ctx, :link, link)
     end)
   end
 
@@ -136,10 +136,10 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   end
 
   step :delete_link, ctx, link_name do
-    {:ok, node} = Node.get(:system, name: link_name, opts: [preload: :link])
+    {:ok, link} = Link.get(:system, name: link_name)
 
-    menu_id = UI.testid(["link-menu", Paths.link_id(node.link)])
-    delete_id = UI.testid(["delete", Paths.link_id(node.link)])
+    menu_id = UI.testid(["link-menu", Paths.link_id(link)])
+    delete_id = UI.testid(["delete", Paths.link_id(link)])
 
     ctx
     |> UI.click(testid: menu_id)
@@ -147,10 +147,10 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   end
 
   step :assert_link_content, ctx, attrs do
-    {:ok, node} = Node.get(:system, name: attrs.title, type: :link, opts: [preload: :link])
+    {:ok, link} = Link.get(:system, name: attrs.title)
 
     ctx
-    |> UI.assert_page(Paths.link_path(ctx.company, node.link))
+    |> UI.assert_page(Paths.link_path(ctx.company, link))
     |> UI.assert_text(attrs.title)
     |> then(fn ctx ->
       if attrs[:notes] do
@@ -162,8 +162,8 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
   end
 
   defp assert_link_type(link_name, type) do
-    {:ok, node} = Node.get(:system, name: link_name, type: :link, opts: [preload: :link])
-    assert node.link.type == type
+    {:ok, link} = Link.get(:system, name: link_name)
+    assert link.type == type
   end
 
   step :assert_link_is_airtable, ctx, title do
