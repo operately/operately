@@ -13,13 +13,13 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
     |> Multi.insert(:node, Node.changeset(%{
       resource_hub_id: hub.id,
       parent_folder_id: attrs[:folder_id],
-      name: attrs.name,
       type: :document,
     }))
     |> Multi.insert(:document, fn changes ->
       Document.changeset(%{
         node_id: changes.node.id,
         author_id: author.id,
+        name: attrs.name,
         content: attrs.content,
         state: state(attrs),
         subscription_list_id: changes.subscription_list.id,
@@ -45,7 +45,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
           resource_hub_id: hub.id,
           document_id: changes.document.id,
           node_id: changes.node.id,
-          name: changes.node.name,
+          name: changes.document.name,
           copied_document_id: attrs[:copied_document] && attrs.copied_document.id,
           copied_document_node_id: attrs[:copied_document] && attrs.copied_document.node_id,
         }

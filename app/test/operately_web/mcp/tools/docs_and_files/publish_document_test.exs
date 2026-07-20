@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.PublishDocumentTest do
       |> Operately.Repo.preload(:node)
 
     assert document.state == :published
-    assert document.node.name == "Published MCP Document"
+    assert document.name == "Published MCP Document"
     assert ToolConnHelper.rich_text_to_string(document.content) == "Published"
   end
 end

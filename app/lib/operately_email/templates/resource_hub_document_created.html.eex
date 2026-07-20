@@ -1,7 +1,7 @@
 <%= if @copied_document do %>
-  <%= title("#{short_name(@author)} created a copy of #{@copied_document.node.name} and named it #{@document.node.name}") %>
+  <%= title("#{short_name(@author)} created a copy of #{@copied_document.name} and named it #{@document.name}") %>
 <% else %>
-  <%= title("#{short_name(@author)} added a document: #{@document.node.name}") %>
+  <%= title("#{short_name(@author)} added a document: #{@document.name}") %>
 <% end %>
 
 <%= spacer() %>

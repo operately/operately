@@ -2,7 +2,7 @@ defmodule Operately.Data.Change047PopulatePublishedAtFieldInExistingPublishedDoc
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Repo
-  alias Operately.ResourceHubs.Document
+  alias __MODULE__.Document
 
   def run do
     Repo.transaction(fn ->
@@ -12,7 +12,7 @@ defmodule Operately.Data.Change047PopulatePublishedAtFieldInExistingPublishedDoc
   end
 
   defp fetch_documents do
-    from(d in Document, where: d.state == :published and is_nil(d.published_at))
+    from(d in Document, where: d.state == "published" and is_nil(d.published_at))
     |> Repo.all()
   end
 
@@ -21,7 +21,21 @@ defmodule Operately.Data.Change047PopulatePublishedAtFieldInExistingPublishedDoc
   end
 
   defp update_documents(doc) do
-    {:ok, _} = Document.changeset(doc, %{published_at: doc.inserted_at})
-    |> Repo.update()
+    {:ok, _} =
+      doc
+      |> Ecto.Changeset.change(%{published_at: doc.inserted_at})
+      |> Repo.update()
+  end
+
+  defmodule Document do
+    use Operately.Schema
+
+    schema "resource_documents" do
+      field :state, :string
+      field :published_at, :utc_datetime
+      field :inserted_at, :utc_datetime
+
+      soft_delete()
+    end
   end
 end

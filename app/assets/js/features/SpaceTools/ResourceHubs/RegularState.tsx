@@ -1,7 +1,7 @@
 import { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 import classNames from "classnames";
 import React, { useMemo } from "react";
-import { CommentCountIndicator, NodeDescription, NodeIcon, ResourceHubSortBy, sortNodesWithFoldersFirst } from "turboui";
+import { CommentCountIndicator, NodeDescription, NodeIcon, ResourceHubSortBy, getNodeName, sortNodesWithFoldersFirst } from "turboui";
 import { Title } from "../components";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 
@@ -46,7 +46,7 @@ function NodeItem({ node }: { node: ResourceHubNode }) {
         <NodeIcon node={node} size={32} />
       </div>
       <div className="overflow-hidden leading-snug flex-1">
-        <div className="font-bold truncate">{node.name}</div>
+        <div className="font-bold truncate">{getNodeName(node)}</div>
         <NodeDescription node={node} fontSize="text-[10px] truncate" />
       </div>
       <CommentCountIndicator count={commentsCount} size={16} />

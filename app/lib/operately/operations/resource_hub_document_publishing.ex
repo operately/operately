@@ -2,14 +2,14 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
   alias Ecto.Multi
   alias Operately.{Activities, Repo}
   alias Operately.ResourceHubs.Parent
-  alias Operately.ResourceHubs.{Document, Node}
+  alias Operately.ResourceHubs.Document
   alias Operately.Notifications.SubscriptionList
   alias Operately.Operations.Notifications.Subscription
   alias Operately.Operations.SubscriptionsListEditing
 
   def run(author, document, attrs) do
     Multi.new()
-    |> update_document(document, attrs[:content])
+    |> update_document(document, attrs)
     |> Multi.run(:subscription_list, fn _, changes ->
       with {:ok, subscription_list} <-
              SubscriptionList.get(:system,
@@ -21,47 +21,38 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
       end
     end)
     |> Subscription.update_mentioned_people(attrs[:content] || document.content)
-    |> update_node(document.node, attrs[:name])
+    |> Multi.run(:result, fn _, changes ->
+      document = Map.put(changes.document, :node, document.node)
+      {:ok, document}
+    end)
     |> insert_activity(author, document)
     |> Repo.transaction()
     |> Repo.extract_result(:result)
   end
 
   defp insert_activity(multi, author, document) do
-    Activities.insert_sync(multi, author.id, :resource_hub_document_created, fn _changes ->
+    Activities.insert_sync(multi, author.id, :resource_hub_document_created, fn changes ->
       %{
         resource_hub_id: document.resource_hub.id,
         document_id: document.id,
         node_id: document.node_id,
-        name: document.node.name,
+        name: changes.document.name,
       }
       |> Map.merge(Parent.parent_fields(document.resource_hub))
     end)
   end
 
-  defp update_document(multi, document, nil) do
-    Multi.update(multi, :document, Document.changeset(document, %{state: :published}))
+  defp update_document(multi, document, attrs) do
+    updates =
+      %{state: :published}
+      |> maybe_put(:content, attrs[:content])
+      |> maybe_put(:name, attrs[:name])
+
+    Multi.update(multi, :document, Document.changeset(document, updates))
   end
 
-  defp update_document(multi, document, content) do
-    Multi.update(multi, :document, Document.changeset(document, %{
-      state: :published,
-      content: content,
-    }))
-  end
-
-  defp update_node(multi, node, nil) do
-    Multi.run(multi, :result, fn _, _ -> {:ok, node} end)
-  end
-
-  defp update_node(multi, node, name) do
-    multi
-    |> Multi.update(:node, Node.changeset(node, %{name: name}))
-    |> Multi.run(:result, fn _, changes ->
-      document = Map.put(changes.document, :node, changes.node)
-      {:ok, document}
-    end)
-  end
+  defp maybe_put(map, _key, nil), do: map
+  defp maybe_put(map, key, value), do: Map.put(map, key, value)
 
   defp maybe_update_subscriptions(subscription_list, attrs) do
     if should_update_subscriptions?(attrs) do

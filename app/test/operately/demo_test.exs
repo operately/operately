@@ -220,9 +220,9 @@ defmodule Operately.DemoTest do
     goal_documents = Operately.ResourceHubs.list_documents(goal_hub)
     goal_links = Operately.ResourceHubs.list_links(goal_hub)
 
-    assert Enum.any?(project_documents, &(Operately.Repo.preload(&1, :node).node.name == "Collaborative Docs Beta Release Plan"))
+    assert Enum.any?(project_documents, &(&1.name == "Collaborative Docs Beta Release Plan"))
     assert Enum.any?(project_links, &(&1.type == :figma))
-    assert Enum.any?(goal_documents, &(Operately.Repo.preload(&1, :node).node.name == "Self-Serve Growth Experiments Log"))
+    assert Enum.any?(goal_documents, &(&1.name == "Self-Serve Growth Experiments Log"))
     assert Enum.any?(goal_links, &(&1.type == :google_sheet))
   end
 end

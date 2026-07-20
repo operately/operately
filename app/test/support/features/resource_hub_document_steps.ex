@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.{ResourceHub, Node}
+  alias Operately.ResourceHubs.{Document, ResourceHub, Node}
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
@@ -84,8 +84,8 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.sleep(200)
     |> UI.refute_has(testid: "submit")
     |> then(fn ctx ->
-      {:ok, node} = Node.get(:system, name: attrs.name, opts: [preload: :document])
-      Map.put(ctx, :document, node.document)
+      {:ok, document} = Document.get(:system, name: attrs.name)
+      Map.put(ctx, :document, document)
     end)
   end
 
@@ -101,8 +101,8 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.click(testid: "save-as-draft")
     |> UI.refute_has(testid: "save-as-draft")
     |> then(fn ctx ->
-      {:ok, node} = Node.get(:system, name: attrs.name, opts: [preload: :document])
-      Map.put(ctx, :document, node.document)
+      {:ok, document} = Document.get(:system, name: attrs.name)
+      Map.put(ctx, :document, document)
     end)
   end
 
@@ -254,10 +254,10 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   end
 
   step :assert_document_content, ctx, attrs do
-    {:ok, node} = Node.get(:system, name: attrs.name, opts: [preload: :document])
+    {:ok, document} = Document.get(:system, name: attrs.name)
 
     ctx
-    |> UI.assert_page(Paths.document_path(ctx.company, node.document))
+    |> UI.assert_page(Paths.document_path(ctx.company, document))
     |> UI.assert_text(attrs.name)
     |> UI.assert_text(attrs.content)
   end

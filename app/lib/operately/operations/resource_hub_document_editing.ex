@@ -2,20 +2,17 @@ defmodule Operately.Operations.ResourceHubDocumentEditing do
   alias Ecto.Multi
   alias Operately.{Repo, Activities}
   alias Operately.ResourceHubs.Parent
-  alias Operately.ResourceHubs.{Document, Node}
+  alias Operately.ResourceHubs.{Document, Parent}
   alias Operately.Notifications.SubscriptionList
   alias Operately.Operations.Notifications.Subscription
   alias Operately.Operations.SubscriptionsListEditing
 
   def run(author, document, attrs) do
     Multi.new()
-    |> Multi.update(:document, Document.changeset(document, %{content: attrs.content}))
-    |> Multi.update(:node, fn changes ->
-      Node.changeset(document.node, %{
-        name: attrs.name,
-        updated_at: changes.document.updated_at
-      })
-    end)
+    |> Multi.update(:document, Document.changeset(document, %{
+      name: attrs.name,
+      content: attrs.content
+    }))
     |> Multi.run(:subscription_list, fn _, changes ->
       with {:ok, subscription_list} <-
              SubscriptionList.get(:system,
