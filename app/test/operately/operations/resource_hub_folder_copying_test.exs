@@ -307,7 +307,8 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
   end
 
   defp assert_link_content(link, creator) do
-    assert link.node.name == "Link"
+    assert link.name == "Link"
+    assert link.node.name == nil
     assert link.node.type == :link
     assert link.description == RichText.rich_text("Description")
     assert link.url == "http://localhost:4000"

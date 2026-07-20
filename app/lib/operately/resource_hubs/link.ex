@@ -21,6 +21,7 @@ defmodule Operately.ResourceHubs.Link do
     has_one :resource_hub, through: [:node, :resource_hub]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_link], foreign_key: :entity_id
 
+    field :name, :string
     field :url, :string
     field :description, :map
     field :type, Ecto.Enum, values: @valid_types
@@ -44,8 +45,8 @@ defmodule Operately.ResourceHubs.Link do
 
   def changeset(link, attrs) do
     link
-    |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :url, :description, :type])
-    |> validate_required([:node_id, :author_id, :url, :type])
+    |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :name, :url, :description, :type])
+    |> validate_required([:node_id, :author_id, :name, :url, :type])
   end
 
   def get(requester, args) do

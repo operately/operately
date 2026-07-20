@@ -44,6 +44,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Nodes do
   end
 
   defp node_name(%{type: :document}), do: nil
+  defp node_name(%{type: :link}), do: nil
   defp node_name(n), do: n.name
 
   defp merge_resources(new_nodes, original_nodes) do
