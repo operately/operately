@@ -50,7 +50,7 @@ defmodule Operately.Search.IndexMaintenance.RunLifecycle do
           completed_at: DateTime.utc_now(),
           last_error: error_category(reason)
         })
-        |> Repo.update()
+        |> Repo.update!()
 
         :ok
     end

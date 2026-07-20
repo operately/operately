@@ -69,6 +69,22 @@ defmodule Operately.Search.MaintenanceTest do
     defp state(_project), do: nil
   end
 
+  defmodule FailingProjectSource do
+    @behaviour Operately.Search.Source
+
+    @impl true
+    def source_type, do: "project"
+
+    @impl true
+    def fetch_batch(_cursor, _limit), do: {:error, :deliberate_batch_failure}
+
+    @impl true
+    def fetch_by_ids(_ids), do: {:ok, []}
+
+    @impl true
+    def to_entry(_source), do: :skip
+  end
+
   setup do
     previous_sources = Application.get_env(:operately, SourceRegistry, [])
     previous_batch_size = Application.get_env(:operately, :search_index_batch_size, 500)
@@ -201,6 +217,23 @@ defmodule Operately.Search.MaintenanceTest do
       assert :ok = perform_job(MaintenanceWorker, legacy_args)
 
       assert Search.get_index_run(run.id).processed_count == 1
+    end)
+  end
+
+  test "marks a maintenance run as failed after the worker's final attempt" do
+    Application.put_env(:operately, SourceRegistry, [FailingProjectSource])
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, run} = Search.start_backfill("project")
+      [job] = all_enqueued(worker: MaintenanceWorker)
+      final_attempt = %{job | attempt: job.max_attempts}
+
+      assert {:discard, "search index maintenance failed"} = MaintenanceWorker.perform(final_attempt)
+
+      failed_run = Search.get_index_run(run.id)
+      assert failed_run.status == :failed
+      assert failed_run.last_error == "deliberate_batch_failure"
+      assert failed_run.completed_at
     end)
   end
 
