@@ -7,9 +7,16 @@ defmodule Operately.Search.Source do
   converts each record into attributes accepted by `Operately.Search.Indexer`.
 
   Conversion returns `{:ok, attrs}` for a searchable record, `:skip` for a record that
-  should not be indexed, or `{:error, reason}` when conversion fails. Every returned
-  source record must expose a binary `:id` used for keyset pagination and index identity.
+  should not be indexed, or `{:error, {:invalid, category}}` for permanently invalid
+  source data. Other errors and exceptions fail the complete batch so Oban can retry it.
+
+  Maintenance fetches run inside a transaction. Both fetch callbacks must use
+  `lock_for_maintenance/1` so their source rows remain stable until the corresponding
+  search entries and checkpoint commit. Every returned source record must expose a
+  binary `:id` used for keyset pagination and index identity.
   """
+
+  import Ecto.Query, only: [lock: 2]
 
   @type cursor :: Ecto.UUID.t() | nil
   @type source :: struct()
@@ -17,7 +24,9 @@ defmodule Operately.Search.Source do
   @callback source_type() :: String.t()
   @callback fetch_batch(cursor(), pos_integer()) :: {:ok, [source()]} | {:error, term()}
   @callback fetch_by_ids([Ecto.UUID.t()]) :: {:ok, [source()]} | {:error, term()}
-  @callback to_entry(source()) :: {:ok, map()} | :skip | {:error, term()}
+  @callback to_entry(source()) :: {:ok, map()} | :skip | {:error, {:invalid, atom()}} | {:error, term()}
+
+  def lock_for_maintenance(query), do: lock(query, "FOR SHARE")
 
   def id!(%{id: id}) when is_binary(id), do: id
   def id!(source_record), do: raise(ArgumentError, "search source is missing a binary id: #{inspect(source_record)}")
