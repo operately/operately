@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 import { TableRow, SetItemExpandedFn, IsItemExpandedFn } from "../components/TableRow";
@@ -45,7 +46,7 @@ function StoryTableRow({
     });
   }, []);
 
-  return <TableRow {...rest}  isExpanded={getItemExpanded} setItemExpanded={updateItemExpanded} />;
+  return <TableRow {...rest} isExpanded={getItemExpanded} setItemExpanded={updateItemExpanded} />;
 }
 
 const meta = {
@@ -174,6 +175,51 @@ export const AchievedGoal: Story = {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Increase website traffic by 50%");
 
     await Steps.assertStatusBadge(canvasElement, step, "Achieved", "green");
+  },
+};
+
+/**
+ * Goal progress bar hover shows targets and checklist summary
+ */
+export const GoalProgressHoverSummary: Story = {
+  render: (args) => (
+    <>
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
+      <tbody>
+        <StoryTableRow {...args} />
+      </tbody>
+    </>
+  ),
+  args: {
+    item: {
+      ...data.mockGoalOnTrack,
+      children: [],
+    },
+    level: 0,
+    isLast: false,
+    tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Hover progress bar to reveal targets and checklist summary", async () => {
+      const trigger = canvas.getByTestId("goal-progress-summary");
+      await userEvent.hover(trigger);
+
+      await waitFor(() => {
+        const summaries = screen.getAllByTestId("goal-progress-summary-content");
+        expect(summaries.length).toBeGreaterThan(0);
+
+        const summary = within(summaries[0]);
+        expect(summary.getByText("Targets")).toBeInTheDocument();
+        expect(summary.getByText("Revenue")).toBeInTheDocument();
+        expect(summary.getByText("Checklist")).toBeInTheDocument();
+        expect(summary.getByText("1/2 completed (50%)")).toBeInTheDocument();
+      });
+    });
   },
 };
 

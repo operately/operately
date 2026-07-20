@@ -1,5 +1,6 @@
 import React from "react";
 
+import type { GoalCheck, Target } from "../../ApiTypes";
 import { Navigation } from "../../Page/Navigation";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 
@@ -170,6 +171,8 @@ export namespace WorkMap {
     assignedAt: string | null;
     timeframe: Timeframe | null;
     milestones: Milestone[];
+    targets: Target[];
+    checklist: GoalCheck[];
     type: ItemType;
     itemPath: string;
     privacy: PrivacyIndicator.PrivacyLevels;
