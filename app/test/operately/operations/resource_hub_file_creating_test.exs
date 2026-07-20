@@ -24,6 +24,14 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
   end
 
   describe "functionality" do
+    test "stores the file title on the file, not the node", ctx do
+      {:ok, files} = create_files(ctx)
+      file = Enum.find(files, &(&1.name == "File 3")) |> Repo.preload(:node)
+
+      assert file.name == "File 3"
+      assert file.node.name == nil
+    end
+
     test "creates subscriptions", ctx do
       {:ok, files} = create_files(ctx)
 
@@ -36,7 +44,7 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
         end)
       end)
 
-      file_3 = Enum.find(files, &(&1.node.name == "File 3"))
+      file_3 = Enum.find(files, &(&1.name == "File 3"))
       {:ok, list} = SubscriptionList.get(:system, parent_id: file_3.id)
       assert {:ok, _} = Subscription.get(:system, subscription_list_id: list.id, person_id: ctx.jane.id)
     end

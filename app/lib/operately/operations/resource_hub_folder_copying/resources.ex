@@ -34,6 +34,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
     data = Enum.map(files, fn f ->
       common_data(f)
       |> Map.merge(%{
+        name: f.name,
         blob_id: f.blob_id,
         preview_blob_id: f.preview_blob_id,
         description: f.description,

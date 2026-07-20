@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubFileSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.{ResourceHub, Node}
+  alias Operately.ResourceHubs.{ResourceHub, File}
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
@@ -78,10 +78,10 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
   end
 
   step :assert_file_content, ctx, attrs do
-    {:ok, node} = Node.get(:system, name: attrs.title, type: :file, opts: [preload: :file])
+    {:ok, file} = File.get(:system, name: attrs.title)
 
     ctx
-    |> UI.assert_page(Paths.file_path(ctx.company, node.file))
+    |> UI.assert_page(Paths.file_path(ctx.company, file))
     |> UI.assert_text(attrs.title)
     |> UI.assert_text(attrs.description)
   end
@@ -93,13 +93,13 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
   step :assert_file_commented_on_company_feed, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_text("commented on #{ctx.file.node.name} in the #{ctx.space.name} space")
+    |> UI.assert_text("commented on #{ctx.file.name} in the #{ctx.space.name} space")
   end
 
   step :assert_file_commented_on_space_feed, ctx do
     ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
-    |> UI.assert_text("commented on #{ctx.file.node.name}")
+    |> UI.assert_text("commented on #{ctx.file.name}")
   end
 
   step :assert_file_deleted_on_space_feed, ctx do
@@ -124,7 +124,7 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Re: #{ctx.file.node.name}"
+      action: "Re: #{ctx.file.name}"
     })
   end
 
@@ -147,7 +147,7 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
-      action: "commented on: #{ctx.file.node.name}",
+      action: "commented on: #{ctx.file.name}",
       author: ctx.creator
     })
   end

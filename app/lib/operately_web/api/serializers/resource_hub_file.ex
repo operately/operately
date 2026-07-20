@@ -2,7 +2,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
   def serialize(file, level: :essential) do
     %{
       id: OperatelyWeb.Paths.file_id(file),
-      name: file.node.name,
+      name: file.name,
       author: OperatelyWeb.Api.Serializer.serialize(file.author),
       description: Jason.encode!(file.description),
       type: Ecto.assoc_loaded?(file.blob) && file.blob.content_type,
@@ -23,7 +23,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.File do
       project: OperatelyWeb.Api.Serializer.serialize(file.project),
       goal: OperatelyWeb.Api.Serializer.serialize(file.goal),
       parent_folder: OperatelyWeb.Api.Serializer.serialize(file.node.parent_folder),
-      name: file.node.name,
+      name: file.name,
       description: Jason.encode!(file.description),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(file.potential_subscribers),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(file.subscription_list),

@@ -15,10 +15,10 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCommentedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "commented on: #{file.node.name}")
+    |> subject(where: parent.name, who: author, action: "commented on: #{file.name}")
     |> assign(:author, author)
     |> assign(:comment, comment)
-    |> assign(:name, file.node.name)
+    |> assign(:name, file.name)
     |> assign(:cta_url, Paths.file_path(company, file, comment) |> Paths.to_url())
     |> render("resource_hub_file_commented")
   end
@@ -35,7 +35,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCommentedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "commented on the file \"#{file.node.name}\"",
+      headline: "commented on the file \"#{file.name}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.file_path(company, file, comment) |> Paths.to_url(),
