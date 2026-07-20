@@ -10,6 +10,9 @@ defmodule Operately.Data.Change102MigrateProjectKeyResourcesToResourceHubLinksTe
   alias Operately.Support.Factory
 
   setup ctx do
+    # Change102 predates resource_links.name; recreate that schema shape for this suite.
+    Ecto.Adapters.SQL.query!(Repo, "ALTER TABLE resource_links ALTER COLUMN name DROP NOT NULL")
+
     ctx =
       Factory.setup(ctx)
       |> Factory.add_space(:space)
@@ -134,10 +137,15 @@ defmodule Operately.Data.Change102MigrateProjectKeyResourcesToResourceHubLinksTe
       link: "https://example.com/existing"
     })
 
-    link_fixture(hub, ctx.creator, %{
-      name: "Existing link",
-      url: "https://example.com/existing"
-    })
+    link =
+      link_fixture(hub, ctx.creator, %{
+        name: "Existing link",
+        url: "https://example.com/existing"
+      })
+
+    # Change102 detects existing links via node.name (pre-name-on-link shape).
+    link = Repo.preload(link, :node)
+    {:ok, _} = Operately.ResourceHubs.update_node(link.node, %{name: "Existing link"})
 
     Change.run()
 
