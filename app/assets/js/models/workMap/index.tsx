@@ -34,6 +34,8 @@ function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
       dueDate: parseContextualDate(milestone.timeframe?.contextualEndDate),
       link: paths.projectMilestonePath(milestone.id),
     })),
+    targets: item.targets || [],
+    checklist: item.checklist || [],
     children: item.children.map((c) => convertToWorkMapItem(paths, c)),
   };
 }
@@ -94,6 +96,8 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       nextStep: "",
       timeframe: null,
       milestones: [],
+      targets: [],
+      checklist: [],
       children: [],
       isNew: true,
       completedOn: null,
@@ -141,6 +145,8 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       nextStep: "",
       timeframe: null,
       milestones: [],
+      targets: [],
+      checklist: [],
       children: [],
       isNew: true,
       completedOn: null,

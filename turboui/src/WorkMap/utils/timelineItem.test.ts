@@ -76,6 +76,8 @@ function makeItem(overrides: Partial<WorkMap.Item> = {}): WorkMap.Item {
     assignedAt: null,
     timeframe: null,
     milestones: [],
+    targets: [],
+    checklist: [],
     type: "project",
     itemPath: "/project",
     privacy: "internal",

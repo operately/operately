@@ -73,6 +73,8 @@ function makeTask(overrides: { name: string; dueDate?: string; assignedAt?: stri
       : null,
     assignedAt: overrides.assignedAt || null,
     milestones: [],
+    targets: [],
+    checklist: [],
     type: "task",
     itemPath: `/${overrides.name}`,
     privacy: "internal",
