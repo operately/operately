@@ -590,7 +590,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
           join: h in assoc(n, :resource_hub),
           join: s in assoc(h, :space),
           where: s.company_id == ^completed_run.company_id,
-          where: n.name == "Document"
+          where: d.name == "Document"
       )
 
     [imported_blob_id] = Operately.RichContent.Blob.find_ids(imported_document.content)
