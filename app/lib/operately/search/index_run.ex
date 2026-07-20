@@ -23,6 +23,7 @@ defmodule Operately.Search.IndexRun do
     field :inserted_count, :integer, default: 0
     field :updated_count, :integer, default: 0
     field :unchanged_count, :integer, default: 0
+    field :superseded_count, :integer, default: 0
     field :skipped_count, :integer, default: 0
     field :failed_count, :integer, default: 0
     field :deleted_orphan_count, :integer, default: 0
@@ -47,6 +48,7 @@ defmodule Operately.Search.IndexRun do
       :inserted_count,
       :updated_count,
       :unchanged_count,
+      :superseded_count,
       :skipped_count,
       :failed_count,
       :deleted_orphan_count,
@@ -59,6 +61,7 @@ defmodule Operately.Search.IndexRun do
     |> validate_number(:inserted_count, greater_than_or_equal_to: 0)
     |> validate_number(:updated_count, greater_than_or_equal_to: 0)
     |> validate_number(:unchanged_count, greater_than_or_equal_to: 0)
+    |> validate_number(:superseded_count, greater_than_or_equal_to: 0)
     |> validate_number(:skipped_count, greater_than_or_equal_to: 0)
     |> validate_number(:failed_count, greater_than_or_equal_to: 0)
     |> validate_number(:deleted_orphan_count, greater_than_or_equal_to: 0)

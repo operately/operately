@@ -63,7 +63,7 @@ defmodule Operately.Search.Entry do
       :source_updated_at
     ])
     |> derive_normalized_title()
-    |> validate_required([:source_type, :source_id, :company_id, :access_context_id, :title, :normalized_title])
+    |> validate_required([:source_type, :source_id, :company_id, :access_context_id, :title, :normalized_title, :source_updated_at])
     |> unique_constraint([:source_type, :source_id])
     |> foreign_key_constraint(:company_id)
     |> foreign_key_constraint(:access_context_id)

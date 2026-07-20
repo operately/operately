@@ -6,7 +6,7 @@ defmodule Operately.Search.MaintenanceWorker do
 
   require Logger
 
-  alias Operately.Search.IndexMaintenance
+  alias Operately.Search.{ErrorCategory, IndexMaintenance}
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: args, attempt: attempt, max_attempts: max_attempts}) do
@@ -15,16 +15,38 @@ defmodule Operately.Search.MaintenanceWorker do
         :ok
 
       {:error, reason} when attempt >= max_attempts ->
-        IndexMaintenance.mark_failed(args["run_id"], reason)
-        {:discard, "search index maintenance failed"}
+        log_failure(args, attempt, reason)
+
+        case IndexMaintenance.mark_failed(args, reason) do
+          :ok ->
+            {:discard, "search index maintenance failed"}
+
+          {:error, persistence_reason} ->
+            log_status_persistence_failure(args, attempt, persistence_reason)
+            {:error, "search index maintenance failure status was not persisted"}
+        end
 
       {:error, reason} ->
-        Logger.warning("Search index maintenance batch failed", reason: error_category(reason))
+        log_failure(args, attempt, reason)
         {:error, "search index maintenance failed"}
     end
   end
 
-  defp error_category(%{__struct__: module}), do: inspect(module)
-  defp error_category(reason) when is_atom(reason), do: Atom.to_string(reason)
-  defp error_category(_reason), do: "unknown"
+  defp log_failure(args, attempt, reason) do
+    Logger.warning("Search index maintenance batch failed", failure_metadata(args, attempt, reason))
+  end
+
+  defp log_status_persistence_failure(args, attempt, reason) do
+    Logger.error("Search index maintenance failure status was not persisted", failure_metadata(args, attempt, reason))
+  end
+
+  defp failure_metadata(args, attempt, reason) do
+    [
+      run_id: args["run_id"],
+      source_type: args["source_type"] || "unknown",
+      phase: args["phase"],
+      attempt: attempt,
+      reason: ErrorCategory.sanitize(reason)
+    ]
+  end
 end

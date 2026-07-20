@@ -23,7 +23,7 @@ defmodule Operately.Search.IndexMaintenance do
     error -> {:error, error}
   end
 
-  defdelegate mark_failed(run_id, reason), to: RunLifecycle
+  defdelegate mark_failed(args, reason), to: RunLifecycle
 
   defp process_batch(run, batch_size) do
     source_type = Atom.to_string(run.source_type)
