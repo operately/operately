@@ -6,7 +6,7 @@ defmodule Operately.ResourceHubs.Document do
   import Operately.Repo.RequestInfo, only: [request_info: 0]
 
   alias Operately.Notifications
-  alias Operately.ResourceHubs.{Getter, Parent}
+  alias Operately.ResourceHubs.{DocumentVersion, Getter, Parent}
   alias Operately.StateMachine
 
   @valid_states [:draft, :published]
@@ -22,9 +22,11 @@ defmodule Operately.ResourceHubs.Document do
     has_one :resource_hub, through: [:node, :resource_hub]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
+    has_many :versions, DocumentVersion, foreign_key: :document_id
 
     field :name, :string
     field :content, :map
+    field :current_version, :integer, default: 1
     field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
 
@@ -47,7 +49,7 @@ defmodule Operately.ResourceHubs.Document do
 
   def changeset(document, attrs) do
     document
-    |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :name, :content, :state, :published_at])
+    |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :name, :content, :current_version, :state, :published_at])
     |> StateMachine.cast_and_validate(:state, %{
       initial: :draft,
       states: [
@@ -56,6 +58,7 @@ defmodule Operately.ResourceHubs.Document do
       ]
     })
     |> validate_required([:node_id, :author_id, :subscription_list_id, :name, :content])
+    |> validate_number(:current_version, greater_than: 0)
   end
 
   def get(requester, args) do

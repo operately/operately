@@ -5,7 +5,7 @@ defmodule Operately.ResourceHubs do
   alias Operately.Goals.Goal
   alias Operately.Groups.Group
   alias Operately.Projects.Project
-  alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, File, Link}
+  alias Operately.ResourceHubs.{ResourceHub, Folder, Node, Document, DocumentVersion, File, Link}
 
   def list_resource_hubs(%Group{} = space) do
     from(r in ResourceHub, where: r.space_id == ^space.id)
@@ -81,6 +81,12 @@ defmodule Operately.ResourceHubs do
   def create_document(attrs \\ %{}) do
     %Document{}
     |> Document.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_document_version(attrs \\ %{}) do
+    %DocumentVersion{}
+    |> DocumentVersion.changeset(attrs)
     |> Repo.insert()
   end
 
