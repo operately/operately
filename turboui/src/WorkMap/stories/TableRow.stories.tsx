@@ -191,7 +191,10 @@ export const GoalProgressHoverSummary: Story = {
     </>
   ),
   args: {
-    item: data.mockGoalOnTrack,
+    item: {
+      ...data.mockGoalOnTrack,
+      children: [],
+    },
     level: 0,
     isLast: false,
     tab: "all",
@@ -207,10 +210,14 @@ export const GoalProgressHoverSummary: Story = {
       await userEvent.hover(trigger);
 
       await waitFor(() => {
-        expect(screen.getByText("Targets")).toBeInTheDocument();
-        expect(screen.getByText("Revenue")).toBeInTheDocument();
-        expect(screen.getByText("Checklist")).toBeInTheDocument();
-        expect(screen.getByText("1/2 completed (50%)")).toBeInTheDocument();
+        const summaries = screen.getAllByTestId("goal-progress-summary-content");
+        expect(summaries.length).toBeGreaterThan(0);
+
+        const summary = within(summaries[0]);
+        expect(summary.getByText("Targets")).toBeInTheDocument();
+        expect(summary.getByText("Revenue")).toBeInTheDocument();
+        expect(summary.getByText("Checklist")).toBeInTheDocument();
+        expect(summary.getByText("1/2 completed (50%)")).toBeInTheDocument();
       });
     });
   },
