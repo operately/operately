@@ -11,13 +11,13 @@ defmodule Operately.Search.IndexRun do
 
   @kinds [:backfill, :reconciliation]
   @statuses [:pending, :running, :completed, :completed_with_errors, :failed]
-  @phases [:sources, :orphans]
+  @phases [:source_scan, :index_scan]
 
   schema "search_index_runs" do
     field :source_type, Ecto.Enum, values: Entry.source_types()
     field :kind, Ecto.Enum, values: @kinds
     field :status, Ecto.Enum, values: @statuses, default: :pending
-    field :phase, Ecto.Enum, values: @phases, default: :sources
+    field :phase, Ecto.Enum, values: @phases, default: :source_scan
     field :cursor, :binary_id
     field :processed_count, :integer, default: 0
     field :inserted_count, :integer, default: 0
