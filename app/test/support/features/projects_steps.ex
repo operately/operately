@@ -519,7 +519,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :open_project_docs_and_files_node, ctx, name: name do
     ctx
-    |> UI.assert_text(name)
+    |> UI.wait_until_text(name)
     |> UI.click_link(name)
   end
 

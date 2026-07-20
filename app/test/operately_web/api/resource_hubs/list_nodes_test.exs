@@ -116,6 +116,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodesTest do
       assert length(res.draft_nodes) == 1
       assert hd(res.draft_nodes).document.id == Paths.document_id(ctx.document3)
       assert hd(res.nodes).document.id == Paths.document_id(ctx.document4)
+      assert hd(res.nodes).name == ctx.document4.name
+      assert hd(res.nodes).document.name == ctx.document4.name
     end
 
     test "include_comments_count", ctx do

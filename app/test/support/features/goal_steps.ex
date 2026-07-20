@@ -156,7 +156,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :open_goal_docs_and_files_node, ctx, name: name do
     ctx
-    |> UI.assert_text(name)
+    |> UI.wait_until_text(name)
     |> UI.click_link(name)
   end
 
