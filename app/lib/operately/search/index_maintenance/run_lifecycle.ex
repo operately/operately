@@ -37,21 +37,22 @@ defmodule Operately.Search.IndexMaintenance.RunLifecycle do
   end
 
   def mark_failed(%{"run_id" => run_id, "phase" => phase, "cursor" => cursor}, reason) do
-    Repo.transaction(fn ->
-      case lock_run(run_id) do
-        nil ->
-          :ok
+    case Repo.transaction(fn ->
+           case lock_run(run_id) do
+             nil ->
+               :ok
 
-        run ->
-          if terminal?(run) or stale_job?(run, phase, cursor) do
-            :ok
-          else
-            fail_run(run, reason)
-          end
-      end
-    end)
-
-    :ok
+             run ->
+               if terminal?(run) or stale_job?(run, phase, cursor) do
+                 :ok
+               else
+                 fail_run(run, reason)
+               end
+           end
+         end) do
+      {:ok, :ok} -> :ok
+      {:error, transaction_reason} -> {:error, transaction_reason}
+    end
   end
 
   defp lock_run!(run_id) do
@@ -141,5 +142,7 @@ defmodule Operately.Search.IndexMaintenance.RunLifecycle do
       last_error: ErrorCategory.sanitize(reason)
     })
     |> Repo.update!()
+
+    :ok
   end
 end
