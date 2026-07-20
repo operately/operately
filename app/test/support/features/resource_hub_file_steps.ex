@@ -63,7 +63,7 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
   end
 
   step :edit_file_from_files_list, ctx, attrs do
-    file_id = Steps.get_resource_id(attrs.original_title)
+    file_id = Steps.get_resource_id(attrs.original_title, :file)
     menu_id = UI.testid(["menu", file_id])
     edit_id = UI.testid(["edit", file_id])
 

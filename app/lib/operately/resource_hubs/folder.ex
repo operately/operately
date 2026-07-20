@@ -17,6 +17,8 @@ defmodule Operately.ResourceHubs.Folder do
     has_one :resource_hub, through: [:node, :resource_hub]
     has_many :child_nodes, Operately.ResourceHubs.Node, foreign_key: :parent_folder_id
 
+    field :name, :string
+
     # populated with after load hooks
     field :access_context, :any, virtual: true
     field :permissions, :any, virtual: true
@@ -35,8 +37,8 @@ defmodule Operately.ResourceHubs.Folder do
 
   def changeset(folder, attrs) do
     folder
-    |> cast(attrs, [:node_id])
-    |> validate_required([:node_id])
+    |> cast(attrs, [:node_id, :name])
+    |> validate_required([:node_id, :name])
   end
 
   def get(requester, args) do

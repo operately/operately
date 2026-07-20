@@ -3,7 +3,7 @@ defmodule Operately.Data.Change107BackfillLinkNamesFromNodesTest do
 
   import Ecto.Query, only: [from: 2]
   alias Operately.Data.Change107BackfillLinkNamesFromNodes, as: Change
-  alias Operately.ResourceHubs.Link
+  alias Operately.ResourceHubs.{Link, Node}
   alias Operately.Support.Factory
 
   setup ctx do
@@ -16,12 +16,7 @@ defmodule Operately.Data.Change107BackfillLinkNamesFromNodesTest do
   end
 
   test "copies names from link nodes onto links", ctx do
-    {:ok, node} =
-      Operately.ResourceHubs.create_node(%{
-        resource_hub_id: ctx.hub.id,
-        name: "Legacy link title",
-        type: :link
-      })
+    node = insert_node_with_name(ctx.hub.id, "Legacy link title", :link)
 
     {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
@@ -44,12 +39,7 @@ defmodule Operately.Data.Change107BackfillLinkNamesFromNodesTest do
   end
 
   test "is idempotent", ctx do
-    {:ok, node} =
-      Operately.ResourceHubs.create_node(%{
-        resource_hub_id: ctx.hub.id,
-        name: "Another title",
-        type: :link
-      })
+    node = insert_node_with_name(ctx.hub.id, "Another title", :link)
 
     {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
@@ -75,7 +65,6 @@ defmodule Operately.Data.Change107BackfillLinkNamesFromNodesTest do
     {:ok, node} =
       Operately.ResourceHubs.create_node(%{
         resource_hub_id: ctx.hub.id,
-        name: "Node title",
         type: :link
       })
 
@@ -96,6 +85,23 @@ defmodule Operately.Data.Change107BackfillLinkNamesFromNodesTest do
 
     link = Repo.get!(Link, link.id)
     assert link.name == "Existing title"
+  end
+
+  defp insert_node_with_name(hub_id, name, type) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    {:ok, node} =
+      %Node{}
+      |> Ecto.Changeset.change(%{
+        resource_hub_id: hub_id,
+        name: name,
+        type: type,
+        inserted_at: now,
+        updated_at: now
+      })
+      |> Repo.insert()
+
+    node
   end
 
   defp insert_link_without_name(attrs) do

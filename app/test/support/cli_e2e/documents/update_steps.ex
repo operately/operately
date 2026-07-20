@@ -202,7 +202,7 @@ defmodule Operately.Support.CliE2E.Documents.UpdateSteps do
       |> Repo.get!(HubScopeSteps.decode_cli_id(ctx.folder_api_id))
       |> Repo.preload(:node)
 
-    assert folder.node.name == "CLI renamed folder"
+    assert folder.name == "CLI renamed folder"
 
     ctx
   end

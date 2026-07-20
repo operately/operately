@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.{Document, Folder, File, Link, ResourceHub, Node}
+  alias Operately.ResourceHubs.{Document, Folder, File, Link, ResourceHub}
   alias Operately.Updates
 
   step :setup, ctx do
@@ -129,8 +129,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   # Deleting resource
   #
 
-  step :delete_resource, ctx, resource_name do
-    resource_id = get_resource_id(resource_name)
+  step :delete_resource, ctx, {resource_name, resource_type} do
+    resource_id = get_resource_id(resource_name, resource_type)
     menu_id = UI.testid(["menu", resource_id])
     delete_id = UI.testid(["delete", resource_id])
 
@@ -159,8 +159,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   # Moving resource
   #
 
-  step :move_resource_to_child_folder, ctx, resource_name do
-    resource_id = get_resource_id(resource_name)
+  step :move_resource_to_child_folder, ctx, {resource_name, resource_type} do
+    resource_id = get_resource_id(resource_name, resource_type)
     menu_id = UI.testid(["menu", resource_id])
     move_id = UI.testid(["move", resource_id])
 
@@ -170,8 +170,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> then(&select_move_destination(&1, ctx.hub, ctx.five))
   end
 
-  step :move_resource_to_parent_folder, ctx, resource_name do
-    resource_id = get_resource_id(resource_name)
+  step :move_resource_to_parent_folder, ctx, {resource_name, resource_type} do
+    resource_id = get_resource_id(resource_name, resource_type)
     menu_id = UI.testid(["menu", resource_id])
     move_id = UI.testid(["move", resource_id])
 
@@ -181,8 +181,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> then(&select_move_destination(&1, ctx.five, ctx.one))
   end
 
-  step :move_resource_to_hub_root, ctx, resource_name do
-    resource_id = get_resource_id(resource_name)
+  step :move_resource_to_hub_root, ctx, {resource_name, resource_type} do
+    resource_id = get_resource_id(resource_name, resource_type)
     menu_id = UI.testid(["menu", resource_id])
     move_id = UI.testid(["move", resource_id])
 
@@ -241,37 +241,24 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> Factory.add_folder(:five, :hub, :four)
   end
 
-  def get_resource_id(resource_name) do
-    case Node.get(:system,
-           name: resource_name,
-           opts: [
-             preload: [:document, :link, :folder, :file]
-           ]
-         ) do
-      {:ok, node} ->
-        cond do
-          node.document -> Paths.document_id(node.document)
-          node.link -> Paths.link_id(node.link)
-          node.folder -> Paths.folder_id(node.folder)
-          node.file -> Paths.file_id(node.file)
-        end
+  def get_resource_id(resource_name, :document) do
+    {:ok, document} = Document.get(:system, name: resource_name)
+    Paths.document_id(document)
+  end
 
-      {:error, :not_found} ->
-        case Document.get(:system, name: resource_name) do
-          {:ok, document} ->
-            Paths.document_id(document)
+  def get_resource_id(resource_name, :link) do
+    {:ok, link} = Link.get(:system, name: resource_name)
+    Paths.link_id(link)
+  end
 
-          {:error, :not_found} ->
-            case Link.get(:system, name: resource_name) do
-              {:ok, link} ->
-                Paths.link_id(link)
+  def get_resource_id(resource_name, :file) do
+    {:ok, file} = File.get(:system, name: resource_name)
+    Paths.file_id(file)
+  end
 
-              {:error, :not_found} ->
-                {:ok, file} = File.get(:system, name: resource_name)
-                Paths.file_id(file)
-            end
-        end
-    end
+  def get_resource_id(resource_name, :folder) do
+    {:ok, folder} = Folder.get(:system, name: resource_name)
+    Paths.folder_id(folder)
   end
 
   defp navigate_folder_picker(ctx, modal_testid, current_location, destination_location) do
@@ -362,8 +349,8 @@ defmodule Operately.Support.Features.ResourceHubSteps do
             Paths.resource_hub_path(ctx.company, hub)
 
           _ ->
-            case Node.get(:system, name: name, type: :folder, opts: [preload: :folder]) do
-              {:ok, node} -> Paths.folder_path(ctx.company, node.folder)
+            case Folder.get(:system, name: name) do
+              {:ok, folder} -> Paths.folder_path(ctx.company, folder)
               _ -> nil
             end
         end

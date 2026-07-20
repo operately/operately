@@ -29,31 +29,28 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Folders do
   end
 
   defp copy_parent_folder(folder, resource_hub, attrs) do
-      node_attrs = prepare_node_attrs(folder.node, resource_hub, attrs)
-      {:ok, new_node} = ResourceHubs.create_node(node_attrs)
+    node_attrs = prepare_node_attrs(folder.node, resource_hub, attrs)
+    {:ok, new_node} = ResourceHubs.create_node(node_attrs)
 
-      folder_attrs = prepare_folder_attrs(folder, new_node)
-      {:ok, new_folder} = ResourceHubs.create_folder(folder_attrs)
+    folder_attrs = prepare_folder_attrs(folder, new_node, attrs)
+    {:ok, new_folder} = ResourceHubs.create_folder(folder_attrs)
 
-      new_folder
+    new_folder
   end
 
   defp prepare_node_attrs(node, resource_hub, node_attrs) do
-    node
-    |> Map.from_struct()
-    |> then(fn attrs ->
-      Map.merge(attrs, %{
-        resource_hub_id: resource_hub.id,
-        parent_folder_id: node_attrs[:parent_folder_id],
-        name: node_attrs[:name] || attrs.name,
-      })
-    end)
+    %{
+      resource_hub_id: resource_hub.id,
+      parent_folder_id: node_attrs[:parent_folder_id],
+      type: node.type,
+    }
   end
 
-  defp prepare_folder_attrs(folder, new_node) do
-    folder
-    |> Map.from_struct()
-    |> Map.put(:node_id, new_node.id)
+  defp prepare_folder_attrs(folder, new_node, attrs) do
+    %{
+      node_id: new_node.id,
+      name: attrs[:name] || folder.name,
+    }
   end
 
   defp fetch_and_categorize_children(folder_id) do
