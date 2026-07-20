@@ -14,6 +14,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Node do
   end
 
   defp node_display_name(%{type: :document, document: %{name: name}}), do: name
-  defp node_display_name(%{type: :document}), do: ""
+
+  defp node_display_name(%{type: :document} = node) do
+    raise ArgumentError,
+          "expected :document node to have its :document association preloaded, got: #{inspect(node)}"
+  end
+
   defp node_display_name(node), do: node.name
 end

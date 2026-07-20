@@ -11,24 +11,13 @@ defmodule Operately.Data.Change106BackfillDocumentNamesFromNodes do
   alias __MODULE__.{Document, Node}
 
   def run do
-    Repo.transaction(fn ->
-      documents_to_backfill()
-      |> Repo.all()
-      |> Enum.each(&backfill_document/1)
-    end)
-  end
-
-  defp documents_to_backfill do
     from(d in Document,
-      join: n in Node, on: d.node_id == n.id,
+      join: n in Node,
+      on: d.node_id == n.id,
       where: n.type == "document" and is_nil(d.name) and not is_nil(n.name),
-      select: {d.id, n.name}
+      update: [set: [name: n.name]]
     )
-  end
-
-  defp backfill_document({document_id, name}) do
-    from(d in Document, where: d.id == ^document_id)
-    |> Repo.update_all(set: [name: name])
+    |> Repo.update_all([])
   end
 
   defmodule Document do
