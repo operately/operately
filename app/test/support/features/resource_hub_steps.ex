@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.{Folder, ResourceHub, Node}
+  alias Operately.ResourceHubs.{Document, Folder, ResourceHub, Node}
   alias Operately.Updates
 
   step :setup, ctx do
@@ -242,19 +242,23 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   def get_resource_id(resource_name) do
-    {:ok, node} =
-      Node.get(:system,
-        name: resource_name,
-        opts: [
-          preload: [:document, :link, :folder, :file]
-        ]
-      )
+    case Node.get(:system,
+           name: resource_name,
+           opts: [
+             preload: [:document, :link, :folder, :file]
+           ]
+         ) do
+      {:ok, node} ->
+        cond do
+          node.document -> Paths.document_id(node.document)
+          node.link -> Paths.link_id(node.link)
+          node.folder -> Paths.folder_id(node.folder)
+          node.file -> Paths.file_id(node.file)
+        end
 
-    cond do
-      node.document -> Paths.document_id(node.document)
-      node.link -> Paths.link_id(node.link)
-      node.folder -> Paths.folder_id(node.folder)
-      node.file -> Paths.file_id(node.file)
+      {:error, :not_found} ->
+        {:ok, document} = Document.get(:system, name: resource_name)
+        Paths.document_id(document)
     end
   end
 
