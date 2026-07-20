@@ -82,9 +82,6 @@ defmodule Operately.Data.Change110BaselineDocumentVersions do
   defp insert_baseline_version(document) do
     inserted_at =
       case document.updated_at do
-        %DateTime{} = dt ->
-          dt |> DateTime.truncate(:second) |> DateTime.to_naive()
-
         %NaiveDateTime{} = dt ->
           NaiveDateTime.truncate(dt, :second)
 
