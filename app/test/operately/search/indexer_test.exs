@@ -45,6 +45,53 @@ defmodule Operately.Search.IndexerTest do
     assert %{access_context_id: ["can't be blank"]} = errors_on(error.changeset)
   end
 
+  test "guarded upserts do not replace newer entries with late maintenance snapshots", ctx do
+    old_attrs = entry_attrs(ctx, title: "Old source snapshot")
+    newer_attrs = entry_attrs(ctx, title: "New canonical value", source_updated_at: later_than(ctx.project.updated_at))
+
+    assert {:ok, %{inserted: 1}} = Indexer.upsert(newer_attrs)
+    assert {:ok, %{updated: 0, superseded: 1}} = Indexer.upsert_guarded(old_attrs)
+
+    entry = Repo.get_by!(Entry, source_id: ctx.project.id)
+    assert entry.title == "New canonical value"
+    assert NaiveDateTime.compare(entry.source_updated_at, newer_attrs.source_updated_at) == :eq
+  end
+
+  test "guarded upserts keep an equal-version entry when indexed data differs", ctx do
+    attrs = entry_attrs(ctx, title: "Canonical value")
+    assert {:ok, %{inserted: 1}} = Indexer.upsert(attrs)
+
+    assert {:ok, %{updated: 0, superseded: 1}} =
+             Indexer.upsert_guarded(%{attrs | title: "Ambiguous maintenance value"})
+
+    assert Repo.get_by!(Entry, source_id: ctx.project.id).title == "Canonical value"
+  end
+
+  test "guarded upserts accept newer source versions", ctx do
+    attrs = entry_attrs(ctx, title: "Original")
+    assert {:ok, %{inserted: 1}} = Indexer.upsert(attrs)
+
+    newer_attrs = %{attrs | title: "Newer", source_updated_at: later_than(attrs.source_updated_at)}
+    assert {:ok, %{updated: 1, superseded: 0}} = Indexer.upsert_guarded(newer_attrs)
+
+    assert Repo.get_by!(Entry, source_id: ctx.project.id).title == "Newer"
+  end
+
+  test "locked repairs fix projection corruption with an equal source version", ctx do
+    attrs = entry_attrs(ctx, title: "Canonical value")
+    assert {:ok, %{inserted: 1}} = Indexer.upsert(%{attrs | title: "Stale projection"})
+
+    assert {:ok, %{updated: 1, superseded: 0}} = Indexer.repair_locked(attrs)
+    assert Repo.get_by!(Entry, source_id: ctx.project.id).title == "Canonical value"
+  end
+
+  test "requires a source update timestamp", ctx do
+    attrs = entry_attrs(ctx) |> Map.delete(:source_updated_at)
+
+    assert {:ok, %{invalid: 1, invalid_entries: [error]}} = Indexer.upsert(attrs)
+    assert %{source_updated_at: ["can't be blank"]} = errors_on(error.changeset)
+  end
+
   test "deletes entries directly and through an Ecto.Multi", ctx do
     assert {:ok, _} = Indexer.upsert(entry_attrs(ctx))
     assert {:ok, 1} = Indexer.delete("project", ctx.project.id)
@@ -110,6 +157,29 @@ defmodule Operately.Search.IndexerTest do
     refute Repo.get_by(Entry, source_type: :project, source_id: ctx.project.id)
   end
 
+  test "Ecto.Multi upserts can build entries from earlier results", ctx do
+    attrs = entry_attrs(ctx)
+
+    assert {:ok, %{search_entry: %{inserted: 1}}} =
+             Multi.new()
+             |> Multi.put(:source_attrs, attrs)
+             |> Indexer.upsert(:search_entry, fn %{source_attrs: source_attrs} -> source_attrs end)
+             |> Repo.transaction()
+
+    assert Repo.get_by!(Entry, source_id: ctx.project.id).title == attrs.title
+  end
+
+  test "guarded Ecto.Multi upserts roll back with their transaction", ctx do
+    result =
+      Multi.new()
+      |> Indexer.upsert_guarded(:search_entry, entry_attrs(ctx))
+      |> Multi.run(:forced_failure, fn _, _ -> {:error, :rollback} end)
+      |> Repo.transaction()
+
+    assert {:error, :forced_failure, :rollback, _changes} = result
+    refute Repo.get_by(Entry, source_type: :project, source_id: ctx.project.id)
+  end
+
   defp entry_attrs(ctx, overrides \\ []) do
     context = Access.get_context(project_id: ctx.project.id)
 
@@ -128,4 +198,6 @@ defmodule Operately.Search.IndexerTest do
     }
     |> Map.merge(Map.new(overrides))
   end
+
+  defp later_than(timestamp), do: NaiveDateTime.add(timestamp, 1, :second)
 end

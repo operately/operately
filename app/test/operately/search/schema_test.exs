@@ -29,7 +29,8 @@ defmodule Operately.Search.SchemaTest do
         company_id: ctx.company.id,
         access_context_id: context.id,
         title: "Café roadmap",
-        body: "customer research"
+        body: "customer research",
+        source_updated_at: ctx.project.updated_at
       }
       |> Entry.changeset()
       |> Repo.insert!()
@@ -73,7 +74,8 @@ defmodule Operately.Search.SchemaTest do
         company_id: ctx.company.id,
         access_context_id: context.id,
         title: "  Ｃａｆé   Roadmap  ",
-        normalized_title: "incorrect caller value"
+        normalized_title: "incorrect caller value",
+        source_updated_at: ctx.project.updated_at
       }
       |> Entry.changeset()
       |> Repo.insert!()
@@ -101,5 +103,13 @@ defmodule Operately.Search.SchemaTest do
     assert index_definitions =~ "USING gin (search_vector)"
     assert index_definitions =~ "search_entries_normalized_title_trgm_index"
     assert index_definitions =~ "gin_trgm_ops"
+  end
+
+  test "requires source versions and stores superseded maintenance counts" do
+    assert [["NO"]] =
+             Repo.query!("SELECT is_nullable FROM information_schema.columns WHERE table_name = 'search_entries' AND column_name = 'source_updated_at'").rows
+
+    assert [["NO", "0"]] =
+             Repo.query!("SELECT is_nullable, column_default FROM information_schema.columns WHERE table_name = 'search_index_runs' AND column_name = 'superseded_count'").rows
   end
 end

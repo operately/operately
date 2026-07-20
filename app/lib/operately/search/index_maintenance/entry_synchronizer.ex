@@ -2,13 +2,14 @@ defmodule Operately.Search.IndexMaintenance.EntrySynchronizer do
   @moduledoc """
   Converts original Operately records into search entries and applies their changes.
 
-  Records that are skipped, fail conversion, or produce invalid entries have any
-  previous search entry removed so stale or unsafe data is not left searchable.
+  Records that are skipped or permanently invalid have any previous search entry
+  removed so stale or unsafe data is not left searchable. Retryable failures abort
+  the complete batch without advancing its checkpoint.
   """
 
   require Logger
 
-  alias Operately.Search.{Indexer, Source}
+  alias Operately.Search.{ErrorCategory, Indexer, Source}
   alias Operately.Search.IndexMaintenance.BatchResult
 
   @empty_changes %{
@@ -19,10 +20,17 @@ defmodule Operately.Search.IndexMaintenance.EntrySynchronizer do
     last_error: nil
   }
 
-  def synchronize(source_type, source_adapter, source_records) do
-    prepared_changes = prepare_index_changes(source_type, source_adapter, source_records)
+  def backfill(source_type, source_adapter, source_records) do
+    synchronize(source_type, source_adapter, source_records, &Indexer.upsert_all_guarded/1)
+  end
 
-    with {:ok, write_summary} <- Indexer.upsert_all(prepared_changes.entries),
+  def repair_locked(source_type, source_adapter, source_records) do
+    synchronize(source_type, source_adapter, source_records, &Indexer.repair_all_locked/1)
+  end
+
+  defp synchronize(source_type, source_adapter, source_records, write_entries) do
+    with {:ok, prepared_changes} <- prepare_index_changes(source_type, source_adapter, source_records),
+         {:ok, write_summary} <- write_entries.(prepared_changes.entries),
          invalid_entry_keys = Enum.map(write_summary.invalid_entries, &{source_type, &1.source_id}),
          {:ok, _deleted_count} <- Indexer.delete_many(prepared_changes.deletion_keys ++ invalid_entry_keys) do
       {:ok,
@@ -31,6 +39,7 @@ defmodule Operately.Search.IndexMaintenance.EntrySynchronizer do
          inserted: write_summary.inserted,
          updated: write_summary.updated,
          unchanged: write_summary.unchanged,
+         superseded: write_summary.superseded,
          skipped: prepared_changes.skipped,
          failed: prepared_changes.failed + write_summary.invalid,
          last_error: prepared_changes.last_error || invalid_entry_error(write_summary.invalid_entries)
@@ -39,13 +48,15 @@ defmodule Operately.Search.IndexMaintenance.EntrySynchronizer do
   end
 
   defp prepare_index_changes(source_type, source_adapter, source_records) do
-    Enum.reduce(source_records, @empty_changes, fn source_record, changes ->
+    Enum.reduce_while(source_records, {:ok, @empty_changes}, fn source_record, {:ok, changes} ->
       source_id = Source.id!(source_record)
 
-      case build_entry_safely(source_adapter, source_record) do
-        {:ok, attrs} -> add_entry(changes, attrs, source_type, source_id)
-        :skip -> skip_entry(changes, source_type, source_id)
-        {:error, category} -> reject_entry(changes, source_type, source_id, category)
+      case source_adapter.to_entry(source_record) do
+        {:ok, attrs} when is_map(attrs) -> {:cont, {:ok, add_entry(changes, attrs, source_type, source_id)}}
+        :skip -> {:cont, {:ok, skip_entry(changes, source_type, source_id)}}
+        {:error, {:invalid, category}} -> {:cont, {:ok, reject_entry(changes, source_type, source_id, category)}}
+        {:error, reason} -> {:halt, {:error, reason}}
+        _invalid -> {:halt, {:error, :invalid_adapter_result}}
       end
     end)
   end
@@ -64,7 +75,8 @@ defmodule Operately.Search.IndexMaintenance.EntrySynchronizer do
   end
 
   defp reject_entry(changes, source_type, source_id, category) do
-    Logger.warning("Search source entry could not be built", source_type: source_type, source_id: source_id, reason: category)
+    category = ErrorCategory.sanitize(category)
+    Logger.warning("Search source entry could not be built", source_type: source_type, reason: category)
 
     %{
       changes
@@ -74,22 +86,6 @@ defmodule Operately.Search.IndexMaintenance.EntrySynchronizer do
     }
   end
 
-  defp build_entry_safely(source_adapter, source_record) do
-    case source_adapter.to_entry(source_record) do
-      {:ok, attrs} when is_map(attrs) -> {:ok, attrs}
-      :skip -> :skip
-      {:error, reason} -> {:error, error_category(reason)}
-      _invalid -> {:error, "invalid_adapter_result"}
-    end
-  rescue
-    error -> {:error, error_category(error)}
-  end
-
   defp invalid_entry_error([]), do: nil
   defp invalid_entry_error(_invalid_entries), do: "invalid_search_entry"
-
-  defp error_category(%{__struct__: module}), do: inspect(module)
-  defp error_category(reason) when is_atom(reason), do: Atom.to_string(reason)
-  defp error_category(reason) when is_binary(reason), do: String.slice(reason, 0, 120)
-  defp error_category(_reason), do: "unknown"
 end

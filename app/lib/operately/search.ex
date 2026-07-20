@@ -70,6 +70,7 @@ defmodule Operately.Search do
   defp initial_job_args(run) do
     %{
       run_id: run.id,
+      source_type: Atom.to_string(run.source_type),
       phase: "source_scan",
       cursor: nil,
       batch_size: Application.get_env(:operately, :search_index_batch_size, 500)

@@ -13,6 +13,7 @@ defmodule Operately.Search.IndexMaintenance.BatchResult do
             inserted: 0,
             updated: 0,
             unchanged: 0,
+            superseded: 0,
             skipped: 0,
             failed: 0,
             deleted_orphans: 0,

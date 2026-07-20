@@ -34,7 +34,7 @@ defmodule Operately.Search.IndexMaintenance.IndexScan do
     current_source_records = Enum.map(current_entries, &Map.fetch!(source_records_by_id, &1.source_id))
 
     # Entries without an original record cannot be rebuilt and must be deleted.
-    with {:ok, result} <- EntrySynchronizer.synchronize(source_type, source_adapter, current_source_records),
+    with {:ok, result} <- EntrySynchronizer.repair_locked(source_type, source_adapter, current_source_records),
          {:ok, deleted_count} <- Indexer.delete_many(entry_keys(orphaned_entries)) do
       {:ok,
        %{

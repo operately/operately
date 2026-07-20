@@ -574,26 +574,26 @@ Reconciliation must use the same Indexer as normal writes and backfills.
 
 Implement this phase as four ordered PRs so indexing, querying, presentation, and application integration can be reviewed independently.
 
-#### PR 2.1 — `feat: index resource hub content for search`
+#### PR 2.1 — `chore: Index resource hub content for search`
 
 - [ ] Add and register source adapters for resource-hub folders, published documents, files, links, and their comments.
 - [ ] Add transactional index updates for create, update, publish, move, delete, and restore operations.
 - [ ] Cover backfill, reconciliation, exclusions, state changes, and nested-folder metadata with adapter tests.
 
-#### PR 2.2 — `feat: add permission-aware resource hub search`
+#### PR 2.2 — `chore: Add permission-aware resource hub search`
 
 - [ ] Add the ranked full-text query and `resource_hub` API scope.
 - [ ] Return unified results with context, match source, safe snippets, state, navigation identifiers, and cursor pagination.
 - [ ] Apply company, resource-hub, publication, deletion, and access-context predicates before ranking, snippets, and limiting.
 - [ ] Cover permissions, nested-folder scope, ranking, snippets, pagination, and exclusion rules with backend tests.
 
-#### PR 2.3 — `feat: add full-text results to GlobalSearch`
+#### PR 2.3 — `chore: Add full-text results to GlobalSearch`
 
 - [ ] Extend TurboUI `GlobalSearch` with a unified result model, match source, snippets, status, error state, pagination, and optional shortcut behavior.
 - [ ] Keep the component pure: accept API-shaped data, links, and callbacks without app imports, routing, contexts, or API calls.
 - [ ] Add Storybook coverage for company and resource-hub scopes, result variants, request states, scrolling, pagination, and keyboard navigation.
 
-#### PR 2.4 — `feat: add search to resource hubs`
+#### PR 2.4 — `chore: Add search to resource hubs`
 
 - [ ] Add the scoped search activator to `ResourceHubPage`.
 - [ ] Extend the app bridge to call resource-hub-scoped search and construct canonical navigation links.
