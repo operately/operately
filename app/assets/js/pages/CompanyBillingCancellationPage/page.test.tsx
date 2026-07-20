@@ -52,6 +52,7 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
         } as any,
         memberCount: 12,
       }),
+      true,
     );
 
     expect(summary.rows).toEqual(
@@ -75,6 +76,7 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
         memberCount: 25,
         storageUsageBytes: 2 * 1024 ** 3,
       }),
+      limitsEnforced: true,
       actionError: null,
       isSubmitting: false,
       onCancelPlan: jest.fn(),
@@ -99,5 +101,25 @@ describe("CompanyBillingCancellationPage bridge helpers", () => {
     );
     expect(viewModel.keepAction.label).toBe("Keep current plan");
     expect(viewModel.cancelAction.label).toBe("Schedule cancellation");
+  });
+
+  it("keeps usage and entitlement details without disruption warnings when limits are not enforced", () => {
+    const summary = buildCompanyBillingCancellationSummary(
+      billingOverviewMock({
+        memberCount: 25,
+        storageUsageBytes: 2 * 1024 ** 3,
+      }),
+      false,
+    );
+
+    expect(summary.rows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: "Active members", value: "25" }),
+        expect.objectContaining({ label: "Free plan member limit", value: "20" }),
+        expect.objectContaining({ label: "Storage used", value: "2 GB" }),
+        expect.objectContaining({ label: "Free plan storage limit", value: "1 GB" }),
+      ]),
+    );
+    expect(summary.overLimitWarning).toBeNull();
   });
 });

@@ -21,7 +21,7 @@ defmodule Operately.Billing.EnforceLimits do
     limit = plan_limit(plan_key, normalized_limit_key)
     current_usage = resolve_current_usage(company, normalized_limit_key, opts)
     projected_usage = current_usage + requested_delta
-    enforced = Billing.billing_enabled_for_company?(company)
+    enforced = Billing.limit_enforcement_enabled_for_company?(company)
 
     %LimitStatus{
       limit_key: normalized_limit_key,

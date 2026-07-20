@@ -12,7 +12,6 @@ defmodule Operately.Support.Features.BillingSteps do
   step :given_a_billing_enabled_company_exists, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("billing")
     |> Factory.log_in_person(:creator)
   end
 
@@ -25,7 +24,6 @@ defmodule Operately.Support.Features.BillingSteps do
   step :given_a_billing_enabled_company_exists_and_i_am_company_admin, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("billing")
     |> Factory.add_company_admin(:admin)
     |> Factory.log_in_person(:admin)
   end
@@ -33,16 +31,16 @@ defmodule Operately.Support.Features.BillingSteps do
   step :given_a_billing_enabled_company_exists_and_i_am_company_member, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("billing")
     |> Factory.add_company_member(:member)
     |> Factory.log_in_person(:member)
   end
 
   step :given_another_billing_enabled_company_exists, ctx do
-    ctx = Factory.add_company(ctx, :second_company, ctx.account, name: "Beta Labs")
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.second_company, "billing")
+    Factory.add_company(ctx, :second_company, ctx.account, name: "Beta Labs")
+  end
 
-    Map.put(ctx, :second_company, company)
+  step :enable_limit_enforcement_for_company, ctx do
+    Factory.enable_feature(ctx, "billing")
   end
 
   step :seed_active_billing_catalog, ctx do

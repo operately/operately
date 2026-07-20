@@ -48,7 +48,9 @@ defmodule Operately.Billing.EnforceLimitsTest do
       assert status.recommended_upgrade == %{plan_key: "business", billing_interval: :yearly, source: :next_plan}
     end
 
-    test "returns unenforced pass-through status and never blocks when billing is off", ctx do
+    test "returns unenforced pass-through status when billing is globally enabled but the company flag is off", ctx do
+      Application.put_env(:operately, :billing_enabled, true)
+      on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
       create_active_product("team", "monthly")
 
       assert %LimitStatus{} = status = EnforceLimits.status(ctx.company, :member_count, current_usage: 20, requested_delta: 1)

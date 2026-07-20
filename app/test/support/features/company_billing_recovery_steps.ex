@@ -15,7 +15,7 @@ defmodule Operately.Support.Features.CompanyBillingRecoverySteps do
       active: true
     })
 
-    Factory.enable_feature(ctx, "billing")
+    ctx
   end
 
   step :fill_company_to_near_member_limit, ctx do
