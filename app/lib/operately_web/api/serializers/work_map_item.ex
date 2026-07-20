@@ -26,6 +26,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       timeframe: OperatelyWeb.Api.Serializer.serialize(item.timeframe),
       assigned_at: OperatelyWeb.Api.Serializer.serialize(item.assigned_at),
       milestones: serialize_milestones(item),
+      targets: serialize_targets(item),
+      checklist: serialize_checklist(item),
       children: OperatelyWeb.Api.Serializer.serialize(item.children),
       privacy: OperatelyWeb.Api.Serializer.serialize(item.privacy),
       assignees: OperatelyWeb.Api.Serializer.serialize(item.assignees)
@@ -37,6 +39,18 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
   end
 
   defp serialize_milestones(_item), do: []
+
+  defp serialize_targets(%{type: :goal, resource: %{targets: targets}}) when is_list(targets) do
+    OperatelyWeb.Api.Serializer.serialize(targets)
+  end
+
+  defp serialize_targets(_item), do: []
+
+  defp serialize_checklist(%{type: :goal, resource: %{checks: checks}}) when is_list(checks) do
+    OperatelyWeb.Api.Serializer.serialize(checks)
+  end
+
+  defp serialize_checklist(_item), do: []
 
   defp item_id(item) do
     case item.type do

@@ -63,11 +63,7 @@ export function TableRow(props: Props) {
           hideCompanyAccess={props.hideCompanyAccessInQuickAdd}
         />
         <StatusCell item={item} hide={columnOptions?.hideStatus} />
-        <ProgressCell
-          progress={item.progress}
-          status={item.status}
-          hide={tab === "completed" || columnOptions?.hideProgress}
-        />
+        <ProgressCell item={item} hide={tab === "completed" || columnOptions?.hideProgress} />
         <DueDateCell
           tab={tab}
           completedOn={item.completedOn}
