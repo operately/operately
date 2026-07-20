@@ -7,7 +7,8 @@ defmodule Operately.Search.Source do
   converts each record into attributes accepted by `Operately.Search.Indexer`.
 
   Conversion returns `{:ok, attrs}` for a searchable record, `:skip` for a record that
-  should not be indexed, or `{:error, reason}` when conversion fails.
+  should not be indexed, or `{:error, reason}` when conversion fails. Every returned
+  source record must expose a binary `:id` used for keyset pagination and index identity.
   """
 
   @type cursor :: Ecto.UUID.t() | nil
@@ -17,4 +18,7 @@ defmodule Operately.Search.Source do
   @callback fetch_batch(cursor(), pos_integer()) :: {:ok, [source()]} | {:error, term()}
   @callback fetch_by_ids([Ecto.UUID.t()]) :: {:ok, [source()]} | {:error, term()}
   @callback to_entry(source()) :: {:ok, map()} | :skip | {:error, term()}
+
+  def id!(%{id: id}) when is_binary(id), do: id
+  def id!(source_record), do: raise(ArgumentError, "search source is missing a binary id: #{inspect(source_record)}")
 end
