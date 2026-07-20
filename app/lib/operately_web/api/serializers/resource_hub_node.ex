@@ -2,7 +2,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Node do
   def serialize(node, level: :essential) do
     %{
       id: OperatelyWeb.Paths.node_id(node),
-      name: node.name,
+      name: node_display_name(node),
       type: node.type,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(node.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(node.updated_at),
@@ -12,4 +12,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Node do
       link: OperatelyWeb.Api.Serializer.serialize(node.link),
     }
   end
+
+  defp node_display_name(%{type: :document, document: %{name: name}}), do: name
+  defp node_display_name(%{type: :document}), do: ""
+  defp node_display_name(node), do: node.name
 end

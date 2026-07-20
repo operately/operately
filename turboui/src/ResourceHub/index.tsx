@@ -30,6 +30,7 @@ export { FolderZeroNodes, HubZeroNodes } from "./ZeroNodes";
 export { NodeDescription } from "./NodeDescription";
 export { SortControl } from "./SortControl";
 export { findNameAndExtension, sortNodesWithFoldersFirst } from "./utils";
+export { getNodeName } from "./selectors";
 export type { AddFileProps } from "./useAddFile";
 export { useAddFile } from "./useAddFile";
 export type { SortableResourceHubNode } from "./utils";

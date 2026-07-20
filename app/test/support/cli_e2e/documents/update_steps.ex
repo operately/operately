@@ -158,7 +158,7 @@ defmodule Operately.Support.CliE2E.Documents.UpdateSteps do
 
     text = document.content |> HubScopeSteps.collect_text() |> Enum.join(" ")
 
-    assert document.node.name == "CLI updated document"
+    assert document.name == "CLI updated document"
     assert text =~ "Updated document content"
 
     ctx

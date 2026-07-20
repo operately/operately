@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
     end
 
     test "edits document", ctx do
-      assert ctx.document.node.name == "Document"
+      assert ctx.document.name == "Document"
       assert ctx.document.content == RichText.rich_text("Content")
 
       assert {200, _} = mutation(ctx.conn, [:documents, :update], %{
@@ -89,7 +89,7 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
 
       {:ok, document} = Document.get(:system, id: ctx.document.id, opts: [preload: :node])
 
-      assert document.node.name == "Brand new name"
+      assert document.name == "Brand new name"
       assert document.content == RichText.rich_text("Edited content")
     end
   end

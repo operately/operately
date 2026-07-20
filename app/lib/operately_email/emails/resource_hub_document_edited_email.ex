@@ -37,7 +37,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "updated the document \"#{document.node.name}\"",
+      headline: "updated the document \"#{document.name}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.document_path(company, document) |> OperatelyWeb.Paths.to_url(),
@@ -49,9 +49,9 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
 
   defp action(person, document, content) do
     if person.id in MentionedPeople.ids(content) do
-      "mentioned you in the document \"#{document.node.name}\""
+      "mentioned you in the document \"#{document.name}\""
     else
-      "updated the document \"#{document.node.name}\""
+      "updated the document \"#{document.name}\""
     end
   end
 end
