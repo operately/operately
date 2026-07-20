@@ -15,7 +15,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "deleted a document: #{document.node.name}")
+    |> subject(where: parent.name, who: author, action: "deleted a document: #{document.name}")
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:cta_url, OperatelyWeb.Paths.resource_hub_path(company, document.resource_hub) |> OperatelyWeb.Paths.to_url())
@@ -33,7 +33,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "deleted the document \"#{document.node.name}\"",
+      headline: "deleted the document \"#{document.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.resource_hub_path(company, document.resource_hub) |> OperatelyWeb.Paths.to_url(),

@@ -21,6 +21,17 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
     content: RichText.rich_text("Content"),
   }
 
+  test "stores the document title on the document, not the node", ctx do
+    document = create_document(ctx, true, [])
+
+    {:ok, document} = Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, @attrs)
+
+    document = Repo.preload(document, :node, force: true)
+
+    assert document.name == "new name"
+    assert document.node.name == nil
+  end
+
   test "Editing document doesn't send notifications to anyone when there are no mentions", ctx do
     document = create_document(ctx, true, [])
 
