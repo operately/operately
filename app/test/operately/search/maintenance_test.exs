@@ -5,7 +5,7 @@ defmodule Operately.Search.MaintenanceTest do
   alias Operately.Access
   alias Operately.Projects.Project
   alias Operately.Search
-  alias Operately.Search.{Entry, IndexRun, MaintenanceWorker, SourceRegistry}
+  alias Operately.Search.{Entry, IndexMaintenance, IndexRun, Indexer, MaintenanceWorker, Source, SourceRegistry}
   alias Operately.Support.Factory
 
   defmodule ProjectSource do
@@ -28,19 +28,22 @@ defmodule Operately.Search.MaintenanceTest do
         |> after_cursor(cursor)
         |> order_by([project], asc: project.id)
         |> limit(^limit)
+        |> Source.lock_for_maintenance()
 
       {:ok, Repo.all(query, with_deleted: true)}
     end
 
     @impl true
     def fetch_by_ids(ids) do
-      query = from(project in Project, where: project.id in ^ids)
+      query = Project |> where([project], project.id in ^ids) |> Source.lock_for_maintenance()
       {:ok, Repo.all(query, with_deleted: true)}
     end
 
     @impl true
     def to_entry(%Project{name: "skip-project"}), do: :skip
-    def to_entry(%Project{name: "adapter-error"}), do: {:error, :deliberate_test_error}
+    def to_entry(%Project{name: "adapter-error"}), do: {:error, {:invalid, :deliberate_test_error}}
+    def to_entry(%Project{name: "retryable-error"}), do: {:error, {:temporary_failure, "private source content"}}
+    def to_entry(%Project{name: "raised-error"}), do: raise("private source content")
     def to_entry(%Project{deleted_at: deleted_at}) when not is_nil(deleted_at), do: :skip
 
     def to_entry(project) do
@@ -128,10 +131,26 @@ defmodule Operately.Search.MaintenanceTest do
     assert Repo.get_by!(Entry, source_id: ctx.alpha.id).title == "Alpha project"
   end
 
+  test "backfill reports a newer indexed entry as superseded", ctx do
+    ctx = Factory.add_project(ctx, :project, :space, name: "Canonical source")
+
+    newer_timestamp = NaiveDateTime.add(ctx.project.updated_at, 1, :second)
+    assert {:ok, %{inserted: 1}} = index_project(ctx.project, title: "Newer indexed value", source_updated_at: newer_timestamp)
+
+    run = start_and_drain(:backfill)
+
+    assert run.status == :completed
+    assert run.superseded_count == 1
+    assert Repo.get_by!(Entry, source_id: ctx.project.id).title == "Newer indexed value"
+  end
+
   test "deletes excluded and unsafe entries while reporting failures", ctx do
-    ctx
-    |> Factory.add_project(:skipped, :space, name: "skip-project")
-    |> Factory.add_project(:failed, :space, name: "adapter-error")
+    ctx = ctx |> Factory.add_project(:skipped, :space) |> Factory.add_project(:failed, :space)
+    assert {:ok, _} = index_project(ctx.skipped)
+    assert {:ok, _} = index_project(ctx.failed)
+
+    ctx.skipped |> Ecto.Changeset.change(name: "skip-project") |> Repo.update!()
+    ctx.failed |> Ecto.Changeset.change(name: "adapter-error") |> Repo.update!()
 
     run = start_and_drain(:backfill)
 
@@ -140,6 +159,84 @@ defmodule Operately.Search.MaintenanceTest do
     assert run.failed_count == 1
     assert run.last_error == "deliberate_test_error"
     assert Repo.aggregate(Entry, :count) == 0
+  end
+
+  test "retryable adapter errors roll back the batch and resume from its checkpoint", ctx do
+    ctx = Factory.add_project(ctx, :project, :space, name: "Original title")
+    assert {:ok, _} = index_project(ctx.project)
+    ctx.project |> Ecto.Changeset.change(name: "retryable-error") |> Repo.update!()
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, run} = Search.start_backfill("project")
+      [job] = all_enqueued(worker: MaintenanceWorker)
+
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert {:error, "search index maintenance failed"} = MaintenanceWorker.perform(job)
+        end)
+
+      refute log =~ "private source content"
+
+      checkpoint = Search.get_index_run(run.id)
+      assert checkpoint.status == :pending
+      assert checkpoint.cursor == nil
+      assert checkpoint.processed_count == 0
+      assert checkpoint.last_error == nil
+      assert Repo.get_by!(Entry, source_id: ctx.project.id).title == "Original title"
+
+      recovered_at = NaiveDateTime.add(ctx.project.updated_at, 1, :second)
+      ctx.project |> Ecto.Changeset.change(name: "Recovered title", updated_at: recovered_at) |> Repo.update!()
+      assert :ok = MaintenanceWorker.perform(job)
+
+      next_job = all_enqueued(worker: MaintenanceWorker) |> Enum.find(& &1.args["cursor"])
+      assert :ok = MaintenanceWorker.perform(next_job)
+
+      completed = Search.get_index_run(run.id)
+      assert completed.status == :completed
+      assert completed.processed_count == 1
+      assert Repo.get_by!(Entry, source_id: ctx.project.id).title == "Recovered title"
+    end)
+  end
+
+  test "adapter exceptions roll back without exposing exception messages", ctx do
+    ctx = Factory.add_project(ctx, :project, :space, name: "Original title")
+    assert {:ok, _} = index_project(ctx.project)
+    ctx.project |> Ecto.Changeset.change(name: "raised-error") |> Repo.update!()
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, run} = Search.start_backfill("project")
+      [job] = all_enqueued(worker: MaintenanceWorker)
+
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert {:error, "search index maintenance failed"} = MaintenanceWorker.perform(job)
+        end)
+
+      refute log =~ "private source content"
+      assert Search.get_index_run(run.id).processed_count == 0
+      assert Repo.get_by!(Entry, source_id: ctx.project.id).title == "Original title"
+    end)
+  end
+
+  test "final adapter exceptions store only their sanitized category", ctx do
+    Factory.add_project(ctx, :project, :space, name: "raised-error")
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, run} = Search.start_backfill("project")
+      [job] = all_enqueued(worker: MaintenanceWorker)
+      final_attempt = %{job | attempt: job.max_attempts}
+
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert {:discard, "search index maintenance failed"} = MaintenanceWorker.perform(final_attempt)
+        end)
+
+      failed_run = Search.get_index_run(run.id)
+      assert failed_run.status == :failed
+      assert failed_run.last_error == "RuntimeError"
+      refute failed_run.last_error =~ "private source content"
+      refute log =~ "private source content"
+    end)
   end
 
   test "reconciliation repairs stale entries and removes orphans", ctx do
@@ -158,7 +255,8 @@ defmodule Operately.Search.MaintenanceTest do
         source_id: Ecto.UUID.generate(),
         company_id: ctx.company.id,
         access_context_id: context.id,
-        title: "Orphan"
+        title: "Orphan",
+        source_updated_at: ctx.project.updated_at
       })
 
     run = start_and_drain(:reconciliation)
@@ -237,6 +335,35 @@ defmodule Operately.Search.MaintenanceTest do
     end)
   end
 
+  test "a delayed final failure cannot replace a terminal run", ctx do
+    Factory.add_project(ctx, :project, :space)
+    run = start_and_drain(:backfill)
+
+    args = %{"run_id" => run.id, "phase" => "source_scan", "cursor" => nil}
+    assert :ok = IndexMaintenance.mark_failed(args, :delayed_failure)
+
+    completed_run = Search.get_index_run(run.id)
+    assert completed_run.status == :completed
+    assert completed_run.last_error == nil
+  end
+
+  test "a delayed final failure cannot replace a newer checkpoint", ctx do
+    ctx |> Factory.add_project(:alpha, :space) |> Factory.add_project(:beta, :space)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, run} = Search.start_backfill("project")
+      [job] = all_enqueued(worker: MaintenanceWorker)
+      assert :ok = MaintenanceWorker.perform(job)
+
+      checkpoint = Search.get_index_run(run.id)
+      assert checkpoint.status == :running
+      assert checkpoint.cursor
+
+      assert :ok = IndexMaintenance.mark_failed(job.args, :delayed_failure)
+      assert Search.get_index_run(run.id).status == :running
+    end)
+  end
+
   defp start_and_drain(kind) do
     Oban.Testing.with_testing_mode(:manual, fn ->
       start_result =
@@ -249,5 +376,15 @@ defmodule Operately.Search.MaintenanceTest do
       assert %{failure: 0} = Oban.drain_queue(queue: :default, with_recursion: true)
       Repo.get!(IndexRun, run.id)
     end)
+  end
+
+  defp index_project(project, overrides \\ []) do
+    {:ok, attrs} = ProjectSource.to_entry(project)
+
+    attrs
+    |> Map.merge(Map.new(overrides))
+    |> Map.put(:source_type, "project")
+    |> Map.put(:source_id, project.id)
+    |> Indexer.upsert()
   end
 end

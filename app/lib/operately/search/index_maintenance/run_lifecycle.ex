@@ -13,7 +13,7 @@ defmodule Operately.Search.IndexMaintenance.RunLifecycle do
   import Ecto.Query
 
   alias Operately.Repo
-  alias Operately.Search.{IndexRun, MaintenanceWorker}
+  alias Operately.Search.{ErrorCategory, IndexRun, MaintenanceWorker}
   alias Operately.Search.IndexMaintenance.BatchResult
 
   def claim(run_id, phase, cursor) do
@@ -36,29 +36,32 @@ defmodule Operately.Search.IndexMaintenance.RunLifecycle do
     end
   end
 
-  def mark_failed(nil, _reason), do: :ok
+  def mark_failed(%{"run_id" => run_id, "phase" => phase, "cursor" => cursor}, reason) do
+    Repo.transaction(fn ->
+      case lock_run(run_id) do
+        nil ->
+          :ok
 
-  def mark_failed(run_id, reason) do
-    case Repo.get(IndexRun, run_id) do
-      nil ->
-        :ok
+        run ->
+          if terminal?(run) or stale_job?(run, phase, cursor) do
+            :ok
+          else
+            fail_run(run, reason)
+          end
+      end
+    end)
 
-      run ->
-        run
-        |> IndexRun.changeset(%{
-          status: :failed,
-          completed_at: DateTime.utc_now(),
-          last_error: error_category(reason)
-        })
-        |> Repo.update!()
-
-        :ok
-    end
+    :ok
   end
 
   defp lock_run!(run_id) do
     from(run in IndexRun, where: run.id == ^run_id, lock: "FOR UPDATE")
     |> Repo.one!()
+  end
+
+  defp lock_run(run_id) do
+    from(run in IndexRun, where: run.id == ^run_id, lock: "FOR UPDATE")
+    |> Repo.one()
   end
 
   defp terminal?(run), do: run.status in [:completed, :completed_with_errors, :failed]
@@ -85,6 +88,7 @@ defmodule Operately.Search.IndexMaintenance.RunLifecycle do
       inserted_count: run.inserted_count + result.inserted,
       updated_count: run.updated_count + result.updated,
       unchanged_count: run.unchanged_count + result.unchanged,
+      superseded_count: run.superseded_count + result.superseded,
       skipped_count: run.skipped_count + result.skipped,
       failed_count: run.failed_count + result.failed,
       deleted_orphan_count: run.deleted_orphan_count + result.deleted_orphans,
@@ -118,6 +122,7 @@ defmodule Operately.Search.IndexMaintenance.RunLifecycle do
   defp enqueue_next_batch(run) do
     %{
       run_id: run.id,
+      source_type: Atom.to_string(run.source_type),
       phase: Atom.to_string(run.phase),
       cursor: run.cursor,
       batch_size: Application.get_env(:operately, :search_index_batch_size, 500)
@@ -128,8 +133,13 @@ defmodule Operately.Search.IndexMaintenance.RunLifecycle do
     run
   end
 
-  defp error_category(%{__struct__: module}), do: inspect(module)
-  defp error_category(reason) when is_atom(reason), do: Atom.to_string(reason)
-  defp error_category(reason) when is_binary(reason), do: String.slice(reason, 0, 120)
-  defp error_category(_reason), do: "unknown"
+  defp fail_run(run, reason) do
+    run
+    |> IndexRun.changeset(%{
+      status: :failed,
+      completed_at: DateTime.utc_now(),
+      last_error: ErrorCategory.sanitize(reason)
+    })
+    |> Repo.update!()
+  end
 end
