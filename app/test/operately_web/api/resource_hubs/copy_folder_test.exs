@@ -202,7 +202,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolderTest do
 
   defp assert_file_created(file, new_file) do
     refute file.node.id == new_file.node.id
-    assert file.node.name == new_file.node.name
+    assert file.name == new_file.name
+    assert new_file.node.name == nil
     assert new_file.node.type == :file
 
     refute file.id == new_file.id

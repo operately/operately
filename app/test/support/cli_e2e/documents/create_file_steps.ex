@@ -156,7 +156,7 @@ defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
     subscription_ids = Enum.map(ctx.subscription_list.subscriptions, & &1.person_id)
 
     assert ctx.created_file.node.parent_folder_id == nil
-    assert ctx.created_file.node.name == Path.basename(ctx.upload_file)
+    assert ctx.created_file.name == Path.basename(ctx.upload_file)
     assert ctx.created_file.description == %{"type" => "doc", "content" => []}
     assert ctx.subscription_list.send_to_everyone
     assert subscription_ids == [ctx.creator.id]
@@ -173,7 +173,7 @@ defmodule Operately.Support.CliE2E.Documents.CreateFileSteps do
     text = ctx.created_file.description |> HubScopeSteps.collect_text() |> Enum.join(" ")
 
     assert ctx.created_file.node.parent_folder_id == ctx.folder.id
-    assert ctx.created_file.node.name == "Quarterly report.png"
+    assert ctx.created_file.name == "Quarterly report.png"
     assert text =~ "Upload notes"
     assert text =~ "Visible in CLI"
     refute ctx.subscription_list.send_to_everyone

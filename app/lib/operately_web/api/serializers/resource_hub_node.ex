@@ -27,5 +27,12 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Node do
           "expected :link node to have its :link association preloaded, got: #{inspect(node)}"
   end
 
+  defp node_display_name(%{type: :file, file: %{name: name}}), do: name
+
+  defp node_display_name(%{type: :file} = node) do
+    raise ArgumentError,
+          "expected :file node to have its :file association preloaded, got: #{inspect(node)}"
+  end
+
   defp node_display_name(node), do: node.name
 end

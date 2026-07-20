@@ -22,6 +22,7 @@ defmodule Operately.ResourceHubs.File do
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
 
+    field :name, :string
     field :description, :map
 
     # populated with after load hooks
@@ -42,8 +43,8 @@ defmodule Operately.ResourceHubs.File do
 
   def changeset(file, attrs) do
     file
-    |> cast(attrs, [:node_id, :author_id, :blob_id, :preview_blob_id, :description, :subscription_list_id])
-    |> validate_required([:node_id, :author_id, :blob_id, :subscription_list_id])
+    |> cast(attrs, [:node_id, :author_id, :blob_id, :preview_blob_id, :name, :description, :subscription_list_id])
+    |> validate_required([:node_id, :author_id, :blob_id, :name, :subscription_list_id])
   end
 
   def get(requester, args) do

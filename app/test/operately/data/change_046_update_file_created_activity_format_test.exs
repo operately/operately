@@ -16,7 +16,7 @@ defmodule Operately.Data.Change046UpdateFileCreatedActivityFormatTest do
   test "updates activities content", ctx do
     Enum.each(ctx.activities, fn a ->
       assert a.content["file_id"] == ctx.my_file.id
-      assert a.content["file_name"] == ctx.my_file.node.name
+      assert a.content["file_name"] == ctx.my_file.name
     end)
 
     Operately.Data.Change046UpdateFileCreatedActivityFormat.run()
@@ -45,7 +45,7 @@ defmodule Operately.Data.Change046UpdateFileCreatedActivityFormatTest do
         "space_id" => ctx.space.id,
         "resource_hub_id" => ctx.hub.id,
         "file_id" => ctx.my_file.id,
-        "file_name" => ctx.my_file.node.name,
+        "file_name" => ctx.my_file.name,
       })
     end)
 
