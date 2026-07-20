@@ -10,7 +10,7 @@ defmodule Operately.Billing.LimitBreachAlerting do
   @valid_limit_keys [:member_count]
 
   def maybe_enqueue_limit_reached_email(%Company{} = company, limit_key, previous_usage, opts \\ []) when limit_key in @valid_limit_keys and is_integer(previous_usage) do
-    if Billing.billing_enabled_for_company?(company) do
+    if Billing.limit_enforcement_enabled_for_company?(company) do
       status = limit_status(company, limit_key, opts)
 
       case threshold_crossed?(status, previous_usage) do

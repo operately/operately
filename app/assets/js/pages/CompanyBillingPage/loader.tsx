@@ -1,4 +1,5 @@
 import * as Billing from "@/models/billing";
+import * as Companies from "@/models/companies";
 import * as Pages from "@/components/Pages";
 
 import axios from "axios";
@@ -8,6 +9,7 @@ import { redirect } from "react-router";
 
 interface LoaderResult {
   billing: Billing.BillingOverview;
+  limitsEnforced: boolean;
 }
 
 interface LoaderArgs {
@@ -17,11 +19,12 @@ interface LoaderArgs {
 }
 
 export async function loader({ params }: LoaderArgs): Promise<LoaderResult> {
-  await Billing.authorizeBillingManagementPageAccess(params.companyId);
+  const company = await Billing.authorizeBillingManagementPageAccess(params.companyId);
 
   try {
     return {
       billing: await Billing.getBilling({}),
+      limitsEnforced: Companies.hasFeature(company, "billing"),
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 403) {

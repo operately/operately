@@ -12,7 +12,6 @@ import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { DangerZone } from "./DangerZone";
 
 import { usePaths } from "@/routes/paths";
-import { hasFeature } from "../../models/companies";
 
 export function Page() {
   const paths = usePaths();
@@ -68,7 +67,6 @@ function AdminsMenu() {
   const manageBilling = paths.companyBillingPath();
   const renameCompanyPath = paths.companyRenamePath();
   const restorePath = paths.companyAdminRestoreSuspendedPeoplePath();
-  const billingEnabled = hasFeature(company, "billing");
 
   return (
     <Paper.Section title="As an admin or owner, you can:">
@@ -76,7 +74,7 @@ function AdminsMenu() {
         <OptionsMenuItem linkTo={managePeople} icon={IconUsers} title="Manage team members" />
 
         <OptionsMenuItem linkTo={restorePath} icon={IconUser} title="Restore access for deactivated team members" />
-        <OptionsMenuItem hidden={!billingEnabled || !company.permissions?.canManageBilling} linkTo={manageBilling} icon={IconFileText} title="Manage plan" />
+        <OptionsMenuItem hidden={!window.appConfig.billingEnabled || !company.permissions?.canManageBilling} linkTo={manageBilling} icon={IconFileText} title="Manage plan" />
         <OptionsMenuItem hidden={!company.permissions?.canEditDetails} linkTo={renameCompanyPath} icon={IconLetterCase} title="Rename the company" />
       </div>
     </Paper.Section>

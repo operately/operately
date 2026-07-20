@@ -13,6 +13,7 @@ interface LoaderArgs {
 
 interface LoaderResult {
   billing: Billing.BillingOverview;
+  limitsEnforced: boolean;
 }
 
 export async function loader(args: LoaderArgs): Promise<LoaderResult> {

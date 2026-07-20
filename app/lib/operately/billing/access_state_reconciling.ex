@@ -4,6 +4,7 @@ defmodule Operately.Billing.AccessStateReconciling do
   the existing local billing projection, and current company usage.
   """
 
+  alias Operately.Billing
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.Plans
   alias Operately.Billing.Usage
@@ -33,7 +34,8 @@ defmodule Operately.Billing.AccessStateReconciling do
       past_due?(Map.get(attrs, :status)) ->
         :past_due
 
-      over_limit?(company, attrs) && (downgrade_became_current?(account, attrs) || existing_over_limit_state?(account)) ->
+      Billing.limit_enforcement_enabled_for_company?(company) && over_limit?(company, attrs) &&
+          (downgrade_became_current?(account, attrs) || existing_over_limit_state?(account)) ->
         :over_limit_after_downgrade
 
       true ->

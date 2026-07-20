@@ -153,10 +153,10 @@ defmodule Operately.Features.BillingTest do
     |> Steps.assert_plan_updated(%{plan: "business", billing_interval: "monthly"})
   end
 
-  feature "company admin hides billing entry for companies without the billing feature", ctx do
+  feature "company admin sees billing entry without the company billing feature", ctx do
     ctx
     |> Steps.given_a_company_exists_without_billing_feature()
-    |> Steps.assert_billing_entry_is_hidden_on_company_admin_page()
+    |> Steps.assert_billing_entry_is_visible_on_company_admin_page()
   end
 
   feature "company admin sees Manage plan and can open billing overview and plans", ctx do
@@ -273,10 +273,19 @@ defmodule Operately.Features.BillingTest do
     |> CompanyAdminSteps.assert_redirected_to_company_admin_page()
   end
 
+  feature "unflagged companies do not show limit banners when usage reaches a plan limit", ctx do
+    ctx
+    |> Steps.given_a_company_exists_without_billing_feature()
+    |> fill_company_beyond_member_limit()
+    |> CompanyAdminSteps.visit_company_home_page()
+    |> CompanyAdminSteps.refute_company_billing_banner_visible()
+  end
+
   feature "billing management pages hide the company danger banner", ctx do
     ctx =
       ctx
       |> Steps.given_a_billing_enabled_company_exists()
+      |> Steps.enable_limit_enforcement_for_company()
       |> Steps.given_free_polar_state_agent()
       |> fill_company_beyond_member_limit()
 

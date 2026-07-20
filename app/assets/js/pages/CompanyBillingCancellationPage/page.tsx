@@ -26,7 +26,7 @@ interface BillingPageLocationState {
 export function Page() {
   const navigate = useNavigate();
   const paths = usePaths();
-  const { billing: loadedBilling } = useLoadedData();
+  const { billing: loadedBilling, limitsEnforced } = useLoadedData();
   const companyRootData = useRouteLoaderData("companyRoot") as CompanyRootData | undefined;
 
   const [billing, setBilling] = React.useState(loadedBilling);
@@ -83,6 +83,7 @@ export function Page() {
         { label: "Billing", to: paths.companyBillingPath() },
       ]}
       billing={billing}
+      limitsEnforced={limitsEnforced}
       actionError={actionError}
       isSubmitting={isSubmitting}
       onKeepCurrentPlan={keepCurrentPlan}

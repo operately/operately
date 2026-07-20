@@ -24,6 +24,7 @@ export function buildCompanyBillingPlanSelectionPageViewModel(
   const selection = buildCompanyBillingPlanSelectionMode({
     billing: props.billing,
     selection: props.selection,
+    limitsEnforced: props.limitsEnforced,
     actionError: props.actionError || null,
     isSubmitting: props.isSubmitting || false,
     onSelectPlan: props.onSelectPlan || noop,
@@ -44,6 +45,7 @@ export function buildCompanyBillingPlanSelectionPageViewModel(
 interface BuildSelectionModeArgs {
   billing: CompanyBillingPlanSelectionPage.BillingOverview;
   selection: CompanyBillingPlanSelectionPage.BillingTargetSelection;
+  limitsEnforced: boolean;
   actionError: string | null;
   isSubmitting: boolean;
   onSelectPlan: (plan: CompanyBillingPlanSelectionPage.Plan) => void;
@@ -84,7 +86,7 @@ export function buildCompanyBillingPlanSelectionMode(
         testId: `billing-plan-card-${definition.key}-${selectedInterval}`,
       };
     }),
-    consequenceNotice: buildSelectionConsequenceNotice(args.billing, mode, selectedTarget),
+    consequenceNotice: buildSelectionConsequenceNotice(args.billing, mode, selectedTarget, args.limitsEnforced),
     continueAction: {
       label: mode === "change_plan" ? "Change plan" : "Continue to checkout",
       tone: "primary",
@@ -130,6 +132,7 @@ function buildSelectionConsequenceNotice(
   billing: CompanyBillingPlanSelectionPage.BillingOverview,
   mode: CompanyBillingPlanSelectionPage.Mode,
   selectedTarget: CompanyBillingPlanSelectionPage.BillingTarget | null,
+  limitsEnforced: boolean,
 ): CompanyBillingPlanSelectionPage.ConsequenceNotice | null {
   if (mode !== "change_plan" || !selectedTarget) return null;
 
@@ -147,11 +150,12 @@ function buildSelectionConsequenceNotice(
     effectiveDate: timing === "next_renewal" ? billing.account.currentPeriodEnd : null,
   });
 
-  const rows = consequence.overageKind !== "none" ? buildConsequenceRows(consequence) : [];
-  const overageDescription = buildCompanyBillingOverageDescription(consequence);
+  const showOverageWarning = limitsEnforced && consequence.overageKind !== "none";
+  const rows = showOverageWarning ? buildConsequenceRows(consequence) : [];
+  const overageDescription = showOverageWarning ? buildCompanyBillingOverageDescription(consequence) : null;
 
   return {
-    tone: consequence.overageKind === "none" ? "info" : "warning",
+    tone: showOverageWarning ? "warning" : "info",
     message: formatCompanyBillingChangeTimingDescription(consequence),
     description: overageDescription || "",
     rows,
