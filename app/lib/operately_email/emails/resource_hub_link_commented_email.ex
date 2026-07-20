@@ -16,10 +16,10 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCommentedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "commented on: #{link.node.name}")
+    |> subject(where: parent.name, who: author, action: "commented on: #{link.name}")
     |> assign(:author, author)
     |> assign(:comment, comment)
-    |> assign(:name, link.node.name)
+    |> assign(:name, link.name)
     |> assign(:cta_url, Paths.link_path(company, link, comment) |> Paths.to_url())
     |> render("resource_hub_link_commented")
   end
@@ -36,7 +36,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCommentedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "commented on the link \"#{link.node.name}\"",
+      headline: "commented on the link \"#{link.name}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.link_path(company, link, comment) |> Paths.to_url(),

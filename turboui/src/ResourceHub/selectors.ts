@@ -28,7 +28,6 @@ export function getNodeId(node: ResourceHubNode): string | null {
 }
 
 export function getNodeName(node: ResourceHubNode): string {
-  if (node.document?.name) return node.document.name;
   return node.name ?? getResourceName(getNodeResource(node));
 }
 
