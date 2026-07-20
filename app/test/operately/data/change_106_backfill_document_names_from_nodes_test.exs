@@ -3,7 +3,7 @@ defmodule Operately.Data.Change106BackfillDocumentNamesFromNodesTest do
 
   import Ecto.Query, only: [from: 2]
   alias Operately.Data.Change106BackfillDocumentNamesFromNodes, as: Change
-  alias Operately.ResourceHubs.Document
+  alias Operately.ResourceHubs.{Document, Node}
   alias Operately.Support.Factory
 
   setup ctx do
@@ -16,12 +16,7 @@ defmodule Operately.Data.Change106BackfillDocumentNamesFromNodesTest do
   end
 
   test "copies names from document nodes onto documents", ctx do
-    {:ok, node} =
-      Operately.ResourceHubs.create_node(%{
-        resource_hub_id: ctx.hub.id,
-        name: "Legacy document title",
-        type: :document
-      })
+    node = insert_node_with_name(ctx.hub.id, "Legacy document title", :document)
 
     {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
@@ -43,12 +38,7 @@ defmodule Operately.Data.Change106BackfillDocumentNamesFromNodesTest do
   end
 
   test "is idempotent", ctx do
-    {:ok, node} =
-      Operately.ResourceHubs.create_node(%{
-        resource_hub_id: ctx.hub.id,
-        name: "Another title",
-        type: :document
-      })
+    node = insert_node_with_name(ctx.hub.id, "Another title", :document)
 
     {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
@@ -73,7 +63,6 @@ defmodule Operately.Data.Change106BackfillDocumentNamesFromNodesTest do
     {:ok, node} =
       Operately.ResourceHubs.create_node(%{
         resource_hub_id: ctx.hub.id,
-        name: "Node title",
         type: :document
       })
 
@@ -93,6 +82,23 @@ defmodule Operately.Data.Change106BackfillDocumentNamesFromNodesTest do
 
     document = Repo.get!(Document, document.id)
     assert document.name == "Existing title"
+  end
+
+  defp insert_node_with_name(hub_id, name, type) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    {:ok, node} =
+      %Node{}
+      |> Ecto.Changeset.change(%{
+        resource_hub_id: hub_id,
+        name: name,
+        type: type,
+        inserted_at: now,
+        updated_at: now
+      })
+      |> Repo.insert()
+
+    node
   end
 
   defp insert_document_without_name(attrs) do

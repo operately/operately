@@ -7,10 +7,10 @@ defmodule Operately.Support.ResourceHub.Deletion do
     end
   end
 
-  def delete_resource_from_nodes_list(ctx, resource_name) do
+  def delete_resource_from_nodes_list(ctx, resource_name, type) do
     ctx
     |> Steps.visit_resource_hub_page()
-    |> Steps.delete_resource(resource_name)
+    |> Steps.delete_resource({resource_name, type})
     |> Steps.confirm_deletion()
     |> Steps.assert_resource_deleted(resource_name)
   end

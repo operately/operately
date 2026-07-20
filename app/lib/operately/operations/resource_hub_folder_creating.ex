@@ -10,12 +10,12 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
     |> Multi.insert(:node, Node.changeset(%{
       resource_hub_id: hub.id,
       parent_folder_id: attrs.parent_folder_id,
-      name: attrs.name,
       type: :folder,
     }))
     |> Multi.insert(:folder, fn changes ->
       Folder.changeset(%{
         node_id: changes.node.id,
+        name: attrs.name,
       })
     end)
     |> Multi.run(:folder_with_node, fn _, changes ->

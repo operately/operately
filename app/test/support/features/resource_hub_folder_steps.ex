@@ -60,7 +60,7 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
   end
 
   step :rename_folder, ctx, attrs do
-    folder_id = Steps.get_resource_id(attrs.current_name)
+    folder_id = Steps.get_resource_id(attrs.current_name, :folder)
     menu_id = UI.testid(["menu", folder_id])
     rename_id = UI.testid(["rename", "folder", folder_id])
 

@@ -182,7 +182,8 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
       new_folder = ResourceHubs.list_folders(ctx.dest_folder) |> hd()
 
-      assert new_folder.node.name == "copied_folder"
+      assert new_folder.name == "copied_folder"
+      assert new_folder.node.name == nil
       assert new_folder.node.type == :folder
       assert ResourceHubs.count_children(new_folder) == 3
     end
@@ -201,7 +202,8 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
       new_folder = ResourceHubs.list_folders(ctx.dest_hub) |> hd()
 
-      assert new_folder.node.name == "copied_folder"
+      assert new_folder.name == "copied_folder"
+      assert new_folder.node.name == nil
       assert new_folder.node.type == :folder
       assert ResourceHubs.count_children(new_folder) == 3
     end
@@ -226,7 +228,8 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
       new_folder = ResourceHubs.list_folders(ctx.dest_folder) |> hd()
 
-      assert new_folder.node.name == "copied_folder"
+      assert new_folder.name == "copied_folder"
+      assert new_folder.node.name == nil
       assert new_folder.node.type == :folder
       assert ResourceHubs.count_children(new_folder) == 3
     end
@@ -288,7 +291,8 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
   #
 
   defp assert_folder_content(folder) do
-    assert folder.node.name == "folder1"
+    assert folder.name == "folder1"
+    assert folder.node.name == nil
     assert folder.node.type == :folder
   end
 

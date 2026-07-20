@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateFolderTest do
       |> then(&Operately.Repo.get!(Folder, &1))
       |> Operately.Repo.preload(:node)
 
-    assert folder.node.name == "MCP Folder"
+    assert folder.name == "MCP Folder"
     assert is_nil(folder.node.parent_folder_id)
   end
 
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateFolderTest do
       |> then(&Operately.Repo.get!(Folder, &1))
       |> Operately.Repo.preload(:node)
 
-    assert folder.node.name == "Project MCP Folder"
+    assert folder.name == "Project MCP Folder"
   end
 
   test "call/2 creates a nested folder when folder_id is provided" do
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateFolderTest do
       |> then(&Operately.Repo.get!(Folder, &1))
       |> Operately.Repo.preload(:node)
 
-    assert folder.node.name == "Nested MCP Folder"
+    assert folder.name == "Nested MCP Folder"
     assert folder.node.parent_folder_id == ctx.parent_folder.id
   end
 

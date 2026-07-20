@@ -145,7 +145,11 @@ defmodule Operately.Data.Change102MigrateProjectKeyResourcesToResourceHubLinksTe
 
     # Change102 detects existing links via node.name (pre-name-on-link shape).
     link = Repo.preload(link, :node)
-    {:ok, _} = Operately.ResourceHubs.update_node(link.node, %{name: "Existing link"})
+
+    {:ok, _} =
+      link.node
+      |> Ecto.Changeset.change(%{name: "Existing link"})
+      |> Repo.update()
 
     Change.run()
 

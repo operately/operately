@@ -105,7 +105,7 @@ defmodule Operately.Support.CliBackwardCompatibility.ResourceHubsSteps do
     assert payload.success
 
     folder = Repo.get!(Folder, ctx.folder_id) |> Repo.preload(:node)
-    assert folder.node.name == "Renamed CLI folder"
+    assert folder.name == "Renamed CLI folder"
 
     ctx
   end

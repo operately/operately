@@ -20,7 +20,7 @@ defmodule Operately.Features.ResourceHubLink.ResourceManagementTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_link(@link)
       |> Steps.visit_resource_hub_page()
-      |> delete_resource_from_nodes_list(@link.title)
+      |> delete_resource_from_nodes_list(@link.title, :link)
       |> Steps.assert_link_deleted_on_space_feed()
       |> Steps.assert_link_deleted_on_company_feed()
     end
@@ -30,7 +30,7 @@ defmodule Operately.Features.ResourceHubLink.ResourceManagementTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_link(@link)
       |> Steps.visit_resource_hub_page()
-      |> delete_resource_from_nodes_list(@link.title)
+      |> delete_resource_from_nodes_list(@link.title, :link)
       |> Steps.assert_link_deleted_notification_sent()
       |> Steps.assert_link_deleted_email_sent()
     end
@@ -40,7 +40,7 @@ defmodule Operately.Features.ResourceHubLink.ResourceManagementTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_link(@link)
       |> Steps.visit_resource_hub_page()
-      |> delete_resource_from_nodes_list(@link.title)
+      |> delete_resource_from_nodes_list(@link.title, :link)
     end
 
     feature "deleting link from link page redirects to resource hub", ctx do
@@ -65,19 +65,19 @@ defmodule Operately.Features.ResourceHubLink.ResourceManagementTest do
       ctx
       |> Steps.given_nested_folders_exist()
       |> Steps.given_link_exists(:hub)
-      |> move_resource_to_child_folder(resource_name: @resource_name)
+      |> move_resource_to_child_folder(resource_name: @resource_name, type: :link)
     end
 
     feature "Moving link to parent folder", ctx do
       ctx
       |> Steps.given_link_within_nested_folders_exists()
-      |> move_resource_to_parent_folder(resource_name: @resource_name)
+      |> move_resource_to_parent_folder(resource_name: @resource_name, type: :link)
     end
 
     feature "Moving link to resource hub root", ctx do
       ctx
       |> Steps.given_link_within_nested_folders_exists()
-      |> move_resource_to_hub_root(resource_name: @resource_name)
+      |> move_resource_to_hub_root(resource_name: @resource_name, type: :link)
     end
   end
 end

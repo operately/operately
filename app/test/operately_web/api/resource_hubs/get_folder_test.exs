@@ -91,7 +91,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
         include_nodes: true,
       })
 
-      assert res.folder.name == ctx.folder1.node.name
+      assert res.folder.name == ctx.folder1.name
       assert length(res.folder.nodes) == 2
 
       [ctx.doc1, ctx.doc2]
@@ -106,7 +106,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.GetFolderTest do
         include_nodes: true,
       })
 
-      assert res.folder.name == ctx.folder2.node.name
+      assert res.folder.name == ctx.folder2.name
       assert length(res.folder.nodes) == 2
 
       [ctx.doc3, ctx.doc4]
