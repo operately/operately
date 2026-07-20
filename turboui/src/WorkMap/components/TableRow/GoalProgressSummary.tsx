@@ -15,11 +15,18 @@ export function GoalProgressSummary({ targets, checklist }: GoalProgressSummaryP
   const hasChecklist = checklist.length > 0;
 
   if (!hasTargets && !hasChecklist) {
-    return <div className="text-content-dimmed text-xs font-normal">No targets or checklist</div>;
+    return (
+      <div className="text-content-dimmed text-xs font-normal" data-testid="goal-progress-summary-content">
+        No targets or checklist
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col gap-3 min-w-[220px] max-w-[320px] font-normal">
+    <div
+      className="flex flex-col gap-3 min-w-[220px] max-w-[320px] font-normal"
+      data-testid="goal-progress-summary-content"
+    >
       {hasTargets && <TargetsSection targets={targets} />}
       {hasChecklist && <ChecklistSection checklist={checklist} />}
     </div>

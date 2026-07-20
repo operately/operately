@@ -34,6 +34,7 @@ describe("GoalProgressSummary", () => {
   it("renders both sections when targets and checklist are present", () => {
     render(<GoalProgressSummary targets={mockGoalTargets} checklist={mockGoalChecklist} />);
 
+    expect(screen.getByTestId("goal-progress-summary-content")).toBeInTheDocument();
     expect(screen.getByText("Targets")).toBeInTheDocument();
     expect(screen.getByText("Checklist")).toBeInTheDocument();
     expect(screen.queryByText("No targets or checklist")).not.toBeInTheDocument();
