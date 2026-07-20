@@ -18,7 +18,6 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
       ctx =
         ctx
         |> Factory.setup()
-        |> Factory.enable_feature("billing")
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
 
@@ -33,14 +32,15 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
       ctx =
         ctx
         |> Factory.setup()
-        |> Factory.enable_feature("billing")
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
       assert {403, _} = query(ctx.conn, [:billing, :get], %{})
     end
 
-    test "it returns not found when billing is disabled for the company", ctx do
+    test "it returns not found when billing is globally disabled", ctx do
+      Application.put_env(:operately, :billing_enabled, false)
+
       ctx =
         ctx
         |> Factory.setup()
@@ -216,7 +216,6 @@ defmodule OperatelyWeb.Api.Billing.GetTest do
     ctx =
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("billing")
       |> Factory.add_company_member(:member)
       |> Factory.log_in_person(:creator)
 

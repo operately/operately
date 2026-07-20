@@ -25,7 +25,7 @@ export function Page() {
   const location = useLocation();
   const navigate = useNavigate();
   const paths = usePaths();
-  const { billing: loadedBilling } = useLoadedData();
+  const { billing: loadedBilling, limitsEnforced } = useLoadedData();
   const companyRootData = useRouteLoaderData("companyRoot") as CompanyRootData | undefined;
 
   const [billing, setBilling] = React.useState(loadedBilling);
@@ -164,6 +164,7 @@ export function Page() {
       ]}
       billing={billing}
       selection={selection}
+      limitsEnforced={limitsEnforced}
       actionError={actionError}
       isSubmitting={isSubmitting}
       onSelectPlan={handleSelectPlan}

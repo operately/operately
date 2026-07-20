@@ -47,7 +47,7 @@ export async function getBilling(input: api.BillingGetInput = {}): Promise<api.B
 export async function authorizeBillingManagementPageAccess(companyId: string) {
   const company = await Companies.getCompany({ includePermissions: true }).then((data) => data.company!);
 
-  if (!Companies.hasFeature(company, "billing") || !company.permissions?.canManageBilling) {
+  if (!window.appConfig.billingEnabled || !company.permissions?.canManageBilling) {
     throw redirect(new Paths({ companyId }).companyAdminPath());
   }
 

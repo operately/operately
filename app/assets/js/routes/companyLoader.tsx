@@ -29,7 +29,7 @@ export async function companyLoader({ params }): Promise<CompanyLoadedData> {
         .catch(() => []),
     ]);
 
-    const billingAccessState = await fetchBillingAccessState(company);
+    const billingAccessState = await fetchBillingAccessState();
 
     return { company, billingAccessState, canAddProject: spacesCount > 0, canAddGoal: spacesCount > 0, siteMessages };
   } catch (error) {
@@ -43,12 +43,8 @@ export async function companyLoader({ params }): Promise<CompanyLoadedData> {
   }
 }
 
-async function fetchBillingAccessState(company: Companies.Company): Promise<Billing.BillingCompanyAccessState | null> {
+async function fetchBillingAccessState(): Promise<Billing.BillingCompanyAccessState | null> {
   if (!window.appConfig.billingEnabled) {
-    return null;
-  }
-
-  if (!company.enabledExperimentalFeatures?.includes("billing")) {
     return null;
   }
 

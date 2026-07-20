@@ -47,7 +47,8 @@ defmodule Operately.Billing.NearLimitAlertingTest do
     end)
   end
 
-  test "does not enqueue near-limit emails when billing is disabled", ctx do
+  test "does not enqueue near-limit emails when billing is globally enabled but company limits are off", ctx do
+    enable_global_billing()
     threshold = EnforceLimits.near_limit_threshold(Plans.member_limit(:free))
     fill_company_to_member_count(ctx.company, threshold)
 
@@ -80,15 +81,19 @@ defmodule Operately.Billing.NearLimitAlertingTest do
   end
 
   defp enable_billing(company) do
+    enable_global_billing()
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
+    company
+  end
+
+  defp enable_global_billing do
     previous_value = Application.get_env(:operately, :billing_enabled)
     Application.put_env(:operately, :billing_enabled, true)
 
     on_exit(fn ->
       restore_billing_enabled(previous_value)
     end)
-
-    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
-    company
   end
 
   defp restore_billing_enabled(nil), do: Application.delete_env(:operately, :billing_enabled)

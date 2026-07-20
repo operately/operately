@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
   def authorize_billing_management_access(conn) do
     with {:ok, company} <- find_company(conn),
          {:ok, person} <- find_me(conn),
-         :ok <- ensure_billing_enabled(company),
+         :ok <- ensure_billing_enabled(),
          {:ok, company} <- Company.get(person, id: company.id),
          {:ok, :allowed} <- Permissions.check(company.request_info.access_level, :can_manage_billing, company_read_only: false) do
       {:ok, %{company: company, person: person}}
@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
   def authorize_admin_billing_read_access(conn) do
     with {:ok, company} <- find_company(conn),
          {:ok, person} <- find_me(conn),
-         :ok <- ensure_billing_enabled(company),
+         :ok <- ensure_billing_enabled(),
          {:ok, company} <- Company.get(person, id: company.id),
          {:ok, :allowed} <- Permissions.check(company.request_info.access_level, :is_admin, company_read_only: false) do
       {:ok, %{company: company, person: person}}
@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
   def authorize_member_billing_read_access(conn) do
     with {:ok, company} <- find_company(conn),
          {:ok, person} <- find_me(conn),
-         :ok <- ensure_billing_enabled(company),
+         :ok <- ensure_billing_enabled(),
          {:ok, company} <- Company.get(person, id: company.id, opts: [required_access_level: Binding.minimal_access()]) do
       {:ok, %{company: company, person: person}}
     else
@@ -44,11 +44,15 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
     end
   end
 
-  defp ensure_billing_enabled(company) do
-    if Billing.billing_enabled_for_company?(company) do
+  def ensure_limit_enforcement_enabled(company) do
+    if Billing.limit_enforcement_enabled_for_company?(company) do
       :ok
     else
       {:error, :not_found}
     end
+  end
+
+  defp ensure_billing_enabled do
+    if Billing.billing_enabled?(), do: :ok, else: {:error, :not_found}
   end
 end
