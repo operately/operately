@@ -15,7 +15,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkDeletedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "deleted a link: #{link.node.name}")
+    |> subject(where: parent.name, who: author, action: "deleted a link: #{link.name}")
     |> assign(:author, author)
     |> assign(:link, link)
     |> assign(:cta_url, OperatelyWeb.Paths.resource_hub_path(company, link.resource_hub) |> OperatelyWeb.Paths.to_url())
@@ -33,7 +33,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkDeletedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "deleted the link \"#{link.node.name}\"",
+      headline: "deleted the link \"#{link.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.resource_hub_path(company, link.resource_hub) |> OperatelyWeb.Paths.to_url(),

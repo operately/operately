@@ -1,9 +1,9 @@
-<%= title("#{short_name(@author)} edited a link: #{@link.node.name}") %>
+<%= title("#{short_name(@author)} edited a link: #{@link.name}") %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= @link.node.name %>
+  <%= @link.name %>
 <% end %>
 <%= row do %>
   <%= @link.url %>

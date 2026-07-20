@@ -2,7 +2,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Link do
   def serialize(link, level: :essential) do
     %{
       id: OperatelyWeb.Paths.link_id(link),
-      name: link.node.name,
+      name: link.name,
       url: link.url,
       description: Jason.encode!(link.description),
       type: Atom.to_string(link.type),
@@ -22,7 +22,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Link do
       project: OperatelyWeb.Api.Serializer.serialize(link.project),
       goal: OperatelyWeb.Api.Serializer.serialize(link.goal),
       parent_folder: OperatelyWeb.Api.Serializer.serialize(link.node.parent_folder),
-      name: link.node.name,
+      name: link.name,
       url: link.url,
       description: Jason.encode!(link.description),
       type: Atom.to_string(link.type),

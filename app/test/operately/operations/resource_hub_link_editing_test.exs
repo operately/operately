@@ -17,6 +17,15 @@ defmodule Operately.Operations.ResourceHubLinkEditingTest do
     |> Factory.add_resource_hub(:hub, :space, :creator, company_access_level: Binding.no_access())
   end
 
+  test "stores the link title on the link, not the node", ctx do
+    {:ok, link} = edit_link(ctx, false, [])
+
+    link = Repo.preload(link, :node, force: true)
+
+    assert link.name == "Edited link"
+    assert link.node.name == nil
+  end
+
   test "Creating link sends notifications to everyone", ctx do
     {:ok, link} = Oban.Testing.with_testing_mode(:manual, fn ->
       edit_link(ctx, true, [])

@@ -188,7 +188,7 @@ defmodule Operately.Support.CliE2E.Documents.UpdateSteps do
       |> Repo.get!(HubScopeSteps.decode_cli_id(ctx.link_api_id))
       |> Repo.preload(:node)
 
-    assert link.node.name == "CLI updated link"
+    assert link.name == "CLI updated link"
     assert link.url == "https://example.com/updated"
 
     ctx

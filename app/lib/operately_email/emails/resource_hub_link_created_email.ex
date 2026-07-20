@@ -32,7 +32,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "added the link \"#{link.node.name}\"",
+      headline: "added the link \"#{link.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.link_path(company, link) |> OperatelyWeb.Paths.to_url(),

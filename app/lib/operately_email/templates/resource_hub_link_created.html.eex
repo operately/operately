@@ -3,7 +3,7 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= @link.node.name %>
+  <%= @link.name %>
 <% end %>
 <%= row do %>
   <%= @link.url %>

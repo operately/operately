@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} deleted a link: #{@link.node.name}") %>
+<%= title("#{short_name(@author)} deleted a link: #{@link.name}") %>
 
 <%= spacer() %>
 

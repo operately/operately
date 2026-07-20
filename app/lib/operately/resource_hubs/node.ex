@@ -31,12 +31,12 @@ defmodule Operately.ResourceHubs.Node do
     node
     |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type, :updated_at])
     |> validate_required([:resource_hub_id, :type])
-    |> validate_name_required_unless_document()
+    |> validate_name_required_unless_migrated()
   end
 
-  defp validate_name_required_unless_document(changeset) do
+  defp validate_name_required_unless_migrated(changeset) do
     case get_field(changeset, :type) do
-      :document -> changeset
+      type when type in [:document, :link] -> changeset
       _ -> validate_required(changeset, [:name])
     end
   end

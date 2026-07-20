@@ -15,7 +15,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkEditedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "edited a link: #{link.node.name}")
+    |> subject(where: parent.name, who: author, action: "edited a link: #{link.name}")
     |> assign(:author, author)
     |> assign(:link, link)
     |> assign(:cta_url, OperatelyWeb.Paths.link_path(company, link) |> OperatelyWeb.Paths.to_url())
@@ -32,7 +32,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkEditedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "edited the link \"#{link.node.name}\"",
+      headline: "edited the link \"#{link.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.link_path(company, link) |> OperatelyWeb.Paths.to_url(),

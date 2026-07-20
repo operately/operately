@@ -18,6 +18,15 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
     |> Factory.add_resource_hub(:hub, :space, :creator, company_access_level: Binding.no_access())
   end
 
+  test "stores the link title on the link, not the node", ctx do
+    {:ok, link} = create_link(ctx, false, [])
+
+    link = Repo.preload(link, :node)
+
+    assert link.name == "My link"
+    assert link.node.name == nil
+  end
+
   test "Creating link sends notifications to everyone", ctx do
     {:ok, link} = Oban.Testing.with_testing_mode(:manual, fn ->
       create_link(ctx, true, [])
