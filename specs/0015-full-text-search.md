@@ -83,7 +83,7 @@ The repository currently pins PostgreSQL 14.5 in:
 
 PostgreSQL 14.5 already supports the complete search design: stored generated `tsvector` columns, GIN indexes, `websearch_to_tsquery`, `ts_rank_cd`, `pg_trgm`, `unaccent`, and custom text-search configurations. Phases 1 through 3 can therefore start before the team chooses the production database version.
 
-Keep search migrations and queries compatible with PostgreSQL 14 and newer; the feature must not adopt a PostgreSQL 18-only capability while the decision remains open. Development and preliminary benchmarks may run on 14.5, but 14.5 is not an acceptable production baseline or the source of final performance evidence. Later PostgreSQL 14 patches contain fixes relevant to `websearch_to_tsquery` and concurrent GIN updates.
+Keep search migrations and queries compatible with PostgreSQL 14 and newer; the feature must not adopt a PostgreSQL 18-only capability while the decision remains open. Development and preliminary search testing may run on 14.5, but 14.5 is not an acceptable production baseline or the source of final performance evidence. Later PostgreSQL 14 patches contain fixes relevant to `websearch_to_tsquery` and concurrent GIN updates.
 
 References:
 
@@ -568,17 +568,37 @@ Reconciliation must use the same Indexer as normal writes and backfills.
 - [x] Add the weighted generated vector and indexes.
 - [x] Add plain-text extractor tests for supported rich-content nodes.
 - [x] Implement `Operately.Search.Indexer` upsert/delete behavior.
-- [ ] Implement the idempotent Oban backfill and reconciliation paths.
-- [ ] Add query-plan and representative-corpus benchmarks.
+- [x] Implement the idempotent Oban backfill and reconciliation paths.
 
 ### Phase 2 — Resource-hub search end to end
 
-- [ ] Index resource-hub folders, published documents, files, links, and their comments.
-- [ ] Add `resource_hub` scope to the search query/API.
-- [ ] Add resource-hub permission and nested-folder scope tests.
-- [ ] Extend TurboUI `GlobalSearch` for unified results, snippets, status, error state, pagination, and optional shortcut behavior.
-- [ ] Add the scoped search activator to `ResourceHubPage` through pure props and the app bridge.
-- [ ] Add Storybook and feature-test coverage.
+Implement this phase as four ordered PRs so indexing, querying, presentation, and application integration can be reviewed independently.
+
+#### PR 2.1 — `feat: index resource hub content for search`
+
+- [ ] Add and register source adapters for resource-hub folders, published documents, files, links, and their comments.
+- [ ] Add transactional index updates for create, update, publish, move, delete, and restore operations.
+- [ ] Cover backfill, reconciliation, exclusions, state changes, and nested-folder metadata with adapter tests.
+
+#### PR 2.2 — `feat: add permission-aware resource hub search`
+
+- [ ] Add the ranked full-text query and `resource_hub` API scope.
+- [ ] Return unified results with context, match source, safe snippets, state, navigation identifiers, and cursor pagination.
+- [ ] Apply company, resource-hub, publication, deletion, and access-context predicates before ranking, snippets, and limiting.
+- [ ] Cover permissions, nested-folder scope, ranking, snippets, pagination, and exclusion rules with backend tests.
+
+#### PR 2.3 — `feat: add full-text results to GlobalSearch`
+
+- [ ] Extend TurboUI `GlobalSearch` with a unified result model, match source, snippets, status, error state, pagination, and optional shortcut behavior.
+- [ ] Keep the component pure: accept API-shaped data, links, and callbacks without app imports, routing, contexts, or API calls.
+- [ ] Add Storybook coverage for company and resource-hub scopes, result variants, request states, scrolling, pagination, and keyboard navigation.
+
+#### PR 2.4 — `feat: add search to resource hubs`
+
+- [ ] Add the scoped search activator to `ResourceHubPage`.
+- [ ] Extend the app bridge to call resource-hub-scoped search and construct canonical navigation links.
+- [ ] Keep `Cmd/Ctrl + K` owned by company search and disable shortcut registration for the resource-hub instance.
+- [ ] Add feature tests for scoped results, navigation, loading, empty, error, pagination, and keyboard behavior.
 
 This phase closes #4682 as scoped here: native documents are searchable by title and body, while folders, uploaded-file records, and links are searchable by their Operately name and description. Uploaded binary and remote-link body extraction remain explicitly out of scope.
 
@@ -599,7 +619,7 @@ Phases 1 through 3 may begin immediately on the current development database. Pr
 ### Phase 4 — Select and update the production database
 
 - [ ] Choose the latest patched PostgreSQL 14 or PostgreSQL 18 release and record the decision and tested image version.
-- [ ] Run the search schema, query, relevance, and representative-corpus benchmarks on the selected version.
+- [ ] Validate the final permission-aware query with `EXPLAIN (ANALYZE, BUFFERS)` and measure relevance and performance against a production-like corpus on the selected version.
 - [ ] If PostgreSQL 14 is selected, update the image in place using the existing volume and `PGDATA`, with a verified backup or snapshot, intervening-release checks, a clean restart, and smoke tests.
 - [ ] If PostgreSQL 18 is selected, complete the bridge, dump/restore, distinct-volume, verification, and rollback work specified in 0016.
 - [ ] Verify Ecto, Postgrex, Oban, extensions, migrations, authentication, export/import, and the complete application test suite on the selected version.
