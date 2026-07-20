@@ -30,7 +30,15 @@ defmodule Operately.ResourceHubs.Node do
   def changeset(node, attrs) do
     node
     |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type, :updated_at])
-    |> validate_required([:resource_hub_id, :name, :type])
+    |> validate_required([:resource_hub_id, :type])
+    |> validate_name_required_unless_document()
+  end
+
+  defp validate_name_required_unless_document(changeset) do
+    case get_field(changeset, :type) do
+      :document -> changeset
+      _ -> validate_required(changeset, [:name])
+    end
   end
 
   def get(requester, args) do

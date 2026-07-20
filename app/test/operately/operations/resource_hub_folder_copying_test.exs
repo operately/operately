@@ -293,7 +293,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
   end
 
   defp assert_document_content(document, creator) do
-    assert document.node.name == "Document"
+    assert document.name == "Document"
     assert document.node.type == :document
     assert document.content == RichText.rich_text("Content")
     assert document.author_id == creator.id

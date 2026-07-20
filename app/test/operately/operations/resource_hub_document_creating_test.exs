@@ -16,6 +16,22 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     |> Factory.add_resource_hub(:hub, :space, :creator)
   end
 
+  test "stores the document title on the document, not the node", ctx do
+    {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+      name: "Document title",
+      content: RichText.rich_text("Content"),
+      post_as_draft: false,
+      send_to_everyone: false,
+      subscription_parent_type: :resource_hub_document,
+      subscriber_ids: [],
+    })
+
+    document = Repo.preload(document, :node)
+
+    assert document.name == "Document title"
+    assert document.node.name == nil
+  end
+
   test "Creating document sends notifications to everyone", ctx do
     {:ok, document} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{

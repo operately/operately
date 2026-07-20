@@ -65,7 +65,6 @@ defmodule Operately.ResourceHubsFixtures do
     {:ok, node} = Operately.ResourceHubs.create_node(%{
       resource_hub_id: hub_id,
       parent_folder_id: attrs[:parent_folder_id] && attrs.parent_folder_id,
-      name: attrs[:name] || "Document",
       type: :document,
     })
 
@@ -74,6 +73,7 @@ defmodule Operately.ResourceHubsFixtures do
     {:ok, document} = Operately.ResourceHubs.create_document(%{
       node_id: node.id,
       author_id: author_id,
+      name: attrs[:name] || "Document",
       state: attrs[:state] || :published,
       content: attrs[:content] || RichText.rich_text("Content"),
       subscription_list_id: subscription_list.id,

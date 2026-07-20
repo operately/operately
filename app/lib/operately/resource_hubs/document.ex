@@ -23,6 +23,7 @@ defmodule Operately.ResourceHubs.Document do
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
 
+    field :name, :string
     field :content, :map
     field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
@@ -46,7 +47,7 @@ defmodule Operately.ResourceHubs.Document do
 
   def changeset(document, attrs) do
     document
-    |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :content, :state, :published_at])
+    |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :name, :content, :state, :published_at])
     |> StateMachine.cast_and_validate(:state, %{
       initial: :draft,
       states: [
@@ -54,7 +55,7 @@ defmodule Operately.ResourceHubs.Document do
         %{name: :published, on_enter: &set_published_at/1}
       ]
     })
-    |> validate_required([:node_id, :author_id, :subscription_list_id, :content])
+    |> validate_required([:node_id, :author_id, :subscription_list_id, :name, :content])
   end
 
   def get(requester, args) do

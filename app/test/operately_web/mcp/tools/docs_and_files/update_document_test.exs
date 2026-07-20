@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocumentTest do
       |> then(&Operately.Repo.get!(Document, &1))
       |> Operately.Repo.preload(:node)
 
-    assert document.node.name == "Updated MCP Document"
+    assert document.name == "Updated MCP Document"
     assert ToolConnHelper.rich_text_to_string(document.content) == "Updated Document"
   end
 end

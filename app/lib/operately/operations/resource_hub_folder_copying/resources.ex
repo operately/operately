@@ -19,6 +19,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
     data = Enum.map(documents, fn d ->
       common_data(d)
       |> Map.merge(%{
+        name: d.name,
         content: d.content,
       })
     end)
