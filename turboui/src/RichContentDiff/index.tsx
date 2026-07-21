@@ -18,6 +18,14 @@ export type RichContentDiffProps = {
   after: JSONContent | unknown;
   mentionedPersonLookup: MentionedPersonLookupFn;
   className?: string;
+  beforeLabel?: React.ReactNode;
+  afterLabel?: React.ReactNode;
+  beforeAriaLabel?: string;
+  afterAriaLabel?: string;
+  beforeTitle?: string | null;
+  afterTitle?: string | null;
+  /** Defaults to true. Set false when the parent page already shows DiffLegend. */
+  showLegend?: boolean;
 };
 
 export { diffRichContent } from "./diffRichContent";
@@ -58,6 +66,33 @@ const DIFF_STYLES = `
 }
 .ProseMirror .diff-added-block {
   border-left-color: var(--color-callout-success-content);
+}
+
+/* Native outside markers sit outside the background box. Native inside markers
+   jump to their own line when the list item wraps a block <p> (TipTap). Paint a
+   custom marker inside the highlighted padding instead. */
+.ProseMirror li.diff-removed-block,
+.ProseMirror li.diff-added-block {
+  list-style: none;
+  position: relative;
+}
+.ProseMirror ul > li.diff-removed-block::before,
+.ProseMirror ul > li.diff-added-block::before {
+  content: "•";
+  position: absolute;
+  left: 0.45em;
+  top: 0;
+  line-height: 1.5;
+}
+.ProseMirror ol > li.diff-removed-block::before,
+.ProseMirror ol > li.diff-added-block::before {
+  content: counter(list-item) ".";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.25em;
+  text-align: right;
+  line-height: 1.5;
 }
 
 /* Blobs are inline node views that render block DOM. Without this, the
@@ -104,6 +139,13 @@ export function RichContentDiff(props: RichContentDiffProps) {
     [schema, props.before, props.after],
   );
 
+  const beforeLabel = props.beforeLabel ?? "Before";
+  const afterLabel = props.afterLabel ?? "After";
+  const beforeAriaLabel = props.beforeAriaLabel ?? (typeof beforeLabel === "string" ? beforeLabel : "Before");
+  const afterAriaLabel = props.afterAriaLabel ?? (typeof afterLabel === "string" ? afterLabel : "After");
+  const showTitles = props.beforeTitle !== undefined || props.afterTitle !== undefined;
+  const titlesEqual = (props.beforeTitle ?? "") === (props.afterTitle ?? "");
+
   if (!comparison.ok) {
     return (
       <div
@@ -119,39 +161,39 @@ export function RichContentDiff(props: RichContentDiffProps) {
   }
 
   return (
-    <div className={classNames("flex flex-col gap-3", props.className)}>
-      <div className="flex flex-wrap items-center gap-4 text-sm text-content-dimmed" aria-label="Diff legend">
-        <span className="inline-flex items-center gap-2">
-          <span
-            className="inline-block h-3 w-3 rounded-sm border border-callout-error-content bg-callout-error-bg"
-            aria-hidden
-          />
-          Removed
-        </span>
-        <span className="inline-flex items-center gap-2">
-          <span
-            className="inline-block h-3 w-3 rounded-sm border border-callout-success-content bg-callout-success-bg"
-            aria-hidden
-          />
-          Added
-        </span>
-        {comparison.changeCount === 0 && <span>No content changes</span>}
-      </div>
+    <div className={classNames("flex flex-col gap-4", props.className)}>
+      {props.showLegend !== false && comparison.changeCount > 0 && <DiffLegend />}
+      {comparison.changeCount === 0 && (
+        <p className="text-sm text-content-dimmed" data-test-id="no-content-changes">
+          No content changes
+        </p>
+      )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2"
+        data-test-id={showTitles ? "title-comparison" : undefined}
+      >
         <DiffPane
-          label="Removed"
+          label={beforeLabel}
+          ariaLabel={beforeAriaLabel}
+          title={showTitles ? props.beforeTitle : undefined}
+          titleVariant={showTitles ? (titlesEqual ? "normal" : "removed") : undefined}
           content={comparison.beforeContent}
           decorationsExtension={comparison.beforeDecorationsExtension}
           mentionedPersonLookup={props.mentionedPersonLookup}
           baseExtensions={baseExtensions}
+          position="before"
         />
         <DiffPane
-          label="Added"
+          label={afterLabel}
+          ariaLabel={afterAriaLabel}
+          title={showTitles ? props.afterTitle : undefined}
+          titleVariant={showTitles ? (titlesEqual ? "normal" : "added") : undefined}
           content={comparison.afterContent}
           decorationsExtension={comparison.afterDecorationsExtension}
           mentionedPersonLookup={props.mentionedPersonLookup}
           baseExtensions={baseExtensions}
+          position="after"
         />
       </div>
     </div>
@@ -184,11 +226,15 @@ function prepareComparison(schema: Schema, before: unknown, after: unknown) {
 }
 
 type DiffPaneProps = {
-  label: string;
+  label: React.ReactNode;
+  ariaLabel: string;
+  title?: string | null;
+  titleVariant?: "normal" | "removed" | "added";
   content: JSONContent;
   decorationsExtension: ReturnType<typeof createDiffDecorationsExtension>;
   mentionedPersonLookup: MentionedPersonLookupFn;
   baseExtensions: Extensions;
+  position: "before" | "after";
 };
 
 function DiffPane(props: DiffPaneProps) {
@@ -206,11 +252,11 @@ function DiffPane(props: DiffPaneProps) {
       editorProps: {
         attributes: {
           class: "diff-pane focus:outline-none text-content-accent",
-          "aria-label": `${props.label} version content`,
+          "aria-label": `${props.ariaLabel} content`,
         },
       },
     },
-    [props.content, props.decorationsExtension],
+    [props.content, props.decorationsExtension, props.ariaLabel],
   );
 
   const editorState = React.useMemo((): EditorState => {
@@ -234,13 +280,31 @@ function DiffPane(props: DiffPaneProps) {
 
   return (
     <section
-      className="min-w-0 rounded-lg border border-surface-outline bg-surface-base"
-      aria-label={`${props.label} version`}
+      className={classNames(
+        "min-w-0",
+        props.position === "before" && "border-b border-stroke-base pb-8 md:border-b-0 md:border-r md:pb-0 md:pr-8",
+        props.position === "after" && "pt-8 md:pt-0 md:pl-8",
+      )}
+      aria-label={props.ariaLabel}
     >
-      <header className="border-b border-stroke-base px-3 py-2 text-sm font-medium text-content-base">
-        {props.label}
+      <header className="mb-4">
+        <h2 className="text-sm font-medium text-content-dimmed">{props.label}</h2>
       </header>
-      <div className="py-3 pr-3 pl-8">
+
+      {props.titleVariant !== undefined && (
+        <div
+          className={classNames(
+            "mb-4 text-xl font-extrabold text-content-accent sm:text-2xl",
+            props.titleVariant === "removed" && "rounded-md bg-red-200 px-2 py-1 dark:bg-red-400/40",
+            props.titleVariant === "added" && "rounded-md bg-emerald-200 px-2 py-1 dark:bg-emerald-400/40",
+          )}
+          data-test-id={`title-${props.titleVariant}`}
+        >
+          {props.title || "Untitled"}
+        </div>
+      )}
+
+      <div className="pl-6">
         <EditorContext.Provider value={editorState}>
           <div className="ProseMirror">
             <TipTap.EditorContent editor={editor} />
@@ -248,5 +312,33 @@ function DiffPane(props: DiffPaneProps) {
         </EditorContext.Provider>
       </div>
     </section>
+  );
+}
+
+export function DiffLegend(props: { className?: string }) {
+  return (
+    <div
+      className={classNames("flex flex-wrap items-center gap-4 text-sm text-content-dimmed", props.className)}
+      aria-label="Diff legend"
+    >
+      <ChangeBadge kind="removed" label="Removed" />
+      <ChangeBadge kind="added" label="Added" />
+    </div>
+  );
+}
+
+function ChangeBadge(props: { kind: "removed" | "added"; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-content-dimmed">
+      <span
+        className={classNames(
+          "inline-block h-2.5 w-2.5 rounded-sm border",
+          props.kind === "removed" && "border-callout-error-content bg-callout-error-bg",
+          props.kind === "added" && "border-callout-success-content bg-callout-success-bg",
+        )}
+        aria-hidden
+      />
+      {props.label}
+    </span>
   );
 }
