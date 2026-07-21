@@ -898,14 +898,14 @@ Recovery:
 
 ## Implementation Phases
 
-### Phase 0 — Diff and rendering spike
+### Phase 0 — Diff and rendering spike ✅
 
-- extract shared rich-editor extension construction
-- implement the pure semantic token encoder
-- implement snapshot-to-change calculation with fixed fixtures
-- create a minimal split `RichContentDiff` Storybook component
-- validate paragraphs, headings, lists, marks, mentions, and blobs
-- measure a representative large-document fixture
+- [x] extract shared rich-editor extension construction
+- [x] implement the pure semantic token encoder
+- [x] implement snapshot-to-change calculation with fixed fixtures
+- [x] create a minimal split `RichContentDiff` Storybook component
+- [x] validate paragraphs, headings, lists, marks, mentions, and blobs
+- [x] measure a representative large-document fixture
 
 This phase proves comparison quality before persistence/API work commits the product to the UI.
 

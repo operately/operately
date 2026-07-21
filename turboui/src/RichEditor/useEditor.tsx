@@ -2,12 +2,8 @@ import React from "react";
 
 import * as TipTap from "@tiptap/react";
 
-import Link from "@tiptap/extension-link";
-import { Placeholder } from "@tiptap/extensions";
-import StarterKit from "@tiptap/starter-kit";
-import Blob, { isUploadInProgress } from "./Blob";
-import FakeTextSelection from "./extensions/FakeTextSelection";
-import Highlight from "./extensions/Highlight";
+import { isUploadInProgress } from "./Blob";
+import { createRichEditorExtensions } from "./createRichEditorExtensions";
 import {
   clearLocalDraft,
   isRichTextEmpty,
@@ -16,7 +12,6 @@ import {
   writeLocalDraft,
 } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
-import { mentionExtensions } from "./mentionExtensions";
 
 export interface Person {
   id: string;
@@ -84,21 +79,6 @@ const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
   tabindex: "",
 };
 
-const starterKitExtension = StarterKit.configure({
-  link: false,
-  bulletList: {
-    keepMarks: true,
-    keepAttributes: false,
-  },
-  orderedList: {
-    keepMarks: true,
-    keepAttributes: false,
-  },
-  dropcursor: false,
-});
-
-const linkExtension = Link.extend({ inclusive: false }).configure({ openOnClick: false });
-
 export function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
 
@@ -112,18 +92,11 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
   const extensions = React.useMemo(
-    () => [
-      starterKitExtension,
-      Blob.configure({
-        uploadFile: props.handlers.uploadFile,
+    () =>
+      createRichEditorExtensions(props.handlers, {
         editable: props.editable,
+        placeholder: props.placeholder,
       }),
-      linkExtension,
-      Placeholder.configure({ placeholder: props.placeholder }),
-      ...mentionExtensions(props.handlers, props.editable),
-      Highlight,
-      FakeTextSelection,
-    ],
     [props.handlers.uploadFile, props.handlers.peopleSearch, props.editable, props.placeholder],
   );
 
