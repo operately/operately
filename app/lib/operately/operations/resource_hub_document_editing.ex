@@ -34,7 +34,6 @@ defmodule Operately.Operations.ResourceHubDocumentEditing do
       {:ok, %{document: document}} -> {:ok, document}
       {:error, _step, :version_conflict, _changes} -> {:error, :version_conflict}
       {:error, _step, reason, _changes} -> {:error, reason}
-      {:error, reason} -> {:error, reason}
     end
   end
 
