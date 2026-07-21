@@ -160,10 +160,26 @@ export { createRichEditorExtensions } from "./RichEditor/createRichEditorExtensi
 export { RichContent };
 export {
   RichContentDiff,
+  DiffLegend,
   diffRichContent,
   createRichContentSchema,
 } from "./RichContentDiff";
 export type { RichContentDiffProps, RichContentChange, DiffRichContentResult } from "./RichContentDiff";
+
+export {
+  DocumentVersionHistoryPage,
+  resolveSelection,
+  sortVersionsNewestFirst,
+  sortVersionsOldestFirst,
+} from "./DocumentVersionHistoryPage";
+export type {
+  DocumentVersionHistoryPageProps,
+  ComparisonStatus,
+  VersionSnapshot,
+} from "./DocumentVersionHistoryPage";
+export { DocumentVersionPageHeader } from "./DocumentVersionComparisonPage/DocumentVersionPageHeader";
+
+export { DocumentVersionComparisonPage } from "./DocumentVersionComparisonPage";
 
 export { createDropFilePlugin } from "./RichEditor/Blob/DropFilePlugin";
 export { createPasteFilePlugin } from "./RichEditor/Blob/PasteFilePlugin";
