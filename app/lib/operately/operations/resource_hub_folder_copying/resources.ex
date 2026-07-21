@@ -1,6 +1,6 @@
 defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
   alias Operately.Repo
-  alias Operately.ResourceHubs.{Document, File, Link}
+  alias Operately.ResourceHubs.{Document, DocumentVersion, File, Link}
 
   @doc """
   Copies the associated resources (documents, files,
@@ -16,16 +16,36 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
   end
 
   defp copy_node_children({:documents, documents}) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
     data = Enum.map(documents, fn d ->
       common_data(d)
       |> Map.merge(%{
         name: d.name,
         content: d.content,
+        current_version: 1,
       })
     end)
 
     count = length(data)
     {^count, new_documents} = Repo.insert_all(Document, data, returning: true)
+
+    version_data =
+      Enum.map(new_documents, fn document ->
+        %{
+          id: Ecto.UUID.generate(),
+          document_id: document.id,
+          version_number: 1,
+          title: document.name,
+          content: document.content,
+          editor_id: document.author_id,
+          origin: :created,
+          inserted_at: now
+        }
+      end)
+
+    version_count = length(version_data)
+    {^version_count, _} = Repo.insert_all(DocumentVersion, version_data)
 
     update_subscription_list_reference(new_documents, documents)
   end

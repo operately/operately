@@ -1404,6 +1404,19 @@ export interface Discussion {
   permissions?: SpacePermissions | null;
 }
 
+export interface DocumentVersion {
+  __typename: "document_version";
+  id: string;
+  versionNumber: number;
+  title: string;
+  editor?: Person | null;
+  origin: string;
+  restoredFromVersionNumber?: number | null;
+  insertedAt: string;
+  isCurrent: boolean;
+  content?: Json | null;
+}
+
 export interface EditCompanyMemberPermissionsInput {
   id: Id;
   accessLevel: AccessOptions;
@@ -1877,6 +1890,7 @@ export interface ResourceHubDocument {
   name: string;
   content: string;
   state: DocumentState;
+  currentVersion?: number | null;
   insertedAt: string;
   publishedAt: string | null;
   updatedAt: string;

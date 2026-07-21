@@ -3,7 +3,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
-  alias Operately.ResourceHubs.{Document, Node}
+  alias Operately.ResourceHubs.{Document, DocumentVersion, Node}
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, hub, attrs) do
@@ -21,16 +21,17 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
         author_id: author.id,
         name: attrs.name,
         content: attrs.content,
+        current_version: 1,
         state: state(attrs),
         subscription_list_id: changes.subscription_list.id,
       })
     end)
+    |> maybe_insert_created_version(author, attrs)
     |> SubscriptionList.update(:document)
     |> Multi.run(:document_with_node, fn _, changes ->
       document = Map.put(changes.document, :node, changes.node)
       {:ok, document}
     end)
-
     |> record_activity(author, hub, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:document_with_node)
@@ -50,6 +51,23 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
           copied_document_node_id: attrs[:copied_document] && attrs.copied_document.node_id,
         }
         |> Map.merge(Parent.parent_fields(hub))
+      end)
+    end
+  end
+
+  defp maybe_insert_created_version(multi, author, attrs) do
+    if attrs.post_as_draft do
+      multi
+    else
+      Multi.insert(multi, :version, fn changes ->
+        DocumentVersion.changeset(%{
+          document_id: changes.document.id,
+          version_number: 1,
+          title: changes.document.name,
+          content: changes.document.content,
+          editor_id: author.id,
+          origin: :created
+        })
       end)
     end
   end

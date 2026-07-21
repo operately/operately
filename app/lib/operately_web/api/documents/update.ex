@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Documents.Update do
     field :document_id, :id, null: false
     field :name, :string, null: false
     field :content, :json, null: false
+    field? :expected_version, :integer, null: true
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end
@@ -38,6 +39,8 @@ defmodule OperatelyWeb.Api.Documents.Update do
       {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :document, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: :version_conflict}} ->
+        {:error, :bad_request, "A newer version of this document exists", %{reason: "version_conflict"}}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
@@ -46,7 +49,8 @@ defmodule OperatelyWeb.Api.Documents.Update do
   defp parse_attrs(inputs) do
     {:ok, Map.merge(inputs, %{
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: inputs[:subscriber_ids] || []
+      subscriber_ids: inputs[:subscriber_ids] || [],
+      expected_version: inputs[:expected_version]
     })}
   end
 

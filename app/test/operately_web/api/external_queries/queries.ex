@@ -28,6 +28,8 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Projects.Get,
       Queries.Projects.List,
       Queries.Documents.Get,
+      Queries.Documents.GetVersion,
+      Queries.Documents.ListVersions,
       Queries.Files.Get,
       Queries.Wrappers.Documents.GetDocument,
       Queries.Wrappers.Documents.GetFile,

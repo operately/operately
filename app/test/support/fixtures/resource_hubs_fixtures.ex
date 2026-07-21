@@ -76,6 +76,7 @@ defmodule Operately.ResourceHubsFixtures do
       name: attrs[:name] || "Document",
       state: attrs[:state] || :published,
       content: attrs[:content] || RichText.rich_text("Content"),
+      current_version: 1,
       subscription_list_id: subscription_list.id,
     })
 
@@ -83,6 +84,18 @@ defmodule Operately.ResourceHubsFixtures do
       parent_type: :resource_hub_document,
       parent_id: document.id,
     })
+
+    if document.state == :published do
+      {:ok, _} =
+        Operately.ResourceHubs.create_document_version(%{
+          document_id: document.id,
+          version_number: 1,
+          title: document.name,
+          content: document.content,
+          editor_id: author_id,
+          origin: :created
+        })
+    end
 
     document
   end

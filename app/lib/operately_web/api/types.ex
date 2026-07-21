@@ -1388,6 +1388,18 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_view, :boolean, null: true
   end
 
+  object :document_version, for: Operately.ResourceHubs.DocumentVersion do
+    field :id, :string, null: false
+    field :version_number, :integer, null: false
+    field :title, :string, null: false
+    field? :editor, :person, null: true
+    field :origin, :string, null: false
+    field? :restored_from_version_number, :integer, null: true
+    field :inserted_at, :string, null: false
+    field :is_current, :boolean, null: false
+    field? :content, :json, null: true
+  end
+
   object :resource_hub_folder, for: Operately.ResourceHubs.Folder do
     field :id, :string, null: false
     field? :resource_hub_id, :string, null: true
@@ -1418,6 +1430,7 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string, null: false
     field :content, :string, null: false
     field :state, :document_state, null: false
+    field? :current_version, :integer, null: true
     field :inserted_at, :string, null: false
     field :published_at, :datetime, null: true
     field :updated_at, :date, null: false

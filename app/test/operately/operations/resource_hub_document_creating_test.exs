@@ -4,6 +4,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
 
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.ResourceHubs.DocumentVersion
   alias Operately.Support.RichText
 
   setup ctx do
@@ -30,6 +31,20 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
 
     assert document.name == "Document title"
     assert document.node.name == nil
+  end
+
+  test "creating a draft does not create a version", ctx do
+    {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+      name: "Draft document",
+      content: RichText.rich_text("Content"),
+      post_as_draft: true,
+      send_to_everyone: false,
+      subscription_parent_type: :resource_hub_document,
+      subscriber_ids: [],
+    })
+
+    assert document.state == :draft
+    assert DocumentVersion.list_for_document(document.id) == []
   end
 
   test "Creating document sends notifications to everyone", ctx do

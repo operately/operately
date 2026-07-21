@@ -238,6 +238,8 @@ defmodule OperatelyWeb.Api do
 
       namespace(:documents, catalog: false) do
         query(:get, OperatelyWeb.Api.Documents.Get)
+        query(:list_versions, OperatelyWeb.Api.Documents.ListVersions)
+        query(:get_version, OperatelyWeb.Api.Documents.GetVersion)
 
         mutation(:create, OperatelyWeb.Api.Documents.Create)
         mutation(:publish, OperatelyWeb.Api.Documents.Publish)

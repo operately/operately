@@ -73,9 +73,13 @@ defmodule Operately.CompanyTransfers.Export.FileDiscoveryTest do
     assert %{table: "resource_files", row_id: ctx.file.id, column: "blob_id", blob_id: ctx.file.blob_id} in discovery.direct_blob_references
     assert %{table: "resource_files", row_id: ctx.file.id, column: "preview_blob_id", blob_id: ctx.preview_blob.id} in discovery.direct_blob_references
 
-    assert discovery.rich_text_blob_references == [
-             %{table: "resource_documents", row_id: ctx.document.id, column: "content", blob_id: ctx.embedded_blob.id}
-           ]
+    version = Operately.ResourceHubs.DocumentVersion.get_by_document_and_number(ctx.document.id, 1)
+
+    assert MapSet.new(discovery.rich_text_blob_references) ==
+             MapSet.new([
+               %{table: "resource_documents", row_id: ctx.document.id, column: "content", blob_id: ctx.embedded_blob.id},
+               %{table: "resource_document_versions", row_id: version.id, column: "content", blob_id: ctx.embedded_blob.id}
+             ])
 
     refute Enum.any?(discovery.files, &(&1["blob_id"] == ctx.unused_blob.id))
   end
@@ -88,16 +92,12 @@ defmodule Operately.CompanyTransfers.Export.FileDiscoveryTest do
       |> Factory.add_resource_hub(:hub, :space, :creator)
       |> Factory.add_document(:document, :hub, content: %{"type" => "doc", "content" => []})
 
+    version = Operately.ResourceHubs.DocumentVersion.get_by_document_and_number(ctx.document.id, 1)
+
     assert {:ok, _version} =
-             Operately.ResourceHubs.create_document_version(%{
-               document_id: ctx.document.id,
-               version_number: 1,
-               title: ctx.document.name,
-               content: blob_document(ctx.historical_blob),
-               content_schema_version: 1,
-               editor_id: nil,
-               origin: :migration
-             })
+             version
+             |> Ecto.Changeset.change(%{content: blob_document(ctx.historical_blob)})
+             |> Repo.update()
 
     on_exit(fn ->
       cleanup_blob_storage([ctx.historical_blob])

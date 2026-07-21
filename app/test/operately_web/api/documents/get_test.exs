@@ -77,6 +77,17 @@ defmodule OperatelyWeb.Api.Documents.GetTest do
       assert res.document.id == Paths.document_id(ctx.doc)
     end
 
+    test "includes current_version", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:documents, :get], %{
+                 id: Paths.document_id(ctx.doc),
+                 include_permissions: true
+               })
+
+      assert res.document.current_version == 1
+      assert res.document.permissions.can_view == true
+    end
+
     test "include_author", ctx do
       assert {200, res} = query(ctx.conn, [:documents, :get], %{id: Paths.document_id(ctx.doc)})
 
