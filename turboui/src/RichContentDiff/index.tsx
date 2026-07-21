@@ -43,12 +43,14 @@ const DIFF_STYLES = `
 .dark .ProseMirror.diff-pane .diff-added {
   background-color: color-mix(in srgb, var(--color-emerald-400) 40%, transparent);
 }
+/* Pull block highlights into the list marker gutter (ul/ol use 1.5em padding).
+   Equal padding keeps text in place for every block type — no list special cases. */
 .ProseMirror .diff-removed-block,
 .ProseMirror .diff-added-block {
   border-left-width: 3px;
   border-left-style: solid;
-  padding-left: 0.5rem;
-  margin-left: -0.5rem;
+  padding-left: 1.5em;
+  margin-left: -1.5em;
 }
 .ProseMirror .diff-removed-block {
   border-left-color: var(--color-callout-error-content);
@@ -60,12 +62,15 @@ const DIFF_STYLES = `
 
 function ensureDiffStyles() {
   if (typeof document === "undefined") return;
-  if (document.getElementById("rich-content-diff-styles")) return;
 
-  const style = document.createElement("style");
-  style.id = "rich-content-diff-styles";
+  let style = document.getElementById("rich-content-diff-styles") as HTMLStyleElement | null;
+  if (!style) {
+    style = document.createElement("style");
+    style.id = "rich-content-diff-styles";
+    document.head.appendChild(style);
+  }
+
   style.textContent = DIFF_STYLES;
-  document.head.appendChild(style);
 }
 
 export function RichContentDiff(props: RichContentDiffProps) {
@@ -216,7 +221,7 @@ function DiffPane(props: DiffPaneProps) {
       <header className="border-b border-stroke-base px-3 py-2 text-sm font-medium text-content-base">
         {props.label}
       </header>
-      <div className="p-3">
+      <div className="py-3 pr-3 pl-8">
         <EditorContext.Provider value={editorState}>
           <div className="ProseMirror">
             <TipTap.EditorContent editor={editor} />
