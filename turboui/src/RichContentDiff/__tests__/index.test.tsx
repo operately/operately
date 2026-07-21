@@ -82,4 +82,13 @@ describe("RichContentDiff", () => {
       expect(pane("Added").querySelector(".diff-added")).toHaveTextContent("lazy");
     });
   });
+
+  test("decorates replaced blob leaf nodes", async () => {
+    renderDiff(F.blobBefore, F.blobAfter);
+
+    await waitFor(() => {
+      expect(pane("Removed").querySelector(".node-blob.diff-removed")).toBeInTheDocument();
+      expect(pane("Added").querySelector(".node-blob.diff-added")).toBeInTheDocument();
+    });
+  });
 });

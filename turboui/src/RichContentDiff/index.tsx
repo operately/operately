@@ -43,6 +43,7 @@ const DIFF_STYLES = `
 .dark .ProseMirror.diff-pane .diff-added {
   background-color: color-mix(in srgb, var(--color-emerald-400) 40%, transparent);
 }
+
 /* Pull block highlights into the list marker gutter (ul/ol use 1.5em padding).
    Equal padding keeps text in place for every block type — no list special cases. */
 .ProseMirror .diff-removed-block,
@@ -56,6 +57,24 @@ const DIFF_STYLES = `
   border-left-color: var(--color-callout-error-content);
 }
 .ProseMirror .diff-added-block {
+  border-left-color: var(--color-callout-success-content);
+}
+
+/* Blobs are inline node views that render block DOM. Without this, the
+   decoration class lands on an inline wrapper and the highlight never covers
+   the visible blob content. */
+.ProseMirror .react-renderer.node-blob.diff-removed,
+.ProseMirror .react-renderer.node-blob.diff-added {
+  display: block;
+  border-left-width: 3px;
+  border-left-style: solid;
+  padding-left: 1.5em;
+  margin-left: -1.5em;
+}
+.ProseMirror .react-renderer.node-blob.diff-removed {
+  border-left-color: var(--color-callout-error-content);
+}
+.ProseMirror .react-renderer.node-blob.diff-added {
   border-left-color: var(--color-callout-success-content);
 }
 `;
