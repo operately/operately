@@ -39,11 +39,9 @@ describe("DocumentVersionHistoryPage", () => {
     renderPage();
 
     expect(screen.getByRole("heading", { name: "History of changes" })).toBeInTheDocument();
-    expect(screen.getByText("Review the current document and see how it changed over time.")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Current document" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Version history" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Current document")).toBeInTheDocument();
+    expect(screen.getByLabelText("Version history")).toBeInTheDocument();
     expect(byTestId("current-document-preview")).toHaveTextContent(M.titles.current);
-    expect(byTestId("current-document-preview")).toHaveTextContent("Version 5");
     expect(byTestId("version-row-5")).toHaveTextContent("Grace Wilson");
     expect(byTestId("version-row-5")).toHaveTextContent("Version 5");
     expect(byTestId("version-row-5")).toHaveTextContent("Current");
@@ -67,8 +65,10 @@ describe("DocumentVersionHistoryPage", () => {
   test("empty history keeps a helpful version panel", () => {
     renderPage({ versions: [] });
 
-    expect(screen.getByText("No saved versions", { selector: "p" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "No saved versions yet" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "No Earlier Versions" })).toBeInTheDocument();
+    expect(
+      screen.getByText("Changes to the title or content will appear here after the document is saved."),
+    ).toBeInTheDocument();
     expect(byTestId("version-timeline")).not.toBeInTheDocument();
   });
 });

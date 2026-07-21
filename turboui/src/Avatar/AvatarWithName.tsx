@@ -12,6 +12,8 @@ interface Props extends AvatarProps {
   title?: string;
   textSize?: AvatarSizeString;
   showAvatar?: boolean;
+  /** Render as inline-flex so the name can sit in a paragraph with surrounding text. */
+  inline?: boolean;
 }
 
 export function AvatarWithName({
@@ -23,23 +25,32 @@ export function AvatarWithName({
   title,
   textSize,
   showAvatar = true,
+  inline = false,
 }: Props) {
   const name = formattedName(person.fullName!, nameFormat);
   const textClassName = classNames(resolveTextSize(size, textSize), className);
+  const NameWrapper = inline && !title ? "span" : "div";
 
   return (
-    <div className={classNames("flex items-center", showAvatar ? "gap-1.5" : "gap-0")}>
+    <div
+      className={classNames(
+        inline ? "inline-flex" : "flex",
+        "items-center",
+        showAvatar ? "gap-1.5" : "gap-0",
+        inline && "whitespace-nowrap align-middle",
+      )}
+    >
       {showAvatar && <Avatar person={person} size={size} />}
-      <div className="flex flex-col">
+      <NameWrapper className={inline && !title ? undefined : "flex flex-col"}>
         {link ? (
           <BlackLink to={link} className={textClassName} underline="hover">
             {name}
           </BlackLink>
         ) : (
-          <div className={textClassName}>{name}</div>
+          <NameWrapper className={textClassName}>{name}</NameWrapper>
         )}
         {title && <div className="text-xs text-content-dimmed">{title}</div>}
-      </div>
+      </NameWrapper>
     </div>
   );
 }

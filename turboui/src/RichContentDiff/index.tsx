@@ -169,10 +169,7 @@ export function RichContentDiff(props: RichContentDiffProps) {
         </p>
       )}
 
-      <div
-        className="grid grid-cols-1 md:grid-cols-2"
-        data-test-id={showTitles ? "title-comparison" : undefined}
-      >
+      <div className="grid grid-cols-1 md:grid-cols-2" data-test-id={showTitles ? "title-comparison" : undefined}>
         <DiffPane
           label={beforeLabel}
           ariaLabel={beforeAriaLabel}
@@ -282,19 +279,20 @@ function DiffPane(props: DiffPaneProps) {
     <section
       className={classNames(
         "min-w-0",
-        props.position === "before" && "border-b border-stroke-base pb-8 md:border-b-0 md:border-r md:pb-0 md:pr-8",
-        props.position === "after" && "pt-8 md:pt-0 md:pl-8",
+        props.position === "before" &&
+          "border-b border-stroke-base pb-5 sm:pb-8 md:border-b-0 md:border-r md:pb-0 md:pr-8",
+        props.position === "after" && "pt-5 sm:pt-8 md:pt-0 md:pl-8",
       )}
       aria-label={props.ariaLabel}
     >
-      <header className="mb-4">
+      <header className="mb-5">
         <h2 className="text-sm font-medium text-content-dimmed">{props.label}</h2>
       </header>
 
       {props.titleVariant !== undefined && (
         <div
           className={classNames(
-            "mb-4 text-xl font-extrabold text-content-accent sm:text-2xl",
+            "mb-6 text-xl font-extrabold leading-tight text-content-accent sm:text-2xl",
             props.titleVariant === "removed" && "rounded-md bg-red-200 px-2 py-1 dark:bg-red-400/40",
             props.titleVariant === "added" && "rounded-md bg-emerald-200 px-2 py-1 dark:bg-emerald-400/40",
           )}
@@ -304,7 +302,7 @@ function DiffPane(props: DiffPaneProps) {
         </div>
       )}
 
-      <div className="pl-6">
+      <div>
         <EditorContext.Provider value={editorState}>
           <div className="ProseMirror">
             <TipTap.EditorContent editor={editor} />
