@@ -2,10 +2,12 @@ import { createRichContentSchema } from "../schema";
 import { diffRichContent } from "../diffRichContent";
 import { buildLargeDocument, doc, paragraph, text } from "./fixtures";
 
+const LARGE_DOCUMENT_REGRESSION_CEILING_MS = 1_000;
+
 /**
- * Measures main-thread cost of a large-document comparison.
- * Phase 0 records the timing; a Web Worker is deferred unless this
- * consistently exceeds an interactive budget (~100ms).
+ * Measures the algorithm cost of a representative large-document comparison.
+ * This is a coarse regression guard; CI timing does not prove a browser
+ * interaction budget because it excludes rendering and varies by runner.
  */
 describe("large document diff performance", () => {
   const schema = createRichContentSchema();
@@ -21,12 +23,11 @@ describe("large document diff performance", () => {
     const elapsedMs = performance.now() - started;
 
     expect(result.ok).toBe(true);
-    // Soft budget: warn via assertion message if unexpectedly slow in CI.
-    // Do not fail the suite for environment variance; log for local inspection.
+    // Keep representative timing visible for local and CI inspection.
     // eslint-disable-next-line no-console
     console.info(`[RichContentDiff] large fixture (400 paragraphs) took ${elapsedMs.toFixed(1)}ms`);
 
-    expect(elapsedMs).toBeLessThan(5000);
+    expect(elapsedMs).toBeLessThan(LARGE_DOCUMENT_REGRESSION_CEILING_MS);
     expect(result.ok && result.changes.length).toBeGreaterThan(0);
   });
 

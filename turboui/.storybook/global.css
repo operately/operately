@@ -13,30 +13,3 @@
 .sbdocs .docs-story {
   background-color: var(--color-surface-base);
 }
-
-/* RichContentDiff decorations (also injected at runtime by the component). */
-.ProseMirror .diff-removed {
-  background-color: rgb(254 226 226);
-}
-.ProseMirror .diff-added {
-  background-color: rgb(220 252 231);
-}
-.dark .ProseMirror .diff-removed {
-  background-color: rgb(127 29 29 / 0.45);
-}
-.dark .ProseMirror .diff-added {
-  background-color: rgb(20 83 45 / 0.45);
-}
-.ProseMirror .diff-removed-block,
-.ProseMirror .diff-added-block {
-  border-left-width: 3px;
-  border-left-style: solid;
-  padding-left: 0.5rem;
-  margin-left: -0.5rem;
-}
-.ProseMirror .diff-removed-block {
-  border-left-color: rgb(239 68 68);
-}
-.ProseMirror .diff-added-block {
-  border-left-color: rgb(34 197 94);
-}

@@ -1,6 +1,7 @@
 import { createRichContentSchema } from "../schema";
 import { diffRichContent } from "../diffRichContent";
 import { operatelyTokenEncoder } from "../tokenEncoder";
+import type { RichContentChange } from "../types";
 import * as F from "./fixtures";
 
 describe("diffRichContent", () => {
@@ -10,6 +11,10 @@ describe("diffRichContent", () => {
     return diffRichContent(schema, before, after);
   }
 
+  function expectChanges(before: unknown, after: unknown, changes: RichContentChange[]) {
+    expect(diff(before, after)).toEqual({ ok: true, changes });
+  }
+
   test("identical documents produce no changes", () => {
     const result = diff(F.identicalDoc, F.identicalDoc);
     expect(result.ok).toBe(true);
@@ -17,116 +22,90 @@ describe("diffRichContent", () => {
   });
 
   test("character insertion", () => {
-    const result = diff(F.charInsertBefore, F.charInsertAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
-    expect(result.changes.some((c) => c.kind === "addition" || c.kind === "replacement")).toBe(true);
+    expectChanges(F.charInsertBefore, F.charInsertAfter, [
+      { kind: "addition", fromA: 12, toA: 12, fromB: 12, toB: 13 },
+    ]);
   });
 
   test("character deletion", () => {
-    const result = diff(F.charInsertAfter, F.charInsertBefore);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.some((c) => c.kind === "deletion" || c.kind === "replacement")).toBe(true);
+    expectChanges(F.charInsertAfter, F.charInsertBefore, [
+      { kind: "deletion", fromA: 12, toA: 13, fromB: 12, toB: 12 },
+    ]);
   });
 
   test("word replacement", () => {
-    const result = diff(F.wordReplaceBefore, F.wordReplaceAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.some((c) => c.kind === "replacement")).toBe(true);
+    expectChanges(F.wordReplaceBefore, F.wordReplaceAfter, [
+      { kind: "replacement", fromA: 5, toA: 10, fromB: 5, toB: 9 },
+    ]);
   });
 
   test("paragraph insertion", () => {
-    const result = diff(F.paragraphInsertBefore, F.paragraphInsertAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.some((c) => c.kind === "addition" || c.kind === "replacement")).toBe(true);
+    expectChanges(F.paragraphInsertBefore, F.paragraphInsertAfter, [
+      { kind: "addition", fromA: 7, toA: 7, fromB: 7, toB: 15 },
+    ]);
   });
 
   test("paragraph deletion", () => {
-    const result = diff(F.paragraphInsertAfter, F.paragraphInsertBefore);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.some((c) => c.kind === "deletion" || c.kind === "replacement")).toBe(true);
+    expectChanges(F.paragraphInsertAfter, F.paragraphInsertBefore, [
+      { kind: "deletion", fromA: 7, toA: 15, fromB: 7, toB: 7 },
+    ]);
   });
 
   test("multiple distant changes", () => {
-    const result = diff(F.distantChangesBefore, F.distantChangesAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThanOrEqual(2);
+    expectChanges(F.distantChangesBefore, F.distantChangesAfter, [
+      { kind: "addition", fromA: 4, toA: 4, fromB: 4, toB: 5 },
+      { kind: "addition", fromA: 14, toA: 14, fromB: 15, toB: 16 },
+    ]);
   });
 
   test("paragraph to heading", () => {
-    const result = diff(F.paragraphToHeadingBefore, F.paragraphToHeadingAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.paragraphToHeadingBefore, F.paragraphToHeadingAfter, [
+      { kind: "replacement", fromA: 0, toA: 1, fromB: 0, toB: 1 },
+      { kind: "replacement", fromA: 6, toA: 7, fromB: 6, toB: 7 },
+    ]);
   });
 
   test("heading level change", () => {
-    const result = diff(F.headingLevelBefore, F.headingLevelAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.headingLevelBefore, F.headingLevelAfter, [
+      { kind: "replacement", fromA: 0, toA: 1, fromB: 0, toB: 1 },
+    ]);
   });
 
   test("list type change", () => {
-    const result = diff(F.listTypeBefore, F.listTypeAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.listTypeBefore, F.listTypeAfter, [
+      { kind: "replacement", fromA: 0, toA: 1, fromB: 0, toB: 1 },
+      { kind: "replacement", fromA: 8, toA: 9, fromB: 8, toB: 9 },
+    ]);
   });
 
   test("list item nesting", () => {
-    const result = diff(F.listNestBefore, F.listNestAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.listNestBefore, F.listNestAfter, [{ kind: "addition", fromA: 10, toA: 10, fromB: 10, toB: 21 }]);
   });
 
-  test("mark changes", () => {
-    const result = diff(F.marksBefore, F.marksAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
+  test("list item insertion", () => {
+    expectChanges(F.listItemInsertBefore, F.listItemInsertAfter, [
+      { kind: "addition", fromA: 8, toA: 8, fromB: 8, toB: 15 },
+    ]);
+  });
 
-    expect(result.changes.some((c) => c.kind === "replacement")).toBe(true);
+  test.each(F.markChanges)("$name mark change", ({ after }) => {
+    expectChanges(F.marksBefore, after, [{ kind: "replacement", fromA: 1, toA: 6, fromB: 1, toB: 6 }]);
+  });
+
+  test("multiple simultaneous mark changes", () => {
+    expectChanges(F.marksBefore, F.marksAfter, [{ kind: "replacement", fromA: 1, toA: 6, fromB: 1, toB: 6 }]);
   });
 
   test("link destination change with unchanged text", () => {
-    const result = diff(F.linkBefore, F.linkAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.linkBefore, F.linkAfter, [{ kind: "replacement", fromA: 1, toA: 5, fromB: 1, toB: 5 }]);
   });
 
   test("mention id and label change", () => {
-    const result = diff(F.mentionBefore, F.mentionAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.mentionBefore, F.mentionAfter, [{ kind: "replacement", fromA: 1, toA: 2, fromB: 1, toB: 2 }]);
   });
 
   test("blob replacement and caption change", () => {
-    const result = diff(F.blobBefore, F.blobAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.blobBefore, F.blobAfter, [{ kind: "replacement", fromA: 1, toA: 2, fromB: 1, toB: 2 }]);
   });
 
   test("ignores blob progress and temporary URL changes", () => {
@@ -138,19 +117,14 @@ describe("diffRichContent", () => {
   });
 
   test("emoji / surrogate-pair text", () => {
-    const result = diff(F.emojiBefore, F.emojiAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.emojiBefore, F.emojiAfter, [{ kind: "addition", fromA: 9, toA: 9, fromB: 9, toB: 15 }]);
   });
 
   test("reordered blocks appear as deletion plus insertion", () => {
-    const result = diff(F.reorderBefore, F.reorderAfter);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(F.reorderBefore, F.reorderAfter, [
+      { kind: "deletion", fromA: 0, toA: 22, fromB: 0, toB: 0 },
+      { kind: "addition", fromA: 47, toA: 47, fromB: 25, toB: 47 },
+    ]);
   });
 
   test("stable equality despite object-key ordering", () => {
@@ -164,12 +138,8 @@ describe("diffRichContent", () => {
   test("full-document replacement returns a change set", () => {
     const before = F.buildLargeDocument(80);
     const after = F.doc(F.paragraph(F.text("Completely different")));
-    const result = diff(before, after);
 
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-
-    expect(result.changes.length).toBeGreaterThan(0);
+    expectChanges(before, after, [{ kind: "replacement", fromA: 0, toA: 7805, fromB: 0, toB: 21 }]);
   });
 
   test("parse error for invalid content", () => {
@@ -191,14 +161,8 @@ describe("operatelyTokenEncoder", () => {
   });
 
   test("mark order does not affect character tokens", () => {
-    const marksAsc = [
-      schema.marks.bold.create(),
-      schema.marks.italic.create(),
-    ];
-    const marksDesc = [
-      schema.marks.italic.create(),
-      schema.marks.bold.create(),
-    ];
+    const marksAsc = [schema.marks.bold.create(), schema.marks.italic.create()];
+    const marksDesc = [schema.marks.italic.create(), schema.marks.bold.create()];
 
     const char = "a".codePointAt(0)!;
     expect(operatelyTokenEncoder.encodeCharacter(char, marksAsc)).toBe(

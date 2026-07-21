@@ -2,6 +2,7 @@ import React from "react";
 import * as TipTap from "@tiptap/react";
 import { getSchema } from "@tiptap/core";
 import type { Extensions, JSONContent } from "@tiptap/core";
+import type { Schema } from "@tiptap/pm/model";
 
 import { createRichEditorExtensions } from "../RichEditor/createRichEditorExtensions";
 import type { MentionedPersonLookupFn, EditorState } from "../RichEditor/useEditor";
@@ -11,7 +12,6 @@ import classNames from "../utils/classnames";
 import { buildDiffDecorations } from "./decorations";
 import { createDiffDecorationsExtension } from "./diffDecorationsExtension";
 import { diffRichContent } from "./diffRichContent";
-import type { DiffRichContentResult } from "./types";
 
 export type RichContentDiffProps = {
   before: JSONContent | unknown;
@@ -27,21 +27,13 @@ export type { RichContentChange, DiffRichContentResult } from "./types";
 const DIFF_STYLES = `
 .ProseMirror .diff-removed,
 .ProseMirror.diff-pane .diff-removed {
-  background-color: rgb(254 226 226);
+  background-color: var(--color-callout-error-bg);
   color: inherit;
 }
 .ProseMirror .diff-added,
 .ProseMirror.diff-pane .diff-added {
-  background-color: rgb(220 252 231);
+  background-color: var(--color-callout-success-bg);
   color: inherit;
-}
-.dark .ProseMirror .diff-removed,
-.dark .ProseMirror.diff-pane .diff-removed {
-  background-color: rgb(127 29 29 / 0.45);
-}
-.dark .ProseMirror .diff-added,
-.dark .ProseMirror.diff-pane .diff-added {
-  background-color: rgb(20 83 45 / 0.45);
 }
 .ProseMirror .diff-removed-block,
 .ProseMirror .diff-added-block {
@@ -51,10 +43,10 @@ const DIFF_STYLES = `
   margin-left: -0.5rem;
 }
 .ProseMirror .diff-removed-block {
-  border-left-color: rgb(239 68 68);
+  border-left-color: var(--color-callout-error-content);
 }
 .ProseMirror .diff-added-block {
-  border-left-color: rgb(34 197 94);
+  border-left-color: var(--color-callout-success-content);
 }
 `;
 
@@ -75,13 +67,12 @@ export function RichContentDiff(props: RichContentDiffProps) {
 
   const baseExtensions = React.useMemo(() => createRichEditorExtensions({}, { editable: false }), []);
   const schema = React.useMemo(() => getSchema(baseExtensions), [baseExtensions]);
-
-  const diffResult: DiffRichContentResult = React.useMemo(
-    () => diffRichContent(schema, props.before, props.after),
+  const comparison = React.useMemo(
+    () => prepareComparison(schema, props.before, props.after),
     [schema, props.before, props.after],
   );
 
-  if (!diffResult.ok) {
+  if (!comparison.ok) {
     return (
       <div
         className={classNames("rounded-lg border border-surface-outline bg-surface-base p-4", props.className)}
@@ -95,55 +86,69 @@ export function RichContentDiff(props: RichContentDiffProps) {
     );
   }
 
-  let beforeDoc;
-  let afterDoc;
-
-  try {
-    beforeDoc = schema.nodeFromJSON(props.before as JSONContent);
-    afterDoc = schema.nodeFromJSON(props.after as JSONContent);
-  } catch {
-    return (
-      <div className={classNames("rounded-lg border border-surface-outline p-4", props.className)} role="alert">
-        <p className="font-medium text-content-error">Unable to compare these versions</p>
-      </div>
-    );
-  }
-
-  const beforeDecorations = buildDiffDecorations(beforeDoc, diffResult.changes, "before");
-  const afterDecorations = buildDiffDecorations(afterDoc, diffResult.changes, "after");
-
   return (
     <div className={classNames("flex flex-col gap-3", props.className)}>
       <div className="flex flex-wrap items-center gap-4 text-sm text-content-dimmed" aria-label="Diff legend">
         <span className="inline-flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-red-200 dark:bg-red-900" aria-hidden />
+          <span
+            className="inline-block h-3 w-3 rounded-sm border border-callout-error-content bg-callout-error-bg"
+            aria-hidden
+          />
           Removed
         </span>
         <span className="inline-flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-green-200 dark:bg-green-900" aria-hidden />
+          <span
+            className="inline-block h-3 w-3 rounded-sm border border-callout-success-content bg-callout-success-bg"
+            aria-hidden
+          />
           Added
         </span>
-        {diffResult.changes.length === 0 && <span>No content changes</span>}
+        {comparison.changeCount === 0 && <span>No content changes</span>}
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <DiffPane
           label="Removed"
-          content={props.before as JSONContent}
-          decorationsExtension={createDiffDecorationsExtension(beforeDecorations)}
+          content={comparison.beforeContent}
+          decorationsExtension={comparison.beforeDecorationsExtension}
           mentionedPersonLookup={props.mentionedPersonLookup}
           baseExtensions={baseExtensions}
         />
         <DiffPane
           label="Added"
-          content={props.after as JSONContent}
-          decorationsExtension={createDiffDecorationsExtension(afterDecorations)}
+          content={comparison.afterContent}
+          decorationsExtension={comparison.afterDecorationsExtension}
           mentionedPersonLookup={props.mentionedPersonLookup}
           baseExtensions={baseExtensions}
         />
       </div>
     </div>
   );
+}
+
+function prepareComparison(schema: Schema, before: unknown, after: unknown) {
+  const diffResult = diffRichContent(schema, before, after);
+  if (!diffResult.ok) return { ok: false } as const;
+
+  try {
+    const beforeContent = before as JSONContent;
+    const afterContent = after as JSONContent;
+    const beforeDoc = schema.nodeFromJSON(beforeContent);
+    const afterDoc = schema.nodeFromJSON(afterContent);
+    const beforeDecorations = buildDiffDecorations(beforeDoc, diffResult.changes, "before");
+    const afterDecorations = buildDiffDecorations(afterDoc, diffResult.changes, "after");
+
+    return {
+      ok: true,
+      beforeContent,
+      afterContent,
+      beforeDecorationsExtension: createDiffDecorationsExtension(beforeDecorations),
+      afterDecorationsExtension: createDiffDecorationsExtension(afterDecorations),
+      changeCount: diffResult.changes.length,
+    } as const;
+  } catch {
+    return { ok: false } as const;
+  }
 }
 
 type DiffPaneProps = {
@@ -160,23 +165,21 @@ function DiffPane(props: DiffPaneProps) {
     [props.baseExtensions, props.decorationsExtension],
   );
 
-  const editor = TipTap.useEditor({
-    editable: false,
-    content: props.content,
-    extensions,
-    injectCSS: false,
-    editorProps: {
-      attributes: {
-        class: "diff-pane focus:outline-none text-content-accent",
-        "aria-label": `${props.label} version content`,
+  const editor = TipTap.useEditor(
+    {
+      editable: false,
+      content: props.content,
+      extensions,
+      injectCSS: false,
+      editorProps: {
+        attributes: {
+          class: "diff-pane focus:outline-none text-content-accent",
+          "aria-label": `${props.label} version content`,
+        },
       },
     },
-  });
-
-  React.useEffect(() => {
-    if (!editor) return;
-    editor.commands.setContent(props.content, { emitUpdate: false });
-  }, [editor, props.content]);
+    [props.content, props.decorationsExtension],
+  );
 
   const editorState = React.useMemo((): EditorState => {
     return {
@@ -198,7 +201,10 @@ function DiffPane(props: DiffPaneProps) {
   }, [editor, props.mentionedPersonLookup]);
 
   return (
-    <section className="min-w-0 rounded-lg border border-surface-outline bg-surface-base">
+    <section
+      className="min-w-0 rounded-lg border border-surface-outline bg-surface-base"
+      aria-label={`${props.label} version`}
+    >
       <header className="border-b border-stroke-base px-3 py-2 text-sm font-medium text-content-base">
         {props.label}
       </header>

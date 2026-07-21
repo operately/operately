@@ -77,6 +77,9 @@ export const listNestAfter = doc(
   bulletList(listItem(paragraph(text("Parent")), bulletList(listItem(paragraph(text("Child")))))),
 );
 
+export const listItemInsertBefore = doc(bulletList(listItem(paragraph(text("One")))));
+export const listItemInsertAfter = doc(bulletList(listItem(paragraph(text("One"))), listItem(paragraph(text("Two")))));
+
 export const marksBefore = doc(paragraph(text("plain")));
 export const marksAfter = doc(
   paragraph(
@@ -89,12 +92,18 @@ export const marksAfter = doc(
   ),
 );
 
-export const linkBefore = doc(
-  paragraph(text("docs", [{ type: "link", attrs: { href: "https://old.example" } }])),
-);
-export const linkAfter = doc(
-  paragraph(text("docs", [{ type: "link", attrs: { href: "https://new.example" } }])),
-);
+export const markChanges = [
+  { name: "bold", after: doc(paragraph(text("plain", [{ type: "bold" }]))) },
+  { name: "italic", after: doc(paragraph(text("plain", [{ type: "italic" }]))) },
+  { name: "strike", after: doc(paragraph(text("plain", [{ type: "strike" }]))) },
+  {
+    name: "highlight",
+    after: doc(paragraph(text("plain", [{ type: "highlight", attrs: { highlight: "yellow" } }]))),
+  },
+] as const;
+
+export const linkBefore = doc(paragraph(text("docs", [{ type: "link", attrs: { href: "https://old.example" } }])));
+export const linkAfter = doc(paragraph(text("docs", [{ type: "link", attrs: { href: "https://new.example" } }])));
 
 export const mentionBefore = doc(paragraph(mention("person-1", "Ada")));
 export const mentionAfter = doc(paragraph(mention("person-2", "Grace")));
@@ -128,8 +137,8 @@ export const blobIgnoredAfter = doc(
 export const emojiBefore = doc(paragraph(text("Hello 👋")));
 export const emojiAfter = doc(paragraph(text("Hello 👋 world")));
 
-export const reorderBefore = doc(paragraph(text("A")), paragraph(text("B")));
-export const reorderAfter = doc(paragraph(text("B")), paragraph(text("A")));
+export const reorderBefore = doc(heading(2, text("Unique heading alpha")), paragraph(text("Distinct paragraph beta")));
+export const reorderAfter = doc(paragraph(text("Distinct paragraph beta")), heading(2, text("Unique heading alpha")));
 
 export const keyOrderBefore = {
   type: "doc",
@@ -174,7 +183,10 @@ export function buildLargeDocument(paragraphCount = 400): JSONContent {
 
     content.push(
       paragraph(
-        text(`Paragraph ${i} with some filler text to approximate a long document body. `, i % 3 === 0 ? [{ type: "bold" }] : undefined),
+        text(
+          `Paragraph ${i} with some filler text to approximate a long document body. `,
+          i % 3 === 0 ? [{ type: "bold" }] : undefined,
+        ),
         text("More words. "),
         i % 5 === 0 ? mention(`person-${i % 7}`, `Person ${i % 7}`) : text("Plain words. "),
       ),
