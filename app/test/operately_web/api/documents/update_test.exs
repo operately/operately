@@ -92,6 +92,29 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
       assert document.name == "Brand new name"
       assert document.content == RichText.rich_text("Edited content")
     end
+
+    test "stale expected_version conflicts without writes", ctx do
+      assert {200, _} =
+               mutation(ctx.conn, [:documents, :update], %{
+                 document_id: Paths.document_id(ctx.document),
+                 name: "First edit",
+                 content: RichText.rich_text("First", :as_string)
+               })
+
+      assert {400, res} =
+               mutation(ctx.conn, [:documents, :update], %{
+                 document_id: Paths.document_id(ctx.document),
+                 name: "Conflict",
+                 content: RichText.rich_text("Conflict", :as_string),
+                 expected_version: 1
+               })
+
+      assert res.details["reason"] == "version_conflict" or res.details[:reason] == "version_conflict"
+
+      {:ok, document} = Document.get(:system, id: ctx.document.id)
+      assert document.name == "First edit"
+      assert document.current_version == 2
+    end
   end
 
   #
