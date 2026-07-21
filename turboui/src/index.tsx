@@ -125,6 +125,8 @@ export { Modal } from "./Modal";
 export { CompanyCreatorOnboardingWizard, CompanyMemberOnboardingWizard } from "./OnboardingWizard";
 export { CompanyImportPage } from "./CompanyImportPage";
 export { PrivacyField } from "./PrivacyField";
+export { PrivacyIndicator, SpacePrivacyIndicator } from "./PrivacyIndicator";
+export type { SpacePrivacyIndicatorProps } from "./PrivacyIndicator";
 export { ProfileEditPage } from "./ProfileEditPage";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectField } from "./ProjectField";
