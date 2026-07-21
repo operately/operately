@@ -32,9 +32,7 @@ const meta: Meta<typeof DocumentVersionComparisonPage> = {
 export default meta;
 type Story = StoryObj<typeof DocumentVersionComparisonPage>;
 
-function baseProps(
-  overrides: Partial<DocumentVersionComparisonPage.Props> = {},
-): DocumentVersionComparisonPage.Props {
+function baseProps(overrides: Partial<DocumentVersionComparisonPage.Props> = {}): DocumentVersionComparisonPage.Props {
   return {
     title: ["See what changed", M.titles.current],
     navigation: M.navigation,
@@ -86,10 +84,29 @@ export const FirstVersion: Story = {
   }),
 };
 
+export const OnlySavedVersion: Story = {
+  args: baseProps({
+    versions: M.oneVersionList,
+    before: null,
+    after: M.snapshot(1, M.titles.oneVersion, M.contentV1),
+  }),
+};
+
+export const VersionUnavailable: Story = {
+  args: baseProps({ versions: [], before: null, after: null }),
+};
+
 export const LoadingComparison: Story = {
   args: baseProps({ comparisonStatus: "loading", before: null, after: null }),
 };
 
 export const ComparisonError: Story = {
   args: baseProps({ comparisonStatus: "error", before: null, after: null }),
+};
+
+export const MobileComparison: Story = {
+  args: baseProps(),
+  parameters: {
+    viewport: { defaultViewport: "mobile1" },
+  },
 };

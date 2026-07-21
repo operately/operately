@@ -30,36 +30,34 @@ type Props = {
 };
 
 export function ComparisonPanel(props: Props) {
-  if (props.versions.length === 0) {
-    return <VersionUnavailableState />;
-  }
+  let content: React.ReactNode;
 
-  if (props.versions.length === 1) {
-    return (
-      <div className="space-y-4" data-test-id="comparison-panel">
+  if (props.versions.length === 0) {
+    content = <VersionUnavailableState />;
+  } else if (props.versions.length === 1) {
+    content = (
+      <div>
         <OneVersionEmptyState />
-        {props.after && (
-          <SingleSnapshot snapshot={props.after} mentionedPersonLookup={props.mentionedPersonLookup} />
-        )}
+        {props.after && <SingleSnapshot snapshot={props.after} mentionedPersonLookup={props.mentionedPersonLookup} />}
       </div>
+    );
+  } else if (props.comparisonStatus === "idle" || props.comparisonStatus === "loading") {
+    content = <ComparisonLoadingState />;
+  } else if (props.comparisonStatus === "error") {
+    content = <ComparisonErrorState onRetry={props.onRetryComparison} />;
+  } else {
+    content = (
+      <ReadyComparison
+        versions={props.versions}
+        before={props.before}
+        after={props.after}
+        formattedTimePreferences={props.formattedTimePreferences}
+        mentionedPersonLookup={props.mentionedPersonLookup}
+      />
     );
   }
 
-  return (
-    <div className="space-y-4" data-test-id="comparison-panel">
-      {props.comparisonStatus === "loading" && <ComparisonLoadingState />}
-      {props.comparisonStatus === "error" && <ComparisonErrorState onRetry={props.onRetryComparison} />}
-      {props.comparisonStatus === "ready" && (
-        <ReadyComparison
-          versions={props.versions}
-          before={props.before}
-          after={props.after}
-          formattedTimePreferences={props.formattedTimePreferences}
-          mentionedPersonLookup={props.mentionedPersonLookup}
-        />
-      )}
-    </div>
-  );
+  return <div data-test-id="comparison-panel">{content}</div>;
 }
 
 function ReadyComparison(props: {
@@ -75,7 +73,7 @@ function ReadyComparison(props: {
 
   if (!props.before) {
     return (
-      <div className="space-y-4">
+      <div>
         <FirstVersionState />
         <SingleSnapshot snapshot={props.after} mentionedPersonLookup={props.mentionedPersonLookup} />
       </div>
@@ -86,15 +84,25 @@ function ReadyComparison(props: {
   const beforeTime = versionInsertedAt(props.versions, props.before);
   const afterTime = versionInsertedAt(props.versions, props.after);
   const beforeLabel = (
-    <VersionTimeLabel time={beforeTime} preferences={props.formattedTimePreferences} testId="version-label-before" />
+    <VersionTimeLabel
+      versionNumber={props.before.versionNumber}
+      time={beforeTime}
+      preferences={props.formattedTimePreferences}
+      testId="version-label-before"
+    />
   );
   const afterLabel = (
-    <VersionTimeLabel time={afterTime} preferences={props.formattedTimePreferences} testId="version-label-after" />
+    <VersionTimeLabel
+      versionNumber={props.after.versionNumber}
+      time={afterTime}
+      preferences={props.formattedTimePreferences}
+      testId="version-label-after"
+    />
   );
 
   if (contentEqual) {
     return (
-      <div className="space-y-4">
+      <div>
         <TitleComparison
           beforeTitle={props.before.title}
           afterTitle={props.after.title}
@@ -123,23 +131,35 @@ function ReadyComparison(props: {
 }
 
 function versionInsertedAt(versions: DocumentVersion[], snapshot: VersionSnapshot): string | null {
-  return snapshot.insertedAt ?? versions.find((version) => version.versionNumber === snapshot.versionNumber)?.insertedAt ?? null;
+  return (
+    snapshot.insertedAt ??
+    versions.find((version) => version.versionNumber === snapshot.versionNumber)?.insertedAt ??
+    null
+  );
 }
 
 function VersionTimeLabel(props: {
+  versionNumber: number;
   time: string | null;
   preferences: FormattedTimePreferences;
   testId: string;
 }) {
-  if (!props.time) {
-    return <span data-test-id={props.testId}>Unknown time</span>;
-  }
-
   return (
-    <span data-test-id={props.testId}>
-      <FormattedTime {...props.preferences} time={props.time} format="short-date" />
-      {" at "}
-      <FormattedTime {...props.preferences} time={props.time} format="time-only" />
+    <span className="flex flex-col gap-1" data-test-id={props.testId}>
+      <span className="text-xs font-bold uppercase tracking-[0.12em] text-content-accent">
+        Version {props.versionNumber}
+      </span>
+      <span className="text-xs font-normal text-content-dimmed">
+        {props.time ? (
+          <>
+            <FormattedTime {...props.preferences} time={props.time} format="short-date" />
+            {" at "}
+            <FormattedTime {...props.preferences} time={props.time} format="time-only" />
+          </>
+        ) : (
+          "Time unavailable"
+        )}
+      </span>
     </span>
   );
 }
@@ -180,16 +200,17 @@ function TitlePane(props: {
     <section
       className={classNames(
         "min-w-0",
-        props.position === "before" && "border-b border-stroke-base pb-8 md:border-b-0 md:border-r md:pb-0 md:pr-8",
-        props.position === "after" && "pt-8 md:pt-0 md:pl-8",
+        props.position === "before" &&
+          "border-b border-stroke-base pb-5 sm:pb-8 md:border-b-0 md:border-r md:pb-0 md:pr-8",
+        props.position === "after" && "pt-5 sm:pt-8 md:pt-0 md:pl-8",
       )}
     >
-      <header className="mb-4">
-        <h2 className="text-sm font-medium text-content-dimmed">{props.label}</h2>
+      <header className="mb-5">
+        <h2>{props.label}</h2>
       </header>
       <div
         className={classNames(
-          "text-xl font-extrabold text-content-accent sm:text-2xl",
+          "text-xl font-extrabold leading-tight text-content-accent sm:text-2xl",
           props.variant === "removed" && "rounded-md bg-red-200 px-2 py-1 dark:bg-red-400/40",
           props.variant === "added" && "rounded-md bg-emerald-200 px-2 py-1 dark:bg-emerald-400/40",
         )}
@@ -201,13 +222,13 @@ function TitlePane(props: {
   );
 }
 
-function SingleSnapshot(props: {
-  snapshot: VersionSnapshot;
-  mentionedPersonLookup: MentionedPersonLookupFn;
-}) {
+function SingleSnapshot(props: { snapshot: VersionSnapshot; mentionedPersonLookup: MentionedPersonLookupFn }) {
   return (
-    <div data-test-id="single-snapshot">
-      <div className="mb-4 text-xl font-extrabold text-content-accent sm:text-2xl md:text-3xl">
+    <div className="pt-5" data-test-id="single-snapshot">
+      <div className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-content-dimmed">
+        Version {props.snapshot.versionNumber}
+      </div>
+      <div className="mb-6 text-2xl font-extrabold tracking-tight text-content-accent sm:text-3xl">
         {props.snapshot.title || "Untitled"}
       </div>
       <RichContent content={props.snapshot.content} mentionedPersonLookup={props.mentionedPersonLookup} />

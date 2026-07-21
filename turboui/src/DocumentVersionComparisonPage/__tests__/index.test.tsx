@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router";
 
@@ -41,11 +41,15 @@ describe("DocumentVersionComparisonPage", () => {
   test("renders adjacent version comparison", () => {
     renderPage();
 
+    expect(screen.getByRole("heading", { name: "See what changed" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Diff legend")).toBeInTheDocument();
     expect(byTestId("version-selectors")).not.toBeInTheDocument();
     expect(byTestId("back-to-document")).not.toBeInTheDocument();
     expect(byTestId("back-to-history")).not.toBeInTheDocument();
     expect(byTestId("version-label-before")).toBeInTheDocument();
     expect(byTestId("version-label-after")).toBeInTheDocument();
+    expect(byTestId("version-label-before")).toHaveTextContent("Version 4");
+    expect(byTestId("version-label-after")).toHaveTextContent("Version 5");
     expect(byTestId("title-removed")).toHaveTextContent(M.titles.renamed);
     expect(byTestId("title-added")).toHaveTextContent(M.titles.current);
   });
@@ -66,6 +70,24 @@ describe("DocumentVersionComparisonPage", () => {
     });
 
     expect(byTestId("first-version-notice")).toBeInTheDocument();
+  });
+
+  test("idle comparison shows the loading workspace", () => {
+    renderPage({ comparisonStatus: "idle", before: null, after: null });
+
+    expect(screen.getByRole("status", { name: "Loading comparison" })).toBeInTheDocument();
+  });
+
+  test("only saved version remains readable without a comparison", () => {
+    renderPage({
+      versions: M.oneVersionList,
+      before: null,
+      after: M.snapshot(1, M.titles.oneVersion, M.contentV1),
+    });
+
+    expect(screen.getByRole("heading", { name: "No earlier versions" })).toBeInTheDocument();
+    expect(byTestId("single-snapshot")).toHaveTextContent("Version 1");
+    expect(byTestId("single-snapshot")).toHaveTextContent(M.titles.oneVersion);
   });
 
   test("retry calls callback", () => {

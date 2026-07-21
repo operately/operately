@@ -5,9 +5,8 @@ import type { DocumentVersion } from "../ApiTypes";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import type { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import type { ComparisonStatus, VersionSnapshot } from "../DocumentVersionHistoryPage/types";
-import { DiffLegend } from "../RichContentDiff";
-
 import { ComparisonPanel } from "./ComparisonPanel";
+import { DocumentVersionPageHeader } from "./DocumentVersionPageHeader";
 
 export namespace DocumentVersionComparisonPage {
   export type Props = {
@@ -26,13 +25,12 @@ export namespace DocumentVersionComparisonPage {
 export type { ComparisonStatus, VersionSnapshot };
 
 export function DocumentVersionComparisonPage(props: DocumentVersionComparisonPage.Props) {
+  const showLegend = props.comparisonStatus === "ready" && props.before !== null && props.after !== null;
+
   return (
     <Page title={props.title} size="xlarge" navigation={props.navigation} testId="document-version-comparison-page">
-      <div className="min-h-[75vh] px-4 py-8 sm:px-10">
-        <header className="mb-8">
-          <h1 className="text-3xl font-extrabold text-content-accent md:text-4xl">See what changed</h1>
-          <DiffLegend className="mt-3" />
-        </header>
+      <div className="min-h-[75vh] px-4 py-8 sm:px-8 sm:py-10 lg:px-10">
+        <DocumentVersionPageHeader title="See what changed" showLegend={showLegend} />
 
         <ComparisonPanel
           versions={props.versions}
