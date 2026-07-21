@@ -32,6 +32,30 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
     assert document.node.name == nil
   end
 
+  test "editing a draft does not create an activity", ctx do
+    document = create_document(ctx, true, [], post_as_draft: true)
+
+    {:ok, updated} =
+      Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, @attrs)
+
+    assert updated.name == "new name"
+    assert updated.state == :draft
+
+    refute Repo.exists?(
+             from(a in Operately.Activities.Activity,
+               where: a.action == ^@action and a.content["document_id"] == ^document.id
+             )
+           )
+  end
+
+  test "editing a published document creates an activity", ctx do
+    document = create_document(ctx, true, [])
+
+    {:ok, _} = Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, @attrs)
+
+    assert get_activity(document, @action)
+  end
+
   test "Editing document doesn't send notifications to anyone when there are no mentions", ctx do
     document = create_document(ctx, true, [])
 
@@ -88,11 +112,11 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
   # Helpers
   #
 
-  defp create_document(ctx, send_to_everyone, people_list) do
+  defp create_document(ctx, send_to_everyone, people_list, opts \\ []) do
     {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
       name: "Some name",
       content: RichText.rich_text("Content"),
-      post_as_draft: false,
+      post_as_draft: Keyword.get(opts, :post_as_draft, false),
       send_to_everyone: send_to_everyone,
       subscription_parent_type: :resource_hub_document,
       subscriber_ids: people_list,

@@ -48,14 +48,16 @@ Users therefore cannot inspect an earlier document, understand exactly what chan
 ## Goals
 
 - Capture an immutable snapshot whenever a document title or body changes.
-- Capture the first snapshot when a document is created, including drafts and copies.
+- Capture the first snapshot when a published document is created, including copies.
+- Do not capture versions while a document remains a draft; draft edits update the canonical document only.
+- Capture version 1 when a draft is first published.
 - Compare arbitrary saved versions, not only adjacent versions.
 - Preserve rich-text semantics when comparing paragraphs, headings, lists, marks, links, mentions, and blobs.
 - Make formatting-only and structure-only changes visible.
 - Restore an earlier title and body as a new version.
 - Keep version capture atomic with the canonical document write.
 - Prevent concurrent saves from assigning duplicate or out-of-order version numbers.
-- Apply existing document access rules without exposing removed historical content to ordinary viewers.
+- Apply existing document view access rules to history reads; require edit access only for restoration.
 - Keep new UI in TurboUI and backend interaction in an app page bridge.
 - Include document versions and their historical blob/mention references in company export and import.
 - Preserve a path for reading snapshots after the TipTap schema evolves.
@@ -172,16 +174,11 @@ This keeps each snapshot as a valid ProseMirror document. It also makes deleted 
 
 A unified diff is deferred because deleted content no longer exists in the new tree. Producing a valid unified document requires inserting old slices into the new schema, handling open slice depths, and resolving node-boundary conflicts. The diff engine designed here can support that later without changing the stored version format.
 
-### 7. History is restricted to document editors
+### 7. History reads use document view access
 
-Historical content may contain text deliberately removed from the current document. In the first release:
+Anyone who can view a document can list and read its version history. Do not add a separate history permission; authorize history endpoints with existing `can_view`.
 
-- users with ordinary document-view access can see only the current document
-- users whose access level grants document editing can list and read history
-- company read-only mode does not prevent an otherwise eligible editor from reading history
-- restoration additionally requires current `can_edit_document` permission and a company that is not read-only
-
-Expose a dedicated `can_view_document_history` permission in the full document API response. Calculate it from the access level that normally grants document editing, without treating company billing/read-only state as a reason to deny the read.
+Restoration additionally requires current `can_edit_document` permission and a company that is not read-only.
 
 The history API must authorize before returning titles, authors, timestamps, or content.
 
@@ -214,7 +211,7 @@ Restoring content updates the document's mentioned-person subscription state, bu
 
 Add `current_version` to `resource_documents`. It represents the current title/body revision, not the document's publication state.
 
-All write operations that may change title/body must:
+All write operations that may change title/body on a **published** document must:
 
 1. load and lock the canonical document row inside the transaction
 2. compare the submitted title/body with the locked canonical values
@@ -223,27 +220,16 @@ All write operations that may change title/body must:
 5. insert the matching snapshot using the new number
 6. update the canonical document (`name` / `content`) and snapshot in the same transaction
 
-Add optional `expected_version` input to document update and publish APIs. First-party UI sends it on every title/body save. When supplied and stale, return a version-conflict error instead of silently overwriting a newer save.
+Draft title/body writes update the canonical document only. They do not increment `current_version`, insert version rows, or emit a `resource_hub_document_edited` activity. Version history for a draft begins at first publish.
+Add optional `expected_version` input to the document update API. First-party UI sends it on every published title/body save. When supplied and stale, return a version-conflict error instead of silently overwriting a newer save.
 
 Keep `expected_version` optional for backward compatibility with existing CLI/MCP/API clients. Writes without it still lock the row and receive a unique next version, but retain last-write-wins behavior.
 
+Do not add `expected_version` to publish. That endpoint only publishes drafts, which do not accumulate version history until the first publish creates version 1.
+
 The restore API always requires `expected_current_version` because it is a new endpoint and has no compatibility constraint.
 
-### 10. Preserve schema compatibility explicitly
-
-Every snapshot stores `content_schema_version`.
-
-The initial value is `1`. Before calling `schema.nodeFromJSON`, the frontend passes snapshot content through a pure migration pipeline:
-
-```ts
-migrateRichContentSnapshot(content, fromSchemaVersion, CURRENT_RICH_CONTENT_SCHEMA_VERSION)
-```
-
-The first implementation returns schema-version-1 content unchanged. Future editor changes that rename/remove nodes, marks, or required attributes must add deterministic migrations and fixtures before changing the current schema version.
-
-Do not mutate stored snapshots during ordinary reads. Migrations happen in memory. A separate idempotent data migration may rewrite historical rows later if storage normalization becomes necessary.
-
-### 11. Historical rich content participates in export/import and blob retention
+### 10. Historical rich content participates in export/import and blob retention
 
 Add `resource_document_versions` to the company-transfer schema and dependency graph.
 
@@ -254,7 +240,7 @@ Export/import must:
 - discover blob IDs referenced only by historical versions
 - export the corresponding blob payloads
 - rewrite blob IDs on import
-- preserve version numbers, origins, restoration source numbers, schema versions, and timestamps
+- preserve version numbers, origins, restoration source numbers, and timestamps
 - set the imported canonical document's `current_version` consistently with the imported version rows
 
 The generic file-discovery traversal already scans schema-backed map fields containing top-level TipTap documents. Registering the version schema must make historical version bodies visible to that traversal; add regression coverage rather than adding a one-off version-specific scanner.
@@ -288,7 +274,6 @@ Create:
 | `version_number` | integer | not null, check `> 0` | Monotonic per-document version |
 | `title` | text | not null | Document title (`resource_documents.name`) at this revision |
 | `content` | map/JSONB | not null | Complete TipTap JSON snapshot |
-| `content_schema_version` | integer | not null, check `> 0` | Parser/migration version |
 | `editor_id` | binary UUID | nullable FK to `people`, `on_delete: :nilify_all` | Person who produced the version; null for migration baselines or removed editors |
 | `origin` | enum/string | not null | `created`, `edited`, `restored`, or `migration` |
 | `restored_from_version_number` | integer | nullable, check `> 0` | Source version for a restoration |
@@ -311,7 +296,6 @@ Use an idempotent data migration under `app/lib/operately/data` to create versio
 
 - `title`: current `resource_documents.name`
 - `content`: current document content
-- `content_schema_version`: `1`
 - `editor_id`: null
 - `origin`: `migration`
 - `inserted_at`: document `updated_at`
@@ -335,18 +319,19 @@ Existing activity data is intentionally not used to synthesize older versions be
 
 1. resource node (tree placement only; no title write)
 2. canonical document with `name`, `content`, and `current_version: 1`
-3. version 1 with `origin: created` (title copied from `document.name`)
+3. for published documents only: version 1 with `origin: created` (title copied from `document.name`)
 4. existing subscriptions and activity behavior
 
-Draft creation also creates version 1 even though it does not emit the normal published-document-created activity.
+Draft creation does **not** insert a version row. Draft title/body edits update the canonical document without incrementing `current_version`, inserting versions, or emitting a document-edit activity.
 
-Copied documents create their own version 1 from the copied current title/body.
+Copied published documents create their own version 1 from the copied current title/body.
 
 ### Document editing
 
 Refactor `ResourceHubDocumentEditing` so title/body comparison happens against the locked `resource_documents` row inside its transaction.
 
-- If title/body changed, update `resource_documents.name` / `content`, increment `current_version`, insert `origin: edited`, and keep the existing edit activity.
+- If the document is a draft and title/body changed, update `resource_documents.name` / `content` only. Do not increment `current_version`, insert a version, or emit a document-edit activity.
+- If the document is published and title/body changed, update `resource_documents.name` / `content`, increment `current_version`, insert `origin: edited`, and keep the existing edit activity.
 - If only subscription settings changed, update subscriptions without changing `current_version`, creating a version, or emitting a misleading document-edit activity.
 - If neither changed, return the canonical document without writes.
 
@@ -356,10 +341,8 @@ This backend comparison is required even though the current form avoids most no-
 
 `ResourceHubDocumentPublishing` continues to change state and publication time.
 
-- Publishing with no title/body change does not create a new content version.
-- Publishing with a changed title/body captures one `origin: edited` version in the same transaction.
+- Publishing a draft always inserts version 1 with `origin: created` from the final published title/body (including any title/body supplied on the publish call).
 - Publishing must not produce two snapshots when both title and content changed.
-
 ### Restoration
 
 Create `Operately.Operations.ResourceHubDocumentVersionRestoring`.
@@ -400,8 +383,6 @@ Input:
 ```ts
 {
   documentId: ID;
-  before?: string;
-  limit?: number; // default 50, maximum 100
 }
 ```
 
@@ -410,7 +391,6 @@ Output:
 ```ts
 {
   versions: DocumentVersionSummary[];
-  nextCursor: string | null;
 }
 ```
 
@@ -431,7 +411,7 @@ Output:
 
 Do not include TipTap content in the list response.
 
-Sort by `version_number DESC`, using the version number and ID to construct a stable opaque cursor.
+Return all versions for the document, sorted by `version_number DESC`. Pagination, if needed in the UI, is handled on the frontend.
 
 ### `documents.get_version`
 
@@ -449,36 +429,12 @@ Output adds:
 ```ts
 {
   content: JSONValue;
-  contentSchemaVersion: number;
 }
 ```
 
 The endpoint verifies that the requested version belongs to the requested document.
 
-### `documents.get_version_comparison`
-
-Input:
-
-```ts
-{
-  documentId: ID;
-  beforeVersionNumber: number;
-  afterVersionNumber: number;
-}
-```
-
-Output:
-
-```ts
-{
-  before: DocumentVersion;
-  after: DocumentVersion;
-}
-```
-
-This endpoint returns the two snapshots in one authorized request. It does not calculate changed ranges on the server.
-
-Reject comparisons where the numbers are equal. Normalize the response so `before.versionNumber < after.versionNumber` regardless of input order.
+For side-by-side comparison, the frontend loads two snapshots with parallel `documents.get_version` calls. It chooses before/after ordering and rejects comparing a version with itself. The backend does not expose a dedicated comparison endpoint and does not calculate changed ranges.
 
 ### `documents.restore_version`
 
@@ -508,7 +464,8 @@ Output:
 Add optional `expected_version` to:
 
 - `documents.update`
-- `documents.publish`
+
+Do not add it to `documents.publish` (drafts only; first publish creates version 1).
 
 Return a distinct conflict response when it does not match the locked document's `current_version`. The first-party edit form shows a persistent error explaining that a newer version exists and offers to reload; it must not silently retry with stale content.
 
@@ -531,11 +488,12 @@ The existing `useEditor` consumes this factory. `RichContentDiff` consumes it to
 For each selected snapshot:
 
 1. validate that `content` is an object with a TipTap `doc` root
-2. migrate it in memory from `contentSchemaVersion` to the current schema version
-3. call `schema.nodeFromJSON`
-4. report a controlled comparison error when parsing fails
+2. call `schema.nodeFromJSON`
+3. report a controlled comparison error when parsing fails
 
-The UI must not crash the entire page because one historical snapshot cannot be parsed. Record the document ID, version number, and schema versions in error reporting without including document content.
+The UI must not crash the entire page because one historical snapshot cannot be parsed. Record the document ID and version number in error reporting without including document content.
+
+Snapshots do not store a TipTap content-schema version. Historical content is parsed with the current editor schema; if TipTap JSON shape later becomes incompatible, handle that as a separate migration effort rather than baking a schema-version field into every snapshot now.
 
 ### Change calculation
 
@@ -601,7 +559,7 @@ Do not mutate either snapshot by inserting diff marks into its JSON. Decorations
 ### Performance behavior
 
 - Calculate only the currently selected comparison.
-- Memoize by document ID, before version number, after version number, and current schema version.
+- Memoize by document ID, before version number, and after version number.
 - Fetch only the two selected bodies; keep history list responses metadata-only.
 - Show a non-blocking comparison loading state.
 - Do not calculate diffs in the history-list render loop.
@@ -617,7 +575,7 @@ Do not cache every pairwise diff in PostgreSQL. A document with `n` versions has
 
 ### Entry point and routes
 
-Add `Version History` to the existing document options menu when `canViewDocumentHistory` is true. The title casing matches the nearby `Export as Markdown` action.
+Add `Version History` to the existing document options menu when `canView` is true. The title casing matches the nearby `Export as Markdown` action.
 
 Add routes:
 
@@ -637,11 +595,11 @@ Create a pure `DocumentVersionHistoryPage` in `turboui/src/DocumentVersionHistor
 It receives:
 
 - current document metadata and permissions
-- paginated version summaries
+- version summaries for the document
 - selected before/after snapshots
 - formatted-time preferences
 - loading and error state
-- callbacks for selection, pagination, restoration, navigation, and retry
+- callbacks for selection, restoration, navigation, and retry
 
 The app bridge lives under `app/assets/js/pages/ResourceHubDocumentVersionsPage/`. It owns API hooks, routes, the current user's formatting preferences, restore mutation, and refresh behavior.
 
@@ -657,7 +615,7 @@ The history list shows newest first. Each row contains:
 - origin context when useful: `Created`, `Restored from Version {number}`, or `History Begins Here`
 - `Current` on the canonical version
 
-The selected version has a clear active state. Loading older history preserves the current selection and appends rows without shifting focus.
+The selected version has a clear active state.
 
 ### Comparison controls
 
@@ -778,7 +736,7 @@ Work test-first within each phase.
 ### Data model and migration
 
 - version validation accepts each valid origin
-- version validation rejects non-positive numbers/schema versions
+- version validation rejects non-positive version numbers
 - unique document/version constraint holds
 - restoration source constraint holds
 - removing a later editor preserves the document/version and nulls the version's `editor_id`
@@ -789,16 +747,17 @@ Work test-first within each phase.
 
 ### Version capture operations
 
-- creation captures version 1
-- draft creation captures version 1
+- published creation captures version 1
+- draft creation captures no version
+- draft edits do not create versions or increment `current_version`
+- first publish of a draft captures version 1 (`origin: created`) from the final title/body
 - copied document receives only version 1
 - content edit increments once and snapshots the new content
 - title edit increments once and snapshots title plus unchanged content
 - title-and-content edit creates one version, not two
 - subscription-only edit creates no version/activity
 - no-op edit creates no version/activity
-- state-only publish creates no content version
-- publish with edited body creates one version
+- publish with edited body on a draft still captures a single first version
 - transaction failure leaves canonical document and versions unchanged
 - two concurrent saves receive unique sequential versions
 - stale `expected_version` returns conflict without writes
@@ -821,13 +780,11 @@ Work test-first within each phase.
 
 ### API
 
-- history list is newest first and cursor-stable
+- history list is newest first
 - history list excludes content
-- get/comparison return only versions belonging to the authorized document
-- comparison normalizes before/after ordering
-- equal-version comparison is rejected
-- ordinary viewer receives forbidden without version metadata
-- eligible editor can read history in company read-only mode
+- get_version returns only versions belonging to the authorized document
+- users without document view access cannot retrieve version metadata
+- viewers can read history in company read-only mode
 - restore returns new document/current-version metadata
 - generated TypeScript types match nullability
 
@@ -884,7 +841,7 @@ Tests assert ranges and semantic classification, not internal Myers search state
 - editor creates several versions and compares adjacent versions
 - editor selects two non-adjacent versions
 - editor restores an earlier version and sees the new current version
-- ordinary viewer cannot open the history route
+- users without document view access cannot open the history route
 - stale restore shows conflict and preserves both users' versions
 
 ---
@@ -893,8 +850,8 @@ Tests assert ranges and semantic classification, not internal Myers search state
 
 Backend:
 
-- paginate version metadata; never preload every body for the history page
-- fetch only selected snapshot bodies
+- return all version metadata in one list response; never include snapshot bodies in the list
+- fetch only selected snapshot bodies for comparison/restore
 - index list ordering by document and version/timestamp
 - record version-list, comparison-fetch, and restore latency
 - count version conflicts and restore failures by reason
@@ -902,8 +859,9 @@ Backend:
 
 Frontend:
 
+- paginate the loaded version list in the UI if the list becomes long
 - measure diff duration and token/document sizes without recording text
-- report parse failures with document ID, version number, stored schema version, and current schema version
+- report parse failures with document ID and version number
 - use Sentry boundaries around the comparison area so invalid history does not crash the entire document page
 - profile memory with two long read-only editors before enabling history generally
 
@@ -925,7 +883,7 @@ Operational checks (ad-hoc SQL / inspection during rollout; no dedicated app mod
 - count documents without a version row
 - count documents whose `current_version` does not equal their highest version number
 - detect duplicate/gapped versions for investigation; gaps are not user-visible corruption but should not occur during normal writes
-- sample snapshot parse success using schema version 1
+- sample snapshot parse success against the current editor schema
 - verify blobs referenced only by historical versions survive export/import
 
 Recovery:
@@ -958,21 +916,21 @@ This phase proves comparison quality before persistence/API work commits the pro
 - [x] add idempotent existing-document baseline data migration
 - [x] add company export/import and historical blob discovery coverage
 
-### Phase 2 — Transactional version capture and APIs
+### Phase 2 — Transactional version capture and APIs ✅
 
-- refactor document create/edit/publish operations to capture versions
-- lock canonical rows and implement optional expected-version conflicts
-- add permissions and serializers
-- add list/get/comparison endpoints
-- regenerate API types
-- add backend/model tests
+- [x] refactor document create/edit/publish operations to capture versions
+- [x] lock canonical rows and implement optional expected-version conflicts
+- [x] add permissions and serializers
+- [x] add list/get version endpoints
+- [x] regenerate API types
+- [x] add backend/model tests
 
 ### Phase 3 — History and comparison UI
 
 - create pure TurboUI history page and stories
 - create the app page bridge, loader, routes, and paths
 - add `Version History` to document options
-- wire selectors, pagination, responsive split view, errors, and formatted times
+- wire selectors, responsive split view, errors, and formatted times
 - add TurboUI, navigation, and feature coverage
 
 ### Phase 4 — Restoration
@@ -992,17 +950,16 @@ This phase proves comparison quality before persistence/API work commits the pro
 
 ## Definition of Done
 
-- Every new native document, including drafts and copies, has version 1.
-- Every title/body save creates exactly one immutable version in the same transaction.
+- Every new published native document, including copies, has version 1.
+- Drafts have no version history until first publish; draft title/body saves do not create versions.
+- Every title/body save on a published document creates exactly one immutable version in the same transaction.
 - Subscription-only and publication-state-only changes do not create content versions.
 - Existing documents have a clearly labeled migration baseline.
-- Authorized editors can list versions and compare any two saved snapshots.
-- Ordinary viewers cannot retrieve history metadata or content.
+- Anyone who can view a document can list versions and compare any two saved snapshots.
 - The diff detects text, formatting, link, mention, blob, and block-structure changes.
 - Diff rendering is accessible and responsive, with no color-only meaning.
 - Restoration creates a new version and preserves all subsequent history.
 - Stale first-party edits/restores fail visibly instead of overwriting newer work.
 - Historical mentions and blobs survive company export/import.
-- Snapshot schema versions are stored and parsed through a migration boundary.
 - Relevant backend, TurboUI, integration, export/import, and feature tests pass.
 - `make api.gen`, `make test.tsc.lint`, `make turboui.build`, `make turboui.test`, and targeted Elixir/feature tests pass.

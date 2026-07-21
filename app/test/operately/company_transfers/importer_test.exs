@@ -629,7 +629,6 @@ defmodule Operately.CompanyTransfers.ImporterTest do
                version_number: 1,
                title: "Baseline title",
                content: %{"type" => "doc", "content" => []},
-               content_schema_version: 1,
                editor_id: nil,
                origin: :migration,
                inserted_at: ~U[2024-01-01 10:00:00Z]
@@ -641,7 +640,6 @@ defmodule Operately.CompanyTransfers.ImporterTest do
                version_number: 2,
                title: "Edited title",
                content: blob_document(ctx.historical_blob),
-               content_schema_version: 1,
                editor_id: ctx.editor.id,
                origin: :edited,
                inserted_at: ~U[2024-01-02 11:00:00Z]
@@ -653,7 +651,6 @@ defmodule Operately.CompanyTransfers.ImporterTest do
                version_number: 3,
                title: "Restored title",
                content: %{"type" => "doc", "content" => []},
-               content_schema_version: 1,
                editor_id: ctx.editor.id,
                origin: :restored,
                restored_from_version_number: 1,
@@ -707,7 +704,6 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert Enum.map(imported_versions, & &1.version_number) == [1, 2, 3]
     assert Enum.map(imported_versions, & &1.origin) == [:migration, :edited, :restored]
     assert Enum.at(imported_versions, 2).restored_from_version_number == 1
-    assert Enum.at(imported_versions, 0).content_schema_version == 1
     assert Enum.at(imported_versions, 0).editor_id == nil
     assert Enum.at(imported_versions, 1).editor_id != nil
     assert Enum.at(imported_versions, 1).editor_id != ctx.editor.id

@@ -17,7 +17,7 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
   end
 
   test "accepts each valid origin", ctx do
-    Enum.each(DocumentVersion.valid_origins(), fn origin ->
+    Enum.each([:edited, :restored, :migration], fn origin ->
       attrs = version_attrs(ctx, origin: origin, version_number: origin_to_number(origin))
 
       attrs =
@@ -30,23 +30,20 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
       assert {:ok, version} = ResourceHubs.create_document_version(attrs)
       assert version.origin == origin
     end)
+
+    assert [%{origin: :created}] =
+             DocumentVersion.list_for_document(ctx.document.id)
+             |> Enum.filter(&(&1.version_number == 1))
   end
 
-  test "rejects non-positive version and schema version numbers", ctx do
+  test "rejects non-positive version numbers", ctx do
     assert {:error, changeset} =
              ResourceHubs.create_document_version(version_attrs(ctx, version_number: 0))
 
     assert %{version_number: _} = errors_on(changeset)
-
-    assert {:error, changeset} =
-             ResourceHubs.create_document_version(version_attrs(ctx, content_schema_version: 0))
-
-    assert %{content_schema_version: _} = errors_on(changeset)
   end
 
   test "enforces unique document/version numbers", ctx do
-    assert {:ok, _} = ResourceHubs.create_document_version(version_attrs(ctx, version_number: 1))
-
     assert {:error, changeset} =
              ResourceHubs.create_document_version(version_attrs(ctx, version_number: 1))
 
@@ -83,11 +80,7 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
   end
 
   test "editor_id foreign key nilifies when the editor person is removed", ctx do
-    assert {:ok, version} =
-             ResourceHubs.create_document_version(
-               version_attrs(ctx, version_number: 1, editor_id: ctx.creator.id)
-             )
-
+    version = DocumentVersion.get_by_document_and_number(ctx.document.id, 1)
     assert version.editor_id == ctx.creator.id
 
     %{rows: [[delete_action]]} =
@@ -112,7 +105,7 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
   end
 
   test "document hard deletion removes versions", ctx do
-    assert {:ok, version} = ResourceHubs.create_document_version(version_attrs(ctx, version_number: 1))
+    version = DocumentVersion.get_by_document_and_number(ctx.document.id, 1)
 
     assert {:ok, _} = Repo.delete(ctx.document)
 
@@ -120,7 +113,7 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
   end
 
   test "list_for_document and get_by_document_and_number", ctx do
-    assert {:ok, v1} = ResourceHubs.create_document_version(version_attrs(ctx, version_number: 1))
+    v1 = DocumentVersion.get_by_document_and_number(ctx.document.id, 1)
 
     assert {:ok, v2} =
              ResourceHubs.create_document_version(version_attrs(ctx, origin: :edited, version_number: 2))
@@ -136,6 +129,7 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
   test "there is no public update path for versions", _ctx do
     refute function_exported?(ResourceHubs, :update_document_version, 2)
     refute function_exported?(DocumentVersion, :update_changeset, 2)
+    refute function_exported?(DocumentVersion, :changeset, 2)
   end
 
   defp version_attrs(ctx, overrides) do
@@ -145,7 +139,6 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
         version_number: 1,
         title: ctx.document.name,
         content: ctx.document.content,
-        content_schema_version: 1,
         editor_id: ctx.creator.id,
         origin: :created
       },
@@ -153,7 +146,6 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
     )
   end
 
-  defp origin_to_number(:created), do: 1
   defp origin_to_number(:edited), do: 2
   defp origin_to_number(:restored), do: 3
   defp origin_to_number(:migration), do: 4
