@@ -11,8 +11,8 @@ function renderDiff(before: unknown, after: unknown) {
   return render(<RichContentDiff before={before} after={after} mentionedPersonLookup={mentionedPersonLookup} />);
 }
 
-function pane(label: "Removed" | "Added") {
-  return screen.getByRole("region", { name: `${label} version` });
+function pane(label: "Before" | "After") {
+  return screen.getByRole("region", { name: label });
 }
 
 describe("RichContentDiff", () => {
@@ -20,20 +20,22 @@ describe("RichContentDiff", () => {
     renderDiff(F.wordReplaceBefore, F.wordReplaceAfter);
 
     await waitFor(() => {
-      expect(pane("Removed").querySelector('[data-diff="removed"]')).toHaveClass("diff-removed");
-      expect(pane("Added").querySelector('[data-diff="added"]')).toHaveClass("diff-added");
+      expect(pane("Before").querySelector('[data-diff="removed"]')).toHaveClass("diff-removed");
+      expect(pane("After").querySelector('[data-diff="added"]')).toHaveClass("diff-added");
     });
 
-    expect(pane("Removed").querySelector('[aria-label="Removed"]')).toBeInTheDocument();
-    expect(pane("Added").querySelector('[aria-label="Added"]')).toBeInTheDocument();
+    expect(pane("Before").querySelector('[aria-label="Removed"]')).toBeInTheDocument();
+    expect(pane("After").querySelector('[aria-label="Added"]')).toBeInTheDocument();
+    expect(screen.getByLabelText("Diff legend")).toHaveTextContent("Removed");
+    expect(screen.getByLabelText("Diff legend")).toHaveTextContent("Added");
   });
 
   test("renders changed blocks and leaf nodes", async () => {
     const { rerender } = renderDiff(F.headingLevelBefore, F.headingLevelAfter);
 
     await waitFor(() => {
-      expect(pane("Removed").querySelector(".diff-removed-block")).toBeInTheDocument();
-      expect(pane("Added").querySelector(".diff-added-block")).toBeInTheDocument();
+      expect(pane("Before").querySelector(".diff-removed-block")).toBeInTheDocument();
+      expect(pane("After").querySelector(".diff-added-block")).toBeInTheDocument();
     });
 
     rerender(
@@ -41,9 +43,22 @@ describe("RichContentDiff", () => {
     );
 
     await waitFor(() => {
-      expect(pane("Removed").querySelector('[data-diff="removed"]')).toBeInTheDocument();
-      expect(pane("Added").querySelector('[data-diff="added"]')).toBeInTheDocument();
+      expect(pane("Before").querySelector('[data-diff="removed"]')).toBeInTheDocument();
+      expect(pane("After").querySelector('[data-diff="added"]')).toBeInTheDocument();
     });
+  });
+
+  test("keeps list markers inside highlighted list items", async () => {
+    renderDiff(F.listItemInsertBefore, F.listItemInsertAfter);
+
+    await waitFor(() => {
+      expect(pane("After").querySelector("li.diff-added-block")).toBeInTheDocument();
+    });
+
+    const styles = document.getElementById("rich-content-diff-styles")?.textContent ?? "";
+    expect(styles).toContain("li.diff-added-block");
+    expect(styles).toContain('content: "•"');
+    expect(styles).toContain("list-style: none");
   });
 
   test("renders identical documents without change decorations", async () => {
@@ -65,8 +80,8 @@ describe("RichContentDiff", () => {
     const { rerender } = renderDiff(F.charInsertBefore, F.charInsertAfter);
 
     await waitFor(() => {
-      expect(within(pane("Added")).getByLabelText("Added version content")).toHaveTextContent("Hello worlds");
-      expect(pane("Added").querySelector(".diff-added")).toHaveTextContent("s");
+      expect(within(pane("After")).getByLabelText("After content")).toHaveTextContent("Hello worlds");
+      expect(pane("After").querySelector(".diff-added")).toHaveTextContent("s");
     });
 
     rerender(
@@ -78,8 +93,8 @@ describe("RichContentDiff", () => {
     );
 
     await waitFor(() => {
-      expect(within(pane("Added")).getByLabelText("Added version content")).toHaveTextContent("The lazy fox");
-      expect(pane("Added").querySelector(".diff-added")).toHaveTextContent("lazy");
+      expect(within(pane("After")).getByLabelText("After content")).toHaveTextContent("The lazy fox");
+      expect(pane("After").querySelector(".diff-added")).toHaveTextContent("lazy");
     });
   });
 
@@ -87,8 +102,29 @@ describe("RichContentDiff", () => {
     renderDiff(F.blobBefore, F.blobAfter);
 
     await waitFor(() => {
-      expect(pane("Removed").querySelector(".node-blob.diff-removed")).toBeInTheDocument();
-      expect(pane("Added").querySelector(".node-blob.diff-added")).toBeInTheDocument();
+      expect(pane("Before").querySelector(".node-blob.diff-removed")).toBeInTheDocument();
+      expect(pane("After").querySelector(".node-blob.diff-added")).toBeInTheDocument();
     });
+  });
+
+  test("renders version labels and document titles inside panes", () => {
+    render(
+      <RichContentDiff
+        before={F.identicalDoc}
+        after={F.identicalDoc}
+        beforeLabel="Jul 21 at 2:04 PM"
+        afterLabel="Jul 21 at 2:05 PM"
+        beforeAriaLabel="Earlier version"
+        afterAriaLabel="Later version"
+        beforeTitle="Old title"
+        afterTitle="New title"
+        mentionedPersonLookup={mentionedPersonLookup}
+      />,
+    );
+
+    expect(screen.getByRole("region", { name: "Earlier version" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Later version" })).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="title-removed"]')).toHaveTextContent("Old title");
+    expect(document.querySelector('[data-test-id="title-added"]')).toHaveTextContent("New title");
   });
 });
