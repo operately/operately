@@ -195,3 +195,187 @@ export function buildLargeDocument(paragraphCount = 400): JSONContent {
 
   return doc(...content);
 }
+
+function cloneDoc(value: JSONContent): JSONContent {
+  return JSON.parse(JSON.stringify(value)) as JSONContent;
+}
+
+function appendFillerParagraphs(content: JSONContent[], paragraphCount: number) {
+  for (let i = 0; i < paragraphCount; i++) {
+    if (i % 10 === 0) {
+      content.push(heading(2, text(`Filler section ${i / 10}`)));
+    }
+
+    content.push(
+      paragraph(
+        text(
+          `Filler paragraph ${i} with enough text to keep the document long. `,
+          i % 3 === 0 ? [{ type: "bold" }] : undefined,
+        ),
+        text("More words. "),
+        i % 5 === 0 ? mention(`person-${i % 7}`, `Person ${i % 7}`) : text("Plain words. "),
+      ),
+    );
+  }
+}
+
+function spacer(label: string): JSONContent {
+  return paragraph(text(`Unchanged spacer — ${label}.`));
+}
+
+/**
+ * Large before/after pair for Storybook: keeps bulk filler text, but seeds a
+ * showcase region with many change kinds (emoji, mention, blob, lists, etc.).
+ * Showcase edits are separated by unchanged spacers so ChangeSet simplification
+ * does not merge them into one large replacement.
+ */
+export function buildLargeDocumentShowcasePair(fillerParagraphCount = 80): {
+  before: JSONContent;
+  after: JSONContent;
+} {
+  const beforeBlocks: JSONContent[] = [
+    heading(1, text("Product update")),
+    spacer("after title"),
+    paragraph(text("Hello 👋 welcome to the draft.")),
+    spacer("after emoji"),
+    paragraph(text("Please review with "), mention("bob_williams", "Bob Williams"), text(".")),
+    spacer("after mention"),
+    paragraph(blob({ id: "blob-demo-1", alt: "Architecture diagram", filetype: "image/png" })),
+    spacer("after blob"),
+    paragraph(text("docs", [{ type: "link", attrs: { href: "https://old.example/docs" } }])),
+    spacer("after link"),
+    bulletList(listItem(paragraph(text("Ship the spike"))), listItem(paragraph(text("Write tests")))),
+    spacer("after list"),
+    paragraph(text("Plain summary without emphasis.")),
+    spacer("after marks target"),
+    heading(2, text("Notes")),
+    spacer("after heading"),
+    paragraph(text("This paragraph will be removed entirely.")),
+    spacer("after removal target"),
+    paragraph(text("Keep this bridge paragraph.")),
+    spacer("after bridge"),
+    paragraph(text("The quick fox jumps over the fence.")),
+    spacer("after word replace"),
+    paragraph(text("Status line stays mostly the same.")),
+    spacer("after char edit"),
+    paragraph(text("A plain paragraph that becomes a heading.")),
+    spacer("after block-type target"),
+  ];
+
+  appendFillerParagraphs(beforeBlocks, fillerParagraphCount);
+
+  const before = doc(...beforeBlocks);
+  const afterBlocks = cloneDoc(before).content!;
+
+  const replaceMatching = (predicate: (block: JSONContent) => boolean, next: JSONContent) => {
+    const index = afterBlocks.findIndex(predicate);
+    if (index >= 0) afterBlocks[index] = next;
+  };
+
+  replaceMatching(
+    (block) => block.type === "paragraph" && block.content?.[0]?.text === "Hello 👋 welcome to the draft.",
+    paragraph(text("Hello 👋🎉 welcome to the published note.")),
+  );
+
+  replaceMatching(
+    (block) =>
+      block.type === "paragraph" &&
+      !!block.content?.some((node) => node.type === "mention" && node.attrs?.id === "bob_williams"),
+    paragraph(text("Please review with "), mention("grace_wilson", "Grace Wilson"), text(".")),
+  );
+
+  replaceMatching(
+    (block) =>
+      block.type === "paragraph" &&
+      !!block.content?.some((node) => node.type === "blob" && node.attrs?.id === "blob-demo-1"),
+    paragraph(blob({ id: "blob-demo-2", alt: "Updated architecture diagram", filetype: "image/png" })),
+  );
+
+  replaceMatching(
+    (block) =>
+      block.type === "paragraph" &&
+      block.content?.[0]?.text === "docs" &&
+      block.content?.[0]?.marks?.[0]?.attrs?.href === "https://old.example/docs",
+    paragraph(text("docs", [{ type: "link", attrs: { href: "https://new.example/docs" } }])),
+  );
+
+  replaceMatching(
+    (block) => block.type === "bulletList",
+    orderedList(
+      1,
+      listItem(paragraph(text("Ship the spike"))),
+      listItem(paragraph(text("Write tests")), bulletList(listItem(paragraph(text("Cover blob diffs"))))),
+      listItem(paragraph(text("Publish the release notes"))),
+    ),
+  );
+
+  replaceMatching(
+    (block) => block.type === "paragraph" && block.content?.[0]?.text === "Plain summary without emphasis.",
+    paragraph(
+      text("Plain summary without emphasis.", [
+        { type: "bold" },
+        { type: "italic" },
+        { type: "strike" },
+        { type: "highlight", attrs: { highlight: "yellow" } },
+      ]),
+    ),
+  );
+
+  replaceMatching(
+    (block) => block.type === "heading" && block.attrs?.level === 2 && block.content?.[0]?.text === "Notes",
+    heading(3, text("Notes")),
+  );
+
+  const removalIndex = afterBlocks.findIndex(
+    (block) => block.type === "paragraph" && block.content?.[0]?.text === "This paragraph will be removed entirely.",
+  );
+  if (removalIndex >= 0) {
+    afterBlocks.splice(removalIndex, 1);
+  }
+
+  const bridgeIndex = afterBlocks.findIndex(
+    (block) => block.type === "paragraph" && block.content?.[0]?.text === "Keep this bridge paragraph.",
+  );
+  if (bridgeIndex >= 0) {
+    afterBlocks.splice(
+      bridgeIndex + 1,
+      0,
+      paragraph(text("Brand-new paragraph inserted in the middle.")),
+      paragraph(text("Another added line with a celebration 🚀")),
+    );
+  }
+
+  replaceMatching(
+    (block) => block.type === "paragraph" && block.content?.[0]?.text === "The quick fox jumps over the fence.",
+    paragraph(text("The lazy fox jumps over the fence.")),
+  );
+
+  replaceMatching(
+    (block) => block.type === "paragraph" && block.content?.[0]?.text === "Status line stays mostly the same.",
+    paragraph(text("Status line stays mostly the same!")),
+  );
+
+  replaceMatching(
+    (block) =>
+      block.type === "paragraph" && block.content?.[0]?.text === "A plain paragraph that becomes a heading.",
+    heading(2, text("A plain paragraph that becomes a heading.")),
+  );
+
+  replaceMatching(
+    (block) => block.type === "heading" && block.content?.[0]?.text === "Filler section 2",
+    heading(3, text("Filler section 2 (renamed)")),
+  );
+
+  // Distant small edit near the end of the filler region.
+  for (let i = afterBlocks.length - 1; i >= 0; i--) {
+    const block = afterBlocks[i]!;
+    if (block.type === "paragraph" && typeof block.content?.[0]?.text === "string" && block.content[0].text.startsWith("Filler paragraph")) {
+      afterBlocks[i] = paragraph(text("Distant edit near the end of a long document."));
+      break;
+    }
+  }
+
+  afterBlocks.push(paragraph(text("Closing paragraph added after everything else.")));
+
+  return { before, after: doc(...afterBlocks) };
+}

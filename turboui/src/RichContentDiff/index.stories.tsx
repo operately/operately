@@ -60,16 +60,14 @@ export const ReorderedBlocks: Story = story(F.reorderBefore, F.reorderAfter);
 export const ParseError: Story = story({ type: "paragraph", content: [] }, F.identicalDoc);
 
 export const LargeDocument: Story = (() => {
-  const before = F.buildLargeDocument(120);
-  const after = F.buildLargeDocument(120);
-  after.content![20] = F.paragraph(F.text("Edited paragraph inside a large document"));
+  const { before, after } = F.buildLargeDocumentShowcasePair(80);
   return {
     ...story(before, after),
     parameters: {
       docs: {
         description: {
           story:
-            "Large fixture for visual/perf checks. Unit tests time a ~400-paragraph document; worker offload is deferred unless main-thread cost is too high.",
+            "Large fixture with a showcase of change kinds (emoji, mentions, blobs, lists, marks, link destination, full-line add/remove, small edits, distant edit). Unit tests time a ~400-paragraph document; worker offload is deferred unless main-thread cost is too high.",
         },
       },
     },
