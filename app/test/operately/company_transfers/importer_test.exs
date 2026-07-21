@@ -623,6 +623,11 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
     upload_blob_payload!(ctx.historical_blob, "historical-only payload")
 
+    # Fixture already creates version 1 for published documents; replace history
+    # with the export/import shapes this test exercises.
+    from(v in DocumentVersion, where: v.document_id == ^ctx.document.id)
+    |> Repo.delete_all()
+
     assert {:ok, _} =
              Operately.ResourceHubs.create_document_version(%{
                document_id: ctx.document.id,
