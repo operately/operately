@@ -1524,6 +1524,19 @@ export interface Discussion {
   permissions?: SpacePermissions | null;
 }
 
+export interface DocumentVersion {
+  __typename: "document_version";
+  id: string;
+  versionNumber: number;
+  title: string;
+  editor?: Person | null;
+  origin: string;
+  restoredFromVersionNumber?: number | null;
+  insertedAt: string;
+  isCurrent: boolean;
+  content?: Json | null;
+}
+
 export interface EditCompanyMemberPermissionsInput {
   id: Id;
   accessLevel: AccessOptions;
@@ -1997,6 +2010,7 @@ export interface ResourceHubDocument {
   name: string;
   content: string;
   state: DocumentState;
+  currentVersion?: number | null;
   insertedAt: string;
   publishedAt: string | null;
   updatedAt: string;
@@ -2920,6 +2934,23 @@ export interface DocumentsGetInput {
 
 export interface DocumentsGetResult {
   document: ResourceHubDocument;
+}
+
+export interface DocumentsGetVersionInput {
+  documentId: Id;
+  versionNumber: number;
+}
+
+export interface DocumentsGetVersionResult {
+  version: DocumentVersion;
+}
+
+export interface DocumentsListVersionsInput {
+  documentId: Id;
+}
+
+export interface DocumentsListVersionsResult {
+  versions: DocumentVersion[];
 }
 
 export interface FilesGetInput {
@@ -4128,6 +4159,7 @@ export interface DocumentsUpdateInput {
   documentId: Id;
   name: string;
   content: Json;
+  expectedVersion?: number | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
@@ -5793,6 +5825,14 @@ class ApiNamespaceDocuments {
     return this.client.get("/documents/get", input);
   }
 
+  async getVersion(input: DocumentsGetVersionInput): Promise<DocumentsGetVersionResult> {
+    return this.client.get("/documents/get_version", input);
+  }
+
+  async listVersions(input: DocumentsListVersionsInput): Promise<DocumentsListVersionsResult> {
+    return this.client.get("/documents/list_versions", input);
+  }
+
   async create(input: DocumentsCreateInput): Promise<DocumentsCreateResult> {
     return this.client.post("/documents/create", input);
   }
@@ -7322,6 +7362,14 @@ export default {
     get: (input: DocumentsGetInput) => defaultApiClient.apiNamespaceDocuments.get(input),
     useGet: (input: DocumentsGetInput) =>
       useQuery<DocumentsGetResult>(() => defaultApiClient.apiNamespaceDocuments.get(input)),
+
+    getVersion: (input: DocumentsGetVersionInput) => defaultApiClient.apiNamespaceDocuments.getVersion(input),
+    useGetVersion: (input: DocumentsGetVersionInput) =>
+      useQuery<DocumentsGetVersionResult>(() => defaultApiClient.apiNamespaceDocuments.getVersion(input)),
+
+    listVersions: (input: DocumentsListVersionsInput) => defaultApiClient.apiNamespaceDocuments.listVersions(input),
+    useListVersions: (input: DocumentsListVersionsInput) =>
+      useQuery<DocumentsListVersionsResult>(() => defaultApiClient.apiNamespaceDocuments.listVersions(input)),
 
     publish: (input: DocumentsPublishInput) => defaultApiClient.apiNamespaceDocuments.publish(input),
     usePublish: () =>

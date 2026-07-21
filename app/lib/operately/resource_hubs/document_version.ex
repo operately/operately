@@ -1,4 +1,6 @@
 defmodule Operately.ResourceHubs.DocumentVersion do
+  def __api_typename__, do: "document_version"
+
   use Operately.Schema
 
   import Ecto.Query, only: [from: 2]
@@ -14,25 +16,21 @@ defmodule Operately.ResourceHubs.DocumentVersion do
     field :version_number, :integer
     field :title, :string
     field :content, :map
-    field :content_schema_version, :integer
     field :origin, Ecto.Enum, values: @valid_origins
     field :restored_from_version_number, :integer
+
+    field :is_current, :boolean, virtual: true
 
     timestamps(updated_at: false)
   end
 
   def changeset(attrs) when is_map(attrs) do
-    changeset(%__MODULE__{}, attrs)
-  end
-
-  def changeset(version, attrs) do
-    version
+    %__MODULE__{}
     |> cast(attrs, [
       :document_id,
       :version_number,
       :title,
       :content,
-      :content_schema_version,
       :editor_id,
       :origin,
       :restored_from_version_number,
@@ -43,11 +41,9 @@ defmodule Operately.ResourceHubs.DocumentVersion do
       :version_number,
       :title,
       :content,
-      :content_schema_version,
       :origin
     ])
     |> validate_number(:version_number, greater_than: 0)
-    |> validate_number(:content_schema_version, greater_than: 0)
     |> validate_number(:restored_from_version_number, greater_than: 0)
     |> validate_inclusion(:origin, @valid_origins)
     |> validate_restored_from_matches_origin()
@@ -61,7 +57,8 @@ defmodule Operately.ResourceHubs.DocumentVersion do
   def list_for_document(document_id) do
     from(v in __MODULE__,
       where: v.document_id == ^document_id,
-      order_by: [desc: v.version_number]
+      order_by: [desc: v.version_number],
+      preload: [:editor]
     )
     |> Repo.all()
   end
@@ -71,6 +68,14 @@ defmodule Operately.ResourceHubs.DocumentVersion do
       where: v.document_id == ^document_id and v.version_number == ^version_number
     )
     |> Repo.one()
+  end
+
+  def mark_current(versions, current_version) when is_list(versions) do
+    Enum.map(versions, &mark_current(&1, current_version))
+  end
+
+  def mark_current(%__MODULE__{} = version, current_version) do
+    %{version | is_current: version.version_number == current_version}
   end
 
   defp validate_restored_from_matches_origin(changeset) do

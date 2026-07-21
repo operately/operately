@@ -4,6 +4,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
   import Operately.NotificationsFixtures
 
   alias Operately.ResourceHubs
+  alias Operately.ResourceHubs.DocumentVersion
   alias Operately.Notifications.SubscriptionList
   alias Operately.Support.RichText
 
@@ -78,6 +79,14 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
       assert_document_content(ctx.doc, ctx.creator)
 
+      {:ok, _} =
+        Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, Repo.preload(ctx.doc, [:resource_hub, :node]), %{
+          name: "Edited before copy",
+          content: RichText.rich_text("Edited content")
+        })
+
+      assert length(DocumentVersion.list_for_document(ctx.doc.id)) == 2
+
       {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.folder1, ctx.hub, %{})
 
       assert ResourceHubs.count_children(ctx.folder1) == 1
@@ -92,7 +101,18 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
 
         docs = ResourceHubs.list_documents(f)
         assert length(docs) == 1
-        assert_document_content(hd(docs), ctx.creator)
+        doc = hd(docs)
+
+        if doc.id == ctx.doc.id do
+          assert length(DocumentVersion.list_for_document(doc.id)) == 2
+        else
+          versions = DocumentVersion.list_for_document(doc.id)
+          assert length(versions) == 1
+          assert hd(versions).version_number == 1
+          assert hd(versions).origin == :created
+          assert hd(versions).title == "Edited before copy"
+          assert doc.current_version == 1
+        end
       end)
     end
 

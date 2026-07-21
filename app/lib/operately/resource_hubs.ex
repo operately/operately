@@ -85,8 +85,8 @@ defmodule Operately.ResourceHubs do
   end
 
   def create_document_version(attrs \\ %{}) do
-    %DocumentVersion{}
-    |> DocumentVersion.changeset(attrs)
+    attrs
+    |> DocumentVersion.changeset()
     |> Repo.insert()
   end
 
