@@ -27,13 +27,21 @@ export type { RichContentChange, DiffRichContentResult } from "./types";
 const DIFF_STYLES = `
 .ProseMirror .diff-removed,
 .ProseMirror.diff-pane .diff-removed {
-  background-color: var(--color-callout-error-bg);
+  background-color: var(--color-red-200);
   color: inherit;
 }
 .ProseMirror .diff-added,
 .ProseMirror.diff-pane .diff-added {
-  background-color: var(--color-callout-success-bg);
+  background-color: var(--color-emerald-200);
   color: inherit;
+}
+.dark .ProseMirror .diff-removed,
+.dark .ProseMirror.diff-pane .diff-removed {
+  background-color: color-mix(in srgb, var(--color-red-400) 40%, transparent);
+}
+.dark .ProseMirror .diff-added,
+.dark .ProseMirror.diff-pane .diff-added {
+  background-color: color-mix(in srgb, var(--color-emerald-400) 40%, transparent);
 }
 .ProseMirror .diff-removed-block,
 .ProseMirror .diff-added-block {
