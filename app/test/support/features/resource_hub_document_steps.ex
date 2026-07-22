@@ -520,21 +520,6 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.assert_text("Page Not Found")
   end
 
-  step :refute_version_history_option, ctx do
-    ctx
-    |> visit_document_page()
-    |> UI.click(testid: "options-button")
-    |> UI.refute_has(testid: "version-history-link")
-  end
-
-  step :assert_version_history_redirects_when_disabled, ctx do
-    {:ok, document} = Document.get(:system, id: ctx.document.id)
-
-    ctx
-    |> UI.visit(Paths.document_versions_path(ctx.company, document))
-    |> UI.assert_page(Paths.document_path(ctx.company, document))
-  end
-
   step :select_version_in_history, ctx, version_number do
     ctx
     |> UI.click(testid: "select-version-#{version_number}")
