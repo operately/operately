@@ -5,6 +5,8 @@ defmodule Operately.DemoTest do
   import Operately.PeopleFixtures
 
   alias Operately.Activities.NotificationDispatcher
+  alias Operately.ResourceHubs.DocumentVersion
+  alias Operately.Repo
 
   test "it creates a demo company without failures" do
     account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
@@ -224,5 +226,94 @@ defmodule Operately.DemoTest do
     assert Enum.any?(project_links, &(&1.type == :figma))
     assert Enum.any?(goal_documents, &(&1.name == "Self-Serve Growth Experiments Log"))
     assert Enum.any?(goal_links, &(&1.type == :google_sheet))
+  end
+
+  test "demo documents capture version history" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
+
+    documents = company_documents(company.id)
+    assert length(documents) > 0
+
+    Enum.each(documents, fn document ->
+      versions = DocumentVersion.list_for_document(document.id)
+      version_numbers = Enum.map(versions, & &1.version_number) |> Enum.sort()
+
+      assert document.current_version == length(versions)
+      assert version_numbers == Enum.to_list(1..document.current_version)
+      assert Enum.find(versions, &(&1.version_number == 1)).origin == :created
+      assert Enum.find(versions, &(&1.version_number == document.current_version)).title == document.name
+    end)
+
+    playbook = Enum.find(documents, &(&1.name == "Product Development Playbook"))
+    beta_plan = Enum.find(documents, &(&1.name == "Collaborative Docs Beta Release Plan"))
+    experiments = Enum.find(documents, &(&1.name == "Self-Serve Growth Experiments Log"))
+
+    assert playbook.current_version == 2
+    assert beta_plan.current_version == 2
+    assert experiments.current_version == 2
+
+    assert Enum.find(DocumentVersion.list_for_document(playbook.id), &(&1.version_number == 2)).origin == :edited
+    assert Enum.find(DocumentVersion.list_for_document(beta_plan.id), &(&1.version_number == 2)).origin == :edited
+  end
+
+  test "document edits create sequential versions" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    data = %{
+      people: [],
+      spaces: [],
+      goals: [],
+      projects: [],
+      documents: [
+        %{
+          key: :handbook,
+          space: :company_space,
+          name: "Handbook",
+          days_ago: 5,
+          content: "First draft",
+          edits: [
+            %{
+              author: :owner,
+              days_ago: 2,
+              name: "Company Handbook",
+              content: "Second draft with title change"
+            }
+          ]
+        }
+      ]
+    }
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO", data)
+
+    document =
+      company_documents(company.id)
+      |> Enum.find(&(&1.name == "Company Handbook"))
+
+    versions = DocumentVersion.list_for_document(document.id) |> Enum.sort_by(& &1.version_number)
+
+    assert document.current_version == 2
+    assert Enum.map(versions, &{&1.version_number, &1.origin, &1.title}) == [
+             {1, :created, "Handbook"},
+             {2, :edited, "Company Handbook"}
+           ]
+
+    assert Date.diff(Date.utc_today(), NaiveDateTime.to_date(Enum.at(versions, 0).inserted_at)) == 5
+    assert Date.diff(Date.utc_today(), NaiveDateTime.to_date(Enum.at(versions, 1).inserted_at)) == 2
+  end
+
+  defp company_documents(company_id) do
+    import Ecto.Query
+
+    from(d in Operately.ResourceHubs.Document,
+      join: n in assoc(d, :node),
+      join: h in assoc(n, :resource_hub),
+      left_join: s in assoc(h, :space),
+      left_join: p in assoc(h, :project),
+      left_join: g in assoc(h, :goal),
+      where: s.company_id == ^company_id or p.company_id == ^company_id or g.company_id == ^company_id
+    )
+    |> Repo.all()
   end
 end

@@ -3072,6 +3072,7 @@ defmodule Operately.Demo.Data do
           key: :product_development_playbook,
           space: :product_space,
           name: "Product Development Playbook",
+          days_ago: 21,
           content: """
           Our guide to building and shipping features that delight customers while maintaining high quality standards.
 
@@ -3113,6 +3114,55 @@ defmodule Operately.Demo.Data do
           - Marketing coordination
           - Post-launch monitoring
           """,
+          edits: [
+            %{
+              author: :frank_miller,
+              days_ago: 7,
+              content: """
+              Our guide to building and shipping features that delight customers while maintaining high quality standards.
+
+              ### Overview
+
+              This playbook outlines our product development methodology, from ideation to launch. It serves as the single source of truth for how we build and ship features.
+
+              ### Core Principles
+
+              - User-First: Every feature starts with user needs
+              - Data-Driven: Decisions backed by metrics and user feedback
+              - Iterative Development: Build, measure, learn, repeat
+              - Quality-Focused: Comprehensive testing at every stage
+              - Safe Rollouts: Use feature flags for gradual releases
+
+              ### Development Process
+
+              1) Discovery Phase
+
+              - User research and feedback analysis
+              - Market and competitor analysis
+              - Technical feasibility assessment
+
+              2) Planning Phase
+
+              - Feature specification
+              - Success metrics definition
+              - Resource allocation
+
+              3) Development Phase
+
+              - Sprint planning and execution
+              - Regular progress updates
+              - Quality assurance
+              - Code review standards and deployment checklist
+
+              4) Launch Phase
+
+              - Beta testing
+              - Documentation
+              - Marketing coordination
+              - Post-launch monitoring
+              """
+            }
+          ],
           comments: [
             %{
               author: :walter_baker,
@@ -3333,6 +3383,7 @@ defmodule Operately.Demo.Data do
           project: :develop_collaborative_features,
           author: :walter_baker,
           name: "Collaborative Docs Beta Release Plan",
+          days_ago: 14,
           content: """
           Plan for rolling out the collaborative docs beta to power users and collecting structured feedback before the wider release.
 
@@ -3348,6 +3399,30 @@ defmodule Operately.Demo.Data do
           2. Ship release notes template and onboarding checklist
           3. Review adoption metrics and decide on general availability timing
           """,
+          edits: [
+            %{
+              author: :frank_miller,
+              days_ago: 3,
+              name: "Collaborative Docs Beta Release Plan",
+              content: """
+              Plan for rolling out the collaborative docs beta to power users and collecting structured feedback before the wider release.
+
+              ### Beta cohort
+
+              - 18 accounts with active document workflows
+              - Weekly office hours with product and engineering
+              - Shared Slack channel for fast feedback
+              - Onboarding checklist for inviting collaborators outside the cohort
+
+              ### Release milestones
+
+              1. Enable presence and inline comments for the beta cohort
+              2. Ship release notes template and onboarding checklist
+              3. Review adoption metrics and decide on general availability timing
+              4. Publish a short changelog for support and customer success
+              """
+            }
+          ],
           comments: [
             %{
               author: :frank_miller,
@@ -3423,6 +3498,7 @@ defmodule Operately.Demo.Data do
           goal: :accelerate_user_growth,
           author: :emily_davis,
           name: "Self-Serve Growth Experiments Log",
+          days_ago: 10,
           content: """
           Running log of experiments supporting self-serve revenue growth.
 
@@ -3436,7 +3512,29 @@ defmodule Operately.Demo.Data do
 
           - Shorter onboarding paths improved trial activation
           - Referral prompts work best after the first completed workflow
-          """
+          """,
+          edits: [
+            %{
+              author: :emily_davis,
+              days_ago: 2,
+              content: """
+              Running log of experiments supporting self-serve revenue growth.
+
+              ### Active experiments
+
+              - Referral incentive test for annual plans
+              - Trial onboarding email sequence refresh
+              - Paid search landing page variant for product-led buyers
+              - In-product upgrade prompt after first completed workflow
+
+              ### Learnings
+
+              - Shorter onboarding paths improved trial activation
+              - Referral prompts work best after the first completed workflow
+              - Upgrade prompts convert better when tied to a completed outcome
+              """
+            }
+          ]
         },
         %{
           key: :referral_program_rollout_guide,
