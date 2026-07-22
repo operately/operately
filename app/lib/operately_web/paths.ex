@@ -372,6 +372,14 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "documents", document_with_comment])
   end
 
+  def document_versions_path(company = %Company{}, document) do
+    create_path([company_id(company), "documents", document_id(document), "versions"])
+  end
+
+  def document_version_path(company = %Company{}, document, version_number) when is_integer(version_number) do
+    create_path([company_id(company), "documents", document_id(document), "versions", Integer.to_string(version_number)])
+  end
+
   def edit_document_path(company = %Company{}, document) do
     create_path([company_id(company), "documents", document_id(document), "edit"])
   end
