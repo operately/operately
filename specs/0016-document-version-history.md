@@ -360,7 +360,7 @@ The operation:
 9. inserts `resource_hub_document_version_restored`
 10. commits all changes atomically
 
-The activity feed text is `restored {document} to version {number}`. Its notification handler returns no recipients in the first release.
+The activity feed text is `restored {document} to a previous version`. Its notification handler returns no recipients in the first release.
 
 Implement all five required activity components:
 

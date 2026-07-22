@@ -150,6 +150,7 @@ export const DISPLAYED_IN_FEED = [
   "milestone_deleting",
   "resource_hub_document_created",
   "resource_hub_document_edited",
+  "resource_hub_document_version_restored",
   "resource_hub_document_commented",
   "resource_hub_document_deleted",
   "resource_hub_file_created",
@@ -255,6 +256,7 @@ import ResourceHubDocumentCommented from "@/features/activities/ResourceHubDocum
 import ResourceHubDocumentCreated from "@/features/activities/ResourceHubDocumentCreated";
 import ResourceHubDocumentDeleted from "@/features/activities/ResourceHubDocumentDeleted";
 import ResourceHubDocumentEdited from "@/features/activities/ResourceHubDocumentEdited";
+import ResourceHubDocumentVersionRestored from "@/features/activities/ResourceHubDocumentVersionRestored";
 import ResourceHubFileCommented from "@/features/activities/ResourceHubFileCommented";
 import ResourceHubFileCreated from "@/features/activities/ResourceHubFileCreated";
 import ResourceHubFileDeleted from "@/features/activities/ResourceHubFileDeleted";
@@ -351,6 +353,7 @@ function handler(activity: Activity) {
     .with("project_timeline_edited", () => ProjectTimelineEdited)
     .with("resource_hub_document_created", () => ResourceHubDocumentCreated)
     .with("resource_hub_document_edited", () => ResourceHubDocumentEdited)
+    .with("resource_hub_document_version_restored", () => ResourceHubDocumentVersionRestored)
     .with("resource_hub_document_commented", () => ResourceHubDocumentCommented)
     .with("resource_hub_document_deleted", () => ResourceHubDocumentDeleted)
     .with("resource_hub_file_created", () => ResourceHubFileCreated)
