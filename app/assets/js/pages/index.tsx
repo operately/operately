@@ -83,6 +83,8 @@ import ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import ProjectRetrospectivePage from "./ProjectRetrospectivePage";
 import ResetPasswordPage from "./ResetPasswordPage";
 import ResourceHubDocumentPage from "./ResourceHubDocumentPage";
+import ResourceHubDocumentVersionComparisonPage from "./ResourceHubDocumentVersionComparisonPage";
+import ResourceHubDocumentVersionsPage from "./ResourceHubDocumentVersionsPage";
 import ResourceHubDraftsPage from "./ResourceHubDraftsPage";
 import ResourceHubEditDocumentPage from "./ResourceHubEditDocumentPage";
 import ResourceHubEditFilePage from "./ResourceHubEditFilePage";
@@ -194,6 +196,8 @@ export default {
   ProjectRetrospectivePage,
   ResetPasswordPage,
   ResourceHubDocumentPage,
+  ResourceHubDocumentVersionComparisonPage,
+  ResourceHubDocumentVersionsPage,
   ResourceHubDraftsPage,
   ResourceHubEditDocumentPage,
   ResourceHubEditFilePage,
