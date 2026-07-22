@@ -54,6 +54,11 @@ defmodule Operately.Operations.CompanyAdding do
       name: "General",
       mission: "Organization-wide announcements and resources",
       company_permissions: Binding.view_access(),
+      tools: %{
+        tasks_enabled: true,
+        discussions_enabled: true,
+        resource_hub_enabled: true
+      }
     }
 
     multi
