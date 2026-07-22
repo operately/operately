@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { IconFileText, IconMessageCircle } from "../../icons";
+import { IconFileText, IconGripVertical, IconMessageCircle } from "../../icons";
 import { DateField } from "../../DateField";
 import { AssigneesField } from "../../AssigneesField";
 import classNames from "../../utils/classnames";
@@ -142,7 +142,7 @@ export function Card({
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
       className={classNames(
-        "relative rounded-md border bg-surface-base px-4 py-2 shadow-xs group w-full cursor-grab focus-visible:outline-none transition-colors",
+        "relative rounded-lg border bg-surface-base px-3.5 py-3 shadow-xs group w-full cursor-grab focus-visible:outline-none transition-[border-color,box-shadow] hover:border-surface-outline hover:shadow-sm",
         selected
           ? "border-brand-1 bg-[rgba(224,242,254,0.75)] shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:bg-[rgba(37,99,235,0.20)]"
           : "border-surface-subtle dark:border-stroke-base",
@@ -158,11 +158,16 @@ export function Card({
       aria-selected={selected}
     >
       {dropIndicatorEdge && <DropIndicator edge={dropIndicatorEdge} />}
-      <div className="flex items-start">
+      <div className="flex items-start gap-2">
+        <IconGripVertical
+          size={16}
+          className="mt-0.5 flex-shrink-0 text-content-subtle opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+          aria-hidden="true"
+        />
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <div onMouseDown={stopDragFromInteractive}>
             <div
-              className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words cursor-pointer hover:underline"
+              className="block text-[15px] font-medium leading-5 text-content-base hover:text-link-hover transition-colors break-words cursor-pointer hover:underline"
               title={task.title}
               onClick={(e) => {
                 e.preventDefault();
@@ -174,17 +179,21 @@ export function Card({
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-2 text-[11px] text-content-dimmed leading-none">
+          <div className="flex items-center justify-between gap-2 text-xs text-content-dimmed leading-4">
             <div className="flex items-center gap-2">
               {shouldShowDescriptionIndicator && (
-                <span className="inline-flex items-center gap-1" data-test-id="description-indicator">
-                  <IconFileText size={12} />
+                <span
+                  className="inline-flex items-center gap-1"
+                  title="Has description"
+                  data-test-id="description-indicator"
+                >
+                  <IconFileText size={14} />
                 </span>
               )}
 
               {shouldShowCommentsIndicator && (
-                <span className="inline-flex items-center gap-1" data-test-id="comments-indicator">
-                  <IconMessageCircle size={12} />
+                <span className="inline-flex items-center gap-1" title="Has comments" data-test-id="comments-indicator">
+                  <IconMessageCircle size={14} />
                   {shouldShowCommentCount && <span>{task.commentCount}</span>}
                 </span>
               )}
@@ -214,7 +223,7 @@ export function Card({
                 <AssigneesField
                   people={currentAssignees}
                   setPeople={handleAssigneesChange}
-                  avatarSize={22}
+                  avatarSize={24}
                   avatarOnly={true}
                   {...(assigneePersonSearch ? { searchData: assigneePersonSearch } : { readonly: true as const })}
                   testId={createTestId("kanban-card-assignee", task.id)}

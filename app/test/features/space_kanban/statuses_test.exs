@@ -32,7 +32,7 @@ defmodule Operately.Features.SpaceKanban.StatusesTest do
     ctx
     |> Steps.visit_kanban_page()
     |> Steps.edit_status(status_value: secondary_status, new_label: "In Motion", appearance: "blue")
-    |> Steps.assert_status_label(status_value: secondary_status, label: "IN MOTION")
+    |> Steps.assert_status_label(status_value: secondary_status, label: "In Motion")
   end
 
   feature "cannot delete the last remaining status", ctx do

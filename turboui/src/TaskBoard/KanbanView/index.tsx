@@ -109,8 +109,9 @@ export function KanbanBoard(props: KanbanBoardProps) {
         assigneePersonSearch={props.assigneePersonSearch}
         onTaskCreate={props.onTaskCreate}
         canEdit={props.canEdit}
+        canManageStatuses={canReorderStatuses}
         onAddStatusClick={
-          props.canEdit
+          canReorderStatuses
             ? () => {
                 setEditingStatus(undefined);
                 setIsAddStatusModalOpen(true);
@@ -118,7 +119,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
             : undefined
         }
         onEditStatus={
-          props.canEdit
+          canReorderStatuses
             ? (status) => {
                 setEditingStatus(status);
                 setIsAddStatusModalOpen(true);
@@ -126,7 +127,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
             : undefined
         }
         onDeleteStatus={
-          props.canEdit
+          canReorderStatuses
             ? (status) => {
                 setDeletingStatus(status);
               }
