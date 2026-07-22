@@ -28,6 +28,7 @@ export default {
     }).configure({
       suggestion: {
         placement: "bottom-start",
+        floatingUi: { strategy: "fixed" },
         render: () => new MentionPopup(),
         items: searchFn,
         allowedPrefixes: [",", "\\s"],

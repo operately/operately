@@ -5,6 +5,12 @@ import { MentionList } from "./MentionList";
 type MentionPopupProps = Record<string, any>;
 
 /**
+ * Must sit above SlideIn / Modal overlays (Tailwind z-50) so @mention
+ * suggestions remain visible when editing task descriptions in a slide-in.
+ */
+export const MENTION_POPUP_Z_INDEX = 100;
+
+/**
  * @public
  * Declaring the MentionPopup class public to silence the knip dead code warning.
  */
@@ -27,6 +33,7 @@ export class MentionPopup {
       return;
     }
 
+    this.component.element.style.zIndex = String(MENTION_POPUP_Z_INDEX);
     this.unmount = props.mount(this.component.element);
   }
 
