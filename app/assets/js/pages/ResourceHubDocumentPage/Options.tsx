@@ -1,11 +1,13 @@
 import React from "react";
 
-import { usePaths } from "@/routes/paths";
+import * as Companies from "@/models/companies";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
-import { IconCopy, IconEdit, IconFileExport, IconTrash } from "turboui";
+import { IconCopy, IconEdit, IconFileExport, IconHistory, IconTrash } from "turboui";
 import { useLoadedData } from "./loader";
 
 interface Props {
@@ -16,7 +18,10 @@ interface Props {
 export function Options({ showCopyModal, showDeleteModal }: Props) {
   const paths = usePaths();
   const { document } = useLoadedData();
+  const { company } = useCompanyLoaderData();
   assertPresent(document.permissions, "permissions must be present in document");
+
+  const documentVersionsEnabled = Companies.hasFeature(company, "document-versions");
 
   return (
     <PageOptions.Root testId="options-button">
@@ -30,6 +35,14 @@ export function Options({ showCopyModal, showDeleteModal }: Props) {
         />
       )}
       {document.permissions.canCreateDocument && <CopyLink showCopyModal={showCopyModal} />}
+      {documentVersionsEnabled && document.permissions.canView && (
+        <PageOptions.Link
+          icon={IconHistory}
+          title="History of changes"
+          to={paths.resourceHubDocumentVersionsPath(document.id!)}
+          testId="version-history-link"
+        />
+      )}
       {document.permissions.canView && <ExportMarkdownAction />}
       {document.permissions.canDeleteDocument && <DeleteAction onClick={showDeleteModal} />}
     </PageOptions.Root>

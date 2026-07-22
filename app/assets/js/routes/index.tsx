@@ -116,6 +116,8 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("folders/:id", pages.ResourceHubFolderPage),
         pageRoute("documents/:id", pages.ResourceHubDocumentPage),
         pageRoute("documents/:id/edit", pages.ResourceHubEditDocumentPage),
+        pageRoute("documents/:id/versions", pages.ResourceHubDocumentVersionsPage),
+        pageRoute("documents/:id/versions/:versionNumber", pages.ResourceHubDocumentVersionComparisonPage),
         pageRoute("files/:id", pages.ResourceHubFilePage),
         pageRoute("files/:id/edit", pages.ResourceHubEditFilePage),
         pageRoute("links/:id", pages.ResourceHubLinkPage),

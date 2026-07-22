@@ -35,7 +35,7 @@ type Story = StoryObj<typeof DocumentVersionComparisonPage>;
 function baseProps(overrides: Partial<DocumentVersionComparisonPage.Props> = {}): DocumentVersionComparisonPage.Props {
   return {
     title: ["See what changed", M.titles.current],
-    navigation: M.navigation,
+    navigation: M.comparisonNavigation,
     versions: M.multiVersionList,
     before: M.snapshot(4, M.titles.renamed, M.contentV1),
     after: M.snapshot(5, M.titles.current, M.contentV2),

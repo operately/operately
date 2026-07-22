@@ -44,17 +44,28 @@ export const titles = {
   migration: "Company handbook: Docs & Files",
 } as const;
 
+/** History page breadcrumbs end at the document. */
 export function navigationFor(documentTitle: string) {
   return [
     { to: "/spaces/1", label: "Product" },
     { to: "/resource-hubs/1", label: "Documents & Files" },
     { to: "/documents/1", label: documentTitle },
+  ];
+}
+
+/** Comparison page breadcrumbs include a link back to history. */
+export function comparisonNavigationFor(documentTitle: string) {
+  return [
+    ...navigationFor(documentTitle),
     { to: "/documents/1/versions", label: "History of changes" },
   ];
 }
 
-/** Default breadcrumb for the current multi-version document. */
+/** Default breadcrumb for the current multi-version document (history page). */
 export const navigation = navigationFor(titles.current);
+
+/** Default breadcrumb for comparison stories. */
+export const comparisonNavigation = comparisonNavigationFor(titles.current);
 
 export const oneVersionList: DocumentVersion[] = [
   version({
