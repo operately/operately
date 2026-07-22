@@ -1,3 +1,5 @@
+import type { JSONContent } from "@tiptap/core";
+
 import type { DocumentVersion, Person } from "../ApiTypes";
 import * as F from "../RichContentDiff/__tests__/fixtures";
 
@@ -26,7 +28,8 @@ const grace: Person = {
 function version(
   attrs: Omit<Partial<DocumentVersion>, "content"> &
     Pick<DocumentVersion, "versionNumber" | "title" | "origin"> & {
-      content?: unknown;
+      // API Json is string; mocks pass TipTap JSON objects.
+      content?: JSONContent | null;
     },
 ): DocumentVersion {
   return {

@@ -40,7 +40,7 @@ export function VersionTimeline(props: Props) {
                 type="button"
                 className="absolute inset-0 z-0 cursor-pointer rounded-md"
                 aria-pressed={isSelected}
-                aria-label={`Preview version from ${version.insertedAt}`}
+                aria-label={`Preview version ${version.versionNumber}: ${actionText}`}
                 onClick={() => props.onSelectVersion(version.versionNumber)}
                 data-test-id={`select-version-${version.versionNumber}`}
               />
