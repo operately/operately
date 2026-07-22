@@ -411,19 +411,22 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
       |> Factory.log_in_person(:creator)
     end
 
-    test "serializes targets and checklist for goals, sorted by index", ctx do
+    test "serializes targets and checklist for goals", ctx do
       assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space)})
 
       goal = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.goal)))
       project = Enum.find(res.work_map, &(&1.id == Paths.project_id(ctx.project)))
 
-      assert Enum.map(goal.targets, & &1.name) == ["Revenue", "Retention"]
-      assert Enum.at(goal.targets, 0).value == 250.0
-      assert Enum.at(goal.targets, 0).unit == "USD"
+      targets_by_name = Map.new(goal.targets, &{&1.name, &1})
+      assert Map.keys(targets_by_name) |> Enum.sort() == ["Retention", "Revenue"]
+      assert targets_by_name["Revenue"].value == 250.0
+      assert targets_by_name["Revenue"].unit == "USD"
+      assert targets_by_name["Retention"].value == 40.0
 
-      assert Enum.map(goal.checklist, & &1.name) == ["Launch plan", "Hire lead"]
-      assert Enum.at(goal.checklist, 0).completed == true
-      assert Enum.at(goal.checklist, 1).completed == false
+      checklist_by_name = Map.new(goal.checklist, &{&1.name, &1})
+      assert Map.keys(checklist_by_name) |> Enum.sort() == ["Hire lead", "Launch plan"]
+      assert checklist_by_name["Launch plan"].completed == true
+      assert checklist_by_name["Hire lead"].completed == false
 
       assert project.targets == []
       assert project.checklist == []

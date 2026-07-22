@@ -3,6 +3,7 @@ import { ProgressBar, ProgressBarStatus, Tooltip } from "../../..";
 import { WorkMap } from "..";
 import { useItemStatus } from "../../hooks/useItemStatus";
 import { GoalProgressSummary } from "./GoalProgressSummary";
+import { ProjectProgressSummary } from "./ProjectProgressSummary";
 
 interface ProgressCellProps {
   item: WorkMap.Item;
@@ -24,15 +25,12 @@ export function ProgressCell({ item, hide }: ProgressCellProps) {
     </div>
   );
 
+  const summary = progressSummaryFor(item);
+
   return (
     <td className="py-2 px-2 pr-6 lg:px-4 ">
-      {item.type === "goal" ? (
-        <Tooltip
-          content={<GoalProgressSummary targets={item.targets} checklist={item.checklist} />}
-          size="sm"
-          className="!font-normal"
-          testId="goal-progress-summary"
-        >
+      {summary ? (
+        <Tooltip content={summary.content} size="sm" className="!font-normal" testId={summary.testId}>
           {progressBar}
         </Tooltip>
       ) : (
@@ -40,4 +38,22 @@ export function ProgressCell({ item, hide }: ProgressCellProps) {
       )}
     </td>
   );
+}
+
+function progressSummaryFor(item: WorkMap.Item): { content: React.ReactNode; testId: string } | null {
+  if (item.type === "goal") {
+    return {
+      content: <GoalProgressSummary targets={item.targets} checklist={item.checklist} />,
+      testId: "goal-progress-summary",
+    };
+  }
+
+  if (item.type === "project") {
+    return {
+      content: <ProjectProgressSummary milestones={item.milestones} />,
+      testId: "project-progress-summary",
+    };
+  }
+
+  return null;
 }

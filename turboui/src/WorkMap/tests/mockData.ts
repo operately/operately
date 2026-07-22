@@ -823,7 +823,28 @@ export const mockGoalPaused = createMockItem("goal-6", "Expand to international 
 export const mockGoalCaution = createMockItem("goal-7", "Implement new CRM system", "goal", "caution", 35);
 export const mockGoalIssue = createMockItem("goal-8", "Migrate legacy systems", "goal", "off_track", 15);
 export const mockGoalOutdated = createMockItem("goal-9", "Update legacy documentation", "goal", "outdated", 30);
-export const mockProjectOnTrack = createMockItem("project-1", "Redesign product dashboard", "project", "on_track", 55);
+
+export const mockProjectMilestones: WorkMap.Milestone[] = [
+  {
+    id: "milestone-design",
+    name: "Ship design",
+    status: "done",
+    dueDate: createContextualDate("2025-02-15T00:00:00.000Z", "day"),
+    link: "/milestones/design",
+  },
+  {
+    id: "milestone-beta",
+    name: "Launch beta",
+    status: "pending",
+    dueDate: createContextualDate("2025-04-30T00:00:00.000Z", "day"),
+    link: "/milestones/beta",
+  },
+];
+
+export const mockProjectOnTrack = withDefaults({
+  ...createMockItem("project-1", "Redesign product dashboard", "project", "on_track", 55),
+  milestones: mockProjectMilestones,
+});
 export const mockProjectCompleted = createMockItem("project-2", "Update documentation", "project", "achieved", 100);
 export const mockProjectOutdated = createMockItem("project-3", "Refactor authentication", "project", "outdated", 25);
 

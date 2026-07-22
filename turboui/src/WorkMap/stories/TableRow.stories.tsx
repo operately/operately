@@ -224,6 +224,48 @@ export const GoalProgressHoverSummary: Story = {
 };
 
 /**
+ * Project progress bar hover shows milestones summary
+ */
+export const ProjectProgressHoverSummary: Story = {
+  render: (args) => (
+    <>
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
+      <tbody>
+        <StoryTableRow {...args} />
+      </tbody>
+    </>
+  ),
+  args: {
+    item: data.mockProjectOnTrack,
+    level: 0,
+    isLast: false,
+    tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Hover progress bar to reveal milestones summary", async () => {
+      const trigger = canvas.getByTestId("project-progress-summary");
+      await userEvent.hover(trigger);
+
+      await waitFor(() => {
+        const summaries = screen.getAllByTestId("project-progress-summary-content");
+        expect(summaries.length).toBeGreaterThan(0);
+
+        const summary = within(summaries[0]);
+        expect(summary.getByText("Milestones")).toBeInTheDocument();
+        expect(summary.getByText("1/2 completed (50%)")).toBeInTheDocument();
+        expect(summary.getByText("Ship design")).toBeInTheDocument();
+        expect(summary.getByText("Launch beta")).toBeInTheDocument();
+      });
+    });
+  },
+};
+
+/**
  * A goal that missed its target
  */
 export const MissedGoal: Story = {

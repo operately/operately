@@ -39,4 +39,14 @@ describe("GoalProgressSummary", () => {
     expect(screen.getByText("Checklist")).toBeInTheDocument();
     expect(screen.queryByText("No targets or checklist")).not.toBeInTheDocument();
   });
+
+  it("sorts targets and checklist by index", () => {
+    const unsortedTargets = [mockGoalTargets[1], mockGoalTargets[0]];
+    const unsortedChecklist = [mockGoalChecklist[1], mockGoalChecklist[0]];
+
+    render(<GoalProgressSummary targets={unsortedTargets} checklist={unsortedChecklist} />);
+
+    const names = screen.getAllByText(/Revenue|Retention|Launch plan|Hire lead/).map((node) => node.textContent);
+    expect(names).toEqual(["Revenue", "Retention", "Launch plan", "Hire lead"]);
+  });
 });
