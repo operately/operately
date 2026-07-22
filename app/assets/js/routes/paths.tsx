@@ -333,6 +333,14 @@ export class Paths {
     return this.createCompanyPath(["documents", documentId]);
   }
 
+  resourceHubDocumentVersionsPath(documentId: string) {
+    return this.createCompanyPath(["documents", documentId, "versions"]);
+  }
+
+  resourceHubDocumentVersionPath(documentId: string, versionNumber: number) {
+    return this.createCompanyPath(["documents", documentId, "versions", String(versionNumber)]);
+  }
+
   resourceHubEditDocumentPath(documentId: string) {
     return this.createCompanyPath(["documents", documentId, "edit"]);
   }

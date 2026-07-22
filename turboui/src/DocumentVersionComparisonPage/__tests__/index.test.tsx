@@ -16,7 +16,7 @@ function byTestId(id: string) {
 function renderPage(overrides: Partial<DocumentVersionComparisonPage.Props> = {}) {
   const props: DocumentVersionComparisonPage.Props = {
     title: ["See what changed", M.titles.current],
-    navigation: M.navigation,
+    navigation: M.comparisonNavigation,
     versions: M.multiVersionList,
     before: M.snapshot(4, M.titles.renamed, M.contentV1),
     after: M.snapshot(5, M.titles.current, M.contentV2),
