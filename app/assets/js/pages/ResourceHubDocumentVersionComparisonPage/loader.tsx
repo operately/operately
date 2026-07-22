@@ -2,7 +2,6 @@ import * as Pages from "@/components/Pages";
 import * as Hub from "@/models/resourceHubs";
 import type { DocumentVersion } from "@/api";
 import { Paths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { redirect } from "react-router";
 
 interface LoaderResult {
@@ -14,11 +13,6 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const paths = new Paths({ companyId: params.companyId });
-
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "document-versions",
-    path: paths.resourceHubDocumentPath(params.id),
-  });
 
   const routeVersionNumber = Number(params.versionNumber);
   if (!Number.isFinite(routeVersionNumber) || routeVersionNumber <= 1) {

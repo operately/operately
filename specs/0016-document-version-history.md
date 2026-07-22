@@ -105,6 +105,8 @@ Normal document edits continue to create the existing `resource_hub_document_edi
 
 The activity references the restored version number but does not duplicate the historical body into activity content.
 
+Restoration does **not** dispatch notifications. The notification handler is intentionally a no-op (no recipients). Restored content may refresh mentioned-person subscription state for future edits, but must not notify people merely because older content was restored. Feed and audit visibility are enough.
+
 ### 3. Backend owns history; frontend owns diffing
 
 Responsibilities are split as follows:
@@ -205,7 +207,7 @@ The restored snapshot records `origin: restored` and `restored_from_version_numb
 
 If the selected snapshot is semantically identical to the current title and body, restoration succeeds as an idempotent no-op and does not create a duplicate version or activity.
 
-Restoring content updates the document's mentioned-person subscription state, but it must not send fresh mention notifications merely because old content was restored.
+Restoring content updates the document's mentioned-person subscription state for future edits, but does not dispatch notifications (see Important Decisions).
 
 ### 9. Version numbering is transactional and concurrency-safe
 
@@ -221,13 +223,14 @@ All write operations that may change title/body on a **published** document must
 6. update the canonical document (`name` / `content`) and snapshot in the same transaction
 
 Draft title/body writes update the canonical document only. They do not increment `current_version`, insert version rows, or emit a `resource_hub_document_edited` activity. Version history for a draft begins at first publish.
-Add optional `expected_version` input to the document update API. First-party UI sends it on every published title/body save. When supplied and stale, return a version-conflict error instead of silently overwriting a newer save.
 
-Keep `expected_version` optional for backward compatibility with existing CLI/MCP/API clients. Writes without it still lock the row and receive a unique next version, but retain last-write-wins behavior.
+Add optional `expected_version` input to the document update API. When supplied and stale, return a version-conflict error instead of writing. Keep it optional for CLI/MCP/API clients.
+
+**Decision: first-party document edit does not send `expected_version` and does not show edit-time conflict UX.** Concurrent published saves are an uncommon edge case. The row lock still assigns unique sequential version numbers, and each save inserts its own immutable snapshot, so no version content is lost from history—only the live document reflects last-write-wins. Restoring any prior snapshot remains available. Revisit only if concurrent editing becomes common enough to justify the UX.
 
 Do not add `expected_version` to publish. That endpoint only publishes drafts, which do not accumulate version history until the first publish creates version 1.
 
-The restore API always requires `expected_current_version` because it is a new endpoint and has no compatibility constraint.
+The restore API always requires `expected_current_version` because restore is an explicit overwrite of the live document from history; a stale restore must fail visibly instead of creating another version from outdated page state.
 
 ### 10. Historical rich content participates in export/import and blob retention
 
@@ -356,16 +359,18 @@ The operation:
 5. increments `current_version`
 6. updates `resource_documents.name` and `content` from the snapshot
 7. inserts a version with `origin: restored`
-8. refreshes mentioned-person subscriptions without dispatching mention notifications
+8. refreshes mentioned-person subscriptions without dispatching notifications
 9. inserts `resource_hub_document_version_restored`
 10. commits all changes atomically
 
-The activity feed text is `restored {document} to a previous version`. Its notification handler returns no recipients in the first release.
+The activity feed text is `restored {document} to a previous version`.
+
+**Decision: restoration does not notify anyone.** Implement the standard notification-handler module so the activity stack stays complete, but it always returns no recipients. Do not email or inbox-notify on restore.
 
 Implement all five required activity components:
 
 1. content handler
-2. notification handler
+2. notification handler (no-op: no recipients)
 3. API type
 4. serializer
 5. frontend feed handler and registration
@@ -472,7 +477,7 @@ Add optional `expected_version` to:
 
 Do not add it to `documents.publish` (drafts only; first publish creates version 1).
 
-Return a distinct conflict response when it does not match the locked document's `current_version`. The first-party edit form shows a persistent error explaining that a newer version exists and offers to reload; it must not silently retry with stale content.
+Return a distinct conflict response when it does not match the locked document's `current_version`. First-party edit does not send `expected_version` (see concurrency decision above); clients that omit it keep last-write-wins while still creating sequential history rows.
 
 Do not include snapshot bodies, titles, mention labels, or diff fragments in logs, telemetry, or error messages.
 
@@ -778,6 +783,7 @@ Work test-first within each phase.
 - subscriptions/comments/reactions/parent/author/publication time remain unchanged
 - mentioned-person subscription state reflects restored content
 - restored old mentions do not receive new notifications
+- restoration activity creates no notification recipients
 - identical restoration is an idempotent no-op
 - stale expected current version conflicts without writes
 - unauthorized viewer cannot restore
@@ -865,8 +871,6 @@ Frontend:
 
 - paginate the loaded version list in the UI if the list becomes long
 - measure diff duration and token/document sizes without recording text
-- report parse failures with document ID and version number
-- use Sentry boundaries around the comparison area so invalid history does not crash the entire document page
 - profile memory with two long read-only editors before enabling history generally
 
 Define a practical large-document fixture before implementation finishes. If normal comparisons consistently block the main thread, move the pure diff calculation to a Web Worker before rollout.
@@ -880,7 +884,7 @@ Define a practical large-document fixture before implementation finishes. If nor
 3. Add export/import handling before relying on versions as durable user data.
 4. Ship read-only history and comparison UI.
 5. Ship restoration and its activity after read/compare behavior is stable.
-6. Expose the document options entry point only after baseline creation and version capture are deployed together.
+6. Expose the document options entry point only after baseline creation and version capture are deployed together. The company `document-versions` feature flag has been removed; history UI is generally available.
 
 Operational checks (ad-hoc SQL / inspection during rollout; no dedicated app module):
 
@@ -893,7 +897,6 @@ Operational checks (ad-hoc SQL / inspection during rollout; no dedicated app mod
 Recovery:
 
 - the canonical document remains the read path for normal document pages
-- hiding the history route/menu disables the feature without changing canonical content
 - version capture failures roll back the corresponding canonical write
 - baseline migration is idempotent and can be rerun
 - do not drop version rows during rollback unless the feature has never accepted production writes
@@ -945,8 +948,9 @@ This phase proves comparison quality before persistence/API work commits the pro
 - [x] add confirmation, conflict, success, and read-only behavior
 - [x] add end-to-end restoration tests
 
-### Phase 5 — Rollout and follow-up
+### Phase 5 — Rollout and follow-up ✅
 
+- [x] release history/compare/restore UI with no company feature flag
 - run the operational checks above and inspect performance telemetry
 - validate company export/import with historical-only blobs
 - decide from user feedback whether to add collapsed unchanged sections, synchronized scrolling, move detection, or a unified diff
@@ -964,7 +968,8 @@ This phase proves comparison quality before persistence/API work commits the pro
 - The diff detects text, formatting, link, mention, blob, and block-structure changes.
 - Diff rendering is accessible and responsive, with no color-only meaning.
 - Restoration creates a new version and preserves all subsequent history.
-- Stale first-party edits/restores fail visibly instead of overwriting newer work.
+- Stale restores fail visibly instead of writing from outdated page state. Concurrent first-party edits use last-write-wins; each save still creates an immutable version.
+- Restoration does not dispatch notifications.
 - Historical mentions and blobs survive company export/import.
 - Relevant backend, TurboUI, integration, export/import, and feature tests pass.
 - `make api.gen`, `make test.tsc.lint`, `make turboui.build`, `make turboui.test`, and targeted Elixir/feature tests pass.
