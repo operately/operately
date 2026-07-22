@@ -360,7 +360,7 @@ The operation:
 9. inserts `resource_hub_document_version_restored`
 10. commits all changes atomically
 
-The activity feed text is `restored {document} to version {number}`. Its notification handler returns no recipients in the first release.
+The activity feed text is `restored {document} to a previous version`. Its notification handler returns no recipients in the first release.
 
 Implement all five required activity components:
 
@@ -674,18 +674,19 @@ Show `Restore This Version` only when:
 
 Use explicit confirmation copy:
 
-- title: `Restore Version {number}?`
-- explanation: `This replaces the current title and content with Version {number}. Later versions will stay in the history.`
-- primary action: `Restore Version {number}`
+- title: `Restore this version?`
+- explanation: `This replaces the current title and content with the selected version. Later versions will stay in the history.`
+- primary action: `Restore`
 - escape action: `Keep Current Version`
 
 On success, navigate to or select the newly created current version and show `Version {sourceNumber} restored as the current document.`
 
-On a version conflict, keep the selected snapshots visible and show:
+On a version conflict, keep the selected snapshots visible and show a confirmation dialog:
 
 - title: `Document changed since you opened it`
 - explanation: `A newer version was saved. Reload the latest version before trying again.`
-- action: `Reload Latest Version`
+- primary action: `Reload Latest Version` (reloads page data)
+- escape action: `Cancel`
 
 Do not retry automatically.
 
@@ -937,12 +938,12 @@ This phase proves comparison quality before persistence/API work commits the pro
 - [x] wire responsive split view, errors, and formatted times
 - [x] add TurboUI, navigation, and feature coverage
 
-### Phase 4 — Restoration
+### Phase 4 — Restoration ✅
 
-- implement restore operation and endpoint
-- implement restoration activity across backend/frontend components
-- add confirmation, conflict, success, and read-only behavior
-- add end-to-end restoration tests
+- [x] implement restore operation and endpoint
+- [x] implement restoration activity across backend/frontend components
+- [x] add confirmation, conflict, success, and read-only behavior
+- [x] add end-to-end restoration tests
 
 ### Phase 5 — Rollout and follow-up
 

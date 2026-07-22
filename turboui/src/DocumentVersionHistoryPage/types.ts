@@ -14,6 +14,8 @@ export type VersionSnapshot = {
   insertedAt?: string;
 };
 
+export type RestoreResult = "ok" | "conflict" | "error";
+
 export type DocumentVersionHistoryPageProps = {
   title: Page.Props["title"];
   navigation: NonNullable<Page.Props["navigation"]>;
@@ -21,6 +23,11 @@ export type DocumentVersionHistoryPageProps = {
   formattedTimePreferences: FormattedTimePreferences;
   mentionedPersonLookup: MentionedPersonLookupFn;
   getComparisonPath: (versionNumber: number) => string;
+  canRestore?: boolean;
+  /** Canonical document current_version used for optimistic concurrency. */
+  currentVersionNumber?: number | null;
+  onRestore?: (versionNumber: number, expectedCurrentVersion: number) => Promise<RestoreResult>;
+  onReload?: () => void | Promise<void>;
 };
 
 export const EMPTY_DOC: JSONContent = { type: "doc", content: [] };

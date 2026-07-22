@@ -245,6 +245,7 @@ defmodule OperatelyWeb.Api do
         mutation(:publish, OperatelyWeb.Api.Documents.Publish)
         mutation(:delete, OperatelyWeb.Api.Documents.Delete)
         mutation(:update, OperatelyWeb.Api.Documents.Update)
+        mutation(:restore_version, OperatelyWeb.Api.Documents.RestoreVersion)
       end
 
       namespace(:links, catalog: false) do

@@ -176,6 +176,7 @@ export type {
   DocumentVersionHistoryPageProps,
   ComparisonStatus,
   VersionSnapshot,
+  RestoreResult,
 } from "./DocumentVersionHistoryPage";
 export { DocumentVersionPageHeader } from "./DocumentVersionComparisonPage/DocumentVersionPageHeader";
 
