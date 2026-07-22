@@ -748,6 +748,16 @@ export interface ActivityContentResourceHubDocumentEdited {
   document?: ResourceHubDocument | null;
 }
 
+export interface ActivityContentResourceHubDocumentVersionRestored {
+  __typename: "activity_content_resource_hub_document_version_restored";
+  goal?: Goal | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  versionNumber: number;
+}
+
 export interface ActivityContentResourceHubFileCommented {
   __typename: "activity_content_resource_hub_file_commented";
   goal?: Goal | null;
@@ -2404,6 +2414,7 @@ export type ActivityContent =
   | ActivityContentResourceHubDocumentCreated
   | ActivityContentResourceHubDocumentDeleted
   | ActivityContentResourceHubDocumentEdited
+  | ActivityContentResourceHubDocumentVersionRestored
   | ActivityContentResourceHubFileCommented
   | ActivityContentResourceHubFileCreated
   | ActivityContentResourceHubFileDeleted

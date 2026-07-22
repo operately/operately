@@ -52,6 +52,7 @@ describe("DocumentVersionHistoryPage", () => {
     expect(byTestId("see-what-changed-5")).toHaveAttribute("href", "/documents/1/versions/5");
     expect(byTestId("view-version-1")).not.toBeInTheDocument();
     expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
+    expect(byTestId("restore-this-version")).not.toBeInTheDocument();
   });
 
   test("clicking a timeline row updates the preview and filled circle", async () => {
@@ -64,6 +65,50 @@ describe("DocumentVersionHistoryPage", () => {
     expect(byTestId("version-dot-4")).toHaveAttribute("data-selected", "true");
     expect(byTestId("version-dot-5")).toHaveAttribute("data-selected", "false");
     expect(byTestId("see-what-changed-4")).toHaveAttribute("href", "/documents/1/versions/4");
+  });
+
+  test("shows restore for editable non-current selection and confirms", async () => {
+    const user = userEvent.setup();
+    const onRestore = jest.fn().mockResolvedValue("ok");
+
+    renderPage({
+      canRestore: true,
+      currentVersionNumber: 5,
+      onRestore,
+    });
+
+    expect(byTestId("restore-this-version")).not.toBeInTheDocument();
+
+    await user.click(byTestId("select-version-4")!);
+    expect(byTestId("restore-this-version")).toBeInTheDocument();
+
+    await user.click(byTestId("restore-this-version")!);
+    expect(byTestId("restore-version-confirm")).toBeInTheDocument();
+    expect(byTestId("restore-version-confirm")).toHaveTextContent("Restore this version?");
+
+    await user.click(screen.getByRole("button", { name: "Restore" }));
+    expect(onRestore).toHaveBeenCalledWith(4, 5);
+  });
+
+  test("shows conflict dialog when restore reports conflict", async () => {
+    const user = userEvent.setup();
+    const onReload = jest.fn();
+
+    renderPage({
+      canRestore: true,
+      currentVersionNumber: 5,
+      onRestore: jest.fn().mockResolvedValue("conflict"),
+      onReload,
+    });
+
+    await user.click(byTestId("select-version-4")!);
+    await user.click(byTestId("restore-this-version")!);
+    await user.click(screen.getByRole("button", { name: "Restore" }));
+
+    expect(byTestId("restore-conflict")).toBeInTheDocument();
+    expect(byTestId("restore-conflict")).toHaveTextContent("Document changed since you opened it");
+    await user.click(screen.getByRole("button", { name: "Reload Latest Version" }));
+    expect(onReload).toHaveBeenCalled();
   });
 
   test("one-version history has no comparison link", () => {
