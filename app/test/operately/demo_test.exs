@@ -246,16 +246,21 @@ defmodule Operately.DemoTest do
       assert Enum.find(versions, &(&1.version_number == document.current_version)).title == document.name
     end)
 
+    multi_version_count = Enum.count(documents, &(&1.current_version >= 2))
+    assert multi_version_count == length(documents)
+
     playbook = Enum.find(documents, &(&1.name == "Product Development Playbook"))
     beta_plan = Enum.find(documents, &(&1.name == "Collaborative Docs Beta Release Plan"))
-    experiments = Enum.find(documents, &(&1.name == "Self-Serve Growth Experiments Log"))
+    architecture = Enum.find(documents, &(&1.name == "Technical Architecture Overview"))
+    handbook = Enum.find(documents, &(&1.name == "Employee Handbook"))
 
-    assert playbook.current_version == 2
-    assert beta_plan.current_version == 2
-    assert experiments.current_version == 2
+    assert playbook.current_version == 3
+    assert beta_plan.current_version == 3
+    assert architecture.current_version == 3
+    assert handbook.current_version == 3
 
     assert Enum.find(DocumentVersion.list_for_document(playbook.id), &(&1.version_number == 2)).origin == :edited
-    assert Enum.find(DocumentVersion.list_for_document(beta_plan.id), &(&1.version_number == 2)).origin == :edited
+    assert Enum.find(DocumentVersion.list_for_document(playbook.id), &(&1.version_number == 3)).origin == :edited
   end
 
   test "document edits create sequential versions" do
