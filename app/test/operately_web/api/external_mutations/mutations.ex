@@ -123,6 +123,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Spaces.PublishDiscussion,
       Mutations.Spaces.UpdateDiscussion,
       Mutations.Documents.Publish,
+      Mutations.Documents.RestoreVersion,
       Mutations.Reactions.Create,
       Mutations.Companies.DeleteAdmin,
       Mutations.Companies.DeleteMember,

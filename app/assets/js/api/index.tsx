@@ -868,6 +868,16 @@ export interface ActivityContentResourceHubDocumentEdited {
   document?: ResourceHubDocument | null;
 }
 
+export interface ActivityContentResourceHubDocumentVersionRestored {
+  __typename: "activity_content_resource_hub_document_version_restored";
+  goal?: Goal | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  versionNumber: number;
+}
+
 export interface ActivityContentResourceHubFileCommented {
   __typename: "activity_content_resource_hub_file_commented";
   goal?: Goal | null;
@@ -2524,6 +2534,7 @@ export type ActivityContent =
   | ActivityContentResourceHubDocumentCreated
   | ActivityContentResourceHubDocumentDeleted
   | ActivityContentResourceHubDocumentEdited
+  | ActivityContentResourceHubDocumentVersionRestored
   | ActivityContentResourceHubFileCommented
   | ActivityContentResourceHubFileCreated
   | ActivityContentResourceHubFileDeleted
@@ -4157,6 +4168,17 @@ export interface DocumentsPublishInput {
 
 export interface DocumentsPublishResult {
   document: ResourceHubDocument;
+}
+
+export interface DocumentsRestoreVersionInput {
+  documentId: Id;
+  versionNumber: number;
+  expectedCurrentVersion: number;
+}
+
+export interface DocumentsRestoreVersionResult {
+  document: ResourceHubDocument;
+  restoredVersion?: DocumentVersion | null;
 }
 
 export interface DocumentsUpdateInput {
@@ -5849,6 +5871,10 @@ class ApiNamespaceDocuments {
     return this.client.post("/documents/publish", input);
   }
 
+  async restoreVersion(input: DocumentsRestoreVersionInput): Promise<DocumentsRestoreVersionResult> {
+    return this.client.post("/documents/restore_version", input);
+  }
+
   async update(input: DocumentsUpdateInput): Promise<DocumentsUpdateResult> {
     return this.client.post("/documents/update", input);
   }
@@ -7374,6 +7400,13 @@ export default {
     listVersions: (input: DocumentsListVersionsInput) => defaultApiClient.apiNamespaceDocuments.listVersions(input),
     useListVersions: (input: DocumentsListVersionsInput) =>
       useQuery<DocumentsListVersionsResult>(() => defaultApiClient.apiNamespaceDocuments.listVersions(input)),
+
+    restoreVersion: (input: DocumentsRestoreVersionInput) =>
+      defaultApiClient.apiNamespaceDocuments.restoreVersion(input),
+    useRestoreVersion: () =>
+      useMutation<DocumentsRestoreVersionInput, DocumentsRestoreVersionResult>((input) =>
+        defaultApiClient.apiNamespaceDocuments.restoreVersion(input),
+      ),
 
     publish: (input: DocumentsPublishInput) => defaultApiClient.apiNamespaceDocuments.publish(input),
     usePublish: () =>

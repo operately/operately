@@ -936,6 +936,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_resource_hub_document_created,
       :activity_content_resource_hub_document_deleted,
       :activity_content_resource_hub_document_edited,
+      :activity_content_resource_hub_document_version_restored,
       :activity_content_resource_hub_file_commented,
       :activity_content_resource_hub_file_created,
       :activity_content_resource_hub_file_deleted,
@@ -1049,6 +1050,15 @@ defmodule OperatelyWeb.Api.Types do
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
+  end
+
+  object :activity_content_resource_hub_document_version_restored, for: Operately.Activities.Content.ResourceHubDocumentVersionRestored do
+    field? :goal, :goal, null: true
+    field? :project, :project, null: true
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :document, :resource_hub_document, null: true
+    field :version_number, :integer, null: false
   end
 
   object :activity_content_resource_hub_document_deleted, for: Operately.Activities.Content.ResourceHubDocumentDeleted do

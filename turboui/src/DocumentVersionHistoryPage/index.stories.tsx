@@ -48,6 +48,47 @@ export const Default: Story = {
   args: baseProps(),
 };
 
+export const WithRestore: Story = {
+  args: baseProps({
+    canRestore: true,
+    currentVersionNumber: 5,
+    onRestore: async () => "ok",
+    onReload: () => undefined,
+  }),
+};
+
+function RestoreConflictHarness() {
+  const [key, setKey] = React.useState(0);
+
+  return (
+    <DocumentVersionHistoryPage
+      key={key}
+      {...baseProps({
+        canRestore: true,
+        currentVersionNumber: 5,
+        onRestore: async () => "conflict",
+        onReload: () => setKey((value) => value + 1),
+      })}
+    />
+  );
+}
+
+export const RestoreConflict: Story = {
+  render: () => <RestoreConflictHarness />,
+  play: async ({ canvasElement }) => {
+    const select = canvasElement.querySelector('[data-test-id="select-version-4"]') as HTMLButtonElement | null;
+    select?.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const restore = canvasElement.querySelector('[data-test-id="restore-this-version"]') as HTMLButtonElement | null;
+    restore?.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const confirm = Array.from(document.querySelectorAll("button")).find(
+      (button) => button.textContent === "Restore",
+    );
+    confirm?.click();
+  },
+};
+
 export const OneVersion: Story = {
   args: baseProps({
     title: ["History of changes", M.titles.oneVersion],
