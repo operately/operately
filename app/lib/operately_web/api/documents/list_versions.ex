@@ -26,6 +26,7 @@ defmodule OperatelyWeb.Api.Documents.ListVersions do
         ctx.document.id
         |> DocumentVersion.list_for_document()
         |> DocumentVersion.mark_current(ctx.document.current_version)
+        |> DocumentVersion.annotate_changes()
 
       {:ok, versions}
     end)

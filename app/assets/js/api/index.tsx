@@ -1534,6 +1534,8 @@ export interface DocumentVersion {
   restoredFromVersionNumber?: number | null;
   insertedAt: string;
   isCurrent: boolean;
+  titleChanged: boolean;
+  contentChanged: boolean;
   content?: Json | null;
 }
 

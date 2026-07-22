@@ -132,6 +132,40 @@ defmodule Operately.ResourceHubs.DocumentVersionTest do
     refute function_exported?(DocumentVersion, :changeset, 2)
   end
 
+  test "annotate_changes compares each version to its predecessor", ctx do
+    v1 = DocumentVersion.get_by_document_and_number(ctx.document.id, 1)
+    content = ctx.document.content
+
+    assert {:ok, title_only} =
+             ResourceHubs.create_document_version(
+               version_attrs(ctx,
+                 origin: :edited,
+                 version_number: 2,
+                 title: "Renamed only",
+                 content: content
+               )
+             )
+
+    assert {:ok, content_only} =
+             ResourceHubs.create_document_version(
+               version_attrs(ctx,
+                 origin: :edited,
+                 version_number: 3,
+                 title: "Renamed only",
+                 content: %{"type" => "doc", "content" => []}
+               )
+             )
+
+    [a3, a2, a1] = DocumentVersion.annotate_changes([content_only, title_only, v1])
+
+    assert a1.title_changed == false
+    assert a1.content_changed == false
+    assert a2.title_changed == true
+    assert a2.content_changed == false
+    assert a3.title_changed == false
+    assert a3.content_changed == true
+  end
+
   defp version_attrs(ctx, overrides) do
     Map.merge(
       %{

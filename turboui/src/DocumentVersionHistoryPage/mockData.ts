@@ -31,6 +31,8 @@ function version(attrs: Partial<DocumentVersion> & Pick<DocumentVersion, "versio
     restoredFromVersionNumber: attrs.restoredFromVersionNumber ?? null,
     insertedAt: attrs.insertedAt ?? `2026-07-21T14:${String(attrs.versionNumber).padStart(2, "0")}:00Z`,
     isCurrent: attrs.isCurrent ?? false,
+    titleChanged: attrs.titleChanged ?? false,
+    contentChanged: attrs.contentChanged ?? false,
     content: attrs.content,
     ...attrs,
   };
@@ -83,12 +85,16 @@ export const multiVersionList: DocumentVersion[] = [
     origin: "edited",
     isCurrent: true,
     editor: grace,
+    titleChanged: true,
+    contentChanged: true,
   }),
   version({
     versionNumber: 4,
     title: titles.renamed,
     origin: "edited",
     editor: bob,
+    titleChanged: true,
+    contentChanged: false,
   }),
   version({
     versionNumber: 3,
@@ -102,6 +108,8 @@ export const multiVersionList: DocumentVersion[] = [
     title: titles.original,
     origin: "edited",
     editor: bob,
+    titleChanged: false,
+    contentChanged: true,
   }),
   version({
     versionNumber: 1,

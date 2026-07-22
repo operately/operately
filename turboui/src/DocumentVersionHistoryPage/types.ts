@@ -81,13 +81,13 @@ export function eventActionText(version: DocumentVersion, previous: DocumentVers
     return `restored this document from Version ${version.restoredFromVersionNumber}`;
   }
 
-  if (previous && previous.title !== version.title) {
+  if (version.titleChanged && !version.contentChanged && previous) {
     return `changed the title of this document from “${previous.title}” to “${version.title}”`;
   }
 
-  return "saved a new version of this document";
+  return "updated this document";
 }
 
-export function eventDescription(version: DocumentVersion, previous: DocumentVersion | null): string {
+export function eventDescription(version: DocumentVersion, previous: DocumentVersion | null = null): string {
   return `${editorLabel(version)} ${eventActionText(version, previous)}`;
 }

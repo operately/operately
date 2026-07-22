@@ -43,9 +43,10 @@ describe("DocumentVersionHistoryPage", () => {
     expect(screen.getByLabelText("Version history")).toBeInTheDocument();
     expect(byTestId("current-document-preview")).toHaveTextContent(M.titles.current);
     expect(byTestId("version-row-5")).toHaveTextContent("Grace Wilson");
-    expect(byTestId("version-row-5")).toHaveTextContent("Version 5");
-    expect(byTestId("version-row-5")).toHaveTextContent("Current");
-    expect(byTestId("version-row-5")).toHaveTextContent("changed the title of this document");
+    expect(byTestId("version-row-5")).toHaveTextContent("Latest");
+    expect(byTestId("version-row-5")).toHaveTextContent("at");
+    expect(byTestId("version-row-5")).toHaveTextContent("updated this document");
+    expect(byTestId("version-row-4")).toHaveTextContent("changed the title of this document");
     expect(byTestId("see-what-changed-5")).toHaveTextContent("See what changed");
     expect(byTestId("see-what-changed-5")).toHaveAttribute("href", "/documents/1/versions/5");
     expect(byTestId("view-version-1")).not.toBeInTheDocument();

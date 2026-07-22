@@ -40,18 +40,16 @@ export function VersionTimeline(props: Props) {
 
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span className="text-sm font-bold text-content-accent">Version {version.versionNumber}</span>
+                  <span className="text-sm font-bold text-content-accent">
+                    <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="short-date" />
+                    {" at "}
+                    <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="time-only" />
+                  </span>
                   {version.isCurrent && (
                     <span className="rounded-full border border-surface-outline bg-surface-base px-2 py-0.5 text-[11px] font-semibold text-content-dimmed">
-                      Current
+                      Latest
                     </span>
                   )}
-                </div>
-
-                <div className="mt-1 text-xs text-content-subtle">
-                  <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="short-date" />
-                  {" at "}
-                  <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="time-only" />
                 </div>
 
                 <div className="mt-2 text-sm leading-5 text-content-accent">
