@@ -23,7 +23,12 @@ const grace: Person = {
   type: "member",
 };
 
-function version(attrs: Partial<DocumentVersion> & Pick<DocumentVersion, "versionNumber" | "title" | "origin">): DocumentVersion {
+function version(
+  attrs: Omit<Partial<DocumentVersion>, "content"> &
+    Pick<DocumentVersion, "versionNumber" | "title" | "origin"> & {
+      content?: unknown;
+    },
+): DocumentVersion {
   return {
     __typename: "document_version",
     id: `ver-${attrs.versionNumber}`,
@@ -33,8 +38,8 @@ function version(attrs: Partial<DocumentVersion> & Pick<DocumentVersion, "versio
     isCurrent: attrs.isCurrent ?? false,
     titleChanged: attrs.titleChanged ?? false,
     contentChanged: attrs.contentChanged ?? false,
-    content: attrs.content,
     ...attrs,
+    content: attrs.content as DocumentVersion["content"],
   };
 }
 
@@ -67,61 +72,6 @@ export const navigation = navigationFor(titles.current);
 
 /** Default breadcrumb for comparison stories. */
 export const comparisonNavigation = comparisonNavigationFor(titles.current);
-
-export const oneVersionList: DocumentVersion[] = [
-  version({
-    versionNumber: 1,
-    title: titles.oneVersion,
-    origin: "created",
-    isCurrent: true,
-    editor: bob,
-  }),
-];
-
-export const multiVersionList: DocumentVersion[] = [
-  version({
-    versionNumber: 5,
-    title: titles.current,
-    origin: "edited",
-    isCurrent: true,
-    editor: grace,
-    titleChanged: true,
-    contentChanged: true,
-  }),
-  version({
-    versionNumber: 4,
-    title: titles.renamed,
-    origin: "edited",
-    editor: bob,
-    titleChanged: true,
-    contentChanged: false,
-  }),
-  version({
-    versionNumber: 3,
-    title: titles.original,
-    origin: "restored",
-    restoredFromVersionNumber: 1,
-    editor: bob,
-  }),
-  version({
-    versionNumber: 2,
-    title: titles.original,
-    origin: "edited",
-    editor: bob,
-    titleChanged: false,
-    contentChanged: true,
-  }),
-  version({
-    versionNumber: 1,
-    title: titles.original,
-    origin: "created",
-    editor: bob,
-  }),
-];
-
-export function snapshot(versionNumber: number, title: string, content: unknown): VersionSnapshot {
-  return { versionNumber, title, content };
-}
 
 /** Realistic multi-section body for history preview / first-version stories. */
 export const contentV1 = F.doc(
@@ -207,3 +157,64 @@ export const contentMentionBlobBefore = F.doc(
   F.paragraph(F.blob({ id: "blob-1", alt: "Old caption", filetype: "image/png" })),
 );
 export const contentLong = F.buildLargeDocumentShowcasePair(20);
+
+export const oneVersionList: DocumentVersion[] = [
+  version({
+    versionNumber: 1,
+    title: titles.oneVersion,
+    origin: "created",
+    isCurrent: true,
+    editor: bob,
+    content: contentV1,
+  }),
+];
+
+export const multiVersionList: DocumentVersion[] = [
+  version({
+    versionNumber: 5,
+    title: titles.current,
+    origin: "edited",
+    isCurrent: true,
+    editor: grace,
+    titleChanged: true,
+    contentChanged: true,
+    content: contentV2,
+  }),
+  version({
+    versionNumber: 4,
+    title: titles.renamed,
+    origin: "edited",
+    editor: bob,
+    titleChanged: true,
+    contentChanged: false,
+    content: contentTitleOnly,
+  }),
+  version({
+    versionNumber: 3,
+    title: titles.original,
+    origin: "restored",
+    restoredFromVersionNumber: 1,
+    editor: bob,
+    content: contentV1,
+  }),
+  version({
+    versionNumber: 2,
+    title: titles.original,
+    origin: "edited",
+    editor: bob,
+    titleChanged: false,
+    contentChanged: true,
+    content: contentV1,
+  }),
+  version({
+    versionNumber: 1,
+    title: titles.original,
+    origin: "created",
+    editor: bob,
+    content: contentV1,
+  }),
+];
+
+export function snapshot(versionNumber: number, title: string, content: unknown): VersionSnapshot {
+  return { versionNumber, title, content };
+}
