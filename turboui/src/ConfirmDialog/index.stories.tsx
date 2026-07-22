@@ -18,6 +18,10 @@ const meta: Meta<typeof ConfirmDialog> = {
     message: { control: "text" },
     confirmText: { control: "text" },
     cancelText: { control: "text" },
+    size: {
+      control: "select",
+      options: ["xx-small", "x-small", "small", "medium", "large"],
+    },
   },
 };
 

@@ -2,6 +2,8 @@ import React from "react";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import { IconAlertTriangle, IconTrash } from "../icons";
 
+export type ConfirmDialogSize = "xx-small" | "x-small" | "small" | "medium" | "large";
+
 export interface ConfirmDialogProps {
   isOpen: boolean;
   onConfirm: () => void;
@@ -11,9 +13,18 @@ export interface ConfirmDialogProps {
   confirmText?: string;
   cancelText?: string;
   variant?: "danger" | "default";
+  size?: ConfirmDialogSize;
   icon?: React.ComponentType<{ size: number; className?: string }>;
   testId?: string;
 }
+
+const SIZE_CLASSES: Record<ConfirmDialogSize, string> = {
+  "xx-small": "max-w-xs",
+  "x-small": "max-w-sm",
+  small: "max-w-md",
+  medium: "max-w-lg",
+  large: "max-w-2xl",
+};
 
 export function ConfirmDialog({
   isOpen,
@@ -24,6 +35,7 @@ export function ConfirmDialog({
   confirmText = "Confirm",
   cancelText = "Cancel",
   variant = "default",
+  size = "small",
   icon,
   testId,
 }: ConfirmDialogProps) {
@@ -35,7 +47,10 @@ export function ConfirmDialog({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div data-test-id={testId} className="bg-surface-base border border-stroke-base rounded-xl shadow-xl max-w-md w-full">
+      <div
+        data-test-id={testId}
+        className={`bg-surface-base border border-stroke-base rounded-xl shadow-xl w-full ${SIZE_CLASSES[size]}`}
+      >
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-3">
             <Icon size={20} className={iconColor} />
