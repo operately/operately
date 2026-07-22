@@ -1,4 +1,10 @@
-import { editorLabel, eventActionText, eventDescription, resolveSelection } from "../types";
+import {
+  defaultSelectedVersionNumber,
+  editorLabel,
+  eventActionText,
+  eventDescription,
+  resolveSelection,
+} from "../types";
 import type { DocumentVersion, Person } from "../../ApiTypes";
 
 const person: Person = {
@@ -40,6 +46,18 @@ describe("resolveSelection", () => {
 
   test("version 1 has no before", () => {
     expect(resolveSelection(versions, 1)).toEqual({ selected: 1, before: null, after: 1 });
+  });
+});
+
+describe("defaultSelectedVersionNumber", () => {
+  test("prefers the current version", () => {
+    expect(
+      defaultSelectedVersionNumber([
+        version({ versionNumber: 3 }),
+        version({ versionNumber: 2, isCurrent: true }),
+        version({ versionNumber: 1, origin: "created" }),
+      ]),
+    ).toBe(2);
   });
 });
 

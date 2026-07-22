@@ -22,8 +22,6 @@ export function Page() {
   const props: DocumentVersionHistoryPage.Props = {
     title: ["History of changes", document.name || "Document"],
     navigation: buildDocumentVersionsPageNavigation(document, resourceHub, paths),
-    currentTitle: document.name || "Untitled",
-    currentContent: normalizeContent(document.content),
     versions,
     formattedTimePreferences,
     mentionedPersonLookup,
@@ -31,16 +29,4 @@ export function Page() {
   };
 
   return <DocumentVersionHistoryPage {...props} />;
-}
-
-function normalizeContent(content: unknown): unknown {
-  if (typeof content === "string") {
-    try {
-      return JSON.parse(content);
-    } catch {
-      return content;
-    }
-  }
-
-  return content ?? { type: "doc", content: [] };
 }

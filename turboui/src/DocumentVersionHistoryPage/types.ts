@@ -15,14 +15,13 @@ export type VersionSnapshot = {
 export type DocumentVersionHistoryPageProps = {
   title: Page.Props["title"];
   navigation: NonNullable<Page.Props["navigation"]>;
-  /** Current document title/body for the preview pane. */
-  currentTitle: string;
-  currentContent: unknown;
   versions: DocumentVersion[];
   formattedTimePreferences: FormattedTimePreferences;
   mentionedPersonLookup: MentionedPersonLookupFn;
   getComparisonPath: (versionNumber: number) => string;
 };
+
+const EMPTY_DOC = { type: "doc", content: [] };
 
 export function sortVersionsNewestFirst(versions: DocumentVersion[]): DocumentVersion[] {
   return [...versions].sort((a, b) => b.versionNumber - a.versionNumber);
@@ -30,6 +29,17 @@ export function sortVersionsNewestFirst(versions: DocumentVersion[]): DocumentVe
 
 export function sortVersionsOldestFirst(versions: DocumentVersion[]): DocumentVersion[] {
   return [...versions].sort((a, b) => a.versionNumber - b.versionNumber);
+}
+
+/** Default preview selection: canonical/latest version, else newest. */
+export function defaultSelectedVersionNumber(versions: DocumentVersion[]): number | null {
+  if (versions.length === 0) return null;
+  const newestFirst = sortVersionsNewestFirst(versions);
+  return (newestFirst.find((v) => v.isCurrent) ?? newestFirst[0]!).versionNumber;
+}
+
+export function versionPreviewContent(version: DocumentVersion | null | undefined): unknown {
+  return version?.content ?? EMPTY_DOC;
 }
 
 /**

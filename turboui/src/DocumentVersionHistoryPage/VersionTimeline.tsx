@@ -11,6 +11,8 @@ import { eventActionText, previousVersion } from "./types";
 
 type Props = {
   versions: DocumentVersion[];
+  selectedVersionNumber: number | null;
+  onSelectVersion: (versionNumber: number) => void;
   formattedTimePreferences: FormattedTimePreferences;
   getComparisonPath: (versionNumber: number) => string;
 };
@@ -25,6 +27,7 @@ export function VersionTimeline(props: Props) {
           const actionText = eventActionText(version, previous);
           const person = version.editor ?? { fullName: "Former member" };
           const canCompare = version.versionNumber > 1;
+          const isSelected = version.versionNumber === props.selectedVersionNumber;
 
           return (
             <li
@@ -33,12 +36,24 @@ export function VersionTimeline(props: Props) {
               data-test-id={`version-row-${version.versionNumber}`}
             >
               {!isLast && <span className="absolute bottom-0 left-[7px] top-3 w-px bg-stroke-base" aria-hidden />}
-              <span
-                className="relative z-10 mt-1 h-[15px] w-[15px] shrink-0 rounded-full border-2 border-link-base bg-surface-base shadow-[0_0_0_4px_var(--color-surface-dimmed)]"
-                aria-hidden
+              <button
+                type="button"
+                className="absolute inset-0 z-0 cursor-pointer rounded-md"
+                aria-pressed={isSelected}
+                aria-label={`Preview version from ${version.insertedAt}`}
+                onClick={() => props.onSelectVersion(version.versionNumber)}
+                data-test-id={`select-version-${version.versionNumber}`}
               />
+              <span
+                className="relative z-10 mt-1 flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full border-2 border-link-base bg-surface-base shadow-[0_0_0_4px_var(--color-surface-dimmed)] pointer-events-none"
+                aria-hidden
+                data-test-id={`version-dot-${version.versionNumber}`}
+                data-selected={isSelected ? "true" : "false"}
+              >
+                {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-link-base opacity-70" />}
+              </span>
 
-              <div className="min-w-0 flex-1">
+              <div className="relative z-10 min-w-0 flex-1 pointer-events-none">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span className="text-sm font-bold text-content-accent">
                     <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="short-date" />
@@ -65,7 +80,7 @@ export function VersionTimeline(props: Props) {
                 </div>
 
                 {canCompare && (
-                  <div className="mt-2.5">
+                  <div className="mt-2.5 pointer-events-auto">
                     <Link
                       to={props.getComparisonPath(version.versionNumber)}
                       testId={`see-what-changed-${version.versionNumber}`}

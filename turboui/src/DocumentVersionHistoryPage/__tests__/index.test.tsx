@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
 import { MemoryRouter } from "react-router";
 
@@ -18,8 +19,6 @@ function renderPage(overrides: Partial<DocumentVersionHistoryPageProps> = {}) {
   const props: DocumentVersionHistoryPageProps = {
     title: ["History of changes", M.titles.current],
     navigation: M.navigation,
-    currentTitle: M.titles.current,
-    currentContent: M.contentV2,
     versions: M.multiVersionList,
     formattedTimePreferences: defaultFormattedTimePreferences,
     mentionedPersonLookup,
@@ -39,9 +38,11 @@ describe("DocumentVersionHistoryPage", () => {
     renderPage();
 
     expect(screen.getByRole("heading", { name: "History of changes" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Current document")).toBeInTheDocument();
+    expect(screen.getByLabelText("Selected version")).toBeInTheDocument();
     expect(screen.getByLabelText("Version history")).toBeInTheDocument();
-    expect(byTestId("current-document-preview")).toHaveTextContent(M.titles.current);
+    expect(byTestId("selected-version-preview")).toHaveTextContent(M.titles.current);
+    expect(byTestId("version-dot-5")).toHaveAttribute("data-selected", "true");
+    expect(byTestId("version-dot-4")).toHaveAttribute("data-selected", "false");
     expect(byTestId("version-row-5")).toHaveTextContent("Grace Wilson");
     expect(byTestId("version-row-5")).toHaveTextContent("Latest");
     expect(byTestId("version-row-5")).toHaveTextContent("at");
@@ -53,14 +54,26 @@ describe("DocumentVersionHistoryPage", () => {
     expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
   });
 
+  test("clicking a timeline row updates the preview and filled circle", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(byTestId("select-version-4")!);
+
+    expect(byTestId("selected-version-preview")).toHaveTextContent(M.titles.renamed);
+    expect(byTestId("version-dot-4")).toHaveAttribute("data-selected", "true");
+    expect(byTestId("version-dot-5")).toHaveAttribute("data-selected", "false");
+    expect(byTestId("see-what-changed-4")).toHaveAttribute("href", "/documents/1/versions/4");
+  });
+
   test("one-version history has no comparison link", () => {
     renderPage({
       versions: M.oneVersionList,
-      currentTitle: M.titles.oneVersion,
-      currentContent: M.contentV1,
     });
 
     expect(byTestId("version-row-1")).toHaveTextContent("created this document");
+    expect(byTestId("selected-version-preview")).toHaveTextContent(M.titles.oneVersion);
+    expect(byTestId("version-dot-1")).toHaveAttribute("data-selected", "true");
     expect(byTestId("view-version-1")).not.toBeInTheDocument();
     expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
   });

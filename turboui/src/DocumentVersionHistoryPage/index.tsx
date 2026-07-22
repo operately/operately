@@ -4,7 +4,7 @@ import { Page } from "../Page";
 import RichContent from "../RichContent";
 
 import type { DocumentVersionHistoryPageProps } from "./types";
-import { sortVersionsNewestFirst } from "./types";
+import { defaultSelectedVersionNumber, sortVersionsNewestFirst, versionPreviewContent } from "./types";
 import { VersionTimeline } from "./VersionTimeline";
 
 export namespace DocumentVersionHistoryPage {
@@ -15,6 +15,7 @@ export {
   resolveSelection,
   sortVersionsNewestFirst,
   sortVersionsOldestFirst,
+  defaultSelectedVersionNumber,
   editorLabel,
   eventActionText,
   eventDescription,
@@ -23,6 +24,12 @@ export type { ComparisonStatus, VersionSnapshot, DocumentVersionHistoryPageProps
 
 export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Props) {
   const versions = sortVersionsNewestFirst(props.versions);
+  const [selectedVersionNumber, setSelectedVersionNumber] = React.useState<number | null>(() =>
+    defaultSelectedVersionNumber(versions),
+  );
+
+  const selectedVersion =
+    versions.find((version) => version.versionNumber === selectedVersionNumber) ?? versions[0] ?? null;
 
   return (
     <Page title={props.title} size="xlarge" navigation={props.navigation} testId="document-version-history-page">
@@ -34,18 +41,23 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(280px,380px)]">
           <section
             className="min-w-0 rounded-lg border border-surface-outline bg-surface-base p-5 sm:p-6"
-            aria-label="Current document"
-            data-test-id="current-document-preview"
+            aria-label="Selected version"
+            data-test-id="selected-version-preview"
           >
-            <h2 className="text-xl font-bold text-content-accent md:text-2xl">{props.currentTitle || "Untitled"}</h2>
+            <h2 className="text-xl font-bold text-content-accent md:text-2xl">{selectedVersion?.title || "Untitled"}</h2>
             <div className="mt-4 text-content-base">
-              <RichContent content={props.currentContent} mentionedPersonLookup={props.mentionedPersonLookup} />
+              <RichContent
+                content={versionPreviewContent(selectedVersion)}
+                mentionedPersonLookup={props.mentionedPersonLookup}
+              />
             </div>
           </section>
 
           <aside className="min-w-0">
             <VersionTimeline
               versions={versions}
+              selectedVersionNumber={selectedVersion?.versionNumber ?? null}
+              onSelectVersion={setSelectedVersionNumber}
               formattedTimePreferences={props.formattedTimePreferences}
               getComparisonPath={props.getComparisonPath}
             />
