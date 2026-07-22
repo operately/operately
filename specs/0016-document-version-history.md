@@ -394,7 +394,7 @@ Output:
 }
 ```
 
-`DocumentVersionSummary` contains:
+`DocumentVersion` list items contain:
 
 ```ts
 {
@@ -408,12 +408,13 @@ Output:
   isCurrent: boolean;
   titleChanged: boolean;
   contentChanged: boolean;
+  content: JSONValue;
 }
 ```
 
 `titleChanged` / `contentChanged` compare each version to its predecessor (`n-1`). Version 1 is always `false`/`false`.
 
-Do not include TipTap content in the list response.
+Include TipTap `content` on each version so the history page can preview any snapshot without a second request.
 
 Return all versions for the document, sorted by `version_number DESC`. Pagination, if needed in the UI, is handled on the frontend.
 
@@ -596,13 +597,12 @@ Use the existing document breadcrumb and parent-resource navigation so users can
 
 Split history and comparison into two TurboUI pages:
 
-1. `DocumentVersionHistoryPage` — current document preview + timeline of version events
+1. `DocumentVersionHistoryPage` — selectable version preview + timeline of version events
 2. `DocumentVersionComparisonPage` — adjacent-version split diff (`n` vs `n-1`)
 
 History page props:
 
-- current document title/body for the preview pane
-- version summaries for the timeline
+- version snapshots (including content) for the timeline and preview pane
 - formatted-time preferences
 - `getComparisonPath(versionNumber)` for timeline action links
 
@@ -626,10 +626,10 @@ The history list shows newest first. Each row contains:
 
 - formatted date and time
 - a sentence describing the event (created, title-only change, updated, restored)
-- `Current` on the canonical version
+- `Latest` on the canonical version
 - an action link `See what changed` for versions after the first (version 1 has no comparison)
 
-Action links navigate to the comparison route for that version (vs its predecessor by default).
+Clicking a row selects that version for the left preview and fills its timeline circle. The latest version is selected by default. `See what changed` still navigates to the comparison route for that version (vs its predecessor).
 
 ### Comparison page
 

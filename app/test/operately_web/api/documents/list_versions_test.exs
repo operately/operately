@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Api.Documents.ListVersionsTest do
       assert length(res.versions) == 1
       assert hd(res.versions).version_number == 1
       assert hd(res.versions).is_current == true
-      refute Map.has_key?(hd(res.versions), :content)
+      assert hd(res.versions).content != nil
     end
   end
 
@@ -63,7 +63,7 @@ defmodule OperatelyWeb.Api.Documents.ListVersionsTest do
       |> then(&create_extra_versions/1)
     end
 
-    test "returns versions newest first and excludes content", ctx do
+    test "returns versions newest first with content", ctx do
       assert {200, res} =
                query(ctx.conn, [:documents, :list_versions], %{
                  document_id: Paths.document_id(ctx.document)
@@ -72,7 +72,7 @@ defmodule OperatelyWeb.Api.Documents.ListVersionsTest do
       assert Enum.map(res.versions, & &1.version_number) == [3, 2, 1]
 
       Enum.each(res.versions, fn version ->
-        refute Map.has_key?(version, :content)
+        assert version.content != nil
       end)
     end
 

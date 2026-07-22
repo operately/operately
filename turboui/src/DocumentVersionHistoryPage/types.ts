@@ -1,3 +1,5 @@
+import type { JSONContent } from "@tiptap/core";
+
 import type { DocumentVersion } from "../ApiTypes";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import type { MentionedPersonLookupFn } from "../RichEditor/useEditor";
@@ -15,14 +17,13 @@ export type VersionSnapshot = {
 export type DocumentVersionHistoryPageProps = {
   title: Page.Props["title"];
   navigation: NonNullable<Page.Props["navigation"]>;
-  /** Current document title/body for the preview pane. */
-  currentTitle: string;
-  currentContent: unknown;
   versions: DocumentVersion[];
   formattedTimePreferences: FormattedTimePreferences;
   mentionedPersonLookup: MentionedPersonLookupFn;
   getComparisonPath: (versionNumber: number) => string;
 };
+
+export const EMPTY_DOC: JSONContent = { type: "doc", content: [] };
 
 export function sortVersionsNewestFirst(versions: DocumentVersion[]): DocumentVersion[] {
   return [...versions].sort((a, b) => b.versionNumber - a.versionNumber);
@@ -30,6 +31,21 @@ export function sortVersionsNewestFirst(versions: DocumentVersion[]): DocumentVe
 
 export function sortVersionsOldestFirst(versions: DocumentVersion[]): DocumentVersion[] {
   return [...versions].sort((a, b) => a.versionNumber - b.versionNumber);
+}
+
+/** Default preview selection: canonical/latest version, else newest. */
+export function defaultSelectedVersionNumber(versions: DocumentVersion[]): number | null {
+  if (versions.length === 0) return null;
+  const newestFirst = sortVersionsNewestFirst(versions);
+  return (newestFirst.find((v) => v.isCurrent) ?? newestFirst[0]!).versionNumber;
+}
+
+/**
+ * Preview body for the history page.
+ * API `Json` is typed as string; runtime TipTap content is an object.
+ */
+export function versionPreviewContent(version: DocumentVersion | null | undefined): JSONContent {
+  return (version?.content as JSONContent | null | undefined) ?? EMPTY_DOC;
 }
 
 /**
