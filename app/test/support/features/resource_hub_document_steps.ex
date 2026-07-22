@@ -157,6 +157,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     {:ok, node} = Node.get(:system, type: :document, opts: [preload: :document])
 
     ctx
+    |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-document-link")
     |> UI.assert_page(Paths.edit_document_path(ctx.company, node.document))
     |> UI.sleep(500)
@@ -171,6 +172,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     {:ok, node} = Node.get(:system, type: :document, opts: [preload: :document])
 
     ctx
+    |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-document-link")
     |> UI.assert_page(Paths.edit_document_path(ctx.company, node.document))
     |> UI.sleep(200)

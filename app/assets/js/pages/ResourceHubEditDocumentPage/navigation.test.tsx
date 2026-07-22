@@ -17,6 +17,7 @@ describe("buildEditDocumentPageNavigation", () => {
       { to: "/spaces/space-1/work-map?tab=projects", label: "Work Map" },
       { to: "/projects/project-1?tab=overview", label: "Improve paid acquisition conversion" },
       { to: "/projects/project-1?tab=docs-and-files", label: "Docs & Files" },
+      { to: "/documents/doc-1", label: "My doc" },
     ]);
   });
 });

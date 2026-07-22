@@ -1,4 +1,5 @@
-import * as Paper from "@/components/PaperContainer";
+import type { Page } from "turboui";
+
 import { buildNewResourcePageNavigationItems, buildParentAwareResourceHub } from "@/models/resourceHubs/pageNavigation";
 import type { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 import type { Paths } from "@/routes/paths";
@@ -11,6 +12,6 @@ export function buildNewLinkPageNavigation(
   resourceHub: ResourceHub,
   folder: ResourceHubFolder | undefined,
   paths: Paths,
-): Paper.NavigationItem[] {
+): NonNullable<Page.Props["navigation"]> {
   return buildNewResourcePageNavigationItems(buildNavigationResourceHub(resourceHub), folder, paths);
 }

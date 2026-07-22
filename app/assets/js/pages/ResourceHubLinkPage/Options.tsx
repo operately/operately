@@ -1,6 +1,7 @@
-import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import { IconEdit, IconTrash } from "turboui";
 import React from "react";
+
+import type { Page } from "turboui";
+import { IconEdit, IconTrash } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -10,30 +11,31 @@ interface Props {
   showDeleteModal: () => void;
 }
 
-export function Options({ showDeleteModal }: Props) {
+export function useLinkPageOptions({ showDeleteModal }: Props): Page.Option[] {
   const { link } = useLoadedData();
   const paths = usePaths();
+
   assertPresent(link.permissions, "permissions must be present in link");
 
-  return (
-    <PageOptions.Root testId="options-button">
-      {link.permissions.canEditLink && (
-        <PageOptions.Link
-          icon={IconEdit}
-          title="Edit"
-          to={paths.resourceHubEditLinkPath(link.id!)}
-          testId="edit-link-link"
-        />
-      )}
-      {link.permissions.canDeleteLink && <DeleteAction onClick={showDeleteModal} />}
-    </PageOptions.Root>
+  return React.useMemo(
+    () => [
+      {
+        type: "link",
+        icon: IconEdit,
+        label: "Edit",
+        link: paths.resourceHubEditLinkPath(link.id!),
+        hidden: !link.permissions?.canEditLink,
+        testId: "edit-link-link",
+      },
+      {
+        type: "action",
+        icon: IconTrash,
+        label: "Delete",
+        onClick: showDeleteModal,
+        hidden: !link.permissions?.canDeleteLink,
+        testId: "delete-resource-link",
+      },
+    ],
+    [link.id, link.permissions?.canDeleteLink, link.permissions?.canEditLink, paths, showDeleteModal],
   );
-}
-
-interface DeleteActionProps {
-  onClick: () => void;
-}
-
-function DeleteAction({ onClick }: DeleteActionProps) {
-  return <PageOptions.Action icon={IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
 }
