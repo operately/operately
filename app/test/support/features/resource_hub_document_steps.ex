@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubDocumentSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.{Document, ResourceHub, Node}
+  alias Operately.ResourceHubs.{Document, DocumentVersion, ResourceHub, Node}
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.ResourceHubSteps, as: Steps
@@ -478,5 +478,109 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
       action: "deleted a document: #{document_name}",
       author: ctx.creator
     })
+  end
+
+  step :open_version_history, ctx do
+    {:ok, document} = Document.get(:system, id: ctx.document.id)
+
+    ctx
+    |> visit_document_page()
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "version-history-link")
+    |> UI.assert_page(Paths.document_versions_path(ctx.company, document))
+    |> Map.put(:document, document)
+  end
+
+  step :assert_on_version_history_page, ctx do
+    ctx
+    |> UI.assert_has(testid: "document-version-history-page")
+    |> UI.assert_text("History of changes")
+  end
+
+  step :open_version_comparison, ctx, version_number do
+    {:ok, document} = Document.get(:system, id: ctx.document.id)
+
+    ctx
+    |> UI.click(testid: "see-what-changed-#{version_number}")
+    |> UI.assert_page(Paths.document_version_path(ctx.company, document, version_number))
+    |> UI.assert_has(testid: "document-version-comparison-page")
+  end
+
+  step :assert_comparing_versions, ctx, {_before_number, _after_number} do
+    ctx
+    |> UI.sleep(500)
+    |> UI.assert_has(testid: "title-comparison")
+    |> UI.assert_has(testid: "version-label-before")
+    |> UI.assert_has(testid: "version-label-after")
+  end
+
+  step :assert_version_history_forbidden, ctx do
+    ctx
+    |> UI.visit(Paths.document_versions_path(ctx.company, ctx.document))
+    |> UI.assert_text("Page Not Found")
+  end
+
+  step :refute_version_history_option, ctx do
+    ctx
+    |> visit_document_page()
+    |> UI.click(testid: "options-button")
+    |> UI.refute_has(testid: "version-history-link")
+  end
+
+  step :assert_version_history_redirects_when_disabled, ctx do
+    {:ok, document} = Document.get(:system, id: ctx.document.id)
+
+    ctx
+    |> UI.visit(Paths.document_versions_path(ctx.company, document))
+    |> UI.assert_page(Paths.document_path(ctx.company, document))
+  end
+
+  step :select_version_in_history, ctx, version_number do
+    ctx
+    |> UI.click(testid: "select-version-#{version_number}")
+  end
+
+  step :restore_selected_version, ctx do
+    ctx
+    |> UI.click(testid: "restore-this-version")
+    |> UI.assert_has(testid: "restore-version-confirm")
+    |> UI.find(UI.query(testid: "restore-version-confirm"), fn dialog ->
+      UI.click_button(dialog, "Restore")
+    end)
+  end
+
+  step :assert_version_restored, ctx, source_version do
+    ctx
+    |> UI.assert_text("Version #{source_version} restored as the current document")
+    |> then(fn ctx ->
+      {:ok, document} = Document.get(:system, id: ctx.document.id)
+      version = DocumentVersion.get_by_document_and_number(document.id, document.current_version)
+
+      assert version.origin == :restored
+      assert version.restored_from_version_number == source_version
+
+      ctx
+      |> Map.put(:document, document)
+      |> UI.assert_has(testid: "version-row-#{document.current_version}")
+    end)
+  end
+
+  step :assert_restore_conflict, ctx do
+    {:ok, document} = Document.get(:system, id: ctx.document.id)
+    versions = DocumentVersion.list_for_document(document.id)
+
+    assert document.current_version == 3
+    assert length(versions) == 3
+    refute Enum.any?(versions, &(&1.origin == :restored))
+
+    ctx
+    |> UI.assert_has(testid: "restore-conflict")
+    |> UI.assert_text("Document changed since you opened it")
+    |> UI.assert_text("Reload")
+  end
+
+  step :refute_restore_action, ctx do
+    ctx
+    |> UI.refute_has(testid: "restore-this-version")
   end
 end
