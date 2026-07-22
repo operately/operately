@@ -12,7 +12,6 @@ defmodule Operately.Features.ResourceHubDocument.VersionHistoryTest do
 
   feature "editor opens history and compares adjacent versions", ctx do
     ctx
-    |> Factory.enable_feature("document-versions")
     |> Steps.visit_resource_hub_page()
     |> Steps.create_document(@document)
     |> Steps.edit_document(%{name: "Versioned Doc", content: "Second body"})
@@ -25,7 +24,6 @@ defmodule Operately.Features.ResourceHubDocument.VersionHistoryTest do
 
   feature "editor restores an earlier version from history", ctx do
     ctx
-    |> Factory.enable_feature("document-versions")
     |> Steps.visit_resource_hub_page()
     |> Steps.create_document(@document)
     |> Steps.edit_document(%{name: "Versioned Doc", content: "Second body"})
@@ -39,7 +37,6 @@ defmodule Operately.Features.ResourceHubDocument.VersionHistoryTest do
   feature "stale restore shows a conflict and keeps history intact", ctx do
     ctx =
       ctx
-      |> Factory.enable_feature("document-versions")
       |> Steps.visit_resource_hub_page()
       |> Steps.create_document(@document)
       |> Steps.edit_document(%{name: "Versioned Doc", content: "Second body"})
@@ -63,7 +60,6 @@ defmodule Operately.Features.ResourceHubDocument.VersionHistoryTest do
   feature "users without document view access cannot open version history", ctx do
     ctx =
       ctx
-      |> Factory.enable_feature("document-versions")
       |> Factory.add_company_member(:outsider)
       |> Steps.visit_resource_hub_page()
       |> Steps.create_document(@document)
@@ -76,7 +72,6 @@ defmodule Operately.Features.ResourceHubDocument.VersionHistoryTest do
   feature "viewer can open history but cannot restore", ctx do
     ctx =
       ctx
-      |> Factory.enable_feature("document-versions")
       |> Factory.add_space_member(:viewer, :space, permissions: :view_access)
       |> Steps.visit_resource_hub_page()
       |> Steps.create_document(@document)
@@ -88,13 +83,5 @@ defmodule Operately.Features.ResourceHubDocument.VersionHistoryTest do
     |> Steps.assert_on_version_history_page()
     |> Steps.select_version_in_history(1)
     |> Steps.refute_restore_action()
-  end
-
-  feature "version history is hidden when the feature flag is disabled", ctx do
-    ctx
-    |> Steps.visit_resource_hub_page()
-    |> Steps.create_document(@document)
-    |> Steps.refute_version_history_option()
-    |> Steps.assert_version_history_redirects_when_disabled()
   end
 end

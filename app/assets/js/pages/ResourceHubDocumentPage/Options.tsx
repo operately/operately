@@ -3,8 +3,6 @@ import React from "react";
 import type { Page } from "turboui";
 import { IconCopy, IconEdit, IconFileExport, IconHistory, IconTrash } from "turboui";
 
-import * as Companies from "@/models/companies";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
@@ -19,11 +17,8 @@ interface Props {
 export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props): Page.Option[] {
   const paths = usePaths();
   const { document } = useLoadedData();
-  const { company } = useCompanyLoaderData();
 
   assertPresent(document.permissions, "permissions must be present in document");
-
-  const documentVersionsEnabled = Companies.hasFeature(company, "document-versions");
 
   return React.useMemo(() => {
     const options: Page.Option[] = [
@@ -49,7 +44,7 @@ export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props
         icon: IconHistory,
         label: "History of changes",
         link: paths.resourceHubDocumentVersionsPath(document.id!),
-        hidden: !documentVersionsEnabled || !document.permissions?.canView,
+        hidden: !document.permissions?.canView,
         testId: "version-history-link",
       },
       {
@@ -83,7 +78,6 @@ export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props
     document.permissions?.canDeleteDocument,
     document.permissions?.canEditDocument,
     document.permissions?.canView,
-    documentVersionsEnabled,
     paths,
     showCopyModal,
     showDeleteModal,
