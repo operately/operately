@@ -122,6 +122,14 @@ const filterTasksByMilestone = (tasks: Types.Task[], milestone: Types.Milestone 
   tasks.filter((task) => !task._isHelperTask && (milestone ? task.milestone?.id === milestone.id : !task.milestone));
 
 export const BasicKanban: Story = {
+  name: "Working board",
+  parameters: {
+    docs: {
+      description: {
+        story: "Shows the stronger card hierarchy, column counts, and persistent board actions with active work.",
+      },
+    },
+  },
   render: () => {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
@@ -299,6 +307,14 @@ export const AutoScrollEdgeColumns: Story = {
 };
 
 export const EmptyStates: Story = {
+  name: "Empty board",
+  parameters: {
+    docs: {
+      description: {
+        story: "Shows the inline Add task action and collapsed closed statuses used when a board has no work yet.",
+      },
+    },
+  },
   render: () => {
     const milestone = mockMilestones.emptyMilestone;
     if (!milestone) return <div>Missing mock milestone data</div>;
