@@ -1,33 +1,25 @@
 import React from "react";
 
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
-
-import { NewResourcePageNavigation } from "turboui";
-import { resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { Page as TurboUIPage } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { Form } from "./form";
 import { useLoadedData } from "./loader";
-import { buildNavigationResourceHub } from "./navigation";
+import { buildNewDocumentPageNavigation } from "./navigation";
 
 export function Page() {
   const { resourceHub, folder } = useLoadedData();
   const paths = usePaths();
-  const navigationResourceHub = buildNavigationResourceHub(resourceHub);
 
   return (
-    <Pages.Page title="New Document">
-      <Paper.Root>
-        <NewResourcePageNavigation
-          resourceHub={navigationResourceHub}
-          folder={folder}
-          paths={resourceHubNavigationPaths(paths)}
-        />
-
-        <Paper.Body>
-          <Form />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+    <TurboUIPage
+      title="New Document"
+      size="medium"
+      navigation={buildNewDocumentPageNavigation(resourceHub, folder, paths)}
+      testId="resource-hub-new-document-page"
+    >
+      <div className="px-12 py-10">
+        <Form />
+      </div>
+    </TurboUIPage>
   );
 }

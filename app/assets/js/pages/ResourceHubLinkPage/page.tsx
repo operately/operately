@@ -1,6 +1,6 @@
 import React from "react";
 
-import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { resourceHubLandingPath } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router";
@@ -8,7 +8,6 @@ import { links } from "@/models/resourceHubs";
 
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import { assertPresent } from "@/utils/assertions";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
@@ -19,15 +18,15 @@ import {
   Forms,
   LinkIcon,
   Modal,
-  ResourcePageNavigation,
+  Page as TurboUIPage,
   Spacer,
   type ResourceHubLinkType,
 } from "turboui";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
-import { Options } from "./Options";
+import { useLinkPageOptions } from "./Options";
 import { useLoadedData } from "./loader";
-import { buildNavigationLink } from "./navigation";
+import { buildLinkPageNavigation } from "./navigation";
 import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions, BulletDot } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -36,31 +35,31 @@ export function Page() {
   const { link } = useLoadedData();
   const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const navigationLink = buildNavigationLink(link);
+  const options = useLinkPageOptions({ showDeleteModal: toggleDeleteModal });
 
   assertPresent(link.notifications, "notifications must be present in link");
   useClearNotificationsOnLoad(link.notifications);
 
   return (
-    <Pages.Page title={link.name!}>
-      <Paper.Root>
-        <ResourcePageNavigation resource={navigationLink} paths={resourceHubNavigationPaths(paths)} />
+    <TurboUIPage
+      title={link.name!}
+      size="medium"
+      navigation={buildLinkPageNavigation(link, paths)}
+      options={options}
+      testId="resource-hub-link-page"
+    >
+      <div className="px-12 py-10 lg:px-28">
+        <Title />
+        <Actions />
+        <Description />
 
-        <Paper.Body className="lg:px-28">
-          <Options showDeleteModal={toggleDeleteModal} />
+        <LinkReactions />
+        <LinkComments />
+        <LinkSubscriptions />
+      </div>
 
-          <Title />
-          <Actions />
-          <Description />
-
-          <LinkReactions />
-          <LinkComments />
-          <LinkSubscriptions />
-
-          <DeleteLinkModal isOpen={showDeleteModal} hideModal={toggleDeleteModal} linkName={link.name || ""} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+      <DeleteLinkModal isOpen={showDeleteModal} hideModal={toggleDeleteModal} linkName={link.name || ""} />
+    </TurboUIPage>
   );
 }
 

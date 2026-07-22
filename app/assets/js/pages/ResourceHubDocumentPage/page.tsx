@@ -2,10 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router";
 
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Reactions from "@/models/reactions";
 import { documents } from "@/models/resourceHubs";
-import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { resourceHubLandingPath } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import { CommentSection, useComments } from "@/features/CommentSection";
@@ -17,7 +16,7 @@ import {
   CopyDocumentModalWrapper,
   Forms,
   Modal,
-  ResourcePageNavigation,
+  Page as TurboUIPage,
   RichContent,
   CurrentSubscriptions,
   Spacer,
@@ -30,8 +29,8 @@ import { assertPresent } from "@/utils/assertions";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
-import { buildNavigationDocument } from "./navigation";
-import { Options } from "./Options";
+import { buildDocumentPageNavigation, buildNavigationDocument } from "./navigation";
+import { useDocumentPageOptions } from "./Options";
 
 export function Page() {
   const { document, folder, resourceHub } = useLoadedData();
@@ -41,6 +40,7 @@ export function Page() {
   const navigationDocument = buildNavigationDocument(document, resourceHub);
   const pageResourceHub = navigationDocument.resourceHub;
   const copyListContext = useCopyDocumentListContext(folder ?? pageResourceHub, document);
+  const options = useDocumentPageOptions({ showCopyModal: openCopyForm, showDeleteModal: toggleDeleteConfirmModal });
 
   assertPresent(document.notifications, "notifications must be present in document");
   useClearNotificationsOnLoad(document.notifications);
@@ -48,32 +48,32 @@ export function Page() {
   React.useEffect(closeCopyForm, [document.id]);
 
   return (
-    <Pages.Page title={document.name!}>
-      <Paper.Root size="large">
-        <ResourcePageNavigation resource={navigationDocument} paths={resourceHubNavigationPaths(paths)} />
+    <TurboUIPage
+      title={document.name!}
+      size="large"
+      navigation={buildDocumentPageNavigation(document, resourceHub, paths)}
+      options={options}
+      testId="resource-hub-document-page"
+    >
+      <div className="min-h-[600px] px-4 py-10 sm:px-12 lg:px-28">
+        <ContinueEditingDraft />
 
-        <Paper.Body minHeight="600px" className="lg:px-28">
-          <Options showCopyModal={openCopyForm} showDeleteModal={toggleDeleteConfirmModal} />
+        <Title />
+        <Body />
+        <DocumentReactions />
+        <DocumentComments />
+        <DocumentSubscriptions />
+      </div>
 
-          <ContinueEditingDraft />
+      <DeleteDocumentModal isOpen={showDeleteConfirmModal} toggleModal={toggleDeleteConfirmModal} />
 
-          <Title />
-          <Body />
-          <DocumentReactions />
-          <DocumentComments />
-          <DocumentSubscriptions />
-
-          <DeleteDocumentModal isOpen={showDeleteConfirmModal} toggleModal={toggleDeleteConfirmModal} />
-
-          <CopyDocumentModalWrapper
-            listContext={copyListContext}
-            document={document}
-            isOpen={isCopyFormOpen}
-            hideModal={closeCopyForm}
-          />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+      <CopyDocumentModalWrapper
+        listContext={copyListContext}
+        document={document}
+        isOpen={isCopyFormOpen}
+        hideModal={closeCopyForm}
+      />
+    </TurboUIPage>
   );
 }
 

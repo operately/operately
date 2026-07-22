@@ -1,32 +1,25 @@
 import React from "react";
 
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
-
-import { ResourcePageNavigation } from "turboui";
-import { resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { Page as TurboUIPage } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 import { Form } from "./form";
-import { buildNavigationLink } from "./navigation";
+import { buildEditLinkPageNavigation } from "./navigation";
 
 export function Page() {
   const { link } = useLoadedData();
   const paths = usePaths();
-  const navigationLink = buildNavigationLink(link);
 
   return (
-    <Pages.Page title="Edit Link">
-      <Paper.Root>
-        <ResourcePageNavigation
-          resource={navigationLink}
-          paths={resourceHubNavigationPaths(paths)}
-        />
-
-        <Paper.Body>
-          <Form />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+    <TurboUIPage
+      title="Edit Link"
+      size="medium"
+      navigation={buildEditLinkPageNavigation(link, paths)}
+      testId="resource-hub-edit-link-page"
+    >
+      <div className="px-12 py-10">
+        <Form />
+      </div>
+    </TurboUIPage>
   );
 }

@@ -16,6 +16,7 @@ export namespace Page {
     onClick?: () => void;
     hidden?: boolean;
     testId?: string;
+    keepOutsideOnBigScreen?: boolean;
   }
 
   export interface Props {
