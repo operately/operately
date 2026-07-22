@@ -487,6 +487,87 @@
           }
         ]
       },
+      "activity_content_resource_hub_document_version_restored": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "goal",
+            "type": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project",
+            "type": {
+              "name": "project",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "resource_hub",
+            "type": {
+              "name": "resource_hub",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "document",
+            "type": {
+              "name": "resource_hub_document",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "version_number",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_goal_discussion_creation": {
         "fields": [
           {
@@ -2964,7 +3045,7 @@
             "name": "milestones",
             "type": {
               "item": {
-                "name": "work_map_item_milestone",
+                "name": "milestone",
                 "kind": "named"
               },
               "kind": "list"
@@ -3184,6 +3265,17 @@
           {
             "default": null,
             "name": "current_version",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "versions_count",
             "type": {
               "name": "integer",
               "kind": "named"
@@ -14601,54 +14693,6 @@
           }
         ]
       },
-      "work_map_item_milestone": {
-        "fields": [
-          {
-            "default": null,
-            "name": "id",
-            "type": {
-              "name": "string",
-              "kind": "named"
-            },
-            "optional": false,
-            "has_default": false,
-            "nullable": false
-          },
-          {
-            "default": null,
-            "name": "title",
-            "type": {
-              "name": "string",
-              "kind": "named"
-            },
-            "optional": false,
-            "has_default": false,
-            "nullable": false
-          },
-          {
-            "default": null,
-            "name": "status",
-            "type": {
-              "name": "milestone_status",
-              "kind": "named"
-            },
-            "optional": false,
-            "has_default": false,
-            "nullable": false
-          },
-          {
-            "default": null,
-            "name": "timeframe",
-            "type": {
-              "name": "timeframe",
-              "kind": "named"
-            },
-            "optional": false,
-            "has_default": false,
-            "nullable": true
-          }
-        ]
-      },
       "activity_content_goal_created": {
         "fields": [
           {
@@ -16828,6 +16872,28 @@
           {
             "default": null,
             "name": "is_current",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "title_changed",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "content_changed",
             "type": {
               "name": "boolean",
               "kind": "named"
@@ -19127,6 +19193,10 @@
         },
         {
           "name": "activity_content_resource_hub_document_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_resource_hub_document_version_restored",
           "kind": "named"
         },
         {
@@ -21766,6 +21836,17 @@
         {
           "default": null,
           "name": "include_path_to_document",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_versions_count",
           "type": {
             "name": "boolean",
             "kind": "named"
