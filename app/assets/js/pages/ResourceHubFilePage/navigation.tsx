@@ -4,7 +4,7 @@ import { buildParentAwareResource, buildResourcePageNavigationItems } from "@/mo
 import type { ResourceHubFile } from "@/models/resourceHubs";
 import type { Paths } from "@/routes/paths";
 
-export function buildNavigationFile(file: ResourceHubFile) {
+function buildNavigationFile(file: ResourceHubFile) {
   return buildParentAwareResource(file);
 }
 

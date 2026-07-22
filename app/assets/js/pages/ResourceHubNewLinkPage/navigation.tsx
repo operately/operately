@@ -4,7 +4,7 @@ import { buildNewResourcePageNavigationItems, buildParentAwareResourceHub } from
 import type { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 import type { Paths } from "@/routes/paths";
 
-export function buildNavigationResourceHub(resourceHub: ResourceHub) {
+function buildNavigationResourceHub(resourceHub: ResourceHub) {
   return buildParentAwareResourceHub(resourceHub);
 }
 
