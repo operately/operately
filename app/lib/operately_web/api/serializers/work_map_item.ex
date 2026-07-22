@@ -33,14 +33,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
   end
 
   defp serialize_milestones(%{type: :project, resource: %{milestones: milestones}}) when is_list(milestones) do
-    Enum.map(milestones, fn milestone ->
-      %{
-        id: Paths.milestone_id(milestone),
-        title: milestone.title,
-        status: OperatelyWeb.Api.Serializer.serialize(milestone.status),
-        timeframe: OperatelyWeb.Api.Serializer.serialize(milestone.timeframe)
-      }
-    end)
+    OperatelyWeb.Api.Serializer.serialize(milestones)
   end
 
   defp serialize_milestones(_item), do: []
