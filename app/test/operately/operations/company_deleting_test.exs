@@ -8,6 +8,7 @@ defmodule Operately.Operations.CompanyDeletingTest do
   alias Operately.Projects.Milestone
   alias Operately.Tasks.Task
   alias Operately.People.Person
+  alias Operately.ResourceHubs.{Document, DocumentVersion}
 
   setup do
     account =
@@ -22,8 +23,11 @@ defmodule Operately.Operations.CompanyDeletingTest do
   end
 
   test "it deletes a company", ctx do
+    assert count_resources(ctx.company.id).document_versions > 0
+
     assert {:ok, _} = Operately.Operations.CompanyDeleting.run(ctx.company.id)
     assert Repo.get_by(Operately.Companies.Company, id: ctx.company.id) == nil
+    assert count_resources(ctx.company.id).document_versions == 0
   end
 
   test "deletes company and all its resources, leaving others intact", ctx do
@@ -45,6 +49,8 @@ defmodule Operately.Operations.CompanyDeletingTest do
     assert ctx_resources.people > 0
     assert ctx_resources.milestones > 0
     assert ctx_resources.tasks > 0
+    assert ctx_resources.documents > 0
+    assert ctx_resources.document_versions > 0
 
     # Run deletion
     assert {:ok, _} = Operately.Operations.CompanyDeleting.run(ctx.company.id)
@@ -57,6 +63,8 @@ defmodule Operately.Operations.CompanyDeletingTest do
     assert deleted_resources.people == 0
     assert deleted_resources.milestones == 0
     assert deleted_resources.tasks == 0
+    assert deleted_resources.documents == 0
+    assert deleted_resources.document_versions == 0
 
     # Verify other company resources are intact
     assert other_resources == count_resources(other_company.id)
@@ -82,6 +90,42 @@ defmodule Operately.Operations.CompanyDeletingTest do
       where: p.company_id == ^company_id or s.company_id == ^company_id
     ), :count)
 
-    %{spaces: spaces, projects: projects, goals: goals, people: people, milestones: milestones, tasks: tasks}
+    documents =
+      Repo.aggregate(
+        from(d in Document,
+          join: n in assoc(d, :node),
+          join: h in assoc(n, :resource_hub),
+          left_join: s in assoc(h, :space),
+          left_join: p in assoc(h, :project),
+          left_join: g in assoc(h, :goal),
+          where: s.company_id == ^company_id or p.company_id == ^company_id or g.company_id == ^company_id
+        ),
+        :count
+      )
+
+    document_versions =
+      Repo.aggregate(
+        from(v in DocumentVersion,
+          join: d in assoc(v, :document),
+          join: n in assoc(d, :node),
+          join: h in assoc(n, :resource_hub),
+          left_join: s in assoc(h, :space),
+          left_join: p in assoc(h, :project),
+          left_join: g in assoc(h, :goal),
+          where: s.company_id == ^company_id or p.company_id == ^company_id or g.company_id == ^company_id
+        ),
+        :count
+      )
+
+    %{
+      spaces: spaces,
+      projects: projects,
+      goals: goals,
+      people: people,
+      milestones: milestones,
+      tasks: tasks,
+      documents: documents,
+      document_versions: document_versions
+    }
   end
 end

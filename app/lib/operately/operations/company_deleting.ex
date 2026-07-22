@@ -2,12 +2,14 @@ defmodule Operately.Operations.CompanyDeleting do
   alias Operately.Repo
   alias Operately.Companies.Company
   alias Operately.Messages.{Message, MessagesBoard}
+  alias Operately.ResourceHubs.DocumentVersion
   import Ecto.Query
 
   def run(%Company{} = company) do
     Repo.transaction(fn ->
       delete_project_tasks(company)
       delete_space_discussions(company)
+      delete_document_versions(company)
 
       case Repo.delete(company) do
         {:ok, res} -> res
@@ -57,6 +59,24 @@ defmodule Operately.Operations.CompanyDeleting do
     {_count, _reaction_ids} = Operately.Updates.delete_reactions(message_ids ++ comment_ids)
 
     from(b in MessagesBoard, where: b.id in ^board_ids)
+    |> Repo.delete_all()
+  end
+
+  # Extra step so document versions are gone before people/documents cascade-delete
+  defp delete_document_versions(company) do
+    document_ids =
+      from(d in Operately.ResourceHubs.Document,
+        join: n in assoc(d, :node),
+        join: h in assoc(n, :resource_hub),
+        left_join: s in assoc(h, :space),
+        left_join: p in assoc(h, :project),
+        left_join: g in assoc(h, :goal),
+        where: s.company_id == ^company.id or p.company_id == ^company.id or g.company_id == ^company.id,
+        select: d.id
+      )
+      |> Repo.all()
+
+    from(v in DocumentVersion, where: v.document_id in ^document_ids)
     |> Repo.delete_all()
   end
 end

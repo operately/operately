@@ -3072,6 +3072,7 @@ defmodule Operately.Demo.Data do
           key: :product_development_playbook,
           space: :product_space,
           name: "Product Development Playbook",
+          days_ago: 21,
           content: """
           Our guide to building and shipping features that delight customers while maintaining high quality standards.
 
@@ -3113,6 +3114,103 @@ defmodule Operately.Demo.Data do
           - Marketing coordination
           - Post-launch monitoring
           """,
+          edits: [
+            %{
+              author: :frank_miller,
+              days_ago: 7,
+              content: """
+              Our guide to building and shipping features that delight customers while maintaining high quality standards.
+
+              ### Overview
+
+              This playbook outlines our product development methodology, from ideation to launch. It serves as the single source of truth for how we build and ship features.
+
+              ### Core Principles
+
+              - User-First: Every feature starts with user needs
+              - Data-Driven: Decisions backed by metrics and user feedback
+              - Iterative Development: Build, measure, learn, repeat
+              - Quality-Focused: Comprehensive testing at every stage
+              - Safe Rollouts: Use feature flags for gradual releases
+
+              ### Development Process
+
+              1) Discovery Phase
+
+              - User research and feedback analysis
+              - Market and competitor analysis
+              - Technical feasibility assessment
+
+              2) Planning Phase
+
+              - Feature specification
+              - Success metrics definition
+              - Resource allocation
+
+              3) Development Phase
+
+              - Sprint planning and execution
+              - Regular progress updates
+              - Quality assurance
+              - Code review standards and deployment checklist
+
+              4) Launch Phase
+
+              - Beta testing
+              - Documentation
+              - Marketing coordination
+              - Post-launch monitoring
+              """
+            },
+            %{
+              author: :walter_baker,
+              days_ago: 2,
+              content: """
+              Our guide to building and shipping features that delight customers while maintaining high quality standards.
+
+              ### Overview
+
+              This playbook outlines our product development methodology, from ideation to launch. It serves as the single source of truth for how we build and ship features.
+
+              ### Core Principles
+
+              - User-First: Every feature starts with user needs
+              - Data-Driven: Decisions backed by metrics and user feedback
+              - Iterative Development: Build, measure, learn, repeat
+              - Quality-Focused: Comprehensive testing at every stage
+              - Safe Rollouts: Use feature flags for gradual releases
+
+              ### Development Process
+
+              1) Discovery Phase
+
+              - User research and feedback analysis
+              - Market and competitor analysis
+              - Technical feasibility assessment
+
+              2) Planning Phase
+
+              - Feature specification
+              - Success metrics definition
+              - Resource allocation
+
+              3) Development Phase
+
+              - Sprint planning and execution
+              - Regular progress updates
+              - Quality assurance
+              - Code review standards and deployment checklist
+
+              4) Launch Phase
+
+              - Beta testing
+              - Documentation
+              - Marketing coordination
+              - Post-launch monitoring
+              - Capture meaningful document version history for launch notes
+              """
+            }
+          ],
           comments: [
             %{
               author: :walter_baker,
@@ -3131,7 +3229,9 @@ defmodule Operately.Demo.Data do
         %{
           key: :brand_voice_guidelines,
           space: :product_space,
+          author: :emily_davis,
           name: "Brand Voice Guidelines 2025",
+          days_ago: 30,
           content: """
           # Brand Voice Guidelines 2025
 
@@ -3149,12 +3249,38 @@ defmodule Operately.Demo.Data do
           - **Support**: Helpful, patient, clear.
           - **Product**: Functional, concise, guiding.
           """,
+          edits: [
+            %{
+              author: :rachel_king,
+              days_ago: 12,
+              content: """
+              # Brand Voice Guidelines 2025
+
+              ## Core Pillars
+              1. **Clarity**: We speak plainly and avoid jargon.
+              2. **Empathy**: We understand our users' challenges.
+              3. **Optimism**: We focus on solutions and possibilities.
+
+              ## Do's and Don'ts
+              - **Do**: Use active voice, simple words, and direct sentences.
+              - **Don't**: Use corporate buzzwords, passive voice, or complex sentence structures.
+
+              ## Tone by Context
+              - **Marketing**: Inspiring, bold, confident.
+              - **Support**: Helpful, patient, clear.
+              - **Product**: Functional, concise, guiding.
+              - **Video & webinars**: Warm, conversational, and concrete.
+              """
+            }
+          ],
           comments: []
         },
         %{
           key: :technical_architecture_overview,
           space: :product_space,
+          author: :david_brown,
           name: "Technical Architecture Overview",
+          days_ago: 45,
           content: """
           A comprehensive overview of our system architecture, tech stack, and infrastructure.
 
@@ -3172,12 +3298,69 @@ defmodule Operately.Demo.Data do
           - Deployment: Docker/Kubernetes
           - CI/CD: Semaphore
           - Monitoring: Grafana
-          """
+          """,
+          edits: [
+            %{
+              author: :walter_baker,
+              days_ago: 20,
+              content: """
+              A comprehensive overview of our system architecture, tech stack, and infrastructure.
+
+              ### System Components
+
+              - Frontend: React/TypeScript
+              - Backend: Elixir/Phoenix
+              - Database: PostgreSQL
+              - Cache Layer: Redis
+              - Message Queue: RabbitMQ
+              - Search: OpenSearch for full-text document discovery
+
+              ### Infrastructure
+
+              - Cloud Provider: AWS
+              - Deployment: Docker/Kubernetes
+              - CI/CD: Semaphore
+              - Monitoring: Grafana
+              - Observability: OpenTelemetry traces for API latency
+              """
+            },
+            %{
+              author: :david_brown,
+              days_ago: 5,
+              content: """
+              A comprehensive overview of our system architecture, tech stack, and infrastructure.
+
+              ### System Components
+
+              - Frontend: React/TypeScript
+              - Backend: Elixir/Phoenix
+              - Database: PostgreSQL
+              - Cache Layer: Redis
+              - Message Queue: RabbitMQ
+              - Search: OpenSearch for full-text document discovery
+
+              ### Infrastructure
+
+              - Cloud Provider: AWS
+              - Deployment: Docker/Kubernetes
+              - CI/CD: Semaphore
+              - Monitoring: Grafana
+              - Observability: OpenTelemetry traces for API latency
+
+              ### Reliability targets
+
+              - API p95 under 300ms for core reads
+              - Document sync recovery within 60 seconds after reconnect
+              """
+            }
+          ]
         },
         %{
           key: :brand_guidelines,
           space: :marketing_space,
+          author: :emily_davis,
           name: "Brand Guidelines",
+          days_ago: 28,
           content: """
           Our comprehensive guide to maintaining consistent brand voice and visual identity.
 
@@ -3202,6 +3385,38 @@ defmodule Operately.Demo.Data do
           - Email marketing templates
           - Blog post formats
           """,
+          edits: [
+            %{
+              author: :olivia_hall,
+              days_ago: 9,
+              content: """
+              Our comprehensive guide to maintaining consistent brand voice and visual identity.
+
+              ### Brand Voice
+
+              - Professional yet approachable
+              - Solutions-oriented
+              - Empowering
+              - Clear and concise
+
+              ### Visual Elements
+
+              - Color palette
+              - Typography
+              - Logo usage
+              - Image style guide
+              - Motion and animation principles for product marketing
+
+              ### Content Guidelines
+
+              - Writing style
+              - Social media tone
+              - Email marketing templates
+              - Blog post formats
+              - Video and webinar presentation standards
+              """
+            }
+          ],
           comments: [
             %{
               author: :rachel_king,
@@ -3220,7 +3435,9 @@ defmodule Operately.Demo.Data do
         %{
           key: :market_expansion_strategy,
           space: :marketing_space,
+          author: :paul_young,
           name: "Market Expansion Strategy",
+          days_ago: 35,
           content: """
           Detailed analysis and strategy for entering new markets.
 
@@ -3246,12 +3463,49 @@ defmodule Operately.Demo.Data do
           - Marketing channels
           - Pricing strategy
           - Partnership model
-          """
+          """,
+          edits: [
+            %{
+              author: :emily_davis,
+              days_ago: 14,
+              content: """
+              Detailed analysis and strategy for entering new markets.
+
+              ### Target Markets
+
+              Enterprise Market
+
+              - Market size: €2.8B
+              - Key competitors
+              - Entry barriers
+              - Growth potential
+              - Priority: mid-market operations teams with existing collaboration spend
+
+              International Market
+
+              - Market size: €1.5B
+              - Cultural considerations
+              - Localization requirements
+              - Partnership opportunities
+              - First wave: Germany and France
+
+              ### Go-to-Market Strategy
+
+              - Localization approach
+              - Marketing channels
+              - Pricing strategy
+              - Partnership model
+              - Security FAQ for enterprise procurement cycles
+              """
+            }
+          ]
         },
         %{
           key: :employee_handbook,
           space: :people_space,
+          author: :karen_martinez,
           name: "Employee Handbook",
+          days_ago: 60,
           content: """
           A comprehensive guide to company policies, benefits, and culture.
 
@@ -3275,12 +3529,77 @@ defmodule Operately.Demo.Data do
           - Performance reviews
           - Mentorship program
           - Learning resources
-          """
+          """,
+          edits: [
+            %{
+              author: :owner,
+              days_ago: 25,
+              content: """
+              A comprehensive guide to company policies, benefits, and culture.
+
+              ### Company Culture
+
+              - Mission and values
+              - Work environment
+              - Communication guidelines
+              - Remote work policy
+              - Meeting norms and async-first defaults
+
+              ### Benefits & Policies
+
+              - Health insurance
+              - Flexible PTO
+              - Professional development
+              - Parental leave
+              - Home office stipend
+
+              ### Career Development
+
+              - Growth framework
+              - Performance reviews
+              - Mentorship program
+              - Learning resources
+              """
+            },
+            %{
+              author: :karen_martinez,
+              days_ago: 4,
+              content: """
+              A comprehensive guide to company policies, benefits, and culture.
+
+              ### Company Culture
+
+              - Mission and values
+              - Work environment
+              - Communication guidelines
+              - Remote work policy
+              - Meeting norms and async-first defaults
+
+              ### Benefits & Policies
+
+              - Health insurance
+              - Flexible PTO
+              - Professional development
+              - Parental leave
+              - Home office stipend
+
+              ### Career Development
+
+              - Growth framework
+              - Performance reviews
+              - Mentorship program
+              - Learning resources
+              - Individual development plan templates for managers
+              """
+            }
+          ]
         },
         %{
           key: :onboarding_process_guide,
           space: :people_space,
+          author: :karen_martinez,
           name: "Onboarding Process Guide",
+          days_ago: 40,
           content: """
           Step-by-step guide for bringing new team members up to speed.
 
@@ -3297,12 +3616,39 @@ defmodule Operately.Demo.Data do
           - Key stakeholder meetings
           - Project assignments
           - Progress check-ins
-          """
+          """,
+          edits: [
+            %{
+              author: :tina_scott,
+              days_ago: 11,
+              content: """
+              Step-by-step guide for bringing new team members up to speed.
+
+              ### Week 1
+
+              - System access setup
+              - Team introductions
+              - Tool training
+              - Initial assignments
+              - Buddy assignment and first coffee chat
+
+              ### First Month
+
+              - Role-specific training
+              - Key stakeholder meetings
+              - Project assignments
+              - Progress check-ins
+              - Shadow a customer call or support thread
+              """
+            }
+          ]
         },
         %{
           key: :financial_controls_handbook,
           space: :finance_space,
+          author: :martin_smith,
           name: "Financial Controls Handbook",
+          days_ago: 50,
           content: """
           Comprehensive guide to financial procedures and controls.
 
@@ -3326,13 +3672,46 @@ defmodule Operately.Demo.Data do
           - Board reporting
           - Audit preparation
           - Compliance requirements
-          """
+          """,
+          edits: [
+            %{
+              author: :martin_smith,
+              days_ago: 8,
+              content: """
+              Comprehensive guide to financial procedures and controls.
+
+              ### Expense Policies
+
+              - Approval processes
+              - Reimbursement procedures
+              - Corporate card usage
+              - Travel expenses
+              - Tool and SaaS purchase approvals
+
+              ### Revenue Recognition
+
+              - Subscription revenue
+              - Contract terms
+              - Payment processing
+              - Reconciliation procedures
+
+              ### Reporting Procedures
+
+              - Monthly close process
+              - Board reporting
+              - Audit preparation
+              - Compliance requirements
+              - Weekly cash and runway snapshot for leadership
+              """
+            }
+          ]
         },
         %{
           key: :collaborative_docs_beta_plan,
           project: :develop_collaborative_features,
           author: :walter_baker,
           name: "Collaborative Docs Beta Release Plan",
+          days_ago: 14,
           content: """
           Plan for rolling out the collaborative docs beta to power users and collecting structured feedback before the wider release.
 
@@ -3348,6 +3727,52 @@ defmodule Operately.Demo.Data do
           2. Ship release notes template and onboarding checklist
           3. Review adoption metrics and decide on general availability timing
           """,
+          edits: [
+            %{
+              author: :frank_miller,
+              days_ago: 3,
+              name: "Collaborative Docs Beta Release Plan",
+              content: """
+              Plan for rolling out the collaborative docs beta to power users and collecting structured feedback before the wider release.
+
+              ### Beta cohort
+
+              - 18 accounts with active document workflows
+              - Weekly office hours with product and engineering
+              - Shared Slack channel for fast feedback
+              - Onboarding checklist for inviting collaborators outside the cohort
+
+              ### Release milestones
+
+              1. Enable presence and inline comments for the beta cohort
+              2. Ship release notes template and onboarding checklist
+              3. Review adoption metrics and decide on general availability timing
+              4. Publish a short changelog for support and customer success
+              """
+            },
+            %{
+              author: :walter_baker,
+              days_ago: 1,
+              content: """
+              Plan for rolling out the collaborative docs beta to power users and collecting structured feedback before the wider release.
+
+              ### Beta cohort
+
+              - 18 accounts with active document workflows
+              - Weekly office hours with product and engineering
+              - Shared Slack channel for fast feedback
+              - Onboarding checklist for inviting collaborators outside the cohort
+
+              ### Release milestones
+
+              1. Enable presence and inline comments for the beta cohort
+              2. Ship release notes template and onboarding checklist
+              3. Review adoption metrics and decide on general availability timing
+              4. Publish a short changelog for support and customer success
+              5. Walk beta users through Version History and restore in office hours
+              """
+            }
+          ],
           comments: [
             %{
               author: :frank_miller,
@@ -3362,6 +3787,7 @@ defmodule Operately.Demo.Data do
           project: :develop_collaborative_features,
           author: :diego_ramirez,
           name: "Beta Customer Feedback Summary",
+          days_ago: 12,
           content: """
           Summary of feedback collected during the collaborative docs beta.
 
@@ -3375,13 +3801,36 @@ defmodule Operately.Demo.Data do
 
           - Prioritize resolved-comment filtering in the next sprint
           - Add a lightweight export flow for published docs
-          """
+          """,
+          edits: [
+            %{
+              author: :walter_baker,
+              days_ago: 4,
+              content: """
+              Summary of feedback collected during the collaborative docs beta.
+
+              ### Top themes
+
+              - Real-time presence is the most requested improvement
+              - Comment resolution needs clearer status indicators
+              - Teams want export options for release notes
+              - Offline recovery still feels fragile for simultaneous edits
+
+              ### Next actions
+
+              - Prioritize resolved-comment filtering in the next sprint
+              - Add a lightweight export flow for published docs
+              - Add QA scenarios for simultaneous edit conflict resolution
+              """
+            }
+          ]
         },
         %{
           key: :enterprise_research_synthesis,
           project: :conduct_market_research_enterprise,
           author: :paul_young,
           name: "Enterprise Segment Research Synthesis",
+          days_ago: 18,
           content: """
           Synthesis of interviews and pipeline data for the enterprise segment validation workstream.
 
@@ -3395,13 +3844,36 @@ defmodule Operately.Demo.Data do
 
           - Publish a security FAQ for sales calls
           - Package admin controls into a single onboarding guide
-          """
+          """,
+          edits: [
+            %{
+              author: :emily_davis,
+              days_ago: 6,
+              content: """
+              Synthesis of interviews and pipeline data for the enterprise segment validation workstream.
+
+              ### Findings
+
+              - Security review and procurement timelines are the main blockers
+              - Teams want clearer admin controls before expanding seat counts
+              - Case studies from similar SaaS companies accelerate trust
+              - Buyers ask for SSO and audit logs earlier than expected
+
+              ### Recommended next steps
+
+              - Publish a security FAQ for sales calls
+              - Package admin controls into a single onboarding guide
+              - Draft SSO readiness FAQ for the next enterprise cohort
+              """
+            }
+          ]
         },
         %{
           key: :collaboration_adoption_playbook,
           goal: :enhance_product_functionality,
           author: :liam_harris,
           name: "Collaboration Feature Adoption Playbook",
+          days_ago: 16,
           content: """
           Playbook for driving adoption of new collaboration workflows across customer accounts.
 
@@ -3416,13 +3888,37 @@ defmodule Operately.Demo.Data do
           - In-app checklist for first collaborative edit
           - Customer success call script for rollout planning
           - Sample workspace template for cross-functional teams
-          """
+          """,
+          edits: [
+            %{
+              author: :frank_miller,
+              days_ago: 5,
+              content: """
+              Playbook for driving adoption of new collaboration workflows across customer accounts.
+
+              ### Adoption signals
+
+              - Weekly active collaborators per account
+              - Documents with more than one editor in a 7-day window
+              - Comment threads resolved within 48 hours
+              - Version history views after the first published edit
+
+              ### Enablement assets
+
+              - In-app checklist for first collaborative edit
+              - Customer success call script for rollout planning
+              - Sample workspace template for cross-functional teams
+              - Short Loom for restoring a previous document version
+              """
+            }
+          ]
         },
         %{
           key: :self_serve_growth_experiments,
           goal: :accelerate_user_growth,
           author: :emily_davis,
           name: "Self-Serve Growth Experiments Log",
+          days_ago: 10,
           content: """
           Running log of experiments supporting self-serve revenue growth.
 
@@ -3436,13 +3932,36 @@ defmodule Operately.Demo.Data do
 
           - Shorter onboarding paths improved trial activation
           - Referral prompts work best after the first completed workflow
-          """
+          """,
+          edits: [
+            %{
+              author: :emily_davis,
+              days_ago: 2,
+              content: """
+              Running log of experiments supporting self-serve revenue growth.
+
+              ### Active experiments
+
+              - Referral incentive test for annual plans
+              - Trial onboarding email sequence refresh
+              - Paid search landing page variant for product-led buyers
+              - In-product upgrade prompt after first completed workflow
+
+              ### Learnings
+
+              - Shorter onboarding paths improved trial activation
+              - Referral prompts work best after the first completed workflow
+              - Upgrade prompts convert better when tied to a completed outcome
+              """
+            }
+          ]
         },
         %{
           key: :referral_program_rollout_guide,
           project: :implement_in_app_referral_program,
           author: :olivia_hall,
           name: "Referral Program Rollout Guide",
+          days_ago: 15,
           content: """
           Internal guide for launching and supporting the in-app referral program.
 
@@ -3458,6 +3977,29 @@ defmodule Operately.Demo.Data do
           2. Verify reward fulfillment workflow with billing
           3. Monitor invite-to-paid conversion daily for the first two weeks
           """,
+          edits: [
+            %{
+              author: :emily_davis,
+              days_ago: 3,
+              content: """
+              Internal guide for launching and supporting the in-app referral program.
+
+              ### Pilot scope
+
+              - 50 accounts with high NPS scores
+              - Account credit rewards approved by finance
+              - Support macros for common referral questions
+              - Escalation path for duplicate invites from the same domain
+
+              ### Launch checklist
+
+              1. Enable referral CTA in settings and post-onboarding
+              2. Verify reward fulfillment workflow with billing
+              3. Monitor invite-to-paid conversion daily for the first two weeks
+              4. Review support macros after the first 100 invites
+              """
+            }
+          ],
           comments: [
             %{
               author: :emily_davis,
@@ -3472,6 +4014,7 @@ defmodule Operately.Demo.Data do
           project: :develop_international_expansion,
           author: :rachel_king,
           name: "EU Onboarding Localization Notes",
+          days_ago: 20,
           content: """
           Working notes for the first EU onboarding launch in Germany and France.
 
@@ -3485,13 +4028,36 @@ defmodule Operately.Demo.Data do
 
           - Legal review of GDPR language in trial signup flow
           - Final approval on French microcopy for the first-run checklist
-          """
+          """,
+          edits: [
+            %{
+              author: :emily_davis,
+              days_ago: 7,
+              content: """
+              Working notes for the first EU onboarding launch in Germany and France.
+
+              ### Localization priorities
+
+              - Welcome email sequence and in-app onboarding tips
+              - Support article links for billing and data residency questions
+              - Customer proof points localized for DACH and France
+              - Pricing page footnotes for VAT-inclusive display
+
+              ### Open items
+
+              - Legal review of GDPR language in trial signup flow
+              - Final approval on French microcopy for the first-run checklist
+              - Confirm German support hours coverage for launch week
+              """
+            }
+          ]
         },
         %{
           key: :series_a_narrative_draft,
           project: :prepare_series_a,
           author: :martin_smith,
           name: "Series A Narrative Draft",
+          days_ago: 22,
           content: """
           Draft investor narrative for the Series A process.
 
@@ -3506,13 +4072,57 @@ defmodule Operately.Demo.Data do
           - ARR growth and net revenue retention trends
           - CAC payback improvements from paid acquisition work
           - Runway extension plan tied to expansion revenue
-          """
+          """,
+          edits: [
+            %{
+              author: :owner,
+              days_ago: 10,
+              content: """
+              Draft investor narrative for the Series A process.
+
+              ### Story pillars
+
+              - Strong product-led growth with improving trial conversion
+              - Expanding enterprise pipeline with repeatable onboarding
+              - Clear path from collaboration beta to broader platform adoption
+              - Durable retention once teams collaborate on shared documents
+
+              ### Supporting metrics
+
+              - ARR growth and net revenue retention trends
+              - CAC payback improvements from paid acquisition work
+              - Runway extension plan tied to expansion revenue
+              """
+            },
+            %{
+              author: :martin_smith,
+              days_ago: 2,
+              content: """
+              Draft investor narrative for the Series A process.
+
+              ### Story pillars
+
+              - Strong product-led growth with improving trial conversion
+              - Expanding enterprise pipeline with repeatable onboarding
+              - Clear path from collaboration beta to broader platform adoption
+              - Durable retention once teams collaborate on shared documents
+
+              ### Supporting metrics
+
+              - ARR growth and net revenue retention trends
+              - CAC payback improvements from paid acquisition work
+              - Runway extension plan tied to expansion revenue
+              - Collaboration beta cohort usage as a leading indicator
+              """
+            }
+          ]
         },
         %{
           key: :paid_acquisition_test_log,
           project: :refine_ad_targeting,
           author: :noah_lewis,
           name: "Paid Acquisition Test Log",
+          days_ago: 17,
           content: """
           Running log of paid acquisition experiments and audience tests.
 
@@ -3526,13 +4136,36 @@ defmodule Operately.Demo.Data do
 
           - Operations audiences convert at 1.4x the baseline
           - Shorter headlines outperform feature-heavy copy on mobile
-          """
+          """,
+          edits: [
+            %{
+              author: :rachel_king,
+              days_ago: 3,
+              content: """
+              Running log of paid acquisition experiments and audience tests.
+
+              ### Current tests
+
+              - Operations leader lookalike audiences on LinkedIn
+              - Founder-led team creative vs. department-head creative
+              - Landing page variant with customer proof above the fold
+              - Retargeting sequence for trial starts without an invite
+
+              ### Early results
+
+              - Operations audiences convert at 1.4x the baseline
+              - Shorter headlines outperform feature-heavy copy on mobile
+              - Retargeting lifts completed onboarding by 12%
+              """
+            }
+          ]
         },
         %{
           key: :process_template_library_spec,
           project: :create_process_templates,
           author: :karen_martinez,
           name: "Process Template Library Spec",
+          days_ago: 19,
           content: """
           Specification for the shared process template library rollout.
 
@@ -3546,13 +4179,36 @@ defmodule Operately.Demo.Data do
 
           - Each template includes owner, reviewer, and example tasks
           - Templates must be usable without customization for common workflows
-          """
+          """,
+          edits: [
+            %{
+              author: :bob_williams,
+              days_ago: 6,
+              content: """
+              Specification for the shared process template library rollout.
+
+              ### Template categories
+
+              - Quarterly planning and OKR setup
+              - Project kickoff and milestone review
+              - Customer onboarding and handoff
+              - Incident response and postmortem
+
+              ### Quality bar
+
+              - Each template includes owner, reviewer, and example tasks
+              - Templates must be usable without customization for common workflows
+              - Every template links to the owning space or goal
+              """
+            }
+          ]
         },
         %{
           key: :ux_designer_interview_scorecard,
           project: :hire_ux_designer,
           author: :diego_ramirez,
           name: "UX Designer Interview Scorecard",
+          days_ago: 13,
           content: """
           Scorecard and interview plan for the senior UX designer search.
 
@@ -3567,13 +4223,37 @@ defmodule Operately.Demo.Data do
           1. Portfolio review with design and product
           2. Workflow critique using a real Operately scenario
           3. Cross-functional collaboration panel
-          """
+          """,
+          edits: [
+            %{
+              author: :liam_harris,
+              days_ago: 2,
+              content: """
+              Scorecard and interview plan for the senior UX designer search.
+
+              ### Evaluation criteria
+
+              - Systems thinking across complex workflows
+              - Collaboration with product and engineering in prior roles
+              - Portfolio depth in B2B SaaS onboarding and admin experiences
+              - Comfort designing dense information surfaces like history timelines
+
+              ### Interview stages
+
+              1. Portfolio review with design and product
+              2. Workflow critique using a real Operately scenario
+              3. Cross-functional collaboration panel
+              4. Paid take-home focused on a document comparison layout
+              """
+            }
+          ]
         },
         %{
           key: :market_expansion_playbook,
           goal: :expand_into_new_markets,
           author: :paul_young,
           name: "Market Expansion Playbook",
+          days_ago: 24,
           content: """
           Playbook for validating and launching repeatable market segments.
 
@@ -3587,13 +4267,35 @@ defmodule Operately.Demo.Data do
 
           - Mid-market operations teams in North America
           - EU product-led growth companies entering their first international market
-          """
+          """,
+          edits: [
+            %{
+              author: :paul_young,
+              days_ago: 8,
+              content: """
+              Playbook for validating and launching repeatable market segments.
+
+              ### Segment validation checklist
+
+              - Clear buyer persona and budget owner
+              - Repeatable sales motion without custom implementation
+              - Onboarding path that works without heavy services support
+              - Security and admin requirements documented before pilot start
+
+              ### Current focus segments
+
+              - Mid-market operations teams in North America
+              - EU product-led growth companies entering their first international market
+              """
+            }
+          ]
         },
         %{
           key: :trial_conversion_optimization_notes,
           goal: :increase_user_acquisition,
           author: :rachel_king,
           name: "Trial Conversion Optimization Notes",
+          days_ago: 11,
           content: """
           Notes on improving trial-to-paid conversion across acquisition channels.
 
@@ -3607,13 +4309,36 @@ defmodule Operately.Demo.Data do
 
           - Guided first-week checklist in the product
           - Trial extension prompt tied to completed core workflow
-          """
+          """,
+          edits: [
+            %{
+              author: :noah_lewis,
+              days_ago: 1,
+              content: """
+              Notes on improving trial-to-paid conversion across acquisition channels.
+
+              ### Friction points
+
+              - Teams stall after creating their first project
+              - Invite flows are unclear for cross-functional onboarding
+              - Pricing page visits happen late in the trial window
+              - Empty Docs & Files hubs make workspaces feel unfinished
+
+              ### Experiments in flight
+
+              - Guided first-week checklist in the product
+              - Trial extension prompt tied to completed core workflow
+              - Seed sample documents with version history for new workspaces
+              """
+            }
+          ]
         },
         %{
           key: :runway_and_revenue_review,
           goal: :ensure_financial_stability,
           author: :martin_smith,
           name: "Runway and Revenue Review",
+          days_ago: 9,
           content: """
           Monthly review of runway, MRR growth, and spend controls ahead of Series A.
 
@@ -3627,13 +4352,36 @@ defmodule Operately.Demo.Data do
 
           - Tighten discretionary marketing spend until CAC stabilizes
           - Prioritize accounts with expansion potential in customer success outreach
-          """
+          """,
+          edits: [
+            %{
+              author: :martin_smith,
+              days_ago: 1,
+              content: """
+              Monthly review of runway, MRR growth, and spend controls ahead of Series A.
+
+              ### Current snapshot
+
+              - Runway below target; hiring pace under review
+              - MRR trending up but behind the quarterly plan
+              - Expansion revenue from annual upgrades offsetting some churn
+              - Paid acquisition efficiency improved week over week
+
+              ### Actions
+
+              - Tighten discretionary marketing spend until CAC stabilizes
+              - Prioritize accounts with expansion potential in customer success outreach
+              - Hold open reqs except for the senior UX designer search
+              """
+            }
+          ]
         },
         %{
           key: :activation_retention_review,
           goal: :improve_product,
           author: :frank_miller,
           name: "Activation and Retention Review",
+          days_ago: 14,
           content: """
           Quarterly review of activation and retention drivers across core workflows.
 
@@ -3646,13 +4394,34 @@ defmodule Operately.Demo.Data do
 
           - Power users want deeper collaboration features before renewal
           - Admin setup still blocks some mid-market rollouts
-          """
+          """,
+          edits: [
+            %{
+              author: :liam_harris,
+              days_ago: 4,
+              content: """
+              Quarterly review of activation and retention drivers across core workflows.
+
+              ### Positive signals
+
+              - Faster time to first completed task after onboarding refresh
+              - Lower early churn among teams that invite collaborators in week one
+              - Documents with version history correlate with higher weekly active editors
+
+              ### Risks
+
+              - Power users want deeper collaboration features before renewal
+              - Admin setup still blocks some mid-market rollouts
+              """
+            }
+          ]
         },
         %{
           key: :idp_rollout_guide,
           goal: :expand_team_capabilities,
           author: :grace_wilson,
           name: "Individual Development Plan Rollout Guide",
+          days_ago: 26,
           content: """
           Guide for managers rolling out individual development plans across the company.
 
@@ -3666,13 +4435,36 @@ defmodule Operately.Demo.Data do
 
           - Percentage of team members with approved plans
           - Manager completion of development check-ins each quarter
-          """
+          """,
+          edits: [
+            %{
+              author: :karen_martinez,
+              days_ago: 9,
+              content: """
+              Guide for managers rolling out individual development plans across the company.
+
+              ### Rollout phases
+
+              1. Manager training on goal-setting conversations
+              2. Template distribution and first draft deadlines
+              3. Quarterly check-ins tied to team development goals
+              4. Peer feedback collected before the second check-in
+
+              ### Success measures
+
+              - Percentage of team members with approved plans
+              - Manager completion of development check-ins each quarter
+              - Share of plans with at least one stretch skill goal
+              """
+            }
+          ]
         },
         %{
           key: :core_process_documentation_index,
           goal: :document_core_business_processes,
           author: :karen_martinez,
           name: "Core Process Documentation Index",
+          days_ago: 27,
           content: """
           Index of priority business processes being documented company-wide.
 
@@ -3686,7 +4478,29 @@ defmodule Operately.Demo.Data do
 
           - Each process doc lists owner, triggers, steps, and tools
           - Review cadence is quarterly unless the workflow changes sooner
-          """
+          """,
+          edits: [
+            %{
+              author: :bob_williams,
+              days_ago: 7,
+              content: """
+              Index of priority business processes being documented company-wide.
+
+              ### In progress
+
+              - Customer onboarding and handoff
+              - Quarterly planning and goal alignment
+              - Incident response and support escalation
+              - Document version restore and audit review
+
+              ### Standards
+
+              - Each process doc lists owner, triggers, steps, and tools
+              - Review cadence is quarterly unless the workflow changes sooner
+              - Publish in Docs & Files with at least one revision after peer review
+              """
+            }
+          ]
         },
       ],
       links: [
