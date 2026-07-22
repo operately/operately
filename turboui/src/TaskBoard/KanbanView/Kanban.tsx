@@ -30,6 +30,7 @@ interface Props {
   onTaskClick: (taskId: string) => void;
   isTaskSlideInOpen: boolean;
   canEdit: boolean;
+  canManageStatuses?: boolean;
 }
 
 export function Kanban({
@@ -49,6 +50,7 @@ export function Kanban({
   onTaskClick,
   isTaskSlideInOpen,
   canEdit,
+  canManageStatuses = false,
 }: Props) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
@@ -76,7 +78,6 @@ export function Kanban({
   }, [hasClosedTasks]);
 
   const visibleStatuses = areClosedStatusesVisible ? regularStatuses : activeStatuses;
-  const canManageStatuses = Boolean(onAddStatusClick);
 
   const setScrollContainerRefs = React.useCallback(
     (element: HTMLDivElement | null) => {
@@ -170,7 +171,7 @@ export function Kanban({
             </button>
           )}
 
-          {canEdit && onAddStatusClick && (
+          {canManageStatuses && onAddStatusClick && (
             <button
               type="button"
               className="mt-1 flex shrink-0 items-center gap-1.5 rounded px-2 py-2 text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-base"
