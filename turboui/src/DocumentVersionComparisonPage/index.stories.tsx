@@ -77,23 +77,8 @@ export const LongSplitDiff: Story = {
   }),
 };
 
-export const FirstVersion: Story = {
-  args: baseProps({
-    before: null,
-    after: M.snapshot(1, M.titles.original, M.contentV1),
-  }),
-};
-
-export const OnlySavedVersion: Story = {
-  args: baseProps({
-    versions: M.oneVersionList,
-    before: null,
-    after: M.snapshot(1, M.titles.oneVersion, M.contentV1),
-  }),
-};
-
 export const VersionUnavailable: Story = {
-  args: baseProps({ versions: [], before: null, after: null }),
+  args: baseProps({ before: null, after: null }),
 };
 
 export const LoadingComparison: Story = {

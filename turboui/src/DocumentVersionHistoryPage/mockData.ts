@@ -31,6 +31,8 @@ function version(attrs: Partial<DocumentVersion> & Pick<DocumentVersion, "versio
     restoredFromVersionNumber: attrs.restoredFromVersionNumber ?? null,
     insertedAt: attrs.insertedAt ?? `2026-07-21T14:${String(attrs.versionNumber).padStart(2, "0")}:00Z`,
     isCurrent: attrs.isCurrent ?? false,
+    titleChanged: attrs.titleChanged ?? false,
+    contentChanged: attrs.contentChanged ?? false,
     content: attrs.content,
     ...attrs,
   };
@@ -41,7 +43,6 @@ export const titles = {
   renamed: "Docs & Files writing principles",
   current: "How we write Docs & Files pages",
   oneVersion: "Getting started with Docs & Files",
-  migration: "Company handbook: Docs & Files",
 } as const;
 
 /** History page breadcrumbs end at the document. */
@@ -84,12 +85,16 @@ export const multiVersionList: DocumentVersion[] = [
     origin: "edited",
     isCurrent: true,
     editor: grace,
+    titleChanged: true,
+    contentChanged: true,
   }),
   version({
     versionNumber: 4,
     title: titles.renamed,
     origin: "edited",
     editor: bob,
+    titleChanged: true,
+    contentChanged: false,
   }),
   version({
     versionNumber: 3,
@@ -103,28 +108,14 @@ export const multiVersionList: DocumentVersion[] = [
     title: titles.original,
     origin: "edited",
     editor: bob,
+    titleChanged: false,
+    contentChanged: true,
   }),
   version({
     versionNumber: 1,
     title: titles.original,
     origin: "created",
     editor: bob,
-  }),
-];
-
-export const migrationBaselineList: DocumentVersion[] = [
-  version({
-    versionNumber: 2,
-    title: titles.migration,
-    origin: "edited",
-    isCurrent: true,
-    editor: grace,
-  }),
-  version({
-    versionNumber: 1,
-    title: titles.migration,
-    origin: "migration",
-    editor: null,
   }),
 ];
 

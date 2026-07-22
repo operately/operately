@@ -7,7 +7,7 @@ import type { FormattedTimePreferences } from "../FormattedTime";
 import { Link } from "../Link";
 import { IconArrowRight } from "../icons";
 
-import { eventActionLabel, eventActionText, previousVersion } from "./types";
+import { eventActionText, previousVersion } from "./types";
 
 type Props = {
   versions: DocumentVersion[];
@@ -23,7 +23,8 @@ export function VersionTimeline(props: Props) {
           const isLast = index === props.versions.length - 1;
           const previous = previousVersion(props.versions, version);
           const actionText = eventActionText(version, previous);
-          const actionLabel = eventActionLabel(version);
+          const person = version.editor ?? { fullName: "Former member" };
+          const canCompare = version.versionNumber > 1;
 
           return (
             <li
@@ -39,68 +40,48 @@ export function VersionTimeline(props: Props) {
 
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span className="text-sm font-bold text-content-accent">Version {version.versionNumber}</span>
+                  <span className="text-sm font-bold text-content-accent">
+                    <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="short-date" />
+                    {" at "}
+                    <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="time-only" />
+                  </span>
                   {version.isCurrent && (
                     <span className="rounded-full border border-surface-outline bg-surface-base px-2 py-0.5 text-[11px] font-semibold text-content-dimmed">
-                      Current
+                      Latest
                     </span>
                   )}
                 </div>
 
-                <div className="mt-1 text-xs text-content-subtle">
-                  <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="short-date" />
-                  {" at "}
-                  <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="time-only" />
+                <div className="mt-2 text-sm leading-5 text-content-accent">
+                  <AvatarWithName
+                    person={person}
+                    size="tiny"
+                    textSize="normal"
+                    nameFormat="full"
+                    inline
+                    className="text-sm text-content-accent"
+                  />{" "}
+                  {actionText}
                 </div>
 
-                <EventDescription version={version} actionText={actionText} />
-
-                {version.origin === "migration" && (
-                  <p className="mt-1 text-sm text-content-subtle">This is the earliest saved version available.</p>
+                {canCompare && (
+                  <div className="mt-2.5">
+                    <Link
+                      to={props.getComparisonPath(version.versionNumber)}
+                      testId={`see-what-changed-${version.versionNumber}`}
+                      underline="hover"
+                      className="inline-flex items-center gap-1 text-sm font-semibold"
+                    >
+                      See what changed
+                      <IconArrowRight size={15} stroke={2} aria-hidden />
+                    </Link>
+                  </div>
                 )}
-
-                <div className="mt-2.5">
-                  <Link
-                    to={props.getComparisonPath(version.versionNumber)}
-                    testId={
-                      version.versionNumber <= 1
-                        ? `view-version-${version.versionNumber}`
-                        : `see-what-changed-${version.versionNumber}`
-                    }
-                    underline="hover"
-                    className="inline-flex items-center gap-1 text-sm font-semibold"
-                  >
-                    {actionLabel}
-                    <IconArrowRight size={15} stroke={2} aria-hidden />
-                  </Link>
-                </div>
               </div>
             </li>
           );
         })}
       </ol>
     </nav>
-  );
-}
-
-function EventDescription(props: { version: DocumentVersion; actionText: string }) {
-  if (props.version.origin === "migration") {
-    return <p className="mt-2 text-sm leading-5 text-content-accent">{props.actionText}</p>;
-  }
-
-  const person = props.version.editor ?? { fullName: "Former member" };
-
-  return (
-    <div className="mt-2 text-sm leading-5 text-content-accent">
-      <AvatarWithName
-        person={person}
-        size="tiny"
-        textSize="normal"
-        nameFormat="full"
-        inline
-        className="text-sm text-content-accent"
-      />{" "}
-      {props.actionText}
-    </div>
   );
 }

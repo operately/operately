@@ -44,12 +44,8 @@ describe("DocumentVersionComparisonPage", () => {
     expect(screen.getByRole("heading", { name: "See what changed" })).toBeInTheDocument();
     expect(screen.getByLabelText("Diff legend")).toBeInTheDocument();
     expect(byTestId("version-selectors")).not.toBeInTheDocument();
-    expect(byTestId("back-to-document")).not.toBeInTheDocument();
-    expect(byTestId("back-to-history")).not.toBeInTheDocument();
-    expect(byTestId("version-label-before")).toBeInTheDocument();
-    expect(byTestId("version-label-after")).toBeInTheDocument();
-    expect(byTestId("version-label-before")).toHaveTextContent("Version 4");
-    expect(byTestId("version-label-after")).toHaveTextContent("Version 5");
+    expect(byTestId("version-label-before")).toHaveTextContent("at");
+    expect(byTestId("version-label-after")).toHaveTextContent("at");
     expect(byTestId("title-removed")).toHaveTextContent(M.titles.renamed);
     expect(byTestId("title-added")).toHaveTextContent(M.titles.current);
   });
@@ -63,31 +59,19 @@ describe("DocumentVersionComparisonPage", () => {
     expect(byTestId("no-content-changes")).toBeInTheDocument();
   });
 
-  test("first version shows notice", () => {
+  test("missing snapshots show unavailable state", () => {
     renderPage({
       before: null,
       after: M.snapshot(1, M.titles.original, M.contentV1),
     });
 
-    expect(byTestId("first-version-notice")).toBeInTheDocument();
+    expect(byTestId("version-unavailable")).toBeInTheDocument();
   });
 
   test("idle comparison shows the loading workspace", () => {
     renderPage({ comparisonStatus: "idle", before: null, after: null });
 
     expect(screen.getByRole("status", { name: "Loading comparison" })).toBeInTheDocument();
-  });
-
-  test("only saved version remains readable without a comparison", () => {
-    renderPage({
-      versions: M.oneVersionList,
-      before: null,
-      after: M.snapshot(1, M.titles.oneVersion, M.contentV1),
-    });
-
-    expect(screen.getByRole("heading", { name: "No earlier versions" })).toBeInTheDocument();
-    expect(byTestId("single-snapshot")).toHaveTextContent("Version 1");
-    expect(byTestId("single-snapshot")).toHaveTextContent(M.titles.oneVersion);
   });
 
   test("retry calls callback", () => {

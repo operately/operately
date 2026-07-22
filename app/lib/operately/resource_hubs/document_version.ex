@@ -20,6 +20,8 @@ defmodule Operately.ResourceHubs.DocumentVersion do
     field :restored_from_version_number, :integer
 
     field :is_current, :boolean, virtual: true
+    field :title_changed, :boolean, virtual: true
+    field :content_changed, :boolean, virtual: true
 
     timestamps(updated_at: false)
   end
@@ -76,6 +78,28 @@ defmodule Operately.ResourceHubs.DocumentVersion do
 
   def mark_current(%__MODULE__{} = version, current_version) do
     %{version | is_current: version.version_number == current_version}
+  end
+
+  @doc """
+  Compares each version to its predecessor (n-1) and sets virtual
+  `title_changed` / `content_changed` flags. Content is not required in the API response.
+  """
+  def annotate_changes(versions) when is_list(versions) do
+    by_number = Map.new(versions, &{&1.version_number, &1})
+
+    Enum.map(versions, fn version ->
+      case Map.get(by_number, version.version_number - 1) do
+        nil ->
+          %{version | title_changed: false, content_changed: false}
+
+        previous ->
+          %{
+            version
+            | title_changed: previous.title != version.title,
+              content_changed: previous.content != version.content
+          }
+      end
+    end)
   end
 
   defp validate_restored_from_matches_origin(changeset) do

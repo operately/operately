@@ -6,7 +6,7 @@ Add immutable version history to native Docs & Files documents so authorized edi
 
 - see when a document's title or content changed
 - identify the person responsible for each saved version
-- compare any two versions in a GitHub-style split diff
+- compare a version with its predecessor in a GitHub-style split diff
 - distinguish additions, deletions, replacements, formatting changes, and structural changes
 - restore an earlier title and body without deleting subsequent history
 
@@ -51,7 +51,7 @@ Users therefore cannot inspect an earlier document, understand exactly what chan
 - Capture the first snapshot when a published document is created, including copies.
 - Do not capture versions while a document remains a draft; draft edits update the canonical document only.
 - Capture version 1 when a draft is first published.
-- Compare arbitrary saved versions, not only adjacent versions.
+- Compare each saved version with its immediate predecessor from the history timeline.
 - Preserve rich-text semantics when comparing paragraphs, headings, lists, marks, links, mentions, and blobs.
 - Make formatting-only and structure-only changes visible.
 - Restore an earlier title and body as a new version.
@@ -406,8 +406,12 @@ Output:
   restoredFromVersionNumber: number | null;
   insertedAt: string;
   isCurrent: boolean;
+  titleChanged: boolean;
+  contentChanged: boolean;
 }
 ```
+
+`titleChanged` / `contentChanged` compare each version to its predecessor (`n-1`). Version 1 is always `false`/`false`.
 
 Do not include TipTap content in the list response.
 
@@ -584,24 +588,35 @@ Add routes:
 /documents/:id/versions/:versionNumber
 ```
 
-The first route opens the latest comparison. The second selects the requested version and compares it with the immediately preceding version by default.
+The first route opens the history timeline (current document preview + version events). The second opens the comparison page for that version versus its predecessor (`See what changed` from the timeline; version 1 has no comparison link).
 
 Use the existing document breadcrumb and parent-resource navigation so users can return to the current document and its folder/resource hub.
 
 ### Page layout
 
-Create a pure `DocumentVersionHistoryPage` in `turboui/src/DocumentVersionHistoryPage/`.
+Split history and comparison into two TurboUI pages:
 
-It receives:
+1. `DocumentVersionHistoryPage` — current document preview + timeline of version events
+2. `DocumentVersionComparisonPage` — adjacent-version split diff (`n` vs `n-1`)
 
-- current document metadata and permissions
-- version summaries for the document
-- selected before/after snapshots
+History page props:
+
+- current document title/body for the preview pane
+- version summaries for the timeline
 - formatted-time preferences
-- loading and error state
-- callbacks for selection, restoration, navigation, and retry
+- `getComparisonPath(versionNumber)` for timeline action links
 
-The app bridge lives under `app/assets/js/pages/ResourceHubDocumentVersionsPage/`. It owns API hooks, routes, the current user's formatting preferences, restore mutation, and refresh behavior.
+Comparison page props:
+
+- version summaries (for empty/one-version states)
+- selected before/after snapshots for the route version and its predecessor
+- loading and error state
+- callbacks for retry and (later) restoration
+
+App bridges:
+
+- `ResourceHubDocumentVersionsPage` → history route
+- `ResourceHubDocumentVersionComparisonPage` → comparison route
 
 TurboUI must not import `@/` modules, call APIs, use React Router, or read app contexts.
 
@@ -609,28 +624,18 @@ TurboUI must not import `@/` modules, call APIs, use React Router, or read app c
 
 The history list shows newest first. Each row contains:
 
-- `Version {number}`
-- editor name/avatar, `Former member` when the editor no longer exists, or `Existing document` for migration baselines
 - formatted date and time
-- origin context when useful: `Created`, `Restored from Version {number}`, or `History Begins Here`
+- a sentence describing the event (created, title-only change, updated, restored)
 - `Current` on the canonical version
+- an action link `See what changed` for versions after the first (version 1 has no comparison)
 
-The selected version has a clear active state.
+Action links navigate to the comparison route for that version (vs its predecessor by default).
 
-### Comparison controls
+### Comparison page
 
-Above the diff, provide two labeled selectors:
+Opening `/versions/:n` always compares `n-1` with `n`. There are no Before/After selectors; users choose which change to inspect from the history timeline.
 
-- `Before`
-- `After`
-
-Defaults:
-
-- opening history compares the previous version with the current version
-- selecting a history row compares its predecessor with the selected row
-- version 1 with no predecessor displays the snapshot without a diff and explains that it is the first saved version
-
-Changing a selector updates the route when appropriate and fetches the selected pair. The selectors prevent comparing a version with itself. The older version is always displayed as `Before`.
+Version 1 with no predecessor displays the snapshot without a diff and explains that it is the first saved version. The older version is always displayed as `Before`.
 
 ### Title changes
 
@@ -819,12 +824,11 @@ Tests assert ranges and semantic classification, not internal Myers search state
 - changed leaf and block nodes are visibly marked
 - title-only changes render correctly
 - one-version and no-change states render correctly
-- selectors cannot compare a version with itself
 - restore action respects props/permissions
-- keyboard focus remains visible through list and selector interactions
+- keyboard focus remains visible through timeline and comparison interactions
 - loading/error states do not discard history navigation
 - mobile layout stacks panes
-- Storybook interaction tests cover comparison selection and restore confirmation
+- Storybook covers adjacent comparison and restore confirmation
 
 ### Company export/import
 
@@ -838,8 +842,7 @@ Tests assert ranges and semantic classification, not internal Myers search state
 
 ### Feature tests
 
-- editor creates several versions and compares adjacent versions
-- editor selects two non-adjacent versions
+- editor creates several versions and compares a version with its predecessor
 - editor restores an earlier version and sees the new current version
 - users without document view access cannot open the history route
 - stale restore shows conflict and preserves both users' versions
@@ -925,13 +928,14 @@ This phase proves comparison quality before persistence/API work commits the pro
 - [x] regenerate API types
 - [x] add backend/model tests
 
-### Phase 3 — History and comparison UI
+### Phase 3 — History and comparison UI ✅
 
-- create pure TurboUI history page and stories
-- create the app page bridge, loader, routes, and paths
-- add `Version History` to document options
-- wire selectors, responsive split view, errors, and formatted times
-- add TurboUI, navigation, and feature coverage
+- [x] create pure TurboUI history page (preview + timeline) and stories
+- [x] create pure TurboUI comparison page (adjacent split diff) and stories
+- [x] create app page bridges, loaders, routes, and paths for both pages
+- [x] add `Version History` to document options
+- [x] wire responsive split view, errors, and formatted times
+- [x] add TurboUI, navigation, and feature coverage
 
 ### Phase 4 — Restoration
 
@@ -955,7 +959,7 @@ This phase proves comparison quality before persistence/API work commits the pro
 - Every title/body save on a published document creates exactly one immutable version in the same transaction.
 - Subscription-only and publication-state-only changes do not create content versions.
 - Existing documents have a clearly labeled migration baseline.
-- Anyone who can view a document can list versions and compare any two saved snapshots.
+- Anyone who can view a document can list versions and compare each version with its predecessor.
 - The diff detects text, formatting, link, mention, blob, and block-structure changes.
 - Diff rendering is accessible and responsive, with no color-only meaning.
 - Restoration creates a new version and preserves all subsequent history.

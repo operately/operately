@@ -3,6 +3,7 @@ import * as Hub from "@/models/resourceHubs";
 import type { DocumentVersion } from "@/api";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
+import { redirect } from "react-router";
 
 interface LoaderResult {
   document: Hub.ResourceHubDocument;
@@ -18,6 +19,11 @@ export async function loader({ params }): Promise<LoaderResult> {
     feature: "document-versions",
     path: paths.resourceHubDocumentPath(params.id),
   });
+
+  const routeVersionNumber = Number(params.versionNumber);
+  if (!Number.isFinite(routeVersionNumber) || routeVersionNumber <= 1) {
+    throw redirect(paths.resourceHubDocumentVersionsPath(params.id));
+  }
 
   const document = await Hub.documents
     .get({
@@ -47,13 +53,11 @@ export async function loader({ params }): Promise<LoaderResult> {
     Hub.documents.listVersions({ documentId: document.id! }),
   ]);
 
-  const routeVersionNumber = Number(params.versionNumber);
-
   return {
     document,
     resourceHub,
     versions: versionsResult.versions || [],
-    routeVersionNumber: Number.isFinite(routeVersionNumber) ? routeVersionNumber : 1,
+    routeVersionNumber,
   };
 }
 
