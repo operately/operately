@@ -33,6 +33,7 @@ export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props
         label: "Edit",
         link: paths.resourceHubEditDocumentPath(document.id!),
         hidden: !document.permissions?.canEditDocument,
+        keepOutsideOnBigScreen: true,
         testId: "edit-document-link",
       },
       {

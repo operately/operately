@@ -36,6 +36,7 @@ export function useFilePageOptions({ showDeleteModal }: Props): Page.Option[] {
         label: "Edit",
         link: paths.resourceHubEditFilePath(file.id!),
         hidden: !file.permissions?.canEditFile,
+        keepOutsideOnBigScreen: true,
         testId: "edit-file-link",
       },
       {

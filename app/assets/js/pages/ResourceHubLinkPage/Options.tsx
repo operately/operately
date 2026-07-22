@@ -25,6 +25,7 @@ export function useLinkPageOptions({ showDeleteModal }: Props): Page.Option[] {
         label: "Edit",
         link: paths.resourceHubEditLinkPath(link.id!),
         hidden: !link.permissions?.canEditLink,
+        keepOutsideOnBigScreen: true,
         testId: "edit-link-link",
       },
       {
