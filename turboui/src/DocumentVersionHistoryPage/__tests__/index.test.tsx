@@ -35,7 +35,7 @@ function renderPage(overrides: Partial<DocumentVersionHistoryPageProps> = {}) {
 }
 
 describe("DocumentVersionHistoryPage", () => {
-  test("renders preview and timeline with action links", () => {
+  test("renders preview and timeline with action links for comparable versions", () => {
     renderPage();
 
     expect(screen.getByRole("heading", { name: "History of changes" })).toBeInTheDocument();
@@ -47,19 +47,20 @@ describe("DocumentVersionHistoryPage", () => {
     expect(byTestId("version-row-5")).toHaveTextContent("Current");
     expect(byTestId("version-row-5")).toHaveTextContent("changed the title of this document");
     expect(byTestId("see-what-changed-5")).toHaveTextContent("See what changed");
-    expect(byTestId("view-version-1")).toHaveTextContent("View this version");
     expect(byTestId("see-what-changed-5")).toHaveAttribute("href", "/documents/1/versions/5");
+    expect(byTestId("view-version-1")).not.toBeInTheDocument();
+    expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
   });
 
-  test("one-version history offers view-this-version", () => {
+  test("one-version history has no comparison link", () => {
     renderPage({
       versions: M.oneVersionList,
       currentTitle: M.titles.oneVersion,
       currentContent: M.contentV1,
     });
 
-    expect(byTestId("view-version-1")).toHaveTextContent("View this version");
-    expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
     expect(byTestId("version-row-1")).toHaveTextContent("created this document");
+    expect(byTestId("view-version-1")).not.toBeInTheDocument();
+    expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
   });
 });

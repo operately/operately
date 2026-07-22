@@ -1891,6 +1891,7 @@ export interface ResourceHubDocument {
   content: string;
   state: DocumentState;
   currentVersion?: number | null;
+  versionsCount?: number | null;
   insertedAt: string;
   publishedAt: string | null;
   updatedAt: string;

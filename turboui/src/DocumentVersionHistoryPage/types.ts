@@ -91,7 +91,3 @@ export function eventActionText(version: DocumentVersion, previous: DocumentVers
 export function eventDescription(version: DocumentVersion, previous: DocumentVersion | null): string {
   return `${editorLabel(version)} ${eventActionText(version, previous)}`;
 }
-
-export function eventActionLabel(version: DocumentVersion): string {
-  return version.versionNumber <= 1 ? "View this version" : "See what changed";
-}

@@ -31,6 +31,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       state: Atom.to_string(document.state),
       content: Jason.encode!(document.content),
       current_version: document.current_version,
+      versions_count: document.versions_count,
       reactions: OperatelyWeb.Api.Serializer.serialize(document.reactions),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(document.inserted_at),
       published_at: OperatelyWeb.Api.Serializer.serialize(document.published_at),

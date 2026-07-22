@@ -7,7 +7,7 @@ import type { FormattedTimePreferences } from "../FormattedTime";
 import { Link } from "../Link";
 import { IconArrowRight } from "../icons";
 
-import { eventActionLabel, eventActionText, previousVersion } from "./types";
+import { eventActionText, previousVersion } from "./types";
 
 type Props = {
   versions: DocumentVersion[];
@@ -23,8 +23,8 @@ export function VersionTimeline(props: Props) {
           const isLast = index === props.versions.length - 1;
           const previous = previousVersion(props.versions, version);
           const actionText = eventActionText(version, previous);
-          const actionLabel = eventActionLabel(version);
           const person = version.editor ?? { fullName: "Former member" };
+          const canCompare = version.versionNumber > 1;
 
           return (
             <li
@@ -66,21 +66,19 @@ export function VersionTimeline(props: Props) {
                   {actionText}
                 </div>
 
-                <div className="mt-2.5">
-                  <Link
-                    to={props.getComparisonPath(version.versionNumber)}
-                    testId={
-                      version.versionNumber <= 1
-                        ? `view-version-${version.versionNumber}`
-                        : `see-what-changed-${version.versionNumber}`
-                    }
-                    underline="hover"
-                    className="inline-flex items-center gap-1 text-sm font-semibold"
-                  >
-                    {actionLabel}
-                    <IconArrowRight size={15} stroke={2} aria-hidden />
-                  </Link>
-                </div>
+                {canCompare && (
+                  <div className="mt-2.5">
+                    <Link
+                      to={props.getComparisonPath(version.versionNumber)}
+                      testId={`see-what-changed-${version.versionNumber}`}
+                      underline="hover"
+                      className="inline-flex items-center gap-1 text-sm font-semibold"
+                    >
+                      See what changed
+                      <IconArrowRight size={15} stroke={2} aria-hidden />
+                    </Link>
+                  </div>
+                )}
               </div>
             </li>
           );

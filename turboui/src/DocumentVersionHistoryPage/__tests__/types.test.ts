@@ -1,4 +1,4 @@
-import { editorLabel, eventActionLabel, eventActionText, eventDescription, resolveSelection } from "../types";
+import { editorLabel, eventActionText, eventDescription, resolveSelection } from "../types";
 import type { DocumentVersion, Person } from "../../ApiTypes";
 
 const person: Person = {
@@ -59,8 +59,6 @@ describe("event copy", () => {
     expect(eventActionText(restored, renamed)).toContain("restored this document from Version 1");
     expect(eventDescription(created, null)).toBe("Ada Lovelace created this document");
     expect(eventDescription(edited, created)).toBe("Ada Lovelace saved a new version of this document");
-    expect(eventActionLabel(created)).toBe("View this version");
-    expect(eventActionLabel(edited)).toBe("See what changed");
     expect(editorLabel(version({ versionNumber: 1, editor: null }))).toBe("Former member");
 
     const migrated = version({ versionNumber: 1, origin: "migration", editor: null });

@@ -2011,6 +2011,7 @@ export interface ResourceHubDocument {
   content: string;
   state: DocumentState;
   currentVersion?: number | null;
+  versionsCount?: number | null;
   insertedAt: string;
   publishedAt: string | null;
   updatedAt: string;
@@ -2930,6 +2931,7 @@ export interface DocumentsGetInput {
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
   includePathToDocument?: boolean | null;
+  includeVersionsCount?: boolean | null;
 }
 
 export interface DocumentsGetResult {

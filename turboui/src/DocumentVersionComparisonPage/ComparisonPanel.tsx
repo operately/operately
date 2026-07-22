@@ -3,7 +3,6 @@ import React from "react";
 import type { DocumentVersion } from "../ApiTypes";
 import FormattedTime from "../FormattedTime";
 import type { FormattedTimePreferences } from "../FormattedTime";
-import RichContent from "../RichContent";
 import { RichContentDiff } from "../RichContentDiff";
 import type { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import classNames from "../utils/classnames";
@@ -13,9 +12,7 @@ import type { ComparisonStatus, VersionSnapshot } from "../DocumentVersionHistor
 import {
   ComparisonErrorState,
   ComparisonLoadingState,
-  FirstVersionState,
   NoChangesState,
-  OneVersionEmptyState,
   VersionUnavailableState,
 } from "./states";
 
@@ -32,19 +29,12 @@ type Props = {
 export function ComparisonPanel(props: Props) {
   let content: React.ReactNode;
 
-  if (props.versions.length === 0) {
-    content = <VersionUnavailableState />;
-  } else if (props.versions.length === 1) {
-    content = (
-      <div>
-        <OneVersionEmptyState />
-        {props.after && <SingleSnapshot snapshot={props.after} mentionedPersonLookup={props.mentionedPersonLookup} />}
-      </div>
-    );
-  } else if (props.comparisonStatus === "idle" || props.comparisonStatus === "loading") {
+  if (props.comparisonStatus === "idle" || props.comparisonStatus === "loading") {
     content = <ComparisonLoadingState />;
   } else if (props.comparisonStatus === "error") {
     content = <ComparisonErrorState onRetry={props.onRetryComparison} />;
+  } else if (!props.before || !props.after) {
+    content = <VersionUnavailableState />;
   } else {
     content = (
       <ReadyComparison
@@ -62,24 +52,11 @@ export function ComparisonPanel(props: Props) {
 
 function ReadyComparison(props: {
   versions: DocumentVersion[];
-  before: VersionSnapshot | null;
-  after: VersionSnapshot | null;
+  before: VersionSnapshot;
+  after: VersionSnapshot;
   formattedTimePreferences: FormattedTimePreferences;
   mentionedPersonLookup: MentionedPersonLookupFn;
 }) {
-  if (!props.after) {
-    return <VersionUnavailableState />;
-  }
-
-  if (!props.before) {
-    return (
-      <div>
-        <FirstVersionState />
-        <SingleSnapshot snapshot={props.after} mentionedPersonLookup={props.mentionedPersonLookup} />
-      </div>
-    );
-  }
-
   const contentEqual = JSON.stringify(props.before.content) === JSON.stringify(props.after.content);
   const beforeTime = versionInsertedAt(props.versions, props.before);
   const afterTime = versionInsertedAt(props.versions, props.after);
@@ -219,19 +196,5 @@ function TitlePane(props: {
         {props.title || "Untitled"}
       </div>
     </section>
-  );
-}
-
-function SingleSnapshot(props: { snapshot: VersionSnapshot; mentionedPersonLookup: MentionedPersonLookupFn }) {
-  return (
-    <div className="pt-5" data-test-id="single-snapshot">
-      <div className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-content-dimmed">
-        Version {props.snapshot.versionNumber}
-      </div>
-      <div className="mb-6 text-2xl font-extrabold tracking-tight text-content-accent sm:text-3xl">
-        {props.snapshot.title || "Untitled"}
-      </div>
-      <RichContent content={props.snapshot.content} mentionedPersonLookup={props.mentionedPersonLookup} />
-    </div>
   );
 }

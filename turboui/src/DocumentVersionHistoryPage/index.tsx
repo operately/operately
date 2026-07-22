@@ -18,7 +18,6 @@ export {
   editorLabel,
   eventActionText,
   eventDescription,
-  eventActionLabel,
 } from "./types";
 export type { ComparisonStatus, VersionSnapshot, DocumentVersionHistoryPageProps } from "./types";
 

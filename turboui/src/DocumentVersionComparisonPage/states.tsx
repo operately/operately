@@ -2,17 +2,6 @@ import React from "react";
 
 import { SecondaryButton } from "../Button";
 
-export function OneVersionEmptyState() {
-  return (
-    <div className="border-b border-surface-outline bg-surface-dimmed py-5" data-test-id="one-version-empty">
-      <h2 className="text-base font-semibold text-content-accent">No earlier versions</h2>
-      <p className="mt-2 text-sm text-content-dimmed">
-        There is no earlier saved version to compare yet. Future changes will appear in the history.
-      </p>
-    </div>
-  );
-}
-
 export function NoChangesState() {
   return (
     <div
@@ -86,17 +75,6 @@ export function VersionUnavailableState() {
       <p className="mt-1 text-sm text-content-dimmed">
         That version could not be found. Choose another version from the history list.
       </p>
-    </div>
-  );
-}
-
-export function FirstVersionState() {
-  return (
-    <div
-      className="border-b border-surface-outline bg-surface-dimmed py-4 text-sm text-content-dimmed"
-      data-test-id="first-version-notice"
-    >
-      This is the first saved version of the document. There is no earlier version to compare.
     </div>
   );
 }
