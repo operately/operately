@@ -1,4 +1,12 @@
-import { editorLabel, eventActionText, eventDescription, resolveSelection } from "../types";
+import {
+  EMPTY_DOC,
+  defaultSelectedVersionNumber,
+  editorLabel,
+  eventActionText,
+  eventDescription,
+  resolveSelection,
+  versionPreviewContent,
+} from "../types";
 import type { DocumentVersion, Person } from "../../ApiTypes";
 
 const person: Person = {
@@ -40,6 +48,55 @@ describe("resolveSelection", () => {
 
   test("version 1 has no before", () => {
     expect(resolveSelection(versions, 1)).toEqual({ selected: 1, before: null, after: 1 });
+  });
+});
+
+describe("defaultSelectedVersionNumber", () => {
+  test("prefers the current version", () => {
+    expect(
+      defaultSelectedVersionNumber([
+        version({ versionNumber: 3 }),
+        version({ versionNumber: 2, isCurrent: true }),
+        version({ versionNumber: 1, origin: "created" }),
+      ]),
+    ).toBe(2);
+  });
+
+  test("returns null for an empty versions array", () => {
+    expect(defaultSelectedVersionNumber([])).toBeNull();
+  });
+
+  test("selects the newest version when no current version is present", () => {
+    expect(
+      defaultSelectedVersionNumber([
+        version({ versionNumber: 1, origin: "created" }),
+        version({ versionNumber: 3 }),
+        version({ versionNumber: 2 }),
+      ]),
+    ).toBe(3);
+  });
+});
+
+describe("versionPreviewContent", () => {
+  test("returns content when present", () => {
+    const content = {
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "Example" }] }],
+    };
+
+    expect(versionPreviewContent(version({ versionNumber: 1, content: content as DocumentVersion["content"] }))).toEqual(
+      content,
+    );
+  });
+
+  test("returns EMPTY_DOC when version has null or undefined content", () => {
+    expect(versionPreviewContent(version({ versionNumber: 1, content: null }))).toEqual(EMPTY_DOC);
+    expect(versionPreviewContent(version({ versionNumber: 1, content: undefined }))).toEqual(EMPTY_DOC);
+  });
+
+  test("returns EMPTY_DOC when version is null or undefined", () => {
+    expect(versionPreviewContent(null)).toEqual(EMPTY_DOC);
+    expect(versionPreviewContent(undefined)).toEqual(EMPTY_DOC);
   });
 });
 

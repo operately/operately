@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Documents.ListVersions do
       {:ok, versions}
     end)
     |> run(:serialized, fn ctx ->
-      {:ok, %{versions: Serializer.serialize(ctx.versions)}}
+      {:ok, %{versions: Serializer.serialize(ctx.versions, level: :full)}}
     end)
     |> respond()
   end

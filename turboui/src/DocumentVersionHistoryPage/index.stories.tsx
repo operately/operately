@@ -36,8 +36,6 @@ function baseProps(overrides: Partial<DocumentVersionHistoryPageProps> = {}): Do
   return {
     title: ["History of changes", M.titles.current],
     navigation: M.navigation,
-    currentTitle: M.titles.current,
-    currentContent: M.contentV2,
     versions: M.multiVersionList,
     formattedTimePreferences: defaultFormattedTimePreferences,
     mentionedPersonLookup: handlers.mentionedPersonLookup,
@@ -54,8 +52,6 @@ export const OneVersion: Story = {
   args: baseProps({
     title: ["History of changes", M.titles.oneVersion],
     navigation: M.navigationFor(M.titles.oneVersion),
-    currentTitle: M.titles.oneVersion,
-    currentContent: M.contentV1,
     versions: M.oneVersionList,
   }),
 };
