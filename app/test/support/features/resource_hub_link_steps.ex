@@ -120,7 +120,6 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
 
   step :edit_link, ctx, attrs do
     ctx
-    |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-link-link")
     |> UI.fill(testid: "title", with: attrs.title)
     |> UI.fill(testid: "url", with: attrs.url)
