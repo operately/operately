@@ -90,25 +90,60 @@ describe("DocumentVersionHistoryPage", () => {
     expect(onRestore).toHaveBeenCalledWith(4, 5);
   });
 
-  test("shows conflict dialog when restore reports conflict", async () => {
+  test("reload after conflict selects the latest version", async () => {
     const user = userEvent.setup();
-    const onReload = jest.fn();
 
-    renderPage({
-      canRestore: true,
-      currentVersionNumber: 5,
-      onRestore: jest.fn().mockResolvedValue("conflict"),
-      onReload,
-    });
+    function Harness() {
+      const [versions, setVersions] = React.useState(M.multiVersionList);
+      const [currentVersionNumber, setCurrentVersionNumber] = React.useState(5);
+
+      return (
+        <DocumentVersionHistoryPage
+          title={["History of changes", M.titles.current]}
+          navigation={M.navigation}
+          versions={versions}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+          mentionedPersonLookup={mentionedPersonLookup}
+          getComparisonPath={(versionNumber) => `/documents/1/versions/${versionNumber}`}
+          canRestore
+          currentVersionNumber={currentVersionNumber}
+          onRestore={async () => "conflict"}
+          onReload={() => {
+            setVersions([
+              {
+                ...M.multiVersionList[0]!,
+                id: "ver-6",
+                versionNumber: 6,
+                isCurrent: true,
+                title: "After concurrent edit",
+              },
+              ...M.multiVersionList.map((version) => ({ ...version, isCurrent: false })),
+            ]);
+            setCurrentVersionNumber(6);
+          }}
+        />
+      );
+    }
+
+    render(
+      <MemoryRouter>
+        <Harness />
+      </MemoryRouter>,
+    );
 
     await user.click(byTestId("select-version-4")!);
+    expect(byTestId("version-dot-4")).toHaveAttribute("data-selected", "true");
+
     await user.click(byTestId("restore-this-version")!);
     await user.click(screen.getByRole("button", { name: "Restore" }));
 
     expect(byTestId("restore-conflict")).toBeInTheDocument();
     expect(byTestId("restore-conflict")).toHaveTextContent("Document changed since you opened it");
-    await user.click(screen.getByRole("button", { name: "Reload Latest Version" }));
-    expect(onReload).toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Reload" }));
+
+    expect(byTestId("version-dot-6")).toHaveAttribute("data-selected", "true");
+    expect(byTestId("selected-version-preview")).toHaveTextContent("After concurrent edit");
   });
 
   test("one-version history has no comparison link", () => {

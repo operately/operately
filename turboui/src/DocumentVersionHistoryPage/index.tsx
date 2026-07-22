@@ -6,7 +6,7 @@ import { Page } from "../Page";
 import RichContent from "../RichContent";
 
 import type { DocumentVersionHistoryPageProps } from "./types";
-import { defaultSelectedVersionNumber, sortVersionsNewestFirst, versionPreviewContent } from "./types";
+import { sortVersionsNewestFirst, versionPreviewContent } from "./types";
 import { VersionTimeline } from "./VersionTimeline";
 
 export namespace DocumentVersionHistoryPage {
@@ -26,16 +26,19 @@ export type { ComparisonStatus, VersionSnapshot, DocumentVersionHistoryPageProps
 
 export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Props) {
   const versions = sortVersionsNewestFirst(props.versions);
-  const [selectedVersionNumber, setSelectedVersionNumber] = React.useState<number | null>(() =>
-    defaultSelectedVersionNumber(versions),
-  );
+  // null follows the latest/current version when props.versions refresh
+  const [selectedVersionNumber, setSelectedVersionNumber] = React.useState<number | null>(null);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [restoring, setRestoring] = React.useState(false);
   const [conflict, setConflict] = React.useState(false);
-  const [selectLatestAfterRefresh, setSelectLatestAfterRefresh] = React.useState(false);
 
   const selectedVersion =
-    versions.find((version) => version.versionNumber === selectedVersionNumber) ?? versions[0] ?? null;
+    (selectedVersionNumber != null
+      ? versions.find((version) => version.versionNumber === selectedVersionNumber)
+      : null) ??
+    versions.find((version) => version.isCurrent) ??
+    versions[0] ??
+    null;
 
   const currentVersionNumber =
     props.currentVersionNumber ?? versions.find((version) => version.isCurrent)?.versionNumber ?? null;
@@ -48,16 +51,10 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
     currentVersionNumber != null;
 
   React.useEffect(() => {
-    if (selectLatestAfterRefresh) {
-      setSelectedVersionNumber(defaultSelectedVersionNumber(versions));
-      setSelectLatestAfterRefresh(false);
-      return;
-    }
-
     if (selectedVersionNumber != null && !versions.some((version) => version.versionNumber === selectedVersionNumber)) {
-      setSelectedVersionNumber(defaultSelectedVersionNumber(versions));
+      setSelectedVersionNumber(null);
     }
-  }, [versions, selectedVersionNumber, selectLatestAfterRefresh]);
+  }, [versions, selectedVersionNumber]);
 
   const handleConfirmRestore = async () => {
     if (!selectedVersion || currentVersionNumber == null || !props.onRestore) return;
@@ -74,7 +71,7 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
 
       if (result === "ok") {
         setConflict(false);
-        setSelectLatestAfterRefresh(true);
+        setSelectedVersionNumber(null);
       }
     } finally {
       setRestoring(false);
@@ -82,9 +79,9 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
   };
 
   const handleReload = async () => {
-    await props.onReload?.();
     setConflict(false);
-    setSelectLatestAfterRefresh(true);
+    setSelectedVersionNumber(null);
+    await props.onReload?.();
   };
 
   return (
