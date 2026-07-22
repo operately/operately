@@ -44,8 +44,8 @@ describe("DocumentVersionComparisonPage", () => {
     expect(screen.getByRole("heading", { name: "See what changed" })).toBeInTheDocument();
     expect(screen.getByLabelText("Diff legend")).toBeInTheDocument();
     expect(byTestId("version-selectors")).not.toBeInTheDocument();
-    expect(byTestId("version-label-before")).toHaveTextContent("Version 4");
-    expect(byTestId("version-label-after")).toHaveTextContent("Version 5");
+    expect(byTestId("version-label-before")).toHaveTextContent("at");
+    expect(byTestId("version-label-after")).toHaveTextContent("at");
     expect(byTestId("title-removed")).toHaveTextContent(M.titles.renamed);
     expect(byTestId("title-added")).toHaveTextContent(M.titles.current);
   });

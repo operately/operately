@@ -62,7 +62,6 @@ function ReadyComparison(props: {
   const afterTime = versionInsertedAt(props.versions, props.after);
   const beforeLabel = (
     <VersionTimeLabel
-      versionNumber={props.before.versionNumber}
       time={beforeTime}
       preferences={props.formattedTimePreferences}
       testId="version-label-before"
@@ -70,7 +69,6 @@ function ReadyComparison(props: {
   );
   const afterLabel = (
     <VersionTimeLabel
-      versionNumber={props.after.versionNumber}
       time={afterTime}
       preferences={props.formattedTimePreferences}
       testId="version-label-after"
@@ -116,27 +114,21 @@ function versionInsertedAt(versions: DocumentVersion[], snapshot: VersionSnapsho
 }
 
 function VersionTimeLabel(props: {
-  versionNumber: number;
   time: string | null;
   preferences: FormattedTimePreferences;
   testId: string;
 }) {
   return (
-    <span className="flex flex-col gap-1" data-test-id={props.testId}>
-      <span className="text-xs font-bold uppercase tracking-[0.12em] text-content-accent">
-        Version {props.versionNumber}
-      </span>
-      <span className="text-xs font-normal text-content-dimmed">
-        {props.time ? (
-          <>
-            <FormattedTime {...props.preferences} time={props.time} format="short-date" />
-            {" at "}
-            <FormattedTime {...props.preferences} time={props.time} format="time-only" />
-          </>
-        ) : (
-          "Time unavailable"
-        )}
-      </span>
+    <span className="text-xs font-normal text-content-dimmed" data-test-id={props.testId}>
+      {props.time ? (
+        <>
+          <FormattedTime {...props.preferences} time={props.time} format="short-date" />
+          {" at "}
+          <FormattedTime {...props.preferences} time={props.time} format="time-only" />
+        </>
+      ) : (
+        "Time unavailable"
+      )}
     </span>
   );
 }
@@ -182,7 +174,7 @@ function TitlePane(props: {
         props.position === "after" && "pt-5 sm:pt-8 md:pt-0 md:pl-8",
       )}
     >
-      <header className="mb-5">
+      <header className="mb-2">
         <h2>{props.label}</h2>
       </header>
       <div
