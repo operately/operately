@@ -64,6 +64,17 @@ defmodule Operately.Operations.CompanyAddingTest do
     assert Groups.get_group(company.company_space_id)
   end
 
+  test "CompanyAdding operation enables tasks on the General space" do
+    {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
+
+    space = Groups.get_group!(company.company_space_id)
+
+    assert space.name == "General"
+    assert space.tools.tasks_enabled == true
+    assert space.tools.discussions_enabled == true
+    assert space.tools.resource_hub_enabled == true
+  end
+
   test "CompanyAdding operation creates admin user's access group and membership" do
     {:ok, company} = Operately.Operations.CompanyAdding.run(@company_attrs)
 
