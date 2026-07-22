@@ -3,15 +3,18 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 import { Page } from ".";
 import { match } from "ts-pattern";
+import { SecondaryButton } from "../Button";
 import { DivLink } from "../Link";
 import { IconX, IconDots } from "../icons";
 import { createTestId } from "../TestableElement";
+import { useWindowSizeBiggerOrEqualTo } from "../utils/useWindowSizeBreakpoint";
 
 import classNames from "classnames";
 
 export function PageOptions({ options, testId = "options-button" }: { options?: Page.Option[]; testId?: string }) {
   const [open, setOpen] = React.useState(false);
   const close = () => setOpen(false);
+  const isBigScreen = useWindowSizeBiggerOrEqualTo("lg");
 
   if (!options) {
     return null;
@@ -23,15 +26,56 @@ export function PageOptions({ options, testId = "options-button" }: { options?: 
     return null;
   }
 
+  const [outsideOptions, insideOptions] = splitOptions(isBigScreen, visibleOptions);
+
   return (
     <div className="absolute right-0 top-0">
       <div className="absolute right-2.5 top-2.5 flex items-center gap-2">
-        <DropdownMenu.Root open={open} onOpenChange={setOpen} modal={false}>
-          <Trigger testId={testId} />
-          <Content close={close} options={visibleOptions} />
-        </DropdownMenu.Root>
+        <OutsideButtons options={outsideOptions} />
+
+        {insideOptions.length > 0 && (
+          <DropdownMenu.Root open={open} onOpenChange={setOpen} modal={false}>
+            <Trigger testId={testId} />
+            <Content close={close} options={insideOptions} />
+          </DropdownMenu.Root>
+        )}
       </div>
     </div>
+  );
+}
+
+function OutsideButtons({ options }: { options: Page.Option[] }) {
+  if (options.length === 0) return null;
+
+  return (
+    <div className="flex items-center gap-2">
+      {options.map((option, index) =>
+        match(option.type)
+          .with("link", () => <OutsideLink key={index} {...option} />)
+          .with("action", () => <OutsideAction key={index} {...option} />)
+          .exhaustive(),
+      )}
+    </div>
+  );
+}
+
+function OutsideLink(props: Page.Option) {
+  return (
+    <SecondaryButton size="xs" linkTo={props.link!} testId={props.testId ?? "page-option-" + createTestId(props.label)}>
+      {props.label}
+    </SecondaryButton>
+  );
+}
+
+function OutsideAction(props: Page.Option) {
+  return (
+    <SecondaryButton
+      size="xs"
+      onClick={props.onClick}
+      testId={props.testId ?? "page-option-" + createTestId(props.label)}
+    >
+      {props.label}
+    </SecondaryButton>
   );
 }
 
@@ -119,4 +163,23 @@ function Close({ onClick }) {
       </div>
     </div>
   );
+}
+
+function splitOptions(isBigScreen: boolean, options: Page.Option[]): [Page.Option[], Page.Option[]] {
+  if (!isBigScreen) {
+    return [[], options];
+  }
+
+  const outside: Page.Option[] = [];
+  const inside: Page.Option[] = [];
+
+  for (const option of options) {
+    if (option.keepOutsideOnBigScreen) {
+      outside.push(option);
+    } else {
+      inside.push(option);
+    }
+  }
+
+  return [outside, inside];
 }

@@ -1,13 +1,14 @@
 import React from "react";
 
+import type { Page } from "turboui";
+import { IconCopy, IconEdit, IconFileExport, IconHistory, IconTrash } from "turboui";
+
 import * as Companies from "@/models/companies";
-import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
-import { IconCopy, IconEdit, IconFileExport, IconHistory, IconTrash } from "turboui";
+
 import { useLoadedData } from "./loader";
 
 interface Props {
@@ -15,63 +16,76 @@ interface Props {
   showDeleteModal: () => void;
 }
 
-export function Options({ showCopyModal, showDeleteModal }: Props) {
+export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props): Page.Option[] {
   const paths = usePaths();
   const { document } = useLoadedData();
   const { company } = useCompanyLoaderData();
+
   assertPresent(document.permissions, "permissions must be present in document");
 
   const documentVersionsEnabled = Companies.hasFeature(company, "document-versions");
 
-  return (
-    <PageOptions.Root testId="options-button">
-      {document.permissions.canEditDocument && (
-        <PageOptions.Link
-          icon={IconEdit}
-          title="Edit"
-          to={paths.resourceHubEditDocumentPath(document.id!)}
-          testId="edit-document-link"
-          keepOutsideOnBigScreen
-        />
-      )}
-      {document.permissions.canCreateDocument && <CopyLink showCopyModal={showCopyModal} />}
-      {documentVersionsEnabled && document.permissions.canView && (
-        <PageOptions.Link
-          icon={IconHistory}
-          title="History of changes"
-          to={paths.resourceHubDocumentVersionsPath(document.id!)}
-          testId="version-history-link"
-        />
-      )}
-      {document.permissions.canView && <ExportMarkdownAction />}
-      {document.permissions.canDeleteDocument && <DeleteAction onClick={showDeleteModal} />}
-    </PageOptions.Root>
-  );
-}
+  return React.useMemo(() => {
+    const options: Page.Option[] = [
+      {
+        type: "link",
+        icon: IconEdit,
+        label: "Edit",
+        link: paths.resourceHubEditDocumentPath(document.id!),
+        hidden: !document.permissions?.canEditDocument,
+        keepOutsideOnBigScreen: true,
+        testId: "edit-document-link",
+      },
+      {
+        type: "action",
+        icon: IconCopy,
+        label: "Copy",
+        onClick: showCopyModal,
+        hidden: !document.permissions?.canCreateDocument,
+        testId: "copy-document-link",
+      },
+      {
+        type: "link",
+        icon: IconHistory,
+        label: "History of changes",
+        link: paths.resourceHubDocumentVersionsPath(document.id!),
+        hidden: !documentVersionsEnabled || !document.permissions?.canView,
+        testId: "version-history-link",
+      },
+      {
+        type: "action",
+        icon: IconFileExport,
+        label: "Export as Markdown",
+        onClick: () => {
+          const content = JSON.parse(document.content!);
+          const markdown = exportToMarkdown(content, { removeEmbeds: true });
+          downloadMarkdown(markdown, document.name || "document");
+        },
+        hidden: !document.permissions?.canView,
+        testId: "export-markdown",
+      },
+      {
+        type: "action",
+        icon: IconTrash,
+        label: "Delete",
+        onClick: showDeleteModal,
+        hidden: !document.permissions?.canDeleteDocument,
+        testId: "delete-resource-link",
+      },
+    ];
 
-function CopyLink({ showCopyModal }) {
-  return <PageOptions.Action icon={IconCopy} title="Copy" onClick={showCopyModal} testId="copy-document-link" />;
-}
-
-function DeleteAction({ onClick }: { onClick: () => void }) {
-  return <PageOptions.Action icon={IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
-}
-
-function ExportMarkdownAction() {
-  const { document } = useLoadedData();
-
-  const handleExport = () => {
-    const content = JSON.parse(document.content!);
-    const markdown = exportToMarkdown(content, { removeEmbeds: true });
-    downloadMarkdown(markdown, document.name || "document");
-  };
-
-  return (
-    <PageOptions.Action
-      icon={IconFileExport}
-      title="Export as Markdown"
-      onClick={handleExport}
-      testId="export-markdown"
-    />
-  );
+    return options;
+  }, [
+    document.content,
+    document.id,
+    document.name,
+    document.permissions?.canCreateDocument,
+    document.permissions?.canDeleteDocument,
+    document.permissions?.canEditDocument,
+    document.permissions?.canView,
+    documentVersionsEnabled,
+    paths,
+    showCopyModal,
+    showDeleteModal,
+  ]);
 }
