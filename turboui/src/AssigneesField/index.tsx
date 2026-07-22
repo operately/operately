@@ -6,6 +6,7 @@ import { IconCircleX, IconSearch, IconUser, IconUserPlus } from "../icons";
 import { PersonField } from "../PersonField";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
+import { plurarize, plurarizeWord } from "../utils/plurarize";
 
 export namespace AssigneesField {
   export type Person = PersonField.Person;
@@ -225,7 +226,7 @@ function TriggerText({ state }: { state: State }) {
     );
   }
 
-  const label = state.people.length === 1 ? state.people[0]!.fullName : `${state.people.length} assignees`;
+  const label = state.people.length === 1 ? state.people[0]!.fullName : plurarize(state.people.length, "assignee", "assignees");
   const title = state.people.map((person) => person.fullName).join(", ");
 
   return (
@@ -370,7 +371,7 @@ function DialogContent({ state }: { state: State }) {
           data-test-id={createTestId(state.testId, "clear")}
         >
           <IconCircleX size={14} />
-          Clear assignees
+          Clear {plurarizeWord(state.people.length, "assignee", "assignees")}
         </button>
       )}
     </div>
