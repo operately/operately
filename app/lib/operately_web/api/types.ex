@@ -2453,20 +2453,13 @@ defmodule OperatelyWeb.Api.Types do
     field :completed_on, :date, null: true
     field :timeframe, :timeframe, null: true
     field :assigned_at, :datetime, null: true
-    field :milestones, list_of(:work_map_item_milestone), null: false
+    field :milestones, list_of(:milestone), null: false
     field :children, list_of(:work_map_item), null: false
     field :type, :work_map_item_type, null: false
     field :item_path, :string, null: false
     field :privacy, :work_map_item_privacy, null: false
 
     field? :assignees, list_of(:person), null: true
-  end
-
-  object :work_map_item_milestone do
-    field :id, :string, null: false
-    field :title, :string, null: false
-    field :status, :milestone_status, null: false
-    field :timeframe, :timeframe, null: true
   end
 
   enum(:success_status, values: [:achieved, :missed])

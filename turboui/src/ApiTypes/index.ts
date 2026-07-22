@@ -2336,19 +2336,12 @@ export interface WorkMapItem {
   completedOn: string | null;
   timeframe: Timeframe | null;
   assignedAt: string | null;
-  milestones: WorkMapItemMilestone[];
+  milestones: Milestone[];
   children: WorkMapItem[];
   type: WorkMapItemType;
   itemPath: string;
   privacy: WorkMapItemPrivacy;
   assignees?: Person[] | null;
-}
-
-export interface WorkMapItemMilestone {
-  id: string;
-  title: string;
-  status: MilestoneStatus;
-  timeframe: Timeframe | null;
 }
 
 export type ActivityContent =
