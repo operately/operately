@@ -45,23 +45,11 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
           </section>
 
           <aside className="min-w-0">
-            {versions.length === 0 ? (
-              <div
-                className="rounded-lg border border-surface-outline bg-surface-base p-6"
-                data-test-id="one-version-empty"
-              >
-                <h2 className="text-lg font-semibold text-content-accent">No Earlier Versions</h2>
-                <p className="mt-2 text-sm text-content-dimmed">
-                  Changes to the title or content will appear here after the document is saved.
-                </p>
-              </div>
-            ) : (
-              <VersionTimeline
-                versions={versions}
-                formattedTimePreferences={props.formattedTimePreferences}
-                getComparisonPath={props.getComparisonPath}
-              />
-            )}
+            <VersionTimeline
+              versions={versions}
+              formattedTimePreferences={props.formattedTimePreferences}
+              getComparisonPath={props.getComparisonPath}
+            />
           </aside>
         </div>
       </div>

@@ -62,5 +62,9 @@ describe("event copy", () => {
     expect(eventActionLabel(created)).toBe("View this version");
     expect(eventActionLabel(edited)).toBe("See what changed");
     expect(editorLabel(version({ versionNumber: 1, editor: null }))).toBe("Former member");
+
+    const migrated = version({ versionNumber: 1, origin: "migration", editor: null });
+    expect(eventActionText(migrated, null)).toBe("created this document");
+    expect(eventDescription(migrated, null)).toBe("Former member created this document");
   });
 });

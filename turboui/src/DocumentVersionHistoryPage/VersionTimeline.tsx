@@ -24,6 +24,7 @@ export function VersionTimeline(props: Props) {
           const previous = previousVersion(props.versions, version);
           const actionText = eventActionText(version, previous);
           const actionLabel = eventActionLabel(version);
+          const person = version.editor ?? { fullName: "Former member" };
 
           return (
             <li
@@ -53,11 +54,17 @@ export function VersionTimeline(props: Props) {
                   <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="time-only" />
                 </div>
 
-                <EventDescription version={version} actionText={actionText} />
-
-                {version.origin === "migration" && (
-                  <p className="mt-1 text-sm text-content-subtle">This is the earliest saved version available.</p>
-                )}
+                <div className="mt-2 text-sm leading-5 text-content-accent">
+                  <AvatarWithName
+                    person={person}
+                    size="tiny"
+                    textSize="normal"
+                    nameFormat="full"
+                    inline
+                    className="text-sm text-content-accent"
+                  />{" "}
+                  {actionText}
+                </div>
 
                 <div className="mt-2.5">
                   <Link
@@ -80,27 +87,5 @@ export function VersionTimeline(props: Props) {
         })}
       </ol>
     </nav>
-  );
-}
-
-function EventDescription(props: { version: DocumentVersion; actionText: string }) {
-  if (props.version.origin === "migration") {
-    return <p className="mt-2 text-sm leading-5 text-content-accent">{props.actionText}</p>;
-  }
-
-  const person = props.version.editor ?? { fullName: "Former member" };
-
-  return (
-    <div className="mt-2 text-sm leading-5 text-content-accent">
-      <AvatarWithName
-        person={person}
-        size="tiny"
-        textSize="normal"
-        nameFormat="full"
-        inline
-        className="text-sm text-content-accent"
-      />{" "}
-      {props.actionText}
-    </div>
   );
 }

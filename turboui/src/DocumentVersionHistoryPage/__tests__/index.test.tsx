@@ -60,15 +60,6 @@ describe("DocumentVersionHistoryPage", () => {
 
     expect(byTestId("view-version-1")).toHaveTextContent("View this version");
     expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
-  });
-
-  test("empty history keeps a helpful version panel", () => {
-    renderPage({ versions: [] });
-
-    expect(screen.getByRole("heading", { name: "No Earlier Versions" })).toBeInTheDocument();
-    expect(
-      screen.getByText("Changes to the title or content will appear here after the document is saved."),
-    ).toBeInTheDocument();
-    expect(byTestId("version-timeline")).not.toBeInTheDocument();
+    expect(byTestId("version-row-1")).toHaveTextContent("created this document");
   });
 });

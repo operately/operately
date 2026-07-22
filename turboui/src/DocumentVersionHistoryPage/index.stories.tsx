@@ -60,16 +60,6 @@ export const OneVersion: Story = {
   }),
 };
 
-export const MigrationBaseline: Story = {
-  args: baseProps({
-    title: ["History of changes", M.titles.migration],
-    navigation: M.navigationFor(M.titles.migration),
-    currentTitle: M.titles.migration,
-    currentContent: M.contentV1,
-    versions: M.migrationBaselineList,
-  }),
-};
-
 export const MobileStacked: Story = {
   args: baseProps(),
   parameters: {

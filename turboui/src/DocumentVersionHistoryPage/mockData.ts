@@ -41,7 +41,6 @@ export const titles = {
   renamed: "Docs & Files writing principles",
   current: "How we write Docs & Files pages",
   oneVersion: "Getting started with Docs & Files",
-  migration: "Company handbook: Docs & Files",
 } as const;
 
 /** History page breadcrumbs end at the document. */
@@ -109,22 +108,6 @@ export const multiVersionList: DocumentVersion[] = [
     title: titles.original,
     origin: "created",
     editor: bob,
-  }),
-];
-
-export const migrationBaselineList: DocumentVersion[] = [
-  version({
-    versionNumber: 2,
-    title: titles.migration,
-    origin: "edited",
-    isCurrent: true,
-    editor: grace,
-  }),
-  version({
-    versionNumber: 1,
-    title: titles.migration,
-    origin: "migration",
-    editor: null,
   }),
 ];
 
