@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
 
-import { IconPlus } from "../../icons";
+import { IconChevronDown, IconChevronRight, IconPlus } from "../../icons";
 import { createTestId } from "../../TestableElement";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
@@ -66,6 +66,17 @@ export function Kanban({
 
   const unknownStatus = statuses.find((status) => status.value === "unknown-status");
   const regularStatuses = statuses.filter((status) => status.value !== "unknown-status");
+  const activeStatuses = regularStatuses.filter((status) => !status.closed);
+  const closedStatuses = regularStatuses.filter((status) => status.closed);
+  const hasClosedTasks = closedStatuses.some((status) => (columns[status.value] || []).length > 0);
+  const [areClosedStatusesVisible, setAreClosedStatusesVisible] = React.useState(hasClosedTasks);
+
+  React.useEffect(() => {
+    if (hasClosedTasks) setAreClosedStatusesVisible(true);
+  }, [hasClosedTasks]);
+
+  const visibleStatuses = areClosedStatusesVisible ? regularStatuses : activeStatuses;
+  const canManageStatuses = Boolean(onAddStatusClick);
 
   const setScrollContainerRefs = React.useCallback(
     (element: HTMLDivElement | null) => {
@@ -91,7 +102,7 @@ export function Kanban({
 
   return (
     <section className="bg-surface-base min-h-[80vh]" data-test-id={testId}>
-      <div ref={setScrollContainerRefs} className="px-3 pt-3 pb-6 overflow-x-auto h-[80vh]" {...scopeBind}>
+      <div ref={setScrollContainerRefs} className="h-[80vh] overflow-x-auto px-3 py-3" {...scopeBind}>
         <div className="flex gap-3 min-w-max items-start">
           {unknownStatus && (
             <Column
@@ -118,8 +129,8 @@ export function Kanban({
             />
           )}
 
-          {regularStatuses.map((status, index) => (
-            <SortableStatusColumn key={status.value} status={status} index={index} canReorder={Boolean(canEdit)}>
+          {visibleStatuses.map((status, index) => (
+            <SortableStatusColumn key={status.value} status={status} index={index} canReorder={canManageStatuses}>
               {(dragHandleRef) => (
                 <Column
                   status={status}
@@ -132,9 +143,9 @@ export function Kanban({
                   assigneePersonSearch={assigneePersonSearch}
                   onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
                   dragHandleRef={dragHandleRef}
-                  isStatusDraggable={Boolean(canEdit)}
+                  isStatusDraggable={canManageStatuses}
                   allStatuses={statuses}
-                  canManageStatuses={canEdit}
+                  canManageStatuses={canManageStatuses}
                   canCreateTask={canEdit}
                   onEditStatus={onEditStatus}
                   onDeleteStatus={onDeleteStatus}
@@ -145,17 +156,29 @@ export function Kanban({
             </SortableStatusColumn>
           ))}
 
-          {canEdit && (
+          {closedStatuses.length > 0 && (
             <button
               type="button"
-              onClick={onAddStatusClick}
-              className="flex flex-col items-center justify-start gap-1.5 px-2 py-2 rounded-md border border-dashed border-surface-outline text-content-dimmed hover:border-brand-1/60 hover:text-brand-1 transition min-w-[100px] h-full"
-              data-test-id={"add-status"}
+              className="mt-1 flex shrink-0 items-center gap-1.5 rounded px-2 py-2 text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-base"
+              onClick={() => setAreClosedStatusesVisible((isVisible) => !isVisible)}
+              aria-expanded={areClosedStatusesVisible}
+              data-test-id="toggle-closed-statuses"
             >
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-surface-dimmed">
-                <IconPlus size={14} />
-              </span>
-              <span className="text-xs font-medium mt-0.5">Add status</span>
+              {areClosedStatusesVisible ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
+              <span>Closed</span>
+              <span className="text-xs tabular-nums">{closedStatuses.length}</span>
+            </button>
+          )}
+
+          {canEdit && onAddStatusClick && (
+            <button
+              type="button"
+              className="mt-1 flex shrink-0 items-center gap-1.5 rounded px-2 py-2 text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-base"
+              onClick={onAddStatusClick}
+              data-test-id="add-status"
+            >
+              <IconPlus size={16} />
+              Add status
             </button>
           )}
         </div>

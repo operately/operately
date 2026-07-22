@@ -73,12 +73,7 @@ export function Column({
     containerId,
   });
 
-  const isColumnEmpty = visibleTasks.length === 0;
-  const isDraggingOverThisColumn = Boolean(
-    draggedItemId && targetLocation && targetLocation.containerId === containerId,
-  );
-  const shouldCenterEmptyState = isColumnEmpty && placeholderIndex === null && !isDraggingOverThisColumn && !isCreating;
-  const shouldShowEmptyPlaceholder = isColumnEmpty && !isDraggingOverThisColumn && !isCreating && !disableDnD;
+  const canCreateTasksInColumn = Boolean(canCreateTask && onCreateTask);
   const effectivePlaceholderIndex = disableDnD ? null : placeholderIndex;
   const shouldShowDropIndicator = !disableDnD && placeholderIndex === null;
 
@@ -115,23 +110,29 @@ export function Column({
   return (
     <div
       ref={!disableDnD ? columnRef : null}
-      className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[78vh] flex-shrink-0 p-3 rounded-lg dark:border dark:border-stroke-base"
+      className="relative flex flex-col gap-3 bg-surface-dimmed min-h-[72vh] flex-shrink-0 p-3 rounded-lg dark:border dark:border-stroke-base"
       style={{ width: columnWidth }}
       data-test-id={createTestId("kanban-column", status.value)}
     >
       <div
         ref={dragHandleRef}
         className={classNames(
-          "flex items-center justify-between text-xs font-semibold text-content-dimmed uppercase tracking-wide px-1 min-h-[24px]",
+          "flex items-center justify-between px-1 min-h-[28px]",
           isStatusDraggable && "cursor-grab active:cursor-grabbing",
         )}
         data-test-id={createTestId("kanban-column-header", status.value)}
       >
-        <div className="flex items-center gap-1.5">
+        <div className="flex min-w-0 items-center gap-1.5">
           {!hideStatusIcon && (
             <StatusSelector status={status} statusOptions={allStatuses} onChange={() => {}} readonly={true} size="sm" />
           )}
-          <span>{title}</span>
+          <span className="truncate text-sm font-semibold text-content-base">{title}</span>
+          <span
+            className="rounded-full border border-surface-outline bg-surface-base px-1.5 py-0.5 text-xs font-medium tabular-nums text-content-dimmed"
+            data-test-id={createTestId("kanban-column-task-count", status.value)}
+          >
+            {tasks.length}
+          </span>
         </div>
 
         <ColumnMenu
@@ -143,58 +144,44 @@ export function Column({
       </div>
 
       <div className="flex-1 flex flex-col">
-        <div
-          className={classNames("space-y-2 flex-1", {
-            "flex items-center": shouldCenterEmptyState,
-          })}
-        >
-          {visibleTasks.length > 0
-            ? visibleTasks.map((task, index) => (
-                <React.Fragment key={task.id}>
-                  {effectivePlaceholderIndex === index && (
-                    <DropPlaceholder containerId={containerId} index={index} height={placeholderHeight} />
-                  )}
-                  <Card
-                    task={task}
-                    containerId={containerId}
-                    index={index}
-                    draggedItemId={draggedItemId}
-                    onTaskAssigneeChange={onTaskAssigneeChange}
-                    onTaskDueDateChange={onTaskDueDateChange}
-                    assigneePersonSearch={assigneePersonSearch}
-                    showDropIndicator={shouldShowDropIndicator}
-                    onTaskClick={onTaskClick}
-                    selected={selectedTaskId === task.id}
-                  />
-                </React.Fragment>
-              ))
-            : shouldShowEmptyPlaceholder && (
-                <div
-                  className={classNames(
-                    "w-full text-center text-xs text-content-subtle py-4 bg-surface-dimmed rounded-md",
-                    "border border-dashed border-surface-outline max-w-[220px] mx-auto",
-                  )}
-                >
-                  Drop tasks here
-                </div>
+        <div className="space-y-2 flex-1">
+          {visibleTasks.map((task, index) => (
+            <React.Fragment key={task.id}>
+              {effectivePlaceholderIndex === index && (
+                <DropPlaceholder containerId={containerId} index={index} height={placeholderHeight} />
               )}
+              <Card
+                task={task}
+                containerId={containerId}
+                index={index}
+                draggedItemId={draggedItemId}
+                onTaskAssigneeChange={onTaskAssigneeChange}
+                onTaskDueDateChange={onTaskDueDateChange}
+                assigneePersonSearch={assigneePersonSearch}
+                showDropIndicator={shouldShowDropIndicator}
+                onTaskClick={onTaskClick}
+                selected={selectedTaskId === task.id}
+              />
+            </React.Fragment>
+          ))}
 
           {!disableDnD && placeholderIndex !== null && placeholderIndex === visibleTasks.length && (
             <DropPlaceholder containerId={containerId} index={visibleTasks.length} height={placeholderHeight} />
           )}
-        </div>
 
-        <TaskCreationForm
-          onCreateTask={onCreateTask}
-          statusValue={status.value}
-          isCreating={isCreating}
-          onModeChange={setIsCreating}
-          canCreateTask={canCreateTask}
-        />
+          <TaskCreationForm
+            onCreateTask={onCreateTask}
+            statusValue={status.value}
+            isCreating={isCreating}
+            onModeChange={setIsCreating}
+            canCreateTask={canCreateTasksInColumn}
+          />
+        </div>
       </div>
     </div>
   );
 }
+
 interface TaskCreationFormProps {
   onCreateTask?: (title: string) => void;
   statusValue: string;
@@ -278,12 +265,14 @@ function TaskCreationForm({
   if (onCreateTask) {
     return (
       <button
-        className="flex items-center gap-1.5 text-xs text-content-dimmed hover:text-content-base px-2 py-1.5 rounded hover:bg-surface-highlight transition-colors w-full text-left mt-2"
+        className="flex w-full items-center gap-1.5 rounded px-2 py-2 text-left text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-base hover:text-content-base"
         onClick={() => handleModeChange(true)}
         data-test-id={createTestId("add-task-button", statusValue)}
       >
-        <span className="text-lg leading-none">+</span>
-        Add new task
+        <span className="text-lg leading-none" aria-hidden="true">
+          +
+        </span>
+        Add task
       </button>
     );
   }
