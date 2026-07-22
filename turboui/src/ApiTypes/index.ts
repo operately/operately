@@ -1414,6 +1414,8 @@ export interface DocumentVersion {
   restoredFromVersionNumber?: number | null;
   insertedAt: string;
   isCurrent: boolean;
+  titleChanged: boolean;
+  contentChanged: boolean;
   content?: Json | null;
 }
 
@@ -1891,6 +1893,7 @@ export interface ResourceHubDocument {
   content: string;
   state: DocumentState;
   currentVersion?: number | null;
+  versionsCount?: number | null;
   insertedAt: string;
   publishedAt: string | null;
   updatedAt: string;

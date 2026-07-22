@@ -59,18 +59,8 @@ export function resolveSelection(
 }
 
 export function editorLabel(version: DocumentVersion): string {
-  if (version.origin === "migration") return "Existing document";
   if (!version.editor) return "Former member";
   return version.editor.fullName || "Former member";
-}
-
-export function originLabel(version: DocumentVersion): string | null {
-  if (version.origin === "created") return "Created";
-  if (version.origin === "migration") return "History Begins Here";
-  if (version.origin === "restored" && version.restoredFromVersionNumber) {
-    return `Restored from Version ${version.restoredFromVersionNumber}`;
-  }
-  return null;
 }
 
 /** Previous version in number order (n-1), from a newest-first list. */
@@ -81,12 +71,8 @@ export function previousVersion(
   return versionsNewestFirst.find((candidate) => candidate.versionNumber === version.versionNumber - 1) ?? null;
 }
 
-/** Action text after the editor name, or the full migration sentence. */
+/** Action text after the editor name. */
 export function eventActionText(version: DocumentVersion, previous: DocumentVersion | null): string {
-  if (version.origin === "migration") {
-    return "History begins here for this existing document.";
-  }
-
   if (version.origin === "created" || version.versionNumber === 1) {
     return "created this document";
   }
@@ -95,21 +81,13 @@ export function eventActionText(version: DocumentVersion, previous: DocumentVers
     return `restored this document from Version ${version.restoredFromVersionNumber}`;
   }
 
-  if (previous && previous.title !== version.title) {
+  if (version.titleChanged && !version.contentChanged && previous) {
     return `changed the title of this document from “${previous.title}” to “${version.title}”`;
   }
 
-  return "saved a new version of this document";
+  return "updated this document";
 }
 
-export function eventDescription(version: DocumentVersion, previous: DocumentVersion | null): string {
-  if (version.origin === "migration") {
-    return eventActionText(version, previous);
-  }
-
+export function eventDescription(version: DocumentVersion, previous: DocumentVersion | null = null): string {
   return `${editorLabel(version)} ${eventActionText(version, previous)}`;
-}
-
-export function eventActionLabel(version: DocumentVersion): string {
-  return version.versionNumber <= 1 ? "View this version" : "See what changed";
 }

@@ -9,6 +9,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.DocumentVersi
       restored_from_version_number: version.restored_from_version_number,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(version.inserted_at),
       is_current: version.is_current == true,
+      title_changed: version.title_changed == true,
+      content_changed: version.content_changed == true,
     }
   end
 

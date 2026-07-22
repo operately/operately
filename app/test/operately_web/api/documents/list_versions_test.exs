@@ -75,6 +75,24 @@ defmodule OperatelyWeb.Api.Documents.ListVersionsTest do
         refute Map.has_key?(version, :content)
       end)
     end
+
+    test "flags title-only and content changes against the previous version", ctx do
+      assert {200, res} =
+               query(ctx.conn, [:documents, :list_versions], %{
+                 document_id: Paths.document_id(ctx.document)
+               })
+
+      by_number = Map.new(res.versions, &{&1.version_number, &1})
+
+      assert by_number[1].title_changed == false
+      assert by_number[1].content_changed == false
+
+      assert by_number[2].title_changed == true
+      assert by_number[2].content_changed == true
+
+      assert by_number[3].title_changed == true
+      assert by_number[3].content_changed == false
+    end
   end
 
   defp create_extra_versions(ctx) do
@@ -92,7 +110,7 @@ defmodule OperatelyWeb.Api.Documents.ListVersionsTest do
         Repo.reload!(document) |> Repo.preload([:resource_hub, :node], force: true),
         %{
           name: "Version three",
-          content: RichText.rich_text("Third")
+          content: RichText.rich_text("Second")
         }
       )
 

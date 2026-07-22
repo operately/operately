@@ -1397,6 +1397,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :restored_from_version_number, :integer, null: true
     field :inserted_at, :string, null: false
     field :is_current, :boolean, null: false
+    field :title_changed, :boolean, null: false
+    field :content_changed, :boolean, null: false
     field? :content, :json, null: true
   end
 
@@ -1431,6 +1433,7 @@ defmodule OperatelyWeb.Api.Types do
     field :content, :string, null: false
     field :state, :document_state, null: false
     field? :current_version, :integer, null: true
+    field? :versions_count, :integer, null: true
     field :inserted_at, :string, null: false
     field :published_at, :datetime, null: true
     field :updated_at, :date, null: false

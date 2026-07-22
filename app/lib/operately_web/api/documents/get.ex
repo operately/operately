@@ -23,6 +23,7 @@ defmodule OperatelyWeb.Api.Documents.Get do
     field? :include_potential_subscribers, :boolean, null: true
     field? :include_unread_notifications, :boolean, null: true
     field? :include_path_to_document, :boolean, null: true
+    field? :include_versions_count, :boolean, null: true
   end
 
   outputs do
@@ -72,6 +73,7 @@ defmodule OperatelyWeb.Api.Documents.Get do
       include_unread_notifications: UnreadNotificationsLoader.load(me),
       include_potential_subscribers: &Document.load_potential_subscribers/1,
       include_path_to_document: &Document.find_path_to_document/1,
+      include_versions_count: &Document.load_versions_count/1,
     ])
   end
 end

@@ -1,4 +1,4 @@
-import { editorLabel, eventActionLabel, eventActionText, eventDescription, resolveSelection } from "../types";
+import { editorLabel, eventActionText, eventDescription, resolveSelection } from "../types";
 import type { DocumentVersion, Person } from "../../ApiTypes";
 
 const person: Person = {
@@ -21,6 +21,8 @@ function version(attrs: Partial<DocumentVersion> & Pick<DocumentVersion, "versio
     restoredFromVersionNumber: attrs.restoredFromVersionNumber ?? null,
     insertedAt: "2026-07-21T12:00:00Z",
     isCurrent: attrs.isCurrent ?? false,
+    titleChanged: attrs.titleChanged ?? false,
+    contentChanged: attrs.contentChanged ?? false,
     ...attrs,
   };
 }
@@ -44,23 +46,46 @@ describe("resolveSelection", () => {
 describe("event copy", () => {
   test("describes create, edit, title change, and restore", () => {
     const created = version({ versionNumber: 1, origin: "created", title: "A" });
-    const edited = version({ versionNumber: 2, origin: "edited", title: "A" });
-    const renamed = version({ versionNumber: 3, origin: "edited", title: "B" });
-    const restored = version({
+    const edited = version({
+      versionNumber: 2,
+      origin: "edited",
+      title: "A",
+      contentChanged: true,
+    });
+    const renamed = version({
+      versionNumber: 3,
+      origin: "edited",
+      title: "B",
+      titleChanged: true,
+      contentChanged: false,
+    });
+    const titleAndContent = version({
       versionNumber: 4,
+      origin: "edited",
+      title: "C",
+      titleChanged: true,
+      contentChanged: true,
+    });
+    const restored = version({
+      versionNumber: 5,
       origin: "restored",
       restoredFromVersionNumber: 1,
       title: "B",
     });
 
     expect(eventActionText(created, null)).toBe("created this document");
-    expect(eventActionText(edited, created)).toBe("saved a new version of this document");
-    expect(eventActionText(renamed, edited)).toContain("changed the title");
-    expect(eventActionText(restored, renamed)).toContain("restored this document from Version 1");
+    expect(eventActionText(edited, created)).toBe("updated this document");
+    expect(eventActionText(renamed, edited)).toBe(
+      "changed the title of this document from “A” to “B”",
+    );
+    expect(eventActionText(titleAndContent, renamed)).toBe("updated this document");
+    expect(eventActionText(restored, titleAndContent)).toContain("restored this document from Version 1");
     expect(eventDescription(created, null)).toBe("Ada Lovelace created this document");
-    expect(eventDescription(edited, created)).toBe("Ada Lovelace saved a new version of this document");
-    expect(eventActionLabel(created)).toBe("View this version");
-    expect(eventActionLabel(edited)).toBe("See what changed");
+    expect(eventDescription(edited, created)).toBe("Ada Lovelace updated this document");
     expect(editorLabel(version({ versionNumber: 1, editor: null }))).toBe("Former member");
+
+    const migrated = version({ versionNumber: 1, origin: "migration", editor: null });
+    expect(eventActionText(migrated, null)).toBe("created this document");
+    expect(eventDescription(migrated, null)).toBe("Former member created this document");
   });
 });

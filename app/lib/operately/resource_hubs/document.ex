@@ -3,9 +3,11 @@ defmodule Operately.ResourceHubs.Document do
 
   use Operately.Schema
 
+  import Ecto.Query, only: [from: 2]
   import Operately.Repo.RequestInfo, only: [request_info: 0]
 
   alias Operately.Notifications
+  alias Operately.Repo
   alias Operately.ResourceHubs.{DocumentVersion, Getter, Parent}
   alias Operately.StateMachine
 
@@ -36,6 +38,7 @@ defmodule Operately.ResourceHubs.Document do
     field :permissions, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
     field :comments_count, :integer, virtual: true
+    field :versions_count, :integer, virtual: true
     field :path_to_document, :any, virtual: true
 
     timestamps()
@@ -103,5 +106,13 @@ defmodule Operately.ResourceHubs.Document do
     path = Operately.ResourceHubs.Node.find_all_parent_folders(document.id, "resource_documents")
 
     Map.put(document, :path_to_document, path)
+  end
+
+  def load_versions_count(document = %__MODULE__{}) do
+    count =
+      from(v in DocumentVersion, where: v.document_id == ^document.id, select: count(v.id))
+      |> Repo.one()
+
+    %{document | versions_count: count || 0}
   end
 end
