@@ -53,7 +53,6 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
 
   step :edit_file, ctx, attrs do
     ctx
-    |> UI.click(testid: "options-button")
     |> UI.click(testid: "edit-file-link")
     |> UI.refute_has(testid: "edit-file-link")
     |> UI.fill(testid: "title", with: attrs.title)

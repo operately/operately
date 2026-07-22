@@ -173,7 +173,13 @@ export const PageOptions: Story = {
       { label: "Project Alpha", to: "#" },
     ],
     options: [
-      { type: "action", label: "Edit", onClick: () => alert("Edit clicked"), icon: IconPencil },
+      {
+        type: "action",
+        label: "Edit",
+        onClick: () => alert("Edit clicked"),
+        icon: IconPencil,
+        keepOutsideOnBigScreen: true,
+      },
       { type: "link", label: "Delete", link: "/delete", icon: IconTrash },
     ],
     children: <Content title="Page with options" />,

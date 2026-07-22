@@ -3,12 +3,11 @@ import React from "react";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router";
 import { files } from "@/models/resourceHubs";
-import { resourceHubLandingPath, resourceHubNavigationPaths } from "@/models/resourceHubs";
+import { resourceHubLandingPath } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
@@ -20,7 +19,7 @@ import {
   FormattedTime,
   Forms,
   Modal,
-  ResourcePageNavigation,
+  Page as TurboUIPage,
   richContentToString,
   RichContent,
   Spacer,
@@ -30,39 +29,40 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
-import { buildNavigationFile } from "./navigation";
+import { buildFilePageNavigation } from "./navigation";
 import { Content } from "./Content";
-import { Options } from "./Options";
+import { useFilePageOptions } from "./Options";
 
 export function Page() {
   const { file } = useLoadedData();
   const paths = usePaths();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const navigationFile = buildNavigationFile(file);
+  const options = useFilePageOptions({ showDeleteModal: toggleDeleteModal });
 
   return (
-    <Pages.Page title={file.name!}>
-      <Paper.Root>
-        <ResourcePageNavigation resource={navigationFile} paths={resourceHubNavigationPaths(paths)} />
+    <TurboUIPage
+      title={file.name!}
+      size="medium"
+      navigation={buildFilePageNavigation(file, paths)}
+      options={options}
+      testId="resource-hub-file-page"
+    >
+      <div className="px-12 py-10">
+        <Title />
 
-        <Paper.Body>
-          <Title />
-          <Options showDeleteModal={toggleDeleteModal} />
+        <Content />
+        <Spacer size={1} />
 
-          <Content />
-          <Spacer size={1} />
+        <FileInfo />
+        <Description />
 
-          <FileInfo />
-          <Description />
+        <FileReactions />
+        <FileComments />
+        <FileSubscriptions />
+      </div>
 
-          <FileReactions />
-          <FileComments />
-          <FileSubscriptions />
-
-          <DeleteFileModal isOpen={showDeleteModal} hideModal={toggleDeleteModal} fileName={file.name || ""} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+      <DeleteFileModal isOpen={showDeleteModal} hideModal={toggleDeleteModal} fileName={file.name || ""} />
+    </TurboUIPage>
   );
 }
 
@@ -74,7 +74,7 @@ function Title() {
 
   return (
     <div className="mb-8 flex flex-col items-center">
-      <Paper.Header title={file.name!} />
+      <div className="mb-6 text-content-accent text-lg md:text-2xl font-extrabold">{file.name!}</div>
       <div className="flex flex-wrap justify-center gap-1 items-center text-content-accent font-medium text-sm sm:text-[16px]">
         <div className="flex items-center gap-1">
           <Avatar person={file.author} size="tiny" /> {file.author.fullName}
