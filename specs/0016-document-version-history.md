@@ -277,7 +277,7 @@ Create:
 | `version_number` | integer | not null, check `> 0` | Monotonic per-document version |
 | `title` | text | not null | Document title (`resource_documents.name`) at this revision |
 | `content` | map/JSONB | not null | Complete TipTap JSON snapshot |
-| `editor_id` | binary UUID | nullable FK to `people`, `on_delete: :nilify_all` | Person who produced the version; null for migration baselines or removed editors |
+| `editor_id` | binary UUID | nullable FK to `people`, `on_delete: :nilify_all` | Person who produced the version; null only for removed editors |
 | `origin` | enum/string | not null | `created`, `edited`, `restored`, or `migration` |
 | `restored_from_version_number` | integer | nullable, check `> 0` | Source version for a restoration |
 | `inserted_at` | UTC datetime | not null | Version creation time |
@@ -299,14 +299,14 @@ Use an idempotent data migration under `app/lib/operately/data` to create versio
 
 - `title`: current `resource_documents.name`
 - `content`: current document content
-- `editor_id`: null
+- `editor_id`: null (filled later from the document author)
 - `origin`: `migration`
 - `inserted_at`: document `updated_at`
 - `resource_documents.current_version`: `1`
 
 The baseline reads title and body from the document row only; it does not join `resource_nodes`.
 
-The history UI labels this row `History Begins Here` and explains `This is the earliest saved version available.` It does not attribute the row to the original author or imply that it is the original document body.
+A follow-up data migration sets `editor_id` from `resource_documents.author_id` on migration baselines. The history UI then attributes the baseline to the document author using the same create copy as a normal first version (`"{name} created this document"`).
 
 Per the repository's data-migration rules, the migration must define minimal inline schemas or use direct SQL. It must not depend on the current application `Document`, `Node`, or `DocumentVersion` modules.
 
@@ -963,7 +963,7 @@ This phase proves comparison quality before persistence/API work commits the pro
 - Drafts have no version history until first publish; draft title/body saves do not create versions.
 - Every title/body save on a published document creates exactly one immutable version in the same transaction.
 - Subscription-only and publication-state-only changes do not create content versions.
-- Existing documents have a clearly labeled migration baseline.
+- Existing documents have a migration baseline attributed to the document author.
 - Anyone who can view a document can list versions and compare each version with its predecessor.
 - The diff detects text, formatting, link, mention, blob, and block-structure changes.
 - Diff rendering is accessible and responsive, with no color-only meaning.
