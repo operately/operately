@@ -17,7 +17,7 @@ describe("GoalProgressSummary", () => {
 
     expect(screen.getByText("Targets")).toBeInTheDocument();
     expect(screen.getByText("Revenue")).toBeInTheDocument();
-    expect(screen.getByText("250 USD → 1000 USD")).toBeInTheDocument();
+    expect(screen.getByText("250 USD → 1,000 USD")).toBeInTheDocument();
     expect(screen.getByText("Retention")).toBeInTheDocument();
     expect(screen.getByText("40% → 100%")).toBeInTheDocument();
   });

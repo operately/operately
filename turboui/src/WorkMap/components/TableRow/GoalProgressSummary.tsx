@@ -4,6 +4,10 @@ import type { GoalCheck, Target } from "../../../ApiTypes";
 import { IconSquare, IconSquareCheckFilled } from "../../../icons";
 import { PieChart } from "../../../PieChart";
 import classNames from "../../../utils/classnames";
+import {
+  calculateTargetProgress,
+  formatTargetValueSummary,
+} from "../../../utils/goalTargetProgress";
 
 interface GoalProgressSummaryProps {
   targets: Target[];
@@ -107,35 +111,4 @@ function ChecklistRow({ item }: { item: GoalCheck }) {
       <span className={nameClass}>{item.name}</span>
     </div>
   );
-}
-
-function calculateTargetProgress(target: Target): number {
-  const from = target.from ?? 0;
-  const to = target.to ?? 0;
-  const value = target.value ?? 0;
-
-  if (from === to) return 0;
-
-  const percentage = from < to ? ((value - from) / (to - from)) * 100 : ((from - value) / (from - to)) * 100;
-
-  return Math.max(0, Math.min(100, percentage));
-}
-
-function formatTargetValueSummary(target: Target): string | null {
-  const value = target.value;
-  const to = target.to;
-  const unit = target.unit ?? "";
-
-  if (value == null || to == null) return null;
-
-  const formattedValue = formatValueAndUnit(value, unit);
-  const formattedTo = formatValueAndUnit(to, unit);
-
-  return `${formattedValue} → ${formattedTo}`;
-}
-
-function formatValueAndUnit(value: number, unit: string): string {
-  if (unit === "%") return `${value}%`;
-  if (unit === "") return String(value);
-  return `${value} ${unit}`;
 }
