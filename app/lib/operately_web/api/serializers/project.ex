@@ -1,4 +1,6 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
+  alias Operately.Projects.OrderingState
+
   def serialize(project, level: :essential) do
     %{
       id: OperatelyWeb.Paths.project_id(project),
@@ -28,8 +30,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       champion: OperatelyWeb.Api.Serializer.serialize(project.champion),
       reviewer: OperatelyWeb.Api.Serializer.serialize(project.reviewer),
       goal: OperatelyWeb.Api.Serializer.serialize(project.goal),
-      milestones: OperatelyWeb.Api.Serializer.serialize(project.milestones),
-      milestones_ordering_state: Operately.Projects.OrderingState.load(project.milestones_ordering_state),
+      milestones: serialize_milestones(project),
+      milestones_ordering_state: OrderingState.load(project.milestones_ordering_state),
       contributors: OperatelyWeb.Api.Serializer.serialize(sort_contribs(exclude_suspended(project))),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(project.last_check_in),
       next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone),
@@ -43,6 +45,14 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: project.tasks_kanban_state}),
     })
   end
+
+  defp serialize_milestones(%{milestones: milestones} = project) when is_list(milestones) do
+    project.milestones_ordering_state
+    |> OrderingState.ordered(milestones)
+    |> OperatelyWeb.Api.Serializer.serialize()
+  end
+
+  defp serialize_milestones(_project), do: nil
 
   defp exclude_suspended(project) do
     case project.contributors do
