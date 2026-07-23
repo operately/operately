@@ -46,14 +46,13 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
     })
   end
 
-  defp serialize_milestones(project) do
+  defp serialize_milestones(%{milestones: milestones} = project) when is_list(milestones) do
     project.milestones_ordering_state
-    |> OrderingState.ordered(loaded_milestones(project))
+    |> OrderingState.ordered(milestones)
     |> OperatelyWeb.Api.Serializer.serialize()
   end
 
-  defp loaded_milestones(%{milestones: milestones}) when is_list(milestones), do: milestones
-  defp loaded_milestones(_project), do: []
+  defp serialize_milestones(_project), do: nil
 
   defp exclude_suspended(project) do
     case project.contributors do
