@@ -2337,6 +2337,8 @@ export interface WorkMapItem {
   timeframe: Timeframe | null;
   assignedAt: string | null;
   milestones: Milestone[];
+  targets: Target[];
+  checklist: GoalCheck[];
   children: WorkMapItem[];
   type: WorkMapItemType;
   itemPath: string;
