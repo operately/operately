@@ -25,6 +25,8 @@ import { Textarea } from "../FormElements/Textarea";
 import { Textfield } from "../FormElements/Textfield";
 import { SwitchToggle } from "../SwitchToggle";
 import { createTestId } from "../TestableElement";
+import { calculateTargetProgress, formatValueAndUnit } from "../utils/goalTargetProgress";
+import { formatNumber } from "../utils/formatting";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -479,7 +481,7 @@ function TargetView({ state, target, containerId }: { state: State; target: Targ
 }
 
 function TargetName({ target, truncate }: { target: TargetState; truncate?: boolean }) {
-  const progress = calculateProgress(target);
+  const progress = calculateTargetProgress(target);
   const nameClass = classNames("flex gap-2 flex-1", { truncate: truncate });
 
   return (
@@ -502,17 +504,14 @@ function NameView({ name, truncate }: { name: string; truncate?: boolean }) {
 function TargetValue({ target }: { target: GoalTargetList.Target }) {
   return (
     <div className="flex items-center">
-      <div className="py-1 text-right text-sm">
-        <span className="font-extrabold">{target.value}</span>
-        {target.unit === "%" ? "%" : ` ${target.unit}`}
-      </div>
+      <div className="py-1 text-right text-sm font-extrabold">{formatValueAndUnit(target.value, target.unit)}</div>
     </div>
   );
 }
 
 function TargetDetails({ state, target }: { state: State; target: TargetState }) {
   const { from, to, unit, value } = target;
-  const progress = calculateProgress(target, false);
+  const progress = calculateTargetProgress(target, false);
   const directionText = from! > to! ? "down to" : "to";
 
   return (
@@ -520,7 +519,8 @@ function TargetDetails({ state, target }: { state: State; target: TargetState })
       <div className="flex items-center gap-2">
         <div className="w-20 font-semibold">Target</div>
         <div>
-          From <span className="font-semibold">{from}</span> {directionText} <span className="font-semibold">{to}</span>
+          From <span className="font-semibold">{formatNumber(from!)}</span> {directionText}{" "}
+          <span className="font-semibold">{formatNumber(to!)}</span>
           {unit === "%" ? "%" : ` ${unit}`}
         </div>
       </div>
@@ -539,31 +539,4 @@ function TargetDetails({ state, target }: { state: State; target: TargetState })
       </div>
     </div>
   );
-}
-
-function formatValueAndUnit(value: number, unit: string): string {
-  return `${value}${unit === "%" ? "%" : ` ${unit}`}`;
-}
-
-function calculateProgress(target: GoalTargetList.Target, clamped = true): number {
-  const from = target.from!;
-  const to = target.to!;
-  const value = target.value!;
-
-  let percentage: number;
-  if (from === to) {
-    percentage = 0; // If from and to are equal, progress is 0%
-  } else if (from < to) {
-    percentage = ((value - from) / (to - from)) * 100;
-  } else if (from > to) {
-    percentage = ((from - value) / (from - to)) * 100;
-  } else {
-    percentage = 0; // Fallback case
-  }
-
-  if (clamped) {
-    return Math.max(0, Math.min(100, percentage));
-  }
-
-  return percentage;
 }

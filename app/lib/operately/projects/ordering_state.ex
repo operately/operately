@@ -24,6 +24,35 @@ defmodule Operately.Projects.OrderingState do
   end
 
   @doc """
+  Returns milestones ordered according to the project's ordering state.
+
+  Unknown IDs in the ordering state are dropped. Before applying the ordering
+  state, milestones are sorted by deadline (earliest first, undated last), then
+  by title. Milestones missing from the ordering state are appended in that
+  fallback order.
+  """
+  def ordered(ordering_state, milestones) when is_list(milestones) do
+    milestones = sort_by_deadline_then_title(milestones)
+    milestones_by_id = Map.new(milestones, &{Paths.milestone_id(&1), &1})
+
+    ordering_state
+    |> normalize(milestones)
+    |> Enum.map(&Map.fetch!(milestones_by_id, &1))
+  end
+
+  defp sort_by_deadline_then_title(milestones) do
+    Enum.sort_by(milestones, fn milestone ->
+      deadline = Operately.ContextualDates.Timeframe.end_date(milestone.timeframe)
+      {deadline_sort_key(deadline), milestone.title || ""}
+    end)
+  end
+
+  # Use {year, month, day} — Date structs do not sort chronologically under term order.
+  # nil deadlines sort after dated milestones.
+  defp deadline_sort_key(nil), do: {1, {9999, 12, 31}}
+  defp deadline_sort_key(date), do: {0, Date.to_erl(date)}
+
+  @doc """
   Returns where each milestone sits in the project's ordering.
 
   The result is a map of `milestone.id => position`, where position is 0 for first, 1 for second, and so on.
