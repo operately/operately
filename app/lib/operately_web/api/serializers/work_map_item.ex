@@ -1,4 +1,5 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
+  alias Operately.Projects.OrderingState
   alias OperatelyWeb.Paths
 
   def serialize(item, level: :essential) do
@@ -34,8 +35,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
     }
   end
 
-  defp serialize_milestones(%{type: :project, resource: %{milestones: milestones}}) when is_list(milestones) do
-    OperatelyWeb.Api.Serializer.serialize(milestones)
+  defp serialize_milestones(%{type: :project, resource: project = %{milestones: milestones}}) when is_list(milestones) do
+    project.milestones_ordering_state
+    |> OrderingState.ordered(milestones)
+    |> OperatelyWeb.Api.Serializer.serialize()
   end
 
   defp serialize_milestones(_item), do: []

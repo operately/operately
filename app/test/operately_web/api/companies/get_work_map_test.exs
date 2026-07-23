@@ -445,4 +445,70 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
       assert empty_goal.checklist == []
     end
   end
+
+  describe "project milestones" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone_a, :project, title: "Alpha")
+      |> Factory.add_project_milestone(:milestone_b, :project, title: "Beta")
+      |> Factory.add_project_milestone(:milestone_c, :project, title: "Gamma")
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "returns milestones in milestones_ordering_state order", ctx do
+      reordered = [
+        Paths.milestone_id(ctx.milestone_c),
+        Paths.milestone_id(ctx.milestone_a),
+        Paths.milestone_id(ctx.milestone_b)
+      ]
+
+      {:ok, _} = Operately.Projects.update_project(ctx.project, %{milestones_ordering_state: reordered})
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space)})
+
+      project = Enum.find(res.work_map, &(&1.id == Paths.project_id(ctx.project)))
+
+      assert Enum.map(project.milestones, & &1.id) == reordered
+      assert Enum.map(project.milestones, & &1.title) == ["Gamma", "Alpha", "Beta"]
+    end
+
+    test "with empty ordering state sorts by deadline then title", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:dated_project, :space)
+        |> Factory.add_project_milestone(:late, :dated_project,
+          title: "Zebra",
+          status: :done,
+          timeframe: %{
+            contextual_end_date: Operately.ContextualDates.ContextualDate.create_day_date(~D[2026-09-15])
+          }
+        )
+        |> Factory.add_project_milestone(:early, :dated_project,
+          title: "Late title",
+          status: :pending,
+          timeframe: %{
+            contextual_end_date: Operately.ContextualDates.ContextualDate.create_day_date(~D[2026-07-20])
+          }
+        )
+        |> Factory.add_project_milestone(:mid, :dated_project,
+          title: "Mid",
+          status: :pending,
+          timeframe: %{
+            contextual_end_date: Operately.ContextualDates.ContextualDate.create_day_date(~D[2026-08-02])
+          }
+        )
+
+      dated_project = Operately.Repo.reload(ctx.dated_project)
+      {:ok, _} = Operately.Projects.update_project(dated_project, %{milestones_ordering_state: []})
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space)})
+
+      project = Enum.find(res.work_map, &(&1.id == Paths.project_id(ctx.dated_project)))
+
+      assert Enum.map(project.milestones, & &1.title) == ["Late title", "Mid", "Zebra"]
+    end
+  end
 end
