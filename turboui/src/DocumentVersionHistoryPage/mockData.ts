@@ -172,6 +172,26 @@ export const oneVersionList: DocumentVersion[] = [
   }),
 ];
 
+export const migrationBaselineList: DocumentVersion[] = [
+  version({
+    versionNumber: 2,
+    title: titles.current,
+    origin: "edited",
+    isCurrent: true,
+    editor: grace,
+    titleChanged: true,
+    contentChanged: true,
+    content: contentV2,
+  }),
+  version({
+    versionNumber: 1,
+    title: titles.original,
+    origin: "migration",
+    editor: null,
+    content: contentV1,
+  }),
+];
+
 export const multiVersionList: DocumentVersion[] = [
   version({
     versionNumber: 5,

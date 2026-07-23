@@ -21,6 +21,9 @@ export {
   editorLabel,
   eventActionText,
   eventDescription,
+  isMigrationBaseline,
+  migrationBaselineExplanation,
+  migrationBaselineTitle,
 } from "./types";
 export type { ComparisonStatus, VersionSnapshot, DocumentVersionHistoryPageProps, RestoreResult } from "./types";
 

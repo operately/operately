@@ -4,6 +4,9 @@ import {
   editorLabel,
   eventActionText,
   eventDescription,
+  isMigrationBaseline,
+  migrationBaselineExplanation,
+  migrationBaselineTitle,
   resolveSelection,
   versionPreviewContent,
 } from "../types";
@@ -140,9 +143,16 @@ describe("event copy", () => {
     expect(eventDescription(created, null)).toBe("Ada Lovelace created this document");
     expect(eventDescription(edited, created)).toBe("Ada Lovelace updated this document");
     expect(editorLabel(version({ versionNumber: 1, editor: null }))).toBe("Former member");
+  });
 
+  test("labels migration baselines without attributing an author", () => {
     const migrated = version({ versionNumber: 1, origin: "migration", editor: null });
-    expect(eventActionText(migrated, null)).toBe("created this document");
-    expect(eventDescription(migrated, null)).toBe("Former member created this document");
+
+    expect(isMigrationBaseline(migrated)).toBe(true);
+    expect(migrationBaselineTitle()).toBe("History Begins Here");
+    expect(migrationBaselineExplanation()).toBe("This is the earliest saved version available.");
+    expect(eventActionText(migrated, null)).toBe("This is the earliest saved version available.");
+    expect(eventDescription(migrated, null)).toBe("History Begins Here");
+    expect(editorLabel(migrated)).toBe("History Begins Here");
   });
 });

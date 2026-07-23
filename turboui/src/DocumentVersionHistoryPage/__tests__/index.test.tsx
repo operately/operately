@@ -157,4 +157,18 @@ describe("DocumentVersionHistoryPage", () => {
     expect(byTestId("view-version-1")).not.toBeInTheDocument();
     expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
   });
+
+  test("migration baseline shows History Begins Here instead of Former member", () => {
+    renderPage({
+      versions: M.migrationBaselineList,
+    });
+
+    expect(byTestId("version-row-1")).toHaveTextContent("History Begins Here");
+    expect(byTestId("version-row-1")).toHaveTextContent("This is the earliest saved version available.");
+    expect(byTestId("version-row-1")).not.toHaveTextContent("Former member");
+    expect(byTestId("version-row-1")).not.toHaveTextContent("created this document");
+    expect(byTestId("migration-baseline-label")).toBeInTheDocument();
+    expect(byTestId("see-what-changed-1")).not.toBeInTheDocument();
+    expect(byTestId("version-row-2")).toHaveTextContent("Grace Wilson");
+  });
 });

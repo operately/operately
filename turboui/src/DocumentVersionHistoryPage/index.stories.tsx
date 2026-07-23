@@ -97,6 +97,12 @@ export const OneVersion: Story = {
   }),
 };
 
+export const MigrationBaseline: Story = {
+  args: baseProps({
+    versions: M.migrationBaselineList,
+  }),
+};
+
 export const MobileStacked: Story = {
   args: baseProps(),
   parameters: {

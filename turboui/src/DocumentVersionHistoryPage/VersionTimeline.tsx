@@ -7,7 +7,13 @@ import type { FormattedTimePreferences } from "../FormattedTime";
 import { Link } from "../Link";
 import { IconArrowRight } from "../icons";
 
-import { eventActionText, previousVersion } from "./types";
+import {
+  eventActionText,
+  isMigrationBaseline,
+  migrationBaselineExplanation,
+  migrationBaselineTitle,
+  previousVersion,
+} from "./types";
 
 type Props = {
   versions: DocumentVersion[];
@@ -24,10 +30,12 @@ export function VersionTimeline(props: Props) {
         {props.versions.map((version, index) => {
           const isLast = index === props.versions.length - 1;
           const previous = previousVersion(props.versions, version);
+          const migrationBaseline = isMigrationBaseline(version);
           const actionText = eventActionText(version, previous);
           const person = version.editor ?? { fullName: "Former member" };
           const canCompare = version.versionNumber > 1;
           const isSelected = version.versionNumber === props.selectedVersionNumber;
+          const previewLabel = migrationBaseline ? migrationBaselineTitle() : actionText;
 
           return (
             <li
@@ -40,7 +48,7 @@ export function VersionTimeline(props: Props) {
                 type="button"
                 className="absolute inset-0 z-0 cursor-pointer rounded-md"
                 aria-pressed={isSelected}
-                aria-label={`Preview version ${version.versionNumber}: ${actionText}`}
+                aria-label={`Preview version ${version.versionNumber}: ${previewLabel}`}
                 onClick={() => props.onSelectVersion(version.versionNumber)}
                 data-test-id={`select-version-${version.versionNumber}`}
               />
@@ -67,17 +75,24 @@ export function VersionTimeline(props: Props) {
                   )}
                 </div>
 
-                <div className="mt-2 text-sm leading-5 text-content-accent">
-                  <AvatarWithName
-                    person={person}
-                    size="tiny"
-                    textSize="normal"
-                    nameFormat="full"
-                    inline
-                    className="text-sm text-content-accent"
-                  />{" "}
-                  {actionText}
-                </div>
+                {migrationBaseline ? (
+                  <div className="mt-2 text-sm leading-5" data-test-id="migration-baseline-label">
+                    <div className="font-semibold text-content-accent">{migrationBaselineTitle()}</div>
+                    <div className="mt-0.5 text-content-dimmed">{migrationBaselineExplanation()}</div>
+                  </div>
+                ) : (
+                  <div className="mt-2 text-sm leading-5 text-content-accent">
+                    <AvatarWithName
+                      person={person}
+                      size="tiny"
+                      textSize="normal"
+                      nameFormat="full"
+                      inline
+                      className="text-sm text-content-accent"
+                    />{" "}
+                    {actionText}
+                  </div>
+                )}
 
                 {canCompare && (
                   <div className="mt-2.5 pointer-events-auto">

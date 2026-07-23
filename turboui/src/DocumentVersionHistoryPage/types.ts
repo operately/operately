@@ -81,7 +81,20 @@ export function resolveSelection(
   return { selected: after, before, after };
 }
 
+export function isMigrationBaseline(version: DocumentVersion): boolean {
+  return version.origin === "migration";
+}
+
+export function migrationBaselineTitle(): string {
+  return "History Begins Here";
+}
+
+export function migrationBaselineExplanation(): string {
+  return "This is the earliest saved version available.";
+}
+
 export function editorLabel(version: DocumentVersion): string {
+  if (isMigrationBaseline(version)) return migrationBaselineTitle();
   if (!version.editor) return "Former member";
   return version.editor.fullName || "Former member";
 }
@@ -96,6 +109,10 @@ export function previousVersion(
 
 /** Action text after the editor name. */
 export function eventActionText(version: DocumentVersion, previous: DocumentVersion | null): string {
+  if (isMigrationBaseline(version)) {
+    return migrationBaselineExplanation();
+  }
+
   if (version.origin === "created" || version.versionNumber === 1) {
     return "created this document";
   }
@@ -112,5 +129,9 @@ export function eventActionText(version: DocumentVersion, previous: DocumentVers
 }
 
 export function eventDescription(version: DocumentVersion, previous: DocumentVersion | null = null): string {
+  if (isMigrationBaseline(version)) {
+    return migrationBaselineTitle();
+  }
+
   return `${editorLabel(version)} ${eventActionText(version, previous)}`;
 }
