@@ -396,4 +396,53 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
       assert project.space_path == nil
     end
   end
+
+  describe "goal targets and checklist" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space, targets: [])
+      |> Factory.add_goal_target(:target_b, :goal, name: "Retention", from: 0, to: 100, value: 40, unit: "%", index: 2)
+      |> Factory.add_goal_target(:target_a, :goal, name: "Revenue", from: 0, to: 1000, value: 250, unit: "USD", index: 1)
+      |> Factory.add_goal_check(:check_done, :goal, name: "Launch plan", completed: true)
+      |> Factory.add_goal_check(:check_pending, :goal, name: "Hire lead", completed: false)
+      |> Factory.add_project(:project, :space)
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "serializes targets and checklist for goals", ctx do
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space)})
+
+      goal = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.goal)))
+      project = Enum.find(res.work_map, &(&1.id == Paths.project_id(ctx.project)))
+
+      targets_by_name = Map.new(goal.targets, &{&1.name, &1})
+      assert Map.keys(targets_by_name) |> Enum.sort() == ["Retention", "Revenue"]
+      assert targets_by_name["Revenue"].value == 250.0
+      assert targets_by_name["Revenue"].unit == "USD"
+      assert targets_by_name["Retention"].value == 40.0
+
+      checklist_by_name = Map.new(goal.checklist, &{&1.name, &1})
+      assert Map.keys(checklist_by_name) |> Enum.sort() == ["Hire lead", "Launch plan"]
+      assert checklist_by_name["Launch plan"].completed == true
+      assert checklist_by_name["Hire lead"].completed == false
+
+      assert project.targets == []
+      assert project.checklist == []
+    end
+
+    test "returns empty lists when a goal has no targets or checklist", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:empty_goal, :space, name: "Empty goal", targets: [])
+
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space)})
+
+      empty_goal = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.empty_goal)))
+
+      assert empty_goal.targets == []
+      assert empty_goal.checklist == []
+    end
+  end
 end
