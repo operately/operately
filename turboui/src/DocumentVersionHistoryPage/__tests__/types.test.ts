@@ -141,8 +141,11 @@ describe("event copy", () => {
     expect(eventDescription(edited, created)).toBe("Ada Lovelace updated this document");
     expect(editorLabel(version({ versionNumber: 1, editor: null }))).toBe("Former member");
 
-    const migrated = version({ versionNumber: 1, origin: "migration", editor: null });
+    const migrated = version({ versionNumber: 1, origin: "migration", editor: person });
     expect(eventActionText(migrated, null)).toBe("created this document");
-    expect(eventDescription(migrated, null)).toBe("Former member created this document");
+    expect(eventDescription(migrated, null)).toBe("Ada Lovelace created this document");
+
+    const migratedWithoutEditor = version({ versionNumber: 1, origin: "migration", editor: null });
+    expect(eventDescription(migratedWithoutEditor, null)).toBe("Former member created this document");
   });
 });
