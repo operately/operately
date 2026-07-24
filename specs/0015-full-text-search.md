@@ -8,8 +8,8 @@ The feature keeps the existing global search interaction and makes it more capab
 
 - `Cmd/Ctrl + K` continues to open the current TurboUI search overlay
 - results are ranked together by relevance instead of being capped at five results in fixed resource-type groups
-- each result explains whether the match came from its title, name, description, document content, comment, or person title
-- content matches include a short highlighted excerpt
+- each result explains whether the match came from its title, name, description, document content, or person title
+- content matches include a short plain-text excerpt
 - closed, completed, and archived resources remain searchable and are labeled clearly
 - the same component can search the whole company or be constrained to one resource hub
 
@@ -39,7 +39,7 @@ The current backend:
 - searches only names and titles with normalized `LIKE '%query%'` expressions
 - runs a separate query for each resource type
 - returns at most five results per type
-- does not search rich-text descriptions, discussions, documents, check-ins, retrospectives, or comments
+- does not search rich-text descriptions, discussions, documents, check-ins, or retrospectives
 - excludes closed projects and goals, completed milestones, and closed tasks
 
 As a company accumulates work, users cannot reliably retrieve an older decision, discussion, check-in, or document unless they already remember where it lives. This makes historical work feel lost and reduces trust in Operately as the durable record of the company's work.
@@ -53,7 +53,7 @@ The resource-hub problem is the same retrieval problem with an additional scope 
 - Search the title/name and textual body of supported Operately resources.
 - Include closed, completed, paused, and archived work unless it has been deleted.
 - Enforce company isolation and existing view permissions before returning titles, snippets, or metadata.
-- Use one search implementation for company, resource-hub, space, project, and goal scopes.
+- Use one search implementation for company and resource-hub scopes.
 - Preserve the current global search overlay, keyboard shortcut, and keyboard navigation.
 - Explain why every result matched.
 - Return enough results to find older work without creating a separate search page in the first release.
@@ -63,6 +63,7 @@ The resource-hub problem is the same retrieval problem with an additional scope 
 ## Non-goals
 
 - Semantic or embedding-based search.
+- Searching comments.
 - Searching historical revisions of a resource. The searchable result is the current canonical record, even when that record is closed or archived.
 - Indexing activity records as duplicate copies of canonical resources.
 - OCR or extraction from uploaded PDF, Office, image, audio, or video contents in the first release.
@@ -185,7 +186,7 @@ Change the result model from fixed resource-type buckets to a single relevance-r
 - result title/name
 - parent context, such as space, project, goal, resource hub, or folder path
 - an optional status badge: `Closed`, `Completed`, `Archived`, or `Paused`
-- the match source: `Matched in title`, `Matched in name`, `Matched in description`, `Matched in content`, `Matched in comment`, or `Matched in job title`
+- the match source: `Matched in title`, `Matched in name`, `Matched in description`, `Matched in content`, or `Matched in job title`
 - a short excerpt when the match is in body content
 
 Title/name matches should rank above body-only matches when the remaining signals are comparable. A strong body match may still outrank a weak fuzzy title match.
@@ -221,19 +222,25 @@ The app bridge owns:
 
 The current `app/assets/js/layouts/CompanyLayout/useGlobalSearch.ts` bridge should evolve into a reusable scoped search hook rather than adding a second mapping implementation for resource hubs.
 
-### 10. Index updates are transactionally connected to canonical writes
+### 10. Canonical writes enqueue reliable index refreshes
 
-Normal create, update, publish, move, close, complete, archive, restore, and delete operations must update the search projection in the same `Ecto.Multi` transaction as the canonical resource change.
+Search is a derived projection and must not make ordinary content writes fail after the canonical data is valid.
 
-Use a central `Operately.Search.Indexer` API. Individual operations supply the canonical resource; they do not construct search rows independently.
+Create, update, publish, close, complete, archive, and restore operations insert an Oban refresh job in the same `Ecto.Multi` transaction as the canonical write. If the write commits, the refresh job exists; if it rolls back, the job does not exist. The worker reloads the latest source record through its trusted adapter and upserts or removes the search entry. Pending duplicate jobs may be coalesced because every execution reads current state.
+
+This deliberately provides near-real-time rather than transactionally immediate indexing. The initial target is for successfully queued updates to become searchable within five seconds under normal load.
+
+Simple resource deletions remove their entries in the canonical transaction. Folder deletion removes entries for the complete hidden subtree so deleted titles and content do not remain visible while a job is pending.
 
 Use Oban for:
 
+- reliable refreshes after normal canonical writes
 - the initial idempotent backfill
+- refreshing copied or structurally changed resource-hub trees
 - batched reindexing after extractor or ranking changes
 - periodic reconciliation of missing, stale, or orphaned entries
 
-Do not make normal search freshness depend only on an asynchronous job. A successfully committed edit should be searchable immediately.
+Backfill and reconciliation remain the repair mechanisms for interrupted jobs, historical data, and rare inconsistencies.
 
 ---
 
@@ -241,7 +248,10 @@ Do not make normal search freshness depend only on an asynchronous job. A succes
 
 ### Company-wide scope
 
-The first complete release indexes:
+The table below describes the candidate company-wide corpus. Phase 3 starts with
+native documents, discussions, projects, goals, check-ins, and retrospectives.
+Milestones, tasks, people, spaces, and other types are added only when product
+usage shows that they materially improve retrieval.
 
 | Result type | Title/name | Body text | Status behavior |
 | --- | --- | --- | --- |
@@ -259,7 +269,6 @@ The first complete release indexes:
 | Resource-hub folder | node name | optional folder description | not deleted |
 | Resource-hub file | node/file name | Operately description | not deleted |
 | Resource-hub link | node/link name | Operately description | not deleted |
-| Comment | parent title/context | comment content | only when the parent is searchable and visible |
 
 Activity records are not indexed when they merely duplicate one of these canonical resources.
 
@@ -271,7 +280,6 @@ Resource-hub search includes:
 - published native documents
 - uploaded-file records by name and Operately description
 - link records by name and Operately description
-- comments on resource-hub documents, files, and links
 
 Uploaded binary contents and external linked-page contents remain out of scope. The UI and documentation must not imply that text inside an uploaded PDF or remote Google Doc is searchable until extraction/import is implemented.
 
@@ -286,7 +294,7 @@ Suggested columns:
 | Column | Purpose |
 | --- | --- |
 | `id` | binary UUID primary key |
-| `source_type` | stable type such as `project`, `discussion`, `resource_hub_document`, or `comment` |
+| `source_type` | stable type such as `project`, `discussion`, or `resource_hub_document` |
 | `source_id` | canonical resource UUID |
 | `company_id` | mandatory tenant filter |
 | `access_context_id` | mandatory live permission filter |
@@ -297,10 +305,10 @@ Suggested columns:
 | `title` | original user-visible title/name, preserving casing and accents |
 | `normalized_title` | search-only normalized title/name used for exact, prefix, substring, and trigram matching |
 | `body` | plain text extracted from rich content |
-| `body_kind` | `description`, `content`, `comment`, `message`, `person_title`, or similar UI-safe semantic label |
+| `body_kind` | `description`, `content`, `message`, `person_title`, or similar UI-safe semantic label |
 | `state` | nullable `closed`, `completed`, `archived`, or `paused` display state |
 | `source_inserted_at` | source chronology and optional recency signal |
-| `source_updated_at` | stale-entry reconciliation |
+| `source_updated_at` | stale-entry reconciliation and guarded refreshes |
 | `search_vector` | stored weighted `tsvector` generated from title and body |
 | timestamps | projection maintenance |
 
@@ -349,26 +357,29 @@ Use a multilingual-safe `simple` base for the first release rather than applying
 
 ### Query construction
 
+The resource-hub release starts with one focused query: `search_resource_hub(person, resource_hub_id, query)`.
+
 - trim and normalize repeated whitespace and separator characters
 - keep the existing minimum query length of two characters
 - use `websearch_to_tsquery('operately', query)` so ordinary input, quoted phrases, `OR`, and exclusions do not produce syntax errors
 - use the full-text GIN index as the primary candidate path
-- use trigram title matching as an additional candidate/ranking signal for partial and misspelled title/name queries
-- always apply company, scope, publication/deletion, and access-context predicates before limiting results
+- apply company, resource-hub, publication/deletion, and access-context predicates before ranking or limiting
+- return at most 30 results in the first release
+- batch-load current nodes and folder paths for the selected results instead of storing folder paths in `search_entries`
+
+Company scope is added in Phase 3. Space, project, goal, type-filter, and pagination inputs are deferred until a concrete product consumer requires them.
 
 ### Ranking signals
 
-Rank results using a documented combination of:
+Rank the first resource-hub release using:
 
 1. exact normalized title/name match
 2. normalized title/name prefix match
 3. title/name full-text rank
-4. title/name trigram similarity
-5. body full-text rank
-6. phrase/proximity rank through `ts_rank_cd`
-7. a small recency tie-breaker
+4. body full-text rank
+5. source ID as a stable tie-breaker
 
-Recency must remain a weak signal. The feature exists specifically to retrieve older work, so a newer weak match must not consistently displace an older strong match.
+Use `ts_rank_cd` for the full-text signals. Trigram typo tolerance, recency scoring, and additional ranking signals are deferred until observed queries demonstrate a relevance problem.
 
 Do not expose raw ranking scores as a stable public API contract.
 
@@ -382,37 +393,30 @@ Examples:
 - project body match -> `description`
 - document title match -> `title`
 - document body match -> `content`
-- comment body match -> `comment`
 - person body match -> `person_title`
 
 ### Snippets
 
-Generate a short excerpt for body matches, centered on the strongest matching terms.
+Generate a short plain-text excerpt for body matches, centered on the strongest matching terms.
 
-Do not return or render `ts_headline` HTML directly. The backend must return plain text plus structured highlighted segments, or parse non-HTML markers into structured segments before serialization. TurboUI renders text through React nodes and never uses `dangerouslySetInnerHTML` for search snippets.
+Do not return or render `ts_headline` HTML. Configure or sanitize excerpt generation so the API returns plain text. Structured highlighted segments may be added later if user testing shows that highlighting materially improves retrieval.
 
 ---
 
 ## API Contract
 
-Extend the company search API inputs:
+The resource-hub API initially accepts:
 
 ```text
 query: string
-scope: company | resource_hub | space | project | goal
-scope_id: UUID | null
-types: list of result types | null
-limit: integer | null
-cursor: string | null
+resource_hub_id: UUID
 ```
 
 Rules:
 
-- `company` requires no `scope_id`
-- every other scope requires a matching `scope_id`
-- the scoped parent must belong to the authenticated company and be visible to the requester
-- default limit is 20; maximum limit is 50
-- pagination uses an opaque cursor based on stable rank/tie-break fields, not an offset
+- the resource hub must belong to the authenticated company and be visible to the requester
+- return at most 30 relevance-ranked results
+- no type filters or pagination are exposed in the first resource-hub release
 
 Add one ordered `results` list:
 
@@ -422,19 +426,18 @@ results[]:
   type
   title
   context
-  state
   matched_field
-  snippet_segments[]
-  source_inserted_at
+  snippet
   navigation_target
-next_cursor
 ```
 
 `navigation_target` carries typed IDs needed by the app bridge to construct the canonical route. TurboUI receives a completed `link` prop and remains unaware of app routing.
 
+Phase 3 adds company scope and state metadata for closed, completed, archived, and paused work. Pagination and additional scopes remain follow-up work unless the first 30 results prove insufficient.
+
 For compatibility, keep the existing grouped `spaces`, `projects`, `goals`, `milestones`, `tasks`, and `people` fields during the first rollout. The upgraded web UI uses `results`; existing API consumers and the MCP tool continue to work while their contracts are updated additively. Removal of grouped fields requires a separate compatibility decision.
 
-Update the MCP `search` tool to expose the ordered results, match source, state, and canonical Operately URL while retaining its existing grouped output during the compatibility period.
+Update the MCP `search` tool after company-wide full-text results are stable, not as part of the resource-hub release.
 
 ---
 
@@ -451,7 +454,6 @@ Suggested copy:
 - loading: `Searching…`
 - empty: `No results for “{query}”. Try different keywords.`
 - error: `Search is unavailable. Try again.`
-- pagination action: `Load more results`
 
 The error state must be distinct from the empty state. A failed request must not tell the user that no matching work exists.
 
@@ -461,7 +463,7 @@ Add a search activator beside the resource-hub header actions:
 
 - activator and placeholder: `Search this resource hub…`
 - use the current resource hub as the fixed backend scope
-- reuse the same overlay, result rows, loading, empty, error, and pagination states
+- reuse the same overlay and its result, loading, empty, and error states
 - do not register another global keyboard shortcut
 
 ### Result row
@@ -489,7 +491,6 @@ Requirements:
 - result type and parent context remain visible without relying only on an icon
 - status is textual and not communicated by color alone
 - snippets are limited to a small number of lines and never overwhelm the title/context hierarchy
-- matched segments are visually emphasized and remain legible in dark mode
 - selected, hovered, loading, empty, and error states use semantic design-system colors
 - long titles, paths, and snippets truncate or wrap predictably on the current responsive overlay
 
@@ -500,7 +501,6 @@ Requirements:
 - represent the result collection and options with appropriate listbox/option semantics or an equivalent accessible navigation pattern
 - expose the selected option through ARIA state
 - announce loading, result count changes, empty state, and errors to assistive technology without moving focus from the query input
-- `Load more results` must be reachable by keyboard and must preserve the current selection sensibly
 
 ### TurboUI stories
 
@@ -514,7 +514,7 @@ Update `turboui/src/GlobalSearch/index.stories.tsx` with:
 - loading
 - empty
 - error
-- enough results to exercise scrolling and `Load more results`
+- enough results to exercise scrolling
 - keyboard navigation interaction coverage
 
 ---
@@ -537,14 +537,15 @@ Do not run a large content backfill inside a blocking Ecto schema migration.
 
 ### Ongoing writes
 
-Add index maintenance to every canonical operation that can change:
+Add a durable refresh job to canonical operations that can change:
 
 - searchable title/body text
 - publication state
 - closed/completed/archived state
 - company, access context, or scope
-- parent/path association needed for result context
 - deletion/restoration state
+
+The job is inserted in the canonical `Ecto.Multi` and runs after commit. Folder paths are hydrated from current resource-hub nodes at query time, so moves and ancestor renames do not require reindexing. Direct deletions and folder-subtree deletions remove entries synchronously.
 
 ### Reconciliation
 
@@ -572,44 +573,42 @@ Reconciliation must use the same Indexer as normal writes and backfills.
 
 ### Phase 2 — Resource-hub search end to end
 
-Implement this phase as four ordered PRs so indexing, querying, presentation, and application integration can be reviewed independently.
+Implement this phase as three ordered PRs so indexing, querying, and the complete user experience can be reviewed independently.
 
 #### PR 2.1 — `chore: Index resource hub content for search`
 
-- [ ] Add and register source adapters for resource-hub folders, published documents, files, links, and their comments.
-- [ ] Add transactional index updates for create, update, publish, move, delete, and restore operations.
-- [ ] Cover backfill, reconciliation, exclusions, state changes, and nested-folder metadata with adapter tests.
+- [x] Add and register source adapters for resource-hub folders, published documents, files, and links.
+- [x] Transactionally enqueue near-real-time refresh jobs for creates, edits, publishing, and copying; remove direct and folder-subtree deletions synchronously, and restore eligible records through reconciliation until a restore API exists.
+- [x] Hydrate folder paths from current nodes during search instead of storing parent-folder metadata in the search projection.
+- [x] Cover queued refreshes, backfill, reconciliation, exclusions, and deletion cleanup with focused adapter and operation tests.
 
 #### PR 2.2 — `chore: Add permission-aware resource hub search`
 
 - [ ] Add the ranked full-text query and `resource_hub` API scope.
-- [ ] Return unified results with context, match source, safe snippets, state, navigation identifiers, and cursor pagination.
+- [ ] Return at most 30 unified results with current context, match source, a plain-text snippet, and navigation identifiers.
 - [ ] Apply company, resource-hub, publication, deletion, and access-context predicates before ranking, snippets, and limiting.
-- [ ] Cover permissions, nested-folder scope, ranking, snippets, pagination, and exclusion rules with backend tests.
+- [ ] Cover permissions, nested-folder scope, simple ranking, snippets, and exclusion rules with backend tests.
 
-#### PR 2.3 — `chore: Add full-text results to GlobalSearch`
+#### PR 2.3 — `chore: Add search to resource hubs`
 
-- [ ] Extend TurboUI `GlobalSearch` with a unified result model, match source, snippets, status, error state, pagination, and optional shortcut behavior.
+- [ ] Extend TurboUI `GlobalSearch` with a unified result model, match source, plain-text snippets, error state, scrolling, and optional shortcut behavior.
 - [ ] Keep the component pure: accept API-shaped data, links, and callbacks without app imports, routing, contexts, or API calls.
-- [ ] Add Storybook coverage for company and resource-hub scopes, result variants, request states, scrolling, pagination, and keyboard navigation.
-
-#### PR 2.4 — `chore: Add search to resource hubs`
-
 - [ ] Add the scoped search activator to `ResourceHubPage`.
 - [ ] Extend the app bridge to call resource-hub-scoped search and construct canonical navigation links.
 - [ ] Keep `Cmd/Ctrl + K` owned by company search and disable shortcut registration for the resource-hub instance.
-- [ ] Add feature tests for scoped results, navigation, loading, empty, error, pagination, and keyboard behavior.
+- [ ] Add focused Storybook and feature coverage for scoped results, navigation, loading, empty, error, scrolling, and keyboard behavior.
 
 This phase closes #4682 as scoped here: native documents are searchable by title and body, while folders, uploaded-file records, and links are searchable by their Operately name and description. Uploaded binary and remote-link body extraction remain explicitly out of scope.
 
 ### Phase 3 — Company-wide full-text corpus
 
-- [ ] Index existing navigation resources plus their descriptions.
-- [ ] Index discussions, check-ins, retrospectives, native documents, and comments.
+- [ ] Add company scope to the same query used by resource hubs.
+- [ ] Index the highest-value historical sources first: native documents, discussions, projects, goals, check-ins, and retrospectives.
+- [ ] Add milestones, tasks, people, and additional source types only when product usage shows that they improve retrieval.
 - [ ] Include closed/completed/archived resources with state metadata.
 - [ ] Add the ordered `results` API while retaining compatibility fields.
 - [ ] Switch the Company Layout bridge and current global overlay to ordered full-text results.
-- [ ] Update the MCP search tool additively.
+- [ ] Update the MCP search tool additively after the web result contract is stable.
 - [ ] Add complete authorization, relevance, state, and navigation tests.
 
 This phase closes #1421.
@@ -658,7 +657,9 @@ This is the final infrastructure prerequisite. Search implementation is not bloc
 ### Indexer
 
 - every supported type produces the expected title, body, body kind, state, company, access context, and scopes
-- create/update/publish/close/complete/archive/move/delete/restore transitions
+- canonical writes commit their refresh jobs atomically
+- queued create/update/publish/close/complete/archive/restore refreshes
+- synchronous direct and folder-subtree deletion cleanup
 - idempotent upsert and delete
 - rich text, mentions, punctuation, accents, empty content, and malformed optional content
 - backfill interruption and resume
@@ -666,24 +667,24 @@ This is the final infrastructure prerequisite. Search implementation is not bloc
 
 ### Search query
 
-- exact, prefix, full-text, phrase, accent-insensitive, case-insensitive, and typo-tolerant matches
-- title matches versus description/content/comment matches
-- stable relevance and cursor pagination
+- exact, prefix, full-text, phrase, accent-insensitive, and case-insensitive matches
+- title matches versus description/content matches
+- stable relevance for the first 30 results
 - closed/completed/archived result inclusion
 - deleted, draft, scheduled, and suspended result exclusion
-- company, resource-hub, space, project, and goal scoping
+- company and resource-hub scoping
 - no cross-company results
 - no result, title, context, or snippet leakage without view access
 - immediate disappearance after permission revocation
-- immediate searchability after a committed content edit
+- normal queued refreshes become searchable within five seconds
 
 ### UI
 
 - current header activator and `Cmd/Ctrl + K`
 - resource-hub activator without shortcut conflict
-- keyboard navigation across loaded and newly loaded results
+- keyboard navigation across results
 - title/body match labels
-- snippets and highlighting
+- plain-text snippets
 - status badges
 - loading, empty, and error copy
 - dark mode and responsive overlay
@@ -709,7 +710,8 @@ Initial targets on the selected production database version and a production-lik
 
 - warm-cache database search p95 <= 200 ms for the first 20 results
 - API p95 <= 300 ms excluding client debounce and network variability
-- normal transactional index updates add no more than 100 ms p95 to canonical writes
+- refresh-job insertion adds no more than 25 ms p95 to canonical writes
+- queued refreshes complete within five seconds p95 under normal load
 - zero unauthorized result metadata or snippets
 - zero missing entries after successful backfill and reconciliation
 
@@ -724,7 +726,7 @@ Use a controlled indexed-search rollout:
 1. Search implementation and compatibility work is completed while the production database decision remains open.
 2. The team selects the latest patched PostgreSQL 14 or PostgreSQL 18 release.
 3. The selected database update is deployed and verified independently.
-4. Search schema and dual writes deploy with indexed reads disabled.
+4. Search schema and queued refresh writes deploy with indexed reads disabled.
 5. Existing content is backfilled.
 6. Reconciliation reports no unexplained gaps.
 7. Indexed reads are enabled for internal/test companies.
@@ -745,11 +747,11 @@ If indexed reads fail during rollout, disable the indexed path and return to the
 - Users can find supported resources by title/name and rich-text body.
 - Closed, completed, and archived work is returned with clear status labels.
 - Every result communicates its resource type, context, and strongest matched field.
-- Body matches include safe, readable excerpts with highlighted terms.
+- Body matches include safe, readable plain-text excerpts.
 - Company and resource-hub searches use the same backend query and TurboUI component with different scopes.
 - Existing access-context rules prevent unauthorized result and snippet disclosure.
-- Search entries are updated transactionally, backfilled idempotently, and reconcilable.
+- Canonical writes reliably enqueue refreshes, deletions fail closed, and search entries remain backfillable and reconcilable.
 - The existing global search keyboard and mouse interactions remain intact.
 - TurboUI stories cover all result and request states.
-- Backend, TurboUI, TypeScript, MCP, and feature tests pass.
+- Backend, TurboUI, TypeScript, and feature tests pass. MCP tests are required when the MCP result contract is updated.
 - Production-like performance targets are measured and met without adding another search service.

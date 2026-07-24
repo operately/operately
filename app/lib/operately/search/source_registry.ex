@@ -1,18 +1,31 @@
 defmodule Operately.Search.SourceRegistry do
   @moduledoc """
-  Maps configured search source types to the adapter modules that handle them.
+  Maps search source types to the adapter modules that handle them.
 
   Backfill and reconciliation jobs identify a source by its stable type instead of a
   module name. The registry resolves that type to a configured adapter and rejects
   duplicate types or modules that do not implement the `Operately.Search.Source`
-  callbacks. This keeps adapter selection controlled by application configuration.
+  callbacks. Production adapters are declared here so search registration remains
+  inside the search subsystem.
   """
 
+  alias Operately.Search.Sources.ResourceHub.{Document, File, Folder, Link}
+
+  @source_modules [Folder, Document, File, Link]
   @callback_functions [source_type: 0, fetch_batch: 2, fetch_by_ids: 1, to_entry: 1]
 
+  @doc """
+  Returns registered adapters keyed by their stable source type.
+
+      {:ok, %{
+        "resource_hub_document" => Operately.Search.Sources.ResourceHub.Document
+      }}
+
+  Returns an error when an adapter is invalid or two adapters declare the same source type.
+  """
   def configured do
     :operately
-    |> Application.get_env(__MODULE__, [])
+    |> Application.get_env(__MODULE__, @source_modules)
     |> build()
   end
 
