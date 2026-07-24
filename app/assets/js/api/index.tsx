@@ -2181,6 +2181,24 @@ export interface ReviewAssignmentOrigin {
   dueDate: string | null;
 }
 
+export interface SearchNavigationTarget {
+  resourceHubId: string;
+  folderId?: string | null;
+  documentId?: string | null;
+  fileId?: string | null;
+  linkId?: string | null;
+}
+
+export interface SearchResult {
+  id: string;
+  type: SearchResultType;
+  title: string;
+  context: string;
+  matchedField: SearchMatchedField;
+  snippet?: string | null;
+  navigationTarget: SearchNavigationTarget;
+}
+
 export interface SiteMessage {
   __typename: "site_message";
   id: string;
@@ -2708,6 +2726,14 @@ export type ReviewAssignmentTypes =
   | "milestone"
   | "project_retrospective"
   | "goal_retrospective";
+
+export type SearchMatchedField = "title" | "name" | "content" | "description";
+
+export type SearchResultType =
+  | "resource_hub_folder"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link";
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
 
@@ -3495,6 +3521,15 @@ export interface ResourceHubsListNodesInput {
 export interface ResourceHubsListNodesResult {
   nodes: ResourceHubNode[];
   draftNodes: ResourceHubNode[];
+}
+
+export interface ResourceHubsSearchInput {
+  resourceHubId: Id;
+  query: string;
+}
+
+export interface ResourceHubsSearchResult {
+  results: SearchResult[];
 }
 
 export interface SiteMessagesListActiveInput {}
@@ -5890,6 +5925,10 @@ class ApiNamespaceResourceHubs {
     return this.client.get("/resource_hubs/list_nodes", input);
   }
 
+  async search(input: ResourceHubsSearchInput): Promise<ResourceHubsSearchResult> {
+    return this.client.get("/resource_hubs/search", input);
+  }
+
   async copyFolder(input: ResourceHubsCopyFolderInput): Promise<ResourceHubsCopyFolderResult> {
     return this.client.post("/resource_hubs/copy_folder", input);
   }
@@ -7429,6 +7468,10 @@ export default {
   },
 
   resource_hubs: {
+    search: (input: ResourceHubsSearchInput) => defaultApiClient.apiNamespaceResourceHubs.search(input),
+    useSearch: (input: ResourceHubsSearchInput) =>
+      useQuery<ResourceHubsSearchResult>(() => defaultApiClient.apiNamespaceResourceHubs.search(input)),
+
     listNodes: (input: ResourceHubsListNodesInput) => defaultApiClient.apiNamespaceResourceHubs.listNodes(input),
     useListNodes: (input: ResourceHubsListNodesInput) =>
       useQuery<ResourceHubsListNodesResult>(() => defaultApiClient.apiNamespaceResourceHubs.listNodes(input)),

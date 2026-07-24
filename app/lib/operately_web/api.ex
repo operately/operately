@@ -228,6 +228,7 @@ defmodule OperatelyWeb.Api do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
+        query(:search, OperatelyWeb.Api.ResourceHubs.Search)
 
         mutation(:update_parent_folder, OperatelyWeb.Api.ResourceHubs.UpdateParentFolder)
         mutation(:copy_folder, OperatelyWeb.Api.ResourceHubs.CopyFolder)
@@ -406,6 +407,7 @@ defmodule OperatelyWeb.Api do
       @doc "Browse and manage Docs & Files"
       namespace(:documents) do
         query(:list_contents, OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents)
+        query(:search, OperatelyWeb.Api.ResourceHubs.Search)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
         query(:get_document, OperatelyWeb.Api.Documents.Get)
         query(:get_link, OperatelyWeb.Api.Links.Get)
