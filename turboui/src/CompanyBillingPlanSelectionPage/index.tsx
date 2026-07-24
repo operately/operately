@@ -114,7 +114,7 @@ function BillingCycleOption({
       className={[
         "rounded-lg px-4 py-2 text-sm font-semibold transition",
         active
-          ? "bg-brand-1 text-surface-base shadow-sm"
+          ? "bg-brand-1 text-white-1 shadow-sm"
           : "text-content-dimmed hover:bg-surface-dimmed hover:text-content-accent",
       ].join(" ")}
       aria-pressed={active}
@@ -131,7 +131,9 @@ function PlanCard({ card }: { card: CompanyBillingPlanSelectionPage.PlanCard }) 
       type="button"
       className={[
         "rounded-lg border px-5 py-4 text-left transition",
-        card.selected ? "border-brand-1 bg-blue-50/70" : "border-stroke-base bg-surface-base hover:border-brand-1/50",
+        card.selected
+          ? "border-brand-1 bg-blue-50/70 dark:bg-blue-900/30"
+          : "border-stroke-base bg-surface-base hover:border-brand-1/50",
         card.disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
       ].join(" ")}
       onClick={card.onSelect}

@@ -217,10 +217,10 @@ function DetailRows({ rows }: { rows: CompanyBillingPage.DetailRow[] }) {
 
 function BillingStatusBadge({ status }: { status: CompanyBillingPage.Status }) {
   const className = {
-    free: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    active: "border-blue-200 bg-blue-50 text-blue-700",
-    past_due: "border-amber-200 bg-amber-50 text-amber-800",
-    canceled: "border-stone-200 bg-stone-100 text-stone-700",
+    free: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+    active: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+    past_due: "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+    canceled: "border-stone-200 bg-stone-100 text-stone-700 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-300",
   }[status];
 
   const label = {
@@ -250,19 +250,19 @@ function NoticeCallout({ notice }: { notice: CompanyBillingPage.Notice }) {
 function StatusDetailNotice({ notice }: { notice: CompanyBillingPage.Notice }) {
   const toneClasses = {
     info: {
-      wrapper: "border-sky-200 bg-sky-50/70",
-      badge: "bg-sky-100 text-sky-800",
-      title: "text-sky-950",
+      wrapper: "border-sky-200 bg-sky-50/70 dark:border-sky-800 dark:bg-sky-900/40",
+      badge: "bg-sky-100 dark:bg-sky-400",
+      title: "text-sky-950 dark:text-sky-100",
     },
     warning: {
-      wrapper: "border-amber-200 bg-amber-50/80",
-      badge: "bg-amber-100 text-amber-900",
-      title: "text-amber-950",
+      wrapper: "border-amber-200 bg-amber-50/80 dark:border-amber-800 dark:bg-amber-900/40",
+      badge: "bg-amber-100 dark:bg-amber-400",
+      title: "text-amber-950 dark:text-amber-100",
     },
     danger: {
-      wrapper: "border-rose-200 bg-rose-50/80",
-      badge: "bg-rose-100 text-rose-900",
-      title: "text-rose-950",
+      wrapper: "border-rose-200 bg-rose-50/80 dark:border-rose-800 dark:bg-rose-900/40",
+      badge: "bg-rose-100 dark:bg-rose-400",
+      title: "text-rose-950 dark:text-rose-100",
     },
   }[notice.tone];
 
@@ -325,7 +325,7 @@ function BillingActionsPanel({ actions }: { actions: CompanyBillingPage.Action[]
 
 function FeaturedAction({ action }: { action: CompanyBillingPage.Action }) {
   return (
-    <div className="rounded-xl border border-sky-200 bg-sky-50/70 p-4">
+    <div className="rounded-xl border border-sky-200 bg-sky-50/70 p-4 dark:border-sky-800 dark:bg-sky-900/40">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <ActionCopy action={action} />
         <div className="sm:flex-shrink-0">
@@ -349,7 +349,7 @@ function ManagementActionRow({ action }: { action: CompanyBillingPage.Action }) 
 
 function RecoveryActionRow({ action }: { action: CompanyBillingPage.Action }) {
   return (
-    <div className="flex flex-col gap-4 border-t border-emerald-200 bg-emerald-50/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 border-t border-emerald-200 bg-emerald-50/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-emerald-800 dark:bg-emerald-900/40">
       <ActionCopy action={action} />
       <div className="sm:flex-shrink-0">
         <ActionButton action={action} size="xs" />
@@ -360,7 +360,7 @@ function RecoveryActionRow({ action }: { action: CompanyBillingPage.Action }) {
 
 function DangerActionCard({ action }: { action: CompanyBillingPage.Action }) {
   return (
-    <div className="rounded-xl border border-rose-200 bg-rose-50/70 p-4">
+    <div className="rounded-xl border border-rose-200 bg-rose-50/70 p-4 dark:border-stroke-base dark:bg-red-900/20">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <ActionCopy action={action} />
         <div className="sm:flex-shrink-0">
