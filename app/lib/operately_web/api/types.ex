@@ -1544,7 +1544,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :link_id, :string, null: true
   end
 
-  object :search_result do
+  object :search_result, for: Operately.Search.Result do
     field :id, :string, null: false
     field :type, :search_result_type, null: false
     field :title, :string, null: false
