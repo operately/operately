@@ -3056,6 +3056,34 @@
           },
           {
             "default": null,
+            "name": "targets",
+            "type": {
+              "item": {
+                "name": "target",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "checklist",
+            "type": {
+              "item": {
+                "name": "goal_check",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "children",
             "type": {
               "item": {
@@ -8188,6 +8216,87 @@
           }
         ]
       },
+      "search_result": {
+        "fields": [
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "type",
+            "type": {
+              "name": "search_result_type",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "context",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "matched_field",
+            "type": {
+              "name": "search_matched_field",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "snippet",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "navigation_target",
+            "type": {
+              "name": "search_navigation_target",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_task_description_change": {
         "fields": [
           {
@@ -9036,6 +9145,65 @@
             "name": "person",
             "type": {
               "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
+      "search_navigation_target": {
+        "fields": [
+          {
+            "default": null,
+            "name": "resource_hub_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "folder_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "document_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "file_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "link_id",
+            "type": {
+              "name": "string",
               "kind": "named"
             },
             "optional": true,
@@ -19453,6 +19621,12 @@
         "paused",
         "closed"
       ],
+      "search_result_type": [
+        "resource_hub_folder",
+        "resource_hub_document",
+        "resource_hub_file",
+        "resource_hub_link"
+      ],
       "project_check_in_status": [
         "on_track",
         "caution",
@@ -19590,6 +19764,12 @@
         "pending",
         "outdated"
       ],
+      "search_matched_field": [
+        "title",
+        "name",
+        "content",
+        "description"
+      ],
       "work_map_item_status": [
         "on_track",
         "achieved",
@@ -19696,8 +19876,8 @@
       ]
     }
   },
-  "endpoint_count": 198,
-  "query_count": 63,
+  "endpoint_count": 199,
+  "query_count": 64,
   "mutation_count": 135,
   "endpoints": [
     {
@@ -22546,6 +22726,56 @@
       "docstring": "Renames a folder.",
       "full_name": "documents/rename_folder",
       "method": "POST"
+    },
+    {
+      "name": "search",
+      "type": "query",
+      "path": "/api/external/v1/documents/search",
+      "handler": "OperatelyWeb.Api.ResourceHubs.Search",
+      "outputs": [
+        {
+          "default": null,
+          "name": "results",
+          "type": {
+            "item": {
+              "name": "search_result",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "documents",
+      "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Searches indexed, visible content inside one resource hub.",
+      "full_name": "documents/search",
+      "method": "GET"
     },
     {
       "name": "update_document",

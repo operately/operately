@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 198
+- Endpoints: 199
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -46,6 +46,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents list_contents` | `op documents list_contents` | `GET` | `/api/external/v1/documents/list_contents` |
 | `documents publish_document` | `op documents publish_document` | `POST` | `/api/external/v1/documents/publish_document` |
 | `documents rename_folder` | `op documents rename_folder` | `POST` | `/api/external/v1/documents/rename_folder` |
+| `documents search` | `op documents search` | `GET` | `/api/external/v1/documents/search` |
 | `documents update_document` | `op documents update_document` | `POST` | `/api/external/v1/documents/update_document` |
 | `documents update_file` | `op documents update_file` | `POST` | `/api/external/v1/documents/update_file` |
 | `documents update_link` | `op documents update_link` | `POST` | `/api/external/v1/documents/update_link` |
