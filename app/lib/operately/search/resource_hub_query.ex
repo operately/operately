@@ -36,7 +36,7 @@ defmodule Operately.Search.ResourceHubQuery do
 
   defp candidate_query(hub_id, query) do
     normalized_title = Text.normalize_title(query)
-    title_prefix = normalized_title <> "%"
+    title_prefix = title_prefix_pattern(normalized_title)
     eligible_items = eligible_items_query(hub_id)
     visible_nodes = visible_nodes_query(hub_id)
 
@@ -51,7 +51,7 @@ defmodule Operately.Search.ResourceHubQuery do
           "? @@ websearch_to_tsquery('public.operately'::regconfig, ?)",
           field(entry, :search_vector),
           ^query
-        ) or like(entry.normalized_title, ^title_prefix),
+        ) or fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
       select: %{
         id: entry.source_id,
         type: entry.source_type,
@@ -59,7 +59,7 @@ defmodule Operately.Search.ResourceHubQuery do
         title: entry.title,
         body_kind: entry.body_kind,
         exact_title: entry.normalized_title == ^normalized_title,
-        prefix_title: like(entry.normalized_title, ^title_prefix),
+        prefix_title: fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
         title_match:
           fragment(
             "to_tsvector('public.operately'::regconfig, coalesce(?, '')) @@ websearch_to_tsquery('public.operately'::regconfig, ?)",
@@ -87,7 +87,7 @@ defmodule Operately.Search.ResourceHubQuery do
       },
       order_by: [
         desc: entry.normalized_title == ^normalized_title,
-        desc: like(entry.normalized_title, ^title_prefix),
+        desc: fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
         desc:
           fragment(
             "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), websearch_to_tsquery('public.operately'::regconfig, ?))",
@@ -106,6 +106,14 @@ defmodule Operately.Search.ResourceHubQuery do
     )
     |> recursive_ctes(true)
     |> with_cte("visible_search_nodes", as: ^visible_nodes)
+  end
+
+  defp title_prefix_pattern(title) do
+    title
+    |> String.replace("!", "!!")
+    |> String.replace("%", "!%")
+    |> String.replace("_", "!_")
+    |> Kernel.<>("%")
   end
 
   # Eligible items are non-deleted hub resources with current nodes; documents must also be published.

@@ -172,6 +172,29 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert Enum.map(results, & &1.id) == expected_ids
   end
 
+  test "treats title prefix metacharacters as literal characters", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:percent_title, :hub, name: "%% roadmap")
+      |> Factory.add_document(:underscore_title, :hub, name: "__ notes")
+      |> Factory.add_document(:backslash_title, :hub, name: ~S(\\archive))
+      |> Factory.add_document(:escape_title, :hub, name: "!! priority")
+
+    Enum.each([ctx.percent_title, ctx.underscore_title, ctx.backslash_title, ctx.escape_title], &sync(:document, &1.id))
+
+    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, "%%")
+    assert id == ctx.percent_title.id
+
+    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, "__")
+    assert id == ctx.underscore_title.id
+
+    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, ~S(\\))
+    assert id == ctx.backslash_title.id
+
+    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, "!!")
+    assert id == ctx.escape_title.id
+  end
+
   test "returns no results for short queries", ctx do
     assert [] = Search.search_resource_hub(ctx.hub, "a")
   end
