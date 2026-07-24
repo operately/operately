@@ -7,6 +7,7 @@ defmodule Operately.Search.ResourceHubIndexingTest do
     ResourceHubDocumentDeleting,
     ResourceHubDocumentEditing,
     ResourceHubDocumentPublishing,
+    ResourceHubDocumentVersionRestoring,
     ResourceHubFileCreating,
     ResourceHubFileDeleting,
     ResourceHubFileEditing,
@@ -34,7 +35,7 @@ defmodule Operately.Search.ResourceHubIndexingTest do
     |> Factory.add_blob(:blob)
   end
 
-  test "queued refreshes index document publishing and edits while deletion is immediate", ctx do
+  test "queued refreshes index document publishing, edits, and restores while deletion is immediate", ctx do
     {:ok, document} = run_operation(fn -> create_document(ctx, draft?: true, folder_id: ctx.first_folder.id) end)
     document = preload_resource(document)
 
@@ -67,6 +68,21 @@ defmodule Operately.Search.ResourceHubIndexingTest do
     assert_entry(:resource_hub_document, document.id, title: "Published handbook")
     run_refresh_jobs()
     assert_entry(:resource_hub_document, document.id, title: "Renamed handbook", body: "Revised content")
+
+    document = preload_resource(document)
+
+    assert {:ok, %{document: document, restored_version: restored_version}} =
+             run_operation(fn ->
+               ResourceHubDocumentVersionRestoring.run(ctx.creator, document, %{
+                 version_number: 1,
+                 expected_current_version: 2
+               })
+             end)
+
+    assert restored_version.restored_from_version_number == 1
+    assert_entry(:resource_hub_document, document.id, title: "Renamed handbook", body: "Revised content")
+    run_refresh_jobs()
+    assert_entry(:resource_hub_document, document.id, title: "Published handbook", body: "Published content")
 
     document = preload_resource(document)
     assert {:ok, _document} = run_operation(fn -> ResourceHubDocumentDeleting.run(ctx.creator, document) end)
