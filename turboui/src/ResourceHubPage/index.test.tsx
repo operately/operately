@@ -142,6 +142,26 @@ describe("ResourceHubPage", () => {
     expect(searchInput.compareDocumentPosition(sortControl) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  test("disables sorting while search is active", () => {
+    render(<ResourceHubPageHarness showSearch initialNodes={[createMockDocumentNode()]} />);
+
+    const searchInput = screen.getByRole("searchbox", { name: "Search this resource hub…" });
+
+    expect(screen.getByRole("button", { name: /Sort by/ })).toBeEnabled();
+
+    fireEvent.change(searchInput, { target: { value: "do" } });
+    const disabledSortControl = screen.getByRole("button", { name: /Sort by/ });
+
+    expect(disabledSortControl).toBeDisabled();
+    expect(disabledSortControl).not.toHaveAttribute("aria-haspopup");
+
+    fireEvent.pointerDown(disabledSortControl, { button: 0, ctrlKey: false });
+    expect(screen.queryByText("Creation Date")).not.toBeInTheDocument();
+
+    fireEvent.change(searchInput, { target: { value: "" } });
+    expect(screen.getByRole("button", { name: /Sort by/ })).toBeEnabled();
+  });
+
   test("debounces search, replaces the normal nodes, and restores them when cleared", async () => {
     const originalNode = createMockDocumentNode({
       id: "original-node",

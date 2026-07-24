@@ -58,7 +58,7 @@ export function NodesList({
       {(search || nodes.length > 0) && (
         <div className="flex items-center justify-between gap-3 mb-4">
           {search ? <SearchInput search={search} searchState={searchState} /> : <div />}
-          <SortControl sortBy={sortBy} onSortChange={onSortChange} />
+          <SortControl sortBy={sortBy} onSortChange={onSortChange} disabled={searchState.isActive} />
         </div>
       )}
 
