@@ -4,6 +4,7 @@ defmodule Operately.Operations.ResourceHubLinkCreating do
   alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{Link, Node}
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Search.ResourceHubIndex
 
   def run(author, hub, attrs) do
     Multi.new()
@@ -26,6 +27,7 @@ defmodule Operately.Operations.ResourceHubLinkCreating do
       })
     end)
     |> SubscriptionList.update(:link)
+    |> ResourceHubIndex.enqueue_resource(:search_link, :link, fn changes -> changes.link.id end)
     |> Multi.run(:link_with_node, fn _, changes ->
       link = Map.put(changes.link, :node, changes.node)
       {:ok, link}

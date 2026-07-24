@@ -2,6 +2,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying do
   alias Ecto.Multi
   alias Operately.{Repo, Activities}
   alias Operately.ResourceHubs.Parent
+  alias Operately.Search.ResourceHubIndex
   alias Operately.Operations.ResourceHubFolderCopying.{
     Folders,
     Nodes,
@@ -35,6 +36,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying do
       {new_folder, _} = changes.folder_and_nodes
       {:ok, new_folder}
     end)
+    |> ResourceHubIndex.enqueue_folder_tree(:search_folder_tree, fn changes -> changes.new_folder.id end)
     |> insert_activity(author, folder, dest_resource_hub)
     |> Repo.transaction()
     |> Repo.extract_result(:new_folder)
