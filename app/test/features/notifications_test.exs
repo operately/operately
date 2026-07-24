@@ -41,4 +41,12 @@ defmodule Operately.Features.NotificationsTest do
     |> Steps.assert_no_unread_notifications()
   end
 
+  feature "mark an unread notification as read", ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> Steps.visit_notifications_page()
+    |> Steps.click_on_first_mark_as_read()
+    |> Steps.assert_notification_was_marked_as_read()
+    |> Steps.assert_no_unread_notifications()
+  end
 end
