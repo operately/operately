@@ -1,6 +1,8 @@
 defmodule Operately.Search.Entry do
   use Operately.Schema
 
+  alias Operately.Search.Text
+
   @states [:closed, :completed, :archived, :paused]
   @source_types [
     :space,
@@ -74,21 +76,9 @@ defmodule Operately.Search.Entry do
 
   defp derive_normalized_title(changeset) do
     case get_field(changeset, :title) do
-      title when is_binary(title) -> put_change(changeset, :normalized_title, normalize_title(title))
+      title when is_binary(title) -> put_change(changeset, :normalized_title, Text.normalize_title(title))
       _ -> changeset
     end
-  end
-
-  defp normalize_title(title) do
-    title
-    # Canonicalize compatibility characters
-    |> String.normalize(:nfkd)
-    # Remove accents
-    |> String.replace(~r/\p{M}/u, "")
-    |> String.downcase()
-    # Collapse multiple spaces to a single space
-    |> String.replace(~r/\s+/u, " ")
-    |> String.trim()
   end
 
   def source_types, do: @source_types

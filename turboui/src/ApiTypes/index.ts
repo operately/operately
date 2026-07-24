@@ -2061,6 +2061,24 @@ export interface ReviewAssignmentOrigin {
   dueDate: string | null;
 }
 
+export interface SearchNavigationTarget {
+  resourceHubId: string;
+  folderId?: string | null;
+  documentId?: string | null;
+  fileId?: string | null;
+  linkId?: string | null;
+}
+
+export interface SearchResult {
+  id: string;
+  type: SearchResultType;
+  title: string;
+  context: string;
+  matchedField: SearchMatchedField;
+  snippet?: string | null;
+  navigationTarget: SearchNavigationTarget;
+}
+
 export interface SiteMessage {
   __typename: "site_message";
   id: string;
@@ -2588,6 +2606,14 @@ export type ReviewAssignmentTypes =
   | "milestone"
   | "project_retrospective"
   | "goal_retrospective";
+
+export type SearchMatchedField = "title" | "name" | "content" | "description";
+
+export type SearchResultType =
+  | "resource_hub_folder"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link";
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
 
