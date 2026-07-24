@@ -29,6 +29,10 @@ defmodule Operately.Support.Features.McpConnectionsSteps do
     |> Factory.log_in_person(:creator)
   end
 
+  step :visit_home_page, ctx do
+    ctx |> UI.visit(Paths.home_path(ctx.company))
+  end
+
   step :visit_security_page, ctx do
     ctx |> UI.visit(Paths.account_security_path(ctx.company))
   end
@@ -37,8 +41,17 @@ defmodule Operately.Support.Features.McpConnectionsSteps do
     ctx |> UI.click(testid: "mcp-connections")
   end
 
+  step :click_mcp_connections_from_account_menu, ctx do
+    ctx
+    |> UI.click(testid: "account-menu")
+    |> UI.click(testid: "mcp-connections-link")
+  end
+
   step :assert_on_mcp_connections_page, ctx do
-    ctx |> UI.assert_has(testid: "account-mcp-connections-page")
+    ctx
+    |> UI.assert_has(testid: "account-mcp-connections-page")
+    |> UI.assert_has(testid: "mcp-server-url")
+    |> UI.assert_has(testid: "mcp-setup-guides-link")
   end
 
   step :given_an_mcp_grant_exists, ctx do

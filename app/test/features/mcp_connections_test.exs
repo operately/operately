@@ -11,6 +11,13 @@ defmodule Operately.Features.McpConnectionsTest do
     |> Steps.assert_on_mcp_connections_page()
   end
 
+  feature "navigate to MCP connections page from account menu", ctx do
+    ctx
+    |> Steps.visit_home_page()
+    |> Steps.click_mcp_connections_from_account_menu()
+    |> Steps.assert_on_mcp_connections_page()
+  end
+
   feature "revoke an MCP connection from the list", ctx do
     ctx
     |> Steps.given_an_mcp_grant_exists()

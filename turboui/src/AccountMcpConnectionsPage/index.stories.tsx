@@ -59,6 +59,7 @@ function InteractiveStory() {
       onRevokeGrant={onRevokeGrant}
       homePath="#"
       securityPath="#"
+      mcpServerUrl="https://app.operately.com/mcp"
       formattedTimePreferences={defaultFormattedTimePreferences}
     />
   );
@@ -71,6 +72,7 @@ export const Default: Story = {
     onRevokeGrant: () => {},
     homePath: "#",
     securityPath: "#",
+    mcpServerUrl: "https://app.operately.com/mcp",
     formattedTimePreferences: defaultFormattedTimePreferences,
   },
   render: () => <InteractiveStory />,
@@ -83,6 +85,7 @@ export const EmptyState: Story = {
     onRevokeGrant: () => {},
     homePath: "#",
     securityPath: "#",
+    mcpServerUrl: "https://app.operately.com/mcp",
     formattedTimePreferences: defaultFormattedTimePreferences,
   },
 };
