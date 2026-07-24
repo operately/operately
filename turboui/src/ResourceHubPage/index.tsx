@@ -3,8 +3,12 @@ import * as React from "react";
 import { ContinueEditingDrafts, type ResourceHub, type ResourceHubNode } from "../ResourceHub";
 
 import { SharedListPage, type SharedListPageProps } from "./SharedListPage";
+import type { ResourceHubSearchFn, ResourceHubSearchProps } from "./types";
 
 export namespace ResourceHubPage {
+  export type SearchFn = ResourceHubSearchFn;
+  export type SearchProps = ResourceHubSearchProps;
+
   export interface Props extends SharedListPageProps {
     resourceHub: ResourceHub;
     drafts: {
@@ -26,6 +30,7 @@ export function ResourceHubPage(props: ResourceHubPage.Props) {
       addFolderModalProps={props.addFolderModalProps}
       heading={props.resourceHub.name ?? ""}
       permissions={props.resourceHub.permissions}
+      search={props.search}
       beforeList={
         <ContinueEditingDrafts
           drafts={props.drafts.nodes}
