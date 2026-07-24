@@ -7,11 +7,11 @@ Replace Operately's current name-based global search with permission-aware full-
 The feature keeps the existing global search interaction and makes it more capable:
 
 - `Cmd/Ctrl + K` continues to open the current TurboUI search overlay
-- results are ranked together by relevance instead of being capped at five results in fixed resource-type groups
+- existing navigation matches remain grouped by resource type, while additional full-text matches are ranked by relevance in a `MORE MATCHES` section
 - each result explains whether the match came from its title, name, description, document content, or person title
 - content matches include a short plain-text excerpt
 - closed, completed, and archived resources remain searchable and are labeled clearly
-- the same component can search the whole company or be constrained to one resource hub
+- resource hubs provide an inline full-text field that filters their normal item list
 
 The backend uses PostgreSQL full-text search with a dedicated `search_entries` projection and GIN indexes. Redis, Elasticsearch, OpenSearch, and other external search services are not required for the first implementation.
 
@@ -183,7 +183,11 @@ Preserve:
 - Escape and click-outside to close
 - the existing modal width, responsive maximum width, and scrollable result area unless testing shows a concrete layout problem
 
-Change the result model from fixed resource-type buckets to a single relevance-ranked list. Every row shows:
+Represent results as ordered sections. The company search preserves its existing `SPACES`, `GOALS`, `PROJECTS`, `MILESTONES`, `TASKS`, and `PEOPLE` groups. Those familiar navigation matches retain their compact presentation.
+
+In Phase 3, company-wide full-text matches that do not already appear in the legacy groups are appended in a mixed `MORE MATCHES` section.
+
+Detailed full-text rows show:
 
 - resource icon and resource type
 - result title/name
@@ -192,21 +196,23 @@ Change the result model from fixed resource-type buckets to a single relevance-r
 - the match source: `Matched in title`, `Matched in name`, `Matched in description`, `Matched in content`, or `Matched in job title`
 - a short excerpt when the match is in body content
 
+Homogeneous legacy sections omit the redundant resource-type label and do not claim a match source that the legacy backend does not report.
+
 Title/name matches should rank above body-only matches when the remaining signals are comparable. A strong body match may still outrank a weak fuzzy title match.
 
-### 8. Resource-hub search reuses the same TurboUI component
+### 8. Resource-hub search is inline
 
-The company header uses company scope.
+The company header continues to own the modal global-search experience.
 
-The resource-hub page adds a `Search this resource hub…` activator beside the existing resource-hub header actions. It opens the same `GlobalSearch` overlay with a search callback bound to `scope: resource_hub` and the current hub ID.
+The resource-hub page renders a `Search this resource hub…` input immediately before the existing sort/filter control. It does not open the global-search overlay.
 
-The resource-hub instance must not register `Cmd/Ctrl + K`, because the company header already owns the global shortcut. Extend `GlobalSearch` with an explicit shortcut/activator configuration instead of relying on page detection inside TurboUI.
+Typing at least two characters starts a 300 ms debounced search scoped to the current hub. Search results replace the normal resource-hub node rows and use the same row presentation and canonical navigation. An empty response displays `No matching items. Try different keywords.` Clearing the field restores the normal nodes immediately.
 
-Folder names and paths are included in result context, but a resource-hub search covers the entire hub, including descendants of nested folders.
+Resource-hub search covers the entire hub, including descendants of nested folders. It preserves backend relevance ordering rather than applying the current folder's selected sort order.
 
 ### 9. TurboUI remains pure
 
-`turboui/src/GlobalSearch` owns presentation and local interaction state. It receives API-shaped display data, links, and callbacks through props.
+`turboui/src/GlobalSearch` owns company overlay presentation and interaction state. `ResourceHubPage` owns the separate inline field and replacement-list state. Both receive display data, links, and callbacks through props.
 
 It must not:
 
@@ -223,7 +229,7 @@ The app bridge owns:
 - navigation callbacks
 - any feature-flag or rollout choice
 
-The current `app/assets/js/layouts/CompanyLayout/useGlobalSearch.ts` bridge should evolve into a reusable scoped search hook rather than adding a second mapping implementation for resource hubs.
+Keep company and resource-hub adapters as sibling app modules. The company adapter returns overlay sections; the resource-hub adapter returns list-row nodes and canonical paths.
 
 ### 10. Canonical writes enqueue reliable index refreshes
 
@@ -423,24 +429,23 @@ Rules:
 - return at most 30 relevance-ranked results
 - no type filters or pagination are exposed in the first resource-hub release
 
-Add one ordered `results` list:
+Return one ordered `nodes` list using the existing `resource_hub_node` API type:
 
 ```text
-results[]:
+nodes[]:
   id
+  name
   type
-  title
-  context
-  matched_field
-  snippet
-  navigation_target
+  folder | document | file | link
 ```
 
-`navigation_target` carries typed IDs needed by the app bridge to construct the canonical route. TurboUI receives a completed `link` prop and remains unaware of app routing.
+The backend keeps ranking metadata internal, selects at most 30 matching node IDs, and hydrates them with the same nested resources, authors, content, file metadata, comment counts, and folder-child counts used by `resource_hubs/list_nodes`. The returned node order remains the full-text relevance order.
+
+This lets inline search use the exact same resource-hub row, description, counts, actions, and canonical path construction as the ordinary list. `Operately.Search.Result` remains reserved for the future mixed company-wide search contract, where match source, context, snippets, and typed navigation metadata are needed.
 
 Phase 3 adds company scope and state metadata for closed, completed, archived, and paused work. Pagination and additional scopes remain follow-up work unless the first 30 results prove insufficient.
 
-For compatibility, keep the existing grouped `spaces`, `projects`, `goals`, `milestones`, `tasks`, and `people` fields during the first rollout. The upgraded web UI uses `results`; existing API consumers and the MCP tool continue to work while their contracts are updated additively. Removal of grouped fields requires a separate compatibility decision.
+Keep the existing grouped `spaces`, `projects`, `goals`, `milestones`, `tasks`, and `people` fields and continue using them for the first company-search sections. In Phase 3, one company API request runs both the legacy and full-text queries, removes full-text duplicates by `(source_type, source_id)`, and returns the remaining ranked matches for a final `MORE MATCHES` section. The browser must not coordinate two requests.
 
 Update the MCP `search` tool after company-wide full-text results are stable, not as part of the resource-hub release.
 
@@ -464,12 +469,15 @@ The error state must be distinct from the empty state. A failed request must not
 
 ### Resource-hub search
 
-Add a search activator beside the resource-hub header actions:
+Add an inline input before the resource-hub sort/filter control:
 
-- activator and placeholder: `Search this resource hub…`
+- placeholder and accessible label: `Search this resource hub…`
 - use the current resource hub as the fixed backend scope
-- reuse the same overlay and its result, loading, empty, and error states
-- do not register another global keyboard shortcut
+- debounce requests by 300 ms
+- replace normal resource-hub rows with ranked results
+- render results with the normal resource-hub item row
+- show `Searching…`, `No matching items. Try different keywords.`, and `Search is unavailable. Try again.` as distinct states
+- restore normal nodes immediately when the input is cleared
 
 ### Result row
 
@@ -492,8 +500,10 @@ Example document title match:
 
 Requirements:
 
-- one relevance-ranked list; do not restore fixed type ordering in the frontend
-- result type and parent context remain visible without relying only on an icon
+- preserve the existing resource-type sections for legacy company navigation results
+- preserve backend relevance order for inline resource-hub results
+- append future mixed company full-text results under `MORE MATCHES`
+- omit repeated type labels in homogeneous sections; mixed sections keep result type and parent context visible without relying only on an icon
 - status is textual and not communicated by color alone
 - snippets are limited to a small number of lines and never overwhelm the title/context hierarchy
 - selected, hovered, loading, empty, and error states use semantic design-system colors
@@ -512,10 +522,12 @@ Requirements:
 Update `turboui/src/GlobalSearch/index.stories.tsx` with:
 
 - mixed title and content matches
+- grouped legacy company results
+- grouped company results followed by `MORE MATCHES`
 - closed/completed/archived results
 - long title, path, and snippet content
 - company scope
-- resource-hub scope with shortcut disabled
+- resource-hub inline search with matching, loading, empty, error, and cleared states
 - loading
 - empty
 - error
@@ -590,18 +602,26 @@ Implement this phase as three ordered PRs so indexing, querying, and the complet
 #### PR 2.2 — `chore: Add permission-aware resource hub search`
 
 - [x] Add the ranked full-text query and `resource_hub` API scope.
-- [x] Return at most 30 unified results with current context, match source, a plain-text snippet, and navigation identifiers.
-- [x] Authorize the resource hub at the API boundary, then apply resource-hub, publication, deletion, and current-hierarchy predicates before ranking, snippets, and limiting.
-- [x] Cover permissions, nested-folder scope, simple ranking, snippets, and exclusion rules with backend tests.
+- [x] Return at most 30 fully hydrated `resource_hub_node` values in relevance order.
+- [x] Authorize the resource hub at the API boundary, then apply resource-hub, publication, deletion, and current-hierarchy predicates before ranking and limiting.
+- [x] Cover permissions, nested-folder scope, ranking, node hydration, and exclusion rules with backend tests.
 
-#### PR 2.3 — `chore: Add search to resource hubs`
+#### PR 2.3a — `chore: Support grouped sections in global search`
 
-- [ ] Extend TurboUI `GlobalSearch` with a unified result model, match source, plain-text snippets, error state, scrolling, and optional shortcut behavior.
+- [ ] Extend TurboUI `GlobalSearch` with ordered sections, match source, plain-text snippets, error state, scrolling, and optional shortcut behavior.
 - [ ] Keep the component pure: accept API-shaped data, links, and callbacks without app imports, routing, contexts, or API calls.
-- [ ] Add the scoped search activator to `ResourceHubPage`.
-- [ ] Extend the app bridge to call resource-hub-scoped search and construct canonical navigation links.
-- [ ] Keep `Cmd/Ctrl + K` owned by company search and disable shortcut registration for the resource-hub instance.
-- [ ] Add focused Storybook and feature coverage for scoped results, navigation, loading, empty, error, scrolling, and keyboard behavior.
+- [ ] Preserve the existing company resource-type groups and compact legacy rows through a dedicated company adapter.
+- [ ] Add focused component, mapper, Storybook, and company feature coverage for sections and cross-section keyboard navigation.
+
+#### PR 2.3b — `chore: Add search to resource hubs`
+
+- [x] Add the scoped inline search field before the resource-hub sort/filter control.
+- [x] Return API-shaped resource-hub nodes directly and reuse the ordinary row and canonical path handling.
+- [x] Debounce searches, replace normal nodes with ranked hits, and restore normal nodes when cleared.
+- [x] Keep `Cmd/Ctrl + K` owned exclusively by company global search.
+- [x] Add focused Storybook and feature coverage for scoped results, navigation, loading, empty, error, and clearing.
+
+Until the initial backfill and controlled rollout are complete, the resource-hub input is shown only to companies with the `full_text_search` experimental feature. The authenticated API remains available independently of this UI gate.
 
 This phase closes #4682 as scoped here: native documents are searchable by title and body, while folders, uploaded-file records, and links are searchable by their Operately name and description. Uploaded binary and remote-link body extraction remain explicitly out of scope.
 
@@ -611,8 +631,9 @@ This phase closes #4682 as scoped here: native documents are searchable by title
 - [ ] Index the highest-value historical sources first: native documents, discussions, projects, goals, check-ins, and retrospectives.
 - [ ] Add milestones, tasks, people, and additional source types only when product usage shows that they improve retrieval.
 - [ ] Include closed/completed/archived resources with state metadata.
-- [ ] Add the ordered `results` API while retaining compatibility fields.
-- [ ] Switch the Company Layout bridge and current global overlay to ordered full-text results.
+- [ ] Have one company API request return the existing grouped matches plus ordered full-text matches.
+- [ ] Deduplicate full-text matches against legacy results by `(source_type, source_id)` on the server.
+- [ ] Append the remaining ranked full-text results to the company overlay under `MORE MATCHES`.
 - [ ] Update the MCP search tool additively after the web result contract is stable.
 - [ ] Add complete authorization, relevance, state, and navigation tests.
 
@@ -686,13 +707,13 @@ This is the final infrastructure prerequisite. Search implementation is not bloc
 ### UI
 
 - current header activator and `Cmd/Ctrl + K`
-- resource-hub activator without shortcut conflict
+- resource-hub inline field placement, debounce, result replacement, and clearing
 - keyboard navigation across results
 - title/body match labels
 - plain-text snippets
 - status badges
 - loading, empty, and error copy
-- dark mode and responsive overlay
+- dark mode and responsive company overlay/resource-hub toolbar
 - canonical navigation for every result type
 
 ---
@@ -753,7 +774,7 @@ If indexed reads fail during rollout, disable the indexed path and return to the
 - Closed, completed, and archived work is returned with clear status labels.
 - Every result communicates its resource type, context, and strongest matched field.
 - Body matches include safe, readable plain-text excerpts.
-- Company and resource-hub searches use the same backend query and TurboUI component with different scopes.
+- Company and resource-hub searches reuse the same backend search foundation while using UI interactions appropriate to their scope.
 - Existing access-context rules prevent unauthorized result and snippet disclosure.
 - Canonical writes reliably enqueue refreshes, deletions fail closed, and search entries remain backfillable and reconcilable.
 - The existing global search keyboard and mouse interactions remain intact.

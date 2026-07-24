@@ -17,6 +17,7 @@ import {
   type ResourceHubPermissions,
   type ResourceHubSortBy,
 } from "../ResourceHub";
+import type { ResourceHubSearchProps } from "./types";
 
 export interface SharedListPageProps {
   title: Page.Props["title"];
@@ -33,9 +34,10 @@ export interface SharedListPageProps {
     getNodeTestId?: (node: ResourceHubNode, index: number) => string;
   };
   addFolderModalProps: AddFolderModalProps;
+  search?: ResourceHubSearchProps;
 }
 
-export interface SharedListContentProps extends Omit<SharedListPageProps, "title" | "navigation"> {
+interface SharedListContentProps extends Omit<SharedListPageProps, "title" | "navigation"> {
   heading: string;
   permissions?: ResourceHubPermissions | null;
   beforeList?: React.ReactNode;
@@ -46,7 +48,7 @@ interface SharedResourceHubListPageProps extends SharedListPageProps, SharedList
   children?: React.ReactNode;
 }
 
-export function SharedListContent({
+function SharedListContent({
   newFileModals,
   addFileWidgetProps,
   nodesListProps,
@@ -54,6 +56,7 @@ export function SharedListContent({
   heading,
   permissions,
   beforeList,
+  search,
 }: SharedListContentProps) {
   return (
     <div className="min-h-[75vh] px-4 sm:px-12 py-10">
@@ -72,13 +75,19 @@ export function SharedListContent({
 
       {beforeList}
       <AddFileWidget {...addFileWidgetProps} />
-      <NodesList {...nodesListProps} />
+      <NodesList {...nodesListProps} search={search} />
       <AddFolderModal {...addFolderModalProps} />
     </div>
   );
 }
 
-export function SharedListPage({ title, navigation, options, children, ...contentProps }: SharedResourceHubListPageProps) {
+export function SharedListPage({
+  title,
+  navigation,
+  options,
+  children,
+  ...contentProps
+}: SharedResourceHubListPageProps) {
   return (
     <NewFileModalsProvider value={contentProps.newFileModals}>
       <FileDragAndDropArea onFilesDropped={contentProps.newFileModals.setFiles}>

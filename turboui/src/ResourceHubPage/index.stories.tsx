@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
+import { expect, userEvent, within } from "storybook/test";
 
 import { ResourceHubPage } from "./index";
 import {
@@ -27,7 +28,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function StoryPage({ empty = false }: { empty?: boolean }) {
+function StoryPage({
+  empty = false,
+  searchMode = "results",
+}: {
+  empty?: boolean;
+  searchMode?: "results" | "empty" | "error";
+}) {
   const [resourceHub] = React.useState(() => createMockResourceHub());
   const [nodes, setNodes] = React.useState(() =>
     empty
@@ -72,6 +79,25 @@ function StoryPage({ empty = false }: { empty?: boolean }) {
       {...sharedProps}
       title={resourceHub.name ?? "Resource Hub"}
       resourceHub={resourceHub}
+      search={{
+        search: async () => {
+          if (searchMode === "error") throw new Error("Search failed");
+          if (searchMode === "empty") return [];
+
+          return [
+            createMockDocumentNode({
+              id: "search-document-1",
+              name: "Engineering principles",
+              document: {
+                id: "search-document-1",
+                name: "Engineering principles",
+              },
+            }),
+          ];
+        },
+        placeholder: "Search this resource hub…",
+        testId: "resource-hub-search",
+      }}
       drafts={{
         nodes: empty ? [] : [createMockDraftNode()],
         draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
@@ -89,4 +115,24 @@ export const Default: Story = {
 export const Empty: Story = {
   args: {} as ResourceHubPage.Props,
   render: () => <StoryPage empty />,
+};
+
+export const NoSearchResults: Story = {
+  args: {} as ResourceHubPage.Props,
+  render: () => <StoryPage searchMode="empty" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByRole("searchbox"), "missing");
+    await expect(canvas.findByText("No matching items. Try different keywords.")).resolves.toBeVisible();
+  },
+};
+
+export const SearchError: Story = {
+  args: {} as ResourceHubPage.Props,
+  render: () => <StoryPage searchMode="error" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByRole("searchbox"), "missing");
+    await expect(canvas.findByRole("alert")).resolves.toHaveTextContent("Search is unavailable. Try again.");
+  },
 };
