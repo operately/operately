@@ -10,6 +10,7 @@ import {
   IconSettings,
   IconLockPassword,
   IconCode,
+  IconRobotFace,
   IconDoorExit,
 } from "turboui";
 import { logOut } from "@/routes/auth";
@@ -59,6 +60,9 @@ export function User() {
       </MenuLinkItem>
       <MenuLinkItem icon={IconCode} to={paths.accountApiTokensPath()} testId="api-tokens-link">
         API Tokens
+      </MenuLinkItem>
+      <MenuLinkItem icon={IconRobotFace} to={paths.accountMcpConnectionsPath()} testId="mcp-connections-link">
+        MCP Connections
       </MenuLinkItem>
       <MenuActionItem icon={IconDoorExit} onClick={handleLogOut} testId="log-out-button">
         Sign Out
