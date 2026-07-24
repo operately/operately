@@ -2070,6 +2070,7 @@ export interface SearchNavigationTarget {
 }
 
 export interface SearchResult {
+  __typename: "result";
   id: string;
   type: SearchResultType;
   title: string;
