@@ -16,8 +16,7 @@ defmodule Operately.Search.Entry do
     :resource_hub_document,
     :resource_hub_folder,
     :resource_hub_file,
-    :resource_hub_link,
-    :comment
+    :resource_hub_link
   ]
 
   schema "search_entries" do
@@ -82,10 +81,13 @@ defmodule Operately.Search.Entry do
 
   defp normalize_title(title) do
     title
-    |> String.normalize(:nfkd) # Canonicalize compatibility characters
-    |> String.replace(~r/\p{M}/u, "") # Remove accents
+    # Canonicalize compatibility characters
+    |> String.normalize(:nfkd)
+    # Remove accents
+    |> String.replace(~r/\p{M}/u, "")
     |> String.downcase()
-    |> String.replace(~r/\s+/u, " ") # Collapse multiple spaces to a single space
+    # Collapse multiple spaces to a single space
+    |> String.replace(~r/\s+/u, " ")
     |> String.trim()
   end
 

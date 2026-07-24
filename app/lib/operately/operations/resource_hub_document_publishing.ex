@@ -7,6 +7,7 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
   alias Operately.Notifications.SubscriptionList
   alias Operately.Operations.Notifications.Subscription
   alias Operately.Operations.SubscriptionsListEditing
+  alias Operately.Search.ResourceHubIndex
 
   def run(author, document, attrs) do
     Multi.new()
@@ -26,6 +27,7 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
       load_and_maybe_update_subscriptions(changes.document.id, attrs)
     end)
     |> Subscription.update_mentioned_people(attrs[:content] || locked.content)
+    |> ResourceHubIndex.enqueue_resource(:search_document, :document, fn changes -> changes.document.id end)
     |> Multi.run(:result, fn _, changes ->
       {:ok, Map.put(changes.document, :node, original_document.node)}
     end)

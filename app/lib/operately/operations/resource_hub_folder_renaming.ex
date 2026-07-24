@@ -3,10 +3,12 @@ defmodule Operately.Operations.ResourceHubFolderRenaming do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.ResourceHubs.{Folder, Parent}
+  alias Operately.Search.ResourceHubIndex
 
   def run(author, folder, new_name) do
     Multi.new()
     |> Multi.update(:folder, Folder.changeset(folder, %{name: new_name}))
+    |> ResourceHubIndex.enqueue_resource(:search_folder, :folder, fn changes -> changes.folder.id end)
     |> Activities.insert_sync(author.id, :resource_hub_folder_renamed, fn _changes ->
       %{
         resource_hub_id: folder.resource_hub.id,
