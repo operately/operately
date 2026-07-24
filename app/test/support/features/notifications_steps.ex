@@ -37,6 +37,18 @@ defmodule Operately.Support.Features.NotificationsSteps do
     UI.click(ctx, testid: "mark-all-read")
   end
 
+  def click_on_first_mark_as_read(ctx) do
+    ctx
+    |> UI.hover(testid: "notification-item-space_members_added")
+    |> UI.click(testid: "notification-item-space_members_added-mark-as-read")
+  end
+
+  def assert_notification_was_marked_as_read(ctx) do
+    ctx
+    |> UI.wait_until_text("Nothing new for you.")
+    |> UI.assert_has(testid: "notification-item-space_members_added")
+  end
+
   def assert_notification_exists(ctx, author: author, subject: subject) do
     author = find_person(author)
 
