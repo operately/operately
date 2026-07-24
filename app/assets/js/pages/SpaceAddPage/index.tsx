@@ -6,10 +6,10 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
-import { AccessLevel, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
+import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { Forms, SecondaryButton, useFormContext } from "turboui";
+import { AccessLevelSummary, Forms, SecondaryButton, useFormContext } from "turboui";
 
 export default { name: "SpaceAddPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -132,7 +132,9 @@ function PrivacyLevelTitle({ field }: { field: string }) {
     return null;
   }
 
-  return <AccessLevel anonymous={anonymous} company={company} tense="future" hideIcon={true} />;
+  return (
+    <AccessLevelSummary resourceType="space" tense="future" anonymous={anonymous} company={company} hideIcon />
+  );
 }
 
 function PrivacyEdit() {
