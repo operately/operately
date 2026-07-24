@@ -22,11 +22,7 @@ describe("calcDescription (spaces)", () => {
   });
 
   test.each([
-    [
-      "present",
-      COMMENT_ACCESS,
-      "Anyone on the internet can view this space, company members can view and comment",
-    ],
+    ["present", COMMENT_ACCESS, "Anyone on the internet can view this space, company members can view and comment"],
     [
       "future",
       COMMENT_ACCESS,
@@ -107,11 +103,7 @@ describe("calcDescription (projects)", () => {
   });
 
   test.each([
-    [
-      "present",
-      COMMENT_ACCESS,
-      "Anyone on the internet can view this project, company members can view and comment",
-    ],
+    ["present", COMMENT_ACCESS, "Anyone on the internet can view this project, company members can view and comment"],
     [
       "future",
       COMMENT_ACCESS,
