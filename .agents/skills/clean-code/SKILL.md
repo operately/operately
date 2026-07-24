@@ -6,8 +6,10 @@ description: >-
   code, follow clean-code principles, refactor for clarity, improve naming,
   reduce complexity or duplication, separate concerns, tighten error handling,
   work test-first or do TDD, or otherwise raise code quality, readability, and
-  maintainability. Apply these rules by default when producing or changing code
-  for a quality-conscious user.
+  maintainability. Also use when writing or reviewing Ecto queries (prefer
+  assoc joins, recursive CTEs over Elixir/DB round-trips, and the Ecto DSL over
+  raw SQL). Apply these rules by default when producing or changing code for a
+  quality-conscious user.
 ---
 
 # Clean Code
@@ -133,7 +135,26 @@ understandable.
 - Isolate external systems (databases, APIs, queues, frameworks) behind clear
   boundaries; keep vendor-specific knowledge from leaking everywhere.
 
-### 14. Definition of done
+### 14. Prefer association joins and database-side recursion (Ecto)
+
+When writing Ecto queries in this codebase:
+
+- Prefer `join: ... in assoc(...)` over manual `join: ..., on: ...` when a
+  schema association already expresses the relationship. Manual `on:` is fine
+  when joining CTEs/string tables, adding conditions beyond the association, or
+  when no association exists.
+- Prefer recursive SQL (Ecto recursive CTEs via `recursive_ctes/2`,
+  `with_cte/3`, and `union_all/2`) over Elixir recursion that hits the database
+  on every iteration. Walk trees and hierarchies in one query when the database
+  can do it.
+- Prefer Ecto's query DSL over hand-written SQL strings (`Repo.query`,
+  interpolated `WITH RECURSIVE ...`) whenever Ecto can express the same query.
+  Reserve raw SQL for cases the DSL cannot express cleanly.
+
+See [reference.md](reference.md#ecto-joins-and-recursive-queries) for examples
+from this codebase.
+
+### 15. Definition of done
 
 A task is done only when:
 
@@ -142,3 +163,5 @@ A task is done only when:
 - the touched code is cleaner than before
 - relevant tests exist and pass (test-first unless a real constraint was noted)
 - no obvious duplication or dead code remains in the changed area
+- query code prefers `assoc`, database-side recursion, and the Ecto DSL when
+  those apply (see rule 14)
