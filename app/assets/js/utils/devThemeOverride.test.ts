@@ -17,10 +17,10 @@ function createMemoryStorage(initial: StorageMap = {}): Storage {
     clear() {
       Object.keys(store).forEach((key) => delete store[key]);
     },
-    getItem(key: string) {
-      return Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null;
+    getItem(key: string): string | null {
+      return store[key] ?? null;
     },
-    key(index: number) {
+    key(index: number): string | null {
       return Object.keys(store)[index] ?? null;
     },
     removeItem(key: string) {

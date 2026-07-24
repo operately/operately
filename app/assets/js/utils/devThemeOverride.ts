@@ -44,7 +44,7 @@ export function applyColorMode(mode: DevThemeOverride): void {
   html.classList.add(mode);
 }
 
-export function getSystemColorMode(): DevThemeOverride {
+function getSystemColorMode(): DevThemeOverride {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
