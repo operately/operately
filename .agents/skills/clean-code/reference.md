@@ -261,6 +261,72 @@ Code should be expressive, not magical, in any language.
 - Prefer explicit query methods, command methods, and object boundaries over
   DSL-heavy designs.
 
+## Ecto Joins and Recursive Queries
+
+These rules apply when writing or reviewing Elixir/Ecto data access in this
+repository. They expand rule 14 in [SKILL.md](SKILL.md).
+
+### Prefer `assoc/2` over manual join conditions
+
+When a schema association already defines the relationship, prefer:
+
+```elixir
+join: node in assoc(folder, :node)
+```
+
+over:
+
+```elixir
+join: node in Node, on: node.id == folder.node_id
+```
+
+For simple `belongs_to` / `has_many` / `has_one` relationships, both generate
+the same SQL. Preferring `assoc` keeps the join tied to the schema so foreign
+keys stay consistent when associations change.
+
+Manual `on:` is appropriate when:
+
+- joining a CTE or string table name (`"reports_hierarchy"`, `"subtree"`)
+- the join condition is not (or not only) the association FK
+- no association exists on the schema and adding one would be forced
+
+### Prefer database recursion over Elixir recursion with per-step queries
+
+Do not walk hierarchies with recursive Elixir that queries the database on each
+iteration (N+1 tree walks). Prefer a single recursive CTE that returns the full
+result set.
+
+Good patterns in this codebase:
+
+- Reports hierarchy: `OperatelyWeb.Api.People.ListPossibleManagers` builds an
+  initial query, a recursive `union_all`, then `recursive_ctes(true)` +
+  `with_cte("reports_hierarchy", as: ^...)`.
+- Goal tree: `Operately.Goals.list_goal_contributors/2` uses the same
+  `union_all` + recursive CTE pattern, then joins associations with `assoc`.
+- Resource hub subtree: `Operately.Search.ResourceHubIndex.Tree` builds a
+  recursive `"subtree"` CTE with Ecto queries over table names, then joins
+  Folder/Document/File/Link schemas onto the CTE.
+
+Avoid raw SQL recursive strings when the Ecto DSL can express the same thing.
+`Operately.ResourceHubs.Node.find_all_parent_folders/2` is an example of the
+older style (interpolated `WITH RECURSIVE` via `Repo.query`); prefer the CTE
+approach above for new work, and migrate toward it when touching similar code.
+
+### Prefer the Ecto query DSL over hand-written SQL
+
+Prefer `from/2`, `join`, `union_all/2`, `recursive_ctes/2`, and `with_cte/3`
+over `Repo.query` with SQL string literals. Raw SQL is reserved for queries the
+DSL cannot express cleanly or safely.
+
+When composing recursive CTEs in Ecto:
+
+1. Define the seed (anchor) query.
+2. Define the recursive step that joins the CTE name as a source.
+3. Combine with `union_all/2` (or `union/2` when duplicates must be removed).
+4. Attach with `recursive_ctes(true)` and `with_cte(name, as: ^query)`.
+5. Join typed schemas with `assoc` when possible; use explicit `on:` when
+   joining the CTE itself.
+
 ## Red Flags
 
 Stop and reconsider when you see: methods with multiple phases of work, boolean
