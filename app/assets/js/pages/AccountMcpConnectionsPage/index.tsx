@@ -63,6 +63,7 @@ function Page() {
       onRevokeGrant={handleRevokeGrant}
       homePath={paths.homePath()}
       securityPath={paths.accountSecurityPath()}
+      mcpServerUrl={`${window.location.origin}/mcp`}
       formattedTimePreferences={formattedTimePreferences}
     />
   );

@@ -1,12 +1,16 @@
 import React from "react";
 
 import { DangerButton, SecondaryButton } from "../Button";
+import { CopyToClipboard } from "../CopyToClipboard";
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
-import { IconTrash } from "../icons";
+import { IconExternalLink, IconTrash } from "../icons";
+import { DivLink } from "../Link";
 import { Menu, MenuActionItem } from "../Menu";
 import { Modal } from "../Modal";
 import { Page } from "../Page";
 import { createTestId } from "../TestableElement";
+
+const MCP_DOCS_URL = "https://operately.com/help/mcp-connections/";
 
 export namespace AccountMcpConnectionsPage {
   export interface Grant {
@@ -25,6 +29,7 @@ export namespace AccountMcpConnectionsPage {
     onRevokeGrant: (grantId: string) => void;
     homePath: string;
     securityPath: string;
+    mcpServerUrl: string;
     formattedTimePreferences: FormattedTimePreferences;
   }
 }
@@ -49,9 +54,11 @@ export function AccountMcpConnectionsPage(props: AccountMcpConnectionsPage.Props
         <header>
           <h1 className="text-2xl font-bold">MCP Connections</h1>
           <p className="text-sm text-content-dimmed mt-2">
-            Manage AI clients connected to your Operately account through MCP OAuth.
+            Connect AI clients via MCP and manage their access here.
           </p>
         </header>
+
+        <ServerUrlSection mcpServerUrl={props.mcpServerUrl} />
 
         <section className="mt-10" data-test-id="existing-mcp-connections-section">
           <h2 className="font-bold">Connected Clients</h2>
@@ -74,6 +81,36 @@ export function AccountMcpConnectionsPage(props: AccountMcpConnectionsPage.Props
         </section>
       </div>
     </Page>
+  );
+}
+
+function ServerUrlSection({ mcpServerUrl }: { mcpServerUrl: string }) {
+  return (
+    <section className="mt-8" data-test-id="mcp-server-url-section">
+      <h2 className="font-bold">Server URL</h2>
+      <p className="text-sm text-content-dimmed mt-1">Use this URL to create a connection in your AI client.</p>
+
+      <div className="mt-3 rounded-md border border-stroke-base bg-surface-dimmed px-3 py-2.5 flex items-center gap-3">
+        <code className="text-sm font-mono break-all flex-1 select-all" data-test-id="mcp-server-url">
+          {mcpServerUrl}
+        </code>
+        <CopyToClipboard text={mcpServerUrl} size={18} className="shrink-0" testId="copy-mcp-server-url" />
+      </div>
+
+      <p className="text-sm text-content-dimmed mt-3">
+        More details are in the docs:{" "}
+        <DivLink
+          to={MCP_DOCS_URL}
+          external
+          target="_blank"
+          className="text-link-base hover:text-link-hover inline-flex items-center gap-1"
+          testId="mcp-setup-guides-link"
+        >
+          Setup guides
+          <IconExternalLink size={14} />
+        </DivLink>
+      </p>
+    </section>
   );
 }
 
