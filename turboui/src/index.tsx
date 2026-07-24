@@ -1,5 +1,7 @@
 export * from "./TestableElement";
 
+export { AccessLevelSummary } from "./AccessLevelSummary";
+export type { AccessLevelSummaryProps } from "./AccessLevelSummary";
 export { AssigneesField } from "./AssigneesField";
 export * from "./Avatar";
 export * from "./Button";

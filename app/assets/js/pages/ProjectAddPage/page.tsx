@@ -12,9 +12,8 @@ import { useLoadedData } from "./loader";
 
 import { PermissionLevels } from "@/features/Permissions";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
-import { AccessLevel } from "@/features/projects/AccessLevel";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
-import { Forms, SecondaryButton } from "turboui";
+import { AccessLevelSummary, Forms, SecondaryButton } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
@@ -169,7 +168,16 @@ function PrivacyLevelTitle({ field }: { field: string }) {
   const [company = PermissionLevels.NO_ACCESS] = Forms.useFieldValue<number>(`${field}.companyMembers`);
   const [space = PermissionLevels.NO_ACCESS] = Forms.useFieldValue<number>(`${field}.spaceMembers`);
 
-  return <AccessLevel anonymous={anonymous} company={company} space={space} tense="future" hideIcon={true} />;
+  return (
+    <AccessLevelSummary
+      resourceType="project"
+      tense="future"
+      anonymous={anonymous}
+      company={company}
+      space={space}
+      hideIcon
+    />
+  );
 }
 
 function PrivacyEdit() {
