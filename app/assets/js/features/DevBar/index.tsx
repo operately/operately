@@ -3,16 +3,23 @@ import React from "react";
 import classNames from "classnames";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { ToggleTestIds } from "./ToggleTestIds";
+import { ToggleTheme } from "./ToggleTheme";
 import { useDevBarData } from "./useDevBarData";
+import { useDevThemeOverride } from "./useDevThemeOverride";
 
 export function DevBar() {
-  if (!window.appConfig.showDevBar) return;
+  if (!window.appConfig.showDevBar) return null;
 
+  return <DevBarContent />;
+}
+
+function DevBarContent() {
+  // Keep the override active even when the bar is collapsed or hidden.
+  const themeOverride = useDevThemeOverride();
   const { pageName, loadTime, isVisible } = useDevBarData();
-
-  if (!isVisible) return;
-
   const [isExpanded, setIsExpanded] = useStateWithLocalStorage<boolean>("devBar", "isExpanded", true);
+
+  if (!isVisible) return null;
 
   const className = classNames(
     "fixed",
@@ -42,6 +49,7 @@ export function DevBar() {
             <div className={pageLoadColor}>{loadTime.toFixed(0)}ms</div>
           </div>
 
+          <ToggleTheme {...themeOverride} />
           <ToggleTestIds />
         </div>
       ) : (
