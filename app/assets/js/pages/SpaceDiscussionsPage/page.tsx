@@ -10,6 +10,7 @@ import {
   Link,
   PrimaryButton,
   Avatar,
+  CommentCountIndicator,
   Summary,
   FormattedTime,
   displayDate,
@@ -21,7 +22,6 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
 
-import { CommentsCountIndicator } from "@/features/Comments";
 import classNames from "classnames";
 
 export function Page() {
@@ -166,7 +166,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
       </div>
 
       <div className="mt-8">
-        <CommentsCountIndicator count={discussion.commentsCount || 0} size={28} />
+        <CommentCountIndicator count={discussion.commentsCount || 0} size={28} />
       </div>
     </DivLink>
   );
