@@ -10,6 +10,7 @@ defmodule Operately.Search.Sources.ResourceHub.Metadata do
   alias Operately.Repo
   alias Operately.ResourceHubs.ResourceHub
   alias Operately.Search.Source
+  alias Operately.Search.Sources.ResourceHub.Record
 
   def load(hub_ids) do
     hubs = ResourceHub |> load_records(hub_ids) |> Map.values()
@@ -59,6 +60,7 @@ defmodule Operately.Search.Sources.ResourceHub.Metadata do
       company_id: parent && parent.company_id,
       access_context_id: context && context.id,
       resource_hub_id: hub.id,
+      scope_updated_at: Record.latest_timestamp([hub.updated_at, parent && parent.updated_at, context && context.updated_at]),
       owning_parent_deleted?: is_nil(parent) or not is_nil(parent.deleted_at)
     })
   end

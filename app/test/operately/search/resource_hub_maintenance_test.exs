@@ -3,6 +3,7 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
   use Oban.Testing, repo: Operately.Repo
 
   alias Operately.Access
+  alias Operately.Projects.Project
   alias Operately.ResourceHubs.{Link, Node}
   alias Operately.Search
   alias Operately.Search.{Entry, IndexRun, Indexer}
@@ -49,6 +50,35 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
     assert Enum.all?(second_runs, &(&1.status == :completed))
     assert Enum.sum(Enum.map(second_runs, & &1.unchanged_count)) == 4
     assert Repo.aggregate(Entry, :count) == 4
+  end
+
+  test "backfill updates resource hub scope after a project moves spaces", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:destination_space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_resource_hub(:project_hub, :project, :creator)
+      |> Factory.add_document(:project_document, :project_hub)
+
+    first_run = start_and_drain(:backfill, "resource_hub_document")
+    assert first_run.status == :completed
+
+    original_entry = assert_entry(:resource_hub_document, ctx.project_document.id)
+    assert original_entry.space_id == ctx.space.id
+    moved_at = original_entry.source_updated_at |> NaiveDateTime.add(5, :second) |> NaiveDateTime.truncate(:second)
+
+    ctx.project
+    |> Project.changeset(%{group_id: ctx.destination_space.id})
+    |> Ecto.Changeset.put_change(:updated_at, moved_at)
+    |> Repo.update!()
+
+    second_run = start_and_drain(:backfill, "resource_hub_document")
+    assert second_run.status == :completed
+    assert second_run.updated_count == 1
+
+    updated_entry = assert_entry(:resource_hub_document, ctx.project_document.id)
+    assert updated_entry.space_id == ctx.destination_space.id
+    assert NaiveDateTime.compare(updated_entry.source_updated_at, moved_at) == :eq
   end
 
   test "reconciliation repairs stale entries, removes exclusions and orphans, and restores eligible records", ctx do

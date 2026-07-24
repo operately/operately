@@ -50,6 +50,7 @@ defmodule Operately.Search.Sources.ResourceHub.Loader do
           space_id: scope && scope.space_id,
           project_id: scope && scope.project_id,
           goal_id: scope && scope.goal_id,
+          scope_updated_at: scope && scope.scope_updated_at,
           owning_parent_deleted?: is_nil(scope) or scope.owning_parent_deleted?,
           hidden_by_deleted_folder?: node && MapSet.member?(hidden_node_ids, node.id)
         }

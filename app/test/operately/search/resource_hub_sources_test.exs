@@ -2,6 +2,7 @@ defmodule Operately.Search.ResourceHubSourcesTest do
   use Operately.DataCase, async: true
 
   alias Operately.Access
+  alias Operately.Projects.Project
   alias Operately.ResourceHubs.File, as: ResourceFile
   alias Operately.ResourceHubs.Link, as: ResourceLink
   alias Operately.ResourceHubs.Node
@@ -117,14 +118,55 @@ defmodule Operately.Search.ResourceHubSourcesTest do
 
   test "uses the newest timestamp from every record contributing projected fields", ctx do
     newer_node_timestamp = NaiveDateTime.add(ctx.document.updated_at, 5, :second)
+    newer_hub_timestamp = NaiveDateTime.add(ctx.document.updated_at, 10, :second)
+    newer_parent_timestamp = NaiveDateTime.add(ctx.document.updated_at, 15, :second)
+    newer_context_timestamp = NaiveDateTime.add(ctx.document.updated_at, 20, :second)
 
     Node
     |> Repo.get!(ctx.document.node_id)
     |> Ecto.Changeset.change(updated_at: newer_node_timestamp)
     |> Repo.update!()
 
-    document_attrs = entry_attrs(Document, ctx.document.id)
-    assert document_attrs.source_updated_at == newer_node_timestamp
+    assert entry_attrs(Document, ctx.document.id).source_updated_at == newer_node_timestamp
+
+    ctx.hub
+    |> Ecto.Changeset.change(updated_at: newer_hub_timestamp)
+    |> Repo.update!()
+
+    assert entry_attrs(Document, ctx.document.id).source_updated_at == newer_hub_timestamp
+
+    ctx.space
+    |> Ecto.Changeset.change(updated_at: newer_parent_timestamp)
+    |> Repo.update!()
+
+    assert entry_attrs(Document, ctx.document.id).source_updated_at == newer_parent_timestamp
+
+    Access.get_context!(group_id: ctx.space.id)
+    |> Ecto.Changeset.change(updated_at: newer_context_timestamp)
+    |> Repo.update!()
+
+    assert entry_attrs(Document, ctx.document.id).source_updated_at == newer_context_timestamp
+  end
+
+  test "advances the source timestamp when a project moves to another space", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:destination_space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_resource_hub(:project_hub, :project, :creator)
+      |> Factory.add_document(:project_document, :project_hub)
+
+    original_attrs = entry_attrs(Document, ctx.project_document.id)
+    moved_at = NaiveDateTime.add(original_attrs.source_updated_at, 5, :second)
+
+    ctx.project
+    |> Project.changeset(%{group_id: ctx.destination_space.id})
+    |> Ecto.Changeset.put_change(:updated_at, moved_at)
+    |> Repo.update!()
+
+    moved_attrs = entry_attrs(Document, ctx.project_document.id)
+    assert moved_attrs.space_id == ctx.destination_space.id
+    assert moved_attrs.source_updated_at == moved_at
   end
 
   test "fails closed for malformed records", ctx do
