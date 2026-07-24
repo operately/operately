@@ -89,20 +89,23 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   setup do
-    previous_sources = Application.get_env(:operately, SourceRegistry, [])
+    previous_sources = Application.fetch_env(:operately, SourceRegistry)
     previous_batch_size = Application.get_env(:operately, :search_index_batch_size, 500)
 
     Application.put_env(:operately, SourceRegistry, [ProjectSource])
     Application.put_env(:operately, :search_index_batch_size, 1)
 
     on_exit(fn ->
-      Application.put_env(:operately, SourceRegistry, previous_sources)
+      restore_source_registry(previous_sources)
       Application.put_env(:operately, :search_index_batch_size, previous_batch_size)
     end)
 
     Factory.setup(%{})
     |> Factory.add_space(:space)
   end
+
+  defp restore_source_registry({:ok, source_modules}), do: Application.put_env(:operately, SourceRegistry, source_modules)
+  defp restore_source_registry(:error), do: Application.delete_env(:operately, SourceRegistry)
 
   test "returns a clear error when no sources are registered" do
     Application.put_env(:operately, SourceRegistry, [])

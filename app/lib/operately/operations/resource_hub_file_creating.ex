@@ -7,6 +7,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
   alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{File, Node}
   alias Operately.Notifications.{SubscriptionList, Subscription}
+  alias Operately.Search.ResourceHubIndex
 
   def run(author, hub, attrs) do
     company = Companies.get_company!(author.company_id)
@@ -25,6 +26,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
       |> update_blobs(file, index)
     end)
     |> parse_result(attrs.files)
+    |> ResourceHubIndex.enqueue_resource(:search_files, :file, fn changes -> Enum.map(changes.result, & &1.id) end)
     |> insert_activity(author, hub)
     |> Repo.transaction()
     |> Repo.extract_result(:result)

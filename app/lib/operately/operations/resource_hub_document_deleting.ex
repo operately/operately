@@ -3,11 +3,13 @@ defmodule Operately.Operations.ResourceHubDocumentDeleting do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
+  alias Operately.Search.ResourceHubIndex
 
   def run(author, document) do
     Multi.new()
     |> Multi.run(:document, fn _, _ -> Repo.soft_delete(document) end)
     |> Multi.run(:node, fn _, _ -> Repo.soft_delete(document.node) end)
+    |> ResourceHubIndex.delete_resource(:search_document, :document, document.id)
     |> Activities.insert_sync(author.id, :resource_hub_document_deleted, fn _changes ->
       %{
         resource_hub_id: document.resource_hub.id,

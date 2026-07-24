@@ -90,7 +90,7 @@ defmodule Operately.Search.SchemaTest do
     assert updated_entry.normalized_title == "resume plan"
   end
 
-  test "creates the generated column and expected GIN indexes" do
+  test "creates the generated column and expected search indexes" do
     assert [["ALWAYS"]] =
              Repo.query!("SELECT is_generated FROM information_schema.columns WHERE table_name = 'search_entries' AND column_name = 'search_vector'").rows
 
