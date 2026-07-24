@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ResourceHubs.Search do
 
   @impl true
   def assert(response, ctx) do
-    assert [%{id: id, type: "resource_hub_document"}] = response.results
+    assert [%{type: "document", document: %{id: id}}] = response.nodes
     assert id == Paths.document_id(ctx.document)
   end
 end

@@ -1,7 +1,6 @@
 defmodule Operately.Search.ResourceHubQueryTest do
   use Operately.DataCase
 
-  alias Operately.ResourceHubs.Folder
   alias Operately.Search
   alias Operately.Search.SourceIndexer
   alias Operately.Support.{Factory, RichText}
@@ -27,31 +26,27 @@ defmodule Operately.Search.ResourceHubQueryTest do
     ctx
   end
 
-  test "returns unified results with semantic match fields, current context, and navigation metadata", ctx do
+  test "returns fully hydrated resource hub nodes", ctx do
     assert [document] = Search.search_resource_hub(ctx.hub, "navigation")
-    assert document.id == ctx.document.id
-    assert document.type == :resource_hub_document
-    assert document.title == "Enterprise research"
-    assert document.context == "Knowledge Base · parent_folder · nested_folder"
-    assert document.matched_field == :content
-    assert document.snippet =~ "navigation problems"
-    refute document.snippet =~ "<b>"
-    refute document.snippet =~ "__OPERATELY_MATCH"
-    assert document.navigation_target == %{resource_hub_id: ctx.hub.id, document_id: ctx.document.id}
+    assert document.type == :document
+    assert document.document.id == ctx.document.id
+    assert document.document.name == "Enterprise research"
+    assert document.document.author.id == ctx.creator.id
+    assert document.document.content == ctx.document.content
+    assert document.document.comments_count == 0
 
     assert [file] = Search.search_resource_hub(ctx.hub, "Quarterly")
-    assert file.type == :resource_hub_file
-    assert file.matched_field == :name
-    assert file.snippet == nil
+    assert file.type == :file
+    assert file.file.id == ctx.resource_file.id
 
     assert [link] = Search.search_resource_hub(ctx.hub, "vendor")
-    assert link.type == :resource_hub_link
-    assert link.matched_field == :description
+    assert link.type == :link
+    assert link.link.id == ctx.resource_link.id
 
     assert [folder] = Search.search_resource_hub(ctx.hub, "nested_folder")
-    assert folder.type == :resource_hub_folder
-    assert folder.context == "Knowledge Base · parent_folder"
-    assert folder.navigation_target == %{resource_hub_id: ctx.hub.id, folder_id: ctx.nested_folder.id}
+    assert folder.type == :folder
+    assert folder.folder.id == ctx.nested_folder.id
+    assert folder.folder.children_count == 3
   end
 
   test "ranks exact titles, prefixes, title terms, and body matches in that order", ctx do
@@ -65,7 +60,7 @@ defmodule Operately.Search.ResourceHubQueryTest do
     Enum.each([ctx.exact, ctx.prefix, ctx.title_term, ctx.body_match], &sync(:document, &1.id))
 
     results = Search.search_resource_hub(ctx.hub, "alpha")
-    result_ids = Enum.map(results, & &1.id)
+    result_ids = Enum.map(results, & &1.document.id)
 
     assert Enum.take(result_ids, 4) == [ctx.exact.id, ctx.prefix.id, ctx.title_term.id, ctx.body_match.id]
   end
@@ -79,13 +74,13 @@ defmodule Operately.Search.ResourceHubQueryTest do
 
     sync(:document, ctx.accented.id)
 
-    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, "CAFÉ")
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "CAFÉ")
     assert id == ctx.accented.id
 
-    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, ~s("customer research"))
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, ~s("customer research"))
     assert id == ctx.accented.id
 
-    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, "customer -archive")
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "customer -archive")
     assert id == ctx.document.id
   end
 
@@ -102,26 +97,13 @@ defmodule Operately.Search.ResourceHubQueryTest do
     sync(:document, ctx.project_document.id)
     sync(:document, ctx.goal_document.id)
 
-    assert [%{id: project_id, context: project_context}] =
-             Search.search_resource_hub(ctx.project_hub, "Project-only")
+    assert [%{document: %{id: project_id}}] = Search.search_resource_hub(ctx.project_hub, "Project-only")
 
     assert project_id == ctx.project_document.id
-    assert project_context == ctx.project_hub.name
 
-    assert [%{id: goal_id, context: goal_context}] =
-             Search.search_resource_hub(ctx.goal_hub, "Goal-only")
+    assert [%{document: %{id: goal_id}}] = Search.search_resource_hub(ctx.goal_hub, "Goal-only")
 
     assert goal_id == ctx.goal_document.id
-    assert goal_context == ctx.goal_hub.name
-  end
-
-  test "uses current folder names without reindexing the matched resource", ctx do
-    ctx.parent_folder
-    |> Folder.changeset(%{name: "Renamed folder"})
-    |> Repo.update!()
-
-    assert [result] = Search.search_resource_hub(ctx.hub, "navigation")
-    assert result.context == "Knowledge Base · Renamed folder · nested_folder"
   end
 
   test "excludes stale entries for drafts, deleted nodes, deleted ancestors, and missing resources", ctx do
@@ -169,7 +151,7 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert length(results) == 30
 
     expected_ids = documents |> Enum.map(& &1.id) |> Enum.sort() |> Enum.take(30)
-    assert Enum.map(results, & &1.id) == expected_ids
+    assert Enum.map(results, & &1.document.id) == expected_ids
   end
 
   test "treats title prefix metacharacters as literal characters", ctx do
@@ -182,16 +164,16 @@ defmodule Operately.Search.ResourceHubQueryTest do
 
     Enum.each([ctx.percent_title, ctx.underscore_title, ctx.backslash_title, ctx.escape_title], &sync(:document, &1.id))
 
-    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, "%%")
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "%%")
     assert id == ctx.percent_title.id
 
-    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, "__")
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "__")
     assert id == ctx.underscore_title.id
 
-    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, ~S(\\))
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, ~S(\\))
     assert id == ctx.backslash_title.id
 
-    assert [%{id: id}] = Search.search_resource_hub(ctx.hub, "!!")
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "!!")
     assert id == ctx.escape_title.id
   end
 

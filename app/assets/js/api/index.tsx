@@ -2190,6 +2190,7 @@ export interface SearchNavigationTarget {
 }
 
 export interface SearchResult {
+  __typename: "result";
   id: string;
   type: SearchResultType;
   title: string;
@@ -3529,7 +3530,7 @@ export interface ResourceHubsSearchInput {
 }
 
 export interface ResourceHubsSearchResult {
-  results: SearchResult[];
+  nodes: ResourceHubNode[];
 }
 
 export interface SiteMessagesListActiveInput {}
