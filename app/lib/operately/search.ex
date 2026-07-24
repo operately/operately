@@ -17,7 +17,7 @@ defmodule Operately.Search do
   alias Operately.Search.{IndexRun, MaintenanceWorker, ResourceHubQuery, SourceRegistry}
 
   @doc """
-  Returns relevance-ranked full-text results from an already-authorized resource hub.
+  Returns fully hydrated resource-hub nodes in full-text relevance order.
   """
   def search_resource_hub(%ResourceHub{} = hub, query), do: ResourceHubQuery.search(hub, query)
 

@@ -30,50 +30,46 @@ defmodule OperatelyWeb.Api.ResourceHubs.SearchTest do
              })
   end
 
-  test "returns the unified result contract with encoded navigation IDs", ctx do
+  test "returns fully hydrated resource hub nodes", ctx do
     ctx = Factory.log_in_person(ctx, :creator)
 
-    assert {200, %{results: [result]}} =
+    assert {200, %{nodes: [node]}} =
              query(ctx.conn, [:resource_hubs, :search], %{
                resource_hub_id: Paths.resource_hub_id(ctx.hub),
                query: "content"
              })
 
-    assert result.id == Paths.document_id(ctx.document)
-    assert result.type == "resource_hub_document"
-    assert result.title == "Searchable document"
-    assert result.context == "Knowledge Base · Searchable folder"
-    assert result.matched_field == "content"
-    assert result.snippet =~ "Distinctive searchable content"
-
-    assert result.navigation_target == %{
-             resource_hub_id: Paths.resource_hub_id(ctx.hub.id),
-             folder_id: nil,
-             document_id: Paths.document_id(ctx.document),
-             file_id: nil,
-             link_id: nil
-           }
+    assert node.type == "document"
+    assert node.name == "Searchable document"
+    assert node.document.id == Paths.document_id(ctx.document)
+    assert node.document.name == "Searchable document"
+    assert node.document.author.id == Paths.person_id(ctx.creator)
+    assert node.document.content =~ "Distinctive searchable content"
+    assert node.document.comments_count == 0
   end
 
-  test "returns typed navigation targets for every resource type", ctx do
+  test "returns every resource type using the same node shape as list_nodes", ctx do
     ctx = Factory.log_in_person(ctx, :creator)
 
-    assert {200, %{results: results}} =
+    assert {200, %{nodes: nodes}} =
              query(ctx.conn, [:resource_hubs, :search], %{
                resource_hub_id: Paths.resource_hub_id(ctx.hub),
                query: "Searchable"
              })
 
-    assert navigation_target(results, "resource_hub_folder").folder_id == Paths.folder_id(ctx.folder)
-    assert navigation_target(results, "resource_hub_document").document_id == Paths.document_id(ctx.document)
-    assert navigation_target(results, "resource_hub_file").file_id == Paths.file_id(ctx.resource_file)
-    assert navigation_target(results, "resource_hub_link").link_id == Paths.link_id(ctx.resource_link)
+    assert Enum.find(nodes, &(&1[:folder] && &1.folder.id == Paths.folder_id(ctx.folder)))
+    assert Enum.find(nodes, &(&1[:document] && &1.document.id == Paths.document_id(ctx.document)))
+    assert Enum.find(nodes, &(&1[:file] && &1.file.id == Paths.file_id(ctx.resource_file)))
+    assert Enum.find(nodes, &(&1[:link] && &1.link.id == Paths.link_id(ctx.resource_link)))
+
+    folder_node = Enum.find(nodes, & &1[:folder])
+    assert folder_node.folder.children_count == 3
   end
 
   test "returns empty results for short queries after authorizing the hub", ctx do
     ctx = Factory.log_in_person(ctx, :creator)
 
-    assert {200, %{results: []}} =
+    assert {200, %{nodes: []}} =
              query(ctx.conn, [:resource_hubs, :search], %{
                resource_hub_id: Paths.resource_hub_id(ctx.hub),
                query: "a"
@@ -148,11 +144,5 @@ defmodule OperatelyWeb.Api.ResourceHubs.SearchTest do
       |> Repo.update!()
 
     %{ctx | folder: folder, resource_file: file, resource_link: link}
-  end
-
-  defp navigation_target(results, type) do
-    results
-    |> Enum.find(&(&1.type == type))
-    |> Map.fetch!(:navigation_target)
   end
 end
