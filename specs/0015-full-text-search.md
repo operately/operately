@@ -138,20 +138,23 @@ Create one `search_entries` table containing normalized searchable text and the 
 
 This is an application-maintained projection, not the source of truth. Canonical resources remain in their existing tables.
 
-### 5. Authorization is evaluated at query time
+### 5. Authorization follows the API scope
 
 Every search entry carries the canonical resource's `company_id` and `access_context_id`.
 
-Search queries must join the existing access bindings and require view access before selecting a result. Do not copy expanded person ACL lists into the search index.
+The API authorizes the requested search scope before invoking the search query. Resource-hub
+children all inherit the owning space, project, or goal access context, so resource-hub search
+authorizes the hub once and does not repeat the same access-binding join for every entry.
 
-This ensures that:
+The query still restricts candidates to the authorized resource hub and joins current resources,
+nodes, and folder ancestors before ranking. This prevents stale index rows for deleted, draft,
+missing, or out-of-scope resources from being returned.
 
-- permission changes take effect without reindexing every resource
-- private titles and snippets never leak through search
-- company isolation remains explicit
-- resource-hub children inherit the access context of the owning space, project, or goal
+Company-wide search spans resources with different access contexts. Phase 3 must therefore apply
+live access bindings to each candidate before selecting titles, snippets, or metadata.
 
-Authorization must be applied inside the candidate query, before ranking, limiting, snippet generation, or serialization.
+Do not copy expanded person ACL lists into the search index. Permission changes must take effect
+without reindexing resources.
 
 ### 6. Closed work is searchable; deleted work is not
 
@@ -357,13 +360,15 @@ Use a multilingual-safe `simple` base for the first release rather than applying
 
 ### Query construction
 
-The resource-hub release starts with one focused query: `search_resource_hub(person, resource_hub_id, query)`.
+The resource-hub release starts with one focused query:
+`search_resource_hub(authorized_resource_hub, query)`.
 
 - trim and normalize repeated whitespace and separator characters
 - keep the existing minimum query length of two characters
 - use `websearch_to_tsquery('operately', query)` so ordinary input, quoted phrases, `OR`, and exclusions do not produce syntax errors
 - use the full-text GIN index as the primary candidate path
-- apply company, resource-hub, publication/deletion, and access-context predicates before ranking or limiting
+- authorize the resource hub in the API before invoking the search query
+- apply resource-hub, publication, deletion, and current-hierarchy predicates before ranking or limiting
 - return at most 30 results in the first release
 - batch-load current nodes and folder paths for the selected results instead of storing folder paths in `search_entries`
 
@@ -584,10 +589,10 @@ Implement this phase as three ordered PRs so indexing, querying, and the complet
 
 #### PR 2.2 — `chore: Add permission-aware resource hub search`
 
-- [ ] Add the ranked full-text query and `resource_hub` API scope.
-- [ ] Return at most 30 unified results with current context, match source, a plain-text snippet, and navigation identifiers.
-- [ ] Apply company, resource-hub, publication, deletion, and access-context predicates before ranking, snippets, and limiting.
-- [ ] Cover permissions, nested-folder scope, simple ranking, snippets, and exclusion rules with backend tests.
+- [x] Add the ranked full-text query and `resource_hub` API scope.
+- [x] Return at most 30 unified results with current context, match source, a plain-text snippet, and navigation identifiers.
+- [x] Authorize the resource hub at the API boundary, then apply resource-hub, publication, deletion, and current-hierarchy predicates before ranking, snippets, and limiting.
+- [x] Cover permissions, nested-folder scope, simple ranking, snippets, and exclusion rules with backend tests.
 
 #### PR 2.3 — `chore: Add search to resource hubs`
 

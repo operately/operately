@@ -1525,6 +1525,35 @@ defmodule OperatelyWeb.Api.Types do
     field? :link, :resource_hub_link, null: true
   end
 
+  enum(:search_result_type,
+    values: [
+      :resource_hub_folder,
+      :resource_hub_document,
+      :resource_hub_file,
+      :resource_hub_link
+    ]
+  )
+
+  enum(:search_matched_field, values: [:title, :name, :content, :description])
+
+  object :search_navigation_target do
+    field :resource_hub_id, :string, null: false
+    field? :folder_id, :string, null: true
+    field? :document_id, :string, null: true
+    field? :file_id, :string, null: true
+    field? :link_id, :string, null: true
+  end
+
+  object :search_result do
+    field :id, :string, null: false
+    field :type, :search_result_type, null: false
+    field :title, :string, null: false
+    field :context, :string, null: false
+    field :matched_field, :search_matched_field, null: false
+    field? :snippet, :string, null: true
+    field :navigation_target, :search_navigation_target, null: false
+  end
+
   object :project_permissions, for: Operately.Projects.Permissions do
     field :can_view, :boolean, null: false
     field :can_comment, :boolean, null: false

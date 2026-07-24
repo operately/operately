@@ -1,6 +1,6 @@
 defmodule Operately.Search do
   @moduledoc """
-  Starts and inspects search index maintenance runs.
+  Provides search queries and manages search-index maintenance runs.
 
   Each registered source type gets its own `Operately.Search.IndexRun`, with an
   independent cursor, counters, status, and chain of Oban batch jobs. A run starts with
@@ -13,7 +13,13 @@ defmodule Operately.Search do
 
   alias Ecto.Multi
   alias Operately.Repo
-  alias Operately.Search.{IndexRun, MaintenanceWorker, SourceRegistry}
+  alias Operately.ResourceHubs.ResourceHub
+  alias Operately.Search.{IndexRun, MaintenanceWorker, ResourceHubQuery, SourceRegistry}
+
+  @doc """
+  Returns relevance-ranked full-text results from an already-authorized resource hub.
+  """
+  def search_resource_hub(%ResourceHub{} = hub, query), do: ResourceHubQuery.search(hub, query)
 
   @doc """
   Starts a backfill for one source type string, or one independent backfill per
