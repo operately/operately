@@ -3,11 +3,9 @@ import React from "react";
 import { Space } from "@/models/spaces";
 import { Discussion } from "@/models/discussions";
 import { Title } from "../components";
-import { CommentsCountIndicator } from "@/features/Comments";
-
 import { assertPresent } from "@/utils/assertions";
 
-import { Avatar, richContentToString } from "turboui";
+import { Avatar, CommentCountIndicator, richContentToString } from "turboui";
 import classNames from "classnames";
 
 interface Props {
@@ -50,7 +48,7 @@ function DiscussionItem({ discussion }: { discussion: Discussion }) {
     <div className={className}>
       {discussion.author && <Avatar person={discussion.author} size={30} />}
       <DiscussionTitle title={discussion.title!} body={discussion.body!} />
-      <CommentsCountIndicator count={discussion.commentsCount} size={16} />
+      <CommentCountIndicator count={discussion.commentsCount} size={16} />
     </div>
   );
 }
