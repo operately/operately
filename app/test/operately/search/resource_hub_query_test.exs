@@ -84,6 +84,25 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert id == ctx.document.id
   end
 
+  test "matches word prefixes in titles and bodies while typing", ctx do
+    ctx =
+      Factory.add_document(ctx, :sentence, :hub,
+        name: "Typing notes",
+        content: RichText.rich_text("This is just a test")
+      )
+
+    sync(:document, ctx.sentence.id)
+
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "just a t")
+    assert id == ctx.sentence.id
+
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "navig")
+    assert id == ctx.document.id
+
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "Enterpri")
+    assert id == ctx.document.id
+  end
+
   test "searches space-, project-, and goal-owned resource hubs", ctx do
     ctx =
       ctx
