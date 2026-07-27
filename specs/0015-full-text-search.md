@@ -617,11 +617,11 @@ Implement the critical path as five ordered PRs. Keep lower-value corpus expansi
 
 #### PR 3.1 — `chore: Add permission-aware company search query`
 
-- [ ] Query the shared `search_entries` projection across the authenticated company without changing the API or UI.
-- [ ] Apply live access-context permissions before selecting titles, snippets, state, or navigation metadata.
-- [ ] Add company-wide ranking, current-record exclusions, context hydration, match-source detection, plain-text snippets, and stable ordering.
-- [ ] Cover relevance, company isolation, permission changes, stale entries, closed/archived state, and navigation metadata with focused domain tests.
-- [ ] Use existing resource-hub entries and targeted fixtures so this query does not depend on every company source adapter landing first.
+- [x] Query the shared `search_entries` projection across the authenticated company without changing the API or UI.
+- [x] Apply live access-context permissions before selecting titles, snippets, state, or navigation metadata.
+- [x] Add company-wide ranking, current-record exclusions, context hydration, match-source detection, plain-text snippets, and stable ordering.
+- [x] Cover relevance, company isolation, permission changes, stale entries, closed/archived state, and navigation metadata with focused domain tests.
+- [x] Use existing resource-hub entries and targeted fixtures so this query does not depend on every company source adapter landing first.
 
 #### PR 3.2 — `chore: Index core work for company search`
 
@@ -661,6 +661,8 @@ Native resource-hub documents are already indexed by Phase 2 and become company-
 - [ ] Apply the same adapter, refresh, authorization, backfill, and reconciliation requirements to every added type.
 
 Update the MCP search tool in a separate follow-up after the combined web API and `MORE MATCHES` contract are stable.
+
+- [ ] After the resource-hub and company search queries have stabilized, evaluate the duplicated resource eligibility and visible-folder CTE logic in `ResourceHubQuery` and `CompanyQuery.ResourceHubItems`. Extract shared query-building code only if it meaningfully reduces maintenance risk without coupling their different scopes, result shapes, authorization boundaries, or hydration behavior; otherwise document why keeping the small duplication is clearer.
 
 This phase closes #1421.
 
