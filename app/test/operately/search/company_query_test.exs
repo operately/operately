@@ -79,6 +79,24 @@ defmodule Operately.Search.CompanyQueryTest do
     assert ctx.resource_file.id in or_result_ids
   end
 
+  test "keeps title matches ahead of bodies with many repeated matches", ctx do
+    repeated_body = Enum.join(List.duplicate("signal", 20), " ")
+
+    ctx =
+      ctx
+      |> Factory.add_document(:title_match, :hub, name: "Roadmap signal", content: RichText.rich_text("Unrelated"))
+      |> Factory.add_document(:body_match, :hub, name: "Evidence archive", content: RichText.rich_text(repeated_body))
+
+    sync(:document, ctx.title_match.id)
+    sync(:document, ctx.body_match.id)
+
+    assert [title_match, body_match] = Search.search_company(ctx.creator, "signal")
+    assert title_match.id == ctx.title_match.id
+    assert title_match.matched_field == :title
+    assert body_match.id == ctx.body_match.id
+    assert body_match.matched_field == :content
+  end
+
   test "uses current owner names without reindexing", ctx do
     ctx.space
     |> Operately.Groups.Group.changeset(%{name: "Renamed Space"})
@@ -231,6 +249,28 @@ defmodule Operately.Search.CompanyQueryTest do
     assert [] = Search.search_company(ctx.creator, "a")
   end
 
+  test "returns no results for oversized queries", ctx do
+    oversized_query = Enum.map_join(1..20_000, " ", &"query#{&1}")
+
+    assert [] = Search.search_company(ctx.creator, oversized_query)
+  end
+
+  test "returns no results for PostgreSQL-invalid query text", ctx do
+    assert [] = Search.search_company(ctx.creator, <<0, ?x>>)
+    assert [] = Search.search_company(ctx.creator, <<255, 255>>)
+  end
+
+  test "ranks with the stored search vector and builds snippets only for body matches", ctx do
+    sql = capture_search_sql(fn -> Search.search_company(ctx.creator, "navigation") end)
+    [_query, order_by] = String.split(sql, " ORDER BY ", parts: 2)
+
+    assert order_by =~ "ARRAY[0.0,0.0,0.0,1.0]::real[]"
+    assert order_by =~ "ARRAY[0.0,0.0,1.0,0.0]::real[]"
+    assert order_by =~ ~r/::real\[\], [^,]+\."search_vector"/
+    refute order_by =~ "ts_rank_cd(to_tsvector"
+    assert sql =~ "THEN NULL ELSE ts_headline"
+  end
+
   defp update_file_and_link(ctx) do
     file =
       ctx.resource_file
@@ -269,5 +309,27 @@ defmodule Operately.Search.CompanyQueryTest do
     |> Repo.get_by!(source_type: :resource_hub_document, source_id: resource.id)
     |> Ecto.Changeset.change(attrs)
     |> Repo.update!()
+  end
+
+  defp capture_search_sql(search) do
+    handler_id = {__MODULE__, self(), make_ref()}
+    test_pid = self()
+
+    :telemetry.attach(
+      handler_id,
+      [:operately, :repo, :query],
+      fn _event, _measurements, metadata, owner ->
+        if self() == owner, do: send(owner, {handler_id, metadata.query})
+      end,
+      test_pid
+    )
+
+    try do
+      search.()
+      assert_receive {^handler_id, sql}
+      sql
+    after
+      :telemetry.detach(handler_id)
+    end
   end
 end

@@ -6,6 +6,9 @@ defmodule Operately.Search.Text do
   @websearch_or ~r/(?:^|\s)OR(?:\s|$)/
   @websearch_exclusion ~r/(?:^|\s)-/
   @ordinary_word_query ~r/^[\p{L}\p{N}]+(?:\s+[\p{L}\p{N}]+)*$/u
+  @min_query_length 2
+  @max_query_length 500
+  @max_query_bytes 2_000
 
   def normalize_title(title) when is_binary(title) do
     title
@@ -25,6 +28,25 @@ defmodule Operately.Search.Text do
   end
 
   def normalize_query(_), do: ""
+
+  @doc """
+  Returns whether a query is meaningful and bounded for PostgreSQL text search.
+  """
+  def searchable_query?(query), do: match?({:ok, _query}, prepare_query(query))
+
+  @doc """
+  Validates and normalizes a query before it is sent to PostgreSQL.
+  """
+  def prepare_query(query) when is_binary(query) do
+    cond do
+      byte_size(query) > @max_query_bytes -> :error
+      not String.valid?(query) -> :error
+      :binary.match(query, <<0>>) != :nomatch -> :error
+      true -> prepare_valid_query(query)
+    end
+  end
+
+  def prepare_query(_), do: :error
 
   @doc """
   Builds the PostgreSQL tsquery used for resource-hub full-text matching.
@@ -50,6 +72,18 @@ defmodule Operately.Search.Text do
   end
 
   def search_tsquery(_), do: {:websearch, ""}
+
+  defp prepare_valid_query(query) do
+    normalized_query = normalize_query(query)
+    query_length = String.length(normalized_query)
+    searchable_length = normalized_query |> normalize_title() |> String.length()
+
+    if searchable_length >= @min_query_length and query_length <= @max_query_length do
+      {:ok, normalized_query}
+    else
+      :error
+    end
+  end
 
   defp websearch_syntax?(query) do
     String.contains?(query, "\"") or Regex.match?(@websearch_or, query) or Regex.match?(@websearch_exclusion, query)

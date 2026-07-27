@@ -19,25 +19,28 @@ defmodule Operately.Search.CompanyQuery do
   @limit 30
 
   def search(%Person{} = person, query) do
-    normalized_query = Text.normalize_query(query)
-
-    if person.suspended_at || String.length(Text.normalize_title(normalized_query)) < 2 do
-      []
+    with nil <- person.suspended_at,
+         {:ok, normalized_query} <- Text.prepare_query(query) do
+      search_company(person, normalized_query)
     else
-      person.company_id
-      |> candidate_query(person.id, normalized_query)
-      |> Repo.all()
-      |> ResultBuilder.build()
+      _ -> []
     end
+  end
+
+  defp search_company(person, normalized_query) do
+    person.company_id
+    |> candidate_query(person.id, normalized_query)
+    |> Repo.all()
+    |> ResultBuilder.build()
   end
 
   defp candidate_query(company_id, person_id, query) do
     normalized_title = Text.normalize_title(query)
     title_prefix = title_prefix_pattern(normalized_title)
     {use_prefix?, tsquery_expr, websearch_expr} = tsquery_args(query)
-    eligible_items = ResourceHubItems.query(company_id)
-    visible_nodes = ResourceHubItems.visible_nodes_query(company_id)
     accessible_contexts = accessible_contexts_query(person_id)
+    eligible_items = ResourceHubItems.query(company_id, accessible_contexts)
+    visible_nodes = ResourceHubItems.visible_nodes_query(company_id, accessible_contexts)
     visible_nodes_cte = ResourceHubItems.visible_nodes_cte()
     snippet_options = "StartSel=#{ResultBuilder.snippet_start()}, StopSel=#{ResultBuilder.snippet_stop()}, MaxFragments=1, MinWords=8, MaxWords=22, ShortWord=2"
 
@@ -47,8 +50,6 @@ defmodule Operately.Search.CompanyQuery do
       on: item.source_id == entry.source_id and item.source_type == entry.source_type,
       join: visible_node in ^visible_nodes_cte,
       on: visible_node.node_id == item.node_id,
-      join: accessible_context in subquery(accessible_contexts),
-      on: accessible_context.id == entry.access_context_id,
       where: entry.company_id == ^company_id,
       where: entry.company_id == item.company_id,
       where: entry.resource_hub_id == item.resource_hub_id,
@@ -82,25 +83,15 @@ defmodule Operately.Search.CompanyQuery do
             ^tsquery_expr,
             ^websearch_expr
           ),
-        title_rank:
+        body_snippet:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            "CASE WHEN ? LIKE ? ESCAPE '!' OR to_tsvector('public.operately'::regconfig, coalesce(?, '')) @@ (CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END) THEN NULL ELSE ts_headline('public.operately'::regconfig, coalesce(?, ''), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END, ?) END",
+            entry.normalized_title,
+            ^title_prefix,
             entry.title,
             ^use_prefix?,
             ^tsquery_expr,
-            ^websearch_expr
-          ),
-        body_rank:
-          fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            entry.body,
-            ^use_prefix?,
-            ^tsquery_expr,
-            ^websearch_expr
-          ),
-        body_snippet:
-          fragment(
-            "ts_headline('public.operately'::regconfig, coalesce(?, ''), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END, ?)",
+            ^websearch_expr,
             entry.body,
             ^use_prefix?,
             ^tsquery_expr,
@@ -113,16 +104,16 @@ defmodule Operately.Search.CompanyQuery do
         desc: fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
         desc:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            entry.title,
+            "ts_rank_cd(ARRAY[0.0,0.0,0.0,1.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            field(entry, :search_vector),
             ^use_prefix?,
             ^tsquery_expr,
             ^websearch_expr
           ),
         desc:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            entry.body,
+            "ts_rank_cd(ARRAY[0.0,0.0,1.0,0.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            field(entry, :search_vector),
             ^use_prefix?,
             ^tsquery_expr,
             ^websearch_expr

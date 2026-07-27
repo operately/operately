@@ -16,15 +16,15 @@ defmodule Operately.Search.ResourceHubQuery do
   @limit 30
 
   def search(%ResourceHub{} = hub, query) do
-    normalized_query = Text.normalize_query(query)
+    case Text.prepare_query(query) do
+      {:ok, normalized_query} ->
+        hub.id
+        |> candidate_query(normalized_query)
+        |> Repo.all()
+        |> load_nodes()
 
-    if String.length(Text.normalize_title(normalized_query)) < 2 do
-      []
-    else
-      hub.id
-      |> candidate_query(normalized_query)
-      |> Repo.all()
-      |> load_nodes()
+      :error ->
+        []
     end
   end
 
@@ -55,16 +55,16 @@ defmodule Operately.Search.ResourceHubQuery do
         desc: fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
         desc:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            entry.title,
+            "ts_rank_cd(ARRAY[0.0,0.0,0.0,1.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            field(entry, :search_vector),
             ^use_prefix?,
             ^tsquery_expr,
             ^websearch_expr
           ),
         desc:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            entry.body,
+            "ts_rank_cd(ARRAY[0.0,0.0,1.0,0.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            field(entry, :search_vector),
             ^use_prefix?,
             ^tsquery_expr,
             ^websearch_expr

@@ -20,10 +20,13 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
   Returns current folders, published documents, files, and links for a company.
 
   Each row includes the node ID, current owner name, and authoritative company,
-  access-context, hub, and scope IDs used to validate its search entry.
+  access-context, hub, and scope IDs used to validate its search entry. The
+  two-argument form restricts work to the supplied accessible-context query.
   """
-  def query(company_id) do
-    hubs = eligible_hubs_query(company_id)
+  def query(company_id), do: query(company_id, nil)
+
+  def query(company_id, accessible_contexts) do
+    hubs = eligible_hubs_query(company_id, accessible_contexts)
 
     folder_query =
       from(folder in Folder,
@@ -116,10 +119,13 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
   Returns non-deleted nodes reachable from a current company-owned hub root.
 
   Descendants are included only while every folder in their path still exists and
-  is not deleted.
+  is not deleted. The two-argument form starts recursion only from hubs in the
+  supplied accessible-context query.
   """
-  def visible_nodes_query(company_id) do
-    hubs = eligible_hubs_query(company_id)
+  def visible_nodes_query(company_id), do: visible_nodes_query(company_id, nil)
+
+  def visible_nodes_query(company_id, accessible_contexts) do
+    hubs = eligible_hubs_query(company_id, accessible_contexts)
 
     root_nodes =
       from(node in Node,
@@ -141,7 +147,7 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
     union_all(root_nodes, ^descendant_nodes)
   end
 
-  defp eligible_hubs_query(company_id) do
+  defp eligible_hubs_query(company_id, accessible_contexts) do
     space_hubs =
       from(hub in ResourceHub,
         join: space in assoc(hub, :space),
@@ -190,8 +196,21 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
         }
       )
 
-    space_hubs
-    |> union_all(^project_hubs)
-    |> union_all(^goal_hubs)
+    hubs =
+      space_hubs
+      |> union_all(^project_hubs)
+      |> union_all(^goal_hubs)
+
+    restrict_to_accessible_contexts(hubs, accessible_contexts)
+  end
+
+  defp restrict_to_accessible_contexts(hubs, nil), do: hubs
+
+  defp restrict_to_accessible_contexts(hubs, accessible_contexts) do
+    from(hub in subquery(hubs),
+      join: context in subquery(accessible_contexts),
+      on: context.id == hub.access_context_id,
+      select: hub
+    )
   end
 end

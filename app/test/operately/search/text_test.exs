@@ -3,6 +3,34 @@ defmodule Operately.Search.TextTest do
 
   alias Operately.Search.Text
 
+  describe "searchable_query?/1" do
+    test "accepts queries at the character and byte boundaries" do
+      maximum_byte_query = String.duplicate("😀", 500)
+
+      assert byte_size(maximum_byte_query) == 2_000
+      assert Text.searchable_query?("customer research")
+      assert Text.searchable_query?(String.duplicate("a", 500))
+      assert Text.searchable_query?(maximum_byte_query)
+      assert Text.prepare_query("  customer \n research  ") == {:ok, "customer research"}
+    end
+
+    test "rejects short, oversized, invalid, and non-string queries" do
+      oversized_bytes = String.duplicate("🧑🏽‍💻", 134)
+
+      assert String.length(oversized_bytes) < 500
+      assert byte_size(oversized_bytes) > 2_000
+
+      refute Text.searchable_query?("a")
+      refute Text.searchable_query?(String.duplicate("a", 501))
+      refute Text.searchable_query?(String.duplicate("é", 501))
+      refute Text.searchable_query?(oversized_bytes)
+      refute Text.searchable_query?(<<0, ?x>>)
+      refute Text.searchable_query?(<<255, 255>>)
+      refute Text.searchable_query?("\u0301\u0301")
+      refute Text.searchable_query?(nil)
+    end
+  end
+
   describe "search_tsquery/1" do
     test "builds a prefix tsquery for the last typed token" do
       assert Text.search_tsquery("just a t") == {:prefix, "'just' & 'a' & 't':*"}

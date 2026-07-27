@@ -65,6 +65,22 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert Enum.take(result_ids, 4) == [ctx.exact.id, ctx.prefix.id, ctx.title_term.id, ctx.body_match.id]
   end
 
+  test "keeps title matches ahead of bodies with many repeated matches", ctx do
+    repeated_body = Enum.join(List.duplicate("signal", 20), " ")
+
+    ctx =
+      ctx
+      |> Factory.add_document(:title_match, :hub, name: "Roadmap signal", content: RichText.rich_text("Unrelated"))
+      |> Factory.add_document(:body_match, :hub, name: "Evidence archive", content: RichText.rich_text(repeated_body))
+
+    sync(:document, ctx.title_match.id)
+    sync(:document, ctx.body_match.id)
+
+    assert [title_match, body_match] = Search.search_resource_hub(ctx.hub, "signal")
+    assert title_match.document.id == ctx.title_match.id
+    assert body_match.document.id == ctx.body_match.id
+  end
+
   test "normalizes case and accents and accepts web-search phrases", ctx do
     ctx =
       Factory.add_document(ctx, :accented, :hub,
@@ -260,6 +276,17 @@ defmodule Operately.Search.ResourceHubQueryTest do
 
   test "returns no results for short queries", ctx do
     assert [] = Search.search_resource_hub(ctx.hub, "a")
+  end
+
+  test "returns no results for oversized queries", ctx do
+    oversized_query = Enum.map_join(1..20_000, " ", &"query#{&1}")
+
+    assert [] = Search.search_resource_hub(ctx.hub, oversized_query)
+  end
+
+  test "returns no results for PostgreSQL-invalid query text", ctx do
+    assert [] = Search.search_resource_hub(ctx.hub, <<0, ?x>>)
+    assert [] = Search.search_resource_hub(ctx.hub, <<255, 255>>)
   end
 
   defp rename_resource_hub_items(ctx) do

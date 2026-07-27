@@ -75,4 +75,33 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItemsTest do
     refute ctx.parent.id in visible_ids
     refute ctx.document.id in visible_ids
   end
+
+  test "items and visible nodes include only hubs in the accessible-context query", ctx do
+    space_context = Operately.Access.get_context!(group_id: ctx.space.id)
+
+    accessible_contexts =
+      from(context in Operately.Access.Context,
+        where: context.id == ^space_context.id,
+        select: %{id: context.id}
+      )
+
+    visible_nodes = ResourceHubItems.visible_nodes_query(ctx.company.id, accessible_contexts)
+    accessible_item_ids = ResourceHubItems.query(ctx.company.id, accessible_contexts) |> Repo.all() |> Enum.map(& &1.source_id)
+
+    visible_node_ids =
+      from(node in "visible_company_search_nodes", select: type(node.node_id, :binary_id))
+      |> recursive_ctes(true)
+      |> with_cte("visible_company_search_nodes", as: ^visible_nodes)
+      |> Repo.all()
+
+    assert ctx.parent.id in accessible_item_ids
+    assert ctx.document.id in accessible_item_ids
+    refute ctx.resource_file.id in accessible_item_ids
+    refute ctx.link.id in accessible_item_ids
+
+    assert ctx.parent.node_id in visible_node_ids
+    assert ctx.document.node_id in visible_node_ids
+    refute ctx.resource_file.node_id in visible_node_ids
+    refute ctx.link.node_id in visible_node_ids
+  end
 end
