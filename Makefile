@@ -360,25 +360,53 @@ test.icons.check:
 
 DOCKER_IMAGE_TAG = $(shell git rev-parse --short HEAD)
 
+# Platforms the official production image is published for. The development
+# image already ships both, so keep production in sync.
+DOCKER_PLATFORMS ?= linux/amd64,linux/arm64
+DOCKER_IMAGE_TAGS = -t operately/operately:latest -t operately/operately:$(DOCKER_IMAGE_TAG)
+
+# Registry-backed build cache so multi-platform builds stay fast across CI runs.
+DOCKER_CACHE_REF = operately/operately:buildcache
+
 inject.rel.version:
 	sed -i -E 's/dev-version/$(shell date +%Y-%m-%d)-$(DOCKER_IMAGE_TAG)/g' app/lib/operately.ex
 
-docker.build:
-	$(MAKE) inject.rel.version
-	docker build -f Dockerfile.prod -t operately/operately:latest -t operately/operately:$(DOCKER_IMAGE_TAG) .
+# Create (once) and select a docker-container builder capable of producing
+# multi-platform images. Safe to run repeatedly.
+docker.buildx.setup:
+	docker buildx inspect operately-builder > /dev/null 2>&1 || \
+		docker buildx create --name operately-builder --driver docker-container
+	docker buildx use operately-builder
+	docker buildx inspect --bootstrap
 
-docker.push:
-	docker push operately/operately:$(DOCKER_IMAGE_TAG)
-	docker push operately/operately:latest
+# Build the multi-platform production image without pushing it. This validates
+# that the image builds cleanly for every supported architecture.
+docker.build: docker.buildx.setup
+	$(MAKE) inject.rel.version
+	docker buildx build --platform $(DOCKER_PLATFORMS) -f Dockerfile.prod \
+		--cache-from type=registry,ref=$(DOCKER_CACHE_REF) \
+		$(DOCKER_IMAGE_TAGS) .
+
+# Build and push the multi-platform production image. buildx builds all
+# platforms and publishes them under a single multi-arch manifest.
+docker.push: docker.buildx.setup
+	$(MAKE) inject.rel.version
+	docker buildx build --platform $(DOCKER_PLATFORMS) -f Dockerfile.prod \
+		--cache-from type=registry,ref=$(DOCKER_CACHE_REF) \
+		--cache-to type=registry,ref=$(DOCKER_CACHE_REF),mode=max \
+		$(DOCKER_IMAGE_TAGS) --push .
 
 #
 # Release related tasks
 #
 
+# Re-tag the already published image for a release. Using imagetools preserves
+# the full multi-arch manifest instead of collapsing it to a single platform,
+# which `docker pull`/`tag`/`push` would do.
 release.tag.docker:
-	docker pull operately/operately:$(DOCKER_IMAGE_TAG)
-	docker tag operately/operately:$(DOCKER_IMAGE_TAG) operately/operately:$(VERSION)
-	docker push operately/operately:$(VERSION)
+	docker buildx imagetools create \
+		-t operately/operately:$(VERSION) \
+		operately/operately:$(DOCKER_IMAGE_TAG)
 
 release.build.singlehost:
 	elixir app/rel/single-host/build.exs $(VERSION)

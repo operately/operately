@@ -178,9 +178,7 @@ blocks:
       jobs:
         - name: "Docker Release"
           commands:
-            - docker pull operately/operately:latest
-            - make docker.build
-            - 'if [[ "$SEMAPHORE_GIT_BRANCH" = "main" && "$SEMAPHORE_GIT_REF_TYPE" = "branch" ]]; then make docker.push; else echo "Skipping Docker push"; fi'
+            - 'if [[ "$SEMAPHORE_GIT_BRANCH" = "main" && "$SEMAPHORE_GIT_REF_TYPE" = "branch" ]]; then make docker.push; else make docker.build; fi'
 
 after_pipeline:
   task:
