@@ -15,7 +15,7 @@ The feature keeps the existing global search interaction and makes it more capab
 
 The backend uses PostgreSQL full-text search with a dedicated `search_entries` projection and GIN indexes. Redis, Elasticsearch, OpenSearch, and other external search services are not required for the first implementation.
 
-Search development can begin on the repository's current PostgreSQL 14.5 environment because it already provides every full-text-search primitive used by this design. Before production rollout, the team must select and deploy either the latest patched PostgreSQL 14 release or the latest patched PostgreSQL 18 release.
+Search development can begin on the repository's current PostgreSQL 14.5 environment because it already provides every full-text-search primitive used by this design. Production has been updated to PostgreSQL 14.23 as a minor in-place patch.
 
 ---
 
@@ -75,16 +75,16 @@ The resource-hub problem is the same retrieval problem with an additional scope 
 
 ## Important Decisions
 
-### 1. Search development does not wait for the database decision
+### 1. Search development does not wait for the database update
 
 The repository currently pins PostgreSQL 14.5 in:
 
 - `docker-compose.yml`
 - `app/rel/single-host/templates/docker-compose.yml.eex`
 
-PostgreSQL 14.5 already supports the complete search design: stored generated `tsvector` columns, GIN indexes, `websearch_to_tsquery`, `ts_rank_cd`, `pg_trgm`, `unaccent`, and custom text-search configurations. Phases 1 through 3 can therefore start before the team chooses the production database version.
+PostgreSQL 14.5 already supports the complete search design: stored generated `tsvector` columns, GIN indexes, `websearch_to_tsquery`, `ts_rank_cd`, `pg_trgm`, `unaccent`, and custom text-search configurations. Phases 1 through 3 can therefore proceed on the development database.
 
-Keep search migrations and queries compatible with PostgreSQL 14 and newer; the feature must not adopt a PostgreSQL 18-only capability while the decision remains open. Development and preliminary search testing may run on 14.5, but 14.5 is not an acceptable production baseline or the source of final performance evidence. Later PostgreSQL 14 patches contain fixes relevant to `websearch_to_tsquery` and concurrent GIN updates.
+Keep search migrations and queries compatible with PostgreSQL 14 and newer. Development and preliminary search testing may run on 14.5, but 14.5 is not an acceptable production baseline or the source of final performance evidence. Later PostgreSQL 14 patches contain fixes relevant to `websearch_to_tsquery` and concurrent GIN updates.
 
 References:
 
@@ -93,27 +93,18 @@ References:
 - [PostgreSQL 14.13 release notes](https://www.postgresql.org/docs/release/14.13/)
 - [PostgreSQL versioning policy](https://www.postgresql.org/support/versioning/)
 
-The selected patched database version is the final infrastructure prerequisite before production backfill and indexed reads, not a prerequisite for implementing the feature.
+The patched production database (PostgreSQL 14.23) is the baseline for production backfill and indexed reads, not a prerequisite for implementing the feature.
 
-### 2. Choose the production database baseline before rollout
+### 2. Production database baseline is PostgreSQL 14.23
 
-At the time of writing, the choices are PostgreSQL 14.23 and PostgreSQL 18.4. If newer patch releases exist when this phase begins, use and pin the latest tested patch in the selected major series.
+Production was updated from PostgreSQL 14.5 to PostgreSQL 14.23 as a minor in-place patch. The update keeps the existing PostgreSQL 14 volume layout and `PGDATA` and does not require dump/restore.
 
-| Option | Pros | Cons |
-| --- | --- | --- |
-| Update 14.5 -> latest 14.x | Minor update; same data format, volume, and `PGDATA`; no dump/restore; short downtime and lower operational risk; fully supports this search design | PostgreSQL 14 support ends November 12, 2026; a major upgrade is still required soon; search and application validation will be repeated on the future major version |
-| Upgrade 14.5 -> latest 18.x | Supported through November 2030; establishes the long-term production baseline once; avoids migrating the larger search projection later | Major data migration; new Docker volume layout; longer downtime; more upgrade, rollback, and self-hosted tooling; higher release risk |
-
-The minor update keeps the existing PostgreSQL 14 volume layout and does not require dump/restore, although it still requires a verified backup or snapshot, a clean database restart, review of intervening minor-release notes, and application smoke tests.
-
-The major upgrade requires `pg_upgrade`, dump/restore, or logical replication. PostgreSQL 18 also changes the official Docker volume mount to `/var/lib/postgresql` and uses `/var/lib/postgresql/18/docker` as its version-specific `PGDATA`. Follow [0016 — Self-Hosted PostgreSQL 18 Upgrade](0016-self-hosted-postgresql-18-upgrade.md) for the bridge, fallback, backup, restore, and rollback requirements.
+The update path used a verified backup or snapshot, review of intervening minor-release notes, a clean database restart, and application smoke tests.
 
 References:
 
 - [PostgreSQL 14.23 release notes](https://www.postgresql.org/docs/release/14.23/)
-- [PostgreSQL 18.4 release notes](https://www.postgresql.org/docs/release/18.4/)
-- [PostgreSQL major-version upgrade documentation](https://www.postgresql.org/docs/18/upgrading.html)
-- [Official PostgreSQL Docker image `PGDATA` documentation](https://github.com/docker-library/docs/blob/master/postgres/README.md#pgdata)
+- [PostgreSQL versioning policy](https://www.postgresql.org/support/versioning/)
 
 ### 3. PostgreSQL is the search engine for the first implementation
 
@@ -615,9 +606,10 @@ Implement this phase as three ordered PRs so indexing, querying, and the complet
 
 #### PR 2.3b — `chore: Add search to resource hubs`
 
-- [x] Add the scoped inline search field before the resource-hub sort/filter control.
+- [x] Add the scoped inline search field before the sort/filter control in standalone resource hubs and the project and goal Docs & Files tabs.
 - [x] Return API-shaped resource-hub nodes directly and reuse the ordinary row and canonical path handling.
 - [x] Debounce searches, replace normal nodes with ranked hits, and restore normal nodes when cleared.
+- [x] Preserve relevance order and disable the shared sort control while search results are active.
 - [x] Keep `Cmd/Ctrl + K` owned exclusively by company global search.
 - [x] Add focused Storybook and feature coverage for scoped results, navigation, loading, empty, error, and clearing.
 
@@ -639,19 +631,18 @@ This phase closes #4682 as scoped here: native documents are searchable by title
 
 This phase closes #1421.
 
-Phases 1 through 3 may begin immediately on the current development database. Preliminary results on PostgreSQL 14.5 do not replace final verification on the selected patched production baseline.
+Phases 1 through 3 may begin immediately on the current development database. Preliminary results on PostgreSQL 14.5 do not replace final verification on the PostgreSQL 14.23 production baseline.
 
-### Phase 4 — Select and update the production database
+### Phase 4 — Update the production database to PostgreSQL 14.23
 
-- [ ] Choose the latest patched PostgreSQL 14 or PostgreSQL 18 release and record the decision and tested image version.
-- [ ] Validate the final permission-aware query with `EXPLAIN (ANALYZE, BUFFERS)` and measure relevance and performance against a production-like corpus on the selected version.
-- [ ] If PostgreSQL 14 is selected, update the image in place using the existing volume and `PGDATA`, with a verified backup or snapshot, intervening-release checks, a clean restart, and smoke tests.
-- [ ] If PostgreSQL 18 is selected, complete the bridge, dump/restore, distinct-volume, verification, and rollback work specified in 0016.
-- [ ] Verify Ecto, Postgrex, Oban, extensions, migrations, authentication, export/import, and the complete application test suite on the selected version.
+- [x] Update production from PostgreSQL 14.5 to PostgreSQL 14.23 as a minor in-place patch on the existing volume and `PGDATA`.
+- [x] Complete the update with a verified backup or snapshot, intervening-release checks, a clean restart, and smoke tests.
+- [x] Verify Ecto, Postgrex, Oban, extensions, migrations, authentication, export/import, and the complete application test suite on PostgreSQL 14.23.
+- [ ] Validate the final permission-aware query with `EXPLAIN (ANALYZE, BUFFERS)` and measure relevance and performance against a production-like corpus on PostgreSQL 14.23.
 - [ ] Verify clean installation and production-like existing-data upgrade paths for development and single-host distributions.
-- [ ] Update installation, upgrade, rollback, and release documentation for the selected path.
+- [ ] Update installation, upgrade, rollback, and release documentation for the PostgreSQL 14.23 baseline.
 
-This is the final infrastructure prerequisite. Search implementation is not blocked by this phase, but no production backfill or indexed reads begin until it is complete.
+The production database update is complete. Search implementation is not blocked by the remaining verification items, but no production backfill or indexed reads begin until those items and Phase 5 readiness checks are complete.
 
 ### Phase 5 — Backfill, rollout, and old-query retirement
 
@@ -667,16 +658,14 @@ This is the final infrastructure prerequisite. Search implementation is not bloc
 
 ## Testing
 
-### Database compatibility and selected update
+### Database compatibility and PostgreSQL 14.23 update
 
-- search schema, extension, generated-vector, GIN, trigram, query, and ranking tests on PostgreSQL 14 and PostgreSQL 18 before the final selection
+- search schema, extension, generated-vector, GIN, trigram, query, and ranking tests on PostgreSQL 14
 - preliminary development compatibility on PostgreSQL 14.5, without treating its correctness or performance results as release evidence
-- final correctness, query-plan, and performance acceptance on the selected latest patched release
-- PostgreSQL 14 path: verified backup or snapshot, same-volume minor update, clean restart, version verification, and rollback rehearsal
-- PostgreSQL 14 path: review and apply any relevant actions from intervening 14.x release notes
-- PostgreSQL 18 path: PostgreSQL 14 fixture volume -> backup -> distinct PostgreSQL 18 volume restore -> application start
-- PostgreSQL 18 path: rollback to the retained PostgreSQL 14 volume and failure on incompatible or unmigrated volume layouts
-- migrations from an existing production-like schema on the selected version
+- final correctness, query-plan, and performance acceptance on PostgreSQL 14.23
+- verified backup or snapshot, same-volume minor update from 14.5 to 14.23, clean restart, version verification, and rollback rehearsal
+- review and apply any relevant actions from intervening 14.x release notes
+- migrations from an existing production-like schema on PostgreSQL 14.23
 - application and Oban read/write smoke tests
 - company export/import round trip
 
@@ -732,7 +721,7 @@ Record:
 - time between canonical update and indexed state
 - GIN index size and `search_entries` table size
 
-Initial targets on the selected production database version and a production-like corpus of at least one million search entries:
+Initial targets on PostgreSQL 14.23 and a production-like corpus of at least one million search entries:
 
 - warm-cache database search p95 <= 200 ms for the first 20 results
 - API p95 <= 300 ms excluding client debounce and network variability
@@ -749,16 +738,15 @@ If these targets are not met, inspect query plans, scope indexes, GIN behavior, 
 
 Use a controlled indexed-search rollout:
 
-1. Search implementation and compatibility work is completed while the production database decision remains open.
-2. The team selects the latest patched PostgreSQL 14 or PostgreSQL 18 release.
-3. The selected database update is deployed and verified independently.
-4. Search schema and queued refresh writes deploy with indexed reads disabled.
-5. Existing content is backfilled.
-6. Reconciliation reports no unexplained gaps.
-7. Indexed reads are enabled for internal/test companies.
-8. Search quality, permission behavior, and database load are reviewed on the selected database version.
-9. Indexed reads expand to all companies.
-10. The old query path is removed in a later cleanup after the rollback window.
+1. Production is updated to PostgreSQL 14.23 and verified independently.
+2. Search implementation and compatibility work continue on the PostgreSQL 14 baseline.
+3. Search schema and queued refresh writes deploy with indexed reads disabled.
+4. Existing content is backfilled.
+5. Reconciliation reports no unexplained gaps.
+6. Indexed reads are enabled for internal/test companies.
+7. Search quality, permission behavior, and database load are reviewed on PostgreSQL 14.23.
+8. Indexed reads expand to all companies.
+9. The old query path is removed in a later cleanup after the rollback window.
 
 If indexed reads fail during rollout, disable the indexed path and return to the existing name-based search while continuing or repairing index writes. Never bypass permission filtering as a fallback.
 
@@ -766,9 +754,9 @@ If indexed reads fail during rollout, disable the indexed path and return to the
 
 ## Definition of Done
 
-- The team has selected and deployed a fully patched PostgreSQL 14 or PostgreSQL 18 production baseline; PostgreSQL 14.5 is no longer used in production.
-- The selected database update and rollback paths are documented and tested for clean and existing installations.
-- Search migrations and queries remain compatible with PostgreSQL 14 and do not depend on PostgreSQL 18-only features.
+- Production runs on PostgreSQL 14.23; PostgreSQL 14.5 is no longer used in production.
+- The PostgreSQL 14.23 update and rollback paths are documented and tested for clean and existing installations.
+- Search migrations and queries remain compatible with PostgreSQL 14.
 - Both referenced issues are covered by automated acceptance tests.
 - Users can find supported resources by title/name and rich-text body.
 - Closed, completed, and archived work is returned with clear status labels.

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -54,6 +54,7 @@ jest.mock("../icons", () => {
     IconPlayerPause: HiddenIcon,
     IconProject: HiddenIcon,
     IconRotateDot: HiddenIcon,
+    IconSearch: HiddenIcon,
     IconSlash: HiddenIcon,
     IconTrash: HiddenIcon,
     IconUpload: HiddenIcon,
@@ -88,10 +89,12 @@ function ProjectPageHarness({
   includeDocsAndFiles = false,
   includeQuicktimeFile = false,
   initialEntry = "/projects/project-1",
+  search,
 }: {
   includeDocsAndFiles?: boolean;
   includeQuicktimeFile?: boolean;
   initialEntry?: string;
+  search?: NonNullable<NonNullable<ProjectPage.Props["docsAndFiles"]>["search"]>["search"];
 }) {
   const subscriptions = useMockSubscriptions({ entityType: "project" });
   const [resourceHub] = React.useState(() =>
@@ -217,6 +220,13 @@ function ProjectPageHarness({
         addFileWidgetProps: sharedProps.addFileWidgetProps,
         nodesListProps: sharedProps.nodesListProps,
         addFolderModalProps: sharedProps.addFolderModalProps,
+        search: search
+          ? {
+              search,
+              placeholder: "Search this resource hub…",
+              testId: "resource-hub-search",
+            }
+          : undefined,
       }
     : undefined;
 
@@ -308,6 +318,40 @@ describe("ProjectPage", () => {
     expect(screen.getByRole("button", { name: "Sort by Name" })).toBeInTheDocument();
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
     expect(screen.getByText("Roadmap Screenshot")).toBeInTheDocument();
+  });
+
+  test("replaces docs and files with debounced resource hub search results and restores them when cleared", async () => {
+    const matchingNode = createMockDocumentNode({
+      id: "matching-node",
+      name: "Approval workflow",
+      document: {
+        id: "matching-document",
+        resourceHubId: "hub-1",
+        parentFolderId: undefined,
+      },
+    });
+    const search = jest.fn().mockResolvedValue([matchingNode]);
+
+    render(
+      <ProjectPageHarness includeDocsAndFiles initialEntry="/projects/project-1?tab=docs-and-files" search={search} />,
+    );
+
+    const searchInput = screen.getByRole("searchbox", { name: "Search this resource hub…" });
+    fireEvent.change(searchInput, { target: { value: "approval" } });
+
+    expect(search).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(search).toHaveBeenCalledWith({ query: "approval" });
+    });
+
+    expect(await screen.findByText("Approval workflow")).toBeInTheDocument();
+    expect(screen.queryByText("Quarterly Plan")).not.toBeInTheDocument();
+
+    fireEvent.change(searchInput, { target: { value: "" } });
+
+    expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
+    expect(screen.queryByText("Approval workflow")).not.toBeInTheDocument();
   });
 
   test("renders quicktime videos as MOV files in the docs and files tab", () => {

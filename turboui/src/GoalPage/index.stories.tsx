@@ -13,6 +13,7 @@ import {
   createMockResourceHub,
   useMockSharedListPageProps,
 } from "../ResourceHubPage/mockData";
+import { getNodeName } from "../ResourceHub/selectors";
 import { genPeople, genPerson } from "../utils/storybook/genPeople";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
@@ -652,6 +653,12 @@ function useMockGoalDocsAndFiles(
     addFileWidgetProps: sharedListProps.addFileWidgetProps,
     nodesListProps: sharedListProps.nodesListProps,
     addFolderModalProps: sharedListProps.addFolderModalProps,
+    search: {
+      search: async ({ query }) =>
+        nodes.filter((node) => getNodeName(node).toLowerCase().includes(query.toLowerCase())),
+      placeholder: "Search this resource hub…",
+      testId: "resource-hub-search",
+    },
   };
 }
 

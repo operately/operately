@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -24,6 +24,7 @@ jest.mock("../icons", () => {
     IconMessage: HiddenIcon,
     IconMessages: HiddenIcon,
     IconRotateDot: HiddenIcon,
+    IconSearch: HiddenIcon,
     IconSlash: HiddenIcon,
     IconTrash: HiddenIcon,
     IconUpload: HiddenIcon,
@@ -76,9 +77,11 @@ import {
 function GoalPageHarness({
   includeDocsAndFiles = false,
   initialEntry = "/goals/goal-1",
+  search,
 }: {
   includeDocsAndFiles?: boolean;
   initialEntry?: string;
+  search?: NonNullable<NonNullable<GoalPage.Props["docsAndFiles"]>["search"]>["search"];
 }) {
   const permissions = generateGoalPermissions(true);
   const [resourceHub] = React.useState(() =>
@@ -185,6 +188,13 @@ function GoalPageHarness({
         addFileWidgetProps: sharedProps.addFileWidgetProps,
         nodesListProps: sharedProps.nodesListProps,
         addFolderModalProps: sharedProps.addFolderModalProps,
+        search: search
+          ? {
+              search,
+              placeholder: "Search this resource hub…",
+              testId: "resource-hub-search",
+            }
+          : undefined,
       }
     : undefined;
 
@@ -265,6 +275,22 @@ describe("GoalPage", () => {
     expect(screen.getByRole("button", { name: "Sort by Name" })).toBeInTheDocument();
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
     expect(screen.getByText("Roadmap Screenshot")).toBeInTheDocument();
+  });
+
+  test("renders resource hub search immediately before sorting in the docs and files tab", () => {
+    render(
+      <GoalPageHarness includeDocsAndFiles initialEntry="/goals/goal-1?tab=docs-and-files" search={async () => []} />,
+    );
+
+    const searchInput = screen.getByRole("searchbox", { name: "Search this resource hub…" });
+    const sortControl = screen.getByRole("button", { name: "Sort by Name" });
+
+    expect(searchInput.compareDocumentPosition(sortControl) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(sortControl).toBeEnabled();
+
+    fireEvent.change(searchInput, { target: { value: "plan" } });
+
+    expect(screen.getByRole("button", { name: "Sort by Name" })).toBeDisabled();
   });
 
   test("falls back to the overview when the docs and files tab is requested without hub data", () => {
