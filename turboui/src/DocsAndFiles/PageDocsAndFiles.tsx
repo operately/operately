@@ -14,6 +14,7 @@ import {
   type ResourceHub,
   type ResourceHubNode,
   useNewFileModalsContext,
+  useResourceHubSearch,
 } from "../ResourceHub";
 import { DocsAndFiles, DocsAndFilesBody, DocsAndFilesDraftPrompt } from ".";
 import {
@@ -31,6 +32,7 @@ import {
   isNodeVideoFile,
 } from "../ResourceHub/selectors";
 import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
+import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
 import { nodeDisplayInsertedAt } from "../utils/drafts";
 import { plurarize } from "../utils/plurarize";
 import { truncate } from "../utils/strings";
@@ -48,6 +50,7 @@ export interface PageDocsAndFiles {
   addFileWidgetProps: Pick<AddFileWidgetProps, "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload">;
   nodesListProps: SharedListPageProps["nodesListProps"];
   addFolderModalProps: AddFolderModalProps;
+  search?: ResourceHubSearchProps;
 }
 
 export function PageDocsAndFilesTab({ docsAndFiles }: { docsAndFiles: PageDocsAndFiles }) {
@@ -60,9 +63,11 @@ export function PageDocsAndFilesTab({ docsAndFiles }: { docsAndFiles: PageDocsAn
 
 function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAndFiles }) {
   const { filesSelected, navigateToNewDocument, navigateToNewLink, selectFiles, toggleShowAddFolder } = useNewFileModalsContext();
+  const searchState = useResourceHubSearch(docsAndFiles.search);
+  const displayedNodes = searchState.isActive ? searchState.results : docsAndFiles.nodesListProps.nodes;
   const items = React.useMemo(
-    () => docsAndFiles.nodesListProps.nodes.flatMap((node) => mapNodeToItem(node, docsAndFiles)),
-    [docsAndFiles],
+    () => displayedNodes.flatMap((node) => mapNodeToItem(node, docsAndFiles)),
+    [displayedNodes, docsAndFiles],
   );
   const draftPrompt = React.useMemo(() => buildDraftPrompt(docsAndFiles), [docsAndFiles]);
   const [sortBy, setSortBy] = React.useState<DocsAndFiles.SortBy>("name");
@@ -94,6 +99,14 @@ function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAn
             hideEmptyState={filesSelected}
             sortBy={sortBy}
             onSortChange={setSortBy}
+            search={
+              docsAndFiles.search
+                ? {
+                    configuration: docsAndFiles.search,
+                    state: searchState,
+                  }
+                : undefined
+            }
           />
           <AddFolderModal {...docsAndFiles.addFolderModalProps} />
         </div>

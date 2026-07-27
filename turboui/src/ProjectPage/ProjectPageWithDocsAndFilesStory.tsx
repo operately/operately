@@ -11,6 +11,7 @@ import {
   createMockResourceHub,
   useMockSharedListPageProps,
 } from "../ResourceHubPage/mockData";
+import { getNodeName } from "../ResourceHub/selectors";
 import { mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { useMockMilestoneOrdering } from "../utils/storybook/milestones";
@@ -360,6 +361,12 @@ function useMockProjectDocsAndFiles(
     addFileWidgetProps: sharedListProps.addFileWidgetProps,
     nodesListProps: sharedListProps.nodesListProps,
     addFolderModalProps: sharedListProps.addFolderModalProps,
+    search: {
+      search: async ({ query }) =>
+        nodes.filter((node) => getNodeName(node).toLowerCase().includes(query.toLowerCase())),
+      placeholder: "Search this resource hub…",
+      testId: "resource-hub-search",
+    },
   };
 }
 

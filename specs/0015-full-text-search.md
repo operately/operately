@@ -615,9 +615,10 @@ Implement this phase as three ordered PRs so indexing, querying, and the complet
 
 #### PR 2.3b — `chore: Add search to resource hubs`
 
-- [x] Add the scoped inline search field before the resource-hub sort/filter control.
+- [x] Add the scoped inline search field before the sort/filter control in standalone resource hubs and the project and goal Docs & Files tabs.
 - [x] Return API-shaped resource-hub nodes directly and reuse the ordinary row and canonical path handling.
 - [x] Debounce searches, replace normal nodes with ranked hits, and restore normal nodes when cleared.
+- [x] Preserve relevance order and disable the shared sort control while search results are active.
 - [x] Keep `Cmd/Ctrl + K` owned exclusively by company global search.
 - [x] Add focused Storybook and feature coverage for scoped results, navigation, loading, empty, error, and clearing.
 

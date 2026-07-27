@@ -1,13 +1,14 @@
 import * as React from "react";
 
 import { DivLink, Link } from "../Link";
-import { Menu, MenuActionItem } from "../Menu";
+import { ResourceHubSearchInput, ResourceHubSearchMessage } from "../ResourceHub";
+import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
+import type { ResourceHubSearchState } from "../ResourceHub/useResourceHubSearch";
+import { SortControl } from "../SortControl";
 import { createTestId } from "../TestableElement";
 import {
   IconAlignJustified,
   IconChartColumn,
-  IconCheck,
-  IconChevronDown,
   IconChevronRight,
   IconFile,
   IconFolderFilled,
@@ -27,7 +28,7 @@ import {
 } from "../ResourceHub/selectors";
 import type { ResourceHubNode } from "../ResourceHub/types";
 import classNames from "../utils/classnames";
-import { DOCS_AND_FILES_SORT_OPTIONS, getRecentPreviewNodes, sortDocsAndFilesItems } from "./sorting";
+import { getRecentPreviewNodes, sortDocsAndFilesItems } from "./sorting";
 import { plurarize } from "../utils/plurarize";
 
 export namespace DocsAndFiles {
@@ -221,39 +222,83 @@ export function DocsAndFilesDraftPrompt({ prompt }: { prompt?: DocsAndFiles.Draf
   );
 }
 
+type DocsAndFilesSearch = {
+  configuration: ResourceHubSearchProps;
+  state: ResourceHubSearchState;
+};
+
 export function DocsAndFilesBody({
   items,
   emptyStateKind = "resourceHub",
   hideEmptyState = false,
   sortBy,
   onSortChange,
+  search,
 }: {
   items: DocsAndFiles.Item[];
   emptyStateKind?: "resourceHub" | "folder";
   hideEmptyState?: boolean;
   sortBy: DocsAndFiles.SortBy;
   onSortChange: (sortBy: DocsAndFiles.SortBy) => void;
+  search?: DocsAndFilesSearch;
 }) {
-  const sortedItems = React.useMemo(() => sortDocsAndFilesItems(items, sortBy), [items, sortBy]);
-  const showEmptyState = sortedItems.length < 1 && !hideEmptyState;
-
-  if (showEmptyState) {
-    return <EmptyState kind={emptyStateKind} />;
-  }
-
-  if (sortedItems.length < 1) {
-    return null;
-  }
+  const displayedItems = React.useMemo(
+    () => (search?.state.isActive ? items : sortDocsAndFilesItems(items, sortBy)),
+    [items, search?.state.isActive, sortBy],
+  );
+  const searchIsActive = search?.state.isActive ?? false;
+  const showToolbar = Boolean(search) || displayedItems.length > 0;
 
   return (
     <>
-      <div className="flex items-center justify-between border-b border-surface-outline py-3">
-        <div className="text-sm font-medium text-content-dimmed">{plurarize(sortedItems.length, "item", "items")}</div>
-        <SortControl sortBy={sortBy} onSortChange={onSortChange} />
-      </div>
-      <DocsAndFilesList items={sortedItems} />
+      {showToolbar && (
+        <div className="flex items-center justify-between gap-3 border-b border-surface-outline py-3">
+          <div className="text-sm font-medium text-content-dimmed">
+            {displayedItems.length > 0 ? plurarize(displayedItems.length, "item", "items") : null}
+          </div>
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
+            {search && <ResourceHubSearchInput search={search.configuration} searchState={search.state} />}
+            <SortControl sortBy={sortBy} onSortChange={onSortChange} disabled={searchIsActive} />
+          </div>
+        </div>
+      )}
+
+      <DocsAndFilesContent
+        items={displayedItems}
+        emptyStateKind={emptyStateKind}
+        hideEmptyState={hideEmptyState}
+        search={search}
+      />
     </>
   );
+}
+
+function DocsAndFilesContent({
+  items,
+  emptyStateKind,
+  hideEmptyState,
+  search,
+}: {
+  items: DocsAndFiles.Item[];
+  emptyStateKind: "resourceHub" | "folder";
+  hideEmptyState: boolean;
+  search?: DocsAndFilesSearch;
+}) {
+  if (search?.state.isActive) {
+    if (search.state.status === "success" && items.length > 0) {
+      return <DocsAndFilesList items={items} />;
+    }
+
+    return <ResourceHubSearchMessage searchState={search.state} />;
+  }
+
+  if (items.length > 0) {
+    return <DocsAndFilesList items={items} />;
+  }
+
+  if (hideEmptyState) return null;
+
+  return <EmptyState kind={emptyStateKind} />;
 }
 
 function DocsAndFilesList({ items }: { items: DocsAndFiles.Item[] }) {
@@ -313,35 +358,6 @@ function EmptyState({ kind }: { kind: "resourceHub" | "folder" }) {
         <div className="mt-1 text-sm text-content-dimmed">{message}</div>
       </div>
     </div>
-  );
-}
-
-function SortControl({
-  sortBy,
-  onSortChange,
-}: {
-  sortBy: DocsAndFiles.SortBy;
-  onSortChange: (sortBy: DocsAndFiles.SortBy) => void;
-}) {
-  const currentOption = DOCS_AND_FILES_SORT_OPTIONS.find((option) => option.value === sortBy);
-  const trigger = (
-    <button className="flex items-center gap-2 rounded-md border border-surface-outline px-3 py-1.5 text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-accent">
-      <span>Sort by {currentOption?.label}</span>
-      <IconChevronDown size={14} />
-    </button>
-  );
-
-  return (
-    <Menu testId="sort-control" size="tiny" customTrigger={trigger}>
-      {DOCS_AND_FILES_SORT_OPTIONS.map((option) => (
-        <MenuActionItem key={option.value} onClick={() => onSortChange(option.value)} testId={`sort-option-${option.value}`}>
-          <div className="flex items-center justify-between w-full">
-            <span>{option.label}</span>
-            {sortBy === option.value && <IconCheck size={16} />}
-          </div>
-        </MenuActionItem>
-      ))}
-    </Menu>
   );
 }
 

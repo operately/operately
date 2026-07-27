@@ -5,7 +5,15 @@ import type { ResourceHubNode } from "./types";
 
 type SearchStatus = "idle" | "loading" | "success" | "error";
 
-export function useResourceHubSearch(search: ResourceHubSearchProps | undefined) {
+export type ResourceHubSearchState = {
+  query: string;
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
+  results: ResourceHubNode[];
+  status: SearchStatus;
+  isActive: boolean;
+};
+
+export function useResourceHubSearch(search: ResourceHubSearchProps | undefined): ResourceHubSearchState {
   const [query, setQuery] = React.useState("");
   const [results, setResults] = React.useState<ResourceHubNode[]>([]);
   const [status, setStatus] = React.useState<SearchStatus>("idle");

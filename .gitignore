@@ -51,6 +51,7 @@ media
 testreports
 
 notes/
+specs-local/
 locals3root/
 *.DS_Store
 
