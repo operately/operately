@@ -14,7 +14,7 @@ export function FileDragAndDropArea({
   onFilesDropped,
   label = "Drop files here to upload them",
 }: FileDragAndDropAreaProps) {
-  const { isFileDragging, onDragEnter, onDragLeave, onDragOver, onDrop } = useFileDragAndDrop(onFilesDropped);
+  const { isFileDragging } = useFileDragAndDrop(onFilesDropped);
 
   const overlayClassName = classNames(
     "fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 z-50",
@@ -28,7 +28,7 @@ export function FileDragAndDropArea({
   );
 
   return (
-    <div onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+    <>
       {children}
 
       <div className={overlayClassName}>
@@ -36,6 +36,6 @@ export function FileDragAndDropArea({
           <div className={messageClassName}>{label}</div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

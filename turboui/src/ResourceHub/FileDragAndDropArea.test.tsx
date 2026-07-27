@@ -23,45 +23,44 @@ describe("FileDragAndDropArea", () => {
     expect(overlay()).toHaveClass("pointer-events-none");
   });
 
-  test("reveals the dropzone when files are dragged in and hides it when they leave", () => {
-    const { container } = render(
+  test("reveals the dropzone when files are dragged anywhere on the page and hides it when they leave", () => {
+    render(
       <FileDragAndDropArea onFilesDropped={jest.fn()}>
         <div>child content</div>
       </FileDragAndDropArea>,
     );
-    const area = container.firstChild as HTMLElement;
 
-    fireEvent.dragEnter(area, { dataTransfer: { types: ["Files"], files: [] } });
+    // The whole document is a drop target, so dragging over the body (not just the
+    // rendered children) must reveal the overlay. This is the fix for the tiny dropzone.
+    fireEvent.dragEnter(document.body, { dataTransfer: { types: ["Files"], files: [] } });
     expect(overlay()).toHaveClass("opacity-100");
     expect(overlay()).toHaveClass("pointer-events-auto");
 
-    fireEvent.dragLeave(area, { dataTransfer: { types: ["Files"], files: [] } });
+    fireEvent.dragLeave(document.body, { dataTransfer: { types: ["Files"], files: [] } });
     expect(overlay()).toHaveClass("opacity-0");
   });
 
   test("ignores drags that do not carry files", () => {
-    const { container } = render(
+    render(
       <FileDragAndDropArea onFilesDropped={jest.fn()}>
         <div>child content</div>
       </FileDragAndDropArea>,
     );
-    const area = container.firstChild as HTMLElement;
 
-    fireEvent.dragEnter(area, { dataTransfer: { types: ["text/plain"], files: [] } });
+    fireEvent.dragEnter(document.body, { dataTransfer: { types: ["text/plain"], files: [] } });
     expect(overlay()).toHaveClass("opacity-0");
   });
 
-  test("calls onFilesDropped with the dropped files", () => {
+  test("calls onFilesDropped when files are dropped anywhere on the page", () => {
     const onFilesDropped = jest.fn();
-    const { container } = render(
+    render(
       <FileDragAndDropArea onFilesDropped={onFilesDropped}>
         <div>child content</div>
       </FileDragAndDropArea>,
     );
-    const area = container.firstChild as HTMLElement;
     const files = [new File(["a"], "a.txt", { type: "text/plain" })];
 
-    fireEvent.drop(area, { dataTransfer: { types: ["Files"], files } });
+    fireEvent.drop(document.body, { dataTransfer: { types: ["Files"], files } });
 
     expect(onFilesDropped).toHaveBeenCalledWith(files);
     expect(overlay()).toHaveClass("opacity-0");
