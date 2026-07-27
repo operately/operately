@@ -5,7 +5,7 @@ import { ResourceHubPage } from "turboui";
 
 type SearchParams = { query: string };
 
-export function useResourceHubSearchHandler(resourceHubId: string | null | undefined): ResourceHubPage.SearchFn {
+function useResourceHubSearchHandler(resourceHubId: string | null | undefined): ResourceHubPage.SearchFn {
   return React.useCallback(
     async ({ query }: SearchParams) => {
       if (!resourceHubId) {
@@ -16,5 +16,24 @@ export function useResourceHubSearchHandler(resourceHubId: string | null | undef
       return response.nodes;
     },
     [resourceHubId],
+  );
+}
+
+export function useResourceHubSearchProps(
+  resourceHubId: string | null | undefined,
+  enabled: boolean,
+): ResourceHubPage.SearchProps | undefined {
+  const search = useResourceHubSearchHandler(resourceHubId);
+
+  return React.useMemo(
+    () =>
+      enabled
+        ? {
+            search,
+            placeholder: "Search this resource hub…",
+            testId: "resource-hub-search",
+          }
+        : undefined,
+    [enabled, search],
   );
 }

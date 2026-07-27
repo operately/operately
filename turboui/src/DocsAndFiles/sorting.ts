@@ -1,8 +1,6 @@
 import type { ResourceHubNode } from "../ResourceHub/types";
 import { nodeDisplayInsertedAt } from "../utils/drafts";
-import { NAME_AND_DATE_SORT_OPTIONS, sortWithFoldersFirst } from "../utils/sortWithFoldersFirst";
-
-export const DOCS_AND_FILES_SORT_OPTIONS = NAME_AND_DATE_SORT_OPTIONS;
+import { sortWithFoldersFirst } from "../utils/sortWithFoldersFirst";
 
 type DocsAndFilesSortableItem = {
   name?: string | null;

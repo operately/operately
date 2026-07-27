@@ -1,13 +1,13 @@
 import * as React from "react";
+
 import { IconCheck, IconChevronDown } from "../icons";
 import { Menu, MenuActionItem } from "../Menu";
 import classNames from "../utils/classnames";
-import { NAME_AND_DATE_SORT_OPTIONS } from "../utils/sortWithFoldersFirst";
-import type { ResourceHubSortBy } from "./types";
+import { NAME_AND_DATE_SORT_OPTIONS, type NameAndDateSortBy } from "../utils/sortWithFoldersFirst";
 
-interface SortControlProps {
-  sortBy: ResourceHubSortBy;
-  onSortChange: (sortBy: ResourceHubSortBy) => void;
+export interface SortControlProps {
+  sortBy: NameAndDateSortBy;
+  onSortChange: (sortBy: NameAndDateSortBy) => void;
   disabled?: boolean;
 }
 

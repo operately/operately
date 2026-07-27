@@ -1,4 +1,5 @@
 import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
+import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
@@ -33,7 +34,9 @@ import {
   useResourceHubNodesListProps,
 } from "@/models/resourceHubs";
 import { parseSpaceForTurboUI } from "@/models/spaces";
+import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 import { Paths, usePaths } from "@/routes/paths";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import type * as Hub from "@/models/resourceHubs";
 import { useChecklists } from "./useChecklists";
 export default { name: "GoalPage", loader, Page } as PageModule;
@@ -132,6 +135,7 @@ async function loadGoalDocsAndFiles(goal: Goal): Promise<GoalDocsAndFilesData | 
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
+  const { company } = useCompanyLoaderData();
   const { data, refresh } = PageCache.useData(loader);
   const { goal, workMap, checkIns, discussions, docsAndFiles } = data;
   const currentUser = useMe();
@@ -229,7 +233,12 @@ function Page() {
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const checklists = useChecklists({ goalId: goal.id, initialChecklist: goal.checklist || [] });
-  const goalDocsAndFilesProps = useGoalDocsAndFilesProps({ docsAndFiles, goalId: goal.id, onRefresh: refresh });
+  const goalDocsAndFilesProps = useGoalDocsAndFilesProps({
+    docsAndFiles,
+    goalId: goal.id,
+    onRefresh: refresh,
+    searchEnabled: Companies.hasFeature(company, "full_text_search"),
+  });
 
   const initialTargets = React.useMemo(() => prepareTargets(goal.targets), [goal.targets]);
 
@@ -350,10 +359,12 @@ function useGoalDocsAndFilesProps({
   docsAndFiles,
   goalId,
   onRefresh,
+  searchEnabled,
 }: {
   docsAndFiles: GoalDocsAndFilesData | null;
   goalId: string;
   onRefresh?: () => Promise<void>;
+  searchEnabled: boolean;
 }): GoalPage.Props["docsAndFiles"] {
   const paths = usePaths();
   const resourceHub = docsAndFiles?.resourceHub;
@@ -373,6 +384,7 @@ function useGoalDocsAndFilesProps({
         }
       : null,
   );
+  const search = useResourceHubSearchProps(resourceHub?.id, searchEnabled);
 
   return React.useMemo(() => {
     if (!docsAndFiles || !resourceHub?.id) {
@@ -391,6 +403,7 @@ function useGoalDocsAndFilesProps({
       newFileModals,
       addFileWidgetProps,
       nodesListProps,
+      search,
       addFolderModalProps: {
         resourceHubId: resourceHub.id,
         onCreated: refresh,
@@ -403,7 +416,18 @@ function useGoalDocsAndFilesProps({
         },
       },
     };
-  }, [addFileWidgetProps, createFolder, docsAndFiles, goalId, newFileModals, nodesListProps, paths, refresh, resourceHub]);
+  }, [
+    addFileWidgetProps,
+    createFolder,
+    docsAndFiles,
+    goalId,
+    newFileModals,
+    nodesListProps,
+    paths,
+    refresh,
+    resourceHub,
+    search,
+  ]);
 }
 
 function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage.Props["checkIns"] {
