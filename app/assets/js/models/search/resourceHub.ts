@@ -18,3 +18,22 @@ export function useResourceHubSearchHandler(resourceHubId: string | null | undef
     [resourceHubId],
   );
 }
+
+export function useResourceHubSearchProps(
+  resourceHubId: string | null | undefined,
+  enabled: boolean,
+): ResourceHubPage.SearchProps | undefined {
+  const search = useResourceHubSearchHandler(resourceHubId);
+
+  return React.useMemo(
+    () =>
+      enabled
+        ? {
+            search,
+            placeholder: "Search this resource hub…",
+            testId: "resource-hub-search",
+          }
+        : undefined,
+    [enabled, search],
+  );
+}
