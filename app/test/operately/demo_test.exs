@@ -14,6 +14,7 @@ defmodule Operately.DemoTest do
     assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
     assert %Operately.Companies.Company{} = company
     assert Operately.Companies.get_company_by_name("Acme Inc.")
+    assert length(Operately.People.list_people(company.id)) == 17
   end
 
   test "it does not enqueue activity notification jobs while building the demo" do
