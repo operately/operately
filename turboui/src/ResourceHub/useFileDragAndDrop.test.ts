@@ -2,27 +2,29 @@ import { act, renderHook } from "@testing-library/react";
 
 import { useFileDragAndDrop } from "./useFileDragAndDrop";
 
-type Handler = (event: React.DragEvent<HTMLDivElement>) => void;
+// Dispatches a drag event on the document, mirroring how the browser delivers
+// file drags to the listeners registered by the hook.
+function dispatchDrag(type: string, { types = ["Files"], files = [] as File[] } = {}) {
+  const event = new Event(type, { bubbles: true, cancelable: true });
+  Object.defineProperty(event, "dataTransfer", {
+    value: { types, files },
+    configurable: true,
+  });
 
-function dragEvent({ types = ["Files"], files = [] as File[] } = {}) {
-  return {
-    preventDefault: jest.fn(),
-    dataTransfer: {
-      types,
-      files,
-    },
-  } as unknown as React.DragEvent<HTMLDivElement>;
+  act(() => {
+    document.dispatchEvent(event);
+  });
+
+  return event;
 }
 
 describe("useFileDragAndDrop", () => {
-  test("activates the dropzone when files are dragged over", () => {
+  test("activates the dropzone when files are dragged over the document", () => {
     const { result } = renderHook(() => useFileDragAndDrop(jest.fn()));
 
     expect(result.current.isFileDragging).toBe(false);
 
-    act(() => {
-      (result.current.onDragEnter as Handler)(dragEvent());
-    });
+    dispatchDrag("dragenter");
 
     expect(result.current.isFileDragging).toBe(true);
   });
@@ -30,37 +32,28 @@ describe("useFileDragAndDrop", () => {
   test("ignores drags that do not contain files", () => {
     const onDrop = jest.fn();
     const { result } = renderHook(() => useFileDragAndDrop(onDrop));
-    const event = dragEvent({ types: ["text/plain"] });
 
-    act(() => {
-      (result.current.onDragEnter as Handler)(event);
-      (result.current.onDragOver as Handler)(event);
-    });
+    const event = dispatchDrag("dragenter", { types: ["text/plain"] });
+    dispatchDrag("dragover", { types: ["text/plain"] });
 
     expect(result.current.isFileDragging).toBe(false);
     // Non-file drags must not be captured, so the default must not be prevented.
-    expect(event.preventDefault).not.toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(false);
   });
 
   test("stays active while moving across nested child elements", () => {
     const { result } = renderHook(() => useFileDragAndDrop(jest.fn()));
 
-    act(() => {
-      (result.current.onDragEnter as Handler)(dragEvent()); // enter container
-      (result.current.onDragEnter as Handler)(dragEvent()); // enter child
-    });
+    dispatchDrag("dragenter"); // enter container
+    dispatchDrag("dragenter"); // enter child
 
     expect(result.current.isFileDragging).toBe(true);
 
-    act(() => {
-      (result.current.onDragLeave as Handler)(dragEvent()); // leave child, still inside container
-    });
+    dispatchDrag("dragleave"); // leave child, still inside container
 
     expect(result.current.isFileDragging).toBe(true);
 
-    act(() => {
-      (result.current.onDragLeave as Handler)(dragEvent()); // leave container entirely
-    });
+    dispatchDrag("dragleave"); // leave the view entirely
 
     expect(result.current.isFileDragging).toBe(false);
   });
@@ -70,13 +63,8 @@ describe("useFileDragAndDrop", () => {
     const { result } = renderHook(() => useFileDragAndDrop(onDrop));
     const files = [new File(["a"], "a.txt", { type: "text/plain" })];
 
-    act(() => {
-      (result.current.onDragEnter as Handler)(dragEvent());
-    });
-
-    act(() => {
-      (result.current.onDrop as Handler)(dragEvent({ files }));
-    });
+    dispatchDrag("dragenter");
+    dispatchDrag("drop", { files });
 
     expect(onDrop).toHaveBeenCalledWith(files);
     expect(result.current.isFileDragging).toBe(false);
@@ -84,11 +72,36 @@ describe("useFileDragAndDrop", () => {
 
   test("does not invoke the callback when no files are dropped", () => {
     const onDrop = jest.fn();
-    const { result } = renderHook(() => useFileDragAndDrop(onDrop));
+    renderHook(() => useFileDragAndDrop(onDrop));
 
-    act(() => {
-      (result.current.onDrop as Handler)(dragEvent({ files: [] }));
+    dispatchDrag("drop", { files: [] });
+
+    expect(onDrop).not.toHaveBeenCalled();
+  });
+
+  test("uses the latest callback without re-binding listeners", () => {
+    const first = jest.fn();
+    const second = jest.fn();
+    const { rerender } = renderHook(({ cb }) => useFileDragAndDrop(cb), {
+      initialProps: { cb: first },
     });
+
+    rerender({ cb: second });
+
+    const files = [new File(["a"], "a.txt", { type: "text/plain" })];
+    dispatchDrag("drop", { files });
+
+    expect(first).not.toHaveBeenCalled();
+    expect(second).toHaveBeenCalledWith(files);
+  });
+
+  test("stops listening after unmount", () => {
+    const onDrop = jest.fn();
+    const { unmount } = renderHook(() => useFileDragAndDrop(onDrop));
+
+    unmount();
+
+    dispatchDrag("drop", { files: [new File(["a"], "a.txt")] });
 
     expect(onDrop).not.toHaveBeenCalled();
   });
