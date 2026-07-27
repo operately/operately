@@ -5,7 +5,7 @@ import { ResourceHubPage } from "turboui";
 
 type SearchParams = { query: string };
 
-export function useResourceHubSearchHandler(resourceHubId: string | null | undefined): ResourceHubPage.SearchFn {
+function useResourceHubSearchHandler(resourceHubId: string | null | undefined): ResourceHubPage.SearchFn {
   return React.useCallback(
     async ({ query }: SearchParams) => {
       if (!resourceHubId) {
