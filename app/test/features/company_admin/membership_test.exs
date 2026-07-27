@@ -119,7 +119,7 @@ defmodule Operately.Features.CompanyAdmin.MembershipTest do
     }
 
     ctx
-    |> Steps.enable_billing_for_company()
+    |> Steps.seed_billing_catalog()
     |> Steps.fill_company_to_member_limit()
     |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.open_company_team_page()
@@ -132,7 +132,7 @@ defmodule Operately.Features.CompanyAdmin.MembershipTest do
   @tag role: :admin
   feature "restoring a removed member is blocked when the company is already full", ctx do
     ctx
-    |> Steps.enable_billing_for_company()
+    |> Steps.seed_billing_catalog()
     |> Steps.given_a_removed_company_member_exists()
     |> Steps.fill_company_to_member_limit()
     |> Steps.assert_logged_in_user_has_admin_access_level()

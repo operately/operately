@@ -6,7 +6,7 @@ defmodule Operately.Support.Features.CompanyBillingRecoverySteps do
 
   import Operately.InviteLinksFixtures, only: [personal_invite_link_fixture: 1]
 
-  step :enable_billing_for_company, ctx do
+  step :seed_billing_catalog, ctx do
     Billing.create_product(%{
       provider: "polar",
       plan_family: "team",

@@ -34,7 +34,7 @@ defmodule Operately.Billing.AccessStateReconciling do
       past_due?(Map.get(attrs, :status)) ->
         :past_due
 
-      Billing.limit_enforcement_enabled_for_company?(company) && over_limit?(company, attrs) &&
+      Billing.billing_enabled?() && over_limit?(company, attrs) &&
           (downgrade_became_current?(account, attrs) || existing_over_limit_state?(account)) ->
         :over_limit_after_downgrade
 

@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
     end
 
     test "it does not enqueue a limit email for pending blobs", ctx do
-      enable_billing(ctx.company)
+      enable_billing()
 
       Oban.Testing.with_testing_mode(:manual, fn ->
         assert {200, _res} =
@@ -74,7 +74,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
     end
 
     test "it blocks uploads that would exceed the storage limit", ctx do
-      enable_billing(ctx.company)
+      enable_billing()
+
       blob_fixture(%{
         company_id: ctx.company.id,
         author_id: ctx.person.id,
@@ -99,7 +100,10 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
       assert Repo.aggregate(Operately.Blobs.Blob, :count, :id) == initial_blob_count
     end
 
-    test "it does not block uploads when billing is disabled for the company", ctx do
+    test "it does not block uploads when billing is disabled", ctx do
+      Application.put_env(:operately, :billing_enabled, false)
+      on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+
       blob_fixture(%{
         company_id: ctx.company.id,
         author_id: ctx.person.id,
@@ -132,10 +136,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlobTest do
     end
   end
 
-  defp enable_billing(company) do
+  defp enable_billing do
     Application.put_env(:operately, :billing_enabled, true)
     on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
-
-    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

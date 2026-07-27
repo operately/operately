@@ -57,7 +57,6 @@ export namespace CompanyBillingPlanSelectionPage {
     title: string | string[];
     billing: BillingOverview;
     selection: BillingTargetSelection;
-    limitsEnforced: boolean;
     navigation?: Navigation.Item[];
     actionError?: string | null;
     isSubmitting?: boolean;

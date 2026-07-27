@@ -44,14 +44,6 @@ defmodule OperatelyWeb.Api.Billing.Helpers do
     end
   end
 
-  def ensure_limit_enforcement_enabled(company) do
-    if Billing.limit_enforcement_enabled_for_company?(company) do
-      :ok
-    else
-      {:error, :not_found}
-    end
-  end
-
   defp ensure_billing_enabled do
     if Billing.billing_enabled?(), do: :ok, else: {:error, :not_found}
   end

@@ -366,10 +366,6 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.assert_text("Page Not Found")
   end
 
-  step :enable_billing_for_company, ctx do
-    Factory.enable_feature(ctx, "billing")
-  end
-
   step :fill_company_to_member_limit, ctx do
     needed_people = max(20 - Billing.active_member_count(ctx.company), 0)
 
