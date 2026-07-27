@@ -103,6 +103,21 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert id == ctx.document.id
   end
 
+  test "matches structured lexemes in document bodies", ctx do
+    ctx =
+      Factory.add_document(ctx, :structured_lexemes, :hub,
+        name: "Contact directory",
+        content: RichText.rich_text("Email support@operately.com, visit example.com, or use version 3.14")
+      )
+
+    sync(:document, ctx.structured_lexemes.id)
+
+    for query <- ["support@operately.com", "example.com", "3.14"] do
+      assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, query)
+      assert id == ctx.structured_lexemes.id
+    end
+  end
+
   test "searches space-, project-, and goal-owned resource hubs", ctx do
     ctx =
       ctx

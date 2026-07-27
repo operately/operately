@@ -5,7 +5,7 @@ defmodule Operately.Search.Text do
 
   @websearch_or ~r/(?:^|\s)OR(?:\s|$)/
   @websearch_exclusion ~r/(?:^|\s)-/
-  @token_splitter ~r/[^\p{L}\p{N}]+/u
+  @ordinary_word_query ~r/^[\p{L}\p{N}]+(?:\s+[\p{L}\p{N}]+)*$/u
 
   def normalize_title(title) when is_binary(title) do
     title
@@ -41,8 +41,8 @@ defmodule Operately.Search.Text do
       websearch_syntax?(normalized_query) ->
         {:websearch, normalized_query}
 
-      prefix_tsquery = build_prefix_tsquery(normalized_query) ->
-        {:prefix, prefix_tsquery}
+      ordinary_word_query?(normalized_query) ->
+        {:prefix, build_prefix_tsquery(normalized_query)}
 
       true ->
         {:websearch, normalized_query}
@@ -55,22 +55,20 @@ defmodule Operately.Search.Text do
     String.contains?(query, "\"") or Regex.match?(@websearch_or, query) or Regex.match?(@websearch_exclusion, query)
   end
 
+  defp ordinary_word_query?(query) do
+    Regex.match?(@ordinary_word_query, normalize_title(query))
+  end
+
   defp build_prefix_tsquery(query) do
     tokens =
       query
       |> normalize_title()
-      |> String.split(@token_splitter, trim: true)
+      |> String.split()
 
-    case tokens do
-      [] ->
-        nil
+    {leading, [last]} = Enum.split(tokens, -1)
 
-      tokens ->
-        {leading, [last]} = Enum.split(tokens, -1)
-
-        (Enum.map(leading, &quote_lexeme/1) ++ [quote_lexeme(last) <> ":*"])
-        |> Enum.join(" & ")
-    end
+    (Enum.map(leading, &quote_lexeme/1) ++ [quote_lexeme(last) <> ":*"])
+    |> Enum.join(" & ")
   end
 
   defp quote_lexeme(lexeme) do

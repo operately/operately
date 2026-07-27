@@ -20,6 +20,12 @@ defmodule Operately.Search.TextTest do
       assert Text.search_tsquery("customer OR archive") == {:websearch, "customer OR archive"}
     end
 
+    test "keeps structured lexemes on the websearch path" do
+      assert Text.search_tsquery("support@operately.com") == {:websearch, "support@operately.com"}
+      assert Text.search_tsquery("example.com") == {:websearch, "example.com"}
+      assert Text.search_tsquery("3.14") == {:websearch, "3.14"}
+    end
+
     test "falls back to websearch when no searchable tokens remain" do
       assert Text.search_tsquery("!!!") == {:websearch, "!!!"}
       assert Text.search_tsquery("   ") == {:websearch, ""}
