@@ -31,6 +31,7 @@ defmodule Operately.Search.ResourceHubQuery do
   defp candidate_query(hub_id, query) do
     normalized_title = Text.normalize_title(query)
     title_prefix = title_prefix_pattern(normalized_title)
+    {use_prefix?, tsquery_expr, websearch_expr} = tsquery_args(query)
     eligible_items = eligible_items_query(hub_id)
     visible_nodes = visible_nodes_query(hub_id)
 
@@ -42,9 +43,11 @@ defmodule Operately.Search.ResourceHubQuery do
       where: entry.resource_hub_id == ^hub_id,
       where:
         fragment(
-          "? @@ websearch_to_tsquery('public.operately'::regconfig, ?)",
+          "? @@ (CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
           field(entry, :search_vector),
-          ^query
+          ^use_prefix?,
+          ^tsquery_expr,
+          ^websearch_expr
         ) or fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
       select: item.node_id,
       order_by: [
@@ -52,15 +55,19 @@ defmodule Operately.Search.ResourceHubQuery do
         desc: fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
         desc:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), websearch_to_tsquery('public.operately'::regconfig, ?))",
+            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
             entry.title,
-            ^query
+            ^use_prefix?,
+            ^tsquery_expr,
+            ^websearch_expr
           ),
         desc:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), websearch_to_tsquery('public.operately'::regconfig, ?))",
+            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
             entry.body,
-            ^query
+            ^use_prefix?,
+            ^tsquery_expr,
+            ^websearch_expr
           ),
         asc: entry.source_id
       ],
@@ -68,6 +75,13 @@ defmodule Operately.Search.ResourceHubQuery do
     )
     |> recursive_ctes(true)
     |> with_cte("visible_search_nodes", as: ^visible_nodes)
+  end
+
+  defp tsquery_args(query) do
+    case Text.search_tsquery(query) do
+      {:prefix, tsquery} -> {true, tsquery, query}
+      {:websearch, websearch_query} -> {false, "", websearch_query}
+    end
   end
 
   defp title_prefix_pattern(title) do
