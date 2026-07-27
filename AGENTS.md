@@ -2,9 +2,11 @@
 
 ## Project Structure & Module Organization
 
-- Backend (Elixir/Phoenix): `app/` with `lib/` (Elixir code), `config/`, `priv/`, and `test/` (plus `ee/` enterprise code and tests).
-- Frontend (TypeScript/React): `app/assets/js/` built with Vite; shared UI library in `turboui/`.
-- Tooling: `Makefile` (common tasks), `scripts/` (CI helpers), `docker/`, `docs/`.
+- Backend (Elixir/Phoenix): `app/` with `lib/` (Elixir code), `config/`, `priv/`, and `test/` (plus `ee/` enterprise code and tests). App-level manifests: `app/mix.exs`, `app/package.json`, `app/vite.config.mjs`.
+- Frontend (TypeScript/React): `app/assets/js/` built with Vite; shared UI library in `turboui/` (its own `package.json`, Storybook, and `turboui/AGENTS.md`).
+- CLI (TypeScript): `cli/` — the `@operately/operately-cli` package for the external API, with `src/`, `docs/`, and its own `package.json`/`tsconfig.json`. Command catalog is generated from the API (see `make gen.cli.catalog`).
+- Docs: `docs/` (developer docs like `dev-env.md`, `architecture.md`, `pull-request-guidelines.md`). Feature specs: `specs/` (numbered design docs, e.g. `0012-operately-mcp.md`) — check here for the intent behind larger features before implementing.
+- Tooling: `Makefile` (common tasks), `scripts/` (CI/build helpers), `docker/`, `.agents/skills/` (agent skills).
 - Tests and artifacts: `app/test/`, `app/ee/test/`, reports in `app/testreports/`, screenshots in `app/screenshots/`.
 
 ## Build, Test, and Development Commands
@@ -18,6 +20,7 @@
 - Enterprise tests: `make test.ee` (Enterprise edition tests with retry logic).
 - UI lib: `make turboui.build`, `make turboui.test`, `make turboui.storybook`.
 - For component workflow, see `turboui/AGENTS.md`.
+- CLI: `make cli.build` (compile `cli/`), `make cli.test` (unit tests, alias for `make cli.test.unit`), `make cli.test.e2e` (end-to-end against the app). Keep the CLI command catalog in sync with the API using `make gen.cli.catalog`; `make test.cli.catalog.sync` verifies it.
 - Docker image: `make docker.build` (see `Dockerfile.prod`).
 
 ## Coding Style & Naming Conventions 
@@ -122,7 +125,7 @@ end
 ## Testing Guidelines
 
 For writing, organizing, and running tests, use the **writing-tests** skill
-(`.agents/skills/writing-tests/SKILL.md`). `app/test/AGENTS.md` points there.
+(`.agents/skills/writing-tests/SKILL.md`).
 
 ### Feature Test Notes
 
