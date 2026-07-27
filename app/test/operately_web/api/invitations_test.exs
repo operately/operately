@@ -307,7 +307,6 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     Application.put_env(:operately, :billing_enabled, true)
     on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
 
-    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
     Billing.create_product(%{
       provider: "polar",
       plan_family: "team",

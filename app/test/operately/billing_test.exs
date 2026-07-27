@@ -26,31 +26,6 @@ defmodule Operately.BillingTest do
     end
   end
 
-  describe "limit_enforcement_enabled_for_company?/1" do
-    setup do
-      company = company_fixture()
-      {:ok, company: company}
-    end
-
-    test "returns false when instance billing is disabled", ctx do
-      Application.put_env(:operately, :billing_enabled, false)
-      refute Billing.limit_enforcement_enabled_for_company?(ctx.company)
-    end
-
-    test "returns false when instance billing is enabled but company feature is off", ctx do
-      Application.put_env(:operately, :billing_enabled, true)
-      refute Billing.limit_enforcement_enabled_for_company?(ctx.company)
-    end
-
-    test "returns true when both instance and company feature are enabled", ctx do
-      Application.put_env(:operately, :billing_enabled, true)
-      {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "billing")
-      assert Billing.limit_enforcement_enabled_for_company?(company)
-    after
-      Application.delete_env(:operately, :billing_enabled)
-    end
-  end
-
   describe "billing accounts" do
     setup do
       company = company_fixture()
@@ -1162,9 +1137,7 @@ defmodule Operately.BillingTest do
       Application.put_env(:operately, :billing_enabled, true)
 
       company = company_fixture()
-      {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
       free_company = company_fixture()
-      {:ok, free_company} = Operately.Companies.enable_experimental_feature(free_company, "billing")
 
       create_plan_definition(%{
         plan_key: "starter_internal",

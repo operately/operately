@@ -98,22 +98,6 @@ defmodule Operately.Demo.Data do
           reports_to: :bob_williams
         },
         %{
-          key: :henry_taylor,
-          name: "Henry Taylor",
-          title: "VP of Engineering",
-          description: "Engineering leader. Makes teams fast. Devtools nerd, weekend cook.",
-          avatar: "photo-1492562080023-ab3db95bfbce",
-          reports_to: :david_brown
-        },
-        %{
-          key: :ivy_anderson,
-          name: "Ivy Anderson",
-          title: "VP of Sales",
-          description: "Sales leader. Pipeline and people. Book club host.",
-          avatar: "photo-1522075469751-3a6694fb2f61",
-          reports_to: :emily_davis
-        },
-        %{
           key: :jack_thomas,
           name: "Jack Thomas",
           title: "VP of Customer Success",
@@ -138,20 +122,12 @@ defmodule Operately.Demo.Data do
           reports_to: :david_brown
         },
         %{
-          key: :mia_clark,
-          name: "Mia Clark",
-          title: "Director of Engineering",
-          description: "Director of engineering. Reliability first. Loves pairing.",
-          avatar: "photo-1541823709867-1b206113eafd",
-          reports_to: :frank_miller
-        },
-        %{
           key: :noah_lewis,
           name: "Noah Lewis",
           title: "Director of Sales",
           description: "Sales director. Playbooks and coaching. Runner, podcast fan.",
           avatar: "photo-1568602471122-7832951cc4c5",
-          reports_to: :ivy_anderson
+          reports_to: :emily_davis
         },
         %{
           key: :olivia_hall,
@@ -167,7 +143,7 @@ defmodule Operately.Demo.Data do
           title: "Director of Business Development",
           description: "Biz dev. Partnerships + strategy. Traveler, soccer fan.",
           avatar: "photo-1600180758890-6b94519a8ba6",
-          reports_to: :ivy_anderson
+          reports_to: :emily_davis
         },
         %{
           key: :quinn_walker,
@@ -185,40 +161,20 @@ defmodule Operately.Demo.Data do
           reports_to: :emily_davis
         },
         %{
-          key: :tina_scott,
-          name: "Tina Scott",
-          title: "Customer Support Representative",
-          avatar: "photo-1700248356502-ca48ae3bafd6",
-          invited: true,
-          reports_to: :jack_thomas
-        },
-        %{
           key: :walter_baker,
           name: "Walter Baker",
           title: "Lead Software Engineer",
           avatar: "photo-1521341957697-b93449760f30",
           invited: true,
-          reports_to: :mia_clark
+          reports_to: :david_brown
         },
       ],
       outside_collaborators: [
-        %{
-          key: :sasha_park,
-          name: "Sasha Park",
-          title: "Brand Strategy Consultant",
-          avatar: "photo-1524504388940-b1c1722653e1"
-        },
         %{
           key: :diego_ramirez,
           name: "Diego Ramirez",
           title: "Freelance Product Designer",
           avatar: "photo-1506794778202-cad84cf45f1d"
-        },
-        %{
-          key: :maya_singh,
-          name: "Maya Singh",
-          title: "Solutions Architect",
-          avatar: "photo-1508214751196-bcfd4ca60f91"
         },
       ],
       spaces: [
@@ -648,7 +604,7 @@ defmodule Operately.Demo.Data do
               size: "small",
               comments: [
                 %{
-                  author: :tina_scott,
+                  author: :jack_thomas,
                   content: "Can we add a section about reward expiration?"
                 }
               ]
@@ -952,7 +908,7 @@ defmodule Operately.Demo.Data do
           reviewer: :emily_davis,
           contributors: [
             %{person: :noah_lewis, responsibility: "Growth Marketer"},
-            %{person: :sasha_park, responsibility: "Brand Strategy Consultant"}
+            %{person: :rachel_king, responsibility: "Director of Marketing"}
           ],
           start_offset_days: -18,
           due_in_days: 31,
@@ -2173,7 +2129,7 @@ defmodule Operately.Demo.Data do
           reviewer: :bob_williams,
           contributors: [
             %{person: :quinn_walker, responsibility: "Operations Manager"},
-            %{person: :maya_singh, responsibility: "Systems Consultant"}
+            %{person: :karen_martinez, responsibility: "People Operations Lead"}
           ],
           start_offset_days: -12,
           due_in_days: 21,
@@ -2955,7 +2911,7 @@ defmodule Operately.Demo.Data do
               content: "The compliance training modules have been particularly helpful. Looking forward to leading a session on regulatory requirements next month."
             },
             %{
-              author: :henry_taylor,
+              author: :walter_baker,
               content: "Great initiative! The engineering team is especially excited about the conference opportunities."
             }
           ]
@@ -2992,42 +2948,41 @@ defmodule Operately.Demo.Data do
           ]
         },
         %{
-          key: :welcome_tina_scott,
+          key: :welcome_walter_baker,
           space: :company_space,
           author: :karen_martinez,
-          title: "🙌 Team Announcement: Welcoming Tina Scott!",
+          title: "🙌 Team Announcement: Welcoming Walter Baker!",
           content: """
           Hey everyone,
 
           I’m excited to share that we’re continuing to grow our team and have
-          an amazing new addition! Please join me in welcoming Tina Scott, who
-          will be joining us as our Customer Support Representative.
+          an amazing new addition! Please join me in welcoming Walter Baker, who
+          will be joining us as our Lead Software Engineer.
 
-          Tina brings valuable experience in customer service, having worked in
-          fast-paced environments where she’s known for her dedication to
-          helping customers and resolving their issues efficiently. She will be
-          a key part of our efforts to ensure that we continue to deliver
-          top-notch support as we expand and onboard new users.
+          Walter brings valuable experience building reliable product systems
+          and helping engineering teams deliver complex features. He will be a
+          key part of our efforts to strengthen the product as we expand and
+          onboard new users.
 
-          Here’s a bit more about Tina:
+          Here’s a bit more about Walter:
 
-          **Background**: Tina has previously worked at BrightTech Solutions and
-          InnovateCo, where she specialized in building customer relationships
-          and improving support processes.
+          **Background**: Walter has worked on collaborative software and
+          developer platforms, where he specialized in reliable systems and
+          practical engineering processes.
 
-          **Specialty**: Tina is skilled in handling complex customer inquiries
-          and is passionate about ensuring customer satisfaction at every step.
+          **Specialty**: Walter is skilled in real-time product architecture and
+          is passionate about helping teams ship dependable software.
 
-          **Fun fact**: Outside of work, Tina enjoys hiking and photography and
-          is always on the lookout for great outdoor spots to explore.
+          **Fun fact**: Outside of work, Walter enjoys experimenting with
+          developer tools and sharing what he learns with other engineers.
 
-          We’re excited to have Tina onboard and confident she will make a
-          great impact, especially as we continue to focus on scaling our
-          support team and enhancing the user experience.
+          We’re excited to have Walter onboard and confident he will make a
+          great impact as we continue improving our collaborative features and
+          engineering practices.
 
           Looking forward to seeing the great things we’ll accomplish together!
 
-          Welcome aboard, Tina! 🎉
+          Welcome aboard, Walter! 🎉
           """
         },
         %{
@@ -3219,7 +3174,7 @@ defmodule Operately.Demo.Data do
               """,
             },
             %{
-              author: :mia_clark,
+              author: :david_brown,
               content: """
               Agreed with Walter about the code review standards. I'd also love to see a section about our technical debt management strategy and how we prioritize it alongside new feature development. The current sprint planning section could use some real-world examples from our recent collaborative features project.
               """,
@@ -3619,7 +3574,7 @@ defmodule Operately.Demo.Data do
           """,
           edits: [
             %{
-              author: :tina_scott,
+              author: :karen_martinez,
               days_ago: 11,
               content: """
               Step-by-step guide for bringing new team members up to speed.
@@ -4597,7 +4552,7 @@ defmodule Operately.Demo.Data do
         %{
           key: :paid_ads_creative_board,
           project: :refine_ad_targeting,
-          author: :sasha_park,
+          author: :rachel_king,
           name: "Paid Ads Creative Board",
           url: "https://www.figma.com/file/paid-acquisition-creative",
           type: :figma,

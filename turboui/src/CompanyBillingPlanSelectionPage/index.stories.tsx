@@ -144,7 +144,6 @@ export const FreeCheckout: Story = {
 
     return (
       <CompanyBillingPlanSelectionPage
-        limitsEnforced={true}
         title={["Acme", "Choose a plan"]}
         navigation={navigation}
         billing={billing}
@@ -180,7 +179,6 @@ export const PaidChangePlan: Story = {
 
     return (
       <CompanyBillingPlanSelectionPage
-        limitsEnforced={true}
         title={["Acme", "Choose a plan"]}
         navigation={navigation}
         billing={billing}
@@ -216,7 +214,6 @@ export const ScheduledChangePreselected: Story = {
 
     return (
       <CompanyBillingPlanSelectionPage
-        limitsEnforced={true}
         title={["Acme", "Choose a plan"]}
         navigation={navigation}
         billing={billing}
@@ -255,7 +252,6 @@ export const OverLimitDowngradePreview: Story = {
 
     return (
       <CompanyBillingPlanSelectionPage
-        limitsEnforced={true}
         title={["Acme", "Choose a plan"]}
         navigation={navigation}
         billing={billing}
@@ -294,7 +290,6 @@ export const MemberOverLimitDowngradePreview: Story = {
 
     return (
       <CompanyBillingPlanSelectionPage
-        limitsEnforced={true}
         title={["Acme", "Choose a plan"]}
         navigation={navigation}
         billing={billing}
@@ -316,40 +311,6 @@ export const MemberOverLimitDowngradePreview: Story = {
   },
 };
 
-export const CommerceFirstDowngradePreview: Story = {
-  render: () => {
-    const billing = billingOverviewMock({
-      account: {
-        planKey: "business",
-        billingInterval: "monthly",
-        status: "active",
-        currentPeriodEnd: "2026-06-14T00:00:00Z",
-      },
-      memberCount: 60,
-      storageUsageBytes: 128_849_018_880,
-    });
-
-    return (
-      <CompanyBillingPlanSelectionPage
-        limitsEnforced={false}
-        title={["Acme", "Choose a plan"]}
-        navigation={navigation}
-        billing={billing}
-        selection={{
-          target: {
-            plan: "team",
-            billingInterval: "monthly",
-            product: findCompanyBillingSellableProduct(billing.catalogProducts, "team", "monthly"),
-          },
-          source: "query",
-          warning: null,
-        }}
-        testId="billing-plan-selection-page-commerce-first"
-      />
-    );
-  },
-};
-
 export const MissingYearlyOption: Story = {
   render: () => {
     const billing = billingOverviewMock({
@@ -360,7 +321,6 @@ export const MissingYearlyOption: Story = {
 
     return (
       <CompanyBillingPlanSelectionPage
-        limitsEnforced={true}
         title={["Acme", "Choose a plan"]}
         navigation={navigation}
         billing={billing}

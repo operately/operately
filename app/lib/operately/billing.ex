@@ -5,11 +5,6 @@ defmodule Operately.Billing do
   This module is the primary public API for billing operations. All new
   billing commerce is gated by the `OPERATELY_BILLING_ENABLED` instance-level
   environment variable.
-
-  The company-scoped `billing` experimental feature flag controls the later
-  rollout phase for member and storage limit enforcement. Companies without
-  that flag can purchase and manage subscriptions without limit warnings or
-  blocked actions.
   """
 
   import Ecto.Query, warn: false
@@ -32,10 +27,6 @@ defmodule Operately.Billing do
 
   def billing_enabled? do
     Application.get_env(:operately, :billing_enabled, false) == true
-  end
-
-  def limit_enforcement_enabled_for_company?(%Operately.Companies.Company{} = company) do
-    billing_enabled?() && Operately.Companies.has_experimental_feature?(company, "billing")
   end
 
   def provider_client(opts \\ []) do

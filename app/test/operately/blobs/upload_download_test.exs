@@ -211,6 +211,5 @@ defmodule Operately.Blobs.UploadDownloadTest do
       end
     end)
 
-    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

@@ -602,7 +602,6 @@ defmodule Operately.PeopleTest do
     end)
 
     company = Operately.Companies.get_company!(company_id)
-    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 
   defp restore_billing_enabled(nil), do: Application.delete_env(:operately, :billing_enabled)

@@ -85,7 +85,7 @@ defmodule Operately.Billing.AccessStateReconcilingTest do
     end
 
     test "scheduled downgrade becoming current while over the member limit starts over_limit_grace" do
-      company = billing_limits_enabled_company()
+      company = company_fixture()
       add_members(company, 59)
 
       {:ok, _account} =
@@ -115,7 +115,7 @@ defmodule Operately.Billing.AccessStateReconcilingTest do
     end
 
     test "scheduled downgrade becoming current while over the storage limit starts over_limit_grace" do
-      company = billing_limits_enabled_company()
+      company = company_fixture()
       author = person_fixture_with_account(%{company_id: company.id})
 
       blob_fixture(%{
@@ -152,7 +152,7 @@ defmodule Operately.Billing.AccessStateReconcilingTest do
     end
 
     test "scheduled downgrade becoming current within the new limits does not start remediation" do
-      company = billing_limits_enabled_company()
+      company = company_fixture()
 
       {:ok, _account} =
         Billing.create_billing_account(%{
@@ -181,7 +181,7 @@ defmodule Operately.Billing.AccessStateReconcilingTest do
     end
 
     test "cancellation falling back to free while over the free plan limit starts over_limit_grace" do
-      company = billing_limits_enabled_company()
+      company = company_fixture()
       add_members(company, 20)
 
       {:ok, _account} =
@@ -209,7 +209,7 @@ defmodule Operately.Billing.AccessStateReconcilingTest do
     end
 
     test "an upgrade clears existing over_limit_grace state" do
-      company = billing_limits_enabled_company()
+      company = company_fixture()
       add_members(company, 59)
 
       {:ok, _account} =
@@ -269,7 +269,7 @@ defmodule Operately.Billing.AccessStateReconcilingTest do
     end
 
     test "payment-default reason wins when both danger reasons could apply" do
-      company = billing_limits_enabled_company()
+      company = company_fixture()
       add_members(company, 59)
 
       {:ok, _account} =
@@ -299,7 +299,8 @@ defmodule Operately.Billing.AccessStateReconcilingTest do
       assert account.access_state_reason == :past_due
     end
 
-    test "an unflagged company can downgrade while over the target limits without remediation" do
+    test "a company can downgrade while over the target limits without remediation when billing is disabled" do
+      Application.put_env(:operately, :billing_enabled, false)
       company = company_fixture()
       add_members(company, 59)
 
@@ -329,12 +330,6 @@ defmodule Operately.Billing.AccessStateReconcilingTest do
       assert account.access_state == :normal
       assert account.access_state_reason == nil
     end
-  end
-
-  defp billing_limits_enabled_company do
-    company = company_fixture()
-    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
-    company
   end
 
   defp restore_billing_enabled(nil), do: Application.delete_env(:operately, :billing_enabled)
