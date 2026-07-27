@@ -14,6 +14,11 @@ defmodule Operately.Search.TextTest do
       assert Text.search_tsquery("CAFÉ handb") == {:prefix, "'cafe' & 'handb':*"}
     end
 
+    test "builds prefix tsqueries for non-Latin words" do
+      assert Text.search_tsquery("Навигац") == {:prefix, "'навигац':*"}
+      assert Text.search_tsquery("東京") == {:prefix, "'東京':*"}
+    end
+
     test "keeps websearch syntax on the websearch path" do
       assert Text.search_tsquery(~s("customer research")) == {:websearch, ~s("customer research")}
       assert Text.search_tsquery("customer -archive") == {:websearch, "customer -archive"}
@@ -21,9 +26,36 @@ defmodule Operately.Search.TextTest do
     end
 
     test "keeps structured lexemes on the websearch path" do
-      assert Text.search_tsquery("support@operately.com") == {:websearch, "support@operately.com"}
-      assert Text.search_tsquery("example.com") == {:websearch, "example.com"}
-      assert Text.search_tsquery("3.14") == {:websearch, "3.14"}
+      for query <- [
+            "support@operately.com",
+            "example.com",
+            "3.14",
+            "2026-07-27",
+            "14:30",
+            "v1.2.3",
+            "/docs/start",
+            "alpha-beta"
+          ] do
+        assert Text.search_tsquery(query) == {:websearch, query}
+      end
+    end
+
+    test "keeps mixed plain and structured terms on the websearch path" do
+      query = "contact support@operately.com"
+
+      assert Text.search_tsquery(query) == {:websearch, query}
+    end
+
+    test "does not add prefix operators inside punctuation-bearing terms" do
+      assert Text.search_tsquery("alpha-be") == {:websearch, "alpha-be"}
+    end
+
+    test "removes URL schemes to match PostgreSQL's indexed URL lexemes" do
+      assert Text.search_tsquery("https://operately.com/docs/search") ==
+               {:websearch, "operately.com/docs/search"}
+
+      assert Text.search_tsquery("visit HTTP://operately.com/docs/search") ==
+               {:websearch, "visit operately.com/docs/search"}
     end
 
     test "falls back to websearch when no searchable tokens remain" do

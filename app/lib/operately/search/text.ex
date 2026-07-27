@@ -39,13 +39,13 @@ defmodule Operately.Search.Text do
 
     cond do
       websearch_syntax?(normalized_query) ->
-        {:websearch, normalized_query}
+        {:websearch, normalize_websearch_query(normalized_query)}
 
       ordinary_word_query?(normalized_query) ->
         {:prefix, build_prefix_tsquery(normalized_query)}
 
       true ->
-        {:websearch, normalized_query}
+        {:websearch, normalize_websearch_query(normalized_query)}
     end
   end
 
@@ -57,6 +57,10 @@ defmodule Operately.Search.Text do
 
   defp ordinary_word_query?(query) do
     Regex.match?(@ordinary_word_query, normalize_title(query))
+  end
+
+  defp normalize_websearch_query(query) do
+    String.replace(query, ~r/\bhttps?:\/\//iu, "")
   end
 
   defp build_prefix_tsquery(query) do
