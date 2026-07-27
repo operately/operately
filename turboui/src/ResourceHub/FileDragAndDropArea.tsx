@@ -6,10 +6,15 @@ import { useFileDragAndDrop } from "./useFileDragAndDrop";
 interface FileDragAndDropAreaProps {
   children: React.ReactNode;
   onFilesDropped: (files: File[]) => void;
+  label?: string;
 }
 
-export function FileDragAndDropArea({ children, onFilesDropped }: FileDragAndDropAreaProps) {
-  const { isFileDragging, onDragLeave, onDragOver, onDrop } = useFileDragAndDrop(onFilesDropped);
+export function FileDragAndDropArea({
+  children,
+  onFilesDropped,
+  label = "Drop files here to upload them",
+}: FileDragAndDropAreaProps) {
+  const { isFileDragging, onDragEnter, onDragLeave, onDragOver, onDrop } = useFileDragAndDrop(onFilesDropped);
 
   const overlayClassName = classNames(
     "fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 z-50",
@@ -23,12 +28,12 @@ export function FileDragAndDropArea({ children, onFilesDropped }: FileDragAndDro
   );
 
   return (
-    <div onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop} className="">
+    <div onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       {children}
 
       <div className={overlayClassName}>
         <div className="flex items-center justify-center h-full">
-          <div className={messageClassName}>Drop files to upload them to Resource Hub</div>
+          <div className={messageClassName}>{label}</div>
         </div>
       </div>
     </div>
