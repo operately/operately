@@ -53,7 +53,7 @@ The resource-hub problem is the same retrieval problem with an additional scope 
 - Search the title/name and textual body of supported Operately resources.
 - Include closed, completed, paused, and archived work unless it has been deleted.
 - Enforce company isolation and existing view permissions before returning titles, snippets, or metadata.
-- Use one search implementation for company and resource-hub scopes.
+- Use one PostgreSQL search projection for company and resource-hub scopes while keeping their loading, API, and UI code independent.
 - Preserve the current global search overlay, keyboard shortcut, and keyboard navigation.
 - Explain why every result matched.
 - Return enough results to find older work without creating a separate search page in the first release.
@@ -174,9 +174,9 @@ Preserve:
 - Escape and click-outside to close
 - the existing modal width, responsive maximum width, and scrollable result area unless testing shows a concrete layout problem
 
-Represent results as ordered sections. The company search preserves its existing `SPACES`, `GOALS`, `PROJECTS`, `MILESTONES`, `TASKS`, and `PEOPLE` groups. Those familiar navigation matches retain their compact presentation.
+Do not refactor `GlobalSearch` as part of the resource-hub release. Resource-hub search has an independent inline UI and does not depend on the company overlay.
 
-In Phase 3, company-wide full-text matches that do not already appear in the legacy groups are appended in a mixed `MORE MATCHES` section.
+In Phase 3, extend the company overlay to represent results as ordered sections. Preserve its existing `SPACES`, `GOALS`, `PROJECTS`, `MILESTONES`, `TASKS`, and `PEOPLE` groups and their compact presentation, then append company-wide full-text matches that do not already appear in those groups under `MORE MATCHES`.
 
 Detailed full-text rows show:
 
@@ -203,7 +203,7 @@ Resource-hub search covers the entire hub, including descendants of nested folde
 
 ### 9. TurboUI remains pure
 
-`turboui/src/GlobalSearch` owns company overlay presentation and interaction state. `ResourceHubPage` owns the separate inline field and replacement-list state. Both receive display data, links, and callbacks through props.
+`turboui/src/GlobalSearch` owns company overlay presentation and interaction state. Resource-hub and Docs & Files components own their separate inline fields and replacement-list state. Both receive display data, nodes, links, and callbacks through props.
 
 It must not:
 
@@ -220,7 +220,7 @@ The app bridge owns:
 - navigation callbacks
 - any feature-flag or rollout choice
 
-Keep company and resource-hub adapters as sibling app modules. The company adapter returns overlay sections; the resource-hub adapter returns list-row nodes and canonical paths.
+Keep resource-hub search independent from company search. The resource-hub adapter returns list-row nodes and canonical paths. Phase 3 introduces a separate company adapter when the company API begins returning legacy groups plus full-text results.
 
 ### 10. Canonical writes enqueue reliable index refreshes
 
@@ -510,7 +510,7 @@ Requirements:
 
 ### TurboUI stories
 
-Update `turboui/src/GlobalSearch/index.stories.tsx` with:
+In Phase 3, update `turboui/src/GlobalSearch/index.stories.tsx` with:
 
 - mixed title and content matches
 - grouped legacy company results
@@ -518,12 +518,13 @@ Update `turboui/src/GlobalSearch/index.stories.tsx` with:
 - closed/completed/archived results
 - long title, path, and snippet content
 - company scope
-- resource-hub inline search with matching, loading, empty, error, and cleared states
 - loading
 - empty
 - error
 - enough results to exercise scrolling
 - keyboard navigation interaction coverage
+
+Cover resource-hub inline matching, loading, empty, error, and cleared states in the Resource Hub, Project, and Goal page stories instead of `GlobalSearch` stories.
 
 ---
 
@@ -597,14 +598,7 @@ Implement this phase as three ordered PRs so indexing, querying, and the complet
 - [x] Authorize the resource hub at the API boundary, then apply resource-hub, publication, deletion, and current-hierarchy predicates before ranking and limiting.
 - [x] Cover permissions, nested-folder scope, ranking, node hydration, and exclusion rules with backend tests.
 
-#### PR 2.3a — `chore: Support grouped sections in global search`
-
-- [ ] Extend TurboUI `GlobalSearch` with ordered sections, match source, plain-text snippets, error state, scrolling, and optional shortcut behavior.
-- [ ] Keep the component pure: accept API-shaped data, links, and callbacks without app imports, routing, contexts, or API calls.
-- [ ] Preserve the existing company resource-type groups and compact legacy rows through a dedicated company adapter.
-- [ ] Add focused component, mapper, Storybook, and company feature coverage for sections and cross-section keyboard navigation.
-
-#### PR 2.3b — `chore: Add search to resource hubs`
+#### PR 2.3 — `chore: Add search to resource hubs`
 
 - [x] Add the scoped inline search field before the sort/filter control in standalone resource hubs and the project and goal Docs & Files tabs.
 - [x] Return API-shaped resource-hub nodes directly and reuse the ordinary row and canonical path handling.
@@ -617,17 +611,56 @@ Until the initial backfill and controlled rollout are complete, the resource-hub
 
 This phase closes #4682 as scoped here: native documents are searchable by title and body, while folders, uploaded-file records, and links are searchable by their Operately name and description. Uploaded binary and remote-link body extraction remain explicitly out of scope.
 
-### Phase 3 — Company-wide full-text corpus
+### Phase 3 — Company-wide full-text corpus and UI
 
-- [ ] Add company scope to the same query used by resource hubs.
-- [ ] Index the highest-value historical sources first: native documents, discussions, projects, goals, check-ins, and retrospectives.
-- [ ] Add milestones, tasks, people, and additional source types only when product usage shows that they improve retrieval.
-- [ ] Include closed/completed/archived resources with state metadata.
-- [ ] Have one company API request return the existing grouped matches plus ordered full-text matches.
+Implement the critical path as five ordered PRs. Keep lower-value corpus expansion and the MCP contract as follow-up work after the web result contract and search quality are stable.
+
+#### PR 3.1 — `chore: Add permission-aware company search query`
+
+- [ ] Query the shared `search_entries` projection across the authenticated company without changing the API or UI.
+- [ ] Apply live access-context permissions before selecting titles, snippets, state, or navigation metadata.
+- [ ] Add company-wide ranking, current-record exclusions, context hydration, match-source detection, plain-text snippets, and stable ordering.
+- [ ] Cover relevance, company isolation, permission changes, stale entries, closed/archived state, and navigation metadata with focused domain tests.
+- [ ] Use existing resource-hub entries and targeted fixtures so this query does not depend on every company source adapter landing first.
+
+#### PR 3.2 — `chore: Index core work for company search`
+
+- [ ] Add and register source adapters for projects, goals, and discussions.
+- [ ] Index names/titles, descriptions/content, current scopes, access contexts, timestamps, and closed/archived state.
+- [ ] Enqueue reliable refreshes from the relevant create, edit, close/archive, restore, and delete operations.
+- [ ] Cover adapter output, operation refreshes, exclusions, backfill, reconciliation, and restoration.
+
+Native resource-hub documents are already indexed by Phase 2 and become company-search candidates through PR 3.1.
+
+#### PR 3.3 — `chore: Index historical narrative work`
+
+- [ ] Add and register source adapters for project check-ins, goal check-ins, and project retrospectives.
+- [ ] Define stable result titles and parent context for records whose primary identity comes from a project or goal.
+- [ ] Index only published records while allowing their parent project or goal to be closed.
+- [ ] Cover publication rules, rich-text extraction, parent permissions and state, refreshes, backfill, and reconciliation.
+
+#### PR 3.4 — `chore: Add combined company search API`
+
+- [ ] Have one company API request run the existing grouped navigation query and the new full-text query.
+- [ ] Preserve the existing grouped `spaces`, `goals`, `projects`, `milestones`, `tasks`, and `people` fields during compatibility.
 - [ ] Deduplicate full-text matches against legacy results by `(source_type, source_id)` on the server.
-- [ ] Append the remaining ranked full-text results to the company overlay under `MORE MATCHES`.
-- [ ] Update the MCP search tool additively after the web result contract is stable.
-- [ ] Add complete authorization, relevance, state, and navigation tests.
+- [ ] Return the remaining ranked full-text results with match source, context, state, safe snippet, and typed navigation metadata.
+- [ ] Update serializers and generated clients, and cover the complete response contract without changing `GlobalSearch` yet.
+
+#### PR 3.5 — `chore: Add full-text matches to global search`
+
+- [ ] Extend TurboUI `GlobalSearch` with ordered sections, match source, plain-text snippets, error handling, stale-response protection, and selected-result scrolling.
+- [ ] Keep `GlobalSearch` pure and preserve its existing shortcut, interaction model, resource-type groups, and compact legacy rows through a dedicated company adapter.
+- [ ] Append ranked full-text results under `MORE MATCHES` without changing the ordering or presentation of the existing groups.
+- [ ] Add focused component, mapper, Storybook, and company feature coverage for request states, sections, deduplication, and cross-section keyboard navigation.
+
+#### Optional PR 3.6 — `chore: Expand the company search corpus`
+
+- [ ] Measure retrieval gaps before adding milestones, tasks, people, or other lower-value source types to the full-text index.
+- [ ] Add only source types that materially improve retrieval beyond the existing name-based navigation groups.
+- [ ] Apply the same adapter, refresh, authorization, backfill, and reconciliation requirements to every added type.
+
+Update the MCP search tool in a separate follow-up after the combined web API and `MORE MATCHES` contract are stable.
 
 This phase closes #1421.
 
