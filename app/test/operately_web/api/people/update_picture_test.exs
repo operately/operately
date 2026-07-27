@@ -94,7 +94,7 @@ defmodule OperatelyWeb.Api.People.UpdatePictureTest do
     end
 
     test "does not enqueue a limit email for avatar uploads", ctx do
-      enable_billing(ctx.company)
+      enable_billing()
 
       blob =
         blob_fixture(%{
@@ -142,10 +142,8 @@ defmodule OperatelyWeb.Api.People.UpdatePictureTest do
     Operately.Repo.insert(changeset)
   end
 
-  defp enable_billing(company) do
+  defp enable_billing do
     Application.put_env(:operately, :billing_enabled, true)
     on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
-
-    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

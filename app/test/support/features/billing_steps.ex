@@ -15,12 +15,6 @@ defmodule Operately.Support.Features.BillingSteps do
     |> Factory.log_in_person(:creator)
   end
 
-  step :given_a_company_exists_without_billing_feature, ctx do
-    ctx
-    |> Factory.setup()
-    |> Factory.log_in_person(:creator)
-  end
-
   step :given_a_billing_enabled_company_exists_and_i_am_company_admin, ctx do
     ctx
     |> Factory.setup()
@@ -37,10 +31,6 @@ defmodule Operately.Support.Features.BillingSteps do
 
   step :given_another_billing_enabled_company_exists, ctx do
     Factory.add_company(ctx, :second_company, ctx.account, name: "Beta Labs")
-  end
-
-  step :enable_limit_enforcement_for_company, ctx do
-    Factory.enable_feature(ctx, "billing")
   end
 
   step :seed_active_billing_catalog, ctx do

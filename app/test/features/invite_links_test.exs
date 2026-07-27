@@ -75,7 +75,6 @@ defmodule Operately.Features.InviteLinksTest do
 
     feature "company-wide invite join is blocked when the company is full", ctx do
       ctx
-      |> Steps.enable_billing_for_company()
       |> Steps.fill_company_to_member_limit()
       |> Steps.follow_invite_link()
       |> Steps.assert_on_company_full_page()
@@ -103,7 +102,6 @@ defmodule Operately.Features.InviteLinksTest do
 
     feature "logs in via email and is redirected to the blocked page when the company is full", ctx do
       ctx
-      |> Steps.enable_billing_for_company()
       |> Steps.fill_company_to_member_limit()
       |> Steps.visit_log_in_page_with_invite_token()
       |> Steps.log_in_with_email()
@@ -158,7 +156,6 @@ defmodule Operately.Features.InviteLinksTest do
 
     feature "signs up via email and is redirected to the blocked page when the company is full", ctx do
       ctx
-      |> Steps.enable_billing_for_company()
       |> Steps.fill_company_to_member_limit()
       |> Steps.given_that_an_invite_link_exists()
       |> Steps.visit_sign_up_page_with_invite_token()

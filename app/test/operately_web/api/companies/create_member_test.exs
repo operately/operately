@@ -135,7 +135,6 @@ defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
     Application.put_env(:operately, :billing_enabled, true)
     on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
 
-    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
     company
   end
 

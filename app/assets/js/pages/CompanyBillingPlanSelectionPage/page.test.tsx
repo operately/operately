@@ -159,7 +159,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
       navigation: [],
       billing: billingOverviewMock(),
       selection: selectCompanyBillingTarget(billingOverviewMock(), parseCompanyBillingSearch("")),
-      limitsEnforced: true,
       testId: "company-billing-plan-selection-page",
     });
 
@@ -173,7 +172,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=yearly")),
       actionError: null,
       isSubmitting: false,
@@ -230,7 +228,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(
         billing,
         parseCompanyBillingSearch("?plan=enterprise&billing_period=monthly"),
@@ -259,7 +256,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("")),
       actionError: null,
       isSubmitting: false,
@@ -289,7 +285,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("")),
       actionError: null,
       isSubmitting: false,
@@ -315,7 +310,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: { target: null, source: null, warning: null },
       actionError: null,
       isSubmitting: false,
@@ -341,7 +335,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=yearly")),
       actionError: null,
       isSubmitting: false,
@@ -372,7 +365,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
@@ -402,7 +394,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
@@ -432,7 +423,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
@@ -458,7 +448,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
@@ -486,7 +475,6 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
 
     const selection = buildCompanyBillingPlanSelectionMode({
       billing,
-      limitsEnforced: true,
       selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
       actionError: null,
       isSubmitting: false,
@@ -501,35 +489,5 @@ describe("CompanyBillingPlanSelectionPage bridge helpers", () => {
     );
     expect(selection.consequenceNotice?.description).toContain("60 active members");
     expect(selection.consequenceNotice?.description).toContain("120 GB");
-  });
-
-  it("keeps downgrade timing but suppresses overage warnings when limits are not enforced", () => {
-    const billing = billingOverviewMock({
-      account: {
-        planKey: "business",
-        billingInterval: "monthly",
-        status: "active",
-      } as any,
-      memberCount: 60,
-      storageUsageBytes: 120 * 1024 ** 3,
-    });
-
-    const selection = buildCompanyBillingPlanSelectionMode({
-      billing,
-      limitsEnforced: false,
-      selection: selectCompanyBillingTarget(billing, parseCompanyBillingSearch("?plan=team&billing_period=monthly")),
-      actionError: null,
-      isSubmitting: false,
-      onSelectPlan: jest.fn(),
-      onSelectInterval: jest.fn(),
-      onSubmit: jest.fn(),
-    });
-
-    expect(selection.consequenceNotice).toMatchObject({
-      tone: "info",
-      description: "",
-      rows: [],
-    });
-    expect(selection.consequenceNotice?.message).toContain("takes effect at the next renewal");
   });
 });

@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploadedTest do
     end
 
     test "enqueues a near-limit warning email when uploaded storage reaches 90 percent", ctx do
-      enable_billing(ctx.company)
+      enable_billing()
       threshold = Operately.Billing.EnforceLimits.near_limit_threshold(Operately.Billing.Plans.storage_limit_bytes(:free))
 
       blob_fixture(%{
@@ -99,10 +99,8 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploadedTest do
     end
   end
 
-  defp enable_billing(company) do
+  defp enable_billing do
     Application.put_env(:operately, :billing_enabled, true)
     on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
-
-    {:ok, _company} = Operately.Companies.enable_experimental_feature(company, "billing")
   end
 end

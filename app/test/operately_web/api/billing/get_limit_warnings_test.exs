@@ -18,7 +18,6 @@ defmodule OperatelyWeb.Api.Billing.GetLimitWarningsTest do
       ctx =
         ctx
         |> Factory.setup()
-        |> Factory.enable_feature("billing")
         |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, [:billing, :get_limit_warnings], %{})
@@ -30,7 +29,6 @@ defmodule OperatelyWeb.Api.Billing.GetLimitWarningsTest do
       ctx =
         ctx
         |> Factory.setup()
-        |> Factory.enable_feature("billing")
         |> Factory.add_company_admin(:admin)
         |> Factory.log_in_person(:admin)
 
@@ -41,7 +39,6 @@ defmodule OperatelyWeb.Api.Billing.GetLimitWarningsTest do
       ctx =
         ctx
         |> Factory.setup()
-        |> Factory.enable_feature("billing")
         |> Factory.add_company_member(:member)
         |> Factory.set_company_access_level(:member, Binding.edit_access())
         |> Factory.log_in_person(:member)
@@ -49,7 +46,9 @@ defmodule OperatelyWeb.Api.Billing.GetLimitWarningsTest do
       assert {403, _} = query(ctx.conn, [:billing, :get_limit_warnings], %{})
     end
 
-    test "it returns not found when billing is disabled for the company", ctx do
+    test "it returns not found when billing is disabled", ctx do
+      Application.put_env(:operately, :billing_enabled, false)
+
       ctx =
         ctx
         |> Factory.setup()
@@ -187,7 +186,6 @@ defmodule OperatelyWeb.Api.Billing.GetLimitWarningsTest do
     ctx =
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("billing")
       |> Factory.log_in_person(:creator)
 
     {:ok, ctx}

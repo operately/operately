@@ -80,7 +80,6 @@ type Story = StoryObj<typeof meta>;
 export const NormalPaidCancellation: Story = {
   render: () => (
     <CompanyBillingCancellationPage
-      limitsEnforced={true}
       title={["Acme", "Cancel plan"]}
       navigation={navigation}
       billing={billingOverviewMock()}
@@ -94,7 +93,6 @@ export const NormalPaidCancellation: Story = {
 export const OverFreeLimitWarning: Story = {
   render: () => (
     <CompanyBillingCancellationPage
-      limitsEnforced={true}
       title={["Acme", "Cancel plan"]}
       navigation={navigation}
       billing={billingOverviewMock({ memberCount: 25 })}
@@ -105,24 +103,9 @@ export const OverFreeLimitWarning: Story = {
   ),
 };
 
-export const CommerceFirstCancellation: Story = {
-  render: () => (
-    <CompanyBillingCancellationPage
-      limitsEnforced={false}
-      title={["Acme", "Cancel plan"]}
-      navigation={navigation}
-      billing={billingOverviewMock({ memberCount: 25 })}
-      onKeepCurrentPlan={() => console.log("keep")}
-      onCancelPlan={() => console.log("schedule cancellation")}
-      testId="billing-cancellation-page-commerce-first"
-    />
-  ),
-};
-
 export const SafeWithinFreeLimit: Story = {
   render: () => (
     <CompanyBillingCancellationPage
-      limitsEnforced={true}
       title={["Acme", "Cancel plan"]}
       navigation={navigation}
       billing={billingOverviewMock({ memberCount: 8 })}

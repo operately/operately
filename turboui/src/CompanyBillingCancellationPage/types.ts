@@ -33,7 +33,6 @@ export namespace CompanyBillingCancellationPage {
   export interface Props {
     title: string | string[];
     billing: BillingOverview;
-    limitsEnforced: boolean;
     navigation?: Navigation.Item[];
     actionError?: string | null;
     isSubmitting?: boolean;
