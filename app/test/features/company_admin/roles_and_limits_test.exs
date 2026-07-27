@@ -15,7 +15,7 @@ defmodule Operately.Features.CompanyAdmin.RolesAndLimitsTest do
     }
 
     ctx
-    |> Steps.enable_billing_for_company()
+    |> Steps.seed_billing_catalog()
     |> Steps.fill_company_to_member_limit()
     |> Steps.open_company_team_page()
     |> Steps.invite_company_member(params)
@@ -39,7 +39,7 @@ defmodule Operately.Features.CompanyAdmin.RolesAndLimitsTest do
     }
 
     ctx
-    |> Steps.enable_billing_for_company()
+    |> Steps.seed_billing_catalog()
     |> Steps.fill_company_to_one_below_member_limit()
     |> Steps.open_company_team_page()
     |> Steps.invite_company_member(first_params)
@@ -59,7 +59,7 @@ defmodule Operately.Features.CompanyAdmin.RolesAndLimitsTest do
     }
 
     ctx
-    |> Steps.enable_billing_for_company()
+    |> Steps.seed_billing_catalog()
     |> Steps.fill_company_to_member_limit()
     |> Steps.open_company_team_page()
     |> Steps.invite_outside_collaborator(params)

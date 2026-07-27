@@ -16,7 +16,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   @tag role: :admin
   feature "manage people page keeps only allowed actions in read-only mode", ctx do
     ctx
-    |> RecoverySteps.enable_billing_for_company()
+    |> RecoverySteps.seed_billing_catalog()
     |> AdminSteps.given_a_company_member_exists()
     |> RecoverySteps.add_invited_company_member(:invited_member, "Invited Memberson")
     |> RecoverySteps.add_expired_invited_company_member(:expired_invited_member, "Expired Invitee")
@@ -31,7 +31,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   @tag role: :owner
   feature "payment grace shows a company-wide danger banner instead of limit banners", ctx do
     ctx
-    |> RecoverySteps.enable_billing_for_company()
+    |> RecoverySteps.seed_billing_catalog()
     |> RecoverySteps.fill_company_to_near_member_limit()
     |> RecoverySteps.put_company_in_payment_recovery(:payment_grace)
     |> AdminSteps.visit_company_home_page()
@@ -45,7 +45,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   @tag role: :admin
   feature "company admins can review billing during payment grace", ctx do
     ctx
-    |> RecoverySteps.enable_billing_for_company()
+    |> RecoverySteps.seed_billing_catalog()
     |> RecoverySteps.put_company_in_payment_recovery(:payment_grace)
     |> AdminSteps.visit_company_home_page()
     |> RecoverySteps.assert_payment_default_banner_has_upgrade_cta()
@@ -56,7 +56,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   @tag role: :owner
   feature "owners do not see rename or trusted email domain actions after the company becomes read-only", ctx do
     ctx
-    |> RecoverySteps.enable_billing_for_company()
+    |> RecoverySteps.seed_billing_catalog()
     |> RecoverySteps.put_company_in_payment_recovery(:read_only)
     |> RecoverySteps.assert_rename_company_hidden_on_company_admin_page()
     |> RecoverySteps.assert_trusted_email_domains_hidden_on_company_admin_page()
@@ -65,7 +65,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   @tag role: :member
   feature "regular members see the payment grace banner without a CTA", ctx do
     ctx
-    |> RecoverySteps.enable_billing_for_company()
+    |> RecoverySteps.seed_billing_catalog()
     |> RecoverySteps.put_company_in_payment_recovery(:payment_grace)
     |> AdminSteps.visit_company_home_page()
     |> RecoverySteps.assert_payment_default_banner_has_no_upgrade_cta()
@@ -76,7 +76,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   @tag role: :member
   feature "regular members still see the payment banner after the company becomes read-only", ctx do
     ctx
-    |> RecoverySteps.enable_billing_for_company()
+    |> RecoverySteps.seed_billing_catalog()
     |> RecoverySteps.put_company_in_payment_recovery(:read_only)
     |> AdminSteps.visit_company_home_page()
     |> RecoverySteps.assert_payment_default_banner_has_no_upgrade_cta()
@@ -87,7 +87,7 @@ defmodule Operately.Features.CompanyBillingRecoveryTest do
   @tag role: :admin
   feature "company admins can open the cancellation page during payment recovery", ctx do
     ctx
-    |> RecoverySteps.enable_billing_for_company()
+    |> RecoverySteps.seed_billing_catalog()
     |> RecoverySteps.put_company_in_payment_recovery(:payment_grace)
     |> RecoverySteps.visit_company_billing_cancel_page()
     |> BillingSteps.assert_billing_cancellation_page_is_open()

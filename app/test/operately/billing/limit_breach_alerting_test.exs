@@ -69,8 +69,11 @@ defmodule Operately.Billing.LimitBreachAlertingTest do
     end)
   end
 
-  test "does not enqueue limit-reached emails when global billing is enabled but company limits are off", ctx do
-    enable_global_billing()
+  test "does not enqueue limit-reached emails when global billing is disabled", ctx do
+    previous_value = Application.get_env(:operately, :billing_enabled)
+    Application.put_env(:operately, :billing_enabled, false)
+    on_exit(fn -> restore_billing_enabled(previous_value) end)
+
     fill_company_to_member_count(ctx.company, 20)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
@@ -81,8 +84,6 @@ defmodule Operately.Billing.LimitBreachAlertingTest do
 
   defp enable_billing(company) do
     enable_global_billing()
-
-    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
     company
   end
 

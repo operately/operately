@@ -14,7 +14,7 @@ export function buildCompanyBillingCancellationPageViewModel(
   return {
     pageTitle: "Cancel plan",
     pageSubtitle: "See what will change before this company moves to the Free plan.",
-    summary: buildCompanyBillingCancellationSummary(props.billing, props.limitsEnforced),
+    summary: buildCompanyBillingCancellationSummary(props.billing),
     errorMessage: props.actionError || null,
     cancelAction: {
       label: "Schedule cancellation",
@@ -30,7 +30,6 @@ export function buildCompanyBillingCancellationPageViewModel(
 
 export function buildCompanyBillingCancellationSummary(
   billing: CompanyBillingCancellationPage.BillingOverview,
-  limitsEnforced: boolean,
 ): CompanyBillingCancellationPage.CancellationSummary {
   const currentPlan = findCompanyBillingPlanDefinition(billing.plans, billing.account.planKey);
   const currentPeriodEnd = formatCompanyBillingDate(billing.account.currentPeriodEnd);
@@ -60,7 +59,7 @@ export function buildCompanyBillingCancellationSummary(
       : "This company will stay on its current paid plan until the end of the current billing period.",
     consequenceDescription: "After that, the company will move to the Free plan.",
     overLimitWarning:
-      limitsEnforced && consequence.overageKind !== "none"
+      consequence.overageKind !== "none"
         ? {
             message: overLimitWarningMessage(consequence.overageKind),
             description: buildCompanyBillingOverageDescription(consequence) || "",

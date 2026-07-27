@@ -69,7 +69,7 @@ defmodule OperatelyWeb.Api.Billing.GetAccessStateTest do
                blocked: false,
                code: "member_count_limit_exceeded",
                current_usage: 2,
-               enforced: false,
+               enforced: true,
                limit: 20,
                limit_key: "member_count",
                near_limit: false,
@@ -83,7 +83,7 @@ defmodule OperatelyWeb.Api.Billing.GetAccessStateTest do
                blocked: false,
                code: "storage_limit_exceeded",
                current_usage: 2048,
-               enforced: false,
+               enforced: true,
                limit: Plans.storage_limit_bytes(:free),
                limit_key: "storage_bytes",
                near_limit: false,
@@ -126,18 +126,9 @@ defmodule OperatelyWeb.Api.Billing.GetAccessStateTest do
       assert res.access_state.access_state_ends_at == DateTime.to_iso8601(ends_at)
       assert res.access_state.member_limit.plan_key == "team"
       assert res.access_state.member_limit.limit == 50
-      assert res.access_state.member_limit.enforced == false
+      assert res.access_state.member_limit.enforced == true
       assert res.access_state.storage_limit.plan_key == "team"
       assert res.access_state.storage_limit.limit == Plans.storage_limit_bytes(:team)
-      assert res.access_state.storage_limit.enforced == false
-    end
-
-    test "it marks limit snapshots as enforced for flagged companies", ctx do
-      ctx = Factory.enable_feature(ctx, "billing")
-
-      assert {200, res} = query(ctx.conn, [:billing, :get_access_state], %{})
-
-      assert res.access_state.member_limit.enforced == true
       assert res.access_state.storage_limit.enforced == true
     end
   end

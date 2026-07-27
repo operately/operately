@@ -71,7 +71,6 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
       restore_billing_enabled(previous_value)
     end)
 
-    {:ok, company} = Operately.Companies.enable_experimental_feature(company, "billing")
     company
   end
 

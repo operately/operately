@@ -43,7 +43,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     end
   end
 
-  step :enable_billing_for_company, ctx do
+  step :seed_billing_catalog, ctx do
     Billing.create_product(%{
       provider: "polar",
       plan_family: "team",
@@ -52,7 +52,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
       active: true
     })
 
-    Factory.enable_feature(ctx, "billing")
+    ctx
   end
 
   step :fill_company_to_member_limit, ctx do
@@ -858,6 +858,10 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :refute_company_billing_banner_visible, ctx do
     ctx |> UI.refute_has(testid: "company-billing-danger-banner")
+  end
+
+  step :assert_company_billing_banner_visible, ctx do
+    ctx |> UI.assert_has(testid: "company-billing-danger-banner")
   end
 
   step :assert_redirected_to_company_admin_page, ctx do
