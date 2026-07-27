@@ -84,6 +84,87 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert id == ctx.document.id
   end
 
+  test "matches word prefixes in titles and bodies while typing", ctx do
+    ctx =
+      Factory.add_document(ctx, :sentence, :hub,
+        name: "Typing notes",
+        content: RichText.rich_text("This is just a test")
+      )
+
+    sync(:document, ctx.sentence.id)
+
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "just a t")
+    assert id == ctx.sentence.id
+
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "navig")
+    assert id == ctx.document.id
+
+    assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "Enterpri")
+    assert id == ctx.document.id
+  end
+
+  test "matches structured lexemes in document bodies", ctx do
+    ctx =
+      Factory.add_document(ctx, :structured_lexemes, :hub,
+        name: "Contact directory",
+        content:
+          RichText.rich_text(
+            "Contact support@operately.com at example.com about version v1.2.3 or 3.14 on 2026-07-27 at 14:30. Read /docs/start or https://operately.com/docs/search about alpha-beta."
+          )
+      )
+
+    sync(:document, ctx.structured_lexemes.id)
+
+    for query <- [
+          "support@operately.com",
+          "example.com",
+          "3.14",
+          "2026-07-27",
+          "14:30",
+          "v1.2.3",
+          "/docs/start",
+          "alpha-beta",
+          "contact support@operately.com",
+          "https://operately.com/docs/search"
+        ] do
+      assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, query)
+      assert id == ctx.structured_lexemes.id
+    end
+  end
+
+  test "preserves OR semantics with structured lexemes", ctx do
+    ctx =
+      Factory.add_document(ctx, :support, :hub,
+        name: "Support directory",
+        content: RichText.rich_text("Contact support@operately.com")
+      )
+
+    sync(:document, ctx.support.id)
+
+    result_ids =
+      ctx.hub
+      |> Search.search_resource_hub("navigation OR support@operately.com")
+      |> Enum.map(& &1.document.id)
+      |> MapSet.new()
+
+    assert result_ids == MapSet.new([ctx.document.id, ctx.support.id])
+  end
+
+  test "matches non-Latin word prefixes", ctx do
+    ctx =
+      Factory.add_document(ctx, :international, :hub,
+        name: "International notes",
+        content: RichText.rich_text("Навигационные заметки 東京計画")
+      )
+
+    sync(:document, ctx.international.id)
+
+    for query <- ["Навигац", "東京"] do
+      assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, query)
+      assert id == ctx.international.id
+    end
+  end
+
   test "searches space-, project-, and goal-owned resource hubs", ctx do
     ctx =
       ctx
