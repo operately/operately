@@ -3,18 +3,9 @@ import { DateField } from "../DateField";
 import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
 import * as Types from "../TaskBoard/types";
 import { Timeline } from "../Timeline";
-import {
-  IconCheck,
-  IconClipboardText,
-  IconFlag,
-  IconFlagFilled,
-  IconListCheck,
-  IconLogs,
-  IconMessage,
-  IconMessages,
-} from "../icons";
+import { IconCheck, IconFlag, IconFlagFilled } from "../icons";
 import { ProjectPageLayout } from "../ProjectPageLayout";
-import { useTabs } from "../Tabs";
+import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
 import { MilestoneSidebar } from "./components/Sidebar";
 import { DeleteModal } from "./components/DeleteModal";
 import { PersonField } from "../PersonField";
@@ -180,27 +171,12 @@ export function MilestonePage(props: MilestonePage.Props) {
     }
   };
 
-  const tabs = useTabs(
-    "tasks",
-    [
-      { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-      {
-        id: "tasks",
-        label: "Tasks",
-        icon: <IconListCheck size={14} />,
-        count: childrenCount.tasksCount,
-      },
-      { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} />, count: childrenCount.checkInsCount },
-      {
-        id: "discussions",
-        label: "Discussions",
-        icon: <IconMessages size={14} />,
-        count: childrenCount.discussionsCount,
-      },
-      { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
-    ],
-    { urlPath: projectLink },
-  );
+  const tabs = useProjectPageTabs({
+    defaultTab: "tasks",
+    childrenCount,
+    showDocsAndFiles: true,
+    urlPath: projectLink,
+  });
 
   const spaceProps =
     "space" in state ? { space: state.space, workmapLink: state.workmapLink } : { homeLink: state.homeLink };

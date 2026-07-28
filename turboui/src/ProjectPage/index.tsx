@@ -1,16 +1,15 @@
 import React from "react";
 
 import { ProjectPageLayout } from "../ProjectPageLayout";
+import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
 
 import { PageDocsAndFilesTab, type PageDocsAndFiles } from "../DocsAndFiles/PageDocsAndFiles";
-import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { BadgeStatus } from "../StatusBadge/types";
 import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
-import { useTabs } from "../Tabs";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import type { KanbanBoardProps, KanbanState } from "../TaskBoard/KanbanView/types";
 import { CheckIns } from "./CheckIns";
@@ -228,29 +227,11 @@ export function ProjectPage(props: ProjectPage.Props) {
   const state = useProjectPageState(props);
   const taskCompletion = React.useMemo(() => getTaskCompletionStats(state.tasks), [state.tasks]);
 
-  const tabs = useTabs("overview", [
-    { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    {
-      id: "tasks",
-      label: "Tasks",
-      icon: <IconListCheck size={14} />,
-      count: state.childrenCount.tasksCount,
-    },
-    { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} />, count: state.childrenCount.checkInsCount },
-    {
-      id: "discussions",
-      label: "Discussions",
-      icon: <IconMessages size={14} />,
-      count: state.childrenCount.discussionsCount,
-    },
-    {
-      id: "docs-and-files",
-      label: "Docs & Files",
-      icon: <IconClipboardText size={14} />,
-      hidden: !state.docsAndFiles,
-    },
-    { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
-  ]);
+  const tabs = useProjectPageTabs({
+    defaultTab: "overview",
+    childrenCount: state.childrenCount,
+    showDocsAndFiles: Boolean(state.docsAndFiles),
+  });
   const activeTab = !state.docsAndFiles && tabs.active === "docs-and-files" ? "overview" : tabs.active;
 
   return (
@@ -267,7 +248,9 @@ export function ProjectPage(props: ProjectPage.Props) {
         {activeTab === "tasks" && <TasksSection state={state} />}
         {activeTab === "check-ins" && <CheckIns {...state} />}
         {activeTab === "discussions" && <Discussions {...state} />}
-        {activeTab === "docs-and-files" && state.docsAndFiles && <PageDocsAndFilesTab docsAndFiles={state.docsAndFiles} />}
+        {activeTab === "docs-and-files" && state.docsAndFiles && (
+          <PageDocsAndFilesTab docsAndFiles={state.docsAndFiles} />
+        )}
         {activeTab === "activity" && <Activity {...state} />}
       </div>
 

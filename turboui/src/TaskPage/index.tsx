@@ -6,8 +6,7 @@ import { TimelineItem, TimelineFilters } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
 import { DateField } from "../DateField";
 import { ProjectPageLayout } from "../ProjectPageLayout";
-import { useTabs } from "../Tabs";
-import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
+import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
 import { SidebarNotificationSection } from "../SidebarSection";
 
 import { PageHeader } from "./PageHeader";
@@ -275,32 +274,12 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
 export function TaskPage(props: TaskPage.Props) {
   const contentState = useTaskPageState(props);
 
-  const tabs = useTabs(
-    "tasks",
-    [
-      { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-      {
-        id: "tasks",
-        label: "Tasks",
-        icon: <IconListCheck size={14} />,
-        count: props.childrenCount.tasksCount,
-      },
-      {
-        id: "check-ins",
-        label: "Check-ins",
-        icon: <IconMessage size={14} />,
-        count: props.childrenCount.checkInsCount,
-      },
-      {
-        id: "discussions",
-        label: "Discussions",
-        icon: <IconMessages size={14} />,
-        count: props.childrenCount.discussionsCount,
-      },
-      { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
-    ],
-    { urlPath: props.projectLink },
-  );
+  const tabs = useProjectPageTabs({
+    defaultTab: "tasks",
+    childrenCount: props.childrenCount,
+    showDocsAndFiles: true,
+    urlPath: props.projectLink,
+  });
 
   return (
     <ProjectPageLayout
