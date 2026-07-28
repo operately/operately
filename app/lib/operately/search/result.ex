@@ -7,5 +7,5 @@ defmodule Operately.Search.Result do
   """
 
   @enforce_keys [:id, :type, :title, :context, :matched_field, :navigation_target]
-  defstruct [:id, :type, :title, :context, :matched_field, :snippet, :navigation_target]
+  defstruct [:id, :type, :title, :context, :matched_field, :snippet, :state, :navigation_target]
 end

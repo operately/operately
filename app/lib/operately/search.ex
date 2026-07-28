@@ -12,9 +12,15 @@ defmodule Operately.Search do
   """
 
   alias Ecto.Multi
+  alias Operately.People.Person
   alias Operately.Repo
   alias Operately.ResourceHubs.ResourceHub
-  alias Operately.Search.{IndexRun, MaintenanceWorker, ResourceHubQuery, SourceRegistry}
+  alias Operately.Search.{CompanyQuery, IndexRun, MaintenanceWorker, ResourceHubQuery, SourceRegistry}
+
+  @doc """
+  Returns permission-aware, relevance-ranked full-text results for a person's company.
+  """
+  def search_company(%Person{} = person, query), do: CompanyQuery.search(person, query)
 
   @doc """
   Returns fully hydrated resource-hub nodes in full-text relevance order.
