@@ -4,7 +4,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{Document, DocumentVersion, Node}
-  alias Operately.Search.ResourceHubIndex
+  alias Operately.Search.Indexing.ResourceHub, as: SearchIndex
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, hub, attrs) do
@@ -29,7 +29,7 @@ defmodule Operately.Operations.ResourceHubDocumentCreating do
     end)
     |> maybe_insert_created_version(author, attrs)
     |> SubscriptionList.update(:document)
-    |> ResourceHubIndex.enqueue_resource(:search_document, :document, fn changes -> changes.document.id end)
+    |> SearchIndex.enqueue_resource(:search_document, :document, fn changes -> changes.document.id end)
     |> Multi.run(:document_with_node, fn _, changes ->
       document = Map.put(changes.document, :node, changes.node)
       {:ok, document}

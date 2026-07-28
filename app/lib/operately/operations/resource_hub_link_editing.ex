@@ -4,12 +4,12 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.Link
-  alias Operately.Search.ResourceHubIndex
+  alias Operately.Search.Indexing.ResourceHub, as: SearchIndex
 
   def run(author, link, attrs) do
     Multi.new()
     |> Multi.update(:link, Link.changeset(link, attrs))
-    |> ResourceHubIndex.enqueue_resource(:search_link, :link, fn changes -> changes.link.id end)
+    |> SearchIndex.enqueue_resource(:search_link, :link, fn changes -> changes.link.id end)
     |> Multi.run(:link_with_node, fn _, changes ->
       link = Map.put(changes.link, :node, link.node)
       {:ok, link}

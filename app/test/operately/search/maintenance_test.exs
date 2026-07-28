@@ -5,11 +5,14 @@ defmodule Operately.Search.MaintenanceTest do
   alias Operately.Access
   alias Operately.Projects.Project
   alias Operately.Search
-  alias Operately.Search.{Entry, IndexMaintenance, IndexRun, Indexer, MaintenanceWorker, Source, SourceRegistry}
+  alias Operately.Search.Entry
+  alias Operately.Search.Indexing
+  alias Operately.Search.Indexing.{Adapter, AdapterRegistry}
+  alias Operately.Search.Maintenance.{BatchRunner, Run, Worker}
   alias Operately.Support.Factory
 
   defmodule ProjectSource do
-    @behaviour Operately.Search.Source
+    @behaviour Operately.Search.Indexing.Adapter
 
     import Ecto.Query
 
@@ -28,14 +31,14 @@ defmodule Operately.Search.MaintenanceTest do
         |> after_cursor(cursor)
         |> order_by([project], asc: project.id)
         |> limit(^limit)
-        |> Source.lock_for_maintenance()
+        |> Adapter.lock_for_maintenance()
 
       {:ok, Repo.all(query, with_deleted: true)}
     end
 
     @impl true
     def fetch_by_ids(ids) do
-      query = Project |> where([project], project.id in ^ids) |> Source.lock_for_maintenance()
+      query = Project |> where([project], project.id in ^ids) |> Adapter.lock_for_maintenance()
       {:ok, Repo.all(query, with_deleted: true)}
     end
 
@@ -73,7 +76,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   defmodule FailingProjectSource do
-    @behaviour Operately.Search.Source
+    @behaviour Operately.Search.Indexing.Adapter
 
     @impl true
     def source_type, do: "project"
@@ -89,10 +92,10 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   setup do
-    previous_sources = Application.fetch_env(:operately, SourceRegistry)
+    previous_sources = Application.fetch_env(:operately, AdapterRegistry)
     previous_batch_size = Application.get_env(:operately, :search_index_batch_size, 500)
 
-    Application.put_env(:operately, SourceRegistry, [ProjectSource])
+    Application.put_env(:operately, AdapterRegistry, [ProjectSource])
     Application.put_env(:operately, :search_index_batch_size, 1)
 
     on_exit(fn ->
@@ -104,11 +107,11 @@ defmodule Operately.Search.MaintenanceTest do
     |> Factory.add_space(:space)
   end
 
-  defp restore_source_registry({:ok, source_modules}), do: Application.put_env(:operately, SourceRegistry, source_modules)
-  defp restore_source_registry(:error), do: Application.delete_env(:operately, SourceRegistry)
+  defp restore_source_registry({:ok, source_modules}), do: Application.put_env(:operately, AdapterRegistry, source_modules)
+  defp restore_source_registry(:error), do: Application.delete_env(:operately, AdapterRegistry)
 
   test "returns a clear error when no sources are registered" do
-    Application.put_env(:operately, SourceRegistry, [])
+    Application.put_env(:operately, AdapterRegistry, [])
     assert {:error, :no_sources_registered} = Search.start_backfill(:all)
     assert {:error, :unknown_source_type} = Search.start_backfill("missing")
   end
@@ -171,11 +174,11 @@ defmodule Operately.Search.MaintenanceTest do
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
-      [job] = all_enqueued(worker: MaintenanceWorker)
+      [job] = all_enqueued(worker: Worker)
 
       log =
         ExUnit.CaptureLog.capture_log(fn ->
-          assert {:error, "search index maintenance failed"} = MaintenanceWorker.perform(job)
+          assert {:error, "search index maintenance failed"} = Worker.perform(job)
         end)
 
       refute log =~ "private source content"
@@ -189,10 +192,10 @@ defmodule Operately.Search.MaintenanceTest do
 
       recovered_at = NaiveDateTime.add(ctx.project.updated_at, 1, :second)
       ctx.project |> Ecto.Changeset.change(name: "Recovered title", updated_at: recovered_at) |> Repo.update!()
-      assert :ok = MaintenanceWorker.perform(job)
+      assert :ok = Worker.perform(job)
 
-      next_job = all_enqueued(worker: MaintenanceWorker) |> Enum.find(& &1.args["cursor"])
-      assert :ok = MaintenanceWorker.perform(next_job)
+      next_job = all_enqueued(worker: Worker) |> Enum.find(& &1.args["cursor"])
+      assert :ok = Worker.perform(next_job)
 
       completed = Search.get_index_run(run.id)
       assert completed.status == :completed
@@ -208,11 +211,11 @@ defmodule Operately.Search.MaintenanceTest do
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
-      [job] = all_enqueued(worker: MaintenanceWorker)
+      [job] = all_enqueued(worker: Worker)
 
       log =
         ExUnit.CaptureLog.capture_log(fn ->
-          assert {:error, "search index maintenance failed"} = MaintenanceWorker.perform(job)
+          assert {:error, "search index maintenance failed"} = Worker.perform(job)
         end)
 
       refute log =~ "private source content"
@@ -226,12 +229,12 @@ defmodule Operately.Search.MaintenanceTest do
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
-      [job] = all_enqueued(worker: MaintenanceWorker)
+      [job] = all_enqueued(worker: Worker)
       final_attempt = %{job | attempt: job.max_attempts}
 
       log =
         ExUnit.CaptureLog.capture_log(fn ->
-          assert {:discard, "search index maintenance failed"} = MaintenanceWorker.perform(final_attempt)
+          assert {:discard, "search index maintenance failed"} = Worker.perform(final_attempt)
         end)
 
       failed_run = Search.get_index_run(run.id)
@@ -253,7 +256,7 @@ defmodule Operately.Search.MaintenanceTest do
     context = Access.get_context!(project_id: ctx.project.id)
 
     {:ok, _} =
-      Operately.Search.Indexer.upsert(%{
+      Operately.Search.Indexing.upsert(%{
         source_type: "project",
         source_id: Ecto.UUID.generate(),
         company_id: ctx.company.id,
@@ -292,14 +295,14 @@ defmodule Operately.Search.MaintenanceTest do
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
-      [first_job] = all_enqueued(worker: MaintenanceWorker)
+      [first_job] = all_enqueued(worker: Worker)
       assert first_job.args["run_id"] == run.id
       assert first_job.args["phase"] == "source_scan"
 
-      assert :ok = perform_job(MaintenanceWorker, first_job.args)
+      assert :ok = perform_job(Worker, first_job.args)
       after_first_batch = Search.get_index_run(run.id)
 
-      assert :ok = perform_job(MaintenanceWorker, first_job.args)
+      assert :ok = perform_job(Worker, first_job.args)
       after_replay = Search.get_index_run(run.id)
 
       assert after_replay.processed_count == after_first_batch.processed_count
@@ -312,24 +315,37 @@ defmodule Operately.Search.MaintenanceTest do
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
-      [job] = all_enqueued(worker: MaintenanceWorker)
+      [job] = all_enqueued(worker: Worker)
 
       legacy_args = Map.put(job.args, "phase", "sources")
-      assert :ok = perform_job(MaintenanceWorker, legacy_args)
+      assert :ok = perform_job(Worker, legacy_args)
 
       assert Search.get_index_run(run.id).processed_count == 1
     end)
   end
 
-  test "marks a maintenance run as failed after the worker's final attempt" do
-    Application.put_env(:operately, SourceRegistry, [FailingProjectSource])
+  test "continues jobs queued with the previous worker module name", ctx do
+    Factory.add_project(ctx, :project, :space)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
-      [job] = all_enqueued(worker: MaintenanceWorker)
+      [job] = all_enqueued(worker: Worker)
+
+      assert {:ok, Operately.Search.MaintenanceWorker} = Oban.Worker.from_string("Operately.Search.MaintenanceWorker")
+      assert :ok = Operately.Search.MaintenanceWorker.perform(job)
+      assert Search.get_index_run(run.id).processed_count == 1
+    end)
+  end
+
+  test "marks a maintenance run as failed after the worker's final attempt" do
+    Application.put_env(:operately, AdapterRegistry, [FailingProjectSource])
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, run} = Search.start_backfill("project")
+      [job] = all_enqueued(worker: Worker)
       final_attempt = %{job | attempt: job.max_attempts}
 
-      assert {:discard, "search index maintenance failed"} = MaintenanceWorker.perform(final_attempt)
+      assert {:discard, "search index maintenance failed"} = Worker.perform(final_attempt)
 
       failed_run = Search.get_index_run(run.id)
       assert failed_run.status == :failed
@@ -343,7 +359,7 @@ defmodule Operately.Search.MaintenanceTest do
     run = start_and_drain(:backfill)
 
     args = %{"run_id" => run.id, "phase" => "source_scan", "cursor" => nil}
-    assert :ok = IndexMaintenance.mark_failed(args, :delayed_failure)
+    assert :ok = BatchRunner.mark_failed(args, :delayed_failure)
 
     completed_run = Search.get_index_run(run.id)
     assert completed_run.status == :completed
@@ -355,14 +371,14 @@ defmodule Operately.Search.MaintenanceTest do
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
-      [job] = all_enqueued(worker: MaintenanceWorker)
-      assert :ok = MaintenanceWorker.perform(job)
+      [job] = all_enqueued(worker: Worker)
+      assert :ok = Worker.perform(job)
 
       checkpoint = Search.get_index_run(run.id)
       assert checkpoint.status == :running
       assert checkpoint.cursor
 
-      assert :ok = IndexMaintenance.mark_failed(job.args, :delayed_failure)
+      assert :ok = BatchRunner.mark_failed(job.args, :delayed_failure)
       assert Search.get_index_run(run.id).status == :running
     end)
   end
@@ -377,7 +393,7 @@ defmodule Operately.Search.MaintenanceTest do
 
       assert {:ok, run} = start_result
       assert %{failure: 0} = Oban.drain_queue(queue: :default, with_recursion: true)
-      Repo.get!(IndexRun, run.id)
+      Repo.get!(Run, run.id)
     end)
   end
 
@@ -388,6 +404,6 @@ defmodule Operately.Search.MaintenanceTest do
     |> Map.merge(Map.new(overrides))
     |> Map.put(:source_type, "project")
     |> Map.put(:source_id, project.id)
-    |> Indexer.upsert()
+    |> Indexing.upsert()
   end
 end
