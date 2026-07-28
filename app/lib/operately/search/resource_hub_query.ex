@@ -11,63 +11,55 @@ defmodule Operately.Search.ResourceHubQuery do
 
   alias Operately.Repo
   alias Operately.ResourceHubs.{Document, File, Folder, Link, Node, ResourceHub}
-  alias Operately.Search.{Entry, Text}
+  alias Operately.Search.{Entry, FullTextQuery, Text}
 
   @limit 30
 
   def search(%ResourceHub{} = hub, query) do
-    normalized_query = Text.normalize_query(query)
+    case Text.prepare_query(query) do
+      {:ok, normalized_query} ->
+        hub.id
+        |> candidate_query(normalized_query)
+        |> Repo.all()
+        |> load_nodes()
 
-    if String.length(Text.normalize_title(normalized_query)) < 2 do
-      []
-    else
-      hub.id
-      |> candidate_query(normalized_query)
-      |> Repo.all()
-      |> load_nodes()
+      :error ->
+        []
     end
   end
 
   defp candidate_query(hub_id, query) do
-    normalized_title = Text.normalize_title(query)
-    title_prefix = title_prefix_pattern(normalized_title)
-    {use_prefix?, tsquery_expr, websearch_expr} = tsquery_args(query)
+    full_text = FullTextQuery.build(query)
     eligible_items = eligible_items_query(hub_id)
     visible_nodes = visible_nodes_query(hub_id)
 
     from(entry in Entry,
+      as: :entry,
       join: item in subquery(eligible_items),
       on: item.source_id == entry.source_id and item.source_type == entry.source_type,
       join: visible_node in "visible_search_nodes",
       on: visible_node.node_id == item.node_id,
       where: entry.resource_hub_id == ^hub_id,
-      where:
-        fragment(
-          "? @@ (CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-          field(entry, :search_vector),
-          ^use_prefix?,
-          ^tsquery_expr,
-          ^websearch_expr
-        ) or fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
+      where: ^FullTextQuery.match_dynamic(full_text),
       select: item.node_id,
       order_by: [
-        desc: entry.normalized_title == ^normalized_title,
-        desc: fragment("? LIKE ? ESCAPE '!'", entry.normalized_title, ^title_prefix),
+        desc: entry.normalized_title == ^full_text.normalized_title,
+        desc: fragment("? AND ? LIKE ? ESCAPE '!'", ^full_text.title_prefix?, entry.normalized_title, ^full_text.title_prefix),
         desc:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            entry.title,
-            ^use_prefix?,
-            ^tsquery_expr,
-            ^websearch_expr
+            "ts_rank_cd(ARRAY[0.0,0.0,0.0,1.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            field(entry, :search_vector),
+            ^full_text.use_prefix?,
+            ^full_text.tsquery_expr,
+            ^full_text.websearch_expr
           ),
         desc:
           fragment(
-            "ts_rank_cd(to_tsvector('public.operately'::regconfig, coalesce(?, '')), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            entry.body,
-            ^use_prefix?,
-            ^tsquery_expr,
-            ^websearch_expr
+            "ts_rank_cd(ARRAY[0.0,0.0,1.0,0.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            field(entry, :search_vector),
+            ^full_text.use_prefix?,
+            ^full_text.tsquery_expr,
+            ^full_text.websearch_expr
           ),
         asc: entry.source_id
       ],
@@ -75,21 +67,6 @@ defmodule Operately.Search.ResourceHubQuery do
     )
     |> recursive_ctes(true)
     |> with_cte("visible_search_nodes", as: ^visible_nodes)
-  end
-
-  defp tsquery_args(query) do
-    case Text.search_tsquery(query) do
-      {:prefix, tsquery} -> {true, tsquery, query}
-      {:websearch, websearch_query} -> {false, "", websearch_query}
-    end
-  end
-
-  defp title_prefix_pattern(title) do
-    title
-    |> String.replace("!", "!!")
-    |> String.replace("%", "!%")
-    |> String.replace("_", "!_")
-    |> Kernel.<>("%")
   end
 
   # Eligible items are non-deleted hub resources with current nodes; documents must also be published.

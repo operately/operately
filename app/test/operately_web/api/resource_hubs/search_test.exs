@@ -76,6 +76,16 @@ defmodule OperatelyWeb.Api.ResourceHubs.SearchTest do
              })
   end
 
+  test "returns empty results for PostgreSQL-invalid query text", ctx do
+    ctx = Factory.log_in_person(ctx, :creator)
+
+    assert {200, %{nodes: []}} =
+             query(ctx.conn, [:resource_hubs, :search], %{
+               resource_hub_id: Paths.resource_hub_id(ctx.hub),
+               query: <<0, ?x>>
+             })
+  end
+
   test "does not reveal inaccessible or cross-company resource hubs", ctx do
     ctx =
       ctx

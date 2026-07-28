@@ -65,6 +65,22 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert Enum.take(result_ids, 4) == [ctx.exact.id, ctx.prefix.id, ctx.title_term.id, ctx.body_match.id]
   end
 
+  test "keeps title matches ahead of bodies with many repeated matches", ctx do
+    repeated_body = Enum.join(List.duplicate("signal", 20), " ")
+
+    ctx =
+      ctx
+      |> Factory.add_document(:title_match, :hub, name: "Roadmap signal", content: RichText.rich_text("Unrelated"))
+      |> Factory.add_document(:body_match, :hub, name: "Evidence archive", content: RichText.rich_text(repeated_body))
+
+    sync(:document, ctx.title_match.id)
+    sync(:document, ctx.body_match.id)
+
+    assert [title_match, body_match] = Search.search_resource_hub(ctx.hub, "signal")
+    assert title_match.document.id == ctx.title_match.id
+    assert body_match.document.id == ctx.body_match.id
+  end
+
   test "normalizes case and accents and accepts web-search phrases", ctx do
     ctx =
       Factory.add_document(ctx, :accented, :hub,
@@ -81,7 +97,55 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert id == ctx.accented.id
 
     assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "customer -archive")
-    assert id == ctx.document.id
+    assert id == ctx.accented.id
+  end
+
+  test "does not match quoted phrases across the title and body boundary", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:split_phrase, :hub,
+        name: "Boundary customer",
+        content: RichText.rich_text("research archive")
+      )
+      |> Factory.add_document(:title_phrase, :hub,
+        name: "Customer research findings",
+        content: RichText.rich_text("archive evidence")
+      )
+
+    sync(:document, ctx.split_phrase.id)
+    sync(:document, ctx.title_phrase.id)
+
+    results = Search.search_resource_hub(ctx.hub, ~s("customer research"))
+    result_ids = Enum.map(results, & &1.document.id)
+
+    assert ctx.title_phrase.id in result_ids
+    refute ctx.split_phrase.id in result_ids
+
+    assert [%{document: %{id: mixed_id}}] =
+             Search.search_resource_hub(ctx.hub, ~s("customer research" archive))
+
+    assert mixed_id == ctx.title_phrase.id
+
+    or_result_ids =
+      ctx.hub
+      |> Search.search_resource_hub(~s("customer research" OR navigation))
+      |> Enum.map(& &1.document.id)
+
+    assert ctx.title_phrase.id in or_result_ids
+    assert ctx.document.id in or_result_ids
+  end
+
+  test "does not admit phrase or OR syntax through literal title-prefix matching", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:quoted_punctuation, :hub, name: ~s("%%" literal title))
+      |> Factory.add_document(:or_punctuation, :hub, name: "%% OR __ literal title")
+
+    sync(:document, ctx.quoted_punctuation.id)
+    sync(:document, ctx.or_punctuation.id)
+
+    assert [] = Search.search_resource_hub(ctx.hub, ~s("%%"))
+    assert [] = Search.search_resource_hub(ctx.hub, "%% OR __")
   end
 
   test "matches word prefixes in titles and bodies while typing", ctx do
@@ -260,6 +324,17 @@ defmodule Operately.Search.ResourceHubQueryTest do
 
   test "returns no results for short queries", ctx do
     assert [] = Search.search_resource_hub(ctx.hub, "a")
+  end
+
+  test "returns no results for oversized queries", ctx do
+    oversized_query = Enum.map_join(1..20_000, " ", &"query#{&1}")
+
+    assert [] = Search.search_resource_hub(ctx.hub, oversized_query)
+  end
+
+  test "returns no results for PostgreSQL-invalid query text", ctx do
+    assert [] = Search.search_resource_hub(ctx.hub, <<0, ?x>>)
+    assert [] = Search.search_resource_hub(ctx.hub, <<255, 255>>)
   end
 
   defp rename_resource_hub_items(ctx) do
