@@ -1,4 +1,5 @@
 import * as React from "react";
+import Api from "@/api";
 import * as api from "@/api";
 import { Reactions } from "turboui";
 
@@ -6,9 +7,9 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import * as People from "@/models/people";
 import { usePaths } from "@/routes/paths";
 
-import { Entity, parseReactionsForTurboUi, useAddReaction, useRemoveReaction } from "./index";
+import { Entity, parseReactionsForTurboUi } from "./index";
 
-export interface ReactionsFormState {
+interface ReactionsFormState {
   reactions: Reactions.Reaction[];
   currentPersonId: string | null | undefined;
   onAddReaction: (emoji: string) => Promise<void>;
@@ -18,8 +19,8 @@ export interface ReactionsFormState {
 export function useReactionsForm(entity: Entity, initial: api.Reaction[]): ReactionsFormState {
   const me = useMe();
   const paths = usePaths();
-  const [add] = useAddReaction();
-  const [removeReaction] = useRemoveReaction();
+  const [add] = Api.reactions.useCreate();
+  const [removeReaction] = Api.reactions.useDelete();
 
   const [reactions, setReactions] = React.useState<Reactions.Reaction[]>(() => {
     return parseReactionsForTurboUi(paths, initial);

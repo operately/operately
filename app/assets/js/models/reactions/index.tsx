@@ -1,15 +1,9 @@
-import Api from "@/api";
 import * as api from "@/api";
 import * as People from "@/models/people";
 import { Paths } from "@/routes/paths";
 
-export type Reaction = api.Reaction;
-export const useAddReaction = Api.reactions.useCreate;
-export const useRemoveReaction = Api.reactions.useDelete;
-
 export { useReactionHandlers } from "./useReactionHandlers";
 export { useReactionsForm } from "./useReactionsForm";
-export type { ReactionsFormState } from "./useReactionsForm";
 
 type EntityType =
   | "project_check_in"
