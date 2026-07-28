@@ -6,11 +6,10 @@ import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router";
 import { links } from "@/models/resourceHubs";
 
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import { assertPresent } from "@/utils/assertions";
 
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import {
@@ -19,6 +18,7 @@ import {
   LinkIcon,
   Modal,
   Page as TurboUIPage,
+  Reactions,
   Spacer,
   type ResourceHubLinkType,
 } from "turboui";
@@ -129,13 +129,13 @@ function LinkReactions() {
   assertPresent(link.reactions, "reactions must be present in link");
 
   const reactions = link.reactions.map((r) => r!);
-  const entity = Reactions.entity(link.id!, "resource_hub_link");
-  const addReactionForm = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(link.id!, "resource_hub_link");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
   return (
     <>
       <Spacer size={2} />
-      <ReactionList size={24} form={addReactionForm} canAddReaction={link.permissions.canCommentOnLink} />
+      <Reactions {...form} size={24} canAddReaction={link.permissions.canCommentOnLink} />
     </>
   );
 }

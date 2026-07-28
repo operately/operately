@@ -8,6 +8,8 @@ export const useAddReaction = Api.reactions.useCreate;
 export const useRemoveReaction = Api.reactions.useDelete;
 
 export { useReactionHandlers } from "./useReactionHandlers";
+export { useReactionsForm } from "./useReactionsForm";
+export type { ReactionsFormState } from "./useReactionsForm";
 
 type EntityType =
   | "project_check_in"
@@ -37,10 +39,7 @@ export function entity(id: string, type: EntityType, parentType?: ParentType): E
 /**
  * Parses backend Reaction objects to the format expected by TurboUI
  */
-export function parseReactionsForTurboUi(
-  paths: Paths,
-  reactions: api.Reaction[] | null | undefined,
-) {
+export function parseReactionsForTurboUi(paths: Paths, reactions: api.Reaction[] | null | undefined) {
   if (!reactions) return [];
 
   return reactions
@@ -57,7 +56,9 @@ export function parseReactionsForTurboUi(
       };
     })
     .filter(
-      (reaction): reaction is {
+      (
+        reaction,
+      ): reaction is {
         id: string;
         emoji: string;
         person: NonNullable<ReturnType<typeof People.parsePersonForTurboUi>>;
