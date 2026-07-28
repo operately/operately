@@ -14,6 +14,7 @@ defmodule Operately.Operations.GoalDeleting do
 
   alias Ecto.Multi
   alias Operately.{Repo, Goals, Updates}
+  alias Operately.Search.IndexUpdates
 
   def run(goal) do
     Multi.new()
@@ -21,6 +22,7 @@ defmodule Operately.Operations.GoalDeleting do
     |> collect_check_ins(goal)
     |> delete_comments()
     |> delete_reactions()
+    |> IndexUpdates.delete_scope(:search_goal_scope, :goal_id, goal.id)
     |> Multi.delete(:goal, goal)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)

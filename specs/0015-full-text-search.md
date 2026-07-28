@@ -632,11 +632,11 @@ adapters before that source type is considered searchable.
 
 #### PR 3.2 — `chore: Index core work for company search`
 
-- [ ] Add and register source adapters for projects, goals, and discussions.
-- [ ] Extend the company query and result builder with live eligibility, context, state, match-source, and typed navigation handling for projects, goals, and discussions.
-- [ ] Index names/titles, descriptions/content, current scopes, access contexts, timestamps, and closed/archived state.
-- [ ] Enqueue reliable refreshes from the relevant create, edit, close/archive, restore, and delete operations.
-- [ ] Cover adapter output, query results, permissions, operation refreshes, exclusions, backfill, reconciliation, and restoration.
+- [x] Add and register source adapters for projects, goals, and discussions.
+- [x] Extend the company query and result builder with live eligibility, context, state, match-source, and typed navigation handling for projects, goals, and discussions.
+- [x] Index names/titles, descriptions/content, current scopes, access contexts, timestamps, and closed/archived state.
+- [x] Enqueue reliable refreshes from the relevant create, edit, close/archive, restore, and delete operations.
+- [x] Cover adapter output, query results, permissions, operation refreshes, exclusions, backfill, reconciliation, and restoration.
 
 Native resource-hub content is already indexed by Phase 2 and is the first source
 family accepted by company search through PR 3.1.

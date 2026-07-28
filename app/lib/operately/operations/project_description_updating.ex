@@ -4,6 +4,7 @@ defmodule Operately.Operations.ProjectDescriptionUpdating do
   alias Operately.Activities
   alias Operately.Projects.Project
   alias Operately.Operations.Notifications.Subscription
+  alias Operately.Search.IndexUpdates
 
   def run(author, project, description) do
     Multi.new()
@@ -22,6 +23,7 @@ defmodule Operately.Operations.ProjectDescriptionUpdating do
         description: description
       }
     end)
+    |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

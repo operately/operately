@@ -3,6 +3,7 @@ defmodule Operately.Operations.DiscussionPublishing do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Messages.Message
+  alias Operately.Search.IndexUpdates
 
   def run(creator, discussion) do
     Multi.new()
@@ -14,6 +15,7 @@ defmodule Operately.Operations.DiscussionPublishing do
       discussion_id: discussion.id,
       title: discussion.title,
     } end)
+    |> IndexUpdates.enqueue(:search_discussion, "discussion", discussion.id)
     |> Repo.transaction()
     |> Repo.extract_result(:message)
   end

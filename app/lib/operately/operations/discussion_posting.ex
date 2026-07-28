@@ -3,6 +3,7 @@ defmodule Operately.Operations.DiscussionPosting do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Search.IndexUpdates
 
   def run(creator, space, attrs) do
     with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
@@ -23,6 +24,7 @@ defmodule Operately.Operations.DiscussionPosting do
       |> SubscriptionList.update(:message)
       |> record_activity(creator, space, attrs)
       |> maybe_enqueue_oban_job(attrs)
+      |> IndexUpdates.enqueue(:search_discussion, "discussion", fn changes -> changes.message.id end)
       |> Repo.transaction()
       |> Repo.extract_result(:message)
     end

@@ -1068,7 +1068,9 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def delete_project(multi) do
-      Ecto.Multi.run(multi, :deleted_project, fn _, changes ->
+      multi
+      |> Operately.Search.IndexUpdates.delete_scope(:search_project_scope, :project_id, fn changes -> changes.project.id end)
+      |> Ecto.Multi.run(:deleted_project, fn _, changes ->
         Operately.Projects.delete_project(changes.project)
       end)
     end

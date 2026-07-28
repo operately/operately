@@ -5,6 +5,7 @@ defmodule Operately.Operations.ProjectSpaceMoving do
   alias Operately.Access.Binding
   alias Operately.Activities
   alias Operately.Projects.Project
+  alias Operately.Search.IndexUpdates
 
   def run(author, project, space_id) do
     Multi.new()
@@ -15,6 +16,7 @@ defmodule Operately.Operations.ProjectSpaceMoving do
     |> delete_old_binding(project.group_id)
     |> insert_new_binding(space_id)
     |> insert_activity(author, project)
+    |> IndexUpdates.enqueue(:search_project, "project", project.id)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

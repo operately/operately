@@ -10,6 +10,7 @@ defmodule Operately.Operations.ProjectCreation do
   alias Operately.Projects.{Project, Contributor}
   alias Operately.ResourceHubs.ResourceHub
   alias Operately.ContextualDates.ContextualDate
+  alias Operately.Search.IndexUpdates
   alias Ecto.Multi
 
   defstruct [
@@ -39,6 +40,7 @@ defmodule Operately.Operations.ProjectCreation do
     |> insert_mentioned_people(params)
     |> insert_bindings(params)
     |> insert_activity(params)
+    |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

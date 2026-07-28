@@ -2,11 +2,13 @@ defmodule Operately.Operations.MessageArchiving do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.Search.IndexUpdates
 
   def run(author, message) do
     Multi.new()
     |> soft_delete_message(message)
     |> record_activity(author, message)
+    |> IndexUpdates.enqueue(:search_discussion, "discussion", message.id)
     |> Repo.transaction()
   end
 
