@@ -10,23 +10,20 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
 
   import Ecto.Query
 
-  alias Operately.ResourceHubs.{Document, File, Folder, Link, Node, ResourceHub}
+  alias Operately.ResourceHubs.{Document, File, Folder, Link, ResourceHub}
 
-  @visible_nodes_cte "visible_company_search_nodes"
+  @candidate_ancestors_cte "company_search_candidate_ancestors"
 
-  def visible_nodes_cte, do: @visible_nodes_cte
+  def candidate_ancestors_cte, do: @candidate_ancestors_cte
 
   @doc """
   Returns current folders, published documents, files, and links for a company.
 
   Each row includes the node ID, current owner name, and authoritative company,
-  access-context, hub, and scope IDs used to validate its search entry. The
-  two-argument form restricts work to the supplied accessible-context query.
+  access-context, hub, and scope IDs used to validate its search entry.
   """
-  def query(company_id), do: query(company_id, nil)
-
-  def query(company_id, accessible_contexts) do
-    hubs = eligible_hubs_query(company_id, accessible_contexts)
+  def query(company_id) do
+    hubs = eligible_hubs_query(company_id)
 
     folder_query =
       from(folder in Folder,
@@ -38,6 +35,7 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
           source_type: type(^"resource_hub_folder", :string),
           source_id: folder.id,
           node_id: node.id,
+          parent_folder_id: node.parent_folder_id,
           resource_hub_id: hub.resource_hub_id,
           company_id: hub.company_id,
           access_context_id: hub.access_context_id,
@@ -59,6 +57,7 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
           source_type: type(^"resource_hub_document", :string),
           source_id: document.id,
           node_id: node.id,
+          parent_folder_id: node.parent_folder_id,
           resource_hub_id: hub.resource_hub_id,
           company_id: hub.company_id,
           access_context_id: hub.access_context_id,
@@ -79,6 +78,7 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
           source_type: type(^"resource_hub_file", :string),
           source_id: file.id,
           node_id: node.id,
+          parent_folder_id: node.parent_folder_id,
           resource_hub_id: hub.resource_hub_id,
           company_id: hub.company_id,
           access_context_id: hub.access_context_id,
@@ -99,6 +99,7 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
           source_type: type(^"resource_hub_link", :string),
           source_id: link.id,
           node_id: node.id,
+          parent_folder_id: node.parent_folder_id,
           resource_hub_id: hub.resource_hub_id,
           company_id: hub.company_id,
           access_context_id: hub.access_context_id,
@@ -116,38 +117,39 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
   end
 
   @doc """
-  Returns non-deleted nodes reachable from a current company-owned hub root.
+  Walks from supplied candidate nodes toward their resource-hub roots.
 
-  Descendants are included only while every folder in their path still exists and
-  is not deleted. The two-argument form starts recursion only from hubs in the
-  supplied accessible-context query.
+  A candidate reaches a root only when every parent folder and folder node is
+  current, non-deleted, and belongs to the same resource hub.
   """
-  def visible_nodes_query(company_id), do: visible_nodes_query(company_id, nil)
-
-  def visible_nodes_query(company_id, accessible_contexts) do
-    hubs = eligible_hubs_query(company_id, accessible_contexts)
-
-    root_nodes =
-      from(node in Node,
-        join: hub in subquery(hubs),
-        on: hub.resource_hub_id == node.resource_hub_id,
-        where: is_nil(node.parent_folder_id) and is_nil(node.deleted_at),
-        select: %{node_id: node.id}
+  def ancestor_paths_query(candidates) do
+    candidate_nodes =
+      from(candidate in subquery(candidates),
+        select: %{
+          entry_id: candidate.entry_id,
+          resource_hub_id: candidate.resource_hub_id,
+          parent_folder_id: candidate.parent_folder_id
+        }
       )
 
-    descendant_nodes =
-      from(parent in @visible_nodes_cte,
+    parent_folders =
+      from(path in @candidate_ancestors_cte,
         join: folder in Folder,
-        on: folder.node_id == parent.node_id,
-        join: child in assoc(folder, :child_nodes),
-        where: is_nil(folder.deleted_at) and is_nil(child.deleted_at),
-        select: %{node_id: child.id}
+        on: folder.id == path.parent_folder_id,
+        join: node in assoc(folder, :node),
+        where: is_nil(folder.deleted_at) and is_nil(node.deleted_at),
+        where: node.resource_hub_id == path.resource_hub_id,
+        select: %{
+          entry_id: path.entry_id,
+          resource_hub_id: path.resource_hub_id,
+          parent_folder_id: node.parent_folder_id
+        }
       )
 
-    union_all(root_nodes, ^descendant_nodes)
+    union_all(candidate_nodes, ^parent_folders)
   end
 
-  defp eligible_hubs_query(company_id, accessible_contexts) do
+  defp eligible_hubs_query(company_id) do
     space_hubs =
       from(hub in ResourceHub,
         join: space in assoc(hub, :space),
@@ -196,21 +198,8 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
         }
       )
 
-    hubs =
-      space_hubs
-      |> union_all(^project_hubs)
-      |> union_all(^goal_hubs)
-
-    restrict_to_accessible_contexts(hubs, accessible_contexts)
-  end
-
-  defp restrict_to_accessible_contexts(hubs, nil), do: hubs
-
-  defp restrict_to_accessible_contexts(hubs, accessible_contexts) do
-    from(hub in subquery(hubs),
-      join: context in subquery(accessible_contexts),
-      on: context.id == hub.access_context_id,
-      select: hub
-    )
+    space_hubs
+    |> union_all(^project_hubs)
+    |> union_all(^goal_hubs)
   end
 end

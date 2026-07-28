@@ -57,7 +57,7 @@ defmodule Operately.Search.CompanyQueryTest do
     assert link_id == ctx.link.id
   end
 
-  test "supports exact, prefix, title, body, phrase, exclusion, case, accents, and typed prefixes", ctx do
+  test "supports exact, prefix, title, body, phrase, unary-minus punctuation, case, accents, and typed prefixes", ctx do
     ctx =
       ctx
       |> Factory.add_document(:exact, :hub, name: "Café", content: RichText.rich_text("Unrelated"))
@@ -72,11 +72,138 @@ defmodule Operately.Search.CompanyQueryTest do
 
     assert Enum.any?(Search.search_company(ctx.creator, "Enterpri"), &(&1.id == ctx.document.id))
     assert Enum.any?(Search.search_company(ctx.creator, ~s("customer interviews")), &(&1.id == ctx.document.id))
-    assert Enum.any?(Search.search_company(ctx.creator, "customer -archive"), &(&1.id == ctx.document.id))
+    minus_result_ids = ctx.creator |> Search.search_company("customer -archive") |> Enum.map(& &1.id)
+    assert ctx.body.id in minus_result_ids
+    refute ctx.document.id in minus_result_ids
 
     or_result_ids = ctx.creator |> Search.search_company("navigation OR financial") |> Enum.map(& &1.id)
     assert ctx.document.id in or_result_ids
     assert ctx.resource_file.id in or_result_ids
+  end
+
+  test "does not match quoted phrases across the title and body boundary", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:split_phrase, :hub,
+        name: "Boundary customer",
+        content: RichText.rich_text("research archive")
+      )
+      |> Factory.add_document(:title_phrase, :hub,
+        name: "Customer research findings",
+        content: RichText.rich_text("archive evidence")
+      )
+
+    sync(:document, ctx.split_phrase.id)
+    sync(:document, ctx.title_phrase.id)
+
+    results = Search.search_company(ctx.creator, ~s("customer research"))
+    result_ids = Enum.map(results, & &1.id)
+
+    assert ctx.title_phrase.id in result_ids
+    refute ctx.split_phrase.id in result_ids
+
+    assert [%{id: mixed_id}] = Search.search_company(ctx.creator, ~s("customer research" archive))
+    assert mixed_id == ctx.title_phrase.id
+
+    or_result_ids =
+      ctx.creator
+      |> Search.search_company(~s("customer research" OR navigation))
+      |> Enum.map(& &1.id)
+
+    assert ctx.title_phrase.id in or_result_ids
+    assert ctx.document.id in or_result_ids
+  end
+
+  test "does not admit phrase or OR syntax through literal title-prefix matching", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:quoted_punctuation, :hub, name: ~s("%%" literal title))
+      |> Factory.add_document(:or_punctuation, :hub, name: "%% OR __ literal title")
+
+    sync(:document, ctx.quoted_punctuation.id)
+    sync(:document, ctx.or_punctuation.id)
+
+    assert [] = Search.search_company(ctx.creator, ~s("%%"))
+    assert [] = Search.search_company(ctx.creator, "%% OR __")
+  end
+
+  test "matches structured lexemes and preserves OR semantics", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:structured, :hub,
+        name: "Contact directory",
+        content:
+          RichText.rich_text(
+            "Contact support@operately.com at example.com about version v1.2.3 or 3.14 on 2026-07-27 at 14:30. Read /docs/start or https://operately.com/docs/search about alpha-beta."
+          )
+      )
+      |> Factory.add_document(:alternative, :hub,
+        name: "Navigation alternative",
+        content: RichText.rich_text("Fallback marker")
+      )
+
+    sync(:document, ctx.structured.id)
+    sync(:document, ctx.alternative.id)
+
+    for query <- [
+          "support@operately.com",
+          "example.com",
+          "3.14",
+          "2026-07-27",
+          "14:30",
+          "v1.2.3",
+          "/docs/start",
+          "alpha-beta",
+          "contact support@operately.com",
+          "https://operately.com/docs/search"
+        ] do
+      assert Enum.any?(Search.search_company(ctx.creator, query), &(&1.id == ctx.structured.id))
+    end
+
+    result_ids =
+      ctx.creator
+      |> Search.search_company("navigation OR support@operately.com")
+      |> Enum.map(& &1.id)
+
+    assert ctx.document.id in result_ids
+    assert ctx.structured.id in result_ids
+  end
+
+  test "matches non-Latin word prefixes", ctx do
+    ctx =
+      Factory.add_document(ctx, :international, :hub,
+        name: "International notes",
+        content: RichText.rich_text("Навигационные заметки 東京計画")
+      )
+
+    sync(:document, ctx.international.id)
+
+    for query <- ["Навигац", "東京"] do
+      assert Enum.any?(Search.search_company(ctx.creator, query), &(&1.id == ctx.international.id))
+    end
+  end
+
+  test "treats title prefix metacharacters as literal characters", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:percent_title, :hub, name: "%% roadmap")
+      |> Factory.add_document(:underscore_title, :hub, name: "__ notes")
+      |> Factory.add_document(:backslash_title, :hub, name: ~S(\\archive))
+      |> Factory.add_document(:escape_title, :hub, name: "!! priority")
+
+    Enum.each([ctx.percent_title, ctx.underscore_title, ctx.backslash_title, ctx.escape_title], &sync(:document, &1.id))
+
+    assert [%{id: percent_id}] = Search.search_company(ctx.creator, "%%")
+    assert percent_id == ctx.percent_title.id
+
+    assert [%{id: underscore_id}] = Search.search_company(ctx.creator, "__")
+    assert underscore_id == ctx.underscore_title.id
+
+    assert [%{id: backslash_id}] = Search.search_company(ctx.creator, ~S(\\))
+    assert backslash_id == ctx.backslash_title.id
+
+    assert [%{id: escape_id}] = Search.search_company(ctx.creator, "!!")
+    assert escape_id == ctx.escape_title.id
   end
 
   test "keeps title matches ahead of bodies with many repeated matches", ctx do
@@ -269,6 +396,9 @@ defmodule Operately.Search.CompanyQueryTest do
     assert order_by =~ ~r/::real\[\], [^,]+\."search_vector"/
     refute order_by =~ "ts_rank_cd(to_tsvector"
     assert sql =~ "THEN NULL ELSE ts_headline"
+    assert sql =~ ~s("company_search_candidates" AS MATERIALIZED)
+    assert sql =~ ~s("company_search_candidate_ancestors")
+    refute sql =~ "visible_company_search_nodes"
   end
 
   defp update_file_and_link(ctx) do

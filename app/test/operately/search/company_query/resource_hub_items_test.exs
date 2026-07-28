@@ -58,50 +58,86 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItemsTest do
     refute ctx.link.id in result_ids
   end
 
-  test "visible nodes exclude descendants below a deleted folder", ctx do
-    Repo.soft_delete!(ctx.parent)
-
-    query =
+  test "ancestor paths walk only supplied candidates and accept root and nested candidates", ctx do
+    candidates =
       from(item in subquery(ResourceHubItems.query(ctx.company.id)),
-        join: visible in "visible_company_search_nodes",
-        on: visible.node_id == item.node_id,
-        select: item.source_id
+        where: item.source_id in ^[ctx.document.id, ctx.resource_file.id],
+        select: %{
+          entry_id: item.source_id,
+          resource_hub_id: item.resource_hub_id,
+          parent_folder_id: item.parent_folder_id
+        }
       )
-      |> recursive_ctes(true)
-      |> with_cte("visible_company_search_nodes", as: ^ResourceHubItems.visible_nodes_query(ctx.company.id))
 
-    visible_ids = Repo.all(query)
+    root_entry_ids = root_entry_ids(ResourceHubItems.ancestor_paths_query(candidates))
 
-    refute ctx.parent.id in visible_ids
-    refute ctx.document.id in visible_ids
+    assert MapSet.new(root_entry_ids) == MapSet.new([ctx.document.id, ctx.resource_file.id])
+    refute ctx.link.id in root_entry_ids
   end
 
-  test "items and visible nodes include only hubs in the accessible-context query", ctx do
-    space_context = Operately.Access.get_context!(group_id: ctx.space.id)
-
-    accessible_contexts =
-      from(context in Operately.Access.Context,
-        where: context.id == ^space_context.id,
-        select: %{id: context.id}
+  test "ancestor paths reject deleted or missing ancestors", ctx do
+    candidates =
+      from(item in subquery(ResourceHubItems.query(ctx.company.id)),
+        where: item.source_id == ^ctx.document.id,
+        select: %{
+          entry_id: item.source_id,
+          resource_hub_id: item.resource_hub_id,
+          parent_folder_id: item.parent_folder_id
+        }
       )
 
-    visible_nodes = ResourceHubItems.visible_nodes_query(ctx.company.id, accessible_contexts)
-    accessible_item_ids = ResourceHubItems.query(ctx.company.id, accessible_contexts) |> Repo.all() |> Enum.map(& &1.source_id)
+    Repo.soft_delete!(ctx.parent)
+    assert root_entry_ids(ResourceHubItems.ancestor_paths_query(candidates)) == []
 
-    visible_node_ids =
-      from(node in "visible_company_search_nodes", select: type(node.node_id, :binary_id))
-      |> recursive_ctes(true)
-      |> with_cte("visible_company_search_nodes", as: ^visible_nodes)
-      |> Repo.all()
+    missing_parent_id = Ecto.UUID.generate()
 
-    assert ctx.parent.id in accessible_item_ids
-    assert ctx.document.id in accessible_item_ids
-    refute ctx.resource_file.id in accessible_item_ids
-    refute ctx.link.id in accessible_item_ids
+    missing_parent_candidates =
+      from(item in subquery(ResourceHubItems.query(ctx.company.id)),
+        where: item.source_id == ^ctx.resource_file.id,
+        select: %{
+          entry_id: item.source_id,
+          resource_hub_id: item.resource_hub_id,
+          parent_folder_id: type(^missing_parent_id, :binary_id)
+        }
+      )
 
-    assert ctx.parent.node_id in visible_node_ids
-    assert ctx.document.node_id in visible_node_ids
-    refute ctx.resource_file.node_id in visible_node_ids
-    refute ctx.link.node_id in visible_node_ids
+    assert root_entry_ids(ResourceHubItems.ancestor_paths_query(missing_parent_candidates)) == []
+  end
+
+  test "ancestor paths reject parent folders from another resource hub", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:other_project, :space)
+      |> Factory.add_resource_hub(:other_hub, :other_project, :creator)
+      |> Factory.add_folder(:other_parent, :other_hub)
+
+    Operately.ResourceHubs.Node
+    |> Repo.get!(ctx.document.node_id)
+    |> Operately.ResourceHubs.Node.changeset(%{parent_folder_id: ctx.other_parent.id})
+    |> Repo.update!()
+
+    candidates =
+      from(item in subquery(ResourceHubItems.query(ctx.company.id)),
+        where: item.source_id == ^ctx.document.id,
+        select: %{
+          entry_id: item.source_id,
+          resource_hub_id: item.resource_hub_id,
+          parent_folder_id: item.parent_folder_id
+        }
+      )
+
+    assert root_entry_ids(ResourceHubItems.ancestor_paths_query(candidates)) == []
+  end
+
+  defp root_entry_ids(ancestor_paths) do
+    ancestor_paths_cte = ResourceHubItems.candidate_ancestors_cte()
+
+    from(path in "company_search_candidate_ancestors",
+      where: is_nil(path.parent_folder_id),
+      select: type(path.entry_id, :binary_id)
+    )
+    |> recursive_ctes(true)
+    |> with_cte(^ancestor_paths_cte, as: ^ancestor_paths)
+    |> Repo.all()
   end
 end

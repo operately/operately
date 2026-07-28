@@ -97,7 +97,55 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert id == ctx.accented.id
 
     assert [%{document: %{id: id}}] = Search.search_resource_hub(ctx.hub, "customer -archive")
-    assert id == ctx.document.id
+    assert id == ctx.accented.id
+  end
+
+  test "does not match quoted phrases across the title and body boundary", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:split_phrase, :hub,
+        name: "Boundary customer",
+        content: RichText.rich_text("research archive")
+      )
+      |> Factory.add_document(:title_phrase, :hub,
+        name: "Customer research findings",
+        content: RichText.rich_text("archive evidence")
+      )
+
+    sync(:document, ctx.split_phrase.id)
+    sync(:document, ctx.title_phrase.id)
+
+    results = Search.search_resource_hub(ctx.hub, ~s("customer research"))
+    result_ids = Enum.map(results, & &1.document.id)
+
+    assert ctx.title_phrase.id in result_ids
+    refute ctx.split_phrase.id in result_ids
+
+    assert [%{document: %{id: mixed_id}}] =
+             Search.search_resource_hub(ctx.hub, ~s("customer research" archive))
+
+    assert mixed_id == ctx.title_phrase.id
+
+    or_result_ids =
+      ctx.hub
+      |> Search.search_resource_hub(~s("customer research" OR navigation))
+      |> Enum.map(& &1.document.id)
+
+    assert ctx.title_phrase.id in or_result_ids
+    assert ctx.document.id in or_result_ids
+  end
+
+  test "does not admit phrase or OR syntax through literal title-prefix matching", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:quoted_punctuation, :hub, name: ~s("%%" literal title))
+      |> Factory.add_document(:or_punctuation, :hub, name: "%% OR __ literal title")
+
+    sync(:document, ctx.quoted_punctuation.id)
+    sync(:document, ctx.or_punctuation.id)
+
+    assert [] = Search.search_resource_hub(ctx.hub, ~s("%%"))
+    assert [] = Search.search_resource_hub(ctx.hub, "%% OR __")
   end
 
   test "matches word prefixes in titles and bodies while typing", ctx do

@@ -4,7 +4,7 @@ defmodule Operately.Search.Text do
   """
 
   @websearch_or ~r/(?:^|\s)OR(?:\s|$)/
-  @websearch_exclusion ~r/(?:^|\s)-/
+  @unary_minus ~r/(^|\s)-+/u
   @ordinary_word_query ~r/^[\p{L}\p{N}]+(?:\s+[\p{L}\p{N}]+)*$/u
   @min_query_length 2
   @max_query_length 500
@@ -23,6 +23,7 @@ defmodule Operately.Search.Text do
 
   def normalize_query(query) when is_binary(query) do
     query
+    |> String.replace(@unary_minus, "\\1")
     |> String.replace(~r/\s+/u, " ")
     |> String.trim()
   end
@@ -52,9 +53,10 @@ defmodule Operately.Search.Text do
   Builds the PostgreSQL tsquery used for resource-hub full-text matching.
 
   Ordinary typed input becomes a `to_tsquery` expression that requires every
-  complete token and treats the last token as a prefix (`:*`). Quoted phrases,
-  `OR`, and `-exclusions` stay on `websearch_to_tsquery` so their syntax is
-  preserved without producing invalid `to_tsquery` input.
+  complete token and treats the last token as a prefix (`:*`). Quoted phrases
+  and `OR` stay on `websearch_to_tsquery` so their syntax is preserved without
+  producing invalid `to_tsquery` input. Unary minus is punctuation, not an
+  exclusion operator.
   """
   def search_tsquery(query) when is_binary(query) do
     normalized_query = normalize_query(query)
@@ -73,6 +75,12 @@ defmodule Operately.Search.Text do
 
   def search_tsquery(_), do: {:websearch, ""}
 
+  def quoted_phrase?(query) when is_binary(query), do: String.contains?(normalize_query(query), "\"")
+  def quoted_phrase?(_), do: false
+
+  def title_prefix_search?(query) when is_binary(query), do: not websearch_syntax?(normalize_query(query))
+  def title_prefix_search?(_), do: false
+
   defp prepare_valid_query(query) do
     normalized_query = normalize_query(query)
     query_length = String.length(normalized_query)
@@ -86,7 +94,7 @@ defmodule Operately.Search.Text do
   end
 
   defp websearch_syntax?(query) do
-    String.contains?(query, "\"") or Regex.match?(@websearch_or, query) or Regex.match?(@websearch_exclusion, query)
+    String.contains?(query, "\"") or Regex.match?(@websearch_or, query)
   end
 
   defp ordinary_word_query?(query) do

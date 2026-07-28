@@ -362,7 +362,8 @@ The resource-hub release starts with one focused query:
 
 - trim and normalize repeated whitespace and separator characters
 - keep the existing minimum query length of two characters
-- use `websearch_to_tsquery('operately', query)` so ordinary input, quoted phrases, `OR`, and exclusions do not produce syntax errors
+- use `websearch_to_tsquery('operately', query)` for quoted phrases, `OR`, and structured terms without producing syntax errors
+- treat unary minus as punctuation rather than an exclusion operator, while preserving internal hyphens in terms such as `alpha-beta`
 - use the full-text GIN index as the primary candidate path
 - authorize the resource hub in the API before invoking the search query
 - apply resource-hub, publication, deletion, and current-hierarchy predicates before ranking or limiting

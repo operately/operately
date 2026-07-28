@@ -47,10 +47,18 @@ defmodule Operately.Search.TextTest do
       assert Text.search_tsquery("東京") == {:prefix, "'東京':*"}
     end
 
-    test "keeps websearch syntax on the websearch path" do
+    test "keeps phrases and OR syntax on the websearch path" do
       assert Text.search_tsquery(~s("customer research")) == {:websearch, ~s("customer research")}
-      assert Text.search_tsquery("customer -archive") == {:websearch, "customer -archive"}
       assert Text.search_tsquery("customer OR archive") == {:websearch, "customer OR archive"}
+    end
+
+    test "treats unary minus as punctuation instead of exclusion syntax" do
+      assert Text.prepare_query("customer -archive") == {:ok, "customer archive"}
+      assert Text.search_tsquery("customer -archive") == {:prefix, "'customer' & 'archive':*"}
+      assert Text.search_tsquery("-support@operately.com") == {:websearch, "support@operately.com"}
+      assert Text.search_tsquery("alpha - beta") == {:prefix, "'alpha' & 'beta':*"}
+
+      refute Text.searchable_query?("-a")
     end
 
     test "keeps structured lexemes on the websearch path" do
