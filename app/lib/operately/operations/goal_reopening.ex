@@ -5,6 +5,7 @@ defmodule Operately.Operations.GoalReopening do
   alias Operately.Goals
   alias Operately.Comments.CommentThread
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Search.IndexUpdates
 
   @action :goal_reopening
 
@@ -35,6 +36,7 @@ defmodule Operately.Operations.GoalReopening do
     end)
     |> SubscriptionList.update(:thread)
     |> Activities.dispatch_notification()
+    |> IndexUpdates.enqueue(:search_goal, "goal", goal.id)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
   end

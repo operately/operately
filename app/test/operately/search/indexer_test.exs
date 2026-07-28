@@ -8,9 +8,13 @@ defmodule Operately.Search.IndexerTest do
   alias Operately.Support.Factory
 
   setup do
-    Factory.setup(%{})
-    |> Factory.add_space(:space)
-    |> Factory.add_project(:project, :space)
+    ctx =
+      Factory.setup(%{})
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+
+    Repo.delete_all(Entry)
+    ctx
   end
 
   test "upserts normalized searchable entries and preserves their identity", ctx do

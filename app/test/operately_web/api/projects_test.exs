@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.ProjectsTest do
   alias Operately.ContextualDates.{Timeframe, ContextualDate}
   alias Operately.Access.Binding
+  alias Operately.Search.{Entry, SourceIndexer}
 
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
@@ -2052,12 +2053,16 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
     test "it deletes the project when user has permission", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
+      assert {:ok, _} = SourceIndexer.sync("project", ctx.project.id)
+      assert Repo.get_by(Entry, source_type: "project", source_id: ctx.project.id)
 
       assert {200, res} = mutation(ctx.conn, [:projects, :delete], %{
         project_id: Paths.project_id(ctx.project)
       })
 
       assert res.project.id == Paths.project_id(ctx.project)
+      refute Repo.get_by(Entry, source_type: "project", source_id: ctx.project.id)
+
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_project!(ctx.project.id)
       end
