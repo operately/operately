@@ -16,6 +16,13 @@ const meta = {
   parameters: {
     layout: "padded",
   },
+  decorators: [
+    (Story) => (
+      <SpaceCardGrid>
+        <Story />
+      </SpaceCardGrid>
+    ),
+  ],
 } satisfies Meta<typeof SpaceCard>;
 
 export default meta;
@@ -68,7 +75,7 @@ export const ClickWithoutLink: Story = {
 
 export const Grid: Story = {
   render: () => (
-    <SpaceCardGrid>
+    <>
       <SpaceCard {...companySpaceCardProps} />
       <SpaceCard {...defaultSpaceCardProps} />
       <SpaceCard {...publicSpaceCardProps} />
@@ -80,6 +87,6 @@ export const Grid: Story = {
         mission="Grow awareness and demand."
         linkTo="/spaces/marketing"
       />
-    </SpaceCardGrid>
+    </>
   ),
 };
