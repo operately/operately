@@ -5,6 +5,7 @@ defmodule Operately.Operations.GoalClosing do
   alias Operately.Activities
   alias Operately.Comments.CommentThread
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Search.IndexUpdates
 
   def run(author, goal, attrs) do
     changeset = Goals.Goal.changeset(goal, %{
@@ -40,6 +41,7 @@ defmodule Operately.Operations.GoalClosing do
     end)
     |> SubscriptionList.update(:thread)
     |> Activities.dispatch_notification()
+    |> IndexUpdates.enqueue(:search_goal, "goal", goal.id)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
   end

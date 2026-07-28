@@ -4,6 +4,7 @@ defmodule Operately.Operations.DiscussionEditing do
   alias Operately.Activities
   alias Operately.Messages.Message
   alias Operately.Notifications.SubscriptionList
+  alias Operately.Search.IndexUpdates
 
   def run(creator, message, attrs) do
     with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
@@ -27,6 +28,7 @@ defmodule Operately.Operations.DiscussionEditing do
       |> Operately.Operations.Notifications.Subscription.update_mentioned_people(update_attrs.body)
       |> record_activity(creator, message, update_attrs)
       |> handle_oban_jobs(message, attrs)
+      |> IndexUpdates.enqueue(:search_discussion, "discussion", fn changes -> changes.message.id end)
       |> Repo.transaction()
       |> Repo.extract_result(:message)
     end

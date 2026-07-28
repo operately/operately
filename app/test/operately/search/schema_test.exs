@@ -6,9 +6,13 @@ defmodule Operately.Search.SchemaTest do
   alias Operately.Support.Factory
 
   setup do
-    Factory.setup(%{})
-    |> Factory.add_space(:space)
-    |> Factory.add_project(:project, :space)
+    ctx =
+      Factory.setup(%{})
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+
+    Repo.delete_all(Entry)
+    ctx
   end
 
   test "installs the accent-insensitive text configuration and required extensions" do

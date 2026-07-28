@@ -19,6 +19,7 @@ defmodule Operately.Operations.SpaceDeleting do
   alias Operately.Goals.{Goal, Update}
   alias Operately.Messages.{Message, MessagesBoard}
   alias Operately.Companies
+  alias Operately.Search.IndexUpdates
 
   def run(space) do
     if general_space?(space) do
@@ -27,6 +28,7 @@ defmodule Operately.Operations.SpaceDeleting do
       Multi.new()
       |> collect_sub_resources(space)
       |> delete_polymorphic_associations()
+      |> IndexUpdates.delete_scope(:search_space_scope, :space_id, space.id)
       |> Multi.delete(:space, space)
       |> Repo.transaction()
       |> Repo.extract_result(:space)

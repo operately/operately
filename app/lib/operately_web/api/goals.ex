@@ -747,15 +747,19 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def update_goal_name(multi, new_name) do
-      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
+      multi
+      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
         Operately.Goals.Goal.changeset(goal, %{name: new_name})
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.updated_goal.id end)
     end
 
     def update_goal_description(multi, new_description) do
-      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
+      multi
+      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
         Operately.Goals.Goal.changeset(goal, %{description: new_description})
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.updated_goal.id end)
     end
 
     def update_access_levels(multi, access_levels) do
@@ -833,9 +837,11 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def update_space(multi, space_id) do
-      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
+      multi
+      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
         Operately.Goals.Goal.changeset(goal, %{group_id: space_id})
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.updated_goal.id end)
     end
 
     def update_goal_champion(multi, champion_id) do

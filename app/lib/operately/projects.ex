@@ -7,6 +7,7 @@ defmodule Operately.Projects do
   alias Operately.People.Person
   alias Operately.Activities
   alias Operately.Access.Fetch
+  alias Operately.Search.IndexUpdates
 
   alias Operately.Projects.{
     Project,
@@ -74,6 +75,7 @@ defmodule Operately.Projects do
       old_name: project.name,
       new_name: changes.project.name
     } end)
+    |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
@@ -86,6 +88,7 @@ defmodule Operately.Projects do
       space_id: project.group_id,
       project_id: changes.project.id
     } end)
+    |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
@@ -95,7 +98,11 @@ defmodule Operately.Projects do
   end
 
   def delete_project(%Project{} = project) do
-    Repo.delete(project)
+    Multi.new()
+    |> IndexUpdates.delete_scope(:search_project_scope, :project_id, project.id)
+    |> Multi.delete(:project, project)
+    |> Repo.transaction()
+    |> Repo.extract_result(:project)
   end
 
   def delete_project_discussions(project_id) do

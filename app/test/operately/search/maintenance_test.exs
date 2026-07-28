@@ -2,6 +2,8 @@ defmodule Operately.Search.MaintenanceTest do
   use Operately.DataCase
   use Oban.Testing, repo: Operately.Repo
 
+  import Ecto.Query, only: [from: 2]
+
   alias Operately.Access
   alias Operately.Projects.Project
   alias Operately.Search
@@ -116,8 +118,8 @@ defmodule Operately.Search.MaintenanceTest do
   test "backfills multiple batches and reruns idempotently", ctx do
     ctx =
       ctx
-      |> Factory.add_project(:alpha, :space, name: "Alpha project")
-      |> Factory.add_project(:beta, :space, name: "Beta project")
+      |> add_project(:alpha, :space, name: "Alpha project")
+      |> add_project(:beta, :space, name: "Beta project")
 
     first_run = start_and_drain(:backfill)
 
@@ -135,7 +137,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "backfill reports a newer indexed entry as superseded", ctx do
-    ctx = Factory.add_project(ctx, :project, :space, name: "Canonical source")
+    ctx = add_project(ctx, :project, :space, name: "Canonical source")
 
     newer_timestamp = NaiveDateTime.add(ctx.project.updated_at, 1, :second)
     assert {:ok, %{inserted: 1}} = index_project(ctx.project, title: "Newer indexed value", source_updated_at: newer_timestamp)
@@ -148,7 +150,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "deletes excluded and unsafe entries while reporting failures", ctx do
-    ctx = ctx |> Factory.add_project(:skipped, :space) |> Factory.add_project(:failed, :space)
+    ctx = ctx |> add_project(:skipped, :space) |> add_project(:failed, :space)
     assert {:ok, _} = index_project(ctx.skipped)
     assert {:ok, _} = index_project(ctx.failed)
 
@@ -165,7 +167,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "retryable adapter errors roll back the batch and resume from its checkpoint", ctx do
-    ctx = Factory.add_project(ctx, :project, :space, name: "Original title")
+    ctx = add_project(ctx, :project, :space, name: "Original title")
     assert {:ok, _} = index_project(ctx.project)
     ctx.project |> Ecto.Changeset.change(name: "retryable-error") |> Repo.update!()
 
@@ -202,7 +204,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "adapter exceptions roll back without exposing exception messages", ctx do
-    ctx = Factory.add_project(ctx, :project, :space, name: "Original title")
+    ctx = add_project(ctx, :project, :space, name: "Original title")
     assert {:ok, _} = index_project(ctx.project)
     ctx.project |> Ecto.Changeset.change(name: "raised-error") |> Repo.update!()
 
@@ -222,7 +224,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "final adapter exceptions store only their sanitized category", ctx do
-    Factory.add_project(ctx, :project, :space, name: "raised-error")
+    add_project(ctx, :project, :space, name: "raised-error")
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
@@ -243,7 +245,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "reconciliation repairs stale entries and removes orphans", ctx do
-    ctx = Factory.add_project(ctx, :project, :space, name: "Original title")
+    ctx = add_project(ctx, :project, :space, name: "Original title")
     backfill = start_and_drain(:backfill)
     assert backfill.status == :completed
 
@@ -275,7 +277,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "only one active maintenance run is allowed for each source type", ctx do
-    Factory.add_project(ctx, :project, :space)
+    add_project(ctx, :project, :space)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, first_run} = Search.start_backfill("project")
@@ -288,7 +290,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "replaying an already committed batch does not double count", ctx do
-    Factory.add_project(ctx, :project, :space)
+    add_project(ctx, :project, :space)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
@@ -308,7 +310,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "continues jobs queued with the previous source phase name", ctx do
-    Factory.add_project(ctx, :project, :space)
+    add_project(ctx, :project, :space)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
@@ -339,7 +341,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "a delayed final failure cannot replace a terminal run", ctx do
-    Factory.add_project(ctx, :project, :space)
+    add_project(ctx, :project, :space)
     run = start_and_drain(:backfill)
 
     args = %{"run_id" => run.id, "phase" => "source_scan", "cursor" => nil}
@@ -351,7 +353,7 @@ defmodule Operately.Search.MaintenanceTest do
   end
 
   test "a delayed final failure cannot replace a newer checkpoint", ctx do
-    ctx |> Factory.add_project(:alpha, :space) |> Factory.add_project(:beta, :space)
+    ctx |> add_project(:alpha, :space) |> add_project(:beta, :space)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, run} = Search.start_backfill("project")
@@ -389,5 +391,13 @@ defmodule Operately.Search.MaintenanceTest do
     |> Map.put(:source_type, "project")
     |> Map.put(:source_id, project.id)
     |> Indexer.upsert()
+  end
+
+  defp add_project(ctx, key, space_key, opts \\ []) do
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      ctx = Factory.add_project(ctx, key, space_key, opts)
+      Repo.delete_all(from job in Oban.Job, where: job.worker == "Operately.Search.IndexUpdates.Worker")
+      ctx
+    end)
   end
 end

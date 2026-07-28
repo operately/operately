@@ -2,6 +2,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.Search.IndexUpdates
 
   def run("project_check_in", id) do
     check_in = Repo.get(Operately.Projects.CheckIn, id)
@@ -97,6 +98,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
           title: changes.message.title
         }
       end)
+      |> IndexUpdates.enqueue(:search_discussion, "discussion", message.id)
       |> Repo.transaction()
       |> Repo.extract_result(:message)
     else
