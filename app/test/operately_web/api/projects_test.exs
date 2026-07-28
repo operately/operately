@@ -650,6 +650,31 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert res.children_count.docs_and_files_count == 4
     end
+
+    test "it counts own drafts but excludes other people's drafts", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:other_member, :engineering)
+        |> Factory.fetch_default_project_resource_hub(:hub, :project)
+        |> Factory.add_document(:published, :hub)
+        |> Factory.add_document(:own_draft, :hub, state: :draft)
+        |> Factory.add_document(:other_draft, :hub, author: :other_member, state: :draft)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.project_id(ctx.project)
+      })
+
+      assert res.children_count.docs_and_files_count == 2
+
+      ctx = Factory.log_in_person(ctx, :other_member)
+
+      assert {200, other_res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.project_id(ctx.project)
+      })
+
+      assert other_res.children_count.docs_and_files_count == 2
+    end
    end
 
   describe "update due date" do

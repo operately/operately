@@ -718,15 +718,8 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def count_docs_and_files(multi) do
-      Ecto.Multi.run(multi, :docs_and_files_count, fn _repo, %{project: project} ->
-        count =
-          from(n in Operately.ResourceHubs.Node,
-            join: hub in assoc(n, :resource_hub),
-            where: hub.project_id == ^project.id and n.type != :folder
-          )
-          |> Repo.aggregate(:count)
-
-        {:ok, count}
+      Ecto.Multi.run(multi, :docs_and_files_count, fn _repo, %{project: project, me: me} ->
+        {:ok, Operately.ResourceHubs.count_visible_docs_and_files(project, me)}
       end)
     end
 

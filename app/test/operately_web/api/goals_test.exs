@@ -102,6 +102,31 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert res.children_count.check_ins_count == 0
       assert res.children_count.docs_and_files_count == 0
     end
+
+    test "it counts own drafts but excludes other people's drafts", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:other_member, :marketing)
+        |> Factory.fetch_default_goal_resource_hub(:hub, :goal)
+        |> Factory.add_document(:published, :hub)
+        |> Factory.add_document(:own_draft, :hub, state: :draft)
+        |> Factory.add_document(:other_draft, :hub, author: :other_member, state: :draft)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:goals, :count_children], %{
+        id: Paths.goal_id(ctx.goal)
+      })
+
+      assert res.children_count.docs_and_files_count == 2
+
+      ctx = Factory.log_in_person(ctx, :other_member)
+
+      assert {200, other_res} = query(ctx.conn, [:goals, :count_children], %{
+        id: Paths.goal_id(ctx.goal)
+      })
+
+      assert other_res.children_count.docs_and_files_count == 2
+    end
   end
 
   describe "update access levels" do
