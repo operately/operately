@@ -22,6 +22,7 @@ defmodule Operately.Search.Indexer.Writer do
   def guarded(repo, attrs_list), do: write(repo, attrs_list, :guarded)
   def repair(repo, attrs_list), do: write(repo, attrs_list, :repair_locked)
 
+  @doc "Deletes one entry by source type and source ID, returning the number deleted."
   def delete(repo, source_type, source_id) do
     {count, _} =
       from(entry in Entry, where: entry.source_type == ^source_type and entry.source_id == ^source_id)
@@ -30,11 +31,21 @@ defmodule Operately.Search.Indexer.Writer do
     count
   end
 
+  @doc "Deletes entries matching the given source type and source ID pairs, returning the number deleted."
   def delete_many(_repo, []), do: 0
 
   def delete_many(repo, source_keys) do
     dynamic = source_keys_dynamic(source_keys)
     {count, _} = from(entry in Entry, where: ^dynamic) |> repo.delete_all()
+    count
+  end
+
+  @doc "Deletes every entry assigned to the given space, project, or goal scope, returning the number deleted."
+  def delete_scope(repo, scope_field, scope_id) when scope_field in [:space_id, :project_id, :goal_id] do
+    {count, _} =
+      from(entry in Entry, where: field(entry, ^scope_field) == ^scope_id)
+      |> repo.delete_all()
+
     count
   end
 

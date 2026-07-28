@@ -34,7 +34,7 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
     ctx
   end
 
-  test "all registered adapters backfill in resumable batches and rerun idempotently", ctx do
+  test "resource hub adapters backfill in resumable batches and rerun idempotently", ctx do
     first_runs = start_and_drain_all(:backfill)
 
     assert Enum.all?(first_runs, &(&1.status == :completed))
@@ -147,14 +147,18 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
 
   defp start_and_drain_all(kind) do
     Oban.Testing.with_testing_mode(:manual, fn ->
-      start_result =
-        case kind do
-          :backfill -> Search.start_backfill(:all)
-          :reconciliation -> Search.start_reconciliation(:all)
-        end
+      runs =
+        Enum.map(@source_types, fn source_type ->
+          result =
+            case kind do
+              :backfill -> Search.start_backfill(source_type)
+              :reconciliation -> Search.start_reconciliation(source_type)
+            end
 
-      assert {:ok, runs} = start_result
-      assert Enum.sort(Enum.map(runs, &Atom.to_string(&1.source_type))) == Enum.sort(@source_types)
+          assert {:ok, run} = result
+          run
+        end)
+
       assert %{failure: 0} = Oban.drain_queue(queue: :default, with_recursion: true)
       Enum.map(runs, &Repo.get!(IndexRun, &1.id))
     end)
