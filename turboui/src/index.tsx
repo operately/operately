@@ -140,6 +140,8 @@ export { ResourceHubFolderPage } from "./ResourceHubFolderPage";
 export { ResourceHubPage } from "./ResourceHubPage";
 export { ReviewPage } from "./ReviewPage";
 export { SidebarNotificationSection } from "./SidebarSection";
+export { SpaceCard, SpaceCardGrid } from "./SpaceCards";
+export type { SpaceCardProps } from "./SpaceCards";
 export { SpaceField } from "./SpaceField";
 export { SpaceToolsConfigurationPage } from "./SpaceToolsConfigurationPage";
 export { SwitchToggle } from "./SwitchToggle";

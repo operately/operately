@@ -11,12 +11,10 @@ import * as Spaces from "@/models/spaces";
 
 export default { name: "HomePage", loader, Page } as PageModule;
 
-import { SpaceCardGrid, SpaceCardLink } from "@/features/spaces/SpaceCards";
-
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
-import { GhostButton, PrimaryButton, showErrorToast } from "turboui";
+import { GhostButton, PrimaryButton, showErrorToast, SpaceCard, SpaceCardGrid } from "turboui";
 import { canDeleteFeedItems } from "./feedPermissions";
 import { Onboarding } from "./Onboarding";
 import { SpacesZeroState } from "./SpacesZeroState";
@@ -237,6 +235,7 @@ function Greeting() {
 }
 
 function SpaceGrid({ spaces }: { spaces: Spaces.Space[] }) {
+  const paths = usePaths();
   const sorted = [...spaces].sort((a, b) => {
     if (a.isCompanySpace) return -1;
 
@@ -246,7 +245,14 @@ function SpaceGrid({ spaces }: { spaces: Spaces.Space[] }) {
   return (
     <SpaceCardGrid>
       {sorted.map((space) => (
-        <SpaceCardLink key={space.id} space={space} />
+        <SpaceCard
+          key={space.id}
+          name={space.name!}
+          mission={space.mission}
+          accessLevels={space.accessLevels}
+          members={space.members ?? []}
+          linkTo={paths.spacePath(space.id!)}
+        />
       ))}
     </SpaceCardGrid>
   );
