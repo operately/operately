@@ -5,6 +5,7 @@ defmodule Operately.Operations.ProjectPausing do
   alias Operately.Activities
   alias Operately.Comments.CommentThread
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Search.IndexUpdates
 
   def run(author, project, attrs) do
     changeset = Projects.Project.changeset(project, %{status: "paused"})
@@ -33,6 +34,7 @@ defmodule Operately.Operations.ProjectPausing do
     end)
     |> SubscriptionList.update(:thread)
     |> Activities.dispatch_notification()
+    |> IndexUpdates.enqueue(:search_project, "project", project.id)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
