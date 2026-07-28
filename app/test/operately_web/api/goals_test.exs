@@ -48,6 +48,62 @@ defmodule OperatelyWeb.Api.GoalsTest do
     |> Factory.add_goal(:goal, :marketing)
   end
 
+  describe "count children" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:goals, :count_children], %{})
+    end
+
+    test "it requires an id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:goals, :count_children], %{})
+      assert res.message == "Missing required fields: id"
+    end
+
+    test "it returns 404 if the goal does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = query(ctx.conn, [:goals, :count_children], %{
+        id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns counts for goal", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_discussion(:discussion1, :goal)
+        |> Factory.add_goal_discussion(:discussion2, :goal)
+        |> Factory.add_goal_update(:check_in1, :goal, :creator)
+        |> Factory.fetch_default_goal_resource_hub(:hub, :goal)
+        |> Factory.add_folder(:folder, :hub)
+        |> Factory.add_document(:doc1, :hub)
+        |> Factory.add_file(:file1, :hub)
+        |> Factory.add_link(:link1, :hub)
+        |> Factory.add_document(:nested_doc, :hub, folder: :folder)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:goals, :count_children], %{
+        id: Paths.goal_id(ctx.goal)
+      })
+
+      assert res.children_count.discussions_count == 2
+      assert res.children_count.check_ins_count == 1
+      assert res.children_count.docs_and_files_count == 4
+    end
+
+    test "it returns 0 counts when goal has no children", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:goals, :count_children], %{
+        id: Paths.goal_id(ctx.goal)
+      })
+
+      assert res.children_count.discussions_count == 0
+      assert res.children_count.check_ins_count == 0
+      assert res.children_count.docs_and_files_count == 0
+    end
+  end
+
   describe "update access levels" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_access_levels], %{})

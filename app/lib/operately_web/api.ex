@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api do
         query(:search_parent_goal, OperatelyWeb.Api.Goals.SearchParentGoal)
         query(:get_check_in, OperatelyWeb.Api.Goals.GetCheckIn)
         query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
+        query(:count_children, OperatelyWeb.Api.Goals.CountChildren)
 
         mutation(:create, OperatelyWeb.Api.Goals.Create)
         mutation(:change_parent, OperatelyWeb.Api.Goals.ChangeParent)

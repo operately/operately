@@ -237,6 +237,7 @@ export const Default: Story = {
           tasksCount: tasks.length,
           discussionsCount: 2,
           checkInsCount: 1,
+          docsAndFilesCount: 0,
         }}
         space={{
           id: "1",
@@ -344,6 +345,7 @@ export const EmptyMilestone: Story = {
           tasksCount: 0,
           discussionsCount: 0,
           checkInsCount: 0,
+          docsAndFilesCount: 0,
         }}
         space={{
           id: "1",
@@ -565,6 +567,7 @@ export const CompletedMilestone: Story = {
           tasksCount: tasks.length,
           discussionsCount: 3,
           checkInsCount: 2,
+          docsAndFilesCount: 0,
         }}
         space={{
           id: "1",

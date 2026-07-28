@@ -675,8 +675,46 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule CountChildren do
+    @moduledoc """
+    Counts discussions, check-ins, and docs & files for a goal.
+    """
+
+    use TurboConnect.Query
+
+    inputs do
+      field :id, :id, null: false
+    end
+
+    outputs do
+      field :children_count, :goal_children_count, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.count_discussions()
+      |> Steps.count_check_ins()
+      |> Steps.count_docs_and_files()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{
+          children_count: %{
+            discussions_count: changes.discussions_count,
+            check_ins_count: changes.check_ins_count,
+            docs_and_files_count: changes.docs_and_files_count
+          }
+        }
+      end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
+    import Ecto.Query, only: [from: 2]
+    alias Operately.Repo
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -699,6 +737,42 @@ defmodule OperatelyWeb.Api.Goals do
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal, company_read_only: company_read_only} ->
         Operately.Goals.Permissions.check(goal.request_info.access_level, permission, company_read_only: company_read_only)
+      end)
+    end
+
+    def count_discussions(multi) do
+      Ecto.Multi.run(multi, :discussions_count, fn _repo, %{goal: goal} ->
+        count =
+          from(activity in Operately.Activities.Activity,
+            where: activity.action == "goal_discussion_creation",
+            where: activity.content["goal_id"] == ^goal.id
+          )
+          |> Repo.aggregate(:count)
+
+        {:ok, count}
+      end)
+    end
+
+    def count_check_ins(multi) do
+      Ecto.Multi.run(multi, :check_ins_count, fn _repo, %{goal: goal} ->
+        count =
+          from(u in Operately.Goals.Update, where: u.goal_id == ^goal.id)
+          |> Repo.aggregate(:count)
+
+        {:ok, count}
+      end)
+    end
+
+    def count_docs_and_files(multi) do
+      Ecto.Multi.run(multi, :docs_and_files_count, fn _repo, %{goal: goal} ->
+        count =
+          from(n in Operately.ResourceHubs.Node,
+            join: hub in assoc(n, :resource_hub),
+            where: hub.goal_id == ^goal.id and n.type != :folder
+          )
+          |> Repo.aggregate(:count)
+
+        {:ok, count}
       end)
     end
 

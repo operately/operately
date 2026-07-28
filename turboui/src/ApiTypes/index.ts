@@ -1512,6 +1512,12 @@ export interface GoalCheckUpdate {
   index: number;
 }
 
+export interface GoalChildrenCount {
+  discussionsCount: number;
+  checkInsCount: number;
+  docsAndFilesCount: number;
+}
+
 export interface GoalDiscussion {
   __typename: "goal_discussion";
   id: Id;
@@ -1778,6 +1784,7 @@ export interface ProjectChildrenCount {
   tasksCount: number;
   discussionsCount: number;
   checkInsCount: number;
+  docsAndFilesCount: number;
 }
 
 export interface ProjectContributor {
