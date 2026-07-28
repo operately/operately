@@ -60,6 +60,43 @@
           }
         ]
       },
+      "goal_children_count": {
+        "fields": [
+          {
+            "default": null,
+            "name": "discussions_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "check_ins_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "docs_and_files_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "blob_creation_input": {
         "fields": [
           {
@@ -14762,6 +14799,17 @@
             "optional": false,
             "has_default": false,
             "nullable": false
+          },
+          {
+            "default": null,
+            "name": "docs_and_files_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -19887,8 +19935,8 @@
       ]
     }
   },
-  "endpoint_count": 199,
-  "query_count": 64,
+  "endpoint_count": 200,
+  "query_count": 65,
   "mutation_count": 135,
   "endpoints": [
     {
@@ -23290,6 +23338,42 @@
       "docstring": "Closes a goal with success status and retrospective.",
       "full_name": "goals/close",
       "method": "POST"
+    },
+    {
+      "name": "count_children",
+      "type": "query",
+      "path": "/api/external/v1/goals/count_children",
+      "handler": "OperatelyWeb.Api.Goals.CountChildren",
+      "outputs": [
+        {
+          "default": null,
+          "name": "children_count",
+          "type": {
+            "name": "goal_children_count",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Counts discussions, check-ins, and docs & files for a goal.",
+      "full_name": "goals/count_children",
+      "method": "GET"
     },
     {
       "name": "create",
@@ -27100,7 +27184,7 @@
           "nullable": false
         }
       ],
-      "docstring": "Counts discussions, tasks, and check-ins for a project.",
+      "docstring": "Counts discussions, tasks, check-ins, and docs & files for a project.",
       "full_name": "projects/count_children",
       "method": "GET"
     },

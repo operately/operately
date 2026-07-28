@@ -533,6 +533,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.children_count.discussions_count == 2
       assert res.children_count.tasks_count == 2
       assert res.children_count.check_ins_count == 0
+      assert res.children_count.docs_and_files_count == 0
     end
 
     test "it returns 0 counts when project has no children", ctx do
@@ -545,6 +546,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.children_count.discussions_count == 0
       assert res.children_count.tasks_count == 0
       assert res.children_count.check_ins_count == 0
+      assert res.children_count.docs_and_files_count == 0
     end
 
     test "it finds project by task_id when use_task_id is true", ctx do
@@ -563,6 +565,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.children_count.discussions_count == 1
       assert res.children_count.tasks_count == 1
       assert res.children_count.check_ins_count == 1
+      assert res.children_count.docs_and_files_count == 0
     end
 
     test "it finds project by milestone_id when use_milestone_id is true", ctx do
@@ -581,6 +584,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.children_count.discussions_count == 1
       assert res.children_count.tasks_count == 1
       assert res.children_count.check_ins_count == 1
+      assert res.children_count.docs_and_files_count == 0
     end
 
     test "it returns 404 when task does not exist with use_task_id", ctx do
@@ -625,6 +629,25 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.children_count.tasks_count == 2
       assert res.children_count.discussions_count == 0
       assert res.children_count.check_ins_count == 0
+      assert res.children_count.docs_and_files_count == 0
+    end
+
+    test "it counts docs and files and excludes folders", ctx do
+      ctx =
+        ctx
+        |> Factory.fetch_default_project_resource_hub(:hub, :project)
+        |> Factory.add_folder(:folder, :hub)
+        |> Factory.add_document(:doc1, :hub)
+        |> Factory.add_file(:file1, :hub)
+        |> Factory.add_link(:link1, :hub)
+        |> Factory.add_document(:nested_doc, :hub, folder: :folder)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.project_id(ctx.project)
+      })
+
+      assert res.children_count.docs_and_files_count == 4
     end
    end
 
