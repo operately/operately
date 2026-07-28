@@ -1,4 +1,4 @@
-import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
+import Api, { GoalChildrenCount, GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
 import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
@@ -42,7 +42,7 @@ import { useChecklists } from "./useChecklists";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 export function pageCacheKey(id: string): string {
-  return `v32-GoalPage.goal-${id}`;
+  return `v33-GoalPage.goal-${id}`;
 }
 
 type GoalDocsAndFilesData = {
@@ -58,6 +58,7 @@ type LoaderResult = {
     checkIns: GoalProgressUpdate[];
     checklist: Goals.Check[];
     discussions: GoalDiscussion[];
+    childrenCount: GoalChildrenCount;
     docsAndFiles: GoalDocsAndFilesData | null;
   };
 
@@ -87,6 +88,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap),
         checkIns: Api.goals.listCheckIns({ goalId: params.id }).then((d) => d.checkIns),
         discussions: Api.goals.listDiscussions({ goalId: params.id }).then((d) => d.discussions),
+        childrenCount: Api.goals.countChildren({ id: params.id }).then((d) => d.childrenCount),
       });
 
       return {
@@ -137,7 +139,7 @@ function Page() {
   const navigate = useNavigate();
   const { company } = useCompanyLoaderData();
   const { data, refresh } = PageCache.useData(loader);
-  const { goal, workMap, checkIns, discussions, docsAndFiles } = data;
+  const { goal, workMap, checkIns, discussions, childrenCount, docsAndFiles } = data;
   const currentUser = useMe();
 
   assertPresent(goal.privacy);
@@ -327,6 +329,7 @@ function Page() {
     targets,
     checkIns: prepareCheckIns(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
+    childrenCount,
     docsAndFiles: goalDocsAndFilesProps,
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),

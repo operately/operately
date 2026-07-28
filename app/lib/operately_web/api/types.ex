@@ -727,6 +727,13 @@ defmodule OperatelyWeb.Api.Types do
     field :tasks_count, :integer
     field :discussions_count, :integer
     field :check_ins_count, :integer
+    field :docs_and_files_count, :integer
+  end
+
+  object :goal_children_count do
+    field :discussions_count, :integer
+    field :check_ins_count, :integer
+    field :docs_and_files_count, :integer
   end
 
   object :project_retrospective, for: Operately.Projects.Retrospective do

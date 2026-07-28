@@ -27,6 +27,7 @@ export namespace ProjectPageLayout {
     tasksCount: number;
     discussionsCount: number;
     checkInsCount: number;
+    docsAndFilesCount: number;
   }
 
   export interface TaskCompletionStats {

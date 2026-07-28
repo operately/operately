@@ -72,7 +72,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function pageCacheKey(id: string): string {
-  return `v12-MilestoneV2Page.task-${id}`;
+  return `v13-MilestoneV2Page.task-${id}`;
 }
 
 function Page() {

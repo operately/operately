@@ -347,6 +347,7 @@ export const Default: Story = {
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
+          docsAndFilesCount: 0,
         }}
         description={
           asRichText(
@@ -462,6 +463,7 @@ export const OverdueCheckIn: Story = {
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockOverdueCheckIns.length,
+          docsAndFilesCount: 0,
         }}
         description={
           asRichText(
@@ -569,6 +571,7 @@ export const ReadOnly: Story = {
           tasksCount: mockTasks.length,
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
+          docsAndFilesCount: 0,
         }}
         description={mobileAppDescription}
         space={space}
@@ -692,6 +695,7 @@ export const EmptyTasks: Story = {
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
+          docsAndFilesCount: 0,
         }}
         description={mobileAppDescription}
         space={space}
@@ -812,6 +816,7 @@ export const EmptyProject: Story = {
           tasksCount: 0,
           discussionsCount: 0,
           checkInsCount: 0,
+          docsAndFilesCount: 0,
         }}
         description={asRichText("")}
         space={space}
@@ -910,6 +915,7 @@ export const EmptyProjectReadOnly: Story = {
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
+          docsAndFilesCount: 0,
         }}
         description={asRichText("")}
         space={space}
@@ -1049,6 +1055,7 @@ export const PausedProject: Story = {
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
+          docsAndFilesCount: 0,
         }}
         description={aiAssistantDescription}
         space={space}
@@ -1161,6 +1168,7 @@ export const ClosedProject: Story = {
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
+          docsAndFilesCount: 0,
         }}
         description={workMapsRolloutDescription}
         space={space}
@@ -1331,6 +1339,7 @@ export const ProjectWithoutSpace: Story = {
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
+          docsAndFilesCount: 0,
         }}
         description={
           asRichText(
