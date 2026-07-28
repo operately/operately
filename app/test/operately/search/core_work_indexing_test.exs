@@ -135,6 +135,13 @@ defmodule Operately.Search.CoreWorkIndexingTest do
     refute_entry(:discussion, ctx.discussion.id)
   end
 
+  test "direct project deletion synchronously removes its scoped entries", ctx do
+    sync("project", ctx.project.id)
+
+    assert {:ok, _project} = Operately.Projects.delete_project(ctx.project)
+    refute_entry(:project, ctx.project.id)
+  end
+
   defp sync(source_type, source_id) do
     assert {:ok, _summary} = SourceIndexer.sync(source_type, source_id)
   end

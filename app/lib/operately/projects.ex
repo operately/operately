@@ -98,7 +98,11 @@ defmodule Operately.Projects do
   end
 
   def delete_project(%Project{} = project) do
-    Repo.delete(project)
+    Multi.new()
+    |> IndexUpdates.delete_scope(:search_project_scope, :project_id, project.id)
+    |> Multi.delete(:project, project)
+    |> Repo.transaction()
+    |> Repo.extract_result(:project)
   end
 
   def delete_project_discussions(project_id) do
