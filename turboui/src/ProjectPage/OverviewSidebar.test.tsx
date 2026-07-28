@@ -42,7 +42,7 @@ function SidebarHarness({
     project: { id: "project-1", name: "Secret project" },
     newCheckInLink: "#",
     newDiscussionLink: "#",
-    childrenCount: { tasksCount: 0, discussionsCount: 0, checkInsCount: 0 },
+    childrenCount: { tasksCount: 0, discussionsCount: 0, checkInsCount: 0, docsAndFilesCount: 0 },
     permissions: { canView: true, canComment: true, canEdit: true, hasFullAccess: true },
     champion: null,
     reviewer: null,

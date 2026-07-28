@@ -512,7 +512,7 @@ defmodule OperatelyWeb.Api.Projects do
 
   defmodule CountChildren do
     @moduledoc """
-    Counts discussions, tasks, and check-ins for a project.
+    Counts discussions, tasks, check-ins, and docs & files for a project.
     """
 
     use TurboConnect.Query
@@ -535,13 +535,15 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.count_discussions()
       |> Steps.count_open_tasks()
       |> Steps.count_check_ins()
+      |> Steps.count_docs_and_files()
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{
           children_count: %{
             discussions_count: changes.discussions_count,
             tasks_count: changes.open_tasks_count,
-            check_ins_count: changes.check_ins_count
+            check_ins_count: changes.check_ins_count,
+            docs_and_files_count: changes.docs_and_files_count
           },
         }
       end)
@@ -709,6 +711,19 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :check_ins_count, fn _repo, %{project: project} ->
         count =
           from(c in Operately.Projects.CheckIn, where: c.project_id == ^project.id)
+          |> Repo.aggregate(:count)
+
+        {:ok, count}
+      end)
+    end
+
+    def count_docs_and_files(multi) do
+      Ecto.Multi.run(multi, :docs_and_files_count, fn _repo, %{project: project} ->
+        count =
+          from(n in Operately.ResourceHubs.Node,
+            join: hub in assoc(n, :resource_hub),
+            where: hub.project_id == ^project.id and n.type != :folder
+          )
           |> Repo.aggregate(:count)
 
         {:ok, count}

@@ -39,7 +39,7 @@ export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
 
 function pageCacheKey(id: string): string {
-  return `v7-ProjectV2Page.project-${id}`;
+  return `v8-ProjectV2Page.project-${id}`;
 }
 
 type ProjectDocsAndFilesData = {

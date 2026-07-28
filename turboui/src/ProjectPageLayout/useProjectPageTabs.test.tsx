@@ -22,6 +22,7 @@ const childrenCount = {
   tasksCount: 4,
   discussionsCount: 2,
   checkInsCount: 1,
+  docsAndFilesCount: 3,
 };
 
 function ProjectTabs() {
@@ -63,7 +64,7 @@ describe("useProjectPageTabs", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "Docs & Files" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Docs & Files/ })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Overview" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Activity" })).toBeInTheDocument();
   });
@@ -75,7 +76,7 @@ describe("useProjectPageTabs", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByRole("link", { name: "Docs & Files" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Docs & Files/ })).not.toBeInTheDocument();
   });
 
   test("uses urlPath for child pages so docs and files navigates to the project", () => {
@@ -85,7 +86,7 @@ describe("useProjectPageTabs", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "Docs & Files" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Docs & Files/ })).toHaveAttribute(
       "href",
       "/projects/project-1?tab=docs-and-files",
     );
