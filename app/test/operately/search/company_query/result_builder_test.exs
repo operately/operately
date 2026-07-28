@@ -54,6 +54,19 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
     assert ResultBuilder.build_one(candidate(%{body_kind: "content"})).matched_field == :content
   end
 
+  test "builds semantic matches and navigation for core work" do
+    project = ResultBuilder.build_one(candidate(%{source_type: :project, exact_title: true}))
+    goal = ResultBuilder.build_one(candidate(%{source_type: :goal, body_kind: "description"}))
+    discussion = ResultBuilder.build_one(candidate(%{source_type: :discussion, exact_title: true}))
+
+    assert project.matched_field == :name
+    assert project.navigation_target == %{project_id: project.id}
+    assert goal.matched_field == :description
+    assert goal.navigation_target == %{goal_id: goal.id}
+    assert discussion.matched_field == :title
+    assert discussion.navigation_target == %{discussion_id: discussion.id}
+  end
+
   defp candidate(overrides) do
     Map.merge(
       %{

@@ -14,7 +14,7 @@ defmodule Operately.Search.CompanyQuery do
   alias Operately.People.Person
   alias Operately.Repo
   alias Operately.Search.{Entry, FullTextQuery, Text}
-  alias Operately.Search.CompanyQuery.{ResourceHubItems, ResultBuilder}
+  alias Operately.Search.CompanyQuery.{CoreWorkItems, ResourceHubItems, ResultBuilder}
 
   @limit 30
   @candidates_cte "company_search_candidates"
@@ -38,7 +38,7 @@ defmodule Operately.Search.CompanyQuery do
   defp candidate_query(company_id, person_id, query) do
     full_text = FullTextQuery.build(query)
     accessible_contexts = accessible_contexts_query(person_id)
-    eligible_items = ResourceHubItems.query(company_id)
+    eligible_items = eligible_items_query(company_id)
     candidates = matched_candidates_query(company_id, eligible_items, accessible_contexts, full_text)
     candidate_ancestors = candidate_ancestors_query()
     candidate_ancestors_cte = ResourceHubItems.candidate_ancestors_cte()
@@ -48,9 +48,11 @@ defmodule Operately.Search.CompanyQuery do
       join: entry in Entry,
       as: :entry,
       on: entry.id == candidate.entry_id,
-      join: ancestor in ^candidate_ancestors_cte,
+      left_join: ancestor in ^candidate_ancestors_cte,
       on: ancestor.entry_id == candidate.entry_id,
-      where: is_nil(ancestor.parent_folder_id),
+      where:
+        is_nil(candidate.resource_hub_id) or
+          (not is_nil(ancestor.entry_id) and is_nil(ancestor.parent_folder_id)),
       select: %{
         source_id: entry.source_id,
         source_type: entry.source_type,
@@ -120,6 +122,13 @@ defmodule Operately.Search.CompanyQuery do
     |> with_cte(^candidate_ancestors_cte, as: ^candidate_ancestors)
   end
 
+  defp eligible_items_query(company_id) do
+    resource_hub_items = ResourceHubItems.query(company_id)
+    core_work_items = CoreWorkItems.query(company_id)
+
+    union_all(resource_hub_items, ^core_work_items)
+  end
+
   defp matched_candidates_query(company_id, eligible_items, accessible_contexts, full_text) do
     from(entry in Entry,
       as: :entry,
@@ -129,7 +138,7 @@ defmodule Operately.Search.CompanyQuery do
       on: accessible_context.id == entry.access_context_id,
       where: entry.company_id == ^company_id,
       where: entry.company_id == item.company_id,
-      where: entry.resource_hub_id == item.resource_hub_id,
+      where: fragment("? IS NOT DISTINCT FROM ?", entry.resource_hub_id, item.resource_hub_id),
       where: entry.access_context_id == item.access_context_id,
       where: fragment("? IS NOT DISTINCT FROM ?", entry.space_id, item.space_id),
       where: fragment("? IS NOT DISTINCT FROM ?", entry.project_id, item.project_id),
@@ -147,6 +156,7 @@ defmodule Operately.Search.CompanyQuery do
   defp candidate_ancestors_query do
     candidates =
       from(candidate in @candidates_cte,
+        where: not is_nil(candidate.resource_hub_id),
         select: %{
           entry_id: type(candidate.entry_id, :binary_id),
           resource_hub_id: type(candidate.resource_hub_id, :binary_id),
