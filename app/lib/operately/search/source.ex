@@ -32,9 +32,7 @@ defmodule Operately.Search.Source do
   def latest_timestamp(timestamps) do
     timestamps
     |> Enum.reject(&is_nil/1)
-    |> Enum.reduce(fn timestamp, latest ->
-      if NaiveDateTime.compare(timestamp, latest) == :gt, do: timestamp, else: latest
-    end)
+    |> Enum.max(NaiveDateTime, fn -> nil end)
   end
 
   def id!(%{id: id}) when is_binary(id), do: id
