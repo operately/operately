@@ -28,6 +28,13 @@ defmodule Operately.Search.Source do
 
   def lock_for_maintenance(query), do: lock(query, "FOR SHARE")
 
+  @doc "Returns the newest non-nil timestamp from records contributing to a search entry."
+  def latest_timestamp(timestamps) do
+    timestamps
+    |> Enum.reject(&is_nil/1)
+    |> Enum.max(NaiveDateTime, fn -> nil end)
+  end
+
   def id!(%{id: id}) when is_binary(id), do: id
   def id!(source_record), do: raise(ArgumentError, "search source is missing a binary id: #{inspect(source_record)}")
 end

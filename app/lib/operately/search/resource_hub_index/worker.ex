@@ -12,14 +12,13 @@ defmodule Operately.Search.ResourceHubIndex.Worker do
     max_attempts: 5,
     unique: [period: 60, fields: [:worker, :args], states: [:available, :scheduled, :retryable]]
 
-  alias Operately.Search.{ErrorCategory, ResourceHubIndex, SourceIndexer}
+  alias Operately.Search.{ErrorCategory, ResourceHubIndex}
+  alias Operately.Search.IndexUpdates
 
   @impl Oban.Worker
+  # TODO: Remove after all jobs queued under this legacy worker have completed.
   def perform(%Oban.Job{args: %{"source_type" => source_type, "source_ids" => source_ids}}) do
-    case SourceIndexer.sync_all(source_type, source_ids) do
-      {:ok, _summary} -> :ok
-      {:error, reason} -> {:error, ErrorCategory.sanitize(reason)}
-    end
+    IndexUpdates.Worker.perform(%Oban.Job{args: %{"source_type" => source_type, "source_ids" => source_ids}})
   end
 
   def perform(%Oban.Job{args: %{"folder_id" => folder_id}}) do
