@@ -618,27 +618,36 @@ Implement the critical path as five ordered PRs. Keep lower-value corpus expansi
 
 #### PR 3.1 — `chore: Add permission-aware company search query`
 
-- [x] Query the shared `search_entries` projection across the authenticated company without changing the API or UI.
+- [x] Add a company-scoped query over the existing resource-hub entries in the shared `search_entries` projection without changing the API or UI.
 - [x] Apply live access-context permissions before selecting titles, snippets, state, or navigation metadata.
-- [x] Add company-wide ranking, current-record exclusions, context hydration, match-source detection, plain-text snippets, and stable ordering.
-- [x] Cover relevance, company isolation, permission changes, stale entries, closed/archived state, and navigation metadata with focused domain tests.
-- [x] Use existing resource-hub entries and targeted fixtures so this query does not depend on every company source adapter landing first.
+- [x] Add shared ranking, current resource-hub record exclusions, context hydration, match-source detection, plain-text snippets, indexed-state passthrough, and stable ordering.
+- [x] Cover relevance, company isolation, permission changes, stale resource-hub entries, indexed state, and navigation metadata with focused domain tests.
+- [x] Keep source eligibility, context hydration, and result construction explicit so later corpus PRs can extend the company query one source family at a time.
+
+PR 3.1 intentionally establishes the permission-aware company-query pipeline with
+resource-hub entries only. It does not make every possible `search_entries` source
+type queryable. Each later corpus PR must extend live eligibility checks, context and
+state hydration, match-source mapping, and typed navigation alongside its source
+adapters before that source type is considered searchable.
 
 #### PR 3.2 — `chore: Index core work for company search`
 
 - [ ] Add and register source adapters for projects, goals, and discussions.
+- [ ] Extend the company query and result builder with live eligibility, context, state, match-source, and typed navigation handling for projects, goals, and discussions.
 - [ ] Index names/titles, descriptions/content, current scopes, access contexts, timestamps, and closed/archived state.
 - [ ] Enqueue reliable refreshes from the relevant create, edit, close/archive, restore, and delete operations.
-- [ ] Cover adapter output, operation refreshes, exclusions, backfill, reconciliation, and restoration.
+- [ ] Cover adapter output, query results, permissions, operation refreshes, exclusions, backfill, reconciliation, and restoration.
 
-Native resource-hub documents are already indexed by Phase 2 and become company-search candidates through PR 3.1.
+Native resource-hub content is already indexed by Phase 2 and is the first source
+family accepted by company search through PR 3.1.
 
 #### PR 3.3 — `chore: Index historical narrative work`
 
 - [ ] Add and register source adapters for project check-ins, goal check-ins, and project retrospectives.
+- [ ] Extend the company query and result builder with live publication and parent eligibility, context, state, match-source, and typed navigation handling for these narrative sources.
 - [ ] Define stable result titles and parent context for records whose primary identity comes from a project or goal.
 - [ ] Index only published records while allowing their parent project or goal to be closed.
-- [ ] Cover publication rules, rich-text extraction, parent permissions and state, refreshes, backfill, and reconciliation.
+- [ ] Cover publication rules, query results, rich-text extraction, parent permissions and state, refreshes, backfill, and reconciliation.
 
 #### PR 3.4 — `chore: Add combined company search API`
 
