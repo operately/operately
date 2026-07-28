@@ -7,11 +7,10 @@ import { AccessOptionsInt } from "@/models/permissions";
 
 import Api from "@/api";
 import { GoalAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
-import { AccessLevel } from "@/features/goals/AccessLevel";
 import { PermissionLevels } from "@/features/Permissions";
 import { createTestId } from "@/utils/testid";
 import { compareIds, usePaths } from "@/routes/paths";
-import { Avatar, BorderedRow, Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
+import { AccessLevelSummary, Avatar, BorderedRow, Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
 import { OtherPeople } from "./OtherPeople";
 import { useLoadedData } from "./loader";
 
@@ -93,11 +92,12 @@ function GeneralAccess() {
   return (
     <Paper.Section title="General Access">
       <BorderedRow>
-        <AccessLevel
+        <AccessLevelSummary
+          resourceType="goal"
+          tense="present"
           anonymous={accessLevels.public ?? PermissionLevels.NO_ACCESS}
           company={accessLevels.company ?? PermissionLevels.NO_ACCESS}
           space={accessLevels.space ?? PermissionLevels.NO_ACCESS}
-          tense="present"
         />
 
         {canEdit && (

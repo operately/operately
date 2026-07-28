@@ -6,11 +6,10 @@ import * as People from "@/models/people";
 
 import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { PermissionLevels } from "@/features/Permissions";
-import { AccessLevel } from "@/features/spaces";
 import { AccessOptionsInt } from "@/models/permissions";
 import { Space } from "@/models/spaces";
 import { usePaths } from "@/routes/paths";
-import { Avatar, BorderedRow, Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
+import { AccessLevelSummary, Avatar, BorderedRow, Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
 import { OtherPeople } from "./OtherPeople";
 
 import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
@@ -79,7 +78,12 @@ function GeneralAccess() {
   return (
     <Paper.Section title="General Access">
       <BorderedRow>
-        <AccessLevel anonymous={space.accessLevels.public!} company={space.accessLevels.company!} tense="present" />
+        <AccessLevelSummary
+          resourceType="space"
+          tense="present"
+          anonymous={space.accessLevels.public ?? 0}
+          company={space.accessLevels.company ?? 0}
+        />
 
         {space.permissions.hasFullAccess && (
           <SecondaryButton linkTo={editPath} size="xs">
