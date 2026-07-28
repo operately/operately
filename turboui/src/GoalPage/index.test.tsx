@@ -225,6 +225,11 @@ function GoalPageHarness({
         relatedWorkItems={[]}
         checkIns={[]}
         discussions={[]}
+        childrenCount={{
+          checkInsCount: 0,
+          discussionsCount: 0,
+          docsAndFilesCount: includeDocsAndFiles ? 1 : 0,
+        }}
         docsAndFiles={docsAndFiles}
         status="on_track"
         state="active"
@@ -255,14 +260,14 @@ describe("GoalPage", () => {
   test("hides the docs and files tab when goal docs are unavailable", () => {
     render(<GoalPageHarness />);
 
-    expect(screen.queryByRole("link", { name: "Docs & Files" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Docs & Files/ })).not.toBeInTheDocument();
     expect(screen.queryByText("Quarterly Plan")).not.toBeInTheDocument();
   });
 
   test("shows the docs and files tab and overview preview when goal docs are available", () => {
     render(<GoalPageHarness includeDocsAndFiles />);
 
-    expect(screen.getByRole("link", { name: "Docs & Files" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Docs & Files 1" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Show 1 more" })).toHaveAttribute("href", "/goals/goal-1?tab=docs-and-files");
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
   });

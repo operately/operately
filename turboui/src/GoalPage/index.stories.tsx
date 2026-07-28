@@ -139,10 +139,21 @@ function Component(props: GoalPageStoryArgs) {
     retrospective: null,
   };
 
+  const checkIns = props.checkIns ?? defaults.checkIns;
+  const discussions = props.discussions ?? defaults.discussions;
+  const childrenCount = props.childrenCount ?? {
+    checkInsCount: checkIns.length,
+    discussionsCount: discussions.length,
+    docsAndFilesCount: 0,
+  };
+
   return (
     <GoalPage
       {...defaults}
       {...props}
+      checkIns={checkIns}
+      discussions={discussions}
+      childrenCount={childrenCount}
       checklistItems={checklistItems}
       goalName={goalName}
       setGoalName={setGoalName}
@@ -519,6 +530,8 @@ const description: any = {
 
 function GoalPageDocsAndFilesStory({ includeDrafts = true }: { includeDrafts?: boolean }) {
   const docsAndFiles = useMockGoalDocsAndFiles("goal-1", "Launch AI Platform", { includeDrafts });
+  const docsAndFilesCount =
+    docsAndFiles.previewNodes.length + (docsAndFiles.drafts?.nodes.length ?? 0);
 
   return (
     <Component
@@ -532,6 +545,11 @@ function GoalPageDocsAndFilesStory({ includeDrafts = true }: { includeDrafts?: b
       contributors={contributors}
       relatedWorkItems={mockRelatedWorkItems}
       docsAndFiles={docsAndFiles}
+      childrenCount={{
+        checkInsCount: mockCheckIns.length,
+        discussionsCount: mockDiscussions.length,
+        docsAndFilesCount,
+      }}
     />
   );
 }

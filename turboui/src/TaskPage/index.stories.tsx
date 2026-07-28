@@ -102,6 +102,7 @@ function Component(props: Partial<TaskPage.Props>) {
       tasksCount: 5,
       discussionsCount: 3,
       checkInsCount: 2,
+      docsAndFilesCount: 0,
     },
 
     closedAt: null,

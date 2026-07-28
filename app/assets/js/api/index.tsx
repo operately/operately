@@ -1632,6 +1632,12 @@ export interface GoalCheckUpdate {
   index: number;
 }
 
+export interface GoalChildrenCount {
+  discussionsCount: number;
+  checkInsCount: number;
+  docsAndFilesCount: number;
+}
+
 export interface GoalDiscussion {
   __typename: "goal_discussion";
   id: Id;
@@ -1898,6 +1904,7 @@ export interface ProjectChildrenCount {
   tasksCount: number;
   discussionsCount: number;
   checkInsCount: number;
+  docsAndFilesCount: number;
 }
 
 export interface ProjectContributor {
@@ -2578,9 +2585,7 @@ export type ActivityContent =
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -2604,13 +2609,7 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
@@ -2655,14 +2654,7 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -2703,15 +2695,7 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -2731,10 +2715,7 @@ export type ReviewAssignmentTypes =
 export type SearchMatchedField = "title" | "name" | "content" | "description";
 
 export type SearchResultType =
-  | "resource_hub_folder"
-  | "resource_hub_document"
-  | "resource_hub_file"
-  | "resource_hub_link";
+  "resource_hub_folder" | "resource_hub_document" | "resource_hub_file" | "resource_hub_link";
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
 
@@ -2765,14 +2746,7 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 
@@ -3013,6 +2987,14 @@ export interface GetThemeInput {}
 
 export interface GetThemeResult {
   theme: AccountTheme;
+}
+
+export interface GoalsCountChildrenInput {
+  id: Id;
+}
+
+export interface GoalsCountChildrenResult {
+  childrenCount: GoalChildrenCount;
 }
 
 export interface GoalsGetInput {
@@ -6518,6 +6500,10 @@ class ApiNamespaceProjects {
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
+  async countChildren(input: GoalsCountChildrenInput): Promise<GoalsCountChildrenResult> {
+    return this.client.get("/goals/count_children", input);
+  }
+
   async get(input: GoalsGetInput): Promise<GoalsGetResult> {
     return this.client.get("/goals/get", input);
   }
@@ -8285,6 +8271,10 @@ export default {
     listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
     useListDiscussions: (input: GoalsListDiscussionsInput) =>
       useQuery<GoalsListDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.listDiscussions(input)),
+
+    countChildren: (input: GoalsCountChildrenInput) => defaultApiClient.apiNamespaceGoals.countChildren(input),
+    useCountChildren: (input: GoalsCountChildrenInput) =>
+      useQuery<GoalsCountChildrenResult>(() => defaultApiClient.apiNamespaceGoals.countChildren(input)),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>

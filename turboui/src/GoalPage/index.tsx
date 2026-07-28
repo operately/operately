@@ -130,6 +130,11 @@ export namespace GoalPage {
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
     discussions: Discussion[];
+    childrenCount: {
+      checkInsCount: number;
+      discussionsCount: number;
+      docsAndFilesCount: number;
+    };
     docsAndFiles?: PageDocsAndFiles;
     currentUser?: Person | null;
     status: BadgeStatus;
@@ -212,9 +217,15 @@ export function GoalPage(props: GoalPage.Props) {
 
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.checkIns.length },
-    { id: "discussions", label: "Discussions", icon: <IconMessages size={14} />, count: props.discussions.length },
-    { id: "docs-and-files", label: "Docs & Files", icon: <IconClipboardText size={14} />, hidden: !state.docsAndFiles },
+    { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.childrenCount.checkInsCount },
+    { id: "discussions", label: "Discussions", icon: <IconMessages size={14} />, count: props.childrenCount.discussionsCount },
+    {
+      id: "docs-and-files",
+      label: "Docs & Files",
+      icon: <IconClipboardText size={14} />,
+      count: props.childrenCount.docsAndFilesCount,
+      hidden: !state.docsAndFiles,
+    },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
   const activeTab = !state.docsAndFiles && tabs.active === "docs-and-files" ? "overview" : tabs.active;

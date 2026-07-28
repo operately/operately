@@ -76,7 +76,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 export default { name: "TaskPage", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v8-TaskV2Page.task-${id}`;
+  return `v9-TaskV2Page.task-${id}`;
 }
 
 function Page() {
@@ -303,7 +303,7 @@ interface usePageFieldProps<T> {
   pageData: { data: any; cacheVersion: number };
   value: (data: {
     task: Tasks.Task;
-    childrenCount: { tasksCount: number; discussionsCount: number };
+    childrenCount: { tasksCount: number; discussionsCount: number; checkInsCount: number; docsAndFilesCount: number };
     activities: Activities.Activity[];
   }) => T;
   update: (newValue: T) => Promise<any>;
