@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as People from "@/models/people";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 
 import { Avatar, FormattedTime, PrimaryButton, SecondaryButton } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -9,7 +9,6 @@ import { useClearNotificationOnIntersection } from "@/features/notifications";
 
 import { FormState } from "./form";
 import { useBoolState } from "@/hooks/useBoolState";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 import { CommentParentType, parseCommentContent } from "@/models/comments";
@@ -17,6 +16,7 @@ import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
 import {
   Menu,
   MenuActionItem,
+  Reactions,
   RichContent,
   IconSquareCheckFilled,
   IconSquareChevronsLeftFilled,
@@ -213,8 +213,8 @@ function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment 
   useScrollIntoViewOnLoad(comment.id);
 
   const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
-  const entity = Reactions.entity(comment.id, "comment", commentParentType);
-  const addReactionForm = useReactionsForm(entity, comment.reactions);
+  const entity = ReactionsModel.entity(comment.id, "comment", commentParentType);
+  const form = ReactionsModel.useReactionsForm(entity, comment.reactions);
 
   const testId = "comment-" + comment.id;
   const content = parseCommentContent(comment.content);
@@ -251,7 +251,7 @@ function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment 
           </div>
         )}
 
-        <ReactionList form={addReactionForm} size={20} canAddReaction={canComment} />
+        <Reactions {...form} size={20} canAddReaction={canComment} />
       </div>
     </div>
   );

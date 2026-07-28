@@ -3,13 +3,12 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 import * as Activities from "@/models/activities";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 
 import { usePaths } from "@/routes/paths";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 
-import { Avatar, CurrentSubscriptions, FormattedTime } from "turboui";
+import { Avatar, CurrentSubscriptions, FormattedTime, Reactions } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
@@ -99,10 +98,10 @@ function ActivityReactions() {
   }
 
   const reactions = commentThread.reactions.filter((reaction): reaction is NonNullable<typeof reaction> => !!reaction);
-  const entity = Reactions.entity(commentThread.id, "project_discussion");
-  const addReactionForm = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(commentThread.id, "project_discussion");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} canAddReaction={!!permissions.canCommentOnThread} />;
+  return <Reactions {...form} size={24} canAddReaction={!!permissions.canCommentOnThread} />;
 }
 
 function Comments({ project }: { project: Projects.Project }) {

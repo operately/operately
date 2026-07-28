@@ -2,11 +2,10 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Discussions from "@/models/discussions";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 import * as React from "react";
 
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
@@ -23,6 +22,7 @@ import {
   DiscardDiscussionDraftModal,
   IconEdit,
   IconTrash,
+  Reactions,
   RichContent,
   CurrentSubscriptions,
   Spacer,
@@ -110,15 +110,15 @@ function DiscussionReactions() {
   if (discussion.state !== "published") return null;
 
   const reactions = discussion.reactions!.map((r) => r!);
-  const entity = Reactions.entity(discussion.id!, "message");
-  const addReactionForm = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(discussion.id!, "message");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
   assertPresent(discussion.permissions?.canComment, "permissions must be present in discussion");
 
   return (
     <>
       <Spacer size={2} />
-      <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.permissions.canComment} />
+      <Reactions {...form} size={24} canAddReaction={discussion.permissions.canComment} />
     </>
   );
 }

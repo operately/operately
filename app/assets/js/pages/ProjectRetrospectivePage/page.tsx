@@ -1,12 +1,11 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 import * as React from "react";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { CommentSection, useForProjectRetrospective } from "@/features/CommentSection";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import {
   AvatarWithName,
@@ -15,6 +14,7 @@ import {
   StatusBadge,
   CurrentSubscriptions,
   parseContent,
+  Reactions,
   RichContent,
   FormattedTime,
   Spacer,
@@ -143,13 +143,13 @@ function RetrospectiveContent() {
 function RetroReactions() {
   const { retrospective } = useLoadedData();
   const reactions = retrospective.reactions!.map((r) => r!);
-  const entity = Reactions.entity(retrospective.id!, "project_retrospective");
-  const addReactionForm = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(retrospective.id!, "project_retrospective");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
   return (
-    <ReactionList
+    <Reactions
+      {...form}
       size={24}
-      form={addReactionForm}
       canAddReaction={retrospective.permissions.canComment}
     />
   );
