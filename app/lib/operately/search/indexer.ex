@@ -64,6 +64,17 @@ defmodule Operately.Search.Indexer do
     Multi.run(multi, name, fn repo, _changes -> {:ok, Writer.delete_many(repo, source_keys)} end)
   end
 
+  def delete_scope(scope_field, scope_id) when scope_field in [:space_id, :project_id, :goal_id] and is_binary(scope_id) do
+    {:ok, Writer.delete_scope(Repo, scope_field, scope_id)}
+  end
+
+  def delete_scope(%Multi{} = multi, name, scope_field, scope_id_or_builder) when scope_field in [:space_id, :project_id, :goal_id] do
+    Multi.run(multi, name, fn repo, changes ->
+      scope_id = resolve_attrs(scope_id_or_builder, changes)
+      {:ok, Writer.delete_scope(repo, scope_field, scope_id)}
+    end)
+  end
+
   defp transact_write(attrs_list, write) do
     Repo.transaction(fn -> write.(Repo, attrs_list) end)
   end
