@@ -222,11 +222,7 @@ function DicusssionComments() {
     <>
       <Spacer size={4} />
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="message"
-        canComment={discussion.permissions.canComment}
-      />
+      <CommentSection form={commentsForm} commentParentType="message" canComment={discussion.permissions.canComment} />
     </>
   );
 }

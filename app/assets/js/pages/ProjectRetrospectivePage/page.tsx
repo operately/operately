@@ -146,13 +146,7 @@ function RetroReactions() {
   const entity = ReactionsModel.entity(retrospective.id!, "project_retrospective");
   const form = ReactionsModel.useReactionsForm(entity, reactions);
 
-  return (
-    <Reactions
-      {...form}
-      size={24}
-      canAddReaction={retrospective.permissions.canComment}
-    />
-  );
+  return <Reactions {...form} size={24} canAddReaction={retrospective.permissions.canComment} />;
 }
 
 function Comments() {

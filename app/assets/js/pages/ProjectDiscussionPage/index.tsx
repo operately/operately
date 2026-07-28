@@ -149,19 +149,17 @@ function DiscussionReactions() {
   const entity = ReactionsModel.entity(discussion.id, "project_discussion");
   const form = ReactionsModel.useReactionsForm(entity, reactions);
 
-  return (
-    <Reactions
-      {...form}
-      size={24}
-      canAddReaction={discussion.projectPermissions?.canComment || false}
-    />
-  );
+  return <Reactions {...form} size={24} canAddReaction={discussion.projectPermissions?.canComment || false} />;
 }
 
 function Comments() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
-  const commentsForm = useComments({ thread: discussion, parentType: "project_discussion", project: discussion.project });
+  const commentsForm = useComments({
+    thread: discussion,
+    parentType: "project_discussion",
+    project: discussion.project,
+  });
 
   return (
     <>
