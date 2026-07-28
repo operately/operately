@@ -240,7 +240,7 @@ function ProjectPageHarness({
         project={{ id: "project-1", name: "Apollo" }}
         newCheckInLink="#"
         newDiscussionLink="#"
-        childrenCount={{ tasksCount: 0, checkInsCount: 0, discussionsCount: 0 }}
+        childrenCount={{ tasksCount: 0, checkInsCount: 0, discussionsCount: 0, docsAndFilesCount: 0 }}
         permissions={{ canView: true, canComment: false, canEdit: false, hasFullAccess: false }}
         champion={null}
         reviewer={null}

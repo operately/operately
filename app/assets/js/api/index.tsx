@@ -1632,6 +1632,12 @@ export interface GoalCheckUpdate {
   index: number;
 }
 
+export interface GoalChildrenCount {
+  discussionsCount: number;
+  checkInsCount: number;
+  docsAndFilesCount: number;
+}
+
 export interface GoalDiscussion {
   __typename: "goal_discussion";
   id: Id;
@@ -1898,6 +1904,7 @@ export interface ProjectChildrenCount {
   tasksCount: number;
   discussionsCount: number;
   checkInsCount: number;
+  docsAndFilesCount: number;
 }
 
 export interface ProjectContributor {
@@ -3013,6 +3020,14 @@ export interface GetThemeInput {}
 
 export interface GetThemeResult {
   theme: AccountTheme;
+}
+
+export interface GoalsCountChildrenInput {
+  id: Id;
+}
+
+export interface GoalsCountChildrenResult {
+  childrenCount: GoalChildrenCount;
 }
 
 export interface GoalsGetInput {
@@ -6518,6 +6533,10 @@ class ApiNamespaceProjects {
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
+  async countChildren(input: GoalsCountChildrenInput): Promise<GoalsCountChildrenResult> {
+    return this.client.get("/goals/count_children", input);
+  }
+
   async get(input: GoalsGetInput): Promise<GoalsGetResult> {
     return this.client.get("/goals/get", input);
   }
@@ -8285,6 +8304,10 @@ export default {
     listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
     useListDiscussions: (input: GoalsListDiscussionsInput) =>
       useQuery<GoalsListDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.listDiscussions(input)),
+
+    countChildren: (input: GoalsCountChildrenInput) => defaultApiClient.apiNamespaceGoals.countChildren(input),
+    useCountChildren: (input: GoalsCountChildrenInput) =>
+      useQuery<GoalsCountChildrenResult>(() => defaultApiClient.apiNamespaceGoals.countChildren(input)),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>

@@ -48,6 +48,7 @@ export function useProjectPageTabs({
         id: "docs-and-files",
         label: "Docs & Files",
         icon: <IconClipboardText size={14} />,
+        count: childrenCount.docsAndFilesCount,
         hidden: !showDocsAndFiles,
       },
       { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },

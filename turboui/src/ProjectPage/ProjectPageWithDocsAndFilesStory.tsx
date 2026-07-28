@@ -154,6 +154,7 @@ export function ProjectPageWithDocsAndFilesStory({
         tasksCount: tasks.length,
         discussionsCount: storyData.mockDiscussions.length,
         checkInsCount: storyData.mockCheckIns.length,
+        docsAndFilesCount: docsAndFiles.previewNodes.length + (docsAndFiles.drafts?.nodes.length ?? 0),
       }}
       description={
         asRichText(

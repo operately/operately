@@ -166,6 +166,39 @@ defmodule Operately.ResourceHubs do
     |> Repo.aggregate(:count, :id)
   end
 
+  @doc """
+  Counts documents, files, and links in the parent's resource hub that are
+  visible to the viewer. Folders are excluded. Draft documents are counted
+  only for their author, matching list visibility.
+  """
+  def count_visible_docs_and_files(%Project{id: project_id}, viewer) do
+    visible_docs_and_files_query()
+    |> where([_n, hub], hub.project_id == ^project_id)
+    |> where_visible_to(viewer.id)
+    |> Repo.aggregate(:count)
+  end
+
+  def count_visible_docs_and_files(%Goal{id: goal_id}, viewer) do
+    visible_docs_and_files_query()
+    |> where([_n, hub], hub.goal_id == ^goal_id)
+    |> where_visible_to(viewer.id)
+    |> Repo.aggregate(:count)
+  end
+
+  defp visible_docs_and_files_query do
+    from(n in Node,
+      join: hub in assoc(n, :resource_hub),
+      left_join: document in assoc(n, :document),
+      where: n.type != :folder
+    )
+  end
+
+  defp where_visible_to(query, viewer_id) do
+    from([n, _hub, document] in query,
+      where: n.type != :document or document.state == :published or document.author_id == ^viewer_id
+    )
+  end
+
   def create_node(attrs \\ %{}) do
     %Node{}
     |> Node.changeset(attrs)
