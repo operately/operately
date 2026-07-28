@@ -6,11 +6,10 @@ import { files } from "@/models/resourceHubs";
 import { resourceHubLandingPath } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import {
@@ -20,6 +19,7 @@ import {
   Forms,
   Modal,
   Page as TurboUIPage,
+  Reactions,
   richContentToString,
   RichContent,
   Spacer,
@@ -141,13 +141,13 @@ function FileReactions() {
   assertPresent(file.permissions?.canCommentOnFile, "permissions must be present in file");
   assertPresent(file.reactions, "reactions must be present in file");
 
-  const entity = Reactions.entity(file.id!, "resource_hub_file");
-  const addReactionForm = useReactionsForm(entity, file.reactions);
+  const entity = ReactionsModel.entity(file.id!, "resource_hub_file");
+  const form = ReactionsModel.useReactionsForm(entity, file.reactions);
 
   return (
     <>
       <Spacer size={2} />
-      <ReactionList size={24} form={addReactionForm} canAddReaction={file.permissions.canCommentOnFile} />
+      <Reactions {...form} size={24} canAddReaction={file.permissions.canCommentOnFile} />
     </>
   );
 }

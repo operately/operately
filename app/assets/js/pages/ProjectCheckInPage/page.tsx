@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 import * as React from "react";
 
 import { useNavigate } from "react-router";
@@ -16,6 +16,7 @@ import {
   IconTrash,
   CurrentSubscriptions,
   Modal,
+  Reactions,
   Spacer,
   showSuccessToast,
   displayDate,
@@ -26,7 +27,6 @@ import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSectio
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 
 import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
@@ -95,10 +95,10 @@ function Comments() {
 function CheckInReactions() {
   const { checkIn } = useLoadedData();
   const reactions = checkIn.reactions!.map((r) => r!);
-  const entity = Reactions.entity(checkIn.id!, "project_check_in");
-  const form = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(checkIn.id!, "project_check_in");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
-  return <ReactionList form={form} size={24} canAddReaction={checkIn.project?.permissions?.canComment || false} />;
+  return <Reactions {...form} size={24} canAddReaction={checkIn.project?.permissions?.canComment || false} />;
 }
 
 function SubscriptionsSection() {
