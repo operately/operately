@@ -1,5 +1,4 @@
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
@@ -12,7 +11,8 @@ import { useFrom } from "./useForm";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { createTestId } from "@/utils/testid";
-import { Avatar, BlackLink, SecondaryButton } from "turboui";
+import { Avatar, BlackLink, SecondaryButton, Page as TurboUIPage } from "turboui";
+import classNames from "classnames";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
@@ -22,32 +22,66 @@ export function Page() {
   const { admins, owners } = useLoadedData();
 
   return (
-    <Pages.Page title={"Manage admins and owners"} testId="manage-admins-page">
-      <Paper.Root>
-        <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />
+    <TurboUIPage
+      title={"Manage admins and owners"}
+      testId="manage-admins-page"
+      navigation={[{ to: paths.companyAdminPath(), label: "Company Administration" }]}
+    >
+      <div className="px-12 py-10">
+        <div className="mb-6">
+          <div className="text-content-accent text-lg md:text-2xl font-extrabold">Manage admins and owners</div>
+          <div className="mt-2">Add/Remove people who are in charge of the company and its operations</div>
+        </div>
 
-        <Paper.Body>
-          <Paper.Header
-            title="Manage admins and owners"
-            subtitle="Add/Remove people who are in charge of the company and its operations"
-          />
+        <Section
+          title="Administrators"
+          subtitle="Company administrators can add/remove people from the company, manage their profiles, update company settings, and more."
+          actions={<AddAdminsModal form={form} />}
+        >
+          <PeopleList type="admins" people={admins} />
+        </Section>
 
-          <Paper.Section
-            title="Administrators"
-            subtitle="Company administrators can add/remove people from the company, manage their profiles, update company settings, and more."
-            actions={<AddAdminsModal form={form} />}
-            children={<PeopleList type="admins" people={admins} />}
-          />
+        <Section
+          title="Account Owners"
+          subtitle="Owners have the highest level of access and can manage all aspects of the company, including billing, and have access to all resources."
+          actions={<AddOwnersModal form={form} />}
+        >
+          <PeopleList type="owners" people={owners} />
+        </Section>
+      </div>
+    </TurboUIPage>
+  );
+}
 
-          <Paper.Section
-            title="Account Owners"
-            subtitle="Owners have the highest level of access and can manage all aspects of the company, including billing, and have access to all resources."
-            actions={<AddOwnersModal form={form} />}
-            children={<PeopleList type="owners" people={owners} />}
-          />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+function Section({
+  title,
+  subtitle,
+  actions,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const className = classNames("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0", {
+    "mb-6": subtitle,
+    "mb-2": !subtitle,
+  });
+
+  return (
+    <div className="mt-10" data-test-id={createTestId(title, "section")}>
+      <div className={className}>
+        <div>
+          <h2 className="font-bold">{title}</h2>
+          {subtitle && <p className="text-sm max-w-xl">{subtitle}</p>}
+        </div>
+
+        {actions && <div className="w-full sm:w-auto">{actions}</div>}
+      </div>
+
+      {children}
+    </div>
   );
 }
 

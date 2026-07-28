@@ -13,7 +13,7 @@ import {
   Modal,
 } from "turboui";
 
-import * as Paper from "@/components/PaperContainer";
+import { Section } from "./Section";
 
 export function DangerZone() {
   const { company, ownerIds } = useLoadedData();
@@ -23,11 +23,11 @@ export function DangerZone() {
   if (!amIOwner) return null;
 
   return (
-    <Paper.Section title="Danger Zone:">
+    <Section title="Danger Zone:">
       <div className="bg-surface-base">
         <DeleteCompanyItem companyName={company.name!} />
       </div>
-    </Paper.Section>
+    </Section>
   );
 }
 

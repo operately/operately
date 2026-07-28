@@ -1,11 +1,10 @@
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Accounts from "@/models/accounts";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router";
-import { Forms, showSuccessToast, showErrorToast } from "turboui";
+import { Forms, showSuccessToast, showErrorToast, Page as TurboUIPage } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "AccountChangePasswordPage", loader: Pages.emptyLoader, Page } as PageModule;
@@ -43,51 +42,44 @@ function Page() {
   });
 
   return (
-    <Pages.Page title={"Change Password"} testId="change-password-page">
-      <Paper.Root size="small">
-        <Navigation />
-
-        <Paper.Body>
-          <Paper.Header title="Change Password" />
-
-          <Forms.Form form={form}>
-            <Forms.FieldGroup>
-              <Forms.PasswordInput
-                field={"currentPassword"}
-                label="Current Password"
-                placeholder="Enter your current password"
-              />
-              <Forms.PasswordInput
-                field={"newPassword"}
-                label="New Password"
-                minLength={12}
-                placeholder="At least 12 characters"
-              />
-              <Forms.PasswordInput
-                field={"confirmPassword"}
-                label="Confirm New Password"
-                minLength={12}
-                placeholder="At least 12 characters"
-              />
-            </Forms.FieldGroup>
-
-            <Forms.Submit saveText="Change Password" cancelText="Cancel" />
-          </Forms.Form>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
-  );
-}
-
-function Navigation() {
-  const paths = usePaths();
-
-  return (
-    <Paper.Navigation
-      items={[
+    <TurboUIPage
+      title={"Change Password"}
+      size="small"
+      testId="change-password-page"
+      navigation={[
         { to: paths.homePath(), label: "Home" },
         { to: paths.accountSecurityPath(), label: "Password & Security" },
       ]}
-    />
+    >
+      <div className="px-10 py-8">
+        <div className="mb-6">
+          <div className="text-content-accent text-lg md:text-2xl font-extrabold">Change Password</div>
+        </div>
+
+        <Forms.Form form={form}>
+          <Forms.FieldGroup>
+            <Forms.PasswordInput
+              field={"currentPassword"}
+              label="Current Password"
+              placeholder="Enter your current password"
+            />
+            <Forms.PasswordInput
+              field={"newPassword"}
+              label="New Password"
+              minLength={12}
+              placeholder="At least 12 characters"
+            />
+            <Forms.PasswordInput
+              field={"confirmPassword"}
+              label="Confirm New Password"
+              minLength={12}
+              placeholder="At least 12 characters"
+            />
+          </Forms.FieldGroup>
+
+          <Forms.Submit saveText="Change Password" cancelText="Cancel" />
+        </Forms.Form>
+      </div>
+    </TurboUIPage>
   );
 }

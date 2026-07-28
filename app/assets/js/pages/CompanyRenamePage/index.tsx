@@ -1,9 +1,8 @@
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
 import * as React from "react";
 
-import { Forms } from "turboui";
+import { Forms, Page as TurboUIPage } from "turboui";
 import { PageModule } from "@/routes/types";
 import { useNavigate, useRevalidator } from "react-router";
 
@@ -41,22 +40,23 @@ function Page() {
   });
 
   return (
-    <Pages.Page title={"Rename Company"} testId="company-rename-page">
-      <Paper.Root size="small">
-        <Paper.NavigateBack to={paths.companyAdminPath()} title="Back to Company Admin" />
+    <TurboUIPage
+      title={"Rename Company"}
+      size="small"
+      testId="company-rename-page"
+      navigation={[{ to: paths.companyAdminPath(), label: "Company Administration" }]}
+    >
+      <div className="px-10 py-8">
+        <Forms.Form form={form}>
+          <div className="mb-6 text-content-accent text-2xl font-extrabold">Editing Company Name</div>
 
-        <Paper.Body>
-          <Forms.Form form={form}>
-            <div className="mb-6 text-content-accent text-2xl font-extrabold">Editing Company Name</div>
+          <Forms.FieldGroup>
+            <Forms.TextInput label="Company Name" field={"name"} minLength={2} maxLength={100} />
+          </Forms.FieldGroup>
 
-            <Forms.FieldGroup>
-              <Forms.TextInput label="Company Name" field={"name"} minLength={2} maxLength={100} />
-            </Forms.FieldGroup>
-
-            <Forms.Submit saveText="Save" />
-          </Forms.Form>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+          <Forms.Submit saveText="Save" />
+        </Forms.Form>
+      </div>
+    </TurboUIPage>
   );
 }
