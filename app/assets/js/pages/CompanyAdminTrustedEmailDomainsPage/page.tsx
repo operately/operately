@@ -1,8 +1,6 @@
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
-import { Forms, GhostButton, IconTrash } from "turboui";
+import { Forms, GhostButton, IconTrash, Page as TurboUIPage } from "turboui";
 
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
@@ -15,25 +13,25 @@ export function Page() {
   const form = useForm({ company });
 
   return (
-    <Pages.Page title={["Trusted Email Domains", company.name!]}>
-      <Paper.Root size="small">
-        <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />
+    <TurboUIPage
+      title={["Trusted Email Domains", company.name!]}
+      size="small"
+      navigation={[{ to: paths.companyAdminPath(), label: "Company Administration" }]}
+    >
+      <div className="px-10 py-8">
+        <div className="text-content-accent text-3xl font-extrabold">Trusted Email Domains</div>
 
-        <Paper.Body minHeight="none">
-          <div className="text-content-accent text-3xl font-extrabold">Trusted Email Domains</div>
+        <div className="text-content-accent font-bold mt-8 text-lg">What's this?</div>
+        <p>
+          Trusted email domains are email domains that are allowed to sign up for an account in this company. If a user
+          signs up with an email address that is not from a trusted domain, and she wasn't manually added by an admin,
+          they will be denied access.
+        </p>
 
-          <div className="text-content-accent font-bold mt-8 text-lg">What's this?</div>
-          <p>
-            Trusted email domains are email domains that are allowed to sign up for an account in this company. If a
-            user signs up with an email address that is not from a trusted domain, and she wasn't manually added by an
-            admin, they will be denied access.
-          </p>
-
-          <div className="text-content-accent font-bold mt-8 text-lg mb-2">Trusted Email Domains</div>
-          <TrustedEmailDomainsList form={form} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+        <div className="text-content-accent font-bold mt-8 text-lg mb-2">Trusted Email Domains</div>
+        <TrustedEmailDomainsList form={form} />
+      </div>
+    </TurboUIPage>
   );
 }
 
