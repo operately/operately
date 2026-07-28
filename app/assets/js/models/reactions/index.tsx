@@ -8,6 +8,8 @@ export const useAddReaction = Api.reactions.useCreate;
 export const useRemoveReaction = Api.reactions.useDelete;
 
 export { useReactionHandlers } from "./useReactionHandlers";
+export { useReactionsForm } from "./useReactionsForm";
+export type { ReactionsFormState } from "./useReactionsForm";
 
 type EntityType =
   | "project_check_in"

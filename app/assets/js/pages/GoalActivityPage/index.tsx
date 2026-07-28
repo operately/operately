@@ -3,13 +3,12 @@ import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 
 import { usePaths } from "@/routes/paths";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForGoalRetrospective } from "@/features/CommentSection";
 
-import { Avatar, CurrentSubscriptions, FormattedTime } from "turboui";
+import { Avatar, CurrentSubscriptions, FormattedTime, Reactions } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
@@ -108,10 +107,10 @@ function ActivityReactions() {
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
 
   const reactions = activity.commentThread.reactions.map((r) => r!);
-  const entity = Reactions.entity(activity.commentThread.id!, "goal_discussion");
-  const addReactionForm = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(activity.commentThread.id!, "goal_discussion");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} canAddReaction={activity.permissions.canCommentOnThread} />;
+  return <Reactions {...form} size={24} canAddReaction={activity.permissions.canCommentOnThread} />;
 }
 
 function Comments({ goal }: { goal: Goals.Goal }) {
