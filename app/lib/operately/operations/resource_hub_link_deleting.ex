@@ -3,13 +3,13 @@ defmodule Operately.Operations.ResourceHubLinkDeleting do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
-  alias Operately.Search.ResourceHubIndex
+  alias Operately.Search.Indexing.ResourceHub, as: SearchIndex
 
   def run(author, link) do
     Multi.new()
     |> Multi.run(:link, fn _, _ -> Repo.soft_delete(link) end)
     |> Multi.run(:node, fn _, _ -> Repo.soft_delete(link.node) end)
-    |> ResourceHubIndex.delete_resource(:search_link, :link, link.id)
+    |> SearchIndex.delete_resource(:search_link, :link, link.id)
     |> Activities.insert_sync(author.id, :resource_hub_link_deleted, fn _changes ->
       %{
         resource_hub_id: link.resource_hub.id,

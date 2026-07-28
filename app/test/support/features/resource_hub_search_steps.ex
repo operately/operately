@@ -2,7 +2,7 @@ defmodule Operately.Support.Features.ResourceHubSearchSteps do
   use Operately.FeatureCase
 
   alias Operately.ResourceHubs.Folder
-  alias Operately.Search.SourceIndexer
+  alias Operately.Search.Indexing.Synchronizer
   alias Operately.Support.RichText
   alias Operately.Support.Features.UI
   alias OperatelyWeb.Paths
@@ -65,7 +65,7 @@ defmodule Operately.Support.Features.ResourceHubSearchSteps do
   end
 
   defp index_document(ctx) do
-    assert {:ok, _summary} = SourceIndexer.sync("resource_hub_document", ctx.document.id)
+    assert {:ok, _summary} = Synchronizer.sync("resource_hub_document", ctx.document.id)
     ctx
   end
 end

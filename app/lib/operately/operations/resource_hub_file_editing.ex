@@ -4,7 +4,7 @@ defmodule Operately.Operations.ResourceHubFileEditing do
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.File
-  alias Operately.Search.ResourceHubIndex
+  alias Operately.Search.Indexing.ResourceHub, as: SearchIndex
 
   def run(author, file, attrs) do
     Multi.new()
@@ -12,7 +12,7 @@ defmodule Operately.Operations.ResourceHubFileEditing do
       name: attrs.name,
       description: attrs.description
     }))
-    |> ResourceHubIndex.enqueue_resource(:search_file, :file, fn changes -> changes.file.id end)
+    |> SearchIndex.enqueue_resource(:search_file, :file, fn changes -> changes.file.id end)
     |> Multi.run(:file_with_node, fn _, changes ->
       file = Map.put(changes.file, :node, file.node)
       {:ok, file}

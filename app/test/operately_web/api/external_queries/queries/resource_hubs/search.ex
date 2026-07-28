@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Api.ExternalQueries.Queries.ResourceHubs.Search do
   use Operately.Support.ExternalApi.QuerySpec
 
-  alias Operately.Search.SourceIndexer
+  alias Operately.Search.Indexing.Synchronizer
   alias Operately.Support.{Factory, RichText}
   alias OperatelyWeb.Paths
 
@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ResourceHubs.Search do
         content: RichText.rich_text("Distinctive customer evidence")
       )
 
-    {:ok, _} = SourceIndexer.sync("resource_hub_document", ctx.document.id)
+    {:ok, _} = Synchronizer.sync("resource_hub_document", ctx.document.id)
     ctx
   end
 

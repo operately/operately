@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.SearchTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access.Binding
-  alias Operately.Search.SourceIndexer
+  alias Operately.Search.Indexing.Synchronizer
   alias Operately.Support.{Factory, RichText}
 
   setup ctx do
@@ -124,10 +124,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.SearchTest do
   end
 
   defp index_results(ctx) do
-    assert {:ok, _} = SourceIndexer.sync("resource_hub_folder", ctx.folder.id)
-    assert {:ok, _} = SourceIndexer.sync("resource_hub_document", ctx.document.id)
-    assert {:ok, _} = SourceIndexer.sync("resource_hub_file", ctx.resource_file.id)
-    assert {:ok, _} = SourceIndexer.sync("resource_hub_link", ctx.resource_link.id)
+    assert {:ok, _} = Synchronizer.sync("resource_hub_folder", ctx.folder.id)
+    assert {:ok, _} = Synchronizer.sync("resource_hub_document", ctx.document.id)
+    assert {:ok, _} = Synchronizer.sync("resource_hub_file", ctx.resource_file.id)
+    assert {:ok, _} = Synchronizer.sync("resource_hub_link", ctx.resource_link.id)
     ctx
   end
 

@@ -536,7 +536,7 @@ Cover resource-hub inline matching, loading, empty, error, and cleared states in
 Implement an idempotent Oban worker that:
 
 - scans canonical sources in stable primary-key batches
-- upserts entries through `Operately.Search.Indexer`
+- upserts entries through `Operately.Search.Indexing`
 - records progress per source type
 - can resume safely after interruption
 - skips deleted, draft, scheduled, and suspended records according to corpus rules
@@ -566,7 +566,7 @@ Add a periodic Oban reconciliation worker or an admin-invoked task that detects:
 - entries whose canonical source no longer exists
 - entries with the wrong company, access context, or scope
 
-Reconciliation must use the same Indexer as normal writes and backfills.
+Reconciliation must use the same indexing API as normal writes and backfills.
 
 ---
 
@@ -578,7 +578,7 @@ Reconciliation must use the same Indexer as normal writes and backfills.
 - [x] Add `Operately.Search.Entry` and `search_entries`.
 - [x] Add the weighted generated vector and indexes.
 - [x] Add plain-text extractor tests for supported rich-content nodes.
-- [x] Implement `Operately.Search.Indexer` upsert/delete behavior.
+- [x] Implement `Operately.Search.Indexing` upsert/delete behavior.
 - [x] Implement the idempotent Oban backfill and reconciliation paths.
 
 ### Phase 2 — Resource-hub search end to end
@@ -663,7 +663,7 @@ Native resource-hub documents are already indexed by Phase 2 and become company-
 
 Update the MCP search tool in a separate follow-up after the combined web API and `MORE MATCHES` contract are stable.
 
-- [ ] After the resource-hub and company search queries have stabilized, evaluate the duplicated resource eligibility and visible-folder CTE logic in `ResourceHubQuery` and `CompanyQuery.ResourceHubItems`. Extract shared query-building code only if it meaningfully reduces maintenance risk without coupling their different scopes, result shapes, authorization boundaries, or hydration behavior; otherwise document why keeping the small duplication is clearer.
+- [ ] After the resource-hub and company search queries have stabilized, evaluate the duplicated resource eligibility and visible-folder CTE logic in `Query.ResourceHub` and `Query.Company.ResourceHubItems`. Extract shared query-building code only if it meaningfully reduces maintenance risk without coupling their different scopes, result shapes, authorization boundaries, or hydration behavior; otherwise document why keeping the small duplication is clearer.
 
 This phase closes #1421.
 
@@ -705,7 +705,7 @@ The production database update is complete. Search implementation is not blocked
 - application and Oban read/write smoke tests
 - company export/import round trip
 
-### Indexer
+### Indexing
 
 - every supported type produces the expected title, body, body kind, state, company, access context, and scopes
 - canonical writes commit their refresh jobs atomically

@@ -6,7 +6,7 @@ defmodule Operately.Operations.ResourceHubDocumentVersionRestoring do
   alias Operately.ResourceHubs.{Document, DocumentVersion}
   alias Operately.Notifications.SubscriptionList
   alias Operately.Operations.Notifications.Subscription
-  alias Operately.Search.ResourceHubIndex
+  alias Operately.Search.Indexing.ResourceHub, as: SearchIndex
 
   def run(author, document, attrs) do
     Multi.new()
@@ -69,7 +69,7 @@ defmodule Operately.Operations.ResourceHubDocumentVersionRestoring do
       )
     end)
     |> Subscription.update_mentioned_people(source.content)
-    |> ResourceHubIndex.enqueue_resource(:search_document, :document, fn changes -> changes.document.id end)
+    |> SearchIndex.enqueue_resource(:search_document, :document, fn changes -> changes.document.id end)
     |> Activities.insert_sync(author.id, :resource_hub_document_version_restored, fn _changes ->
       %{
         resource_hub_id: original_document.resource_hub.id,

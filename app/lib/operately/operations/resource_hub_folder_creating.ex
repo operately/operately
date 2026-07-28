@@ -4,7 +4,7 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
   alias Operately.Activities
   alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{Folder, Node}
-  alias Operately.Search.ResourceHubIndex
+  alias Operately.Search.Indexing.ResourceHub, as: SearchIndex
 
   def run(author, hub, attrs) do
     Multi.new()
@@ -19,7 +19,7 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
         name: attrs.name,
       })
     end)
-    |> ResourceHubIndex.enqueue_resource(:search_folder, :folder, fn changes -> changes.folder.id end)
+    |> SearchIndex.enqueue_resource(:search_folder, :folder, fn changes -> changes.folder.id end)
     |> Multi.run(:folder_with_node, fn _, changes ->
       folder = Map.put(changes.folder, :node, changes.node)
       {:ok, folder}
