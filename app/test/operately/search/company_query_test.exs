@@ -57,6 +57,115 @@ defmodule Operately.Search.CompanyQueryTest do
     assert link_id == ctx.link.id
   end
 
+  test "returns projects, goals, and discussions with semantic matches and typed navigation", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:search_project, :space, name: "Website roadmap")
+      |> Factory.add_goal(:search_goal, :space, name: "Expansion goal")
+      |> Factory.add_messages_board(:board, :space)
+      |> Factory.add_message(:discussion, :board,
+        title: "Customer research",
+        body: RichText.rich_text("Interview synthesis")
+      )
+
+    project =
+      ctx.search_project
+      |> Operately.Projects.Project.changeset(%{description: RichText.rich_text("Navigation evidence")})
+      |> Repo.update!()
+
+    goal =
+      ctx.search_goal
+      |> Operately.Goals.Goal.changeset(%{description: RichText.rich_text("Market evidence")})
+      |> Repo.update!()
+
+    sync(:project, project.id)
+    sync(:goal, goal.id)
+    sync(:discussion, ctx.discussion.id)
+
+    assert [%{id: id, context: "Research Space", matched_field: :description, navigation_target: %{project_id: project_id}}] =
+             Search.search_company(ctx.creator, "Navigation evidence")
+
+    assert id == project.id
+    assert project_id == project.id
+
+    assert [%{id: id, matched_field: :name, navigation_target: %{goal_id: goal_id}}] =
+             Search.search_company(ctx.creator, "Expansion goal")
+
+    assert id == goal.id
+    assert goal_id == goal.id
+
+    assert [%{id: id, matched_field: :content, snippet: snippet, navigation_target: %{discussion_id: discussion_id}}] =
+             Search.search_company(ctx.creator, "Interview synthesis")
+
+    assert id == ctx.discussion.id
+    assert discussion_id == ctx.discussion.id
+    assert snippet =~ "Interview synthesis"
+  end
+
+  test "includes current historical core work states and excludes ineligible core work", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:paused_project, :space, name: "Paused marker")
+      |> Factory.add_project(:archived_project, :space, name: "Archived marker")
+      |> Factory.add_goal(:closed_goal, :space, name: "Closed marker")
+      |> Factory.add_goal(:deleted_goal, :space, name: "Deleted marker")
+      |> Factory.add_messages_board(:board, :space)
+      |> Factory.add_message(:archived_discussion, :board, title: "Archived discussion marker")
+      |> Factory.add_message(:draft_discussion, :board, title: "Draft marker", state: :draft)
+
+    ctx.paused_project |> Ecto.Changeset.change(status: "paused") |> Repo.update!()
+    Repo.soft_delete!(ctx.archived_project)
+    ctx.closed_goal |> Ecto.Changeset.change(closed_at: DateTime.utc_now(:second)) |> Repo.update!()
+    Repo.soft_delete!(ctx.deleted_goal)
+    Repo.soft_delete!(ctx.archived_discussion)
+
+    Enum.each(
+      [
+        {:project, ctx.paused_project.id},
+        {:project, ctx.archived_project.id},
+        {:goal, ctx.closed_goal.id},
+        {:goal, ctx.deleted_goal.id},
+        {:discussion, ctx.archived_discussion.id},
+        {:discussion, ctx.draft_discussion.id}
+      ],
+      fn {type, id} -> sync(type, id) end
+    )
+
+    assert [%{state: :paused}] = Search.search_company(ctx.creator, "Paused marker")
+    assert Enum.any?(Search.search_company(ctx.creator, "Archived marker"), &(&1.id == ctx.archived_project.id and &1.state == :archived))
+    assert [%{state: :closed}] = Search.search_company(ctx.creator, "Closed marker")
+    assert [%{state: :archived}] = Search.search_company(ctx.creator, "Archived discussion marker")
+    assert [] = Search.search_company(ctx.creator, "Deleted marker")
+    assert [] = Search.search_company(ctx.creator, "Draft marker")
+  end
+
+  test "applies live core-work permissions and rejects stale scope metadata", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:viewer)
+      |> Factory.add_space(:other_space)
+      |> Factory.add_project(:private_project, :space,
+        name: "Private project marker",
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access()
+      )
+
+    sync(:project, ctx.private_project.id)
+    context = Access.get_context!(project_id: ctx.private_project.id)
+
+    assert [] = Search.search_company(ctx.viewer, "Private project marker")
+    {:ok, _binding} = Access.bind(context, person_id: ctx.viewer.id, level: Binding.view_access())
+    assert [%{id: id}] = Search.search_company(ctx.viewer, "Private project marker")
+    assert id == ctx.private_project.id
+
+    Entry
+    |> Repo.get_by!(source_type: :project, source_id: ctx.private_project.id)
+    |> Ecto.Changeset.change(space_id: ctx.other_space.id)
+    |> Repo.update!()
+
+    assert [] = Search.search_company(ctx.viewer, "Private project marker")
+  end
+
   test "supports exact, prefix, title, body, phrase, unary-minus punctuation, case, accents, and typed prefixes", ctx do
     ctx =
       ctx
@@ -430,7 +539,12 @@ defmodule Operately.Search.CompanyQueryTest do
   end
 
   defp sync(type, id) do
-    source_type = Search.ResourceHubIndex.source_type(type)
+    source_type =
+      case type do
+        type when type in [:project, :goal, :discussion] -> Atom.to_string(type)
+        resource_hub_type -> Search.ResourceHubIndex.source_type(resource_hub_type)
+      end
+
     assert {:ok, _summary} = SourceIndexer.sync(source_type, id)
   end
 

@@ -35,6 +35,7 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
   end
 
   defp matched_field(%{source_type: :resource_hub_document}, true), do: :title
+  defp matched_field(%{source_type: :discussion}, true), do: :title
   defp matched_field(_candidate, true), do: :name
   defp matched_field(%{body_kind: "content"}, false), do: :content
   defp matched_field(%{body_kind: "description"}, false), do: :description
@@ -63,4 +64,8 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
   defp navigation_target(%{source_type: :resource_hub_link} = candidate) do
     %{resource_hub_id: candidate.resource_hub_id, link_id: candidate.source_id}
   end
+
+  defp navigation_target(%{source_type: :project} = candidate), do: %{project_id: candidate.source_id}
+  defp navigation_target(%{source_type: :goal} = candidate), do: %{goal_id: candidate.source_id}
+  defp navigation_target(%{source_type: :discussion} = candidate), do: %{discussion_id: candidate.source_id}
 end
