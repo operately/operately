@@ -1,18 +1,18 @@
 import * as React from "react";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 
 import { useLoadedData } from "./loader";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { assertPresent } from "@/utils/assertions";
 import { useIsEditMode } from "@/components/Pages";
+import { Reactions } from "turboui";
 
 export function CheckInReactions() {
   const { update } = useLoadedData();
   const isEditMode = useIsEditMode();
 
   const reactions = update.reactions!.map((r: any) => r!);
-  const entity = Reactions.entity(update.id!, "goal_update");
-  const addReactionForm = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(update.id!, "goal_update");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
   assertPresent(update.permissions?.canComment, "permissions must be present in update");
 
@@ -20,7 +20,7 @@ export function CheckInReactions() {
 
   return (
     <div className="mt-8">
-      <ReactionList size={24} form={addReactionForm} canAddReaction={update.permissions.canComment} />
+      <Reactions {...form} size={24} canAddReaction={update.permissions.canComment} />
     </div>
   );
 }
