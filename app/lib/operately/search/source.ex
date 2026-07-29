@@ -35,6 +35,12 @@ defmodule Operately.Search.Source do
     |> Enum.max(NaiveDateTime, fn -> nil end)
   end
 
+  @doc "Maps parent project status fields on a child-source record to a search entry state."
+  def project_state(%{project_closed_at: closed_at}) when not is_nil(closed_at), do: :closed
+  def project_state(%{project_status: "closed"}), do: :closed
+  def project_state(%{project_status: "paused"}), do: :paused
+  def project_state(_record), do: nil
+
   def id!(%{id: id}) when is_binary(id), do: id
   def id!(source_record), do: raise(ArgumentError, "search source is missing a binary id: #{inspect(source_record)}")
 end
