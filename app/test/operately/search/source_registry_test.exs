@@ -33,7 +33,10 @@ defmodule Operately.Search.SourceRegistryTest do
     assert source_types == [
              "discussion",
              "goal",
+             "goal_check_in",
              "project",
+             "project_check_in",
+             "project_retrospective",
              "resource_hub_document",
              "resource_hub_file",
              "resource_hub_folder",
