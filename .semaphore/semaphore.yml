@@ -127,8 +127,8 @@ blocks:
       jobs:
         - name: Prepare Test Manifests
           commands:
-            - artifact pull project ci/test-timings-v1.json --force
-            - make test.manifests.prepare
+            - artifact pull project ci/test-timings-v1.json -d /tmp/test-timings-v1.json --force
+            - make test.manifests.prepare TEST_TIMINGS_INPUT=/tmp/test-timings-v1.json
             - artifact push workflow test-manifests --force
 
   - name: Sharded App Tests
