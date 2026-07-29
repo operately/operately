@@ -2,15 +2,14 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Projects from "@/models/projects";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 import * as React from "react";
 
 import { CommentSection, useComments } from "@/features/CommentSection";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PageModule } from "@/routes/types";
-import { Avatar, IconEdit, CurrentSubscriptions, RichContent, FormattedTime } from "turboui";
+import { Avatar, IconEdit, CurrentSubscriptions, Reactions, RichContent, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import Api from "@/api";
@@ -147,22 +146,20 @@ function DiscussionReactions() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
   const reactions = (discussion.reactions || []).map((r) => r);
-  const entity = Reactions.entity(discussion.id, "project_discussion");
-  const addReactionForm = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(discussion.id, "project_discussion");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
-  return (
-    <ReactionList
-      size={24}
-      form={addReactionForm}
-      canAddReaction={discussion.projectPermissions?.canComment || false}
-    />
-  );
+  return <Reactions {...form} size={24} canAddReaction={discussion.projectPermissions?.canComment || false} />;
 }
 
 function Comments() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
-  const commentsForm = useComments({ thread: discussion, parentType: "project_discussion", project: discussion.project });
+  const commentsForm = useComments({
+    thread: discussion,
+    parentType: "project_discussion",
+    project: discussion.project,
+  });
 
   return (
     <>

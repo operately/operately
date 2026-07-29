@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router";
 
 import * as Pages from "@/components/Pages";
-import * as Reactions from "@/models/reactions";
+import * as ReactionsModel from "@/models/reactions";
 import { documents } from "@/models/resourceHubs";
 import { resourceHubLandingPath } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
@@ -11,12 +11,12 @@ import { CommentSection, useComments } from "@/features/CommentSection";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { OngoingDraftActions } from "@/features/drafts";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import {
   CopyDocumentModalWrapper,
   Forms,
   Modal,
   Page as TurboUIPage,
+  Reactions,
   RichContent,
   CurrentSubscriptions,
   Spacer,
@@ -116,13 +116,13 @@ function DocumentReactions() {
   assertPresent(document.permissions?.canCommentOnDocument, "permissions must be present in document");
 
   const reactions = document.reactions!.map((r) => r!);
-  const entity = Reactions.entity(document.id!, "resource_hub_document");
-  const addReactionForm = useReactionsForm(entity, reactions);
+  const entity = ReactionsModel.entity(document.id!, "resource_hub_document");
+  const form = ReactionsModel.useReactionsForm(entity, reactions);
 
   return (
     <>
       <Spacer size={2} />
-      <ReactionList size={24} form={addReactionForm} canAddReaction={document.permissions.canCommentOnDocument} />
+      <Reactions {...form} size={24} canAddReaction={document.permissions.canCommentOnDocument} />
     </>
   );
 }
