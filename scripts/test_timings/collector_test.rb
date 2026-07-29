@@ -89,6 +89,17 @@ class TestTimingsCollectorTest < Minitest::Test
     assert_includes error.message, "Invalid JUnit XML"
   end
 
+  def test_rejects_missing_report_file
+    report_path = File.join(@tmp_dir, "missing.xml")
+
+    error = assert_raises(TestTimings::Error) do
+      TestTimings::JUnitExtractor.new.extract(report_path: report_path, suite: "unit", shard: 1)
+    end
+
+    assert_includes error.message, "missing.xml"
+    assert_includes error.message, "JUnit report not found"
+  end
+
   def test_merges_the_complete_expected_fragment_set
     fragment_paths = write_complete_fragment_set
     generated_at = "2026-07-29T12:00:00Z"
@@ -106,6 +117,84 @@ class TestTimingsCollectorTest < Minitest::Test
     assert_equal timing_map.fetch("timings").keys.sort, timing_map.fetch("timings").keys
   end
 
+  def test_rejects_unsupported_schema_version
+    fragment_path = write_file("unsupported_schema.json", JSON.generate({
+      "schema_version" => 999,
+      "suite" => "unit",
+      "shard" => 1,
+      "timings" => {},
+    }))
+
+    error = assert_raises(TestTimings::Error) do
+      TestTimings::FragmentMerger.new(expected_shards: { "unit" => 1 }).merge(
+        fragment_paths: [fragment_path],
+        generated_at: "2026-07-29T12:00:00Z",
+        source_commit: "abc123",
+      )
+    end
+
+    assert_includes error.message, "Unsupported schema version"
+  end
+
+  def test_rejects_invalid_shard_identity
+    fragment_path = write_file("invalid_shard_identity.json", JSON.generate({
+      "schema_version" => 1,
+      "suite" => 123,
+      "shard" => 0,
+      "timings" => {},
+    }))
+
+    error = assert_raises(TestTimings::Error) do
+      TestTimings::FragmentMerger.new(expected_shards: { "unit" => 1 }).merge(
+        fragment_paths: [fragment_path],
+        generated_at: "2026-07-29T12:00:00Z",
+        source_commit: "abc123",
+      )
+    end
+
+    assert_includes error.message, "Invalid shard identity"
+  end
+
+  def test_rejects_non_hash_timings
+    fragment_path = write_file("non_hash_timings.json", JSON.generate({
+      "schema_version" => 1,
+      "suite" => "unit",
+      "shard" => 1,
+      "timings" => ["not", "a", "hash"],
+    }))
+
+    error = assert_raises(TestTimings::Error) do
+      TestTimings::FragmentMerger.new(expected_shards: { "unit" => 1 }).merge(
+        fragment_paths: [fragment_path],
+        generated_at: "2026-07-29T12:00:00Z",
+        source_commit: "abc123",
+      )
+    end
+
+    assert_includes error.message, "Invalid timings map"
+  end
+
+  def test_rejects_invalid_timing_entries
+    fragment_path = write_file("invalid_timing_entries.json", JSON.generate({
+      "schema_version" => 1,
+      "suite" => "unit",
+      "shard" => 1,
+      "timings" => {
+        "test/file1.rb" => "not-a-number",
+      },
+    }))
+
+    error = assert_raises(TestTimings::Error) do
+      TestTimings::FragmentMerger.new(expected_shards: { "unit" => 1 }).merge(
+        fragment_paths: [fragment_path],
+        generated_at: "2026-07-29T12:00:00Z",
+        source_commit: "abc123",
+      )
+    end
+
+    assert_includes error.message, "Invalid timing for"
+  end
+
   def test_rejects_a_missing_shard
     fragment_paths = write_complete_fragment_set
     fragment_paths.delete(fragment_paths.last)
@@ -116,6 +205,18 @@ class TestTimingsCollectorTest < Minitest::Test
 
     assert_includes error.message, "Missing fragments"
     assert_includes error.message, "feature-18"
+  end
+
+  def test_rejects_unexpected_extra_fragments
+    fragment_paths = write_complete_fragment_set
+    fragment_paths << write_fragment(suite: "extra", shard: 1)
+
+    error = assert_raises(TestTimings::Error) do
+      merge_fragments(fragment_paths)
+    end
+
+    assert_includes error.message, "Unexpected fragments"
+    assert_includes error.message, "extra-1"
   end
 
   def test_rejects_duplicate_shard_identities
@@ -196,6 +297,16 @@ class TestTimingsCollectorTest < Minitest::Test
     assert_equal "2026-07-29T12:00:00Z", timing_map.fetch("generated_at")
     assert_equal "abc123", timing_map.fetch("source_commit")
     assert_equal 20, timing_map.fetch("timings").length
+  end
+
+  def test_cli_invalid_subcommand_returns_nonzero_exit_code
+    exit_code = nil
+
+    capture_io do
+      exit_code = TestTimings::CLI.new.run(["unknown"])
+    end
+
+    assert_equal 1, exit_code
   end
 
   private
