@@ -222,6 +222,54 @@ defmodule Operately.Search.CompanyQueryTest do
     assert [] = Search.search_company(ctx.viewer, "Confidential check-in marker")
   end
 
+  test "rejects stale parent state for paused project check-ins", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:project, :space, name: "Paused check-in project")
+      |> Factory.add_project_check_in(:check_in, :project, :creator)
+
+    check_in =
+      ctx.check_in
+      |> Ecto.Changeset.change(description: RichText.rich_text("Paused parent state marker"))
+      |> Repo.update!()
+
+    sync(:project_check_in, check_in.id)
+
+    assert [%{id: id, state: nil}] = Search.search_company(ctx.creator, "Paused parent state marker")
+    assert id == check_in.id
+
+    ctx.project |> Ecto.Changeset.change(status: "paused") |> Repo.update!()
+    assert [] = Search.search_company(ctx.creator, "Paused parent state marker")
+
+    sync(:project_check_in, check_in.id)
+    assert [%{id: id, state: :paused}] = Search.search_company(ctx.creator, "Paused parent state marker")
+    assert id == check_in.id
+  end
+
+  test "rejects stale parent state for closed goal check-ins", ctx do
+    ctx =
+      ctx
+      |> Factory.add_goal(:goal, :space, name: "Closed check-in goal")
+      |> Factory.add_goal_update(:check_in, :goal, :creator)
+
+    check_in =
+      ctx.check_in
+      |> Ecto.Changeset.change(message: RichText.rich_text("Closed goal parent state marker"))
+      |> Repo.update!()
+
+    sync(:goal_check_in, check_in.id)
+
+    assert [%{id: id, state: nil}] = Search.search_company(ctx.creator, "Closed goal parent state marker")
+    assert id == check_in.id
+
+    ctx.goal |> Ecto.Changeset.change(closed_at: DateTime.utc_now(:second)) |> Repo.update!()
+    assert [] = Search.search_company(ctx.creator, "Closed goal parent state marker")
+
+    sync(:goal_check_in, check_in.id)
+    assert [%{id: id, state: :closed}] = Search.search_company(ctx.creator, "Closed goal parent state marker")
+    assert id == check_in.id
+  end
+
   test "includes current core work states and excludes ineligible core work", ctx do
     ctx =
       ctx

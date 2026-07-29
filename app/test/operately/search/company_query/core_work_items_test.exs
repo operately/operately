@@ -104,6 +104,28 @@ defmodule Operately.Search.CompanyQuery.CoreWorkItemsTest do
     assert Repo.all(CoreWorkItems.query(ctx.company.id), with_deleted: true) == []
   end
 
+  test "computes expected_state from live parent status", ctx do
+    ctx.project |> Ecto.Changeset.change(status: "paused") |> Repo.update!()
+
+    items = parent_owned_items(ctx.company.id)
+
+    assert items["project_check_in"].expected_state == "paused"
+    assert items["project_retrospective"].expected_state == "paused"
+    assert items["goal_check_in"].expected_state == nil
+
+    ctx.project
+    |> Ecto.Changeset.change(status: "closed", closed_at: DateTime.utc_now(:second))
+    |> Repo.update!()
+
+    ctx.goal |> Ecto.Changeset.change(closed_at: DateTime.utc_now(:second)) |> Repo.update!()
+
+    items = parent_owned_items(ctx.company.id)
+
+    assert items["project_check_in"].expected_state == "closed"
+    assert items["project_retrospective"].expected_state == "closed"
+    assert items["goal_check_in"].expected_state == "closed"
+  end
+
   test "includes closed parents and excludes unpublished check-ins and deleted parents", ctx do
     ctx.project
     |> Ecto.Changeset.change(status: "closed", closed_at: DateTime.utc_now(:second))
@@ -134,5 +156,13 @@ defmodule Operately.Search.CompanyQuery.CoreWorkItemsTest do
       |> Enum.filter(&(&1.source_type in ["project_check_in", "goal_check_in", "project_retrospective"]))
 
     assert remaining_parent_owned_items == []
+  end
+
+  defp parent_owned_items(company_id) do
+    company_id
+    |> CoreWorkItems.query()
+    |> Repo.all(with_deleted: true)
+    |> Enum.filter(&(&1.source_type in ["project_check_in", "goal_check_in", "project_retrospective"]))
+    |> Map.new(&{&1.source_type, &1})
   end
 end

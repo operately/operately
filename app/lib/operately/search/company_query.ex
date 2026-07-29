@@ -147,6 +147,8 @@ defmodule Operately.Search.CompanyQuery do
       where: fragment("? IS NOT DISTINCT FROM ?", entry.space_id, item.space_id),
       where: fragment("? IS NOT DISTINCT FROM ?", entry.project_id, item.project_id),
       where: fragment("? IS NOT DISTINCT FROM ?", entry.goal_id, item.goal_id),
+      # Reject stale parent-owned entries whose indexed inherited state no longer
+      # matches the live project/goal.
       where:
         item.source_type not in ^@parent_state_types or
           fragment("? IS NOT DISTINCT FROM ?", entry.state, item.expected_state),
