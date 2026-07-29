@@ -67,12 +67,40 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
     assert discussion.navigation_target == %{discussion_id: discussion.id}
   end
 
+  test "builds semantic matches and navigation for check-ins and retrospectives" do
+    project_id = Ecto.UUID.generate()
+
+    project_check_in = ResultBuilder.build_one(candidate(%{source_type: :project_check_in, exact_title: true}))
+    goal_check_in = ResultBuilder.build_one(candidate(%{source_type: :goal_check_in, body_kind: "message"}))
+
+    retrospective =
+      ResultBuilder.build_one(
+        candidate(%{
+          source_type: :project_retrospective,
+          source_project_id: project_id,
+          body_kind: "content"
+        })
+      )
+
+    assert project_check_in.matched_field == :title
+    assert project_check_in.navigation_target == %{project_check_in_id: project_check_in.id}
+    assert goal_check_in.matched_field == :message
+    assert goal_check_in.navigation_target == %{goal_check_in_id: goal_check_in.id}
+
+    assert retrospective.navigation_target == %{
+             project_id: project_id,
+             project_retrospective_id: retrospective.id
+           }
+  end
+
   defp candidate(overrides) do
     Map.merge(
       %{
         source_id: Ecto.UUID.generate(),
         source_type: :resource_hub_document,
         resource_hub_id: Ecto.UUID.generate(),
+        source_project_id: nil,
+        source_goal_id: nil,
         title: "Research",
         owner_name: "Product",
         body_kind: "content",
