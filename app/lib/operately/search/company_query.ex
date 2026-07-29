@@ -18,6 +18,7 @@ defmodule Operately.Search.CompanyQuery do
 
   @limit 30
   @candidates_cte "company_search_candidates"
+  @parent_state_types ["project_check_in", "goal_check_in", "project_retrospective"]
 
   def search(%Person{} = person, query) do
     with nil <- person.suspended_at,
@@ -57,6 +58,8 @@ defmodule Operately.Search.CompanyQuery do
         source_id: entry.source_id,
         source_type: entry.source_type,
         resource_hub_id: entry.resource_hub_id,
+        source_project_id: type(candidate.project_id, :binary_id),
+        source_goal_id: type(candidate.goal_id, :binary_id),
         title: entry.title,
         body_kind: entry.body_kind,
         state: entry.state,
@@ -126,7 +129,8 @@ defmodule Operately.Search.CompanyQuery do
     resource_hub_items = ResourceHubItems.query(company_id)
     core_work_items = CoreWorkItems.query(company_id)
 
-    union_all(resource_hub_items, ^core_work_items)
+    resource_hub_items
+    |> union_all(^core_work_items)
   end
 
   defp matched_candidates_query(company_id, eligible_items, accessible_contexts, full_text) do
@@ -143,12 +147,19 @@ defmodule Operately.Search.CompanyQuery do
       where: fragment("? IS NOT DISTINCT FROM ?", entry.space_id, item.space_id),
       where: fragment("? IS NOT DISTINCT FROM ?", entry.project_id, item.project_id),
       where: fragment("? IS NOT DISTINCT FROM ?", entry.goal_id, item.goal_id),
+      # Reject stale parent-owned entries whose indexed inherited state no longer
+      # matches the live project/goal.
+      where:
+        item.source_type not in ^@parent_state_types or
+          fragment("? IS NOT DISTINCT FROM ?", entry.state, item.expected_state),
       where: ^FullTextQuery.match_dynamic(full_text),
       select: %{
         entry_id: entry.id,
         resource_hub_id: item.resource_hub_id,
         parent_folder_id: item.parent_folder_id,
-        owner_name: item.owner_name
+        owner_name: item.owner_name,
+        project_id: item.project_id,
+        goal_id: item.goal_id
       }
     )
   end

@@ -42,7 +42,8 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
           space_id: hub.space_id,
           project_id: hub.project_id,
           goal_id: hub.goal_id,
-          owner_name: hub.owner_name
+          owner_name: hub.owner_name,
+          expected_state: type(^nil, :string)
         }
       )
 
@@ -64,7 +65,8 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
           space_id: hub.space_id,
           project_id: hub.project_id,
           goal_id: hub.goal_id,
-          owner_name: hub.owner_name
+          owner_name: hub.owner_name,
+          expected_state: type(^nil, :string)
         }
       )
 
@@ -85,7 +87,8 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
           space_id: hub.space_id,
           project_id: hub.project_id,
           goal_id: hub.goal_id,
-          owner_name: hub.owner_name
+          owner_name: hub.owner_name,
+          expected_state: type(^nil, :string)
         }
       )
 
@@ -106,7 +109,8 @@ defmodule Operately.Search.CompanyQuery.ResourceHubItems do
           space_id: hub.space_id,
           project_id: hub.project_id,
           goal_id: hub.goal_id,
-          owner_name: hub.owner_name
+          owner_name: hub.owner_name,
+          expected_state: type(^nil, :string)
         }
       )
 
