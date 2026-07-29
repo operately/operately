@@ -1,6 +1,6 @@
 import * as React from "react";
 import classNames from "../utils/classnames";
-import { Navigation } from "./Navigation";
+import { NavigateBack, Navigation } from "./Navigation";
 import { PageOptions } from "./PageOptions";
 import { Paper } from "./Paper";
 import { useHtmlTitle } from "./useHtmlTitle";
@@ -25,6 +25,8 @@ export namespace Page {
     options?: Option[];
     children?: React.ReactNode;
     navigation?: Navigation.Item[];
+    /** Legacy single back-link (PaperContainer.NavigateBack). */
+    legacyNavigation?: Navigation.LegacyItem;
     navigationTestId?: string;
     optionsTestId?: string;
     testId?: string;
@@ -49,6 +51,7 @@ export function Page(props: Page.Props) {
 
   return (
     <div className={containerClass}>
+      {props.legacyNavigation && <NavigateBack {...props.legacyNavigation} />}
       {props.navigation && <Navigation items={props.navigation} testId={props.navigationTestId ?? "navigation"} />}
 
       <Paper testId={props.testId}>
@@ -69,6 +72,7 @@ export function PageNew(props: Page.Props) {
 
   return (
     <div className={containerClass} data-test-id={props.testId}>
+      {props.legacyNavigation && <NavigateBack {...props.legacyNavigation} />}
       {props.navigation && <Navigation items={props.navigation} testId={props.navigationTestId ?? "navigation"} />}
 
       <div className={innerClass}>

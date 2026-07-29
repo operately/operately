@@ -57,7 +57,11 @@ function Page() {
 
   return (
     <div className="mt-20">
-      <TurboUIPage title={"New Company"} size="small" navigation={[{ to: Paths.lobbyPath(), label: "Lobby" }]}>
+      <TurboUIPage
+        title={"New Company"}
+        size="small"
+        legacyNavigation={{ to: Paths.lobbyPath(), title: "Back to the Lobby" }}
+      >
         <div className="px-10 py-8">
           <PageTitle />
 

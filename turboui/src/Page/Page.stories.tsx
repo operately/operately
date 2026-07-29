@@ -164,6 +164,15 @@ export const LongNavigation: Story = {
   },
 };
 
+export const LegacyNavigation: Story = {
+  args: {
+    title: "Legacy back navigation",
+    size: "tiny",
+    legacyNavigation: { to: "/log_in", title: "Back to Sign In" },
+    children: <Content title="Legacy back navigation" />,
+  },
+};
+
 export const PageOptions: Story = {
   args: {
     title: "Page with options",

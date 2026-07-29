@@ -31,7 +31,7 @@ function Page() {
       title={["Forgot Password"]}
       size="tiny"
       testId="forgot-password-page"
-      navigation={[{ to: "/log_in", label: "Sign In" }]}
+      legacyNavigation={{ to: "/log_in", title: "Back to Sign In" }}
     >
       <div className="px-8 py-6 sm:px-10 sm:py-8 h-dvh sm:h-auto">
         <div className="py-8 sm:px-4 sm:py-4">
