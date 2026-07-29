@@ -50,7 +50,7 @@ defmodule Operately.Search.Sources.CoreWork.ProjectRetrospective do
        title: "Project retrospective",
        body: RichContent.to_plain_text(retrospective.content),
        body_kind: "content",
-       state: project_state(record),
+       state: Source.project_state(record),
        source_inserted_at: retrospective.inserted_at,
        source_updated_at:
          Source.latest_timestamp([
@@ -88,9 +88,4 @@ defmodule Operately.Search.Sources.CoreWork.ProjectRetrospective do
 
   defp after_cursor(query, nil), do: query
   defp after_cursor(query, cursor), do: where(query, [retrospective], retrospective.id > ^cursor)
-
-  defp project_state(%{project_closed_at: closed_at}) when not is_nil(closed_at), do: :closed
-  defp project_state(%{project_status: "closed"}), do: :closed
-  defp project_state(%{project_status: "paused"}), do: :paused
-  defp project_state(_record), do: nil
 end

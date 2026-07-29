@@ -51,7 +51,7 @@ defmodule Operately.Search.Sources.CoreWork.ProjectCheckIn do
        title: check_in_title(check_in),
        body: RichContent.to_plain_text(check_in.description),
        body_kind: "description",
-       state: project_state(record),
+       state: Source.project_state(record),
        source_inserted_at: check_in.inserted_at,
        source_updated_at:
          Source.latest_timestamp([
@@ -97,9 +97,4 @@ defmodule Operately.Search.Sources.CoreWork.ProjectCheckIn do
     date = check_in.published_at || check_in.inserted_at
     "Check-in on #{date |> Operately.Time.as_date() |> Date.to_iso8601()}"
   end
-
-  defp project_state(%{project_closed_at: closed_at}) when not is_nil(closed_at), do: :closed
-  defp project_state(%{project_status: "closed"}), do: :closed
-  defp project_state(%{project_status: "paused"}), do: :paused
-  defp project_state(_record), do: nil
 end
