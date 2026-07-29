@@ -5,6 +5,7 @@ defmodule Operately.Operations.ProjectCheckIn do
   alias Operately.Activities
   alias Operately.Projects.{CheckIn, Project}
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Search.IndexUpdates
 
   def run(author, project, attrs) do
     with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
@@ -32,6 +33,7 @@ defmodule Operately.Operations.ProjectCheckIn do
       |> maybe_update_project(project, next_check_in, attrs)
       |> maybe_record_activity(author, project, attrs)
       |> maybe_enqueue_oban_job(attrs)
+      |> IndexUpdates.enqueue(:search_project_check_in, "project_check_in", fn changes -> changes.check_in.id end)
       |> Repo.transaction()
       |> Repo.extract_result(:check_in)
       |> case do

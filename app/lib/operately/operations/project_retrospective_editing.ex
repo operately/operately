@@ -3,6 +3,7 @@ defmodule Operately.Operations.ProjectRetrospectiveEditing do
   alias Operately.{Repo, Activities}
   alias Operately.Projects.{Project, Retrospective}
   alias Operately.Notifications.SubscriptionList
+  alias Operately.Search.IndexUpdates
 
   def run(author, retrospective, attrs) do
     if has_changed?(retrospective, attrs) do
@@ -32,6 +33,7 @@ defmodule Operately.Operations.ProjectRetrospectiveEditing do
         retrospective_id: retrospective.id,
       }
     end)
+    |> IndexUpdates.enqueue(:search_project_retrospective, "project_retrospective", fn changes -> changes.retrospective.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:retrospective_with_project)
   end

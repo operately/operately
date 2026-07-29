@@ -3,6 +3,7 @@ defmodule Operately.Operations.ProjectCheckInDeleting do
   alias Operately.{Repo, Updates}
   alias Operately.Projects.{CheckIn, Project}
   alias Operately.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Search.IndexUpdates
 
   import Ecto.Query, only: [from: 2]
 
@@ -15,6 +16,7 @@ defmodule Operately.Operations.ProjectCheckInDeleting do
     |> delete_comments(check_in)
     |> delete_subscriptions(check_in)
     |> delete_subscription_list(check_in)
+    |> IndexUpdates.delete(:search_project_check_in, "project_check_in", check_in.id)
     |> Multi.delete(:check_in, check_in)
     |> maybe_update_project(project, check_in, previous_check_in)
     |> Repo.transaction()

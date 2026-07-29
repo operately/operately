@@ -3,6 +3,7 @@ defmodule Operately.Operations.ProjectGoalDisconnection do
   alias Operately.Activities
   alias Operately.Repo
   alias Operately.Search.IndexUpdates
+  alias Operately.Search.CoreWorkIndexUpdates
 
   def run(person, project) do
     project_changeset = Operately.Projects.change_project(project, %{
@@ -18,6 +19,7 @@ defmodule Operately.Operations.ProjectGoalDisconnection do
       goal_id: project.goal_id
     } end)
     |> IndexUpdates.enqueue(:search_project, "project", project.id)
+    |> CoreWorkIndexUpdates.enqueue_project(project.id)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

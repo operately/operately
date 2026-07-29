@@ -641,13 +641,13 @@ adapters before that source type is considered searchable.
 Native resource-hub content is already indexed by Phase 2 and is the first source
 family accepted by company search through PR 3.1.
 
-#### PR 3.3 — `chore: Index historical narrative work`
+#### PR 3.3 — `chore: Index check-ins and project retrospectives`
 
-- [ ] Add and register source adapters for project check-ins, goal check-ins, and project retrospectives.
-- [ ] Extend the company query and result builder with live publication and parent eligibility, context, state, match-source, and typed navigation handling for these narrative sources.
-- [ ] Define stable result titles and parent context for records whose primary identity comes from a project or goal.
-- [ ] Index only published records while allowing their parent project or goal to be closed.
-- [ ] Cover publication rules, query results, rich-text extraction, parent permissions and state, refreshes, backfill, and reconciliation.
+- [x] Add and register source adapters for project check-ins, goal check-ins, and project retrospectives.
+- [x] Extend the company query and result builder with live publication and parent eligibility, context, state, match-source, and typed navigation handling for these core-work sources.
+- [x] Define stable result titles and parent context for records whose primary identity comes from a project or goal.
+- [x] Index only published records while allowing their parent project or goal to be closed.
+- [x] Cover publication rules, query results, rich-text extraction, parent permissions and state, refreshes, backfill, and reconciliation.
 
 #### PR 3.4 — `chore: Add combined company search API`
 

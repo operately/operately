@@ -6,6 +6,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
   alias Operately.Projects.Project
   alias Operately.Projects.CheckIn
   alias Operately.Notifications.SubscriptionList
+  alias Operately.Search.IndexUpdates
 
   def run(author, check_in, attrs) do
     with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
@@ -32,6 +33,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
       |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.description)
       |> record_activity(author, project, check_in, attrs)
       |> handle_oban_jobs(check_in, attrs)
+      |> IndexUpdates.enqueue(:search_project_check_in, "project_check_in", fn changes -> changes.check_in.id end)
       |> Repo.transaction()
       |> Repo.extract_result(:check_in)
       |> broadcast_if_published(author)

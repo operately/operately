@@ -3,6 +3,7 @@ defmodule Operately.Operations.GoalCheckIn do
   alias Operately.{Repo, Activities}
   alias Operately.Goals.{Goal, Update, Target}
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
+  alias Operately.Search.IndexUpdates
 
   def run(author, goal, attrs) do
     with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
@@ -49,6 +50,7 @@ defmodule Operately.Operations.GoalCheckIn do
       |> maybe_update_checklist(goal, checklist, attrs)
       |> maybe_record_activity(author, goal, attrs)
       |> maybe_enqueue_oban_job(attrs)
+      |> IndexUpdates.enqueue(:search_goal_check_in, "goal_check_in", fn changes -> changes.update.id end)
       |> Repo.transaction()
       |> Repo.extract_result(:update)
       |> handle_result_broadcast()
