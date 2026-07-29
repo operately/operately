@@ -4,7 +4,7 @@ import * as People from "@/models/people";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink, IconBuildingEstate, IconSparkles, Link, Page as TurboUIPage } from "turboui";
+import { DivLink, IconBuildingEstate, IconSparkles, Link } from "turboui";
 
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
@@ -22,11 +22,9 @@ interface LoaderResult {
 async function loader(): Promise<LoaderResult> {
   return {
     account: await Api.people.getAccount({}).then((res) => res.account!),
-    companies: await Api.companies
-      .list({
-        includeMemberCount: true,
-      })
-      .then((res) => res.companies!),
+    companies: await Api.companies.list({
+      includeMemberCount: true,
+    }).then((res) => res.companies!),
   };
 }
 
@@ -37,7 +35,7 @@ function Page() {
   const firstName = People.firstName({ fullName: account.fullName });
 
   return (
-    <TurboUIPage title={"Lobby"} size="fullwidth" testId="lobby-page">
+    <Pages.Page title={"Lobby"} testId="lobby-page">
       <div className="p-4 py-8 sm:p-8 lg:p-12">
         <OperatelyLogo width="32px" height="32px" />
         <div className="font-medium mt-4 sm:mt-8">Welcome to Operately, {firstName}!</div>
@@ -45,7 +43,7 @@ function Page() {
         <CompanyCards companies={companies} />
         <AdminsLink />
       </div>
-    </TurboUIPage>
+    </Pages.Page>
   );
 }
 
