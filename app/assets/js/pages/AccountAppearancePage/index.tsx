@@ -18,7 +18,7 @@ function Page() {
 
   return (
     <TurboUIPage
-      title={["Apperance", "Account"]}
+      title={["Appearance", "Account"]}
       size="small"
       navigation={[
         { to: paths.homePath(), label: "Home" },
