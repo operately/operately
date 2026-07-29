@@ -31,6 +31,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
           check_in_id: changes.check_in.id
         }
       end)
+      |> IndexUpdates.enqueue(:search_project_check_in, "project_check_in", check_in.id)
       |> Repo.transaction()
       |> Repo.extract_result(:check_in)
       |> case do
@@ -70,6 +71,7 @@ defmodule Operately.AsyncPublishing.ScheduledPostPublishing do
           new_timeframe: changes.update.timeframe
         }
       end)
+      |> IndexUpdates.enqueue(:search_goal_check_in, "goal_check_in", update.id)
       |> Repo.transaction()
       |> Repo.extract_result(:update)
       |> case do

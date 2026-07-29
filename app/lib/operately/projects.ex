@@ -8,6 +8,7 @@ defmodule Operately.Projects do
   alias Operately.Activities
   alias Operately.Access.Fetch
   alias Operately.Search.IndexUpdates
+  alias Operately.Search.CoreWorkIndexUpdates
 
   alias Operately.Projects.{
     Project,
@@ -76,6 +77,7 @@ defmodule Operately.Projects do
       new_name: changes.project.name
     } end)
     |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
+    |> CoreWorkIndexUpdates.enqueue_project(fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
@@ -89,6 +91,7 @@ defmodule Operately.Projects do
       project_id: changes.project.id
     } end)
     |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
+    |> CoreWorkIndexUpdates.enqueue_project(fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

@@ -819,6 +819,7 @@ defmodule OperatelyWeb.Api.Goals do
         Operately.Goals.Goal.changeset(goal, %{name: new_name})
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.updated_goal.id end)
+      |> Operately.Search.CoreWorkIndexUpdates.enqueue_goal(fn changes -> changes.updated_goal.id end)
     end
 
     def update_goal_description(multi, new_description) do
@@ -827,6 +828,7 @@ defmodule OperatelyWeb.Api.Goals do
         Operately.Goals.Goal.changeset(goal, %{description: new_description})
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.updated_goal.id end)
+      |> Operately.Search.CoreWorkIndexUpdates.enqueue_goal(fn changes -> changes.updated_goal.id end)
     end
 
     def update_access_levels(multi, access_levels) do
@@ -909,6 +911,7 @@ defmodule OperatelyWeb.Api.Goals do
         Operately.Goals.Goal.changeset(goal, %{group_id: space_id})
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.updated_goal.id end)
+      |> Operately.Search.CoreWorkIndexUpdates.enqueue_goal(fn changes -> changes.updated_goal.id end)
     end
 
     def update_goal_champion(multi, champion_id) do
