@@ -7,7 +7,8 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import * as People from "@/models/people";
 import { usePaths } from "@/routes/paths";
 
-import { Entity, parseReactionsForTurboUi } from "./index";
+import { Entity } from "./entity";
+import { parseReactionsForTurboUi } from "./parseReactionsForTurboUi";
 
 interface ReactionsFormState {
   reactions: Reactions.Reaction[];
