@@ -1,9 +1,8 @@
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { IconSun, IconMoon, IconDeviceLaptop, Forms, showErrorToast } from "turboui";
+import { IconSun, IconMoon, IconDeviceLaptop, Forms, showErrorToast, Page as TurboUIPage } from "turboui";
 
 import classnames from "classnames";
 
@@ -15,28 +14,21 @@ import { usePaths } from "@/routes/paths";
 export default { name: "AccountAppearancePage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
-  return (
-    <Pages.Page title={["Apperance", "Account"]}>
-      <Paper.Root size="small">
-        <Navigation />
-        <Paper.Body>
-          <Form />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
-  );
-}
-
-function Navigation() {
   const paths = usePaths();
 
   return (
-    <Paper.Navigation
-      items={[
+    <TurboUIPage
+      title={["Appearance", "Account"]}
+      size="small"
+      navigation={[
         { to: paths.homePath(), label: "Home" },
         { to: paths.accountSettingsPath(), label: "Settings" },
       ]}
-    />
+    >
+      <div className="px-10 py-8">
+        <Form />
+      </div>
+    </TurboUIPage>
   );
 }
 

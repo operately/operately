@@ -1,11 +1,18 @@
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { BillingLimitGuidanceNotice, BlackLink, InfoCallout, Link, SecondaryButton, showErrorToast } from "turboui";
+import {
+  BillingLimitGuidanceNotice,
+  BlackLink,
+  InfoCallout,
+  Link,
+  SecondaryButton,
+  showErrorToast,
+  Page as TurboUIPage,
+} from "turboui";
 import { PageModule } from "@/routes/types";
 import { includesId } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
@@ -40,31 +47,33 @@ function Page() {
   const [limitGuidance, setLimitGuidance] = React.useState<Billing.BillingLimitGuidance | null>(null);
 
   return (
-    <Pages.Page title={["Restore Deactivated Team Members", company.name!]} testId="restore-suspended-people-page">
-      <>
-        <Paper.Root size="medium">
-          <Navigation />
+    <>
+      <TurboUIPage
+        title={["Restore Deactivated Team Members", company.name!]}
+        size="medium"
+        testId="restore-suspended-people-page"
+        navigation={[{ to: paths.companyAdminPath(), label: "Company Administration" }]}
+      >
+        <div className="px-12 py-10">
+          <div className="mb-6">
+            <div className="text-content-accent text-lg md:text-2xl font-extrabold">
+              Restore Deactivated Team Members
+            </div>
+          </div>
 
-          <Paper.Body>
-            <Paper.Header title="Restore Deactivated Team Members" />
+          {suspendedPeople.length === 0 ? (
+            <NoSuspenedPeopleMessage />
+          ) : (
+            <SuspendedPeopleList onLimitError={setLimitGuidance} viewerRole={viewerRole} paths={paths} />
+          )}
+        </div>
+      </TurboUIPage>
 
-            {suspendedPeople.length === 0 ? (
-              <NoSuspenedPeopleMessage />
-            ) : (
-              <SuspendedPeopleList onLimitError={setLimitGuidance} viewerRole={viewerRole} paths={paths} />
-            )}
-          </Paper.Body>
-        </Paper.Root>
-
-        {limitGuidance && <BillingLimitGuidanceNotice isOpen={true} onClose={() => setLimitGuidance(null)} guidance={limitGuidance} />}
-      </>
-    </Pages.Page>
+      {limitGuidance && (
+        <BillingLimitGuidanceNotice isOpen={true} onClose={() => setLimitGuidance(null)} guidance={limitGuidance} />
+      )}
+    </>
   );
-}
-
-function Navigation() {
-  const paths = usePaths();
-  return <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />;
 }
 
 function NoSuspenedPeopleMessage() {
@@ -77,8 +86,8 @@ function NoSuspenedPeopleMessage() {
         message={`No deactivated team members`}
         description={
           <p>
-            There are no deactivated team members in {company.name}. To remove access for departing team members, visit the{" "}
-            <Link to={paths.companyManagePeoplePath()}>Manage Team Members</Link> page.
+            There are no deactivated team members in {company.name}. To remove access for departing team members, visit
+            the <Link to={paths.companyManagePeoplePath()}>Manage Team Members</Link> page.
           </p>
         }
       />

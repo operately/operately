@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as People from "@/models/people";
-import * as Paper from "@/components/PaperContainer";
 
 import { Avatar } from "turboui";
 
 import { useLoadedData } from "./loader";
+import { Section } from "./Section";
 
 export function CompanyAdmins() {
   const { company } = useLoadedData();
@@ -13,9 +13,9 @@ export function CompanyAdmins() {
   if (company.admins.length === 0) return null;
 
   return (
-    <Paper.Section title="Administrators">
+    <Section title="Administrators">
       <PeopleList people={company.admins || []} />
-    </Paper.Section>
+    </Section>
   );
 }
 
@@ -26,9 +26,9 @@ export function CompanyOwners() {
   if (company.owners.length === 0) return null;
 
   return (
-    <Paper.Section title="Account Owners">
+    <Section title="Account Owners">
       <PeopleList people={company.owners || []} />
-    </Paper.Section>
+    </Section>
   );
 }
 
