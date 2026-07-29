@@ -1,15 +1,23 @@
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
-import { IconFileExport, IconFileText, IconLetterCase, IconLock, IconShieldLock, IconUser, IconUsers, OptionsMenuItem } from "turboui";
+import {
+  IconFileExport,
+  IconFileText,
+  IconLetterCase,
+  IconLock,
+  IconShieldLock,
+  IconUser,
+  IconUsers,
+  OptionsMenuItem,
+  Link,
+  Page as TurboUIPage,
+} from "turboui";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { includesId } from "@/routes/paths";
-import { Link } from "turboui";
 import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
-import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { DangerZone } from "./DangerZone";
+import { Section } from "./Section";
 
 import { usePaths } from "@/routes/paths";
 
@@ -18,35 +26,36 @@ export function Page() {
   const { company } = useLoadedData();
 
   return (
-    <Pages.Page title={[company.name!, "Administration"]} testId="company-admin-page">
-      <Paper.Root size="small">
-        <NavigationBackToLobby />
+    <TurboUIPage
+      title={[company.name!, "Administration"]}
+      size="small"
+      testId="company-admin-page"
+      navigation={[{ to: paths.homePath(), label: "Home" }]}
+    >
+      <div className="px-10 py-8">
+        <div className="uppercase text-sm tracking-wide">Company Administration</div>
+        <div className="text-content-accent text-3xl font-extrabold">{company.name}</div>
 
-        <Paper.Body minHeight="none">
-          <div className="uppercase text-sm tracking-wide">Company Administration</div>
-          <div className="text-content-accent text-3xl font-extrabold">{company.name}</div>
+        <Section title="What's this?">
+          <p>
+            This is the company administration page where owners and admins can manage the company's settings. They have
+            special permissions to add or remove team members, change who can access the application, and more. If you
+            need something done, contact one of them.
+          </p>
 
-          <Paper.Section title="What's this?">
-            <p>
-              This is the company administration page where owners and admins can manage the company's settings. They
-              have special permissions to add or remove team members, change who can access the application, and more. If
-              you need something done, contact one of them.
-            </p>
+          <p className="mt-2">
+            <Link to={paths.companyPermissionsPath()}>View permission breakdown</Link>
+          </p>
+        </Section>
 
-            <p className="mt-2">
-              <Link to={paths.companyPermissionsPath()}>View permission breakdown</Link>
-            </p>
-          </Paper.Section>
+        <CompanyAdmins />
+        <CompanyOwners />
 
-          <CompanyAdmins />
-          <CompanyOwners />
-
-          <AdminsMenu />
-          <OwnersMenu />
-          <DangerZone />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+        <AdminsMenu />
+        <OwnersMenu />
+        <DangerZone />
+      </div>
+    </TurboUIPage>
   );
 }
 
@@ -69,15 +78,25 @@ function AdminsMenu() {
   const restorePath = paths.companyAdminRestoreSuspendedPeoplePath();
 
   return (
-    <Paper.Section title="As an admin or owner, you can:">
+    <Section title="As an admin or owner, you can:">
       <div>
         <OptionsMenuItem linkTo={managePeople} icon={IconUsers} title="Manage team members" />
 
         <OptionsMenuItem linkTo={restorePath} icon={IconUser} title="Restore access for deactivated team members" />
-        <OptionsMenuItem hidden={!window.appConfig.billingEnabled || !company.permissions?.canManageBilling} linkTo={manageBilling} icon={IconFileText} title="Manage plan" />
-        <OptionsMenuItem hidden={!company.permissions?.canEditDetails} linkTo={renameCompanyPath} icon={IconLetterCase} title="Rename the company" />
+        <OptionsMenuItem
+          hidden={!window.appConfig.billingEnabled || !company.permissions?.canManageBilling}
+          linkTo={manageBilling}
+          icon={IconFileText}
+          title="Manage plan"
+        />
+        <OptionsMenuItem
+          hidden={!company.permissions?.canEditDetails}
+          linkTo={renameCompanyPath}
+          icon={IconLetterCase}
+          title="Rename the company"
+        />
       </div>
-    </Paper.Section>
+    </Section>
   );
 }
 
@@ -98,12 +117,17 @@ function OwnersMenu() {
   const exportCompany = paths.companyExportPath();
 
   return (
-    <Paper.Section title="As an owner, you can:">
+    <Section title="As an owner, you can:">
       <div>
         <OptionsMenuItem linkTo={manageAdmins} icon={IconShieldLock} title="Manage administrators and owners" />
-        <OptionsMenuItem hidden={!company.permissions?.canEditTrustedEmailDomains} linkTo={manageTrustedDomains} icon={IconLock} title="Manage trusted email domains" />
+        <OptionsMenuItem
+          hidden={!company.permissions?.canEditTrustedEmailDomains}
+          linkTo={manageTrustedDomains}
+          icon={IconLock}
+          title="Manage trusted email domains"
+        />
         <OptionsMenuItem linkTo={exportCompany} icon={IconFileExport} title="Export company data" />
       </div>
-    </Paper.Section>
+    </Section>
   );
 }

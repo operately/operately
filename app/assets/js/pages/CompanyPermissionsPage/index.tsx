@@ -1,7 +1,6 @@
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import { PageModule } from "@/routes/types";
-import { IconCheck, IconX } from "turboui";
+import { IconCheck, IconX, Page as TurboUIPage } from "turboui";
 import * as React from "react";
 
 import { usePaths } from "@/routes/paths";
@@ -10,28 +9,30 @@ export default { name: "CompanyPermissionsPage", loader: Pages.emptyLoader, Page
 function Page() {
   const paths = usePaths();
   return (
-    <Pages.Page title="Permissions">
-      <Paper.Root size="small">
-        <Paper.NavigateBack to={paths.companyAdminPath()} title="Back to Company Admin" />
+    <TurboUIPage
+      title="Permissions"
+      size="small"
+      navigation={[{ to: paths.companyAdminPath(), label: "Company Administration" }]}
+    >
+      <div className="px-10 py-8">
         <div className="font-extrabold text-2xl mb-4 text-center">Permission Breakdown</div>
-        <Paper.Body>
-          <Header />
 
-          <Row permission="Add spaces" members={true} admins={true} owners={true} />
-          <Row permission="Add goals" members={true} admins={true} owners={true} />
-          <Row permission="Add projects" members={true} admins={true} owners={true} />
+        <Header />
 
-          <Row permission="Invite people" members={false} admins={true} owners={true} />
-          <Row permission="Remove people" members={false} admins={true} owners={true} />
-          <Row permission="Update profiles" members={false} admins={true} owners={true} />
+        <Row permission="Add spaces" members={true} admins={true} owners={true} />
+        <Row permission="Add goals" members={true} admins={true} owners={true} />
+        <Row permission="Add projects" members={true} admins={true} owners={true} />
 
-          <Row permission="Add/Remove admins" members={false} admins={false} owners={true} />
-          <Row permission="Add/Remove owners" members={false} admins={false} owners={true} />
-          <Row permission="Manage trusted email domains" members={false} admins={false} owners={true} />
-          <Row permission="Access any resource" members={false} admins={false} owners={true} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+        <Row permission="Invite people" members={false} admins={true} owners={true} />
+        <Row permission="Remove people" members={false} admins={true} owners={true} />
+        <Row permission="Update profiles" members={false} admins={true} owners={true} />
+
+        <Row permission="Add/Remove admins" members={false} admins={false} owners={true} />
+        <Row permission="Add/Remove owners" members={false} admins={false} owners={true} />
+        <Row permission="Manage trusted email domains" members={false} admins={false} owners={true} />
+        <Row permission="Access any resource" members={false} admins={false} owners={true} />
+      </div>
+    </TurboUIPage>
   );
 }
 
