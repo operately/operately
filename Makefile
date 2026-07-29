@@ -1,7 +1,7 @@
 SHELL := /bin/bash  # Use bash syntax
 MAKEFLAGS += -s     # Silent mode
 
-.PHONY: test cli.build cli.test cli.test.unit cli.test.e2e mcp.test.e2e app.node_modules turboui.node_modules cli.node_modules turboui.test.storybook
+.PHONY: test test.timings test.timings.extract test.timings.merge cli.build cli.test cli.test.unit cli.test.e2e mcp.test.e2e app.node_modules turboui.node_modules cli.node_modules turboui.test.storybook
 
 REPORTS_DIR ?= $(PWD)/app/testreports
 SCREENSHOTS_DIR ?= $(PWD)/app/screenshots
@@ -353,6 +353,29 @@ test.elixir.warnings:
 test.icons.check:
 	bash scripts/icon-linting.sh
 
+#
+# Historical test timing artifacts
+#
+# CI uses these commands and variables to extract each shard's per-file runtimes
+# from JUnit, validate the complete shard set, and build the shared timing map.
+TEST_TIMINGS_SUITE ?=
+TEST_TIMINGS_SHARD ?=
+TEST_TIMINGS_REPORT ?= app/testreports/junit.xml
+TEST_TIMINGS_FRAGMENT ?= /tmp/test-timing-$(TEST_TIMINGS_SUITE)-$(TEST_TIMINGS_SHARD).json
+TEST_TIMINGS_FRAGMENTS_DIR ?= test-timing-fragments
+TEST_TIMINGS_OUTPUT ?= /tmp/test-timings-v1.json
+TEST_TIMINGS_UNIT_SHARDS ?= 2
+TEST_TIMINGS_FEATURE_SHARDS ?= 18
+TEST_TIMINGS_SOURCE_COMMIT ?= $(SEMAPHORE_GIT_SHA)
+
+test.timings:
+	ruby scripts/test_timings/collector_test.rb
+
+test.timings.extract:
+	ruby scripts/test_timings/collector.rb extract --report $(TEST_TIMINGS_REPORT) --output $(TEST_TIMINGS_FRAGMENT) --suite $(TEST_TIMINGS_SUITE) --shard $(TEST_TIMINGS_SHARD)
+
+test.timings.merge:
+	ruby scripts/test_timings/collector.rb merge --fragments $(TEST_TIMINGS_FRAGMENTS_DIR) --output $(TEST_TIMINGS_OUTPUT) --unit-shards $(TEST_TIMINGS_UNIT_SHARDS) --feature-shards $(TEST_TIMINGS_FEATURE_SHARDS) --source-commit $(TEST_TIMINGS_SOURCE_COMMIT)
 
 #
 # Building a docker image
