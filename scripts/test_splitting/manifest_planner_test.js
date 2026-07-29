@@ -90,14 +90,61 @@ test("loadTimingMap rejects missing, malformed, unsupported, and empty artifacts
     });
     assert.throws(() => loadTimingMap(unsupported), /Unsupported timing artifact schema/);
 
+    const nonObjectTopLevel = writeJson(directory, "non_object_top_level.json", [
+      { schema_version: 1, timings: { "test/a_test.exs": 1 } },
+    ]);
+    assert.throws(() => loadTimingMap(nonObjectTopLevel), /Invalid timing artifact/);
+
+    const nonObjectTimingsArray = writeJson(directory, "non_object_timings_array.json", {
+      schema_version: 1,
+      timings: [],
+    });
+    assert.throws(() => loadTimingMap(nonObjectTimingsArray), /Invalid timings map/);
+
+    const nonObjectTimingsNull = writeJson(directory, "non_object_timings_null.json", {
+      schema_version: 1,
+      timings: null,
+    });
+    assert.throws(() => loadTimingMap(nonObjectTimingsNull), /Invalid timings map/);
+
     const empty = writeJson(directory, "empty.json", { schema_version: 1, timings: {} });
     assert.throws(() => loadTimingMap(empty), /must not be empty/);
+
+    const nonCanonicalAbsolutePath = writeJson(directory, "non_canonical_absolute_path.json", {
+      schema_version: 1,
+      timings: { "/abs/path/to/test_test.exs": 1 },
+    });
+    assert.throws(() => loadTimingMap(nonCanonicalAbsolutePath), /Invalid timing/);
+
+    const nonCanonicalOutsideTestDir = writeJson(directory, "non_canonical_outside_test_dir.json", {
+      schema_version: 1,
+      timings: { "spec/a_test.exs": 1 },
+    });
+    assert.throws(() => loadTimingMap(nonCanonicalOutsideTestDir), /Invalid timing/);
+
+    const nonCanonicalMissingTestSuffix = writeJson(directory, "non_canonical_missing_test_suffix.json", {
+      schema_version: 1,
+      timings: { "test/a.exs": 1 },
+    });
+    assert.throws(() => loadTimingMap(nonCanonicalMissingTestSuffix), /Invalid timing/);
 
     const invalidTiming = writeJson(directory, "invalid-timing.json", {
       schema_version: 1,
       timings: { "test/a_test.exs": -1 },
     });
     assert.throws(() => loadTimingMap(invalidTiming), /Invalid timing/);
+
+    const invalidWeightString = writeJson(directory, "invalid_weight_string.json", {
+      schema_version: 1,
+      timings: { "test/a_test.exs": "100" },
+    });
+    assert.throws(() => loadTimingMap(invalidWeightString), /Invalid timing/);
+
+    const invalidWeightNull = writeJson(directory, "invalid_weight_null.json", {
+      schema_version: 1,
+      timings: { "test/b_test.exs": null },
+    });
+    assert.throws(() => loadTimingMap(invalidWeightNull), /Invalid timing/);
   });
 });
 
