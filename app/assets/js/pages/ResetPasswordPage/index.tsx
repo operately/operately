@@ -1,9 +1,8 @@
 import * as Api from "@/api";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 
-import { Forms } from "turboui";
+import { Forms, Page as TurboUIPage } from "turboui";
 import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { useNavigate } from "react-router";
@@ -49,48 +48,46 @@ function Page() {
   const okForm = okEmail && okPassword && okConfirmPassword;
 
   return (
-    <Pages.Page title={["Reset Password"]} testId="reset-password-page">
-      <Paper.Root size="tiny">
-        <Paper.Body className="h-dvh sm:h-auto">
-          <div className="py-8 sm:px-4 sm:py-4">
-            <OperatelyLogo width="30px" height="30px" />
-            <h1 className="text-2xl font-bold my-4">Reset Password</h1>
+    <TurboUIPage title={["Reset Password"]} size="tiny" testId="reset-password-page">
+      <div className="px-8 py-6 sm:px-10 sm:py-8 h-dvh sm:h-auto">
+        <div className="py-8 sm:px-4 sm:py-4">
+          <OperatelyLogo width="30px" height="30px" />
+          <h1 className="text-2xl font-bold my-4">Reset Password</h1>
 
-            <Forms.Form form={form}>
-              <Forms.FieldGroup>
-                <Forms.TextInput
-                  field="email"
-                  label="Email"
-                  placeholder="e.g. your@email.com"
-                  required
-                  okSign={okEmail}
-                />
+          <Forms.Form form={form}>
+            <Forms.FieldGroup>
+              <Forms.TextInput
+                field="email"
+                label="Email"
+                placeholder="e.g. your@email.com"
+                required
+                okSign={okEmail}
+              />
 
-                <Forms.PasswordInput
-                  field="password"
-                  label="Password"
-                  placeholder="Enter your new password"
-                  required
-                  okSign={okPassword}
-                />
+              <Forms.PasswordInput
+                field="password"
+                label="Password"
+                placeholder="Enter your new password"
+                required
+                okSign={okPassword}
+              />
 
-                <Forms.PasswordInput
-                  field="confirmPassword"
-                  label="Confirm Password"
-                  placeholder="Re-enter your new password"
-                  required
-                  okSign={okConfirmPassword}
-                />
+              <Forms.PasswordInput
+                field="confirmPassword"
+                label="Confirm Password"
+                placeholder="Re-enter your new password"
+                required
+                okSign={okConfirmPassword}
+              />
 
-                <PasswordStrength password={form.values.password} />
-              </Forms.FieldGroup>
+              <PasswordStrength password={form.values.password} />
+            </Forms.FieldGroup>
 
-              <SubmitButton onClick={form.actions.submit} disabled={!okForm} />
-            </Forms.Form>
-          </div>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+            <SubmitButton onClick={form.actions.submit} disabled={!okForm} />
+          </Forms.Form>
+        </div>
+      </div>
+    </TurboUIPage>
   );
 }
 
