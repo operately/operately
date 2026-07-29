@@ -1,7 +1,7 @@
 SHELL := /bin/bash  # Use bash syntax
 MAKEFLAGS += -s     # Silent mode
 
-.PHONY: test test.timings test.timings.extract test.timings.merge cli.build cli.test cli.test.unit cli.test.e2e mcp.test.e2e app.node_modules turboui.node_modules cli.node_modules turboui.test.storybook
+.PHONY: test test.manifests test.manifests.prepare test.timings test.timings.extract test.timings.merge cli.build cli.test cli.test.unit cli.test.e2e mcp.test.e2e app.node_modules turboui.node_modules cli.node_modules turboui.test.storybook
 
 REPORTS_DIR ?= $(PWD)/app/testreports
 SCREENSHOTS_DIR ?= $(PWD)/app/screenshots
@@ -293,10 +293,18 @@ test.ee:
 	./devenv bash -c "./scripts/run_ee_tests.js"
 
 test.mix.unit: test.init
-	./devenv bash -c "./scripts/run_unit_tests.js $(INDEX) $(TOTAL)"
+	@if [[ -n "$(MANIFEST)" ]]; then \
+		./devenv bash -c "./scripts/run_unit_tests.js --manifest $(MANIFEST)"; \
+	else \
+		./devenv bash -c "./scripts/run_unit_tests.js $(INDEX) $(TOTAL)"; \
+	fi
 
 test.mix.features: test.init
-	./devenv bash -c "./scripts/run_feature_tests.js $(INDEX) $(TOTAL)"
+	@if [[ -n "$(MANIFEST)" ]]; then \
+		./devenv bash -c "./scripts/run_feature_tests.js --manifest $(MANIFEST)"; \
+	else \
+		./devenv bash -c "./scripts/run_feature_tests.js $(INDEX) $(TOTAL)"; \
+	fi
 
 test.npm: test.init
 	./devenv bash -c "cd app && npx jest $(shell echo $(FILE) | cut -d':' -f1)"
@@ -356,8 +364,8 @@ test.icons.check:
 #
 # Historical test timing artifacts
 #
-# CI uses these commands and variables to extract each shard's per-file runtimes
-# from JUnit, validate the complete shard set, and build the shared timing map.
+# CI uses these commands and variables to extract per-file runtimes, build the
+# shared timing map, and prepare deterministic manifests for every test shard.
 TEST_TIMINGS_SUITE ?=
 TEST_TIMINGS_SHARD ?=
 TEST_TIMINGS_REPORT ?= app/testreports/junit.xml
@@ -367,9 +375,18 @@ TEST_TIMINGS_OUTPUT ?= /tmp/test-timings-v1.json
 TEST_TIMINGS_UNIT_SHARDS ?= 2
 TEST_TIMINGS_FEATURE_SHARDS ?= 18
 TEST_TIMINGS_SOURCE_COMMIT ?= $(SEMAPHORE_GIT_SHA)
+TEST_TIMINGS_INPUT ?= ci/test-timings-v1.json
+TEST_MANIFESTS_OUTPUT ?= test-manifests
+MANIFEST ?=
 
 test.timings:
 	ruby scripts/test_timings/collector_test.rb
+
+test.manifests:
+	node --test scripts/test_splitting/file_splitter_test.js scripts/test_splitting/manifest_planner_test.js
+
+test.manifests.prepare:
+	node scripts/test_splitting/manifest_planner.js --timings $(TEST_TIMINGS_INPUT) --output $(TEST_MANIFESTS_OUTPUT) --unit-shards $(TEST_TIMINGS_UNIT_SHARDS) --feature-shards $(TEST_TIMINGS_FEATURE_SHARDS)
 
 test.timings.extract:
 	ruby scripts/test_timings/collector.rb extract --report $(TEST_TIMINGS_REPORT) --output $(TEST_TIMINGS_FRAGMENT) --suite $(TEST_TIMINGS_SUITE) --shard $(TEST_TIMINGS_SHARD)

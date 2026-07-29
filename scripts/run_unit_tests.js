@@ -1,26 +1,52 @@
 #!/usr/bin/env node
 
 const path = require("path");
-const { execSync } = require("child_process");
-const { findTestFiles, parseSplitArgs, splitFiles } = require("./test_file_splitter");
+const { spawnSync } = require("child_process");
+const { parseSplitArgs, splitFiles } = require("./test_splitting/file_splitter");
+const { parseManifestPath, readTestManifest } = require("./test_splitting/manifest");
+const { findUnitTestFiles } = require("./test_splitting/suite_files");
 
-function findUnitTests() {
-  const excludedSuites = ["test/features", "test/cli_e2e", "test/mcp_e2e"];
-  const split = parseSplitArgs(process.argv);
-  const files = findTestFiles(["app/test"], (file) => !excludedSuites.some((suite) => file.includes(suite)));
+function selectUnitTests(argv = process.argv, files = findUnitTestFiles(), weightForFile) {
+  const manifestPath = parseManifestPath(argv);
 
-  return splitFiles(files, split);
+  if (manifestPath) {
+    return readTestManifest(manifestPath, files);
+  }
+
+  return splitFiles(files, parseSplitArgs(argv), weightForFile);
 }
 
 function runTests(testFiles) {
-  try {
-    const files = testFiles.map((file) => path.relative("app", file));
-    const command = `cd app && MIX_ENV=test mix tests_with_retries ${files.join(" ")}`;
+  const files = testFiles.map((file) => path.relative("app", file));
+  const result = spawnSync("mix", ["tests_with_retries", ...files], {
+    cwd: "app",
+    env: { ...process.env, MIX_ENV: "test" },
+    stdio: "inherit",
+  });
 
-    execSync(command, { stdio: "inherit" });
-  } catch (error) {
-    process.exit(1);
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status !== 0) {
+    process.exitCode = result.status ?? 1;
   }
 }
 
-runTests(findUnitTests());
+function main() {
+  try {
+    runTests(selectUnitTests());
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
+  }
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  runTests,
+  selectUnitTests,
+};
