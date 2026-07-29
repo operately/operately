@@ -6,6 +6,7 @@ defmodule Operately.Operations.ProjectResuming do
   alias Operately.Comments.CommentThread
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
   alias Operately.Search.IndexUpdates
+  alias Operately.Search.CoreWorkIndexUpdates
 
   def run(author, project, attrs) do
     next_check_in = Operately.Time.calculate_next_weekly_check_in(
@@ -42,6 +43,7 @@ defmodule Operately.Operations.ProjectResuming do
     |> SubscriptionList.update(:thread)
     |> Activities.dispatch_notification()
     |> IndexUpdates.enqueue(:search_project, "project", project.id)
+    |> CoreWorkIndexUpdates.enqueue_project(project.id)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end

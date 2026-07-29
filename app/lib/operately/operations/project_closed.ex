@@ -5,6 +5,7 @@ defmodule Operately.Operations.ProjectClosed do
   alias Operately.Projects.{Project, Retrospective}
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
   alias Operately.Search.IndexUpdates
+  alias Operately.Search.CoreWorkIndexUpdates
 
   def run(author, project, attrs) do
     Multi.new()
@@ -31,6 +32,7 @@ defmodule Operately.Operations.ProjectClosed do
       retrospective_id: changes.retrospective.id,
     } end)
     |> IndexUpdates.enqueue(:search_project, "project", project.id)
+    |> CoreWorkIndexUpdates.enqueue_project(project.id)
     |> Repo.transaction()
     |> Repo.extract_result(:retrospective)
   end
