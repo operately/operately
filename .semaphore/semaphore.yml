@@ -66,7 +66,7 @@ blocks:
 
   - name: App Tests
     run:
-      when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'}) or change_in('/scripts/test_timings', {default_branch: 'main'})"
+      when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'}) or change_in('/scripts/test_timings', {default_branch: 'main'}) or change_in('/scripts/test_splitting', {default_branch: 'main'}) or change_in('/scripts/run_unit_tests.js', {default_branch: 'main'}) or change_in('/scripts/run_feature_tests.js', {default_branch: 'main'}) or change_in('/Makefile', {default_branch: 'main'}) or change_in('/.semaphore/semaphore.yml', {default_branch: 'main'})"
     dependencies: []
     task:
       secrets:
@@ -87,6 +87,7 @@ blocks:
           commands:
             - make test.setup.lint
             - make test.timings
+            - make test.manifests
             - make test.js.dead.code
             - make test.tsc.lint
             - make test.cli.catalog.sync
@@ -99,14 +100,6 @@ blocks:
             - make test.setup.dialyzer
             - make test.dialyzer
 
-        - name: Unit Tests
-          parallelism: 2
-          commands:
-            - make test.setup.unit
-            - make test.mix.unit INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
-            - make test.timings.extract TEST_TIMINGS_SUITE=unit TEST_TIMINGS_SHARD=$SEMAPHORE_JOB_INDEX
-            - artifact push workflow -d test-timing-fragments/unit-$SEMAPHORE_JOB_INDEX.json /tmp/test-timing-unit-$SEMAPHORE_JOB_INDEX.json --force
-
         - name: EE Tests
           commands:
             - make test.setup.ee
@@ -117,11 +110,62 @@ blocks:
             - make test.setup.js
             - make test.npm
 
+      epilogue:
+        always:
+          commands:
+            - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
+            - ./scripts/publish_retries_report.sh app/testreports/retries.md
+
+  - name: Prepare Test Manifests
+    run:
+      when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'}) or change_in('/scripts/test_timings', {default_branch: 'main'}) or change_in('/scripts/test_splitting', {default_branch: 'main'}) or change_in('/scripts/run_unit_tests.js', {default_branch: 'main'}) or change_in('/scripts/run_feature_tests.js', {default_branch: 'main'}) or change_in('/Makefile', {default_branch: 'main'}) or change_in('/.semaphore/semaphore.yml', {default_branch: 'main'})"
+    dependencies: []
+    task:
+      prologue:
+        commands:
+          - checkout
+      jobs:
+        - name: Prepare Test Manifests
+          commands:
+            - artifact pull project ci/test-timings-v1.json -d /tmp/test-timings-v1.json --force
+            - make test.manifests.prepare TEST_TIMINGS_INPUT=/tmp/test-timings-v1.json
+            - artifact push workflow test-manifests --force
+
+  - name: Sharded App Tests
+    run:
+      when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'}) or change_in('/scripts/test_timings', {default_branch: 'main'}) or change_in('/scripts/test_splitting', {default_branch: 'main'}) or change_in('/scripts/run_unit_tests.js', {default_branch: 'main'}) or change_in('/scripts/run_feature_tests.js', {default_branch: 'main'}) or change_in('/Makefile', {default_branch: 'main'}) or change_in('/.semaphore/semaphore.yml', {default_branch: 'main'})"
+    dependencies:
+      - Prepare Test Manifests
+    task:
+      secrets:
+        - name: ci-cache-credentials
+      prologue:
+        commands:
+          - checkout
+          - cache restore app-deps-v2-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-build-v2-$SEMAPHORE_AGENT_MACHINE_OS_IMAGE-$(checksum app/mix.lock)-$(checksum app/mix.exs)
+          - cache restore app-node-modules-v2-$(checksum app/package-lock.json)
+          - cache restore cli-node-modules-v2-$(checksum cli/package-lock.json)
+          - cache restore turboui-node-modules-v2-$(checksum turboui/package-lock.json)
+          - cache restore turboui-dist-v2-$(git rev-parse HEAD:turboui)
+          - ./scripts/cache-fix-for-erlang
+
+      jobs:
+        - name: Unit Tests
+          parallelism: 2
+          commands:
+            - artifact pull workflow test-manifests --force
+            - make test.setup.unit
+            - make test.mix.unit MANIFEST=test-manifests/unit-$SEMAPHORE_JOB_INDEX.txt
+            - make test.timings.extract TEST_TIMINGS_SUITE=unit TEST_TIMINGS_SHARD=$SEMAPHORE_JOB_INDEX
+            - artifact push workflow -d test-timing-fragments/unit-$SEMAPHORE_JOB_INDEX.json /tmp/test-timing-unit-$SEMAPHORE_JOB_INDEX.json --force
+
         - name: Features
           parallelism: 18
           commands:
+            - artifact pull workflow test-manifests --force
             - make test.setup.features
-            - make test.mix.features INDEX=$SEMAPHORE_JOB_INDEX TOTAL=$SEMAPHORE_JOB_COUNT
+            - make test.mix.features MANIFEST=test-manifests/feature-$SEMAPHORE_JOB_INDEX.txt
             - make test.timings.extract TEST_TIMINGS_SUITE=feature TEST_TIMINGS_SHARD=$SEMAPHORE_JOB_INDEX
             - artifact push workflow -d test-timing-fragments/feature-$SEMAPHORE_JOB_INDEX.json /tmp/test-timing-feature-$SEMAPHORE_JOB_INDEX.json --force
 
@@ -192,10 +236,11 @@ blocks:
       - License Check
       - Turboui
       - App Tests
+      - Sharded App Tests
       - CLI and MCP E2E
       - Docker Build
     run:
-      when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'}) or change_in('/scripts/test_timings', {default_branch: 'main'})"
+      when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'}) or change_in('/scripts/test_timings', {default_branch: 'main'}) or change_in('/scripts/test_splitting', {default_branch: 'main'}) or change_in('/scripts/run_unit_tests.js', {default_branch: 'main'}) or change_in('/scripts/run_feature_tests.js', {default_branch: 'main'}) or change_in('/Makefile', {default_branch: 'main'}) or change_in('/.semaphore/semaphore.yml', {default_branch: 'main'})"
     task:
       prologue:
         commands:
