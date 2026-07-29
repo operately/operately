@@ -1,9 +1,8 @@
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { Link } from "turboui";
+import { Link, Page as TurboUIPage } from "turboui";
 
 import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
 import { SignUpWithEmail, SignUpWithGoogleButton } from "@/features/auth/Buttons";
@@ -16,23 +15,23 @@ function Page() {
   const redirectTo = new URLSearchParams(window.location.search).get("redirect_to");
 
   return (
-    <Pages.Page title={["Sign Up"]} testId="sign-up-page">
-      <Paper.Root size="tiny">
-        <Paper.Body className="h-dvh sm:h-auto">
-          <div className="py-8 sm:px-4 sm:py-4">
-            <Header />
+    <TurboUIPage title={["Sign Up"]} size="tiny" testId="sign-up-page">
+      <div className="px-8 py-6 sm:px-10 sm:py-8 h-dvh sm:h-auto">
+        <div className="py-8 sm:px-4 sm:py-4">
+          <Header />
 
-            <div className="flex flex-col gap-3 mb-8">
-              {window.appConfig.allowSignupWithGoogle && <SignUpWithGoogleButton />}
-              {window.appConfig.allowSignupWithEmail && <SignUpWithEmail inviteToken={inviteToken} redirectTo={redirectTo} />}
-            </div>
-
-            <TosAndPrivacyPolicy />
-            <SignInLink />
+          <div className="flex flex-col gap-3 mb-8">
+            {window.appConfig.allowSignupWithGoogle && <SignUpWithGoogleButton />}
+            {window.appConfig.allowSignupWithEmail && (
+              <SignUpWithEmail inviteToken={inviteToken} redirectTo={redirectTo} />
+            )}
           </div>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+
+          <TosAndPrivacyPolicy />
+          <SignInLink />
+        </div>
+      </div>
+    </TurboUIPage>
   );
 }
 

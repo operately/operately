@@ -1,10 +1,9 @@
 import Api, { Company } from "@/api";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { IconBuildingEstate } from "turboui";
+import { IconBuildingEstate, Page as TurboUIPage } from "turboui";
 import { PageModule } from "@/routes/types";
 import { Paths } from "@/routes/paths";
 import classnames from "classnames";
@@ -33,9 +32,9 @@ function Page() {
   const billingPeriod = params.get("billing_period");
 
   return (
-    <Pages.Page title={["Select Company"]} testId="billing-pick-company-page">
-      <Paper.Root size="small" className="mt-24">
-        <Paper.Body>
+    <div className="mt-20">
+      <TurboUIPage title={["Select Company"]} size="small" testId="billing-pick-company-page">
+        <div className="px-10 py-8">
           <div className="flex items-center justify-between mb-8">
             <div>
               <div className="text-content-accent text-xl font-semibold">Select a company</div>
@@ -51,9 +50,9 @@ function Page() {
           </div>
 
           <CompanyList companies={companies} plan={plan} billingPeriod={billingPeriod} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+        </div>
+      </TurboUIPage>
+    </div>
   );
 }
 

@@ -4,13 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import BillingPickCompanyPageModule from "./index";
 
 jest.mock("@/components/Pages", () => ({
-  Page: ({ children, testId }: { children: React.ReactNode; testId?: string }) => <div data-test-id={testId}>{children}</div>,
   useLoadedData: jest.fn(() => ({ companies: [] })),
-}));
-
-jest.mock("@/components/PaperContainer", () => ({
-  Root: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Body: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 jest.mock("@/components/OperatelyLogo", () => ({
@@ -19,6 +13,9 @@ jest.mock("@/components/OperatelyLogo", () => ({
 
 jest.mock("turboui", () => ({
   IconBuildingEstate: () => <div>icon</div>,
+  Page: ({ children, testId }: { children: React.ReactNode; testId?: string }) => (
+    <div data-test-id={testId}>{children}</div>
+  ),
 }));
 
 describe("BillingPickCompanyPage", () => {
