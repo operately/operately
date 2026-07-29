@@ -1,21 +1,25 @@
 defmodule Operately.Search.CompanyQuery.CoreWorkItems do
   @moduledoc """
-  Builds the canonical project, goal, and discussion set eligible for company search.
+  Builds the canonical core-work set eligible for company search.
 
   The returned metadata is authoritative for company, access-context, and scope
-  validation. Search entries that no longer match it are rejected before ranking.
+  validation. Parent-owned records also validate publication and inherited state.
+  Search entries that no longer match current canonical data are rejected before ranking.
   """
 
   import Ecto.Query
 
-  alias Operately.Goals.Goal
+  alias Operately.Goals.{Goal, Update}
   alias Operately.Messages.Message
-  alias Operately.Projects.Project
+  alias Operately.Projects.{CheckIn, Project, Retrospective}
 
   def query(company_id) do
     project_query(company_id)
     |> union_all(^goal_query(company_id))
     |> union_all(^discussion_query(company_id))
+    |> union_all(^project_check_in_query(company_id))
+    |> union_all(^goal_check_in_query(company_id))
+    |> union_all(^project_retrospective_query(company_id))
   end
 
   defp project_query(company_id) do
@@ -34,7 +38,8 @@ defmodule Operately.Search.CompanyQuery.CoreWorkItems do
         space_id: project.group_id,
         project_id: project.id,
         goal_id: project.goal_id,
-        owner_name: space.name
+        owner_name: space.name,
+        expected_state: type(^nil, :string)
       }
     )
   end
@@ -56,7 +61,8 @@ defmodule Operately.Search.CompanyQuery.CoreWorkItems do
         space_id: goal.group_id,
         project_id: type(^nil, :binary_id),
         goal_id: goal.id,
-        owner_name: space.name
+        owner_name: space.name,
+        expected_state: type(^nil, :string)
       }
     )
   end
@@ -79,7 +85,104 @@ defmodule Operately.Search.CompanyQuery.CoreWorkItems do
         space_id: space.id,
         project_id: type(^nil, :binary_id),
         goal_id: type(^nil, :binary_id),
-        owner_name: space.name
+        owner_name: space.name,
+        expected_state: type(^nil, :string)
+      }
+    )
+  end
+
+  defp project_check_in_query(company_id) do
+    from(check_in in CheckIn,
+      join: project in assoc(check_in, :project),
+      join: space in assoc(project, :group),
+      join: context in assoc(project, :access_context),
+      where: project.company_id == ^company_id,
+      where: check_in.state == :published,
+      where: is_nil(project.deleted_at) and is_nil(space.deleted_at),
+      select: %{
+        source_type: type(^"project_check_in", :string),
+        source_id: check_in.id,
+        node_id: type(^nil, :binary_id),
+        parent_folder_id: type(^nil, :binary_id),
+        resource_hub_id: type(^nil, :binary_id),
+        company_id: project.company_id,
+        access_context_id: context.id,
+        space_id: project.group_id,
+        project_id: project.id,
+        goal_id: project.goal_id,
+        owner_name: project.name,
+        expected_state:
+          type(
+            fragment(
+              "CASE WHEN ? IS NOT NULL OR ? = 'closed' THEN 'closed' WHEN ? = 'paused' THEN 'paused' ELSE NULL END",
+              project.closed_at,
+              project.status,
+              project.status
+            ),
+            :string
+          )
+      }
+    )
+  end
+
+  defp goal_check_in_query(company_id) do
+    from(check_in in Update,
+      join: goal in assoc(check_in, :goal),
+      join: space in assoc(goal, :group),
+      join: context in assoc(goal, :access_context),
+      where: goal.company_id == ^company_id,
+      where: check_in.state == :published,
+      where: is_nil(goal.deleted_at) and is_nil(space.deleted_at),
+      select: %{
+        source_type: type(^"goal_check_in", :string),
+        source_id: check_in.id,
+        node_id: type(^nil, :binary_id),
+        parent_folder_id: type(^nil, :binary_id),
+        resource_hub_id: type(^nil, :binary_id),
+        company_id: goal.company_id,
+        access_context_id: context.id,
+        space_id: goal.group_id,
+        project_id: type(^nil, :binary_id),
+        goal_id: goal.id,
+        owner_name: goal.name,
+        expected_state:
+          type(
+            fragment("CASE WHEN ? IS NOT NULL THEN 'closed' ELSE NULL END", goal.closed_at),
+            :string
+          )
+      }
+    )
+  end
+
+  defp project_retrospective_query(company_id) do
+    from(retrospective in Retrospective,
+      join: project in assoc(retrospective, :project),
+      join: space in assoc(project, :group),
+      join: context in assoc(project, :access_context),
+      where: project.company_id == ^company_id,
+      where: is_nil(project.deleted_at) and is_nil(space.deleted_at),
+      select: %{
+        source_type: type(^"project_retrospective", :string),
+        source_id: retrospective.id,
+        node_id: type(^nil, :binary_id),
+        parent_folder_id: type(^nil, :binary_id),
+        resource_hub_id: type(^nil, :binary_id),
+        company_id: project.company_id,
+        access_context_id: context.id,
+        space_id: project.group_id,
+        project_id: project.id,
+        goal_id: project.goal_id,
+        owner_name: project.name,
+        expected_state:
+          type(
+            fragment(
+              "CASE WHEN ? IS NOT NULL OR ? = 'closed' THEN 'closed' WHEN ? = 'paused' THEN 'paused' ELSE NULL END",
+              project.closed_at,
+              project.status,
+              project.status
+            ),
+            :string
+          )
       }
     )
   end

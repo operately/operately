@@ -102,7 +102,127 @@ defmodule Operately.Search.CompanyQueryTest do
     assert snippet =~ "Interview synthesis"
   end
 
-  test "includes current historical core work states and excludes ineligible core work", ctx do
+  test "returns check-ins and retrospectives with parent context and typed navigation", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:check_in_project, :space, name: "Website redesign")
+      |> Factory.add_goal(:check_in_goal, :space, name: "European expansion")
+      |> Factory.add_project_check_in(:project_check_in, :check_in_project, :creator)
+      |> Factory.add_goal_update(:goal_check_in, :check_in_goal, :creator)
+      |> Factory.add_project_retrospective(:retrospective, :check_in_project, :creator)
+
+    project_check_in =
+      ctx.project_check_in
+      |> Ecto.Changeset.change(
+        description: RichText.rich_text("Navigation evidence"),
+        published_at: ~U[2026-07-20 12:00:00Z]
+      )
+      |> Repo.update!()
+
+    goal_check_in =
+      ctx.goal_check_in
+      |> Ecto.Changeset.change(
+        message: RichText.rich_text("Revenue evidence"),
+        published_at: ~U[2026-07-21 12:00:00Z]
+      )
+      |> Repo.update!()
+
+    retrospective =
+      ctx.retrospective
+      |> Ecto.Changeset.change(content: RichText.rich_text("Launch lessons"))
+      |> Repo.update!()
+
+    Enum.each(
+      [
+        {:project_check_in, project_check_in.id},
+        {:goal_check_in, goal_check_in.id},
+        {:project_retrospective, retrospective.id}
+      ],
+      fn {type, id} -> sync(type, id) end
+    )
+
+    assert [
+             %{
+               title: "Check-in on 2026-07-20",
+               context: "Website redesign",
+               matched_field: :description,
+               navigation_target: %{project_check_in_id: project_check_in_id}
+             }
+           ] = Search.search_company(ctx.creator, "Navigation evidence")
+
+    assert project_check_in_id == project_check_in.id
+
+    assert [
+             %{
+               context: "European expansion",
+               matched_field: :message,
+               navigation_target: %{goal_check_in_id: goal_check_in_id}
+             }
+           ] = Search.search_company(ctx.creator, "Revenue evidence")
+
+    assert goal_check_in_id == goal_check_in.id
+
+    assert [
+             %{
+               title: "Project retrospective",
+               context: "Website redesign",
+               matched_field: :content,
+               navigation_target: %{
+                 project_id: project_id,
+                 project_retrospective_id: retrospective_id
+               }
+             }
+           ] = Search.search_company(ctx.creator, "Launch lessons")
+
+    assert project_id == ctx.check_in_project.id
+    assert retrospective_id == retrospective.id
+  end
+
+  test "applies live permissions, publication, and parent-state validation to check-ins", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:viewer)
+      |> Factory.add_project(:private_project, :space,
+        name: "Private check-in project",
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access()
+      )
+      |> Factory.add_project_check_in(:private_check_in, :private_project, :creator)
+
+    check_in =
+      ctx.private_check_in
+      |> Ecto.Changeset.change(description: RichText.rich_text("Confidential check-in marker"))
+      |> Repo.update!()
+
+    sync(:project_check_in, check_in.id)
+    context = Access.get_context!(project_id: ctx.private_project.id)
+
+    assert [] = Search.search_company(ctx.viewer, "Confidential check-in marker")
+
+    {:ok, _binding} =
+      Access.bind(context,
+        person_id: ctx.viewer.id,
+        level: Binding.view_access()
+      )
+
+    assert [%{id: id, state: nil}] = Search.search_company(ctx.viewer, "Confidential check-in marker")
+    assert id == check_in.id
+
+    ctx.private_project
+    |> Ecto.Changeset.change(status: "closed", closed_at: DateTime.utc_now(:second))
+    |> Repo.update!()
+
+    assert [] = Search.search_company(ctx.viewer, "Confidential check-in marker")
+
+    sync(:project_check_in, check_in.id)
+    assert [%{id: id, state: :closed}] = Search.search_company(ctx.viewer, "Confidential check-in marker")
+    assert id == check_in.id
+
+    check_in |> Ecto.Changeset.change(state: :draft) |> Repo.update!()
+    assert [] = Search.search_company(ctx.viewer, "Confidential check-in marker")
+  end
+
+  test "includes current core work states and excludes ineligible core work", ctx do
     ctx =
       ctx
       |> Factory.add_project(:paused_project, :space, name: "Paused marker")
@@ -541,7 +661,7 @@ defmodule Operately.Search.CompanyQueryTest do
   defp sync(type, id) do
     source_type =
       case type do
-        type when type in [:project, :goal, :discussion] -> Atom.to_string(type)
+        type when type in [:project, :goal, :discussion, :project_check_in, :goal_check_in, :project_retrospective] -> Atom.to_string(type)
         resource_hub_type -> Search.ResourceHubIndex.source_type(resource_hub_type)
       end
 
