@@ -1,36 +1,31 @@
 import * as React from "react";
 import classNames from "classnames";
 
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
-
 import * as Companies from "@/models/companies";
 import { logIn } from "@/routes/auth";
 import { PasswordStrength } from "@/features/auth/PasswordStrength";
 import { validatePassword } from "@/features/auth/validatePassword";
 import { validateEmail } from "@/features/auth/validateEmail";
-import { Forms, Spacer } from "turboui";
+import { Forms, Spacer, Page as TurboUIPage } from "turboui";
 import { OperatelyLogo } from "turboui/Logo";
 
 export function Page() {
   return (
-    <Pages.Page title="Welcome to Operately!">
-      <Paper.Root>
-        <Paper.Body>
-          <div className="grid grid-cols-[min-content_1fr] gap-x-4">
-            <div className="row-span-2 pt-1">
-              <OperatelyLogo width="48px" height="48px" />
-            </div>
-            <div className="text-content-accent text-2xl font-extrabold">Welcome to Operately!</div>
-            <div className="text-content-accent">Let&apos;s set up your company.</div>
+    <TurboUIPage title="Welcome to Operately!">
+      <div className="px-12 py-10">
+        <div className="grid grid-cols-[min-content_1fr] gap-x-4">
+          <div className="row-span-2 pt-1">
+            <OperatelyLogo width="48px" height="48px" />
           </div>
+          <div className="text-content-accent text-2xl font-extrabold">Welcome to Operately!</div>
+          <div className="text-content-accent">Let&apos;s set up your company.</div>
+        </div>
 
-          <Spacer size={6} />
+        <Spacer size={6} />
 
-          <Form />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+        <Form />
+      </div>
+    </TurboUIPage>
   );
 }
 

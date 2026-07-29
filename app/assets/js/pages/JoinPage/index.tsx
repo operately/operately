@@ -1,7 +1,6 @@
 import Api from "@/api";
 
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Accounts from "@/models/accounts";
 import * as People from "@/models/people";
 import { PageModule } from "@/routes/types";
@@ -12,7 +11,7 @@ import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { logIn } from "@/routes/auth";
 import { redirect } from "react-router";
 
-import { Forms } from "turboui";
+import { Forms, Page as TurboUIPage } from "turboui";
 
 export default { name: "JoinPage", loader, Page } as PageModule;
 
@@ -35,17 +34,16 @@ async function loader({ request }): Promise<any> {
 
 function Page() {
   return (
-    <Pages.Page title="Welcome to Operately!">
-      <Paper.Root size="small">
-        <div className="mt-24"></div>
-
-        <Paper.Body>
+    <div className="mt-20">
+      <TurboUIPage title="Welcome to Operately!" size="small">
+        <div className="px-10 py-8">
           <Header />
           <Form />
-        </Paper.Body>
+        </div>
+
         <WhatHappensNext />
-      </Paper.Root>
-    </Pages.Page>
+      </TurboUIPage>
+    </div>
   );
 }
 
@@ -116,12 +114,7 @@ function Form() {
               minLength={12}
               maxLength={72}
             />
-            <Forms.PasswordInput
-              label="Repeat password"
-              field={"passwordConfirmation"}
-              minLength={12}
-              maxLength={72}
-            />
+            <Forms.PasswordInput label="Repeat password" field={"passwordConfirmation"} minLength={12} maxLength={72} />
           </Forms.FieldGroup>
 
           <Forms.Submit saveText="Set password &amp; Log in" buttonSize="base" className="w-full" />
@@ -146,8 +139,7 @@ function GoogleLogin() {
       <div className="space-y-2">
         <SignInWithGoogleButton />
         <div className="text-xs text-content-dimmed">
-          * If you sign in with Google, you must use{" "}
-          <span className="font-semibold break-all">{member.email}</span>.
+          * If you sign in with Google, you must use <span className="font-semibold break-all">{member.email}</span>.
         </div>
       </div>
     </div>
