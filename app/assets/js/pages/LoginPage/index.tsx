@@ -1,7 +1,6 @@
 import Api from "@/api";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
@@ -11,7 +10,7 @@ import { logIn } from "@/routes/auth";
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import classNames from "classnames";
-import { Forms, DimmedLink, Link, type FormState } from "turboui";
+import { Forms, DimmedLink, Link, type FormState, Page as TurboUIPage } from "turboui";
 
 export default { name: "LoginPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -63,28 +62,26 @@ function Page() {
   });
 
   return (
-    <Pages.Page title={["Sign In"]} testId="login-page">
-      <Paper.Root size="tiny">
-        <Paper.Body className="h-dvh sm:h-auto">
-          <div className="py-8 sm:px-4 sm:py-4">
-            <OperatelyLogo width="40px" height="40px" />
-            <h1 className="text-2xl font-bold mt-4">Operately</h1>
-            <p className="text-content-dimmed mb-8">Please enter your details to sign in</p>
+    <TurboUIPage title={["Sign In"]} size="tiny" testId="login-page">
+      <div className="px-8 py-6 sm:px-10 sm:py-8 h-dvh sm:h-auto">
+        <div className="py-8 sm:px-4 sm:py-4">
+          <OperatelyLogo width="40px" height="40px" />
+          <h1 className="text-2xl font-bold mt-4">Operately</h1>
+          <p className="text-content-dimmed mb-8">Please enter your details to sign in</p>
 
-            <Forms.Form form={form}>
-              {window.appConfig.allowLoginWithEmail && <EmailLogin form={form} error={error} />}
-              {window.appConfig.allowLoginWithGoogle && <GoogleLogin />}
+          <Forms.Form form={form}>
+            {window.appConfig.allowLoginWithEmail && <EmailLogin form={form} error={error} />}
+            {window.appConfig.allowLoginWithGoogle && <GoogleLogin />}
 
-              {isSignupEnabled() && (
-                <div className="mt-8 text-center text-sm font-medium">
-                  Don't have an account? <Link to="/sign_up">Create an account</Link>
-                </div>
-              )}
-            </Forms.Form>
-          </div>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+            {isSignupEnabled() && (
+              <div className="mt-8 text-center text-sm font-medium">
+                Don't have an account? <Link to="/sign_up">Create an account</Link>
+              </div>
+            )}
+          </Forms.Form>
+        </div>
+      </div>
+    </TurboUIPage>
   );
 }
 
