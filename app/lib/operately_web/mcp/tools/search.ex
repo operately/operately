@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Mcp.Tools.Search do
     Definition.new!(
       name: "search",
       title: "Search Operately",
-      description: "Searches spaces, projects, goals, milestones, tasks, and people in the authenticated company.",
+      description: "Searches navigation items and indexed content in the authenticated company.",
       company_mode: :authenticated,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -32,9 +32,10 @@ defmodule OperatelyWeb.Mcp.Tools.Search do
             "goals" => JsonSchema.array(JsonSchema.any_object(), description: "Matching goals."),
             "milestones" => JsonSchema.array(JsonSchema.any_object(), description: "Matching milestones."),
             "tasks" => JsonSchema.array(JsonSchema.any_object(), description: "Matching tasks."),
-            "people" => JsonSchema.array(JsonSchema.any_object(), description: "Matching people.")
+            "people" => JsonSchema.array(JsonSchema.any_object(), description: "Matching people."),
+            "full_text_results" => JsonSchema.array(JsonSchema.any_object(), description: "Ranked full-text matches not already returned in the grouped results.")
           },
-          required: ["spaces", "projects", "goals", "milestones", "tasks", "people"]
+          required: ["spaces", "projects", "goals", "milestones", "tasks", "people", "full_text_results"]
         )
     )
   end

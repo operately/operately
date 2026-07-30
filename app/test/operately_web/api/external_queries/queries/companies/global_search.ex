@@ -26,5 +26,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.GlobalSearch do
     assert is_list(response.milestones)
     assert is_list(response.tasks)
     assert is_list(response.people)
+    assert is_list(response.full_text_results)
   end
 end

@@ -2069,11 +2069,17 @@ export interface ReviewAssignmentOrigin {
 }
 
 export interface SearchNavigationTarget {
-  resourceHubId: string;
+  resourceHubId?: string | null;
   folderId?: string | null;
   documentId?: string | null;
   fileId?: string | null;
   linkId?: string | null;
+  projectId?: string | null;
+  goalId?: string | null;
+  discussionId?: string | null;
+  projectCheckInId?: string | null;
+  goalCheckInId?: string | null;
+  projectRetrospectiveId?: string | null;
 }
 
 export interface SearchResult {
@@ -2084,6 +2090,7 @@ export interface SearchResult {
   context: string;
   matchedField: SearchMatchedField;
   snippet?: string | null;
+  state?: SearchResultState | null;
   navigationTarget: SearchNavigationTarget;
 }
 
@@ -2615,13 +2622,21 @@ export type ReviewAssignmentTypes =
   | "project_retrospective"
   | "goal_retrospective";
 
-export type SearchMatchedField = "title" | "name" | "content" | "description";
+export type SearchMatchedField = "title" | "name" | "content" | "description" | "message";
+
+export type SearchResultState = "closed" | "completed" | "archived" | "paused";
 
 export type SearchResultType =
   | "resource_hub_folder"
   | "resource_hub_document"
   | "resource_hub_file"
-  | "resource_hub_link";
+  | "resource_hub_link"
+  | "project"
+  | "goal"
+  | "discussion"
+  | "project_check_in"
+  | "goal_check_in"
+  | "project_retrospective";
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
 

@@ -1,8 +1,12 @@
 defmodule OperatelyWeb.Api.Companies.GlobalSearchTest do
   use OperatelyWeb.TurboCase
 
-  alias Operately.Support.Factory
+  alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.Repo
+  alias Operately.Search
+  alias Operately.Search.SourceIndexer
+  alias Operately.Support.{Factory, RichText}
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -22,7 +26,116 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearchTest do
       ctx = log_in(ctx)
 
       assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "a")
-      assert res == %{spaces: [], projects: [], goals: [], milestones: [], tasks: [], people: []}
+
+      assert res == %{
+               spaces: [],
+               projects: [],
+               goals: [],
+               milestones: [],
+               tasks: [],
+               people: [],
+               full_text_results: []
+             }
+    end
+
+    test "returns indexed body matches with full result metadata", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :marketing, name: "Website redesign")
+        |> log_in()
+
+      project =
+        ctx.project
+        |> Operately.Projects.Project.changeset(%{
+          description: RichText.rich_text("Customer interviews revealed a navigation bottleneck")
+        })
+        |> Repo.update!()
+
+      assert {:ok, _summary} = SourceIndexer.sync("project", project.id)
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "navigation bottleneck")
+
+      assert res.projects == []
+
+      assert [
+               %{
+                 id: id,
+                 type: "project",
+                 title: "Website redesign",
+                 context: "Product Space",
+                 matched_field: "description",
+                 snippet: snippet,
+                 state: nil,
+                 navigation_target: %{project_id: project_id}
+               }
+             ] = res.full_text_results
+
+      assert id == Operately.ShortUuid.encode!(project.id)
+      assert project_id == Operately.ShortUuid.encode!(project.id)
+      assert snippet =~ "navigation bottleneck"
+      refute snippet =~ "__OPERATELY_SEARCH"
+    end
+
+    test "deduplicates grouped matches without changing the remaining full-text order", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:grouped_project, :marketing, name: "Signal roadmap")
+        |> Factory.add_project(:body_project, :marketing, name: "Website redesign")
+        |> Factory.add_project(:closed_project, :marketing, name: "Signal archive")
+        |> Factory.close_project(:closed_project)
+        |> log_in()
+
+      body_project =
+        ctx.body_project
+        |> Operately.Projects.Project.changeset(%{description: RichText.rich_text("Signal research")})
+        |> Repo.update!()
+
+      Enum.each([ctx.grouped_project, body_project, ctx.closed_project], fn project ->
+        assert {:ok, _summary} = SourceIndexer.sync("project", project.id)
+      end)
+
+      expected_ids =
+        ctx.creator
+        |> Search.search_company("Signal")
+        |> Enum.reject(&(&1.id == ctx.grouped_project.id))
+        |> Enum.map(&Operately.ShortUuid.encode!(&1.id))
+
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Signal")
+      assert Enum.map(res.projects, & &1.id) == [OperatelyWeb.Paths.project_id(ctx.grouped_project)]
+      assert Enum.map(res.full_text_results, & &1.id) == expected_ids
+      refute Enum.any?(res.full_text_results, &(&1.id == Operately.ShortUuid.encode!(ctx.grouped_project.id)))
+      assert Enum.any?(res.full_text_results, &(&1.state == "closed"))
+    end
+
+    test "applies live permissions to full-text results", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:viewer)
+        |> Factory.add_project(:private_project, :marketing,
+          name: "Private project",
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        )
+        |> Factory.log_in_person(:viewer)
+
+      private_project =
+        ctx.private_project
+        |> Operately.Projects.Project.changeset(%{
+          description: RichText.rich_text("Confidential acquisition marker")
+        })
+        |> Repo.update!()
+
+      assert {:ok, _summary} = SourceIndexer.sync("project", private_project.id)
+      assert {200, %{full_text_results: []}} = query(ctx.conn, [:companies, :global_search], query: "Confidential acquisition marker")
+
+      context = Access.get_context!(project_id: private_project.id)
+      assert {:ok, _binding} = Access.bind(context, person_id: ctx.viewer.id, level: Binding.view_access())
+
+      assert {200, %{full_text_results: [%{id: result_id}]}} =
+               query(ctx.conn, [:companies, :global_search], query: "Confidential acquisition marker")
+
+      assert result_id == Operately.ShortUuid.encode!(private_project.id)
+      assert {:ok, _binding} = Access.unbind(context, person_id: ctx.viewer.id)
+      assert {200, %{full_text_results: []}} = query(ctx.conn, [:companies, :global_search], query: "Confidential acquisition marker")
     end
 
     test "searches spaces by name", ctx do
@@ -136,8 +249,8 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearchTest do
 
       assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "John")
 
-      assert length(res.people) == 1
-      assert List.first(res.people).full_name == "John Developer"
+      assert Enum.any?(res.people, &(&1.full_name == "John Developer"))
+      refute Enum.any?(res.people, &(&1.full_name == "Jane Manager"))
     end
 
     test "searches people by title", ctx do
@@ -198,16 +311,24 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearchTest do
       assert List.first(res.people).full_name == "John Developer"
     end
 
-    test "respects access controls for projects", ctx do
-      # This test ensures that projects the user doesn't have access to are not returned
-      # The actual access control logic is tested in the filter_by_view_access module
+    test "returns only projects that the user can see", ctx do
       ctx =
         ctx
-        |> log_in()
-        |> Factory.add_project(:website, :marketing, name: "Public Website")
+        |> Factory.add_company_member(:viewer)
+        |> Factory.add_project(:visible_project, :marketing,
+          name: "Visible Website",
+          company_access_level: Binding.view_access(),
+          space_access_level: Binding.view_access()
+        )
+        |> Factory.add_project(:private_project, :marketing,
+          name: "Private Website",
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        )
+        |> Factory.log_in_person(:viewer)
 
       assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Website")
-      assert length(res.projects) == 1
+      assert Enum.map(res.projects, & &1.name) == ["Visible Website"]
     end
 
     test "returns mixed results for general queries", ctx do
