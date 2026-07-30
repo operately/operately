@@ -2,16 +2,17 @@
 
 ## Summary
 
-Replace Operately's current name-based global search with permission-aware full-text search across current and past work, discussions, and documents.
+Add permission-aware full-text retrieval across current and past work, discussions, and documents while preserving the existing global search as a fast navigation tool.
 
-The feature keeps the existing global search interaction and makes it more capable:
+The feature separates quick navigation from deeper content search:
 
 - `Cmd/Ctrl + K` continues to open the current TurboUI search overlay
-- existing navigation matches remain grouped by resource type, while additional full-text matches are ranked by relevance in a `MORE MATCHES` section
-- each result explains whether the match came from its title, name, description, document content, or person title
-- content matches include a short plain-text excerpt
-- closed, completed, and archived resources remain searchable and are labeled clearly
-- resource hubs provide an inline full-text field that filters their normal item list
+- the overlay searches titles and names only, preserves its existing grouped results, and adds discussions, folders, documents, files, and links
+- a final `Search titles and content for “{query}”` option opens a dedicated Search page, even when the quick search has no matches
+- the Search page immediately runs the carried query, supports further 300 ms debounced searches, and returns at most 30 relevance-ranked full-text results
+- dedicated full-text results explain whether the match came from a title, name, description, or content and include a short plain-text excerpt for body matches
+- closed, completed, and archived resources remain available through dedicated full-text search and are labeled clearly
+- resource hubs continue to provide an inline full-text field that filters their normal item list
 
 The backend uses PostgreSQL full-text search with a dedicated `search_entries` projection and GIN indexes. Redis, Elasticsearch, OpenSearch, and other external search services are not required for the first implementation.
 
@@ -26,7 +27,7 @@ This work closes:
 - [#1421 — Search](https://github.com/operately/operately/issues/1421): company-wide, content type-aware full-text search through messages, documents, and past work
 - [#4682 — Search within Documents & Files section](https://github.com/operately/operately/issues/4682): search resource-hub items by name and native document content without browsing the complete hierarchy manually
 
-It builds on the first version of [#3504 — Global Search](https://github.com/operately/operately/issues/3504). That issue delivered the existing `Cmd/Ctrl + K` navigation search; this specification extends it rather than creating a second company-wide search experience.
+It builds on the first version of [#3504 — Global Search](https://github.com/operately/operately/issues/3504). That issue delivered the existing `Cmd/Ctrl + K` navigation search; this specification preserves that quick-navigation experience and adds a dedicated company-wide content-search page behind it.
 
 ---
 
@@ -54,9 +55,11 @@ The resource-hub problem is the same retrieval problem with an additional scope 
 - Include closed, completed, paused, and archived work unless it has been deleted.
 - Enforce company isolation and existing view permissions before returning titles, snippets, or metadata.
 - Use one PostgreSQL search projection for company and resource-hub scopes while keeping their loading, API, and UI code independent.
-- Preserve the current global search overlay, keyboard shortcut, and keyboard navigation.
-- Explain why every result matched.
-- Return enough results to find older work without creating a separate search page in the first release.
+- Preserve the current global search overlay, keyboard shortcut, keyboard navigation, per-type limits, and current-work exclusions as a title/name-only quick navigator.
+- Expand quick navigation to discussions, folders, documents, files, and links.
+- Provide a dedicated Search page for permission-aware title and body retrieval.
+- Explain why every dedicated full-text result matched.
+- Return up to 30 full-text results on the dedicated Search page.
 - Keep search indexing recoverable through an idempotent backfill and reconciliation process.
 - Meet interactive-search latency without introducing another stateful service.
 
@@ -149,7 +152,7 @@ without reindexing resources.
 
 ### 6. Closed work is searchable; deleted work is not
 
-The current global search excludes past work. The new behavior intentionally changes this:
+The quick-navigation overlay continues to exclude past work. Dedicated company full-text search intentionally includes it:
 
 - closed projects and goals are searchable and display `Closed`
 - completed milestones and tasks are searchable and display `Completed`
@@ -160,34 +163,41 @@ The current global search excludes past work. The new behavior intentionally cha
 
 Current/open resources do not need a status badge. Status labels are neutral context, not error states.
 
-### 7. Preserve the current search UI and improve result presentation
+### 7. Separate quick navigation from full-text retrieval
 
-Continue using `turboui/src/GlobalSearch` and the existing overlay. Do not introduce a separate company search page in the first release.
+Continue using `turboui/src/GlobalSearch` and the existing overlay for fast navigation. The overlay remains title/name-only and does not render full-text results, match-source labels, body snippets, or historical-state badges.
 
 Preserve:
 
 - the header search activator
 - `Cmd/Ctrl + K`
 - the 300 ms debounce
+- the existing `SPACES`, `GOALS`, `PROJECTS`, `MILESTONES`, `TASKS`, and `PEOPLE` groups
+- the current limit of five results per type
+- the current exclusion of closed projects and goals, completed milestones, and closed tasks
 - arrow-key navigation
 - Enter to navigate
 - Escape and click-outside to close
 - the existing modal width, responsive maximum width, and scrollable result area unless testing shows a concrete layout problem
 
-Do not refactor `GlobalSearch` as part of the resource-hub release. Resource-hub search has an independent inline UI and does not depend on the company overlay.
+Expand the overlay with title/name-only `DISCUSSIONS`, `FOLDERS`, `DOCUMENTS`, `FILES`, and `LINKS` groups. Append these after the existing groups so the established navigation order remains stable. Include only currently eligible, published, non-deleted records that the requester can view; archived discussions are excluded from quick navigation.
 
-In Phase 3, extend the company overlay to represent results as ordered sections. Preserve its existing `SPACES`, `GOALS`, `PROJECTS`, `MILESTONES`, `TASKS`, and `PEOPLE` groups and their compact presentation, then append company-wide full-text matches that do not already appear in those groups under `MORE MATCHES`.
+For every valid query of at least two characters, render a divider followed by one final selectable action:
 
-Detailed full-text rows show:
+```text
+Search titles and content for “{query}”
+```
+
+Show this action whether quick matches exist, no quick matches exist, or the quick-search request fails. Clicking it or selecting it with the keyboard closes the overlay and opens the dedicated Search page with the query preserved.
+
+The dedicated Search page owns company-wide full-text retrieval. It renders the relevance-ranked results already defined by `Operately.Search.search_company/2`, including historical resources. Detailed rows show:
 
 - resource icon and resource type
 - result title/name
 - parent context, such as space, project, goal, resource hub, or folder path
 - an optional status badge: `Closed`, `Completed`, `Archived`, or `Paused`
-- the match source: `Matched in title`, `Matched in name`, `Matched in description`, `Matched in content`, or `Matched in job title`
+- the match source: `Matched in title`, `Matched in name`, `Matched in description`, `Matched in content`, or `Matched in message`
 - a short excerpt when the match is in body content
-
-Homogeneous legacy sections omit the redundant resource-type label and do not claim a match source that the legacy backend does not report.
 
 Title/name matches should rank above body-only matches when the remaining signals are comparable. A strong body match may still outrank a weak fuzzy title match.
 
@@ -203,7 +213,7 @@ Resource-hub search covers the entire hub, including descendants of nested folde
 
 ### 9. TurboUI remains pure
 
-`turboui/src/GlobalSearch` owns company overlay presentation and interaction state. Resource-hub and Docs & Files components own their separate inline fields and replacement-list state. Both receive display data, nodes, links, and callbacks through props.
+`turboui/src/GlobalSearch` owns quick-navigation overlay presentation and interaction state. The dedicated Search page owns company full-text presentation and request state. Resource-hub and Docs & Files components own their separate inline fields and replacement-list state. All receive display data, nodes, links, and callbacks through props.
 
 It must not:
 
@@ -214,13 +224,13 @@ It must not:
 
 The app bridge owns:
 
-- company versus resource-hub scope
+- quick-navigation, company full-text, and resource-hub scope
 - API calls
 - route construction for each result type
 - navigation callbacks
 - any feature-flag or rollout choice
 
-Keep resource-hub search independent from company search. The resource-hub adapter returns list-row nodes and canonical paths. Phase 3 introduces a separate company adapter when the company API begins returning legacy groups plus full-text results.
+Keep resource-hub search independent from company search. The resource-hub adapter returns list-row nodes and canonical paths. Quick navigation and the dedicated Search page use separate adapters because their corpora, result detail, limits, and interaction models differ.
 
 ### 10. Canonical writes enqueue reliable index refreshes
 
@@ -271,6 +281,21 @@ usage shows that they materially improve retrieval.
 | Resource-hub link | node/link name | Operately description | not deleted |
 
 Activity records are not indexed when they merely duplicate one of these canonical resources.
+
+### Quick-navigation scope
+
+The `Cmd/Ctrl + K` overlay is a separate title/name-only corpus. It includes:
+
+- active spaces
+- active or paused projects; closed projects remain excluded
+- open goals; closed goals remain excluded
+- pending milestones; completed milestones remain excluded
+- open tasks; closed tasks remain excluded
+- non-suspended people, matched by full name or job title as today
+- published, non-archived discussions
+- non-deleted resource-hub folders, published documents, files, and links whose owning space, project, or goal is also eligible for quick navigation
+
+Quick navigation does not include project check-ins, goal check-ins, or project retrospectives because they do not have stable user-authored titles. It does not match descriptions, messages, document bodies, or other body content. Every group remains capped at five results and applies live company and view permissions.
 
 ### Resource-hub scope
 
@@ -370,7 +395,9 @@ The resource-hub release starts with one focused query:
 - return at most 30 results in the first release
 - batch-load current nodes and folder paths for the selected results instead of storing folder paths in `search_entries`
 
-Company scope is added in Phase 3. Space, project, goal, type-filter, and pagination inputs are deferred until a concrete product consumer requires them.
+Company scope is added in Phase 3. The dedicated Search page uses this permission-aware query with the same two-character minimum, 300 ms client debounce, and 30-result cap. Space, project, goal, type-filter, and pagination inputs are deferred until a concrete product consumer requires them.
+
+Quick navigation uses a separate canonical title/name query. It preserves the existing normalized substring behavior and five-results-per-type limit and must not execute the full-text body query.
 
 ### Ranking signals
 
@@ -433,13 +460,42 @@ nodes[]:
 
 The backend keeps ranking metadata internal, selects at most 30 matching node IDs, and hydrates them with the same nested resources, authors, content, file metadata, comment counts, and folder-child counts used by `resource_hubs/list_nodes`. The returned node order remains the full-text relevance order.
 
-This lets inline search use the exact same resource-hub row, description, counts, actions, and canonical path construction as the ordinary list. `Operately.Search.Result` remains reserved for the future mixed company-wide search contract, where match source, context, snippets, and typed navigation metadata are needed.
+This lets inline search use the exact same resource-hub row, description, counts, actions, and canonical path construction as the ordinary list. `Operately.Search.Result` is used by the mixed company-wide full-text contract, where match source, context, snippets, and typed navigation metadata are needed.
 
 Phase 3 adds company scope and state metadata for closed, completed, archived, and paused work. Pagination and additional scopes remain follow-up work unless the first 30 results prove insufficient.
 
-Keep the existing grouped `spaces`, `projects`, `goals`, `milestones`, `tasks`, and `people` fields and continue using them for the first company-search sections. In Phase 3, one company API request runs both the legacy and full-text queries, removes full-text duplicates by `(source_type, source_id)`, and returns the remaining ranked matches for a final `MORE MATCHES` section. The browser must not coordinate two requests.
+PR 3.4 implemented a compatibility response that combines the existing grouped navigation fields with `full_text_results`. Keep that contract stable for existing API and MCP consumers, but do not use its full-text list in the quick-search overlay.
 
-Update the MCP `search` tool after company-wide full-text results are stable, not as part of the resource-hub release.
+PR 3.5 adds `companies/quick_search`, a shared internal and external title/name-only API:
+
+```text
+query: string
+
+spaces[]
+projects[]
+goals[]
+milestones[]
+tasks[]
+people[]
+discussions[]
+folders[]
+documents[]
+files[]
+links[]
+```
+
+It returns at most five visible, currently eligible results per type and never queries body text.
+External API clients receive the same permission-filtered grouped response.
+
+PR 3.7 adds `companies/search`, a focused full-text API for the dedicated Search page:
+
+```text
+query: string
+
+results[]: SearchResult
+```
+
+It delegates to the existing permission-aware `Operately.Search.search_company/2` query and returns at most 30 results. The existing combined PR 3.4 endpoint remains available for compatibility until a separately reviewed retirement.
 
 ---
 
@@ -449,15 +505,55 @@ Update the MCP `search` tool after company-wide full-text results are stable, no
 
 The Company Layout continues to render the existing `GlobalSearch` activator in the top navigation.
 
-Suggested copy:
+Quick-search copy:
 
 - activator: `Search`
-- overlay input placeholder: `Search all work and documents…`
+- overlay input placeholder: preserve the current placeholder
 - loading: `Searching…`
-- empty: `No results for “{query}”. Try different keywords.`
+- empty: `No title or name matches for “{query}”.`
+- error: `Quick search is unavailable.`
+- final action: `Search titles and content for “{query}”`
+
+For a query of at least two characters, the quick-search result area has one of these shapes:
+
+```text
+Result 1
+Result 2
+Result 3
+────────────────
+Search titles and content for “{query}”
+```
+
+```text
+No title or name matches for “{query}”.
+────────────────
+Search titles and content for “{query}”
+```
+
+The error state must be distinct from the empty state. A failed quick-search request must not tell the user that no matching work exists, and it must not remove the option to continue to the dedicated Search page.
+
+### Dedicated Search page
+
+The final quick-search action navigates to the company Search page with the current query in the URL as `q`. The page:
+
+- uses the page title `Search`
+- uses `Search titles and content…` as the search-field placeholder and accessible label
+- initializes the field from `q` and immediately searches when `q` has at least two characters
+- updates results after a 300 ms debounce as the field changes
+- updates `q` without adding one browser-history entry per keystroke
+- ignores stale responses when a newer query is pending or complete
+- returns and displays at most 30 results; pagination is not part of the first page release
+- renders only the ranked full-text result list, not the quick-navigation groups
+- navigates every result through its canonical typed navigation target
+
+Page copy:
+
+- loading: `Searching…`
+- no query: `Search across projects, goals, discussions, documents, and more.`
+- empty: `No content found for “{query}”. Try different keywords.`
 - error: `Search is unavailable. Try again.`
 
-The error state must be distinct from the empty state. A failed request must not tell the user that no matching work exists.
+The page must preserve the query across reloads and support direct links and browser back/forward navigation.
 
 ### Resource-hub search
 
@@ -492,38 +588,50 @@ Example document title match:
 
 Requirements:
 
-- preserve the existing resource-type sections for legacy company navigation results
+- preserve the existing compact resource-type sections in quick navigation and append the five new title/name-only groups
 - preserve backend relevance order for inline resource-hub results
-- append future mixed company full-text results under `MORE MATCHES`
-- omit repeated type labels in homogeneous sections; mixed sections keep result type and parent context visible without relying only on an icon
+- keep body snippets, match-source labels, historical-state badges, and mixed full-text rows out of the quick-search overlay
+- render mixed full-text rows only on the dedicated Search page
+- omit repeated type labels in homogeneous quick-search sections; dedicated mixed results keep result type and parent context visible without relying only on an icon
 - status is textual and not communicated by color alone
 - snippets are limited to a small number of lines and never overwhelm the title/context hierarchy
 - selected, hovered, loading, empty, and error states use semantic design-system colors
-- long titles, paths, and snippets truncate or wrap predictably on the current responsive overlay
+- long titles and names truncate predictably in the overlay; long titles, paths, and snippets truncate or wrap predictably on the Search page
 
 ### Interaction and accessibility
 
 - preserve arrow-key wraparound, Enter, Escape, click, and click-outside behavior
-- keep the selected item visible while keyboard navigation crosses the scroll boundary
+- include `Search titles and content for “{query}”` in the overlay's arrow-key and Enter navigation
+- keep the selected item visible while keyboard navigation crosses the overlay scroll boundary
 - represent the result collection and options with appropriate listbox/option semantics or an equivalent accessible navigation pattern
 - expose the selected option through ARIA state
 - announce loading, result count changes, empty state, and errors to assistive technology without moving focus from the query input
+- keep focus in the dedicated page's search field while debounced results update
 
 ### TurboUI stories
 
-In Phase 3, update `turboui/src/GlobalSearch/index.stories.tsx` with:
+In PR 3.6, update `turboui/src/GlobalSearch/index.stories.tsx` with:
 
-- mixed title and content matches
 - grouped legacy company results
-- grouped company results followed by `MORE MATCHES`
-- closed/completed/archived results
-- long title, path, and snippet content
+- the additional discussion and resource-hub groups
+- grouped results followed by `Search titles and content for “{query}”`
+- empty and error states that retain the final action
+- long titles and names
 - company scope
 - loading
 - empty
 - error
 - enough results to exercise scrolling
-- keyboard navigation interaction coverage
+- keyboard navigation through the final action
+
+In PR 3.8, add dedicated Search-page stories or component tests for:
+
+- title and content matches
+- closed/completed/archived results
+- long title, path, and snippet content
+- initial, loading, empty, error, and populated states
+- stale-response handling
+- the 30-result cap
 
 Cover resource-hub inline matching, loading, empty, error, and cleared states in the Resource Hub, Project, and Goal page stories instead of `GlobalSearch` stories.
 
@@ -614,7 +722,7 @@ This phase closes #4682 as scoped here: native documents are searchable by title
 
 ### Phase 3 — Company-wide full-text corpus and UI
 
-Implement the critical path as five ordered PRs. Keep lower-value corpus expansion and the MCP contract as follow-up work after the web result contract and search quality are stable.
+Implement the critical path as eight ordered PRs. Keep lower-value full-text corpus expansion as an optional ninth PR after the dedicated Search page and search quality are stable.
 
 #### PR 3.1 — `chore: Add permission-aware company search query`
 
@@ -657,14 +765,44 @@ family accepted by company search through PR 3.1.
 - [x] Return the remaining ranked full-text results with match source, context, state, safe snippet, and typed navigation metadata.
 - [x] Update serializers and generated clients, and cover the complete response contract without changing `GlobalSearch` yet.
 
-#### PR 3.5 — `chore: Add full-text matches to global search`
+PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permission, query, and compatibility-API foundation. PRs 3.5 through 3.8 implement the revised separation between quick navigation and dedicated full-text search.
 
-- [ ] Extend TurboUI `GlobalSearch` with ordered sections, match source, plain-text snippets, error handling, stale-response protection, and selected-result scrolling.
-- [ ] Keep `GlobalSearch` pure and preserve its existing shortcut, interaction model, resource-type groups, and compact legacy rows through a dedicated company adapter.
-- [ ] Append ranked full-text results under `MORE MATCHES` without changing the ordering or presentation of the existing groups.
-- [ ] Add focused component, mapper, Storybook, and company feature coverage for request states, sections, deduplication, and cross-section keyboard navigation.
+#### PR 3.5 — `chore: Add expanded quick-search API`
 
-#### Optional PR 3.6 — `chore: Expand the company search corpus`
+- [x] Add `companies/quick_search`, searching canonical titles/names for spaces, projects, goals, milestones, tasks, people, discussions, folders, documents, files, and links.
+- [x] Preserve normalized substring behavior, the two-character minimum, five results per type, current group ordering, and existing exclusions for closed/completed work.
+- [x] Include only published, non-archived discussions and eligible non-deleted resource-hub items; exclude check-ins and retrospectives.
+- [x] Apply company isolation and live view permissions before selecting any result metadata.
+- [x] Return separate typed groups for the eleven supported quick-search types without querying descriptions, messages, document bodies, or `search_vector`.
+- [x] Expose the endpoint through the common internal and external API contract.
+- [x] Update generated clients and catalogs, and cover every group, external authorization, title/name-only matching, caps, exclusions, company isolation, and live permission changes.
+
+#### PR 3.6 — `chore: Expand the global quick search`
+
+- [ ] Switch the company `GlobalSearch` adapter to `companies/quick_search` while preserving the activator, `Cmd/Ctrl + K`, 300 ms debounce, compact rows, existing group order, and keyboard interaction.
+- [ ] Append `DISCUSSIONS`, `FOLDERS`, `DOCUMENTS`, `FILES`, and `LINKS` after the existing groups.
+- [ ] Add a divider and final `Search titles and content for “{query}”` option for every query of at least two characters, including empty and quick-search error states.
+- [ ] Make the final option part of arrow-key, Enter, click, selected-item scrolling, and accessible option semantics.
+- [ ] Navigate the final option to the company Search page with the query encoded as `q`; never render or request body matches in the overlay.
+- [ ] Add focused mapper, TurboUI, Storybook, and company feature coverage for new groups, title-only matching, result/empty/error layouts, long queries, and keyboard navigation through the final action.
+
+#### PR 3.7 — `chore: Add dedicated company full-text search API`
+
+- [ ] Add `companies/search`, accepting `query` and returning one ordered `results` list.
+- [ ] Delegate to `Operately.Search.search_company/2`, preserving its live permission checks, eligibility validation, relevance order, typed navigation, match source, state, safe snippets, and 30-result cap.
+- [ ] Return an empty list for queries shorter than two characters and keep the completed PR 3.4 combined endpoint unchanged for compatibility.
+- [ ] Update serializers, generated clients, external API coverage, and focused response-contract tests for every supported full-text type.
+
+#### PR 3.8 — `chore: Add company Search page`
+
+- [ ] Add the company Search route and page, using URL parameter `q` as the shareable and reload-safe query.
+- [ ] Seed the search field from `q`, immediately search valid initial queries, debounce edits by 300 ms, update the URL without one history entry per keystroke, and handle browser back/forward.
+- [ ] Ignore stale responses and render distinct initial, loading, populated, empty, and error states while keeping focus in the search field.
+- [ ] Render at most 30 mixed full-text results with resource type, title/name, context, optional historical state, strongest matched field, safe body snippet, and canonical navigation.
+- [ ] Keep quick-navigation groups off this page and do not add pagination in the first release.
+- [ ] Add focused page/component stories and company feature coverage for carried queries, direct links, subsequent searches, stale responses, all request states, result navigation, accessibility, and the 30-result cap.
+
+#### Optional PR 3.9 — `chore: Expand the company full-text corpus`
 
 - [ ] Measure retrieval gaps before adding milestones, tasks, people, or other lower-value source types to the full-text index.
 - [ ] Add only source types that materially improve retrieval beyond the existing name-based navigation groups.
@@ -674,7 +812,7 @@ The combined API response is also exposed by the existing MCP search tool; no se
 
 - [ ] After the resource-hub and company search queries have stabilized, evaluate the duplicated resource eligibility and visible-folder CTE logic in `ResourceHubQuery` and `CompanyQuery.ResourceHubItems`. Extract shared query-building code only if it meaningfully reduces maintenance risk without coupling their different scopes, result shapes, authorization boundaries, or hydration behavior; otherwise document why keeping the small duplication is clearer.
 
-This phase closes #1421.
+Phase 3 closes #1421 after PRs 3.5 through 3.8 deliver the revised quick-navigation and dedicated Search-page experience.
 
 Phases 1 through 3 may begin immediately on the current development database. Preliminary results on PostgreSQL 14.5 do not replace final verification on the PostgreSQL 14.23 production baseline.
 
@@ -698,6 +836,8 @@ The production database update is complete. Search implementation is not blocked
 - [ ] Monitor latency, errors, index lag, reconciliation differences, and database load.
 - [ ] Enable for all companies when acceptance criteria pass.
 - [ ] Remove the old multi-query `LIKE` implementation only after rollback is no longer required.
+
+> **Direction note:** PR 3.5 preserves title/name quick navigation as a product capability. The final cleanup item above applies only to the obsolete multi-query implementation after the replacement quick-search query is live; it does not remove title/name quick search.
 
 ---
 
@@ -725,7 +865,7 @@ The production database update is complete. Search implementation is not blocked
 - backfill interruption and resume
 - reconciliation repairs missing/stale entries and removes orphans
 
-### Search query
+### Full-text query
 
 - exact, prefix, full-text, phrase, accent-insensitive, and case-insensitive matches
 - title matches versus description/content matches
@@ -738,16 +878,30 @@ The production database update is complete. Search implementation is not blocked
 - immediate disappearance after permission revocation
 - normal queued refreshes become searchable within five seconds
 
+### Quick-search query
+
+- normalized title/name substring matching for all eleven supported groups
+- no description, message, document-body, or other body-only matches
+- five results per type with stable ordering
+- existing closed/completed exclusions for legacy groups
+- published and non-archived discussion eligibility
+- published/non-deleted resource-hub eligibility
+- no check-in or retrospective results
+- company isolation, live view permissions, and immediate permission revocation
+- no full-text query execution from the quick-search endpoint
+
 ### UI
 
 - current header activator and `Cmd/Ctrl + K`
+- existing quick-search groups followed by discussions, folders, documents, files, and links
+- `Search titles and content for “{query}”` after populated, empty, and error states
+- keyboard and pointer navigation from the overlay to the Search page with the query preserved
+- dedicated Search page initial query, URL synchronization, 300 ms debounce, stale-response protection, and 30-result cap
 - resource-hub inline field placement, debounce, result replacement, and clearing
-- keyboard navigation across results
-- title/body match labels
-- plain-text snippets
-- status badges
+- keyboard navigation across quick-search results and the final action
+- title/body match labels, plain-text snippets, and status badges on the dedicated Search page only
 - loading, empty, and error copy
-- dark mode and responsive company overlay/resource-hub toolbar
+- dark mode and responsive company overlay, Search page, and resource-hub toolbar
 - canonical navigation for every result type
 
 ---
@@ -758,7 +912,7 @@ Record:
 
 - API duration and database query duration
 - candidate count and returned count
-- scope and result-type distribution without recording raw user query text in logs by default
+- quick-navigation, company full-text, and resource-hub scope plus result-type distribution without recording raw user query text in logs by default
 - search errors and timeouts
 - index write failures
 - backfill progress
@@ -791,7 +945,7 @@ Use a controlled indexed-search rollout:
 6. Indexed reads are enabled for internal/test companies.
 7. Search quality, permission behavior, and database load are reviewed on PostgreSQL 14.23.
 8. Indexed reads expand to all companies.
-9. The old query path is removed in a later cleanup after the rollback window.
+9. Obsolete combined and multi-query paths are removed in a later cleanup after the rollback window; the replacement title/name quick-search path remains.
 
 If indexed reads fail during rollout, disable the indexed path and return to the existing name-based search while continuing or repairing index writes. Never bypass permission filtering as a fallback.
 
@@ -803,14 +957,17 @@ If indexed reads fail during rollout, disable the indexed path and return to the
 - The PostgreSQL 14.23 update and rollback paths are documented and tested for clean and existing installations.
 - Search migrations and queries remain compatible with PostgreSQL 14.
 - Both referenced issues are covered by automated acceptance tests.
-- Users can find supported resources by title/name and rich-text body.
-- Closed, completed, and archived work is returned with clear status labels.
-- Every result communicates its resource type, context, and strongest matched field.
-- Body matches include safe, readable plain-text excerpts.
+- The `Cmd/Ctrl + K` overlay remains a title/name-only quick navigator with its current groups and the added discussion and resource-hub groups.
+- Every valid quick query offers `Search titles and content for “{query}”`, including when quick search is empty or unavailable.
+- The dedicated Search page preserves the carried query, supports further debounced searches, and returns at most 30 permission-aware full-text results.
+- Users can find supported resources by title/name and rich-text body on the dedicated Search page.
+- Closed, completed, and archived work is returned there with clear status labels.
+- Every dedicated full-text result communicates its resource type, context, and strongest matched field.
+- Body matches include safe, readable plain-text excerpts on the dedicated Search page.
 - Company and resource-hub searches reuse the same backend search foundation while using UI interactions appropriate to their scope.
 - Existing access-context rules prevent unauthorized result and snippet disclosure.
 - Canonical writes reliably enqueue refreshes, deletions fail closed, and search entries remain backfillable and reconcilable.
-- The existing global search keyboard and mouse interactions remain intact.
+- The existing global-search keyboard and mouse interactions remain intact, including navigation through the final Search-page action.
 - TurboUI stories cover all result and request states.
 - Backend, TurboUI, TypeScript, and feature tests pass. MCP tests are required when the MCP result contract is updated.
 - Production-like performance targets are measured and met without adding another search service.
