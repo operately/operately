@@ -162,7 +162,7 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
 
   step :assert_task_renamed, ctx, opts do
     ctx
-    |> UI.assert_text(opts[:title])
+    |> UI.wait_until_text(opts[:title])
     |> UI.refute_text(opts[:old_title])
   end
 
@@ -227,7 +227,9 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
 
     ctx
     |> UI.click(testid: card_title_testid(task))
-    |> UI.assert_has(testid: "task-slide-in")
+    |> UI.wait_until_has(testid: "task-slide-in")
+    |> UI.wait_until_has(testid: "task-header")
+    |> UI.sleep(400)
   end
 
   step :close_task_slide_in, ctx, _task_key do
@@ -246,15 +248,15 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
   end
 
   step :change_task_status, ctx, opts do
+    prev_status = Keyword.fetch!(opts, :prev_status)
     next_status = Keyword.fetch!(opts, :next_status)
 
     ctx
-    |> UI.find(UI.query(testid: "task-header"), fn el ->
-      UI.click(el, testid: "task-status")
-    end)
+    |> UI.wait_until_text(prev_status, testid: "task-status")
+    |> UI.click(testid: "task-status")
     |> UI.wait_until_has(testid: UI.testid(["status-option", next_status]))
     |> UI.click(testid: UI.testid(["status-option", next_status]))
-    |> UI.sleep(300)
+    |> UI.refute_text(prev_status, testid: "task-status")
   end
 
   step :change_task_assignee, ctx, opts do
