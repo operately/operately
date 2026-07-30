@@ -6,7 +6,7 @@ import { SearchPage } from "turboui";
 
 type Search = (input: CompaniesSearchInput) => Promise<CompaniesSearchResult>;
 
-export interface CompanySearchState {
+interface CompanySearchState {
   query: string;
   status: SearchPage.Status;
   results: SearchResult[];
