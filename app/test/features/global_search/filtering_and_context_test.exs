@@ -59,5 +59,10 @@ defmodule Operately.Features.GlobalSearch.FilteringAndContextTest do
     |> Steps.assert_category_header_visible("MILESTONES")
     |> Steps.assert_category_header_visible("TASKS")
     |> Steps.assert_category_header_visible("PEOPLE")
+    |> Steps.assert_category_header_visible("DISCUSSIONS")
+    |> Steps.assert_category_header_visible("FOLDERS")
+    |> Steps.assert_category_header_visible("DOCUMENTS")
+    |> Steps.assert_category_header_visible("FILES")
+    |> Steps.assert_category_header_visible("LINKS")
   end
 end

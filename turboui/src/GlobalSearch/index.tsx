@@ -2,7 +2,20 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 
 import { Avatar } from "../Avatar";
-import { IconGoal, IconMilestone, IconProject, IconSearch, IconTask, IconTent, IconX } from "../icons";
+import {
+  IconFile,
+  IconFileText,
+  IconFolderFilled,
+  IconGoal,
+  IconLink,
+  IconMessage,
+  IconMilestone,
+  IconProject,
+  IconSearch,
+  IconTask,
+  IconTent,
+  IconX,
+} from "../icons";
 import { createTestId } from "../TestableElement";
 
 export namespace GlobalSearch {
@@ -52,6 +65,13 @@ export namespace GlobalSearch {
     avatarUrl?: string | null;
   }
 
+  export interface Resource {
+    id: string;
+    name: string;
+    context: string;
+    link: string;
+  }
+
   export interface SearchResult {
     spaces?: Space[] | null;
     projects?: Project[] | null;
@@ -59,6 +79,11 @@ export namespace GlobalSearch {
     milestones?: Milestone[] | null;
     tasks?: Task[] | null;
     people?: Person[] | null;
+    discussions?: Resource[] | null;
+    folders?: Resource[] | null;
+    documents?: Resource[] | null;
+    files?: Resource[] | null;
+    links?: Resource[] | null;
   }
 
   export type SearchFn = (params: { query: string }) => Promise<SearchResult>;
@@ -83,9 +108,28 @@ export namespace GlobalSearch {
     isSearching: boolean;
     setIsSearching: (searching: boolean) => void;
 
+    searchError: boolean;
+    setSearchError: (hasError: boolean) => void;
+
     selectedIndex: number;
     setSelectedIndex: (index: number) => void;
   }
+}
+
+interface SearchOption {
+  id: string;
+  optionId: string;
+  type: string;
+  name: string;
+  link: string;
+  icon: React.ReactNode;
+  subtitle?: string;
+  testId: string;
+}
+
+interface SearchGroup {
+  title: string;
+  options: SearchOption[];
 }
 
 function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
@@ -93,28 +137,32 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const [query, setQuery] = React.useState("");
   const [results, setResults] = React.useState<GlobalSearch.SearchResult>({});
   const [isSearching, setIsSearching] = React.useState(false);
+  const [searchError, setSearchError] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
-  const searchTimeoutRef = React.useRef<any>();
+  const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
 
   const performSearch = React.useCallback(
     async (searchQuery: string) => {
       if (searchQuery.trim().length < 2) {
         setResults({});
+        setSearchError(false);
+        setSelectedIndex(-1);
         setIsOpen(false);
         return;
       }
 
       setIsSearching(true);
+      setSearchError(false);
 
       try {
         const searchResults = await props.search({ query: searchQuery.trim() });
         setResults(searchResults);
-        setSelectedIndex(-1); // Reset selection when results change
+        setSelectedIndex(-1);
         setIsOpen(true);
-      } catch (error) {
-        console.error("Search failed:", error);
+      } catch {
         setResults({});
+        setSearchError(true);
         setSelectedIndex(-1);
       } finally {
         setIsSearching(false);
@@ -151,249 +199,246 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
     setResults,
     isSearching,
     setIsSearching,
+    searchError,
+    setSearchError,
     selectedIndex,
     setSelectedIndex,
   };
 }
 
-interface SearchResultItemProps {
-  id: string;
-  name: string;
-  link: string;
-  icon: React.ReactNode;
-  subtitle?: string;
-  isSelected: boolean;
-  onClick: (link: string) => void;
-  testId: string;
+function buildSearchGroups(results: GlobalSearch.SearchResult, testId: string): SearchGroup[] {
+  const groups: SearchGroup[] = [
+    {
+      title: "SPACES",
+      options: (results.spaces ?? []).map((space) =>
+        buildOption(testId, "space", space.id, space.name, space.link, <IconTent size={24} />),
+      ),
+    },
+    {
+      title: "GOALS",
+      options: (results.goals ?? []).map((goal) =>
+        buildOption(
+          testId,
+          "goal",
+          goal.id,
+          goal.name,
+          goal.link,
+          <IconGoal size={24} />,
+          compactContext(goal.champion?.fullName, goal.space?.name),
+        ),
+      ),
+    },
+    {
+      title: "PROJECTS",
+      options: (results.projects ?? []).map((project) =>
+        buildOption(
+          testId,
+          "project",
+          project.id,
+          project.name,
+          project.link,
+          <IconProject size={24} />,
+          compactContext(project.champion?.fullName, project.space?.name),
+        ),
+      ),
+    },
+    {
+      title: "MILESTONES",
+      options: (results.milestones ?? []).map((milestone) =>
+        buildOption(
+          testId,
+          "milestone",
+          milestone.id,
+          milestone.title,
+          milestone.link,
+          <IconMilestone size={24} />,
+          compactContext(milestone.project?.name, milestone.space?.name),
+        ),
+      ),
+    },
+    {
+      title: "TASKS",
+      options: (results.tasks ?? []).map((task) =>
+        buildOption(
+          testId,
+          "task",
+          task.id,
+          task.name,
+          task.link,
+          <IconTask size={24} />,
+          compactContext(task.project?.name, task.space?.name),
+        ),
+      ),
+    },
+    {
+      title: "PEOPLE",
+      options: (results.people ?? []).map((person) =>
+        buildOption(
+          testId,
+          "person",
+          person.id,
+          person.fullName,
+          person.link,
+          <Avatar person={person} size={24} />,
+          person.title || undefined,
+        ),
+      ),
+    },
+    resourceGroup(testId, "DISCUSSIONS", "discussion", results.discussions, <IconMessage size={24} />),
+    resourceGroup(testId, "FOLDERS", "folder", results.folders, <IconFolderFilled size={24} />),
+    resourceGroup(testId, "DOCUMENTS", "document", results.documents, <IconFileText size={24} />),
+    resourceGroup(testId, "FILES", "file", results.files, <IconFile size={24} />),
+    resourceGroup(testId, "LINKS", "link", results.links, <IconLink size={24} />),
+  ];
+
+  return groups.filter((group) => group.options.length > 0);
 }
 
-function SearchResultItem({ id, name, link, icon, subtitle, isSelected, onClick, testId }: SearchResultItemProps) {
+function resourceGroup(
+  testId: string,
+  title: string,
+  type: string,
+  resources: GlobalSearch.Resource[] | null | undefined,
+  icon: React.ReactNode,
+): SearchGroup {
+  return {
+    title,
+    options: (resources ?? []).map((resource) =>
+      buildOption(testId, type, resource.id, resource.name, resource.link, icon, resource.context),
+    ),
+  };
+}
+
+function buildOption(
+  testId: string,
+  type: string,
+  id: string,
+  name: string,
+  link: string,
+  icon: React.ReactNode,
+  subtitle?: string,
+): SearchOption {
+  return {
+    id,
+    optionId: createTestId(testId, "option", type, id),
+    type,
+    name,
+    link,
+    icon,
+    subtitle,
+    testId: createTestId(testId, type, name),
+  };
+}
+
+function compactContext(...parts: Array<string | null | undefined>): string | undefined {
+  const context = parts.filter(Boolean).join(" • ");
+  return context || undefined;
+}
+
+interface SearchResultItemProps {
+  option: SearchOption;
+  isSelected: boolean;
+  onClick: (link: string) => void;
+}
+
+function SearchResultItem({ option, isSelected, onClick }: SearchResultItemProps) {
+  const optionRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (isSelected) {
+      optionRef.current?.scrollIntoView({ block: "nearest" });
+    }
+  }, [isSelected]);
+
   return (
     <div
-      key={id}
+      ref={optionRef}
+      id={option.optionId}
+      role="option"
+      aria-selected={isSelected}
       className={`mx-1 px-2 py-2 rounded cursor-pointer transition-colors ${
         isSelected ? "bg-surface-highlight" : "hover:bg-surface-highlight"
       }`}
-      onClick={() => onClick(link)}
-      data-test-id={testId}
+      onClick={() => onClick(option.link)}
+      data-test-id={option.testId}
     >
       <div className="flex items-center gap-3">
-        {icon}
+        {option.icon}
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-medium truncate">{name}</div>
-          {subtitle && <div className="text-xs text-content-dimmed truncate">{subtitle}</div>}
+          <div className="text-sm font-medium truncate">{option.name}</div>
+          {option.subtitle && <div className="text-xs text-content-dimmed truncate">{option.subtitle}</div>}
         </div>
       </div>
     </div>
   );
 }
 
-export function SearchResults({
+function SearchResults({
   state,
   onClose,
-  flatResults,
+  groups,
+  options,
+  listboxId,
 }: {
   state: GlobalSearch.State;
   onClose: () => void;
-  flatResults: { type: string; item: any; link: string }[];
+  groups: SearchGroup[];
+  options: SearchOption[];
+  listboxId: string;
 }) {
-  const hasResults = React.useMemo(() => {
-    const { spaces, projects, goals, milestones, tasks, people } = state.results;
-    return (
-      (spaces && spaces.length > 0) ||
-      (projects && projects.length > 0) ||
-      (goals && goals.length > 0) ||
-      (milestones && milestones.length > 0) ||
-      (tasks && tasks.length > 0) ||
-      (people && people.length > 0)
-    );
-  }, [state.results]);
-
   if (state.isSearching) {
-    return <div className="p-4 text-center text-content-dimmed text-sm">Searching...</div>;
+    return (
+      <div role="status" aria-live="polite" className="p-4 text-center text-content-dimmed text-sm">
+        Searching…
+      </div>
+    );
   }
 
-  if (!hasResults && state.query.length >= 2) {
-    return <div className="p-4 text-center text-content-dimmed text-sm">No results found for "{state.query}"</div>;
+  if (state.searchError) {
+    return (
+      <div role="alert" className="p-4 text-center text-content-error text-sm">
+        Quick search is unavailable.
+      </div>
+    );
   }
 
-  if (!hasResults) {
+  if (groups.length === 0 && state.query.trim().length >= 2) {
+    return (
+      <div role="status" aria-live="polite" className="p-4 text-center text-content-dimmed text-sm">
+        No title or name matches for “{state.query.trim()}”.
+      </div>
+    );
+  }
+
+  if (groups.length === 0) {
     return null;
   }
 
   const handleItemClick = (link: string) => {
-    state.onNavigate(link);
-    state.setIsOpen(false);
-    state.setQuery("");
-    state.setSelectedIndex(-1);
-    onClose();
-  };
-
-  const getCurrentIndex = (type: string, itemId: string) => {
-    return flatResults.findIndex((result) => result.type === type && result.item.id === itemId);
+    navigateToResult(state, link, onClose);
   };
 
   return (
-    <div className="py-1">
-      {/* Spaces */}
-      {state.results.spaces && state.results.spaces.length > 0 && (
-        <div className="mb-2">
-          <SearchResultGroupHeader title="SPACES" />
-
-          {state.results.spaces.map((space) => {
-            const currentIndex = getCurrentIndex("space", space.id);
-            const isSelected = currentIndex === state.selectedIndex;
-
-            return (
+    <>
+      <div role="status" aria-live="polite" className="sr-only">
+        {options.length} {options.length === 1 ? "result" : "results"}
+      </div>
+      <div id={listboxId} role="listbox" aria-label="Quick search results" className="py-1">
+        {groups.map((group) => (
+          <div key={group.title} role="group" aria-label={group.title} className="mb-2 last:mb-0">
+            <SearchResultGroupHeader title={group.title} />
+            {group.options.map((option) => (
               <SearchResultItem
-                key={space.id}
-                id={space.id}
-                name={space.name}
-                link={space.link}
-                icon={<IconTent size={24} />}
-                isSelected={isSelected}
+                key={`${option.type}-${option.id}`}
+                option={option}
+                isSelected={options[state.selectedIndex]?.optionId === option.optionId}
                 onClick={handleItemClick}
-                testId={createTestId(state.testId, "space", space.name)}
               />
-            );
-          })}
-        </div>
-      )}
-
-      {/* Goals */}
-      {state.results.goals && state.results.goals.length > 0 && (
-        <div className="mb-2">
-          <SearchResultGroupHeader title="GOALS" />
-
-          {state.results.goals.map((goal) => {
-            const currentIndex = getCurrentIndex("goal", goal.id);
-            const isSelected = currentIndex === state.selectedIndex;
-            const subtitle = [goal.champion?.fullName, goal.space?.name].filter(Boolean).join(" • ");
-
-            return (
-              <SearchResultItem
-                key={goal.id}
-                id={goal.id}
-                name={goal.name}
-                link={goal.link}
-                icon={<IconGoal size={24} />}
-                subtitle={subtitle || undefined}
-                isSelected={isSelected}
-                onClick={handleItemClick}
-                testId={createTestId(state.testId, "goal", goal.name)}
-              />
-            );
-          })}
-        </div>
-      )}
-
-      {/* Projects */}
-      {state.results.projects && state.results.projects.length > 0 && (
-        <div className="mb-2">
-          <SearchResultGroupHeader title="PROJECTS" />
-
-          {state.results.projects.map((project) => {
-            const currentIndex = getCurrentIndex("project", project.id);
-            const isSelected = currentIndex === state.selectedIndex;
-            const subtitle = [project.champion?.fullName, project.space?.name].filter(Boolean).join(" • ");
-
-            return (
-              <SearchResultItem
-                key={project.id}
-                id={project.id}
-                name={project.name}
-                link={project.link}
-                icon={<IconProject size={24} />}
-                subtitle={subtitle || undefined}
-                isSelected={isSelected}
-                onClick={handleItemClick}
-                testId={createTestId(state.testId, "project", project.name)}
-              />
-            );
-          })}
-        </div>
-      )}
-
-      {/* Milestones */}
-      {state.results.milestones && state.results.milestones.length > 0 && (
-        <div className="mb-2">
-          <SearchResultGroupHeader title="MILESTONES" />
-
-          {state.results.milestones.map((milestone) => {
-            const currentIndex = getCurrentIndex("milestone", milestone.id);
-            const isSelected = currentIndex === state.selectedIndex;
-            const subtitle = [milestone.project?.name, milestone.space?.name].filter(Boolean).join(" • ");
-
-            return (
-              <SearchResultItem
-                key={milestone.id}
-                id={milestone.id}
-                name={milestone.title}
-                link={milestone.link}
-                icon={<IconMilestone size={24} />}
-                subtitle={subtitle}
-                isSelected={isSelected}
-                onClick={handleItemClick}
-                testId={createTestId(state.testId, "milestone", milestone.title)}
-              />
-            );
-          })}
-        </div>
-      )}
-
-      {/* Tasks */}
-      {state.results.tasks && state.results.tasks.length > 0 && (
-        <div className="mb-2">
-          <SearchResultGroupHeader title="TASKS" />
-
-          {state.results.tasks.map((task) => {
-            const currentIndex = getCurrentIndex("task", task.id);
-            const isSelected = currentIndex === state.selectedIndex;
-            const subtitle = [task.project?.name, task.space?.name].filter(Boolean).join(" • ");
-
-            return (
-              <SearchResultItem
-                key={task.id}
-                id={task.id}
-                name={task.name}
-                link={task.link}
-                icon={<IconTask size={24} />}
-                subtitle={subtitle}
-                isSelected={isSelected}
-                onClick={handleItemClick}
-                testId={createTestId(state.testId, "task", task.name)}
-              />
-            );
-          })}
-        </div>
-      )}
-
-      {/* People */}
-      {state.results.people && state.results.people.length > 0 && (
-        <div>
-          <SearchResultGroupHeader title="PEOPLE" />
-
-          {state.results.people.map((person) => {
-            const currentIndex = getCurrentIndex("person", person.id);
-            const isSelected = currentIndex === state.selectedIndex;
-
-            return (
-              <SearchResultItem
-                key={person.id}
-                id={person.id}
-                name={person.fullName}
-                link={person.link}
-                icon={<Avatar person={person} size={24} />}
-                subtitle={person.title || undefined}
-                isSelected={isSelected}
-                onClick={handleItemClick}
-                testId={createTestId(state.testId, "person", person.fullName)}
-              />
-            );
-          })}
-        </div>
-      )}
-    </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -406,61 +451,10 @@ interface SearchOverlayProps {
 function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { query, setIsOpen, testId, setQuery } = state;
-
-  // Create flattened results for keyboard navigation
-  const flatResults = React.useMemo(() => {
-    const items: { type: string; item: any; link: string }[] = [];
-
-    if (state.results.spaces) {
-      state.results.spaces.forEach((space) => {
-        items.push({ type: "space", item: space, link: space.link });
-      });
-    }
-
-    if (state.results.goals) {
-      state.results.goals.forEach((goal) => {
-        items.push({ type: "goal", item: goal, link: goal.link });
-      });
-    }
-
-    if (state.results.projects) {
-      state.results.projects.forEach((project) => {
-        items.push({ type: "project", item: project, link: project.link });
-      });
-    }
-
-    if (state.results.milestones) {
-      state.results.milestones.forEach((milestone) => {
-        items.push({ type: "milestone", item: milestone, link: milestone.link });
-      });
-    }
-
-    if (state.results.tasks) {
-      state.results.tasks.forEach((task) => {
-        items.push({ type: "task", item: task, link: task.link });
-      });
-    }
-
-    if (state.results.people) {
-      state.results.people.forEach((person) => {
-        items.push({ type: "person", item: person, link: person.link });
-      });
-    }
-
-    return items;
-  }, [state.results]);
-
-  const hasResults = React.useMemo(() => {
-    const { spaces, projects, goals, milestones, tasks, people } = state.results;
-    return (
-      (spaces && spaces.length > 0) ||
-      (projects && projects.length > 0) ||
-      (goals && goals.length > 0) ||
-      (milestones && milestones.length > 0) ||
-      (tasks && tasks.length > 0) ||
-      (people && people.length > 0)
-    );
-  }, [state.results]);
+  const groups = React.useMemo(() => buildSearchGroups(state.results, testId), [state.results, testId]);
+  const options = React.useMemo(() => groups.flatMap((group) => group.options), [groups]);
+  const listboxId = createTestId(testId, "results");
+  const selectedOption = options[state.selectedIndex];
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -468,7 +462,6 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Handle Escape key globally (in case focus is not on input)
       if (event.key === "Escape") {
         event.preventDefault();
         onClose();
@@ -477,7 +470,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, hasResults, flatResults, state]);
+  }, [isOpen, onClose]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -492,32 +485,23 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     switch (event.key) {
       case "ArrowDown":
-        if (hasResults) {
+        if (options.length > 0) {
           event.preventDefault();
-          const nextDown = state.selectedIndex + 1;
-          state.setSelectedIndex(nextDown >= flatResults.length ? 0 : nextDown);
+          const nextIndex = state.selectedIndex + 1;
+          state.setSelectedIndex(nextIndex >= options.length ? 0 : nextIndex);
         }
-
         break;
       case "ArrowUp":
-        if (hasResults) {
+        if (options.length > 0) {
           event.preventDefault();
-          const nextUp = state.selectedIndex - 1;
-          state.setSelectedIndex(nextUp < 0 ? flatResults.length - 1 : nextUp);
+          const previousIndex = state.selectedIndex - 1;
+          state.setSelectedIndex(previousIndex < 0 ? options.length - 1 : previousIndex);
         }
-
         break;
       case "Enter":
-        if (hasResults && state.selectedIndex >= 0 && state.selectedIndex < flatResults.length) {
+        if (selectedOption) {
           event.preventDefault();
-          const selectedItem = flatResults[state.selectedIndex];
-          if (selectedItem) {
-            state.onNavigate(selectedItem.link);
-            state.setIsOpen(false);
-            state.setQuery("");
-            state.setSelectedIndex(-1);
-            onClose();
-          }
+          navigateToResult(state, selectedOption.link, onClose);
         }
         break;
       case "Escape":
@@ -542,8 +526,17 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
             <input
               ref={inputRef}
               type="text"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-controls={listboxId}
+              aria-expanded={isOpen}
+              aria-activedescendant={selectedOption?.optionId}
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                state.setSearchError(false);
+                state.setSelectedIndex(-1);
+              }}
               onKeyDown={handleInputKeyDown}
               placeholder="Search for spaces, projects, goals, milestones, tasks, or people..."
               className="w-full pl-10 pr-12 py-2.5 text-base bg-surface-base border-b border-surface-outline focus:outline-none rounded-b-lg"
@@ -551,6 +544,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
             />
             <button
               type="button"
+              aria-label="Close search"
               className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-content-dimmed uppercase tracking-wide"
               onClick={onClose}
             >
@@ -559,7 +553,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
           </div>
 
           <div className="max-h-[60vh] overflow-y-auto">
-            <SearchResults state={state} onClose={onClose} flatResults={flatResults} />
+            <SearchResults state={state} onClose={onClose} groups={groups} options={options} listboxId={listboxId} />
           </div>
         </div>
       </div>
@@ -568,8 +562,20 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   );
 }
 
+function navigateToResult(state: GlobalSearch.State, link: string, onClose: () => void) {
+  state.onNavigate(link);
+  state.setIsOpen(false);
+  state.setQuery("");
+  state.setSelectedIndex(-1);
+  onClose();
+}
+
 function SearchResultGroupHeader({ title }: { title: string }) {
-  return <div className="px-3 py-0.5 text-xs font-medium text-content-dimmed">{title}</div>;
+  return (
+    <div className="px-3 py-0.5 text-xs font-medium text-content-dimmed" aria-hidden="true">
+      {title}
+    </div>
+  );
 }
 
 function SearchActivator({
@@ -598,6 +604,7 @@ function SearchActivator({
 export function GlobalSearch(props: GlobalSearch.Props) {
   const state = useGlobalSearchState(props);
   const [overlayOpen, setOverlayOpen] = React.useState(false);
+  const { setIsOpen, setSelectedIndex } = state;
 
   const openOverlay = React.useCallback(() => {
     setOverlayOpen(true);
@@ -605,9 +612,9 @@ export function GlobalSearch(props: GlobalSearch.Props) {
 
   const closeOverlay = React.useCallback(() => {
     setOverlayOpen(false);
-    state.setIsOpen(false);
-    state.setSelectedIndex(-1);
-  }, [state]);
+    setIsOpen(false);
+    setSelectedIndex(-1);
+  }, [setIsOpen, setSelectedIndex]);
 
   React.useEffect(() => {
     const handleGlobalShortcut = (event: KeyboardEvent) => {
