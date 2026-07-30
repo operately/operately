@@ -2963,6 +2963,14 @@ export interface CompaniesQuickSearchResult {
   links: QuickSearchResource[];
 }
 
+export interface CompaniesSearchInput {
+  query: string;
+}
+
+export interface CompaniesSearchResult {
+  results: SearchResult[];
+}
+
 export interface CompanyTransfersGetExportRunInput {
   id: Id;
 }
@@ -6049,6 +6057,10 @@ class ApiNamespaceCompanies {
     return this.client.get("/companies/quick_search", input);
   }
 
+  async search(input: CompaniesSearchInput): Promise<CompaniesSearchResult> {
+    return this.client.get("/companies/search", input);
+  }
+
   async convertMemberToGuest(input: CompaniesConvertMemberToGuestInput): Promise<CompaniesConvertMemberToGuestResult> {
     return this.client.post("/companies/convert_member_to_guest", input);
   }
@@ -7612,6 +7624,10 @@ export default {
     list: (input: CompaniesListInput) => defaultApiClient.apiNamespaceCompanies.list(input),
     useList: (input: CompaniesListInput) =>
       useQuery<CompaniesListResult>(() => defaultApiClient.apiNamespaceCompanies.list(input)),
+
+    search: (input: CompaniesSearchInput) => defaultApiClient.apiNamespaceCompanies.search(input),
+    useSearch: (input: CompaniesSearchInput) =>
+      useQuery<CompaniesSearchResult>(() => defaultApiClient.apiNamespaceCompanies.search(input)),
 
     getWorkMap: (input: CompaniesGetWorkMapInput) => defaultApiClient.apiNamespaceCompanies.getWorkMap(input),
     useGetWorkMap: (input: CompaniesGetWorkMapInput) =>

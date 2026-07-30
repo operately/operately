@@ -192,6 +192,7 @@ defmodule OperatelyWeb.Api do
         query(:get_work_map, OperatelyWeb.Api.Companies.GetWorkMap)
         query(:get_flat_work_map, OperatelyWeb.Api.Companies.GetFlatWorkMap)
         query(:quick_search, OperatelyWeb.Api.Companies.QuickSearch)
+        query(:search, OperatelyWeb.Api.Companies.Search)
 
         mutation(:restore_member, OperatelyWeb.Api.Companies.RestoreMember)
         mutation(:convert_member_to_guest, OperatelyWeb.Api.Companies.ConvertMemberToGuest)

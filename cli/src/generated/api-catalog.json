@@ -20099,8 +20099,8 @@
       ]
     }
   },
-  "endpoint_count": 201,
-  "query_count": 66,
+  "endpoint_count": 202,
+  "query_count": 67,
   "mutation_count": 135,
   "endpoints": [
     {
@@ -21699,6 +21699,45 @@
       "docstring": "Restores a suspended company member.",
       "full_name": "companies/restore_member",
       "method": "POST"
+    },
+    {
+      "name": "search",
+      "type": "query",
+      "path": "/api/external/v1/companies/search",
+      "handler": "OperatelyWeb.Api.Companies.Search",
+      "outputs": [
+        {
+          "default": null,
+          "name": "results",
+          "type": {
+            "item": {
+              "name": "search_result",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Returns relevance-ranked full-text results visible to the current person.",
+      "full_name": "companies/search",
+      "method": "GET"
     },
     {
       "name": "update",

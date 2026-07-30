@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 201
+- Endpoints: 202
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -30,6 +30,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `companies list_activities` | `op companies list_activities` | `GET` | `/api/external/v1/companies/list_activities` |
 | `companies quick_search` | `op companies quick_search` | `GET` | `/api/external/v1/companies/quick_search` |
 | `companies restore_member` | `op companies restore_member` | `POST` | `/api/external/v1/companies/restore_member` |
+| `companies search` | `op companies search` | `GET` | `/api/external/v1/companies/search` |
 | `companies update` | `op companies update` | `POST` | `/api/external/v1/companies/update` |
 | `companies update_members_permissions` | `op companies update_members_permissions` | `POST` | `/api/external/v1/companies/update_members_permissions` |
 | `documents copy_folder` | `op documents copy_folder` | `POST` | `/api/external/v1/documents/copy_folder` |
