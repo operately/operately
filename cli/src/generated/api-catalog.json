@@ -8334,6 +8334,17 @@
           },
           {
             "default": null,
+            "name": "state",
+            "type": {
+              "name": "search_result_state",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "navigation_target",
             "type": {
               "name": "search_navigation_target",
@@ -9210,9 +9221,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
-            "nullable": false
+            "nullable": true
           },
           {
             "default": null,
@@ -9250,6 +9261,72 @@
           {
             "default": null,
             "name": "link_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "goal_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "discussion_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project_check_in_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "goal_check_in_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "project_retrospective_id",
             "type": {
               "name": "string",
               "kind": "named"
@@ -19684,7 +19761,13 @@
         "resource_hub_folder",
         "resource_hub_document",
         "resource_hub_file",
-        "resource_hub_link"
+        "resource_hub_link",
+        "project",
+        "goal",
+        "discussion",
+        "project_check_in",
+        "goal_check_in",
+        "project_retrospective"
       ],
       "project_check_in_status": [
         "on_track",
@@ -19827,7 +19910,8 @@
         "title",
         "name",
         "content",
-        "description"
+        "description",
+        "message"
       ],
       "work_map_item_status": [
         "on_track",
@@ -19892,6 +19976,12 @@
         "space",
         "goal",
         "project"
+      ],
+      "search_result_state": [
+        "closed",
+        "completed",
+        "archived",
+        "paused"
       ],
       "work_map_item_type": [
         "project",
@@ -20988,6 +21078,20 @@
           "optional": false,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "full_text_results",
+          "type": {
+            "item": {
+              "name": "search_result",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -21004,7 +21108,7 @@
           "nullable": false
         }
       ],
-      "docstring": "Performs a global search across spaces, projects, goals, milestones, tasks, and people.",
+      "docstring": "Performs grouped navigation and full-text search across a person's company.",
       "full_name": "companies/global_search",
       "method": "GET"
     },

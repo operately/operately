@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   @moduledoc """
-  Performs a global search across spaces, projects, goals, milestones, tasks, and people.
+  Performs grouped navigation and full-text search across a person's company.
   """
 
   use TurboConnect.Query
@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   alias Operately.Projects.Milestone
   alias Operately.Goals.Goal
   alias Operately.People.Person
+  alias Operately.Search
   alias OperatelyWeb.Api.Serializer
 
   inputs do
@@ -28,9 +29,27 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
     field :milestones, list_of(:milestone), null: false
     field :tasks, list_of(:task), null: false
     field :people, list_of(:person), null: false
+    field :full_text_results, list_of(:search_result), null: false
   end
 
   @limit 5
+  @empty_results %{
+    spaces: [],
+    projects: [],
+    goals: [],
+    milestones: [],
+    tasks: [],
+    people: [],
+    full_text_results: []
+  }
+  @grouped_result_types %{
+    spaces: :space,
+    projects: :project,
+    goals: :goal,
+    milestones: :milestone,
+    tasks: :task,
+    people: :person
+  }
 
   # Normalization SQL: LOWER + hyphens/underscores → spaces, so "re establish" matches "re-establish".
   # Fragment strings must be literals (Ecto security); keep these two in sync if normalization changes.
@@ -52,37 +71,60 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   def call(conn, inputs) do
     person = me(conn)
     query = String.trim(inputs.query)
+    normalized_query = normalize_search_term(query)
 
-    if String.length(query) < 2 do
-      {:ok, %{spaces: [], projects: [], goals: [], milestones: [], tasks: [], people: []}}
+    if String.length(query) < 2 or normalized_query == "" do
+      {:ok, @empty_results}
     else
-      normalized = normalize_search_term(query)
-      if normalized == "" do
-        {:ok, %{spaces: [], projects: [], goals: [], milestones: [], tasks: [], people: []}}
-      else
-        [spaces, projects, goals, milestones, tasks, people] =
-          [
-            Task.async(fn -> search_spaces(person, normalized) end),
-            Task.async(fn -> search_projects(person, normalized) end),
-            Task.async(fn -> search_goals(person, normalized) end),
-            Task.async(fn -> search_milestones(person, normalized) end),
-            Task.async(fn -> search_tasks(person, normalized) end),
-            Task.async(fn -> search_people(person, normalized) end)
-          ]
-          |> Task.await_many()
-
-        output = %{
-          spaces: Serializer.serialize(spaces, level: :essential),
-          projects: Serializer.serialize(projects, level: :full),
-          goals: Serializer.serialize(goals, level: :essential),
-          milestones: Serializer.serialize(milestones, level: :essential),
-          tasks: Serializer.serialize(tasks, level: :full),
-          people: Serializer.serialize(people, level: :essential)
-        }
-
-        {:ok, output}
-      end
+      {:ok, search_and_serialize(person, query, normalized_query)}
     end
+  end
+
+  defp search_and_serialize(person, query, normalized_query) do
+    [spaces, projects, goals, milestones, tasks, people, full_text_results] =
+      [
+        Task.async(fn -> search_spaces(person, normalized_query) end),
+        Task.async(fn -> search_projects(person, normalized_query) end),
+        Task.async(fn -> search_goals(person, normalized_query) end),
+        Task.async(fn -> search_milestones(person, normalized_query) end),
+        Task.async(fn -> search_tasks(person, normalized_query) end),
+        Task.async(fn -> search_people(person, normalized_query) end),
+        Task.async(fn -> Search.search_company(person, query) end)
+      ]
+      |> Task.await_many()
+
+    grouped_results = %{
+      spaces: spaces,
+      projects: projects,
+      goals: goals,
+      milestones: milestones,
+      tasks: tasks,
+      people: people
+    }
+
+    %{
+      spaces: Serializer.serialize(spaces, level: :essential),
+      projects: Serializer.serialize(projects, level: :full),
+      goals: Serializer.serialize(goals, level: :essential),
+      milestones: Serializer.serialize(milestones, level: :essential),
+      tasks: Serializer.serialize(tasks, level: :full),
+      people: Serializer.serialize(people, level: :essential),
+      full_text_results:
+        full_text_results
+        |> deduplicate_full_text_results(grouped_results)
+        |> Serializer.serialize(level: :essential)
+    }
+  end
+
+  defp deduplicate_full_text_results(full_text_results, grouped_results) do
+    grouped_source_keys =
+      Enum.reduce(@grouped_result_types, MapSet.new(), fn {group, source_type}, source_keys ->
+        grouped_results
+        |> Map.fetch!(group)
+        |> Enum.reduce(source_keys, fn result, keys -> MapSet.put(keys, {source_type, result.id}) end)
+      end)
+
+    Enum.reject(full_text_results, &MapSet.member?(grouped_source_keys, {&1.type, &1.id}))
   end
 
   defp search_spaces(person, search_term) do

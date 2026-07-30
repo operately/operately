@@ -651,11 +651,11 @@ family accepted by company search through PR 3.1.
 
 #### PR 3.4 — `chore: Add combined company search API`
 
-- [ ] Have one company API request run the existing grouped navigation query and the new full-text query.
-- [ ] Preserve the existing grouped `spaces`, `goals`, `projects`, `milestones`, `tasks`, and `people` fields during compatibility.
-- [ ] Deduplicate full-text matches against legacy results by `(source_type, source_id)` on the server.
-- [ ] Return the remaining ranked full-text results with match source, context, state, safe snippet, and typed navigation metadata.
-- [ ] Update serializers and generated clients, and cover the complete response contract without changing `GlobalSearch` yet.
+- [x] Have one company API request run the existing grouped navigation query and the new full-text query.
+- [x] Preserve the existing grouped `spaces`, `goals`, `projects`, `milestones`, `tasks`, and `people` fields during compatibility.
+- [x] Deduplicate full-text matches against legacy results by `(source_type, source_id)` on the server.
+- [x] Return the remaining ranked full-text results with match source, context, state, safe snippet, and typed navigation metadata.
+- [x] Update serializers and generated clients, and cover the complete response contract without changing `GlobalSearch` yet.
 
 #### PR 3.5 — `chore: Add full-text matches to global search`
 
@@ -670,7 +670,7 @@ family accepted by company search through PR 3.1.
 - [ ] Add only source types that materially improve retrieval beyond the existing name-based navigation groups.
 - [ ] Apply the same adapter, refresh, authorization, backfill, and reconciliation requirements to every added type.
 
-Update the MCP search tool in a separate follow-up after the combined web API and `MORE MATCHES` contract are stable.
+The combined API response is also exposed by the existing MCP search tool; no separate MCP tool is required.
 
 - [ ] After the resource-hub and company search queries have stabilized, evaluate the duplicated resource eligibility and visible-folder CTE logic in `ResourceHubQuery` and `CompanyQuery.ResourceHubItems`. Extract shared query-building code only if it meaningfully reduces maintenance risk without coupling their different scopes, result shapes, authorization boundaries, or hydration behavior; otherwise document why keeping the small duplication is clearer.
 
