@@ -1867,6 +1867,18 @@ export interface ProjectReviewRequest {
   author?: Person | null;
 }
 
+export interface QuickSearchDiscussion {
+  id: string;
+  title: string;
+  context: string;
+}
+
+export interface QuickSearchResource {
+  id: string;
+  name: string;
+  context: string;
+}
+
 export interface Reaction {
   __typename: "reaction";
   id: string;

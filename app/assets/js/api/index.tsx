@@ -1987,6 +1987,18 @@ export interface ProjectReviewRequest {
   author?: Person | null;
 }
 
+export interface QuickSearchDiscussion {
+  id: string;
+  title: string;
+  context: string;
+}
+
+export interface QuickSearchResource {
+  id: string;
+  name: string;
+  context: string;
+}
+
 export interface Reaction {
   __typename: "reaction";
   id: string;
@@ -2945,6 +2957,24 @@ export interface CompaniesListActivitiesInput {
 
 export interface CompaniesListActivitiesResult {
   activities: Activity[];
+}
+
+export interface CompaniesQuickSearchInput {
+  query: string;
+}
+
+export interface CompaniesQuickSearchResult {
+  spaces: Space[];
+  projects: Project[];
+  goals: Goal[];
+  milestones: Milestone[];
+  tasks: Task[];
+  people: Person[];
+  discussions: QuickSearchDiscussion[];
+  folders: QuickSearchResource[];
+  documents: QuickSearchResource[];
+  files: QuickSearchResource[];
+  links: QuickSearchResource[];
 }
 
 export interface CompanyTransfersGetExportRunInput {
@@ -6033,6 +6063,10 @@ class ApiNamespaceCompanies {
     return this.client.get("/companies/list_activities", input);
   }
 
+  async quickSearch(input: CompaniesQuickSearchInput): Promise<CompaniesQuickSearchResult> {
+    return this.client.get("/companies/quick_search", input);
+  }
+
   async convertMemberToGuest(input: CompaniesConvertMemberToGuestInput): Promise<CompaniesConvertMemberToGuestResult> {
     return this.client.post("/companies/convert_member_to_guest", input);
   }
@@ -7580,6 +7614,10 @@ export default {
   },
 
   companies: {
+    quickSearch: (input: CompaniesQuickSearchInput) => defaultApiClient.apiNamespaceCompanies.quickSearch(input),
+    useQuickSearch: (input: CompaniesQuickSearchInput) =>
+      useQuery<CompaniesQuickSearchResult>(() => defaultApiClient.apiNamespaceCompanies.quickSearch(input)),
+
     getActivity: (input: CompaniesGetActivityInput) => defaultApiClient.apiNamespaceCompanies.getActivity(input),
     useGetActivity: (input: CompaniesGetActivityInput) =>
       useQuery<CompaniesGetActivityResult>(() => defaultApiClient.apiNamespaceCompanies.getActivity(input)),
