@@ -6,6 +6,7 @@ defmodule Operately.Groups.SpaceTools do
 
   embedded_schema do
     field :tasks_enabled, :boolean, default: false
+    field :kpis_enabled, :boolean, default: false
     field :discussions_enabled, :boolean, default: true
     field :resource_hub_enabled, :boolean, default: true
 
@@ -22,12 +23,13 @@ defmodule Operately.Groups.SpaceTools do
 
   def changeset(space_tools, attrs) do
     space_tools
-    |> cast(attrs, [:tasks_enabled, :discussions_enabled, :resource_hub_enabled])
+    |> cast(attrs, [:tasks_enabled, :kpis_enabled, :discussions_enabled, :resource_hub_enabled])
   end
 
   def default_settings do
     %__MODULE__{
       tasks_enabled: false,
+      kpis_enabled: false,
       discussions_enabled: true,
       resource_hub_enabled: true
     }

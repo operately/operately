@@ -67,6 +67,7 @@ defmodule Operately.GroupsTest do
 
       assert group.tools != nil
       assert group.tools.tasks_enabled == false
+      assert group.tools.kpis_enabled == false
       assert group.tools.discussions_enabled == true
       assert group.tools.resource_hub_enabled == true
     end

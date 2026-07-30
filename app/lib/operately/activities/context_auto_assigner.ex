@@ -53,6 +53,10 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "discussion_comment_submitted",
     "message_archiving",
     "space_task_commented",
+
+    "kpi_creating",
+    "kpi_deleting",
+    "kpi_data_point_adding",
   ]
 
   @project_actions [
