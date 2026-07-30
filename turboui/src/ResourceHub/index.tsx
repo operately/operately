@@ -6,7 +6,7 @@ export type { AddFolderModalProps } from "./AddFolderModal";
 export { ContinueEditingDrafts } from "./ContinueEditingDrafts";
 export { DraftNodesList } from "./DraftNodesList";
 export { FileDragAndDropArea } from "./FileDragAndDropArea";
-export { FileIcon, NodeIcon } from "./NodeIcon";
+export { FileIcon, NodeIcon, ResourceHubTypeIcon } from "./NodeIcon";
 export { LinkIcon } from "./LinkIcon";
 export { Header } from "./Header";
 export { NodeMenu } from "./NodeMenu";

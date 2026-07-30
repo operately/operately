@@ -801,12 +801,13 @@ PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permissio
 
 #### PR 3.8 — `chore: Add company Search page`
 
-- [ ] Add the company Search route and page, using URL parameter `q` as the shareable and reload-safe query.
-- [ ] Seed the search field from `q`, immediately search valid initial queries, debounce edits by 300 ms, update the URL without one history entry per keystroke, and handle browser back/forward.
-- [ ] Ignore stale responses and render distinct initial, loading, populated, empty, and error states while keeping focus in the search field.
-- [ ] Render at most 30 mixed full-text results with resource type, title/name, context, optional historical state, strongest matched field, safe body snippet, and canonical navigation.
-- [ ] Keep quick-navigation groups off this page and do not add pagination in the first release.
-- [ ] Add focused page/component stories and company feature coverage for carried queries, direct links, subsequent searches, stale responses, all request states, result navigation, accessibility, and the 30-result cap.
+- [x] Add the company Search route and page, using URL parameter `q` as the shareable and reload-safe query.
+- [x] Gate the Search page behind the `full_text_search` experimental feature and redirect disabled companies to Home.
+- [x] Seed the search field from `q`, immediately search valid initial queries, debounce edits by 300 ms, update the URL without one history entry per keystroke, and handle browser back/forward.
+- [x] Ignore stale responses and render distinct initial, loading, populated, empty, and error states while keeping focus in the search field.
+- [x] Render at most 30 mixed full-text results with resource type, title/name, context, optional historical state, strongest matched field, safe body snippet, and canonical navigation.
+- [x] Keep quick-navigation groups off this page and do not add pagination in the first release.
+- [x] Add focused page/component stories and company feature coverage for carried queries, direct links, subsequent searches, stale responses, all request states, result navigation, accessibility, and the 30-result cap.
 
 #### PR 3.9 — `chore: Connect quick search to full-text search`
 
