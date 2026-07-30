@@ -1335,12 +1335,36 @@ defmodule OperatelyWeb.Api.Types do
     field :tasks_enabled, :boolean, null: false
     field :discussions_enabled, :boolean, null: false
     field :resource_hub_enabled, :boolean, null: false
+    field :kpis_enabled, :boolean, null: false
 
     field :projects, list_of(:project), null: true
     field :goals, list_of(:goal), null: true
     field :messages_boards, list_of(:messages_board), null: true
     field :resource_hubs, list_of(:resource_hub), null: true
     field :tasks, list_of(:task), null: true
+    field :kpis, list_of(:kpi), null: true
+  end
+
+  object :kpi_data_point, for: Operately.Kpis.DataPoint do
+    field :id, :string, null: false
+    field :value, :float, null: false
+    field :recorded_for, :date, null: false
+  end
+
+  object :kpi, for: Operately.Kpis.Kpi do
+    field :id, :string, null: false
+    field :name, :string, null: false
+    field? :description, :string, null: true
+    field? :unit, :string, null: true
+    field? :target, :float, null: true
+    field? :target_direction, :string, null: true
+    field? :warning_threshold, :float, null: true
+    field? :warning_direction, :string, null: true
+    field? :danger_threshold, :float, null: true
+    field? :danger_direction, :string, null: true
+    field? :data_points, list_of(:kpi_data_point), null: true
+    field? :inserted_at, :datetime, null: true
+    field? :updated_at, :datetime, null: true
   end
 
   object :blob_creation_input do

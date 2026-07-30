@@ -12,7 +12,7 @@ defmodule Operately.Support.Factory.Spaces do
     tools_attrs =
       opts
       |> Enum.into(%{})
-      |> Map.take([:tasks_enabled, :discussions_enabled, :resource_hub_enabled])
+      |> Map.take([:tasks_enabled, :discussions_enabled, :resource_hub_enabled, :kpis_enabled])
 
     {:ok, space} = Operately.Groups.update_group(space, %{tools: tools_attrs})
 
@@ -22,10 +22,12 @@ defmodule Operately.Support.Factory.Spaces do
   def enable_tool(space, :tasks), do: set_tools(space, tasks_enabled: true)
   def enable_tool(space, :discussions), do: set_tools(space, discussions_enabled: true)
   def enable_tool(space, :resource_hub), do: set_tools(space, resource_hub_enabled: true)
+  def enable_tool(space, :kpis), do: set_tools(space, kpis_enabled: true)
 
   def disable_tool(space, :tasks), do: set_tools(space, tasks_enabled: false)
   def disable_tool(space, :discussions), do: set_tools(space, discussions_enabled: false)
   def disable_tool(space, :resource_hub), do: set_tools(space, resource_hub_enabled: false)
+  def disable_tool(space, :kpis), do: set_tools(space, kpis_enabled: false)
 
   def set_space_tools(ctx, space_name, opts \\ []) do
     space = Map.fetch!(ctx, space_name)
@@ -38,10 +40,12 @@ defmodule Operately.Support.Factory.Spaces do
   def enable_space_tool(ctx, space_name, :tasks), do: set_space_tools(ctx, space_name, tasks_enabled: true)
   def enable_space_tool(ctx, space_name, :discussions), do: set_space_tools(ctx, space_name, discussions_enabled: true)
   def enable_space_tool(ctx, space_name, :resource_hub), do: set_space_tools(ctx, space_name, resource_hub_enabled: true)
+  def enable_space_tool(ctx, space_name, :kpis), do: set_space_tools(ctx, space_name, kpis_enabled: true)
 
   def disable_space_tool(ctx, space_name, :tasks), do: set_space_tools(ctx, space_name, tasks_enabled: false)
   def disable_space_tool(ctx, space_name, :discussions), do: set_space_tools(ctx, space_name, discussions_enabled: false)
   def disable_space_tool(ctx, space_name, :resource_hub), do: set_space_tools(ctx, space_name, resource_hub_enabled: false)
+  def disable_space_tool(ctx, space_name, :kpis), do: set_space_tools(ctx, space_name, kpis_enabled: false)
 
   def add_space_member(ctx, testid, space_name, opts \\ []) do
     space = Map.fetch!(ctx, space_name)

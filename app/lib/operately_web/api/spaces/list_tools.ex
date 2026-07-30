@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
   alias Operately.Projects.Project
   alias Operately.Messages.{MessagesBoard, Message}
   alias Operately.ResourceHubs.{ResourceHub, Node}
+  alias Operately.Kpis.Kpi
   alias Operately.Groups.Group
   alias Operately.Groups.SpaceTools
   alias Operately.Access.Filters
@@ -85,11 +86,21 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
         end
       end)
 
+    kpis_task =
+      Task.async(fn ->
+        if space.tools.kpis_enabled do
+          load_kpis(space.id, me)
+        else
+          {:ok, []}
+        end
+      end)
+
     {:ok, projects} = Task.await(projects_task)
     {:ok, goals} = Task.await(goals_task)
     {:ok, tasks} = Task.await(tasks_task)
     {:ok, messages_boards} = Task.await(messages_boards_task)
     {:ok, resource_hubs} = Task.await(resource_hubs_task)
+    {:ok, kpis} = Task.await(kpis_task)
 
     {:ok,
      %{
@@ -97,7 +108,8 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
        goals: goals,
        tasks: tasks,
        messages_boards: messages_boards,
-       resource_hubs: resource_hubs
+       resource_hubs: resource_hubs,
+       kpis: kpis
      }}
   end
 
@@ -137,6 +149,22 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
       |> Repo.all()
 
     {:ok, tasks}
+  end
+
+  defp load_kpis(space_id, me) do
+    data_points_q = from(dp in Operately.Kpis.DataPoint, order_by: [asc: dp.recorded_for])
+
+    kpis =
+      from(k in Kpi,
+        join: s in assoc(k, :space), as: :space,
+        preload: [data_points: ^data_points_q],
+        where: k.space_id == ^space_id,
+        order_by: [asc: k.name]
+      )
+      |> Filters.filter_by_view_access(me.id, named_binding: :space)
+      |> Repo.all()
+
+    {:ok, kpis}
   end
 
   defp load_messages_boards(space_id, me) do

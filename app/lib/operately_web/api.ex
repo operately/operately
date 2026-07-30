@@ -164,6 +164,11 @@ defmodule OperatelyWeb.Api do
         mutation(:create_discussion, OperatelyWeb.Api.Spaces.CreateDiscussion)
         mutation(:publish_discussion, OperatelyWeb.Api.Spaces.PublishDiscussion)
         mutation(:update_discussion, OperatelyWeb.Api.Spaces.UpdateDiscussion)
+        mutation(:create_kpi, OperatelyWeb.Api.Spaces.CreateKpi)
+        mutation(:update_kpi, OperatelyWeb.Api.Spaces.UpdateKpi)
+        mutation(:delete_kpi, OperatelyWeb.Api.Spaces.DeleteKpi)
+        mutation(:add_kpi_data_point, OperatelyWeb.Api.Spaces.AddKpiDataPoint)
+        mutation(:update_kpi_data_point, OperatelyWeb.Api.Spaces.UpdateKpiDataPoint)
       end
 
       @doc "Get, list, update and manage user profiles and account settings"

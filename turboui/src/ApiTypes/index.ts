@@ -1616,6 +1616,30 @@ export interface InviteLink {
   allowedDomains?: string[] | null;
 }
 
+export interface Kpi {
+  __typename: "kpi";
+  id: string;
+  name: string;
+  description?: string | null;
+  unit?: string | null;
+  target?: number | null;
+  targetDirection?: string | null;
+  warningThreshold?: number | null;
+  warningDirection?: string | null;
+  dangerThreshold?: number | null;
+  dangerDirection?: string | null;
+  dataPoints?: KpiDataPoint[] | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface KpiDataPoint {
+  __typename: "data_point";
+  id: string;
+  value: number;
+  recordedFor: string;
+}
+
 export interface McpGrant {
   __typename: "mcp_grant";
   id: Id;
@@ -2156,11 +2180,13 @@ export interface SpaceTools {
   tasksEnabled: boolean;
   discussionsEnabled: boolean;
   resourceHubEnabled: boolean;
+  kpisEnabled: boolean;
   projects: Project[] | null;
   goals: Goal[] | null;
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  kpis: Kpi[] | null;
 }
 
 export interface Subscriber {
@@ -2484,9 +2510,7 @@ export type ActivityContent =
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -2510,13 +2534,7 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
@@ -2561,14 +2579,7 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -2609,15 +2620,7 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -2679,14 +2682,7 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 

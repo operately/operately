@@ -285,6 +285,176 @@ defmodule OperatelyWeb.Api.Spaces do
     end
   end
 
+  defmodule CreateKpi do
+    @moduledoc """
+    Creates a KPI in a space.
+    """
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :space_id, :id, null: false
+      field :name, :string, null: false
+      field? :description, :string, null: true
+      field? :unit, :string, null: true
+      field? :target, :float, null: true
+      field? :target_direction, :string, null: true
+      field? :warning_threshold, :float, null: true
+      field? :warning_direction, :string, null: true
+      field? :danger_threshold, :float, null: true
+      field? :danger_direction, :string, null: true
+    end
+
+    outputs do
+      field :kpi, :kpi, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_space(inputs.space_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.create_kpi(inputs)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{kpi: Serializer.serialize(Steps.with_data_points(changes.kpi), level: :essential)}
+      end)
+    end
+  end
+
+  defmodule UpdateKpi do
+    @moduledoc """
+    Updates a KPI in a space.
+    """
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :kpi_id, :id, null: false
+      field? :name, :string, null: true
+      field? :description, :string, null: true
+      field? :unit, :string, null: true
+      field? :target, :float, null: true
+      field? :target_direction, :string, null: true
+      field? :warning_threshold, :float, null: true
+      field? :warning_direction, :string, null: true
+      field? :danger_threshold, :float, null: true
+      field? :danger_direction, :string, null: true
+    end
+
+    outputs do
+      field :kpi, :kpi, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_kpi(inputs.kpi_id)
+      |> Steps.find_space_for_kpi()
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_kpi(inputs)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{kpi: Serializer.serialize(Steps.with_data_points(changes.updated_kpi), level: :essential)}
+      end)
+    end
+  end
+
+  defmodule DeleteKpi do
+    @moduledoc """
+    Deletes a KPI from a space.
+    """
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :kpi_id, :id, null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_kpi(inputs.kpi_id)
+      |> Steps.find_space_for_kpi()
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.delete_kpi()
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
+  defmodule AddKpiDataPoint do
+    @moduledoc """
+    Adds a data point to a KPI.
+    """
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :kpi_id, :id, null: false
+      field :value, :float, null: false
+      field :recorded_for, :date, null: false
+    end
+
+    outputs do
+      field :data_point, :kpi_data_point, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_kpi(inputs.kpi_id)
+      |> Steps.find_space_for_kpi()
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.add_kpi_data_point(inputs)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{data_point: Serializer.serialize(changes.data_point, level: :essential)}
+      end)
+    end
+  end
+
+  defmodule UpdateKpiDataPoint do
+    @moduledoc """
+    Updates a KPI data point.
+    """
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :data_point_id, :id, null: false
+      field? :value, :float, null: true
+      field? :recorded_for, :date, null: true
+    end
+
+    outputs do
+      field :data_point, :kpi_data_point, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_kpi_data_point(inputs.data_point_id)
+      |> Steps.find_kpi_for_data_point()
+      |> Steps.find_space_for_kpi()
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_kpi_data_point(inputs)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{data_point: Serializer.serialize(changes.updated_data_point, level: :essential)}
+      end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     alias Ecto.Multi
     alias Operately.Repo
@@ -459,6 +629,71 @@ defmodule OperatelyWeb.Api.Spaces do
       end)
     end
 
+    def find_kpi(multi, kpi_id) do
+      Multi.run(multi, :kpi, fn _repo, _changes ->
+        case Repo.get(Operately.Kpis.Kpi, kpi_id) do
+          nil -> {:error, {:not_found, "KPI not found"}}
+          kpi -> {:ok, kpi}
+        end
+      end)
+    end
+
+    def find_kpi_for_data_point(multi) do
+      Multi.run(multi, :kpi, fn _repo, %{data_point: data_point} ->
+        case Repo.get(Operately.Kpis.Kpi, data_point.kpi_id) do
+          nil -> {:error, {:not_found, "KPI not found"}}
+          kpi -> {:ok, kpi}
+        end
+      end)
+    end
+
+    def find_kpi_data_point(multi, data_point_id) do
+      Multi.run(multi, :data_point, fn _repo, _changes ->
+        case Repo.get(Operately.Kpis.DataPoint, data_point_id) do
+          nil -> {:error, {:not_found, "Data point not found"}}
+          data_point -> {:ok, data_point}
+        end
+      end)
+    end
+
+    def find_space_for_kpi(multi) do
+      Multi.run(multi, :space, fn _repo, %{me: me, kpi: kpi} ->
+        Space.get(me, id: kpi.space_id)
+      end)
+    end
+
+    def create_kpi(multi, inputs) do
+      Multi.run(multi, :kpi, fn _repo, %{space: space} ->
+        Operately.Operations.KpiCreating.run(space, inputs)
+      end)
+    end
+
+    def update_kpi(multi, inputs) do
+      Multi.run(multi, :updated_kpi, fn _repo, %{kpi: kpi} ->
+        Operately.Operations.KpiUpdating.run(kpi, inputs)
+      end)
+    end
+
+    def delete_kpi(multi) do
+      Multi.run(multi, :deleted_kpi, fn _repo, %{kpi: kpi} ->
+        Operately.Operations.KpiDeleting.run(kpi)
+      end)
+    end
+
+    def add_kpi_data_point(multi, inputs) do
+      Multi.run(multi, :data_point, fn _repo, %{kpi: kpi} ->
+        Operately.Operations.KpiDataPointAdding.run(kpi, inputs)
+      end)
+    end
+
+    def update_kpi_data_point(multi, inputs) do
+      Multi.run(multi, :updated_data_point, fn _repo, %{data_point: data_point} ->
+        Operately.Operations.KpiDataPointUpdating.run(data_point, inputs)
+      end)
+    end
+
+    def with_data_points(kpi), do: Repo.preload(kpi, :data_points)
+
     def commit(multi) do
       Repo.transaction(multi)
     end
@@ -493,6 +728,9 @@ defmodule OperatelyWeb.Api.Spaces do
         {:error, :updated_space, %Ecto.Changeset{}, _changes} ->
           {:error, :bad_request, "Invalid tools"}
 
+        {:error, _failed_operation, %Ecto.Changeset{} = changeset, _changes} ->
+          {:error, :bad_request, changeset_error_message(changeset)}
+
         {:error, :validate_task_statuses, message, _changes} ->
           {:error, :bad_request, message}
 
@@ -505,6 +743,17 @@ defmodule OperatelyWeb.Api.Spaces do
         _ ->
           {:error, :internal_server_error}
       end
+    end
+
+    defp changeset_error_message(changeset) do
+      changeset
+      |> Ecto.Changeset.traverse_errors(fn {msg, opts} ->
+        Enum.reduce(opts, msg, fn {key, value}, acc ->
+          String.replace(acc, "%{#{key}}", to_string(value))
+        end)
+      end)
+      |> Enum.map(fn {field, messages} -> "#{field} #{Enum.join(messages, ", ")}" end)
+      |> Enum.join("; ")
     end
   end
 end

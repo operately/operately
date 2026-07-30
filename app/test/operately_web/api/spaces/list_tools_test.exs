@@ -260,6 +260,42 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
     end
   end
 
+  describe "spaces/list_tools kpis" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.enable_space_tool(:space, :kpis)
+      |> Factory.add_kpi(:kpi1, :space, name: "Revenue")
+      |> Factory.add_kpi(:kpi2, :space, name: "Churn")
+      |> Factory.add_kpi_data_point(:dp_late, :kpi1, value: 200.0, recorded_for: ~D[2026-02-01])
+      |> Factory.add_kpi_data_point(:dp_early, :kpi1, value: 100.0, recorded_for: ~D[2026-01-01])
+    end
+
+    test "lists kpis with data points ordered by recorded_for", ctx do
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
+
+      assert length(res.tools.kpis) == 2
+      assert res.tools.kpis_enabled == true
+
+      kpi1 = Enum.find(res.tools.kpis, &(&1.name == "Revenue"))
+      assert length(kpi1.data_points) == 2
+      assert Enum.map(kpi1.data_points, & &1.value) == [100.0, 200.0]
+
+      kpi2 = Enum.find(res.tools.kpis, &(&1.name == "Churn"))
+      assert kpi2.data_points == []
+    end
+
+    test "returns an empty list when kpis are disabled", ctx do
+      ctx = Factory.disable_space_tool(ctx, :space, :kpis)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
+      assert res.tools.kpis_enabled == false
+      assert res.tools.kpis == []
+    end
+  end
+
   describe "tools configuration" do
     setup ctx do
       ctx
