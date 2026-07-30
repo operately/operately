@@ -14,11 +14,17 @@ defmodule OperatelyWeb.Mcp.Tools.SearchTest do
   alias OperatelyWeb.Paths
 
   describe "definition/0" do
-    test "declares the combined full-text result list" do
+    test "declares every quick search result group" do
       definition = Search.definition()
+      properties = definition.output_schema["properties"]
 
-      assert definition.output_schema["properties"]["full_text_results"]["type"] == "array"
-      assert "full_text_results" in definition.output_schema["required"]
+      assert definition.name == "search"
+      assert definition.input_schema["required"] == ["query"]
+
+      for group <- ~w(spaces projects goals milestones tasks people discussions folders documents files links) do
+        assert properties[group]["type"] == "array"
+        assert group in definition.output_schema["required"]
+      end
     end
   end
 
@@ -48,7 +54,11 @@ defmodule OperatelyWeb.Mcp.Tools.SearchTest do
       assert Enum.map(result.milestones, & &1.id) == [Paths.milestone_id(milestone)]
       assert Enum.map(result.tasks, & &1.id) == [Paths.task_id(task)]
       assert is_list(result.people)
-      assert is_list(result.full_text_results)
+      assert is_list(result.discussions)
+      assert is_list(result.folders)
+      assert is_list(result.documents)
+      assert is_list(result.files)
+      assert is_list(result.links)
     end
   end
 

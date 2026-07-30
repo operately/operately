@@ -29,22 +29,10 @@ defmodule Operately.Search.QuickSearch do
     files: [],
     links: []
   }
-  @legacy_empty_results Map.take(@empty_results, [:spaces, :projects, :goals, :milestones, :tasks, :people])
-
   def search(%Person{} = person, query) do
     case prepare_query(query) do
       {:ok, search_term} -> run_searches(person, search_term)
       :error -> @empty_results
-    end
-  end
-
-  @doc """
-  Runs only the six grouped searches returned by the compatibility API.
-  """
-  def search_legacy_groups(%Person{} = person, query) do
-    case prepare_query(query) do
-      {:ok, search_term} -> run_legacy_searches(person, search_term)
-      :error -> @legacy_empty_results
     end
   end
 
@@ -59,11 +47,16 @@ defmodule Operately.Search.QuickSearch do
 
   defp run_searches(person, search_term) do
     [spaces, projects, goals, milestones, tasks, people, discussions, resource_hub_items] =
-      (legacy_search_tasks(person, search_term) ++
-         [
-           Task.async(fn -> search_discussions(person, search_term) end),
-           Task.async(fn -> ResourceHubItems.search(person, search_term) end)
-         ])
+      [
+        Task.async(fn -> search_spaces(person, search_term) end),
+        Task.async(fn -> search_projects(person, search_term) end),
+        Task.async(fn -> search_goals(person, search_term) end),
+        Task.async(fn -> search_milestones(person, search_term) end),
+        Task.async(fn -> search_tasks(person, search_term) end),
+        Task.async(fn -> search_people(person, search_term) end),
+        Task.async(fn -> search_discussions(person, search_term) end),
+        Task.async(fn -> ResourceHubItems.search(person, search_term) end)
+      ]
       |> Task.await_many()
 
     Map.merge(resource_hub_items, %{
@@ -75,33 +68,6 @@ defmodule Operately.Search.QuickSearch do
       people: people,
       discussions: discussions
     })
-  end
-
-  defp run_legacy_searches(person, search_term) do
-    [spaces, projects, goals, milestones, tasks, people] =
-      person
-      |> legacy_search_tasks(search_term)
-      |> Task.await_many()
-
-    %{
-      spaces: spaces,
-      projects: projects,
-      goals: goals,
-      milestones: milestones,
-      tasks: tasks,
-      people: people
-    }
-  end
-
-  defp legacy_search_tasks(person, search_term) do
-    [
-      Task.async(fn -> search_spaces(person, search_term) end),
-      Task.async(fn -> search_projects(person, search_term) end),
-      Task.async(fn -> search_goals(person, search_term) end),
-      Task.async(fn -> search_milestones(person, search_term) end),
-      Task.async(fn -> search_tasks(person, search_term) end),
-      Task.async(fn -> search_people(person, search_term) end)
-    ]
   end
 
   defp search_spaces(person, search_term) do
