@@ -3,7 +3,7 @@ import { calculateImageRatio, ImageWithPlaceholder } from "../ImageWithPlacehold
 import classNames from "../utils/classnames";
 import { IconAlignJustified, IconChartColumn, IconFolderFilled, IconLink, IconLogs, IconVideo } from "../icons";
 import { getNodeLinkType, getNodeThumbnail, getNodeType, hasNodeContentType, isNodeMovFile, isNodeVideoFile } from "./selectors";
-import type { ResourceHubNode } from "./types";
+import type { ResourceHubNode, ResourceHubNodeType } from "./types";
 import { LinkIcon } from "./LinkIcon";
 
 export function NodeIcon({ node, size }: { node: ResourceHubNode; size: number }) {
@@ -11,27 +11,30 @@ export function NodeIcon({ node, size }: { node: ResourceHubNode; size: number }
   const linkType = getNodeLinkType(node);
   const thumbnail = getNodeThumbnail(node);
 
-  if (nodeType === "folder") return <FolderIcon size={size} />;
+  if (nodeType === "folder") return <ResourceHubTypeIcon type="folder" size={size} />;
 
   if (nodeType === "link") {
     if (linkType && linkType !== "other") return <LinkIcon type={linkType} size={size} />;
-    return <FileIcon size={size} icon={IconLink} />;
+    return <ResourceHubTypeIcon type="link" size={size} />;
   }
 
   if (thumbnail) return <Thumbnail url={thumbnail.url} alt={thumbnail.alt} width={thumbnail.width} height={thumbnail.height} size={size} />;
 
-  if (nodeType === "document") return <FileIcon size={size} icon={IconAlignJustified} color="bg-sky-500" />;
+  if (nodeType === "document") return <ResourceHubTypeIcon type="document" size={size} />;
   if (hasNodeContentType(node, "pdf")) return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
   if (isNodeMovFile(node)) return <FileIcon size={size} filetype="mov" icon={IconVideo} />;
   if (isNodeVideoFile(node)) return <FileIcon size={size} icon={IconVideo} />;
   if (hasNodeContentType(node, "audio")) return <FileIcon size={size} filetype="audio" />;
   if (hasNodeContentType(node, "zip")) return <FileIcon size={size} filetype="zip" icon={IconChartColumn} />;
 
-  return <FileIcon size={size} icon={IconAlignJustified} />;
+  return <ResourceHubTypeIcon type="file" size={size} />;
 }
 
-function FolderIcon({ size }: { size: number }) {
-  return <IconFolderFilled size={size} className="text-sky-500" />;
+export function ResourceHubTypeIcon({ type, size }: { type: ResourceHubNodeType; size: number }) {
+  if (type === "folder") return <IconFolderFilled size={size} className="text-sky-500" />;
+  if (type === "link") return <FileIcon size={size} icon={IconLink} />;
+
+  return <FileIcon size={size} icon={IconAlignJustified} />;
 }
 
 interface FileIconProps {
