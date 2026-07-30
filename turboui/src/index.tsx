@@ -28,6 +28,7 @@ export * from "./PieChart";
 export * from "./ProgressBar";
 export * from "./RichContent";
 export * from "./ResourceHub";
+export * from "./SearchPage";
 export * from "./Spacer";
 export * from "./StatusBadge";
 export * from "./SmallStatusIndicator";

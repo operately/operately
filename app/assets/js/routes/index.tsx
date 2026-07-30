@@ -61,6 +61,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
       shouldRevalidate: companyShouldRevalidate,
       children: [
         pageRoute("", pages.HomePage),
+        pageRoute("search", pages.SearchPage),
         pageRoute("invite-team", pages.InviteTeamPage),
         pageRoute("invite-people", pages.MemberTypeSelectionPage),
         pageRoute("review", pages.ReviewPage),

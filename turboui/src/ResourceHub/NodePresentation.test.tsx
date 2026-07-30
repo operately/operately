@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router";
 
 import { ResourceHubNodesListProvider, type ResourceHubNodesListContextValue } from "./contexts/NodesListContext";
 import { NodeDescription } from "./NodeDescription";
-import { NodeIcon } from "./NodeIcon";
+import { NodeIcon, ResourceHubTypeIcon } from "./NodeIcon";
 import { NodeMenu } from "./NodeMenu";
 import type { ResourceHubNode } from "./types";
 
@@ -113,6 +113,21 @@ const listContext: ResourceHubNodesListContextValue = {
 };
 
 describe("resource hub node presentation", () => {
+  test("renders the canonical icon for each basic resource type", () => {
+    render(
+      <>
+        <ResourceHubTypeIcon type="folder" size={48} />
+        <ResourceHubTypeIcon type="document" size={48} />
+        <ResourceHubTypeIcon type="file" size={48} />
+        <ResourceHubTypeIcon type="link" size={48} />
+      </>,
+    );
+
+    expect(screen.getByText("folder-icon")).toBeInTheDocument();
+    expect(screen.getAllByText("doc-icon")).toHaveLength(2);
+    expect(screen.getByText("link-icon")).toBeInTheDocument();
+  });
+
   test("renders description details from a raw document node", () => {
     render(<NodeDescription node={documentNode} />);
 
