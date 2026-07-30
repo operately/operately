@@ -21,34 +21,32 @@ export function Page() {
   );
 }
 
-function PeopleList({ people }: { people: Person[] }) {
+export function PeopleList({ people }: { people: Person[] }) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+    <ul className="flex flex-col divide-y divide-stroke-base border-y border-stroke-base">
       {people.map((person) => (
-        <PersonCard key={person.id} person={person} />
+        <PersonRow key={person.id} person={person} />
       ))}
-    </div>
+    </ul>
   );
 }
 
-function PersonCard({ person }: { person: Person }) {
+function PersonRow({ person }: { person: Person }) {
   const paths = usePaths();
   const testId = "person-" + person.id!;
 
   return (
-    <div className="bg-surface-base rounded shadow p-4 border border-stroke-base">
-      <div className="flex items-start gap-4">
-        <Avatar person={person} size={40} />
+    <li className="flex items-center gap-4 py-3">
+      <Avatar person={person} size={40} />
 
-        <div className="flex flex-col">
-          <div className="font-bold leading-tight">
-            <Link to={paths.profilePath(person.id!!)} underline="never" testId={testId}>
-              {person.fullName}
-            </Link>
-          </div>
-          <div className="font-medium text-sm text-content-dimmed">{person.title}</div>
+      <div className="flex flex-col">
+        <div className="font-bold leading-tight">
+          <Link to={paths.profilePath(person.id!!)} underline="never" testId={testId}>
+            {person.fullName}
+          </Link>
         </div>
+        <div className="font-medium text-sm text-content-dimmed">{person.title}</div>
       </div>
-    </div>
+    </li>
   );
 }
