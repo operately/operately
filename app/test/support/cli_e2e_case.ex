@@ -41,7 +41,8 @@ defmodule Operately.CliE2ECase do
     {:ok,
      cli_base_url: @base_url,
      cli_home: cli_home,
-     cli_user_agent: cli_user_agent}
+     cli_user_agent: cli_user_agent,
+     sandbox_owner: owner}
   end
 
   def run_cli(ctx, args, opts \\ []) when is_list(args) do

@@ -29,22 +29,10 @@ defmodule Operately.Search.QuickSearch do
     files: [],
     links: []
   }
-  @legacy_empty_results Map.take(@empty_results, [:spaces, :projects, :goals, :milestones, :tasks, :people])
-
   def search(%Person{} = person, query) do
     case prepare_query(query) do
       {:ok, search_term} -> run_searches(person, search_term)
       :error -> @empty_results
-    end
-  end
-
-  @doc """
-  Runs only the six grouped searches returned by the compatibility API.
-  """
-  def search_legacy_groups(%Person{} = person, query) do
-    case prepare_query(query) do
-      {:ok, search_term} -> run_legacy_searches(person, search_term)
-      :error -> @legacy_empty_results
     end
   end
 
@@ -75,22 +63,6 @@ defmodule Operately.Search.QuickSearch do
       people: people,
       discussions: discussions
     })
-  end
-
-  defp run_legacy_searches(person, search_term) do
-    [spaces, projects, goals, milestones, tasks, people] =
-      person
-      |> legacy_search_tasks(search_term)
-      |> Task.await_many()
-
-    %{
-      spaces: spaces,
-      projects: projects,
-      goals: goals,
-      milestones: milestones,
-      tasks: tasks,
-      people: people
-    }
   end
 
   defp legacy_search_tasks(person, search_term) do

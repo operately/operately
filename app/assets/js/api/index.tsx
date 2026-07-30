@@ -2925,20 +2925,6 @@ export interface CompaniesGetWorkMapResult {
   workMap: WorkMapItem[];
 }
 
-export interface CompaniesGlobalSearchInput {
-  query: string;
-}
-
-export interface CompaniesGlobalSearchResult {
-  spaces: Space[];
-  projects: Project[];
-  goals: Goal[];
-  milestones: Milestone[];
-  tasks: Task[];
-  people: Person[];
-  fullTextResults: SearchResult[];
-}
-
 export interface CompaniesListInput {
   includeMemberCount?: boolean | null;
   isCompanyOwner?: boolean;
@@ -6051,10 +6037,6 @@ class ApiNamespaceCompanies {
     return this.client.get("/companies/get_work_map", input);
   }
 
-  async globalSearch(input: CompaniesGlobalSearchInput): Promise<CompaniesGlobalSearchResult> {
-    return this.client.get("/companies/global_search", input);
-  }
-
   async list(input: CompaniesListInput): Promise<CompaniesListResult> {
     return this.client.get("/companies/list", input);
   }
@@ -7630,10 +7612,6 @@ export default {
     list: (input: CompaniesListInput) => defaultApiClient.apiNamespaceCompanies.list(input),
     useList: (input: CompaniesListInput) =>
       useQuery<CompaniesListResult>(() => defaultApiClient.apiNamespaceCompanies.list(input)),
-
-    globalSearch: (input: CompaniesGlobalSearchInput) => defaultApiClient.apiNamespaceCompanies.globalSearch(input),
-    useGlobalSearch: (input: CompaniesGlobalSearchInput) =>
-      useQuery<CompaniesGlobalSearchResult>(() => defaultApiClient.apiNamespaceCompanies.globalSearch(input)),
 
     getWorkMap: (input: CompaniesGetWorkMapInput) => defaultApiClient.apiNamespaceCompanies.getWorkMap(input),
     useGetWorkMap: (input: CompaniesGetWorkMapInput) =>
