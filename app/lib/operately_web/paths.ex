@@ -60,6 +60,16 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company)])
   end
 
+  def search_path(company, query \\ nil)
+
+  def search_path(company = %Company{}, nil) do
+    create_path([company_id(company), "search"])
+  end
+
+  def search_path(company = %Company{}, query) when is_binary(query) do
+    search_path(company) <> "?" <> URI.encode_query(%{q: query})
+  end
+
   def people_path(company = %Company{}) do
     create_path([company_id(company), "people"])
   end

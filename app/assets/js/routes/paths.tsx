@@ -70,6 +70,14 @@ export class Paths {
     return this.createCompanyPath([]);
   }
 
+  searchPath(query?: string) {
+    const path = this.createCompanyPath(["search"]);
+    if (!query) return path;
+
+    const searchParams = new URLSearchParams({ q: query });
+    return `${path}?${searchParams.toString()}`;
+  }
+
   setupPath() {
     return this.createCompanyPath(["setup"]);
   }
