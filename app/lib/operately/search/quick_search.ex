@@ -50,17 +50,11 @@ defmodule Operately.Search.QuickSearch do
 
   defp prepare_query(query) do
     with {:ok, query} <- Text.prepare_query(query),
-         search_term when search_term != "" <- normalize_search_term(query) do
+         search_term when search_term != "" <- Text.normalize_search_term(query) do
       {:ok, search_term}
     else
       _ -> :error
     end
-  end
-
-  defp normalize_search_term(query) do
-    query
-    |> String.replace(~r/[-_\s]+/, " ")
-    |> String.trim()
   end
 
   defp run_searches(person, search_term) do

@@ -31,6 +31,16 @@ defmodule Operately.Search.TextTest do
     end
   end
 
+  describe "normalize_search_term/1" do
+    test "collapses hyphens, underscores, and whitespace" do
+      assert Text.normalize_search_term("re-establish") == "re establish"
+      assert Text.normalize_search_term("re_establish") == "re establish"
+      assert Text.normalize_search_term("  re   establish  ") == "re establish"
+      assert Text.normalize_search_term("---") == ""
+      assert Text.normalize_search_term(nil) == ""
+    end
+  end
+
   describe "search_tsquery/1" do
     test "builds a prefix tsquery for the last typed token" do
       assert Text.search_tsquery("just a t") == {:prefix, "'just' & 'a' & 't':*"}

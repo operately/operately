@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
 
   alias Operately.Search
   alias Operately.Search.QuickSearch
+  alias Operately.Search.Text
   alias OperatelyWeb.Api.Serializer
 
   inputs do
@@ -24,6 +25,15 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
     field :full_text_results, list_of(:search_result), null: false
   end
 
+  @empty_results %{
+    spaces: [],
+    projects: [],
+    goals: [],
+    milestones: [],
+    tasks: [],
+    people: [],
+    full_text_results: []
+  }
   @grouped_result_types %{
     spaces: :space,
     projects: :project,
@@ -36,14 +46,18 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   def call(conn, inputs) do
     person = me(conn)
 
-    [quick_results, full_text_results] =
-      [
-        Task.async(fn -> QuickSearch.search_legacy_groups(person, inputs.query) end),
-        Task.async(fn -> Search.search_company(person, inputs.query) end)
-      ]
-      |> Task.await_many()
+    if Text.searchable_query?(inputs.query) do
+      [quick_results, full_text_results] =
+        [
+          Task.async(fn -> QuickSearch.search_legacy_groups(person, inputs.query) end),
+          Task.async(fn -> Search.search_company(person, inputs.query) end)
+        ]
+        |> Task.await_many()
 
-    {:ok, serialize(quick_results, full_text_results)}
+      {:ok, serialize(quick_results, full_text_results)}
+    else
+      {:ok, @empty_results}
+    end
   end
 
   defp serialize(quick_results, full_text_results) do

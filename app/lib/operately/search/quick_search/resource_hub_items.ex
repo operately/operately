@@ -9,12 +9,13 @@ defmodule Operately.Search.QuickSearch.ResourceHubItems do
   alias Operately.People.Person
   alias Operately.Repo
   alias Operately.ResourceHubs.{Document, File, Folder, Link, Node, ResourceHub}
+  alias Operately.Search.Text
 
   @limit 5
   @visible_nodes_cte "quick_search_visible_resource_nodes"
 
   def search(%Person{} = person, search_term) do
-    search_term = normalize_search_term(search_term)
+    search_term = Text.normalize_search_term(search_term)
 
     person
     |> matching_items_query(search_term)
@@ -256,12 +257,6 @@ defmodule Operately.Search.QuickSearch.ResourceHubItems do
       files: Map.get(grouped_items, "file", []),
       links: Map.get(grouped_items, "link", [])
     }
-  end
-
-  defp normalize_search_term(search_term) do
-    search_term
-    |> String.replace(~r/[-_\s]+/, " ")
-    |> String.trim()
   end
 
   defp match_pattern(search_term), do: "%#{String.downcase(search_term)}%"

@@ -31,6 +31,18 @@ defmodule Operately.Search.Text do
   def normalize_query(_), do: ""
 
   @doc """
+  Collapses hyphens, underscores, and whitespace so title/name matching treats
+  them as equivalent (e.g. "re establish" matches "re-establish").
+  """
+  def normalize_search_term(search_term) when is_binary(search_term) do
+    search_term
+    |> String.replace(~r/[-_\s]+/, " ")
+    |> String.trim()
+  end
+
+  def normalize_search_term(_), do: ""
+
+  @doc """
   Returns whether a query is meaningful and bounded for PostgreSQL text search.
   """
   def searchable_query?(query), do: match?({:ok, _query}, prepare_query(query))
