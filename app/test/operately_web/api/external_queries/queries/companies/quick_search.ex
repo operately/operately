@@ -1,0 +1,32 @@
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.QuickSearch do
+  use Operately.Support.ExternalApi.QuerySpec
+
+  alias Operately.Support.Factory
+
+  def query_name, do: "companies/quick_search"
+
+  @impl true
+  def setup(ctx) do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space, name: "Searchable Space")
+  end
+
+  @impl true
+  def inputs(_ctx), do: %{query: "Searchable"}
+
+  @impl true
+  def assert(response, _ctx) do
+    assert is_list(response.spaces)
+    assert is_list(response.projects)
+    assert is_list(response.goals)
+    assert is_list(response.milestones)
+    assert is_list(response.tasks)
+    assert is_list(response.people)
+    assert is_list(response.discussions)
+    assert is_list(response.folders)
+    assert is_list(response.documents)
+    assert is_list(response.files)
+    assert is_list(response.links)
+  end
+end
