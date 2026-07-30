@@ -21067,7 +21067,7 @@
       "name": "global_search",
       "type": "query",
       "path": "/api/external/v1/companies/global_search",
-      "handler": "OperatelyWeb.Api.Companies.GlobalSearch",
+      "handler": "OperatelyWeb.Api.Wrappers.Companies.GlobalSearch",
       "outputs": [
         {
           "default": null,
@@ -21155,10 +21155,66 @@
         },
         {
           "default": null,
-          "name": "full_text_results",
+          "name": "discussions",
           "type": {
             "item": {
-              "name": "search_result",
+              "name": "quick_search_discussion",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "folders",
+          "type": {
+            "item": {
+              "name": "quick_search_resource",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "documents",
+          "type": {
+            "item": {
+              "name": "quick_search_resource",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "files",
+          "type": {
+            "item": {
+              "name": "quick_search_resource",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "links",
+          "type": {
+            "item": {
+              "name": "quick_search_resource",
               "kind": "named"
             },
             "kind": "list"
@@ -21182,7 +21238,7 @@
           "nullable": false
         }
       ],
-      "docstring": "Performs grouped navigation and full-text search across a person's company.",
+      "docstring": "Preserves the global-search route while delegating to quick search.",
       "full_name": "companies/global_search",
       "method": "GET"
     },
