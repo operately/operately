@@ -1532,6 +1532,18 @@ defmodule OperatelyWeb.Api.Types do
     field? :link, :resource_hub_link, null: true
   end
 
+  object :quick_search_discussion do
+    field :id, :string, null: false
+    field :title, :string, null: false
+    field :context, :string, null: false
+  end
+
+  object :quick_search_resource do
+    field :id, :string, null: false
+    field :name, :string, null: false
+    field :context, :string, null: false
+  end
+
   enum :search_result_type,
     values: [
       :resource_hub_folder,

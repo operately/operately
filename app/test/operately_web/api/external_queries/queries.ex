@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Companies.GetFlatWorkMap,
       Queries.Companies.GetWorkMap,
       Queries.Companies.GlobalSearch,
+      Queries.Companies.QuickSearch,
       Queries.Goals.Get,
       Queries.Goals.ListCheckIns,
       Queries.Goals.List,
