@@ -215,12 +215,22 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
 
   step :assert_navigated_to_goal, ctx, goal_name do
     goal = Operately.Repo.get_by(Operately.Goals.Goal, name: goal_name)
-    ctx |> UI.assert_page(Paths.goal_path(ctx.company, goal))
+
+    ctx
+    |> UI.assert_page(Paths.goal_path(ctx.company, goal))
+    |> UI.wait_until_has(testid: "goal-page")
+    |> UI.wait_until_text(goal.name, testid: "goal-page")
+    |> UI.sleep(300)
   end
 
   step :assert_navigated_to_milestone, ctx do
     milestone = ctx.launch_milestone
-    ctx |> UI.assert_page(Paths.project_milestone_path(ctx.company, milestone))
+
+    ctx
+    |> UI.assert_page(Paths.project_milestone_path(ctx.company, milestone))
+    |> UI.wait_until_has(testid: "milestone-page")
+    |> UI.wait_until_text(milestone.title, testid: "milestone-header")
+    |> UI.sleep(300)
   end
 
   step :assert_navigated_to_task, ctx do
