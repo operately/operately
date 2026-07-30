@@ -13,6 +13,15 @@ defmodule OperatelyWeb.Mcp.Tools.SearchTest do
   alias OperatelyWeb.Mcp.Tools.Search
   alias OperatelyWeb.Paths
 
+  describe "definition/0" do
+    test "declares the combined full-text result list" do
+      definition = Search.definition()
+
+      assert definition.output_schema["properties"]["full_text_results"]["type"] == "array"
+      assert "full_text_results" in definition.output_schema["required"]
+    end
+  end
+
   describe "call/2" do
     test "returns matching resources from the authenticated company only" do
       account = account_fixture()
@@ -39,6 +48,7 @@ defmodule OperatelyWeb.Mcp.Tools.SearchTest do
       assert Enum.map(result.milestones, & &1.id) == [Paths.milestone_id(milestone)]
       assert Enum.map(result.tasks, & &1.id) == [Paths.task_id(task)]
       assert is_list(result.people)
+      assert is_list(result.full_text_results)
     end
   end
 
