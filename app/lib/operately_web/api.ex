@@ -191,7 +191,6 @@ defmodule OperatelyWeb.Api do
         query(:get_activity, OperatelyWeb.Api.Companies.GetActivity)
         query(:get_work_map, OperatelyWeb.Api.Companies.GetWorkMap)
         query(:get_flat_work_map, OperatelyWeb.Api.Companies.GetFlatWorkMap)
-        query(:global_search, OperatelyWeb.Api.Companies.GlobalSearch)
         query(:quick_search, OperatelyWeb.Api.Companies.QuickSearch)
 
         mutation(:restore_member, OperatelyWeb.Api.Companies.RestoreMember)
@@ -405,6 +404,10 @@ defmodule OperatelyWeb.Api do
   defmacro external_endpoints do
     quote do
       common_endpoints()
+
+      namespace(:companies) do
+        query(:global_search, OperatelyWeb.Api.Wrappers.Companies.GlobalSearch)
+      end
 
       @doc "Browse and manage Docs & Files"
       namespace(:documents) do

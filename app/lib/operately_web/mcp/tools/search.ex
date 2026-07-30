@@ -1,14 +1,14 @@
 defmodule OperatelyWeb.Mcp.Tools.Search do
   use OperatelyWeb.Mcp.Tool
 
-  alias OperatelyWeb.Api.Companies.GlobalSearch
+  alias OperatelyWeb.Api.Wrappers.Companies.GlobalSearch
 
   @impl true
   def definition do
     Definition.new!(
       name: "search",
       title: "Search Operately",
-      description: "Searches navigation items and indexed content in the authenticated company.",
+      description: "Searches visible resources by title or name in the authenticated company.",
       company_mode: :authenticated,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,
@@ -33,9 +33,13 @@ defmodule OperatelyWeb.Mcp.Tools.Search do
             "milestones" => JsonSchema.array(JsonSchema.any_object(), description: "Matching milestones."),
             "tasks" => JsonSchema.array(JsonSchema.any_object(), description: "Matching tasks."),
             "people" => JsonSchema.array(JsonSchema.any_object(), description: "Matching people."),
-            "full_text_results" => JsonSchema.array(JsonSchema.any_object(), description: "Ranked full-text matches not already returned in the grouped results.")
+            "discussions" => JsonSchema.array(JsonSchema.any_object(), description: "Matching discussions."),
+            "folders" => JsonSchema.array(JsonSchema.any_object(), description: "Matching folders."),
+            "documents" => JsonSchema.array(JsonSchema.any_object(), description: "Matching documents."),
+            "files" => JsonSchema.array(JsonSchema.any_object(), description: "Matching files."),
+            "links" => JsonSchema.array(JsonSchema.any_object(), description: "Matching links.")
           },
-          required: ["spaces", "projects", "goals", "milestones", "tasks", "people", "full_text_results"]
+          required: ["spaces", "projects", "goals", "milestones", "tasks", "people", "discussions", "folders", "documents", "files", "links"]
         )
     )
   end
