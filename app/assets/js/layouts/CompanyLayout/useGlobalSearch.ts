@@ -1,37 +1,49 @@
-import Api, { CompaniesGlobalSearchResult } from "@/api";
+import Api, { CompaniesQuickSearchInput, CompaniesQuickSearchResult, QuickSearchResource } from "@/api";
 import * as React from "react";
 
 import { Paths, usePaths } from "@/routes/paths";
 import { GlobalSearch } from "turboui";
 
 type SearchParams = { query: string };
+type QuickSearchApi = (input: CompaniesQuickSearchInput) => Promise<CompaniesQuickSearchResult>;
 
 export function useGlobalSearchHandler(): (params: SearchParams) => Promise<GlobalSearch.SearchResult> {
   const paths = usePaths();
 
-  return React.useCallback(
-    async ({ query }: SearchParams) => {
-      try {
-        const result = await Api.companies.globalSearch({ query });
-
-        return {
-          spaces: prepareSpaces(paths, result),
-          projects: prepareProjects(paths, result),
-          goals: prepareGoals(paths, result),
-          milestones: prepareMilestones(paths, result),
-          tasks: prepareTasks(paths, result),
-          people: preparePeople(paths, result),
-        };
-      } catch (error) {
-        console.error("Global search failed:", error);
-        return {};
-      }
-    },
-    [paths],
-  );
+  return React.useCallback(({ query }: SearchParams) => loadQuickSearchResults(paths, query), [paths]);
 }
 
-function prepareSpaces(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Space[] {
+export async function loadQuickSearchResults(
+  paths: Paths,
+  query: string,
+  search: QuickSearchApi = Api.companies.quickSearch,
+): Promise<GlobalSearch.SearchResult> {
+  const result = await search({ query });
+  return mapQuickSearchResult(paths, result);
+}
+
+export function mapQuickSearchResult(paths: Paths, result: CompaniesQuickSearchResult): GlobalSearch.SearchResult {
+  return {
+    spaces: prepareSpaces(paths, result),
+    projects: prepareProjects(paths, result),
+    goals: prepareGoals(paths, result),
+    milestones: prepareMilestones(paths, result),
+    tasks: prepareTasks(paths, result),
+    people: preparePeople(paths, result),
+    discussions: result.discussions.map((discussion) => ({
+      id: discussion.id,
+      name: discussion.title,
+      context: discussion.context,
+      link: paths.discussionPath(discussion.id),
+    })),
+    folders: prepareResources(result.folders, paths.resourceHubFolderPath.bind(paths)),
+    documents: prepareResources(result.documents, paths.resourceHubDocumentPath.bind(paths)),
+    files: prepareResources(result.files, paths.resourceHubFilePath.bind(paths)),
+    links: prepareResources(result.links, paths.resourceHubLinkPath.bind(paths)),
+  };
+}
+
+function prepareSpaces(paths: Paths, result: CompaniesQuickSearchResult): GlobalSearch.Space[] {
   return (
     result.spaces?.map((space) => ({
       id: space.id,
@@ -41,7 +53,7 @@ function prepareSpaces(paths: Paths, result: CompaniesGlobalSearchResult): Globa
   );
 }
 
-function prepareProjects(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Project[] {
+function prepareProjects(paths: Paths, result: CompaniesQuickSearchResult): GlobalSearch.Project[] {
   return (
     result.projects?.map((project) => ({
       id: project.id!,
@@ -53,7 +65,7 @@ function prepareProjects(paths: Paths, result: CompaniesGlobalSearchResult): Glo
   );
 }
 
-function prepareGoals(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Goal[] {
+function prepareGoals(paths: Paths, result: CompaniesQuickSearchResult): GlobalSearch.Goal[] {
   return (
     result.goals?.map((goal) => ({
       id: goal.id!,
@@ -65,7 +77,7 @@ function prepareGoals(paths: Paths, result: CompaniesGlobalSearchResult): Global
   );
 }
 
-function prepareMilestones(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Milestone[] {
+function prepareMilestones(paths: Paths, result: CompaniesQuickSearchResult): GlobalSearch.Milestone[] {
   return (
     result.milestones?.map((milestone) => ({
       id: milestone.id!,
@@ -77,7 +89,7 @@ function prepareMilestones(paths: Paths, result: CompaniesGlobalSearchResult): G
   );
 }
 
-function preparePeople(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Person[] {
+function preparePeople(paths: Paths, result: CompaniesQuickSearchResult): GlobalSearch.Person[] {
   return (
     result.people?.map((person) => ({
       id: person.id!,
@@ -89,14 +101,29 @@ function preparePeople(paths: Paths, result: CompaniesGlobalSearchResult): Globa
   );
 }
 
-function prepareTasks(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Task[] {
+function prepareTasks(paths: Paths, result: CompaniesQuickSearchResult): GlobalSearch.Task[] {
   return (
     result.tasks?.map((task) => ({
       id: task.id,
       name: task.name,
-      link: task.type === "project" ? paths.taskPath(task.id!) : paths.spaceKanbanPath(task.space?.id || "", { taskId: task.id }),
+      link:
+        task.type === "project"
+          ? paths.taskPath(task.id!)
+          : paths.spaceKanbanPath(task.space?.id || "", { taskId: task.id }),
       project: task.project ?? null,
       space: task.type === "project" ? task.projectSpace : task.space,
     })) || []
   );
+}
+
+function prepareResources(
+  resources: QuickSearchResource[],
+  resourcePath: (id: string) => string,
+): GlobalSearch.Resource[] {
+  return resources.map((resource) => ({
+    id: resource.id,
+    name: resource.name,
+    context: resource.context,
+    link: resourcePath(resource.id),
+  }));
 }

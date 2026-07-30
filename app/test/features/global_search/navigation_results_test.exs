@@ -70,4 +70,54 @@ defmodule Operately.Features.GlobalSearch.NavigationResultsTest do
     |> Steps.click_person_result("Alice Smith")
     |> Steps.assert_navigated_to_person("Alice Smith")
   end
+
+  feature "searching for discussions", ctx do
+    ctx
+    |> Steps.given_new_search_resources_exist()
+    |> Steps.open_global_search()
+    |> Steps.search_for("Quick Search Discussion")
+    |> Steps.assert_discussion_result_visible("Quick Search Discussion")
+    |> Steps.click_discussion_result("Quick Search Discussion")
+    |> Steps.assert_navigated_to_discussion()
+  end
+
+  feature "searching for folders", ctx do
+    ctx
+    |> Steps.given_new_search_resources_exist()
+    |> Steps.open_global_search()
+    |> Steps.search_for("Quick Search Folder")
+    |> Steps.assert_folder_result_visible("Quick Search Folder")
+    |> Steps.click_folder_result("Quick Search Folder")
+    |> Steps.assert_navigated_to_folder()
+  end
+
+  feature "searching for documents", ctx do
+    ctx
+    |> Steps.given_new_search_resources_exist()
+    |> Steps.open_global_search()
+    |> Steps.search_for("Quick Search Document")
+    |> Steps.assert_document_result_visible("Quick Search Document")
+    |> Steps.click_document_result("Quick Search Document")
+    |> Steps.assert_navigated_to_document()
+  end
+
+  feature "searching for files", ctx do
+    ctx
+    |> Steps.given_new_search_resources_exist()
+    |> Steps.open_global_search()
+    |> Steps.search_for("Quick Search File")
+    |> Steps.assert_file_result_visible("Quick Search File")
+    |> Steps.click_file_result("Quick Search File")
+    |> Steps.assert_navigated_to_file()
+  end
+
+  feature "searching for links", ctx do
+    ctx
+    |> Steps.given_new_search_resources_exist()
+    |> Steps.open_global_search()
+    |> Steps.search_for("Quick Search Link")
+    |> Steps.assert_link_result_visible("Quick Search Link")
+    |> Steps.click_link_result("Quick Search Link")
+    |> Steps.assert_navigated_to_link()
+  end
 end

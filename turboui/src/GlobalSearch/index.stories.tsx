@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React from "react";
-import { GlobalSearch, SearchResults } from "./index";
+import { expect, fn, userEvent, within } from "storybook/test";
+
+import { GlobalSearch } from "./index";
 
 const meta: Meta<typeof GlobalSearch> = {
   title: "Components/GlobalSearch",
@@ -8,259 +9,198 @@ const meta: Meta<typeof GlobalSearch> = {
   parameters: {
     layout: "centered",
   },
+  args: {
+    onNavigate: fn(),
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof GlobalSearch>;
 
-const mockSearchResults: GlobalSearch.SearchResult = {
-  spaces: [
-    {
-      id: "1",
-      name: "Product",
-      link: "/spaces/1",
-    },
-    {
-      id: "2",
-      name: "Marketing",
-      link: "/spaces/2",
-    },
-  ],
-  projects: [
-    {
-      id: "1",
-      name: "Website Redesign",
-      link: "/projects/1",
-      champion: { fullName: "John Doe" },
-      space: { name: "Marketing" },
-    },
-    {
-      id: "2",
-      name: "Mobile App Development",
-      link: "/projects/2",
-      champion: { fullName: "Jane Smith" },
-      space: { name: "Engineering" },
-    },
-  ],
+const allGroups: GlobalSearch.SearchResult = {
+  spaces: [{ id: "space-1", name: "Product", link: "/spaces/1" }],
   goals: [
     {
-      id: "1",
-      name: "Increase User Engagement",
+      id: "goal-1",
+      name: "Increase user engagement",
       link: "/goals/1",
       champion: { fullName: "Alice Johnson" },
       space: { name: "Product" },
     },
+  ],
+  projects: [
     {
-      id: "2",
-      name: "Improve Performance Metrics",
-      link: "/goals/2",
-      champion: { fullName: "Bob Wilson" },
-      space: { name: "Engineering" },
+      id: "project-1",
+      name: "Website redesign",
+      link: "/projects/1",
+      champion: { fullName: "John Doe" },
+      space: { name: "Marketing" },
+    },
+  ],
+  milestones: [
+    {
+      id: "milestone-1",
+      title: "Launch milestone",
+      link: "/milestones/1",
+      project: { name: "Website redesign" },
+      space: { name: "Marketing" },
     },
   ],
   tasks: [
     {
-      id: "1",
-      name: "Implement user authentication",
+      id: "task-1",
+      name: "Design landing page",
       link: "/tasks/1",
-      project: { name: "Mobile App Development" },
-      space: { name: "Engineering" },
-    },
-    {
-      id: "2",
-      name: "Design landing page mockups",
-      link: "/tasks/2",
-      project: { name: "Website Redesign" },
+      project: { name: "Website redesign" },
       space: { name: "Marketing" },
     },
   ],
   people: [
     {
-      id: "1",
-      fullName: "John Doe",
-      title: "Senior Developer",
+      id: "person-1",
+      fullName: "Jane Smith",
+      title: "Product manager",
       link: "/people/1",
     },
+  ],
+  discussions: [
     {
-      id: "2",
-      fullName: "Jane Smith",
-      title: "Product Manager",
-      link: "/people/2",
+      id: "discussion-1",
+      name: "Launch announcement",
+      context: "Marketing",
+      link: "/discussions/1",
     },
   ],
-};
-
-const mockEmptyResults: GlobalSearch.SearchResult = {
-  spaces: [],
-  projects: [],
-  goals: [],
-  tasks: [],
-  people: [],
-};
-
-const mockSearch: GlobalSearch.SearchFn = async ({ query }) => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  if (query.toLowerCase().includes("design") || query.toLowerCase().includes("dev")) {
-    return mockSearchResults;
-  }
-
-  if (query.toLowerCase().includes("empty")) {
-    return mockEmptyResults;
-  }
-
-  // Partial results based on query
-  const filteredResults: GlobalSearch.SearchResult = {};
-
-  if (query.toLowerCase().includes("project")) {
-    filteredResults.projects = mockSearchResults.projects;
-  }
-
-  if (query.toLowerCase().includes("space")) {
-    filteredResults.spaces = mockSearchResults.spaces;
-  }
-
-  if (query.toLowerCase().includes("goal")) {
-    filteredResults.goals = mockSearchResults.goals;
-  }
-
-  if (query.toLowerCase().includes("task")) {
-    filteredResults.tasks = mockSearchResults.tasks;
-  }
-
-  if (query.toLowerCase().includes("people") || query.toLowerCase().includes("person")) {
-    filteredResults.people = mockSearchResults.people;
-  }
-
-  // Default: return a mix of results
-  if (Object.keys(filteredResults).length === 0) {
-    return {
-      spaces: mockSearchResults.spaces?.slice(0, 1),
-      projects: mockSearchResults.projects?.slice(0, 2),
-      goals: mockSearchResults.goals?.slice(0, 1),
-      people: mockSearchResults.people?.slice(0, 1),
-    };
-  }
-
-  return filteredResults;
-};
-
-export const Default: Story = {
-  args: {
-    search: mockSearch,
-    onNavigate: (link) => {
-      console.log("Navigate to:", link);
-      alert(`Would navigate to: ${link}`);
+  folders: [{ id: "folder-1", name: "Research", context: "Product", link: "/folders/1" }],
+  documents: [
+    {
+      id: "document-1",
+      name: "Customer interviews",
+      context: "Product",
+      link: "/documents/1",
     },
+  ],
+  files: [{ id: "file-1", name: "Launch assets.zip", context: "Marketing", link: "/files/1" }],
+  links: [{ id: "link-1", name: "Design prototype", context: "Website redesign", link: "/links/1" }],
+};
+
+const searchAllGroups: GlobalSearch.SearchFn = async () => allGroups;
+const searchNothing: GlobalSearch.SearchFn = async () => ({});
+const searchError: GlobalSearch.SearchFn = async () => {
+  throw new Error("Quick search is unavailable");
+};
+const searchForever: GlobalSearch.SearchFn = () => new Promise(() => {});
+
+async function openAndType(query: string) {
+  const body = within(document.body);
+  await userEvent.click(body.getByRole("button", { name: /search/i }));
+  const input = body.getByRole("combobox");
+  await userEvent.type(input, query);
+  return { body, input };
+}
+
+export const AllGroups: Story = {
+  args: {
+    search: searchAllGroups,
   },
-  decorators: [
-    (Story) => (
-      <div className="w-96">
-        <div className="mb-4 text-sm text-gray-600">
-          <p>Try searching for:</p>
-          <ul className="list-disc list-inside mt-2 space-y-1">
-            <li>"design" or "dev" - Full results</li>
-            <li>"project" - Projects only</li>
-            <li>"space" - Spaces only</li>
-            <li>"goal" - Goals only</li>
-            <li>"task" - Tasks only</li>
-            <li>"people" - People only</li>
-            <li>"empty" - No results</li>
-            <li>Any other term - Mixed results</li>
-          </ul>
-          <p className="mt-2 text-xs">Press Cmd/Ctrl + K to focus the search input</p>
-        </div>
-        <Story />
-      </div>
-    ),
-  ],
+  play: async () => {
+    const { body } = await openAndType("launch");
+    const options = await body.findAllByRole("option");
+    await expect(options).toHaveLength(11);
+  },
 };
 
-const SearchOverlayDemo = ({
-  search,
-  onNavigate,
-  initialQuery = "dev",
-  placeholder = "Search...",
-}: {
-  search: GlobalSearch.SearchFn;
-  onNavigate: (link: string) => void;
-  initialQuery?: string;
-  placeholder?: string;
-}) => {
-  const [query, setQuery] = React.useState(initialQuery);
-  const [results, setResults] = React.useState<GlobalSearch.SearchResult>({});
-  const [isSearching, setIsSearching] = React.useState(false);
-
-  const [selectedIndex, setSelectedIndex] = React.useState(-1);
-
-  const state: GlobalSearch.State = {
-    search,
-    onNavigate,
-    placeholder,
-    testId: "global-search-demo",
-    isOpen: true,
-    setIsOpen: () => {},
-    query,
-    setQuery,
-    results,
-    setResults,
-    isSearching,
-    setIsSearching,
-    selectedIndex,
-    setSelectedIndex,
-  };
-
-  // Perform search when query changes
-  React.useEffect(() => {
-    if (query.trim().length < 2) {
-      setResults({});
-      return;
-    }
-
-    setIsSearching(true);
-    search({ query: query.trim() })
-      .then((searchResults) => {
-        setResults(searchResults);
-      })
-      .catch((error) => {
-        console.error("Search failed:", error);
-        setResults({});
-      })
-      .finally(() => {
-        setIsSearching(false);
-      });
-  }, [query, search]);
-
-  // Initialize with search results on mount
-  React.useEffect(() => {
-    if (initialQuery.trim().length >= 2) {
-      setIsSearching(true);
-      search({ query: initialQuery.trim() })
-        .then(setResults)
-        .catch(() => setResults({}))
-        .finally(() => setIsSearching(false));
-    }
-  }, [initialQuery, search]);
-
-  return (
-    <div className="relative w-full">
-      <div className="w-[800px] max-w-[90vw] bg-surface-base border border-surface-outline rounded-b-lg shadow-lg">
-        <div className="overflow-y-auto">
-          <SearchResults state={state} onClose={() => {}} flatResults={[]} />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const SearchResultsDropdown: Story = {
-  render: (args) => <SearchOverlayDemo search={args.search} onNavigate={args.onNavigate} initialQuery="design" />,
+export const Loading: Story = {
   args: {
-    search: mockSearch,
-    onNavigate: (link) => {
-      console.log("Navigate to:", link);
-      alert(`Would navigate to: ${link}`);
-    },
+    search: searchForever,
+  },
+  play: async () => {
+    const { body } = await openAndType("launch");
+    await expect(await body.findByText("Searching…")).toBeVisible();
+  },
+};
+
+export const Empty: Story = {
+  args: {
+    search: searchNothing,
+  },
+  play: async () => {
+    const { body } = await openAndType("missing");
+    await expect(await body.findByText("No title or name matches for “missing”.")).toBeVisible();
+  },
+};
+
+export const Error: Story = {
+  args: {
+    search: searchError,
+  },
+  play: async () => {
+    const { body } = await openAndType("failure");
+    await expect(await body.findByText("Quick search is unavailable.")).toBeVisible();
+  },
+};
+
+export const LongNames: Story = {
+  args: {
+    search: async () => ({
+      documents: [
+        {
+          id: "long-document",
+          name: "A very long customer research synthesis title that must remain compact inside the quick-search overlay",
+          context: "A resource hub with an intentionally long owner name that must also truncate",
+          link: "/documents/long-document",
+        },
+      ],
+    }),
+  },
+  play: async () => {
+    const { body } = await openAndType("research");
+    await expect(await body.findByRole("option")).toBeVisible();
+  },
+};
+
+const scrollingResults: GlobalSearch.SearchResult = {
+  ...allGroups,
+  discussions: Array.from({ length: 5 }, (_, index) => ({
+    id: `discussion-${index}`,
+    name: `Discussion result ${index + 1}`,
+    context: "Product",
+    link: `/discussions/${index}`,
+  })),
+  folders: Array.from({ length: 5 }, (_, index) => ({
+    id: `folder-${index}`,
+    name: `Folder result ${index + 1}`,
+    context: "Product",
+    link: `/folders/${index}`,
+  })),
+  documents: Array.from({ length: 5 }, (_, index) => ({
+    id: `document-${index}`,
+    name: `Document result ${index + 1}`,
+    context: "Product",
+    link: `/documents/${index}`,
+  })),
+  files: Array.from({ length: 5 }, (_, index) => ({
+    id: `file-${index}`,
+    name: `File result ${index + 1}`,
+    context: "Product",
+    link: `/files/${index}`,
+  })),
+  links: Array.from({ length: 5 }, (_, index) => ({
+    id: `link-${index}`,
+    name: `Link result ${index + 1}`,
+    context: "Product",
+    link: `/links/${index}`,
+  })),
+};
+
+export const ScrollingAndKeyboardNavigation: Story = {
+  args: {
+    search: async () => scrollingResults,
+  },
+  play: async () => {
+    const { body, input } = await openAndType("result");
+    await body.findByRole("listbox");
+    await userEvent.type(input, "{arrowup}");
+    await expect(body.getByRole("option", { selected: true })).toHaveTextContent("Link result 5");
   },
 };
