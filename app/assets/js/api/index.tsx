@@ -1736,6 +1736,30 @@ export interface InviteLink {
   allowedDomains?: string[] | null;
 }
 
+export interface Kpi {
+  __typename: "kpi";
+  id: string;
+  name: string;
+  description?: string | null;
+  unit?: string | null;
+  target?: number | null;
+  targetDirection?: string | null;
+  warningThreshold?: number | null;
+  warningDirection?: string | null;
+  dangerThreshold?: number | null;
+  dangerDirection?: string | null;
+  dataPoints?: KpiDataPoint[] | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface KpiDataPoint {
+  __typename: "data_point";
+  id: string;
+  value: number;
+  recordedFor: string;
+}
+
 export interface McpGrant {
   __typename: "mcp_grant";
   id: Id;
@@ -2264,11 +2288,13 @@ export interface SpaceTools {
   tasksEnabled: boolean;
   discussionsEnabled: boolean;
   resourceHubEnabled: boolean;
+  kpisEnabled: boolean;
   projects: Project[] | null;
   goals: Goal[] | null;
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  kpis: Kpi[] | null;
 }
 
 export interface Subscriber {
@@ -2592,9 +2618,7 @@ export type ActivityContent =
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -2618,13 +2642,7 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
@@ -2669,14 +2687,7 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -2717,15 +2728,7 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -2787,14 +2790,7 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 
@@ -5258,6 +5254,16 @@ export interface ResourceHubsUpdateParentFolderResult {
   success: boolean;
 }
 
+export interface SpacesAddKpiDataPointInput {
+  kpiId: Id;
+  value: number;
+  recordedFor: string;
+}
+
+export interface SpacesAddKpiDataPointResult {
+  dataPoint: KpiDataPoint;
+}
+
 export interface SpacesAddMembersInput {
   spaceId: Id;
   members: AddMemberInput[];
@@ -5298,12 +5304,37 @@ export interface SpacesCreateDiscussionResult {
   discussion: Discussion;
 }
 
+export interface SpacesCreateKpiInput {
+  spaceId: Id;
+  name: string;
+  description?: string | null;
+  unit?: string | null;
+  target?: number | null;
+  targetDirection?: string | null;
+  warningThreshold?: number | null;
+  warningDirection?: string | null;
+  dangerThreshold?: number | null;
+  dangerDirection?: string | null;
+}
+
+export interface SpacesCreateKpiResult {
+  kpi: Kpi;
+}
+
 export interface SpacesDeleteInput {
   spaceId: Id;
 }
 
 export interface SpacesDeleteResult {
   space: Space;
+}
+
+export interface SpacesDeleteKpiInput {
+  kpiId: Id;
+}
+
+export interface SpacesDeleteKpiResult {
+  success: boolean;
 }
 
 export interface SpacesDeleteMemberInput {
@@ -5358,6 +5389,33 @@ export interface SpacesUpdateKanbanInput {
 
 export interface SpacesUpdateKanbanResult {
   task: Task;
+}
+
+export interface SpacesUpdateKpiInput {
+  kpiId: Id;
+  name?: string | null;
+  description?: string | null;
+  unit?: string | null;
+  target?: number | null;
+  targetDirection?: string | null;
+  warningThreshold?: number | null;
+  warningDirection?: string | null;
+  dangerThreshold?: number | null;
+  dangerDirection?: string | null;
+}
+
+export interface SpacesUpdateKpiResult {
+  kpi: Kpi;
+}
+
+export interface SpacesUpdateKpiDataPointInput {
+  dataPointId: Id;
+  value?: number | null;
+  recordedFor?: string | null;
+}
+
+export interface SpacesUpdateKpiDataPointResult {
+  dataPoint: KpiDataPoint;
 }
 
 export interface SpacesUpdateMembersPermissionsInput {
@@ -6189,6 +6247,10 @@ class ApiNamespaceSpaces {
     return this.client.get("/spaces/search_potential_members", input);
   }
 
+  async addKpiDataPoint(input: SpacesAddKpiDataPointInput): Promise<SpacesAddKpiDataPointResult> {
+    return this.client.post("/spaces/add_kpi_data_point", input);
+  }
+
   async addMembers(input: SpacesAddMembersInput): Promise<SpacesAddMembersResult> {
     return this.client.post("/spaces/add_members", input);
   }
@@ -6205,8 +6267,16 @@ class ApiNamespaceSpaces {
     return this.client.post("/spaces/create_discussion", input);
   }
 
+  async createKpi(input: SpacesCreateKpiInput): Promise<SpacesCreateKpiResult> {
+    return this.client.post("/spaces/create_kpi", input);
+  }
+
   async delete(input: SpacesDeleteInput): Promise<SpacesDeleteResult> {
     return this.client.post("/spaces/delete", input);
+  }
+
+  async deleteKpi(input: SpacesDeleteKpiInput): Promise<SpacesDeleteKpiResult> {
+    return this.client.post("/spaces/delete_kpi", input);
   }
 
   async deleteMember(input: SpacesDeleteMemberInput): Promise<SpacesDeleteMemberResult> {
@@ -6231,6 +6301,14 @@ class ApiNamespaceSpaces {
 
   async updateKanban(input: SpacesUpdateKanbanInput): Promise<SpacesUpdateKanbanResult> {
     return this.client.post("/spaces/update_kanban", input);
+  }
+
+  async updateKpi(input: SpacesUpdateKpiInput): Promise<SpacesUpdateKpiResult> {
+    return this.client.post("/spaces/update_kpi", input);
+  }
+
+  async updateKpiDataPoint(input: SpacesUpdateKpiDataPointInput): Promise<SpacesUpdateKpiDataPointResult> {
+    return this.client.post("/spaces/update_kpi_data_point", input);
   }
 
   async updateMembersPermissions(
@@ -7799,6 +7877,12 @@ export default {
     useListTasks: (input: SpacesListTasksInput) =>
       useQuery<SpacesListTasksResult>(() => defaultApiClient.apiNamespaceSpaces.listTasks(input)),
 
+    deleteKpi: (input: SpacesDeleteKpiInput) => defaultApiClient.apiNamespaceSpaces.deleteKpi(input),
+    useDeleteKpi: () =>
+      useMutation<SpacesDeleteKpiInput, SpacesDeleteKpiResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.deleteKpi(input),
+      ),
+
     publishDiscussion: (input: SpacesPublishDiscussionInput) =>
       defaultApiClient.apiNamespaceSpaces.publishDiscussion(input),
     usePublishDiscussion: () =>
@@ -7851,6 +7935,12 @@ export default {
         defaultApiClient.apiNamespaceSpaces.updateKanban(input),
       ),
 
+    updateKpi: (input: SpacesUpdateKpiInput) => defaultApiClient.apiNamespaceSpaces.updateKpi(input),
+    useUpdateKpi: () =>
+      useMutation<SpacesUpdateKpiInput, SpacesUpdateKpiResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.updateKpi(input),
+      ),
+
     addMembers: (input: SpacesAddMembersInput) => defaultApiClient.apiNamespaceSpaces.addMembers(input),
     useAddMembers: () =>
       useMutation<SpacesAddMembersInput, SpacesAddMembersResult>((input) =>
@@ -7874,6 +7964,13 @@ export default {
         defaultApiClient.apiNamespaceSpaces.createDiscussion(input),
       ),
 
+    updateKpiDataPoint: (input: SpacesUpdateKpiDataPointInput) =>
+      defaultApiClient.apiNamespaceSpaces.updateKpiDataPoint(input),
+    useUpdateKpiDataPoint: () =>
+      useMutation<SpacesUpdateKpiDataPointInput, SpacesUpdateKpiDataPointResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.updateKpiDataPoint(input),
+      ),
+
     updateTaskStatuses: (input: SpacesUpdateTaskStatusesInput) =>
       defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
     useUpdateTaskStatuses: () =>
@@ -7886,6 +7983,18 @@ export default {
     useUpdateDiscussion: () =>
       useMutation<SpacesUpdateDiscussionInput, SpacesUpdateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updateDiscussion(input),
+      ),
+
+    createKpi: (input: SpacesCreateKpiInput) => defaultApiClient.apiNamespaceSpaces.createKpi(input),
+    useCreateKpi: () =>
+      useMutation<SpacesCreateKpiInput, SpacesCreateKpiResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.createKpi(input),
+      ),
+
+    addKpiDataPoint: (input: SpacesAddKpiDataPointInput) => defaultApiClient.apiNamespaceSpaces.addKpiDataPoint(input),
+    useAddKpiDataPoint: () =>
+      useMutation<SpacesAddKpiDataPointInput, SpacesAddKpiDataPointResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.addKpiDataPoint(input),
       ),
   },
 

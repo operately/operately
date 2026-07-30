@@ -43,6 +43,10 @@ defmodule Operately.Support.Factory do
   defdelegate enable_space_tool(ctx, space_name, tool), to: Factory.Spaces
   defdelegate disable_space_tool(ctx, space_name, tool), to: Factory.Spaces
 
+  # kpis
+  defdelegate add_kpi(ctx, testid, space_name, opts \\ []), to: Factory.Kpis
+  defdelegate add_kpi_data_point(ctx, testid, kpi_name, opts \\ []), to: Factory.Kpis
+
   # goals
   defdelegate add_goal(ctx, testid, space_name, opts \\ []), to: Factory.Goals
   defdelegate add_goal_update(ctx, testid, goal_name, person_name, opts \\ []), to: Factory.Goals
