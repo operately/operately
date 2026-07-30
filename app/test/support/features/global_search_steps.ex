@@ -94,6 +94,36 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     |> UI.assert_has(testid: UI.testid(["header-global-search-person", person_name]))
   end
 
+  step :assert_discussion_result_visible, ctx, discussion_title do
+    ctx
+    |> UI.assert_text(discussion_title)
+    |> UI.assert_has(testid: UI.testid(["header-global-search-discussion", discussion_title]))
+  end
+
+  step :assert_folder_result_visible, ctx, folder_name do
+    ctx
+    |> UI.assert_text(folder_name)
+    |> UI.assert_has(testid: UI.testid(["header-global-search-folder", folder_name]))
+  end
+
+  step :assert_document_result_visible, ctx, document_name do
+    ctx
+    |> UI.assert_text(document_name)
+    |> UI.assert_has(testid: UI.testid(["header-global-search-document", document_name]))
+  end
+
+  step :assert_file_result_visible, ctx, file_name do
+    ctx
+    |> UI.assert_text(file_name)
+    |> UI.assert_has(testid: UI.testid(["header-global-search-file", file_name]))
+  end
+
+  step :assert_link_result_visible, ctx, link_name do
+    ctx
+    |> UI.assert_text(link_name)
+    |> UI.assert_has(testid: UI.testid(["header-global-search-link", link_name]))
+  end
+
   step :refute_milestone_result_visible, ctx, milestone_title do
     ctx
     |> UI.refute_text(milestone_title)
@@ -136,6 +166,36 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
   step :click_person_result, ctx, person_name do
     ctx
     |> UI.click(testid: UI.testid(["header-global-search-person", person_name]))
+    |> UI.sleep(300)
+  end
+
+  step :click_discussion_result, ctx, discussion_title do
+    ctx
+    |> UI.click(testid: UI.testid(["header-global-search-discussion", discussion_title]))
+    |> UI.sleep(300)
+  end
+
+  step :click_folder_result, ctx, folder_name do
+    ctx
+    |> UI.click(testid: UI.testid(["header-global-search-folder", folder_name]))
+    |> UI.sleep(300)
+  end
+
+  step :click_document_result, ctx, document_name do
+    ctx
+    |> UI.click(testid: UI.testid(["header-global-search-document", document_name]))
+    |> UI.sleep(300)
+  end
+
+  step :click_file_result, ctx, file_name do
+    ctx
+    |> UI.click(testid: UI.testid(["header-global-search-file", file_name]))
+    |> UI.sleep(300)
+  end
+
+  step :click_link_result, ctx, link_name do
+    ctx
+    |> UI.click(testid: UI.testid(["header-global-search-link", link_name]))
     |> UI.sleep(300)
   end
 
@@ -184,12 +244,32 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     ctx |> UI.assert_page(Paths.profile_path(ctx.company, person))
   end
 
+  step :assert_navigated_to_discussion, ctx do
+    ctx |> UI.assert_page(Paths.message_path(ctx.company, ctx.search_discussion))
+  end
+
+  step :assert_navigated_to_folder, ctx do
+    ctx |> UI.assert_page(Paths.folder_path(ctx.company, ctx.search_folder))
+  end
+
+  step :assert_navigated_to_document, ctx do
+    ctx |> UI.assert_page(Paths.document_path(ctx.company, ctx.search_document))
+  end
+
+  step :assert_navigated_to_file, ctx do
+    ctx |> UI.assert_page(Paths.file_path(ctx.company, ctx.search_file))
+  end
+
+  step :assert_navigated_to_link, ctx do
+    ctx |> UI.assert_page(Paths.link_path(ctx.company, ctx.search_link))
+  end
+
   #
   # Empty state and error messages
   #
 
   step :assert_no_results_message, ctx do
-    ctx |> UI.assert_text("No results found")
+    ctx |> UI.assert_text("No title or name matches for")
   end
 
   step :assert_search_not_triggered, ctx do
@@ -203,7 +283,7 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
   end
 
   step :assert_searching_indicator, ctx do
-    ctx |> UI.assert_text("Searching...")
+    ctx |> UI.assert_text("Searching…")
   end
 
   #
@@ -280,6 +360,27 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
       status: :pending
     )
     |> Factory.add_project_task(:test_task, :test_milestone, name: "Test Task")
+    |> add_new_search_resources("Test")
+  end
+
+  step :given_new_search_resources_exist, ctx do
+    add_new_search_resources(ctx, "Quick Search")
+  end
+
+  step :given_body_only_matches_exist, ctx do
+    marker = "buried-body-marker"
+
+    ctx
+    |> Factory.add_messages_board(:body_search_board, :marketing)
+    |> Factory.add_message(:body_search_discussion, :body_search_board,
+      title: "Ordinary discussion",
+      body: Operately.Support.RichText.rich_text(marker)
+    )
+    |> Factory.add_resource_hub(:body_search_hub, :marketing, :creator)
+    |> Factory.add_document(:body_search_document, :body_search_hub,
+      name: "Ordinary document",
+      content: Operately.Support.RichText.rich_text(marker)
+    )
   end
 
   step :given_space_task_exists, ctx, task_name do
@@ -307,5 +408,29 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
       status: :pending
     )
     |> Factory.close_project(:closed_project)
+  end
+
+  defp add_new_search_resources(ctx, prefix) do
+    ctx
+    |> Factory.add_messages_board(:search_board, :marketing)
+    |> Factory.add_message(:search_discussion, :search_board, title: "#{prefix} Discussion")
+    |> Factory.add_resource_hub(:search_hub, :marketing, :creator)
+    |> Factory.add_folder(:search_folder, :search_hub)
+    |> Factory.add_document(:search_document, :search_hub, name: "#{prefix} Document")
+    |> Factory.add_file(:search_file, :search_hub, name: "#{prefix} File")
+    |> Factory.add_link(:search_link, :search_hub)
+    |> rename_resource(:search_folder, "#{prefix} Folder")
+    |> rename_resource(:search_file, "#{prefix} File")
+    |> rename_resource(:search_link, "#{prefix} Link")
+  end
+
+  defp rename_resource(ctx, key, name) do
+    resource =
+      ctx
+      |> Map.fetch!(key)
+      |> Ecto.Changeset.change(name: name)
+      |> Operately.Repo.update!()
+
+    Map.put(ctx, key, resource)
   end
 end

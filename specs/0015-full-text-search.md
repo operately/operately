@@ -190,6 +190,8 @@ Search titles and content for “{query}”
 
 Show this action whether quick matches exist, no quick matches exist, or the quick-search request fails. Clicking it or selecting it with the keyboard closes the overlay and opens the dedicated Search page with the query preserved.
 
+This action is added only after the dedicated Search API and page exist. PR 3.6 expands the title/name-only quick-navigation results without the divider or final action; PR 3.9 connects that overlay to the completed Search page.
+
 The dedicated Search page owns company-wide full-text retrieval. It renders the relevance-ranked results already defined by `Operately.Search.search_company/2`, including historical resources. Detailed rows show:
 
 - resource icon and resource type
@@ -614,15 +616,13 @@ In PR 3.6, update `turboui/src/GlobalSearch/index.stories.tsx` with:
 
 - grouped legacy company results
 - the additional discussion and resource-hub groups
-- grouped results followed by `Search titles and content for “{query}”`
-- empty and error states that retain the final action
 - long titles and names
 - company scope
 - loading
 - empty
 - error
 - enough results to exercise scrolling
-- keyboard navigation through the final action
+- keyboard navigation across quick-search results
 
 In PR 3.8, add dedicated Search-page stories or component tests for:
 
@@ -632,6 +632,12 @@ In PR 3.8, add dedicated Search-page stories or component tests for:
 - initial, loading, empty, error, and populated states
 - stale-response handling
 - the 30-result cap
+
+In PR 3.9, extend the Global Search stories with:
+
+- grouped results followed by `Search titles and content for “{query}”`
+- empty and error states that retain the final action
+- keyboard and pointer navigation through the final action
 
 Cover resource-hub inline matching, loading, empty, error, and cleared states in the Resource Hub, Project, and Goal page stories instead of `GlobalSearch` stories.
 
@@ -722,7 +728,7 @@ This phase closes #4682 as scoped here: native documents are searchable by title
 
 ### Phase 3 — Company-wide full-text corpus and UI
 
-Implement the critical path as eight ordered PRs. Keep lower-value full-text corpus expansion as an optional ninth PR after the dedicated Search page and search quality are stable.
+Implement the critical path as nine ordered PRs. Keep lower-value full-text corpus expansion as an optional tenth PR after the dedicated Search page and search quality are stable.
 
 #### PR 3.1 — `chore: Add permission-aware company search query`
 
@@ -765,7 +771,7 @@ family accepted by company search through PR 3.1.
 - [x] Return the remaining ranked full-text results with match source, context, state, safe snippet, and typed navigation metadata.
 - [x] Update serializers and generated clients, and cover the complete response contract without changing `GlobalSearch` yet.
 
-PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permission, query, and compatibility-API foundation. PRs 3.5 through 3.8 implement the revised separation between quick navigation and dedicated full-text search.
+PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permission, query, and compatibility-API foundation. PRs 3.5 through 3.9 implement the revised separation between quick navigation and dedicated full-text search.
 
 #### PR 3.5 — `chore: Add expanded quick-search API`
 
@@ -779,12 +785,12 @@ PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permissio
 
 #### PR 3.6 — `chore: Expand the global quick search`
 
-- [ ] Switch the company `GlobalSearch` adapter to `companies/quick_search` while preserving the activator, `Cmd/Ctrl + K`, 300 ms debounce, compact rows, existing group order, and keyboard interaction.
-- [ ] Append `DISCUSSIONS`, `FOLDERS`, `DOCUMENTS`, `FILES`, and `LINKS` after the existing groups.
-- [ ] Add a divider and final `Search titles and content for “{query}”` option for every query of at least two characters, including empty and quick-search error states.
-- [ ] Make the final option part of arrow-key, Enter, click, selected-item scrolling, and accessible option semantics.
-- [ ] Navigate the final option to the company Search page with the query encoded as `q`; never render or request body matches in the overlay.
-- [ ] Add focused mapper, TurboUI, Storybook, and company feature coverage for new groups, title-only matching, result/empty/error layouts, long queries, and keyboard navigation through the final action.
+- [x] Switch the company `GlobalSearch` adapter to `companies/quick_search` while preserving the activator, `Cmd/Ctrl + K`, 300 ms debounce, compact rows, and existing group order.
+- [x] Append `DISCUSSIONS`, `FOLDERS`, `DOCUMENTS`, `FILES`, and `LINKS` after the existing groups and show their current space or owner as context.
+- [x] Keep the overlay title/name-only and omit any full-text action, request, route, snippet, match-source label, or historical-state badge until the dedicated Search page exists.
+- [x] Replace untyped result flattening with normalized typed options shared by rendering and keyboard navigation.
+- [x] Preserve arrow-key wraparound, Enter, Escape, click-outside closing, selected-item scrolling, and accessible listbox/option state.
+- [x] Add focused mapper, TurboUI, Storybook, and company feature coverage for every group, canonical navigation, title-only matching, loading/empty/error states, long names, scrolling, keyboard navigation, and accessibility.
 
 #### PR 3.7 — `chore: Add dedicated company full-text search API`
 
@@ -802,7 +808,15 @@ PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permissio
 - [ ] Keep quick-navigation groups off this page and do not add pagination in the first release.
 - [ ] Add focused page/component stories and company feature coverage for carried queries, direct links, subsequent searches, stale responses, all request states, result navigation, accessibility, and the 30-result cap.
 
-#### Optional PR 3.9 — `chore: Expand the company full-text corpus`
+#### PR 3.9 — `chore: Connect quick search to full-text search`
+
+- [ ] Add a divider and final `Search titles and content for “{query}”` option for every quick-search query of at least two characters.
+- [ ] Keep the action available after populated, empty, and quick-search error states without changing or refilling the quick-search results.
+- [ ] Include the action in pointer navigation, arrow-key wraparound, Enter handling, selected-item scrolling, listbox/option semantics, and selected-option ARIA state.
+- [ ] Close the overlay and navigate to the completed company Search page with the current query encoded as `q`.
+- [ ] Add focused TurboUI, Storybook, mapper, and company feature coverage for copy, divider placement, availability in every request state, keyboard behavior, query preservation, and navigation.
+
+#### Optional PR 3.10 — `chore: Expand the company full-text corpus`
 
 - [ ] Measure retrieval gaps before adding milestones, tasks, people, or other lower-value source types to the full-text index.
 - [ ] Add only source types that materially improve retrieval beyond the existing name-based navigation groups.
@@ -812,7 +826,7 @@ The combined API response is also exposed by the existing MCP search tool; no se
 
 - [ ] After the resource-hub and company search queries have stabilized, evaluate the duplicated resource eligibility and visible-folder CTE logic in `ResourceHubQuery` and `CompanyQuery.ResourceHubItems`. Extract shared query-building code only if it meaningfully reduces maintenance risk without coupling their different scopes, result shapes, authorization boundaries, or hydration behavior; otherwise document why keeping the small duplication is clearer.
 
-Phase 3 closes #1421 after PRs 3.5 through 3.8 deliver the revised quick-navigation and dedicated Search-page experience.
+Phase 3 closes #1421 after PRs 3.5 through 3.9 deliver the revised quick-navigation and dedicated Search-page experience.
 
 Phases 1 through 3 may begin immediately on the current development database. Preliminary results on PostgreSQL 14.5 do not replace final verification on the PostgreSQL 14.23 production baseline.
 
@@ -894,11 +908,13 @@ The production database update is complete. Search implementation is not blocked
 
 - current header activator and `Cmd/Ctrl + K`
 - existing quick-search groups followed by discussions, folders, documents, files, and links
-- `Search titles and content for “{query}”` after populated, empty, and error states
-- keyboard and pointer navigation from the overlay to the Search page with the query preserved
+- PR 3.6 quick navigation without a full-text action or Search-page dependency
 - dedicated Search page initial query, URL synchronization, 300 ms debounce, stale-response protection, and 30-result cap
+- PR 3.9 `Search titles and content for “{query}”` after populated, empty, and error states
+- PR 3.9 keyboard and pointer navigation from the overlay to the Search page with the query preserved
 - resource-hub inline field placement, debounce, result replacement, and clearing
-- keyboard navigation across quick-search results and the final action
+- PR 3.6 keyboard navigation across quick-search results
+- PR 3.9 keyboard navigation through the final action
 - title/body match labels, plain-text snippets, and status badges on the dedicated Search page only
 - loading, empty, and error copy
 - dark mode and responsive company overlay, Search page, and resource-hub toolbar

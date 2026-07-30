@@ -41,4 +41,12 @@ defmodule Operately.Features.GlobalSearch.InteractionTest do
     |> Steps.start_typing("Website")
     |> Steps.assert_searching_indicator()
   end
+
+  feature "search does not match discussion or document bodies", ctx do
+    ctx
+    |> Steps.given_body_only_matches_exist()
+    |> Steps.open_global_search()
+    |> Steps.search_for("buried-body-marker")
+    |> Steps.assert_no_results_message()
+  end
 end
