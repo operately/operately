@@ -466,7 +466,7 @@ This lets inline search use the exact same resource-hub row, description, counts
 
 Phase 3 adds company scope and state metadata for closed, completed, archived, and paused work. Pagination and additional scopes remain follow-up work unless the first 30 results prove insufficient.
 
-PR 3.4 implemented a compatibility response that combines the existing grouped navigation fields with `full_text_results`. Keep that contract stable for existing API and MCP consumers, but do not use its full-text list in the quick-search overlay.
+PR 3.4 originally implemented a compatibility response combining grouped navigation with `full_text_results`. That combined endpoint was later retired: the external `companies/global_search` route now remains only as a backward-compatible wrapper around quick search. PR 3.7 does not restore the combined response; `companies/search` is the dedicated full-text contract.
 
 PR 3.5 adds `companies/quick_search`, a shared internal and external title/name-only API:
 
@@ -497,7 +497,7 @@ query: string
 results[]: SearchResult
 ```
 
-It delegates to the existing permission-aware `Operately.Search.search_company/2` query and returns at most 30 results. The existing combined PR 3.4 endpoint remains available for compatibility until a separately reviewed retirement.
+It delegates to the existing permission-aware `Operately.Search.search_company/2` query and returns at most 30 results. The external `companies/global_search` compatibility wrapper remains unchanged and continues forwarding to quick search.
 
 ---
 
@@ -794,10 +794,10 @@ PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permissio
 
 #### PR 3.7 — `chore: Add dedicated company full-text search API`
 
-- [ ] Add `companies/search`, accepting `query` and returning one ordered `results` list.
-- [ ] Delegate to `Operately.Search.search_company/2`, preserving its live permission checks, eligibility validation, relevance order, typed navigation, match source, state, safe snippets, and 30-result cap.
-- [ ] Return an empty list for queries shorter than two characters and keep the completed PR 3.4 combined endpoint unchanged for compatibility.
-- [ ] Update serializers, generated clients, external API coverage, and focused response-contract tests for every supported full-text type.
+- [x] Add `companies/search`, accepting `query` and returning one ordered `results` list.
+- [x] Delegate to `Operately.Search.search_company/2`, preserving its live permission checks, eligibility validation, relevance order, typed navigation, match source, state, safe snippets, and 30-result cap.
+- [x] Return an empty list for queries shorter than two characters and keep the external `companies/global_search` quick-search compatibility wrapper unchanged.
+- [x] Update serializers, generated clients, external API coverage, and focused response-contract tests for every supported full-text type.
 
 #### PR 3.8 — `chore: Add company Search page`
 
