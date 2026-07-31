@@ -29,6 +29,7 @@ export * from "./ProgressBar";
 export * from "./RichContent";
 export * from "./ResourceHub";
 export * from "./SearchPage";
+export * from "./SearchIndexAdminPage";
 export * from "./Spacer";
 export * from "./StatusBadge";
 export * from "./SmallStatusIndicator";
