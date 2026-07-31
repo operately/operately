@@ -2,6 +2,7 @@ defmodule Operately.Operations.CompanyMemberRemoving do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.People
+  alias Operately.Search.IndexUpdates
 
   @doc """
   Removes a company member from the system.
@@ -19,6 +20,7 @@ defmodule Operately.Operations.CompanyMemberRemoving do
     person = People.get_person!(person_id) |> Repo.preload(:account)
 
     Multi.new()
+    |> IndexUpdates.delete(:search_person, "person", person.id)
     |> suspend_or_delete_person(person)
     |> insert_activity(admin)
     |> Repo.transaction()

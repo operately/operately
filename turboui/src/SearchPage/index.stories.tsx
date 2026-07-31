@@ -160,6 +160,9 @@ export const HistoricalStates: Story = {
       results={[
         result({ id: "closed", title: "Closed project", state: "closed", link: "/closed" }),
         result({ id: "completed", title: "Completed goal", type: "goal", state: "completed", link: "/completed" }),
+        result({ id: "milestone", title: "Launch beta", type: "milestone", state: "completed", link: "/milestone" }),
+        result({ id: "task", title: "Interview customers", type: "task", state: "paused", link: "/task" }),
+        result({ id: "person", title: "Taylor Reed", type: "person", matchedField: "title", snippet: "VP of Product", state: null, link: "/person" }),
         result({
           id: "archived",
           title: "Archived discussion",

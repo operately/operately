@@ -7,6 +7,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Operations.Notifications.Subscription, as: SubscriptionOperations
   alias Operately.Projects.Project
+  alias Operately.Search.IndexUpdates
   alias Operately.Updates.Comment
 
   def run(author, milestone, action, comment_attrs) do
@@ -16,12 +17,19 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> ensure_subscription_step(author, milestone, action)
     |> insert_milestone_comment(milestone, action)
     |> apply_comment_action(milestone, action)
+    |> maybe_enqueue_milestone(action, milestone.id)
     |> load_project(milestone)
     |> record_activity(author, milestone, action)
     |> Repo.transaction()
     |> broadcast_updates(action)
     |> Repo.extract_result(:result)
   end
+
+  defp maybe_enqueue_milestone(multi, action, milestone_id) when action in ["complete", "reopen"] do
+    IndexUpdates.enqueue(multi, :search_milestone, "milestone", milestone_id)
+  end
+
+  defp maybe_enqueue_milestone(multi, _action, _milestone_id), do: multi
 
   defp load_project(multi, milestone) do
     Multi.run(multi, :project, fn _, _ ->

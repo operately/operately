@@ -2208,6 +2208,9 @@ export interface SearchNavigationTarget {
   linkId?: string | null;
   projectId?: string | null;
   goalId?: string | null;
+  milestoneId?: string | null;
+  taskId?: string | null;
+  personId?: string | null;
   discussionId?: string | null;
   projectCheckInId?: string | null;
   goalCheckInId?: string | null;
@@ -2765,6 +2768,9 @@ export type SearchResultType =
   | "resource_hub_link"
   | "project"
   | "goal"
+  | "milestone"
+  | "task"
+  | "person"
   | "discussion"
   | "project_check_in"
   | "goal_check_in"

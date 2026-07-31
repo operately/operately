@@ -9367,6 +9367,39 @@
           },
           {
             "default": null,
+            "name": "milestone_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "task_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "person_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "discussion_id",
             "type": {
               "name": "string",
@@ -19838,6 +19871,9 @@
         "resource_hub_link",
         "project",
         "goal",
+        "milestone",
+        "task",
+        "person",
         "discussion",
         "project_check_in",
         "goal_check_in",

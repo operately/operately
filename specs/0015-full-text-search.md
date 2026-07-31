@@ -817,11 +817,11 @@ PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permissio
 - [x] Close the overlay and navigate to the completed company Search page with the current query encoded as `q`.
 - [x] Add focused TurboUI, Storybook, mapper, and company feature coverage for copy, divider placement, availability in every request state, keyboard behavior, query preservation, and navigation.
 
-#### Optional PR 3.10 — `chore: Expand the company full-text corpus`
+#### PR 3.10 — `feat: Expand full-text search to milestones, tasks, and people`
 
-- [ ] Measure retrieval gaps before adding milestones, tasks, people, or other lower-value source types to the full-text index.
-- [ ] Add only source types that materially improve retrieval beyond the existing name-based navigation groups.
-- [ ] Apply the same adapter, refresh, authorization, backfill, and reconciliation requirements to every added type.
+- [x] Add milestones and tasks after identifying descriptions as a retrieval gap in the title-only quick-navigation groups.
+- [x] Add people so company titles are searchable alongside full names; keep profile descriptions and other person metadata outside the index.
+- [x] Apply the same adapter, transactional refresh, live authorization, backfill, reconciliation, state validation, and deletion-cleanup requirements to all three sources.
 
 The combined API response is also exposed by the existing MCP search tool; no separate MCP tool is required.
 

@@ -2,6 +2,7 @@ defmodule Operately.People.InsertPersonIntoOperation do
   alias Ecto.Multi
   alias Operately.Access
   alias Operately.Repo
+  alias Operately.Search.IndexUpdates
 
   def insert(multi, callback) when is_function(callback, 1) do
     multi
@@ -9,6 +10,7 @@ defmodule Operately.People.InsertPersonIntoOperation do
     |> insert_person_access_group()
     |> insert_membership_with_company_group()
     |> insert_company_space_member()
+    |> IndexUpdates.enqueue(:search_person, "person", fn changes -> changes.person.id end)
   end
 
   defp insert_person_access_group(multi) do

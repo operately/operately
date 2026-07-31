@@ -2,6 +2,7 @@ defmodule Operately.Operations.KanbanStateUpdating do
   alias Ecto.Multi
   alias Operately.Activities
   alias Operately.Repo
+  alias Operately.Search.IndexUpdates
   alias Operately.Tasks.KanbanState
 
   def run(author, scope, task, status, kanban_state) do
@@ -25,6 +26,7 @@ defmodule Operately.Operations.KanbanStateUpdating do
       end
     end)
     |> maybe_save_task_status_activity(author.id, scope, task)
+    |> IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
   end
 
   defp validate_task_parent(%{type: :project, project: project}, task) do

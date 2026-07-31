@@ -5,6 +5,7 @@ defmodule Operately.Operations.CompanyMemberRestoring do
   alias Operately.Billing.Usage
   alias Operately.People.Person
   alias Operately.Repo
+  alias Operately.Search.IndexUpdates
 
   def run(author, company, person) do
     with :ok <- Usage.check_member_limit(company) do
@@ -17,6 +18,7 @@ defmodule Operately.Operations.CompanyMemberRestoring do
 
       Multi.new()
       |> Multi.update(:person, changeset)
+      |> IndexUpdates.enqueue(:search_person, "person", fn changes -> changes.person.id end)
       |> Activities.insert_sync(author.id, :company_member_restoring, fn _changes ->
         %{
           company_id: person.company_id,

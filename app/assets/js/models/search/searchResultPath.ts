@@ -17,6 +17,12 @@ export function searchResultPath(paths: Paths, result: SearchResult): string | n
       return target.projectId ? paths.projectPath(target.projectId) : null;
     case "goal":
       return target.goalId ? paths.goalPath(target.goalId) : null;
+    case "milestone":
+      return target.milestoneId ? paths.projectMilestonePath(target.milestoneId) : null;
+    case "task":
+      return target.taskId ? paths.taskPath(target.taskId) : null;
+    case "person":
+      return target.personId ? paths.profilePath(target.personId) : null;
     case "discussion":
       return target.discussionId ? paths.discussionPath(target.discussionId) : null;
     case "project_check_in":
