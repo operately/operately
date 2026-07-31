@@ -80,6 +80,7 @@ config :operately, Oban,
     {Oban.Plugins.Pruner, max_age: 300},
     {Oban.Plugins.Cron,
      crontab: [
+       {"@reboot", Operately.Search.BootstrapWorker},
        {"0 8 * * *", OperatelyEmail.Cron.DailySummary},
        {"0 8 * * *", OperatelyEmail.Cron.Assignments},
        {"0 2 * * *", Operately.Beacon.Cron},
@@ -88,7 +89,8 @@ config :operately, Oban,
   ],
   queues: [
     default: 10,
-    mailer: 10
+    mailer: 10,
+    search_maintenance: 1
   ]
 
 # Import environment specific config. This must remain at the bottom

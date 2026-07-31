@@ -7,8 +7,7 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
   alias Operately.Access
   alias Operately.Messages.Message
   alias Operately.Projects.Project
-  alias Operately.Search
-  alias Operately.Search.{Entry, IndexRun, Indexer}
+  alias Operately.Search.{Entry, IndexRun, Indexer, MaintenanceRuns}
   alias Operately.Support.Factory
 
   @source_types ["project", "goal", "milestone", "task", "person", "discussion", "project_check_in", "goal_check_in", "project_retrospective"]
@@ -216,7 +215,7 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
   defp start_and_drain_all(kind) do
     Oban.Testing.with_testing_mode(:manual, fn ->
       runs = Enum.map(@source_types, &start(kind, &1))
-      assert %{failure: 0} = Oban.drain_queue(queue: :default, with_recursion: true)
+      assert %{failure: 0} = Oban.drain_queue(queue: :search_maintenance, with_recursion: true)
       Enum.map(runs, &Repo.get!(IndexRun, &1.id))
     end)
   end
@@ -224,18 +223,18 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
   defp start_and_drain(kind, source_type) do
     Oban.Testing.with_testing_mode(:manual, fn ->
       run = start(kind, source_type)
-      assert %{failure: 0} = Oban.drain_queue(queue: :default, with_recursion: true)
+      assert %{failure: 0} = Oban.drain_queue(queue: :search_maintenance, with_recursion: true)
       Repo.get!(IndexRun, run.id)
     end)
   end
 
   defp start(:backfill, source_type) do
-    assert {:ok, run} = Search.start_backfill(source_type)
+    assert {:ok, run} = MaintenanceRuns.start_backfill(source_type)
     run
   end
 
   defp start(:reconciliation, source_type) do
-    assert {:ok, run} = Search.start_reconciliation(source_type)
+    assert {:ok, run} = MaintenanceRuns.start_reconciliation(source_type)
     run
   end
 
