@@ -14,6 +14,8 @@ defmodule Operately.Search.CoreWorkIndexUpdatesTest do
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_goal(:goal, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
       |> Factory.add_project_check_in(:project_check_in, :project, :creator)
       |> Factory.add_goal_update(:goal_check_in, :goal, :creator)
       |> Factory.add_project_retrospective(:retrospective, :project, :creator)
@@ -36,6 +38,22 @@ defmodule Operately.Search.CoreWorkIndexUpdatesTest do
       args: %{
         source_type: "project_check_in",
         source_ids: [ctx.project_check_in.id]
+      }
+    )
+
+    assert_enqueued(
+      worker: Worker,
+      args: %{
+        source_type: "milestone",
+        source_ids: [ctx.milestone.id]
+      }
+    )
+
+    assert_enqueued(
+      worker: Worker,
+      args: %{
+        source_type: "task",
+        source_ids: [ctx.task.id]
       }
     )
 

@@ -11,7 +11,7 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
   alias Operately.Search.{Entry, IndexRun, Indexer}
   alias Operately.Support.Factory
 
-  @source_types ["project", "goal", "discussion", "project_check_in", "goal_check_in", "project_retrospective"]
+  @source_types ["project", "goal", "milestone", "task", "person", "discussion", "project_check_in", "goal_check_in", "project_retrospective"]
 
   setup ctx do
     previous_batch_size = Application.get_env(:operately, :search_index_batch_size, 500)
@@ -25,6 +25,9 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
       |> Factory.add_space(:other_space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_goal(:goal, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.add_company_member(:teammate, name: "Taylor Reed", title: "Product lead")
       |> Factory.add_messages_board(:board, :space)
       |> Factory.add_message(:discussion, :board)
       |> Factory.add_project_check_in(:project_check_in, :project, :creator)
@@ -42,6 +45,9 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
     assert Enum.all?(first_runs, &(&1.processed_count > 0))
     assert_entry(:project, ctx.project.id)
     assert_entry(:goal, ctx.goal.id)
+    assert_entry(:milestone, ctx.milestone.id)
+    assert_entry(:task, ctx.task.id)
+    assert_entry(:person, ctx.teammate.id)
     assert_entry(:discussion, ctx.discussion.id)
     assert_entry(:project_check_in, ctx.project_check_in.id)
     assert_entry(:goal_check_in, ctx.goal_check_in.id)
@@ -49,12 +55,13 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
 
     second_runs = start_and_drain_all(:backfill)
 
-    assert Enum.sum(Enum.map(second_runs, & &1.unchanged_count)) == 6
+    indexed_count = indexed_core_entry_count()
+    assert Enum.sum(Enum.map(second_runs, & &1.unchanged_count)) == indexed_count
 
     assert Repo.aggregate(
              from(entry in Entry, where: entry.source_type in ^Enum.map(@source_types, &String.to_existing_atom/1)),
              :count
-           ) == 6
+           ) == indexed_count
   end
 
   test "reconciliation repairs stale entries, removes exclusions and orphans, and restores eligibility", ctx do
@@ -162,6 +169,50 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
     assert_entry(:goal_check_in, ctx.goal_check_in.id)
   end
 
+  test "reconciliation repairs work items and removes suspended people and orphans", ctx do
+    start_and_drain_all(:backfill)
+
+    assert_entry(:milestone, ctx.milestone.id)
+    |> Ecto.Changeset.change(title: "Stale milestone")
+    |> Repo.update!()
+
+    completed_status = %{id: "done", label: "Done", color: "green", index: 1, value: "done", closed: true}
+    ctx.task |> Operately.Tasks.Task.changeset(%{task_status: completed_status}) |> Repo.update!()
+    ctx.teammate |> Ecto.Changeset.change(suspended: true, suspended_at: DateTime.utc_now(:second)) |> Repo.update!()
+
+    context = Access.get_context!(project_id: ctx.project.id)
+    orphan_id = Ecto.UUID.generate()
+
+    assert {:ok, _summary} =
+             Indexer.upsert(%{
+               source_type: "task",
+               source_id: orphan_id,
+               company_id: ctx.company.id,
+               access_context_id: context.id,
+               space_id: ctx.space.id,
+               project_id: ctx.project.id,
+               title: "Orphan task",
+               body: "Missing canonical source",
+               body_kind: "description",
+               source_updated_at: ctx.task.updated_at
+             })
+
+    reconciliation_runs = start_and_drain_all(:reconciliation)
+    assert Enum.all?(reconciliation_runs, &(&1.status == :completed))
+    assert assert_entry(:milestone, ctx.milestone.id).title == ctx.milestone.title
+    assert assert_entry(:task, ctx.task.id).state == :completed
+    refute_entry(:person, ctx.teammate.id)
+    refute_entry(:task, orphan_id)
+
+    ctx.teammate
+    |> Repo.reload!()
+    |> Ecto.Changeset.change(suspended: false, suspended_at: nil)
+    |> Repo.update!()
+
+    assert start_and_drain(:backfill, "person").status == :completed
+    assert_entry(:person, ctx.teammate.id)
+  end
+
   defp start_and_drain_all(kind) do
     Oban.Testing.with_testing_mode(:manual, fn ->
       runs = Enum.map(@source_types, &start(kind, &1))
@@ -194,5 +245,12 @@ defmodule Operately.Search.CoreWorkMaintenanceTest do
 
   defp refute_entry(source_type, source_id) do
     refute Repo.get_by(Entry, source_type: source_type, source_id: source_id)
+  end
+
+  defp indexed_core_entry_count do
+    Repo.aggregate(
+      from(entry in Entry, where: entry.source_type in ^Enum.map(@source_types, &String.to_existing_atom/1)),
+      :count
+    )
   end
 end

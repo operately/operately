@@ -18,7 +18,7 @@ defmodule Operately.Search.CompanyQuery do
 
   @limit 30
   @candidates_cte "company_search_candidates"
-  @parent_state_types ["project_check_in", "goal_check_in", "project_retrospective"]
+  @state_validated_types ["milestone", "task", "project_check_in", "goal_check_in", "project_retrospective"]
 
   def search(%Person{} = person, query) do
     with nil <- person.suspended_at,
@@ -150,7 +150,7 @@ defmodule Operately.Search.CompanyQuery do
       # Reject stale parent-owned entries whose indexed inherited state no longer
       # matches the live project/goal.
       where:
-        item.source_type not in ^@parent_state_types or
+        item.source_type not in ^@state_validated_types or
           fragment("? IS NOT DISTINCT FROM ?", entry.state, item.expected_state),
       where: ^FullTextQuery.match_dynamic(full_text),
       select: %{

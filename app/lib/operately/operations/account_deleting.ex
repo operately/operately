@@ -9,6 +9,7 @@ defmodule Operately.Operations.AccountDeleting do
   alias Operately.People.CliAuthSession
   alias Operately.Operations.AccountSiteAdminUpdating
   alias Operately.Repo
+  alias Operately.Search.IndexUpdates
 
   @deleted_account_name "Deleted Account"
   @deleted_person_name "Deleted User"
@@ -71,7 +72,9 @@ defmodule Operately.Operations.AccountDeleting do
 
   defp anonymize_people(multi, people) do
     Enum.reduce(people, multi, fn person, multi ->
-      Multi.update(multi, {:person, person.id}, person_changeset(person))
+      multi
+      |> IndexUpdates.delete({:search_person, person.id}, "person", person.id)
+      |> Multi.update({:person, person.id}, person_changeset(person))
     end)
   end
 
