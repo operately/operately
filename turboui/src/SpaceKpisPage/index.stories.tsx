@@ -9,7 +9,8 @@ import { mockChampionSearch, mockCurrentUser, mockKpis, mockPeople, mockSpace } 
 // Space KPIs — proof of concept (frontend, Storybook only).
 //
 // Demonstrates the end-to-end KPIs experience described in the POC:
-//   - a new "KPIs" tab on the Space page (shown next to Goals / Projects / ...)
+//   - a KPIs space tool using the same page chrome (breadcrumb header + tool
+//     title) as the other space tools (Work Map, Tasks)
 //   - a list view: name, unit, cadence, champion, latest value + trend
 //   - a detail view: line chart of history, champion + cadence, "Log update"
 //   - a "New KPI" form (name, unit, cadence, champion picker)
@@ -105,6 +106,7 @@ function Harness(args: HarnessArgs) {
   return (
     <SpaceKpisPage
       space={mockSpace}
+      navigation={[{ to: mockSpace.link, label: mockSpace.name }]}
       kpis={kpis}
       currentUser={mockCurrentUser}
       championSearch={mockChampionSearch}

@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
-import { IconChevronLeft } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -9,61 +8,35 @@ import { formatCadence, formatShortDate, formatValue, latestEntry, latestTrend }
 
 interface KpiDetailProps {
   kpi: SpaceKpisPage.Kpi;
-  canManage: boolean;
-  onBack: () => void;
-  onLogUpdate: () => void;
 }
 
-export function KpiDetail({ kpi, canManage, onBack, onLogUpdate }: KpiDetailProps) {
+// The KPI name, back navigation and the "Log update" action live in the shared
+// page header (see index.tsx), so the detail body focuses on the metadata,
+// latest value, history chart and the recorded-updates log.
+export function KpiDetail({ kpi }: KpiDetailProps) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
   return (
     <div data-test-id="kpi-detail">
-      <button
-        type="button"
-        className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-link-base hover:underline"
-        onClick={onBack}
-        data-test-id="kpi-detail-back"
-      >
-        <IconChevronLeft size={16} />
-        All KPIs
-      </button>
-
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-content-accent">{kpi.name}</h1>
-          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-content-dimmed">
-            <span>
-              Measured in <span className="font-medium text-content-base">{kpi.unit}</span>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-content-dimmed">
+        <span>
+          Measured in <span className="font-medium text-content-base">{kpi.unit}</span>
+        </span>
+        <span>
+          Cadence <span className="font-medium text-content-base">{formatCadence(kpi.cadence)}</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          Champion
+          {kpi.champion ? (
+            <span className="flex items-center gap-1.5 font-medium text-content-base">
+              <Avatar person={kpi.champion} size="tiny" />
+              {kpi.champion.fullName}
             </span>
-            <span>
-              Cadence <span className="font-medium text-content-base">{formatCadence(kpi.cadence)}</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              Champion
-              {kpi.champion ? (
-                <span className="flex items-center gap-1.5 font-medium text-content-base">
-                  <Avatar person={kpi.champion} size="tiny" />
-                  {kpi.champion.fullName}
-                </span>
-              ) : (
-                <span className="font-medium text-content-subtle">Unassigned</span>
-              )}
-            </span>
-          </div>
-        </div>
-
-        {canManage && (
-          <button
-            type="button"
-            className="rounded-lg bg-brand-1 px-3 py-1.5 text-sm font-medium text-white-1 hover:bg-blue-600"
-            onClick={onLogUpdate}
-            data-test-id="kpi-detail-log-update"
-          >
-            Log update
-          </button>
-        )}
+          ) : (
+            <span className="font-medium text-content-subtle">Unassigned</span>
+          )}
+        </span>
       </div>
 
       <div className="mt-6 flex items-end gap-3">
