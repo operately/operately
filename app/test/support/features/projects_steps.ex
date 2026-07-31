@@ -1194,59 +1194,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> wait_until_reviewer_field("Set reviewer")
   end
 
-  defp assert_reviewer_field_ready(ctx, text) do
-    wait_until_reviewer_field(ctx, text)
-  end
-
-  defp wait_until_reviewer_field(ctx, text, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
-    try do
-      ctx
-      |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-      |> UI.wait_until_testid(testid: "project-page")
-      |> UI.wait_until_has(css: "button[data-test-id=\"reviewer-field\"]")
-      |> UI.find(UI.query(testid: "reviewer-field"), fn el ->
-        UI.assert_text(el, text)
-      end)
-    rescue
-      e in [ExUnit.AssertionError, QueryError, RuntimeError, Wallaby.ExpectationNotMetError] ->
-        case attempts do
-          [] ->
-            raise e
-
-          [delay | remaining] ->
-            :timer.sleep(delay)
-            wait_until_reviewer_field(ctx, text, remaining)
-        end
-    end
-  end
-
-  defp wait_for_reviewer_activity(ctx, title) do
-    activity_path = Paths.project_path(ctx.company, ctx.project, tab: "activity")
-
-    ctx
-    |> UI.click(testid: "tab-activity")
-    |> UI.assert_location(activity_path)
-    |> UI.wait_until_testid(testid: "project-feed")
-    |> UI.wait_until_text(title, testid: "project-feed")
-  end
-
-  defp wait_until_project(ctx, description, condition, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
-    project = Operately.Projects.get_project!(ctx.project.id)
-
-    cond do
-      condition.(project) ->
-        ctx
-
-      attempts == [] ->
-        flunk("Timed out waiting for project #{description}")
-
-      true ->
-        [delay | remaining] = attempts
-        :timer.sleep(delay)
-        wait_until_project(ctx, description, condition, remaining)
-    end
-  end
-
   step :assert_reviewer_changed_feed_posted, ctx, reviewer: reviewer do
     title = "assigned #{Person.short_name(reviewer)} as the reviewer"
     title_long = "assigned #{Person.short_name(reviewer)} as the reviewer on #{ctx.project.name}"
@@ -1296,24 +1243,31 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :change_champion, ctx, name: name do
     ctx
+    |> assert_champion_field_ready()
     |> UI.click(testid: "champion-field")
+    |> UI.wait_until_testid(testid: "champion-field-popover")
     |> UI.click(testid: "champion-field-assign-another")
+    |> UI.wait_until_testid(testid: "champion-field-search")
+    |> UI.wait_until_testid(testid: UI.testid(["champion-field-search-result", name]))
     |> UI.click(testid: UI.testid(["champion-field-search-result", name]))
-    |> UI.sleep(300)
+    |> UI.refute_has(testid: "champion-field-popover")
+    |> wait_until_champion_is(name)
   end
 
   step :remove_champion, ctx do
     ctx
+    |> assert_champion_field_ready()
     |> UI.click(testid: "champion-field")
+    |> UI.wait_until_testid(testid: "champion-field-popover")
     |> UI.click(testid: "champion-field-clear-assignment")
-    |> UI.sleep(300)
+    |> UI.refute_has(testid: "champion-field-popover")
+    |> wait_until_champion_removed()
   end
 
   step :assert_champion_changed, ctx, name: name do
     ctx
-    |> UI.assert_text(name, testid: "champion-field")
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text(name, testid: "champion-field")
+    |> wait_until_champion_is(name)
+    |> wait_until_champion_field(name)
   end
 
   step :assert_champion_changed_feed_posted, ctx, champion: champion do
@@ -1325,9 +1279,8 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_champion_removed, ctx do
     ctx
-    |> UI.assert_text("Set champion", testid: "champion-field")
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text("Set champion", testid: "champion-field")
+    |> wait_until_champion_removed()
+    |> wait_until_champion_field("Set champion")
   end
 
   step :assert_champion_removed_feed_posted, ctx do
@@ -1373,22 +1326,6 @@ defmodule Operately.Support.Features.ProjectSteps do
       author: ctx.creator,
       action: "removed the champion"
     })
-  end
-
-  defp assert_feed(ctx, title, long_tile) do
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: title})
-    end)
-    |> UI.visit(Paths.space_path(ctx.company, ctx.product))
-    |> UI.find(UI.query(testid: "space-feed"), fn el ->
-      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_tile})
-    end)
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.find(UI.query(testid: "company-feed"), fn el ->
-      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_tile})
-    end)
   end
 
   step :download_project_markdown, ctx do
@@ -1689,5 +1626,125 @@ defmodule Operately.Support.Features.ProjectSteps do
       action: "commented on the project pausing",
       author: ctx.commenter
     })
+  end
+
+  #
+  # Helpers
+  #
+
+  defp assert_feed(ctx, title, long_tile) do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: title})
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.product))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_tile})
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_tile})
+    end)
+  end
+
+  defp assert_reviewer_field_ready(ctx, text) do
+    wait_until_reviewer_field(ctx, text)
+  end
+
+  defp wait_until_reviewer_field(ctx, text, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    try do
+      ctx
+      |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+      |> UI.wait_until_testid(testid: "project-page")
+      |> UI.wait_until_has(css: "button[data-test-id=\"reviewer-field\"]")
+      |> UI.find(UI.query(testid: "reviewer-field"), fn el ->
+        UI.assert_text(el, text)
+      end)
+    rescue
+      e in [ExUnit.AssertionError, QueryError, RuntimeError, Wallaby.ExpectationNotMetError] ->
+        case attempts do
+          [] ->
+            raise e
+
+          [delay | remaining] ->
+            :timer.sleep(delay)
+            wait_until_reviewer_field(ctx, text, remaining)
+        end
+    end
+  end
+
+  defp wait_for_reviewer_activity(ctx, title) do
+    activity_path = Paths.project_path(ctx.company, ctx.project, tab: "activity")
+
+    ctx
+    |> UI.click(testid: "tab-activity")
+    |> UI.assert_location(activity_path)
+    |> UI.wait_until_testid(testid: "project-feed")
+    |> UI.wait_until_text(title, testid: "project-feed")
+  end
+
+  defp wait_until_project(ctx, description, condition, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    project = Operately.Projects.get_project!(ctx.project.id)
+
+    cond do
+      condition.(project) ->
+        ctx
+
+      attempts == [] ->
+        flunk("Timed out waiting for project #{description}")
+
+      true ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_project(ctx, description, condition, remaining)
+    end
+  end
+
+  defp wait_until_champion_is(ctx, name) do
+    wait_until_project(ctx, "champion to be #{name}", fn project ->
+      case Operately.Projects.get_champion(project) do
+        nil -> false
+        champion -> champion.full_name == name
+      end
+    end)
+  end
+
+  defp wait_until_champion_removed(ctx) do
+    wait_until_project(ctx, "champion to be removed", fn project ->
+      is_nil(Operately.Projects.get_champion(project))
+    end)
+  end
+
+  # The project page renders from a cached payload first, so the champion field
+  # starts out read-only (a link to the champion's profile) until the permissions
+  # of the current user arrive. Clicking too early navigates away from the project.
+  defp assert_champion_field_ready(ctx) do
+    case Operately.Projects.get_champion(ctx.project) do
+      nil -> wait_until_champion_field(ctx, "Set champion")
+      champion -> wait_until_champion_field(ctx, champion.full_name)
+    end
+  end
+
+  defp wait_until_champion_field(ctx, text, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    try do
+      ctx
+      |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+      |> UI.wait_until_testid(testid: "project-page")
+      |> UI.wait_until_has(css: "button[data-test-id=\"champion-field\"]")
+      |> UI.find(UI.query(testid: "champion-field"), fn el ->
+        UI.assert_text(el, text)
+      end)
+    rescue
+      e in [ExUnit.AssertionError, QueryError, RuntimeError, Wallaby.ExpectationNotMetError] ->
+        case attempts do
+          [] ->
+            raise e
+
+          [delay | remaining] ->
+            :timer.sleep(delay)
+            wait_until_champion_field(ctx, text, remaining)
+        end
+    end
   end
 end
