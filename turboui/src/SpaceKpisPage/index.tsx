@@ -26,25 +26,49 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   const [editKpiId, setEditKpiId] = React.useState<string | null>(null);
   const [deleteKpiId, setDeleteKpiId] = React.useState<string | null>(null);
 
-  // The list endpoint omits entries, so the detail view lazily loads the full
-  // KPI (with entries) via `onLoadKpi`. Until it resolves we fall back to the
-  // list row so the header/metadata render immediately.
   const { onLoadKpi } = props;
   const [detailKpi, setDetailKpi] = React.useState<SpaceKpisPageNS.Kpi | null>(null);
   const [detailLoading, setDetailLoading] = React.useState(false);
+
+  // Locally-refreshed KPIs (with entries) keyed by id. After a KPI is mutated we
+  // re-fetch it via `onLoadKpi` and stash it here so its list row — including
+  // the "Latest value" / trend, which are derived from `entries` — updates
+  // immediately, without depending on the parent re-running its loader. This is
+  // what keeps the list from showing a stale "No data" state right after
+  // logging an entry.
+  const [kpiOverrides, setKpiOverrides] = React.useState<Record<string, SpaceKpisPageNS.Kpi>>({});
+
+  // The list props are the source of truth; local overrides win when present so
+  // freshly-logged values show up without a full page reload.
+  const kpis = React.useMemo(
+    () => props.kpis.map((kpi) => kpiOverrides[kpi.id] ?? kpi),
+    [props.kpis, kpiOverrides],
+  );
+
+  // Re-fetch a single KPI (with its entries) and record it as an override so
+  // both the list row and, when open, the detail view reflect the latest data.
+  const refreshKpi = React.useCallback(
+    async (kpiId: string): Promise<SpaceKpisPageNS.Kpi | null> => {
+      if (!onLoadKpi) return null;
+      const full = await onLoadKpi(kpiId);
+      if (full) setKpiOverrides((prev) => ({ ...prev, [full.id]: full }));
+      return full;
+    },
+    [onLoadKpi],
+  );
 
   const loadDetail = React.useCallback(
     async (kpiId: string) => {
       if (!onLoadKpi) return;
       setDetailLoading(true);
       try {
-        const full = await onLoadKpi(kpiId);
+        const full = await refreshKpi(kpiId);
         setDetailKpi((current) => (full && full.id === kpiId ? full : current));
       } finally {
         setDetailLoading(false);
       }
     },
-    [onLoadKpi],
+    [onLoadKpi, refreshKpi],
   );
 
   React.useEffect(() => {
@@ -52,23 +76,30 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
     if (selectedKpiId && onLoadKpi) loadDetail(selectedKpiId);
   }, [selectedKpiId, onLoadKpi, loadDetail]);
 
-  const listKpi = props.kpis.find((kpi) => kpi.id === selectedKpiId) ?? null;
+  const listKpi = kpis.find((kpi) => kpi.id === selectedKpiId) ?? null;
   const selectedKpi = detailKpi && detailKpi.id === selectedKpiId ? detailKpi : listKpi;
-  const logKpi = props.kpis.find((kpi) => kpi.id === logKpiId) ?? null;
-  const editKpi = props.kpis.find((kpi) => kpi.id === editKpiId) ?? null;
-  const deleteKpi = props.kpis.find((kpi) => kpi.id === deleteKpiId) ?? null;
+  const logKpi = kpis.find((kpi) => kpi.id === logKpiId) ?? null;
+  const editKpi = kpis.find((kpi) => kpi.id === editKpiId) ?? null;
+  const deleteKpi = kpis.find((kpi) => kpi.id === deleteKpiId) ?? null;
 
-  // After mutating the open KPI, reload its detail so the chart/log reflect the
-  // change without needing a full page reload.
+  // After mutating a KPI, re-fetch it so its list row (latest value / trend) and,
+  // when open, the detail chart/log reflect the change immediately — regardless
+  // of whether the parent refreshes its own data.
   const handleRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput) => {
     const result = await props.onRecordEntry(input);
-    if (result.success && input.kpiId === selectedKpiId) await loadDetail(input.kpiId);
+    if (result.success) {
+      if (input.kpiId === selectedKpiId) await loadDetail(input.kpiId);
+      else await refreshKpi(input.kpiId);
+    }
     return result;
   };
 
   const handleEditKpi = async (input: SpaceKpisPageNS.EditKpiInput) => {
     const result = await props.onEditKpi(input);
-    if (result.success && input.id === selectedKpiId) await loadDetail(input.id);
+    if (result.success) {
+      if (input.id === selectedKpiId) await loadDetail(input.id);
+      else await refreshKpi(input.id);
+    }
     return result;
   };
 
@@ -110,6 +141,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6">
           <KpisContent
             {...props}
+            kpis={kpis}
             canManage={canManage}
             selectedKpi={selectedKpi}
             detailLoading={detailLoading && detailKpi === null}

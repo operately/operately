@@ -211,6 +211,39 @@ describe("SpaceKpisPage create & log", () => {
     );
   });
 
+  test("logging an entry from the list refreshes that row's latest value (no stale 'No data')", async () => {
+    const user = userEvent.setup();
+
+    // Start from the KPI that has no entries yet — its list row shows "No data".
+    const target = mockKpis.find((kpi) => kpi.id === "kpi-churn")!;
+
+    // The parent's list prop is intentionally NOT updated here, so the row can
+    // only stop showing "No data" if the component refreshes the KPI itself via
+    // onLoadKpi after logging.
+    const onLoadKpi = jest.fn(async (kpiId: string) => ({
+      ...target,
+      entries: [{ id: "logged", value: 500, recordedAt: new Date("2026-07-30"), recordedBy: null }],
+      id: kpiId,
+    }));
+    const onRecordEntry = jest.fn(async () => ({ success: true }));
+
+    const { container } = renderPage({ onLoadKpi, onRecordEntry });
+
+    const row = () => container.querySelector<HTMLElement>(`[data-test-id="kpi-row-${target.id}"]`)!;
+    expect(row()).toHaveTextContent("No data");
+
+    await user.click(container.querySelector(`[data-test-id="log-update-${target.id}"]`)!);
+    fireEvent.change(await findByTestId("value"), { target: { value: "500" } });
+    fireEvent.change(await findByTestId("log-update-period"), { target: { value: "2026-07-30" } });
+    await user.click(await findByTestId("submit"));
+
+    await waitFor(() => expect(onLoadKpi).toHaveBeenCalledWith(target.id));
+    await waitFor(() => {
+      expect(row()).toHaveTextContent("500%");
+      expect(row()).not.toHaveTextContent("No data");
+    });
+  });
+
   test("logging an entry reloads the detail so the chart reflects the new value", async () => {
     const user = userEvent.setup();
 
