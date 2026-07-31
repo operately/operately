@@ -842,17 +842,25 @@ Phases 1 through 3 may begin immediately on the current development database. Pr
 
 The production database update is complete. Search implementation is not blocked by the remaining verification items, but no production backfill or indexed reads begin until those items and Phase 5 readiness checks are complete.
 
-### Phase 5 — Backfill, rollout, and old-query retirement
+### Phase 5 — Initial backfill and feature enablement
 
-- [ ] Deploy schema and ongoing index writes before enabling indexed reads.
-- [ ] Backfill existing companies and publish progress/health metrics.
-- [ ] Compare indexed results with canonical sources and investigate gaps.
-- [ ] Enable indexed reads behind a controlled rollout switch.
-- [ ] Monitor latency, errors, index lag, reconciliation differences, and database load.
-- [ ] Enable for all companies when acceptance criteria pass.
-- [ ] Remove the old multi-query `LIKE` implementation only after rollback is no longer required.
+The indexing, retry, checkpoint, idempotency, reconciliation, and durable run-status logic already exists. Keep this phase to one small production-readiness PR and reuse the existing `full_text_search` feature flag; do not add a cohort system, dashboard project, pause/resume UI, or a second backfill framework.
 
-> **Direction note:** PR 3.5 preserves title/name quick navigation as a product capability. The final cleanup item above applies only to the obsolete multi-query implementation after the replacement quick-search query is live; it does not remove title/name quick search.
+#### PR 5 — `chore: Add production controls for the initial search backfill`
+
+- [x] Add an application-start bootstrap worker that automatically starts the first backfill after the application, Oban, and schema migrations are available. This gives fresh and upgraded self-hosted installations automatic indexing without invoking mutable application modules from an Ecto migration.
+- [x] Make the bootstrap safe on restarts and multi-node deployments: enqueue it uniquely, start only registered source types that have no historical backfill run of any status, and treat existing or concurrently created runs as already started. A failed first run is not restarted automatically; an administrator decides when to rerun it.
+- [x] Run maintenance jobs on a dedicated low-concurrency queue so the one-time backfill cannot consume the shared default queue or create excessive database load. Keep the existing configurable batch size.
+- [x] Log a completion summary for every source run and emit a clear warning or alert for `completed_with_errors` and `failed` runs. Reuse the existing sanitized batch-failure logs.
+- [x] Add a site-admin Search Index page showing each source type's latest run kind, status, progress counters, timestamps, and sanitized error. Refresh the page while runs are active.
+- [x] Let site administrators manually start a backfill or reconciliation for one source type or all source types, while preserving the existing one-active-run-per-source constraint. Do not add pause/resume controls.
+- [x] Build the page as a pure TurboUI component with an application bridge to authenticated site-admin APIs, and cover automatic first-run behavior, restart and multi-node idempotency, authorization, status display, manual reruns, active-run conflicts, terminal logging, and the dedicated queue.
+- [x] Document the short operating procedure: deploy with `full_text_search` disabled, let the initial backfill start automatically, inspect the run summaries, safely rerun failed source types, and run the existing reconciliation once after all backfills complete.
+- [x] Enable `full_text_search` only after every source backfill and reconciliation run completes without unexplained errors.
+
+The bootstrap is automatically scheduled on application startup, but the database is the source of truth for whether a source type has already received its one automatic backfill. This avoids repeating the backfill on every deployment while ensuring newly installed, upgraded, and future-source installations initialize themselves without a manual release step.
+
+If a run fails, keep the feature flag disabled, use its saved cursor and counters to diagnose the failure, and rerun it from the site-admin page after the issue is fixed. No indexed-read fallback or legacy-query retirement work is required in this phase: title/name quick search remains the normal experience while the feature flag is disabled and remains a separate product capability afterward.
 
 ---
 
@@ -952,19 +960,17 @@ If these targets are not met, inspect query plans, scope indexes, GIN behavior, 
 
 ## Rollout and Recovery
 
-Use a controlled indexed-search rollout:
+Use this simple enablement sequence:
 
 1. Production is updated to PostgreSQL 14.23 and verified independently.
 2. Search implementation and compatibility work continue on the PostgreSQL 14 baseline.
-3. Search schema and queued refresh writes deploy with indexed reads disabled.
-4. Existing content is backfilled.
-5. Reconciliation reports no unexplained gaps.
-6. Indexed reads are enabled for internal/test companies.
-7. Search quality, permission behavior, and database load are reviewed on PostgreSQL 14.23.
-8. Indexed reads expand to all companies.
-9. Obsolete combined and multi-query paths are removed in a later cleanup after the rollback window; the replacement title/name quick-search path remains.
+3. Search schema and queued refresh writes deploy with `full_text_search` disabled.
+4. The Phase 5 application bootstrap automatically starts the first per-source backfill jobs exactly once.
+5. Durable run summaries show every backfill completed without unexplained errors.
+6. One reconciliation pass completes cleanly.
+7. The existing `full_text_search` feature flag is enabled.
 
-If indexed reads fail during rollout, disable the indexed path and return to the existing name-based search while continuing or repairing index writes. Never bypass permission filtering as a fallback.
+If indexed reads fail after enablement, disable `full_text_search` and return to the existing title/name quick search while repairing or rerunning index maintenance. Never bypass permission filtering as a fallback.
 
 ---
 

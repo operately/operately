@@ -3,6 +3,7 @@ import * as SaasAdminCompanyPage from "./SaasAdminCompanyPage";
 import * as SaasAdminEmailSettingsPage from "./SaasAdminEmailSettingsPage";
 import * as SaasAdminPage from "./SaasAdminPage";
 import * as SaasAdminSiteMessagesPage from "./SaasAdminSiteMessagesPage";
+import * as SaasAdminSearchIndexPage from "./SaasAdminSearchIndexPage";
 
 export default {
   SaasAdminPage: {
@@ -33,5 +34,11 @@ export default {
     name: "SaasAdminSiteMessagesPage",
     loader: SaasAdminSiteMessagesPage.loader,
     Page: SaasAdminSiteMessagesPage.Page,
+  },
+
+  SaasAdminSearchIndexPage: {
+    name: "SaasAdminSearchIndexPage",
+    loader: SaasAdminSearchIndexPage.loader,
+    Page: SaasAdminSearchIndexPage.Page,
   },
 };
