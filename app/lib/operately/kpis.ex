@@ -14,8 +14,13 @@ defmodule Operately.Kpis do
   def kpi_actions, do: @kpi_actions
 
   def list_kpis(space_id) do
+    # Preload entries (ordered oldest -> newest) so the list view can render the
+    # latest value / trend per KPI. A single batched preload query avoids N+1.
+    entries = from(e in KpiEntry, order_by: e.period)
+
     from(k in Kpi, where: k.space_id == ^space_id, order_by: k.name)
     |> Repo.all()
+    |> Repo.preload(entries: entries)
   end
 
   def get_kpi(id), do: Repo.get(Kpi, id)
