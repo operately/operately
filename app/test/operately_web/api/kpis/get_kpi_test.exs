@@ -37,6 +37,17 @@ defmodule OperatelyWeb.Api.Kpis.GetKpiTest do
       assert periods == ["2026-01-01", "2026-02-01", "2026-03-01"]
     end
 
+    test "a just-logged entry shows immediately when fetching the KPI", ctx do
+      ctx = Factory.log_in_person(ctx, :member)
+
+      log_inputs = %{kpi_id: Paths.kpi_id(ctx.kpi), value: 42.0, period: "2026-01-01"}
+      assert {200, _} = mutation(ctx.conn, [:kpis, :log_kpi_entry], log_inputs)
+
+      assert {200, res} = query(ctx.conn, [:kpis, :get_kpi], %{kpi_id: Paths.kpi_id(ctx.kpi)})
+      assert [entry] = res.kpi.entries
+      assert entry.value == 42.0
+    end
+
     test "a non-space-member cannot get a KPI", ctx do
       ctx = Factory.log_in_person(ctx, :outsider)
       assert {404, _} = query(ctx.conn, [:kpis, :get_kpi], %{kpi_id: Paths.kpi_id(ctx.kpi)})
