@@ -67,10 +67,13 @@ export namespace SpaceKpisPage {
     championId: string | null;
   }
 
-  // Payload for the `recordKpiEntry` mutation / `KpiEntryRecording` operation.
+  // Payload for the `logKpiEntry` mutation / `KpiEntryLogging` operation.
+  // `period` is the day the value is recorded for, formatted as `YYYY-MM-DD`
+  // to match the backend `:date` input.
   export interface RecordEntryInput {
     kpiId: string;
     value: number;
+    period: string;
   }
 
   export type MutationResult = { success: boolean; id?: string; error?: string };
@@ -87,6 +90,13 @@ export namespace SpaceKpisPage {
 
     // Search backing the champion picker in the "New KPI" form.
     championSearch: (query: string) => Promise<Person[]>;
+
+    // Optional lazy-loader for a single KPI's full record (including its
+    // entries) used by the detail view. The list endpoint omits entries for
+    // performance, so the page fetches them on demand when a KPI is opened.
+    // When omitted (e.g. stories with fully-populated mock data), the KPI from
+    // `kpis` is used as-is.
+    onLoadKpi?: (kpiId: string) => Promise<Kpi | null>;
 
     // Callbacks that stand in for the GraphQL mutations. Resolvers call the
     // Operately.Operations.{KpiCreating,KpiUpdating,KpiDeleting,KpiEntryRecording}
