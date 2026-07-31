@@ -1,7 +1,7 @@
 defmodule Operately.Search.SourceRegistryTest do
   use ExUnit.Case, async: true
 
-  alias Operately.Search.SourceRegistry
+  alias Operately.Search.{IndexRun, SourceRegistry}
 
   defmodule ProjectSource do
     @behaviour Operately.Search.Source
@@ -45,6 +45,8 @@ defmodule Operately.Search.SourceRegistryTest do
              "resource_hub_link",
              "task"
            ]
+
+    assert Enum.sort(IndexRun.source_types()) == Enum.map(source_types, &String.to_existing_atom/1)
   end
 
   test "rejects duplicate and invalid source registrations" do

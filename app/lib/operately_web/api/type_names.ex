@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.TypeNames do
   the serializer.
   """
 
-  @type_modules [OperatelyWeb.Api.Types]
+  @type_modules [OperatelyWeb.Api.Types, OperatelyEE.AdminApi.Types]
 
   def resolve(mod) when is_atom(mod), do: TurboConnect.TypeNames.resolve(mod)
 
