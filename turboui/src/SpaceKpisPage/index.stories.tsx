@@ -14,11 +14,14 @@ import { mockChampionSearch, mockCurrentUser, mockKpis, mockPeople, mockSpace } 
 //   - a list view: name, unit, cadence, champion, latest value + trend
 //   - a detail view: line chart of history, champion + cadence, "Log update"
 //   - a "New KPI" form (name, unit, cadence, champion picker)
+//   - an overflow "manage" menu on each KPI (list rows + detail header) to
+//     Edit the KPI or Delete it (with a destructive confirmation)
 //   - single-KPI "Log update" only — NO "update all KPIs at once" batch UI
 //
-// The stories use an in-memory harness so the create/record callbacks (which in
-// the app call the createKpi / recordKpiEntry GraphQL mutations) actually update
-// the UI, letting reviewers exercise the happy path.
+// The stories use an in-memory harness so the create/edit/delete/record
+// callbacks (which in the app call the createKpi / updateKpi / deleteKpi /
+// recordKpiEntry GraphQL mutations) actually update the UI, letting reviewers
+// exercise the happy path.
 //
 type HarnessArgs = {
   loading?: boolean;
@@ -73,6 +76,39 @@ function Harness(args: HarnessArgs) {
     return { success: true, id: newKpi.id };
   };
 
+  const onEditKpi = async (input: SpaceKpisPageNS.EditKpiInput): Promise<SpaceKpisPageNS.MutationResult> => {
+    console.log("updateKpi", input);
+    await delay(400);
+
+    if (args.failMutations) {
+      return { success: false, error: "A KPI with that name already exists in this space." };
+    }
+
+    const champion = mockPeople.find((p) => p.id === input.championId) ?? null;
+
+    setKpis((prev) =>
+      prev.map((kpi) =>
+        kpi.id === input.id
+          ? { ...kpi, name: input.name, unit: input.unit, cadence: input.cadence, champion }
+          : kpi,
+      ),
+    );
+
+    return { success: true, id: input.id };
+  };
+
+  const onDeleteKpi = async (kpiId: string): Promise<SpaceKpisPageNS.MutationResult> => {
+    console.log("deleteKpi", kpiId);
+    await delay(400);
+
+    if (args.failMutations) {
+      return { success: false, error: "You don't have permission to delete this KPI." };
+    }
+
+    setKpis((prev) => prev.filter((kpi) => kpi.id !== kpiId));
+    return { success: true };
+  };
+
   const onRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput): Promise<SpaceKpisPageNS.MutationResult> => {
     console.log("recordKpiEntry", input);
     await delay(400);
@@ -111,6 +147,8 @@ function Harness(args: HarnessArgs) {
       currentUser={mockCurrentUser}
       championSearch={mockChampionSearch}
       onCreateKpi={onCreateKpi}
+      onEditKpi={onEditKpi}
+      onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
       loading={args.loading}
       error={args.error}
