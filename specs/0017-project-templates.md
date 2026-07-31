@@ -73,7 +73,7 @@ Saving an existing project asks for a template name and description, plus:
 - **Include comments** — off by default
 - **Include Docs & Files** — on by default
 
-Under **Include people and assignments**, show the helper text: **Copy the project team and task assignments. People keep their project roles and access; task assignees can edit the new project.**
+Under **Include people and assignments**, show the helper text: **Copy the project team and task assignments. People keep their project roles and access.**
 
 Creating a template from the company-level page requires choosing a Space first. Creating it from a Space page preselects that Space. Saving an existing project creates the template in the same Space as the project.
 
@@ -93,7 +93,7 @@ When creating a project from a template, the user must choose a start date. Oper
 | Project duration | Stored relative to the start date when a project end date exists |
 | Milestones | Name, description, order, and relative due date |
 | Tasks | Name, description, milestone, order, priority, size, relative due date, and due-relative reminders |
-| Task workflow | Custom statuses and board ordering are copied; all tasks start in the first open status |
+| Task workflow | Custom statuses and board ordering are copied; all tasks start in the first not-started or equivalent status |
 | Discussions | Title, body, and author attribution are copied only when **Include discussions** is selected |
 | People | Champion, reviewer, contributors, responsibilities, contributor access levels, and task assignees are retained only when **Include people and assignments** is selected |
 | Comments | Comments attached to included discussions, milestones, tasks, documents, files, and links are copied only when **Include comments** is selected |
@@ -148,7 +148,7 @@ When a project is created from the template:
 - Active people who still belong to the company, including guests, are copied automatically. They are not merely suggested and the user does not have to confirm each person.
 - The champion and reviewer keep their roles and receive Full Access, matching Operately's existing project behavior.
 - Other contributors keep their responsibility and direct project access level.
-- Task assignees keep their assignments. Operately's existing task-assignment behavior ensures an assignee is also a project contributor with Edit Access when needed.
+- Task assignees keep their assignments. Operately's existing task-assignment behavior ensures an assignee is also a project contributor.
 - The new project's Company-members and Space-members baseline access levels still come from the normal project creation flow. Operately combines those baselines with contributor access using the most permissive applicable level.
 - Copied contributors and task assignees follow Operately's normal automatic subscription behavior.
 
@@ -178,8 +178,174 @@ If a referenced person has been removed or suspended since the template was save
 - The new project's baseline access levels are selected during creation rather than inherited from the source project; direct contributor access is copied only when people and assignments are included.
 - Template edits, archival, and deletion do not affect existing projects.
 
-## Success Measures
+## Implementation Phases
 
-- Share of new projects created from templates.
-- Number of companies with at least one template used more than once.
-- Support reports related to incorrect relative dates or unexpected copied content.
+Implement templates as a distinct kind of project-backed aggregate rather than as a second, parallel project system. A template can then reuse the existing project, milestone, task, discussion, and resource-hub schemas and the TurboUI project page, while template-specific APIs and guards keep it out of normal work, activity, notification, search, and reporting flows.
+
+Store relative scheduling separately from normal contextual dates. The project template stores a duration in calendar days; template milestones and tasks store non-negative due-date offsets. Materializing a project converts those offsets into ordinary contextual dates and does not copy the offsets into the generated project.
+
+All graph copies must run through one template copy/materialization service with explicit old-ID to new-ID maps. Do not compose the feature from user-facing create/copy mutations: those mutations create activities, subscriptions, notifications, and other history that this feature intentionally excludes.
+
+Keep the complete feature behind a `project_templates` experimental feature until Phase 6. Earlier phases may be merged and exercised through focused tests and development-only entry points, but must not expose a partially supported copy matrix to companies.
+
+### Phase 1 — Template persistence, isolation, and authorization
+
+This phase establishes the invariant that template-shaped project data cannot leak into normal project behavior.
+
+#### PR 1.1 — `feat: Add the project template data model`
+
+- [ ] Add an explicit project kind with `project` as the default for all existing rows and `template` for project templates.
+- [ ] Add template archival state, nullable source-template provenance for generated projects, and indexed lookup by company, Space, kind, and archival/deletion state.
+- [ ] Add template-only non-negative schedule fields for project duration, milestone due offset, and task due offset, with changeset and database constraints.
+- [ ] Add explicit `projects` and `templates` query scopes. Audit project lists, Work Map queries, goal children, assignments, global/full-text search, feeds, reports, scheduled jobs, and notification queries so they accept only real projects unless they intentionally opt into templates.
+- [ ] Make ordinary project getters and mutations reject template IDs. Template code must use the template domain boundary instead of accidentally treating a template as running work.
+- [ ] Preserve template rows and source-template provenance through company export/import.
+- [ ] Cover defaults, constraints, provenance, and every isolation boundary with focused schema and query tests.
+
+`deleted_at` continues to represent deletion. Use a separate archival field for the reversible archive/restore lifecycle so archived and deleted templates remain distinguishable.
+
+#### PR 1.2 — `feat: Add permission-aware project template APIs`
+
+- [ ] Add a `ProjectTemplates` domain boundary and read APIs for one template, templates in one Space, and the company-level aggregate.
+- [ ] Authorize visibility from the current Space access, not from copied contributors or source-project access.
+- [ ] Require Full Access to the Space for creating, editing, duplicating, archiving, restoring, and deleting templates.
+- [ ] Require the existing Space permission for project creation when a user instantiates a template; being able to view a template is not enough.
+- [ ] Return the card metadata and milestone/task counts needed by both library surfaces without loading the complete project graph.
+- [ ] Support search, Space filtering, and archived filtering in the backend query while applying access filtering before selecting template metadata.
+- [ ] Add internal/external API contract tests, regenerate clients, and verify that an inaccessible Space never leaks a template name, description, count, or creator.
+
+### Phase 2 — Blank templates and the template editor
+
+At the end of this phase, a Space administrator can create and edit a blank core template, and accessible templates can be found in either library. The feature remains flagged because project materialization and optional content are not complete.
+
+#### PR 2.1 — `feat: Create and edit blank project templates`
+
+- [ ] Add a blank-template creation operation that creates the project-shaped root, access context, default task workflow, and project resource hub without creating a project activity, check-in schedule, subscriptions, or search entry.
+- [ ] Add template-safe mutations for name, description, duration, custom task statuses, milestones, tasks, ordering, Kanban state, and relative task/milestone dates.
+- [ ] Reuse focused schema/domain helpers from projects where they have no project-runtime side effects; keep activity, notification, subscription, and search behavior out of template mutations.
+- [ ] Reject negative offsets and reject project-only actions such as check-ins, pause/resume, close, retrospective, goal connection, and project access-baseline editing.
+- [ ] Keep all template edits authorized by Full Access to the owning Space.
+- [ ] Add operation tests proving template edits do not create activities, notifications, subscriptions, check-ins, or search entries.
+
+#### PR 2.2 — `feat: Add a project template mode to TurboUI`
+
+- [ ] Extend the existing TurboUI project page through an explicit template mode instead of creating a second visual implementation of milestones, tasks, workflow, description, discussions, and Docs & Files.
+- [ ] Add reusable relative-day controls with the copy **On the project start date** and **N days after project starts**.
+- [ ] In template mode, replace project status with the **Template** pill and hide runtime-only controls and sections: project start date, health/status actions, check-ins, retrospective, activity feed, subscriptions, parent goal, and project access baselines.
+- [ ] Keep normal project rendering and date editing unchanged.
+- [ ] Add focused TurboUI tests and Storybook stories for empty and populated templates, relative dates, responsive layouts, permissions, and rejected invalid offsets.
+
+#### PR 2.3 — `feat: Add project template library pages`
+
+- [ ] Add the company-level **Project Templates** route and a Space-level **Project Templates** route.
+- [ ] Build the app bridge for the template page, including the **Space > Project Templates** breadcrumb and template-mode handlers.
+- [ ] Render searchable cards with description, Space, creator, last update, milestone count, and task count.
+- [ ] Group the company view by Space and add a Space filter; omit inaccessible Spaces and templates rather than rendering disabled results.
+- [ ] Add **New template** entry points. Preselect the current Space on the Space page and require a Space choice on the company page.
+- [ ] Initially wire create, open, and edit only; Phase 6 adds the complete duplicate/archive/delete card lifecycle after the full graph copier exists.
+- [ ] Add page/component tests and company feature coverage for both library scopes, filtering, empty states, access changes, and navigation.
+
+### Phase 3 — Core project materialization
+
+This phase delivers the first end-to-end vertical slice: a blank core template can produce an independent, ready-to-edit project with the correct schedule.
+
+#### PR 3.1 — `feat: Materialize core projects from templates`
+
+- [ ] Add one transactional materialization service for the project root, description, duration, custom task statuses, milestone/task structure, ordering, priority, size, and due-relative task reminders.
+- [ ] Require a start date and materialize project end, milestone due, and task due dates with calendar-day `Date.add/2` semantics.
+- [ ] Create normal project access context and baseline bindings from the creation input; never copy a parent goal or Company-members/Space-members baseline from the template.
+- [ ] Reset health, completion, closed/reopened state, check-ins, and retrospective. Rebuild the generated Kanban state so every task starts in the first open template status while preserving the copied status definitions and relative board ordering.
+- [ ] Persist source-template provenance for measurement only. No later template edit, archive, or deletion may update the generated project.
+- [ ] Create only the normal new-project activity and runtime subscriptions required by ordinary project creation; do not replay template edit history.
+- [ ] Cover zero-day offsets, leap years, month/year boundaries, missing start dates, ordering, reset fields, access baselines, and rollback on any invalid child.
+
+#### PR 3.2 — `feat: Create projects from project templates`
+
+- [ ] Extend New Project so Space is selected before Template and the Template selector lists only active templates from that Space.
+- [ ] Require a project start date when a template is selected while keeping the existing non-template creation flow unchanged.
+- [ ] Keep name, parent goal, and baseline access selection in the normal creation flow and submit them with the selected template and start date.
+- [ ] Add **Create project from template** to template cards and carry the template and owning Space into New Project.
+- [ ] Clear an incompatible template selection if the user changes Space.
+- [ ] Navigate directly to the independent generated project after the transaction commits.
+- [ ] Add form, route, API, and feature coverage for Space scoping, archived templates, start-date validation, direct card entry, creation failure, and successful navigation.
+
+### Phase 4 — Saving an existing project as a core template
+
+This phase adds the reverse core transformation and centralizes schedule validation. The user-facing **Save as template** action remains flagged until the optional copy families in Phase 5 honor every switch in the final dialog.
+
+#### PR 4.1 — `feat: Build core templates from existing projects`
+
+- [ ] Add a transactional project-to-template path to the shared copy service for description, project duration, workflow, milestones, tasks, ordering, priority, size, and due-relative reminders.
+- [ ] Require a concrete source-project start date and derive each supported offset from that date.
+- [ ] Validate the complete source graph before writing. Return one structured result for a missing start date and every project end, milestone due date, or task due date earlier than the start date.
+- [ ] Exclude fixed-date reminders and reset health, completion, closed/reopened state, check-ins, retrospective, goal, access baselines, activities, notifications, and subscriptions.
+- [ ] Create the template in the source project's Space and authorize against Full Access to that Space.
+- [ ] Cover source dates at offset zero, mixed contextual-date precision, invalid pre-start dates, nil dates, state resets, and all-or-nothing rollback.
+
+#### PR 4.2 — `feat: Add save project as template validation UI`
+
+- [ ] Build the name, description, and include-option dialog and connect it to the source validation response.
+- [ ] Keep the project actions entry point and submission disabled until Phase 5 supports every include option end to end; do not expose a dialog whose switches are only partially honored.
+- [ ] Show pre-start date validation in plain language and link or identify every offending project, milestone, and task date so the user can fix or remove it.
+- [ ] Open the created template after a successful save and leave the source project unchanged.
+- [ ] Add component and feature coverage for permission gating, defaults, validation, cancellation, retry, and success navigation.
+
+### Phase 5 — Selected people, discussions, comments, and Docs & Files
+
+Each PR in this phase extends the same copy service in both directions: project to template, template to project, and template to duplicated template. Every copied family must use explicit ID maps and must not fall back to copying historical activities or subscription state.
+
+#### PR 5.1 — `feat: Copy project template people and assignments`
+
+- [ ] When **Include people and assignments** is selected, copy champion, reviewer, contributors, responsibilities, contributor access levels, and task assignees into template data; otherwise copy none of them.
+- [ ] Do not grant copied people direct access to the template itself. Template visibility and management continue to come only from the owning Space.
+- [ ] When materializing, keep active company people and guests, skip removed or suspended people, and calculate one summary with affected project roles and task counts.
+- [ ] Recreate champion/reviewer Full Access, contributor direct access, task assignments, assignee Edit Access, and automatic subscriptions through shared access/assignment helpers.
+- [ ] Preserve author attribution in descriptions and other copied content independently of this option; content authors are not project contributors unless they are also copied by this option.
+- [ ] Add backend and feature coverage for on/off behavior, guests, inactive people, duplicate roles, assignment-implied contribution, most-permissive access, and the pre-creation warning.
+
+#### PR 5.2 — `feat: Copy project template discussions`
+
+- [ ] When **Include discussions** is selected, copy project discussion title, body, author attribution, and stable ordering; otherwise omit all project discussions.
+- [ ] Give every copied discussion a fresh subscription list with no copied subscribers and do not emit discussion-submitted activities or notifications.
+- [ ] Decouple project-discussion authorization from its historical creation activity where necessary so copied discussions resolve access from their current parent project/template.
+- [ ] Add discussion create/edit support to template mode with template permissions and no feed/notification side effects.
+- [ ] Add copy-service, API, template-page, and generated-project coverage for included/excluded discussions and author attribution.
+
+#### PR 5.3 — `feat: Copy project template Docs and Files`
+
+- [ ] When **Include Docs & Files** is selected, copy the published resource-hub tree with fresh node, folder, document, file, link, and subscription-list IDs while preserving hierarchy and ordering.
+- [ ] Copy published native documents as independent documents with a new version 1; do not copy draft/deleted documents or historical document versions.
+- [ ] Copy links and file records independently. Reuse immutable blob payloads safely rather than duplicating bytes, while ensuring later metadata/content edits affect only the copy.
+- [ ] Do not copy reactions or subscribers and do not emit resource-copy activities or notifications.
+- [ ] Add full Docs & Files editing to template mode and keep draft content excluded when a template is later duplicated or materialized.
+- [ ] Cover nested folders, mixed resource types, rich-text blobs, published/draft/deleted state, document baselines, and source independence.
+
+#### PR 5.4 — `feat: Copy comments in project templates`
+
+- [ ] When **Include comments** is selected, copy comments only after all included parent-resource maps are available.
+- [ ] Support comments on included discussions, milestones, tasks, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
+- [ ] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
+- [ ] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
+- [ ] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
+- [ ] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Full Access to the project's Space.
+- [ ] Cover the complete option matrix, permission gating, cancellation, validation, retry, success navigation, and source-project independence in backend and end-to-end tests.
+
+### Phase 6 — Template lifecycle, rollout, and hardening
+
+#### PR 6.1 — `feat: Add project template lifecycle actions`
+
+- [ ] Implement template duplication through the complete copy service, preserving relative offsets and included reusable content while generating an independent template graph.
+- [ ] Add archive, restore, and delete operations with Space Full Access checks and clear confirmation UI.
+- [ ] Hide archived templates from New Project and default library results; allow archived filtering and restoration in both libraries.
+- [ ] Ensure archive or deletion never changes generated projects and that duplicate/archive/delete operations do not create project activities or notifications.
+- [ ] Finish card actions and invalidate company, Space, template-page, and New Project caches consistently.
+- [ ] Add lifecycle tests for permissions, deep-copy independence, archived visibility, restoration, deletion, stale open pages, and generated-project independence.
+
+#### PR 6.2 — `feat: Roll out project templates`
+
+- [ ] Run the full backend, API, TurboUI, TypeScript, and feature-test suites for blank templates, save-from-project, duplicate, and project materialization.
+- [ ] Add telemetry for template creation source, successful/failed materialization, selected copy options, copied/skipped people, and generated-project provenance without recording template content.
+- [ ] Verify company export/import preserves active and archived templates, relative offsets, optional content, blob references, and generated-project independence.
+- [ ] Verify no template appears in Work Maps, goals, assignments, search, feeds, check-in jobs, project reports, or ordinary project APIs.
+- [ ] Exercise large templates with representative milestone, task, comment, and file counts; record transaction latency and establish practical limits or operator guidance if needed.
+- [ ] Enable `project_templates` for controlled companies, monitor copy failures and unexpected-content reports, then remove the experimental gate after the acceptance criteria pass.
