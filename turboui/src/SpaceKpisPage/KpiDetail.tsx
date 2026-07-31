@@ -8,12 +8,17 @@ import { formatCadence, formatShortDate, formatValue, latestEntry, latestTrend }
 
 interface KpiDetailProps {
   kpi: SpaceKpisPage.Kpi;
+
+  // True while the KPI's entries are still being fetched (the list endpoint
+  // omits them). Shows a placeholder in place of the chart/history so we don't
+  // flash a misleading "No data" state.
+  loadingHistory?: boolean;
 }
 
 // The KPI name, back navigation and the "Log update" action live in the shared
 // page header (see index.tsx), so the detail body focuses on the metadata,
 // latest value, history chart and the recorded-updates log.
-export function KpiDetail({ kpi }: KpiDetailProps) {
+export function KpiDetail({ kpi, loadingHistory = false }: KpiDetailProps) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
@@ -39,24 +44,33 @@ export function KpiDetail({ kpi }: KpiDetailProps) {
         </span>
       </div>
 
-      <div className="mt-6 flex items-end gap-3">
-        <div className="text-4xl font-bold text-content-accent">
-          {latest ? formatValue(latest.value, kpi.unit) : "—"}
+      {loadingHistory ? (
+        <div className="mt-6 space-y-6" data-test-id="kpi-detail-loading">
+          <div className="h-10 w-40 animate-pulse rounded bg-surface-dimmed" />
+          <div className="h-[220px] animate-pulse rounded-lg bg-surface-dimmed" />
         </div>
-        <div className="pb-1">
-          <TrendIndicator delta={trend} />
-        </div>
-        {latest && (
-          <div className="pb-1.5 text-xs text-content-dimmed">latest · {formatShortDate(latest.recordedAt)}</div>
-        )}
-      </div>
+      ) : (
+        <>
+          <div className="mt-6 flex items-end gap-3">
+            <div className="text-4xl font-bold text-content-accent">
+              {latest ? formatValue(latest.value, kpi.unit) : "—"}
+            </div>
+            <div className="pb-1">
+              <TrendIndicator delta={trend} />
+            </div>
+            {latest && (
+              <div className="pb-1.5 text-xs text-content-dimmed">latest · {formatShortDate(latest.recordedAt)}</div>
+            )}
+          </div>
 
-      <div className="mt-6 rounded-lg border border-stroke-base bg-surface-base p-4">
-        <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
-        <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
-      </div>
+          <div className="mt-6 rounded-lg border border-stroke-base bg-surface-base p-4">
+            <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
+            <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
+          </div>
 
-      <EntriesTable entries={kpi.entries} unit={kpi.unit} />
+          <EntriesTable entries={kpi.entries} unit={kpi.unit} />
+        </>
+      )}
     </div>
   );
 }

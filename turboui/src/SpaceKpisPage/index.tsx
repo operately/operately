@@ -26,10 +26,51 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   const [editKpiId, setEditKpiId] = React.useState<string | null>(null);
   const [deleteKpiId, setDeleteKpiId] = React.useState<string | null>(null);
 
-  const selectedKpi = props.kpis.find((kpi) => kpi.id === selectedKpiId) ?? null;
+  // The list endpoint omits entries, so the detail view lazily loads the full
+  // KPI (with entries) via `onLoadKpi`. Until it resolves we fall back to the
+  // list row so the header/metadata render immediately.
+  const { onLoadKpi } = props;
+  const [detailKpi, setDetailKpi] = React.useState<SpaceKpisPageNS.Kpi | null>(null);
+  const [detailLoading, setDetailLoading] = React.useState(false);
+
+  const loadDetail = React.useCallback(
+    async (kpiId: string) => {
+      if (!onLoadKpi) return;
+      setDetailLoading(true);
+      try {
+        const full = await onLoadKpi(kpiId);
+        setDetailKpi((current) => (full && full.id === kpiId ? full : current));
+      } finally {
+        setDetailLoading(false);
+      }
+    },
+    [onLoadKpi],
+  );
+
+  React.useEffect(() => {
+    setDetailKpi(null);
+    if (selectedKpiId && onLoadKpi) loadDetail(selectedKpiId);
+  }, [selectedKpiId, onLoadKpi, loadDetail]);
+
+  const listKpi = props.kpis.find((kpi) => kpi.id === selectedKpiId) ?? null;
+  const selectedKpi = detailKpi && detailKpi.id === selectedKpiId ? detailKpi : listKpi;
   const logKpi = props.kpis.find((kpi) => kpi.id === logKpiId) ?? null;
   const editKpi = props.kpis.find((kpi) => kpi.id === editKpiId) ?? null;
   const deleteKpi = props.kpis.find((kpi) => kpi.id === deleteKpiId) ?? null;
+
+  // After mutating the open KPI, reload its detail so the chart/log reflect the
+  // change without needing a full page reload.
+  const handleRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput) => {
+    const result = await props.onRecordEntry(input);
+    if (result.success && input.kpiId === selectedKpiId) await loadDetail(input.kpiId);
+    return result;
+  };
+
+  const handleEditKpi = async (input: SpaceKpisPageNS.EditKpiInput) => {
+    const result = await props.onEditKpi(input);
+    if (result.success && input.id === selectedKpiId) await loadDetail(input.id);
+    return result;
+  };
 
   const contentReady = !props.loading && !props.error;
 
@@ -71,6 +112,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             {...props}
             canManage={canManage}
             selectedKpi={selectedKpi}
+            detailLoading={detailLoading && detailKpi === null}
             onSelectKpi={setSelectedKpiId}
             onOpenNew={() => setIsNewOpen(true)}
             onOpenLog={setLogKpiId}
@@ -86,7 +128,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         onClose={() => setIsNewOpen(false)}
         championSearch={props.championSearch}
         onCreate={props.onCreateKpi}
-        onEdit={props.onEditKpi}
+        onEdit={handleEditKpi}
       />
 
       {/* Edit KPI — keyed by id so the form re-initialises for each KPI. */}
@@ -97,7 +139,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         championSearch={props.championSearch}
         kpi={editKpi}
         onCreate={props.onCreateKpi}
-        onEdit={props.onEditKpi}
+        onEdit={handleEditKpi}
       />
 
       <DeleteKpiModal
@@ -116,7 +158,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         kpi={logKpi}
         isOpen={logKpiId !== null}
         onClose={() => setLogKpiId(null)}
-        onRecord={props.onRecordEntry}
+        onRecord={handleRecordEntry}
       />
     </PageNew>
   );
@@ -208,6 +250,7 @@ function PageHeader(props: PageHeaderProps) {
 interface KpisContentProps extends SpaceKpisPageNS.Props {
   canManage: boolean;
   selectedKpi: SpaceKpisPageNS.Kpi | null;
+  detailLoading: boolean;
   onSelectKpi: (id: string) => void;
   onOpenNew: () => void;
   onOpenLog: (id: string) => void;
@@ -225,7 +268,7 @@ function KpisContent(props: KpisContentProps) {
   }
 
   if (props.selectedKpi) {
-    return <KpiDetail kpi={props.selectedKpi} />;
+    return <KpiDetail kpi={props.selectedKpi} loadingHistory={props.detailLoading} />;
   }
 
   return (

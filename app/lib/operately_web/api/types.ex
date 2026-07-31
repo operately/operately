@@ -1350,12 +1350,14 @@ defmodule OperatelyWeb.Api.Types do
     field :tasks_enabled, :boolean, null: false
     field :discussions_enabled, :boolean, null: false
     field :resource_hub_enabled, :boolean, null: false
+    field :kpis_enabled, :boolean, null: false
   end
 
   object :space_tools, for: Operately.Groups.SpaceTools do
     field :tasks_enabled, :boolean, null: false
     field :discussions_enabled, :boolean, null: false
     field :resource_hub_enabled, :boolean, null: false
+    field :kpis_enabled, :boolean, null: false
 
     field :projects, list_of(:project), null: true
     field :goals, list_of(:goal), null: true
