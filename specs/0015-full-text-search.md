@@ -811,11 +811,11 @@ PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permissio
 
 #### PR 3.9 — `chore: Connect quick search to full-text search`
 
-- [ ] Add a divider and final `Search titles and content for “{query}”` option for every quick-search query of at least two characters.
-- [ ] Keep the action available after populated, empty, and quick-search error states without changing or refilling the quick-search results.
-- [ ] Include the action in pointer navigation, arrow-key wraparound, Enter handling, selected-item scrolling, listbox/option semantics, and selected-option ARIA state.
-- [ ] Close the overlay and navigate to the completed company Search page with the current query encoded as `q`.
-- [ ] Add focused TurboUI, Storybook, mapper, and company feature coverage for copy, divider placement, availability in every request state, keyboard behavior, query preservation, and navigation.
+- [x] Add a divider and final `Search titles and content for “{query}”` option for every quick-search query of at least two characters.
+- [x] Keep the action available after populated, empty, and quick-search error states without changing or refilling the quick-search results.
+- [x] Include the action in pointer navigation, arrow-key wraparound, Enter handling, selected-item scrolling, listbox/option semantics, and selected-option ARIA state.
+- [x] Close the overlay and navigate to the completed company Search page with the current query encoded as `q`.
+- [x] Add focused TurboUI, Storybook, mapper, and company feature coverage for copy, divider placement, availability in every request state, keyboard behavior, query preservation, and navigation.
 
 #### Optional PR 3.10 — `chore: Expand the company full-text corpus`
 

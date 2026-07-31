@@ -49,4 +49,21 @@ defmodule Operately.Features.GlobalSearch.InteractionTest do
     |> Steps.search_for("buried-body-marker")
     |> Steps.assert_no_results_message()
   end
+
+  feature "continues the current query on the full-text Search page when enabled", ctx do
+    ctx
+    |> Steps.enable_full_text_search()
+    |> Steps.open_global_search()
+    |> Steps.search_for("Website redesign")
+    |> Steps.assert_full_text_search_action("Website redesign")
+    |> Steps.open_full_text_search()
+    |> Steps.assert_full_text_search_page("Website redesign")
+  end
+
+  feature "does not show the full-text action when the feature is disabled", ctx do
+    ctx
+    |> Steps.open_global_search()
+    |> Steps.search_for("Website redesign")
+    |> Steps.refute_full_text_search_action()
+  end
 end
