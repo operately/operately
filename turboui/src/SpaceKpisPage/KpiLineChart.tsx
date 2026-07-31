@@ -34,9 +34,12 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
   const min = Math.min(...values);
   const max = Math.max(...values);
 
-  // Give the line vertical breathing room so a flat series is not glued to an edge.
+  // Pin the y-axis minimum at zero so a high-baseline, low-variance series is
+  // shown in true proportion rather than having small fluctuations visually
+  // exaggerated by an auto-scaled minimum. The maximum still auto-scales, with
+  // headroom above the largest value so the line is not glued to the top edge.
   const span = max - min || Math.abs(max) || 1;
-  const yMin = min - span * 0.15;
+  const yMin = 0;
   const yMax = max + span * 0.15;
 
   const innerWidth = VIEW_WIDTH - PADDING.left - PADDING.right;
@@ -79,6 +82,7 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
               textAnchor="end"
               className="fill-content-dimmed"
               style={{ fontSize: 11 }}
+              data-test-id={i === gridLines.length - 1 ? "kpi-chart-y-axis-min" : undefined}
             >
               {formatNumber(value)}
             </text>
