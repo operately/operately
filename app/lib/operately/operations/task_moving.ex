@@ -5,6 +5,7 @@ defmodule Operately.Operations.TaskMoving do
   alias Operately.Groups.Group
   alias Operately.Projects.Project
   alias Operately.Activities
+  alias Operately.Search.IndexUpdates
 
   def run(author, task, destination_type, destination) do
     with :ok <- ensure_valid_destination(destination_type, destination),
@@ -32,6 +33,7 @@ defmodule Operately.Operations.TaskMoving do
 
       Multi.new()
       |> Multi.update(:task, Task.changeset(task, attrs))
+      |> IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.task.id end)
       |> Activities.insert_sync(author.id, :task_moving, fn _ ->
         activity_content(task, destination_type, destination)
       end)

@@ -405,6 +405,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id, [:champion])
       |> Steps.check_permissions(:can_edit)
       |> Steps.create_milestone(inputs)
+      |> Operately.Search.IndexUpdates.enqueue(:search_milestone, "milestone", fn changes -> changes.milestone.id end)
       |> Steps.add_milestone_to_ordering_state()
       |> Steps.save_activity(:project_milestone_creation, fn changes ->
         %{
@@ -458,6 +459,7 @@ defmodule OperatelyWeb.Api.Projects do
           }
         })
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_milestone, "milestone", fn changes -> changes.updated_milestone.id end)
       |> Steps.save_activity(:project_milestone_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -825,11 +827,12 @@ defmodule OperatelyWeb.Api.Projects do
         end)
 
         if Enum.empty?(errors) do
-          {:ok, length(tasks)}
+          {:ok, Enum.map(tasks, & &1.id)}
         else
           List.first(errors)
         end
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_tasks_with_replaced_status, "task", fn changes -> changes.replace_task_statuses end)
     end
 
     def update_project_start_date(multi, new_start_date) do

@@ -102,6 +102,96 @@ defmodule Operately.Search.CompanyQueryTest do
     assert snippet =~ "Interview synthesis"
   end
 
+  test "returns milestones, project and space tasks, and people with semantic matches", ctx do
+    ctx =
+      ctx
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_project(:project, :space, name: "Growth program", goal: :goal)
+      |> Factory.add_project_milestone(:milestone, :project, title: "Launch beta")
+      |> Factory.add_project_task(:project_task, :milestone, name: "Interview customers")
+      |> Factory.create_space_task(:space_task, :space, name: "Prepare agenda")
+      |> Factory.add_company_member(:teammate,
+        name: "Taylor Reed",
+        title: "VP of Product",
+        description: RichText.rich_text("Biography marker must remain unindexed")
+      )
+
+    milestone = ctx.milestone |> Operately.Projects.Milestone.changeset(%{description: RichText.rich_text("Activation evidence")}) |> Repo.update!()
+    project_task = ctx.project_task |> Operately.Tasks.Task.changeset(%{description: RichText.rich_text("Retention interviews")}) |> Repo.update!()
+    space_task = ctx.space_task |> Operately.Tasks.Task.changeset(%{description: RichText.rich_text("Cadence marker")}) |> Repo.update!()
+
+    sync(:milestone, milestone.id)
+    sync(:task, project_task.id)
+    sync(:task, space_task.id)
+    sync(:person, ctx.teammate.id)
+
+    assert [%{id: id, context: "Growth program", matched_field: :title, navigation_target: %{milestone_id: milestone_id}}] =
+             Search.search_company(ctx.creator, "Launch beta")
+
+    assert id == milestone.id
+    assert milestone_id == milestone.id
+
+    assert [%{id: id, context: "Growth program", matched_field: :description, navigation_target: %{task_id: task_id}}] =
+             Search.search_company(ctx.creator, "Retention interviews")
+
+    assert id == project_task.id
+    assert task_id == project_task.id
+
+    assert [%{id: id, context: "Research Space", matched_field: :description}] =
+             Search.search_company(ctx.creator, "Cadence marker")
+
+    assert id == space_task.id
+
+    assert [%{id: id, context: company_name, matched_field: :title, snippet: snippet, navigation_target: %{person_id: person_id}}] =
+             Search.search_company(ctx.creator, "VP of Product")
+
+    assert id == ctx.teammate.id
+    assert person_id == ctx.teammate.id
+    assert company_name == ctx.company.name
+    assert snippet =~ "VP of Product"
+    assert [] = Search.search_company(ctx.creator, "Biography marker")
+  end
+
+  test "validates live permissions, inherited states, and person suspension", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:viewer)
+      |> Factory.add_project(:private_project, :space,
+        name: "Restricted project",
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access()
+      )
+      |> Factory.add_project_milestone(:milestone, :private_project, title: "Permission marker milestone")
+      |> Factory.add_project_task(:task, :milestone, name: "Permission marker task")
+      |> Factory.add_company_member(:teammate, name: "Permission Marker Person", title: "Research lead")
+
+    sync(:milestone, ctx.milestone.id)
+    sync(:task, ctx.task.id)
+    sync(:person, ctx.teammate.id)
+
+    assert [] = Search.search_company(ctx.viewer, "Permission marker milestone")
+    assert [] = Search.search_company(ctx.viewer, "Permission marker task")
+
+    context = Access.get_context!(project_id: ctx.private_project.id)
+    {:ok, _binding} = Access.bind(context, person_id: ctx.viewer.id, level: Binding.view_access())
+    assert [%{id: milestone_id}] = Search.search_company(ctx.viewer, "Permission marker milestone")
+    assert milestone_id == ctx.milestone.id
+    assert [%{id: task_id}] = Search.search_company(ctx.viewer, "Permission marker task")
+    assert task_id == ctx.task.id
+
+    ctx.private_project |> Ecto.Changeset.change(status: "paused") |> Repo.update!()
+    assert [] = Search.search_company(ctx.viewer, "Permission marker milestone")
+    assert [] = Search.search_company(ctx.viewer, "Permission marker task")
+
+    sync(:milestone, ctx.milestone.id)
+    sync(:task, ctx.task.id)
+    assert [%{state: :paused}] = Search.search_company(ctx.viewer, "Permission marker milestone")
+    assert [%{state: :paused}] = Search.search_company(ctx.viewer, "Permission marker task")
+
+    ctx.teammate |> Ecto.Changeset.change(suspended: true, suspended_at: DateTime.utc_now(:second)) |> Repo.update!()
+    assert [] = Search.search_company(ctx.creator, "Permission Marker Person")
+  end
+
   test "returns check-ins and retrospectives with parent context and typed navigation", ctx do
     ctx =
       ctx
@@ -709,7 +799,7 @@ defmodule Operately.Search.CompanyQueryTest do
   defp sync(type, id) do
     source_type =
       case type do
-        type when type in [:project, :goal, :discussion, :project_check_in, :goal_check_in, :project_retrospective] -> Atom.to_string(type)
+        type when type in [:project, :goal, :milestone, :task, :person, :discussion, :project_check_in, :goal_check_in, :project_retrospective] -> Atom.to_string(type)
         resource_hub_type -> Search.ResourceHubIndex.source_type(resource_hub_type)
       end
 
