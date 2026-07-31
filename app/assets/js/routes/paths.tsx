@@ -398,6 +398,10 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "tools-config"]);
   }
 
+  spaceKpisPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "kpis"]);
+  }
+
   spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {
     if (opts?.taskId) {
       return this.createCompanyPath(["spaces", spaceId, "kanban"]) + "?taskId=" + opts.taskId;
