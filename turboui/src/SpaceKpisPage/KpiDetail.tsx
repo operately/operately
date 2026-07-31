@@ -1,0 +1,137 @@
+import React from "react";
+
+import { Avatar } from "../Avatar";
+import { IconChevronLeft } from "../icons";
+import { KpiLineChart } from "./KpiLineChart";
+import { TrendIndicator } from "./TrendIndicator";
+import type { SpaceKpisPage } from "./types";
+import { formatCadence, formatShortDate, formatValue, latestEntry, latestTrend } from "./utils";
+
+interface KpiDetailProps {
+  kpi: SpaceKpisPage.Kpi;
+  canManage: boolean;
+  onBack: () => void;
+  onLogUpdate: () => void;
+}
+
+export function KpiDetail({ kpi, canManage, onBack, onLogUpdate }: KpiDetailProps) {
+  const latest = latestEntry(kpi);
+  const trend = latestTrend(kpi);
+
+  return (
+    <div data-test-id="kpi-detail">
+      <button
+        type="button"
+        className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-link-base hover:underline"
+        onClick={onBack}
+        data-test-id="kpi-detail-back"
+      >
+        <IconChevronLeft size={16} />
+        All KPIs
+      </button>
+
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-content-accent">{kpi.name}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-content-dimmed">
+            <span>
+              Measured in <span className="font-medium text-content-base">{kpi.unit}</span>
+            </span>
+            <span>
+              Cadence <span className="font-medium text-content-base">{formatCadence(kpi.cadence)}</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              Champion
+              {kpi.champion ? (
+                <span className="flex items-center gap-1.5 font-medium text-content-base">
+                  <Avatar person={kpi.champion} size="tiny" />
+                  {kpi.champion.fullName}
+                </span>
+              ) : (
+                <span className="font-medium text-content-subtle">Unassigned</span>
+              )}
+            </span>
+          </div>
+        </div>
+
+        {canManage && (
+          <button
+            type="button"
+            className="rounded-lg bg-brand-1 px-3 py-1.5 text-sm font-medium text-white-1 hover:bg-blue-600"
+            onClick={onLogUpdate}
+            data-test-id="kpi-detail-log-update"
+          >
+            Log update
+          </button>
+        )}
+      </div>
+
+      <div className="mt-6 flex items-end gap-3">
+        <div className="text-4xl font-bold text-content-accent">
+          {latest ? formatValue(latest.value, kpi.unit) : "—"}
+        </div>
+        <div className="pb-1">
+          <TrendIndicator delta={trend} />
+        </div>
+        {latest && (
+          <div className="pb-1.5 text-xs text-content-dimmed">latest · {formatShortDate(latest.recordedAt)}</div>
+        )}
+      </div>
+
+      <div className="mt-6 rounded-lg border border-stroke-base bg-surface-base p-4">
+        <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
+        <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
+      </div>
+
+      <EntriesTable entries={kpi.entries} unit={kpi.unit} />
+    </div>
+  );
+}
+
+function EntriesTable({ entries, unit }: { entries: SpaceKpisPage.KpiEntry[]; unit: string }) {
+  if (entries.length === 0) return null;
+
+  // Show newest first in the log, even though entries are stored oldest -> newest.
+  const rows = [...entries].reverse();
+
+  return (
+    <div className="mt-6">
+      <h2 className="mb-3 text-sm font-bold text-content-accent">Recorded updates</h2>
+      <div className="overflow-hidden rounded-lg border border-stroke-base">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-stroke-base bg-surface-dimmed text-left text-xs uppercase tracking-wide text-content-dimmed">
+              <th className="px-4 py-2 font-medium">Date</th>
+              <th className="px-4 py-2 font-medium">Recorded by</th>
+              <th className="px-4 py-2 text-right font-medium">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((entry) => (
+              <tr
+                key={entry.id}
+                className="border-b border-stroke-dimmed last:border-b-0"
+                data-test-id={`entry-row-${entry.id}`}
+              >
+                <td className="px-4 py-2 text-content-base">{formatShortDate(entry.recordedAt)}</td>
+                <td className="px-4 py-2">
+                  {entry.recordedBy ? (
+                    <div className="flex items-center gap-2">
+                      <Avatar person={entry.recordedBy} size="tiny" />
+                      <span className="text-content-base">{entry.recordedBy.fullName}</span>
+                    </div>
+                  ) : (
+                    <span className="text-content-subtle">Unknown</span>
+                  )}
+                </td>
+                <td className="px-4 py-2 text-right font-medium text-content-accent">
+                  {formatValue(entry.value, unit)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
