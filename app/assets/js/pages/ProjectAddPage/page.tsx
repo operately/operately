@@ -118,23 +118,11 @@ function Form() {
   );
 }
 
-function SelectChampion({
-  me,
-  search,
-}: {
-  me: People.Person;
-  search: (query: string) => Promise<People.Person[]>;
-}) {
+function SelectChampion({ me, search }: { me: People.Person; search: (query: string) => Promise<People.Person[]> }) {
   return <Forms.SelectPerson label="Champion" field="champion" searchFn={search} default={me} />;
 }
 
-function SelectReviewer({
-  me,
-  search,
-}: {
-  me: People.Person;
-  search: (query: string) => Promise<People.Person[]>;
-}) {
+function SelectReviewer({ me, search }: { me: People.Person; search: (query: string) => Promise<People.Person[]> }) {
   return (
     <Forms.SelectPerson
       label="Reviewer"

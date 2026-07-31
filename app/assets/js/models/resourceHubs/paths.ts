@@ -25,10 +25,7 @@ type ResourceHubLandingTarget = {
   goal?: Pick<Goal, "id"> | null;
 };
 
-export function resourceHubLandingPath(
-  paths: Paths,
-  resourceHub?: ResourceHubLandingTarget | null,
-) {
+export function resourceHubLandingPath(paths: Paths, resourceHub?: ResourceHubLandingTarget | null) {
   if (resourceHub?.project?.id) {
     return paths.projectPath(resourceHub.project.id, { tab: "docs-and-files" });
   }
@@ -59,7 +56,7 @@ export function resourceHubWithParentContext<T extends ResourceHub | null | unde
     project?: Project | null;
     goal?: Goal | null;
   },
-) : T {
+): T {
   if (!resourceHub) return resourceHub;
 
   return {

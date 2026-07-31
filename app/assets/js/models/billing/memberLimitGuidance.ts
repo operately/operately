@@ -22,7 +22,10 @@ export function buildMemberLimitGuidance(
   routes: BillingLimitGuidanceRoutes,
 ): BillingLimitGuidance {
   const recommendedPlanLabel = error.recommendedUpgrade.target
-    ? formatCompanyBillingPlanLabel(error.recommendedUpgrade.target.plan, error.recommendedUpgrade.target.billingInterval)
+    ? formatCompanyBillingPlanLabel(
+        error.recommendedUpgrade.target.plan,
+        error.recommendedUpgrade.target.billingInterval,
+      )
     : null;
 
   const usageSummary = `This company has ${error.currentUsage} active members. The plan includes ${error.limit}.`;

@@ -7,14 +7,16 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    file: await files.get({
-      id: params.id,
-      includePathToFile: true,
-      includeResourceHub: true,
-      includeGoal: true,
-      includeSpace: true,
-      includeProject: true,
-    }).then((res) => res.file!),
+    file: await files
+      .get({
+        id: params.id,
+        includePathToFile: true,
+        includeResourceHub: true,
+        includeGoal: true,
+        includeSpace: true,
+        includeProject: true,
+      })
+      .then((res) => res.file!),
   };
 }
 

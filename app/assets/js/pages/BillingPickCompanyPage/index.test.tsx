@@ -4,7 +4,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import BillingPickCompanyPageModule from "./index";
 
 jest.mock("@/components/Pages", () => ({
-  Page: ({ children, testId }: { children: React.ReactNode; testId?: string }) => <div data-test-id={testId}>{children}</div>,
+  Page: ({ children, testId }: { children: React.ReactNode; testId?: string }) => (
+    <div data-test-id={testId}>{children}</div>
+  ),
   useLoadedData: jest.fn(() => ({ companies: [] })),
 }));
 

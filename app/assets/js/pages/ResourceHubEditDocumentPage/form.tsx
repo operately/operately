@@ -28,7 +28,10 @@ export function Form({ document }: { document: ResourceHubDocument }) {
     resourceHubName: document.resourceHub.name,
   });
 
-  const initialSubscriptionsRef = React.useRef<{ subscriptionType: SubscribersSelector.SubscriptionOption; subscriberIds: string[] } | null>(null);
+  const initialSubscriptionsRef = React.useRef<{
+    subscriptionType: SubscribersSelector.SubscriptionOption;
+    subscriberIds: string[];
+  } | null>(null);
 
   if (initialSubscriptionsRef.current === null) {
     initialSubscriptionsRef.current = {

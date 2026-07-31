@@ -54,7 +54,9 @@ export async function authorizeBillingManagementPageAccess(companyId: string) {
   return company;
 }
 
-export async function getAccessState(input: api.BillingGetAccessStateInput = {}): Promise<api.BillingCompanyAccessState> {
+export async function getAccessState(
+  input: api.BillingGetAccessStateInput = {},
+): Promise<api.BillingCompanyAccessState> {
   return Api.billing.getAccessState(input).then((data) => data.accessState);
 }
 
@@ -128,7 +130,9 @@ export async function beginCustomerPortalSession(returnTo: string): Promise<Begi
   });
 }
 
-async function createCheckoutSession(input: api.BillingCreateCheckoutSessionInput): Promise<api.BillingCheckoutSession> {
+async function createCheckoutSession(
+  input: api.BillingCreateCheckoutSessionInput,
+): Promise<api.BillingCheckoutSession> {
   return Api.billing.createCheckoutSession(input).then((data) => data.session);
 }
 

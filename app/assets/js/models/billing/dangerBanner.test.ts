@@ -232,7 +232,11 @@ describe("billing danger banner helpers", () => {
 
   it("recognizes payment recovery access states from account-like inputs", () => {
     expect(Billing.isPaymentRecoveryAccessState(accessState())).toBe(true);
-    expect(Billing.isPaymentRecoveryAccessState(accessState({ accessState: "read_only", accessStateEndsAt: null }))).toBe(true);
-    expect(Billing.isPaymentRecoveryAccessState(accessState({ accessState: "normal", accessStateReason: null }))).toBe(false);
+    expect(
+      Billing.isPaymentRecoveryAccessState(accessState({ accessState: "read_only", accessStateEndsAt: null })),
+    ).toBe(true);
+    expect(Billing.isPaymentRecoveryAccessState(accessState({ accessState: "normal", accessStateReason: null }))).toBe(
+      false,
+    );
   });
 });

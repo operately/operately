@@ -32,7 +32,7 @@ export function toImportPageRun(run: CompanyImportRun) {
   const currentVersion = window.appConfig?.version;
 
   const showVersionWarning = Boolean(
-    run.status === "failed" && manifestVersion && currentVersion && manifestVersion !== currentVersion
+    run.status === "failed" && manifestVersion && currentVersion && manifestVersion !== currentVersion,
   );
 
   return {

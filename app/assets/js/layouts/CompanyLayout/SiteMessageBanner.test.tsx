@@ -66,7 +66,9 @@ describe("SiteMessageBanner", () => {
 
   it("does not render when all messages are dismissed", () => {
     mockUseCompanyLoaderData.mockReturnValue({
-      siteMessages: [{ id: "message-1", title: "Maintenance", description: richTextDescription("Scheduled downtime tonight") }],
+      siteMessages: [
+        { id: "message-1", title: "Maintenance", description: richTextDescription("Scheduled downtime tonight") },
+      ],
     });
     mockUseStateWithLocalStorage.mockReturnValue([["message-1"], jest.fn()]);
 

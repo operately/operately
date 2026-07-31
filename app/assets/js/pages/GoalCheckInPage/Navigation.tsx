@@ -12,15 +12,12 @@ export function Navigation() {
   if (goal.space) {
     items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
     items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
-  }
-  else {
+  } else {
     items.push({ to: paths.workMapPath("goals"), label: "Work Map" });
   }
 
   items.push({ to: paths.goalPath(goal.id), label: goal.name });
   items.push({ to: paths.goalPath(goal.id, { tab: "check-ins" }), label: "Check-ins" });
 
-  return (
-    <Paper.Navigation items={items} />
-  );
+  return <Paper.Navigation items={items} />;
 }

@@ -59,7 +59,9 @@ export function Page() {
 
   const [billing, setBilling] = React.useState(locationState?.billing || loadedBilling);
   const [actionError, setActionError] = React.useState<string | null>(null);
-  const [feedback, setFeedback] = React.useState<TurboCompanyBillingPage.Feedback | null>(locationState?.feedback || null);
+  const [feedback, setFeedback] = React.useState<TurboCompanyBillingPage.Feedback | null>(
+    locationState?.feedback || null,
+  );
   const [, setIsStartingCheckout] = React.useState(false);
 
   React.useEffect(() => {
@@ -137,41 +139,38 @@ export function Page() {
     [finishCheckoutConfirmation, search],
   );
 
-  const startCheckout = React.useCallback(
-    async (target: TurboCompanyBillingPage.BillingTarget | null) => {
-      setActionError(null);
-      setFeedback(null);
-      setIsStartingCheckout(true);
+  const startCheckout = React.useCallback(async (target: TurboCompanyBillingPage.BillingTarget | null) => {
+    setActionError(null);
+    setFeedback(null);
+    setIsStartingCheckout(true);
 
-      const result = await Billing.beginCheckout(target);
+    const result = await Billing.beginCheckout(target);
 
-      if (result.outcome === "missing_target") {
-        setIsStartingCheckout(false);
-        return;
-      }
-
-      if (result.outcome === "target_unavailable") {
-        setIsStartingCheckout(false);
-        setActionError("That plan is no longer available. Choose another plan.");
-        showErrorToast("Checkout unavailable", "That plan is no longer available. Choose another plan.");
-        return;
-      }
-
-      if (result.outcome === "session_created") {
-        Billing.redirectToExternalBillingUrl(result.session.url);
-        return;
-      }
-
-      if (result.billing) {
-        setBilling(result.billing);
-      }
-
-      setActionError("We couldn't start checkout right now. Please try again.");
-      showErrorToast("Failed to start checkout", "We couldn't start checkout right now. Please try again.");
+    if (result.outcome === "missing_target") {
       setIsStartingCheckout(false);
-    },
-    [],
-  );
+      return;
+    }
+
+    if (result.outcome === "target_unavailable") {
+      setIsStartingCheckout(false);
+      setActionError("That plan is no longer available. Choose another plan.");
+      showErrorToast("Checkout unavailable", "That plan is no longer available. Choose another plan.");
+      return;
+    }
+
+    if (result.outcome === "session_created") {
+      Billing.redirectToExternalBillingUrl(result.session.url);
+      return;
+    }
+
+    if (result.billing) {
+      setBilling(result.billing);
+    }
+
+    setActionError("We couldn't start checkout right now. Please try again.");
+    showErrorToast("Failed to start checkout", "We couldn't start checkout right now. Please try again.");
+    setIsStartingCheckout(false);
+  }, []);
 
   const openPaymentMethodSession = React.useCallback(async () => {
     setActionError(null);
@@ -188,7 +187,10 @@ export function Page() {
     }
 
     setActionError("We couldn't open payment method details right now. Please try again.");
-    showErrorToast("Payment method unavailable", "We couldn't open payment method details right now. Please try again.");
+    showErrorToast(
+      "Payment method unavailable",
+      "We couldn't open payment method details right now. Please try again.",
+    );
   }, [paths]);
 
   const openCustomerPortalSession = React.useCallback(async () => {
@@ -257,7 +259,9 @@ export function Page() {
       onOpenSelection={selection.target ? () => openPlanSelection() : null}
       onCompleteUpgrade={canUseCheckout && pendingTarget ? () => void startCheckout(pendingTarget) : null}
       onCancelPlan={canManagePaidSubscription && !billing.account.cancelAtPeriodEnd ? openCancellationPage : null}
-      onReactivatePlan={canManagePaidSubscription && billing.account.cancelAtPeriodEnd ? () => void reactivatePlan() : null}
+      onReactivatePlan={
+        canManagePaidSubscription && billing.account.cancelAtPeriodEnd ? () => void reactivatePlan() : null
+      }
       onUpdatePaymentMethod={canManagePaidSubscription ? () => void openPaymentMethodSession() : null}
       onManageBilling={canManagePaidSubscription ? () => void openCustomerPortalSession() : null}
       testId="company-billing-page"

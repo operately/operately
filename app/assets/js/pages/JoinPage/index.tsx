@@ -116,12 +116,7 @@ function Form() {
               minLength={12}
               maxLength={72}
             />
-            <Forms.PasswordInput
-              label="Repeat password"
-              field={"passwordConfirmation"}
-              minLength={12}
-              maxLength={72}
-            />
+            <Forms.PasswordInput label="Repeat password" field={"passwordConfirmation"} minLength={12} maxLength={72} />
           </Forms.FieldGroup>
 
           <Forms.Submit saveText="Set password &amp; Log in" buttonSize="base" className="w-full" />
@@ -146,8 +141,7 @@ function GoogleLogin() {
       <div className="space-y-2">
         <SignInWithGoogleButton />
         <div className="text-xs text-content-dimmed">
-          * If you sign in with Google, you must use{" "}
-          <span className="font-semibold break-all">{member.email}</span>.
+          * If you sign in with Google, you must use <span className="font-semibold break-all">{member.email}</span>.
         </div>
       </div>
     </div>

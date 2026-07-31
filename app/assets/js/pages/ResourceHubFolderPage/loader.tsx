@@ -9,16 +9,18 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const [folder, nodes] = await Promise.all([
-    folders.get({
-      id: params.id,
-      includeResourceHub: true,
-      includeGoal: true,
-      includeSpace: true,
-      includeProject: true,
-      includePathToFolder: true,
-      includePermissions: true,
-      includePotentialSubscribers: true,
-    }).then((res) => res.folder!),
+    folders
+      .get({
+        id: params.id,
+        includeResourceHub: true,
+        includeGoal: true,
+        includeSpace: true,
+        includeProject: true,
+        includePathToFolder: true,
+        includePermissions: true,
+        includePotentialSubscribers: true,
+      })
+      .then((res) => res.folder!),
     resource_hubs.listNodes({
       folderId: params.id,
       includeChildrenCount: true,

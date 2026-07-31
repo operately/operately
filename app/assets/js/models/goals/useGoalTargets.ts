@@ -78,7 +78,7 @@ export function useGoalTargets({
     targetsRef.current = targets;
   }, [targets]);
 
-  // Keeps the refs, state, and ordering in sync 
+  // Keeps the refs, state, and ordering in sync
   // so optimistic updates stay consistent across async callbacks.
   const applyTargetsState = React.useCallback(
     (nextTargets: GoalTarget[], nextOrdering: string[]) => {

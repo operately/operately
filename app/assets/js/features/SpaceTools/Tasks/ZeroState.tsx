@@ -17,7 +17,9 @@ function ExplanationAndButton() {
     <div className="flex flex-col justify-center items-center group">
       <div className="text-base font-bold">Tasks</div>
 
-      <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">Organize tasks on a Kanban board with status columns.</div>
+      <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
+        Organize tasks on a Kanban board with status columns.
+      </div>
 
       <GhostButton size="sm">Add a new task</GhostButton>
     </div>

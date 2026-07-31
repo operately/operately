@@ -3,18 +3,12 @@ import * as React from "react";
 
 import { emptyLoader } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import {
-  AccountNotificationSettingsPage as NotificationSettingsPage,
-  showErrorToast,
-} from "turboui";
+import { AccountNotificationSettingsPage as NotificationSettingsPage, showErrorToast } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router";
-import {
-  buildNotificationSettingsUpdateInput,
-  getNotificationSettingsFormState,
-} from "./state";
+import { buildNotificationSettingsUpdateInput, getNotificationSettingsFormState } from "./state";
 
 export default { name: "AccountNotificationSettingsPage", loader: emptyLoader, Page } as PageModule;
 
@@ -32,7 +26,13 @@ function Page() {
         dailySummaryDeliveryTime: me.dailySummaryDeliveryTime,
         notifyAboutAssignments: me.notifyAboutAssignments,
       }),
-    [me.notifyOnMention, me.emailWindowMinutes, me.sendDailySummary, me.dailySummaryDeliveryTime, me.notifyAboutAssignments],
+    [
+      me.notifyOnMention,
+      me.emailWindowMinutes,
+      me.sendDailySummary,
+      me.dailySummaryDeliveryTime,
+      me.notifyAboutAssignments,
+    ],
   );
 
   const [notifyOnMention, setNotifyOnMention] = React.useState(initialState.notifyOnMention);
@@ -70,7 +70,16 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [notifyOnMention, emailWindowMinutes, me.id, navigate, paths, sendDailySummary, dailySummaryDeliveryTime, notifyAboutAssignments]);
+  }, [
+    notifyOnMention,
+    emailWindowMinutes,
+    me.id,
+    navigate,
+    paths,
+    sendDailySummary,
+    dailySummaryDeliveryTime,
+    notifyAboutAssignments,
+  ]);
 
   return (
     <NotificationSettingsPage

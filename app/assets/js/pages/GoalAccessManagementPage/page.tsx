@@ -10,7 +10,16 @@ import { GoalAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { PermissionLevels } from "@/features/Permissions";
 import { createTestId } from "@/utils/testid";
 import { compareIds, usePaths } from "@/routes/paths";
-import { AccessLevelSummary, Avatar, BorderedRow, Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
+import {
+  AccessLevelSummary,
+  Avatar,
+  BorderedRow,
+  Menu,
+  MenuActionItem,
+  PrimaryButton,
+  SecondaryButton,
+  SubMenu,
+} from "turboui";
 import { OtherPeople } from "./OtherPeople";
 import { useLoadedData } from "./loader";
 
@@ -44,7 +53,7 @@ function Navigation() {
     items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
     items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
   } else {
-    items.push({ to: paths.workMapPath("goals"), label: "Work Map" })
+    items.push({ to: paths.workMapPath("goals"), label: "Work Map" });
   }
   items.push({ to: paths.goalPath(goal.id), label: goal.name });
 

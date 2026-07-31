@@ -166,6 +166,17 @@ defmodule OperatelyWeb.Api do
         mutation(:update_discussion, OperatelyWeb.Api.Spaces.UpdateDiscussion)
       end
 
+      @doc "Get, list, create and manage Space KPIs"
+      namespace(:kpis) do
+        query(:list_kpis, OperatelyWeb.Api.Kpis.ListKpis)
+        query(:get_kpi, OperatelyWeb.Api.Kpis.GetKpi)
+
+        mutation(:create_kpi, OperatelyWeb.Api.Kpis.CreateKpi)
+        mutation(:edit_kpi, OperatelyWeb.Api.Kpis.EditKpi)
+        mutation(:delete_kpi, OperatelyWeb.Api.Kpis.DeleteKpi)
+        mutation(:log_kpi_entry, OperatelyWeb.Api.Kpis.LogKpiEntry)
+      end
+
       @doc "Get, list, update and manage user profiles and account settings"
       namespace(:people) do
         query(:get_account, OperatelyWeb.Api.People.GetAccount)

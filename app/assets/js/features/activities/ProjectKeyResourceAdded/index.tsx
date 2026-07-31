@@ -3,7 +3,6 @@ import type { Activity } from "@/models/activities";
 import React from "react";
 import type { ActivityHandler } from "../interfaces";
 
-
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectKeyResourceAdded: ActivityHandler = {
@@ -63,11 +62,7 @@ const ProjectKeyResourceAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return (
-      "Added a key resource to the " +
-      content(activity).project!.name! +
-      " project"
-    );
+    return "Added a key resource to the " + content(activity).project!.name! + " project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

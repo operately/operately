@@ -61,12 +61,7 @@ export function SiteMessageModal({ isOpen, onClose, onSuccess, message }: SiteMe
       <Forms.Form form={form}>
         <Forms.FieldGroup>
           <Forms.TextInput field="title" label="Title" required autoFocus />
-          <Forms.RichTextArea
-            field="description"
-            label="Description"
-            required
-            richTextHandlers={richTextHandlers}
-          />
+          <Forms.RichTextArea field="description" label="Description" required richTextHandlers={richTextHandlers} />
 
           <Forms.SelectBox
             field="audience"

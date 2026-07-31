@@ -13,9 +13,7 @@ interface LoaderResult {
 }
 
 async function loader(): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ includePermissions: true }).then(
-    (res) => res.company,
-  );
+  const company = await Companies.getCompany({ includePermissions: true }).then((res) => res.company);
 
   if (!company.permissions?.isAdmin) {
     throw new Response("Not Found", { status: 404 });

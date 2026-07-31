@@ -44,10 +44,7 @@ export function DocumentTitle({ title, author, state, publishedAt, scheduledAt, 
         {state === "scheduled" && scheduledAt && (
           <>
             {author && <BulletDot margin="mx-0.5" />}
-            <ScheduledPostDate
-              scheduledAt={scheduledAt}
-              formattedTimePreferences={formattedTimePreferences}
-            />
+            <ScheduledPostDate scheduledAt={scheduledAt} formattedTimePreferences={formattedTimePreferences} />
           </>
         )}
 

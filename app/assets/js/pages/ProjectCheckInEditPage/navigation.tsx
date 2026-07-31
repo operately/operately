@@ -8,10 +8,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 import { usePaths } from "@/routes/paths";
 
-export function buildProjectCheckInEditNavigation(
-  checkIn: ProjectCheckIn,
-  paths: Paths,
-): Paper.NavigationItem[] {
+export function buildProjectCheckInEditNavigation(checkIn: ProjectCheckIn, paths: Paths): Paper.NavigationItem[] {
   const items: Paper.NavigationItem[] = [];
 
   if (checkIn.space) {

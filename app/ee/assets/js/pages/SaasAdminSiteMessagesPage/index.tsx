@@ -136,8 +136,18 @@ function MessageTable({
           </div>
           <div>{audienceLabel(message)}</div>
           <div>{message.active ? "Active" : "Inactive"}</div>
-          <div>{message.expiresAt ? <FormattedTime {...formattedTimePreferences} time={message.expiresAt} format="long-date" /> : "Never"}</div>
-          <div>{message.insertedAt ? <FormattedTime {...formattedTimePreferences} time={message.insertedAt} format="long-date" /> : null}</div>
+          <div>
+            {message.expiresAt ? (
+              <FormattedTime {...formattedTimePreferences} time={message.expiresAt} format="long-date" />
+            ) : (
+              "Never"
+            )}
+          </div>
+          <div>
+            {message.insertedAt ? (
+              <FormattedTime {...formattedTimePreferences} time={message.insertedAt} format="long-date" />
+            ) : null}
+          </div>
           <div className="flex justify-end">
             <Menu>
               <MenuActionItem icon={IconEdit} onClick={() => onEdit(message)}>

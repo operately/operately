@@ -18,5 +18,9 @@ export function Tasks(props: Props) {
   const path = paths.spaceKanbanPath(props.space.id!);
   const isZeroState = props.tasks.length < 1;
 
-  return <Container path={path} testId="tasks-tool">{isZeroState ? <ZeroState /> : <RegularState {...props} />}</Container>;
+  return (
+    <Container path={path} testId="tasks-tool">
+      {isZeroState ? <ZeroState /> : <RegularState {...props} />}
+    </Container>
+  );
 }

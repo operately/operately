@@ -18,6 +18,8 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Companies.QuickSearch,
       Queries.Companies.Search,
       Queries.Goals.Get,
+      Queries.Kpis.ListKpis,
+      Queries.Kpis.GetKpi,
       Queries.Goals.ListCheckIns,
       Queries.Goals.List,
       Queries.Goals.GetCheckIn,

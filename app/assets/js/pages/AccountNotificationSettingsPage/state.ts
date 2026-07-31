@@ -12,7 +12,14 @@ const DEFAULT_EMAIL_WINDOW_MINUTES: EmailWindowMinutes = 5;
 const DEFAULT_DAILY_SUMMARY_DELIVERY_TIME = "18:00";
 
 export function getNotificationSettingsFormState(
-  person: Pick<Person, "notifyOnMention" | "emailWindowMinutes" | "sendDailySummary" | "dailySummaryDeliveryTime" | "notifyAboutAssignments">,
+  person: Pick<
+    Person,
+    | "notifyOnMention"
+    | "emailWindowMinutes"
+    | "sendDailySummary"
+    | "dailySummaryDeliveryTime"
+    | "notifyAboutAssignments"
+  >,
 ): NotificationSettingsFormState {
   return {
     notifyOnMention: person.notifyOnMention ?? false,

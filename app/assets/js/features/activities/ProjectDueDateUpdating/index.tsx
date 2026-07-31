@@ -79,7 +79,8 @@ const ProjectDueDateUpdating: ActivityHandler = {
     if (newDueDate) {
       return (
         <>
-          Updated due date for {projectName} to <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
+          Updated due date for {projectName} to{" "}
+          <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
         </>
       );
     } else {

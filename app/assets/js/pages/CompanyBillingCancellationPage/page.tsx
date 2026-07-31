@@ -1,10 +1,7 @@
 import * as Billing from "@/models/billing";
 import * as React from "react";
 
-import {
-  buildCompanyBillingCancellationFeedback,
-  isCompanyBillingPaidStatus,
-} from "turboui/CompanyBilling";
+import { buildCompanyBillingCancellationFeedback, isCompanyBillingPaidStatus } from "turboui/CompanyBilling";
 import { CompanyBillingPage as TurboCompanyBillingPage } from "turboui/CompanyBillingPage";
 import { CompanyBillingCancellationPage as TurboCompanyBillingCancellationPage } from "turboui/CompanyBillingCancellationPage";
 import { showErrorToast } from "turboui";

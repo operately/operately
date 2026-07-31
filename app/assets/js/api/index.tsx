@@ -1736,6 +1736,29 @@ export interface InviteLink {
   allowedDomains?: string[] | null;
 }
 
+export interface Kpi {
+  __typename: "kpi";
+  id: Id;
+  name: string;
+  unit: string;
+  cadence: string;
+  spaceId: Id;
+  champion?: Person | null;
+  entries?: KpiEntry[] | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface KpiEntry {
+  __typename: "kpi_entry";
+  id: Id;
+  value: number;
+  period: string;
+  recordedBy?: Person | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
 export interface McpGrant {
   __typename: "mcp_grant";
   id: Id;
@@ -3195,6 +3218,22 @@ export interface InvitationsGetInviteLinkByTokenInput {
 
 export interface InvitationsGetInviteLinkByTokenResult {
   inviteLink?: InviteLink | null;
+}
+
+export interface KpisGetKpiInput {
+  kpiId: Id;
+}
+
+export interface KpisGetKpiResult {
+  kpi: Kpi;
+}
+
+export interface KpisListKpisInput {
+  spaceId: Id;
+}
+
+export interface KpisListKpisResult {
+  kpis: Kpi[];
 }
 
 export interface LinksGetInput {
@@ -4705,6 +4744,48 @@ export interface JoinCompanyResult {
   result: string;
 }
 
+export interface KpisCreateKpiInput {
+  spaceId: Id;
+  name: string;
+  unit: string;
+  cadence: string;
+  championId?: Id | null;
+}
+
+export interface KpisCreateKpiResult {
+  kpi: Kpi;
+}
+
+export interface KpisDeleteKpiInput {
+  kpiId: Id;
+}
+
+export interface KpisDeleteKpiResult {
+  kpi: Kpi;
+}
+
+export interface KpisEditKpiInput {
+  kpiId: Id;
+  name?: string | null;
+  unit?: string | null;
+  cadence?: string | null;
+  championId?: Id | null;
+}
+
+export interface KpisEditKpiResult {
+  kpi: Kpi;
+}
+
+export interface KpisLogKpiEntryInput {
+  kpiId: Id;
+  value: number;
+  period: string;
+}
+
+export interface KpisLogKpiEntryResult {
+  entry: KpiEntry;
+}
+
 export interface LinksCreateInput {
   resourceHubId: Id;
   folderId?: Id | null;
@@ -6174,6 +6255,34 @@ class ApiNamespacePeople {
   }
 }
 
+class ApiNamespaceKpis {
+  constructor(private client: ApiClient) {}
+
+  async getKpi(input: KpisGetKpiInput): Promise<KpisGetKpiResult> {
+    return this.client.get("/kpis/get_kpi", input);
+  }
+
+  async listKpis(input: KpisListKpisInput): Promise<KpisListKpisResult> {
+    return this.client.get("/kpis/list_kpis", input);
+  }
+
+  async createKpi(input: KpisCreateKpiInput): Promise<KpisCreateKpiResult> {
+    return this.client.post("/kpis/create_kpi", input);
+  }
+
+  async deleteKpi(input: KpisDeleteKpiInput): Promise<KpisDeleteKpiResult> {
+    return this.client.post("/kpis/delete_kpi", input);
+  }
+
+  async editKpi(input: KpisEditKpiInput): Promise<KpisEditKpiResult> {
+    return this.client.post("/kpis/edit_kpi", input);
+  }
+
+  async logKpiEntry(input: KpisLogKpiEntryInput): Promise<KpisLogKpiEntryResult> {
+    return this.client.post("/kpis/log_kpi_entry", input);
+  }
+}
+
 class ApiNamespaceSpaces {
   constructor(private client: ApiClient) {}
 
@@ -6783,6 +6892,7 @@ export class ApiClient {
   public apiNamespaceComments: ApiNamespaceComments;
   public apiNamespaceCompanies: ApiNamespaceCompanies;
   public apiNamespacePeople: ApiNamespacePeople;
+  public apiNamespaceKpis: ApiNamespaceKpis;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceTasks: ApiNamespaceTasks;
   public apiNamespaceProjects: ApiNamespaceProjects;
@@ -6806,6 +6916,7 @@ export class ApiClient {
     this.apiNamespaceComments = new ApiNamespaceComments(this);
     this.apiNamespaceCompanies = new ApiNamespaceCompanies(this);
     this.apiNamespacePeople = new ApiNamespacePeople(this);
+    this.apiNamespaceKpis = new ApiNamespaceKpis(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceTasks = new ApiNamespaceTasks(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
@@ -7784,6 +7895,38 @@ export default {
     useUpdateTheme: () =>
       useMutation<PeopleUpdateThemeInput, PeopleUpdateThemeResult>((input) =>
         defaultApiClient.apiNamespacePeople.updateTheme(input),
+      ),
+  },
+
+  kpis: {
+    getKpi: (input: KpisGetKpiInput) => defaultApiClient.apiNamespaceKpis.getKpi(input),
+    useGetKpi: (input: KpisGetKpiInput) =>
+      useQuery<KpisGetKpiResult>(() => defaultApiClient.apiNamespaceKpis.getKpi(input)),
+
+    listKpis: (input: KpisListKpisInput) => defaultApiClient.apiNamespaceKpis.listKpis(input),
+    useListKpis: (input: KpisListKpisInput) =>
+      useQuery<KpisListKpisResult>(() => defaultApiClient.apiNamespaceKpis.listKpis(input)),
+
+    createKpi: (input: KpisCreateKpiInput) => defaultApiClient.apiNamespaceKpis.createKpi(input),
+    useCreateKpi: () =>
+      useMutation<KpisCreateKpiInput, KpisCreateKpiResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.createKpi(input),
+      ),
+
+    deleteKpi: (input: KpisDeleteKpiInput) => defaultApiClient.apiNamespaceKpis.deleteKpi(input),
+    useDeleteKpi: () =>
+      useMutation<KpisDeleteKpiInput, KpisDeleteKpiResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.deleteKpi(input),
+      ),
+
+    editKpi: (input: KpisEditKpiInput) => defaultApiClient.apiNamespaceKpis.editKpi(input),
+    useEditKpi: () =>
+      useMutation<KpisEditKpiInput, KpisEditKpiResult>((input) => defaultApiClient.apiNamespaceKpis.editKpi(input)),
+
+    logKpiEntry: (input: KpisLogKpiEntryInput) => defaultApiClient.apiNamespaceKpis.logKpiEntry(input),
+    useLogKpiEntry: () =>
+      useMutation<KpisLogKpiEntryInput, KpisLogKpiEntryResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.logKpiEntry(input),
       ),
   },
 

@@ -24,9 +24,12 @@ interface LoaderResult {
 
 async function loader(): Promise<LoaderResult> {
   const company = await Companies.getCompany({ includePermissions: true }).then((res) => res.company);
-  const people = await People.getPeople({ includeManager: true, includeCompanyAccessLevels: true, includeInviteLink: true, includeAccount: true }).then(
-    (res) => res.people,
-  );
+  const people = await People.getPeople({
+    includeManager: true,
+    includeCompanyAccessLevels: true,
+    includeInviteLink: true,
+    includeAccount: true,
+  }).then((res) => res.people);
   const { invitedPeople, currentMembers, guests } = People.separatePeople(people);
 
   if (!company.permissions?.isAdmin) {
