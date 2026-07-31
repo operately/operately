@@ -9,10 +9,10 @@ defmodule Operately.Search.SourceRegistry do
   inside the search subsystem.
   """
 
-  alias Operately.Search.Sources.CoreWork.{Discussion, Goal, GoalCheckIn, Project, ProjectCheckIn, ProjectRetrospective}
+  alias Operately.Search.Sources.CoreWork.{Discussion, Goal, GoalCheckIn, Milestone, Person, Project, ProjectCheckIn, ProjectRetrospective, Task}
   alias Operately.Search.Sources.ResourceHub.{Document, File, Folder, Link}
 
-  @source_modules [Folder, Document, File, Link, Project, Goal, Discussion, ProjectCheckIn, GoalCheckIn, ProjectRetrospective]
+  @source_modules [Folder, Document, File, Link, Project, Goal, Milestone, Task, Person, Discussion, ProjectCheckIn, GoalCheckIn, ProjectRetrospective]
   @callback_functions [source_type: 0, fetch_batch: 2, fetch_by_ids: 1, to_entry: 1]
 
   @doc """

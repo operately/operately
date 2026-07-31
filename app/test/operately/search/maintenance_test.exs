@@ -102,8 +102,16 @@ defmodule Operately.Search.MaintenanceTest do
       Application.put_env(:operately, :search_index_batch_size, previous_batch_size)
     end)
 
-    Factory.setup(%{})
-    |> Factory.add_space(:space)
+    # Person creation now enqueues search indexing. Keep Oban manual here so the
+    # project-only registry override cannot fail those jobs during fixture setup.
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      ctx =
+        Factory.setup(%{})
+        |> Factory.add_space(:space)
+
+      Repo.delete_all(from job in Oban.Job, where: job.worker == "Operately.Search.IndexUpdates.Worker")
+      ctx
+    end)
   end
 
   defp restore_source_registry({:ok, source_modules}), do: Application.put_env(:operately, SourceRegistry, source_modules)

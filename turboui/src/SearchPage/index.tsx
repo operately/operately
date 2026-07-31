@@ -6,9 +6,12 @@ import {
   IconCalendar,
   IconGoal,
   IconHistory,
+  IconMilestone,
   IconMessage,
   IconProject,
   IconSearch,
+  IconTask,
+  IconUser,
 } from "../icons";
 import { DivLink } from "../Link";
 import { Page } from "../Page";
@@ -166,6 +169,12 @@ function SearchResultIcon({ type }: { type: SearchResultType }) {
       return <IconProject size={32} />;
     case "goal":
       return <IconGoal size={32} />;
+    case "milestone":
+      return <IconMilestone size={32} />;
+    case "task":
+      return <IconTask size={32} />;
+    case "person":
+      return <IconUser size={28} className="text-content-dimmed" />;
     case "discussion":
       return <IconMessage size={28} className="text-content-dimmed" />;
     case "project_check_in":
@@ -235,6 +244,9 @@ const RESULT_TYPE_METADATA: Record<SearchResultType, { label: string }> = {
   resource_hub_link: { label: "Link" },
   project: { label: "Project" },
   goal: { label: "Goal" },
+  milestone: { label: "Milestone" },
+  task: { label: "Task" },
+  person: { label: "Person" },
   discussion: { label: "Discussion" },
   project_check_in: { label: "Project check-in" },
   goal_check_in: { label: "Goal check-in" },

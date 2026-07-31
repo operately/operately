@@ -85,6 +85,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       |> Steps.find_milestone(inputs.milestone_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_milestone_title(inputs.title)
+      |> Steps.enqueue_milestone(:updated_milestone)
       |> Steps.save_activity(:milestone_title_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -124,6 +125,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       |> Steps.find_milestone(inputs.milestone_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_milestone_description(inputs.description)
+      |> Steps.enqueue_milestone(:updated_milestone)
       |> Steps.save_activity(:milestone_description_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -164,6 +166,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       |> Steps.find_milestone(inputs.milestone_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_milestone_due_date(inputs.due_date)
+      |> Steps.enqueue_milestone(:updated_milestone)
       |> Steps.save_activity(:milestone_due_date_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -407,11 +410,24 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
     end
 
     def delete_milestone(multi) do
-      Ecto.Multi.run(multi, :delete_milestone, fn repo, %{milestone: milestone} ->
+      multi
+      |> Ecto.Multi.run(:milestone_task_ids, fn repo, %{milestone: milestone} ->
+        ids = from(task in Operately.Tasks.Task, where: task.milestone_id == ^milestone.id, select: task.id) |> repo.all()
+        {:ok, ids}
+      end)
+      |> Operately.Search.IndexUpdates.delete(:search_milestone, "milestone", fn changes -> changes.milestone.id end)
+      |> Operately.Search.IndexUpdates.delete(:search_milestone_tasks, "task", fn changes -> changes.milestone_task_ids end)
+      |> Ecto.Multi.run(:delete_milestone, fn repo, %{milestone: milestone} ->
         case repo.delete(milestone) do
           {:ok, deleted_milestone} -> {:ok, deleted_milestone}
           {:error, changeset} -> {:error, changeset}
         end
+      end)
+    end
+
+    def enqueue_milestone(multi, result_key) do
+      Operately.Search.IndexUpdates.enqueue(multi, :search_milestone, "milestone", fn changes ->
+        Map.fetch!(changes, result_key).id
       end)
     end
 

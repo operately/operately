@@ -22,7 +22,10 @@ defmodule Operately.Search.CoreWorkIndexingTest do
       |> Factory.setup()
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
       |> Factory.add_goal(:goal, :space)
+      |> Factory.add_company_member(:teammate, name: "Taylor Reed", title: "Product lead")
       |> Factory.add_messages_board(:board, :space)
       |> Factory.add_message(:discussion, :board)
 
@@ -32,6 +35,8 @@ defmodule Operately.Search.CoreWorkIndexingTest do
 
   test "project edits and archives refresh the indexed title and state", ctx do
     sync("project", ctx.project.id)
+    sync("milestone", ctx.milestone.id)
+    sync("task", ctx.task.id)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, project} = Operately.Projects.rename_project(ctx.creator, ctx.project, "Renamed project")
@@ -44,6 +49,8 @@ defmodule Operately.Search.CoreWorkIndexingTest do
       run_refresh_jobs()
       assert archived.deleted_at
       assert_entry(:project, project.id, state: :archived)
+      refute_entry(:milestone, ctx.milestone.id)
+      refute_entry(:task, ctx.task.id)
     end)
   end
 
@@ -122,6 +129,8 @@ defmodule Operately.Search.CoreWorkIndexingTest do
 
   test "goal and space deletion synchronously remove scoped entries", ctx do
     sync("project", ctx.project.id)
+    sync("milestone", ctx.milestone.id)
+    sync("task", ctx.task.id)
     sync("goal", ctx.goal.id)
     sync("discussion", ctx.discussion.id)
 
@@ -132,14 +141,70 @@ defmodule Operately.Search.CoreWorkIndexingTest do
 
     assert {:ok, _space} = ctx.space |> Repo.preload(:company) |> SpaceDeleting.run()
     refute_entry(:project, ctx.project.id)
+    refute_entry(:milestone, ctx.milestone.id)
+    refute_entry(:task, ctx.task.id)
     refute_entry(:discussion, ctx.discussion.id)
   end
 
   test "direct project deletion synchronously removes its scoped entries", ctx do
     sync("project", ctx.project.id)
+    sync("milestone", ctx.milestone.id)
+    sync("task", ctx.task.id)
 
     assert {:ok, _project} = Operately.Projects.delete_project(ctx.project)
     refute_entry(:project, ctx.project.id)
+    refute_entry(:milestone, ctx.milestone.id)
+    refute_entry(:task, ctx.task.id)
+  end
+
+  test "task changes refresh and deletion removes the exact entry", ctx do
+    sync("task", ctx.task.id)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, %{updated_task: updated_task}} =
+               Ecto.Multi.new()
+               |> Ecto.Multi.put(:task, ctx.task)
+               |> OperatelyWeb.Api.Tasks.SharedMultiSteps.update_task_name("Renamed task")
+               |> Repo.transaction()
+
+      run_refresh_jobs()
+      assert_entry(:task, updated_task.id, title: "Renamed task")
+
+      assert {:ok, _changes} =
+               Ecto.Multi.new()
+               |> Ecto.Multi.put(:task, updated_task)
+               |> OperatelyWeb.Api.Tasks.SharedMultiSteps.delete_task()
+               |> Repo.transaction()
+
+      refute_entry(:task, updated_task.id)
+    end)
+  end
+
+  test "milestone deletion synchronously removes its entry and cascade-deleted tasks", ctx do
+    sync("milestone", ctx.milestone.id)
+    sync("task", ctx.task.id)
+
+    assert {:ok, _changes} =
+             Ecto.Multi.new()
+             |> Ecto.Multi.put(:milestone, ctx.milestone)
+             |> OperatelyWeb.Api.Projects.Milestones.SharedMultiSteps.delete_milestone()
+             |> Repo.transaction()
+
+    refute_entry(:milestone, ctx.milestone.id)
+    refute_entry(:task, ctx.task.id)
+  end
+
+  test "person profile updates refresh and member removal deletes the entry", ctx do
+    sync("person", ctx.teammate.id)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, person} = Operately.People.update_person(ctx.teammate, %{title: "Strategy lead"})
+      run_refresh_jobs()
+      assert_entry(:person, person.id, body: "Strategy lead")
+
+      assert {:ok, _person} = Operately.Operations.CompanyMemberRemoving.run(ctx.creator, person.id)
+      refute_entry(:person, person.id)
+    end)
   end
 
   defp sync(source_type, source_id) do
