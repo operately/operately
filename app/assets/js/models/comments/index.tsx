@@ -28,10 +28,7 @@ export interface CommentItem {
   value: any;
 }
 
-function splitComments(
-  comments: CommentItem[],
-  timestamp: string,
-): { before: CommentItem[]; after: CommentItem[] } {
+function splitComments(comments: CommentItem[], timestamp: string): { before: CommentItem[]; after: CommentItem[] } {
   const before = comments.filter((comment) => {
     return Time.parse(comment.insertedAt)! < Time.parse(timestamp)!;
   });

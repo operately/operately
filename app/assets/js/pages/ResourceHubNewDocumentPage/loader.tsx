@@ -11,18 +11,22 @@ export async function loader({ params, request }): Promise<LoaderResult> {
   const { folderId } = Object.fromEntries(url.searchParams.entries());
 
   const [resourceHub, folder] = await Promise.all([
-    resource_hubs.get({
-      id: params.id,
-      includeGoal: true,
-      includeSpace: true,
-      includeProject: true,
-      includePotentialSubscribers: true,
-    }).then((res) => res.resourceHub!),
+    resource_hubs
+      .get({
+        id: params.id,
+        includeGoal: true,
+        includeSpace: true,
+        includeProject: true,
+        includePotentialSubscribers: true,
+      })
+      .then((res) => res.resourceHub!),
     folderId
-      ? folders.get({
-          id: folderId,
-          includePathToFolder: true,
-        }).then((res) => res.folder!)
+      ? folders
+          .get({
+            id: folderId,
+            includePathToFolder: true,
+          })
+          .then((res) => res.folder!)
       : undefined,
   ]);
 

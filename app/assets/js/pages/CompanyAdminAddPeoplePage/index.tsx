@@ -223,7 +223,21 @@ function useInviteSubmit(
     } finally {
       setIsSubmitting(false);
     }
-  }, [add, inviteGuest, isSubmitting, memberType, paths, setErrors, setLimitGuidance, setState, setSpaces, setGoals, setProjects, values, viewerRole]);
+  }, [
+    add,
+    inviteGuest,
+    isSubmitting,
+    memberType,
+    paths,
+    setErrors,
+    setLimitGuidance,
+    setState,
+    setSpaces,
+    setGoals,
+    setProjects,
+    values,
+    viewerRole,
+  ]);
 
   return { spaces, goals, projects, handleSubmit, isSubmitting };
 }

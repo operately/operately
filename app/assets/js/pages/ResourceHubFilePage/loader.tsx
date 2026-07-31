@@ -9,20 +9,22 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const [file, subscriptionStatus] = await Promise.all([
-    files.get({
-      id: params.id,
-      includeAuthor: true,
-      includeResourceHub: true,
-      includeGoal: true,
-      includeSpace: true,
-      includeProject: true,
-      includeParentFolder: true,
-      includeReactions: true,
-      includePermissions: true,
-      includeSubscriptionsList: true,
-      includePotentialSubscribers: true,
-      includePathToFile: true,
-    }).then((res) => res.file),
+    files
+      .get({
+        id: params.id,
+        includeAuthor: true,
+        includeResourceHub: true,
+        includeGoal: true,
+        includeSpace: true,
+        includeProject: true,
+        includeParentFolder: true,
+        includeReactions: true,
+        includePermissions: true,
+        includeSubscriptionsList: true,
+        includePotentialSubscribers: true,
+        includePathToFile: true,
+      })
+      .then((res) => res.file),
     isSubscribedToResource({
       resourceId: params.id,
       resourceType: "resource_hub_file",

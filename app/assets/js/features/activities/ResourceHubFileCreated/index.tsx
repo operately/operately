@@ -39,11 +39,13 @@ const ResourceHubFileCreated: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
     const parent = visibleParentDescriptor(page, data);
-    const resourceHub = data.resourceHub ? resourceHubLink(data.resourceHub, { project: data.project, goal: data.goal }) : null;
+    const resourceHub = data.resourceHub
+      ? resourceHubLink(data.resourceHub, { project: data.project, goal: data.goal })
+      : null;
     const files = data.files ?? [];
 
     if (files.length === 1 && files[0]) {
-      const file = files[0].id ? fileLink(files[0]) : files[0].name ?? "a file";
+      const file = files[0].id ? fileLink(files[0]) : (files[0].name ?? "a file");
 
       if (!parent) {
         return feedTitle(activity, "added a file:", file);

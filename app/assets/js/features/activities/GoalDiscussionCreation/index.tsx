@@ -29,7 +29,11 @@ const GoalDiscussionCreation: ActivityHandler = {
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <RichContent content={activity.commentThread!.message!} mentionedPersonLookup={mentionedPersonLookup} parseContent />
+          <RichContent
+            content={activity.commentThread!.message!}
+            mentionedPersonLookup={mentionedPersonLookup}
+            parseContent
+          />
         )}
       </div>
     );
@@ -60,7 +64,11 @@ const GoalDiscussionCreation: ActivityHandler = {
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <Summary content={activity.commentThread.message} characterCount={300} mentionedPersonLookup={mentionedPersonLookup} />
+          <Summary
+            content={activity.commentThread.message}
+            characterCount={300}
+            mentionedPersonLookup={mentionedPersonLookup}
+          />
         )}
       </div>
     );

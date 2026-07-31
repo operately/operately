@@ -20,7 +20,8 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeReviewer: true,
       includeSpace: true,
     }).then((data) => data.goal),
-    Api.goals.listAccessMembers({ goalId: params.goalId })
+    Api.goals
+      .listAccessMembers({ goalId: params.goalId })
       .then((data) => People.sortByName(data.people || []))
       .catch((error) => {
         if (error?.status === 403) {

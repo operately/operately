@@ -35,7 +35,8 @@ export function BillingDangerBanner() {
   }
 
   const testId = banner.kind === "payment_default" ? "payment-default-banner" : "company-billing-danger-banner";
-  const ctaTestId = banner.kind === "payment_default" ? "payment-default-banner-cta" : "company-billing-danger-banner-cta";
+  const ctaTestId =
+    banner.kind === "payment_default" ? "payment-default-banner-cta" : "company-billing-danger-banner-cta";
 
   return (
     <div
@@ -65,8 +66,7 @@ export function BillingDangerBanner() {
                         : "border-white/20 bg-white/10 text-white-1/90"
                     }`}
                   >
-                    <span className="font-semibold text-white-1">{row.label}:</span>{" "}
-                    {row.value}
+                    <span className="font-semibold text-white-1">{row.label}:</span> {row.value}
                   </div>
                 ))}
               </div>

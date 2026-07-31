@@ -69,16 +69,18 @@ export const PageCache = {
     React.useEffect(() => {
       const abortController = new AbortController();
 
-      loader({ params, refreshCache }).then((newData) => {
-        if (!abortController.signal.aborted) {
-          setData(newData);
-        }
-      }).catch((error) => {
-        // Silently ignore errors if the component was unmounted
-        if (!abortController.signal.aborted) {
-          console.error("PageCache loader error:", error);
-        }
-      });
+      loader({ params, refreshCache })
+        .then((newData) => {
+          if (!abortController.signal.aborted) {
+            setData(newData);
+          }
+        })
+        .catch((error) => {
+          // Silently ignore errors if the component was unmounted
+          if (!abortController.signal.aborted) {
+            console.error("PageCache loader error:", error);
+          }
+        });
 
       return () => {
         abortController.abort();

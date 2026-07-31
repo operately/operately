@@ -34,9 +34,7 @@ describe("buildMilestonesOrderingState", () => {
 
   test("should handle moving task within the same milestone", () => {
     // Create milestones with ordering states
-    const milestones = [
-      createMilestone("milestone-1", ["task-1", "task-2", "task-3"]),
-    ];
+    const milestones = [createMilestone("milestone-1", ["task-1", "task-2", "task-3"])];
 
     // Create the task being moved
     const task = createTask("task-1", "milestone-1");
@@ -56,9 +54,7 @@ describe("buildMilestonesOrderingState", () => {
 
   test("should handle moving task to no-milestone", () => {
     // Create milestones with ordering states
-    const milestones = [
-      createMilestone("milestone-1", ["task-1", "task-2"]),
-    ];
+    const milestones = [createMilestone("milestone-1", ["task-1", "task-2"])];
 
     // Create the task being moved
     const task = createTask("task-1", "milestone-1");
@@ -78,9 +74,7 @@ describe("buildMilestonesOrderingState", () => {
 
   test("should handle moving task from no-milestone to a milestone", () => {
     // Create milestones with ordering states
-    const milestones = [
-      createMilestone("milestone-1", ["task-2"]),
-    ];
+    const milestones = [createMilestone("milestone-1", ["task-2"])];
 
     // Create the task being moved (with no milestone)
     const task = createTask("task-1", null);
@@ -99,9 +93,7 @@ describe("buildMilestonesOrderingState", () => {
   });
 
   test("should normalize ordering state to visible tasks only", () => {
-    const milestones = [
-      createMilestone("milestone-1", ["task-3", "task-1"]),
-    ];
+    const milestones = [createMilestone("milestone-1", ["task-3", "task-1"])];
 
     const tasks = [
       createTask("task-1", "milestone-1"),

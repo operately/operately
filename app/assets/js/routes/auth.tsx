@@ -13,11 +13,7 @@ interface LogInOptions {
   onSuccess?: () => void | Promise<void>;
 }
 
-export async function logIn(
-  email: string,
-  password: string,
-  options: LogInOptions = {},
-): Promise<LogInResult> {
+export async function logIn(email: string, password: string, options: LogInOptions = {}): Promise<LogInResult> {
   const { redirectTo = null, skipRedirect = false, onSuccess } = options;
   const data = { email, password };
 

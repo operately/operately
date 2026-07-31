@@ -1,6 +1,12 @@
 import * as Paper from "@/components/PaperContainer";
 import { resourceHubNavigationPaths, resourceHubWithParentContext } from "@/models/resourceHubs";
-import type { ResourceHub, ResourceHubDocument, ResourceHubFile, ResourceHubFolder, ResourceHubLink } from "@/models/resourceHubs";
+import type {
+  ResourceHub,
+  ResourceHubDocument,
+  ResourceHubFile,
+  ResourceHubFolder,
+  ResourceHubLink,
+} from "@/models/resourceHubs";
 import type { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { resourceHubDraftsNavigation, resourceHubFolderNavigation, resourceHubPageNavigation } from "turboui";

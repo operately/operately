@@ -40,7 +40,16 @@ const ResourceHubFolderCopied: ActivityHandler = {
       return feedTitle(activity, "made a copy of the", originalFolder, "folder and named it", folder);
     }
 
-    return feedTitle(activity, "made a copy of the", originalFolder, "folder in the", parent.link, parent.label, "and named it", folder);
+    return feedTitle(
+      activity,
+      "made a copy of the",
+      originalFolder,
+      "folder in the",
+      parent.link,
+      parent.label,
+      "and named it",
+      folder,
+    );
   },
 
   FeedItemContent({}: { activity: Activity }) {

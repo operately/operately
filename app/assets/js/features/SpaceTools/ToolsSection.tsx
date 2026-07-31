@@ -23,13 +23,13 @@ export function ToolsSection({ space, tools }: ToolsSectionPros) {
           projects={tools.projects ?? []}
         />
 
-        {tools.discussionsEnabled && (tools.messagesBoards ?? []).map((boards) => (
-          <Discussions space={space} discussions={boards.messages ?? []} key={boards.id} />
-        ))}
+        {tools.discussionsEnabled &&
+          (tools.messagesBoards ?? []).map((boards) => (
+            <Discussions space={space} discussions={boards.messages ?? []} key={boards.id} />
+          ))}
 
-        {tools.resourceHubEnabled && (tools.resourceHubs ?? []).map((hub) => (
-          <ResourceHub resourceHub={hub} key={hub.id} />
-        ))}
+        {tools.resourceHubEnabled &&
+          (tools.resourceHubs ?? []).map((hub) => <ResourceHub resourceHub={hub} key={hub.id} />)}
 
         {tools.tasksEnabled && <Tasks space={space} tasks={tools.tasks ?? []} />}
       </div>

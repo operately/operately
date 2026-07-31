@@ -4,7 +4,11 @@ import { Subscriber } from "@/models/notifications";
 import { compareIds } from "@/routes/paths";
 import { SubscribersSelector } from "turboui";
 
-type LabelContext = { projectName: string } | { spaceName: string } | { resourceHubName: string } | { goalName: string };
+type LabelContext =
+  | { projectName: string }
+  | { spaceName: string }
+  | { resourceHubName: string }
+  | { goalName: string };
 
 type UseSubscriptionsAdapterOpts = {
   notifyPrioritySubscribers?: boolean;

@@ -75,9 +75,7 @@ const ProjectDescriptionChanged: ActivityHandler = {
     const { project, projectName, hasDescription } = content(activity);
     const name = project?.name ?? projectName;
 
-    return hasDescription
-      ? `Project "${name}" description was updated`
-      : `Project "${name}" description was removed`;
+    return hasDescription ? `Project "${name}" description was updated` : `Project "${name}" description was removed`;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

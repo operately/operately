@@ -22,9 +22,11 @@ interface LoaderResult {
 async function loader(): Promise<LoaderResult> {
   return {
     account: await Api.people.getAccount({}).then((res) => res.account!),
-    companies: await Api.companies.list({
-      includeMemberCount: true,
-    }).then((res) => res.companies!),
+    companies: await Api.companies
+      .list({
+        includeMemberCount: true,
+      })
+      .then((res) => res.companies!),
   };
 }
 

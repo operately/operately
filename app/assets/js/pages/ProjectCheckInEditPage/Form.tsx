@@ -117,13 +117,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
   );
 }
 
-function FullEditDisabledMessage({
-  allowFullEdit,
-  isUnpublished,
-}: {
-  allowFullEdit: boolean;
-  isUnpublished: boolean;
-}) {
+function FullEditDisabledMessage({ allowFullEdit, isUnpublished }: { allowFullEdit: boolean; isUnpublished: boolean }) {
   if (isUnpublished || allowFullEdit) return null;
 
   return (

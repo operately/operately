@@ -217,10 +217,15 @@ export class Paths {
 
   projectPath(
     projectId: string,
-    attrs?: { tab?: "overview" | "tasks" | "check-ins" | "discussions" | "docs-and-files" | "activity"; milestoneId?: string },
+    attrs?: {
+      tab?: "overview" | "tasks" | "check-ins" | "discussions" | "docs-and-files" | "activity";
+      milestoneId?: string;
+    },
   ) {
     if (attrs?.milestoneId) {
-      return this.createCompanyPath(["projects", projectId]) + `?tab=tasks&milestone=${attrs.milestoneId}&taskDisplay=board`;
+      return (
+        this.createCompanyPath(["projects", projectId]) + `?tab=tasks&milestone=${attrs.milestoneId}&taskDisplay=board`
+      );
     }
     if (attrs?.tab) {
       return this.createCompanyPath(["projects", projectId]) + `?tab=${attrs.tab}`;
@@ -436,7 +441,10 @@ export class Paths {
     return this.createCompanyPath(["goals", goalId, "complete"]);
   }
 
-  goalPath(goalId: string, params?: { tab?: "overview" | "discussions" | "check-ins" | "docs-and-files" | "activity" }) {
+  goalPath(
+    goalId: string,
+    params?: { tab?: "overview" | "discussions" | "check-ins" | "docs-and-files" | "activity" },
+  ) {
     return this.createCompanyPath(["goals", goalId]) + (params?.tab ? "?tab=" + params.tab : "");
   }
 

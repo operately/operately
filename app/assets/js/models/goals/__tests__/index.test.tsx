@@ -80,7 +80,7 @@ describe("targetProgressPercentage", () => {
     const makeTarget = (from: number, to: number, value: number): Target => ({
       __typename: "target",
       from,
-      to, 
+      to,
       value,
     });
 

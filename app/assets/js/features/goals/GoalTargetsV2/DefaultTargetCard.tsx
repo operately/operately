@@ -25,9 +25,9 @@ export function DefaultTargetCard(props: Props) {
 
   const handlePropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!readonly) {
-      e.stopPropagation()
+      e.stopPropagation();
     }
-  }
+  };
 
   return (
     <div className={containerClass}>
@@ -36,7 +36,7 @@ export function DefaultTargetCard(props: Props) {
         <div onClick={handlePropagation}>
           <TargetValue readonly={readonlyValue} index={index} target={target} />
         </div>
-        <ExpandIcon expanded={open}  />
+        <ExpandIcon expanded={open} />
       </div>
       {open && <TargetDetails target={target} />}
     </div>

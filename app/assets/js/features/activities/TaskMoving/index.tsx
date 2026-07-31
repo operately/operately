@@ -14,7 +14,8 @@ const TaskMoving: ActivityHandler = {
     const task = data.task;
 
     if (data.destinationType === "space") {
-      if (data.destinationSpace?.id && task?.id) return paths.spaceKanbanPath(data.destinationSpace.id, { taskId: task.id });
+      if (data.destinationSpace?.id && task?.id)
+        return paths.spaceKanbanPath(data.destinationSpace.id, { taskId: task.id });
       if (data.destinationSpace?.id) return paths.spaceKanbanPath(data.destinationSpace.id);
       return paths.homePath();
     }
@@ -52,11 +53,7 @@ const TaskMoving: ActivityHandler = {
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const data = content(activity);
 
-    return (
-      <>
-        Previously, it was in {originLabel(data)}
-      </>
-    );
+    return <>Previously, it was in {originLabel(data)}</>;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

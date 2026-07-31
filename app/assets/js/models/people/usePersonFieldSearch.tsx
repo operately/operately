@@ -37,7 +37,7 @@ export function usePersonFieldSearch<T>(hookParams: UsePeopleSearch<T>): SearchD
         .map((person) => transform(person)) as T[];
       setPeople(transformedPeople);
     },
-    [hookParams.scope.type, hookParams.scope.id, hookParams.ignoredIds, hookParams.transformResult]
+    [hookParams.scope.type, hookParams.scope.id, hookParams.ignoredIds, hookParams.transformResult],
   );
 
   // Load initial people on mount

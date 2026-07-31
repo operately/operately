@@ -176,11 +176,7 @@ function Options() {
         />
       </PageOptions.Root>
 
-      <EnableFeatureModal
-        isOpen={showEnableFeatureModal}
-        onClose={toggleEnableFeatureModal}
-        onSaved={refresh}
-      />
+      <EnableFeatureModal isOpen={showEnableFeatureModal} onClose={toggleEnableFeatureModal} onSaved={refresh} />
       <RemoveFeatureFlagsModal
         isOpen={showRemoveFeatureFlagsModal}
         onClose={toggleRemoveFeatureFlagsModal}

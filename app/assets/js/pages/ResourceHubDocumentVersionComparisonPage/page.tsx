@@ -1,11 +1,6 @@
 import React from "react";
 
-import {
-  DocumentVersionComparisonPage,
-  resolveSelection,
-  type ComparisonStatus,
-  type VersionSnapshot,
-} from "turboui";
+import { DocumentVersionComparisonPage, resolveSelection, type ComparisonStatus, type VersionSnapshot } from "turboui";
 
 import { documents } from "@/models/resourceHubs";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -25,10 +20,7 @@ export function Page() {
   assertPresent(document.id, "document id must be present");
   assertPresent(document.permissions, "permissions must be present in document");
 
-  const selection = React.useMemo(
-    () => resolveSelection(versions, routeVersionNumber),
-    [versions, routeVersionNumber],
-  );
+  const selection = React.useMemo(() => resolveSelection(versions, routeVersionNumber), [versions, routeVersionNumber]);
 
   const [before, setBefore] = React.useState<VersionSnapshot | null>(null);
   const [after, setAfter] = React.useState<VersionSnapshot | null>(null);

@@ -10,28 +10,30 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const document = await Hub.documents.get({
-    id: params.id,
-    includeAuthor: true,
-    includeReactions: true,
-    includePermissions: true,
-    includePotentialSubscribers: true,
-    includeResourceHub: true,
-    includeGoal: true,
-    includeSpace: true,
-    includeProject: true,
-    includeSubscriptionsList: true,
-    includeUnreadNotifications: true,
-    includePathToDocument: true,
-  }).then((res) => res.document);
+  const document = await Hub.documents
+    .get({
+      id: params.id,
+      includeAuthor: true,
+      includeReactions: true,
+      includePermissions: true,
+      includePotentialSubscribers: true,
+      includeResourceHub: true,
+      includeGoal: true,
+      includeSpace: true,
+      includeProject: true,
+      includeSubscriptionsList: true,
+      includeUnreadNotifications: true,
+      includePathToDocument: true,
+    })
+    .then((res) => res.document);
 
   const [folder, resourceHub, subscriptionStatus] = await Promise.all([
     document.parentFolderId
-      ? Hub.folders.get({ id: document.parentFolderId, includePotentialSubscribers: true }).then(
-          (res) => res.folder!,
-        )
+      ? Hub.folders.get({ id: document.parentFolderId, includePotentialSubscribers: true }).then((res) => res.folder!)
       : undefined,
-    Hub.resource_hubs.get({ id: document.resourceHubId!, includePotentialSubscribers: true }).then((res) => res.resourceHub!),
+    Hub.resource_hubs
+      .get({ id: document.resourceHubId!, includePotentialSubscribers: true })
+      .then((res) => res.resourceHub!),
     Api.notifications.isSubscribed({
       resourceId: document.id,
       resourceType: "resource_hub_document",

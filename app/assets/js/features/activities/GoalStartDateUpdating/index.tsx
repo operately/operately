@@ -34,7 +34,8 @@ const GoalStartDateUpdating: ActivityHandler = {
 
     const message = newStartDate ? (
       <>
-        changed the start date to <FormattedTime {...formattedTimePreferences} time={newStartDate} format="short-date" />
+        changed the start date to{" "}
+        <FormattedTime {...formattedTimePreferences} time={newStartDate} format="short-date" />
       </>
     ) : (
       "cleared the start date"

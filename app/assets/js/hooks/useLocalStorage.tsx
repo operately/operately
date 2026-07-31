@@ -1,9 +1,4 @@
-import {
-  getLocalStorage,
-  safeGetItem,
-  safeRemoveItem,
-  safeSetItem,
-} from "@/utils/safeLocalStorage";
+import { getLocalStorage, safeGetItem, safeRemoveItem, safeSetItem } from "@/utils/safeLocalStorage";
 
 export function useLocalStorage(key: string) {
   const storage = getLocalStorage();

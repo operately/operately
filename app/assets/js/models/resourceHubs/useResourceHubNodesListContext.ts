@@ -85,7 +85,13 @@ export function useResourceHubNodesListContext(props: NullableNodesProps): Resou
         };
       },
       loadResourceHub: async (id: string): Promise<FolderSelectLoadResult> => {
-        const res = await Hub.resource_hubs.get({ id, includeNodes: true, includeGoal: true, includeSpace: true, includeProject: true });
+        const res = await Hub.resource_hubs.get({
+          id,
+          includeNodes: true,
+          includeGoal: true,
+          includeSpace: true,
+          includeProject: true,
+        });
 
         return {
           current: { type: "resourceHub", resourceHub: res.resourceHub! },
