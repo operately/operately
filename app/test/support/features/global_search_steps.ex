@@ -304,12 +304,12 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
 
   step :assert_full_text_search_action, ctx, query do
     ctx
-    |> UI.assert_text("Search titles and content for “#{query}”")
+    |> UI.assert_text("Search all content for “#{query}”")
     |> UI.assert_has(testid: "header-global-search-full-text-search")
   end
 
   step :refute_full_text_search_action, ctx do
-    ctx |> UI.refute_text("Search titles and content for")
+    ctx |> UI.refute_text("Search all content for")
   end
 
   step :open_full_text_search, ctx do
