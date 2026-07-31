@@ -837,6 +837,27 @@ defmodule OperatelyWeb.Api.Types do
     field? :value, :float, null: true
   end
 
+  object :kpi, for: Operately.Kpis.Kpi do
+    field :id, :id, null: false
+    field :name, :string, null: false
+    field :unit, :string, null: false
+    field :cadence, :string, null: false
+    field :space_id, :id, null: false
+    field? :champion, :person, null: true
+    field? :entries, list_of(:kpi_entry), null: true
+    field? :inserted_at, :datetime, null: true
+    field? :updated_at, :datetime, null: true
+  end
+
+  object :kpi_entry, for: Operately.Kpis.KpiEntry do
+    field :id, :id, null: false
+    field :value, :float, null: false
+    field :period, :date, null: false
+    field? :recorded_by, :person, null: true
+    field? :inserted_at, :datetime, null: true
+    field? :updated_at, :datetime, null: true
+  end
+
   object :edit_milestone_ordering_state_input do
     field :milestone_id, :id, null: false
     field :ordering_state, list_of(:string), null: false
