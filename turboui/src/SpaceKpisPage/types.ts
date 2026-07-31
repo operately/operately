@@ -56,6 +56,17 @@ export namespace SpaceKpisPage {
     championId: string | null;
   }
 
+  // Payload for the `updateKpi` mutation / `KpiUpdating` operation. Same shape
+  // as NewKpiInput plus the id of the KPI being edited. Entries are never edited
+  // here — they are append-only samples managed via recordKpiEntry.
+  export interface EditKpiInput {
+    id: string;
+    name: string;
+    unit: string;
+    cadence: Cadence;
+    championId: string | null;
+  }
+
   // Payload for the `recordKpiEntry` mutation / `KpiEntryRecording` operation.
   export interface RecordEntryInput {
     kpiId: string;
@@ -78,9 +89,12 @@ export namespace SpaceKpisPage {
     championSearch: (query: string) => Promise<Person[]>;
 
     // Callbacks that stand in for the GraphQL mutations. Resolvers call the
-    // Operately.Operations.{KpiCreating,KpiEntryRecording} operations; presentational
-    // components never touch Ecto/GraphQL directly (see models/gql convention).
+    // Operately.Operations.{KpiCreating,KpiUpdating,KpiDeleting,KpiEntryRecording}
+    // operations; presentational components never touch Ecto/GraphQL directly
+    // (see models/gql convention).
     onCreateKpi: (input: NewKpiInput) => Promise<MutationResult>;
+    onEditKpi: (input: EditKpiInput) => Promise<MutationResult>;
+    onDeleteKpi: (kpiId: string) => Promise<MutationResult>;
     onRecordEntry: (input: RecordEntryInput) => Promise<MutationResult>;
 
     // Route-loader driven data states.

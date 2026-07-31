@@ -1,7 +1,8 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
-import { IconChartColumn } from "../icons";
+import { IconChartColumn, IconDots } from "../icons";
+import { KpiActionsMenu } from "./KpiActionsMenu";
 import type { SpaceKpisPage } from "./types";
 import { formatCadence, formatValue, latestEntry, latestTrend } from "./utils";
 import { TrendIndicator } from "./TrendIndicator";
@@ -12,9 +13,11 @@ interface KpiListProps {
   onSelect: (kpiId: string) => void;
   onLogUpdate: (kpiId: string) => void;
   onNewKpi: () => void;
+  onEdit: (kpiId: string) => void;
+  onDelete: (kpiId: string) => void;
 }
 
-export function KpiList({ kpis, canManage, onSelect, onLogUpdate, onNewKpi }: KpiListProps) {
+export function KpiList({ kpis, canManage, onSelect, onLogUpdate, onNewKpi, onEdit, onDelete }: KpiListProps) {
   if (kpis.length === 0) {
     return <EmptyState canManage={canManage} onNewKpi={onNewKpi} />;
   }
@@ -39,6 +42,8 @@ export function KpiList({ kpis, canManage, onSelect, onLogUpdate, onNewKpi }: Kp
               canManage={canManage}
               onSelect={() => onSelect(kpi.id)}
               onLogUpdate={() => onLogUpdate(kpi.id)}
+              onEdit={() => onEdit(kpi.id)}
+              onDelete={() => onDelete(kpi.id)}
             />
           ))}
         </tbody>
@@ -52,11 +57,15 @@ function KpiRow({
   canManage,
   onSelect,
   onLogUpdate,
+  onEdit,
+  onDelete,
 }: {
   kpi: SpaceKpisPage.Kpi;
   canManage: boolean;
   onSelect: () => void;
   onLogUpdate: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
@@ -98,17 +107,32 @@ function KpiRow({
 
       <td className="px-4 py-3 text-right">
         {canManage && (
-          <button
-            type="button"
-            className="rounded-md px-2 py-1 text-xs font-medium text-link-base opacity-0 transition-opacity hover:bg-surface-accent group-hover:opacity-100"
-            onClick={(event) => {
-              event.stopPropagation();
-              onLogUpdate();
-            }}
-            data-test-id={`log-update-${kpi.id}`}
-          >
-            Log update
-          </button>
+          // Stop row-selection navigation when interacting with the actions.
+          <div className="flex items-center justify-end gap-1" onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className="rounded-md px-2 py-1 text-xs font-medium text-link-base opacity-0 transition-opacity hover:bg-surface-accent group-hover:opacity-100"
+              onClick={onLogUpdate}
+              data-test-id={`log-update-${kpi.id}`}
+            >
+              Log update
+            </button>
+
+            <KpiActionsMenu
+              kpiId={kpi.id}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              customTrigger={
+                <button
+                  type="button"
+                  aria-label="KPI actions"
+                  className="rounded-md p-1 text-content-dimmed opacity-0 transition-opacity hover:bg-surface-accent hover:text-content-base group-hover:opacity-100 data-[state=open]:opacity-100"
+                >
+                  <IconDots size={18} />
+                </button>
+              }
+            />
+          </div>
         )}
       </td>
     </tr>

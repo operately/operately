@@ -6,10 +6,12 @@ import { PageNew } from "../Page";
 import type { Navigation } from "../Page/Navigation";
 import { IconChartColumn, IconChevronRight } from "../icons";
 
+import { DeleteKpiModal } from "./DeleteKpiModal";
+import { KpiActionsMenu } from "./KpiActionsMenu";
 import { KpiDetail } from "./KpiDetail";
+import { KpiFormModal } from "./KpiFormModal";
 import { KpiList } from "./KpiList";
 import { LogUpdateForm } from "./LogUpdateForm";
-import { NewKpiForm } from "./NewKpiForm";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
 
 // The KPIs tool for a space. The page chrome (fullwidth PageNew + breadcrumb
@@ -21,9 +23,13 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   const [selectedKpiId, setSelectedKpiId] = React.useState<string | null>(props.initialSelectedKpiId ?? null);
   const [isNewOpen, setIsNewOpen] = React.useState(false);
   const [logKpiId, setLogKpiId] = React.useState<string | null>(null);
+  const [editKpiId, setEditKpiId] = React.useState<string | null>(null);
+  const [deleteKpiId, setDeleteKpiId] = React.useState<string | null>(null);
 
   const selectedKpi = props.kpis.find((kpi) => kpi.id === selectedKpiId) ?? null;
   const logKpi = props.kpis.find((kpi) => kpi.id === logKpiId) ?? null;
+  const editKpi = props.kpis.find((kpi) => kpi.id === editKpiId) ?? null;
+  const deleteKpi = props.kpis.find((kpi) => kpi.id === deleteKpiId) ?? null;
 
   const contentReady = !props.loading && !props.error;
 
@@ -38,12 +44,24 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
     }
   }
 
+  // Edit/Delete for the open KPI live in an overflow menu beside the primary
+  // header action, so the detail view offers the same manage actions as the list.
+  const headerKpiActions =
+    canManage && contentReady && selectedKpi
+      ? {
+          kpiId: selectedKpi.id,
+          onEdit: () => setEditKpiId(selectedKpi.id),
+          onDelete: () => setDeleteKpiId(selectedKpi.id),
+        }
+      : null;
+
   return (
     <PageNew title={[props.space.name, "KPIs"]} size="fullwidth" testId="space-kpis-page">
       <PageHeader
         navigation={props.navigation}
         selectedKpiName={selectedKpi?.name ?? null}
         primaryAction={primaryAction}
+        kpiActions={headerKpiActions}
         onBackToList={() => setSelectedKpiId(null)}
       />
 
@@ -56,15 +74,42 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             onSelectKpi={setSelectedKpiId}
             onOpenNew={() => setIsNewOpen(true)}
             onOpenLog={setLogKpiId}
+            onOpenEdit={setEditKpiId}
+            onOpenDelete={setDeleteKpiId}
           />
         </div>
       </div>
 
-      <NewKpiForm
+      {/* New KPI */}
+      <KpiFormModal
         isOpen={isNewOpen}
         onClose={() => setIsNewOpen(false)}
         championSearch={props.championSearch}
         onCreate={props.onCreateKpi}
+        onEdit={props.onEditKpi}
+      />
+
+      {/* Edit KPI — keyed by id so the form re-initialises for each KPI. */}
+      <KpiFormModal
+        key={editKpi?.id ?? "edit-kpi"}
+        isOpen={editKpiId !== null}
+        onClose={() => setEditKpiId(null)}
+        championSearch={props.championSearch}
+        kpi={editKpi}
+        onCreate={props.onCreateKpi}
+        onEdit={props.onEditKpi}
+      />
+
+      <DeleteKpiModal
+        kpi={deleteKpi}
+        isOpen={deleteKpiId !== null}
+        onClose={() => setDeleteKpiId(null)}
+        onDelete={props.onDeleteKpi}
+        onDeleted={() => {
+          // If we deleted the KPI currently open in the detail view, fall back
+          // to the list since the detail can no longer be shown.
+          if (selectedKpiId === deleteKpiId) setSelectedKpiId(null);
+        }}
       />
 
       <LogUpdateForm
@@ -83,10 +128,17 @@ interface HeaderAction {
   testId: string;
 }
 
+interface HeaderKpiActions {
+  kpiId: string;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
 interface PageHeaderProps {
   navigation: Navigation.Item[];
   selectedKpiName: string | null;
   primaryAction: HeaderAction | null;
+  kpiActions: HeaderKpiActions | null;
   onBackToList: () => void;
 }
 
@@ -128,16 +180,26 @@ function PageHeader(props: PageHeaderProps) {
           </h1>
         </div>
 
-        {props.primaryAction && (
-          <button
-            type="button"
-            className="rounded-lg bg-brand-1 px-3 py-1.5 text-sm font-medium text-white-1 hover:bg-blue-600"
-            onClick={props.primaryAction.onClick}
-            data-test-id={props.primaryAction.testId}
-          >
-            {props.primaryAction.label}
-          </button>
-        )}
+        <div className="flex items-center gap-1.5">
+          {props.primaryAction && (
+            <button
+              type="button"
+              className="rounded-lg bg-brand-1 px-3 py-1.5 text-sm font-medium text-white-1 hover:bg-blue-600"
+              onClick={props.primaryAction.onClick}
+              data-test-id={props.primaryAction.testId}
+            >
+              {props.primaryAction.label}
+            </button>
+          )}
+
+          {props.kpiActions && (
+            <KpiActionsMenu
+              kpiId={props.kpiActions.kpiId}
+              onEdit={props.kpiActions.onEdit}
+              onDelete={props.kpiActions.onDelete}
+            />
+          )}
+        </div>
       </div>
     </header>
   );
@@ -149,6 +211,8 @@ interface KpisContentProps extends SpaceKpisPageNS.Props {
   onSelectKpi: (id: string) => void;
   onOpenNew: () => void;
   onOpenLog: (id: string) => void;
+  onOpenEdit: (id: string) => void;
+  onOpenDelete: (id: string) => void;
 }
 
 function KpisContent(props: KpisContentProps) {
@@ -171,6 +235,8 @@ function KpisContent(props: KpisContentProps) {
       onSelect={props.onSelectKpi}
       onLogUpdate={props.onOpenLog}
       onNewKpi={props.onOpenNew}
+      onEdit={props.onOpenEdit}
+      onDelete={props.onOpenDelete}
     />
   );
 }
