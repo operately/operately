@@ -2302,6 +2302,7 @@ export interface SpaceTools {
   tasksEnabled: boolean;
   discussionsEnabled: boolean;
   resourceHubEnabled: boolean;
+  kpisEnabled: boolean;
   projects: Project[] | null;
   goals: Goal[] | null;
   messagesBoards: MessagesBoard[] | null;
@@ -2494,6 +2495,7 @@ export interface UpdateSpaceToolsPayload {
   tasksEnabled: boolean;
   discussionsEnabled: boolean;
   resourceHubEnabled: boolean;
+  kpisEnabled: boolean;
 }
 
 export interface UpdateTargetInput {

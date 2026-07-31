@@ -8,6 +8,7 @@ defmodule Operately.Groups.SpaceTools do
     field :tasks_enabled, :boolean, default: false
     field :discussions_enabled, :boolean, default: true
     field :resource_hub_enabled, :boolean, default: true
+    field :kpis_enabled, :boolean, default: false
 
     field :projects, {:array, :map}, virtual: true
     field :goals, {:array, :map}, virtual: true
@@ -22,14 +23,15 @@ defmodule Operately.Groups.SpaceTools do
 
   def changeset(space_tools, attrs) do
     space_tools
-    |> cast(attrs, [:tasks_enabled, :discussions_enabled, :resource_hub_enabled])
+    |> cast(attrs, [:tasks_enabled, :discussions_enabled, :resource_hub_enabled, :kpis_enabled])
   end
 
   def default_settings do
     %__MODULE__{
       tasks_enabled: false,
       discussions_enabled: true,
-      resource_hub_enabled: true
+      resource_hub_enabled: true,
+      kpis_enabled: false
     }
   end
 
