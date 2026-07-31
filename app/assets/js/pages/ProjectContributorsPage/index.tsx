@@ -7,7 +7,17 @@ import * as Projects from "@/models/projects";
 import { PageModule } from "@/routes/types";
 
 import { ProjectContributor } from "@/models/projectContributors";
-import { AccessLevelSummary, BorderedRow, ContributorAvatar, Menu, MenuActionItem, MenuLinkItem, PlaceholderAvatar, PrimaryButton, SecondaryButton } from "turboui";
+import {
+  AccessLevelSummary,
+  BorderedRow,
+  ContributorAvatar,
+  Menu,
+  MenuActionItem,
+  MenuLinkItem,
+  PlaceholderAvatar,
+  PrimaryButton,
+  SecondaryButton,
+} from "turboui";
 
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { createTestId } from "@/utils/testid";

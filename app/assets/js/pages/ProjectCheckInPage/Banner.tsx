@@ -21,7 +21,8 @@ function ProjectClosedBanner({ project }: { project: Projects.Project }) {
 
   return (
     <Paper.Banner testId="project-closed-banner">
-      This project was closed on <FormattedTime {...formattedTimePreferences} time={project.closedAt!} format="long-date" />. View the{" "}
+      This project was closed on{" "}
+      <FormattedTime {...formattedTimePreferences} time={project.closedAt!} format="long-date" />. View the{" "}
       <Link to={retroPath} testId="project-retrospective-link" className="font-bold ml-1">
         retrospective
       </Link>

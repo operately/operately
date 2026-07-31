@@ -20,13 +20,13 @@ interface UseProjectMilestoneOrderingResult {
   reorderMilestones: (sourceId: string, destinationIndex: number) => Promise<void>;
 }
 
-// useProjectMilestoneOrdering does the following: 
-//    1) caches the original milestones/order in a ref so normalization only happens once, 
+// useProjectMilestoneOrdering does the following:
+//    1) caches the original milestones/order in a ref so normalization only happens once,
 //       then seeds React state for ordered milestones and the current ordering array.
-//    2) orderingRef mirrors the latest order to keep synchronous reads in callbacks aligned with async React updates, 
+//    2) orderingRef mirrors the latest order to keep synchronous reads in callbacks aligned with async React updates,
 //       while setMilestones normalizes incoming lists and only mutates ordering state when values actually change.
-//    3) reorderMilestones performs optimistic moves: it shifts the requested id, updates UI state immediately, calls the API, 
-//       reconciles with the server response, and rolls back with a toast on failure while also invalidating cache/refreshing 
+//    3) reorderMilestones performs optimistic moves: it shifts the requested id, updates UI state immediately, calls the API,
+//       reconciles with the server response, and rolls back with a toast on failure while also invalidating cache/refreshing
 //       when successful.
 export function useProjectMilestoneOrdering({
   projectId,
@@ -38,7 +38,10 @@ export function useProjectMilestoneOrdering({
   const initialDataRef = React.useRef<{ milestones: TaskBoard.Milestone[]; ordering: string[] } | null>(null);
 
   if (!initialDataRef.current) {
-    const ordering = normalizeOrderingState(initialOrderingState, initialMilestones.map(m => m.id));
+    const ordering = normalizeOrderingState(
+      initialOrderingState,
+      initialMilestones.map((m) => m.id),
+    );
     initialDataRef.current = {
       milestones: reorderMilestonesByIds(initialMilestones, ordering),
       ordering,
@@ -54,19 +57,22 @@ export function useProjectMilestoneOrdering({
     orderingRef.current = orderingState;
   }, [orderingState]);
 
-  const setMilestones = React.useCallback<React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>>(
-    (update) => {
-      setMilestonesState((prev) => {
-        const next =
-          typeof update === "function" ? (update as (value: TaskBoard.Milestone[]) => TaskBoard.Milestone[])(prev) : update;
-        const normalized = normalizeOrderingState(orderingRef.current, next.map(m => m.id));
+  const setMilestones = React.useCallback<React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>>((update) => {
+    setMilestonesState((prev) => {
+      const next =
+        typeof update === "function"
+          ? (update as (value: TaskBoard.Milestone[]) => TaskBoard.Milestone[])(prev)
+          : update;
+      const normalized = normalizeOrderingState(
+        orderingRef.current,
+        next.map((m) => m.id),
+      );
 
-        setOrderingState((prevOrdering) => (arraysEqual(prevOrdering, normalized) ? prevOrdering : normalized));
+      setOrderingState((prevOrdering) => (arraysEqual(prevOrdering, normalized) ? prevOrdering : normalized));
 
-        return reorderMilestonesByIds(next, normalized);
-      });
-    },
-  []);
+      return reorderMilestonesByIds(next, normalized);
+    });
+  }, []);
 
   const reorderMilestones = React.useCallback(
     async (sourceId: string, destinationIndex: number) => {
@@ -97,7 +103,10 @@ export function useProjectMilestoneOrdering({
         const serverOrdering = response.project?.milestonesOrderingState || updatedOrder;
 
         setMilestonesState((prev) => {
-          const normalized = normalizeOrderingState(serverOrdering, prev.map(m => m.id));
+          const normalized = normalizeOrderingState(
+            serverOrdering,
+            prev.map((m) => m.id),
+          );
           setOrderingState((prevOrdering) => (arraysEqual(prevOrdering, normalized) ? prevOrdering : normalized));
           return reorderMilestonesByIds(prev, normalized);
         });
@@ -124,17 +133,14 @@ export function useProjectMilestoneOrdering({
   };
 }
 
-// Converts the normalized ordering back into milestone objects, 
+// Converts the normalized ordering back into milestone objects,
 // skipping ids that are no longer present in the map.
-function reorderMilestonesByIds(
-  milestones: TaskBoard.Milestone[],
-  ordering: string[],
-): TaskBoard.Milestone[] {
+function reorderMilestonesByIds(milestones: TaskBoard.Milestone[], ordering: string[]): TaskBoard.Milestone[] {
   if (milestones.length === 0) {
     return [];
   }
 
-  const milestoneIds = milestones.map(m => m.id);
+  const milestoneIds = milestones.map((m) => m.id);
   const normalized = normalizeOrderingState(ordering, milestoneIds);
   const milestoneMap = new Map(milestones.map((m) => [m.id, m]));
 

@@ -42,10 +42,7 @@ export function useCurrentSubscriptionsAdapter({
   const [unsubscribe, { loading: unsubscribeLoading }] = useUnsubscribeFromNotifications();
   const [editSubscribers] = useEditSubscriptionsList();
 
-  const subscribedPeople = useMemo(
-    () => potentialSubscribers.filter((s) => s.isSubscribed),
-    [potentialSubscribers],
-  );
+  const subscribedPeople = useMemo(() => potentialSubscribers.filter((s) => s.isSubscribed), [potentialSubscribers]);
 
   const handleSubscribe = () => {
     subscribe({

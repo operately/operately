@@ -24,12 +24,6 @@ export function Form() {
   const form = useForm({ mode: "edit", goal, update });
 
   return (
-    <CheckInForm
-      form={form}
-      goal={goal}
-      mode={mode}
-      allowFullEdit={allowFullEdit}
-      isUnpublished={isUnpublished}
-    />
+    <CheckInForm form={form} goal={goal} mode={mode} allowFullEdit={allowFullEdit} isUnpublished={isUnpublished} />
   );
 }

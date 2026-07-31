@@ -56,7 +56,9 @@ export function useOptimisticComments(opts: {
           return false;
         }
 
-        setComments((prev) => prev.map((c) => (c.id === tempId ? { ...c, id: realId, insertedAt: realInsertedAt ?? c.insertedAt } : c)));
+        setComments((prev) =>
+          prev.map((c) => (c.id === tempId ? { ...c, id: realId, insertedAt: realInsertedAt ?? c.insertedAt } : c)),
+        );
 
         onAfterMutation?.();
         return true;

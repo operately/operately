@@ -33,7 +33,6 @@ export function formatTime(
   return formatted.replace(" AM", "am").replace(" PM", "pm");
 }
 
-
 function hour12Option(timeFormat: TimeFormat): boolean | undefined {
   switch (timeFormat) {
     case "hour_12":

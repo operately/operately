@@ -154,7 +154,13 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
           <div className="font-semibold leading-none mb-1">{discussion.title}</div>
           <div className="break-words line-clamp-2">
             <span className="font-medium text-content-dimmed">
-              Last edited on <FormattedTime {...formattedTimePreferences} time={discussion.updatedAt!} format="relative-time-or-date" /> &mdash;{" "}
+              Last edited on{" "}
+              <FormattedTime
+                {...formattedTimePreferences}
+                time={discussion.updatedAt!}
+                format="relative-time-or-date"
+              />{" "}
+              &mdash;{" "}
             </span>
             {truncateString(contentSnippet, 60)}
           </div>

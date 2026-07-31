@@ -29,7 +29,10 @@ export function parseMilestonesForTurboUi(
     milestonesById[milestone.id] = milestone;
   });
 
-  const normalizedOrdering = normalizeOrderingState(orderingState, parsedMilestones.map((milestone) => milestone.id));
+  const normalizedOrdering = normalizeOrderingState(
+    orderingState,
+    parsedMilestones.map((milestone) => milestone.id),
+  );
 
   const orderedMilestones = normalizedOrdering
     .map((id) => milestonesById[id])

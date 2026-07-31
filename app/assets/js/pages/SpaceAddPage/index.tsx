@@ -132,9 +132,7 @@ function PrivacyLevelTitle({ field }: { field: string }) {
     return null;
   }
 
-  return (
-    <AccessLevelSummary resourceType="space" tense="future" anonymous={anonymous} company={company} hideIcon />
-  );
+  return <AccessLevelSummary resourceType="space" tense="future" anonymous={anonymous} company={company} hideIcon />;
 }
 
 function PrivacyEdit() {

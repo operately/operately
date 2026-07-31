@@ -24,7 +24,9 @@ function Page() {
 
             <div className="flex flex-col gap-3 mb-8">
               {window.appConfig.allowSignupWithGoogle && <SignUpWithGoogleButton />}
-              {window.appConfig.allowSignupWithEmail && <SignUpWithEmail inviteToken={inviteToken} redirectTo={redirectTo} />}
+              {window.appConfig.allowSignupWithEmail && (
+                <SignUpWithEmail inviteToken={inviteToken} redirectTo={redirectTo} />
+              )}
             </div>
 
             <TosAndPrivacyPolicy />

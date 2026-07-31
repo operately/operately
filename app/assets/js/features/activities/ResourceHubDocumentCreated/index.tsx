@@ -70,12 +70,7 @@ const ResourceHubDocumentCreating: ActivityHandler = {
     const documentName = document?.name ?? "a document";
 
     if (copiedDocument) {
-      return (
-        "Created a copy of " +
-        copiedDocument.name +
-        " and named it " +
-        documentName
-      );
+      return "Created a copy of " + copiedDocument.name + " and named it " + documentName;
     } else {
       return "Added: " + documentName;
     }
@@ -103,7 +98,16 @@ function ItemCopiedTitle(activity: Activity, page: string) {
     return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document);
   }
 
-  return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document, "in the", parent.link, parent.label);
+  return feedTitle(
+    activity,
+    "created a copy of",
+    copiedDocument,
+    "and named it",
+    document,
+    "in the",
+    parent.link,
+    parent.label,
+  );
 }
 
 function ItemCreatedTitle(activity: Activity, page: string) {

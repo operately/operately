@@ -15,4 +15,3 @@ export const PERMISSIONS_LIST = [
   { value: "comment_access", label: "Comment Access" },
   { value: "view_access", label: "View Access" },
 ];
-

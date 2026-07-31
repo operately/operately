@@ -34,7 +34,11 @@ const GoalClosing: ActivityHandler = {
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-4">
-            <RichContent content={activity.commentThread.message} mentionedPersonLookup={mentionedPersonLookup} parseContent />
+            <RichContent
+              content={activity.commentThread.message}
+              mentionedPersonLookup={mentionedPersonLookup}
+              parseContent
+            />
           </div>
         )}
       </div>

@@ -469,6 +469,23 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(target_id)
   end
 
+  def kpi_id(%Operately.Kpis.Kpi{id: id, name: name}) do
+    id = Operately.ShortUuid.encode!(id)
+    OperatelyWeb.Api.Helpers.id_with_comments(name, id)
+  end
+
+  def kpi_id(kpi_id) when is_binary(kpi_id) do
+    Operately.ShortUuid.encode!(kpi_id)
+  end
+
+  def kpi_entry_id(%Operately.Kpis.KpiEntry{id: id}) do
+    Operately.ShortUuid.encode!(id)
+  end
+
+  def kpi_entry_id(entry_id) when is_binary(entry_id) do
+    Operately.ShortUuid.encode!(entry_id)
+  end
+
   def project_id(project) do
     id = Operately.ShortUuid.encode!(project.id)
     OperatelyWeb.Api.Helpers.id_with_comments(project.name, id)

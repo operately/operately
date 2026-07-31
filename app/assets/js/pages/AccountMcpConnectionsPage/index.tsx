@@ -32,29 +32,32 @@ function Page() {
     setGrants(sortMcpGrants(mcpGrants));
   }, [mcpGrants]);
 
-  const handleRevokeGrant = React.useCallback(async (grantId: string) => {
-    if (pendingRevokeIds[grantId]) return;
+  const handleRevokeGrant = React.useCallback(
+    async (grantId: string) => {
+      if (pendingRevokeIds[grantId]) return;
 
-    const revokedGrant = grants.find((grant) => grant.id === grantId);
-    if (!revokedGrant) return;
+      const revokedGrant = grants.find((grant) => grant.id === grantId);
+      if (!revokedGrant) return;
 
-    setPendingRevokeIds((prev) => ({ ...prev, [grantId]: true }));
-    setGrants((prev) => prev.filter((grant) => grant.id !== grantId));
+      setPendingRevokeIds((prev) => ({ ...prev, [grantId]: true }));
+      setGrants((prev) => prev.filter((grant) => grant.id !== grantId));
 
-    try {
-      await Accounts.revokeMcpGrant(grantId);
-      showSuccessToast("Connection Revoked", "The MCP client can no longer access your account.");
-    } catch {
-      setGrants((prev) => restoreGrant(prev, revokedGrant));
-      showErrorToast("Failed To Revoke Connection", "Please try again.");
-    } finally {
-      setPendingRevokeIds((prev) => {
-        const next = { ...prev };
-        delete next[grantId];
-        return next;
-      });
-    }
-  }, [grants, pendingRevokeIds]);
+      try {
+        await Accounts.revokeMcpGrant(grantId);
+        showSuccessToast("Connection Revoked", "The MCP client can no longer access your account.");
+      } catch {
+        setGrants((prev) => restoreGrant(prev, revokedGrant));
+        showErrorToast("Failed To Revoke Connection", "Please try again.");
+      } finally {
+        setPendingRevokeIds((prev) => {
+          const next = { ...prev };
+          delete next[grantId];
+          return next;
+        });
+      }
+    },
+    [grants, pendingRevokeIds],
+  );
 
   return (
     <AccountMcpConnectionsPage
@@ -70,9 +73,7 @@ function Page() {
 }
 
 function sortMcpGrants(grants: Accounts.McpGrant[]) {
-  return [...grants].sort(
-    (a, b) => new Date(b.insertedAt).getTime() - new Date(a.insertedAt).getTime(),
-  );
+  return [...grants].sort((a, b) => new Date(b.insertedAt).getTime() - new Date(a.insertedAt).getTime());
 }
 
 function restoreGrant(grants: Accounts.McpGrant[], revokedGrant: Accounts.McpGrant) {

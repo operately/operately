@@ -8,7 +8,7 @@ export function ToggleTestIds() {
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShow(!show);
-  }
+  };
   const className = color + " cursor-pointer";
 
   React.useEffect(() => {

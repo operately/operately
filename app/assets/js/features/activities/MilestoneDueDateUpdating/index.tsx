@@ -33,7 +33,9 @@ const MilestoneDueDateUpdating: ActivityHandler = {
     const { project, milestone, milestoneName, newDueDate } = content(activity);
     const title = milestone ? milestoneLink(milestone, milestoneName) : `"${milestoneName}"`;
 
-    const message = newDueDate ? ["updated the due date for the", title, "milestone"] : ["removed due date from the", title, "milestone"];
+    const message = newDueDate
+      ? ["updated the due date for the", title, "milestone"]
+      : ["removed due date from the", title, "milestone"];
 
     if (page === "project") {
       return feedTitle(activity, ...message);

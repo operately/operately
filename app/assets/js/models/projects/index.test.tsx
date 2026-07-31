@@ -25,35 +25,35 @@ function getCustomProject(date) {
 
 describe(".isMilestoneOverdue", () => {
   it("the deadline is today", () => {
-    const date = Time.today().toISOString().split('T')[0];
+    const date = Time.today().toISOString().split("T")[0];
     const milestone = getCustomMilestone(date, "pending");
 
     expect(isMilestoneOverdue(milestone)).toBe(false);
   });
 
   it("the deadline was 10 days ago", () => {
-    const date = Time.daysAgo(10).toISOString().split('T')[0];
+    const date = Time.daysAgo(10).toISOString().split("T")[0];
     const milestone = getCustomMilestone(date, "pending");
 
     expect(isMilestoneOverdue(milestone)).toBe(true);
   });
 
   it("the deadline is in 10 days", () => {
-    const date = Time.daysFromNow(10).toISOString().split('T')[0];
-    const milestone = getCustomMilestone(date, "pending")
-    
+    const date = Time.daysFromNow(10).toISOString().split("T")[0];
+    const milestone = getCustomMilestone(date, "pending");
+
     expect(isMilestoneOverdue(milestone)).toBe(false);
   });
 
   it("done milestone", () => {
-    const date = Time.daysAgo(10).toISOString().split('T')[0];
+    const date = Time.daysAgo(10).toISOString().split("T")[0];
     const milestone = getCustomMilestone(date, "done");
 
     expect(isMilestoneOverdue(milestone)).toBe(false);
   });
 
   it("no status", () => {
-    const date = Time.daysAgo(10).toISOString().split('T')[0];
+    const date = Time.daysAgo(10).toISOString().split("T")[0];
     const milestone = getCustomMilestone(date, undefined);
 
     expect(isMilestoneOverdue(milestone)).toBe(false);
@@ -68,28 +68,28 @@ describe(".isMilestoneOverdue", () => {
 
 describe(".isOverdue", () => {
   it("the deadline is today", () => {
-    const date = Time.today().toISOString().split('T')[0];
+    const date = Time.today().toISOString().split("T")[0];
     const project = getCustomProject(date);
 
     expect(isOverdue(project)).toBe(false);
   });
 
   it("the deadline was 10 days ago", () => {
-    const date = Time.daysAgo(10).toISOString().split('T')[0];
+    const date = Time.daysAgo(10).toISOString().split("T")[0];
     const project = getCustomProject(date);
 
     expect(isOverdue(project)).toBe(true);
   });
 
   it("the deadline is in 10 days", () => {
-    const date = Time.daysFromNow(10).toISOString().split('T')[0];
+    const date = Time.daysFromNow(10).toISOString().split("T")[0];
     const project = getCustomProject(date);
-    
+
     expect(isOverdue(project)).toBe(false);
   });
 
   it("the deadline was yesterday", () => {
-    const date = Time.daysAgo(1).toISOString().split('T')[0];
+    const date = Time.daysAgo(1).toISOString().split("T")[0];
     const project = getCustomProject(date);
 
     expect(isOverdue(project)).toBe(true);
@@ -97,9 +97,9 @@ describe(".isOverdue", () => {
 
   it("matches isMilestoneOverdue behavior for consistency", () => {
     // Test the same scenarios as isMilestoneOverdue to ensure consistency
-    const todayStr = Time.today().toISOString().split('T')[0];
-    const yesterdayStr = Time.daysAgo(1).toISOString().split('T')[0];
-    const futureStr = Time.daysFromNow(10).toISOString().split('T')[0];
+    const todayStr = Time.today().toISOString().split("T")[0];
+    const yesterdayStr = Time.daysAgo(1).toISOString().split("T")[0];
+    const futureStr = Time.daysFromNow(10).toISOString().split("T")[0];
 
     const todayProject = getCustomProject(todayStr);
     const yesterdayProject = getCustomProject(yesterdayStr);

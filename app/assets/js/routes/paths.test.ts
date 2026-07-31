@@ -6,7 +6,9 @@ describe("Paths.companyBillingPath", () => {
   });
 
   it("builds the company billing path with checkout return params", () => {
-    expect(new Paths({ companyId: "acme" }).companyBillingPath({ checkoutId: "chk_123" })).toBe("/acme/admin/billing?checkout_id=chk_123");
+    expect(new Paths({ companyId: "acme" }).companyBillingPath({ checkoutId: "chk_123" })).toBe(
+      "/acme/admin/billing?checkout_id=chk_123",
+    );
   });
 });
 

@@ -22,19 +22,9 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
     invalidateCache,
   );
 
-  const { handleEditComment } = Comments.useEditCommentHandler(
-    comments,
-    setComments,
-    "milestone",
-    invalidateCache,
-  );
+  const { handleEditComment } = Comments.useEditCommentHandler(comments, setComments, "milestone", invalidateCache);
 
-  const { handleDeleteComment } = Comments.useDeleteCommentHandler(
-    comments,
-    setComments,
-    "milestone",
-    invalidateCache,
-  );
+  const { handleDeleteComment } = Comments.useDeleteCommentHandler(comments, setComments, "milestone", invalidateCache);
 
   const handleCreateComment = React.useCallback(
     async (content: any) => {

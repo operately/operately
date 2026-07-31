@@ -71,14 +71,7 @@ export function useAccountActions({
       const message = error?.response?.data?.message || failedActionMessage(pendingAction.type);
       showErrorToast(failedActionTitle(pendingAction.type), message);
     }
-  }, [
-    closeDialog,
-    deleteAccount,
-    demoteAccountFromSiteAdmin,
-    pendingAction,
-    promoteAccountToSiteAdmin,
-    refetch,
-  ]);
+  }, [closeDialog, deleteAccount, demoteAccountFromSiteAdmin, pendingAction, promoteAccountToSiteAdmin, refetch]);
 
   const dialogContent = pendingAction ? dialogDetails(pendingAction) : null;
 

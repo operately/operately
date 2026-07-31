@@ -73,7 +73,11 @@ function buildKanbanStateFromTasks(
   return fullState;
 }
 
-function collectPresentTaskIds(parsedState: KanbanState, tasks: MilestoneKanbanPage.Task[], statusKeys: string[]): string[] {
+function collectPresentTaskIds(
+  parsedState: KanbanState,
+  tasks: MilestoneKanbanPage.Task[],
+  statusKeys: string[],
+): string[] {
   const presentTaskIds: string[] = [];
 
   statusKeys.forEach((status) => {

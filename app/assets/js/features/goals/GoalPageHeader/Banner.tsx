@@ -28,7 +28,8 @@ function GoalStatusBanner({ goal }: { goal: Goals.Goal }) {
   if (goal.isArchived) {
     return (
       <Paper.Banner>
-        This goal was archived on <FormattedTime {...formattedTimePreferences} time={goal.archivedAt!} format="long-date" />
+        This goal was archived on{" "}
+        <FormattedTime {...formattedTimePreferences} time={goal.archivedAt!} format="long-date" />
       </Paper.Banner>
     );
   }

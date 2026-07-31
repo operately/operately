@@ -17,7 +17,7 @@ describe("RegularState", () => {
             commentsCount: 2,
           } as any,
         ]}
-      />
+      />,
     );
 
     expect(html).toContain("Imported discussion");

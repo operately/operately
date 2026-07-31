@@ -38,7 +38,7 @@ const ResourceHubFileEdited: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
-    const file = data.file?.id && data.file?.name ? fileLink(data.file) : data.file?.name ?? "a file";
+    const file = data.file?.id && data.file?.name ? fileLink(data.file) : (data.file?.name ?? "a file");
     const parent = visibleParentDescriptor(page, data);
 
     if (!parent) {

@@ -4,11 +4,7 @@ import * as React from "react";
 
 import { PageModule } from "@/routes/types";
 import { usePaths } from "@/routes/paths";
-import {
-  AccountApiTokensPage,
-  showErrorToast,
-  showSuccessToast,
-} from "turboui";
+import { AccountApiTokensPage, showErrorToast, showSuccessToast } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export default { name: "AccountApiTokensPage", loader, Page } as PageModule;

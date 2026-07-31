@@ -36,13 +36,10 @@ describe("parseMilestonesForTurboUi", () => {
   });
 
   it("falls back to natural order when no ordering is provided", () => {
-    const result = parseMilestonesForTurboUi(
-      paths,
-      [
-        { id: "m1", title: "First", status: "pending" },
-        { id: "m2", title: "Second", status: "done" },
-      ] as any,
-    );
+    const result = parseMilestonesForTurboUi(paths, [
+      { id: "m1", title: "First", status: "pending" },
+      { id: "m2", title: "Second", status: "done" },
+    ] as any);
 
     expect(result.orderingState).toEqual(["m1", "m2"]);
     expect(result.orderedMilestones.map((m) => m.id)).toEqual(["m1", "m2"]);
@@ -115,11 +112,7 @@ describe("normalizeOrderingState", () => {
     });
 
     it("matches UUIDs to IDs with comments in ordering state", () => {
-      const milestoneIds = [
-        "F5cXEbrEVH0RsmpnpRg1nP",
-        "BLjKZ3IcqsH9PpGi55hRlt",
-        "FYGDNEB5LWCpIlp1K4CBdX",
-      ];
+      const milestoneIds = ["F5cXEbrEVH0RsmpnpRg1nP", "BLjKZ3IcqsH9PpGi55hRlt", "FYGDNEB5LWCpIlp1K4CBdX"];
       const orderingState = [
         "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt", // With comment
         "1-mentions-F5cXEbrEVH0RsmpnpRg1nP", // With comment
@@ -127,11 +120,7 @@ describe("normalizeOrderingState", () => {
 
       const ordering = normalizeOrderingState(orderingState, milestoneIds);
 
-      expect(ordering).toEqual([
-        "BLjKZ3IcqsH9PpGi55hRlt",
-        "F5cXEbrEVH0RsmpnpRg1nP",
-        "FYGDNEB5LWCpIlp1K4CBdX",
-      ]);
+      expect(ordering).toEqual(["BLjKZ3IcqsH9PpGi55hRlt", "F5cXEbrEVH0RsmpnpRg1nP", "FYGDNEB5LWCpIlp1K4CBdX"]);
     });
 
     it("handles mixed ID formats in both arrays", () => {
@@ -155,10 +144,7 @@ describe("normalizeOrderingState", () => {
     });
 
     it("preserves the actual milestone ID format in output", () => {
-      const milestoneIds = [
-        "1-mentions-F5cXEbrEVH0RsmpnpRg1nP",
-        "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt",
-      ];
+      const milestoneIds = ["1-mentions-F5cXEbrEVH0RsmpnpRg1nP", "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt"];
       const orderingState = [
         "BLjKZ3IcqsH9PpGi55hRlt", // UUID only
       ];
@@ -166,10 +152,7 @@ describe("normalizeOrderingState", () => {
       const ordering = normalizeOrderingState(orderingState, milestoneIds);
 
       // Should return the actual milestone ID with comment, not the UUID from ordering
-      expect(ordering).toEqual([
-        "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt",
-        "1-mentions-F5cXEbrEVH0RsmpnpRg1nP",
-      ]);
+      expect(ordering).toEqual(["2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt", "1-mentions-F5cXEbrEVH0RsmpnpRg1nP"]);
     });
 
     it("handles all real-world ID formats", () => {
@@ -180,11 +163,7 @@ describe("normalizeOrderingState", () => {
         "pitch-deck-narrative-and-C7MmCD8BKEUT384NrM9Hbj",
         "key-metrics-and-growth-FUdnf08tVJwrPsObddIyt2",
       ];
-      const orderingState = [
-        "C7MmCD8BKEUT384NrM9Hbj",
-        "F5cXEbrEVH0RsmpnpRg1nP",
-        "FUdnf08tVJwrPsObddIyt2",
-      ];
+      const orderingState = ["C7MmCD8BKEUT384NrM9Hbj", "F5cXEbrEVH0RsmpnpRg1nP", "FUdnf08tVJwrPsObddIyt2"];
 
       const ordering = normalizeOrderingState(orderingState, milestoneIds);
 
@@ -200,10 +179,7 @@ describe("normalizeOrderingState", () => {
 
   describe("deduplication with comments", () => {
     it("prevents duplicates when ordering has both UUID and commented version", () => {
-      const milestoneIds = [
-        "1-mentions-F5cXEbrEVH0RsmpnpRg1nP",
-        "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt",
-      ];
+      const milestoneIds = ["1-mentions-F5cXEbrEVH0RsmpnpRg1nP", "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt"];
       const orderingState = [
         "F5cXEbrEVH0RsmpnpRg1nP",
         "1-mentions-F5cXEbrEVH0RsmpnpRg1nP", // Same milestone, different format
@@ -213,18 +189,12 @@ describe("normalizeOrderingState", () => {
       const ordering = normalizeOrderingState(orderingState, milestoneIds);
 
       // Should only include each milestone once
-      expect(ordering).toEqual([
-        "1-mentions-F5cXEbrEVH0RsmpnpRg1nP",
-        "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt",
-      ]);
+      expect(ordering).toEqual(["1-mentions-F5cXEbrEVH0RsmpnpRg1nP", "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt"]);
       expect(ordering.length).toBe(2);
     });
 
     it("uses the first occurrence when duplicates exist", () => {
-      const milestoneIds = [
-        "1-mentions-F5cXEbrEVH0RsmpnpRg1nP",
-        "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt",
-      ];
+      const milestoneIds = ["1-mentions-F5cXEbrEVH0RsmpnpRg1nP", "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt"];
       const orderingState = [
         "BLjKZ3IcqsH9PpGi55hRlt", // First occurrence
         "F5cXEbrEVH0RsmpnpRg1nP",
@@ -234,10 +204,7 @@ describe("normalizeOrderingState", () => {
       const ordering = normalizeOrderingState(orderingState, milestoneIds);
 
       // Should use the actual milestone ID and preserve first occurrence order
-      expect(ordering).toEqual([
-        "2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt",
-        "1-mentions-F5cXEbrEVH0RsmpnpRg1nP",
-      ]);
+      expect(ordering).toEqual(["2-investor-meetings-BLjKZ3IcqsH9PpGi55hRlt", "1-mentions-F5cXEbrEVH0RsmpnpRg1nP"]);
     });
   });
 

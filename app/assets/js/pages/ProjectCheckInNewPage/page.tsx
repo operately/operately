@@ -29,7 +29,7 @@ function Navigation() {
   const { project } = useLoadedData();
   const items: Paper.NavigationItem[] = [];
 
-if (project.space) {
+  if (project.space) {
     items.push({ to: paths.spacePath(project.space.id), label: project.space.name });
     items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects" as const), label: "Work Map" });
   } else {

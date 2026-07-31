@@ -80,12 +80,15 @@ function Page() {
 function Hero({ companyName }: { companyName?: string | null }) {
   return (
     <div className="border-b border-stroke-base px-8 py-8 sm:px-10 sm:py-10">
-      <h1 className="max-w-xl text-3xl font-extrabold leading-tight text-content-accent sm:text-4xl">Member limit reached</h1>
+      <h1 className="max-w-xl text-3xl font-extrabold leading-tight text-content-accent sm:text-4xl">
+        Member limit reached
+      </h1>
 
       <p className="mt-4 max-w-2xl text-base leading-7 text-content-accent">
         {companyName ? (
           <>
-            <span className="font-semibold">{companyName}</span> has reached its member limit, so this invite can't be used yet.
+            <span className="font-semibold">{companyName}</span> has reached its member limit, so this invite can't be
+            used yet.
           </>
         ) : (
           <>This company has reached its member limit, so this invite can't be used yet.</>

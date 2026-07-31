@@ -9,7 +9,16 @@ import { PermissionLevels } from "@/features/Permissions";
 import { AccessOptionsInt } from "@/models/permissions";
 import { Space } from "@/models/spaces";
 import { usePaths } from "@/routes/paths";
-import { AccessLevelSummary, Avatar, BorderedRow, Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
+import {
+  AccessLevelSummary,
+  Avatar,
+  BorderedRow,
+  Menu,
+  MenuActionItem,
+  PrimaryButton,
+  SecondaryButton,
+  SubMenu,
+} from "turboui";
 import { OtherPeople } from "./OtherPeople";
 
 import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
