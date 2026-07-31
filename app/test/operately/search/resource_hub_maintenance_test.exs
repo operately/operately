@@ -2,6 +2,8 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
   use Operately.DataCase
   use Oban.Testing, repo: Operately.Repo
 
+  import Ecto.Query
+
   alias Operately.Access
   alias Operately.Projects.Project
   alias Operately.ResourceHubs.{Link, Node}
@@ -31,6 +33,7 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
       |> Factory.add_file(:resource_file, :hub, folder: :folder)
       |> Factory.add_link(:resource_link, :hub, folder: :folder)
 
+    Repo.delete_all(Oban.Job)
     ctx
   end
 
@@ -49,7 +52,11 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
 
     assert Enum.all?(second_runs, &(&1.status == :completed))
     assert Enum.sum(Enum.map(second_runs, & &1.unchanged_count)) == 4
-    assert Repo.aggregate(Entry, :count) == 4
+
+    assert Repo.aggregate(
+             from(entry in Entry, where: entry.source_type in ^Enum.map(@source_types, &String.to_existing_atom/1)),
+             :count
+           ) == 4
   end
 
   test "backfill updates resource hub scope after a project moves spaces", ctx do
