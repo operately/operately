@@ -151,6 +151,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in @company_actions -> fetch_company_context(activity.content.company_id)
       activity.action in @space_actions -> fetch_space_context(activity)
       activity.action in Operately.Goals.goal_actions() -> fetch_goal_context(activity.content)
+      activity.action in Operately.Kpis.kpi_actions() -> fetch_space_context(activity)
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
       activity.action in @task_actions -> fetch_project_or_space_context(activity.content)
       activity.action in @resource_hub_actions -> fetch_resource_hub_context(activity.content)
