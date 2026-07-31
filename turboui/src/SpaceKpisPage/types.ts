@@ -8,6 +8,8 @@
 // Intentionally simpler than Goals/Targets: raw value + unit only, no
 // target/threshold fields.
 //
+import type { Navigation } from "../Page/Navigation";
+
 export namespace SpaceKpisPage {
   // Ecto.Enum :weekly | :monthly on the backend.
   export type Cadence = "weekly" | "monthly";
@@ -64,6 +66,11 @@ export namespace SpaceKpisPage {
 
   export interface Props {
     space: Space;
+
+    // Breadcrumb items shown in the page header, matching the other space tools
+    // (Work Map, Tasks). Typically a single crumb linking back to the space.
+    navigation: Navigation.Item[];
+
     kpis: Kpi[];
     currentUser: Person | null;
 
