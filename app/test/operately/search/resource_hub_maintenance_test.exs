@@ -7,8 +7,7 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
   alias Operately.Access
   alias Operately.Projects.Project
   alias Operately.ResourceHubs.{Link, Node}
-  alias Operately.Search
-  alias Operately.Search.{Entry, IndexRun, Indexer}
+  alias Operately.Search.{Entry, IndexRun, Indexer, MaintenanceRuns}
   alias Operately.Support.{Factory, RichText}
 
   @source_types [
@@ -158,15 +157,15 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
         Enum.map(@source_types, fn source_type ->
           result =
             case kind do
-              :backfill -> Search.start_backfill(source_type)
-              :reconciliation -> Search.start_reconciliation(source_type)
+              :backfill -> MaintenanceRuns.start_backfill(source_type)
+              :reconciliation -> MaintenanceRuns.start_reconciliation(source_type)
             end
 
           assert {:ok, run} = result
           run
         end)
 
-      assert %{failure: 0} = Oban.drain_queue(queue: :default, with_recursion: true)
+      assert %{failure: 0} = Oban.drain_queue(queue: :search_maintenance, with_recursion: true)
       Enum.map(runs, &Repo.get!(IndexRun, &1.id))
     end)
   end
@@ -175,12 +174,12 @@ defmodule Operately.Search.ResourceHubMaintenanceTest do
     Oban.Testing.with_testing_mode(:manual, fn ->
       start_result =
         case kind do
-          :backfill -> Search.start_backfill(source_type)
-          :reconciliation -> Search.start_reconciliation(source_type)
+          :backfill -> MaintenanceRuns.start_backfill(source_type)
+          :reconciliation -> MaintenanceRuns.start_reconciliation(source_type)
         end
 
       assert {:ok, run} = start_result
-      assert %{failure: 0} = Oban.drain_queue(queue: :default, with_recursion: true)
+      assert %{failure: 0} = Oban.drain_queue(queue: :search_maintenance, with_recursion: true)
       Repo.get!(IndexRun, run.id)
     end)
   end
