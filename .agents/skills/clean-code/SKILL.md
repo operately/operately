@@ -6,9 +6,8 @@ description: >-
   code, follow clean-code principles, refactor for clarity, improve naming,
   reduce complexity or duplication, separate concerns, tighten error handling,
   work test-first or do TDD, or otherwise raise code quality, readability, and
-  maintainability. Also use when writing or reviewing Ecto queries (prefer
-  assoc joins, recursive CTEs over Elixir/DB round-trips, and the Ecto DSL over
-  raw SQL). Apply these rules by default when producing or changing code for a
+  maintainability. Also use when writing or reviewing Operately APIs or Ecto
+  queries. Apply these rules by default when producing or changing code for a
   quality-conscious user.
 ---
 
@@ -154,7 +153,22 @@ When writing Ecto queries in this codebase:
 See [reference.md](reference.md#ecto-joins-and-recursive-queries) for examples
 from this codebase.
 
-### 15. Definition of done
+### 15. Model Operately API types and serializers explicitly
+
+- Represent closed value sets with TurboConnect `enum`, not `:string`. Derive
+  values from the domain or Ecto schema source of truth, use the enum in API
+  inputs and outputs, and convert atoms/strings only at required boundaries.
+- Keep endpoint modules focused on authentication and orchestration. Serialize
+  domain structs through an `OperatelyWeb.Api.Serializable` implementation in
+  `app/lib/operately_web/api/serializers/`; never define inline endpoint
+  serializers.
+- Register serialized models with `object :name, for: Module`, ensure the
+  relevant types module participates in `OperatelyWeb.Api.TypeNames`, and call
+  `Serializer.serialize/1` from endpoints.
+- Regenerate affected clients and cover enum and serialization behavior at the
+  appropriate API or serializer boundary.
+
+### 16. Definition of done
 
 A task is done only when:
 
