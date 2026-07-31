@@ -203,6 +203,31 @@ export interface Person {
   title: string;
 }
 
+export interface SearchIndexRun {
+  __typename: "search_index_run";
+  id: string;
+  kind: SearchIndexMaintenanceKind;
+  status: SearchIndexRunStatus;
+  phase: SearchIndexRunPhase;
+  processedCount: number;
+  insertedCount: number;
+  updatedCount: number;
+  unchangedCount: number;
+  supersededCount: number;
+  skippedCount: number;
+  failedCount: number;
+  deletedOrphanCount: number;
+  lastError?: string;
+  startedAt?: string;
+  completedAt?: string;
+  insertedAt: string;
+}
+
+export interface SearchIndexSourceStatus {
+  sourceType: SearchIndexSourceType;
+  latestRun?: SearchIndexRun;
+}
+
 export interface SiteMessage {
   id: string;
   title: string;
@@ -227,6 +252,27 @@ export interface SmtpSettings {
 export type BillingBehavior = "internal" | "provider_managed";
 
 export type EmailProvider = "smtp" | "sendgrid";
+
+export type SearchIndexMaintenanceKind = "backfill" | "reconciliation";
+
+export type SearchIndexRunPhase = "source_scan" | "index_scan";
+
+export type SearchIndexRunStatus = "pending" | "running" | "completed" | "completed_with_errors" | "failed";
+
+export type SearchIndexSourceType =
+  | "project"
+  | "goal"
+  | "milestone"
+  | "task"
+  | "person"
+  | "discussion"
+  | "project_check_in"
+  | "goal_check_in"
+  | "project_retrospective"
+  | "resource_hub_document"
+  | "resource_hub_folder"
+  | "resource_hub_file"
+  | "resource_hub_link";
 
 export interface GetAccountsInput {}
 
@@ -266,6 +312,12 @@ export interface GetEmailSettingsInput {}
 
 export interface GetEmailSettingsResult {
   emailSettings: EmailSettings;
+}
+
+export interface GetSearchIndexStatusInput {}
+
+export interface GetSearchIndexStatusResult {
+  sources: SearchIndexSourceStatus[];
 }
 
 export interface ListBillingPlanDefinitionsInput {}
@@ -414,6 +466,16 @@ export interface SetActiveBillingProductResult {
   product: BillingProduct;
 }
 
+export interface StartSearchIndexMaintenanceInput {
+  kind: SearchIndexMaintenanceKind;
+  sourceType?: SearchIndexSourceType;
+}
+
+export interface StartSearchIndexMaintenanceResult {
+  startedSourceTypes: SearchIndexSourceType[];
+  alreadyRunningSourceTypes: SearchIndexSourceType[];
+}
+
 export interface SyncBillingProductsFromPolarInput {}
 
 export interface SyncBillingProductsFromPolarResult {
@@ -513,6 +575,10 @@ class ApiNamespaceRoot {
     return this.client.get("/get_email_settings", input);
   }
 
+  async getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
+    return this.client.get("/get_search_index_status", input);
+  }
+
   async listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
     return this.client.get("/list_billing_plan_definitions", input);
   }
@@ -579,6 +645,12 @@ class ApiNamespaceRoot {
 
   async setActiveBillingProduct(input: SetActiveBillingProductInput): Promise<SetActiveBillingProductResult> {
     return this.client.post("/set_active_billing_product", input);
+  }
+
+  async startSearchIndexMaintenance(
+    input: StartSearchIndexMaintenanceInput,
+  ): Promise<StartSearchIndexMaintenanceResult> {
+    return this.client.post("/start_search_index_maintenance", input);
   }
 
   async syncBillingProductsFromPolar(
@@ -687,6 +759,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getEmailSettings(input);
   }
 
+  getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
+    return this.apiNamespaceRoot.getSearchIndexStatus(input);
+  }
+
   listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
     return this.apiNamespaceRoot.listBillingPlanDefinitions(input);
   }
@@ -751,6 +827,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.setActiveBillingProduct(input);
   }
 
+  startSearchIndexMaintenance(input: StartSearchIndexMaintenanceInput): Promise<StartSearchIndexMaintenanceResult> {
+    return this.apiNamespaceRoot.startSearchIndexMaintenance(input);
+  }
+
   syncBillingProductsFromPolar(input: SyncBillingProductsFromPolarInput): Promise<SyncBillingProductsFromPolarResult> {
     return this.apiNamespaceRoot.syncBillingProductsFromPolar(input);
   }
@@ -797,6 +877,9 @@ export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResu
 }
 export async function getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
   return defaultApiClient.getEmailSettings(input);
+}
+export async function getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
+  return defaultApiClient.getSearchIndexStatus(input);
 }
 export async function listBillingPlanDefinitions(
   input: ListBillingPlanDefinitionsInput,
@@ -858,6 +941,11 @@ export async function setActiveBillingProduct(
 ): Promise<SetActiveBillingProductResult> {
   return defaultApiClient.setActiveBillingProduct(input);
 }
+export async function startSearchIndexMaintenance(
+  input: StartSearchIndexMaintenanceInput,
+): Promise<StartSearchIndexMaintenanceResult> {
+  return defaultApiClient.startSearchIndexMaintenance(input);
+}
 export async function syncBillingProductsFromPolar(
   input: SyncBillingProductsFromPolarInput,
 ): Promise<SyncBillingProductsFromPolarResult> {
@@ -905,6 +993,12 @@ export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCom
 
 export function useGetEmailSettings(input: GetEmailSettingsInput): UseQueryHookResult<GetEmailSettingsResult> {
   return useQuery<GetEmailSettingsResult>(() => defaultApiClient.getEmailSettings(input));
+}
+
+export function useGetSearchIndexStatus(
+  input: GetSearchIndexStatusInput,
+): UseQueryHookResult<GetSearchIndexStatusResult> {
+  return useQuery<GetSearchIndexStatusResult>(() => defaultApiClient.getSearchIndexStatus(input));
 }
 
 export function useListBillingPlanDefinitions(
@@ -1012,6 +1106,15 @@ export function useSetActiveBillingProduct(): UseMutationHookResult<
   );
 }
 
+export function useStartSearchIndexMaintenance(): UseMutationHookResult<
+  StartSearchIndexMaintenanceInput,
+  StartSearchIndexMaintenanceResult
+> {
+  return useMutation<StartSearchIndexMaintenanceInput, StartSearchIndexMaintenanceResult>((input) =>
+    defaultApiClient.startSearchIndexMaintenance(input),
+  );
+}
+
 export function useSyncBillingProductsFromPolar(): UseMutationHookResult<
   SyncBillingProductsFromPolarInput,
   SyncBillingProductsFromPolarResult
@@ -1075,6 +1178,8 @@ export default {
   useGetCompany,
   getEmailSettings,
   useGetEmailSettings,
+  getSearchIndexStatus,
+  useGetSearchIndexStatus,
   listBillingPlanDefinitions,
   useListBillingPlanDefinitions,
   listBillingProducts,
@@ -1107,6 +1212,8 @@ export default {
   useSendTestEmail,
   setActiveBillingProduct,
   useSetActiveBillingProduct,
+  startSearchIndexMaintenance,
+  useStartSearchIndexMaintenance,
   syncBillingProductsFromPolar,
   useSyncBillingProductsFromPolar,
   unarchiveBillingPlanDefinition,

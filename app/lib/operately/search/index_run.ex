@@ -6,15 +6,18 @@ defmodule Operately.Search.IndexRun do
   counters, and sanitized failure details needed to resume safely after retries or deployments.
   """
 
+  def __api_typename__, do: "search_index_run"
+
   use Operately.Schema
   alias Operately.Search.Entry
 
   @kinds [:backfill, :reconciliation]
   @statuses [:pending, :running, :completed, :completed_with_errors, :failed]
   @phases [:source_scan, :index_scan]
+  @source_types Entry.source_types() -- [:space]
 
   schema "search_index_runs" do
-    field :source_type, Ecto.Enum, values: Entry.source_types()
+    field :source_type, Ecto.Enum, values: @source_types
     field :kind, Ecto.Enum, values: @kinds
     field :status, Ecto.Enum, values: @statuses, default: :pending
     field :phase, Ecto.Enum, values: @phases, default: :source_scan
@@ -35,6 +38,8 @@ defmodule Operately.Search.IndexRun do
   end
 
   def changeset(attrs), do: changeset(%__MODULE__{}, attrs)
+
+  def source_types, do: @source_types
 
   def changeset(run, attrs) do
     run

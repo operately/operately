@@ -17,6 +17,7 @@ defmodule OperatelyEE.AdminApi do
   query :list_billing_plan_definitions, Q.ListBillingPlanDefinitions
   query :list_billing_products, Q.ListBillingProducts
   query :list_site_messages, Q.ListSiteMessages
+  query :get_search_index_status, Q.GetSearchIndexStatus
 
   mutation :delete_account, M.DeleteAccount
   mutation :promote_account_to_site_admin, M.PromoteAccountToSiteAdmin
@@ -37,4 +38,5 @@ defmodule OperatelyEE.AdminApi do
   mutation :create_site_message, M.CreateSiteMessage
   mutation :update_site_message, M.UpdateSiteMessage
   mutation :delete_site_message, M.DeleteSiteMessage
+  mutation :start_search_index_maintenance, M.StartSearchIndexMaintenance
 end
