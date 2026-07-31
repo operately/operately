@@ -67,6 +67,19 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
     assert discussion.navigation_target == %{discussion_id: discussion.id}
   end
 
+  test "builds semantic matches and navigation for milestones, tasks, and people" do
+    milestone = ResultBuilder.build_one(candidate(%{source_type: :milestone, exact_title: true}))
+    task = ResultBuilder.build_one(candidate(%{source_type: :task, body_kind: "description"}))
+    person = ResultBuilder.build_one(candidate(%{source_type: :person, body_kind: "title"}))
+
+    assert milestone.matched_field == :title
+    assert milestone.navigation_target == %{milestone_id: milestone.id}
+    assert task.matched_field == :description
+    assert task.navigation_target == %{task_id: task.id}
+    assert person.matched_field == :title
+    assert person.navigation_target == %{person_id: person.id}
+  end
+
   test "builds semantic matches and navigation for check-ins and retrospectives" do
     project_id = Ecto.UUID.generate()
 

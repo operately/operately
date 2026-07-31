@@ -143,6 +143,9 @@ describe("SearchPage", () => {
       "resource_hub_link",
       "project",
       "goal",
+      "milestone",
+      "task",
+      "person",
       "discussion",
       "project_check_in",
       "goal_check_in",
@@ -166,6 +169,9 @@ describe("SearchPage", () => {
     expect(screen.getByText("Document")).toBeInTheDocument();
     expect(screen.getByText("File")).toBeInTheDocument();
     expect(screen.getByText("Link")).toBeInTheDocument();
+    expect(screen.getByText("Milestone")).toBeInTheDocument();
+    expect(screen.getByText("Task")).toBeInTheDocument();
+    expect(screen.getByText("Person")).toBeInTheDocument();
     expect(screen.getByText("Project check-in")).toBeInTheDocument();
     expect(screen.getByText("Goal check-in")).toBeInTheDocument();
     expect(screen.getByText("Project retrospective")).toBeInTheDocument();

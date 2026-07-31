@@ -6,6 +6,7 @@ defmodule Operately.Operations.GuestInviting do
   alias Operately.Access.Binding
   alias Operately.InviteLinks
   alias Operately.People
+  alias Operately.Search.IndexUpdates
 
   def run(admin, company, attrs) do
     with :ok <- Usage.check_member_limit(company) do
@@ -16,6 +17,7 @@ defmodule Operately.Operations.GuestInviting do
       |> insert_account(attrs)
       |> insert_person(admin, attrs)
       |> insert_person_access_group(admin)
+      |> IndexUpdates.enqueue(:search_person, "person", fn changes -> changes.person.id end)
       |> insert_invite_link(admin, skip_invitation)
       |> insert_activity(admin)
       |> Repo.transaction()

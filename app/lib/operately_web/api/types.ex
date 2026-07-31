@@ -1552,6 +1552,9 @@ defmodule OperatelyWeb.Api.Types do
       :resource_hub_link,
       :project,
       :goal,
+      :milestone,
+      :task,
+      :person,
       :discussion,
       :project_check_in,
       :goal_check_in,
@@ -1569,6 +1572,9 @@ defmodule OperatelyWeb.Api.Types do
     field? :link_id, :string, null: true
     field? :project_id, :string, null: true
     field? :goal_id, :string, null: true
+    field? :milestone_id, :string, null: true
+    field? :task_id, :string, null: true
+    field? :person_id, :string, null: true
     field? :discussion_id, :string, null: true
     field? :project_check_in_id, :string, null: true
     field? :goal_check_in_id, :string, null: true

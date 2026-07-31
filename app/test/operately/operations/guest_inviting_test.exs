@@ -17,6 +17,7 @@ defmodule Operately.Operations.GuestInvitingTest do
   alias Operately.InviteLinks
   alias Operately.People
   alias Operately.People.Person
+  alias Operately.Search.IndexUpdates.Worker
   alias Operately.Activities.Activity
 
   @email "guest@your-company.com"
@@ -37,13 +38,17 @@ defmodule Operately.Operations.GuestInvitingTest do
   test "GuestInviting operation creates guest person", ctx do
     assert Repo.aggregate(Person, :count, :id) == 2
 
-    {:ok, _} = Operately.Operations.GuestInviting.run(ctx.admin, ctx.company, @guest_attrs)
+    assert {:ok, _} =
+             Oban.Testing.with_testing_mode(:manual, fn ->
+               Operately.Operations.GuestInviting.run(ctx.admin, ctx.company, @guest_attrs)
+             end)
 
     person = People.get_person_by_email(ctx.company, @email)
 
     assert person.full_name == "Guest User"
     assert person.title == "Advisor"
     assert person.type == :guest
+    assert_enqueued(worker: Worker, args: %{"source_type" => "person", "source_ids" => [person.id]})
 
     account = People.get_account_by_email(@email)
     assert account

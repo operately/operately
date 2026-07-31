@@ -8,6 +8,7 @@ defmodule Operately.People do
   alias Operately.Companies
   alias Operately.Companies.Company
   alias Operately.People.{Account, AccountToken, ApiToken, ManagerCycle, Person}
+  alias Operately.Search.IndexUpdates
   alias Operately.Access.Binding
   alias Operately.Access.Fetch
 
@@ -113,6 +114,7 @@ defmodule Operately.People do
     |> Multi.run(:add_to_general_space, fn _, %{person: person} ->
       Companies.add_person_to_general_space(person)
     end)
+    |> IndexUpdates.enqueue(:search_person, "person", fn changes -> changes.person.id end)
     |> Repo.transaction()
     |> case do
       {:ok, %{person: person}} ->
@@ -132,7 +134,15 @@ defmodule Operately.People do
     changeset = Person.changeset(person, attrs)
 
     try do
-      Repo.update(changeset)
+      Multi.new()
+      |> Multi.update(:person, changeset)
+      |> IndexUpdates.enqueue(:search_person, "person", fn changes -> changes.person.id end)
+      |> Repo.transaction()
+      |> case do
+        {:ok, %{person: person}} -> {:ok, person}
+        {:error, :person, changeset, _changes} -> {:error, changeset}
+        {:error, _operation, reason, _changes} -> {:error, reason}
+      end
     rescue
       e in Postgrex.Error ->
         if ManagerCycle.postgres_cycle_error?(e) do

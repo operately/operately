@@ -36,8 +36,10 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
 
   defp matched_field(%{source_type: :resource_hub_document}, true), do: :title
   defp matched_field(%{source_type: :discussion}, true), do: :title
+  defp matched_field(%{source_type: :milestone}, true), do: :title
   defp matched_field(%{source_type: source_type}, true) when source_type in [:project_check_in, :goal_check_in, :project_retrospective], do: :title
   defp matched_field(_candidate, true), do: :name
+  defp matched_field(%{body_kind: "title"}, false), do: :title
   defp matched_field(%{body_kind: "content"}, false), do: :content
   defp matched_field(%{body_kind: "description"}, false), do: :description
   defp matched_field(%{body_kind: "message"}, false), do: :message
@@ -69,6 +71,9 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
 
   defp navigation_target(%{source_type: :project} = candidate), do: %{project_id: candidate.source_id}
   defp navigation_target(%{source_type: :goal} = candidate), do: %{goal_id: candidate.source_id}
+  defp navigation_target(%{source_type: :milestone} = candidate), do: %{milestone_id: candidate.source_id}
+  defp navigation_target(%{source_type: :task} = candidate), do: %{task_id: candidate.source_id}
+  defp navigation_target(%{source_type: :person} = candidate), do: %{person_id: candidate.source_id}
   defp navigation_target(%{source_type: :discussion} = candidate), do: %{discussion_id: candidate.source_id}
   defp navigation_target(%{source_type: :project_check_in} = candidate), do: %{project_check_in_id: candidate.source_id}
   defp navigation_target(%{source_type: :goal_check_in} = candidate), do: %{goal_check_in_id: candidate.source_id}

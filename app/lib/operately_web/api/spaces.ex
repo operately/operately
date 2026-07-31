@@ -438,11 +438,12 @@ defmodule OperatelyWeb.Api.Spaces do
         end)
 
         if Enum.empty?(errors) do
-          {:ok, length(tasks)}
+          {:ok, Enum.map(tasks, & &1.id)}
         else
           List.first(errors)
         end
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_tasks_with_replaced_status, "task", fn changes -> changes.replace_task_statuses end)
     end
 
     def get_tasks(multi) do

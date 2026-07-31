@@ -58,6 +58,9 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
                link_id: nil,
                project_id: Operately.ShortUuid.encode!(ctx.title_match.id),
                goal_id: nil,
+               milestone_id: nil,
+               task_id: nil,
+               person_id: nil,
                discussion_id: nil,
                project_check_in_id: nil,
                goal_check_in_id: nil,
@@ -103,6 +106,35 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
 
     assert {200, %{results: []}} =
              query(ctx.conn, [:companies, :search], query: "Confidential acquisition marker")
+  end
+
+  test "serializes milestone, task, and person search results", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:project, :space, name: "Expansion program")
+      |> Factory.add_project_milestone(:milestone, :project, title: "Launch marker")
+      |> Factory.add_project_task(:task, :milestone, name: "Interview marker")
+      |> Factory.add_company_member(:teammate, name: "Taylor Marker", title: "Product strategist")
+
+    assert {:ok, _} = SourceIndexer.sync("milestone", ctx.milestone.id)
+    assert {:ok, _} = SourceIndexer.sync("task", ctx.task.id)
+    assert {:ok, _} = SourceIndexer.sync("person", ctx.teammate.id)
+    ctx = Factory.log_in_person(ctx, :creator)
+
+    assert {200, %{results: [%{type: "milestone", matched_field: "title", navigation_target: milestone_target}]}} =
+             query(ctx.conn, [:companies, :search], query: "Launch marker")
+
+    assert milestone_target.milestone_id == Operately.ShortUuid.encode!(ctx.milestone.id)
+
+    assert {200, %{results: [%{type: "task", matched_field: "name", navigation_target: task_target}]}} =
+             query(ctx.conn, [:companies, :search], query: "Interview marker")
+
+    assert task_target.task_id == Operately.ShortUuid.encode!(ctx.task.id)
+
+    assert {200, %{results: [%{type: "person", matched_field: "title", navigation_target: person_target}]}} =
+             query(ctx.conn, [:companies, :search], query: "Product strategist")
+
+    assert person_target.person_id == Operately.ShortUuid.encode!(ctx.teammate.id)
   end
 
   defp update_project_description(ctx, project_name, description) do
