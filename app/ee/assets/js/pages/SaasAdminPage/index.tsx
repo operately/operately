@@ -390,6 +390,7 @@ function Options() {
     <PageOptions.Root testId="options-button">
       <PageOptions.Link icon={IconMail} title="Email Configuration" to="/admin/email-settings" />
       <PageOptions.Link icon={IconInfoCircle} title="Site Messages" to="/admin/site-messages" />
+      <PageOptions.Link icon={IconSearch} title="Search Index" to="/admin/search-index" />
       {window.appConfig.billingEnabled && (
         <PageOptions.Link icon={IconBuilding} title="Billing Catalog" to="/admin/billing-catalog" />
       )}

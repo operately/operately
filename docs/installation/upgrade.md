@@ -56,3 +56,7 @@ docker compose run --rm app sh -c "/opt/operately/bin/migrate"
 ```
 docker compose up --wait --detach
 ```
+
+Search index backfills required by an upgrade start automatically after the
+application is running. Site administrators can monitor and repair them from
+`/admin/search-index`.
