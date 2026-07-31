@@ -25,8 +25,12 @@ const results: GlobalSearch.SearchResult = {
   links: [{ id: "link-1", name: "Link result", context: "Product Space", link: "/links/1" }],
 };
 
-function openSearch(search: GlobalSearch.SearchFn, onNavigate = jest.fn()) {
-  render(<GlobalSearch search={search} onNavigate={onNavigate} />);
+function openSearch(
+  search: GlobalSearch.SearchFn,
+  onNavigate = jest.fn(),
+  fullTextSearchPath?: GlobalSearch.Props["fullTextSearchPath"],
+) {
+  render(<GlobalSearch search={search} onNavigate={onNavigate} fullTextSearchPath={fullTextSearchPath} />);
   fireEvent.click(screen.getByRole("button", { name: /search/i }));
 
   return {
@@ -88,6 +92,50 @@ describe("GlobalSearch", () => {
 
     expect(within(listbox).getAllByText("Product Space")).toHaveLength(5);
     expect(within(listbox).getAllByRole("option")).toHaveLength(11);
+    expect(screen.queryByText(/Search all content for/)).not.toBeInTheDocument();
+  });
+
+  test("renders the full-text action after a divider and navigates with the trimmed query", async () => {
+    const fullTextSearchPath = (query: string) => `/search?${new URLSearchParams({ q: query })}`;
+    const { input, onNavigate } = openSearch(jest.fn().mockResolvedValue(results), jest.fn(), fullTextSearchPath);
+
+    await enterQuery(input, "  customer plans  ");
+
+    const action = await screen.findByRole("option", {
+      name: "Search all content for “customer plans”",
+    });
+    expect(action.parentElement).toHaveClass("border-t");
+
+    fireEvent.click(action);
+
+    expect(onNavigate).toHaveBeenCalledWith("/search?q=customer+plans");
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    expect(screen.getByRole("combobox")).toHaveValue("");
+  });
+
+  test("includes the full-text action in keyboard wraparound and Enter navigation", async () => {
+    const scrollIntoView = jest.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+
+    const fullTextSearchPath = (query: string) => `/search?${new URLSearchParams({ q: query })}`;
+    const { input, onNavigate } = openSearch(jest.fn().mockResolvedValue(results), jest.fn(), fullTextSearchPath);
+    await enterQuery(input, "result");
+    await screen.findByRole("listbox");
+
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+
+    const selectedOption = screen.getByRole("option", { selected: true });
+    expect(selectedOption).toHaveTextContent("Search all content for “result”");
+    expect(input).toHaveAttribute("aria-activedescendant", selectedOption.id);
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: "nearest" });
+
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onNavigate).toHaveBeenCalledWith("/search?q=result");
   });
 
   test("supports keyboard wraparound, exposes selection, scrolls it into view, and navigates with Enter", async () => {
@@ -118,10 +166,12 @@ describe("GlobalSearch", () => {
       resolveSearch = resolve;
     });
 
-    const { input } = openSearch(jest.fn().mockReturnValue(pendingSearch));
+    const fullTextSearchPath = (query: string) => `/search?q=${query}`;
+    const { input } = openSearch(jest.fn().mockReturnValue(pendingSearch), jest.fn(), fullTextSearchPath);
     await enterQuery(input, "missing");
 
     expect(screen.getByRole("status")).toHaveTextContent("Searching…");
+    expect(screen.getByRole("option")).toHaveTextContent("Search all content for “missing”");
 
     await act(async () => {
       resolveSearch({});
@@ -129,15 +179,27 @@ describe("GlobalSearch", () => {
     });
 
     expect(screen.getByRole("status")).toHaveTextContent("No title or name matches for “missing”.");
+    expect(screen.getByRole("option")).toHaveTextContent("Search all content for “missing”");
   });
 
   test("shows quick-search failures as an error", async () => {
     const failure = new Error("unavailable");
     const failingSearch = jest.fn().mockRejectedValue(failure);
-    const { input } = openSearch(failingSearch);
+    const fullTextSearchPath = (query: string) => `/search?q=${query}`;
+    const { input } = openSearch(failingSearch, jest.fn(), fullTextSearchPath);
     await enterQuery(input, "failure");
 
     await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Quick search is unavailable."));
+    expect(screen.getByRole("option")).toHaveTextContent("Search all content for “failure”");
+  });
+
+  test("does not render the full-text action for a short query", async () => {
+    const fullTextSearchPath = (query: string) => `/search?q=${query}`;
+    const { input } = openSearch(jest.fn().mockResolvedValue({}), jest.fn(), fullTextSearchPath);
+
+    await enterQuery(input, "a");
+
+    expect(screen.queryByText(/Search all content for/)).not.toBeInTheDocument();
   });
 
   test("keeps long result names truncated", async () => {

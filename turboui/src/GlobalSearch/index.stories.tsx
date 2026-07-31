@@ -11,6 +11,7 @@ const meta: Meta<typeof GlobalSearch> = {
   },
   args: {
     onNavigate: fn(),
+    fullTextSearchPath: (query) => `/search?${new URLSearchParams({ q: query })}`,
   },
 };
 
@@ -105,8 +106,10 @@ export const AllGroups: Story = {
   },
   play: async () => {
     const { body } = await openAndType("launch");
-    const options = await body.findAllByRole("option");
-    await expect(options).toHaveLength(11);
+    await body.findByRole("group", { name: "LINKS" });
+    const options = body.getAllByRole("option");
+    await expect(options).toHaveLength(12);
+    await expect(body.getByText("Search all content for “launch”")).toBeVisible();
   },
 };
 
@@ -117,6 +120,7 @@ export const Loading: Story = {
   play: async () => {
     const { body } = await openAndType("launch");
     await expect(await body.findByText("Searching…")).toBeVisible();
+    await expect(body.getByText("Search all content for “launch”")).toBeVisible();
   },
 };
 
@@ -127,6 +131,7 @@ export const Empty: Story = {
   play: async () => {
     const { body } = await openAndType("missing");
     await expect(await body.findByText("No title or name matches for “missing”.")).toBeVisible();
+    await expect(body.getByText("Search all content for “missing”")).toBeVisible();
   },
 };
 
@@ -137,6 +142,7 @@ export const Error: Story = {
   play: async () => {
     const { body } = await openAndType("failure");
     await expect(await body.findByText("Quick search is unavailable.")).toBeVisible();
+    await expect(body.getByText("Search all content for “failure”")).toBeVisible();
   },
 };
 
@@ -155,7 +161,11 @@ export const LongNames: Story = {
   },
   play: async () => {
     const { body } = await openAndType("research");
-    await expect(await body.findByRole("option")).toBeVisible();
+    await expect(
+      await body.findByText(
+        "A very long customer research synthesis title that must remain compact inside the quick-search overlay",
+      ),
+    ).toBeVisible();
   },
 };
 
@@ -199,8 +209,21 @@ export const ScrollingAndKeyboardNavigation: Story = {
   },
   play: async () => {
     const { body, input } = await openAndType("result");
-    await body.findByRole("listbox");
+    await body.findByText("Link result 5");
     await userEvent.type(input, "{arrowup}");
-    await expect(body.getByRole("option", { selected: true })).toHaveTextContent("Link result 5");
+    await expect(body.getByRole("option", { selected: true })).toHaveTextContent("Search all content for “result”");
+  },
+};
+
+export const FullTextSearchDisabled: Story = {
+  args: {
+    search: searchAllGroups,
+    fullTextSearchPath: undefined,
+  },
+  play: async () => {
+    const { body } = await openAndType("launch");
+    await body.findByRole("group", { name: "LINKS" });
+    await expect(body.getAllByRole("option")).toHaveLength(11);
+    await expect(body.queryByText("Search all content for “launch”")).not.toBeInTheDocument();
   },
 };
