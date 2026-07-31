@@ -57,6 +57,34 @@ defmodule OperatelyEE.AdminApi.Types do
 
   enum(:email_provider, values: Operately.SystemSettings.EmailConfig.provider_values())
   enum(:billing_behavior, values: [:internal, :provider_managed])
+  enum(:search_index_maintenance_kind, values: [:backfill, :reconciliation])
+  enum(:search_index_run_status, values: [:pending, :running, :completed, :completed_with_errors, :failed])
+  enum(:search_index_run_phase, values: [:source_scan, :index_scan])
+  enum(:search_index_source_type, values: Operately.Search.IndexRun.source_types())
+
+  object :search_index_run, for: Operately.Search.IndexRun do
+    field :id, :string
+    field :kind, :search_index_maintenance_kind
+    field :status, :search_index_run_status
+    field :phase, :search_index_run_phase
+    field :processed_count, :integer
+    field :inserted_count, :integer
+    field :updated_count, :integer
+    field :unchanged_count, :integer
+    field :superseded_count, :integer
+    field :skipped_count, :integer
+    field :failed_count, :integer
+    field :deleted_orphan_count, :integer
+    field? :last_error, :string
+    field? :started_at, :datetime
+    field? :completed_at, :datetime
+    field :inserted_at, :datetime
+  end
+
+  object :search_index_source_status do
+    field :source_type, :search_index_source_type
+    field? :latest_run, :search_index_run
+  end
 
   object :smtp_settings do
     field :host, :string, null: false
