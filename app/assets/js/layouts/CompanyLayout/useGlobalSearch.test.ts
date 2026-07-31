@@ -1,7 +1,7 @@
-import { CompaniesQuickSearchResult } from "@/api";
+import { CompaniesQuickSearchResult, Company } from "@/api";
 import { Paths } from "@/routes/paths";
 
-import { loadQuickSearchResults, mapQuickSearchResult } from "./useGlobalSearch";
+import { companySearchPathBuilder, loadQuickSearchResults, mapQuickSearchResult } from "./useGlobalSearch";
 
 const paths = new Paths({ companyId: "company-1" });
 
@@ -152,5 +152,20 @@ describe("global quick-search adapter", () => {
     const search = jest.fn().mockRejectedValue(failure);
 
     await expect(loadQuickSearchResults(paths, "roadmap", search)).rejects.toBe(failure);
+  });
+
+  test("builds full-text search paths only for companies with the feature enabled", () => {
+    const company = (enabledExperimentalFeatures: string[]): Company => ({
+      __typename: "company",
+      id: "company-1",
+      name: "Company",
+      setupCompleted: true,
+      enabledExperimentalFeatures,
+    });
+
+    expect(companySearchPathBuilder(paths, company(["full_text_search"]))?.("customer plans")).toBe(
+      "/company-1/search?q=customer+plans",
+    );
+    expect(companySearchPathBuilder(paths, company([]))).toBeUndefined();
   });
 });

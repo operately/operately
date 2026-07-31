@@ -54,6 +54,12 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     |> UI.sleep(100)
   end
 
+  step :enable_full_text_search, ctx do
+    ctx
+    |> Factory.enable_feature("full_text_search")
+    |> then(fn ctx -> UI.visit(ctx, Paths.home_path(ctx.company)) end)
+  end
+
   #
   # Assertions for search results
   #
@@ -294,6 +300,28 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
 
   step :assert_searching_indicator, ctx do
     ctx |> UI.assert_text("Searching…")
+  end
+
+  step :assert_full_text_search_action, ctx, query do
+    ctx
+    |> UI.assert_text("Search all content for “#{query}”")
+    |> UI.assert_has(testid: "header-global-search-full-text-search")
+  end
+
+  step :refute_full_text_search_action, ctx do
+    ctx |> UI.refute_text("Search all content for")
+  end
+
+  step :open_full_text_search, ctx do
+    ctx
+    |> UI.click(testid: "header-global-search-full-text-search")
+    |> UI.sleep(300)
+  end
+
+  step :assert_full_text_search_page, ctx, query do
+    ctx
+    |> UI.assert_location(Paths.search_path(ctx.company, query))
+    |> UI.assert_has(testid: "company-search-input", value: query)
   end
 
   #

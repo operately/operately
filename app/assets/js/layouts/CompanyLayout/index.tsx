@@ -37,7 +37,7 @@ import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import * as Billing from "@/models/billing";
 import { Paths, usePaths } from "@/routes/paths";
-import { useGlobalSearchHandler } from "./useGlobalSearch";
+import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { BillingDangerBanner } from "./BillingDangerBanner";
 import { SiteMessageBanner } from "./SiteMessageBanner";
@@ -199,7 +199,7 @@ function DesktopNavigation({ company, canAddProject, canAddGoal, onOpenKeyboardS
         </div>
 
         <div className="flex items-center gap-2">
-          <Search />
+          <Search company={company} />
           <NewDropdown
             canAddGoal={canAddGoal}
             canAddProject={canAddProject}
@@ -262,13 +262,20 @@ export default function CompanyLayout() {
   );
 }
 
-function Search() {
+function Search({ company }: { company: Api.Company }) {
   const navigate = useNavigate();
+  const paths = usePaths();
   const handleGlobalSearch = useGlobalSearchHandler();
+  const fullTextSearchPath = companySearchPathBuilder(paths, company);
 
   return (
     <div className="hidden lg:block">
-      <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />
+      <GlobalSearch
+        search={handleGlobalSearch}
+        onNavigate={navigate}
+        fullTextSearchPath={fullTextSearchPath}
+        testId="header-global-search"
+      />
     </div>
   );
 }

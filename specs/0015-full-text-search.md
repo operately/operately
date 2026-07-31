@@ -8,7 +8,7 @@ The feature separates quick navigation from deeper content search:
 
 - `Cmd/Ctrl + K` continues to open the current TurboUI search overlay
 - the overlay searches titles and names only, preserves its existing grouped results, and adds discussions, folders, documents, files, and links
-- a final `Search titles and content for “{query}”` option opens a dedicated Search page, even when the quick search has no matches
+- a final `Search all content for “{query}”` option opens a dedicated Search page, even when the quick search has no matches
 - the Search page immediately runs the carried query, supports further 300 ms debounced searches, and returns at most 30 relevance-ranked full-text results
 - dedicated full-text results explain whether the match came from a title, name, description, or content and include a short plain-text excerpt for body matches
 - closed, completed, and archived resources remain available through dedicated full-text search and are labeled clearly
@@ -185,7 +185,7 @@ Expand the overlay with title/name-only `DISCUSSIONS`, `FOLDERS`, `DOCUMENTS`, `
 For every valid query of at least two characters, render a divider followed by one final selectable action:
 
 ```text
-Search titles and content for “{query}”
+Search all content for “{query}”
 ```
 
 Show this action whether quick matches exist, no quick matches exist, or the quick-search request fails. Clicking it or selecting it with the keyboard closes the overlay and opens the dedicated Search page with the query preserved.
@@ -514,7 +514,7 @@ Quick-search copy:
 - loading: `Searching…`
 - empty: `No title or name matches for “{query}”.`
 - error: `Quick search is unavailable.`
-- final action: `Search titles and content for “{query}”`
+- final action: `Search all content for “{query}”`
 
 For a query of at least two characters, the quick-search result area has one of these shapes:
 
@@ -523,13 +523,13 @@ Result 1
 Result 2
 Result 3
 ────────────────
-Search titles and content for “{query}”
+Search all content for “{query}”
 ```
 
 ```text
 No title or name matches for “{query}”.
 ────────────────
-Search titles and content for “{query}”
+Search all content for “{query}”
 ```
 
 The error state must be distinct from the empty state. A failed quick-search request must not tell the user that no matching work exists, and it must not remove the option to continue to the dedicated Search page.
@@ -603,7 +603,7 @@ Requirements:
 ### Interaction and accessibility
 
 - preserve arrow-key wraparound, Enter, Escape, click, and click-outside behavior
-- include `Search titles and content for “{query}”` in the overlay's arrow-key and Enter navigation
+- include `Search all content for “{query}”` in the overlay's arrow-key and Enter navigation
 - keep the selected item visible while keyboard navigation crosses the overlay scroll boundary
 - represent the result collection and options with appropriate listbox/option semantics or an equivalent accessible navigation pattern
 - expose the selected option through ARIA state
@@ -635,7 +635,7 @@ In PR 3.8, add dedicated Search-page stories or component tests for:
 
 In PR 3.9, extend the Global Search stories with:
 
-- grouped results followed by `Search titles and content for “{query}”`
+- grouped results followed by `Search all content for “{query}”`
 - empty and error states that retain the final action
 - keyboard and pointer navigation through the final action
 
@@ -811,11 +811,11 @@ PRs 3.1 through 3.4 are complete and remain unchanged as the indexing, permissio
 
 #### PR 3.9 — `chore: Connect quick search to full-text search`
 
-- [ ] Add a divider and final `Search titles and content for “{query}”` option for every quick-search query of at least two characters.
-- [ ] Keep the action available after populated, empty, and quick-search error states without changing or refilling the quick-search results.
-- [ ] Include the action in pointer navigation, arrow-key wraparound, Enter handling, selected-item scrolling, listbox/option semantics, and selected-option ARIA state.
-- [ ] Close the overlay and navigate to the completed company Search page with the current query encoded as `q`.
-- [ ] Add focused TurboUI, Storybook, mapper, and company feature coverage for copy, divider placement, availability in every request state, keyboard behavior, query preservation, and navigation.
+- [x] Add a divider and final `Search all content for “{query}”` option for every quick-search query of at least two characters.
+- [x] Keep the action available after populated, empty, and quick-search error states without changing or refilling the quick-search results.
+- [x] Include the action in pointer navigation, arrow-key wraparound, Enter handling, selected-item scrolling, listbox/option semantics, and selected-option ARIA state.
+- [x] Close the overlay and navigate to the completed company Search page with the current query encoded as `q`.
+- [x] Add focused TurboUI, Storybook, mapper, and company feature coverage for copy, divider placement, availability in every request state, keyboard behavior, query preservation, and navigation.
 
 #### Optional PR 3.10 — `chore: Expand the company full-text corpus`
 
@@ -911,7 +911,7 @@ The production database update is complete. Search implementation is not blocked
 - existing quick-search groups followed by discussions, folders, documents, files, and links
 - PR 3.6 quick navigation without a full-text action or Search-page dependency
 - dedicated Search page initial query, URL synchronization, 300 ms debounce, stale-response protection, and 30-result cap
-- PR 3.9 `Search titles and content for “{query}”` after populated, empty, and error states
+- PR 3.9 `Search all content for “{query}”` after populated, empty, and error states
 - PR 3.9 keyboard and pointer navigation from the overlay to the Search page with the query preserved
 - resource-hub inline field placement, debounce, result replacement, and clearing
 - PR 3.6 keyboard navigation across quick-search results
@@ -975,7 +975,7 @@ If indexed reads fail during rollout, disable the indexed path and return to the
 - Search migrations and queries remain compatible with PostgreSQL 14.
 - Both referenced issues are covered by automated acceptance tests.
 - The `Cmd/Ctrl + K` overlay remains a title/name-only quick navigator with its current groups and the added discussion and resource-hub groups.
-- Every valid quick query offers `Search titles and content for “{query}”`, including when quick search is empty or unavailable.
+- Every valid quick query offers `Search all content for “{query}”`, including when quick search is empty or unavailable.
 - The dedicated Search page preserves the carried query, supports further debounced searches, and returns at most 30 permission-aware full-text results.
 - Users can find supported resources by title/name and rich-text body on the dedicated Search page.
 - Closed, completed, and archived work is returned there with clear status labels.
