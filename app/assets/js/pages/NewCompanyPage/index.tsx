@@ -1,13 +1,12 @@
 import Api from "@/api";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router";
 
-import { Forms, Link } from "turboui";
+import { Forms, Link, Page as TurboUIPage } from "turboui";
 import { PageModule } from "@/routes/types";
 import { BillingCatalog, parseBillingIntent } from "./billingIntent";
 
@@ -57,10 +56,13 @@ function Page() {
   });
 
   return (
-    <Pages.Page title={"New Company"}>
-      <Paper.Root size="small" className="mt-24">
-        <Paper.NavigateBack to={Paths.lobbyPath()} title="Back to the Lobby" />
-        <Paper.Body>
+    <div className="mt-20">
+      <TurboUIPage
+        title={"New Company"}
+        size="small"
+        legacyNavigation={{ to: Paths.lobbyPath(), title: "Back to the Lobby" }}
+      >
+        <div className="px-10 py-8">
           <PageTitle />
 
           <Forms.Form form={form}>
@@ -89,9 +91,9 @@ function Page() {
               Import it here
             </Link>
           </div>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+        </div>
+      </TurboUIPage>
+    </div>
   );
 }
 

@@ -1,5 +1,5 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { IconDots, IconSlash } from "../icons";
+import { IconArrowLeft, IconDots, IconSlash } from "../icons";
 import * as React from "react";
 
 import { Link } from "../Link";
@@ -12,10 +12,27 @@ export namespace Navigation {
     label: string;
   }
 
+  // Legacy back-link navigation (matches PaperContainer.NavigateBack).
+  export interface LegacyItem {
+    to: string;
+    title: string;
+  }
+
   export interface Props {
     items: Item[];
     testId?: string;
   }
+}
+
+export function NavigateBack({ to, title }: Navigation.LegacyItem) {
+  return (
+    <div className="flex items-center justify-center mb-4 mt-12">
+      <Link to={to}>
+        <IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
+        {title}
+      </Link>
+    </div>
+  );
 }
 
 const navigationClassName = classNames(

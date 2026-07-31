@@ -1,7 +1,6 @@
 import * as Api from "@/api";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
@@ -13,7 +12,7 @@ import { logIn } from "@/routes/auth";
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { match } from "ts-pattern";
-import { Forms } from "turboui";
+import { Forms, Page as TurboUIPage } from "turboui";
 
 export default { name: "SignUpWithEmailPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -102,75 +101,74 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
   const validation = validateForm(form);
 
   return (
-    <Pages.Page title={["Sign Up"]} testId="sign-up-page">
-      <Paper.Root size="tiny">
-        <Paper.Body className="h-dvh sm:h-auto">
-          <div className="py-8 sm:px-4 sm:py-4">
-            <OperatelyLogo width="40px" height="40px" />
-            <h1 className="text-2xl font-bold mt-4">Sign up for Operately</h1>
-            <p className="text-content-dimmed mb-8">Use your work email — keep work and life separate.</p>
+    <TurboUIPage title={["Sign Up"]} size="tiny" testId="sign-up-page">
+      <div className="px-8 py-6 sm:px-10 sm:py-8 h-dvh sm:h-auto">
+        <div className="py-8 sm:px-4 sm:py-4">
+          <OperatelyLogo width="40px" height="40px" />
+          <h1 className="text-2xl font-bold mt-4">Sign up for Operately</h1>
+          <p className="text-content-dimmed mb-8">Use your work email — keep work and life separate.</p>
 
-            <Forms.Form form={form}>
-              {submitError && (
-                <div className="mb-4" role="alert">
-                  <Forms.ErrorMessage error={submitError} />
-                </div>
-              )}
-
-              <Forms.FieldGroup>
-                <Forms.TextInput
-                  field={"email"}
-                  label="Work Email"
-                  placeholder="name@company.com"
-                  required
-                  okSign={validation.email}
-                />
-
-                <Forms.TextInput
-                  field={"name"}
-                  label="Full Name"
-                  placeholder="Enter your full name"
-                  required
-                  okSign={validation.name}
-                />
-
-                <Forms.PasswordInput
-                  field={"password"}
-                  label="Password"
-                  minLength={12}
-                  placeholder="At least 12 characters"
-                  required
-                  noAutofill
-                  okSign={validation.password}
-                />
-
-                <PasswordStrength password={form.values.password} />
-
-                <Forms.PasswordInput
-                  field={"confirmPassword"}
-                  label="Confirm Password"
-                  minLength={12}
-                  placeholder="At least 12 characters"
-                  required
-                  noAutofill
-                  okSign={validation.confirmPassword}
-                />
-              </Forms.FieldGroup>
-
-              <div className="my-6">
-                <Forms.Submit
-                  saveText={!validation.isValid ? "Please fill in all fields" : "Continue ->"}
-                  className="w-full py-2 px-4"
-                />
+          <Forms.Form form={form}>
+            {submitError && (
+              <div className="mb-4" role="alert">
+                <Forms.ErrorMessage error={submitError} />
               </div>
+            )}
 
-              <TosAndPrivacyPolicy />
-            </Forms.Form>
-          </div>
-        </Paper.Body>
-        <WhatHappensNext />
-      </Paper.Root>
-    </Pages.Page>
+            <Forms.FieldGroup>
+              <Forms.TextInput
+                field={"email"}
+                label="Work Email"
+                placeholder="name@company.com"
+                required
+                okSign={validation.email}
+              />
+
+              <Forms.TextInput
+                field={"name"}
+                label="Full Name"
+                placeholder="Enter your full name"
+                required
+                okSign={validation.name}
+              />
+
+              <Forms.PasswordInput
+                field={"password"}
+                label="Password"
+                minLength={12}
+                placeholder="At least 12 characters"
+                required
+                noAutofill
+                okSign={validation.password}
+              />
+
+              <PasswordStrength password={form.values.password} />
+
+              <Forms.PasswordInput
+                field={"confirmPassword"}
+                label="Confirm Password"
+                minLength={12}
+                placeholder="At least 12 characters"
+                required
+                noAutofill
+                okSign={validation.confirmPassword}
+              />
+            </Forms.FieldGroup>
+
+            <div className="my-6">
+              <Forms.Submit
+                saveText={!validation.isValid ? "Please fill in all fields" : "Continue ->"}
+                className="w-full py-2 px-4"
+              />
+            </div>
+
+            <TosAndPrivacyPolicy />
+          </Forms.Form>
+        </div>
+      </div>
+
+      <WhatHappensNext />
+    </TurboUIPage>
   );
 }
 
@@ -184,26 +182,24 @@ function WhatHappensNext() {
 
 function CodeVerification({ form }: { form: ReturnType<typeof Forms.useForm> }) {
   return (
-    <Pages.Page title={["Sign Up"]} testId="sign-up-page">
-      <Paper.Root size="tiny">
-        <Paper.Body className="h-dvh sm:h-auto">
-          <Forms.Form form={form}>
-            <div className="py-8 sm:px-4 sm:py-4 flex flex-col items-center text-center">
-              <OperatelyLogo width="32px" height="32px" />
-              <h1 className="text-3xl font-bold mt-4 mb-4">Check your email for a code</h1>
-              <CodeMessage />
+    <TurboUIPage title={["Sign Up"]} size="tiny" testId="sign-up-page">
+      <div className="px-8 py-6 sm:px-10 sm:py-8 h-dvh sm:h-auto">
+        <Forms.Form form={form}>
+          <div className="py-8 sm:px-4 sm:py-4 flex flex-col items-center text-center">
+            <OperatelyLogo width="32px" height="32px" />
+            <h1 className="text-3xl font-bold mt-4 mb-4">Check your email for a code</h1>
+            <CodeMessage />
 
-              <div className="flex flex-col items-center">
-                <CodeInput field={"code"} />
-                <Forms.Submit saveText="Continue ->" className="w-60" />
-              </div>
-
-              <div className="mt-8 text-center text-sm">Can’t find your code? Check your spam folder.</div>
+            <div className="flex flex-col items-center">
+              <CodeInput field={"code"} />
+              <Forms.Submit saveText="Continue ->" className="w-60" />
             </div>
-          </Forms.Form>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+
+            <div className="mt-8 text-center text-sm">Can’t find your code? Check your spam folder.</div>
+          </div>
+        </Forms.Form>
+      </div>
+    </TurboUIPage>
   );
 }
 

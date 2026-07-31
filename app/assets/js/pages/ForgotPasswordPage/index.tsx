@@ -1,11 +1,10 @@
 import * as Api from "@/api";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 
 import classNames from "classnames";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { Forms, ActionLink, type FormState } from "turboui";
+import { Forms, ActionLink, type FormState, Page as TurboUIPage } from "turboui";
 
 import { PageModule } from "@/routes/types";
 
@@ -28,20 +27,22 @@ function Page() {
   const retry = () => setShowEmailSent(false);
 
   return (
-    <Pages.Page title={["Forgot Password"]} testId="forgot-password-page">
-      <Paper.Root size="tiny">
-        <Paper.NavigateBack to="/log_in" title="Back to Sign In" />
-        <Paper.Body className="h-dvh sm:h-auto">
-          <div className="py-8 sm:px-4 sm:py-4">
-            <OperatelyLogo width="30px" height="30px" />
-            <h1 className="text-2xl font-bold mt-4">Forgot Password?</h1>
-            <p className="text-content-dimmed mb-4">Get reset instructions via email.</p>
+    <TurboUIPage
+      title={["Forgot Password"]}
+      size="tiny"
+      testId="forgot-password-page"
+      legacyNavigation={{ to: "/log_in", title: "Back to Sign In" }}
+    >
+      <div className="px-8 py-6 sm:px-10 sm:py-8 h-dvh sm:h-auto">
+        <div className="py-8 sm:px-4 sm:py-4">
+          <OperatelyLogo width="30px" height="30px" />
+          <h1 className="text-2xl font-bold mt-4">Forgot Password?</h1>
+          <p className="text-content-dimmed mb-4">Get reset instructions via email.</p>
 
-            {showEmailSent ? <EmailSentMessage retry={retry} /> : <Form form={form} />}
-          </div>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+          {showEmailSent ? <EmailSentMessage retry={retry} /> : <Form form={form} />}
+        </div>
+      </div>
+    </TurboUIPage>
   );
 }
 
