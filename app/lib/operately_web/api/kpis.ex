@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Kpis do
       |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
       |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
       |> run(:kpis, fn ctx -> {:ok, Repo.preload(Kpis.list_kpis(ctx.space.id), :champion)} end)
-      |> run(:serialized, fn ctx -> {:ok, %{kpis: Serializer.serialize(ctx.kpis, level: :essential)}} end)
+      |> run(:serialized, fn ctx -> {:ok, %{kpis: Serializer.serialize(ctx.kpis, level: :full)}} end)
       |> respond()
     end
 
