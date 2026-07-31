@@ -17,7 +17,8 @@ interface ToolsSectionPros {
 
 export function ToolsSection({ space, tools }: ToolsSectionPros) {
   const { company } = useCompanyLoaderData();
-  const kpisEnabled = Companies.hasFeature(company, "space_kpis");
+  const kpisFeatureEnabled = Companies.hasFeature(company, "space_kpis");
+  const showKpis = kpisFeatureEnabled && tools.kpisEnabled;
   return (
     <div className="mt-6 py-6">
       <div className="flex justify-center items-start flex-wrap gap-4">
@@ -38,7 +39,7 @@ export function ToolsSection({ space, tools }: ToolsSectionPros) {
 
         {tools.tasksEnabled && <Tasks space={space} tasks={tools.tasks ?? []} />}
 
-        {kpisEnabled && <Kpis space={space} />}
+        {showKpis && <Kpis space={space} />}
       </div>
     </div>
   );

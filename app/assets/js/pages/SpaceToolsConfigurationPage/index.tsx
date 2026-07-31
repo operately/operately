@@ -3,9 +3,11 @@ import * as React from "react";
 import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
+import * as Companies from "@/models/companies";
 
 import { PageModule } from "@/routes/types";
 import { usePaths } from "@/routes/paths";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useNavigate } from "react-router";
 
 import { SpaceToolsConfigurationPage } from "turboui";
@@ -29,12 +31,16 @@ async function loader({ params }): Promise<LoaderResult> {
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
+  const { company } = useCompanyLoaderData();
   const { space, tools: loadedTools } = Pages.useLoadedData() as LoaderResult;
+
+  const kpisEnabled = Companies.hasFeature(company, "space_kpis");
 
   const [tools, setTools] = React.useState<SpaceToolsConfigurationPage.ToolSettings>({
     discussionsEnabled: loadedTools.discussionsEnabled,
     resourceHubEnabled: loadedTools.resourceHubEnabled,
     tasksEnabled: loadedTools.tasksEnabled,
+    kpisEnabled: loadedTools.kpisEnabled,
   });
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -49,6 +55,7 @@ function Page() {
           discussionsEnabled: tools.discussionsEnabled,
           resourceHubEnabled: tools.resourceHubEnabled,
           tasksEnabled: tools.tasksEnabled,
+          kpisEnabled: tools.kpisEnabled,
         },
       });
 
@@ -56,7 +63,15 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [navigate, paths, space.id, tools.discussionsEnabled, tools.resourceHubEnabled, tools.tasksEnabled]);
+  }, [
+    navigate,
+    paths,
+    space.id,
+    tools.discussionsEnabled,
+    tools.resourceHubEnabled,
+    tools.tasksEnabled,
+    tools.kpisEnabled,
+  ]);
 
   const handleCancel = React.useCallback(() => {
     navigate(paths.spacePath(space.id));
@@ -71,6 +86,7 @@ function Page() {
       onSave={handleSave}
       onCancel={handleCancel}
       isSubmitting={isSubmitting}
+      showKpis={kpisEnabled}
     />
   );
 }
