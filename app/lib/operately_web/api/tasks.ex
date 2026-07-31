@@ -716,7 +716,8 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def update_task_status(multi, new_status) do
-      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
+      multi
+      |> Ecto.Multi.update(:updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{
           task_status: new_status,
           status: new_status.value,
@@ -724,6 +725,7 @@ defmodule OperatelyWeb.Api.Tasks do
           reopened_at: next_reopened_at(task, new_status)
         })
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
     end
 
     defp next_closed_at(task, new_status) do
@@ -790,9 +792,11 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def update_task_name(multi, new_name) do
-      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
+      multi
+      |> Ecto.Multi.update(:updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{name: new_name})
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
     end
 
     def update_task_description(multi, description) do
@@ -807,6 +811,7 @@ defmodule OperatelyWeb.Api.Tasks do
         end)
         |> SubscriptionOps.insert(changes.me, %{content: description, subscriber_ids: []})
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
     end
 
     def assignee_ids(inputs) do
@@ -871,7 +876,9 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def delete_task(multi) do
-      Ecto.Multi.run(multi, :delete_task, fn repo, %{task: task} ->
+      multi
+      |> Operately.Search.IndexUpdates.delete(:search_task, "task", fn changes -> changes.task.id end)
+      |> Ecto.Multi.run(:delete_task, fn repo, %{task: task} ->
         case repo.delete(task) do
           {:ok, deleted_task} -> {:ok, deleted_task}
           {:error, changeset} -> {:error, changeset}
@@ -993,6 +1000,7 @@ defmodule OperatelyWeb.Api.Tasks do
         task = maybe_attach_milestone(task, changes)
         {:ok, task}
       end)
+      |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.new_task.id end)
     end
 
     defp closed_at_for_status(status) do

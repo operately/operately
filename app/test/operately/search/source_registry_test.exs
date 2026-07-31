@@ -34,13 +34,16 @@ defmodule Operately.Search.SourceRegistryTest do
              "discussion",
              "goal",
              "goal_check_in",
+             "milestone",
+             "person",
              "project",
              "project_check_in",
              "project_retrospective",
              "resource_hub_document",
              "resource_hub_file",
              "resource_hub_folder",
-             "resource_hub_link"
+             "resource_hub_link",
+             "task"
            ]
   end
 
