@@ -3,7 +3,8 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
   Converts ranked company-search candidates into shared search results.
 
   This module contains no database access. It selects the user-facing match field,
-  removes internal snippet markers, and builds type-safe navigation metadata.
+  cleans plain-text body excerpts for title and body matches, and builds type-safe
+  navigation metadata.
   """
 
   alias Operately.Search.Result
@@ -44,13 +45,38 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
   defp matched_field(%{body_kind: "description"}, false), do: :description
   defp matched_field(%{body_kind: "message"}, false), do: :message
 
-  defp snippet(_candidate, true), do: nil
+  # People only index a job title as "body"; keep name matches snippet-free.
+  defp snippet(%{source_type: :person}, true), do: nil
 
-  defp snippet(candidate, false) do
-    candidate.body_snippet
-    |> String.replace(@snippet_start, "")
-    |> String.replace(@snippet_stop, "")
+  defp snippet(candidate, _title_match?) do
+    case clean_snippet(candidate.body_snippet) do
+      nil -> nil
+      cleaned -> maybe_append_ellipsis(cleaned, Map.get(candidate, :body))
+    end
+  end
+
+  defp clean_snippet(nil), do: nil
+
+  defp clean_snippet(body_snippet) do
+    cleaned =
+      body_snippet
+      |> String.replace(@snippet_start, "")
+      |> String.replace(@snippet_stop, "")
+      |> String.trim()
+
+    if cleaned == "", do: nil, else: cleaned
+  end
+
+  defp maybe_append_ellipsis(snippet, body) when body in [nil, ""], do: snippet
+
+  defp maybe_append_ellipsis(snippet, body) do
+    if normalize_text(body) == normalize_text(snippet), do: snippet, else: snippet <> "..."
+  end
+
+  defp normalize_text(text) do
+    text
     |> String.trim()
+    |> String.replace(~r/\s+/u, " ")
   end
 
   defp navigation_target(%{source_type: :resource_hub_folder} = candidate) do

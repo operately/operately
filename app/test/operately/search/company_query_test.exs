@@ -88,11 +88,12 @@ defmodule Operately.Search.CompanyQueryTest do
     assert id == project.id
     assert project_id == project.id
 
-    assert [%{id: id, matched_field: :name, navigation_target: %{goal_id: goal_id}}] =
+    assert [%{id: id, matched_field: :name, snippet: snippet, navigation_target: %{goal_id: goal_id}}] =
              Search.search_company(ctx.creator, "Expansion goal")
 
     assert id == goal.id
     assert goal_id == goal.id
+    assert snippet =~ "Market evidence"
 
     assert [%{id: id, matched_field: :content, snippet: snippet, navigation_target: %{discussion_id: discussion_id}}] =
              Search.search_company(ctx.creator, "Interview synthesis")
@@ -125,11 +126,12 @@ defmodule Operately.Search.CompanyQueryTest do
     sync(:task, space_task.id)
     sync(:person, ctx.teammate.id)
 
-    assert [%{id: id, context: "Growth program", matched_field: :title, navigation_target: %{milestone_id: milestone_id}}] =
+    assert [%{id: id, context: "Growth program", matched_field: :title, snippet: snippet, navigation_target: %{milestone_id: milestone_id}}] =
              Search.search_company(ctx.creator, "Launch beta")
 
     assert id == milestone.id
     assert milestone_id == milestone.id
+    assert snippet =~ "Activation evidence"
 
     assert [%{id: id, context: "Growth program", matched_field: :description, navigation_target: %{task_id: task_id}}] =
              Search.search_company(ctx.creator, "Retention interviews")
@@ -142,12 +144,17 @@ defmodule Operately.Search.CompanyQueryTest do
 
     assert id == space_task.id
 
-    assert [%{id: id, context: company_name, matched_field: :title, snippet: snippet, navigation_target: %{person_id: person_id}}] =
-             Search.search_company(ctx.creator, "VP of Product")
+    assert [%{id: id, context: company_name, matched_field: :name, snippet: nil, navigation_target: %{person_id: person_id}}] =
+             Search.search_company(ctx.creator, "Taylor Reed")
 
     assert id == ctx.teammate.id
     assert person_id == ctx.teammate.id
     assert company_name == ctx.company.name
+
+    assert [%{id: id, context: ^company_name, matched_field: :title, snippet: snippet, navigation_target: %{person_id: ^person_id}}] =
+             Search.search_company(ctx.creator, "VP of Product")
+
+    assert id == ctx.teammate.id
     assert snippet =~ "VP of Product"
     assert [] = Search.search_company(ctx.creator, "Biography marker")
   end
@@ -587,8 +594,37 @@ defmodule Operately.Search.CompanyQueryTest do
     assert [title_match, body_match] = Search.search_company(ctx.creator, "signal")
     assert title_match.id == ctx.title_match.id
     assert title_match.matched_field == :title
+    assert title_match.snippet =~ "Unrelated"
     assert body_match.id == ctx.body_match.id
     assert body_match.matched_field == :content
+  end
+
+  test "returns similarly sized body excerpts for title and body matches", ctx do
+    long_body = Enum.map_join(1..80, " ", &"content#{&1}")
+
+    ctx =
+      ctx
+      |> Factory.add_document(:title_match, :hub, name: "Excerpt signal", content: RichText.rich_text(long_body))
+      |> Factory.add_document(:body_match, :hub,
+        name: "Evidence archive",
+        content: RichText.rich_text(long_body <> " excerpt signal " <> long_body)
+      )
+
+    sync(:document, ctx.title_match.id)
+    sync(:document, ctx.body_match.id)
+
+    assert [title_match, body_match] = Search.search_company(ctx.creator, "excerpt signal")
+    assert title_match.id == ctx.title_match.id
+    assert title_match.matched_field == :title
+    assert body_match.id == ctx.body_match.id
+    assert body_match.matched_field == :content
+
+    title_words = title_match.snippet |> String.split(~r/\s+/, trim: true) |> length()
+    body_words = body_match.snippet |> String.split(~r/\s+/, trim: true) |> length()
+
+    assert title_words in 35..45
+    assert body_words in 35..45
+    assert abs(title_words - body_words) <= 8
   end
 
   test "uses current owner names without reindexing", ctx do
@@ -754,7 +790,7 @@ defmodule Operately.Search.CompanyQueryTest do
     assert [] = Search.search_company(ctx.creator, <<255, 255>>)
   end
 
-  test "ranks with the stored search vector and builds snippets only for body matches", ctx do
+  test "ranks with the stored search vector and builds body excerpts for nonempty bodies", ctx do
     sql = capture_search_sql(fn -> Search.search_company(ctx.creator, "navigation") end)
     [_query, order_by] = String.split(sql, " ORDER BY ", parts: 2)
 
@@ -762,7 +798,7 @@ defmodule Operately.Search.CompanyQueryTest do
     assert order_by =~ "ARRAY[0.0,0.0,1.0,0.0]::real[]"
     assert order_by =~ ~r/::real\[\], [^,]+\."search_vector"/
     refute order_by =~ "ts_rank_cd(to_tsvector"
-    assert sql =~ "THEN NULL ELSE ts_headline"
+    assert sql =~ ~r/coalesce\(.*, ''\) = '' THEN NULL ELSE ts_headline/
     assert sql =~ ~s("company_search_candidates" AS MATERIALIZED)
     assert sql =~ ~s("company_search_candidate_ancestors")
     refute sql =~ "visible_company_search_nodes"

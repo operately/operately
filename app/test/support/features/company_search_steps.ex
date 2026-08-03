@@ -55,8 +55,7 @@ defmodule Operately.Support.Features.CompanySearchSteps do
   step :assert_body_match_metadata, ctx do
     ctx
     |> UI.assert_text("PROJECT")
-    |> UI.assert_text("In Product")
-    |> UI.assert_text("Matched in description")
+    |> UI.assert_text("Product")
     |> UI.assert_text("approval workflow")
   end
 

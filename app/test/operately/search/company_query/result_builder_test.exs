@@ -15,6 +15,8 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
         source_type: :resource_hub_document,
         resource_hub_id: hub_id,
         exact_title: true,
+        body: "Customer interviews revealed navigation problems",
+        body_snippet: "Customer interviews revealed navigation problems",
         state: :archived
       }),
       candidate(%{
@@ -23,6 +25,7 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
         resource_hub_id: hub_id,
         title: "Research.pdf",
         body_kind: "description",
+        body: "customer evidence and more notes from the research team",
         body_snippet: "__OPERATELY_SEARCH_START__customer__OPERATELY_SEARCH_STOP__ evidence"
       })
     ]
@@ -32,7 +35,7 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
                id: ^document_id,
                type: :resource_hub_document,
                matched_field: :title,
-               snippet: nil,
+               snippet: "Customer interviews revealed navigation problems",
                state: :archived,
                navigation_target: %{resource_hub_id: ^hub_id, document_id: ^document_id}
              },
@@ -40,10 +43,59 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
                id: ^file_id,
                type: :resource_hub_file,
                matched_field: :description,
-               snippet: "customer evidence",
+               snippet: "customer evidence...",
                navigation_target: %{resource_hub_id: ^hub_id, file_id: ^file_id}
              }
            ] = ResultBuilder.build(candidates)
+  end
+
+  test "keeps person name matches snippet-free and omits blank body excerpts" do
+    person =
+      ResultBuilder.build_one(
+        candidate(%{
+          source_type: :person,
+          exact_title: true,
+          body_kind: "title",
+          body: "VP of Product",
+          body_snippet: "VP of Product"
+        })
+      )
+
+    empty_body =
+      ResultBuilder.build_one(
+        candidate(%{
+          source_type: :project,
+          exact_title: true,
+          body_kind: "description",
+          body: "",
+          body_snippet: "   "
+        })
+      )
+
+    assert person.matched_field == :name
+    assert person.snippet == nil
+    assert empty_body.snippet == nil
+  end
+
+  test "appends an ellipsis when the excerpt is shorter than the body" do
+    truncated =
+      ResultBuilder.build_one(
+        candidate(%{
+          body: "Customer interviews revealed navigation problems across the checkout flow",
+          body_snippet: "Customer interviews revealed navigation problems"
+        })
+      )
+
+    complete =
+      ResultBuilder.build_one(
+        candidate(%{
+          body: "Customer interviews revealed navigation problems",
+          body_snippet: "Customer interviews revealed navigation problems"
+        })
+      )
+
+    assert truncated.snippet == "Customer interviews revealed navigation problems..."
+    assert complete.snippet == "Customer interviews revealed navigation problems"
   end
 
   test "uses semantic title fields for every resource hub type" do
@@ -120,6 +172,7 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
         exact_title: false,
         prefix_title: false,
         title_match: false,
+        body: "customer evidence",
         body_snippet: "customer evidence",
         state: nil
       },
