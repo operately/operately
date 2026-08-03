@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Projects.List do
   defp load(person, inputs) do
     include_filters = extract_include_filters(inputs)
 
-    (from p in Project, as: :project)
+    from(p in Project.projects(), as: :project)
     |> Project.scope_company(person.company_id)
     |> Project.scope_visibility(person.id)
     |> Project.scope_space(inputs[:space_id])

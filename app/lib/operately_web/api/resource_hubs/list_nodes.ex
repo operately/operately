@@ -60,7 +60,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
         left_join: hub in assoc(n, :resource_hub), as: :hub,
         left_join: goal in assoc(hub, :goal), as: :goal,
         left_join: project in assoc(hub, :project), as: :project,
-        left_join: space in assoc(hub, :space), as: :space
+        left_join: space in assoc(hub, :space), as: :space,
+        where: is_nil(hub.project_id) or project.kind == :project
       )
       |> filter_nodes(filter_inputs)
       |> Node.preload_content(me)

@@ -29,7 +29,13 @@ defmodule OperatelyWeb.Api.Comments.List do
   end
 
   defp load(id, :project_check_in, person) do
-    from(c in Comment, join: check_in in CheckIn, on: c.entity_id == check_in.id, join: p in assoc(check_in, :project), as: :project, where: c.entity_id == ^id and c.entity_type == :project_check_in)
+    from(c in Comment,
+      join: check_in in CheckIn,
+      on: c.entity_id == check_in.id,
+      join: p in assoc(check_in, :project),
+      as: :project,
+      where: c.entity_id == ^id and c.entity_type == :project_check_in and p.kind == :project
+    )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)
     |> Repo.all()
@@ -38,9 +44,11 @@ defmodule OperatelyWeb.Api.Comments.List do
 
   defp load(id, :project_retrospective, person) do
     from(c in Comment,
-      join: retro in Operately.Projects.Retrospective, on: c.entity_id == retro.id,
-      join: project in assoc(retro, :project), as: :project,
-      where: retro.id == ^id and c.entity_type == :project_retrospective
+      join: retro in Operately.Projects.Retrospective,
+      on: c.entity_id == retro.id,
+      join: project in assoc(retro, :project),
+      as: :project,
+      where: retro.id == ^id and c.entity_type == :project_retrospective and project.kind == :project
     )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)
@@ -50,9 +58,11 @@ defmodule OperatelyWeb.Api.Comments.List do
 
   defp load(id, :project_task, person) do
     from(c in Comment,
-      join: task in Operately.Tasks.Task, on: c.entity_id == task.id,
-      join: project in assoc(task, :project), as: :project,
-      where: task.id == ^id and c.entity_type == :project_task
+      join: task in Operately.Tasks.Task,
+      on: c.entity_id == task.id,
+      join: project in assoc(task, :project),
+      as: :project,
+      where: task.id == ^id and c.entity_type == :project_task and project.kind == :project
     )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)
@@ -93,10 +103,13 @@ defmodule OperatelyWeb.Api.Comments.List do
 
   defp load(id, :resource_hub_document, person) do
     from(c in Comment,
-      join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id,
+      join: d in Operately.ResourceHubs.Document,
+      on: c.entity_id == d.id,
       join: hub in assoc(d, :resource_hub),
-      left_join: space in assoc(hub, :space), as: :space,
-      where: d.id == ^id
+      left_join: project in assoc(hub, :project),
+      left_join: space in assoc(hub, :space),
+      as: :space,
+      where: d.id == ^id and (is_nil(hub.project_id) or project.kind == :project)
     )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :space)
@@ -106,10 +119,13 @@ defmodule OperatelyWeb.Api.Comments.List do
 
   defp load(id, :resource_hub_file, person) do
     from(c in Comment,
-      join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id,
+      join: f in Operately.ResourceHubs.File,
+      on: c.entity_id == f.id,
       join: hub in assoc(f, :resource_hub),
-      left_join: space in assoc(hub, :space), as: :space,
-      where: f.id == ^id
+      left_join: project in assoc(hub, :project),
+      left_join: space in assoc(hub, :space),
+      as: :space,
+      where: f.id == ^id and (is_nil(hub.project_id) or project.kind == :project)
     )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :space)
@@ -118,10 +134,14 @@ defmodule OperatelyWeb.Api.Comments.List do
   end
 
   defp load(id, :resource_hub_link, person) do
-    from(c in Comment, join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id,
+    from(c in Comment,
+      join: l in Operately.ResourceHubs.Link,
+      on: c.entity_id == l.id,
       join: hub in assoc(l, :resource_hub),
-      left_join: space in assoc(hub, :space), as: :space,
-      where: l.id == ^id
+      left_join: project in assoc(hub, :project),
+      left_join: space in assoc(hub, :space),
+      as: :space,
+      where: l.id == ^id and (is_nil(hub.project_id) or project.kind == :project)
     )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :space)

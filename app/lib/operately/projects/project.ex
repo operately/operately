@@ -3,6 +3,7 @@ defmodule Operately.Projects.Project do
   use Operately.Repo.Getter
 
   alias Operately.Repo
+  alias Operately.Repo.Getter.Profile
   alias Operately.Access.AccessLevels
   alias Operately.WorkMaps.WorkMapItem
   alias Operately.ContextualDates.Timeframe
@@ -28,6 +29,7 @@ defmodule Operately.Projects.Project do
     has_one :resource_hub, Operately.ResourceHubs.ResourceHub, foreign_key: :project_id
 
     has_one :access_context, Operately.Access.Context, foreign_key: :project_id
+    has_one :space_access_context, through: [:group, :access_context]
     has_one :champion, through: [:champion_contributor, :person]
     has_one :reviewer, through: [:reviewer_contributor, :person]
 
@@ -36,6 +38,8 @@ defmodule Operately.Projects.Project do
     field :description, :map
     field :name, :string
     field :private, :boolean, default: false
+    field :kind, Ecto.Enum, values: [:project, :template], default: :project
+    field :template_duration_days, :integer
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
     embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
@@ -81,6 +85,24 @@ defmodule Operately.Projects.Project do
 
   def changeset(project, attrs) do
     project
+    |> base_changeset(attrs)
+    |> validate_project_kind()
+  end
+
+  def template_changeset(attrs) do
+    template_changeset(%__MODULE__{}, attrs)
+  end
+
+  def template_changeset(project, attrs) do
+    project
+    |> base_changeset(attrs)
+    |> cast(attrs, [:template_duration_days])
+    |> put_change(:kind, :template)
+    |> validate_number(:template_duration_days, greater_than_or_equal_to: 0)
+  end
+
+  defp base_changeset(project, attrs) do
+    project
     |> cast(attrs, [
       :name,
       :description,
@@ -114,6 +136,14 @@ defmodule Operately.Projects.Project do
       :creator_id,
       :subscription_list_id
     ])
+  end
+
+  defp validate_project_kind(changeset) do
+    if get_field(changeset, :kind) == :project do
+      changeset
+    else
+      add_error(changeset, :kind, "is not a project")
+    end
   end
 
   defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
@@ -194,6 +224,24 @@ defmodule Operately.Projects.Project do
   import Operately.Access.Filters, only: [filter_by_access: 3, filter_by_view_access: 2]
   import Ecto.Query, only: [from: 2, from: 1, where: 3, limit: 2, order_by: 3]
 
+  def projects(query \\ __MODULE__) do
+    from p in query, where: p.kind == :project
+  end
+
+  def templates(query \\ __MODULE__) do
+    from p in query, where: p.kind == :template
+  end
+
+  def getter_profile(:default) do
+    %Profile{scope: &projects/1}
+  end
+
+  def getter_profile(:template) do
+    %Profile{scope: &templates/1, access_contexts: [:space_access_context]}
+  end
+
+  def getter_profile(_), do: nil
+
   def scope_company(query, company_id) do
     from p in query, where: p.company_id == ^company_id
   end
@@ -255,7 +303,7 @@ defmodule Operately.Projects.Project do
   def search(person, query, nil, opts), do: search(person, query, :view_access, opts)
 
   def search(person, query, access_level, opts) do
-    from(p in __MODULE__)
+    projects()
     |> where([p], p.company_id == ^person.company_id)
     |> where([p], ilike(p.name, ^"%#{query}%"))
     |> filter_by_access(person.id, access_level)

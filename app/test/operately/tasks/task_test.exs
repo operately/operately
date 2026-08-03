@@ -75,4 +75,13 @@ defmodule Operately.Tasks.TaskTest do
     assert {:ok, task} = Task.get(modified_requester, id: ctx.project_task.id)
     assert task.request_info.requester.full_name == ctx.project_editor.full_name
   end
+
+  test "rejects tasks owned by project templates for people and system requests", ctx do
+    ctx.project
+    |> Operately.Projects.Project.template_changeset(%{})
+    |> Repo.update!()
+
+    assert {:error, :not_found} = Task.get(ctx.project_editor, id: ctx.project_task.id)
+    assert {:error, :not_found} = Task.get(:system, id: ctx.project_task.id)
+  end
 end

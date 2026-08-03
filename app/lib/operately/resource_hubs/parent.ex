@@ -9,6 +9,42 @@ defmodule Operately.ResourceHubs.Parent do
   alias Operately.Repo
   alias Operately.ResourceHubs.ResourceHub
 
+  def scope_hubs(query) do
+    from([resource: hub] in query,
+      where:
+        is_nil(hub.project_id) or
+          exists(
+            from project in Project,
+              where: project.id == parent_as(:resource).project_id and project.kind == :project
+          )
+    )
+  end
+
+  def scope_nodes(query) do
+    from([resource: node] in query,
+      where:
+        exists(
+          from hub in ResourceHub,
+            left_join: project in assoc(hub, :project),
+            where: hub.id == parent_as(:resource).resource_hub_id,
+            where: is_nil(hub.project_id) or project.kind == :project
+        )
+    )
+  end
+
+  def scope_node_children(query) do
+    from([resource: resource] in query,
+      where:
+        exists(
+          from node in Operately.ResourceHubs.Node,
+            join: hub in assoc(node, :resource_hub),
+            left_join: project in assoc(hub, :project),
+            where: node.id == parent_as(:resource).node_id,
+            where: is_nil(hub.project_id) or project.kind == :project
+        )
+    )
+  end
+
   def parent_type(%Group{}), do: :space
   def parent_type(%Project{}), do: :project
   def parent_type(%Goal{}), do: :goal
@@ -195,8 +231,8 @@ defmodule Operately.ResourceHubs.Parent do
   defp get_space(%ResourceHub{space: %Group{} = space}), do: space
   defp get_space(%ResourceHub{space_id: space_id}), do: Repo.get!(Group, space_id)
 
-  defp get_project(%ResourceHub{project: %Project{} = project}), do: project
-  defp get_project(%ResourceHub{project_id: project_id}), do: Repo.get!(Project, project_id)
+  defp get_project(%ResourceHub{project: %Project{kind: :project} = project}), do: project
+  defp get_project(%ResourceHub{project_id: project_id}), do: Operately.Projects.get_project!(project_id)
 
   defp get_goal(%ResourceHub{goal: %Goal{} = goal}), do: goal
   defp get_goal(%ResourceHub{goal_id: goal_id}), do: Repo.get!(Goal, goal_id)

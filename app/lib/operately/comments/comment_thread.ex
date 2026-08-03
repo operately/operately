@@ -1,7 +1,10 @@
 defmodule Operately.Comments.CommentThread do
   use Operately.Schema
   use Operately.Repo.Getter
+
   alias Operately.Notifications
+  alias Operately.Projects.Project
+  alias Operately.Repo.Getter.Profile
 
   schema "comment_threads" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -44,6 +47,20 @@ defmodule Operately.Comments.CommentThread do
     |> cast(attrs, [:message, :parent_id, :parent_type, :title, :has_title, :subscription_list_id, :author_id, :acknowledged_by_id, :acknowledged_at])
     |> validate_required([:message, :parent_id, :parent_type, :subscription_list_id])
     |> validate_required_author_id()
+  end
+
+  def getter_profile(:default) do
+    %Profile{scope: &scope_out_project_templates/1}
+  end
+
+  defp scope_out_project_templates(query) do
+    from [resource: thread] in query,
+      where:
+        thread.parent_type != :project or
+          not exists(
+            from project in Project,
+              where: project.id == parent_as(:resource).parent_id and project.kind == :template
+          )
   end
 
   defp validate_required_author_id(changeset) do

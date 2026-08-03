@@ -103,7 +103,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
 
   defp load_projects(space_id, me) do
     projects =
-      from(p in Project,
+      from(p in Project.projects(),
         as: :project,
         preload: [last_check_in: :author, milestones: :project],
         where: p.status != "paused"

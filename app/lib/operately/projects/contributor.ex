@@ -4,6 +4,8 @@ defmodule Operately.Projects.Contributor do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Repo.Getter.Profile
+
   @allowed_roles [:champion, :reviewer, :contributor]
 
   schema "project_contributors" do
@@ -40,6 +42,16 @@ defmodule Operately.Projects.Contributor do
     contributor
     |> cast(attrs, [:responsibility, :project_id, :person_id, :role])
     |> validate_required([:project_id, :person_id])
+  end
+
+  def getter_profile(:default) do
+    %Profile{scope: &scope_out_project_templates/1}
+  end
+
+  defp scope_out_project_templates(query) do
+    from [resource: contributor] in query,
+      join: project in assoc(contributor, :project),
+      where: project.kind == :project
   end
 
   def set_permissions(contributor = %__MODULE__{}, company_read_only \\ false) do

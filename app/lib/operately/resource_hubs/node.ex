@@ -6,6 +6,7 @@ defmodule Operately.ResourceHubs.Node do
   use Operately.Repo.Getter
 
   alias Operately.Repo.Getter.Profile
+  alias Operately.ResourceHubs.Parent
 
   schema "resource_nodes" do
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
@@ -42,7 +43,10 @@ defmodule Operately.ResourceHubs.Node do
   end
 
   def getter_profile(:default) do
-    %Profile{access_contexts: [:space_access_context, :project_access_context, :goal_access_context]}
+    %Profile{
+      scope: &Parent.scope_nodes/1,
+      access_contexts: [:space_access_context, :project_access_context, :goal_access_context]
+    }
   end
 
   #
