@@ -33,6 +33,14 @@ const milestone: ProjectPage.Milestone = {
   link: "#",
 };
 
+const completedMilestone: ProjectPage.Milestone = {
+  id: "research-complete",
+  name: "Research complete",
+  status: "done",
+  dueDate: createDate("2029-12-15"),
+  link: "#",
+};
+
 const createdMilestone: ProjectPage.Milestone = {
   id: "customer-onboarding",
   name: "Customer onboarding",
@@ -48,7 +56,7 @@ function renderSelector({ selectedMilestone = null }: { selectedMilestone?: Proj
   render(
     <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <MilestoneViewSelector
-        milestones={[milestone]}
+        milestones={[milestone, completedMilestone]}
         selectedMilestone={selectedMilestone}
         canCreateMilestone
         onChange={onChange}
@@ -75,6 +83,25 @@ describe("MilestoneViewSelector", () => {
     expect(screen.getByRole("menuitem", { name: "All project tasks" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "Website launch" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "Create milestone" })).toBeInTheDocument();
+  });
+
+  it("shows milestone status icons in the menu and selected control", () => {
+    renderSelector({ selectedMilestone: completedMilestone });
+
+    const trigger = screen.getByRole("button", { name: "Viewing tasks for Research complete" });
+    expect(within(trigger).getByTestId("icon-IconFlagFilled")).toBeInTheDocument();
+
+    fireEvent.keyDown(trigger, { key: "Enter" });
+
+    expect(
+      within(screen.getByRole("menuitem", { name: "All project tasks" })).getByTestId("icon-IconList"),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("menuitem", { name: "Website launch" })).getByTestId("icon-IconFlag"),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("menuitem", { name: "Research complete" })).getByTestId("icon-IconFlagFilled"),
+    ).toBeInTheDocument();
   });
 
   it("selects a newly created milestone after creation succeeds", async () => {
