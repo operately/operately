@@ -454,16 +454,23 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   step :assert_milestone_visible_in_completed_tasks_board, ctx, name: name do
     ctx
-    |> UI.find(UI.query(testid: "completed-milestones-board"), fn el ->
-      UI.assert_text(el, name)
+    |> UI.find(UI.query(testid: "completed-milestones-compact-section"), fn el ->
+      el
+      |> UI.click(testid: "completed-milestones-toggle")
+      |> UI.assert_text(name)
     end)
   end
 
   step :refute_milestone_visible_in_completed_tasks_board, ctx, name: name do
     try do
-      UI.refute_text(ctx, name, testid: "completed-milestones-board")
+      ctx
+      |> UI.find(UI.query(testid: "completed-milestones-compact-section"), fn el ->
+        el
+        |> UI.click(testid: "completed-milestones-toggle")
+        |> UI.refute_text(name)
+      end)
     rescue
-      QueryError -> UI.refute_has(ctx, testid: "completed-milestones-board")
+      QueryError -> UI.refute_has(ctx, testid: "completed-milestones-compact-section")
     end
   end
 

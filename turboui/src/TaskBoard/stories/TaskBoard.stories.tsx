@@ -53,6 +53,42 @@ const mockPeople: Types.Person[] = [
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
 ];
 
+const completedMilestoneTasks: Types.Task[] = [
+  {
+    id: "completed-research-plan",
+    title: "Agree on the research plan",
+    status: DONE_STATUS,
+    description: null,
+    link: "#",
+    milestone: mockMilestones.completedMilestone1!,
+    dueDate: null,
+    closedAt: new Date("2025-03-12T00:00:00Z"),
+    type: "project",
+  },
+  {
+    id: "completed-customer-interviews",
+    title: "Complete customer interviews",
+    status: DONE_STATUS,
+    description: null,
+    link: "#",
+    milestone: mockMilestones.completedMilestone1!,
+    dueDate: null,
+    closedAt: new Date("2025-03-18T00:00:00Z"),
+    type: "project",
+  },
+  {
+    id: "completed-design-tokens",
+    title: "Publish the initial design tokens",
+    status: DONE_STATUS,
+    description: null,
+    link: "#",
+    milestone: mockMilestones.completedMilestone2!,
+    dueDate: null,
+    closedAt: new Date("2025-05-02T00:00:00Z"),
+    type: "project",
+  },
+];
+
 export const Default: Story = {
   tags: ["autodocs"],
   render: () => {
@@ -60,7 +96,7 @@ export const Default: Story = {
     const [displayMode, setDisplayMode] = useState<Types.TaskDisplayMode>("list");
 
     // Create state for tasks and task creation
-    const [tasks, setTasks] = useState([...mockTasks("project")]);
+    const [tasks, setTasks] = useState([...mockTasks("project"), ...completedMilestoneTasks]);
     const [milestones, setMilestones] = useState<Types.Milestone[]>([...Object.values(mockMilestones)]);
     const [searchableMilestones, setSearchableMilestones] = useState<Types.Milestone[]>([
       ...Object.values(mockMilestones),
@@ -170,6 +206,7 @@ export const CompletedMilestonesAtEnd: Story = {
       name: "Discovery wrapped",
       status: "done",
       dueDate: createContextualDate("2025-03-15", "day"),
+      completedAt: new Date("2025-03-18T00:00:00Z"),
     };
 
     const [milestones] = useState<Types.Milestone[]>([openMilestone, completedMilestone]);
