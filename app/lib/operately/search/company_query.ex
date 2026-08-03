@@ -19,6 +19,11 @@ defmodule Operately.Search.CompanyQuery do
   @limit 30
   @candidates_cte "company_search_candidates"
   @state_validated_types ["milestone", "task", "project_check_in", "goal_check_in", "project_retrospective"]
+  # Title-only matches fall back to MinWords when the query is absent from the body.
+  # Keep MinWords just below MaxWords (PostgreSQL requires MinWords < MaxWords) so
+  # title and body excerpts stay roughly the same length.
+  @snippet_min_words 39
+  @snippet_max_words 40
 
   def search(%Person{} = person, query) do
     with nil <- person.suspended_at,
@@ -43,7 +48,8 @@ defmodule Operately.Search.CompanyQuery do
     candidates = matched_candidates_query(company_id, eligible_items, accessible_contexts, full_text)
     candidate_ancestors = candidate_ancestors_query()
     candidate_ancestors_cte = ResourceHubItems.candidate_ancestors_cte()
-    snippet_options = "StartSel=#{ResultBuilder.snippet_start()}, StopSel=#{ResultBuilder.snippet_stop()}, MaxFragments=1, MinWords=8, MaxWords=22, ShortWord=2"
+    snippet_options =
+      "StartSel=#{ResultBuilder.snippet_start()}, StopSel=#{ResultBuilder.snippet_stop()}, MaxFragments=1, MinWords=#{@snippet_min_words}, MaxWords=#{@snippet_max_words}, ShortWord=2"
 
     from(candidate in @candidates_cte,
       join: entry in Entry,
@@ -61,10 +67,12 @@ defmodule Operately.Search.CompanyQuery do
         source_project_id: type(candidate.project_id, :binary_id),
         source_goal_id: type(candidate.goal_id, :binary_id),
         title: entry.title,
+        body: entry.body,
         body_kind: entry.body_kind,
         state: entry.state,
         owner_name: candidate.owner_name,
         exact_title: entry.normalized_title == ^full_text.normalized_title,
+        # True when the query is eligible for prefix matching and the normalized title starts with it.
         prefix_title:
           fragment(
             "? AND ? LIKE ? ESCAPE '!'",
@@ -72,6 +80,7 @@ defmodule Operately.Search.CompanyQuery do
             entry.normalized_title,
             ^full_text.title_prefix
           ),
+        # True when the title itself matches the full-text query (prefix or websearch form).
         title_match:
           fragment(
             "to_tsvector('public.operately'::regconfig, coalesce(?, '')) @@ (CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
@@ -80,16 +89,11 @@ defmodule Operately.Search.CompanyQuery do
             ^full_text.tsquery_expr,
             ^full_text.websearch_expr
           ),
+        # Empty bodies stay null; otherwise build a short plain-text excerpt via ts_headline.
         body_snippet:
           fragment(
-            "CASE WHEN (? AND ? LIKE ? ESCAPE '!') OR to_tsvector('public.operately'::regconfig, coalesce(?, '')) @@ (CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END) THEN NULL ELSE ts_headline('public.operately'::regconfig, coalesce(?, ''), CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END, ?) END",
-            ^full_text.title_prefix?,
-            entry.normalized_title,
-            ^full_text.title_prefix,
-            entry.title,
-            ^full_text.use_prefix?,
-            ^full_text.tsquery_expr,
-            ^full_text.websearch_expr,
+            "CASE WHEN coalesce(?, '') = '' THEN NULL ELSE ts_headline('public.operately'::regconfig, ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END, ?) END",
+            entry.body,
             entry.body,
             ^full_text.use_prefix?,
             ^full_text.tsquery_expr,
