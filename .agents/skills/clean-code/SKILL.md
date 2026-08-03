@@ -153,6 +153,10 @@ When writing Ecto queries in this codebase:
 See [reference.md](reference.md#ecto-joins-and-recursive-queries) for examples
 from this codebase.
 
+When loading a single resource with requester-aware authorization, use
+`Operately.Repo.Getter`. Read [getter.md](getter.md) before adding Getter
+profiles, alternate access-context paths, or a custom loading wrapper.
+
 ### 15. Model Operately API types and serializers explicitly
 
 - Represent closed value sets with TurboConnect `enum`, not `:string`. Derive
