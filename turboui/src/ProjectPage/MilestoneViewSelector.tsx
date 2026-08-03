@@ -1,9 +1,11 @@
 import React from "react";
 
 import { Menu, MenuActionItem, MenuSeparator } from "../Menu";
-import { IconCheck, IconChevronDown, IconPlus } from "../icons";
+import { IconCheck, IconChevronDown, IconFlag, IconFlagFilled, IconList, IconPlus } from "../icons";
 import { MilestoneCreationModal } from "../TaskBoard/components/MilestoneCreationModal";
 import type { ProjectPage } from "./index";
+
+const ALL_PROJECT_TASKS_LABEL = "All project tasks";
 
 interface MilestoneViewSelectorProps {
   milestones: ProjectPage.Milestone[];
@@ -21,7 +23,7 @@ export function MilestoneViewSelector({
   onCreateMilestone,
 }: MilestoneViewSelectorProps) {
   const [isCreationModalOpen, setIsCreationModalOpen] = React.useState(false);
-  const selectedLabel = selectedMilestone?.name ?? "All project tasks";
+  const selectedLabel = selectedMilestone?.name ?? ALL_PROJECT_TASKS_LABEL;
 
   const createMilestone = async (milestone: ProjectPage.NewMilestonePayload) => {
     const result = await Promise.resolve(onCreateMilestone(milestone));
@@ -44,6 +46,7 @@ export function MilestoneViewSelector({
               aria-label={`Viewing tasks for ${selectedLabel}`}
               data-test-id="milestone-view-selector"
             >
+              <MilestoneStatusIcon milestone={selectedMilestone} />
               <span className="truncate">{selectedLabel}</span>
               <IconChevronDown size={16} className="flex-shrink-0 text-content-dimmed" />
             </button>
@@ -51,16 +54,12 @@ export function MilestoneViewSelector({
           size="small"
           align="start"
         >
-          <MilestoneOption
-            label="All project tasks"
-            isSelected={selectedMilestone === null}
-            onSelect={() => onChange(null)}
-          />
+          <MilestoneOption milestone={null} isSelected={selectedMilestone === null} onSelect={() => onChange(null)} />
 
           {milestones.map((milestone) => (
             <MilestoneOption
               key={milestone.id}
-              label={milestone.name}
+              milestone={milestone}
               isSelected={milestone.id === selectedMilestone?.id}
               onSelect={() => onChange(milestone.id)}
             />
@@ -91,20 +90,37 @@ export function MilestoneViewSelector({
 }
 
 function MilestoneOption({
-  label,
+  milestone,
   isSelected,
   onSelect,
 }: {
-  label: string;
+  milestone: ProjectPage.Milestone | null;
   isSelected: boolean;
   onSelect: () => void;
 }) {
+  const label = milestone?.name ?? ALL_PROJECT_TASKS_LABEL;
+
   return (
     <MenuActionItem onClick={onSelect}>
       <span className="flex min-w-0 items-center justify-between gap-4">
-        <span className="truncate">{label}</span>
+        <span className="flex min-w-0 items-center gap-2">
+          <MilestoneStatusIcon milestone={milestone} />
+          <span className="truncate">{label}</span>
+        </span>
         {isSelected && <IconCheck size={16} className="flex-shrink-0 text-content-base" />}
       </span>
     </MenuActionItem>
   );
+}
+
+function MilestoneStatusIcon({ milestone }: { milestone: ProjectPage.Milestone | null }) {
+  if (!milestone) {
+    return <IconList size={16} className="flex-shrink-0 text-content-dimmed" />;
+  }
+
+  if (milestone.status === "done") {
+    return <IconFlagFilled size={16} className="flex-shrink-0 text-accent-1" />;
+  }
+
+  return <IconFlag size={16} className="flex-shrink-0 text-content-dimmed" />;
 }
