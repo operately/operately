@@ -23,18 +23,31 @@ import {
   validateTextLength,
 } from ".";
 
+const richEditorMockState = {
+  localDraftRestored: false,
+  restoredDraft: null as unknown,
+  fallbackContent: null as unknown,
+  editor: {
+    commands: { setContent: jest.fn() },
+    getJSON: () => richEditorMockState.restoredDraft ?? richEditorMockState.fallbackContent ?? null,
+  },
+};
+
 jest.mock("../RichEditor", () => ({
   Editor: (props: { hideBorder?: boolean; className?: string }) => (
     <div data-testid="rich-editor" data-hide-border={props.hideBorder ? "true" : "false"} className={props.className} />
   ),
-  useEditor: (props: { content?: unknown }) => ({
-    editor: {
-      commands: { setContent: jest.fn() },
-      getJSON: () => props.content ?? null,
-    },
-    localDraftRestored: false,
-    clearLocalDraft: () => undefined,
-  }),
+  useEditor: (props: { content?: unknown }) => {
+    richEditorMockState.fallbackContent = props.content ?? null;
+
+    return {
+      editor: richEditorMockState.editor,
+      get localDraftRestored() {
+        return richEditorMockState.localDraftRestored;
+      },
+      clearLocalDraft: () => undefined,
+    };
+  },
 }));
 
 jest.mock("../icons", () => ({
@@ -706,6 +719,46 @@ describe("Forms", () => {
     render(<Harness />);
 
     expect(screen.getByTestId("rich-editor")).toHaveAttribute("data-hide-border", "true");
+  });
+
+  test("syncs a restored local draft into the form without looping", async () => {
+    const restoredDraft = {
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "Recovered draft" }] }],
+    };
+    const onSubmit = jest.fn();
+
+    richEditorMockState.localDraftRestored = true;
+    richEditorMockState.restoredDraft = restoredDraft;
+
+    try {
+      function Harness() {
+        const form = useForm({
+          fields: { body: emptyContent() },
+          submit: async () => {
+            onSubmit(form.values);
+          },
+        });
+
+        return (
+          <Form form={form}>
+            <RichTextArea field="body" richTextHandlers={createMockRichEditorHandlers()} />
+            <Submit />
+          </Form>
+        );
+      }
+
+      render(<Harness />);
+
+      fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ body: restoredDraft }));
+      });
+    } finally {
+      richEditorMockState.localDraftRestored = false;
+      richEditorMockState.restoredDraft = null;
+    }
   });
 
   test("shows editor border by default", () => {
