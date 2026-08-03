@@ -103,6 +103,32 @@ defmodule Operately.Repo.Getter do
   When the requester's highest access level for the resource is below the
   required level, `{:error, :not_found}` is returned.
 
+  ## Getter profiles
+
+  Schemas that need different row scopes or authorization paths can declare
+  named Getter profiles with `getter_profile/1`. A profile combines an optional
+  scope with one or more associations that resolve to
+  `Operately.Access.Context`:
+
+    alias Operately.Repo.Getter.Profile
+
+    def getter_profile(:default) do
+      %Profile{scope: &scope_projects/1, access_contexts: [:project_access_context]}
+    end
+
+    def getter_profile(:template) do
+      %Profile{scope: &scope_templates/1, access_contexts: [:space_access_context]}
+    end
+
+    def getter_profile(_), do: nil
+
+  Callers select a schema-declared profile by name:
+
+    MySchema.get(person, id: "123", opts: [getter_profile: :template])
+
+  Resources without `getter_profile/1` continue to use `:access_context` with
+  no additional scope. Profile scopes also apply to `:system` requests.
+
   ## Getting solf-deleted resources
 
   If you want to get soft-deleted resources, you can pass the `:with_deleted`
@@ -182,33 +208,39 @@ defmodule Operately.Repo.Getter do
 
   alias Operately.Access.Binding
   alias Operately.Repo.RequestInfo
+  alias Operately.Repo.Getter.AccessQuery
+  alias Operately.Repo.Getter.Args
+  alias Operately.Repo.Getter.AuthPreloader
+  alias Operately.Repo.Getter.Profile
 
   def get(module, requester, args) do
-    args = __MODULE__.GetterArgs.parse(args)
+    args = Args.parse(args)
+    profile = Profile.resolve!(module, args.getter_profile)
 
     # Auth preloads must override regular preloads for the same association.
-    preload = drop_overlapping_preloads(args.preload, args.auth_preload)
+    preload = AuthPreloader.ordinary_preloads(args.preload, args.auth_preload)
     query = from(r in module, as: :resource, preload: ^preload)
+    query = Profile.apply_scope!(query, module, args.getter_profile, profile)
     query = add_where_clauses(query, args.field_matchers)
 
     case requester do
       :system -> get_for_system(query, :system, args)
-      %{} -> get_for_person(query, requester.id, args)
-      requester_id when is_binary(requester_id) -> get_for_person(query, requester_id, args)
+      %{} -> get_for_person(query, requester.id, args, profile.access_contexts)
+      requester_id when is_binary(requester_id) -> get_for_person(query, requester_id, args, profile.access_contexts)
       _ -> {:error, :invalid_requester}
     end
   end
 
-  def get_for_system(query, :system, args) do
+  defp get_for_system(query, :system, args) do
     case load(query, args) do
       {:ok, resource} -> process_resource(resource, :system, Binding.full_access(), args)
       {:error, :not_found} -> {:error, :not_found}
     end
   end
 
-  def get_for_person(query, requester_id, args) do
+  defp get_for_person(query, requester_id, args, access_contexts) do
     query =
-      base_query(query, requester_id, args.required_access_level)
+      AccessQuery.authorize(query, requester_id, args.required_access_level, access_contexts)
       |> group_by([resource: r, person: p], [r.id, p.id])
       |> select([resource: r, binding: b, person: p], {r, max(b.access_level), p})
 
@@ -218,230 +250,30 @@ defmodule Operately.Repo.Getter do
     end
   end
 
-  defp base_query(query, requester_id, required_access_level \\ Binding.view_access()) do
-    # Join the access graph and keep only bindings visible to the requester.
-    from([resource: r] in query,
-      join: c in assoc(r, :access_context),
-      join: b in assoc(c, :bindings), as: :binding,
-      join: g in assoc(b, :group),
-      join: m in assoc(g, :memberships),
-      join: p in assoc(m, :person), as: :person,
-      where: m.person_id == ^requester_id,
-      where: is_nil(p.suspended_at),
-      where: b.access_level >= ^required_access_level
-    )
-  end
-
-  def load(query, args) do
+  defp load(query, args) do
     Operately.Repo.one(query, with_deleted: args.with_deleted) |> to_tuple()
   end
 
-  def add_where_clauses(query, field_matchers) do
+  defp add_where_clauses(query, field_matchers) do
     Enum.reduce(field_matchers, query, fn {name, value}, query ->
       where(query, [resource: r], field(r, ^name) == ^value)
     end)
   end
 
-  def process_resource(resource, requester, access_level, args) do
+  defp process_resource(resource, requester, access_level, args) do
     resource = RequestInfo.populate_request_info(resource, requester, access_level)
-    resource = preload_auth(resource, requester, args)
+    resource = AuthPreloader.preload(resource, requester, args)
     resource = run_after_load_hooks(resource, args.after_load)
 
     {:ok, resource}
   end
 
-  def run_after_load_hooks(resource, hooks) do
+  defp run_after_load_hooks(resource, hooks) do
     Enum.reduce(hooks, resource, fn hook, resource ->
       hook.(resource)
     end)
   end
 
-  def to_tuple(nil), do: {:error, :not_found}
-  def to_tuple(resource), do: {:ok, resource}
-
-  defp drop_overlapping_preloads(preload, auth_preload) when auth_preload in [nil, []], do: preload
-
-  defp drop_overlapping_preloads(preload, auth_preload) do
-    auth_assocs = auth_preload_assocs(auth_preload)
-
-    preload
-    |> List.wrap()
-    |> List.flatten()
-    |> Enum.reject(&preload_assoc_in?(&1, auth_assocs))
-  end
-
-  defp auth_preload_assocs(auth_preload) do
-    auth_preload
-    |> List.wrap()
-    |> List.flatten()
-    |> Enum.map(&preload_assoc_name/1)
-    |> Enum.reject(&is_nil/1)
-    |> MapSet.new()
-  end
-
-  defp preload_assoc_in?(item, assocs) do
-    case preload_assoc_name(item) do
-      nil -> false
-      assoc -> MapSet.member?(assocs, assoc)
-    end
-  end
-
-  defp preload_assoc_name({assoc, _}) when is_atom(assoc), do: assoc
-  defp preload_assoc_name(assoc) when is_atom(assoc), do: assoc
-  defp preload_assoc_name(_), do: nil
-
-  defp preload_auth(resource, _requester, %{auth_preload: auth_preload}) when auth_preload in [nil, []], do: resource
-
-  defp preload_auth(resource, :system, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
-    Operately.Repo.preload(resource, List.wrap(auth_preload) |> List.flatten(), with_deleted: with_deleted)
-  end
-
-  defp preload_auth(resource, requester, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
-    # Auth preloads re-run access checks on the associated resources.
-    requester_id = requester_id(requester)
-
-    if requester_id do
-      preload = build_auth_preload(resource.__struct__, requester_id, auth_preload)
-      Operately.Repo.preload(resource, preload, with_deleted: with_deleted)
-    else
-      resource
-    end
-  end
-
-  defp requester_id(%{id: id}), do: id
-  defp requester_id(id) when is_binary(id), do: id
-  defp requester_id(_), do: nil
-
-  defp build_auth_preload(module, requester_id, auth_preload) do
-    auth_preload
-    |> List.wrap()
-    |> List.flatten()
-    |> Enum.map(&build_auth_preload_item(module, requester_id, &1))
-    |> merge_auth_preload_items()
-  end
-
-  defp build_auth_preload_item(module, requester_id, {assoc, {query, nested}}) do
-    {assoc, {auth_query(module, assoc, requester_id, query), normalize_nested_preload(nested)}}
-  end
-
-  defp build_auth_preload_item(module, requester_id, {assoc, %Ecto.Query{} = query}) do
-    {assoc, auth_query(module, assoc, requester_id, query)}
-  end
-
-  defp build_auth_preload_item(module, requester_id, {assoc, %Ecto.SubQuery{} = query}) do
-    {assoc, auth_query(module, assoc, requester_id, query)}
-  end
-
-  defp build_auth_preload_item(module, requester_id, {assoc, nested}) do
-    {assoc, {auth_query(module, assoc, requester_id), normalize_nested_preload(nested)}}
-  end
-
-  defp build_auth_preload_item(module, requester_id, assoc) when is_atom(assoc) do
-    {assoc, auth_query(module, assoc, requester_id)}
-  end
-
-  # Deduplicate auth preloads per assoc to avoid Ecto errors on repeated keys.
-  defp merge_auth_preload_items(items) do
-    items
-    |> Enum.reduce(%{}, fn item, acc ->
-      {assoc, query, nested} = normalize_auth_preload_item(item)
-
-      # Keep the first auth query and merge nested preloads for the same assoc.
-      Map.update(acc, assoc, {query, List.wrap(nested)}, fn {existing_query, existing_nested} ->
-        {existing_query || query, merge_nested_preloads(existing_nested, nested)}
-      end)
-    end)
-    |> Enum.map(fn {assoc, {query, nested}} ->
-      if nested == [] do
-        {assoc, query}
-      else
-        {assoc, {query, nested}}
-      end
-    end)
-  end
-
-  defp normalize_auth_preload_item({assoc, {query, nested}}), do: {assoc, query, normalize_nested_preload(nested)}
-  defp normalize_auth_preload_item({assoc, query}), do: {assoc, query, []}
-
-  # Merge nested preloads (e.g., [:members] + [:company]) into a single list.
-  defp merge_nested_preloads(existing, nested) do
-    existing = List.wrap(existing)
-    nested = List.wrap(nested)
-
-    Enum.uniq(existing ++ nested)
-  end
-
-  defp normalize_nested_preload(nil), do: []
-  defp normalize_nested_preload(nested), do: nested
-
-  defp auth_query(module, assoc, requester_id, query \\ nil) do
-    assoc_module = assoc_module(module, assoc)
-
-    # Build an access-filtered query for the association being auth-preloaded.
-    (query || assoc_module)
-    |> Ecto.Queryable.to_query()
-    |> ensure_resource_binding()
-    |> base_query(requester_id)
-    |> distinct([resource: r], r.id)
-  end
-
-  defp ensure_resource_binding(query) do
-    from(r in query, as: :resource)
-  end
-
-  defp assoc_module(module, assoc) do
-    case module.__schema__(:association, assoc) do
-      nil -> raise ArgumentError, "Unknown association #{inspect(assoc)} for #{inspect(module)}"
-      %Ecto.Association.HasThrough{through: through} -> resolve_through_assoc(module, through)
-      association -> association.related
-    end
-  end
-
-  defp resolve_through_assoc(_module, []), do: (raise ArgumentError, "Invalid through association path")
-
-  defp resolve_through_assoc(module, [assoc | rest]) do
-    next_module = assoc_module(module, assoc)
-
-    case rest do
-      [] -> next_module
-      _ -> resolve_through_assoc(next_module, rest)
-    end
-  end
-
-  defmodule GetterArgs do
-    defstruct [
-      field_matchers: [],
-      preload: [],
-      auth_preload: [],
-      with_deleted: false,
-      after_load: [],
-      required_access_level: nil
-    ]
-
-    @allowed_options [:preload, :auth_preload, :with_deleted, :after_load, :required_access_level]
-
-    def parse(args) do
-      field_matchers = Keyword.delete(args, :opts)
-      opts = Keyword.get(args, :opts, [])
-
-      validate_options(opts)
-
-      %__MODULE__{
-        field_matchers: field_matchers,
-        preload: Keyword.get(opts, :preload, []),
-        auth_preload: Keyword.get(opts, :auth_preload, []),
-        with_deleted: Keyword.get(opts, :with_deleted, false),
-        after_load: Keyword.get(opts, :after_load, []),
-        required_access_level: Keyword.get(opts, :required_access_level, Binding.view_access())
-      }
-    end
-
-    defp validate_options(opts) do
-      unknown_options = Keyword.drop(opts, @allowed_options)
-
-      if unknown_options != [] do
-        raise ArgumentError, "Invalid options: #{Keyword.keys(unknown_options)}"
-      end
-    end
-  end
+  defp to_tuple(nil), do: {:error, :not_found}
+  defp to_tuple(resource), do: {:ok, resource}
 end

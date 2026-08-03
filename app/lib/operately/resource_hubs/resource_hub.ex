@@ -1,14 +1,18 @@
 defmodule Operately.ResourceHubs.ResourceHub do
   use Operately.Schema
+  use Operately.Repo.Getter
 
-  import Operately.Repo.RequestInfo, only: [request_info: 0]
-
-  alias Operately.ResourceHubs.{Getter, Parent}
+  alias Operately.Repo.Getter.Profile
+  alias Operately.ResourceHubs.Parent
 
   schema "resource_hubs" do
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
     belongs_to :goal, Operately.Goals.Goal
+
+    has_one :space_access_context, through: [:space, :access_context]
+    has_one :project_access_context, through: [:project, :access_context]
+    has_one :goal_access_context, through: [:goal, :access_context]
 
     has_many :nodes, Operately.ResourceHubs.Node, foreign_key: :resource_hub_id
 
@@ -36,16 +40,8 @@ defmodule Operately.ResourceHubs.ResourceHub do
     |> unique_constraint(:goal_id)
   end
 
-  def get(requester, args) do
-    Getter.get(__MODULE__, requester, args, :hub)
-  end
-
-  def get!(requester, args) do
-    case get(requester, args) do
-      {:ok, resource} -> resource
-      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
-      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
-    end
+  def getter_profile(:default) do
+    %Profile{access_contexts: [:space_access_context, :project_access_context, :goal_access_context]}
   end
 
   defp validate_parent(changeset) do

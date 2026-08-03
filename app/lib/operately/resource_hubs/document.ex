@@ -2,13 +2,14 @@ defmodule Operately.ResourceHubs.Document do
   def __api_typename__, do: "resource_hub_document"
 
   use Operately.Schema
+  use Operately.Repo.Getter
 
   import Ecto.Query, only: [from: 2]
-  import Operately.Repo.RequestInfo, only: [request_info: 0]
 
   alias Operately.Notifications
   alias Operately.Repo
-  alias Operately.ResourceHubs.{DocumentVersion, Getter, Parent}
+  alias Operately.Repo.Getter.Profile
+  alias Operately.ResourceHubs.{DocumentVersion, Parent}
   alias Operately.StateMachine
 
   @valid_states [:draft, :published]
@@ -22,6 +23,9 @@ defmodule Operately.ResourceHubs.Document do
     has_one :project, through: [:node, :resource_hub, :project]
     has_one :goal, through: [:node, :resource_hub, :goal]
     has_one :resource_hub, through: [:node, :resource_hub]
+    has_one :space_access_context, through: [:node, :resource_hub, :space, :access_context]
+    has_one :project_access_context, through: [:node, :resource_hub, :project, :access_context]
+    has_one :goal_access_context, through: [:node, :resource_hub, :goal, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_document], foreign_key: :entity_id
     has_many :versions, DocumentVersion, foreign_key: :document_id
@@ -64,16 +68,8 @@ defmodule Operately.ResourceHubs.Document do
     |> validate_number(:current_version, greater_than: 0)
   end
 
-  def get(requester, args) do
-    Getter.get(__MODULE__, requester, args, :node_child)
-  end
-
-  def get!(requester, args) do
-    case get(requester, args) do
-      {:ok, resource} -> resource
-      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
-      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
-    end
+  def getter_profile(:default) do
+    %Profile{access_contexts: [:space_access_context, :project_access_context, :goal_access_context]}
   end
 
   defp set_published_at(changeset) do

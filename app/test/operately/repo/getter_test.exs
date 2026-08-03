@@ -5,7 +5,62 @@ defmodule Operately.Repo.GetterTest do
   alias Operately.Goals.Goal
   alias Operately.Projects.Milestone
   alias Operately.Projects.Project
+  alias Operately.Repo.Getter.Profile
   alias Operately.Support.Factory
+
+  defmodule ProfiledProject do
+    use Operately.Schema
+    use Operately.Repo.Getter
+    import Ecto.Query, only: [where: 3]
+
+    schema "projects" do
+      field :name, :string
+      belongs_to :group, Operately.Groups.Group
+
+      has_one :project_access_context, Operately.Access.Context, foreign_key: :project_id
+      has_one :space_access_context, through: [:group, :access_context]
+
+      request_info()
+    end
+
+    def getter_profile(:default) do
+      %Profile{scope: &scope_regular_projects/1, access_contexts: [:project_access_context]}
+    end
+
+    def getter_profile(:template) do
+      %Profile{scope: &scope_template_projects/1, access_contexts: [:space_access_context]}
+    end
+
+    def getter_profile(:all_access_paths) do
+      %Profile{access_contexts: [:project_access_context, :space_access_context]}
+    end
+
+    def getter_profile(_), do: nil
+
+    defp scope_regular_projects(query) do
+      where(query, [resource: project], project.name == "Regular project")
+    end
+
+    defp scope_template_projects(query) do
+      where(query, [resource: project], project.name == "Template project")
+    end
+  end
+
+  defmodule InvalidProfileProject do
+    use Operately.Schema
+    use Operately.Repo.Getter
+
+    schema "projects" do
+      field :name, :string
+      belongs_to :group, Operately.Groups.Group
+      request_info()
+    end
+
+    def getter_profile(:invalid_scope), do: %Profile{scope: :not_a_function}
+    def getter_profile(:missing_association), do: %Profile{access_contexts: [:missing]}
+    def getter_profile(:wrong_association), do: %Profile{access_contexts: [:group]}
+    def getter_profile(_), do: nil
+  end
 
   setup do
     ctx =
@@ -184,5 +239,120 @@ defmodule Operately.Repo.GetterTest do
              )
 
     assert milestone.space.id == ctx.space.id
+  end
+
+  describe "getter profiles" do
+    setup do
+      ctx =
+        Factory.setup(%{})
+        |> Factory.add_space(:profile_space, company_permissions: Binding.no_access())
+        |> Factory.add_space_member(:space_viewer, :profile_space, permissions: :view_access)
+        |> Factory.add_space_member(:multi_path_user, :profile_space, permissions: :view_access)
+        |> Factory.add_project(:regular_project, :profile_space,
+          name: "Regular project",
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        )
+        |> Factory.add_project_contributor(:project_editor, :regular_project, :as_person)
+
+      ctx =
+        Factory.add_project_contributor(ctx, :multi_path_contributor, :regular_project,
+          multi_path_contributor: ctx.multi_path_user,
+          permissions: :edit_access
+        )
+
+      ctx =
+        ctx
+        |> Factory.add_project(:template_project, :profile_space,
+          name: "Template project",
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        )
+
+      {:ok, ctx}
+    end
+
+    test "uses the default profile's scope and access context", ctx do
+      assert {:ok, project} = ProfiledProject.get(ctx.project_editor, id: ctx.regular_project.id)
+      assert project.id == ctx.regular_project.id
+      assert project.request_info.requester.id == ctx.project_editor.id
+      assert project.request_info.access_level == Binding.edit_access()
+
+      assert {:error, :not_found} = ProfiledProject.get(ctx.space_viewer, id: ctx.regular_project.id)
+      assert {:error, :not_found} = ProfiledProject.get(ctx.project_editor, id: ctx.template_project.id)
+    end
+
+    test "allows a named profile to replace both scope and access context", ctx do
+      assert {:ok, project} =
+               ProfiledProject.get(ctx.space_viewer,
+                 id: ctx.template_project.id,
+                 opts: [getter_profile: :template]
+               )
+
+      assert project.id == ctx.template_project.id
+      assert project.request_info.access_level == Binding.view_access()
+
+      assert {:error, :not_found} =
+               ProfiledProject.get(ctx.project_editor,
+                 id: ctx.template_project.id,
+                 opts: [getter_profile: :template]
+               )
+    end
+
+    test "applies profile scopes to system requests", ctx do
+      assert {:ok, project} = ProfiledProject.get(:system, id: ctx.regular_project.id)
+      assert project.id == ctx.regular_project.id
+
+      assert {:error, :not_found} = ProfiledProject.get(:system, id: ctx.template_project.id)
+
+      assert {:ok, project} =
+               ProfiledProject.get(:system,
+                 id: ctx.template_project.id,
+                 opts: [getter_profile: :template]
+               )
+
+      assert project.id == ctx.template_project.id
+    end
+
+    test "uses the highest access level from every declared access path", ctx do
+      assert {:ok, project} =
+               ProfiledProject.get(ctx.multi_path_user.id,
+                 id: ctx.regular_project.id,
+                 opts: [getter_profile: :all_access_paths, required_access_level: Binding.edit_access()]
+               )
+
+      assert project.request_info.requester.id == ctx.multi_path_user.id
+      assert project.request_info.access_level == Binding.edit_access()
+
+      assert {:error, :not_found} =
+               ProfiledProject.get(ctx.space_viewer,
+                 id: ctx.regular_project.id,
+                 opts: [getter_profile: :all_access_paths, required_access_level: Binding.edit_access()]
+               )
+    end
+
+    test "resources without getter_profile/1 keep the default getter behavior", ctx do
+      assert {:ok, project} = Project.get(ctx.project_editor, id: ctx.regular_project.id)
+      assert project.id == ctx.regular_project.id
+      assert project.request_info.access_level == Binding.edit_access()
+    end
+
+    test "rejects unknown and malformed profiles with diagnostic errors", ctx do
+      assert_raise ArgumentError, ~r/Unknown getter profile :unknown for .*ProfiledProject/, fn ->
+        ProfiledProject.get(:system, id: ctx.regular_project.id, opts: [getter_profile: :unknown])
+      end
+
+      assert_raise ArgumentError, ~r/profile :invalid_scope.*scope must be nil or a function with arity 1/, fn ->
+        InvalidProfileProject.get(:system, id: ctx.regular_project.id, opts: [getter_profile: :invalid_scope])
+      end
+
+      assert_raise ArgumentError, ~r/profile :missing_association.*unknown access context association :missing/, fn ->
+        InvalidProfileProject.get(:system, id: ctx.regular_project.id, opts: [getter_profile: :missing_association])
+      end
+
+      assert_raise ArgumentError, ~r/profile :wrong_association.*must resolve to Operately.Access.Context/, fn ->
+        InvalidProfileProject.get(:system, id: ctx.regular_project.id, opts: [getter_profile: :wrong_association])
+      end
+    end
   end
 end
