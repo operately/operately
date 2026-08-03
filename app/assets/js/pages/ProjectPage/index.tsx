@@ -739,10 +739,12 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
         dueDate: serializeContextualDate(milestone.dueDate),
       })
       .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setMilestones((prev) => [...prev, parseMilestoneForTurboUi(paths, data.milestone)]);
+        const createdMilestone = parseMilestoneForTurboUi(paths, data.milestone);
 
-        return { success: true };
+        PageCache.invalidate(pageCacheKey(project.id));
+        setMilestones((prev) => [...prev, createdMilestone]);
+
+        return { success: true, milestone: createdMilestone };
       })
       .catch((e) => {
         console.error("Failed to create milestone", e);

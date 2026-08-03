@@ -136,6 +136,10 @@ export function MenuActionItem(props: MenuActionItemProps) {
   );
 }
 
+export function MenuSeparator() {
+  return <DropdownMenu.Separator className="my-2 h-px bg-surface-outline" />;
+}
+
 function useHasVisibleChildren(children: React.ReactNode): boolean {
   return React.useMemo(() => {
     let hasVisible = false;
