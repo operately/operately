@@ -5,7 +5,7 @@ defmodule Operately.Projects.ListOperation do
   alias Operately.Projects.Project
 
   def run(person, filters) do
-    query = (from p in Project, as: :project)
+    query = (from p in Project.projects(), as: :project)
 
     query = apply_visibility_filter(query, person)
     query = apply_group_filter(query, filters[:space_id])

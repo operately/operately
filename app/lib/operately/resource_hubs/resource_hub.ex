@@ -41,7 +41,10 @@ defmodule Operately.ResourceHubs.ResourceHub do
   end
 
   def getter_profile(:default) do
-    %Profile{access_contexts: [:space_access_context, :project_access_context, :goal_access_context]}
+    %Profile{
+      scope: &Parent.scope_hubs/1,
+      access_contexts: [:space_access_context, :project_access_context, :goal_access_context]
+    }
   end
 
   defp validate_parent(changeset) do

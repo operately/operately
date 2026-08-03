@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Projects.SearchPotentialContributors do
   end
 
   defp has_permissions?(person, project_id) do
-    from(p in Project, where: p.id == ^project_id)
+    from(p in Project.projects(), where: p.id == ^project_id)
     |> filter_by_view_access(person.id)
     |> Repo.exists?()
   end

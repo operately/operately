@@ -94,6 +94,26 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodesTest do
       assert Enum.find(res.nodes, &(&1[:file] && &1.file.id == Paths.file_id(ctx.file2)))
     end
 
+    test "does not list nodes owned by a project template", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space)
+        |> Factory.fetch_default_project_resource_hub(:project_hub, :project)
+        |> Factory.add_document(:template_document, :project_hub)
+
+      ctx.project
+      |> Operately.Projects.Project.template_changeset(%{})
+      |> Repo.update!()
+
+      assert {200, res} =
+               query(ctx.conn, [:resource_hubs, :list_nodes], %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.project_hub)
+               })
+
+      assert res.nodes == []
+      assert res.draft_nodes == []
+    end
+
     test "list only nodes within folder", ctx do
       ctx =
         ctx

@@ -54,6 +54,7 @@ defmodule Operately.Tasks.Task do
     field :deprecated_due_date, :naive_datetime
     embeds_one :due_date, Operately.ContextualDates.ContextualDate, on_replace: :update
     embeds_many :reminders, Operately.Tasks.Reminder, on_replace: :delete
+    field :template_due_offset_days, :integer
 
     embeds_one :task_status, Operately.Tasks.Status, on_replace: :update
     field :closed_at, :naive_datetime
@@ -102,8 +103,33 @@ defmodule Operately.Tasks.Task do
     |> validate_project_or_group()
   end
 
+  def template_changeset(attrs) do
+    template_changeset(%__MODULE__{}, attrs)
+  end
+
+  def template_changeset(task, attrs) do
+    task
+    |> changeset(attrs)
+    |> cast(attrs, [:template_due_offset_days])
+    |> validate_number(:template_due_offset_days, greater_than_or_equal_to: 0)
+  end
+
   def getter_profile(:default) do
-    %Profile{access_contexts: [:project_access_context, :space_access_context]}
+    %Profile{
+      scope: &scope_out_project_templates/1,
+      access_contexts: [:project_access_context, :space_access_context]
+    }
+  end
+
+  defp scope_out_project_templates(query) do
+    from([resource: task] in query,
+      where:
+        is_nil(task.project_id) or
+          exists(
+            from project in Operately.Projects.Project,
+              where: project.id == parent_as(:resource).project_id and project.kind == :project
+          )
+    )
   end
 
   @impl Operately.WorkMaps.WorkMapItem

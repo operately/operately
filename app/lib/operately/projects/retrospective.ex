@@ -5,6 +5,7 @@ defmodule Operately.Projects.Retrospective do
   use Operately.Repo.Getter
 
   alias Operately.Notifications
+  alias Operately.Repo.Getter.Profile
 
   schema "project_retrospectives" do
     belongs_to :author, Operately.People.Person
@@ -41,6 +42,16 @@ defmodule Operately.Projects.Retrospective do
   #
   # After load hooks
   #
+
+  def getter_profile(:default) do
+    %Profile{scope: &scope_out_project_templates/1}
+  end
+
+  defp scope_out_project_templates(query) do
+    from [resource: retrospective] in query,
+      join: project in assoc(retrospective, :project),
+      where: project.kind == :project
+  end
 
   def set_permissions(retrospective = %__MODULE__{}, company_read_only \\ false) do
     perms = Operately.Projects.Permissions.calculate(retrospective.request_info.access_level, company_read_only: company_read_only)

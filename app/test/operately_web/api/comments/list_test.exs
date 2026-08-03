@@ -63,6 +63,23 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert_comments(res, comments)
     end
 
+    test "project template comments are not returned", ctx do
+      check_in = create_check_in(ctx, company_access: Binding.view_access())
+      add_comment(ctx, check_in, "project_check_in")
+
+      check_in.project
+      |> Operately.Projects.Project.template_changeset(%{})
+      |> Repo.update!()
+
+      assert {200, res} =
+               query(ctx.conn, [:comments, :list], %{
+                 entity_id: Paths.project_check_in_id(check_in),
+                 entity_type: "project_check_in"
+               })
+
+      assert res.comments == []
+    end
+
     test "space members have no access", ctx do
       add_person_to_space(ctx)
       check_in = create_check_in(ctx, space_access: Binding.no_access())

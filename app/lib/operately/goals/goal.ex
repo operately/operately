@@ -19,7 +19,7 @@ defmodule Operately.Goals.Goal do
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
 
     has_many :targets, Target
-    has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
+    has_many :projects, Operately.Projects.Project, foreign_key: :goal_id, where: [kind: :project]
     has_many :checks, Operately.Goals.Check, foreign_key: :goal_id
 
     has_one :resource_hub, Operately.ResourceHubs.ResourceHub, foreign_key: :goal_id

@@ -271,6 +271,25 @@ defmodule OperatelyWeb.Api.Comments.UpdateTest do
       comment = Repo.reload(comment)
       assert res.comment == Serializer.serialize(comment, level: :essential)
     end
+
+    test "does not edit comments owned by a project template", ctx do
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+      check_in = create_check_in(ctx.person, project)
+      {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, check_in, "project_check_in", RichText.rich_text("Content"))
+
+      project
+      |> Operately.Projects.Project.template_changeset(%{})
+      |> Repo.update!()
+
+      assert {404, _res} =
+               mutation(ctx.conn, [:comments, :update], %{
+                 comment_id: Paths.comment_id(comment),
+                 content: RichText.rich_text("New content", :as_string),
+                 parent_type: "project_check_in"
+               })
+
+      assert Repo.reload(comment).content == RichText.rich_text("Content")
+    end
   end
 
   describe "Updates subscriptions" do

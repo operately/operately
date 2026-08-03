@@ -11,6 +11,8 @@ defmodule Operately.Projects.KeyResource do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Repo.Getter.Profile
+
   schema "project_key_resources" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
     has_one :access_context, through: [:project, :access_context]
@@ -22,5 +24,15 @@ defmodule Operately.Projects.KeyResource do
     timestamps()
     request_info()
     requester_access_level()
+  end
+
+  def getter_profile(:default) do
+    %Profile{scope: &scope_out_project_templates/1}
+  end
+
+  defp scope_out_project_templates(query) do
+    from [resource: key_resource] in query,
+      join: project in assoc(key_resource, :project),
+      where: project.kind == :project
   end
 end

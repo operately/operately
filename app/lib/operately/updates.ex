@@ -40,7 +40,7 @@ defmodule Operately.Updates do
           on: check_in.id == comment.entity_id,
           join: project in assoc(check_in, :project),
           as: :resource,
-          where: comment.id == ^id
+          where: comment.id == ^id and project.kind == :project
         )
 
       :project_retrospective ->
@@ -50,7 +50,7 @@ defmodule Operately.Updates do
           on: retrospective.id == comment.entity_id,
           join: project in assoc(retrospective, :project),
           as: :resource,
-          where: comment.id == ^id
+          where: comment.id == ^id and project.kind == :project
         )
 
       :project_task ->
@@ -60,7 +60,7 @@ defmodule Operately.Updates do
           on: task.id == comment.entity_id,
           join: project in assoc(task, :project),
           as: :resource,
-          where: comment.id == ^id
+          where: comment.id == ^id and project.kind == :project
         )
 
       :space_task ->
@@ -119,9 +119,8 @@ defmodule Operately.Updates do
           join: m in assoc(mc, :milestone),
           join: p in assoc(m, :project),
           as: :resource,
-          where: c.id == ^id
+          where: c.id == ^id and p.kind == :project
         )
-
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
   end

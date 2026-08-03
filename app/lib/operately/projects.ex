@@ -18,36 +18,57 @@ defmodule Operately.Projects do
     CheckIn
   }
 
-  def get_project(id), do: Repo.get(Project, id, with_deleted: true)
+  def get_project(id) do
+    Project.projects()
+    |> where([p], p.id == ^id)
+    |> Repo.one(with_deleted: true)
+  end
 
   def get_project!(id) do
-    query = from p in Project, where: p.id == ^id
+    query = from p in Project.projects(), where: p.id == ^id
 
     Repo.one!(query, with_deleted: true)
   end
 
   def get_project_with_access_level(project_id, person_id) do
-    from(p in Project, as: :resource, where: p.id == ^project_id)
+    from(p in Project.projects(), as: :resource, where: p.id == ^project_id)
     |> Fetch.get_resource_with_access_level(person_id)
   end
 
   def get_check_in!(id) do
-    Repo.get!(CheckIn, id)
+    from(check_in in CheckIn,
+      join: project in assoc(check_in, :project),
+      where: check_in.id == ^id and project.kind == :project,
+      select: check_in
+    )
+    |> Repo.one!()
   end
 
   def get_check_ins!(project_id) do
-    from(c in CheckIn, where: c.project_id == ^project_id)
+    from(c in CheckIn,
+      join: project in assoc(c, :project),
+      where: c.project_id == ^project_id and project.kind == :project,
+      select: c
+    )
     |> Repo.all()
     |> Operately.Drafts.sort_by_display_date_desc()
   end
 
   def get_check_in_with_access_level(check_in_id, person_id) do
-    from(c in CheckIn, as: :resource, where: c.id == ^check_in_id)
+    from(c in CheckIn,
+      as: :resource,
+      join: project in assoc(c, :project),
+      where: c.id == ^check_in_id and project.kind == :project
+    )
     |> Fetch.get_resource_with_access_level(person_id)
   end
 
   def list_check_ins(project_id) do
-    from(c in CheckIn, where: c.project_id == ^project_id)
+    from(c in CheckIn,
+      join: project in assoc(c, :project),
+      where: c.project_id == ^project_id and project.kind == :project,
+      select: c
+    )
     |> Repo.all()
   end
 
@@ -82,7 +103,7 @@ defmodule Operately.Projects do
     |> Repo.extract_result(:project)
   end
 
-  def archive_project(author, %Project{} = project) do
+  def archive_project(author, %Project{kind: :project} = project) do
     Multi.new()
     |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)
     |> Activities.insert_sync(author.id, :project_archived, fn changes -> %{
@@ -96,17 +117,21 @@ defmodule Operately.Projects do
     |> Repo.extract_result(:project)
   end
 
+  def archive_project(_author, %Project{}), do: {:error, :not_found}
+
   def change_project(%Project{} = project, attrs \\ %{}) do
     Project.changeset(project, attrs)
   end
 
-  def delete_project(%Project{} = project) do
+  def delete_project(%Project{kind: :project} = project) do
     Multi.new()
     |> IndexUpdates.delete_scope(:search_project_scope, :project_id, project.id)
     |> Multi.delete(:project, project)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
+
+  def delete_project(%Project{}), do: {:error, :not_found}
 
   def delete_project_discussions(project_id) do
     from(t in Operately.Comments.CommentThread,
@@ -117,25 +142,41 @@ defmodule Operately.Projects do
   end
 
   def get_milestones(ids) do
-    Repo.all(from m in Milestone, where: m.id in ^ids)
+    Repo.all(from m in Milestone,
+      join: project in assoc(m, :project),
+      where: m.id in ^ids and project.kind == :project,
+      select: m)
   end
 
-  def get_milestone!(id, opts \\ []), do: Repo.get!(Milestone, id, opts)
+  def get_milestone!(id, opts \\ []) do
+    from(m in Milestone,
+      join: project in assoc(m, :project),
+      where: m.id == ^id and project.kind == :project,
+      select: m
+    )
+    |> Repo.one!(opts)
+  end
 
   def get_milestone_by_name(project, milestone_name) do
     Repo.one(from m in Milestone,
-      where: m.project_id == ^project.id,
+      join: parent in assoc(m, :project),
+      where: m.project_id == ^project.id and parent.kind == :project,
       where: m.title == ^milestone_name)
   end
 
   def get_milestone_with_access_level(milestone_id, person_id) do
-    from(m in Milestone, as: :resource, where: m.id == ^milestone_id)
+    from(m in Milestone,
+      as: :resource,
+      join: project in assoc(m, :project),
+      where: m.id == ^milestone_id and project.kind == :project
+    )
     |> Fetch.get_resource_with_access_level(person_id)
   end
 
   def list_project_milestones(project) do
     query = from m in Milestone,
-      where: m.project_id == ^project.id,
+      join: parent in assoc(m, :project),
+      where: m.project_id == ^project.id and parent.kind == :project,
       order_by: [asc: m.id]
 
     Repo.all(query)
@@ -157,16 +198,25 @@ defmodule Operately.Projects do
   end
 
   def get_contributor!(person_id: person_id, project_id: project_id) do
-    Repo.one(from c in Contributor, where: c.person_id == ^person_id and c.project_id == ^project_id)
+    Repo.one(from c in Contributor,
+      join: project in assoc(c, :project),
+      where: c.person_id == ^person_id and c.project_id == ^project_id and project.kind == :project,
+      select: c)
   end
 
   def get_contributor!(id) do
-    Repo.get!(Contributor, id)
+    from(c in Contributor,
+      join: project in assoc(c, :project),
+      where: c.id == ^id and project.kind == :project,
+      select: c)
+    |> Repo.one!()
   end
 
   def get_contributor_role!(project, person_id) do
     Repo.one(from c in Contributor,
+      join: parent in assoc(c, :project),
       where: c.project_id == ^project.id,
+      where: parent.kind == :project,
       where: c.person_id == ^person_id,
       select: c.role,
       limit: 1)
@@ -175,7 +225,9 @@ defmodule Operately.Projects do
   def get_person_by_role(project, role) do
     query = from p in Person,
       inner_join: c in Contributor, on: c.person_id == p.id,
+      inner_join: parent in assoc(c, :project),
       where: c.project_id == ^project.id,
+      where: parent.kind == :project,
       where: c.role == ^role,
       limit: 1
 
@@ -191,7 +243,11 @@ defmodule Operately.Projects do
   end
 
   def list_project_contributors(project) do
-    query = (from c in Contributor, where: c.project_id == ^project.id, preload: :person)
+    query = (from c in Contributor,
+      join: parent in assoc(c, :project),
+      where: c.project_id == ^project.id and parent.kind == :project,
+      preload: :person,
+      select: c)
 
     query
     |> Contributor.order_by_role_and_insertion_at()
@@ -337,7 +393,14 @@ defmodule Operately.Projects do
 
   alias Operately.Projects.Retrospective
 
-  def get_retrospective!(id), do: Repo.get!(Retrospective, id)
+  def get_retrospective!(id) do
+    from(retrospective in Retrospective,
+      join: project in assoc(retrospective, :project),
+      where: retrospective.id == ^id and project.kind == :project,
+      select: retrospective
+    )
+    |> Repo.one!()
+  end
 
   def create_retrospective(attrs) do
     %Retrospective{}

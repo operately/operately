@@ -2,6 +2,8 @@ defmodule Operately.Projects.Milestone do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Repo.Getter.Profile
+
   @valid_statuses [:pending, :done]
 
   schema "project_milestones" do
@@ -25,6 +27,7 @@ defmodule Operately.Projects.Milestone do
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
     field :completed_at, :naive_datetime
+    field :template_due_offset_days, :integer
 
     field :description, :map
     field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
@@ -66,6 +69,17 @@ defmodule Operately.Projects.Milestone do
     |> validate_required([:title, :tasks_kanban_state, :project_id, :subscription_list_id])
   end
 
+  def template_changeset(attrs) do
+    template_changeset(%__MODULE__{}, attrs)
+  end
+
+  def template_changeset(milestone, attrs) do
+    milestone
+    |> changeset(attrs)
+    |> cast(attrs, [:template_due_offset_days])
+    |> validate_number(:template_due_offset_days, greater_than_or_equal_to: 0)
+  end
+
   def set_status(milestone, :pending) do
     milestone
     |> changeset(%{status: :pending, completed_at: nil})
@@ -86,8 +100,18 @@ defmodule Operately.Projects.Milestone do
 
   import Ecto.Query, only: [from: 2]
 
+  def getter_profile(:default) do
+    %Profile{scope: &scope_out_project_templates/1}
+  end
+
+  defp scope_out_project_templates(query) do
+    from [resource: milestone] in query,
+      join: project in assoc(milestone, :project),
+      where: project.kind == :project
+  end
+
   def load_comments_count(milestones) do
-    milestone_ids = Enum.map(milestones, &(&1.id))
+    milestone_ids = Enum.map(milestones, & &1.id)
 
     # Only count comments with action :none (actual comments).
     # Actions :complete and :reopen are milestone status changes, not comments.
@@ -113,7 +137,7 @@ defmodule Operately.Projects.Milestone do
 
   def load_comment_notifications(person) do
     fn milestone ->
-      comment_ids = Enum.map(milestone.comments, &(&1.comment_id))
+      comment_ids = Enum.map(milestone.comments, & &1.comment_id)
 
       notifications_map =
         from(n in Operately.Notifications.Notification,
@@ -130,7 +154,9 @@ defmodule Operately.Projects.Milestone do
       comments =
         Enum.map(milestone.comments, fn comment ->
           case Map.get(notifications_map, comment.comment_id) do
-            nil -> comment
+            nil ->
+              comment
+
             notification ->
               milestone_comment = Map.put(comment.comment, :notification, notification)
               Map.put(comment, :comment, milestone_comment)

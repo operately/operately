@@ -5,6 +5,7 @@ defmodule Operately.Projects.CheckIn do
   use Operately.Repo.Getter
 
   alias Operately.Notifications
+  alias Operately.Repo.Getter.Profile
 
   @valid_statuses [:on_track, :caution, :off_track]
   @valid_states [:draft, :scheduled, :published]
@@ -63,6 +64,16 @@ defmodule Operately.Projects.CheckIn do
   # After load hooks
 
   import Ecto.Query, only: [from: 2]
+
+  def getter_profile(:default) do
+    %Profile{scope: &scope_out_project_templates/1}
+  end
+
+  defp scope_out_project_templates(query) do
+    from [resource: check_in] in query,
+      join: project in assoc(check_in, :project),
+      where: project.kind == :project
+  end
 
   def load_potential_subscribers(check_in = %__MODULE__{}) do
     q = from(c in Operately.Projects.Contributor, join: p in assoc(c, :person), preload: :person)

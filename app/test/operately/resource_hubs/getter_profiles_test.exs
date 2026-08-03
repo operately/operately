@@ -91,7 +91,11 @@ defmodule Operately.ResourceHubs.GetterProfilesTest do
       |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
       |> Factory.add_project_contributor(:project_viewer, :project, :as_person)
       |> Factory.add_resource_hub(:hub, :project, :creator)
-      |> Factory.add_document(:document, :hub)
+      |> Factory.add_folder(:folder, :hub)
+      |> Factory.add_document(:document, :hub, folder: :folder)
+      |> Factory.add_file(:hub_file, :hub, folder: :folder)
+      |> Factory.add_link(:link, :hub, folder: :folder)
+      |> preload_nodes()
       |> then(&{:ok, &1})
     end
 
@@ -104,6 +108,26 @@ defmodule Operately.ResourceHubs.GetterProfilesTest do
 
       assert {:error, :not_found} = ResourceHub.get(ctx.space_member, id: ctx.hub.id)
       assert {:error, :not_found} = Document.get(ctx.space_member, id: ctx.document.id)
+    end
+
+    test "ordinary profiles reject every resource owned by a project template", ctx do
+      ctx.project
+      |> Operately.Projects.Project.template_changeset(%{})
+      |> Repo.update!()
+
+      resources = [
+        {ResourceHub, ctx.hub.id},
+        {Node, ctx.folder_node.id},
+        {Folder, ctx.folder.id},
+        {Document, ctx.document.id},
+        {File, ctx.hub_file.id},
+        {Link, ctx.link.id}
+      ]
+
+      Enum.each(resources, fn {module, id} ->
+        assert {:error, :not_found} = module.get(ctx.project_viewer, id: id)
+        assert {:error, :not_found} = module.get(:system, id: id)
+      end)
     end
   end
 
