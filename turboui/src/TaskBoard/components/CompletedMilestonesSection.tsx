@@ -20,6 +20,7 @@ export function CompletedMilestonesSection({ milestones, formattedTimePreference
     <section className="mt-6" data-test-id="completed-milestones-compact-section">
       <button
         type="button"
+        data-test-id="completed-milestones-toggle"
         className="flex w-full items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-base"
         onClick={() => setIsExpanded((expanded) => !expanded)}
         aria-controls={contentId}
