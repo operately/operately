@@ -3,12 +3,11 @@ import { useSearchParams } from "react-router";
 
 import { KanbanBoard, TaskBoard, TasksMenu, TaskDisplayMenu } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
-import { Menu, MenuActionItem } from "../Menu";
-import { IconFlag } from "../icons";
 import { compareIds } from "../utils/ids";
 import { useLocalStorage } from "../utils/useLocalStorage";
 
 import type { ProjectPage } from "./index";
+import { MilestoneViewSelector } from "./MilestoneViewSelector";
 
 export function TasksSection({ state }: { state: ProjectPage.State }) {
   const { selectedMilestone, tasks, onMilestoneFilterChange } = useMilestoneFilter({
@@ -63,11 +62,13 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
   if (taskDisplayMode === "board") {
     return (
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between gap-3 m-4 px-1 mb-0">
-          <MilestoneFilter
+        <div className="flex flex-wrap items-center justify-between gap-3 m-4 px-1 mb-0">
+          <MilestoneViewSelector
             milestones={state.milestones}
             selectedMilestone={selectedMilestone}
+            canCreateMilestone={state.permissions.canEdit || false}
             onChange={onMilestoneFilterChange}
+            onCreateMilestone={state.onMilestoneCreate}
           />
           <div className="flex items-center">
             <TasksMenu
@@ -231,40 +232,6 @@ const parseTaskDisplayMode = (value: unknown): TaskBoardTypes.TaskDisplayMode | 
   if (value === "list" || value === "board") return value;
   return null;
 };
-
-function MilestoneFilter({
-  milestones,
-  selectedMilestone,
-  onChange,
-}: {
-  milestones: TaskBoardTypes.Milestone[];
-  selectedMilestone: TaskBoardTypes.Milestone | null;
-  onChange: (milestoneId: string | null) => void;
-}) {
-  return (
-    <Menu
-      customTrigger={
-        <button
-          type="button"
-          className="flex items-center gap-1.5 text-sm font-medium text-content-dimmed hover:text-content-base transition px-2 py-1 -mx-2 rounded-md hover:bg-surface-dimmed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface-outline"
-          data-test-id="current-milestone"
-        >
-          <IconFlag size={18} className="flex-shrink-0" />
-          {selectedMilestone?.name ?? "All milestones"}
-        </button>
-      }
-      size="small"
-      align="start"
-    >
-      <MenuActionItem onClick={() => onChange(null)}>All milestones</MenuActionItem>
-      {milestones.map((milestone) => (
-        <MenuActionItem key={milestone.id} onClick={() => onChange(milestone.id)}>
-          {milestone.name}
-        </MenuActionItem>
-      ))}
-    </Menu>
-  );
-}
 
 function useMilestoneFilter({
   milestones,
