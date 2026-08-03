@@ -41,33 +41,32 @@ interface DivLinkProps extends Props {
 
 const baseLinkClass = classNames("cursor-pointer", "transition-colors");
 
-function UnstyledLink({ children, testId, ...rest }: LinkProps) {
-  // Destructure and omit disableColorHoverEffect, underline, before passing to Router.Link
-  // Omit disableColorHoverEffect and underline using object rest syntax
-  const { disableColorHoverEffect, underline, ...linkProps } = rest;
-
+const UnstyledLink = React.forwardRef<HTMLAnchorElement, LinkProps>(function UnstyledLink(
+  { children, testId, disableColorHoverEffect: _disableColorHoverEffect, underline: _underline, ...linkProps },
+  ref,
+) {
   return (
-    <Router.Link data-test-id={testId} {...linkProps}>
+    <Router.Link ref={ref} data-test-id={testId} {...linkProps}>
       {children}
     </Router.Link>
   );
-}
+});
 
-export function Link(props: LinkProps) {
+export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props, ref) {
   const className = classNames(baseLinkClass, underlineClass(props.underline), "text-link-base", props.className, {
     "hover:text-link-hover": !props.disableColorHoverEffect,
   });
 
-  return <UnstyledLink {...props} className={className} />;
-}
+  return <UnstyledLink {...props} ref={ref} className={className} />;
+});
 
-export function BlackLink(props: LinkProps) {
+export const BlackLink = React.forwardRef<HTMLAnchorElement, LinkProps>(function BlackLink(props, ref) {
   const className = classNames(baseLinkClass, underlineClass(props.underline), "text-content-base", props.className, {
     "hover:text-content-dimmed": !props.disableColorHoverEffect,
   });
 
-  return <UnstyledLink {...props} className={className} />;
-}
+  return <UnstyledLink {...props} ref={ref} className={className} />;
+});
 
 export function ButtonLink({ onClick, children, testId }: ButtonLinkProps) {
   return (
@@ -89,29 +88,32 @@ export function ActionLink(props: ActionLinkProps) {
   );
 }
 
-export function DimmedLink(props: LinkProps) {
+export const DimmedLink = React.forwardRef<HTMLAnchorElement, LinkProps>(function DimmedLink(props, ref) {
   const className = classNames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed", props.className, {
     "hover:text-content-base": !props.disableColorHoverEffect,
   });
 
-  return <UnstyledLink {...props} className={className} />;
-}
+  return <UnstyledLink {...props} ref={ref} className={className} />;
+});
 
-export function DivLink({ to, children, testId, target, external, style, ...props }: DivLinkProps) {
+export const DivLink = React.forwardRef<HTMLAnchorElement, DivLinkProps>(function DivLink(
+  { to, children, testId, target, external, style, ...props },
+  ref,
+) {
   if (external) {
     return (
-      <a href={to} data-test-id={testId} {...props} target={target} style={style as any}>
+      <a ref={ref} href={to} data-test-id={testId} {...props} target={target} style={style as any}>
         {children}
       </a>
     );
   } else {
     return (
-      <Router.Link to={to} data-test-id={testId} {...props} target={target} style={style as any}>
+      <Router.Link ref={ref} to={to} data-test-id={testId} {...props} target={target} style={style as any}>
         {children}
       </Router.Link>
     );
   }
-}
+});
 
 function underlineClass(underline: "always" | "hover" | "never" | undefined) {
   if (!underline || underline === "always") return "underline underline-offset-2";
