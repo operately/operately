@@ -103,6 +103,32 @@ defmodule Operately.Repo.Getter do
   When the requester's highest access level for the resource is below the
   required level, `{:error, :not_found}` is returned.
 
+  ## Getter profiles
+
+  Schemas that need different row scopes or authorization paths can declare
+  named Getter profiles with `getter_profile/1`. A profile combines an optional
+  scope with one or more associations that resolve to
+  `Operately.Access.Context`:
+
+    alias Operately.Repo.Getter.Profile
+
+    def getter_profile(:default) do
+      %Profile{scope: &scope_projects/1, access_contexts: [:project_access_context]}
+    end
+
+    def getter_profile(:template) do
+      %Profile{scope: &scope_templates/1, access_contexts: [:space_access_context]}
+    end
+
+    def getter_profile(_), do: nil
+
+  Callers select a schema-declared profile by name:
+
+    MySchema.get(person, id: "123", opts: [getter_profile: :template])
+
+  Resources without `getter_profile/1` continue to use `:access_context` with
+  no additional scope. Profile scopes also apply to `:system` requests.
+
   ## Getting solf-deleted resources
 
   If you want to get soft-deleted resources, you can pass the `:with_deleted`
@@ -183,18 +209,32 @@ defmodule Operately.Repo.Getter do
   alias Operately.Access.Binding
   alias Operately.Repo.RequestInfo
 
+  defmodule Profile do
+    @moduledoc """
+    Describes how Getter scopes a resource and resolves its access contexts.
+
+    Profiles are declared by schemas and selected by name through the
+    `:getter_profile` option. Callers cannot provide query functions or access
+    associations directly.
+    """
+
+    defstruct scope: nil, access_contexts: [:access_context]
+  end
+
   def get(module, requester, args) do
     args = __MODULE__.GetterArgs.parse(args)
+    profile = resolve_profile(module, args.getter_profile)
 
     # Auth preloads must override regular preloads for the same association.
     preload = drop_overlapping_preloads(args.preload, args.auth_preload)
     query = from(r in module, as: :resource, preload: ^preload)
+    query = apply_profile_scope(query, module, args.getter_profile, profile)
     query = add_where_clauses(query, args.field_matchers)
 
     case requester do
       :system -> get_for_system(query, :system, args)
-      %{} -> get_for_person(query, requester.id, args)
-      requester_id when is_binary(requester_id) -> get_for_person(query, requester_id, args)
+      %{} -> get_for_person(query, requester.id, args, profile.access_contexts)
+      requester_id when is_binary(requester_id) -> get_for_person(query, requester_id, args, profile.access_contexts)
       _ -> {:error, :invalid_requester}
     end
   end
@@ -206,9 +246,9 @@ defmodule Operately.Repo.Getter do
     end
   end
 
-  def get_for_person(query, requester_id, args) do
+  def get_for_person(query, requester_id, args, access_contexts \\ [:access_context]) do
     query =
-      base_query(query, requester_id, args.required_access_level)
+      base_query(query, requester_id, args.required_access_level, access_contexts)
       |> group_by([resource: r, person: p], [r.id, p.id])
       |> select([resource: r, binding: b, person: p], {r, max(b.access_level), p})
 
@@ -218,18 +258,133 @@ defmodule Operately.Repo.Getter do
     end
   end
 
-  defp base_query(query, requester_id, required_access_level \\ Binding.view_access()) do
+  defp base_query(query, requester_id, required_access_level, access_contexts) do
     # Join the access graph and keep only bindings visible to the requester.
-    from([resource: r] in query,
-      join: c in assoc(r, :access_context),
-      join: b in assoc(c, :bindings), as: :binding,
+    query = join_access_contexts(query, access_contexts)
+    binding_context_match = binding_context_match(access_contexts)
+
+    from([resource: _resource] in query,
+      join: b in Binding,
+      on: ^binding_context_match,
+      as: :binding,
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
-      join: p in assoc(m, :person), as: :person,
+      join: p in assoc(m, :person),
+      as: :person,
       where: m.person_id == ^requester_id,
       where: is_nil(p.suspended_at),
       where: b.access_level >= ^required_access_level
     )
+  end
+
+  defp join_access_contexts(query, access_contexts) do
+    access_contexts
+    |> Enum.with_index()
+    |> Enum.reduce(query, fn {association, index}, query ->
+      binding = access_context_binding(index)
+      join(query, :left, [resource: resource], context in assoc(resource, ^association), as: ^binding)
+    end)
+  end
+
+  defp binding_context_match(access_contexts) do
+    access_contexts
+    |> Enum.with_index()
+    |> Enum.reduce(dynamic(false), fn {_association, index}, match ->
+      context_binding = access_context_binding(index)
+      dynamic([binding: binding], ^match or binding.context_id == as(^context_binding).id)
+    end)
+  end
+
+  defp access_context_binding(index), do: String.to_atom("getter_access_context_#{index}")
+
+  defp resolve_profile(module, :default) do
+    if function_exported?(module, :getter_profile, 1) do
+      module
+      |> apply(:getter_profile, [:default])
+      |> validate_profile!(module, :default)
+    else
+      # Preserve the existing behavior for schemas that only use Getter with
+      # `:system` and therefore do not expose an access context association.
+      %Profile{}
+    end
+  end
+
+  defp resolve_profile(module, profile_name) when is_atom(profile_name) do
+    if function_exported?(module, :getter_profile, 1) do
+      module
+      |> apply(:getter_profile, [profile_name])
+      |> validate_profile!(module, profile_name)
+    else
+      raise ArgumentError, "Unknown getter profile #{inspect(profile_name)} for #{inspect(module)}"
+    end
+  end
+
+  defp resolve_profile(module, profile_name) do
+    raise ArgumentError, "Getter profile names must be atoms, got #{inspect(profile_name)} for #{inspect(module)}"
+  end
+
+  defp validate_profile!(nil, module, profile_name) do
+    raise ArgumentError, "Unknown getter profile #{inspect(profile_name)} for #{inspect(module)}"
+  end
+
+  defp validate_profile!(%Profile{} = profile, module, profile_name) do
+    validate_scope!(profile.scope, module, profile_name)
+    validate_access_contexts!(profile.access_contexts, module, profile_name)
+    profile
+  end
+
+  defp validate_profile!(profile, module, profile_name) do
+    raise ArgumentError,
+          "Getter profile #{inspect(profile_name)} for #{inspect(module)} must return #{inspect(Profile)} or nil, got: #{inspect(profile)}"
+  end
+
+  defp validate_scope!(nil, _module, _profile_name), do: :ok
+  defp validate_scope!(scope, _module, _profile_name) when is_function(scope, 1), do: :ok
+
+  defp validate_scope!(_scope, module, profile_name) do
+    raise ArgumentError,
+          "Getter profile #{inspect(profile_name)} for #{inspect(module)} scope must be nil or a function with arity 1"
+  end
+
+  defp validate_access_contexts!(access_contexts, module, profile_name) when is_list(access_contexts) and access_contexts != [] do
+    if Enum.all?(access_contexts, &is_atom/1) and Enum.uniq(access_contexts) == access_contexts do
+      Enum.each(access_contexts, &validate_access_context_association!(&1, module, profile_name))
+    else
+      raise ArgumentError,
+            "Getter profile #{inspect(profile_name)} for #{inspect(module)} access_contexts must be a non-empty list of unique association names"
+    end
+  end
+
+  defp validate_access_contexts!(_access_contexts, module, profile_name) do
+    raise ArgumentError,
+          "Getter profile #{inspect(profile_name)} for #{inspect(module)} access_contexts must be a non-empty list of unique association names"
+  end
+
+  defp validate_access_context_association!(association, module, profile_name) do
+    case module.__schema__(:association, association) do
+      nil ->
+        raise ArgumentError,
+              "Getter profile #{inspect(profile_name)} for #{inspect(module)} has unknown access context association #{inspect(association)}"
+
+      _association ->
+        if assoc_module(module, association) != Operately.Access.Context do
+          raise ArgumentError,
+                "Getter profile #{inspect(profile_name)} for #{inspect(module)} association #{inspect(association)} must resolve to Operately.Access.Context"
+        end
+    end
+  end
+
+  defp apply_profile_scope(query, _module, _profile_name, %Profile{scope: nil}), do: query
+
+  defp apply_profile_scope(query, module, profile_name, %Profile{scope: scope}) do
+    case scope.(query) do
+      %Ecto.Query{} = scoped_query ->
+        scoped_query
+
+      other ->
+        raise ArgumentError,
+              "Getter profile #{inspect(profile_name)} for #{inspect(module)} scope must return an Ecto.Query, got: #{inspect(other)}"
+    end
   end
 
   def load(query, args) do
@@ -376,12 +531,14 @@ defmodule Operately.Repo.Getter do
 
   defp auth_query(module, assoc, requester_id, query \\ nil) do
     assoc_module = assoc_module(module, assoc)
+    profile = resolve_profile(assoc_module, :default)
 
     # Build an access-filtered query for the association being auth-preloaded.
     (query || assoc_module)
     |> Ecto.Queryable.to_query()
     |> ensure_resource_binding()
-    |> base_query(requester_id)
+    |> apply_profile_scope(assoc_module, :default, profile)
+    |> base_query(requester_id, Binding.view_access(), profile.access_contexts)
     |> distinct([resource: r], r.id)
   end
 
@@ -397,7 +554,7 @@ defmodule Operately.Repo.Getter do
     end
   end
 
-  defp resolve_through_assoc(_module, []), do: (raise ArgumentError, "Invalid through association path")
+  defp resolve_through_assoc(_module, []), do: raise(ArgumentError, "Invalid through association path")
 
   defp resolve_through_assoc(module, [assoc | rest]) do
     next_module = assoc_module(module, assoc)
@@ -409,16 +566,15 @@ defmodule Operately.Repo.Getter do
   end
 
   defmodule GetterArgs do
-    defstruct [
-      field_matchers: [],
-      preload: [],
-      auth_preload: [],
-      with_deleted: false,
-      after_load: [],
-      required_access_level: nil
-    ]
+    defstruct field_matchers: [],
+              preload: [],
+              auth_preload: [],
+              with_deleted: false,
+              after_load: [],
+              required_access_level: nil,
+              getter_profile: :default
 
-    @allowed_options [:preload, :auth_preload, :with_deleted, :after_load, :required_access_level]
+    @allowed_options [:preload, :auth_preload, :with_deleted, :after_load, :required_access_level, :getter_profile]
 
     def parse(args) do
       field_matchers = Keyword.delete(args, :opts)
@@ -432,7 +588,8 @@ defmodule Operately.Repo.Getter do
         auth_preload: Keyword.get(opts, :auth_preload, []),
         with_deleted: Keyword.get(opts, :with_deleted, false),
         after_load: Keyword.get(opts, :after_load, []),
-        required_access_level: Keyword.get(opts, :required_access_level, Binding.view_access())
+        required_access_level: Keyword.get(opts, :required_access_level, Binding.view_access()),
+        getter_profile: Keyword.get(opts, :getter_profile, :default)
       }
     end
 
