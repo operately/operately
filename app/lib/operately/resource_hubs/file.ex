@@ -2,11 +2,11 @@ defmodule Operately.ResourceHubs.File do
   def __api_typename__, do: "resource_hub_file"
 
   use Operately.Schema
-
-  import Operately.Repo.RequestInfo, only: [request_info: 0]
+  use Operately.Repo.Getter
 
   alias Operately.Notifications
-  alias Operately.ResourceHubs.{Getter, Parent}
+  alias Operately.Repo.Getter.Profile
+  alias Operately.ResourceHubs.Parent
 
   schema "resource_files" do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
@@ -19,6 +19,9 @@ defmodule Operately.ResourceHubs.File do
     has_one :project, through: [:node, :resource_hub, :project]
     has_one :goal, through: [:node, :resource_hub, :goal]
     has_one :resource_hub, through: [:node, :resource_hub]
+    has_one :space_access_context, through: [:node, :resource_hub, :space, :access_context]
+    has_one :project_access_context, through: [:node, :resource_hub, :project, :access_context]
+    has_one :goal_access_context, through: [:node, :resource_hub, :goal, :access_context]
     has_many :reactions, Operately.Updates.Reaction, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
     has_many :comments, Operately.Updates.Comment, where: [entity_type: :resource_hub_file], foreign_key: :entity_id
 
@@ -47,16 +50,8 @@ defmodule Operately.ResourceHubs.File do
     |> validate_required([:node_id, :author_id, :blob_id, :name, :subscription_list_id])
   end
 
-  def get(requester, args) do
-    Getter.get(__MODULE__, requester, args, :node_child)
-  end
-
-  def get!(requester, args) do
-    case get(requester, args) do
-      {:ok, resource} -> resource
-      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
-      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
-    end
+  def getter_profile(:default) do
+    %Profile{access_contexts: [:space_access_context, :project_access_context, :goal_access_context]}
   end
 
   #

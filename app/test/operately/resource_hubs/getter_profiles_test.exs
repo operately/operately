@@ -1,4 +1,4 @@
-defmodule Operately.ResourceHubs.GetterTest do
+defmodule Operately.ResourceHubs.GetterProfilesTest do
   use Operately.DataCase
 
   alias Operately.Access.Binding
@@ -21,13 +21,14 @@ defmodule Operately.ResourceHubs.GetterTest do
       |> then(&{:ok, &1})
     end
 
-    test "ResourceHub.get uses the hub auth path and evaluates permissions", ctx do
+    test "ResourceHub.get uses its access-context profile and evaluates permissions", ctx do
       assert {:ok, hub} = ResourceHub.get(ctx.viewer, id: ctx.hub.id)
       assert hub.id == ctx.hub.id
       assert hub.request_info.requester.id == ctx.viewer.id
       assert hub.request_info.access_level == Binding.view_access()
 
       assert {:error, :not_found} = ResourceHub.get(ctx.outsider, id: ctx.hub.id)
+
       assert {:error, :not_found} =
                ResourceHub.get(ctx.viewer, id: ctx.hub.id, opts: [required_access_level: Binding.edit_access()])
 
@@ -37,7 +38,7 @@ defmodule Operately.ResourceHubs.GetterTest do
       assert hub.request_info.access_level == Binding.edit_access()
     end
 
-    test "Node.get uses the node auth path for all resource node types", ctx do
+    test "Node.get uses its access-context profile for all resource node types", ctx do
       [ctx.folder_node, ctx.document_node, ctx.file_node, ctx.link_node]
       |> Enum.each(fn node ->
         assert {:ok, fetched} = Node.get(ctx.viewer, id: node.id)
@@ -46,6 +47,7 @@ defmodule Operately.ResourceHubs.GetterTest do
       end)
 
       assert {:error, :not_found} = Node.get(ctx.outsider, id: ctx.folder_node.id)
+
       assert {:error, :not_found} =
                Node.get(ctx.viewer, id: ctx.folder_node.id, opts: [required_access_level: Binding.edit_access()])
 
@@ -55,7 +57,7 @@ defmodule Operately.ResourceHubs.GetterTest do
       assert node.request_info.access_level == Binding.edit_access()
     end
 
-    test "node-child getters use the node_child auth path and evaluate permissions", ctx do
+    test "node-child getters use their access-context profiles and evaluate permissions", ctx do
       [
         {Folder, ctx.folder.id},
         {Document, ctx.document.id},

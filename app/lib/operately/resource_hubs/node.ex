@@ -3,12 +3,17 @@ defmodule Operately.ResourceHubs.Node do
 
   import Ecto.Query, only: [from: 2]
   use Operately.Schema
+  use Operately.Repo.Getter
 
-  import Operately.Repo.RequestInfo, only: [request_info: 0]
+  alias Operately.Repo.Getter.Profile
 
   schema "resource_nodes" do
     belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
     belongs_to :parent_folder, Operately.ResourceHubs.Folder, foreign_key: :parent_folder_id
+
+    has_one :space_access_context, through: [:resource_hub, :space, :access_context]
+    has_one :project_access_context, through: [:resource_hub, :project, :access_context]
+    has_one :goal_access_context, through: [:resource_hub, :goal, :access_context]
 
     # Readonly leftover: names now live on document/link/file/folder records.
     # Kept only so we do not lose historical data if a name migration needs re-running;
@@ -36,16 +41,8 @@ defmodule Operately.ResourceHubs.Node do
     |> validate_required([:resource_hub_id, :type])
   end
 
-  def get(requester, args) do
-    Operately.ResourceHubs.Getter.get(__MODULE__, requester, args, :node)
-  end
-
-  def get!(requester, args) do
-    case get(requester, args) do
-      {:ok, resource} -> resource
-      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
-      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
-    end
+  def getter_profile(:default) do
+    %Profile{access_contexts: [:space_access_context, :project_access_context, :goal_access_context]}
   end
 
   #
