@@ -20,6 +20,7 @@ import { TaskDisplayMenu } from "./TaskDisplayMenu";
 import { StatusSelector } from "../../StatusSelector";
 import { TaskSlideIn } from "../KanbanView/TaskSlideIn";
 import { compareIds } from "../../utils/ids";
+import { CompletedMilestonesSection } from "./CompletedMilestonesSection";
 
 export { TaskDisplayMenu, TasksMenu };
 
@@ -431,45 +432,10 @@ export function TaskBoard({
       </div>
 
       {completedMilestones.length > 0 && (
-        <div
-          className="mt-6 flex flex-col bg-surface-base border border-surface-outline rounded-md overflow-hidden"
-          data-test-id="completed-milestones-board"
-        >
-          <div
-            className="px-4 py-2 text-xs font-medium uppercase tracking-wide text-content-dimmed bg-surface-base border-b border-surface-outline"
-            data-test-id="completed-milestones-section"
-          >
-            Completed milestones
-          </div>
-          <div className="overflow-x-auto">
-            <ul className="w-full list-none m-0 p-0">
-              {completedMilestones.map((milestoneData) => (
-                <MilestoneCard
-                  key={milestoneData.milestone.id}
-                  milestone={milestoneData.milestone}
-                  tasks={groupedTasks[milestoneData.milestone.id] || []}
-                  showHiddenTasksToggle={showHiddenTasksToggle}
-                  showKanbanLink={showMilestoneKanbanLink}
-                  stats={milestoneData.stats}
-                  onTaskCreate={onTaskCreate}
-                  onTaskAssigneeChange={onTaskAssigneeChange}
-                  onTaskDueDateChange={onTaskDueDateChange}
-                  onTaskStatusChange={onTaskStatusChange}
-                  onMilestoneUpdate={onMilestoneUpdate}
-                  assigneePersonSearch={assigneePersonSearch}
-                  statusOptions={statuses}
-                  availableMilestones={allMilestones}
-                  draggedItemId={draggedItemId}
-                  targetLocation={destination}
-                  placeholderHeight={draggedItemDimensions?.height ?? null}
-                  onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
-                  richTextHandlers={richTextHandlers}
-                  formattedTimePreferences={formattedTimePreferences}
-                />
-              ))}
-            </ul>
-          </div>
-        </div>
+        <CompletedMilestonesSection
+          milestones={completedMilestones}
+          formattedTimePreferences={formattedTimePreferences}
+        />
       )}
     </div>
   );
