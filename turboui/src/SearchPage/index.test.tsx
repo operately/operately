@@ -82,9 +82,10 @@ describe("SearchPage", () => {
     expect(screen.getByRole("status")).toHaveTextContent("1 result found.");
     expect(screen.getByRole("link", { name: /Website redesign/ })).toHaveAttribute("href", "/acme/projects/project-1");
     expect(screen.getByText("Project")).toBeInTheDocument();
-    expect(screen.getByText("In Marketing")).toBeInTheDocument();
+    expect(screen.getByText("Marketing")).toBeInTheDocument();
     expect(screen.getByText("Closed")).toBeInTheDocument();
-    expect(screen.getByText("Matched in description")).toBeInTheDocument();
+    expect(screen.queryByText("Matched in description")).not.toBeInTheDocument();
+    expect(screen.queryByText("In Marketing")).not.toBeInTheDocument();
     expect(screen.getByTestId("search-result-snippet")).toHaveTextContent(
       "Customer research supports the new information architecture.",
     );
@@ -105,8 +106,8 @@ describe("SearchPage", () => {
 
     expect(screen.getByText("Document")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2, name: "Runway and Revenue Review" })).toBeInTheDocument();
-    expect(screen.getByText("In Extend runway from Series A")).toBeInTheDocument();
-    expect(screen.queryByText("Document · Extend runway from Series A")).not.toBeInTheDocument();
+    expect(screen.getByText("Extend runway from Series A")).toBeInTheDocument();
+    expect(screen.queryByText("In Extend runway from Series A")).not.toBeInTheDocument();
 
     const icon = screen.getByTestId("search-result-icon");
     expect(icon).toHaveClass("h-12", "w-12", "self-start");
@@ -175,6 +176,6 @@ describe("SearchPage", () => {
     expect(screen.getByText("Project check-in")).toBeInTheDocument();
     expect(screen.getByText("Goal check-in")).toBeInTheDocument();
     expect(screen.getByText("Project retrospective")).toBeInTheDocument();
-    expect(screen.getAllByText("In Marketing")).toHaveLength(30);
+    expect(screen.getAllByText("Marketing")).toHaveLength(30);
   });
 });

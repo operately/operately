@@ -16,6 +16,7 @@ import {
 import { DivLink } from "../Link";
 import { Page } from "../Page";
 import { ResourceHubTypeIcon } from "../ResourceHub";
+import { StatusBadge } from "../StatusBadge";
 
 export namespace SearchPage {
   export type Status = "initial" | "loading" | "success" | "error";
@@ -133,15 +134,24 @@ function SearchResultRow({ query, result }: { query: string; result: SearchPage.
         <SearchResultIcon type={result.type} />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
           <span className="text-xs font-semibold uppercase tracking-wide text-content-dimmed">{metadata.label}</span>
-          {result.state ? <StateBadge state={result.state} /> : null}
+          <span aria-hidden="true" className="text-xs text-content-subtle">
+            ·
+          </span>
+          <span className="min-w-0 truncate text-xs font-medium text-content-dimmed">{result.context}</span>
+          {result.state ? (
+            <StatusBadge
+              status={result.state}
+              customLabel={STATE_LABELS[result.state]}
+              hideIcon
+              className="shrink-0"
+            />
+          ) : null}
         </div>
         <h2 className="mt-1 min-w-0 break-words text-base font-semibold text-content-accent">
           <HighlightedText text={result.title} terms={highlightTerms} />
         </h2>
-        <p className="mt-1 break-words text-sm text-content-dimmed">In {result.context}</p>
-        <p className="mt-2 text-xs font-medium text-content-subtle">Matched in {result.matchedField}</p>
         {result.snippet ? (
           <p
             data-testid="search-result-snippet"
@@ -223,14 +233,6 @@ function getHighlightTerms(query: string) {
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function StateBadge({ state }: { state: SearchResultState }) {
-  return (
-    <span className="rounded-full border border-surface-outline bg-surface-dimmed px-2 py-0.5 text-xs font-medium text-content-dimmed">
-      {STATE_LABELS[state]}
-    </span>
-  );
 }
 
 function resultCountLabel(count: number) {
