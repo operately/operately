@@ -166,8 +166,8 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   step :assert_milestone_selected, ctx do
     ctx
-    |> UI.assert_text(ctx.milestone.title, testid: "current-milestone")
-    |> UI.refute_text("All milestones", testid: "current-milestone")
+    |> UI.assert_text(ctx.milestone.title, testid: "milestone-view-selector")
+    |> UI.refute_text("All project tasks", testid: "milestone-view-selector")
   end
 
   step :reload_project_page, ctx do

@@ -303,6 +303,8 @@ export const Default: Story = {
 
       // Add the new milestone to the milestones array
       setMilestones((prev) => [...prev, newMilestone]);
+
+      return { success: true, milestone: newMilestone };
     };
 
     const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
@@ -420,6 +422,16 @@ export const Default: Story = {
       />
     );
   },
+};
+
+export const BoardView: Story = {
+  parameters: {
+    reactRouter: {
+      path: "/projects/project-1?tab=tasks&taskDisplay=board",
+      routePath: "/projects/:id",
+    },
+  },
+  render: Default.render,
 };
 
 export const OverdueCheckIn: Story = {

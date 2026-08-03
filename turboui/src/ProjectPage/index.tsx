@@ -74,6 +74,11 @@ export namespace ProjectPage {
   export type NewTaskPayload = TaskBoardTypes.NewTaskPayload;
   export type TaskStatus = TaskBoardTypes.StatusCustomizationStatus;
 
+  export interface MilestoneCreationResult {
+    success: boolean;
+    milestone?: Milestone;
+  }
+
   export type SpaceProps =
     | {
         workmapLink: string;
@@ -161,7 +166,9 @@ export namespace ProjectPage {
     onTaskStatusChange: (taskId: string, status: TaskBoardTypes.Status | null) => void;
     onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
     onTaskDelete: (taskId: string) => void | Promise<{ success: boolean }>;
-    onMilestoneCreate: (milestone: NewMilestonePayload) => void | Promise<{ success: boolean }>;
+    onMilestoneCreate: (
+      milestone: NewMilestonePayload,
+    ) => void | MilestoneCreationResult | Promise<MilestoneCreationResult>;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     onMilestoneReorder: (sourceId: string, destinationIndex: number) => Promise<void>;
     onMilestoneSearch: (query: string) => Promise<void>;
