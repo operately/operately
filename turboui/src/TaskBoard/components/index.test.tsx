@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -76,6 +76,7 @@ const completedMilestone: Types.Milestone = {
   name: "Completed Milestone",
   status: "done",
   dueDate: createDate("2024-01-15"),
+  completedAt: new Date("2024-01-20T00:00:00Z"),
   link: "#",
 };
 
@@ -139,33 +140,35 @@ function renderTaskBoard() {
 }
 
 describe("TaskBoard completed milestones", () => {
-  it("renders completed milestones after the no milestone section and keeps their tasks collapsed", () => {
+  it("renders compact completed milestones after active work and keeps them collapsed by default", () => {
     const { container } = renderTaskBoard();
     const board = container.querySelector('[data-test-id="tasks-board"]');
-    const completedBoard = container.querySelector('[data-test-id="completed-milestones-board"]');
-    const completedMilestoneCard = container.querySelector('[data-test-id="milestone-completed-milestone"]');
+    const completedSection = container.querySelector('[data-test-id="completed-milestones-compact-section"]');
 
     expect(board).not.toBeNull();
-    expect(completedBoard).not.toBeNull();
-    expect(completedMilestoneCard).not.toBeNull();
+    expect(completedSection).not.toBeNull();
 
     const openMilestoneHeading = screen.getByText("Open Milestone");
     const noMilestoneHeading = screen.getByText("No milestone");
-    const completedSectionHeading = screen.getByText("Completed milestones");
-    const completedMilestoneHeading = screen.getByText("Completed Milestone");
+    const completedSectionToggle = screen.getByRole("button", { name: "1 completed milestone" });
 
-    expect(openMilestoneHeading.compareDocumentPosition(noMilestoneHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(noMilestoneHeading.compareDocumentPosition(completedSectionHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(completedSectionHeading.compareDocumentPosition(completedMilestoneHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(board?.contains(completedSectionHeading)).toBe(false);
-    expect(board?.contains(completedMilestoneHeading)).toBe(false);
-    expect(completedBoard?.contains(completedSectionHeading)).toBe(true);
-    expect(completedBoard?.contains(completedMilestoneHeading)).toBe(true);
+    expect(
+      openMilestoneHeading.compareDocumentPosition(noMilestoneHeading) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      noMilestoneHeading.compareDocumentPosition(completedSectionToggle) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(completedSectionToggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("Completed Milestone")).not.toBeInTheDocument();
 
-    expect(screen.getByText("Show 1 completed task")).toBeInTheDocument();
+    fireEvent.click(completedSectionToggle);
+
+    expect(completedSectionToggle).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("Completed Milestone")).toBeInTheDocument();
+    expect(within(completedSection!).getByText("1 task")).toBeInTheDocument();
+    expect(within(completedSection!).getByText("Completed Jan 20, 2024")).toBeInTheDocument();
+    expect(completedSection?.querySelector('[data-test-id="milestone-add-task"]')).not.toBeInTheDocument();
     expect(screen.queryByText("Closed task in completed milestone")).not.toBeInTheDocument();
     expect(screen.queryByText(/click \+ or press c to add a task/i)).not.toBeInTheDocument();
-    expect(completedMilestoneCard?.querySelector('[data-testid="icon-IconFlagFilled"]')).not.toBeNull();
-    expect(completedMilestoneCard?.querySelector(".text-content-error")).toBeNull();
   });
 });
