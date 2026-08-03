@@ -83,12 +83,33 @@ function DiscussionSubscriptions() {
     return null;
   }
 
+  return (
+    <DiscussionSubscriptionsContent
+      discussion={discussion}
+      isCurrentUserSubscribed={isCurrentUserSubscribed}
+      onRefresh={refresh}
+    />
+  );
+}
+
+function DiscussionSubscriptionsContent({
+  discussion,
+  isCurrentUserSubscribed,
+  onRefresh,
+}: {
+  discussion: Discussions.Discussion;
+  isCurrentUserSubscribed: boolean;
+  onRefresh: () => void;
+}) {
+  assertPresent(discussion.potentialSubscribers, "potentialSubscribers must be present in discussion");
+  assertPresent(discussion.subscriptionList, "subscriptionList must be present in discussion");
+
   const subscriptionsState = useCurrentSubscriptionsAdapter({
     potentialSubscribers: discussion.potentialSubscribers,
     subscriptionList: discussion.subscriptionList,
     resourceName: "discussion",
     type: "message",
-    onRefresh: refresh,
+    onRefresh,
   });
 
   return (
@@ -106,12 +127,11 @@ function DiscussionSubscriptions() {
 
 function DiscussionReactions() {
   const { discussion } = useLoadedData();
-
-  if (discussion.state !== "published") return null;
-
-  const reactions = discussion.reactions!.map((r) => r!);
+  const reactions = (discussion.reactions ?? []).map((r) => r!);
   const entity = ReactionsModel.entity(discussion.id!, "message");
   const form = ReactionsModel.useReactionsForm(entity, reactions);
+
+  if (discussion.state !== "published") return null;
 
   assertPresent(discussion.permissions?.canComment, "permissions must be present in discussion");
 

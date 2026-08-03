@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import type { FormState, FormValues } from "./types";
+import type { FormState, FormValueUpdater, FormValues } from "./types";
 
 const FormContext = React.createContext<FormState<FormValues> | null>(null);
 
@@ -24,14 +24,16 @@ export function useFormContext<T extends FormValues = FormValues>() {
   return form as FormState<T>;
 }
 
-export function useFieldValue<TValue = unknown>(field: string): [TValue | undefined, (value: React.SetStateAction<TValue | undefined>) => void] {
+export function useFieldValue<TValue = unknown>(field: string): [TValue | undefined, (value: FormValueUpdater<TValue>) => void] {
   const form = useFormContext();
+  const formRef = React.useRef(form);
+  formRef.current = form;
 
   const setValue = React.useCallback(
-    (nextValue: React.SetStateAction<TValue | undefined>) => {
-      form.actions.setValue(field, nextValue);
+    (nextValue: FormValueUpdater<TValue>) => {
+      formRef.current.actions.setValue(field, nextValue);
     },
-    [field, form],
+    [field],
   );
 
   return [form.actions.getValue<TValue>(field), setValue];
