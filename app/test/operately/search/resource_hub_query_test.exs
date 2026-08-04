@@ -81,6 +81,23 @@ defmodule Operately.Search.ResourceHubQueryTest do
     assert body_match.document.id == ctx.body_match.id
   end
 
+  test "ranks title-and-body matches ahead of title-only matches", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:title_only, :hub, name: "Roadmap signal", content: RichText.rich_text("Unrelated"))
+      |> Factory.add_document(:title_and_body, :hub,
+        name: "Delivery signal",
+        content: RichText.rich_text("The signal appears in the body as well")
+      )
+
+    sync(:document, ctx.title_only.id)
+    sync(:document, ctx.title_and_body.id)
+
+    assert [title_and_body, title_only] = Search.search_resource_hub(ctx.hub, "signal")
+    assert title_and_body.document.id == ctx.title_and_body.id
+    assert title_only.document.id == ctx.title_only.id
+  end
+
   test "normalizes case and accents and accepts web-search phrases", ctx do
     ctx =
       Factory.add_document(ctx, :accented, :hub,
