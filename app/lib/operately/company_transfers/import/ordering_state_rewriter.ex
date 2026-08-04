@@ -18,6 +18,14 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriter do
     "project_milestones" => [
       %{column: "tasks_ordering_state", kind: :id_list, table: "tasks"},
       %{column: "tasks_kanban_state", kind: :id_lists_by_key, table: "tasks"}
+    ],
+    "project_templates" => [
+      %{column: "milestones_ordering_state", kind: :id_list, table: "project_template_milestones"},
+      %{column: "tasks_kanban_state", kind: :id_lists_by_key, table: "project_template_tasks"}
+    ],
+    "project_template_milestones" => [
+      %{column: "tasks_ordering_state", kind: :id_list, table: "project_template_tasks"},
+      %{column: "tasks_kanban_state", kind: :id_lists_by_key, table: "project_template_tasks"}
     ]
   }
 

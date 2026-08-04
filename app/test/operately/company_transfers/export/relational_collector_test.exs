@@ -85,6 +85,35 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     assert subscription["type"] == "mentioned"
   end
 
+  test "collects a company's project template graph without leaking another company", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_milestone(:milestone, :template)
+      |> Factory.add_project_template_task(:task, :template, milestone: :milestone)
+
+    other_ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_milestone(:milestone, :template)
+      |> Factory.add_project_template_task(:task, :template, milestone: :milestone)
+
+    assert {:ok, collected} = RelationalCollector.collect(ctx.company.id)
+
+    tables = table_map(collected)
+
+    assert ctx.template.id in row_ids(tables, "project_templates")
+    assert ctx.milestone.id in row_ids(tables, "project_template_milestones")
+    assert ctx.task.id in row_ids(tables, "project_template_tasks")
+
+    refute other_ctx.template.id in row_ids(tables, "project_templates")
+    refute other_ctx.milestone.id in row_ids(tables, "project_template_milestones")
+    refute other_ctx.task.id in row_ids(tables, "project_template_tasks")
+  end
+
   test "keeps empty included tables present in the minimal slice", ctx do
     assert {:ok, collected} = RelationalCollector.collect(ctx.company.id)
 
