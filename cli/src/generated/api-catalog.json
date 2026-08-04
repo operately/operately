@@ -8764,6 +8764,17 @@
           },
           {
             "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "navigation_target",
             "type": {
               "name": "search_navigation_target",
@@ -9102,6 +9113,17 @@
                 "kind": "named"
               },
               "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "subscription_list",
+            "type": {
+              "name": "subscription_list",
+              "kind": "named"
             },
             "optional": true,
             "has_default": false,
@@ -20643,7 +20665,8 @@
         "project",
         "milestone",
         "project_task",
-        "space_task"
+        "space_task",
+        "kpi"
       ],
       "reaction_entity_type": [
         "project_check_in",
@@ -20865,9 +20888,9 @@
       ]
     }
   },
-  "endpoint_count": 218,
+  "endpoint_count": 220,
   "query_count": 71,
-  "mutation_count": 147,
+  "mutation_count": 149,
   "endpoints": [
     {
       "name": "create",
@@ -27564,6 +27587,78 @@
       ],
       "docstring": "Logs a value for a KPI in a given period. Any space member with edit access may log.",
       "full_name": "kpis/log_kpi_entry",
+      "method": "POST"
+    },
+    {
+      "name": "subscribe_to_kpi",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/subscribe_to_kpi",
+      "handler": "OperatelyWeb.Api.Kpis.SubscribeToKpi",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "kpi_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Subscribes the current user to a KPI so they are notified when new entries are logged.",
+      "full_name": "kpis/subscribe_to_kpi",
+      "method": "POST"
+    },
+    {
+      "name": "unsubscribe_from_kpi",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/unsubscribe_from_kpi",
+      "handler": "OperatelyWeb.Api.Kpis.UnsubscribeFromKpi",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "kpi_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Unsubscribes the current user from a KPI so they stop receiving its notifications.",
+      "full_name": "kpis/unsubscribe_from_kpi",
       "method": "POST"
     },
     {

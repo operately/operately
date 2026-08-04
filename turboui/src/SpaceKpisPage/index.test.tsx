@@ -292,3 +292,42 @@ describe("SpaceKpisPage create & log", () => {
     expect(onLoadKpi).toHaveBeenCalledTimes(2);
   });
 });
+
+// The detail view lets the current user follow/unfollow a KPI so they are
+// notified when new entries are logged, reusing the shared NotificationToggle.
+describe("SpaceKpisPage subscription toggle", () => {
+  test("no follow control is shown when onToggleSubscription is omitted", () => {
+    const target = mockKpis[0]!;
+    const { container } = renderPage({ initialSelectedKpiId: target.id });
+
+    expect(container.querySelector('[data-test-id="project-subscribe-button"]')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="project-unsubscribe-button"]')).not.toBeInTheDocument();
+  });
+
+  test("an unsubscribed user can subscribe to the open KPI", async () => {
+    const user = userEvent.setup();
+    const target = { ...mockKpis[0]!, isSubscribed: false };
+    const onToggleSubscription = jest.fn(async () => ({ success: true }));
+
+    const { container } = renderPage({
+      kpis: [target, ...mockKpis.slice(1)],
+      initialSelectedKpiId: target.id,
+      onToggleSubscription,
+    });
+
+    await user.click(container.querySelector('[data-test-id="project-subscribe-button"]')!);
+
+    expect(onToggleSubscription).toHaveBeenCalledWith({ kpiId: target.id, subscribed: true });
+  });
+
+  test("a subscribed user sees an unsubscribe control", () => {
+    const target = { ...mockKpis[0]!, isSubscribed: true };
+    const { container } = renderPage({
+      kpis: [target, ...mockKpis.slice(1)],
+      initialSelectedKpiId: target.id,
+      onToggleSubscription: async () => ({ success: true }),
+    });
+
+    expect(container.querySelector('[data-test-id="project-unsubscribe-button"]')).toBeInTheDocument();
+  });
+});
