@@ -73,6 +73,12 @@ describe("LogUpdateForm date affordance", () => {
     const dateInput = getByTestId("log-update-period");
     expect(dateInput).toBeInTheDocument();
     await waitFor(() => expect(dateInput).toHaveFocus());
+
+    // The revealed input carries a user-friendly "Date" label — not the
+    // internal "Period" terminology — while keeping the `period` id/field.
+    const label = document.querySelector('label[for="kpi-entry-period"]');
+    expect(label).toHaveTextContent("Date");
+    expect(label).not.toHaveTextContent("Period");
   });
 
   test("submitting after changing the date sends the chosen period", async () => {
