@@ -202,13 +202,12 @@ function useAddItemModalState(props: AddItemModal.Props) {
   };
 
   const submit = async () => {
+    if (!validate()) {
+      return;
+    }
+
     setSubmitting(true);
-
     try {
-      if (!validate()) {
-        return;
-      }
-
       const result = await props.save({
         name: name.trim(),
         type: itemType,
