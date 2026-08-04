@@ -9,12 +9,14 @@ import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
 
 import { usePaths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const paths = usePaths();
   const refresh = useRefresh();
+  const me = useMe();
   const { company } = useCompanyLoaderData();
   const { space, kpis } = useLoadedData();
 
@@ -24,8 +26,13 @@ export function Page() {
   const [editKpi] = Kpis.useEditKpi();
   const [deleteKpi] = Kpis.useDeleteKpi();
   const [logKpiEntry] = Kpis.useLogKpiEntry();
+  const [subscribeToKpi] = Kpis.useSubscribeToKpi();
+  const [unsubscribeFromKpi] = Kpis.useUnsubscribeFromKpi();
 
-  const parsedKpis = React.useMemo(() => kpis.map((kpi) => Kpis.parseKpiForTurboUi(paths, kpi)), [kpis, paths]);
+  const parsedKpis = React.useMemo(
+    () => kpis.map((kpi) => Kpis.parseKpiForTurboUi(paths, kpi, me?.id)),
+    [kpis, paths, me?.id],
+  );
 
   const championSearch = React.useCallback(
     async (query: string) => People.parsePeopleForTurboUi(paths, await peopleSearch(query)),
@@ -77,14 +84,23 @@ export function Page() {
       refresh();
     });
 
-  const onLoadKpi = async (kpiId: string) => Kpis.parseKpiForTurboUi(paths, (await Kpis.getKpi({ kpiId })).kpi);
+  const onToggleSubscription = async (input: { kpiId: string; subscribed: boolean }) =>
+    run(async () => {
+      if (input.subscribed) {
+        await subscribeToKpi({ kpiId: input.kpiId });
+      } else {
+        await unsubscribeFromKpi({ kpiId: input.kpiId });
+      }
+    });
+
+  const onLoadKpi = async (kpiId: string) => Kpis.parseKpiForTurboUi(paths, (await Kpis.getKpi({ kpiId })).kpi, me?.id);
 
   return (
     <SpaceKpisPage
       space={{ id: space.id!, name: space.name!, link: paths.spacePath(space.id!) }}
       navigation={[{ to: paths.spacePath(space.id!), label: space.name! }]}
       kpis={parsedKpis}
-      currentUser={null}
+      currentUser={me ? People.parsePersonForTurboUi(paths, me) : null}
       canManage={space.permissions?.canEdit ?? false}
       championSearch={championSearch}
       onLoadKpi={onLoadKpi}
@@ -92,6 +108,7 @@ export function Page() {
       onEditKpi={onEditKpi}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      onToggleSubscription={onToggleSubscription}
     />
   );
 }

@@ -137,6 +137,22 @@ function Harness(args: HarnessArgs) {
     return { success: true };
   };
 
+  const onToggleSubscription = async (input: {
+    kpiId: string;
+    subscribed: boolean;
+  }): Promise<SpaceKpisPageNS.MutationResult> => {
+    console.log("toggleKpiSubscription", input);
+    await delay(300);
+
+    if (args.failMutations) {
+      return { success: false, error: "You don't have permission to change your subscription." };
+    }
+
+    setKpis((prev) => prev.map((kpi) => (kpi.id === input.kpiId ? { ...kpi, isSubscribed: input.subscribed } : kpi)));
+
+    return { success: true };
+  };
+
   return (
     <SpaceKpisPage
       space={mockSpace}
@@ -148,6 +164,7 @@ function Harness(args: HarnessArgs) {
       onEditKpi={onEditKpi}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      onToggleSubscription={onToggleSubscription}
       loading={args.loading}
       error={args.error}
       canManage={args.canManage}

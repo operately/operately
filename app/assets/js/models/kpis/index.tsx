@@ -11,10 +11,14 @@ export const useCreateKpi = Api.kpis.useCreateKpi;
 export const useEditKpi = Api.kpis.useEditKpi;
 export const useDeleteKpi = Api.kpis.useDeleteKpi;
 export const useLogKpiEntry = Api.kpis.useLogKpiEntry;
+export const useSubscribeToKpi = Api.kpis.useSubscribeToKpi;
+export const useUnsubscribeFromKpi = Api.kpis.useUnsubscribeFromKpi;
 
 // Map the API KPI shape onto the presentational turboui shape. The `period` /
 // timestamps arrive as ISO strings and are parsed into `Date`s for the chart.
-export function parseKpiForTurboUi(paths: Paths, kpi: ApiKpi): SpaceKpisPage.Kpi {
+// `currentUserId` is used to derive the current user's subscription state from
+// the KPI's subscription list (only present on the detail payload).
+export function parseKpiForTurboUi(paths: Paths, kpi: ApiKpi, currentUserId?: string | null): SpaceKpisPage.Kpi {
   return {
     id: kpi.id,
     name: kpi.name,
@@ -24,7 +28,14 @@ export function parseKpiForTurboUi(paths: Paths, kpi: ApiKpi): SpaceKpisPage.Kpi
     insertedAt: kpi.insertedAt ? new Date(kpi.insertedAt) : new Date(),
     latestEntry: kpi.latestEntry ? parseKpiEntryForTurboUi(paths, kpi.latestEntry) : null,
     entries: (kpi.entries ?? []).map((entry) => parseKpiEntryForTurboUi(paths, entry)),
+    isSubscribed: isCurrentUserSubscribed(kpi, currentUserId),
   };
+}
+
+function isCurrentUserSubscribed(kpi: ApiKpi, currentUserId?: string | null): boolean | undefined {
+  if (!kpi.subscriptionList || !currentUserId) return undefined;
+
+  return (kpi.subscriptionList.subscriptions ?? []).some((sub) => !sub.canceled && sub.person?.id === currentUserId);
 }
 
 function parseKpiEntryForTurboUi(paths: Paths, entry: ApiKpiEntry): SpaceKpisPage.KpiEntry {

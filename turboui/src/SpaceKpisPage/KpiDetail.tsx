@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
+import { NotificationToggle } from "../NotificationToggle";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -13,12 +14,16 @@ interface KpiDetailProps {
   // omits them). Shows a placeholder in place of the chart/history so we don't
   // flash a misleading "No data" state.
   loadingHistory?: boolean;
+
+  // Subscribe/unsubscribe the current user to this KPI. When omitted, the
+  // follow control is hidden (e.g. read-only contexts / stories).
+  onToggleSubscription?: (subscribed: boolean) => void;
 }
 
 // The KPI name, back navigation and the "Log update" action live in the shared
 // page header (see index.tsx), so the detail body focuses on the metadata,
 // latest value, history chart and the recorded-updates log.
-export function KpiDetail({ kpi, loadingHistory = false }: KpiDetailProps) {
+export function KpiDetail({ kpi, loadingHistory = false, onToggleSubscription }: KpiDetailProps) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
@@ -69,6 +74,16 @@ export function KpiDetail({ kpi, loadingHistory = false }: KpiDetailProps) {
           </div>
 
           <EntriesTable entries={kpi.entries} unit={kpi.unit} />
+
+          {onToggleSubscription && (
+            <div className="mt-6 border-t border-stroke-dimmed pt-4">
+              <NotificationToggle
+                entityType="kpi"
+                isSubscribed={kpi.isSubscribed ?? false}
+                onToggle={onToggleSubscription}
+              />
+            </div>
+          )}
         </>
       )}
     </div>

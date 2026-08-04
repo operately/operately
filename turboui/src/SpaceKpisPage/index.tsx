@@ -72,6 +72,16 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
     return result;
   };
 
+  const { onToggleSubscription } = props;
+  const handleToggleSubscription = React.useCallback(
+    async (kpiId: string, subscribed: boolean) => {
+      if (!onToggleSubscription) return;
+      const result = await onToggleSubscription({ kpiId, subscribed });
+      if (result.success && kpiId === selectedKpiId) await loadDetail(kpiId);
+    },
+    [onToggleSubscription, selectedKpiId, loadDetail],
+  );
+
   const contentReady = !props.loading && !props.error;
 
   // The primary header action mirrors what the visible content offers: "New KPI"
@@ -118,6 +128,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             onOpenLog={setLogKpiId}
             onOpenEdit={setEditKpiId}
             onOpenDelete={setDeleteKpiId}
+            onToggleSubscription={onToggleSubscription ? handleToggleSubscription : undefined}
           />
         </div>
       </div>
@@ -247,7 +258,7 @@ function PageHeader(props: PageHeaderProps) {
   );
 }
 
-interface KpisContentProps extends SpaceKpisPageNS.Props {
+interface KpisContentProps extends Omit<SpaceKpisPageNS.Props, "onToggleSubscription"> {
   canManage: boolean;
   selectedKpi: SpaceKpisPageNS.Kpi | null;
   detailLoading: boolean;
@@ -256,6 +267,7 @@ interface KpisContentProps extends SpaceKpisPageNS.Props {
   onOpenLog: (id: string) => void;
   onOpenEdit: (id: string) => void;
   onOpenDelete: (id: string) => void;
+  onToggleSubscription?: (kpiId: string, subscribed: boolean) => void;
 }
 
 function KpisContent(props: KpisContentProps) {
@@ -268,7 +280,16 @@ function KpisContent(props: KpisContentProps) {
   }
 
   if (props.selectedKpi) {
-    return <KpiDetail kpi={props.selectedKpi} loadingHistory={props.detailLoading} />;
+    const kpi = props.selectedKpi;
+    return (
+      <KpiDetail
+        kpi={kpi}
+        loadingHistory={props.detailLoading}
+        onToggleSubscription={
+          props.onToggleSubscription ? (subscribed) => props.onToggleSubscription!(kpi.id, subscribed) : undefined
+        }
+      />
+    );
   }
 
   return (
