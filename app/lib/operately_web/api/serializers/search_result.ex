@@ -8,6 +8,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Search.Result do
       matched_field: result.matched_field,
       snippet: result.snippet,
       state: result.state,
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(result.inserted_at),
       navigation_target: serialize_navigation_target(result.navigation_target)
     }
   end

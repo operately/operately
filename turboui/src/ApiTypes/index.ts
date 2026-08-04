@@ -2179,6 +2179,7 @@ export interface SearchResult {
   matchedField: SearchMatchedField;
   snippet?: string | null;
   state?: SearchResultState | null;
+  insertedAt: string;
   navigationTarget: SearchNavigationTarget;
 }
 

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
 import type { SearchResult } from "../ApiTypes";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { IconCalendar, IconLayoutGrid, IconWorld } from "../icons";
 import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS, SearchPage } from "./index";
 
@@ -14,6 +15,9 @@ const meta = {
       path: "/acme/search",
       routePath: "/:companyId/search",
     },
+  },
+  args: {
+    formattedTimePreferences: defaultFormattedTimePreferences,
   },
 } satisfies Meta<typeof SearchPage>;
 
@@ -31,15 +35,30 @@ function result(overrides: Partial<SearchResult & { link: string }> = {}): Searc
     snippet:
       "Customer research supports simplifying the information architecture and making the approval workflow easier to understand.",
     state: "closed",
+    insertedAt: "2026-07-28T12:00:00.000Z",
     navigationTarget: { projectId: "project-1" },
     link: "/acme/projects/project-1",
     ...overrides,
   };
 }
 
-function InteractivePage(props: Omit<SearchPage.Props, "query" | "onQueryChange"> & { initialQuery?: string }) {
-  const [query, setQuery] = React.useState(props.initialQuery ?? "");
-  return <SearchPage {...props} query={query} onQueryChange={setQuery} />;
+function InteractivePage(
+  props: Omit<SearchPage.Props, "query" | "onQueryChange" | "formattedTimePreferences"> & {
+    initialQuery?: string;
+    formattedTimePreferences?: SearchPage.Props["formattedTimePreferences"];
+  },
+) {
+  const { initialQuery, formattedTimePreferences = defaultFormattedTimePreferences, ...pageProps } = props;
+  const [query, setQuery] = React.useState(initialQuery ?? "");
+
+  return (
+    <SearchPage
+      {...pageProps}
+      query={query}
+      onQueryChange={setQuery}
+      formattedTimePreferences={formattedTimePreferences}
+    />
+  );
 }
 
 const DEFAULT_FILTER_SELECTIONS: Record<string, string[]> = {
@@ -107,6 +126,7 @@ function InteractiveRefinePage({
       onQueryChange={setQuery}
       status="success"
       results={results}
+      formattedTimePreferences={defaultFormattedTimePreferences}
       refine={refine}
     />
   );
