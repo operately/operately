@@ -52,8 +52,8 @@ function OverviewSection(props: ProjectPage.State) {
         {...props}
         canEdit={props.permissions.canEdit}
         label="Description"
-        placeholder="What does success look like?"
-        zeroStatePlaceholder="What does success look like?"
+        placeholder="Add a project description..."
+        zeroStatePlaceholder="Add a project description..."
         localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
       />
     </div>
