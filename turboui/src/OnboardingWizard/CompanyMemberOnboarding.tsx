@@ -65,7 +65,7 @@ export function CompanyMemberOnboardingWizard(props: CompanyMemberOnboardingWiza
   return (
     <WizardModal labelledBy="company-member-onboarding-heading">
       {match(state.currentStep)
-        .with("welcome", () => <WelcomeStep state={state} imageUrl={props.markoImageUrl} whatReady="profile" />)
+        .with("welcome", () => <WelcomeStep state={state} imageUrl={props.markoImageUrl} />)
         .with("role", () => <RoleStep state={state} />)
         .with("avatar", () => <AvatarStep state={state} />)
         .run()}

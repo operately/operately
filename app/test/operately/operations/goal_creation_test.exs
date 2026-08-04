@@ -46,6 +46,14 @@ defmodule Operately.Operations.GoalCreationTest do
     assert Access.get_context(goal_id: goal.id)
   end
 
+  test "GoalCreation operation completes company setup", ctx do
+    refute ctx.company.setup_completed
+
+    {:ok, _goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
+
+    assert Operately.Repo.reload(ctx.company).setup_completed
+  end
+
   test "GoalCreation operation creates a default goal-backed resource hub", ctx do
     {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
     goal_id = goal.id

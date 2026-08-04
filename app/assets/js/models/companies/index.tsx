@@ -27,8 +27,3 @@ export const useRestoreCompanyMember = Api.companies.useRestoreMember;
 export function createInvitationUrl(token: string) {
   return `${window.location.protocol}//${window.location.host}/join?token=${token}`;
 }
-
-// Bulk invitations
-export function createBulkInvitationUrl(token: string) {
-  return `${window.location.protocol}//${window.location.host}/join/${token}`;
-}

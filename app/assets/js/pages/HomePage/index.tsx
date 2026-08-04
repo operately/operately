@@ -8,6 +8,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
+import { getWorkMap } from "@/models/workMap";
 
 export default { name: "HomePage", loader, Page } as PageModule;
 
@@ -15,8 +16,9 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
 import { GhostButton, PrimaryButton, showErrorToast, SpaceCard, SpaceCardGrid } from "turboui";
+import { Navigate } from "react-router";
 import { canDeleteFeedItems } from "./feedPermissions";
-import { Onboarding } from "./Onboarding";
+import { shouldOpenCompanyWorkMap } from "./firstRun";
 import { SpacesZeroState } from "./SpacesZeroState";
 
 interface LoaderData {
@@ -24,6 +26,7 @@ interface LoaderData {
   spaces: Spaces.Space[];
   adminIds: string[];
   ownerIds: string[];
+  hasWorkItems: boolean;
 }
 
 async function loader(): Promise<LoaderData> {
@@ -33,7 +36,10 @@ async function loader(): Promise<LoaderData> {
     includePermissions: true,
   }).then((d) => d.company);
 
-  const spaces = await Spaces.getSpaces({ includeAccessLevels: true });
+  const [spaces, hasWorkItems] = await Promise.all([
+    Spaces.getSpaces({ includeAccessLevels: true }),
+    company.setupCompleted ? Promise.resolve(false) : getWorkMap({}).then((data) => data.workMap.length > 0),
+  ]);
   const adminIds = company.admins?.map((a) => a.id);
   const ownerIds = company.owners?.map((o) => o.id);
 
@@ -42,6 +48,7 @@ async function loader(): Promise<LoaderData> {
     spaces,
     adminIds: adminIds || [],
     ownerIds: ownerIds || [],
+    hasWorkItems,
   };
 }
 
@@ -50,14 +57,22 @@ function useLoadedData(): LoaderData {
 }
 
 function Page() {
-  const { company } = useLoadedData();
+  const paths = usePaths();
+  const { company, hasWorkItems } = useLoadedData();
   const isOwner = useIsOwner();
-  const shouldPromptOnboarding = isOwner && !company.setupCompleted;
+
+  if (
+    shouldOpenCompanyWorkMap({
+      isOwner,
+      setupCompleted: company.setupCompleted,
+      hasWorkItems,
+    })
+  ) {
+    return <Navigate to={paths.workMapPath()} replace />;
+  }
 
   return (
     <Pages.Page title="Home" testId="company-home">
-      {shouldPromptOnboarding && <Onboarding company={company} />}
-
       <Paper.Root size="medium" className="px-4 sm:px-0">
         <Greeting />
         <SpacesSection />

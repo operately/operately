@@ -43,6 +43,8 @@ export function WorkMap({
   profileUser,
   hideCompanyAccessInQuickAdd,
   zeroStateMessage,
+  emptyStateVariant,
+  onItemCreated,
   formattedTimePreferences,
 }: WorkMap.Props) {
   const location = useLocation();
@@ -50,6 +52,7 @@ export function WorkMap({
   const searchParams = new URLSearchParams(location.search);
   const timelineAvailable = type !== "personal" && tab === "projects";
   const view = timelineAvailable && searchParams.get("view") === "timeline" ? "timeline" : "table";
+  const firstProjectStateVisible = emptyStateVariant === "first-project" && items.length === 0 && addingEnabled;
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
@@ -63,7 +66,9 @@ export function WorkMap({
         </div>
       </header>
 
-      <WorkMapNavigation tabsState={tabsState} timelineAvailable={timelineAvailable} view={view} />
+      {!firstProjectStateVisible && (
+        <WorkMapNavigation tabsState={tabsState} timelineAvailable={timelineAvailable} view={view} />
+      )}
       <div className="flex-1 overflow-auto">
         {view === "timeline" ? (
           <WorkMapTimeline items={filteredItems} tab={tab} />
@@ -81,6 +86,8 @@ export function WorkMap({
             profileUser={profileUser}
             hideCompanyAccessInQuickAdd={Boolean(hideCompanyAccessInQuickAdd)}
             zeroStateMessage={zeroStateMessage}
+            emptyStateVariant={emptyStateVariant}
+            onItemCreated={onItemCreated}
             formattedTimePreferences={formattedTimePreferences}
           />
         )}
@@ -181,6 +188,8 @@ export namespace WorkMap {
   export type WorkMapType = "company" | "personal";
   export type Filter = "all" | "goals" | "projects" | "completed" | "paused";
   export type View = "table" | "timeline";
+  export type EmptyStateVariant = "standard" | "first-project";
+  export type ItemCreatedFn = (type: AddItemModal.ItemType, id: string) => void | Promise<void>;
 
   export interface TabOptions {
     hideAll?: boolean;
@@ -224,6 +233,8 @@ export namespace WorkMap {
     hideCompanyAccessInQuickAdd?: boolean;
 
     zeroStateMessage?: string;
+    emptyStateVariant?: EmptyStateVariant;
+    onItemCreated?: ItemCreatedFn;
     formattedTimePreferences: FormattedTimePreferences;
   }
 }

@@ -2,9 +2,9 @@ defmodule Operately.Support.Features.CompaniesSteps do
   use Operately.FeatureCase
 
   alias Operately.{Billing, Companies, Repo}
-  alias Operately.Groups.Group
+  alias Operately.Projects.Project
   alias Operately.Support.Features.UI
-  alias Wallaby.{Browser, Element}
+  alias OperatelyWeb.Paths
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -45,56 +45,37 @@ defmodule Operately.Support.Features.CompaniesSteps do
     |> UI.assert_text("Acme Co.")
   end
 
-  step :assert_welcome_from_marko_is_shown, ctx do
+  step :assert_first_project_setup_is_shown, ctx do
     ctx
-    |> UI.assert_has(testid: "company-creator-onboarding")
-    |> UI.assert_has(testid: "company-creator-step-welcome")
-    |> UI.assert_text("Thanks for signing up!")
-  end
-
-  step :click_lets_start, ctx do
-    ctx |> UI.click(testid: "company-creator-lets-start")
-  end
-
-  step :select_a_few_spaces_to_create, ctx do
-    ctx
-    |> UI.assert_has(testid: "company-creator-step-spaces")
-    |> UI.click(testid: "company-creator-space-marketing")
-    |> UI.click(testid: "company-creator-space-engineering")
-    |> UI.click(testid: "company-creator-next")
-    |> Map.put(:selected_spaces, ["Marketing", "Engineering"])
-  end
-
-  step :assert_i_get_an_invitation_token, ctx do
-    ctx = ctx |> UI.assert_has(testid: "company-creator-step-invite")
-
-    element = Browser.find(ctx.session, UI.query(testid: "company-creator-invite-link"))
-    value = Element.attr(element, "value")
-
-    assert is_binary(value)
-    assert String.contains?(value, "/join")
-
-    Map.put(ctx, :invitation_link, value)
-  end
-
-  step :complete_onboarding, ctx do
-    ctx
-    |> UI.click(testid: "company-creator-finish")
-    |> UI.sleep(1000)
+    |> UI.assert_page(Paths.work_map_path(ctx.company))
     |> UI.refute_has(testid: "company-creator-onboarding")
+    |> UI.assert_has(testid: "first-project-zero-state")
+    |> UI.assert_text("Add your first project")
   end
 
-  step :assert_spaces_are_created, ctx do
-    # assert created in DB
-    Enum.map(ctx.selected_spaces, fn space ->
-      group = Repo.get_by(Group, name: space, company_id: ctx.company.id)
-      assert group, "Expected space \"#{space}\" to be created"
-    end)
+  step :create_first_project, ctx do
+    project_name = "Launch customer portal"
 
-    # assert visible on page
-    Enum.map(ctx.selected_spaces, fn space ->
-      UI.assert_text(ctx, space)
-    end)
+    ctx =
+      ctx
+      |> UI.fill(testid: "first-project-name", with: project_name)
+      |> UI.click(testid: "create-first-project")
+      |> UI.wait_until_has(testid: "project-page")
+
+    project = Repo.get_by!(Project, company_id: ctx.company.id, name: project_name)
+    Map.put(ctx, :first_project, project)
+  end
+
+  step :assert_first_project_defaults, ctx do
+    project = Repo.preload(ctx.first_project, [:group, contributors: :person])
+    champion = Enum.find(project.contributors, &(&1.role == :champion))
+    company_spaces = Repo.all(Ecto.assoc(ctx.company, :spaces))
+    company = Repo.reload(ctx.company)
+
+    assert project.group.name == "General"
+    assert champion.person_id == ctx.person.id
+    assert Enum.map(company_spaces, & &1.name) == ["General"]
+    assert company.setup_completed
 
     ctx
   end

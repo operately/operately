@@ -13,7 +13,9 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 export function Input(props: InputProps) {
-  const { field, testId, error, onEnter, okSign, className, ...rest } = props;
+  const { field, testId, error, onEnter, okSign, className, "aria-describedby": ariaDescribedBy, ...rest } = props;
+  const errorId = error && field ? `${field}-error` : undefined;
+  const describedBy = [ariaDescribedBy, errorId].filter(Boolean).join(" ") || undefined;
 
   return (
     <div className="relative w-full">
@@ -22,6 +24,8 @@ export function Input(props: InputProps) {
         name={field}
         data-test-id={testId}
         className={inputStyles(error, className)}
+        aria-describedby={describedBy}
+        aria-invalid={error || undefined}
         onKeyDown={(event) => {
           if (event.key === "Enter" && onEnter) {
             onEnter(event);

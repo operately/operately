@@ -11,6 +11,7 @@ import { validatePassword } from "@/features/auth/validatePassword";
 import { validateEmail } from "@/features/auth/validateEmail";
 import { Forms, Spacer } from "turboui";
 import { OperatelyLogo } from "turboui/Logo";
+import { Paths } from "@/routes/paths";
 
 export function Page() {
   return (
@@ -75,7 +76,7 @@ function Form() {
         passwordConfirmation: form.values.passwordConfirmation,
       });
 
-      await logIn(form.values.email, form.values.password, { redirectTo: `/${res.company.id}` });
+      await logIn(form.values.email, form.values.password, { redirectTo: Paths.companyWorkMapPath(res.company.id) });
     },
     onError: (error) => {
       const data = error.response?.data as { error?: string; message?: string } | undefined;
