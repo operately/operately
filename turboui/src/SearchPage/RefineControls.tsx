@@ -38,7 +38,7 @@ export function RefineControls({ sort, onSortChange, filters, onFilterChange }: 
     <div
       role="group"
       aria-label="Refine results"
-      className="mt-3 flex flex-wrap items-center justify-between gap-y-2"
+      className="mt-3 flex flex-wrap items-center justify-start gap-x-8 gap-y-2"
       data-test-id="search-refine-controls"
     >
       <SortToggle sort={sort} onSortChange={onSortChange} />
