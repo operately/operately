@@ -148,6 +148,8 @@ export { SpaceField } from "./SpaceField";
 export { SpaceKpisPage } from "./SpaceKpisPage";
 // The types namespace (`SpaceKpisPage.Props`, `.Kpi`, ...) is imported directly
 // from "turboui/SpaceKpisPage/types" to avoid a value/namespace name clash.
+// KPI summary card for the space home page (see KpiSummaryCard.stories.tsx).
+export { KpiSummaryCard } from "./SpaceKpisPage/KpiSummaryCard";
 export { SpaceToolsConfigurationPage } from "./SpaceToolsConfigurationPage";
 export { SwitchToggle } from "./SwitchToggle";
 export { Tabs, useTabs } from "./Tabs";
