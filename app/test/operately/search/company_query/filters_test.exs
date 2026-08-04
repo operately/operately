@@ -59,10 +59,10 @@ defmodule Operately.Search.CompanyQuery.FiltersTest do
              MapSet.new([ctx.product_project.id, ctx.marketing_project.id])
   end
 
-  test "filters by time range using source_updated_at", ctx do
-    set_entry_updated_at(ctx.product_project, days_ago(3))
-    set_entry_updated_at(ctx.marketing_project, days_ago(20))
-    set_entry_updated_at(ctx.product_goal, days_ago(100))
+  test "filters by time range using source_inserted_at", ctx do
+    set_entry_inserted_at(ctx.product_project, days_ago(3))
+    set_entry_inserted_at(ctx.marketing_project, days_ago(20))
+    set_entry_inserted_at(ctx.product_goal, days_ago(100))
 
     assert search_ids(ctx.creator, "Shared marker", %{time_range: :last_7_days}) == [ctx.product_project.id]
 
@@ -76,10 +76,10 @@ defmodule Operately.Search.CompanyQuery.FiltersTest do
              MapSet.new([ctx.product_project.id, ctx.marketing_project.id, ctx.product_goal.id])
   end
 
-  test "sorts by most recent source_updated_at", ctx do
-    set_entry_updated_at(ctx.product_project, days_ago(1))
-    set_entry_updated_at(ctx.marketing_project, days_ago(2))
-    set_entry_updated_at(ctx.product_goal, days_ago(3))
+  test "sorts by most recent source_inserted_at", ctx do
+    set_entry_inserted_at(ctx.product_project, days_ago(1))
+    set_entry_inserted_at(ctx.marketing_project, days_ago(2))
+    set_entry_inserted_at(ctx.product_goal, days_ago(3))
 
     assert search_ids(ctx.creator, "Shared marker", %{sort: :most_recent}) == [
              ctx.product_project.id,
@@ -120,7 +120,7 @@ defmodule Operately.Search.CompanyQuery.FiltersTest do
     ctx
   end
 
-  defp set_entry_updated_at(resource, updated_at) do
+  defp set_entry_inserted_at(resource, inserted_at) do
     source_type =
       case resource do
         %Project{} -> :project
@@ -128,7 +128,7 @@ defmodule Operately.Search.CompanyQuery.FiltersTest do
       end
 
     from(entry in Entry, where: entry.source_type == ^source_type and entry.source_id == ^resource.id)
-    |> Repo.update_all(set: [source_updated_at: updated_at])
+    |> Repo.update_all(set: [source_inserted_at: inserted_at])
   end
 
   defp days_ago(days) do

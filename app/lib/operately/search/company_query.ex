@@ -70,6 +70,7 @@ defmodule Operately.Search.CompanyQuery do
         body: entry.body,
         body_kind: entry.body_kind,
         state: entry.state,
+        source_inserted_at: entry.source_inserted_at,
         owner_name: candidate.owner_name,
         exact_title: entry.normalized_title == ^full_text.normalized_title,
         # True when the query is eligible for prefix matching and the normalized title starts with it.

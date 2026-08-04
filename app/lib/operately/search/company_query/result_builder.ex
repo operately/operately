@@ -31,6 +31,7 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
       matched_field: matched_field(candidate, title_match?),
       snippet: snippet(candidate, title_match?),
       state: candidate.state,
+      inserted_at: candidate.source_inserted_at,
       navigation_target: navigation_target(candidate)
     }
   end

@@ -37,7 +37,7 @@ defmodule Operately.Search.CompanyQuery.Filters do
     case normalize(filters).sort do
       :most_recent ->
         [
-          desc: dynamic([entry: entry], entry.source_updated_at),
+          desc: dynamic([entry: entry], entry.source_inserted_at),
           asc: dynamic([entry: entry], entry.source_id)
         ]
 
@@ -62,7 +62,7 @@ defmodule Operately.Search.CompanyQuery.Filters do
 
   defp filter_time(query, time_range) do
     cutoff = cutoff_for(time_range)
-    from([entry: entry] in query, where: entry.source_updated_at >= ^cutoff)
+    from([entry: entry] in query, where: entry.source_inserted_at >= ^cutoff)
   end
 
   defp cutoff_for(:last_7_days), do: shift_naive(day: -7)
