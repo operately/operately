@@ -7,9 +7,13 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Create do
 
   @impl true
   def setup(ctx) do
-    ctx
-    |> Factory.setup()
-    |> Factory.add_space(:space)
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+
+    {:ok, company} = Operately.Companies.update_company(ctx.company, %{setup_completed: false})
+    %{ctx | company: company}
   end
 
   @impl true
@@ -24,8 +28,9 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Create do
   end
 
   @impl true
-  def assert(response, _ctx) do
+  def assert(response, ctx) do
     assert response.project.id
     refute Map.has_key?(response, :error)
+    assert Operately.Repo.reload(ctx.company).setup_completed
   end
 end

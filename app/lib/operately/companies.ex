@@ -1,5 +1,7 @@
 defmodule Operately.Companies do
   import Ecto.Query, warn: false
+
+  alias Ecto.Multi
   alias Operately.Repo
 
   alias Operately.Companies.{AddPersonToGeneralSpace, Company}
@@ -98,6 +100,17 @@ defmodule Operately.Companies do
     company
     |> Company.changeset(attrs)
     |> Repo.update()
+  end
+
+  def mark_setup_completed(multi, company_id) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    Multi.update_all(
+      multi,
+      :company_setup_completion,
+      from(company in Company, where: company.id == ^company_id and not company.setup_completed),
+      set: [setup_completed: true, updated_at: now]
+    )
   end
 
   def delete_company(%Company{} = company) do

@@ -2,7 +2,6 @@ import * as React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import * as Companies from "@/models/companies";
 import * as Spaces from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { PageCache } from "@/routes/PageCache";
@@ -42,11 +41,9 @@ export function Page() {
 
   const handleItemCreated = React.useCallback(
     (type: "goal" | "project", id: string) => {
-      finishFirstItemOnboarding({
+      return finishFirstItemOnboarding({
         invalidateWorkMapCache: () => PageCache.invalidate(companyWorkMapCacheKey(company.id)),
         navigateToItem: () => navigate(type === "project" ? paths.projectPath(id) : paths.goalPath(id)),
-        markSetupComplete: () => Companies.completeCompanySetup({ spaces: [] }),
-        reportError: (error) => console.error("Failed to mark company setup as complete:", error),
       });
     },
     [company.id, navigate, paths],
