@@ -3,7 +3,7 @@ import * as React from "react";
 import { FormsProvider } from "./context";
 import type { FormProps, FormValues } from "./types";
 
-export function Form<T extends FormValues>({ form, testId, children, preventSubmitOnEnter }: FormProps<T>) {
+export function Form<T extends FormValues>({ form, testId, className, children, preventSubmitOnEnter }: FormProps<T>) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!preventSubmitOnEnter) {
@@ -13,7 +13,7 @@ export function Form<T extends FormValues>({ form, testId, children, preventSubm
 
   return (
     <FormsProvider form={form as FormProps<FormValues>["form"]}>
-      <form data-test-id={testId} onSubmit={handleSubmit}>
+      <form className={className} data-test-id={testId} onSubmit={handleSubmit}>
         {children}
       </form>
     </FormsProvider>

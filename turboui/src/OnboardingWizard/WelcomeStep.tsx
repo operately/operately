@@ -7,14 +7,13 @@ import { WizardStep } from "./WizardLayout";
 export interface WelcomeStepProps {
   state: WizardState<any>;
   imageUrl: string;
-  whatReady: "profile" | "workspace";
   headingId?: string;
   stepTestId?: string;
   startTestId?: string;
 }
 
-export function WelcomeStep({ state, imageUrl, whatReady, headingId, stepTestId, startTestId }: WelcomeStepProps) {
-  const resolvedHeadingId = headingId ?? defaultHeadingId(whatReady);
+export function WelcomeStep({ state, imageUrl, headingId, stepTestId, startTestId }: WelcomeStepProps) {
+  const resolvedHeadingId = headingId ?? "company-member-onboarding-heading";
 
   return (
     <WizardStep
@@ -51,12 +50,4 @@ export function WelcomeStep({ state, imageUrl, whatReady, headingId, stepTestId,
       </div>
     </WizardStep>
   );
-}
-
-function defaultHeadingId(whatReady: WelcomeStepProps["whatReady"]) {
-  if (whatReady === "workspace") {
-    return "company-creator-onboarding-heading";
-  }
-
-  return "company-member-onboarding-heading";
 }

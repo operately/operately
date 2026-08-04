@@ -2,6 +2,7 @@ defmodule Operately.Operations.ProjectCreation do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Access
+  alias Operately.Companies
   alias Operately.Access.{Binding, Context}
   alias Operately.Operations.Notifications.Subscription, as: SubscriptionOps
   alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
@@ -40,6 +41,7 @@ defmodule Operately.Operations.ProjectCreation do
     |> insert_mentioned_people(params)
     |> insert_bindings(params)
     |> insert_activity(params)
+    |> Companies.mark_setup_completed(params.company_id)
     |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)

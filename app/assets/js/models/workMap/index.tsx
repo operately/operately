@@ -51,7 +51,14 @@ const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
 
 export type { WorkMapItem };
 
-export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[], WorkMap.AddNewItemFn] {
+interface WorkMapItemOptions {
+  projectChampionId?: string;
+}
+
+export function useWorkMapItems(
+  initialItems: WorkMapItem[] = [],
+  options: WorkMapItemOptions = {},
+): [WorkMapItem[], WorkMap.AddNewItemFn] {
   const paths = usePaths();
 
   const [items, setItems] = React.useState<WorkMapItem[]>(initialItems);
@@ -122,6 +129,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       anonymousAccessLevel: 0,
       companyAccessLevel: accessLevelAsNumber(props.accessLevels.company),
       spaceAccessLevel: accessLevelAsNumber(props.accessLevels.space),
+      championId: options.projectChampionId,
     });
 
     const item: WorkMapItem = {

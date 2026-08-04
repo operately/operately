@@ -340,7 +340,7 @@ export function TaskBoard({
               {/* If no tasks at all */}
               {showNoTasksMsg && (
                 <li className="py-4 text-center text-content-subtle">
-                  No tasks yet — click 'New task' to create the first one.
+                  Add the first task to start breaking down the work.
                 </li>
               )}
 

@@ -46,6 +46,7 @@ export interface UseFormOptions<T extends FormValues> {
 export interface FormProps<T extends FormValues = FormValues> {
   form: FormState<T>;
   testId?: string;
+  className?: string;
   children: React.ReactNode;
   preventSubmitOnEnter?: boolean;
 }

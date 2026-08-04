@@ -5,17 +5,15 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
-  alias Operately.Companies
   alias Operately.InviteLinks
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.InviteLinksFixtures
 
   step :given_that_a_company_and_an_admin_exists, ctx do
-    company = company_fixture()
-    creator = hd(Companies.list_owners(company))
+    ctx = Factory.setup(ctx)
 
-    Map.merge(ctx, %{company: company, admin: creator, creator: creator})
+    Map.put(ctx, :admin, ctx.creator)
   end
 
   step :given_multiple_spaces_goals_and_projects_exist, ctx do
