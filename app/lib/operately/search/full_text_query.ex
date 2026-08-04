@@ -53,6 +53,92 @@ defmodule Operately.Search.FullTextQuery do
     end
   end
 
+  def title_match_dynamic(%__MODULE__{} = query) do
+    dynamic(
+      [entry: entry],
+      fragment(
+        "to_tsvector('public.operately'::regconfig, coalesce(?, '')) @@ (CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+        entry.title,
+        ^query.use_prefix?,
+        ^query.tsquery_expr,
+        ^query.websearch_expr
+      )
+    )
+  end
+
+  def body_match_dynamic(%__MODULE__{} = query) do
+    dynamic(
+      [entry: entry],
+      fragment(
+        "to_tsvector('public.operately'::regconfig, coalesce(?, '')) @@ (CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+        entry.body,
+        ^query.use_prefix?,
+        ^query.tsquery_expr,
+        ^query.websearch_expr
+      )
+    )
+  end
+
+  # True when the query hits the title (exact, prefix, or full-text) and the body.
+  def title_and_body_match_dynamic(%__MODULE__{} = query) do
+    title_hit = title_hit_dynamic(query)
+    body_match = body_match_dynamic(query)
+
+    dynamic([entry: entry], ^title_hit and ^body_match)
+  end
+
+  # Shared relevance order for company and resource-hub full-text search.
+  # Must be interpolated at the root of `order_by` (`order_by: ^ranking_order(query)`).
+  def ranking_order(%__MODULE__{} = query) do
+    [
+      desc: dynamic([entry: entry], entry.normalized_title == ^query.normalized_title),
+      desc:
+        dynamic(
+          [entry: entry],
+          fragment("? AND ? LIKE ? ESCAPE '!'", ^query.title_prefix?, entry.normalized_title, ^query.title_prefix)
+        ),
+      desc: title_and_body_match_dynamic(query),
+      desc:
+        dynamic(
+          [entry: entry],
+          fragment(
+            "ts_rank_cd(ARRAY[0.0,0.0,0.0,1.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            field(entry, :search_vector),
+            ^query.use_prefix?,
+            ^query.tsquery_expr,
+            ^query.websearch_expr
+          )
+        ),
+      desc:
+        dynamic(
+          [entry: entry],
+          fragment(
+            "ts_rank_cd(ARRAY[0.0,0.0,1.0,0.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
+            field(entry, :search_vector),
+            ^query.use_prefix?,
+            ^query.tsquery_expr,
+            ^query.websearch_expr
+          )
+        ),
+      asc: dynamic([entry: entry], entry.source_id)
+    ]
+  end
+
+  defp title_hit_dynamic(query) do
+    exact_title =
+      dynamic([entry: entry], entry.normalized_title == ^query.normalized_title)
+
+    prefix_title =
+      dynamic(
+        [entry: entry],
+        fragment("? AND ? LIKE ? ESCAPE '!'", ^query.title_prefix?, entry.normalized_title, ^query.title_prefix)
+      )
+
+    title_match = title_match_dynamic(query)
+
+    dynamic([entry: entry], ^exact_title or ^prefix_title or ^title_match)
+  end
+
   defp indexed_match_dynamic(query) do
     dynamic(
       [entry: entry],

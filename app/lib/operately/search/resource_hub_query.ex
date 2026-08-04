@@ -42,27 +42,7 @@ defmodule Operately.Search.ResourceHubQuery do
       where: entry.resource_hub_id == ^hub_id,
       where: ^FullTextQuery.match_dynamic(full_text),
       select: item.node_id,
-      order_by: [
-        desc: entry.normalized_title == ^full_text.normalized_title,
-        desc: fragment("? AND ? LIKE ? ESCAPE '!'", ^full_text.title_prefix?, entry.normalized_title, ^full_text.title_prefix),
-        desc:
-          fragment(
-            "ts_rank_cd(ARRAY[0.0,0.0,0.0,1.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            field(entry, :search_vector),
-            ^full_text.use_prefix?,
-            ^full_text.tsquery_expr,
-            ^full_text.websearch_expr
-          ),
-        desc:
-          fragment(
-            "ts_rank_cd(ARRAY[0.0,0.0,1.0,0.0]::real[], ?, CASE WHEN ? THEN to_tsquery('public.operately'::regconfig, ?) ELSE websearch_to_tsquery('public.operately'::regconfig, ?) END)",
-            field(entry, :search_vector),
-            ^full_text.use_prefix?,
-            ^full_text.tsquery_expr,
-            ^full_text.websearch_expr
-          ),
-        asc: entry.source_id
-      ],
+      order_by: ^FullTextQuery.ranking_order(full_text),
       limit: @limit
     )
     |> recursive_ctes(true)

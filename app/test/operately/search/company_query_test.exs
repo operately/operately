@@ -599,6 +599,26 @@ defmodule Operately.Search.CompanyQueryTest do
     assert body_match.matched_field == :content
   end
 
+  test "ranks title-and-body matches ahead of title-only matches", ctx do
+    ctx =
+      ctx
+      |> Factory.add_document(:title_only, :hub, name: "Roadmap signal", content: RichText.rich_text("Unrelated"))
+      |> Factory.add_document(:title_and_body, :hub,
+        name: "Delivery signal",
+        content: RichText.rich_text("The signal appears in the body as well")
+      )
+
+    sync(:document, ctx.title_only.id)
+    sync(:document, ctx.title_and_body.id)
+
+    assert [title_and_body, title_only] = Search.search_company(ctx.creator, "signal")
+    assert title_and_body.id == ctx.title_and_body.id
+    assert title_and_body.matched_field == :title
+    assert title_and_body.snippet =~ "signal"
+    assert title_only.id == ctx.title_only.id
+    assert title_only.matched_field == :title
+  end
+
   test "returns similarly sized body excerpts for title and body matches", ctx do
     long_body = Enum.map_join(1..80, " ", &"content#{&1}")
 
@@ -797,6 +817,8 @@ defmodule Operately.Search.CompanyQueryTest do
     assert order_by =~ "ARRAY[0.0,0.0,0.0,1.0]::real[]"
     assert order_by =~ "ARRAY[0.0,0.0,1.0,0.0]::real[]"
     assert order_by =~ ~r/::real\[\], [^,]+\."search_vector"/
+    # Title-and-body boolean tier comes before title/body ts_rank_cd.
+    assert order_by =~ ~r/to_tsvector\('public\.operately'::regconfig, coalesce\(.*, ''\)\).*to_tsvector\('public\.operately'::regconfig, coalesce\(.*, ''\)\).*ts_rank_cd/s
     refute order_by =~ "ts_rank_cd(to_tsvector"
     assert sql =~ ~r/coalesce\(.*, ''\) = '' THEN NULL ELSE ts_headline/
     assert sql =~ ~s("company_search_candidates" AS MATERIALIZED)
