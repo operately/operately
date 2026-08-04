@@ -1664,6 +1664,7 @@ defmodule OperatelyWeb.Api.Types do
     field :matched_field, :search_matched_field, null: false
     field? :snippet, :string, null: true
     field? :state, :search_result_state, null: true
+    field :inserted_at, :datetime, null: false
     field :navigation_target, :search_navigation_target, null: false
   end
 

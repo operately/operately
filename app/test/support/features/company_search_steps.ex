@@ -34,9 +34,9 @@ defmodule Operately.Support.Features.CompanySearchSteps do
     |> index_project(:product_marker)
     |> index_project(:marketing_marker)
     |> index_goal(:product_marker_goal)
-    |> set_entry_updated_at(:marketing_marker, days_ago(1))
-    |> set_entry_updated_at(:product_marker, days_ago(5))
-    |> set_entry_updated_at(:product_marker_goal, days_ago(40))
+    |> set_entry_inserted_at(:marketing_marker, days_ago(1))
+    |> set_entry_inserted_at(:product_marker, days_ago(5))
+    |> set_entry_inserted_at(:product_marker_goal, days_ago(40))
   end
 
   step :visit_search_page, ctx do
@@ -197,7 +197,7 @@ defmodule Operately.Support.Features.CompanySearchSteps do
     ctx
   end
 
-  defp set_entry_updated_at(ctx, resource_key, updated_at) do
+  defp set_entry_inserted_at(ctx, resource_key, inserted_at) do
     resource = Map.fetch!(ctx, resource_key)
 
     source_type =
@@ -207,7 +207,7 @@ defmodule Operately.Support.Features.CompanySearchSteps do
       end
 
     from(entry in Entry, where: entry.source_type == ^source_type and entry.source_id == ^resource.id)
-    |> Repo.update_all(set: [source_updated_at: updated_at])
+    |> Repo.update_all(set: [source_inserted_at: inserted_at])
 
     ctx
   end

@@ -2,6 +2,7 @@ import * as React from "react";
 
 import Api from "@/api";
 import * as Pages from "@/components/Pages";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { searchResultPath } from "@/models/search/searchResultPath";
 import { useCompanySearch } from "@/models/search/useCompanySearch";
 import { usePaths } from "@/routes/paths";
@@ -29,6 +30,7 @@ function Page() {
   const paths = usePaths();
   const { spaces } = Pages.useLoadedData<LoaderResult>();
   const search = useCompanySearch(spaces);
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const results = React.useMemo<SearchPageView.Result[]>(
     () =>
@@ -45,6 +47,7 @@ function Page() {
       status={search.status}
       results={results}
       onQueryChange={search.onQueryChange}
+      formattedTimePreferences={formattedTimePreferences}
       refine={search.refine}
     />
   );

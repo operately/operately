@@ -5,6 +5,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
 import type { SearchResult } from "../ApiTypes";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { IconCalendar, IconLayoutGrid, IconWorld } from "../icons";
 import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS, SearchPage } from "./index";
 
@@ -18,6 +19,7 @@ function result(overrides: Partial<SearchResult & { link: string }> = {}): Searc
     matchedField: "description",
     snippet: "Customer research supports the new information architecture.",
     state: "closed",
+    insertedAt: "2026-07-28T12:00:00.000Z",
     navigationTarget: { projectId: "project-1" },
     link: "/acme/projects/project-1",
     ...overrides,
@@ -30,6 +32,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof SearchPage>> = {}
     status: "initial",
     results: [],
     onQueryChange: jest.fn(),
+    formattedTimePreferences: defaultFormattedTimePreferences,
   };
 
   return render(
@@ -64,21 +67,33 @@ describe("SearchPage", () => {
 
     rerender(
       <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <SearchPage query="evidence" status="success" results={[]} onQueryChange={jest.fn()} />
+        <SearchPage
+          query="evidence"
+          status="success"
+          results={[]}
+          onQueryChange={jest.fn()}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
       </MemoryRouter>,
     );
     expect(screen.getByRole("status")).toHaveTextContent("No content found for “evidence”. Try different keywords.");
 
     rerender(
       <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <SearchPage query="evidence" status="error" results={[]} onQueryChange={jest.fn()} />
+        <SearchPage
+          query="evidence"
+          status="error"
+          results={[]}
+          onQueryChange={jest.fn()}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
       </MemoryRouter>,
     );
     expect(screen.getByRole("alert")).toHaveTextContent("Search is unavailable. Try again.");
     expect(screen.getByRole("searchbox")).toHaveFocus();
   });
 
-  test("renders result metadata, state, snippet, and navigation", () => {
+  test("renders result metadata, state, snippet, timestamp, and navigation", () => {
     renderPage({ query: "research", status: "success", results: [result()] });
 
     expect(screen.getByRole("status")).toHaveTextContent("1 result found.");
@@ -86,6 +101,7 @@ describe("SearchPage", () => {
     expect(screen.getByText("Project")).toBeInTheDocument();
     expect(screen.getByText("Marketing")).toBeInTheDocument();
     expect(screen.getByText("Closed")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="search-result-inserted-at"]')).toBeInTheDocument();
     expect(screen.queryByText("Matched in description")).not.toBeInTheDocument();
     expect(screen.queryByText("In Marketing")).not.toBeInTheDocument();
     expect(screen.getByTestId("search-result-snippet")).toHaveTextContent(

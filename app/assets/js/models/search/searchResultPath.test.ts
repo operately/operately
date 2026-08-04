@@ -12,6 +12,7 @@ function result(type: SearchResult["type"], navigationTarget: SearchResult["navi
     matchedField: "title",
     snippet: null,
     state: null,
+    insertedAt: "2026-07-28T12:00:00.000Z",
     navigationTarget,
   };
 }
