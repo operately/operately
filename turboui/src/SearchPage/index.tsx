@@ -17,7 +17,10 @@ import { DivLink } from "../Link";
 import { Page } from "../Page";
 import { ResourceHubTypeIcon } from "../ResourceHub";
 import { StatusBadge } from "../StatusBadge";
+import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS } from "./filterOptions";
 import { RefineControls, type RefineControlsProps } from "./RefineControls";
+
+export { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS };
 
 export namespace SearchPage {
   export type Status = "initial" | "loading" | "success" | "error";

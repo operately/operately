@@ -1636,6 +1636,8 @@ defmodule OperatelyWeb.Api.Types do
 
   enum :search_matched_field, values: [:title, :name, :content, :description, :message]
   enum :search_result_state, values: [:closed, :completed, :archived, :paused]
+  enum :search_time_range, values: Operately.Search.CompanyQuery.Filters.time_ranges()
+  enum :search_sort, values: Operately.Search.CompanyQuery.Filters.sorts()
 
   object :search_navigation_target do
     field? :resource_hub_id, :string, null: true
