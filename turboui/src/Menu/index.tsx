@@ -32,6 +32,7 @@ interface MenuLinkItemProps extends MenuItemProps {
 
 interface MenuActionItemProps extends MenuItemProps {
   onClick: () => void;
+  keepOpen?: boolean;
 }
 
 interface SubMenuProps {
@@ -130,7 +131,14 @@ export function MenuActionItem(props: MenuActionItemProps) {
   if (props.hidden) return null;
 
   return (
-    <DropdownMenu.Item className={menuItemClassNames(props)} data-test-id={props.testId} onSelect={props.onClick}>
+    <DropdownMenu.Item
+      className={menuItemClassNames(props)}
+      data-test-id={props.testId}
+      onSelect={(event) => {
+        if (props.keepOpen) event.preventDefault();
+        props.onClick();
+      }}
+    >
       <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
     </DropdownMenu.Item>
   );
