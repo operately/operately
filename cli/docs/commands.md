@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 202
+- Endpoints: 210
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -96,6 +96,12 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals update_target` | `op goals update_target` | `POST` | `/api/external/v1/goals/update_target` |
 | `goals update_target_index` | `op goals update_target_index` | `POST` | `/api/external/v1/goals/update_target_index` |
 | `goals update_target_value` | `op goals update_target_value` | `POST` | `/api/external/v1/goals/update_target_value` |
+| `kpis create_kpi` | `op kpis create_kpi` | `POST` | `/api/external/v1/kpis/create_kpi` |
+| `kpis delete_kpi` | `op kpis delete_kpi` | `POST` | `/api/external/v1/kpis/delete_kpi` |
+| `kpis edit_kpi` | `op kpis edit_kpi` | `POST` | `/api/external/v1/kpis/edit_kpi` |
+| `kpis get_kpi` | `op kpis get_kpi` | `GET` | `/api/external/v1/kpis/get_kpi` |
+| `kpis list_kpis` | `op kpis list_kpis` | `GET` | `/api/external/v1/kpis/list_kpis` |
+| `kpis log_kpi_entry` | `op kpis log_kpi_entry` | `POST` | `/api/external/v1/kpis/log_kpi_entry` |
 | `notifications get_unread_count` | `op notifications get_unread_count` | `GET` | `/api/external/v1/notifications/get_unread_count` |
 | `notifications is_subscribed` | `op notifications is_subscribed` | `GET` | `/api/external/v1/notifications/is_subscribed` |
 | `notifications list` | `op notifications list` | `GET` | `/api/external/v1/notifications/list` |
@@ -116,6 +122,8 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people search` | `op people search` | `GET` | `/api/external/v1/people/search` |
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
 | `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
+| `project_templates get` | `op project_templates get` | `GET` | `/api/external/v1/project_templates/get` |
+| `project_templates list` | `op project_templates list` | `GET` | `/api/external/v1/project_templates/list` |
 | `projects acknowledge_check_in` | `op projects acknowledge_check_in` | `POST` | `/api/external/v1/projects/acknowledge_check_in` |
 | `projects acknowledge_retrospective` | `op projects acknowledge_retrospective` | `POST` | `/api/external/v1/projects/acknowledge_retrospective` |
 | `projects close` | `op projects close` | `POST` | `/api/external/v1/projects/close` |

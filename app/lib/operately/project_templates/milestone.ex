@@ -1,4 +1,6 @@
 defmodule Operately.ProjectTemplates.Milestone do
+  def __api_typename__, do: "project_template_milestone"
+
   use Operately.Schema
 
   alias Operately.ProjectTemplates.{ProjectTemplate, Task}
