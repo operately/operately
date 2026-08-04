@@ -91,6 +91,14 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Enum.member?(contributors, {ctx.champion.id, :champion})
   end
 
+  test "ProjectCreation operation completes company setup", ctx do
+    refute ctx.company.setup_completed
+
+    {:ok, _project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+
+    assert Repo.reload(ctx.company).setup_completed
+  end
+
   test "ProjectCreation operation creates a default project-backed resource hub", ctx do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
     project_id = project.id

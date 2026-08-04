@@ -4,6 +4,7 @@ defmodule Operately.Operations.GoalCreation do
   alias Operately.Goals.{Goal, Target}
   alias Operately.Activities
   alias Operately.Access
+  alias Operately.Companies
   alias Operately.Access.{Context, Binding}
   alias Operately.ResourceHubs.ResourceHub
   alias Operately.Search.IndexUpdates
@@ -16,6 +17,7 @@ defmodule Operately.Operations.GoalCreation do
     |> insert_targets(attrs[:targets] || [])
     |> insert_bindings(creator, attrs)
     |> insert_activity(creator)
+    |> Companies.mark_setup_completed(creator.company_id)
     |> IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.goal.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)

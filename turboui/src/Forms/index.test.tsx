@@ -96,7 +96,10 @@ jest.mock("react-select/async", () => {
     defaultValue,
     inputId,
   }: {
-    loadOptions: (input: string, callback: (options: { label: React.ReactNode; value: string | null }[]) => void) => void;
+    loadOptions: (
+      input: string,
+      callback: (options: { label: React.ReactNode; value: string | null }[]) => void,
+    ) => void;
     onChange: (option: { label: React.ReactNode; value: string | null } | null) => void;
     defaultValue?: { label: React.ReactNode; value: string | null };
     inputId?: string;
@@ -190,7 +193,9 @@ describe("Forms", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    expect(await screen.findByText("Can't be empty")).toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent("Can't be empty");
+    expect(screen.getByRole("textbox", { name: "Name *" })).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("textbox", { name: "Name *" })).toHaveAttribute("aria-describedby", "name-error");
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -410,10 +415,7 @@ describe("Forms", () => {
   test("keeps a selected person after form re-renders when default is set", async () => {
     const onSubmit = jest.fn();
     const defaultPerson = { id: "person-1", fullName: "Alice", avatarUrl: null, title: "Engineer" };
-    const people = [
-      defaultPerson,
-      { id: "person-2", fullName: "Bob", avatarUrl: null, title: "Designer" },
-    ];
+    const people = [defaultPerson, { id: "person-2", fullName: "Bob", avatarUrl: null, title: "Designer" }];
     const searchFn = jest.fn(async () => people);
 
     function Harness() {

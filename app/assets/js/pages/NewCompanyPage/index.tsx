@@ -52,7 +52,7 @@ function Page() {
         billingPeriod: billingIntent.billingPeriod,
       });
 
-      navigate(Paths.companyHomePath(res.company.id));
+      navigate(Paths.companyWorkMapPath(res.company.id));
     },
   });
 

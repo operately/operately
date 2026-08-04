@@ -39,6 +39,10 @@ export class Paths {
     return "/" + companyId;
   }
 
+  static companyWorkMapPath(companyId: string) {
+    return `/${companyId}/work-map`;
+  }
+
   static inviteJoinPath(token: string) {
     return `/join/${token}`;
   }

@@ -82,9 +82,9 @@ export function ActionLink(props: ActionLinkProps) {
   });
 
   return (
-    <span data-test-id={props.testId} className={className} onClick={props.onClick}>
+    <button type="button" data-test-id={props.testId} className={className} onClick={props.onClick}>
       {props.children}
-    </span>
+    </button>
   );
 }
 

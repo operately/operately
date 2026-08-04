@@ -713,16 +713,14 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.fill(testid: "title", with: "Founder")
     |> UI.click(testid: "submit")
     |> UI.sleep(250)
-    |> UI.click_button("Let's get started")
-    |> UI.click_text("Marketing")
-    |> UI.click_button("Next ->")
-    |> UI.click_button("Finish Setup")
+    |> UI.fill(testid: "first-project-name", with: "First project")
+    |> UI.click(testid: "create-first-project")
     |> UI.sleep(250)
     |> UI.click(testid: "new-dropdown")
     |> UI.click(testid: "new-dropdown-new-goal")
     |> UI.fill(testid: "goal-name-input", with: "New Goal")
     |> UI.click(testid: "space-field")
-    |> UI.click(testid: "space-field-search-result-marketing")
+    |> UI.click(testid: "space-field-search-result-general")
     |> UI.click_button("Add Goal")
   end
 
@@ -755,7 +753,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx
     |> UI.click_text("Company B")
     |> UI.find(UI.query(testid: "your-operately-spaces-section"), fn el ->
-      UI.click_text(el, "Marketing")
+      UI.click_text(el, "General")
     end)
     |> UI.click_text("Goals & Projects")
     |> UI.click_text("New Goal")

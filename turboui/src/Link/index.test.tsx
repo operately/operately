@@ -1,18 +1,25 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import "@testing-library/jest-dom";
 
-import { BlackLink, Link } from ".";
+import { ActionLink, BlackLink, Link } from ".";
 import { Tooltip } from "../Tooltip";
 
 function renderWithRouter(ui: React.ReactElement) {
-  return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>,
-  );
+  return render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>);
 }
 
 describe("Link", () => {
+  it("renders actions as accessible buttons", () => {
+    const onClick = jest.fn();
+
+    render(<ActionLink onClick={onClick}>Add a goal</ActionLink>);
+
+    fireEvent.click(screen.getByRole("button", { name: "Add a goal" }));
+    expect(onClick).toHaveBeenCalled();
+  });
+
   it("forwards refs to the underlying anchor", () => {
     const ref = React.createRef<HTMLAnchorElement>();
 
