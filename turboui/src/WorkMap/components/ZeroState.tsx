@@ -131,7 +131,7 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
 
   return (
     <div className="px-4 py-12 sm:py-16" data-test-id="first-project-zero-state">
-      <div className="mx-auto flex max-w-xs flex-col items-center gap-6 text-center">
+      <div className="mx-auto flex max-w-sm flex-col items-center gap-6 text-center">
         <div className="flex flex-col items-center gap-2">
           <h2 className="text-balance text-xl font-semibold text-content-strong">Add your first project</h2>
           <p className="max-w-[42ch] text-pretty text-base text-content-dimmed sm:text-sm">
@@ -139,7 +139,7 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
           </p>
         </div>
 
-        <Forms.Form form={form} testId="first-project-form">
+        <Forms.Form form={form} className="w-full" testId="first-project-form">
           <div className="flex w-full flex-col gap-3 text-left">
             <Forms.FieldGroup>
               <Forms.TextInput
@@ -151,13 +151,7 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
               />
             </Forms.FieldGroup>
 
-            <PrimaryButton
-              className="w-full"
-              type="submit"
-              size="sm"
-              loading={submitting}
-              testId="create-first-project"
-            >
+            <PrimaryButton className="w-full" type="submit" loading={submitting} testId="create-first-project">
               Create project
             </PrimaryButton>
           </div>

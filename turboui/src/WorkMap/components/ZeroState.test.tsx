@@ -39,6 +39,15 @@ describe("Work Map first-project state", () => {
     expect(screen.getByRole("button", { name: "Add a goal" })).toBeInTheDocument();
   });
 
+  it("gives the project form the full onboarding column width", () => {
+    renderFirstProjectState();
+
+    const form = document.querySelector('[data-test-id="first-project-form"]');
+
+    expect(form).toHaveClass("w-full");
+    expect(form?.parentElement).toHaveClass("max-w-sm");
+  });
+
   it("creates the project in General and reports the created item", async () => {
     const user = userEvent.setup();
     const { addItem, onItemCreated } = renderFirstProjectState();
