@@ -42,31 +42,31 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     assert {200, %{results: [title_match, body_match]}} =
              query(ctx.conn, [:companies, :search], query: "Signal")
 
-    assert title_match == %{
-             __typename: "result",
-             id: Operately.ShortUuid.encode!(ctx.title_match.id),
-             type: "project",
-             title: "Signal roadmap",
-             context: "Product Space",
-             matched_field: "name",
-             snippet: nil,
-             state: nil,
-             navigation_target: %{
-               resource_hub_id: nil,
-               folder_id: nil,
-               document_id: nil,
-               file_id: nil,
-               link_id: nil,
-               project_id: Operately.ShortUuid.encode!(ctx.title_match.id),
-               goal_id: nil,
-               milestone_id: nil,
-               task_id: nil,
-               person_id: nil,
-               discussion_id: nil,
-               project_check_in_id: nil,
-               goal_check_in_id: nil,
-               project_retrospective_id: nil
-             }
+    assert title_match.id == Operately.ShortUuid.encode!(ctx.title_match.id)
+    assert title_match.type == "project"
+    assert title_match.title == "Signal roadmap"
+    assert title_match.context == "Product Space"
+    assert title_match.matched_field == "name"
+    assert title_match.snippet == nil
+    assert title_match.state == nil
+    assert is_binary(title_match.inserted_at)
+    assert {:ok, _datetime, _} = DateTime.from_iso8601(title_match.inserted_at)
+
+    assert title_match.navigation_target == %{
+             resource_hub_id: nil,
+             folder_id: nil,
+             document_id: nil,
+             file_id: nil,
+             link_id: nil,
+             project_id: Operately.ShortUuid.encode!(ctx.title_match.id),
+             goal_id: nil,
+             milestone_id: nil,
+             task_id: nil,
+             person_id: nil,
+             discussion_id: nil,
+             project_check_in_id: nil,
+             goal_check_in_id: nil,
+             project_retrospective_id: nil
            }
 
     assert body_match.id == Operately.ShortUuid.encode!(ctx.body_match.id)
@@ -164,9 +164,9 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
 
     assert Enum.map(results, & &1.id) == [Operately.ShortUuid.encode!(ctx.product_project.id)]
 
-    set_entry_updated_at(ctx.marketing_project, days_ago(1))
-    set_entry_updated_at(ctx.product_project, days_ago(5))
-    set_entry_updated_at(ctx.product_goal, days_ago(40))
+    set_entry_inserted_at(ctx.marketing_project, days_ago(1))
+    set_entry_inserted_at(ctx.product_project, days_ago(5))
+    set_entry_inserted_at(ctx.product_goal, days_ago(40))
 
     assert {200, %{results: recent_results}} =
              query(ctx.conn, [:companies, :search],
@@ -213,7 +213,7 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     ctx
   end
 
-  defp set_entry_updated_at(resource, updated_at) do
+  defp set_entry_inserted_at(resource, inserted_at) do
     import Ecto.Query
 
     source_type =
@@ -225,7 +225,7 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     from(entry in Operately.Search.Entry,
       where: entry.source_type == ^source_type and entry.source_id == ^resource.id
     )
-    |> Repo.update_all(set: [source_updated_at: updated_at])
+    |> Repo.update_all(set: [source_inserted_at: inserted_at])
   end
 
   defp days_ago(days) do
