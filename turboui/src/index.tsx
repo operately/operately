@@ -128,7 +128,7 @@ export { MilestoneKanbanPage } from "./MilestoneKanbanPage";
 export { MilestonePage } from "./MilestonePage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { Modal } from "./Modal";
-export { CompanyCreatorOnboardingWizard, CompanyMemberOnboardingWizard } from "./OnboardingWizard";
+export { CompanyMemberOnboardingWizard } from "./OnboardingWizard";
 export { CompanyImportPage } from "./CompanyImportPage";
 export { PrivacyField } from "./PrivacyField";
 export { PrivacyIndicator, SpacePrivacyIndicator } from "./PrivacyIndicator";

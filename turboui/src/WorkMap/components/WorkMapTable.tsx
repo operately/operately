@@ -25,6 +25,8 @@ interface Props {
   profileUser?: WorkMap.Person;
   hideCompanyAccessInQuickAdd?: boolean;
   zeroStateMessage?: string;
+  emptyStateVariant?: WorkMap.EmptyStateVariant;
+  onItemCreated?: WorkMap.ItemCreatedFn;
   formattedTimePreferences: FormattedTimePreferences;
 }
 
@@ -41,6 +43,8 @@ export function WorkMapTable({
   profileUser,
   hideCompanyAccessInQuickAdd = false,
   zeroStateMessage,
+  emptyStateVariant,
+  onItemCreated,
   formattedTimePreferences,
 }: Props) {
   const emptyWorkMap = items.length === 0;
@@ -100,6 +104,8 @@ export function WorkMapTable({
           addItemDefaultSpace={addItemDefaultSpace!}
           hideCompanyAccess={hideCompanyAccessInQuickAdd}
           zeroStateMessage={zeroStateMessage}
+          variant={emptyStateVariant}
+          onItemCreated={onItemCreated}
         />
       ) : (
         <table className="min-w-full divide-y divide-surface-outline">

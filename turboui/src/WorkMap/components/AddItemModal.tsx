@@ -27,6 +27,9 @@ export namespace AddItemModal {
     initialItemType?: ItemType;
     hideTypeSelector?: boolean;
     hideCompanyAccess?: boolean;
+    hideCreateMore?: boolean;
+    keepOpenAfterSave?: boolean;
+    onSaved?: (type: ItemType, id: string) => void | Promise<void>;
   }
 
   export type ItemType = "goal" | "project";
@@ -123,7 +126,9 @@ export function AddItemModal(props: AddItemModal.Props) {
           </div>
 
           <div className="flex items-center mt-8">
-            <SwitchToggle value={state.createMore} setValue={state.setCreateMore} label="Create more" />
+            {!props.hideCreateMore && (
+              <SwitchToggle value={state.createMore} setValue={state.setCreateMore} label="Create more" />
+            )}
 
             <div className="flex-1"></div>
             <div className="flex space-x-3">
@@ -204,7 +209,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
         return;
       }
 
-      await props.save({
+      const result = await props.save({
         name: name.trim(),
         type: itemType,
         space: space!,
@@ -217,13 +222,18 @@ function useAddItemModalState(props: AddItemModal.Props) {
       setNameError(undefined);
       setSpaceError(undefined);
 
-      if (!createMore) {
+      await props.onSaved?.(itemType, result.id);
+
+      if (!createMore && !props.keepOpenAfterSave) {
         props.close();
       }
+
+      if (!props.keepOpenAfterSave) {
+        setSubmitting(false);
+      }
     } catch (error) {
-      console.error("Failed to create goal:", error);
+      console.error("Failed to create item:", error);
       showErrorToast("Network error", "Failed to create the " + itemType + ".");
-    } finally {
       setSubmitting(false);
     }
   };

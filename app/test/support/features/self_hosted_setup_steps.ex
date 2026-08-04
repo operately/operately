@@ -37,8 +37,10 @@ defmodule Operately.Support.Features.SelfHostedSetupSteps do
     ctx
   end
 
-  step :assert_on_company_home, ctx do
-    ctx |> UI.assert_has(testid: "company-home")
+  step :assert_on_first_project_setup, ctx do
+    ctx
+    |> UI.assert_has(testid: "first-project-zero-state")
+    |> UI.assert_text("Add your first project")
   end
 
   step :assert_setup_page_is_no_longer_accessible, ctx do
