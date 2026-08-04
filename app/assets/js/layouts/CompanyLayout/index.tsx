@@ -199,7 +199,7 @@ function DesktopNavigation({ company, canAddProject, canAddGoal, onOpenKeyboardS
         </div>
 
         <div className="flex items-center gap-2">
-          <Search company={company} />
+          <Search />
           <NewDropdown
             canAddGoal={canAddGoal}
             canAddProject={canAddProject}
@@ -262,11 +262,11 @@ export default function CompanyLayout() {
   );
 }
 
-function Search({ company }: { company: Api.Company }) {
+function Search() {
   const navigate = useNavigate();
   const paths = usePaths();
   const handleGlobalSearch = useGlobalSearchHandler();
-  const fullTextSearchPath = companySearchPathBuilder(paths, company);
+  const fullTextSearchPath = companySearchPathBuilder(paths);
 
   return (
     <div className="hidden lg:block">
