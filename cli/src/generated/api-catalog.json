@@ -6935,6 +6935,20 @@
             "optional": false,
             "has_default": false,
             "nullable": true
+          },
+          {
+            "default": null,
+            "name": "kpis",
+            "type": {
+              "item": {
+                "name": "kpi",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -9062,6 +9076,17 @@
             "name": "champion",
             "type": {
               "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "latest_entry",
+            "type": {
+              "name": "kpi_entry",
               "kind": "named"
             },
             "optional": true,
@@ -20667,6 +20692,10 @@
         "reviewer",
         "contributor"
       ],
+      "search_sort": [
+        "best_match",
+        "most_recent"
+      ],
       "access_options": [
         "no_access",
         "minimal_access",
@@ -20675,6 +20704,12 @@
         "edit_access",
         "admin_access",
         "full_access"
+      ],
+      "search_time_range": [
+        "last_7_days",
+        "last_30_days",
+        "last_90_days",
+        "last_12_months"
       ],
       "billing_access_state": [
         "normal",
@@ -22464,6 +22499,56 @@
           "optional": false,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "space_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "types",
+          "type": {
+            "item": {
+              "name": "search_result_type",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "time_range",
+          "type": {
+            "name": "search_time_range",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "sort",
+          "type": {
+            "name": "search_sort",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         }
       ],
       "docstring": "Returns relevance-ranked full-text results visible to the current person.",
