@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
 import type { SearchResult } from "../ApiTypes";
+import { IconCalendar, IconWorld } from "../icons";
 import { SearchPage } from "./index";
 
 function result(overrides: Partial<SearchResult & { link: string }> = {}): SearchResult & { link: string } {
@@ -134,6 +135,62 @@ describe("SearchPage", () => {
       "The team improved <strong>activation</strong> this quarter.",
     );
     expect(container.querySelector("strong")).not.toBeInTheDocument();
+  });
+
+  test("renders sticky refine controls when refine props are provided", () => {
+    const onSortChange = jest.fn();
+    const onFilterChange = jest.fn();
+
+    renderPage({
+      query: "research",
+      status: "success",
+      results: [result()],
+      refine: {
+        sort: "best_match",
+        onSortChange,
+        filters: [
+          {
+            id: "spaces",
+            label: "All spaces",
+            icon: IconWorld,
+            selectionMode: "multiple",
+            selectedOptionIds: ["product", "marketing"],
+            options: [
+              { id: "product", label: "Product" },
+              { id: "marketing", label: "Marketing" },
+            ],
+          },
+          {
+            id: "time",
+            label: "All time",
+            icon: IconCalendar,
+            selectionMode: "single",
+            selectedOptionIds: ["last_7_days"],
+            options: [
+              { id: "last_7_days", label: "Last 7 days" },
+              { id: "last_30_days", label: "Last 30 days" },
+            ],
+          },
+        ],
+        onFilterChange,
+      },
+    });
+
+    expect(screen.getByTestId("search-refine-controls")).toBeInTheDocument();
+    expect(screen.getByTestId("search-sort-toggle")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Best match" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Most recent" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByTestId("search-filter-spaces")).toHaveTextContent("All spaces");
+    expect(screen.getByTestId("search-filter-spaces-count")).toHaveTextContent("2");
+    expect(screen.getByTestId("search-filter-time")).toHaveTextContent("Last 7 days");
+
+    fireEvent.click(screen.getByRole("button", { name: "Most recent" }));
+    expect(onSortChange).toHaveBeenCalledWith("most_recent");
+  });
+
+  test("hides refine controls when refine props are omitted", () => {
+    renderPage({ query: "research", status: "success", results: [result()] });
+    expect(screen.queryByTestId("search-refine-controls")).not.toBeInTheDocument();
   });
 
   test("renders all indexed resource labels and caps the visible list at 30 results", () => {

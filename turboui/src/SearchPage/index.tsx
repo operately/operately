@@ -17,29 +17,41 @@ import { DivLink } from "../Link";
 import { Page } from "../Page";
 import { ResourceHubTypeIcon } from "../ResourceHub";
 import { StatusBadge } from "../StatusBadge";
+import { RefineControls, type RefineControlsProps } from "./RefineControls";
 
 export namespace SearchPage {
   export type Status = "initial" | "loading" | "success" | "error";
   export type Result = SearchResult & { link: string };
+  export type Refine = RefineControlsProps;
+  export type SortMode = RefineControlsProps["sort"];
+  export type RefineFilter = RefineControlsProps["filters"][number];
 
   export interface Props {
     query: string;
     status: Status;
     results: Result[];
     onQueryChange: (query: string) => void;
+    refine?: Refine;
   }
 }
 
 const RESULT_LIMIT = 30;
 
-export function SearchPage({ query, status, results, onQueryChange }: SearchPage.Props) {
+export function SearchPage({ query, status, results, onQueryChange, refine }: SearchPage.Props) {
   const visibleResults = results.slice(0, RESULT_LIMIT);
 
   return (
     <Page title="Search" size="large" testId="company-search-page">
       <main className="min-h-[75vh] px-4 py-8 sm:px-12 sm:py-10">
         <h1 className="sr-only">Search</h1>
-        <SearchField query={query} onQueryChange={onQueryChange} />
+        {refine ? (
+          <div className="sticky top-0 z-10 -mx-4 border-b border-surface-outline bg-surface-base px-4 pb-4 pt-1 sm:-mx-12 sm:px-12">
+            <SearchField query={query} onQueryChange={onQueryChange} />
+            <RefineControls {...refine} />
+          </div>
+        ) : (
+          <SearchField query={query} onQueryChange={onQueryChange} />
+        )}
         <div className="mt-8">
           <SearchContent query={query} status={status} results={visibleResults} />
         </div>

@@ -14,6 +14,7 @@ namespace Tooltip {
     size?: Size;
     className?: string;
     contentClassName?: string;
+    disabled?: boolean;
   }
 }
 
@@ -45,7 +46,7 @@ export function Tooltip(props: Tooltip.Props) {
 
   return (
     <ReactTooltip.Provider>
-      <ReactTooltip.Root delayDuration={props.delayDuration}>
+      <ReactTooltip.Root delayDuration={props.delayDuration} open={props.disabled ? false : undefined}>
         <ReactTooltip.Trigger asChild data-testid={props.testId} className={props.contentClassName}>
           {props.children}
         </ReactTooltip.Trigger>
