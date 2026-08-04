@@ -23,10 +23,6 @@ defmodule Operately.Support.Features.ResourceHubSearchSteps do
     |> Factory.log_in_person(:creator)
   end
 
-  step :enable_search, ctx do
-    Factory.enable_feature(ctx, "full_text_search")
-  end
-
   step :visit_resource_hub, ctx do
     UI.visit(ctx, Paths.resource_hub_path(ctx.company, ctx.hub))
   end
@@ -49,10 +45,6 @@ defmodule Operately.Support.Features.ResourceHubSearchSteps do
 
   step :assert_document_page, ctx do
     UI.assert_page(ctx, Paths.document_path(ctx.company, ctx.document))
-  end
-
-  step :refute_search_input, ctx do
-    UI.refute_has(ctx, testid: "resource-hub-search")
   end
 
   defp rename_folder(ctx, name) do

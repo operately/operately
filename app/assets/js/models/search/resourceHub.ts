@@ -21,19 +21,18 @@ function useResourceHubSearchHandler(resourceHubId: string | null | undefined): 
 
 export function useResourceHubSearchProps(
   resourceHubId: string | null | undefined,
-  enabled: boolean,
 ): ResourceHubPage.SearchProps | undefined {
   const search = useResourceHubSearchHandler(resourceHubId);
 
   return React.useMemo(
     () =>
-      enabled
+      resourceHubId
         ? {
             search,
             placeholder: "Search this resource hub…",
             testId: "resource-hub-search",
           }
         : undefined,
-    [enabled, search],
+    [resourceHubId, search],
   );
 }

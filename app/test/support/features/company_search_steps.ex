@@ -9,7 +9,6 @@ defmodule Operately.Support.Features.CompanySearchSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("full_text_search")
     |> Factory.add_space(:space, name: "Product")
     |> Factory.add_project(:website, :space, name: "Website redesign")
     |> Factory.add_project(:portal, :space, name: "Customer portal")

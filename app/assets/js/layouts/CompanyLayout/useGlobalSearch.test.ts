@@ -1,4 +1,4 @@
-import { CompaniesQuickSearchResult, Company } from "@/api";
+import { CompaniesQuickSearchResult } from "@/api";
 import { Paths } from "@/routes/paths";
 
 import { companySearchPathBuilder, loadQuickSearchResults, mapQuickSearchResult } from "./useGlobalSearch";
@@ -154,18 +154,7 @@ describe("global quick-search adapter", () => {
     await expect(loadQuickSearchResults(paths, "roadmap", search)).rejects.toBe(failure);
   });
 
-  test("builds full-text search paths only for companies with the feature enabled", () => {
-    const company = (enabledExperimentalFeatures: string[]): Company => ({
-      __typename: "company",
-      id: "company-1",
-      name: "Company",
-      setupCompleted: true,
-      enabledExperimentalFeatures,
-    });
-
-    expect(companySearchPathBuilder(paths, company(["full_text_search"]))?.("customer plans")).toBe(
-      "/company-1/search?q=customer+plans",
-    );
-    expect(companySearchPathBuilder(paths, company([]))).toBeUndefined();
+  test("builds full-text search paths for the current query", () => {
+    expect(companySearchPathBuilder(paths)?.("customer plans")).toBe("/company-1/search?q=customer+plans");
   });
 });
