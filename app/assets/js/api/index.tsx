@@ -4990,6 +4990,108 @@ export interface PeopleUpdateThemeResult {
   success: boolean;
 }
 
+export interface ProjectTemplatesCreateInput {
+  spaceId: Id;
+  name: string;
+  description?: Json | null;
+  durationDays?: number | null;
+}
+
+export interface ProjectTemplatesCreateResult {
+  template: ProjectTemplate;
+}
+
+export interface ProjectTemplatesCreateMilestoneInput {
+  templateId: Id;
+  title: string;
+  description?: Json | null;
+  dueOffsetDays?: number | null;
+}
+
+export interface ProjectTemplatesCreateMilestoneResult {
+  milestone: ProjectTemplateMilestone;
+}
+
+export interface ProjectTemplatesCreateTaskInput {
+  templateId: Id;
+  milestoneId?: Id | null;
+  name: string;
+  description?: Json | null;
+  priority?: string | null;
+  size?: string | null;
+  dueOffsetDays?: number | null;
+  reminders?: TaskReminder[];
+  taskStatus?: TaskStatus;
+}
+
+export interface ProjectTemplatesCreateTaskResult {
+  task: ProjectTemplateTask;
+}
+
+export interface ProjectTemplatesDeleteMilestoneInput {
+  templateId: Id;
+  milestoneId: Id;
+}
+
+export interface ProjectTemplatesDeleteMilestoneResult {
+  success: boolean;
+}
+
+export interface ProjectTemplatesDeleteTaskInput {
+  templateId: Id;
+  taskId: Id;
+}
+
+export interface ProjectTemplatesDeleteTaskResult {
+  success: boolean;
+}
+
+export interface ProjectTemplatesUpdateInput {
+  id: Id;
+  name?: string;
+  description?: Json | null;
+  durationDays?: number | null;
+  taskStatuses?: TaskStatus[];
+  deletedStatusReplacements?: DeletedStatusReplacement[];
+  milestonesOrderingState?: string[];
+  tasksKanbanState?: Json;
+}
+
+export interface ProjectTemplatesUpdateResult {
+  success: boolean;
+}
+
+export interface ProjectTemplatesUpdateMilestoneInput {
+  templateId: Id;
+  milestoneId: Id;
+  title?: string;
+  description?: Json | null;
+  dueOffsetDays?: number | null;
+  tasksOrderingState?: string[];
+  tasksKanbanState?: Json;
+}
+
+export interface ProjectTemplatesUpdateMilestoneResult {
+  milestone: ProjectTemplateMilestone;
+}
+
+export interface ProjectTemplatesUpdateTaskInput {
+  templateId: Id;
+  taskId: Id;
+  milestoneId?: Id | null;
+  name?: string;
+  description?: Json;
+  priority?: string | null;
+  size?: string | null;
+  dueOffsetDays?: number | null;
+  reminders?: TaskReminder[];
+  taskStatus?: TaskStatus;
+}
+
+export interface ProjectTemplatesUpdateTaskResult {
+  task: ProjectTemplateTask;
+}
+
 export interface ProjectsAcknowledgeCheckInInput {
   id: Id;
 }
@@ -6541,6 +6643,38 @@ class ApiNamespaceProjectTemplates {
 
   async list(input: ProjectTemplatesListInput): Promise<ProjectTemplatesListResult> {
     return this.client.get("/project_templates/list", input);
+  }
+
+  async create(input: ProjectTemplatesCreateInput): Promise<ProjectTemplatesCreateResult> {
+    return this.client.post("/project_templates/create", input);
+  }
+
+  async createMilestone(input: ProjectTemplatesCreateMilestoneInput): Promise<ProjectTemplatesCreateMilestoneResult> {
+    return this.client.post("/project_templates/create_milestone", input);
+  }
+
+  async createTask(input: ProjectTemplatesCreateTaskInput): Promise<ProjectTemplatesCreateTaskResult> {
+    return this.client.post("/project_templates/create_task", input);
+  }
+
+  async deleteMilestone(input: ProjectTemplatesDeleteMilestoneInput): Promise<ProjectTemplatesDeleteMilestoneResult> {
+    return this.client.post("/project_templates/delete_milestone", input);
+  }
+
+  async deleteTask(input: ProjectTemplatesDeleteTaskInput): Promise<ProjectTemplatesDeleteTaskResult> {
+    return this.client.post("/project_templates/delete_task", input);
+  }
+
+  async update(input: ProjectTemplatesUpdateInput): Promise<ProjectTemplatesUpdateResult> {
+    return this.client.post("/project_templates/update", input);
+  }
+
+  async updateMilestone(input: ProjectTemplatesUpdateMilestoneInput): Promise<ProjectTemplatesUpdateMilestoneResult> {
+    return this.client.post("/project_templates/update_milestone", input);
+  }
+
+  async updateTask(input: ProjectTemplatesUpdateTaskInput): Promise<ProjectTemplatesUpdateTaskResult> {
+    return this.client.post("/project_templates/update_task", input);
   }
 }
 
@@ -8244,6 +8378,60 @@ export default {
     get: (input: ProjectTemplatesGetInput) => defaultApiClient.apiNamespaceProjectTemplates.get(input),
     useGet: (input: ProjectTemplatesGetInput) =>
       useQuery<ProjectTemplatesGetResult>(() => defaultApiClient.apiNamespaceProjectTemplates.get(input)),
+
+    create: (input: ProjectTemplatesCreateInput) => defaultApiClient.apiNamespaceProjectTemplates.create(input),
+    useCreate: () =>
+      useMutation<ProjectTemplatesCreateInput, ProjectTemplatesCreateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.create(input),
+      ),
+
+    createTask: (input: ProjectTemplatesCreateTaskInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createTask(input),
+    useCreateTask: () =>
+      useMutation<ProjectTemplatesCreateTaskInput, ProjectTemplatesCreateTaskResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createTask(input),
+      ),
+
+    deleteMilestone: (input: ProjectTemplatesDeleteMilestoneInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.deleteMilestone(input),
+    useDeleteMilestone: () =>
+      useMutation<ProjectTemplatesDeleteMilestoneInput, ProjectTemplatesDeleteMilestoneResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.deleteMilestone(input),
+      ),
+
+    createMilestone: (input: ProjectTemplatesCreateMilestoneInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
+    useCreateMilestone: () =>
+      useMutation<ProjectTemplatesCreateMilestoneInput, ProjectTemplatesCreateMilestoneResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
+      ),
+
+    updateMilestone: (input: ProjectTemplatesUpdateMilestoneInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateMilestone(input),
+    useUpdateMilestone: () =>
+      useMutation<ProjectTemplatesUpdateMilestoneInput, ProjectTemplatesUpdateMilestoneResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateMilestone(input),
+      ),
+
+    update: (input: ProjectTemplatesUpdateInput) => defaultApiClient.apiNamespaceProjectTemplates.update(input),
+    useUpdate: () =>
+      useMutation<ProjectTemplatesUpdateInput, ProjectTemplatesUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.update(input),
+      ),
+
+    updateTask: (input: ProjectTemplatesUpdateTaskInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateTask(input),
+    useUpdateTask: () =>
+      useMutation<ProjectTemplatesUpdateTaskInput, ProjectTemplatesUpdateTaskResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateTask(input),
+      ),
+
+    deleteTask: (input: ProjectTemplatesDeleteTaskInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.deleteTask(input),
+    useDeleteTask: () =>
+      useMutation<ProjectTemplatesDeleteTaskInput, ProjectTemplatesDeleteTaskResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.deleteTask(input),
+      ),
   },
 
   projects: {

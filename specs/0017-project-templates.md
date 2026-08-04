@@ -253,12 +253,12 @@ At the end of this phase, a Space administrator can create and edit a blank core
 
 #### PR 2.1 — `feat: Create and edit blank project templates`
 
-- [ ] Add a blank-template creation operation that creates the template root and default task workflow without creating a project, project access context, runtime resource hub, activity, check-in schedule, subscription list, or search entry.
-- [ ] Add template-safe mutations for name, description, duration, custom task statuses, milestones, tasks, ordering, Kanban state, and relative task/milestone dates.
-- [ ] Reuse pure domain helpers from projects where they have no persistence or project-runtime side effects; template mutations must write only template-owned tables.
-- [ ] Reject negative offsets. Project-only actions such as check-ins, pause/resume, close, retrospective, goal connection, and project access-baseline editing must not exist in the template API.
-- [ ] Keep all template edits authorized by Edit Access to the owning Space.
-- [ ] Add operation tests proving template edits do not create activities, notifications, subscriptions, check-ins, or search entries.
+- [x] Add a blank-template creation operation that creates the template root and default task workflow without creating a project, project access context, runtime resource hub, activity, check-in schedule, subscription list, or search entry.
+- [x] Add template-safe mutations for name, description, duration, custom task statuses, milestones, tasks, ordering, Kanban state, and relative task/milestone dates.
+- [x] Reuse pure domain helpers from projects where they have no persistence or project-runtime side effects; template mutations must write only template-owned tables.
+- [x] Reject negative offsets. Project-only actions such as check-ins, pause/resume, close, retrospective, goal connection, and project access-baseline editing must not exist in the template API.
+- [x] Keep all template edits authorized by Edit Access to the owning Space.
+- [x] Add operation tests proving template edits do not create activities, notifications, subscriptions, check-ins, or search entries.
 
 #### PR 2.2 — `feat: Add a project template mode to TurboUI`
 
