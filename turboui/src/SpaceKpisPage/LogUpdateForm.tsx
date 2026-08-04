@@ -107,7 +107,7 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord }: LogUpdateFormP
           {editingPeriod ? (
             <div>
               <label htmlFor="kpi-entry-period" className="block text-sm font-medium text-content-accent mb-1">
-                Period
+                Date
               </label>
               <input
                 ref={periodInputRef}
