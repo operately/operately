@@ -148,8 +148,7 @@ function EmptyState({ canManage, onNewKpi }: { canManage: boolean; onNewKpi: () 
       <IconChartColumn size={40} className="text-content-subtle" />
       <h3 className="mt-4 font-bold text-content-accent">No KPIs yet</h3>
       <p className="mt-1 max-w-sm text-sm text-content-dimmed">
-        Track the numbers this space cares about — pipeline, uptime, NPS — and log updates on a weekly or monthly
-        cadence.
+        Track key metrics for this space and record updates over time.
       </p>
       {canManage && (
         <button
