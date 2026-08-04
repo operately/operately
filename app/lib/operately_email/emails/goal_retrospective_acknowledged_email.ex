@@ -22,6 +22,7 @@ defmodule OperatelyEmail.Emails.GoalRetrospectiveAcknowledgedEmail do
 
   def buffered_item(_person, activity) do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+    retrospective_activity = Activities.get_activity!(activity.content["retrospective_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
 
@@ -32,7 +33,7 @@ defmodule OperatelyEmail.Emails.GoalRetrospectiveAcknowledgedEmail do
       headline: "acknowledged a goal retrospective",
       excerpt_html: nil,
       excerpt_text: nil,
-      item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
+      item_url: Paths.goal_activity_path(company, retrospective_activity) |> Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil

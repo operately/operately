@@ -136,7 +136,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
       headline: "submitted a check-in with status \"#{status_label(update.status)}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
-      item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
+      item_url: OperatelyWeb.Paths.goal_check_in_path(company, update) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil

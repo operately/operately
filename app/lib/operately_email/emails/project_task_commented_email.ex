@@ -42,7 +42,7 @@ defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
       headline: "commented on the task \"#{task.name}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
-      item_url: OperatelyWeb.Paths.task_path(company, task) |> OperatelyWeb.Paths.to_url(),
+      item_url: Paths.task_path(company, task, comment) |> Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil

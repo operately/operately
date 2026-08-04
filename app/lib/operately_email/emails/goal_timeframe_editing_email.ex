@@ -36,7 +36,7 @@ defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
       headline: "updated the goal's timeframe",
       excerpt_html: nil,
       excerpt_text: nil,
-      item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
+      item_url: OperatelyWeb.Paths.goal_activity_path(company, activity) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil
