@@ -166,7 +166,7 @@ Example: a template has tasks due 7 and 10 days after start. If the project star
 
 ## People, Assignments, and Access
 
-A template is visible only to people who can access its Space. Anyone who can create a project in the Space can use its templates. People with Full Access to a Space can create, edit, duplicate, archive, and delete its templates. The company-level template page does not expand access; it only aggregates templates the current user can already see through their Spaces.
+A template is visible only to people with View Access to its Space. Every other template action, including using, creating, commenting on, editing, duplicating, archiving, restoring, and deleting a template, requires Edit Access. The standard Can Comment and Full Access permissions remain part of the template permission model for consistency, but template actions do not depend on them. The company-level template page does not expand access; it only aggregates templates the current user can already see through their Spaces.
 
 **Include people and assignments** controls all person-specific project data:
 
@@ -239,13 +239,13 @@ This phase establishes the invariant that template data is physically separate f
 
 #### PR 1.2 — `feat: Add permission-aware project template APIs`
 
-- [ ] Add a `ProjectTemplates` domain boundary and read APIs for one template, templates in one Space, and the company-level aggregate.
-- [ ] Authorize visibility from the current Space access, not from copied contributors or source-project access.
-- [ ] Require Full Access to the Space for creating, editing, duplicating, archiving, restoring, and deleting templates.
-- [ ] Require the existing Space permission for project creation when a user instantiates a template; being able to view a template is not enough.
-- [ ] Return the card metadata and milestone/task counts needed by both library surfaces without loading the complete project graph.
-- [ ] Support search, Space filtering, and archived filtering in the backend query while applying access filtering before selecting template metadata.
-- [ ] Add internal/external API contract tests, regenerate clients, and verify that an inaccessible Space never leaks a template name, description, count, or creator.
+- [x] Add a `ProjectTemplates` domain boundary and read APIs for one template, templates in one Space, and the company-level aggregate.
+- [x] Authorize visibility from the current Space access, not from copied contributors or source-project access.
+- [x] Require Edit Access to the Space for creating, editing, duplicating, archiving, restoring, and deleting templates.
+- [x] Require Edit Access to the Space when a user instantiates a template; being able to view a template is not enough.
+- [x] Return the card metadata and milestone/task counts needed by both library surfaces without loading the complete project graph.
+- [x] Support search, Space filtering, and archived filtering in the backend query while applying access filtering before selecting template metadata.
+- [x] Add internal/external API contract tests, regenerate clients, and verify that an inaccessible Space never leaks a template name, description, count, or creator.
 
 ### Phase 2 — Blank templates and the template editor
 
@@ -257,7 +257,7 @@ At the end of this phase, a Space administrator can create and edit a blank core
 - [ ] Add template-safe mutations for name, description, duration, custom task statuses, milestones, tasks, ordering, Kanban state, and relative task/milestone dates.
 - [ ] Reuse pure domain helpers from projects where they have no persistence or project-runtime side effects; template mutations must write only template-owned tables.
 - [ ] Reject negative offsets. Project-only actions such as check-ins, pause/resume, close, retrospective, goal connection, and project access-baseline editing must not exist in the template API.
-- [ ] Keep all template edits authorized by Full Access to the owning Space.
+- [ ] Keep all template edits authorized by Edit Access to the owning Space.
 - [ ] Add operation tests proving template edits do not create activities, notifications, subscriptions, check-ins, or search entries.
 
 #### PR 2.2 — `feat: Add a project template mode to TurboUI`
@@ -314,7 +314,7 @@ This phase adds the reverse core transformation and centralizes schedule validat
 - [ ] Require a concrete source-project start date and derive each supported offset from that date.
 - [ ] Validate the complete source graph before writing. Return one structured result for a missing start date and every project end, milestone due date, or task due date earlier than the start date.
 - [ ] Exclude fixed-date reminders and reset health, completion, closed/reopened state, check-ins, retrospective, goal, access baselines, activities, notifications, and subscriptions.
-- [ ] Create the template in the source project's Space and authorize against Full Access to that Space.
+- [ ] Create the template in the source project's Space and authorize against Edit Access to that Space.
 - [ ] Cover source dates at offset zero, mixed contextual-date precision, invalid pre-start dates, nil dates, state resets, and all-or-nothing rollback.
 
 #### PR 4.2 — `feat: Add save project as template validation UI`
@@ -362,7 +362,7 @@ Each PR in this phase extends the same copy service in both directions: project 
 - [ ] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
 - [ ] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
 - [ ] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
-- [ ] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Full Access to the project's Space.
+- [ ] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.
 - [ ] Cover the complete option matrix, permission gating, cancellation, validation, retry, success navigation, and source-project independence in backend and end-to-end tests.
 
 ### Phase 6 — Template lifecycle, rollout, and hardening
@@ -370,7 +370,7 @@ Each PR in this phase extends the same copy service in both directions: project 
 #### PR 6.1 — `feat: Add project template lifecycle actions`
 
 - [ ] Implement template duplication through the complete copy service, preserving relative offsets and included reusable content while generating an independent template graph.
-- [ ] Add archive, restore, and delete operations with Space Full Access checks and clear confirmation UI.
+- [ ] Add archive, restore, and delete operations with Space Edit Access checks and clear confirmation UI.
 - [ ] Hide archived templates from New Project and default library results; allow archived filtering and restoration in both libraries.
 - [ ] Ensure archive or deletion never changes generated projects and that duplicate/archive/delete operations do not create project activities or notifications.
 - [ ] Finish card actions and invalidate company, Space, template-page, and New Project caches consistently.
