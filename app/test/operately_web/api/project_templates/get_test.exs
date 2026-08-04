@@ -4,6 +4,13 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
   alias Operately.ProjectTemplates.ProjectTemplate
   alias OperatelyWeb.Paths
 
+  @permissions_table [
+    %{permissions: :view_access, expected: 200},
+    %{permissions: :comment_access, expected: 200},
+    %{permissions: :edit_access, expected: 200},
+    %{permissions: :full_access, expected: 200}
+  ]
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -84,6 +91,15 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
 
     assert {404, res} = request(ctx)
     refute inspect(res) =~ ctx.template.name
+  end
+
+  tabletest @permissions_table do
+    test "returns #{@test.expected} for #{@test.permissions}", ctx do
+      ctx = ctx |> Factory.add_space_member(:person, :space, permissions: @test.permissions) |> Factory.log_in_person(:person)
+
+      assert {code, _} = request(ctx)
+      assert code == @test.expected
+    end
   end
 
   test "does not use source-project access", ctx do

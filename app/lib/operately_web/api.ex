@@ -117,10 +117,19 @@ defmodule OperatelyWeb.Api do
         mutation(:update_milestone_ordering, OperatelyWeb.Api.Projects.Milestones.UpdateOrdering)
       end
 
-      @doc "Read project templates"
+      @doc "Get, list, create and manage project templates"
       namespace(:project_templates) do
         query(:get, OperatelyWeb.Api.ProjectTemplates.Get)
         query(:list, OperatelyWeb.Api.ProjectTemplates.List)
+
+        mutation(:create, OperatelyWeb.Api.ProjectTemplates.Create)
+        mutation(:update, OperatelyWeb.Api.ProjectTemplates.Update)
+        mutation(:create_milestone, OperatelyWeb.Api.ProjectTemplates.CreateMilestone)
+        mutation(:update_milestone, OperatelyWeb.Api.ProjectTemplates.UpdateMilestone)
+        mutation(:delete_milestone, OperatelyWeb.Api.ProjectTemplates.DeleteMilestone)
+        mutation(:create_task, OperatelyWeb.Api.ProjectTemplates.CreateTask)
+        mutation(:update_task, OperatelyWeb.Api.ProjectTemplates.UpdateTask)
+        mutation(:delete_task, OperatelyWeb.Api.ProjectTemplates.DeleteTask)
       end
 
       @doc "Get, list, create and manage tasks across projects and spaces"

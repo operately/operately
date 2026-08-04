@@ -4,6 +4,13 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ListTest do
   alias Operately.ProjectTemplates.ProjectTemplate
   alias OperatelyWeb.Paths
 
+  @permissions_table [
+    %{permissions: :view_access, expected: 200},
+    %{permissions: :comment_access, expected: 200},
+    %{permissions: :edit_access, expected: 200},
+    %{permissions: :full_access, expected: 200}
+  ]
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -97,15 +104,16 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ListTest do
     assert Enum.map(res.templates, & &1.name) == ["Onboarding"]
   end
 
-  test "includes templates with Space view access", ctx do
-    ctx =
-      ctx
-      |> Factory.add_company_member(:viewer)
-      |> Factory.add_space(:visible_space, company_permissions: Operately.Access.Binding.view_access())
-      |> Factory.add_project_template(:visible_template, :visible_space, name: "Visible")
-      |> Factory.log_in_person(:viewer)
+  tabletest @permissions_table do
+    test "returns #{@test.expected} for #{@test.permissions}", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:person, :alpha_space, permissions: @test.permissions)
+        |> Factory.log_in_person(:person)
 
-    assert {200, res} = query(ctx.conn, [:project_templates, :list], %{})
-    assert Enum.map(res.templates, & &1.name) == ["Visible"]
+      assert {code, res} = query(ctx.conn, [:project_templates, :list], %{space_id: Paths.space_id(ctx.alpha_space)})
+      assert code == @test.expected
+      assert Enum.map(res.templates, & &1.name) == ["Launch"]
+    end
   end
 end
