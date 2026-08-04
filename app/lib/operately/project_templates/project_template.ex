@@ -1,5 +1,8 @@
 defmodule Operately.ProjectTemplates.ProjectTemplate do
+  def __api_typename__, do: "project_template"
+
   use Operately.Schema
+  use Operately.Repo.Getter
 
   alias Operately.ProjectTemplates.{Milestone, Task}
   alias Operately.Tasks.{KanbanState, Status}
@@ -9,6 +12,8 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
     belongs_to :space, Operately.Groups.Group
     belongs_to :creator, Operately.People.Person
     belongs_to :source_project, Operately.Projects.Project
+
+    has_one :access_context, through: [:space, :access_context]
 
     has_many :milestones, Milestone
     has_many :tasks, Task
@@ -23,8 +28,12 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
 
     field :archived_at, :utc_datetime_usec
 
+    field :milestone_count, :integer, virtual: true, default: 0
+    field :task_count, :integer, virtual: true, default: 0
+
     timestamps()
     soft_delete()
+    request_info()
   end
 
   def changeset(attrs), do: changeset(%__MODULE__{}, attrs)

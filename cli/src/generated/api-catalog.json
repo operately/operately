@@ -3502,6 +3502,123 @@
           }
         ]
       },
+      "project_template_milestone": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "project_template_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "due_offset_days",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "tasks_kanban_state",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "tasks_ordering_state",
+            "type": {
+              "item": {
+                "name": "string",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_project_contributor_removed": {
         "fields": [
           {
@@ -6148,6 +6265,209 @@
           }
         ]
       },
+      "project_template": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "duration_days",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "creator",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "archived_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "milestone_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "task_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "task_statuses",
+            "type": {
+              "item": {
+                "name": "task_status",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "milestones_ordering_state",
+            "type": {
+              "item": {
+                "name": "string",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "tasks_kanban_state",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "milestones",
+            "type": {
+              "item": {
+                "name": "project_template_milestone",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "tasks",
+            "type": {
+              "item": {
+                "name": "project_template_task",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "activity_content_goal_due_date_updating": {
         "fields": [
           {
@@ -6527,6 +6847,17 @@
           {
             "default": null,
             "name": "resource_hub_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "kpis_enabled",
             "type": {
               "name": "boolean",
               "kind": "named"
@@ -8650,6 +8981,123 @@
             "name": "document",
             "type": {
               "name": "resource_hub_document",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
+      "kpi": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "unit",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "cadence",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "space_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "champion",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "entries",
+            "type": {
+              "item": {
+                "name": "kpi_entry",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
               "kind": "named"
             },
             "optional": true,
@@ -11302,6 +11750,98 @@
             "optional": false,
             "has_default": false,
             "nullable": false
+          },
+          {
+            "default": null,
+            "name": "kpis_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
+      "kpi_entry": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "value",
+            "type": {
+              "name": "float",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "period",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "recorded_by",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -16409,6 +16949,156 @@
           }
         ]
       },
+      "project_template_task": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "project_template_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "project_template_milestone_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "priority",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "size",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "due_offset_days",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "reminders",
+            "type": {
+              "item": {
+                "name": "task_reminder",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "task_status",
+            "type": {
+              "name": "task_status",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_resource_hub_link_deleted": {
         "fields": [
           {
@@ -20070,6 +20760,11 @@
         "resource_hub_file",
         "resource_hub_link"
       ],
+      "project_template_archive_status": [
+        "active",
+        "archived",
+        "all"
+      ],
       "cli_auth_status": [
         "pending",
         "authenticated",
@@ -20135,9 +20830,9 @@
       ]
     }
   },
-  "endpoint_count": 202,
-  "query_count": 67,
-  "mutation_count": 135,
+  "endpoint_count": 210,
+  "query_count": 71,
+  "mutation_count": 139,
   "endpoints": [
     {
       "name": "create",
@@ -26458,6 +27153,335 @@
       "method": "POST"
     },
     {
+      "name": "create_kpi",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/create_kpi",
+      "handler": "OperatelyWeb.Api.Kpis.CreateKpi",
+      "outputs": [
+        {
+          "default": null,
+          "name": "kpi",
+          "type": {
+            "name": "kpi",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "unit",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "cadence",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "champion_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Creates a KPI in a space. Any space member with edit access may create one.",
+      "full_name": "kpis/create_kpi",
+      "method": "POST"
+    },
+    {
+      "name": "delete_kpi",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/delete_kpi",
+      "handler": "OperatelyWeb.Api.Kpis.DeleteKpi",
+      "outputs": [
+        {
+          "default": null,
+          "name": "kpi",
+          "type": {
+            "name": "kpi",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "kpi_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Deletes a KPI. Any space member with edit access may delete one.",
+      "full_name": "kpis/delete_kpi",
+      "method": "POST"
+    },
+    {
+      "name": "edit_kpi",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/edit_kpi",
+      "handler": "OperatelyWeb.Api.Kpis.EditKpi",
+      "outputs": [
+        {
+          "default": null,
+          "name": "kpi",
+          "type": {
+            "name": "kpi",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "kpi_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "unit",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "cadence",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "champion_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Edits a KPI. Any space member with edit access may edit one.",
+      "full_name": "kpis/edit_kpi",
+      "method": "POST"
+    },
+    {
+      "name": "get_kpi",
+      "type": "query",
+      "path": "/api/external/v1/kpis/get_kpi",
+      "handler": "OperatelyWeb.Api.Kpis.GetKpi",
+      "outputs": [
+        {
+          "default": null,
+          "name": "kpi",
+          "type": {
+            "name": "kpi",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "kpi_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Retrieves a KPI together with its entries (history) for charting.",
+      "full_name": "kpis/get_kpi",
+      "method": "GET"
+    },
+    {
+      "name": "list_kpis",
+      "type": "query",
+      "path": "/api/external/v1/kpis/list_kpis",
+      "handler": "OperatelyWeb.Api.Kpis.ListKpis",
+      "outputs": [
+        {
+          "default": null,
+          "name": "kpis",
+          "type": {
+            "item": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Lists the KPIs of a space.",
+      "full_name": "kpis/list_kpis",
+      "method": "GET"
+    },
+    {
+      "name": "log_kpi_entry",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/log_kpi_entry",
+      "handler": "OperatelyWeb.Api.Kpis.LogKpiEntry",
+      "outputs": [
+        {
+          "default": null,
+          "name": "entry",
+          "type": {
+            "name": "kpi_entry",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "kpi_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "value",
+          "type": {
+            "name": "float",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "period",
+          "type": {
+            "name": "date",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Logs a value for a KPI in a given period. Any space member with edit access may log.",
+      "full_name": "kpis/log_kpi_entry",
+      "method": "POST"
+    },
+    {
       "name": "get_unread_count",
       "type": "query",
       "path": "/api/external/v1/notifications/get_unread_count",
@@ -27462,6 +28486,103 @@
       "docstring": "Updates the theme preference for the current account.",
       "full_name": "people/update_theme",
       "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/project_templates/get",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "template",
+          "type": {
+            "name": "project_template",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/get",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/project_templates/list",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "templates",
+          "type": {
+            "item": {
+              "name": "project_template",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": "",
+          "name": "search",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": "active",
+          "name": "archive_status",
+          "type": {
+            "name": "project_template_archive_status",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/list",
+      "method": "GET"
     },
     {
       "name": "acknowledge_check_in",
@@ -33688,9 +34809,11 @@
     "documents": "",
     "files": "",
     "goals": "Get, list, create and manage goals",
+    "kpis": "Get, list, create and manage Space KPIs",
     "links": "",
     "notifications": "List and manage notifications and subscriptions",
     "people": "Get, list, update and manage user profiles and account settings",
+    "project_templates": "Read project templates",
     "projects": "Get, list, create and manage projects",
     "reactions": "Add or remove emoji reactions to content",
     "resource_hubs": "",

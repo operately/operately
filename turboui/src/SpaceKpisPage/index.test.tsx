@@ -101,6 +101,29 @@ describe("SpaceKpisPage layout", () => {
 // These tests cover the answer to "how can I edit/delete a KPI?": every KPI now
 // exposes an overflow "manage" menu (in the list and the detail header) offering
 // Edit and Delete, gated on canManage.
+describe("SpaceKpisPage list latest value", () => {
+  // The list endpoint omits full history but carries `latestEntry`; the list
+  // must render that value rather than "No data".
+  test("shows the latest value from latestEntry even when entries is empty", () => {
+    const kpi: SpaceKpisPageNS.Kpi = {
+      id: "kpi-throughput",
+      name: "PR Throughput",
+      unit: "USD",
+      cadence: "weekly",
+      champion: null,
+      insertedAt: new Date(),
+      latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null },
+      entries: [],
+    };
+
+    const { container } = renderPage({ kpis: [kpi] });
+
+    const row = container.querySelector(`[data-test-id="kpi-row-${kpi.id}"]`)!;
+    expect(row).toHaveTextContent("123 USD");
+    expect(row).not.toHaveTextContent("No data");
+  });
+});
+
 describe("SpaceKpisPage edit & delete", () => {
   test("each KPI row exposes a manage menu with Edit and Delete", async () => {
     const user = userEvent.setup();

@@ -1744,6 +1744,7 @@ export interface Kpi {
   cadence: string;
   spaceId: Id;
   champion?: Person | null;
+  latestEntry?: KpiEntry | null;
   entries?: KpiEntry[] | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
@@ -2008,6 +2009,55 @@ export interface ProjectReviewRequest {
   reviewId?: string | null;
   content?: string | null;
   author?: Person | null;
+}
+
+export interface ProjectTemplate {
+  __typename: "project_template";
+  id: string;
+  name: string;
+  description?: string | null;
+  durationDays?: number | null;
+  space: Space;
+  creator?: Person | null;
+  archivedAt?: string | null;
+  insertedAt: string;
+  updatedAt: string;
+  milestoneCount: number;
+  taskCount: number;
+  taskStatuses?: TaskStatus[] | null;
+  milestonesOrderingState?: string[] | null;
+  tasksKanbanState?: Json | null;
+  milestones?: ProjectTemplateMilestone[] | null;
+  tasks?: ProjectTemplateTask[] | null;
+}
+
+export interface ProjectTemplateMilestone {
+  __typename: "project_template_milestone";
+  id: string;
+  projectTemplateId: string;
+  title: string;
+  description?: string | null;
+  dueOffsetDays?: number | null;
+  tasksKanbanState: Json;
+  tasksOrderingState: string[];
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateTask {
+  __typename: "project_template_task";
+  id: string;
+  projectTemplateId: string;
+  projectTemplateMilestoneId?: string | null;
+  name: string;
+  description: string;
+  priority?: string | null;
+  size?: string | null;
+  dueOffsetDays?: number | null;
+  reminders: TaskReminder[];
+  taskStatus: TaskStatus;
+  insertedAt: string;
+  updatedAt: string;
 }
 
 export interface QuickSearchDiscussion {
@@ -2729,6 +2779,8 @@ export type ProjectContributorRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 
+export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
+
 export type ReactionEntityType =
   | "project_check_in"
   | "project_retrospective"
@@ -3376,6 +3428,24 @@ export interface PeopleSearchInput {
 
 export interface PeopleSearchResult {
   people: Person[];
+}
+
+export interface ProjectTemplatesGetInput {
+  id: Id;
+}
+
+export interface ProjectTemplatesGetResult {
+  template: ProjectTemplate;
+}
+
+export interface ProjectTemplatesListInput {
+  spaceId?: Id | null;
+  search?: string;
+  archiveStatus?: ProjectTemplateArchiveStatus;
+}
+
+export interface ProjectTemplatesListResult {
+  templates: ProjectTemplate[];
 }
 
 export interface ProjectsCountChildrenInput {
@@ -6464,6 +6534,18 @@ class ApiNamespaceTasks {
   }
 }
 
+class ApiNamespaceProjectTemplates {
+  constructor(private client: ApiClient) {}
+
+  async get(input: ProjectTemplatesGetInput): Promise<ProjectTemplatesGetResult> {
+    return this.client.get("/project_templates/get", input);
+  }
+
+  async list(input: ProjectTemplatesListInput): Promise<ProjectTemplatesListResult> {
+    return this.client.get("/project_templates/list", input);
+  }
+}
+
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
 
@@ -6904,6 +6986,7 @@ export class ApiClient {
   public apiNamespaceKpis: ApiNamespaceKpis;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceTasks: ApiNamespaceTasks;
+  public apiNamespaceProjectTemplates: ApiNamespaceProjectTemplates;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceReactions: ApiNamespaceReactions;
@@ -6928,6 +7011,7 @@ export class ApiClient {
     this.apiNamespaceKpis = new ApiNamespaceKpis(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceTasks = new ApiNamespaceTasks(this);
+    this.apiNamespaceProjectTemplates = new ApiNamespaceProjectTemplates(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
@@ -8152,6 +8236,16 @@ export default {
       useMutation<TasksUpdateNameInput, TasksUpdateNameResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateName(input),
       ),
+  },
+
+  project_templates: {
+    list: (input: ProjectTemplatesListInput) => defaultApiClient.apiNamespaceProjectTemplates.list(input),
+    useList: (input: ProjectTemplatesListInput) =>
+      useQuery<ProjectTemplatesListResult>(() => defaultApiClient.apiNamespaceProjectTemplates.list(input)),
+
+    get: (input: ProjectTemplatesGetInput) => defaultApiClient.apiNamespaceProjectTemplates.get(input),
+    useGet: (input: ProjectTemplatesGetInput) =>
+      useQuery<ProjectTemplatesGetResult>(() => defaultApiClient.apiNamespaceProjectTemplates.get(input)),
   },
 
   projects: {

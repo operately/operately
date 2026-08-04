@@ -1,5 +1,4 @@
 import Api from "@/api";
-import * as Companies from "@/models/companies";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 import { useNavigate } from "react-router";
@@ -33,7 +32,6 @@ import {
 import { useSubscription } from "@/models/subscriptions";
 import type * as Hub from "@/models/resourceHubs";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -136,7 +134,6 @@ async function loadProjectDocsAndFiles(project: Projects.Project): Promise<Proje
 
 function Page() {
   const paths = usePaths();
-  const { company } = useCompanyLoaderData();
   const { data, refresh } = PageCache.useData(loader);
   const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles } = data;
   const navigate = useNavigate();
@@ -324,7 +321,6 @@ function Page() {
     docsAndFiles,
     projectId: project.id,
     onRefresh: refresh,
-    searchEnabled: Companies.hasFeature(company, "full_text_search"),
   });
 
   const props: ProjectPage.Props = {
@@ -420,12 +416,10 @@ function useProjectDocsAndFilesProps({
   docsAndFiles,
   projectId,
   onRefresh,
-  searchEnabled,
 }: {
   docsAndFiles: ProjectDocsAndFilesData | null;
   projectId: string;
   onRefresh?: () => Promise<void>;
-  searchEnabled: boolean;
 }): ProjectPage.Props["docsAndFiles"] {
   const paths = usePaths();
   const resourceHub = docsAndFiles?.resourceHub;
@@ -445,7 +439,7 @@ function useProjectDocsAndFilesProps({
         }
       : null,
   );
-  const search = useResourceHubSearchProps(resourceHub?.id, searchEnabled);
+  const search = useResourceHubSearchProps(resourceHub?.id);
 
   return React.useMemo(() => {
     if (!docsAndFiles || !resourceHub?.id) {

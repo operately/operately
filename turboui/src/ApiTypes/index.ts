@@ -1624,6 +1624,7 @@ export interface Kpi {
   cadence: string;
   spaceId: Id;
   champion?: Person | null;
+  latestEntry?: KpiEntry | null;
   entries?: KpiEntry[] | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
@@ -1888,6 +1889,55 @@ export interface ProjectReviewRequest {
   reviewId?: string | null;
   content?: string | null;
   author?: Person | null;
+}
+
+export interface ProjectTemplate {
+  __typename: "project_template";
+  id: string;
+  name: string;
+  description?: string | null;
+  durationDays?: number | null;
+  space: Space;
+  creator?: Person | null;
+  archivedAt?: string | null;
+  insertedAt: string;
+  updatedAt: string;
+  milestoneCount: number;
+  taskCount: number;
+  taskStatuses?: TaskStatus[] | null;
+  milestonesOrderingState?: string[] | null;
+  tasksKanbanState?: Json | null;
+  milestones?: ProjectTemplateMilestone[] | null;
+  tasks?: ProjectTemplateTask[] | null;
+}
+
+export interface ProjectTemplateMilestone {
+  __typename: "project_template_milestone";
+  id: string;
+  projectTemplateId: string;
+  title: string;
+  description?: string | null;
+  dueOffsetDays?: number | null;
+  tasksKanbanState: Json;
+  tasksOrderingState: string[];
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateTask {
+  __typename: "project_template_task";
+  id: string;
+  projectTemplateId: string;
+  projectTemplateMilestoneId?: string | null;
+  name: string;
+  description: string;
+  priority?: string | null;
+  size?: string | null;
+  dueOffsetDays?: number | null;
+  reminders: TaskReminder[];
+  taskStatus: TaskStatus;
+  insertedAt: string;
+  updatedAt: string;
 }
 
 export interface QuickSearchDiscussion {
@@ -2419,9 +2469,102 @@ export interface WorkMapItem {
   assignees?: Person[] | null;
 }
 
-export type ActivityContent = ActivityContentCompanyOwnersAdding | ActivityContentCompanyAdminAdded | ActivityContentCompanyMembersPermissionsEdited | ActivityContentCompanyMemberAdded | ActivityContentCompanyMemberJoined | ActivityContentCompanyMemberConvertedToGuest | ActivityContentGuestInvited | ActivityContentCompanyEditing | ActivityContentCommentAdded | ActivityContentDiscussionCommentSubmitted | ActivityContentDiscussionEditing | ActivityContentDiscussionPosting | ActivityContentGoalArchived | ActivityContentGoalCheckIn | ActivityContentGoalCheckInAcknowledgement | ActivityContentGoalCheckInEdit | ActivityContentGoalClosing | ActivityContentGoalRetrospectiveAcknowledged | ActivityContentGoalCreated | ActivityContentGoalDiscussionCreation | ActivityContentGoalDiscussionEditing | ActivityContentGoalEditing | ActivityContentGoalReopening | ActivityContentGoalReparent | ActivityContentGoalTimeframeEditing | ActivityContentGroupEdited | ActivityContentProjectArchived | ActivityContentProjectCheckInAcknowledged | ActivityContentProjectCheckInCommented | ActivityContentProjectCheckInEdit | ActivityContentProjectCheckInSubmitted | ActivityContentProjectClosed | ActivityContentProjectRetrospectiveAcknowledged | ActivityContentProjectContributorAddition | ActivityContentProjectContributorsAddition | ActivityContentProjectContributorEdited | ActivityContentProjectContributorRemoved | ActivityContentProjectCreated | ActivityContentProjectDiscussionSubmitted | ActivityContentProjectGoalConnection | ActivityContentProjectGoalDisconnection | ActivityContentProjectMilestoneCommented | ActivityContentProjectDescriptionChanged | ActivityContentMilestoneDescriptionUpdating | ActivityContentGoalDescriptionChanged | ActivityContentProjectMoved | ActivityContentProjectPausing | ActivityContentProjectRenamed | ActivityContentProjectResuming | ActivityContentProjectReviewAcknowledged | ActivityContentProjectReviewCommented | ActivityContentProjectReviewRequestSubmitted | ActivityContentProjectDueDateUpdating | ActivityContentProjectStartDateUpdating | ActivityContentProjectChampionUpdating | ActivityContentProjectReviewerUpdating | ActivityContentProjectReviewSubmitted | ActivityContentProjectTimelineEdited | ActivityContentResourceHubDocumentCommented | ActivityContentResourceHubDocumentCreated | ActivityContentResourceHubDocumentDeleted | ActivityContentResourceHubDocumentEdited | ActivityContentResourceHubDocumentVersionRestored | ActivityContentResourceHubFileCommented | ActivityContentResourceHubFileCreated | ActivityContentResourceHubFileDeleted | ActivityContentResourceHubFileEdited | ActivityContentResourceHubFolderCopied | ActivityContentResourceHubFolderCreated | ActivityContentResourceHubFolderDeleted | ActivityContentResourceHubFolderRenamed | ActivityContentResourceHubLinkCommented | ActivityContentResourceHubLinkCreated | ActivityContentResourceHubLinkDeleted | ActivityContentResourceHubLinkEdited | ActivityContentSpaceTaskCommented | ActivityContentSpaceJoining | ActivityContentTaskAdding | ActivityContentTaskAssigneeAssignment | ActivityContentTaskClosing | ActivityContentTaskCommentDeleting | ActivityContentTaskDescriptionChange | ActivityContentTaskNameEditing | ActivityContentTaskMoving | ActivityContentTaskPriorityChange | ActivityContentTaskReopening | ActivityContentTaskSizeChange | ActivityContentTaskStatusChange | ActivityContentTaskStatusUpdating | ActivityContentTaskUpdate;
+export type ActivityContent =
+  | ActivityContentCompanyOwnersAdding
+  | ActivityContentCompanyAdminAdded
+  | ActivityContentCompanyMembersPermissionsEdited
+  | ActivityContentCompanyMemberAdded
+  | ActivityContentCompanyMemberJoined
+  | ActivityContentCompanyMemberConvertedToGuest
+  | ActivityContentGuestInvited
+  | ActivityContentCompanyEditing
+  | ActivityContentCommentAdded
+  | ActivityContentDiscussionCommentSubmitted
+  | ActivityContentDiscussionEditing
+  | ActivityContentDiscussionPosting
+  | ActivityContentGoalArchived
+  | ActivityContentGoalCheckIn
+  | ActivityContentGoalCheckInAcknowledgement
+  | ActivityContentGoalCheckInEdit
+  | ActivityContentGoalClosing
+  | ActivityContentGoalRetrospectiveAcknowledged
+  | ActivityContentGoalCreated
+  | ActivityContentGoalDiscussionCreation
+  | ActivityContentGoalDiscussionEditing
+  | ActivityContentGoalEditing
+  | ActivityContentGoalReopening
+  | ActivityContentGoalReparent
+  | ActivityContentGoalTimeframeEditing
+  | ActivityContentGroupEdited
+  | ActivityContentProjectArchived
+  | ActivityContentProjectCheckInAcknowledged
+  | ActivityContentProjectCheckInCommented
+  | ActivityContentProjectCheckInEdit
+  | ActivityContentProjectCheckInSubmitted
+  | ActivityContentProjectClosed
+  | ActivityContentProjectRetrospectiveAcknowledged
+  | ActivityContentProjectContributorAddition
+  | ActivityContentProjectContributorsAddition
+  | ActivityContentProjectContributorEdited
+  | ActivityContentProjectContributorRemoved
+  | ActivityContentProjectCreated
+  | ActivityContentProjectDiscussionSubmitted
+  | ActivityContentProjectGoalConnection
+  | ActivityContentProjectGoalDisconnection
+  | ActivityContentProjectMilestoneCommented
+  | ActivityContentProjectDescriptionChanged
+  | ActivityContentMilestoneDescriptionUpdating
+  | ActivityContentGoalDescriptionChanged
+  | ActivityContentProjectMoved
+  | ActivityContentProjectPausing
+  | ActivityContentProjectRenamed
+  | ActivityContentProjectResuming
+  | ActivityContentProjectReviewAcknowledged
+  | ActivityContentProjectReviewCommented
+  | ActivityContentProjectReviewRequestSubmitted
+  | ActivityContentProjectDueDateUpdating
+  | ActivityContentProjectStartDateUpdating
+  | ActivityContentProjectChampionUpdating
+  | ActivityContentProjectReviewerUpdating
+  | ActivityContentProjectReviewSubmitted
+  | ActivityContentProjectTimelineEdited
+  | ActivityContentResourceHubDocumentCommented
+  | ActivityContentResourceHubDocumentCreated
+  | ActivityContentResourceHubDocumentDeleted
+  | ActivityContentResourceHubDocumentEdited
+  | ActivityContentResourceHubDocumentVersionRestored
+  | ActivityContentResourceHubFileCommented
+  | ActivityContentResourceHubFileCreated
+  | ActivityContentResourceHubFileDeleted
+  | ActivityContentResourceHubFileEdited
+  | ActivityContentResourceHubFolderCopied
+  | ActivityContentResourceHubFolderCreated
+  | ActivityContentResourceHubFolderDeleted
+  | ActivityContentResourceHubFolderRenamed
+  | ActivityContentResourceHubLinkCommented
+  | ActivityContentResourceHubLinkCreated
+  | ActivityContentResourceHubLinkDeleted
+  | ActivityContentResourceHubLinkEdited
+  | ActivityContentSpaceTaskCommented
+  | ActivityContentSpaceJoining
+  | ActivityContentTaskAdding
+  | ActivityContentTaskAssigneeAssignment
+  | ActivityContentTaskClosing
+  | ActivityContentTaskCommentDeleting
+  | ActivityContentTaskDescriptionChange
+  | ActivityContentTaskNameEditing
+  | ActivityContentTaskMoving
+  | ActivityContentTaskPriorityChange
+  | ActivityContentTaskReopening
+  | ActivityContentTaskSizeChange
+  | ActivityContentTaskStatusChange
+  | ActivityContentTaskStatusUpdating
+  | ActivityContentTaskUpdate;
 
-export type ActivityDataUnion = ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
+export type ActivityDataUnion =
+  | ActivityEventDataProjectCreate
+  | ActivityEventDataMilestoneCreate
+  | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -2429,9 +2572,29 @@ export type AssignmentResource = Project | Milestone;
 
 export type PanelLinkedResource = Project;
 
-export type UpdateContent = UpdateContentProjectCreated | UpdateContentProjectStartTimeChanged | UpdateContentProjectEndTimeChanged | UpdateContentProjectContributorAdded | UpdateContentProjectContributorRemoved | UpdateContentProjectMilestoneCreated | UpdateContentProjectMilestoneCompleted | UpdateContentProjectMilestoneDeadlineChanged | UpdateContentProjectMilestoneDeleted | UpdateContentStatusUpdate | UpdateContentReview | UpdateContentProjectDiscussion | UpdateContentMessage;
+export type UpdateContent =
+  | UpdateContentProjectCreated
+  | UpdateContentProjectStartTimeChanged
+  | UpdateContentProjectEndTimeChanged
+  | UpdateContentProjectContributorAdded
+  | UpdateContentProjectContributorRemoved
+  | UpdateContentProjectMilestoneCreated
+  | UpdateContentProjectMilestoneCompleted
+  | UpdateContentProjectMilestoneDeadlineChanged
+  | UpdateContentProjectMilestoneDeleted
+  | UpdateContentStatusUpdate
+  | UpdateContentReview
+  | UpdateContentProjectDiscussion
+  | UpdateContentMessage;
 
-export type AccessOptions = "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
+export type AccessOptions =
+  | "no_access"
+  | "minimal_access"
+  | "view_access"
+  | "comment_access"
+  | "edit_access"
+  | "admin_access"
+  | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
@@ -2449,7 +2612,19 @@ export type CheckInState = "draft" | "scheduled" | "published";
 
 export type CliAuthStatus = "pending" | "authenticated" | "failed" | "no_companies" | "expired";
 
-export type CommentParentType = "project_check_in" | "project_retrospective" | "project_discussion" | "goal_update" | "goal_discussion" | "message" | "resource_hub_document" | "resource_hub_file" | "resource_hub_link" | "space_task" | "project_task" | "milestone";
+export type CommentParentType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "project_discussion"
+  | "goal_update"
+  | "goal_discussion"
+  | "message"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link"
+  | "space_task"
+  | "project_task"
+  | "milestone";
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
@@ -2463,7 +2638,15 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
-export type GoalStatus = "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
+export type GoalStatus =
+  | "on_track"
+  | "achieved"
+  | "missed"
+  | "paused"
+  | "caution"
+  | "off_track"
+  | "pending"
+  | "outdated";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -2475,13 +2658,46 @@ export type ProjectContributorRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 
-export type ReactionEntityType = "project_check_in" | "project_retrospective" | "project_discussion" | "goal_update" | "goal_discussion" | "message" | "comment" | "resource_hub_document" | "resource_hub_file" | "resource_hub_link";
+export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
 
-export type ReactionParentType = "project_check_in" | "project_retrospective" | "project_discussion" | "goal_update" | "goal_discussion" | "message" | "milestone" | "project_task" | "space_task" | "resource_hub_document" | "resource_hub_file" | "resource_hub_link";
+export type ReactionEntityType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "project_discussion"
+  | "goal_update"
+  | "goal_discussion"
+  | "message"
+  | "comment"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link";
+
+export type ReactionParentType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "project_discussion"
+  | "goal_update"
+  | "goal_discussion"
+  | "message"
+  | "milestone"
+  | "project_task"
+  | "space_task"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link";
 
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
-export type ResourceHubLinkType = "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
+export type ResourceHubLinkType =
+  | "airtable"
+  | "dropbox"
+  | "figma"
+  | "google"
+  | "google_doc"
+  | "google_sheet"
+  | "google_slides"
+  | "notion"
+  | "other";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -2489,7 +2705,14 @@ export type ReviewAssignmentOriginTypes = "project" | "goal" | "space";
 
 export type ReviewAssignmentRoles = "owner" | "reviewer";
 
-export type ReviewAssignmentTypes = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone" | "project_retrospective" | "goal_retrospective";
+export type ReviewAssignmentTypes =
+  | "check_in"
+  | "goal_update"
+  | "space_task"
+  | "project_task"
+  | "milestone"
+  | "project_retrospective"
+  | "goal_retrospective";
 
 export type SearchMatchedField = "title" | "name" | "content" | "description" | "message";
 
@@ -2512,7 +2735,19 @@ export type SearchResultType =
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
 
-export type SubscriptionParentType = "project_check_in" | "project_retrospective" | "goal_update" | "message" | "resource_hub_document" | "resource_hub_file" | "resource_hub_link" | "comment_thread" | "project" | "milestone" | "project_task" | "space_task";
+export type SubscriptionParentType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "goal_update"
+  | "message"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link"
+  | "comment_thread"
+  | "project"
+  | "milestone"
+  | "project_task"
+  | "space_task";
 
 export type SuccessStatus = "achieved" | "missed";
 
@@ -2526,11 +2761,18 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 
 export type WorkMapItemState = "active" | "paused" | "closed";
 
-export type WorkMapItemStatus = "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
+export type WorkMapItemStatus =
+  | "on_track"
+  | "achieved"
+  | "missed"
+  | "paused"
+  | "caution"
+  | "off_track"
+  | "pending"
+  | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 
 export type AccessOptionsInt = 0 | 10 | 40 | 70 | 100;
 
 export type EmailWindowMinutes = 5 | 10 | 15 | 30 | 60;
-

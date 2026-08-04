@@ -42,7 +42,16 @@ function makeEntries(
     .sort((a, b) => a.recordedAt.getTime() - b.recordedAt.getTime());
 }
 
-export const mockKpis: SpaceKpisPage.Kpi[] = [
+// Mirrors the backend: the list endpoint provides `latestEntry` alongside the
+// (here fully-populated) history, so stories render latest values consistently.
+function withLatestEntry(kpi: Omit<SpaceKpisPage.Kpi, "latestEntry">): SpaceKpisPage.Kpi {
+  return {
+    ...kpi,
+    latestEntry: kpi.entries.length > 0 ? kpi.entries[kpi.entries.length - 1]! : null,
+  };
+}
+
+export const mockKpis: SpaceKpisPage.Kpi[] = ([
   {
     id: "kpi-mrr",
     name: "Monthly Recurring Revenue",
@@ -108,7 +117,7 @@ export const mockKpis: SpaceKpisPage.Kpi[] = [
     // No entries yet — exercises the empty chart / "No data" states.
     entries: [],
   },
-];
+] as Omit<SpaceKpisPage.Kpi, "latestEntry">[]).map(withLatestEntry);
 
 // A trimmed set of KPIs used by the KpiSummaryCard stories to show a mix of
 // trends within a single space: rising (MRR), volatile (NPS), and a brand-new

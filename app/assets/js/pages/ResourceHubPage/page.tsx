@@ -1,7 +1,6 @@
 import React from "react";
 
 import { ResourceHubPage } from "turboui";
-import * as Companies from "@/models/companies";
 import {
   folders,
   getDraftEditPath,
@@ -12,17 +11,14 @@ import {
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 
 import { usePaths } from "@/routes/paths";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useLoadedData, useRefresh } from "./loader";
 import { buildResourceHubPageNavigation } from "./navigation";
 
 export function Page() {
   const { resourceHub, nodes, draftNodes } = useLoadedData();
-  const { company } = useCompanyLoaderData();
   const refresh = useRefresh();
   const paths = usePaths();
-  const searchEnabled = Companies.hasFeature(company, "full_text_search");
-  const search = useResourceHubSearchProps(resourceHub.id, searchEnabled);
+  const search = useResourceHubSearchProps(resourceHub.id);
 
   const newFileModalsContext = useNewFileModalsContextValue({ resourceHub });
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });

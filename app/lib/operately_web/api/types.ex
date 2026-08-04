@@ -682,6 +682,54 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_name, :string, null: true
   end
 
+  enum :project_template_archive_status, values: Operately.ProjectTemplates.archive_statuses()
+
+  object :project_template, for: Operately.ProjectTemplates.ProjectTemplate do
+    field :id, :string, null: false
+    field :name, :string, null: false
+    field? :description, :string, null: true
+    field? :duration_days, :integer, null: true
+    field :space, :space, null: false
+    field? :creator, :person, null: true
+    field? :archived_at, :datetime, null: true
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+    field :milestone_count, :integer, null: false
+    field :task_count, :integer, null: false
+    field? :task_statuses, list_of(:task_status), null: true
+    field? :milestones_ordering_state, list_of(:string), null: true
+    field? :tasks_kanban_state, :json, null: true
+    field? :milestones, list_of(:project_template_milestone), null: true
+    field? :tasks, list_of(:project_template_task), null: true
+  end
+
+  object :project_template_milestone, for: Operately.ProjectTemplates.Milestone do
+    field :id, :string, null: false
+    field :project_template_id, :string, null: false
+    field :title, :string, null: false
+    field? :description, :string, null: true
+    field? :due_offset_days, :integer, null: true
+    field :tasks_kanban_state, :json, null: false
+    field :tasks_ordering_state, list_of(:string), null: false
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
+  object :project_template_task, for: Operately.ProjectTemplates.Task do
+    field :id, :string, null: false
+    field :project_template_id, :string, null: false
+    field? :project_template_milestone_id, :string, null: true
+    field :name, :string, null: false
+    field :description, :string, null: false
+    field? :priority, :string, null: true
+    field? :size, :string, null: true
+    field? :due_offset_days, :integer, null: true
+    field :reminders, list_of(:task_reminder), null: false
+    field :task_status, :task_status, null: false
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
   object :project, for: Operately.Projects.Project do
     field :id, :string
     field :name, :string
@@ -844,6 +892,7 @@ defmodule OperatelyWeb.Api.Types do
     field :cadence, :string, null: false
     field :space_id, :id, null: false
     field? :champion, :person, null: true
+    field? :latest_entry, :kpi_entry, null: true
     field? :entries, list_of(:kpi_entry), null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
