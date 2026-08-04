@@ -31,6 +31,35 @@ defmodule OperatelyWeb.Api.Kpis.ListKpisTest do
       assert Paths.kpi_id(k2) in ids
     end
 
+    test "each KPI carries its latest entry (value + period) without full history", ctx do
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, name: "PR Throughput", unit: "USD")
+
+      # Log entries out of order to prove the latest (by period) is returned.
+      kpi_entry_fixture(ctx.member, kpi, value: 100.0, period: ~D[2026-01-01])
+      kpi_entry_fixture(ctx.member, kpi, value: 123.0, period: ~D[2026-03-01])
+      kpi_entry_fixture(ctx.member, kpi, value: 110.0, period: ~D[2026-02-01])
+
+      ctx = Factory.log_in_person(ctx, :member)
+      assert {200, res} = query(ctx.conn, [:kpis, :list_kpis], %{space_id: Paths.space_id(ctx.space)})
+
+      listed = Enum.find(res.kpis, &(&1.id == Paths.kpi_id(kpi)))
+      assert listed.latest_entry.value == 123.0
+      assert listed.latest_entry.period == "2026-03-01"
+
+      # The list must not carry the full entry history for performance.
+      refute Map.has_key?(listed, :entries) && listed.entries
+    end
+
+    test "a KPI with no entries has a nil latest entry", ctx do
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, name: "Fresh KPI")
+
+      ctx = Factory.log_in_person(ctx, :member)
+      assert {200, res} = query(ctx.conn, [:kpis, :list_kpis], %{space_id: Paths.space_id(ctx.space)})
+
+      listed = Enum.find(res.kpis, &(&1.id == Paths.kpi_id(kpi)))
+      assert listed.latest_entry == nil
+    end
+
     test "a non-space-member cannot list the KPIs", ctx do
       kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id)
 

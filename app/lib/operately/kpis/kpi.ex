@@ -11,6 +11,10 @@ defmodule Operately.Kpis.Kpi do
     field(:unit, :string)
     field(:cadence, Ecto.Enum, values: [:weekly, :monthly])
 
+    # Populated by ListKpis via Kpis.load_latest_entries/1 so the list view can
+    # show the most recent value without preloading the full entry history.
+    field(:latest_entry, :any, virtual: true)
+
     timestamps()
   end
 

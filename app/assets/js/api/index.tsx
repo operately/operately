@@ -1744,6 +1744,7 @@ export interface Kpi {
   cadence: string;
   spaceId: Id;
   champion?: Person | null;
+  latestEntry?: KpiEntry | null;
   entries?: KpiEntry[] | null;
   insertedAt?: string | null;
   updatedAt?: string | null;

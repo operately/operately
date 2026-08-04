@@ -9,6 +9,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Kpis.Kpi do
       cadence: Atom.to_string(kpi.cadence),
       space_id: Operately.ShortUuid.encode!(kpi.space_id),
       champion: Serializer.serialize(kpi.champion),
+      latest_entry: serialize_latest_entry(kpi),
       inserted_at: Serializer.serialize(kpi.inserted_at),
       updated_at: Serializer.serialize(kpi.updated_at)
     }
@@ -18,4 +19,12 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Kpis.Kpi do
     serialize(kpi, level: :essential)
     |> Map.put(:entries, Serializer.serialize(kpi.entries, level: :essential))
   end
+
+  # The list view carries only the most recent entry (value + period) so it can
+  # show the latest value without the cost of preloading the full history.
+  defp serialize_latest_entry(%{latest_entry: %Operately.Kpis.KpiEntry{} = entry}) do
+    Serializer.serialize(entry, level: :essential)
+  end
+
+  defp serialize_latest_entry(_kpi), do: nil
 end
