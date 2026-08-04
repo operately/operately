@@ -7,16 +7,10 @@ import { mockSingleKpi, mockSummaryKpis } from "./mockData";
 //
 // KPI summary card — proof of concept (frontend, Storybook only).
 //
-// A compact card summarising a single space's KPIs, meant to sit on the space
-// home page alongside the other tool cards (Goals & Projects, Discussions,
-// Tasks...). See app/assets/js/features/SpaceTools/ToolsSection.tsx for the
-// intended integration point — the existing Kpis.tsx tool card would be
-// replaced by this data-backed summary once a space home renders KPI data.
-//
-// Each row shows the KPI name, its latest value (formatted via the shared
-// SpaceKpisPage/utils formatValue), a trend indicator, and a dependency-free
-// sparkline of recent entries. Clicking a row calls onSelectKpi; clicking the
-// header / footer / card background links to the full KPIs tab.
+// Inner content for the KPIs tool card on the space home page. In the app it
+// is wrapped by the shared SpaceTools Container (see
+// app/assets/js/features/SpaceTools/components.tsx) so it matches Goals &
+// Projects, Tasks, and Files.
 //
 const meta = {
   title: "Pages/SpaceKpisPage/KpiSummaryCard",
@@ -25,17 +19,12 @@ const meta = {
     layout: "centered",
   },
   args: {
-    spaceKpisLink: "#kpis-tab",
-    onSelectKpi: (kpiId: string) => console.log("select KPI", kpiId),
     canManage: true,
   },
-  argTypes: {
-    onSelectKpi: { action: "select KPI" },
-  },
-  // Mirror the fixed-width tool-card slot on the space home page.
+  // Mirror the fixed-width SpaceTools card shell on the space home page.
   decorators: [
     (Story) => (
-      <div className="w-[340px]">
+      <div className="text-xs w-full h-[380px] max-w-[340px] overflow-hidden border border-stroke-base bg-surface-base rounded-lg shadow-sm transition-shadow duration-300 hover:shadow hover:border-surface-outline group">
         <Story />
       </div>
     ),
@@ -77,19 +66,8 @@ export const NoKpisReadOnly: Story = {
   },
 };
 
-// Read-only rows are still navigable via the card / footer links, but the
-// per-row onSelect handler is omitted so rows link into the KPIs tab instead.
-export const RowsLinkWithoutHandler: Story = {
-  args: {
-    kpis: mockSummaryKpis,
-    onSelectKpi: undefined,
-  },
-};
-
-// The card collapses extra KPIs behind a "View all N KPIs" footer to stay
-// compact. Here maxRows is lowered so the overflow footer is visible with the
-// standard fixtures.
-export const ManyKpisCollapsed: Story = {
+// The card lists up to maxRows KPIs to stay compact within the 380px tool slot.
+export const ManyKpisTruncated: Story = {
   args: {
     kpis: mockSummaryKpis,
     maxRows: 2,

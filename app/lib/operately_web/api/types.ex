@@ -1364,6 +1364,7 @@ defmodule OperatelyWeb.Api.Types do
     field :messages_boards, list_of(:messages_board), null: true
     field :resource_hubs, list_of(:resource_hub), null: true
     field :tasks, list_of(:task), null: true
+    field :kpis, list_of(:kpi), null: true
   end
 
   object :blob_creation_input do

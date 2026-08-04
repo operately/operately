@@ -1,7 +1,7 @@
 import React from "react";
 
-import { DivLink } from "../Link";
-import { IconArrowRight, IconChartColumn } from "../icons";
+import { GhostButton } from "../Button";
+import { IconChartColumn } from "../icons";
 import classNames from "../utils/classnames";
 
 import { TrendIndicator } from "./TrendIndicator";
@@ -12,156 +12,75 @@ interface KpiSummaryCardProps {
   // The KPIs tracked by this space. May be empty.
   kpis: SpaceKpisPage.Kpi[];
 
-  // Link to the space's full KPIs tab. The whole card links here, as do the
-  // header and empty-state call to action.
-  spaceKpisLink: string;
-
-  // Called when a KPI row is clicked. Mirrors `KpiList`'s row `onSelect` so the
-  // parent can open that KPI's detail view. When omitted, clicking a row falls
-  // through to the card-level link (the KPIs tab).
-  onSelectKpi?: (kpiId: string) => void;
-
   // Controls whether the empty state shows a "Track a KPI" call to action.
   // Defaults to true to match the KPIs tool, where any space member can manage.
   canManage?: boolean;
 
-  // Caps how many KPI rows are listed before collapsing the rest into a
-  // "+N more" footer, keeping the summary card compact. Defaults to 4.
+  // Caps how many KPI rows are listed, keeping the summary card compact. Defaults
+  // to 7 to match the Tasks tool card on the space dashboard.
   maxRows?: number;
 
   testId?: string;
 }
 
-// Compact summary of a space's KPIs, intended for the space home page alongside
-// the other tool cards (Goals & Projects, Discussions, Tasks...). Unlike the
-// company-level SpaceCards/SpaceCard (a directory of spaces), this lives inside
-// a single space and summarises *that space's* KPIs: each row shows the KPI
-// name, its latest value, a trend indicator, and a dependency-free sparkline of
-// recent entries.
-export function KpiSummaryCard({
-  kpis,
-  spaceKpisLink,
-  onSelectKpi,
-  canManage = true,
-  maxRows = 4,
-  testId = "kpi-summary-card",
-}: KpiSummaryCardProps) {
-  const cardClass = classNames(
-    "flex flex-col",
-    "w-full max-w-[340px]",
-    "bg-surface-base",
-    "border border-stroke-base",
-    "rounded-lg shadow-sm",
-    "overflow-hidden",
-  );
-
-  if (kpis.length === 0) {
-    return (
-      <div className={cardClass} data-test-id={testId}>
-        <CardHeader spaceKpisLink={spaceKpisLink} />
-        <EmptyState spaceKpisLink={spaceKpisLink} canManage={canManage} />
-      </div>
-    );
-  }
-
-  const visibleKpis = kpis.slice(0, maxRows);
-  const hiddenCount = kpis.length - visibleKpis.length;
+// Inner content for the KPIs tool card on the space home page. The app wraps
+// this in the shared SpaceTools Container (same shell as Goals & Projects,
+// Tasks, and Files) so the card matches their layout and hover behaviour.
+export function KpiSummaryCard({ kpis, canManage = true, maxRows = 7, testId = "kpi-summary-card" }: KpiSummaryCardProps) {
+  const isZeroState = kpis.length === 0;
 
   return (
-    <div className={cardClass} data-test-id={testId}>
-      <CardHeader spaceKpisLink={spaceKpisLink} />
-
-      <div className="divide-y divide-stroke-dimmed">
-        {visibleKpis.map((kpi) => (
-          <KpiRow key={kpi.id} kpi={kpi} spaceKpisLink={spaceKpisLink} onSelectKpi={onSelectKpi} />
-        ))}
-      </div>
-
-      <DivLink
-        to={spaceKpisLink}
-        className="border-t border-stroke-dimmed px-4 py-2.5 text-xs font-medium text-link-base hover:bg-surface-highlight"
-        testId={`${testId}-view-all`}
-      >
-        {hiddenCount > 0 ? `View all ${kpis.length} KPIs` : "View all KPIs"}
-      </DivLink>
+    <div data-test-id={testId}>
+      {isZeroState ? <ZeroState canManage={canManage} /> : <RegularState kpis={kpis} maxRows={maxRows} />}
     </div>
   );
 }
 
-function CardHeader({ spaceKpisLink }: { spaceKpisLink: string }) {
+function RegularState({ kpis, maxRows }: { kpis: SpaceKpisPage.Kpi[]; maxRows: number }) {
+  const visibleKpis = kpis.slice(0, maxRows);
+
   return (
-    <DivLink
-      to={spaceKpisLink}
-      className="group flex items-center justify-between gap-2 border-b border-stroke-base px-4 py-3 hover:bg-surface-highlight"
-      testId="kpi-summary-card-header"
-    >
-      <div className="flex items-center gap-2">
-        <IconChartColumn size={18} className="text-content-dimmed" />
-        <span className="text-sm font-bold text-content-accent">KPIs</span>
+    <div className="flex flex-col h-full">
+      <Title />
+
+      <div className="bg-surface-dimmed rounded mx-2 flex-1">
+        {visibleKpis.map((kpi) => (
+          <KpiRow key={kpi.id} kpi={kpi} />
+        ))}
       </div>
-      <IconArrowRight
-        size={16}
-        className="text-content-dimmed transition-transform group-hover:translate-x-0.5 group-hover:text-content-base"
-      />
-    </DivLink>
+    </div>
   );
 }
 
-function KpiRow({
-  kpi,
-  spaceKpisLink,
-  onSelectKpi,
-}: {
-  kpi: SpaceKpisPage.Kpi;
-  spaceKpisLink: string;
-  onSelectKpi?: (kpiId: string) => void;
-}) {
+function Title() {
+  return <div className="font-bold text-base text-center py-2">KPIs</div>;
+}
+
+function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
-  const rowClass =
-    "group flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-surface-highlight";
-
-  const content = (
-    <>
+  return (
+    <div
+      className="flex items-center justify-between gap-2 py-2 px-2 border-b border-stroke-base last:border-b-0"
+      data-test-id={`kpi-summary-row-${kpi.id}`}
+    >
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold text-content-accent group-hover:underline">{kpi.name}</div>
+        <div className="font-bold truncate">{kpi.name}</div>
         {latest ? (
-          <div className="mt-0.5 flex items-center gap-2">
-            <span className="text-xs font-medium text-content-base">{formatValue(latest.value, kpi.unit)}</span>
+          <div className="mt-0.5 flex items-center gap-2 text-[10px]">
+            <span className="font-medium text-content-base">{formatValue(latest.value, kpi.unit)}</span>
             <TrendIndicator delta={trend} />
           </div>
         ) : (
-          <div className="mt-0.5 text-xs text-content-subtle" data-test-id={`kpi-summary-no-data-${kpi.id}`}>
+          <div className="mt-0.5 text-[10px] text-content-subtle" data-test-id={`kpi-summary-no-data-${kpi.id}`}>
             No data
           </div>
         )}
       </div>
 
       <Sparkline entries={kpi.entries} />
-    </>
-  );
-
-  // Mirror KpiList's row onSelect: clicking a row opens that KPI. When no
-  // handler is provided, fall back to a link into the KPIs tab so the row is
-  // still navigable.
-  if (onSelectKpi) {
-    return (
-      <button
-        type="button"
-        className={rowClass}
-        onClick={() => onSelectKpi(kpi.id)}
-        data-test-id={`kpi-summary-row-${kpi.id}`}
-      >
-        {content}
-      </button>
-    );
-  }
-
-  return (
-    <DivLink to={spaceKpisLink} className={rowClass} testId={`kpi-summary-row-${kpi.id}`}>
-      {content}
-    </DivLink>
+    </div>
   );
 }
 
@@ -169,9 +88,9 @@ function KpiRow({
 // KpiLineChart, stripped down to just a trend line (no axes, gridlines, dots,
 // or labels). Coloured by overall direction: up = success, down = error.
 function Sparkline({ entries }: { entries: SpaceKpisPage.KpiEntry[] }) {
-  const width = 88;
-  const height = 28;
-  const pad = 3;
+  const width = 56;
+  const height = 24;
+  const pad = 2;
 
   if (entries.length === 0) return null;
 
@@ -186,18 +105,16 @@ function Sparkline({ entries }: { entries: SpaceKpisPage.KpiEntry[] }) {
   const x = (index: number) => (entries.length === 1 ? width / 2 : pad + (innerWidth * index) / (entries.length - 1));
   const y = (value: number) => pad + innerHeight * (1 - (value - min) / span);
 
-  // Direction of travel from first to last recorded entry colours the line.
   const direction = values[values.length - 1]! - values[0]!;
   const strokeClass =
     direction > 0 ? "stroke-callout-success-content" : direction < 0 ? "stroke-callout-error-content" : "stroke-blue-500";
 
-  // A single entry has no line to draw — show a flat marker instead.
   if (entries.length === 1) {
     const cy = height / 2;
     return (
       <svg width={width} height={height} className="shrink-0" aria-hidden>
         <line x1={pad} x2={width - pad} y1={cy} y2={cy} className="stroke-surface-outline" strokeWidth={1.5} strokeDasharray="3 3" />
-        <circle cx={width / 2} cy={cy} r={2.5} className="fill-blue-500" />
+        <circle cx={width / 2} cy={cy} r={2} className="fill-blue-500" />
       </svg>
     );
   }
@@ -211,26 +128,74 @@ function Sparkline({ entries }: { entries: SpaceKpisPage.KpiEntry[] }) {
   );
 }
 
-function EmptyState({ spaceKpisLink, canManage }: { spaceKpisLink: string; canManage: boolean }) {
+function ZeroState({ canManage }: { canManage: boolean }) {
   return (
-    <div
-      className="flex flex-col items-center justify-center px-6 py-8 text-center"
-      data-test-id="kpi-summary-card-empty"
-    >
-      <IconChartColumn size={28} className="text-content-subtle" />
-      <div className="mt-2 text-sm font-semibold text-content-accent">No KPIs tracked yet</div>
-      <p className="mt-1 text-xs text-content-dimmed">
-        Track the numbers this space cares about — pipeline, uptime, NPS.
-      </p>
-      {canManage && (
-        <DivLink
-          to={spaceKpisLink}
-          className="mt-3 rounded-lg bg-brand-1 px-3 py-1.5 text-xs font-medium text-white-1 hover:bg-blue-600"
-          testId="kpi-summary-card-empty-cta"
-        >
-          Track a KPI
-        </DivLink>
-      )}
+    <div data-test-id="kpi-summary-card-empty">
+      <Examples />
+      <ExplanationAndButton canManage={canManage} />
+    </div>
+  );
+}
+
+function ExplanationAndButton({ canManage }: { canManage: boolean }) {
+  return (
+    <div className="flex flex-col justify-center items-center group">
+      <div className="text-base font-bold">KPIs</div>
+
+      <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
+        Track the numbers this space cares about and log updates on a weekly or monthly cadence.
+      </div>
+
+      {canManage && <GhostButton size="sm">Track a KPI</GhostButton>}
+    </div>
+  );
+}
+
+function Examples() {
+  return (
+    <div className="relative w-full h-[170px] mt-10 opacity-75 px-[50px] flex flex-col gap-3">
+      <Example name="Monthly revenue" value="$42k" trend="up" />
+      <Example name="NPS score" value="68" trend="flat" />
+      <Example name="Uptime" value="99.9%" trend="up" />
+    </div>
+  );
+}
+
+function Example({ name, value, trend }: { name: string; value: string; trend: "up" | "down" | "flat" }) {
+  const iconClass = classNames(
+    "bg-stone-300",
+    "group-hover:bg-green-300",
+    "group-hover:text-stone-900",
+    "dark:bg-stone-600",
+    "dark:group-hover:bg-green-500",
+    "rounded-full p-1.5 transition-all",
+  );
+
+  const strokeClass =
+    trend === "up" ? "stroke-callout-success-content" : trend === "down" ? "stroke-callout-error-content" : "stroke-blue-500";
+
+  return (
+    <div className="flex items-center justify-between gap-2 group-hover:gap-3 transition-all shadow-sm pb-2">
+      <div className="flex items-center gap-2 min-w-0">
+        <div className={iconClass}>
+          <IconChartColumn size={18} stroke={1.5} />
+        </div>
+        <div className="min-w-0">
+          <div className="font-bold text-[10px] leading-none truncate">{name}</div>
+          <div className="text-[10px]">{value}</div>
+        </div>
+      </div>
+
+      <svg width={48} height={18} className="shrink-0" aria-hidden>
+        <path
+          d={trend === "down" ? "M 2 4 L 14 10 L 26 8 L 38 14 L 46 16" : "M 2 14 L 14 10 L 26 12 L 38 6 L 46 4"}
+          className={strokeClass}
+          strokeWidth={1.5}
+          fill="none"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+      </svg>
     </div>
   );
 }

@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
   alias Operately.Groups.Group
   alias Operately.Groups.SpaceTools
   alias Operately.Access.Filters
+  alias Operately.Kpis.{Kpi, KpiEntry}
 
   inputs do
     field :space_id, :id, null: false
@@ -85,11 +86,21 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
         end
       end)
 
+    kpis_task =
+      Task.async(fn ->
+        if space.tools.kpis_enabled do
+          load_kpis(space.id)
+        else
+          {:ok, []}
+        end
+      end)
+
     {:ok, projects} = Task.await(projects_task)
     {:ok, goals} = Task.await(goals_task)
     {:ok, tasks} = Task.await(tasks_task)
     {:ok, messages_boards} = Task.await(messages_boards_task)
     {:ok, resource_hubs} = Task.await(resource_hubs_task)
+    {:ok, kpis} = Task.await(kpis_task)
 
     {:ok,
      %{
@@ -97,7 +108,8 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
        goals: goals,
        tasks: tasks,
        messages_boards: messages_boards,
-       resource_hubs: resource_hubs
+       resource_hubs: resource_hubs,
+       kpis: kpis
      }}
   end
 
@@ -171,5 +183,23 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
       |> ResourceHub.load_comments_count()
 
     {:ok, hubs}
+  end
+
+  defp load_kpis(space_id) do
+    entries_q =
+      from(e in KpiEntry,
+        order_by: e.period,
+        preload: :recorded_by
+      )
+
+    kpis =
+      from(k in Kpi,
+        where: k.space_id == ^space_id,
+        order_by: k.name,
+        preload: [:champion, entries: ^entries_q]
+      )
+      |> Repo.all()
+
+    {:ok, kpis}
   end
 end

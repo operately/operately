@@ -22,9 +22,8 @@ jest.mock("./components", () => ({
   ),
 }));
 
-// turboui bundles its own React instance, so only stub the single icon the
-// KPIs card uses instead of rendering the real component under jest.
-jest.mock("turboui", () => ({ IconChartColumn: () => null }));
+// turboui bundles its own React instance, so stub the KPI summary content.
+jest.mock("turboui", () => ({ KpiSummaryCard: () => null }));
 
 jest.mock("@/routes/paths", () => ({
   usePaths: () => ({ spaceKpisPath: (id: string) => `/spaces/${id}/kpis` }),

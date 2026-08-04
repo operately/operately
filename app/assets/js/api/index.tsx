@@ -2308,6 +2308,7 @@ export interface SpaceTools {
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  kpis: Kpi[] | null;
 }
 
 export interface Subscriber {

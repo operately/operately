@@ -39,7 +39,7 @@ export function ToolsSection({ space, tools }: ToolsSectionPros) {
 
         {tools.tasksEnabled && <Tasks space={space} tasks={tools.tasks ?? []} />}
 
-        {showKpis && <Kpis space={space} />}
+        {showKpis && <Kpis space={space} kpis={tools.kpis ?? []} />}
       </div>
     </div>
   );
