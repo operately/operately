@@ -13,7 +13,7 @@ import { IconCalendar, IconLayoutGrid, IconWorld, SearchPage, SEARCH_TIME_FILTER
 
 type Search = (input: CompaniesSearchInput) => Promise<CompaniesSearchResult>;
 
-export interface SearchSpaceOption {
+interface SearchSpaceOption {
   id: string;
   name: string;
 }
