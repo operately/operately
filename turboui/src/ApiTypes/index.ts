@@ -2238,6 +2238,7 @@ export interface SpaceTools {
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
+  kpis: Kpi[] | null;
 }
 
 export interface Subscriber {
@@ -2734,6 +2735,10 @@ export type SearchResultType =
   | "project_retrospective";
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
+
+export type SearchSort = "best_match" | "most_recent";
+
+export type SearchTimeRange = "last_7_days" | "last_30_days" | "last_90_days" | "last_12_months";
 
 export type SubscriptionParentType =
   | "project_check_in"

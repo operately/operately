@@ -7,8 +7,10 @@ defmodule Operately.Search do
 
   @doc """
   Returns permission-aware, relevance-ranked full-text results for a person's company.
+
+  Optional `filters` may include `:space_ids`, `:types`, `:time_range`, and `:sort`.
   """
-  def search_company(%Person{} = person, query), do: CompanyQuery.search(person, query)
+  def search_company(%Person{} = person, query, filters \\ %{}), do: CompanyQuery.search(person, query, filters)
 
   @doc """
   Returns fully hydrated resource-hub nodes in full-text relevance order.

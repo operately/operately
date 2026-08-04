@@ -1,11 +1,12 @@
 import * as React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
 import type { SearchResult } from "../ApiTypes";
-import { IconCalendar, IconWorld } from "../icons";
-import { SearchPage } from "./index";
+import { IconCalendar, IconLayoutGrid, IconWorld } from "../icons";
+import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS, SearchPage } from "./index";
 
 function result(overrides: Partial<SearchResult & { link: string }> = {}): SearchResult & { link: string } {
   return {
@@ -137,7 +138,8 @@ describe("SearchPage", () => {
     expect(container.querySelector("strong")).not.toBeInTheDocument();
   });
 
-  test("renders sticky refine controls when refine props are provided", () => {
+  test("renders sticky refine controls when refine props are provided", async () => {
+    const user = userEvent.setup();
     const onSortChange = jest.fn();
     const onFilterChange = jest.fn();
 
@@ -161,36 +163,52 @@ describe("SearchPage", () => {
             ],
           },
           {
+            id: "types",
+            label: "All types",
+            icon: IconLayoutGrid,
+            selectionMode: "multiple",
+            selectedOptionIds: [],
+            options: SEARCH_TYPE_FILTER_OPTIONS,
+          },
+          {
             id: "time",
             label: "All time",
             icon: IconCalendar,
             selectionMode: "single",
             selectedOptionIds: ["last_7_days"],
-            options: [
-              { id: "last_7_days", label: "Last 7 days" },
-              { id: "last_30_days", label: "Last 30 days" },
-            ],
+            options: SEARCH_TIME_FILTER_OPTIONS,
           },
         ],
         onFilterChange,
       },
     });
 
-    expect(screen.getByTestId("search-refine-controls")).toBeInTheDocument();
-    expect(screen.getByTestId("search-sort-toggle")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="search-refine-controls"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="search-sort-toggle"]')).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Best match" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Most recent" })).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByTestId("search-filter-spaces")).toHaveTextContent("All spaces");
-    expect(screen.getByTestId("search-filter-spaces-count")).toHaveTextContent("2");
-    expect(screen.getByTestId("search-filter-time")).toHaveTextContent("Last 7 days");
+    expect(document.querySelector('[data-test-id="search-filter-spaces"]')).toHaveTextContent("All spaces");
+    expect(document.querySelector('[data-test-id="search-filter-spaces-count"]')).toHaveTextContent("2");
+    expect(document.querySelector('[data-test-id="search-filter-types"]')).toHaveTextContent("All types");
+    expect(document.querySelector('[data-test-id="search-filter-time"]')).toHaveTextContent("Last 7 days");
+    expect(document.querySelector('[data-test-id="search-filter-people"]')).not.toBeInTheDocument();
+    expect(SEARCH_TYPE_FILTER_OPTIONS).toHaveLength(13);
 
-    fireEvent.click(screen.getByRole("button", { name: "Most recent" }));
+    await user.click(screen.getByRole("button", { name: "Most recent" }));
     expect(onSortChange).toHaveBeenCalledWith("most_recent");
+
+    await user.click(document.querySelector('[data-test-id="search-filter-types"]')!);
+    for (const option of SEARCH_TYPE_FILTER_OPTIONS) {
+      expect(await screen.findByRole("menuitem", { name: option.label })).toBeInTheDocument();
+    }
+
+    await user.click(screen.getByRole("menuitem", { name: "Projects" }));
+    expect(onFilterChange).toHaveBeenCalledWith("types", ["project"]);
   });
 
   test("hides refine controls when refine props are omitted", () => {
     renderPage({ query: "research", status: "success", results: [result()] });
-    expect(screen.queryByTestId("search-refine-controls")).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="search-refine-controls"]')).not.toBeInTheDocument();
   });
 
   test("renders all indexed resource labels and caps the visible list at 30 results", () => {
