@@ -2,6 +2,8 @@ import React from "react";
 
 import type { WorkMap } from "..";
 import { PrimaryButton } from "../../Button";
+import * as Forms from "../../Forms";
+import { ActionLink } from "../../Link";
 import { SpaceField } from "../../SpaceField";
 import { IconGoal, IconGrowth, IconProject } from "../../icons";
 import { AddItemModal } from "./AddItemModal";
@@ -94,47 +96,38 @@ export function ZeroStateCanAdd({ spaceSearch, addItem, addItemDefaultSpace, hid
 }
 
 function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onItemCreated }: ZeroStateProps) {
-  const [name, setName] = React.useState("");
-  const [nameError, setNameError] = React.useState<string | null>(null);
-  const [submitError, setSubmitError] = React.useState<string | null>(null);
-  const [submitting, setSubmitting] = React.useState(false);
+  const [navigationPending, setNavigationPending] = React.useState(false);
   const [goalModalOpen, setGoalModalOpen] = React.useState(false);
 
-  const submitProject = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const projectName = name.trim();
-    if (!projectName) {
-      setNameError("Enter a project name.");
-      return;
-    }
-
-    setNameError(null);
-    setSubmitError(null);
-    setSubmitting(true);
-
-    try {
+  const form = Forms.useForm({
+    fields: { name: "" },
+    validate: (addError) => {
+      if (!form.values.name.trim()) {
+        addError("name", "Enter a project name.");
+      }
+    },
+    submit: async () => {
       const result = await addItem({
-        name: projectName,
+        name: form.values.name.trim(),
         type: "project",
         space: addItemDefaultSpace,
         parentId: null,
         accessLevels: { company: "edit", space: "edit" },
       });
 
-      await onItemCreated?.("project", result.id);
-
-      if (!onItemCreated) {
-        setSubmitting(false);
+      if (onItemCreated) {
+        setNavigationPending(true);
+        await onItemCreated("project", result.id);
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Failed to create project:", error);
-      setSubmitError("The project could not be created. Try again.");
-      setSubmitting(false);
-    }
-  };
+      setNavigationPending(false);
+      form.actions.addErrors({ name: "The project could not be created. Try again." });
+    },
+  });
 
-  const inputError = nameError || submitError;
+  const submitting = form.state === "submitting" || navigationPending;
 
   return (
     <div className="px-4 py-12 sm:py-16" data-test-id="first-project-zero-state">
@@ -146,46 +139,40 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
           </p>
         </div>
 
-        <form className="flex w-full flex-col gap-3 text-left" onSubmit={submitProject}>
-          <div className="flex flex-col gap-1">
-            <label className="text-base font-medium text-content-accent sm:text-sm" htmlFor="first-project-name">
-              Project name
-            </label>
-            <input
-              autoFocus
-              id="first-project-name"
-              name="project-name"
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="e.g. Launch the new website"
-              aria-describedby={inputError ? "first-project-error" : undefined}
-              aria-invalid={Boolean(inputError)}
-              className="w-full rounded-lg border border-surface-outline bg-surface-base px-3 py-2.5 text-base text-content-accent outline-none placeholder:text-content-subtle focus-visible:-outline-offset-1 focus-visible:outline-2 focus-visible:outline-brand-1 sm:py-2 sm:text-sm"
-              data-test-id="first-project-name"
-            />
-            {inputError && (
-              <p id="first-project-error" className="text-base text-content-error sm:text-sm" role="alert">
-                {inputError}
-              </p>
-            )}
-          </div>
+        <Forms.Form form={form} testId="first-project-form">
+          <div className="flex w-full flex-col gap-3 text-left">
+            <Forms.FieldGroup>
+              <Forms.TextInput
+                autoFocus
+                field="name"
+                label="Project name"
+                placeholder="e.g. Launch the new website"
+                testId="first-project-name"
+              />
+            </Forms.FieldGroup>
 
-          <PrimaryButton className="w-full" type="submit" size="sm" loading={submitting} testId="create-first-project">
-            Create project
-          </PrimaryButton>
-        </form>
+            <PrimaryButton
+              className="w-full"
+              type="submit"
+              size="sm"
+              loading={submitting}
+              testId="create-first-project"
+            >
+              Create project
+            </PrimaryButton>
+          </div>
+        </Forms.Form>
 
         <p className="text-pretty text-base text-content-dimmed sm:text-sm">
           Tracking an outcome instead?{" "}
-          <button
-            type="button"
-            className="font-medium text-brand-1 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
+          <ActionLink
+            underline="hover"
+            className="font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
             onClick={() => setGoalModalOpen(true)}
-            data-test-id="add-first-goal"
+            testId="add-first-goal"
           >
             Add a goal
-          </button>
+          </ActionLink>
           .
         </p>
       </div>

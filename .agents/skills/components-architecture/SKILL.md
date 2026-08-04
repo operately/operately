@@ -2,10 +2,11 @@
 name: components-architecture
 description: >-
   Defines where UI components belong in Operately (TurboUI-first). Use when
-  creating, changing, or migrating UI components, adding features that need UI,
-  or deciding whether to refactor legacy app UI in app/assets/js/components or
-  app/assets/js/features. Covers pure TurboUI components, the app bridge
-  pattern, and legacy migration scenarios.
+  creating, changing, reviewing, or migrating UI components, adding features
+  that need UI, or deciding whether to refactor legacy app UI in
+  app/assets/js/components or app/assets/js/features. Covers pure TurboUI
+  components, component reuse, the app bridge pattern, and legacy migration
+  scenarios.
 ---
 
 # Components Architecture
@@ -19,7 +20,7 @@ and UI components under `app/assets/js/features/` are **deprecated for new UI**.
 Non-UI code in `app/assets/js/features/` (activity registration, API hooks,
 loaders, model hooks) still belongs in the app.
 
-For detailed examples, see [reference.md](reference.md).
+For detailed examples and the canonical component selection map, see [reference.md](reference.md).
 
 ## Architecture
 
@@ -73,6 +74,19 @@ work. Legacy parsers still exist in older pages but are not the target pattern.
 - **Callback shape**: `(id: string, updates: Partial<Type>) => void` for entity updates
 - **No mock data in components**: mock data belongs in Storybook stories only
 - **Reuse TurboUI primitives**: `PrimaryButton`, design-system colors (`content-subtle`, `content-error`), Tabler icons — check `turboui/src/Colors/Colors.stories.tsx` and `turboui/src/icons/index.tsx` before adding new ones
+
+### Component reuse gate
+
+Complete this before writing JSX for new or changed UI:
+
+1. List every required control and interaction pattern: forms, fields, buttons, links, selectors, modals, empty states, validation, and loading feedback.
+2. Search `turboui/src/index.tsx`, relevant component directories, and existing usages for matching components.
+3. Compose the UI from those components. Use raw interactive elements only when implementing a TurboUI primitive or when the inventory confirms that no suitable primitive exists.
+4. If a raw `<input>`, `<button>`, `<select>`, `<textarea>`, dialog, link-like action, or validation message remains, document the reason in the implementation summary.
+
+Use `Forms.Form`, `Forms.FieldGroup`, `Forms.TextInput`, and `Forms.Submit` as the default stack for new conventional forms. Use `TextField` for inline editing or existing surfaces already composed around it. Treat `FormElements/Textfield` as legacy and do not select it for new UI.
+
+During code review, classify hand-rolled interactive UI that duplicates an existing TurboUI component as a P2 architecture issue.
 
 ### File organization
 
@@ -167,6 +181,9 @@ Use when a full migration would dominate the PR or touch unrelated features.
 
 ## Checklist
 
+- [ ] Completed the component reuse inventory before writing JSX
+- [ ] Reused existing TurboUI controls and interaction patterns where available
+- [ ] Documented every remaining raw interactive element and why no suitable primitive exists
 - [ ] New or changed UI lives in `turboui/src/`, not in deprecated app UI folders
 - [ ] TurboUI component has no app imports or API calls
 - [ ] App page passes data and callbacks; API and context logic stays in app

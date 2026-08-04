@@ -24,7 +24,7 @@ export function Input(props: InputFieldProps) {
         <Label field={props.field} label={props.label} icon={props.labelIcon} required={props.required} />
       ) : null}
       {props.children}
-      {props.error ? <ErrorMessage error={props.error} /> : null}
+      {props.error ? <ErrorMessage error={props.error} id={`${props.field}-error`} /> : null}
     </div>
   );
 }

@@ -217,6 +217,26 @@ Rules:
 - **Empty states**: preserve container structure; include a clear next action
 - **Locale/timezone**: pass as props from app; do not hard-code `"en-US"` in TurboUI
 
+## Component Selection
+
+Inventory the UI before implementation and use this table as the default routing guide. Confirm the component's current API and inspect an existing usage before coding.
+
+| Need | Default TurboUI choice | Notes |
+| ---- | ---------------------- | ----- |
+| Conventional form | `Forms.Form` + `Forms.FieldGroup` | Use `Forms.useForm` for values, validation, errors, and submission state |
+| Text field in a form | `Forms.TextInput` | Use with the `Forms` stack; do not recreate labels or validation markup |
+| Form actions | `Forms.Submit` | Reuse built-in loading and cancel behavior |
+| Inline editable text | `TextField` | Use for inline editing or existing surfaces already composed around it |
+| Primary or secondary action | `PrimaryButton`, `SecondaryButton`, `GhostButton`, `DangerButton` | Choose the semantic variant; do not style a raw button to imitate one |
+| Text-style action | `ActionLink` | Use for actions that should look like links |
+| Navigation link | `Link`, `BlackLink`, `DimmedLink`, `GhostLink` | Choose by visual emphasis |
+| Modal | `Modal` | Compose forms and actions from TurboUI primitives inside it |
+| Space, person, goal, project, date, or privacy selector | The corresponding `*Field` component | Search `turboui/src/index.tsx` before creating a selector |
+
+`turboui/src/FormElements/Textfield` is legacy. Do not choose it for new UI.
+
+Raw interactive elements are appropriate only inside the implementation of a TurboUI primitive or when no suitable primitive exists. In the latter case, record what was searched and why the available components did not fit.
+
 ## Legacy UI (Do Not Extend)
 
 Examples of deprecated patterns that should be migrated over time, not copied:
