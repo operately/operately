@@ -17,6 +17,7 @@ defmodule Operately.Notifications.SubscriptionList do
       :space_task,
       :project_milestone,
       :project,
+      :kpi,
     ]
     field :send_to_everyone, :boolean, default: false
 

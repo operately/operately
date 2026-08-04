@@ -52,6 +52,11 @@ export namespace SpaceKpisPage {
     // Entries ordered oldest -> newest, ready for charting. Populated by the
     // detail endpoint; empty in the list payload.
     entries: KpiEntry[];
+
+    // Whether the current user is subscribed to this KPI (and therefore notified
+    // when new entries are logged). Populated by the detail endpoint; undefined
+    // in the list payload where subscription state isn't loaded.
+    isSubscribed?: boolean;
   }
 
   // Payload for the `createKpi` mutation / `KpiCreating` operation.
@@ -112,6 +117,10 @@ export namespace SpaceKpisPage {
     onEditKpi: (input: EditKpiInput) => Promise<MutationResult>;
     onDeleteKpi: (kpiId: string) => Promise<MutationResult>;
     onRecordEntry: (input: RecordEntryInput) => Promise<MutationResult>;
+
+    // Subscribe/unsubscribe the current user to a KPI's notifications. Optional
+    // so stories and read-only contexts can omit the follow control.
+    onToggleSubscription?: (input: { kpiId: string; subscribed: boolean }) => Promise<MutationResult>;
 
     // Route-loader driven data states.
     loading?: boolean;

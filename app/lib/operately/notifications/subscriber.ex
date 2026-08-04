@@ -4,6 +4,7 @@ defmodule Operately.Notifications.Subscriber do
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.People.Person
   alias Operately.Messages.Message
+  alias Operately.Kpis.Kpi
 
   defstruct [
     :person,
@@ -116,6 +117,27 @@ defmodule Operately.Notifications.Subscriber do
     |> Map.values()
   end
 
+  def from_kpi(%Kpi{} = kpi) do
+    subs =
+      exclude_canceled_subscriptions(kpi.subscription_list)
+      |> Enum.into(%{}, fn s ->
+        {s.person.id, from_subscription(s)}
+      end)
+
+    potential_subs =
+      kpi.space.members
+      |> Enum.into(%{}, fn p -> {p.id, from_person(p)} end)
+      |> then(fn members ->
+        if kpi.champion_id != nil do
+          Map.put(members, kpi.champion_id, from_kpi_champion(kpi.champion))
+        else
+          members
+        end
+      end)
+
+    merge_subs_and_potential_subs(subs, potential_subs)
+  end
+
   def from_resource_hub_child(resource_hub_child) do
     subs =
       exclude_canceled_subscriptions(resource_hub_child.subscription_list)
@@ -148,6 +170,10 @@ defmodule Operately.Notifications.Subscriber do
   end
 
   defp from_goal_champion(champion = %Person{}) do
+    build_struct(champion, "Champion", priority: true)
+  end
+
+  defp from_kpi_champion(champion = %Person{}) do
     build_struct(champion, "Champion", priority: true)
   end
 
