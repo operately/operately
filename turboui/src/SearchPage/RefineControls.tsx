@@ -148,12 +148,12 @@ function FilterChip({
     </Menu>
   );
 
-  if (isMultiple && selectedCount > 0) {
+  if (isMultiple) {
     return (
       <Tooltip
         content={selectedOptions.map((option) => option.label).join(", ")}
         size="sm"
-        disabled={menuOpen}
+        disabled={menuOpen || selectedCount === 0}
         testId={`search-filter-${filter.id}-tooltip`}
       >
         <span className="inline-flex shrink-0">{menu}</span>
