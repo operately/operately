@@ -118,3 +118,16 @@ export const mockKpis: SpaceKpisPage.Kpi[] = ([
     entries: [],
   },
 ] as Omit<SpaceKpisPage.Kpi, "latestEntry">[]).map(withLatestEntry);
+
+// A trimmed set of KPIs used by the KpiSummaryCard stories to show a mix of
+// trends within a single space: rising (MRR), volatile (NPS), and a brand-new
+// KPI with no data yet (Logo Churn).
+export const mockSummaryKpis: SpaceKpisPage.Kpi[] = [
+  mockKpis[0]!, // Monthly Recurring Revenue — steady upward trend
+  mockKpis[1]!, // Net Promoter Score — up-and-down
+  mockKpis[3]!, // Weekly Sign-ups — single entry, no trend line yet
+  mockKpis[4]!, // Logo Churn — no entries, "No data" row
+];
+
+// A single KPI, for the summary card's single-KPI story.
+export const mockSingleKpi: SpaceKpisPage.Kpi[] = [mockKpis[2]!]; // Service Uptime

@@ -1,30 +1,27 @@
-import React from "react";
+import React, { useMemo } from "react";
 
-import { IconChartColumn } from "turboui";
+import { KpiSummaryCard } from "turboui";
 
+import { Kpi, parseKpiForTurboUi } from "@/models/kpis";
 import { Space } from "@/models/spaces";
 import { usePaths } from "@/routes/paths";
 import { Container } from "./components";
 
 interface Props {
   space: Space;
+  kpis?: Kpi[];
 }
 
-// Space tool card linking to the KPIs page. Only rendered when the company has
-// the `space_kpis` experimental feature enabled (see ToolsSection).
-export function Kpis({ space }: Props) {
+// Space tool card for KPIs. Only rendered when the company has the `space_kpis`
+// experimental feature enabled (see ToolsSection).
+export function Kpis({ space, kpis = [] }: Props) {
   const paths = usePaths();
   const path = paths.spaceKpisPath(space.id!);
+  const parsedKpis = useMemo(() => kpis.map((kpi) => parseKpiForTurboUi(paths, kpi)), [kpis, paths]);
 
   return (
     <Container path={path} testId="kpis-tool">
-      <div className="flex flex-col items-center justify-center h-full px-6 text-center group">
-        <IconChartColumn size={40} className="text-content-dimmed mb-3" />
-        <div className="text-base font-bold">KPIs</div>
-        <div className="mt-1 text-sm text-content-dimmed">
-          Track the numbers this space cares about and log updates on a weekly or monthly cadence.
-        </div>
-      </div>
+      <KpiSummaryCard kpis={parsedKpis} />
     </Container>
   );
 }

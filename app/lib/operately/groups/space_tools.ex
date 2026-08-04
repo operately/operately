@@ -15,6 +15,7 @@ defmodule Operately.Groups.SpaceTools do
     field :messages_boards, {:array, :map}, virtual: true
     field :resource_hubs, {:array, :map}, virtual: true
     field :tasks, {:array, :map}, virtual: true
+    field :kpis, {:array, :map}, virtual: true
   end
 
   def changeset(space_tools, attrs) when is_struct(attrs, __MODULE__) do
@@ -45,7 +46,8 @@ defmodule Operately.Groups.SpaceTools do
       goals: Map.get(attrs, :goals),
       messages_boards: Map.get(attrs, :messages_boards),
       resource_hubs: Map.get(attrs, :resource_hubs),
-      tasks: Map.get(attrs, :tasks)
+      tasks: Map.get(attrs, :tasks),
+      kpis: Map.get(attrs, :kpis)
     }
   end
 end
