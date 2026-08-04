@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 210
+- Endpoints: 218
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -122,8 +122,16 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people search` | `op people search` | `GET` | `/api/external/v1/people/search` |
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
 | `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
+| `project_templates create` | `op project_templates create` | `POST` | `/api/external/v1/project_templates/create` |
+| `project_templates create_milestone` | `op project_templates create_milestone` | `POST` | `/api/external/v1/project_templates/create_milestone` |
+| `project_templates create_task` | `op project_templates create_task` | `POST` | `/api/external/v1/project_templates/create_task` |
+| `project_templates delete_milestone` | `op project_templates delete_milestone` | `POST` | `/api/external/v1/project_templates/delete_milestone` |
+| `project_templates delete_task` | `op project_templates delete_task` | `POST` | `/api/external/v1/project_templates/delete_task` |
 | `project_templates get` | `op project_templates get` | `GET` | `/api/external/v1/project_templates/get` |
 | `project_templates list` | `op project_templates list` | `GET` | `/api/external/v1/project_templates/list` |
+| `project_templates update` | `op project_templates update` | `POST` | `/api/external/v1/project_templates/update` |
+| `project_templates update_milestone` | `op project_templates update_milestone` | `POST` | `/api/external/v1/project_templates/update_milestone` |
+| `project_templates update_task` | `op project_templates update_task` | `POST` | `/api/external/v1/project_templates/update_task` |
 | `projects acknowledge_check_in` | `op projects acknowledge_check_in` | `POST` | `/api/external/v1/projects/acknowledge_check_in` |
 | `projects acknowledge_retrospective` | `op projects acknowledge_retrospective` | `POST` | `/api/external/v1/projects/acknowledge_retrospective` |
 | `projects close` | `op projects close` | `POST` | `/api/external/v1/projects/close` |
