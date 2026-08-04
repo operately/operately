@@ -1026,6 +1026,31 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
+  describe "permissions - suspended member" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:member)
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_project(:project, :space)
+    end
+
+    test "an active member sees the company work map", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.member, %{company_id: ctx.company.id})
+
+      assert length(work_map) == 2
+    end
+
+    test "a suspended member sees nothing", ctx do
+      ctx = Factory.suspend_company_member(ctx, :member)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.member, %{company_id: ctx.company.id})
+
+      assert work_map == []
+    end
+  end
+
   describe "handling edge cases" do
     setup ctx do
       ctx

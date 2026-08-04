@@ -8,7 +8,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   alias Operately.Projects.Project
   alias Operately.Groups.Group
   alias Operately.WorkMaps.{WorkMap, WorkMapItem}
-  alias Operately.Access.Filters
+  alias Operately.Access.{Binding, GroupMembership}
 
   @doc """
   Retrieves a work map based on the provided parameters.
@@ -316,7 +316,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   defp space_preload_query(:system), do: from(g in Group)
 
   defp space_preload_query(%Operately.People.Person{id: requester_id}) do
-    Filters.filter_by_view_access(Group, requester_id)
+    from(g in Group, join: c in assoc(g, :access_context), as: :context)
+    |> where_view_access(requester_id)
   end
 
   defp space_preload_query(_person) do
@@ -340,12 +341,37 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp filter_by_view_access(query, :system, _name), do: query
 
-  defp filter_by_view_access(query, person = %Operately.People.Person{}, name) do
-    Filters.filter_by_view_access(query, person.id, named_binding: name)
+  defp filter_by_view_access(query, %Operately.People.Person{id: person_id}, name) do
+    from([{^name, item}] in query, join: c in assoc(item, :access_context), as: :context)
+    |> where_view_access(person_id)
   end
 
   defp filter_by_view_access(query, person, _name) do
     Logger.warning("Invalid person for view access filter: #{inspect(person)}")
     where(query, [p], false)
+  end
+
+  # Restricts a query (that already joined its :access_context as `:context`) to
+  # resources the person can view.
+  #
+  # Instead of walking each resource's context -> bindings -> group -> memberships
+  # -> person (which forces a scan of the company-wide membership list for every
+  # resource), we resolve the person's access groups once and match bindings by
+  # (group_id, access_level). This uses the access_bindings_group_id_access_level_idx
+  # index and keeps the query bounded to the person's handful of groups.
+  defp where_view_access(query, person_id) do
+    from([context: c] in query,
+      join: b in assoc(c, :bindings),
+      where: b.access_level >= ^Binding.view_access() and b.group_id in subquery(person_group_ids(person_id)),
+      distinct: true
+    )
+  end
+
+  defp person_group_ids(person_id) do
+    from(m in GroupMembership,
+      join: p in assoc(m, :person),
+      where: m.person_id == ^person_id and is_nil(p.suspended_at),
+      select: m.group_id
+    )
   end
 end
