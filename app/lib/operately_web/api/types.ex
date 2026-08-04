@@ -892,6 +892,7 @@ defmodule OperatelyWeb.Api.Types do
     field :cadence, :string, null: false
     field :space_id, :id, null: false
     field? :champion, :person, null: true
+    field? :latest_entry, :kpi_entry, null: true
     field? :entries, list_of(:kpi_entry), null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true

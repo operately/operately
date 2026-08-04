@@ -44,7 +44,13 @@ export namespace SpaceKpisPage {
     champion: Person | null;
     insertedAt: Date;
 
-    // Entries ordered oldest -> newest, ready for charting.
+    // The most recent entry, provided by the list endpoint so the list view can
+    // show the latest value without loading the full history. Null when the KPI
+    // has no entries yet.
+    latestEntry: KpiEntry | null;
+
+    // Entries ordered oldest -> newest, ready for charting. Populated by the
+    // detail endpoint; empty in the list payload.
     entries: KpiEntry[];
   }
 

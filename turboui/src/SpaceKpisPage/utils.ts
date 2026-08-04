@@ -36,9 +36,11 @@ function trimZeroes(value: number): string {
 }
 
 // Entries are stored oldest -> newest; the latest is the most recent sample.
+// The list payload omits full history but carries `latestEntry`, so fall back to
+// it when `entries` is empty (e.g. the list view).
 export function latestEntry(kpi: SpaceKpisPage.Kpi): SpaceKpisPage.KpiEntry | null {
-  if (kpi.entries.length === 0) return null;
-  return kpi.entries[kpi.entries.length - 1]!;
+  if (kpi.entries.length > 0) return kpi.entries[kpi.entries.length - 1]!;
+  return kpi.latestEntry ?? null;
 }
 
 // Signed delta between the two most recent entries, or null when we cannot
