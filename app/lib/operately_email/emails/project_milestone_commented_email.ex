@@ -71,6 +71,13 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
         {nil, nil}
       end
 
+    item_url =
+      if action == "none" do
+        OperatelyWeb.Paths.project_milestone_path(company, milestone, comment)
+      else
+        OperatelyWeb.Paths.project_milestone_path(company, milestone)
+      end
+
     %{
       parent_id: parent.id,
       parent_type: parent.type,
@@ -78,7 +85,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
       headline: headline_text(milestone, action),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
-      item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),
+      item_url: item_url |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil

@@ -23,6 +23,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInAcknowledgedEmail do
 
   def buffered_item(_person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])
+    check_in = Operately.Projects.get_check_in!(activity.content["check_in_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
 
@@ -33,7 +34,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInAcknowledgedEmail do
       headline: "acknowledged a project check-in",
       excerpt_html: nil,
       excerpt_text: nil,
-      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      item_url: OperatelyWeb.Paths.project_check_in_path(company, check_in) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil

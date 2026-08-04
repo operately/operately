@@ -26,6 +26,8 @@ defmodule Operately.Operations.CommentAdding.Activity do
   end
 
   def insert(multi, creator, action = :project_check_in_commented, entity) do
+    entity = Operately.Repo.preload(entity, :project)
+
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       %{
         company_id: creator.company_id,
@@ -38,6 +40,8 @@ defmodule Operately.Operations.CommentAdding.Activity do
   end
 
   def insert(multi, creator, action = :project_retrospective_commented, entity) do
+    entity = Operately.Repo.preload(entity, :project)
+
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       %{
         company_id: creator.company_id,

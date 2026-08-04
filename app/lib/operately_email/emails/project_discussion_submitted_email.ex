@@ -44,7 +44,7 @@ defmodule OperatelyEmail.Emails.ProjectDiscussionSubmittedEmail do
       headline: "started the project discussion \"#{discussion.title}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
-      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      item_url: Paths.project_discussion_path(company, discussion) |> Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil
