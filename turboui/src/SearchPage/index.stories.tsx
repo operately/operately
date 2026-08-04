@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
 import type { SearchResult } from "../ApiTypes";
+import { IconCalendar, IconLayoutGrid, IconUser, IconWorld } from "../icons";
 import { SearchPage } from "./index";
 
 const meta = {
@@ -39,6 +40,99 @@ function result(overrides: Partial<SearchResult & { link: string }> = {}): Searc
 function InteractivePage(props: Omit<SearchPage.Props, "query" | "onQueryChange"> & { initialQuery?: string }) {
   const [query, setQuery] = React.useState(props.initialQuery ?? "");
   return <SearchPage {...props} query={query} onQueryChange={setQuery} />;
+}
+
+const DEFAULT_FILTER_SELECTIONS: Record<string, string[]> = {
+  spaces: [],
+  types: [],
+  people: [],
+  time: [],
+};
+
+function buildRefineFilters(selections: Record<string, string[]>): SearchPage.RefineFilter[] {
+  return [
+    {
+      id: "spaces",
+      label: "All spaces",
+      icon: IconWorld,
+      selectionMode: "multiple",
+      selectedOptionIds: selections.spaces,
+      options: [
+        { id: "product", label: "Product" },
+        { id: "marketing", label: "Marketing" },
+        { id: "engineering", label: "Engineering" },
+      ],
+    },
+    {
+      id: "types",
+      label: "All types",
+      icon: IconLayoutGrid,
+      selectionMode: "multiple",
+      selectedOptionIds: selections.types,
+      options: [
+        { id: "projects", label: "Projects" },
+        { id: "goals", label: "Goals" },
+        { id: "documents", label: "Documents" },
+        { id: "discussions", label: "Discussions" },
+      ],
+    },
+    {
+      id: "people",
+      label: "Anyone",
+      icon: IconUser,
+      selectionMode: "multiple",
+      selectedOptionIds: selections.people,
+      options: [
+        { id: "me", label: "Created by me" },
+        { id: "taylor", label: "Taylor Reed" },
+        { id: "alex", label: "Alex Kim" },
+      ],
+    },
+    {
+      id: "time",
+      label: "All time",
+      icon: IconCalendar,
+      selectionMode: "single",
+      selectedOptionIds: selections.time,
+      options: [
+        { id: "last_7_days", label: "Last 7 days" },
+        { id: "last_30_days", label: "Last 30 days" },
+        { id: "last_90_days", label: "Last 90 days" },
+        { id: "last_12_months", label: "Last 12 months" },
+      ],
+    },
+  ];
+}
+
+function InteractiveRefinePage({
+  initialQuery = "customer evidence",
+  results,
+}: {
+  initialQuery?: string;
+  results: SearchPage.Result[];
+}) {
+  const [query, setQuery] = React.useState(initialQuery);
+  const [sort, setSort] = React.useState<SearchPage.SortMode>("best_match");
+  const [selections, setSelections] = React.useState(DEFAULT_FILTER_SELECTIONS);
+
+  const refine: SearchPage.Refine = {
+    sort,
+    onSortChange: setSort,
+    filters: buildRefineFilters(selections),
+    onFilterChange: (filterId, selectedOptionIds) => {
+      setSelections((current) => ({ ...current, [filterId]: selectedOptionIds }));
+    },
+  };
+
+  return (
+    <SearchPage
+      query={query}
+      onQueryChange={setQuery}
+      status="success"
+      results={results}
+      refine={refine}
+    />
+  );
 }
 
 export const Initial: Story = {
@@ -192,4 +286,31 @@ export const ThirtyResults: Story = {
       )}
     />
   ),
+};
+
+const refineDemoResults = Array.from({ length: 30 }, (_, index) =>
+  result({
+    id: `refine-result-${index}`,
+    title: `Customer evidence result ${index + 1}`,
+    context: index % 2 === 0 ? "Product" : "Marketing",
+    state: null,
+    link: `/acme/results/${index + 1}`,
+  }),
+);
+
+export const WithRefineControls: Story = {
+  args: { query: "customer evidence", status: "success", results: refineDemoResults, onQueryChange: () => undefined },
+  render: () => <InteractiveRefinePage results={refineDemoResults} />,
+};
+
+export const StickyRefineScrolling: Story = {
+  args: { query: "customer evidence", status: "success", results: refineDemoResults, onQueryChange: () => undefined },
+  parameters: {
+    docs: {
+      description: {
+        story: "Scroll the page to validate that the search field and refine controls stay fixed at the top.",
+      },
+    },
+  },
+  render: () => <InteractiveRefinePage results={refineDemoResults} />,
 };
