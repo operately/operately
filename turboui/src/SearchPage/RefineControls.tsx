@@ -38,8 +38,8 @@ export function RefineControls({ sort, onSortChange, filters, onFilterChange }: 
     <div
       role="group"
       aria-label="Refine results"
-      className="mt-3 flex flex-wrap items-center justify-between gap-y-2"
-      data-testid="search-refine-controls"
+      className="mt-3 flex flex-wrap items-center justify-start gap-x-8 gap-y-2"
+      data-test-id="search-refine-controls"
     >
       <SortToggle sort={sort} onSortChange={onSortChange} />
       {filters.map((filter) => (
@@ -55,7 +55,7 @@ function SortToggle({ sort, onSortChange }: Pick<RefineControlsProps, "sort" | "
       role="group"
       aria-label="Sort results"
       className="inline-flex shrink-0 rounded-full bg-surface-dimmed p-0.5"
-      data-testid="search-sort-toggle"
+      data-test-id="search-sort-toggle"
     >
       {SORT_OPTIONS.map((option) => {
         const selected = sort === option.id;
@@ -65,7 +65,7 @@ function SortToggle({ sort, onSortChange }: Pick<RefineControlsProps, "sort" | "
             key={option.id}
             type="button"
             aria-pressed={selected}
-            data-testid={`search-sort-${option.id}`}
+            data-test-id={`search-sort-${option.id}`}
             onClick={() => onSortChange(option.id)}
             className={classNames(
               "rounded-full px-2.5 py-1 text-xs transition-colors",
@@ -100,14 +100,14 @@ function FilterChip({
     <button
       type="button"
       className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-content-dimmed transition-colors hover:text-content-base"
-      data-testid={`search-filter-${filter.id}`}
+      data-test-id={`search-filter-${filter.id}`}
     >
       <Icon size={18} aria-hidden="true" className="shrink-0" />
       <span>{displayLabel}</span>
       {isMultiple && selectedCount > 0 ? (
         <span
           className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-surface-dimmed px-1.5 text-xs font-semibold text-content-accent"
-          data-testid={`search-filter-${filter.id}-count`}
+          data-test-id={`search-filter-${filter.id}-count`}
         >
           {selectedCount}
         </span>
@@ -117,13 +117,7 @@ function FilterChip({
   );
 
   const menu = (
-    <Menu
-      testId={`search-filter-menu-${filter.id}`}
-      size="small"
-      align="start"
-      customTrigger={trigger}
-      onOpenChange={setMenuOpen}
-    >
+    <Menu testId={`search-filter-${filter.id}`} size="small" align="start" customTrigger={trigger} onOpenChange={setMenuOpen}>
       {filter.options.map((option) => {
         const selected = filter.selectedOptionIds.includes(option.id);
 
@@ -154,12 +148,12 @@ function FilterChip({
     </Menu>
   );
 
-  if (isMultiple && selectedCount > 0) {
+  if (isMultiple) {
     return (
       <Tooltip
         content={selectedOptions.map((option) => option.label).join(", ")}
         size="sm"
-        disabled={menuOpen}
+        disabled={menuOpen || selectedCount === 0}
         testId={`search-filter-${filter.id}-tooltip`}
       >
         <span className="inline-flex shrink-0">{menu}</span>

@@ -24,6 +24,7 @@ export function Tooltip(props: Tooltip.Props) {
   props = { ...props, delayDuration: props.delayDuration || DEFAULT_DELAY_DURATION };
 
   const size = props.size ?? "md";
+  const [open, setOpen] = React.useState(false);
 
   const sizeClasses =
     size === "sm"
@@ -46,7 +47,13 @@ export function Tooltip(props: Tooltip.Props) {
 
   return (
     <ReactTooltip.Provider>
-      <ReactTooltip.Root delayDuration={props.delayDuration} open={props.disabled ? false : undefined}>
+      <ReactTooltip.Root
+        delayDuration={props.delayDuration}
+        open={props.disabled ? false : open}
+        onOpenChange={(nextOpen) => {
+          if (!props.disabled) setOpen(nextOpen);
+        }}
+      >
         <ReactTooltip.Trigger asChild data-testid={props.testId} className={props.contentClassName}>
           {props.children}
         </ReactTooltip.Trigger>
