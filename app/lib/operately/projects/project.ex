@@ -15,6 +15,7 @@ defmodule Operately.Projects.Project do
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
+    belongs_to :source_template, Operately.ProjectTemplates.ProjectTemplate
 
     has_many :contributors, Contributor, foreign_key: :project_id
     has_many :contributing_people, through: [:contributors, :person]
@@ -86,6 +87,7 @@ defmodule Operately.Projects.Project do
       :description,
       :group_id,
       :goal_id,
+      :source_template_id,
       :next_check_in_scheduled_at,
       :health,
       :company_id,

@@ -413,6 +413,9 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert Discovery.classify_table("companies") == :included
       assert Discovery.classify_table("projects") == :included
       assert Discovery.classify_table("milestone_comments") == :included
+      assert Discovery.classify_table("project_templates") == :included
+      assert Discovery.classify_table("project_template_milestones") == :included
+      assert Discovery.classify_table("project_template_tasks") == :included
     end
 
     test "does not classify removed agent tables as included" do
