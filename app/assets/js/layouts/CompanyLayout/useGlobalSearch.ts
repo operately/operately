@@ -1,7 +1,6 @@
-import Api, { CompaniesQuickSearchInput, CompaniesQuickSearchResult, Company, QuickSearchResource } from "@/api";
+import Api, { CompaniesQuickSearchInput, CompaniesQuickSearchResult, QuickSearchResource } from "@/api";
 import * as React from "react";
 
-import * as Companies from "@/models/companies";
 import { Paths, usePaths } from "@/routes/paths";
 import { GlobalSearch } from "turboui";
 
@@ -14,11 +13,7 @@ export function useGlobalSearchHandler(): (params: SearchParams) => Promise<Glob
   return React.useCallback(({ query }: SearchParams) => loadQuickSearchResults(paths, query), [paths]);
 }
 
-export function companySearchPathBuilder(paths: Paths, company: Company): GlobalSearch.Props["fullTextSearchPath"] {
-  if (!Companies.hasFeature(company, "full_text_search")) {
-    return undefined;
-  }
-
+export function companySearchPathBuilder(paths: Paths): GlobalSearch.Props["fullTextSearchPath"] {
   return (query) => paths.searchPath(query);
 }
 
