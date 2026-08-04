@@ -95,6 +95,26 @@ export const Empty: Story = {
 };
 
 /**
+ * First-run company state with a focused project creation form.
+ */
+export const FirstProject: Story = {
+  render: (args) => <WorkMapPage {...args} />,
+  args: {
+    title: "Company Work Map",
+    items: [],
+    addingEnabled: true,
+    spaceSearch: mockSpaceSearch,
+    addItem: mockAddItem,
+    addItemDefaultSpace: mockSpaces[0]!,
+    emptyStateVariant: "first-project",
+    onItemCreated: (type, id) => console.log("Created first item:", type, id),
+    columnOptions: {
+      hideProject: true,
+    },
+  },
+};
+
+/**
  * Work Map with a closed parent which has ongoing children.
  * This showcases the behavior where a closed parent is included in the filtered results
  * because it has ongoing children, even though the parent itself is closed.

@@ -39,7 +39,10 @@
 
 - When a request references an existing screen, component, or screenshot, inspect that source in the repo before coding. Reuse its structure, typography, and spacing verbatim unless the user explicitly requests something different.
 - Treat screenshots as canonical references: find the implementation they depict (e.g., ProjectPage headers, Milestone cards) and mirror that implementation rather than improvising.
-- Prefer existing TurboUI components over hand-rolled versions. If you cannot reuse an existing piece, call it out in the summary with a brief reason.
+- Before writing JSX for new or changed UI, inventory the required controls and interaction patterns, then search TurboUI exports and existing usages for matching components.
+- Use existing TurboUI components when they exist. Do not hand-roll inputs, buttons, selects, textareas, links, modals, or validation markup unless you are implementing a TurboUI primitive or no suitable primitive exists.
+- Treat hand-rolling an interactive control when a TurboUI equivalent exists as a P2 architecture issue during review.
+- In the implementation summary, list the TurboUI primitives reused. For each remaining raw interactive element, briefly explain why no existing component was suitable.
 
 ## Activity System Guidelines
 

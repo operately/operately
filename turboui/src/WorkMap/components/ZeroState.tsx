@@ -1,6 +1,9 @@
 import React from "react";
 
-import { WorkMap } from "..";
+import type { WorkMap } from "..";
+import { PrimaryButton } from "../../Button";
+import * as Forms from "../../Forms";
+import { ActionLink } from "../../Link";
 import { SpaceField } from "../../SpaceField";
 import { IconGoal, IconGrowth, IconProject } from "../../icons";
 import { AddItemModal } from "./AddItemModal";
@@ -12,14 +15,15 @@ interface ZeroStateProps {
   addItemDefaultSpace: SpaceField.Space;
   hideCompanyAccess?: boolean;
   zeroStateMessage?: string;
+  variant?: WorkMap.EmptyStateVariant;
+  onItemCreated?: WorkMap.ItemCreatedFn;
 }
 
 export function ZeroState(props: ZeroStateProps) {
-  if (props.addingEnabled) {
-    return <ZeroStateCanAdd {...props} />;
-  } else {
-    return <ZeroStateCannotAdd message={props.zeroStateMessage} />;
-  }
+  if (!props.addingEnabled) return <ZeroStateCannotAdd message={props.zeroStateMessage} />;
+  if (props.variant === "first-project") return <FirstProjectZeroState {...props} />;
+
+  return <ZeroStateCanAdd {...props} />;
 }
 
 function ZeroStateCannotAdd({ message }: { message?: string }) {
@@ -86,6 +90,105 @@ export function ZeroStateCanAdd({ spaceSearch, addItem, addItemDefaultSpace, hid
         initialItemType={modalState.type}
         hideTypeSelector={true}
         hideCompanyAccess={Boolean(hideCompanyAccess)}
+      />
+    </div>
+  );
+}
+
+function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onItemCreated }: ZeroStateProps) {
+  const [navigationPending, setNavigationPending] = React.useState(false);
+  const [goalModalOpen, setGoalModalOpen] = React.useState(false);
+
+  const form = Forms.useForm({
+    fields: { name: "" },
+    validate: (addError) => {
+      if (!form.values.name.trim()) {
+        addError("name", "Enter a project name.");
+      }
+    },
+    submit: async () => {
+      const result = await addItem({
+        name: form.values.name.trim(),
+        type: "project",
+        space: addItemDefaultSpace,
+        parentId: null,
+        accessLevels: { company: "edit", space: "edit" },
+      });
+
+      if (onItemCreated) {
+        setNavigationPending(true);
+        await onItemCreated("project", result.id);
+      }
+    },
+    onError: (error) => {
+      console.error("Failed to create project:", error);
+      setNavigationPending(false);
+      form.actions.addErrors({ name: "The project could not be created. Try again." });
+    },
+  });
+
+  const submitting = form.state === "submitting" || navigationPending;
+
+  return (
+    <div className="px-4 py-12 sm:py-16" data-test-id="first-project-zero-state">
+      <div className="mx-auto flex max-w-xs flex-col items-center gap-6 text-center">
+        <div className="flex flex-col items-center gap-2">
+          <h2 className="text-balance text-xl font-semibold text-content-strong">Add your first project</h2>
+          <p className="max-w-[42ch] text-pretty text-base text-content-dimmed sm:text-sm">
+            Start with something already in motion. You can add tasks, milestones, and teammates next.
+          </p>
+        </div>
+
+        <Forms.Form form={form} testId="first-project-form">
+          <div className="flex w-full flex-col gap-3 text-left">
+            <Forms.FieldGroup>
+              <Forms.TextInput
+                autoFocus
+                field="name"
+                label="Project name"
+                placeholder="e.g. Launch the new website"
+                testId="first-project-name"
+              />
+            </Forms.FieldGroup>
+
+            <PrimaryButton
+              className="w-full"
+              type="submit"
+              size="sm"
+              loading={submitting}
+              testId="create-first-project"
+            >
+              Create project
+            </PrimaryButton>
+          </div>
+        </Forms.Form>
+
+        <p className="text-pretty text-base text-content-dimmed sm:text-sm">
+          Tracking an outcome instead?{" "}
+          <ActionLink
+            underline="hover"
+            className="font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
+            onClick={() => setGoalModalOpen(true)}
+            testId="add-first-goal"
+          >
+            Add a goal
+          </ActionLink>
+          .
+        </p>
+      </div>
+
+      <AddItemModal
+        isOpen={goalModalOpen}
+        close={() => setGoalModalOpen(false)}
+        parentGoal={null}
+        spaceSearch={spaceSearch}
+        save={addItem}
+        space={addItemDefaultSpace}
+        initialItemType="goal"
+        hideTypeSelector
+        hideCreateMore
+        keepOpenAfterSave={Boolean(onItemCreated)}
+        onSaved={onItemCreated}
       />
     </div>
   );

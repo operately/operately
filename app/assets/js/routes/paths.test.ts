@@ -12,6 +12,12 @@ describe("Paths.companyBillingPath", () => {
   });
 });
 
+describe("Paths.companyWorkMapPath", () => {
+  it("builds the company Work Map path before a company-scoped Paths instance exists", () => {
+    expect(Paths.companyWorkMapPath("acme")).toBe("/acme/work-map");
+  });
+});
+
 describe("Paths.companyBillingPlansPath", () => {
   it("builds the company billing plans path without query params", () => {
     expect(new Paths({ companyId: "acme" }).companyBillingPlansPath()).toBe("/acme/admin/billing/plans");
