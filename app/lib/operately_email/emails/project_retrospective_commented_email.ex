@@ -41,7 +41,7 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveCommentedEmail do
       headline: "commented on the project retrospective",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
-      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      item_url: OperatelyWeb.Paths.project_retrospective_path(company, project, comment) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil

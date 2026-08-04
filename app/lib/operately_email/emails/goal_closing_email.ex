@@ -63,7 +63,7 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
       headline: "closed this goal",
       excerpt_html: nil,
       excerpt_text: nil,
-      item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
+      item_url: Paths.goal_activity_path(company, activity) |> Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil

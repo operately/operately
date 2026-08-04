@@ -33,7 +33,7 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveAcknowledgedEmail do
       headline: "acknowledged a project retrospective",
       excerpt_html: nil,
       excerpt_text: nil,
-      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      item_url: OperatelyWeb.Paths.project_retrospective_path(company, project) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil
