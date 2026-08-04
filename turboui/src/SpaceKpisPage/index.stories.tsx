@@ -69,6 +69,7 @@ function Harness(args: HarnessArgs) {
       cadence: input.cadence,
       champion,
       insertedAt: new Date(),
+      latestEntry: null,
       entries: [],
     };
 
@@ -120,18 +121,15 @@ function Harness(args: HarnessArgs) {
     setKpis((prev) =>
       prev.map((kpi) =>
         kpi.id === input.kpiId
-          ? {
-              ...kpi,
-              entries: [
-                ...kpi.entries,
-                {
-                  id: `entry-${crypto.randomUUID()}`,
-                  value: input.value,
-                  recordedAt: new Date(),
-                  recordedBy: mockCurrentUser,
-                },
-              ],
-            }
+          ? (() => {
+              const entry = {
+                id: `entry-${crypto.randomUUID()}`,
+                value: input.value,
+                recordedAt: new Date(),
+                recordedBy: mockCurrentUser,
+              };
+              return { ...kpi, latestEntry: entry, entries: [...kpi.entries, entry] };
+            })()
           : kpi,
       ),
     );
