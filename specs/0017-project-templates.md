@@ -77,7 +77,7 @@ Under **Include people and assignments**, show the helper text: **Copy the proje
 
 Creating a template from the company-level page requires choosing a Space first. Creating it from a Space page preselects that Space. Saving an existing project creates the template in the same Space as the project.
 
-The resulting template opens like a standard project. Its breadcrumb is **Space > Project Templates**, and a **Template** pill appears next to the title in place of the project status.
+The resulting template opens in an editor that looks and behaves like the reusable parts of a standard project. It is not a project record. Its breadcrumb is **Space > Project Templates**, and a **Template** pill appears next to the title in place of the project status.
 
 ### Creating a project from a template
 
@@ -113,6 +113,36 @@ The following are always reset or excluded:
 The template stores its Space. A project created from the template belongs to that same Space, but does not automatically inherit the source project's Company-members and Space-members baseline access settings. Its parent goal and baseline access levels are chosen through Operately's normal project creation flow. Direct contributor access is copied only when **Include people and assignments** is selected.
 
 When comments are included, each comment stays attached to its copied parent resource and retains its content and author attribution. Copying comments does not copy reactions or subscriptions and does not send mention or comment notifications. Comments whose parent resource is not included are never copied; this means discussion comments require both **Include discussions** and **Include comments**.
+
+## Persistence Boundary
+
+Templates are not a kind of project and are never stored in the `projects` table. Store the reusable root fields in a dedicated `project_templates` table and store the reusable graph in template-owned tables. At minimum, the core model needs template-specific milestones and tasks; optional people, assignments, discussions, comments, and Docs & Files data must also use template-owned records rather than runtime project records.
+
+The template tables copy only the fields required to describe reusable future work. They do not contain project runtime fields such as health, status, check-in scheduling, completion state, retrospective state, parent goal, access baselines, subscription lists, notification state, or contextual project dates.
+
+The initial `project_templates` root contains only the reusable project-level data and template lifecycle metadata:
+
+| `project_templates` field | Source or purpose |
+| --- | --- |
+| `id` | Template identity |
+| `company_id` | Copied from the source project or selected Space |
+| `space_id` | The owning Space; equivalent to a project's `group_id` |
+| `creator_id` | Person who created the template |
+| `source_project_id` | Optional provenance when saved from a project |
+| `name`, `description` | Reusable project content |
+| `duration_days` | Relative replacement for a project timeframe end date |
+| `task_statuses` | Reusable workflow definitions |
+| `milestones_ordering_state`, `tasks_kanban_state` | Reusable ordering and board layout |
+| `archived_at`, `deleted_at` | Template lifecycle state |
+| `inserted_at`, `updated_at` | Standard timestamps |
+
+Do not copy `goal_id`, `private`, `subscription_list_id`, `last_check_in_id`, `last_check_in_status`, `next_check_in_scheduled_at`, `health`, `status`, `closed_at`, `success_status`, deprecated scheduling fields, or any virtual project fields into `project_templates`.
+
+Template milestones and tasks contain their reusable content, ordering, workflow placement, and non-negative due-date offsets. They do not use `project_id`, and they cannot be loaded by ordinary milestone or task APIs. Template-specific people and assignment records reference people for later materialization but do not grant access to the template. Template visibility and management always come from the owning Space.
+
+Generated projects remain ordinary rows in `projects` and may hold a nullable `source_template_id` for provenance. This is the only direct persistence link between a running project and a template. It does not create synchronization in either direction.
+
+Reuse project code only below the persistence and runtime boundary: shared value objects, pure validation and ordering helpers, copy primitives, and TurboUI presentation components are appropriate to share. Project schemas, project getters, runtime mutations, access contexts, activities, subscriptions, notifications, search indexing, and scheduled work are not.
 
 ## Relative Scheduling
 
@@ -170,6 +200,8 @@ If a referenced person has been removed or suspended since the template was save
 - A Space page shows only templates belonging to that Space.
 - A template never appears to people without access to its Space.
 - The New Project flow shows only templates for the selected Space.
+- Creating or editing a template never inserts a row into `projects`, `project_milestones`, or `tasks`.
+- Ordinary project, milestone, and task getters and mutations cannot resolve template records by construction; they do not depend on callers remembering a template guard.
 - A user can create a project from a template from either the library or New Project flow.
 - Creating a project from a template requires a start date.
 - The generated project preserves milestone/task structure, ordering, workflow, descriptions, and selected reusable content, including discussions when selected.
@@ -180,7 +212,7 @@ If a referenced person has been removed or suspended since the template was save
 
 ## Implementation Phases
 
-Implement templates as a distinct kind of project-backed aggregate rather than as a second, parallel project system. A template can then reuse the existing project, milestone, task, discussion, and resource-hub schemas and the TurboUI project page, while template-specific APIs and guards keep it out of normal work, activity, notification, search, and reporting flows.
+Implement templates as a separate persistence aggregate with its own domain boundary. A template resembles a project in the editor and can share pure domain helpers and TurboUI components, but it must not reuse project, milestone, task, discussion, comment, or resource-hub rows. This makes ordinary project behavior safe by default: existing and future project endpoints cannot accidentally operate on templates because template IDs do not exist in project runtime tables.
 
 Store relative scheduling separately from normal contextual dates. The project template stores a duration in calendar days; template milestones and tasks store non-negative due-date offsets. Materializing a project converts those offsets into ordinary contextual dates and does not copy the offsets into the generated project.
 
@@ -190,17 +222,18 @@ Keep the complete feature behind a `project_templates` experimental feature unti
 
 ### Phase 1 — Template persistence, isolation, and authorization
 
-This phase establishes the invariant that template-shaped project data cannot leak into normal project behavior.
+This phase establishes the invariant that template data is physically separate from normal project behavior.
 
 #### PR 1.1 — `feat: Add the project template data model`
 
-- [ ] Add an explicit project kind with `project` as the default for all existing rows and `template` for project templates.
-- [ ] Add template archival state, nullable source-template provenance for generated projects, and indexed lookup by company, Space, kind, and archival/deletion state.
-- [ ] Add template-only non-negative schedule fields for project duration, milestone due offset, and task due offset, with changeset and database constraints.
-- [ ] Add explicit `projects` and `templates` query scopes. Audit project lists, Work Map queries, goal children, assignments, global/full-text search, feeds, reports, scheduled jobs, and notification queries so they accept only real projects unless they intentionally opt into templates.
-- [ ] Make ordinary project getters and mutations reject template IDs. Template code must use the template domain boundary instead of accidentally treating a template as running work.
-- [ ] Preserve template rows and source-template provenance through company export/import.
-- [ ] Cover defaults, constraints, provenance, and every isolation boundary with focused schema and query tests.
+- [x] Add `project_templates`, `project_template_milestones`, and `project_template_tasks` tables with foreign keys that never point through `projects`.
+- [x] Copy only reusable fields into the template schemas: root description, duration, task statuses and ordering; milestone content, ordering and due offset; and task content, workflow placement, ordering, priority, size, due offset, and due-relative reminders.
+- [x] Add template archival and soft-deletion state, optional source-project provenance, and indexed lookup by company, Space, and archival/deletion state.
+- [x] Add non-negative database and changeset constraints for project duration, milestone due offset, and task due offset.
+- [x] Add nullable `projects.source_template_id` provenance for generated projects. Deleting a template must nullify or otherwise preserve generated projects without coupling their lifecycle.
+- [x] Do not add a project kind, template query scopes to `Operately.Projects.Project`, or template branches to ordinary project getters and mutations.
+- [x] Preserve template-owned rows and generated-project source-template provenance through company export/import.
+- [x] Cover defaults, constraints, cascading template cleanup, provenance, and physical isolation from ordinary project, milestone, and task queries with focused schema tests.
 
 `deleted_at` continues to represent deletion. Use a separate archival field for the reversible archive/restore lifecycle so archived and deleted templates remain distinguishable.
 
@@ -220,16 +253,16 @@ At the end of this phase, a Space administrator can create and edit a blank core
 
 #### PR 2.1 — `feat: Create and edit blank project templates`
 
-- [ ] Add a blank-template creation operation that creates the project-shaped root, access context, default task workflow, and project resource hub without creating a project activity, check-in schedule, subscriptions, or search entry.
+- [ ] Add a blank-template creation operation that creates the template root and default task workflow without creating a project, project access context, runtime resource hub, activity, check-in schedule, subscription list, or search entry.
 - [ ] Add template-safe mutations for name, description, duration, custom task statuses, milestones, tasks, ordering, Kanban state, and relative task/milestone dates.
-- [ ] Reuse focused schema/domain helpers from projects where they have no project-runtime side effects; keep activity, notification, subscription, and search behavior out of template mutations.
-- [ ] Reject negative offsets and reject project-only actions such as check-ins, pause/resume, close, retrospective, goal connection, and project access-baseline editing.
+- [ ] Reuse pure domain helpers from projects where they have no persistence or project-runtime side effects; template mutations must write only template-owned tables.
+- [ ] Reject negative offsets. Project-only actions such as check-ins, pause/resume, close, retrospective, goal connection, and project access-baseline editing must not exist in the template API.
 - [ ] Keep all template edits authorized by Full Access to the owning Space.
 - [ ] Add operation tests proving template edits do not create activities, notifications, subscriptions, check-ins, or search entries.
 
 #### PR 2.2 — `feat: Add a project template mode to TurboUI`
 
-- [ ] Extend the existing TurboUI project page through an explicit template mode instead of creating a second visual implementation of milestones, tasks, workflow, description, discussions, and Docs & Files.
+- [ ] Reuse the relevant TurboUI project-page components through an explicit template presentation model instead of making template records pretend to be project API records or creating a second visual implementation.
 - [ ] Add reusable relative-day controls with the copy **On the project start date** and **N days after project starts**.
 - [ ] In template mode, replace project status with the **Template** pill and hide runtime-only controls and sections: project start date, health/status actions, check-ins, retrospective, activity feed, subscriptions, parent goal, and project access baselines.
 - [ ] Keep normal project rendering and date editing unchanged.
@@ -252,6 +285,7 @@ This phase delivers the first end-to-end vertical slice: a blank core template c
 #### PR 3.1 — `feat: Materialize core projects from templates`
 
 - [ ] Add one transactional materialization service for the project root, description, duration, custom task statuses, milestone/task structure, ordering, priority, size, and due-relative task reminders.
+- [ ] Read only from template-owned tables and create fresh runtime project, milestone, and task rows with explicit old-ID to new-ID maps.
 - [ ] Require a start date and materialize project end, milestone due, and task due dates with calendar-day `Date.add/2` semantics.
 - [ ] Create normal project access context and baseline bindings from the creation input; never copy a parent goal or Company-members/Space-members baseline from the template.
 - [ ] Reset health, completion, closed/reopened state, check-ins, and retrospective. Rebuild the generated Kanban state so every task starts in the first open template status while preserving the copied status definitions and relative board ordering.
@@ -276,6 +310,7 @@ This phase adds the reverse core transformation and centralizes schedule validat
 #### PR 4.1 — `feat: Build core templates from existing projects`
 
 - [ ] Add a transactional project-to-template path to the shared copy service for description, project duration, workflow, milestones, tasks, ordering, priority, size, and due-relative reminders.
+- [ ] Write the copied graph only to template-owned tables; saving a project as a template must not create a second project row or reuse runtime milestone/task rows.
 - [ ] Require a concrete source-project start date and derive each supported offset from that date.
 - [ ] Validate the complete source graph before writing. Return one structured result for a missing start date and every project end, milestone due date, or task due date earlier than the start date.
 - [ ] Exclude fixed-date reminders and reset health, completion, closed/reopened state, check-ins, retrospective, goal, access baselines, activities, notifications, and subscriptions.
@@ -296,7 +331,7 @@ Each PR in this phase extends the same copy service in both directions: project 
 
 #### PR 5.1 — `feat: Copy project template people and assignments`
 
-- [ ] When **Include people and assignments** is selected, copy champion, reviewer, contributors, responsibilities, contributor access levels, and task assignees into template data; otherwise copy none of them.
+- [ ] Add template-specific people and assignment records. When **Include people and assignments** is selected, copy champion, reviewer, contributors, responsibilities, contributor access levels, and task assignees into those records; otherwise copy none of them.
 - [ ] Do not grant copied people direct access to the template itself. Template visibility and management continue to come only from the owning Space.
 - [ ] When materializing, keep active company people and guests, skip removed or suspended people, and calculate one summary with affected project roles and task counts.
 - [ ] Recreate champion/reviewer Full Access, contributor direct access, task assignments, assignee Edit Access, and automatic subscriptions through shared access/assignment helpers.
@@ -305,24 +340,24 @@ Each PR in this phase extends the same copy service in both directions: project 
 
 #### PR 5.2 — `feat: Copy project template discussions`
 
-- [ ] When **Include discussions** is selected, copy project discussion title, body, author attribution, and stable ordering; otherwise omit all project discussions.
-- [ ] Give every copied discussion a fresh subscription list with no copied subscribers and do not emit discussion-submitted activities or notifications.
-- [ ] Decouple project-discussion authorization from its historical creation activity where necessary so copied discussions resolve access from their current parent project/template.
+- [ ] Add template-specific discussion records. When **Include discussions** is selected, copy project discussion title, body, author attribution, and stable ordering; otherwise omit all project discussions.
+- [ ] Template discussions have no runtime subscription list and do not emit discussion-submitted activities or notifications. Materialized project discussions receive fresh runtime subscription lists.
+- [ ] Authorize template discussions from their owning template and Space, independently of project discussion authorization and historical creation activities.
 - [ ] Add discussion create/edit support to template mode with template permissions and no feed/notification side effects.
 - [ ] Add copy-service, API, template-page, and generated-project coverage for included/excluded discussions and author attribution.
 
 #### PR 5.3 — `feat: Copy project template Docs and Files`
 
-- [ ] When **Include Docs & Files** is selected, copy the published resource-hub tree with fresh node, folder, document, file, link, and subscription-list IDs while preserving hierarchy and ordering.
+- [ ] Add template-specific resource-tree records. When **Include Docs & Files** is selected, copy the published resource-hub content into those records with fresh node, folder, document, file, and link IDs while preserving hierarchy and ordering.
 - [ ] Copy published native documents as independent documents with a new version 1; do not copy draft/deleted documents or historical document versions.
-- [ ] Copy links and file records independently. Reuse immutable blob payloads safely rather than duplicating bytes, while ensuring later metadata/content edits affect only the copy.
+- [ ] Copy links and file metadata independently. Reuse immutable blob payloads safely rather than duplicating bytes, while ensuring later metadata/content edits affect only the copy.
 - [ ] Do not copy reactions or subscribers and do not emit resource-copy activities or notifications.
 - [ ] Add full Docs & Files editing to template mode and keep draft content excluded when a template is later duplicated or materialized.
 - [ ] Cover nested folders, mixed resource types, rich-text blobs, published/draft/deleted state, document baselines, and source independence.
 
 #### PR 5.4 — `feat: Copy comments in project templates`
 
-- [ ] When **Include comments** is selected, copy comments only after all included parent-resource maps are available.
+- [ ] Add template-specific comment records. When **Include comments** is selected, copy comments only after all included template parent-resource maps are available.
 - [ ] Support comments on included discussions, milestones, tasks, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
 - [ ] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
 - [ ] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
@@ -347,5 +382,6 @@ Each PR in this phase extends the same copy service in both directions: project 
 - [ ] Add telemetry for template creation source, successful/failed materialization, selected copy options, copied/skipped people, and generated-project provenance without recording template content.
 - [ ] Verify company export/import preserves active and archived templates, relative offsets, optional content, blob references, and generated-project independence.
 - [ ] Verify no template appears in Work Maps, goals, assignments, search, feeds, check-in jobs, project reports, or ordinary project APIs.
+- [ ] Verify template creation and editing do not write project runtime tables and that ordinary project, milestone, task, discussion, comment, and resource APIs cannot resolve template-owned IDs.
 - [ ] Exercise large templates with representative milestone, task, comment, and file counts; record transaction latency and establish practical limits or operator guidance if needed.
 - [ ] Enable `project_templates` for controlled companies, monitor copy failures and unexpected-content reports, then remove the experimental gate after the acceptance criteria pass.

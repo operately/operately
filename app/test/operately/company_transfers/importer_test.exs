@@ -19,6 +19,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.People.Account
   alias Operately.People.Person
   alias Operately.Goals.{Goal, Update}
+  alias Operately.ProjectTemplates.ProjectTemplate
   alias Operately.Projects.Project
   alias Operately.ResourceHubs.Document
   alias Operately.ResourceHubs.DocumentVersion
@@ -88,6 +89,95 @@ defmodule Operately.CompanyTransfers.ImporterTest do
              "reused_count" => 2,
              "created_count" => 0
            }
+  end
+
+  test "run/1 round-trips the core project template graph and provenance", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:source_project, :space)
+      |> Factory.add_project(:generated_project, :space)
+      |> Factory.add_project_template(:template, :space,
+        source_project: :source_project,
+        name: "Launch template",
+        duration_days: 30
+      )
+      |> Factory.add_project_template_milestone(:milestone, :template, title: "Launch", due_offset_days: 14)
+      |> Factory.add_project_template_task(:root_task, :template,
+        name: "Prepare",
+        due_offset_days: 0,
+        reminders: [%{type: :before_due, days: 2}]
+      )
+      |> Factory.add_project_template_task(:milestone_task, :template,
+        milestone: :milestone,
+        name: "Ship",
+        due_offset_days: 14
+      )
+
+    template =
+      ctx.template
+      |> change(%{
+        milestones_ordering_state: [WebPaths.milestone_id(ctx.milestone)],
+        tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.root_task), WebPaths.task_id(ctx.milestone_task)]}
+      })
+      |> Repo.update!()
+
+    milestone =
+      ctx.milestone
+      |> change(%{
+        tasks_ordering_state: [WebPaths.task_id(ctx.milestone_task)],
+        tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.milestone_task)]}
+      })
+      |> Repo.update!()
+
+    ctx.generated_project
+    |> Project.changeset(%{source_template_id: template.id})
+    |> Repo.update!()
+
+    ctx = %{ctx | template: template, milestone: milestone}
+    short_id = unique_short_id()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               replace_company_short_id(package, short_id)
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_template = Repo.get_by!(ProjectTemplate, company_id: completed_run.company_id, name: "Launch template")
+    imported_template = Repo.preload(imported_template, [:milestones, :tasks])
+    imported_milestone = Enum.find(imported_template.milestones, &(&1.title == "Launch"))
+    imported_root_task = Enum.find(imported_template.tasks, &(&1.name == "Prepare"))
+    imported_milestone_task = Enum.find(imported_template.tasks, &(&1.name == "Ship"))
+    imported_source_project = Repo.get_by!(Project, company_id: completed_run.company_id, name: ctx.source_project.name)
+    imported_generated_project = Repo.get_by!(Project, company_id: completed_run.company_id, name: ctx.generated_project.name)
+
+    assert imported_template.id != ctx.template.id
+    assert imported_milestone.id != ctx.milestone.id
+    assert imported_root_task.id != ctx.root_task.id
+    assert imported_milestone_task.id != ctx.milestone_task.id
+
+    assert imported_template.source_project_id == imported_source_project.id
+    assert imported_generated_project.source_template_id == imported_template.id
+    assert imported_milestone_task.project_template_milestone_id == imported_milestone.id
+    assert imported_root_task.project_template_milestone_id == nil
+
+    assert imported_template.duration_days == 30
+    assert imported_milestone.due_offset_days == 14
+    assert imported_root_task.due_offset_days == 0
+    assert imported_milestone_task.due_offset_days == 14
+    assert imported_root_task.task_status.value == "pending"
+    assert [%{type: :before_due, days: 2}] = imported_root_task.reminders
+
+    assert imported_template.milestones_ordering_state == [WebPaths.milestone_id(imported_milestone)]
+
+    assert imported_template.tasks_kanban_state == %{
+             "pending" => [WebPaths.task_id(imported_root_task), WebPaths.task_id(imported_milestone_task)]
+           }
+
+    assert imported_milestone.tasks_ordering_state == [WebPaths.task_id(imported_milestone_task)]
+    assert imported_milestone.tasks_kanban_state == %{"pending" => [WebPaths.task_id(imported_milestone_task)]}
   end
 
   test "run/1 generates new short_id when the package short_id is already taken", ctx do

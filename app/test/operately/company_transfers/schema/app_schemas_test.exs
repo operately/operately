@@ -16,4 +16,10 @@ defmodule Operately.CompanyTransfers.Schema.AppSchemasTest do
              "updated_at" => :updated_at
            }
   end
+
+  test "schema_for_table/1 resolves project template schemas" do
+    assert AppSchemas.schema_for_table("project_templates") == Operately.ProjectTemplates.ProjectTemplate
+    assert AppSchemas.schema_for_table("project_template_milestones") == Operately.ProjectTemplates.Milestone
+    assert AppSchemas.schema_for_table("project_template_tasks") == Operately.ProjectTemplates.Task
+  end
 end
