@@ -84,6 +84,9 @@ defmodule Operately.People.Person do
   def time_format(%__MODULE__{preferences: %Preferences{time_format: time_format}}) when not is_nil(time_format), do: time_format
   def time_format(_), do: Preferences.default_time_format()
 
+  def markdown_hints?(%__MODULE__{preferences: %Preferences{markdown_hints: markdown_hints}}) when is_boolean(markdown_hints), do: markdown_hints
+  def markdown_hints?(_), do: true
+
   def short_name(person) do
     parts = String.split(person.full_name, " ")
 

@@ -34,10 +34,19 @@ interface OnBlurData {
 export type UploadFileFn = (file: File, onProgress: (progress: number) => void) => Promise<{ id: string; url: string }>;
 export type MentionedPersonLookupFn = (id: string) => Promise<Person | null>;
 
+// Reflects the current person's server-persisted "markdown shortcuts" hint
+// preference and lets the toolbar toggle button flip it. Optional: consumers
+// that don't wire it simply won't render the toggle button.
+export interface MarkdownHintsPreference {
+  enabled: boolean;
+  onToggle: () => void;
+}
+
 export interface RichEditorHandlers {
   mentionedPersonLookup: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
   uploadFile?: UploadFileFn;
+  markdownHints?: MarkdownHintsPreference;
 }
 
 interface UseEditorProps {
@@ -66,6 +75,7 @@ export interface EditorState {
   setLinkEditActive: (active: boolean) => void;
   mentionedPersonLookup?: MentionedPersonLookupFn;
   uploadFile?: UploadFileFn;
+  markdownHints?: MarkdownHintsPreference;
   setContent: (content: any) => void;
   setFocused: (focused: boolean) => void;
   getJson: () => any;
@@ -199,6 +209,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     setLinkEditActive,
     mentionedPersonLookup: props.handlers.mentionedPersonLookup,
     uploadFile: props.handlers.uploadFile,
+    markdownHints: props.handlers.markdownHints,
     setContent,
     setFocused,
     getJson,
