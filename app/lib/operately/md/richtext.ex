@@ -57,6 +57,19 @@ defmodule Operately.MD.RichText do
     |> Enum.join("\n")
   end
 
+  defp render_block(%{"type" => "table", "content" => rows}) when is_list(rows) do
+    case Enum.map(rows, &render_table_row/1) do
+      [] ->
+        ""
+
+      [header | body] ->
+        separator = render_table_line(List.duplicate("---", length(header)))
+
+        [render_table_line(header), separator | Enum.map(body, &render_table_line/1)]
+        |> Enum.join("\n")
+    end
+  end
+
   defp render_block(%{"type" => "blob", "attrs" => attrs}) do
     alt = Map.get(attrs, "alt", "")
     src = Map.get(attrs, "src", "")
@@ -105,6 +118,30 @@ defmodule Operately.MD.RichText do
   end
 
   defp render_list_item(_), do: ""
+
+  # GitHub Flavored Markdown tables. The first row is always emitted as the
+  # header (followed by the "---" separator), matching how the editor stores
+  # tables with a header row.
+  defp render_table_row(%{"type" => "tableRow", "content" => cells}) when is_list(cells) do
+    Enum.map(cells, &render_table_cell/1)
+  end
+
+  defp render_table_row(_), do: []
+
+  defp render_table_cell(%{"content" => blocks}) when is_list(blocks) do
+    blocks
+    |> Enum.map(&render_block/1)
+    |> Enum.join(" ")
+    |> String.replace("\n", " ")
+    |> String.replace("|", "\\|")
+    |> String.trim()
+  end
+
+  defp render_table_cell(_), do: ""
+
+  defp render_table_line(cells) do
+    "| " <> Enum.join(cells, " | ") <> " |"
+  end
 
   # Inline nodes and marks
   defp render_inline(nodes) when is_list(nodes) do
