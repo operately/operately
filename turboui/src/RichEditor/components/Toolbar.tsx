@@ -10,6 +10,7 @@ import { H1Button } from "./H1Button";
 import { H2Button } from "./H2Button";
 import { ItalicButton } from "./ItalicButton";
 import { LinkButton } from "./LinkButton";
+import { MarkdownModeButton } from "./MarkdownModeButton";
 import { NumberListButton } from "./NumberListButton";
 import { RedoButton } from "./RedoButton";
 import { StrikeButton } from "./StrikeButton";
@@ -45,6 +46,7 @@ function DesktopToolbar() {
             <BoldButton editor={editor} iconSize={20} />
             <ItalicButton editor={editor} iconSize={20} />
             <StrikeButton editor={editor} iconSize={20} />
+            <MarkdownModeButton iconSize={20} />
 
             <Separator />
 
@@ -96,6 +98,7 @@ function MobileToolbar() {
             <BoldButton editor={editor} iconSize={20} />
             <ItalicButton editor={editor} iconSize={20} />
             <StrikeButton editor={editor} iconSize={20} />
+            <MarkdownModeButton iconSize={20} />
             <H1Button editor={editor} iconSize={20} />
             <H2Button editor={editor} iconSize={20} />
             <ColorPicker editor={editor} iconSize={18} />
