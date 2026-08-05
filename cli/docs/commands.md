@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 218
+- Endpoints: 220
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -102,6 +102,8 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `kpis get_kpi` | `op kpis get_kpi` | `GET` | `/api/external/v1/kpis/get_kpi` |
 | `kpis list_kpis` | `op kpis list_kpis` | `GET` | `/api/external/v1/kpis/list_kpis` |
 | `kpis log_kpi_entry` | `op kpis log_kpi_entry` | `POST` | `/api/external/v1/kpis/log_kpi_entry` |
+| `kpis subscribe_to_kpi` | `op kpis subscribe_to_kpi` | `POST` | `/api/external/v1/kpis/subscribe_to_kpi` |
+| `kpis unsubscribe_from_kpi` | `op kpis unsubscribe_from_kpi` | `POST` | `/api/external/v1/kpis/unsubscribe_from_kpi` |
 | `notifications get_unread_count` | `op notifications get_unread_count` | `GET` | `/api/external/v1/notifications/get_unread_count` |
 | `notifications is_subscribed` | `op notifications is_subscribed` | `GET` | `/api/external/v1/notifications/is_subscribed` |
 | `notifications list` | `op notifications list` | `GET` | `/api/external/v1/notifications/list` |

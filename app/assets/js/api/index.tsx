@@ -1746,6 +1746,7 @@ export interface Kpi {
   champion?: Person | null;
   latestEntry?: KpiEntry | null;
   entries?: KpiEntry[] | null;
+  subscriptionList?: SubscriptionList | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2873,7 +2874,8 @@ export type SubscriptionParentType =
   | "project"
   | "milestone"
   | "project_task"
-  | "space_task";
+  | "space_task"
+  | "kpi";
 
 export type SuccessStatus = "achieved" | "missed";
 
@@ -4874,6 +4876,22 @@ export interface KpisLogKpiEntryResult {
   entry: KpiEntry;
 }
 
+export interface KpisSubscribeToKpiInput {
+  kpiId: Id;
+}
+
+export interface KpisSubscribeToKpiResult {
+  success: boolean;
+}
+
+export interface KpisUnsubscribeFromKpiInput {
+  kpiId: Id;
+}
+
+export interface KpisUnsubscribeFromKpiResult {
+  success: boolean;
+}
+
 export interface LinksCreateInput {
   resourceHubId: Id;
   folderId?: Id | null;
@@ -6470,6 +6488,14 @@ class ApiNamespaceKpis {
 
   async logKpiEntry(input: KpisLogKpiEntryInput): Promise<KpisLogKpiEntryResult> {
     return this.client.post("/kpis/log_kpi_entry", input);
+  }
+
+  async subscribeToKpi(input: KpisSubscribeToKpiInput): Promise<KpisSubscribeToKpiResult> {
+    return this.client.post("/kpis/subscribe_to_kpi", input);
+  }
+
+  async unsubscribeFromKpi(input: KpisUnsubscribeFromKpiInput): Promise<KpisUnsubscribeFromKpiResult> {
+    return this.client.post("/kpis/unsubscribe_from_kpi", input);
   }
 }
 
@@ -8143,6 +8169,13 @@ export default {
     useListKpis: (input: KpisListKpisInput) =>
       useQuery<KpisListKpisResult>(() => defaultApiClient.apiNamespaceKpis.listKpis(input)),
 
+    unsubscribeFromKpi: (input: KpisUnsubscribeFromKpiInput) =>
+      defaultApiClient.apiNamespaceKpis.unsubscribeFromKpi(input),
+    useUnsubscribeFromKpi: () =>
+      useMutation<KpisUnsubscribeFromKpiInput, KpisUnsubscribeFromKpiResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.unsubscribeFromKpi(input),
+      ),
+
     createKpi: (input: KpisCreateKpiInput) => defaultApiClient.apiNamespaceKpis.createKpi(input),
     useCreateKpi: () =>
       useMutation<KpisCreateKpiInput, KpisCreateKpiResult>((input) =>
@@ -8158,6 +8191,12 @@ export default {
     editKpi: (input: KpisEditKpiInput) => defaultApiClient.apiNamespaceKpis.editKpi(input),
     useEditKpi: () =>
       useMutation<KpisEditKpiInput, KpisEditKpiResult>((input) => defaultApiClient.apiNamespaceKpis.editKpi(input)),
+
+    subscribeToKpi: (input: KpisSubscribeToKpiInput) => defaultApiClient.apiNamespaceKpis.subscribeToKpi(input),
+    useSubscribeToKpi: () =>
+      useMutation<KpisSubscribeToKpiInput, KpisSubscribeToKpiResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.subscribeToKpi(input),
+      ),
 
     logKpiEntry: (input: KpisLogKpiEntryInput) => defaultApiClient.apiNamespaceKpis.logKpiEntry(input),
     useLogKpiEntry: () =>

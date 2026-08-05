@@ -7,13 +7,14 @@ const ENTITY_LABEL_BY_TYPE: Record<NotificationToggle.Props["entityType"], strin
   space_task: "task",
   project: "project",
   milestone: "milestone",
+  kpi: "KPI",
 };
 
 export namespace NotificationToggle {
   export interface Props {
     isSubscribed: boolean;
     onToggle: (subscribed: boolean) => void;
-    entityType: "project_task" | "space_task" | "project" | "milestone";
+    entityType: "project_task" | "space_task" | "project" | "milestone" | "kpi";
   }
 }
 
