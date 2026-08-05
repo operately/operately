@@ -8,6 +8,7 @@ import { Status, StatusOptions } from "@/components/status";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useScheduleFlow } from "@/hooks/useScheduleFlow";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { compareIds } from "@/routes/paths";
 import { isWithinTimeframe } from "@/utils/time";
@@ -18,6 +19,7 @@ import {
   InfoCallout,
   ScheduleFlowControls,
   Spacer,
+  SubscribersSelector,
   displayDate,
   type FormState,
 } from "turboui";
@@ -35,6 +37,13 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
   const canSchedule = isUnpublished;
   const scheduleFlow = useScheduleFlow({
     initialScheduledAt: canSchedule ? checkIn.scheduledAt : null,
+  });
+
+  const subscriptionsState = useSubscriptionsAdapter(checkIn.potentialSubscribers ?? [], {
+    ignoreMe: true,
+    notifyPrioritySubscribers: true,
+    projectName: checkIn.project.name,
+    sendNotificationsToEveryone: checkIn.subscriptionList?.sendToEveryone,
   });
 
   const allowFullEdit =
@@ -69,20 +78,30 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
       const shouldSchedule =
         action === "schedule" || action === "save-changes" || (action === "publish" && scheduleFlow.isScheduledLocally);
 
+      const stateAttrs = isUnpublished
+        ? action === "publish-now"
+          ? { state: "published" as const, scheduledAt: null }
+          : action === "save-as-draft"
+            ? { state: "draft" as const, scheduledAt: null }
+            : shouldSchedule
+              ? { state: "scheduled" as const, scheduledAt: scheduleFlow.scheduledAtIso }
+              : action === "publish"
+                ? { state: "published" as const }
+                : { state: "draft" as const, scheduledAt: null }
+        : {};
+
+      const isPublishing = "state" in stateAttrs && stateAttrs.state === "published";
+
       const res = await edit({
         checkInId: checkIn.id,
         status,
         description: JSON.stringify(description),
-        ...(isUnpublished
-          ? action === "publish-now"
-            ? { state: "published" as const, scheduledAt: null }
-            : action === "save-as-draft"
-              ? { state: "draft" as const, scheduledAt: null }
-              : shouldSchedule
-                ? { state: "scheduled" as const, scheduledAt: scheduleFlow.scheduledAtIso }
-                : action === "publish"
-                  ? { state: "published" as const }
-                  : { state: "draft" as const, scheduledAt: null }
+        ...stateAttrs,
+        ...(isPublishing
+          ? {
+              sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
+              subscriberIds: subscriptionsState.currentSubscribersList,
+            }
           : {}),
       });
 
@@ -106,6 +125,8 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
       </Forms.FieldGroup>
 
       <Spacer size={4} />
+
+      {isUnpublished && <SubscribersSelector {...subscriptionsState} />}
 
       <SubmitButtons
         form={form}

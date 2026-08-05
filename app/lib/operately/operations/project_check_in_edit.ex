@@ -6,6 +6,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
   alias Operately.Projects.Project
   alias Operately.Projects.CheckIn
   alias Operately.Notifications.SubscriptionList
+  alias Operately.Operations.SubscriptionsListEditing
   alias Operately.Search.IndexUpdates
 
   def run(author, check_in, attrs) do
@@ -23,12 +24,7 @@ defmodule Operately.Operations.ProjectCheckInEdit do
       |> update_check_in(check_in, attrs)
       |> maybe_update_project(project, check_in, next_check_in)
       |> Multi.run(:subscription_list, fn _, changes ->
-        SubscriptionList.get(:system,
-          parent_id: changes.check_in.id,
-          opts: [
-            preload: :subscriptions
-          ]
-        )
+        load_and_maybe_update_subscriptions(check_in, changes.check_in, attrs)
       end)
       |> Operately.Operations.Notifications.Subscription.update_mentioned_people(attrs.description)
       |> record_activity(author, project, check_in, attrs)
@@ -38,6 +34,47 @@ defmodule Operately.Operations.ProjectCheckInEdit do
       |> Repo.extract_result(:check_in)
       |> broadcast_if_published(author)
     end
+  end
+
+  #
+  # When an unpublished check-in is being published, the author gets a chance to
+  # adjust the notification settings. Those settings are applied to the existing
+  # subscription list before the publish notifications are dispatched.
+  #
+  defp load_and_maybe_update_subscriptions(original_check_in, updated_check_in, attrs) do
+    with {:ok, subscription_list} <-
+           SubscriptionList.get(:system,
+             parent_id: updated_check_in.id,
+             opts: [preload: :subscriptions]
+           ),
+         {:ok, subscription_list} <-
+           maybe_update_subscriptions(subscription_list, original_check_in, updated_check_in, attrs) do
+      {:ok, subscription_list}
+    end
+  end
+
+  defp maybe_update_subscriptions(subscription_list, original_check_in, updated_check_in, attrs) do
+    if publishing?(original_check_in, updated_check_in) and has_subscription_settings?(attrs) do
+      attrs_for_update = %{
+        send_notifications_to_everyone: attrs[:send_to_everyone],
+        subscriber_ids: attrs[:subscriber_ids] || []
+      }
+
+      case SubscriptionsListEditing.run(subscription_list, attrs_for_update) do
+        {:ok, _} -> SubscriptionList.get(:system, id: subscription_list.id, opts: [preload: :subscriptions])
+        {:error, _operation, reason, _changes} -> {:error, reason}
+      end
+    else
+      {:ok, subscription_list}
+    end
+  end
+
+  defp publishing?(original_check_in, updated_check_in) do
+    unpublished?(original_check_in.state) and updated_check_in.state == :published
+  end
+
+  defp has_subscription_settings?(attrs) do
+    not is_nil(attrs[:subscriber_ids]) or not is_nil(attrs[:send_to_everyone])
   end
 
   #
