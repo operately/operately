@@ -2,6 +2,7 @@ import * as React from "react";
 
 import type { SearchResult, SearchResultState, SearchResultType } from "../ApiTypes";
 import { Input } from "../Forms/Input";
+import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
 import {
   IconCalendar,
   IconGoal,
@@ -17,7 +18,10 @@ import { DivLink } from "../Link";
 import { Page } from "../Page";
 import { ResourceHubTypeIcon } from "../ResourceHub";
 import { StatusBadge } from "../StatusBadge";
+import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS } from "./filterOptions";
 import { RefineControls, type RefineControlsProps } from "./RefineControls";
+
+export { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS };
 
 export namespace SearchPage {
   export type Status = "initial" | "loading" | "success" | "error";
@@ -31,13 +35,21 @@ export namespace SearchPage {
     status: Status;
     results: Result[];
     onQueryChange: (query: string) => void;
+    formattedTimePreferences: FormattedTimePreferences;
     refine?: Refine;
   }
 }
 
 const RESULT_LIMIT = 30;
 
-export function SearchPage({ query, status, results, onQueryChange, refine }: SearchPage.Props) {
+export function SearchPage({
+  query,
+  status,
+  results,
+  onQueryChange,
+  formattedTimePreferences,
+  refine,
+}: SearchPage.Props) {
   const visibleResults = results.slice(0, RESULT_LIMIT);
 
   return (
@@ -53,7 +65,12 @@ export function SearchPage({ query, status, results, onQueryChange, refine }: Se
           <SearchField query={query} onQueryChange={onQueryChange} />
         )}
         <div className="mt-8">
-          <SearchContent query={query} status={status} results={visibleResults} />
+          <SearchContent
+            query={query}
+            status={status}
+            results={visibleResults}
+            formattedTimePreferences={formattedTimePreferences}
+          />
         </div>
       </main>
     </Page>
@@ -85,7 +102,12 @@ function SearchField({ query, onQueryChange }: Pick<SearchPage.Props, "query" | 
   );
 }
 
-function SearchContent({ query, status, results }: Pick<SearchPage.Props, "query" | "status" | "results">) {
+function SearchContent({
+  query,
+  status,
+  results,
+  formattedTimePreferences,
+}: Pick<SearchPage.Props, "query" | "status" | "results" | "formattedTimePreferences">) {
   if (status === "loading") {
     return <SearchMessage role="status">Searching…</SearchMessage>;
   }
@@ -112,7 +134,11 @@ function SearchContent({ query, status, results }: Pick<SearchPage.Props, "query
       <ol aria-label="Search results" className="divide-y divide-surface-outline">
         {results.map((result) => (
           <li key={`${result.type}-${result.id}`}>
-            <SearchResultRow query={query} result={result} />
+            <SearchResultRow
+              query={query}
+              result={result}
+              formattedTimePreferences={formattedTimePreferences}
+            />
           </li>
         ))}
       </ol>
@@ -128,7 +154,15 @@ function SearchMessage({ role, children }: { role: "status" | "alert"; children:
   );
 }
 
-function SearchResultRow({ query, result }: { query: string; result: SearchPage.Result }) {
+function SearchResultRow({
+  query,
+  result,
+  formattedTimePreferences,
+}: {
+  query: string;
+  result: SearchPage.Result;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   const metadata = RESULT_TYPE_METADATA[result.type];
   const highlightTerms = getHighlightTerms(query);
 
@@ -173,6 +207,14 @@ function SearchResultRow({ query, result }: { query: string; result: SearchPage.
           </p>
         ) : null}
       </div>
+      {result.insertedAt ? (
+        <span
+          data-test-id="search-result-inserted-at"
+          className="mt-1 shrink-0 whitespace-nowrap text-xs text-content-subtle"
+        >
+          <FormattedTime {...formattedTimePreferences} time={result.insertedAt} format="relative-time-or-date" />
+        </span>
+      ) : null}
     </DivLink>
   );
 }

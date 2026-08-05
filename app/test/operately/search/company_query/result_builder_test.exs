@@ -174,7 +174,8 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
         title_match: false,
         body: "customer evidence",
         body_snippet: "customer evidence",
-        state: nil
+        state: nil,
+        source_inserted_at: ~N[2026-07-28 12:00:00]
       },
       overrides
     )

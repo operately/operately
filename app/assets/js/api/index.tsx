@@ -2299,6 +2299,7 @@ export interface SearchResult {
   matchedField: SearchMatchedField;
   snippet?: string | null;
   state?: SearchResultState | null;
+  insertedAt: string;
   navigationTarget: SearchNavigationTarget;
 }
 
@@ -2856,6 +2857,10 @@ export type SearchResultType =
 
 export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
 
+export type SearchSort = "best_match" | "most_recent";
+
+export type SearchTimeRange = "last_7_days" | "last_30_days" | "last_90_days" | "last_12_months";
+
 export type SubscriptionParentType =
   | "project_check_in"
   | "project_retrospective"
@@ -3049,6 +3054,10 @@ export interface CompaniesQuickSearchResult {
 
 export interface CompaniesSearchInput {
   query: string;
+  spaceIds?: Id[] | null;
+  types?: SearchResultType[] | null;
+  timeRange?: SearchTimeRange | null;
+  sort?: SearchSort | null;
 }
 
 export interface CompaniesSearchResult {

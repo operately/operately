@@ -255,6 +255,7 @@ describe("SpaceKpisPage create & log", () => {
     await findByTestId("log-update-modal");
 
     fireEvent.change(await findByTestId("value"), { target: { value: "123" } });
+    await user.click(await findByTestId("log-update-change-date"));
     fireEvent.change(await findByTestId("log-update-period"), { target: { value: "2026-07-15" } });
     await user.click(await findByTestId("submit"));
 
@@ -284,6 +285,7 @@ describe("SpaceKpisPage create & log", () => {
 
     await user.click(container.querySelector('[data-test-id="kpi-detail-log-update"]')!);
     fireEvent.change(await findByTestId("value"), { target: { value: "500" } });
+    await user.click(await findByTestId("log-update-change-date"));
     fireEvent.change(await findByTestId("log-update-period"), { target: { value: "2026-07-30" } });
     await user.click(await findByTestId("submit"));
 

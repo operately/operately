@@ -6,6 +6,6 @@ defmodule Operately.Search.Result do
   ordered result list while using `type` and `navigation_target` for navigation.
   """
 
-  @enforce_keys [:id, :type, :title, :context, :matched_field, :navigation_target]
-  defstruct [:id, :type, :title, :context, :matched_field, :snippet, :state, :navigation_target]
+  @enforce_keys [:id, :type, :title, :context, :matched_field, :navigation_target, :inserted_at]
+  defstruct [:id, :type, :title, :context, :matched_field, :snippet, :state, :navigation_target, :inserted_at]
 end

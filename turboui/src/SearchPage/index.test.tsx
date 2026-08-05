@@ -1,11 +1,13 @@
 import * as React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
 import type { SearchResult } from "../ApiTypes";
-import { IconCalendar, IconWorld } from "../icons";
-import { SearchPage } from "./index";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
+import { IconCalendar, IconLayoutGrid, IconWorld } from "../icons";
+import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS, SearchPage } from "./index";
 
 function result(overrides: Partial<SearchResult & { link: string }> = {}): SearchResult & { link: string } {
   return {
@@ -17,6 +19,7 @@ function result(overrides: Partial<SearchResult & { link: string }> = {}): Searc
     matchedField: "description",
     snippet: "Customer research supports the new information architecture.",
     state: "closed",
+    insertedAt: "2026-07-28T12:00:00.000Z",
     navigationTarget: { projectId: "project-1" },
     link: "/acme/projects/project-1",
     ...overrides,
@@ -29,6 +32,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof SearchPage>> = {}
     status: "initial",
     results: [],
     onQueryChange: jest.fn(),
+    formattedTimePreferences: defaultFormattedTimePreferences,
   };
 
   return render(
@@ -63,21 +67,33 @@ describe("SearchPage", () => {
 
     rerender(
       <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <SearchPage query="evidence" status="success" results={[]} onQueryChange={jest.fn()} />
+        <SearchPage
+          query="evidence"
+          status="success"
+          results={[]}
+          onQueryChange={jest.fn()}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
       </MemoryRouter>,
     );
     expect(screen.getByRole("status")).toHaveTextContent("No content found for “evidence”. Try different keywords.");
 
     rerender(
       <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <SearchPage query="evidence" status="error" results={[]} onQueryChange={jest.fn()} />
+        <SearchPage
+          query="evidence"
+          status="error"
+          results={[]}
+          onQueryChange={jest.fn()}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
       </MemoryRouter>,
     );
     expect(screen.getByRole("alert")).toHaveTextContent("Search is unavailable. Try again.");
     expect(screen.getByRole("searchbox")).toHaveFocus();
   });
 
-  test("renders result metadata, state, snippet, and navigation", () => {
+  test("renders result metadata, state, snippet, timestamp, and navigation", () => {
     renderPage({ query: "research", status: "success", results: [result()] });
 
     expect(screen.getByRole("status")).toHaveTextContent("1 result found.");
@@ -85,6 +101,7 @@ describe("SearchPage", () => {
     expect(screen.getByText("Project")).toBeInTheDocument();
     expect(screen.getByText("Marketing")).toBeInTheDocument();
     expect(screen.getByText("Closed")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="search-result-inserted-at"]')).toBeInTheDocument();
     expect(screen.queryByText("Matched in description")).not.toBeInTheDocument();
     expect(screen.queryByText("In Marketing")).not.toBeInTheDocument();
     expect(screen.getByTestId("search-result-snippet")).toHaveTextContent(
@@ -137,7 +154,8 @@ describe("SearchPage", () => {
     expect(container.querySelector("strong")).not.toBeInTheDocument();
   });
 
-  test("renders sticky refine controls when refine props are provided", () => {
+  test("renders sticky refine controls when refine props are provided", async () => {
+    const user = userEvent.setup();
     const onSortChange = jest.fn();
     const onFilterChange = jest.fn();
 
@@ -161,36 +179,52 @@ describe("SearchPage", () => {
             ],
           },
           {
+            id: "types",
+            label: "All types",
+            icon: IconLayoutGrid,
+            selectionMode: "multiple",
+            selectedOptionIds: [],
+            options: SEARCH_TYPE_FILTER_OPTIONS,
+          },
+          {
             id: "time",
             label: "All time",
             icon: IconCalendar,
             selectionMode: "single",
             selectedOptionIds: ["last_7_days"],
-            options: [
-              { id: "last_7_days", label: "Last 7 days" },
-              { id: "last_30_days", label: "Last 30 days" },
-            ],
+            options: SEARCH_TIME_FILTER_OPTIONS,
           },
         ],
         onFilterChange,
       },
     });
 
-    expect(screen.getByTestId("search-refine-controls")).toBeInTheDocument();
-    expect(screen.getByTestId("search-sort-toggle")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="search-refine-controls"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="search-sort-toggle"]')).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Best match" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Most recent" })).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByTestId("search-filter-spaces")).toHaveTextContent("All spaces");
-    expect(screen.getByTestId("search-filter-spaces-count")).toHaveTextContent("2");
-    expect(screen.getByTestId("search-filter-time")).toHaveTextContent("Last 7 days");
+    expect(document.querySelector('[data-test-id="search-filter-spaces"]')).toHaveTextContent("All spaces");
+    expect(document.querySelector('[data-test-id="search-filter-spaces-count"]')).toHaveTextContent("2");
+    expect(document.querySelector('[data-test-id="search-filter-types"]')).toHaveTextContent("All types");
+    expect(document.querySelector('[data-test-id="search-filter-time"]')).toHaveTextContent("Last 7 days");
+    expect(document.querySelector('[data-test-id="search-filter-people"]')).not.toBeInTheDocument();
+    expect(SEARCH_TYPE_FILTER_OPTIONS).toHaveLength(13);
 
-    fireEvent.click(screen.getByRole("button", { name: "Most recent" }));
+    await user.click(screen.getByRole("button", { name: "Most recent" }));
     expect(onSortChange).toHaveBeenCalledWith("most_recent");
+
+    await user.click(document.querySelector('[data-test-id="search-filter-types"]')!);
+    for (const option of SEARCH_TYPE_FILTER_OPTIONS) {
+      expect(await screen.findByRole("menuitem", { name: option.label })).toBeInTheDocument();
+    }
+
+    await user.click(screen.getByRole("menuitem", { name: "Projects" }));
+    expect(onFilterChange).toHaveBeenCalledWith("types", ["project"]);
   });
 
   test("hides refine controls when refine props are omitted", () => {
     renderPage({ query: "research", status: "success", results: [result()] });
-    expect(screen.queryByTestId("search-refine-controls")).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="search-refine-controls"]')).not.toBeInTheDocument();
   });
 
   test("renders all indexed resource labels and caps the visible list at 30 results", () => {

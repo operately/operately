@@ -14,7 +14,7 @@ defmodule Operately.Search.CompanyQuery do
   alias Operately.People.Person
   alias Operately.Repo
   alias Operately.Search.{Entry, FullTextQuery, Text}
-  alias Operately.Search.CompanyQuery.{CoreWorkItems, ResourceHubItems, ResultBuilder}
+  alias Operately.Search.CompanyQuery.{CoreWorkItems, Filters, ResourceHubItems, ResultBuilder}
 
   @limit 30
   @candidates_cte "company_search_candidates"
@@ -25,27 +25,27 @@ defmodule Operately.Search.CompanyQuery do
   @snippet_min_words 39
   @snippet_max_words 40
 
-  def search(%Person{} = person, query) do
+  def search(%Person{} = person, query, filters \\ %{}) do
     with nil <- person.suspended_at,
          {:ok, normalized_query} <- Text.prepare_query(query) do
-      search_company(person, normalized_query)
+      search_company(person, normalized_query, Filters.normalize(filters))
     else
       _ -> []
     end
   end
 
-  defp search_company(person, normalized_query) do
+  defp search_company(person, normalized_query, filters) do
     person.company_id
-    |> candidate_query(person.id, normalized_query)
+    |> candidate_query(person.id, normalized_query, filters)
     |> Repo.all()
     |> ResultBuilder.build()
   end
 
-  defp candidate_query(company_id, person_id, query) do
+  defp candidate_query(company_id, person_id, query, filters) do
     full_text = FullTextQuery.build(query)
     accessible_contexts = accessible_contexts_query(person_id)
     eligible_items = eligible_items_query(company_id)
-    candidates = matched_candidates_query(company_id, eligible_items, accessible_contexts, full_text)
+    candidates = matched_candidates_query(company_id, eligible_items, accessible_contexts, full_text, filters)
     candidate_ancestors = candidate_ancestors_query()
     candidate_ancestors_cte = ResourceHubItems.candidate_ancestors_cte()
     snippet_options =
@@ -70,6 +70,7 @@ defmodule Operately.Search.CompanyQuery do
         body: entry.body,
         body_kind: entry.body_kind,
         state: entry.state,
+        source_inserted_at: entry.source_inserted_at,
         owner_name: candidate.owner_name,
         exact_title: entry.normalized_title == ^full_text.normalized_title,
         # True when the query is eligible for prefix matching and the normalized title starts with it.
@@ -101,7 +102,7 @@ defmodule Operately.Search.CompanyQuery do
             ^snippet_options
           )
       },
-      order_by: ^FullTextQuery.ranking_order(full_text),
+      order_by: ^Filters.order_by(filters, full_text),
       limit: @limit
     )
     |> recursive_ctes(true)
@@ -117,7 +118,7 @@ defmodule Operately.Search.CompanyQuery do
     |> union_all(^core_work_items)
   end
 
-  defp matched_candidates_query(company_id, eligible_items, accessible_contexts, full_text) do
+  defp matched_candidates_query(company_id, eligible_items, accessible_contexts, full_text, filters) do
     from(entry in Entry,
       as: :entry,
       join: item in subquery(eligible_items),
@@ -146,6 +147,7 @@ defmodule Operately.Search.CompanyQuery do
         goal_id: item.goal_id
       }
     )
+    |> Filters.apply(filters)
   end
 
   defp candidate_ancestors_query do

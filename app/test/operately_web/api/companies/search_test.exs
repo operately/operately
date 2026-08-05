@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
   alias Operately.Repo
   alias Operately.Search.SourceIndexer
   alias Operately.Support.{Factory, RichText}
+  alias OperatelyWeb.Paths
 
   setup ctx do
     ctx
@@ -41,31 +42,31 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     assert {200, %{results: [title_match, body_match]}} =
              query(ctx.conn, [:companies, :search], query: "Signal")
 
-    assert title_match == %{
-             __typename: "result",
-             id: Operately.ShortUuid.encode!(ctx.title_match.id),
-             type: "project",
-             title: "Signal roadmap",
-             context: "Product Space",
-             matched_field: "name",
-             snippet: nil,
-             state: nil,
-             navigation_target: %{
-               resource_hub_id: nil,
-               folder_id: nil,
-               document_id: nil,
-               file_id: nil,
-               link_id: nil,
-               project_id: Operately.ShortUuid.encode!(ctx.title_match.id),
-               goal_id: nil,
-               milestone_id: nil,
-               task_id: nil,
-               person_id: nil,
-               discussion_id: nil,
-               project_check_in_id: nil,
-               goal_check_in_id: nil,
-               project_retrospective_id: nil
-             }
+    assert title_match.id == Operately.ShortUuid.encode!(ctx.title_match.id)
+    assert title_match.type == "project"
+    assert title_match.title == "Signal roadmap"
+    assert title_match.context == "Product Space"
+    assert title_match.matched_field == "name"
+    assert title_match.snippet == nil
+    assert title_match.state == nil
+    assert is_binary(title_match.inserted_at)
+    assert {:ok, _datetime, _} = DateTime.from_iso8601(title_match.inserted_at)
+
+    assert title_match.navigation_target == %{
+             resource_hub_id: nil,
+             folder_id: nil,
+             document_id: nil,
+             file_id: nil,
+             link_id: nil,
+             project_id: Operately.ShortUuid.encode!(ctx.title_match.id),
+             goal_id: nil,
+             milestone_id: nil,
+             task_id: nil,
+             person_id: nil,
+             discussion_id: nil,
+             project_check_in_id: nil,
+             goal_check_in_id: nil,
+             project_retrospective_id: nil
            }
 
     assert body_match.id == Operately.ShortUuid.encode!(ctx.body_match.id)
@@ -137,6 +138,49 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     assert person_target.person_id == Operately.ShortUuid.encode!(ctx.teammate.id)
   end
 
+  test "applies optional space, type, time, and sort filters", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:marketing, name: "Marketing Space")
+      |> Factory.add_project(:product_project, :space, name: "Filter marker product")
+      |> Factory.add_project(:marketing_project, :marketing, name: "Filter marker marketing")
+      |> Factory.add_goal(:product_goal, :space, name: "Filter marker goal")
+      |> update_project_description(:product_project, "Filter marker shared body")
+      |> update_project_description(:marketing_project, "Filter marker shared body")
+      |> update_goal_description(:product_goal, "Filter marker shared body")
+      |> index_project(:product_project)
+      |> index_project(:marketing_project)
+      |> index_goal(:product_goal)
+      |> Factory.log_in_person(:creator)
+
+    space_id = Paths.space_id(ctx.space)
+
+    assert {200, %{results: results}} =
+             query(ctx.conn, [:companies, :search],
+               query: "Filter marker",
+               space_ids: [space_id],
+               types: ["project"]
+             )
+
+    assert Enum.map(results, & &1.id) == [Operately.ShortUuid.encode!(ctx.product_project.id)]
+
+    set_entry_inserted_at(ctx.marketing_project, days_ago(1))
+    set_entry_inserted_at(ctx.product_project, days_ago(5))
+    set_entry_inserted_at(ctx.product_goal, days_ago(40))
+
+    assert {200, %{results: recent_results}} =
+             query(ctx.conn, [:companies, :search],
+               query: "Filter marker",
+               time_range: "last_7_days",
+               sort: "most_recent"
+             )
+
+    assert Enum.map(recent_results, & &1.id) == [
+             Operately.ShortUuid.encode!(ctx.marketing_project.id),
+             Operately.ShortUuid.encode!(ctx.product_project.id)
+           ]
+  end
+
   defp update_project_description(ctx, project_name, description) do
     project =
       ctx
@@ -147,9 +191,48 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     Map.put(ctx, project_name, project)
   end
 
+  defp update_goal_description(ctx, goal_name, description) do
+    goal =
+      ctx
+      |> Map.fetch!(goal_name)
+      |> Operately.Goals.Goal.changeset(%{description: RichText.rich_text(description)})
+      |> Repo.update!()
+
+    Map.put(ctx, goal_name, goal)
+  end
+
   defp index_project(ctx, project_name) do
     project = Map.fetch!(ctx, project_name)
     assert {:ok, _summary} = SourceIndexer.sync("project", project.id)
     ctx
   end
+
+  defp index_goal(ctx, goal_name) do
+    goal = Map.fetch!(ctx, goal_name)
+    assert {:ok, _summary} = SourceIndexer.sync("goal", goal.id)
+    ctx
+  end
+
+  defp set_entry_inserted_at(resource, inserted_at) do
+    import Ecto.Query
+
+    source_type =
+      case resource do
+        %Project{} -> :project
+        %Operately.Goals.Goal{} -> :goal
+      end
+
+    from(entry in Operately.Search.Entry,
+      where: entry.source_type == ^source_type and entry.source_id == ^resource.id
+    )
+    |> Repo.update_all(set: [source_inserted_at: inserted_at])
+  end
+
+  defp days_ago(days) do
+    DateTime.utc_now()
+    |> DateTime.shift(day: -days)
+    |> DateTime.to_naive()
+    |> NaiveDateTime.truncate(:microsecond)
+  end
 end
+
