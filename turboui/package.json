@@ -9,8 +9,8 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
     "lint": "eslint \"src/**/*.ts*\"",
     "clean": "rm -rf node_modules && rm -rf dist",
     "storybook": "storybook dev -p $PORT_STORYBOOK_SERVER",

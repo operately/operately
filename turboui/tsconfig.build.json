@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./dist", // .js (as well as .d.ts, .js.map, etc.) files will be emitted into this directory
+    "declaration": true, // Generate .d.ts files (needed for library)
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*", "src/types/**/*.d.ts"],
+  "exclude": [
+    "node_modules/**/*",
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.stories.tsx",
+    "src/WorkMap/tests/**"
+  ]
+}
