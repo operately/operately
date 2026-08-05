@@ -104,6 +104,7 @@ import IconLogs from "@tabler/icons-react/dist/esm/icons/IconLogs.mjs";
 import IconMail from "@tabler/icons-react/dist/esm/icons/IconMail.mjs";
 import IconMailFast from "@tabler/icons-react/dist/esm/icons/IconMailFast.mjs";
 import IconMap2 from "@tabler/icons-react/dist/esm/icons/IconMap2.mjs";
+import IconMarkdown from "@tabler/icons-react/dist/esm/icons/IconMarkdown.mjs";
 import IconMenu2 from "@tabler/icons-react/dist/esm/icons/IconMenu2.mjs";
 import IconMessage from "@tabler/icons-react/dist/esm/icons/IconMessage.mjs";
 import IconMessageCircle from "@tabler/icons-react/dist/esm/icons/IconMessageCircle.mjs";
@@ -267,6 +268,7 @@ export {
   IconMail,
   IconMailFast,
   IconMap2,
+  IconMarkdown,
   IconMenu2,
   IconMessage,
   IconMessageCircle,

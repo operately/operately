@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.People.Update do
   use OperatelyWeb.Api.Helpers
 
   @notification_preference_fields [:notify_about_assignments, :notify_on_mention, :send_daily_summary, :email_window_minutes, :daily_summary_delivery_time]
-  @display_preference_fields [:time_format]
+  @display_preference_fields [:time_format, :markdown_hints]
   @updatable_fields_for_oneself [
     :full_name,
     :title,
@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.People.Update do
     :manager_id,
     :theme,
     :time_format,
+    :markdown_hints,
     :notify_about_assignments,
     :notify_on_mention,
     :send_daily_summary,
@@ -30,6 +31,7 @@ defmodule OperatelyWeb.Api.People.Update do
     field? :title, :string, null: false
     field? :timezone, :string, null: false
     field? :time_format, :time_format, null: false
+    field? :markdown_hints, :boolean, null: false
     field? :manager_id, :id, null: true
     field? :theme, :string, null: false
     field? :notify_about_assignments, :boolean, null: false

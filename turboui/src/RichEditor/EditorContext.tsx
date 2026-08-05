@@ -9,6 +9,10 @@ export function useUploadFile(): EditorState["uploadFile"] {
   return useEditorContext().uploadFile;
 }
 
+export function useMarkdownHints(): EditorState["markdownHints"] {
+  return useEditorContext().markdownHints;
+}
+
 export function usePerson(id: string): Person | null {
   const [person, setPerson] = React.useState<Person | null>(null);
   const { mentionedPersonLookup } = useEditorContext();

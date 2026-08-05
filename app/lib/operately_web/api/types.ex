@@ -2029,6 +2029,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :daily_summary_delivery_time, :string, null: false
     field? :notify_on_mention, :boolean, null: false
     field? :notify_about_assignments, :boolean, null: false
+    field? :markdown_hints, :boolean, null: false
     field? :suspended, :boolean, null: true
     field? :company, :company, null: true
     field? :manager, :person, null: true

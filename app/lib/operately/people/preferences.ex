@@ -62,12 +62,13 @@ defmodule Operately.People.Preferences do
 
   embedded_schema do
     field :time_format, Ecto.Enum, values: @time_format_values, default: :automatic
+    field :markdown_hints, :boolean, default: true
     embeds_one :notifications, Notifications, on_replace: :update, defaults_to_struct: true
   end
 
   def changeset(preferences, attrs) do
     preferences
-    |> cast(attrs, [:time_format])
+    |> cast(attrs, [:time_format, :markdown_hints])
     |> validate_inclusion(:time_format, @time_format_values)
     |> cast_embed(:notifications, with: &Notifications.changeset/2)
   end
