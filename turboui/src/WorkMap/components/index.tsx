@@ -162,7 +162,7 @@ export namespace WorkMap {
     name: string;
     status: ItemStatus;
     taskStatus: StatusSelector.StatusOption | null;
-    progress: number;
+    progress: number | null;
     project: { id: string; name: string } | null;
     projectPath: string | null;
     space: Space | null;

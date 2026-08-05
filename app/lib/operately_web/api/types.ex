@@ -2575,6 +2575,13 @@ defmodule OperatelyWeb.Api.Types do
   enum(:work_map_item_privacy, values: [:public, :internal, :confidential, :secret])
   enum(:work_map_item_state, values: [:active, :paused, :closed])
 
+  object :work_map_milestone, for: Operately.WorkMaps.WorkMapMilestone do
+    field :id, :string, null: false
+    field :title, :string, null: false
+    field :status, :milestone_status, null: false
+    field :timeframe, :timeframe, null: true
+  end
+
   object :work_map_item, for: Operately.WorkMaps.WorkMapItem do
     field :id, :string, null: false
     field :parent_id, :string, null: true
@@ -2582,7 +2589,7 @@ defmodule OperatelyWeb.Api.Types do
     field :state, :work_map_item_state, null: false
     field :status, :work_map_item_status, null: false
     field :task_status, :task_status, null: true
-    field :progress, :float, null: false
+    field :progress, :float, null: true
     field :space, :space, null: true
     field :space_path, :string, null: true
     field :project, :project, null: true
@@ -2596,7 +2603,7 @@ defmodule OperatelyWeb.Api.Types do
     field :completed_on, :date, null: true
     field :timeframe, :timeframe, null: true
     field :assigned_at, :datetime, null: true
-    field :milestones, list_of(:milestone), null: false
+    field :milestones, list_of(:work_map_milestone), null: false
     field :targets, list_of(:target), null: false
     field :checklist, list_of(:goal_check), null: false
     field :children, list_of(:work_map_item), null: false
