@@ -77,6 +77,18 @@ describe("RichEditor markdown input rules", () => {
     expect(firstChild(h3).type).toBe("paragraph");
   });
 
+  it("still renders existing H3+ content (schema keeps full heading levels)", () => {
+    const editor = makeEditor();
+    editor.commands.setContent({
+      type: "doc",
+      content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "deep" }] }],
+    });
+    // The H3+ input rule is disabled, but the schema must preserve existing
+    // headings so stored content is not downcast to H1 on render.
+    expect(firstChild(editor)).toMatchObject({ type: "heading", attrs: { level: 3 } });
+    expect(editor.getHTML()).toContain("<h3>deep</h3>");
+  });
+
   it("converts lists, blockquote and code block while typing", () => {
     const bullet = makeEditor();
     type(bullet, "-", " ");
