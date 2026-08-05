@@ -2581,7 +2581,7 @@ export interface WorkMapItem {
   completedOn: string | null;
   timeframe: Timeframe | null;
   assignedAt: string | null;
-  milestones: Milestone[];
+  milestones: WorkMapMilestone[];
   targets: Target[];
   checklist: GoalCheck[];
   children: WorkMapItem[];
@@ -2589,6 +2589,14 @@ export interface WorkMapItem {
   itemPath: string;
   privacy: WorkMapItemPrivacy;
   assignees?: Person[] | null;
+}
+
+export interface WorkMapMilestone {
+  __typename: "work_map_milestone";
+  id: string;
+  title: string;
+  status: MilestoneStatus;
+  timeframe: Timeframe | null;
 }
 
 export type ActivityContent =

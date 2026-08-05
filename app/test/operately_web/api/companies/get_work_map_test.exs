@@ -473,6 +473,11 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
 
       assert Enum.map(project.milestones, & &1.id) == reordered
       assert Enum.map(project.milestones, & &1.title) == ["Gamma", "Alpha", "Beta"]
+
+      assert Enum.all?(project.milestones, fn milestone ->
+               Map.keys(milestone) |> Enum.sort() ==
+                 [:__typename, :id, :status, :timeframe, :title] |> Enum.sort()
+             end)
     end
 
     test "with empty ordering state sorts by deadline then title", ctx do
