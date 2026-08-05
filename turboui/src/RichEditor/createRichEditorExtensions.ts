@@ -8,6 +8,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Blob from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
 import Highlight from "./extensions/Highlight";
+import MarkdownBlockPasteRules from "./extensions/MarkdownBlockPasteRules";
 import { mentionExtensions } from "./mentionExtensions";
 import type { RichEditorHandlers } from "./useEditor";
 
@@ -53,8 +54,8 @@ const starterKitExtension = StarterKit.configure({
 });
 
 // `markdownLinks` enables the Discord-style "[label](https://example.com)"
-// input rule. Its companion paste rule is suppressed via the editor's
-// `enablePasteRules` option (see useEditor) so pasted markdown stays literal.
+// input rule and its companion paste rule, both allow-listed via the editor's
+// `enablePasteRules` option (see useEditor).
 const linkExtension = Link.extend({ inclusive: false }).configure({
   openOnClick: false,
   markdownLinks: true,
@@ -84,7 +85,7 @@ export function createRichEditorExtensions(
     extensions.push(Placeholder.configure({ placeholder: options.placeholder }));
   }
 
-  extensions.push(...mentionExtensions(handlers, editable), Highlight, FakeTextSelection);
+  extensions.push(...mentionExtensions(handlers, editable), Highlight, FakeTextSelection, MarkdownBlockPasteRules);
 
   return extensions;
 }

@@ -11,9 +11,9 @@ function makeEditor(): Editor {
   return new Editor({
     element: document.createElement("div"),
     extensions: createRichEditorExtensions(handlers, { editable: true }),
-    // Mirror the editor option set in useEditor: keep input rules, disable
-    // markdown paste conversion (except Highlight).
-    enablePasteRules: ["highlight"],
+    // Mirror the editor option set in useEditor: keep input rules and the
+    // allow-listed markdown paste rules (see markdownPasteRules.test.ts).
+    enablePasteRules: ["highlight", "bold", "italic", "strike", "link", "markdownBlockPasteRules"],
   });
 }
 
@@ -117,16 +117,6 @@ describe("RichEditor markdown input rules", () => {
     const text = firstText(editor);
     expect(text.text).toBe("label");
     expect(text.marks?.[0]).toMatchObject({ type: "link", attrs: { href: "https://example.com" } });
-  });
-
-  it("keeps pasted markdown literal", () => {
-    const bold = makeEditor();
-    paste(bold, "**bold**");
-    expect(firstText(bold)).toEqual({ type: "text", text: "**bold**" });
-
-    const link = makeEditor();
-    paste(link, "[label](https://example.com)");
-    expect(firstText(link)).toEqual({ type: "text", text: "[label](https://example.com)" });
   });
 
   it("preserves existing Highlight behavior", () => {
