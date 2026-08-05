@@ -6,6 +6,7 @@ import * as Blobs from "@/models/blobs";
 import { useOptionalPaths } from "@/routes/paths";
 import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { RichEditorHandlers } from "turboui";
+import { useMarkdownHintsPreference } from "./useMarkdownHintsPreference";
 
 interface Props {
   scope?: People.SearchScope;
@@ -38,8 +39,11 @@ export function useRichEditorHandlers(attrs?: Props): RichEditorHandlers {
     return Blobs.uploadFile(file, onProgress);
   }, []);
 
+  const markdownHints = useMarkdownHintsPreference();
+
   return {
     mentionedPersonLookup,
+    markdownHints,
     ...(paths ? { peopleSearch, uploadFile } : {}),
   };
 }
