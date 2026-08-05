@@ -161,6 +161,10 @@ export interface SelectPersonProps {
   default?: SelectPersonPerson | null;
   required?: boolean;
   autoFocus?: boolean;
+  // Portal the option menu to <body> so it is not clipped by overflow/scroll
+  // boundaries (e.g. a Modal's `overflow-auto`). Off by default because portaling
+  // breaks callers that locate options inside the field root (feature tests).
+  portalMenu?: boolean;
 }
 
 export interface SelectGoalGoal {

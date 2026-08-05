@@ -65,6 +65,7 @@ function SelectPersonInput(props: SelectPersonProps) {
         filterOption={(candidate) => !excludedIds[candidate.value]}
         allowEmptySelection={props.allowEmpty}
         emptySelectionLabel={props.emptyLabel}
+        portalMenu={props.portalMenu}
       />
     </div>
   );
@@ -93,6 +94,7 @@ interface PersonSearchProps {
   error?: boolean;
   allowEmptySelection?: boolean;
   emptySelectionLabel?: string;
+  portalMenu?: boolean;
 }
 
 function PersonSearch(props: PersonSearchProps) {
@@ -116,7 +118,14 @@ function PersonSearch(props: PersonSearchProps) {
       cacheOptions={false}
       filterOption={props.filterOption || (() => true)}
       classNames={asyncSelectClassNames(!!props.error)}
-      styles={asyncSelectStyles()}
+      styles={asyncSelectStyles(!!props.portalMenu)}
+      // When `portalMenu` is set, render the menu in a body-level portal so it
+      // floats above (and is not clipped by) overflow/scroll boundaries of
+      // ancestors such as the Modal's `overflow-auto` container.
+      menuPortalTarget={
+        props.portalMenu && typeof document !== "undefined" ? document.body : undefined
+      }
+      menuPlacement={props.portalMenu ? "auto" : undefined}
     />
   );
 }
@@ -173,7 +182,7 @@ function PersonLabel({ person, showTitle }: { person: SelectPersonPerson; showTi
   );
 }
 
-function asyncSelectStyles() {
+function asyncSelectStyles(portalMenu: boolean) {
   return {
     input: (provided: Record<string, unknown>) => ({
       ...provided,
@@ -181,6 +190,16 @@ function asyncSelectStyles() {
         boxShadow: "none",
       },
     }),
+    ...(portalMenu
+      ? {
+          // The menu is portaled to <body>, so it needs a z-index above the Modal
+          // (z-50) to remain visible above the dialog and its backdrop.
+          menuPortal: (provided: Record<string, unknown>) => ({
+            ...provided,
+            zIndex: 60,
+          }),
+        }
+      : {}),
   };
 }
 
