@@ -91,6 +91,11 @@ describe("RichEditor markdown paste rules", () => {
     paste(ordered, "1. item");
     expect(firstChild(ordered).type).toBe("orderedList");
 
+    // The starting index from the markdown is preserved on paste.
+    const orderedFromTwo = makeEditor();
+    paste(orderedFromTwo, "2. item");
+    expect(firstChild(orderedFromTwo)).toMatchObject({ type: "orderedList", attrs: { start: 2 } });
+
     const code = makeEditor();
     paste(code, "```js const x = 1;");
     expect(firstChild(code).type).toBe("codeBlock");

@@ -107,10 +107,13 @@ const MarkdownBlockPasteRules = Extension.create({
     }
 
     if (nodes.orderedList) {
+      // Preserve the starting index (e.g. "2." -> start: 2), mirroring
+      // StarterKit's orderedList input rule (`getAttributes: { start: +match[1] }`).
       rules.push(
         wrappingPasteRule({
           find: /^(\d+)\.\s/g,
           type: nodes.orderedList,
+          getAttributes: (match) => ({ start: Number(match[1]) || 1 }),
         }),
       );
     }
