@@ -174,6 +174,69 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckInTest do
         assert Enum.find(list.subscriptions, &(&1.person_id == p.id))
       end)
     end
+
+    test "publishing a draft applies the selected notification subscribers", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:contrib1, :project, :as_person)
+        |> Factory.add_project_contributor(:contrib2, :project, :as_person)
+
+      {:ok, draft} =
+        Ecto.Changeset.change(ctx.check_in, %{state: :draft, published_at: nil})
+        |> Repo.update()
+
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_check_in], %{
+                 check_in_id: Paths.project_check_in_id(draft),
+                 status: "on_track",
+                 description: RichText.rich_text("Publishing now", :as_string),
+                 state: "published",
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: [Paths.person_id(ctx.contrib1)]
+               })
+
+      assert res.check_in.state == "published"
+
+      {:ok, list} =
+        SubscriptionList.get(:system,
+          parent_id: draft.id,
+          opts: [preload: :subscriptions]
+        )
+
+      refute list.send_to_everyone
+
+      active_ids =
+        list.subscriptions
+        |> Enum.reject(& &1.canceled)
+        |> Enum.map(& &1.person_id)
+
+      assert ctx.contrib1.id in active_ids
+      refute ctx.contrib2.id in active_ids
+    end
+
+    test "publishing a draft can notify everyone", ctx do
+      {:ok, draft} =
+        Ecto.Changeset.change(ctx.check_in, %{state: :draft, published_at: nil})
+        |> Repo.update()
+
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_check_in], %{
+                 check_in_id: Paths.project_check_in_id(draft),
+                 status: "on_track",
+                 description: RichText.rich_text("Publishing now", :as_string),
+                 state: "published",
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: []
+               })
+
+      {:ok, list} =
+        SubscriptionList.get(:system,
+          parent_id: draft.id,
+          opts: [preload: :subscriptions]
+        )
+
+      assert list.send_to_everyone
+    end
   end
 
   describe "full edit window after publish" do
