@@ -99,6 +99,7 @@ export function KpiFormModal({ isOpen, onClose, championSearch, kpi, onCreate, o
             allowEmpty
             emptyLabel="No champion"
             required={false}
+            portalMenu
           />
         </div>
 
