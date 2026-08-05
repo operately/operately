@@ -2,6 +2,7 @@ import type { Extensions } from "@tiptap/core";
 import { textblockTypeInputRule } from "@tiptap/core";
 import Heading from "@tiptap/extension-heading";
 import Link from "@tiptap/extension-link";
+import { TableKit } from "@tiptap/extension-table";
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 
@@ -60,6 +61,12 @@ const linkExtension = Link.extend({ inclusive: false }).configure({
   markdownLinks: true,
 });
 
+// Bundles the table node/row/cell/header extensions. `resizable` lets users
+// drag column borders in the editor; read-only content keeps the stored widths.
+const tableExtension = TableKit.configure({
+  table: { resizable: true },
+});
+
 /**
  * Pure TipTap extension list shared by editable editors, read-only content,
  * and version diffs. Does not create React state or an editor instance.
@@ -78,6 +85,7 @@ export function createRichEditorExtensions(
       editable,
     }),
     linkExtension,
+    tableExtension,
   ];
 
   if (options.placeholder != null) {
