@@ -4,8 +4,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   require Logger
 
   alias Operately.Repo
-  alias Operately.Goals.Goal
-  alias Operately.Projects.Project
+  alias Operately.Goals.{Check, Goal, Target}
+  alias Operately.Projects.{Milestone, Project}
   alias Operately.Groups.Group
   alias Operately.WorkMaps.{WorkMap, WorkMapItem}
   alias Operately.Access.Filters
@@ -244,11 +244,9 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     query
     |> join(:left, [p], company in assoc(p, :company), as: :company)
     |> join(:left, [p], c in assoc(p, :champion), as: :champion)
-    |> join(:left, [p], lci in assoc(p, :last_check_in), as: :last_check_in)
-    |> preload([company: company, champion: c, last_check_in: lci],
+    |> preload([company: company, champion: c],
       company: company,
-      champion: c,
-      last_check_in: lci
+      champion: c
     )
     |> preload_project_milestones()
     |> maybe_preload_project_reviewer(include_reviewer || need_reviewer)
@@ -270,8 +268,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp preload_project_milestones(query) do
     subquery =
-      from(m in Operately.Projects.Milestone,
-        select: [:id, :title, :status, :inserted_at, :completed_at, :timeframe]
+      from(m in Milestone,
+        join: project in assoc(m, :project),
+        where: is_nil(project.closed_at),
+        select: [:id, :title, :status, :timeframe]
       )
 
     preload(query, [], milestones: ^subquery)
@@ -283,12 +283,24 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     need_reviewer = needs_reviewer?(args)
     need_reviewer_or_assignees = need_reviewer || include_reviewer || include_assignees
 
+    targets =
+      from(target in Target,
+        join: goal in assoc(target, :goal),
+        where: is_nil(goal.closed_at)
+      )
+
+    checks =
+      from(check in Check,
+        join: goal in assoc(check, :goal),
+        where: is_nil(goal.closed_at)
+      )
+
     query
     |> join(:left, [goal: g], company in assoc(g, :company), as: :company)
     |> join(:left, [goal: g], c in assoc(g, :champion), as: :champion)
     |> preload([company: company, champion: c], [
-      :targets,
-      :checks,
+      targets: ^targets,
+      checks: ^checks,
       company: company,
       champion: c
     ])

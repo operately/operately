@@ -818,6 +818,50 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
+  describe "progress details" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:open_goal, :space, targets: [])
+      |> Factory.add_goal_target(:open_target, :open_goal, name: "Open target", from: 0, to: 100, value: 40, unit: "%", index: 1)
+      |> Factory.add_goal_check(:open_check, :open_goal, name: "Open check")
+      |> Factory.add_goal(:closed_goal, :space, targets: [])
+      |> Factory.add_goal_target(:closed_target, :closed_goal, name: "Closed target", from: 0, to: 100, value: 40, unit: "%", index: 1)
+      |> Factory.add_goal_check(:closed_check, :closed_goal, name: "Closed check")
+      |> Factory.close_goal(:closed_goal)
+      |> Factory.add_project(:open_project, :space)
+      |> Factory.add_project_milestone(:open_milestone, :open_project, title: "Open milestone")
+      |> Factory.add_project_check_in(:open_check_in, :open_project, :creator, status: "caution")
+      |> Factory.add_project(:closed_project, :space)
+      |> Factory.add_project_milestone(:closed_milestone, :closed_project, title: "Closed milestone")
+      |> Factory.close_project(:closed_project)
+    end
+
+    test "loads progress details only for open goals and projects", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
+
+      open_goal = Enum.find(work_map, &(&1.id == ctx.open_goal.id))
+      closed_goal = Enum.find(work_map, &(&1.id == ctx.closed_goal.id))
+      open_project = Enum.find(work_map, &(&1.id == ctx.open_project.id))
+      closed_project = Enum.find(work_map, &(&1.id == ctx.closed_project.id))
+
+      assert Enum.map(open_goal.resource.targets, & &1.id) == [ctx.open_target.id]
+      assert Enum.map(open_goal.resource.checks, & &1.id) == [ctx.open_check.id]
+      assert closed_goal.resource.targets == []
+      assert closed_goal.resource.checks == []
+      assert closed_goal.progress == nil
+      assert closed_goal.next_step == ""
+
+      assert Enum.map(open_project.resource.milestones, & &1.id) == [ctx.open_milestone.id]
+      assert open_project.status == :caution
+      assert %Ecto.Association.NotLoaded{} = open_project.resource.last_check_in
+      assert closed_project.resource.milestones == []
+      assert closed_project.progress == nil
+      assert closed_project.next_step == ""
+    end
+  end
+
   describe "permissions - query root projects" do
     @table [
       %{person: :company_member, count: 1, expected_projects: [:public_project]},

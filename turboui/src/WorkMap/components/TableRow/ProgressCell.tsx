@@ -1,5 +1,6 @@
 import React from "react";
-import { ProgressBar, ProgressBarStatus, Tooltip } from "../../..";
+import { ProgressBar, ProgressBarStatus } from "../../../ProgressBar";
+import { Tooltip } from "../../../Tooltip";
 import { WorkMap } from "..";
 import { useItemStatus } from "../../hooks/useItemStatus";
 import { GoalProgressSummary } from "./GoalProgressSummary";
