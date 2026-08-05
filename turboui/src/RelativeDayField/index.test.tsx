@@ -1,0 +1,79 @@
+import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { RelativeDayField } from ".";
+
+describe("RelativeDayField", () => {
+  it.each([
+    [0, "On the project start date"],
+    [1, "1 day after project starts"],
+    [12, "12 days after project starts"],
+  ])("formats %s days", (value, label) => {
+    render(<RelativeDayField value={value} onChange={jest.fn()} />);
+
+    expect(screen.getByText(label)).toBeTruthy();
+  });
+
+  it("renders its empty placeholder", () => {
+    render(<RelativeDayField value={null} onChange={jest.fn()} placeholder="Set project duration" />);
+
+    expect(screen.getByText("Set project duration")).toBeTruthy();
+  });
+
+  it("saves a valid value with Enter", () => {
+    const onChange = jest.fn();
+    render(<RelativeDayField value={1} onChange={onChange} />);
+
+    fireEvent.click(screen.getByText("1 day after project starts"));
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "3" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(onChange).toHaveBeenCalledWith(3);
+  });
+
+  it("clears the value", () => {
+    const onChange = jest.fn();
+    render(<RelativeDayField value={4} onChange={onChange} />);
+
+    fireEvent.click(screen.getByText("4 days after project starts"));
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
+
+  it("cancels changes with Escape", () => {
+    const onChange = jest.fn();
+    render(<RelativeDayField value={2} onChange={onChange} />);
+
+    fireEvent.click(screen.getByText("2 days after project starts"));
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "8" } });
+    fireEvent.keyDown(input, { key: "Escape" });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getByText("2 days after project starts")).toBeTruthy();
+  });
+
+  it.each(["-1", "1.5", "not a number"])("rejects malformed input: %s", (inputValue) => {
+    const onChange = jest.fn();
+    render(<RelativeDayField value={null} onChange={onChange} />);
+
+    fireEvent.click(screen.getByText("Set relative date"));
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: inputValue } });
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(screen.getByText("Enter zero or a positive number of days.")).toBeTruthy();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("does not enter edit mode when read-only", () => {
+    render(<RelativeDayField value={5} readonly />);
+
+    fireEvent.click(screen.getByText("5 days after project starts"));
+
+    expect(screen.queryByRole("textbox")).toBeNull();
+  });
+});

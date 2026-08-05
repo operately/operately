@@ -262,11 +262,11 @@ At the end of this phase, a Space administrator can create and edit a blank core
 
 #### PR 2.2 — `feat: Add a project template mode to TurboUI`
 
-- [ ] Reuse the relevant TurboUI project-page components through an explicit template presentation model instead of making template records pretend to be project API records or creating a second visual implementation.
-- [ ] Add reusable relative-day controls with the copy **On the project start date** and **N days after project starts**.
-- [ ] In template mode, replace project status with the **Template** pill and hide runtime-only controls and sections: project start date, health/status actions, check-ins, retrospective, activity feed, subscriptions, parent goal, and project access baselines.
-- [ ] Keep normal project rendering and date editing unchanged.
-- [ ] Add focused TurboUI tests and Storybook stories for empty and populated templates, relative dates, responsive layouts, permissions, and rejected invalid offsets.
+- [x] Reuse the relevant TurboUI project-page components through an explicit template presentation model instead of making template records pretend to be project API records or creating a second visual implementation.
+- [x] Add reusable relative-day controls with the copy **On the project start date** and **N days after project starts**.
+- [x] In template mode, replace project status with the **Template** pill and hide runtime-only controls and sections: project start date, health/status actions, check-ins, retrospective, activity feed, subscriptions, parent goal, and project access baselines.
+- [x] Keep normal project rendering and date editing unchanged.
+- [x] Add focused TurboUI tests and Storybook stories for empty and populated templates, relative dates, responsive layouts, permissions, and rejected invalid offsets.
 
 #### PR 2.3 — `feat: Add project template library pages`
 

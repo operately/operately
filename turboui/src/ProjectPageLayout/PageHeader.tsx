@@ -12,12 +12,14 @@ export function PageHeader(props: ProjectPageLayout.Props) {
     "space" in props
       ? [
           { to: props.space.link, label: props.space.name },
-          { to: props.workmapLink, label: "Projects" },
+          {
+            to: props.mode === "template" ? props.projectTemplatesLink || props.workmapLink : props.workmapLink,
+            label: props.mode === "template" ? "Project Templates" : "Projects",
+          },
         ]
       : [{ to: props.homeLink, label: "Home" }];
 
-  const isInviteOnly =
-    props.accessLevels?.company === "no_access" && props.accessLevels?.space === "no_access";
+  const isInviteOnly = props.accessLevels?.company === "no_access" && props.accessLevels?.space === "no_access";
 
   return (
     <div className="mt-4 px-4 flex items-center gap-3">
@@ -36,7 +38,7 @@ export function PageHeader(props: ProjectPageLayout.Props) {
             testId="project-name-field"
           />
 
-          {isInviteOnly && (
+          {props.mode !== "template" && isInviteOnly && (
             <PrivacyIndicator
               privacyLevel="secret"
               resourceType="project"
@@ -46,7 +48,15 @@ export function PageHeader(props: ProjectPageLayout.Props) {
             />
           )}
 
-          <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />
+          {props.mode === "template" ? (
+            <span className="inline-flex rounded-full border border-brand-1/20 bg-brand-2 px-2 py-0.5 text-xs font-medium text-content-accent">
+              Template
+            </span>
+          ) : (
+            props.status && (
+              <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />
+            )
+          )}
 
           {props.taskCompletion && <TaskCompletionIndicator stats={props.taskCompletion} />}
         </div>
