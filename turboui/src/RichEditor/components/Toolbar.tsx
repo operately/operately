@@ -13,6 +13,7 @@ import { LinkButton } from "./LinkButton";
 import { NumberListButton } from "./NumberListButton";
 import { RedoButton } from "./RedoButton";
 import { StrikeButton } from "./StrikeButton";
+import { TableButton } from "./TableButton";
 import { UndoButton } from "./UndoButton";
 
 import { useWindowSizeBreakpoints } from "../../utils/useWindowSizeBreakpoint";
@@ -60,6 +61,7 @@ function DesktopToolbar() {
             <BlockquoteButton editor={editor} iconSize={20} />
             <CodeBlockButton editor={editor} iconSize={20} />
             <DividerButton editor={editor} iconSize={20} />
+            <TableButton editor={editor} iconSize={20} />
 
             <Separator />
             <LinkButton editor={editor} iconSize={20} />
@@ -108,6 +110,7 @@ function MobileToolbar() {
             <BlockquoteButton editor={editor} iconSize={20} />
             <CodeBlockButton editor={editor} iconSize={20} />
             <DividerButton editor={editor} iconSize={20} />
+            <TableButton editor={editor} iconSize={20} />
             <LinkButton editor={editor} iconSize={20} />
             <UndoButton editor={editor} iconSize={20} />
             <RedoButton editor={editor} iconSize={20} />
