@@ -16,6 +16,11 @@ export type CreateRichEditorExtensionsOptions = {
 
 const starterKitExtension = StarterKit.configure({
   link: false,
+  // Only expose H1/H2 markdown input rules ("# ", "## "), matching the
+  // H1Button/H2Button in the toolbar. No toolbar button exists for H3+.
+  heading: {
+    levels: [1, 2],
+  },
   bulletList: {
     keepMarks: true,
     keepAttributes: false,
@@ -27,7 +32,13 @@ const starterKitExtension = StarterKit.configure({
   dropcursor: false,
 });
 
-const linkExtension = Link.extend({ inclusive: false }).configure({ openOnClick: false });
+// `markdownLinks` enables the Discord-style "[label](https://example.com)"
+// input rule. Its companion paste rule is suppressed via the editor's
+// `enablePasteRules` option (see useEditor) so pasted markdown stays literal.
+const linkExtension = Link.extend({ inclusive: false }).configure({
+  openOnClick: false,
+  markdownLinks: true,
+});
 
 /**
  * Pure TipTap extension list shared by editable editors, read-only content,
