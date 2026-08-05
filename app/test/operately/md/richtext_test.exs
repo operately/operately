@@ -3,6 +3,20 @@ defmodule Operately.MD.RichTextTest do
 
   alias Operately.MD.RichText
 
+  defp table_row(cells, kind \\ :body) do
+    cell_type = if kind == :header, do: "tableHeader", else: "tableCell"
+
+    content =
+      Enum.map(cells, fn text ->
+        %{
+          "type" => cell_type,
+          "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => text}]}]
+        }
+      end)
+
+    %{"type" => "tableRow", "content" => content}
+  end
+
   describe "render/1" do
     test "renders an empty document" do
       doc = %{"type" => "doc", "content" => []}
@@ -252,6 +266,48 @@ defmodule Operately.MD.RichTextTest do
       }
 
       assert RichText.render(doc) == "---"
+    end
+  end
+
+  describe "tables" do
+    test "renders a table as GitHub Flavored Markdown" do
+      doc = %{
+        "type" => "doc",
+        "content" => [
+          %{
+            "type" => "table",
+            "content" => [
+              table_row(["Name", "Role"], :header),
+              table_row(["Alice", "Engineer"]),
+              table_row(["Bob", "Designer"])
+            ]
+          }
+        ]
+      }
+
+      assert RichText.render(doc) ==
+               """
+               | Name | Role |
+               | --- | --- |
+               | Alice | Engineer |
+               | Bob | Designer |\
+               """
+    end
+
+    test "escapes pipes and collapses newlines inside cells" do
+      doc = %{
+        "type" => "doc",
+        "content" => [
+          %{
+            "type" => "table",
+            "content" => [
+              table_row(["a | b"], :header)
+            ]
+          }
+        ]
+      }
+
+      assert RichText.render(doc) == "| a \\| b |\n| --- |"
     end
   end
 

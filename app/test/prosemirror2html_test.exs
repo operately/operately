@@ -283,4 +283,50 @@ defmodule Prosemirror2HtmlTest do
     assert html == "<div>&#128206; <a href=\"https://example.com/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5\">Authentication Failed message</a></div>"
   end
 
+  test "tables" do
+    content = %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "table",
+          "content" => [
+            %{
+              "type" => "tableRow",
+              "content" => [
+                %{
+                  "type" => "tableHeader",
+                  "attrs" => %{"colspan" => 2, "rowspan" => 1},
+                  "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Name"}]}]
+                }
+              ]
+            },
+            %{
+              "type" => "tableRow",
+              "content" => [
+                %{
+                  "type" => "tableCell",
+                  "attrs" => %{"colspan" => 1, "rowspan" => 1},
+                  "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Alice"}]}]
+                },
+                %{
+                  "type" => "tableCell",
+                  "attrs" => %{"colspan" => 1, "rowspan" => 1},
+                  "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Bob"}]}]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
+    html = Prosemirror2Html.convert(content, @opts)
+
+    assert html ==
+             "<table>" <>
+               "<tr><th colspan=\"2\"><p>Name</p></th></tr>" <>
+               "<tr><td><p>Alice</p></td><td><p>Bob</p></td></tr>" <>
+               "</table>"
+  end
+
 end
