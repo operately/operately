@@ -9,7 +9,14 @@ import Api, {
   SearchSort,
   SearchTimeRange,
 } from "@/api";
-import { IconCalendar, IconLayoutGrid, IconWorld, SearchPage, SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS } from "turboui";
+import {
+  IconCalendar,
+  IconLayoutGrid,
+  IconWorld,
+  SearchPage,
+  SEARCH_TIME_FILTER_OPTIONS,
+  SEARCH_TYPE_FILTER_OPTIONS,
+} from "turboui";
 
 type Search = (input: CompaniesSearchInput) => Promise<CompaniesSearchResult>;
 
