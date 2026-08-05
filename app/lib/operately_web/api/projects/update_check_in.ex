@@ -16,6 +16,8 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
     field :description, :json, null: false
     field? :state, :check_in_state, null: true
     field? :scheduled_at, :datetime, null: true
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
@@ -54,7 +56,9 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
        status: inputs.status,
        description: inputs.description,
        state: inputs[:state],
-       scheduled_at: inputs[:scheduled_at]
+       scheduled_at: inputs[:scheduled_at],
+       send_to_everyone: inputs[:send_notifications_to_everyone],
+       subscriber_ids: inputs[:subscriber_ids]
      }}
   end
 end
