@@ -20,6 +20,16 @@ export const mockChampionSearch = async (query: string): Promise<SpaceKpisPage.P
   return mockPeople.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
+// A deliberately long champion list (15+ people) used to exercise the case
+// where the dropdown is taller than the modal: the menu is portaled to <body>
+// so it floats above the modal instead of being clipped by its overflow.
+const manyPeople = genPeople(18);
+
+export const mockLongChampionSearch = async (query: string): Promise<SpaceKpisPage.Person[]> => {
+  if (!query) return manyPeople;
+  return manyPeople.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
+};
+
 const DAY = 24 * 60 * 60 * 1000;
 
 // `today` in the POC's frozen timeline so stories are deterministic.

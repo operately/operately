@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router";
 
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
-import { mockChampionSearch, mockCurrentUser, mockKpis, mockSpace } from "./mockData";
+import { mockChampionSearch, mockCurrentUser, mockKpis, mockLongChampionSearch, mockSpace } from "./mockData";
 
 // This codebase tags elements with `data-test-id` (not the default
 // `data-testid`), so we resolve them via the attribute selector, polling until
@@ -214,6 +214,35 @@ describe("SpaceKpisPage create & log", () => {
         expect.objectContaining({ name: "Weekly Sign-ups", unit: "users", cadence: "monthly", championId: null }),
       ),
     );
+  });
+
+  // Regression: the champion dropdown used to be clipped by the modal's
+  // `overflow-auto` when the option list was taller than the modal. The menu is
+  // now portaled to <body>, so a long list renders fully outside the modal
+  // element rather than being cut off by its scroll boundary.
+  test("the champion dropdown renders its full list in a body portal, not clipped inside the modal", async () => {
+    const user = userEvent.setup();
+    const { container } = renderPage({ championSearch: mockLongChampionSearch });
+
+    await user.click(container.querySelector('[data-test-id="new-kpi"]')!);
+    const modal = await findByTestId("new-kpi-modal");
+
+    // Open the Champion picker (react-select's text input inside the field).
+    const championField = await findByTestId("championid");
+    await user.click(championField.querySelector("input")!);
+
+    // The long option list renders...
+    await waitFor(
+      () => {
+        expect(document.querySelectorAll('[data-test-id^="person-option"]').length).toBeGreaterThanOrEqual(15);
+      },
+      { timeout: 2000 },
+    );
+
+    // ...and it lives in a body-level portal, outside the modal's overflow
+    // container, so it isn't clipped by the modal edge.
+    const options = document.querySelectorAll('[data-test-id^="person-option"]');
+    options.forEach((option) => expect(modal.contains(option)).toBe(false));
   });
 
   test("logging an update submits the value and period to onRecordEntry", async () => {

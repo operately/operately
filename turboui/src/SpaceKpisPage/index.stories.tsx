@@ -3,7 +3,14 @@ import React from "react";
 
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
-import { mockChampionSearch, mockCurrentUser, mockKpis, mockPeople, mockSpace } from "./mockData";
+import {
+  mockChampionSearch,
+  mockCurrentUser,
+  mockKpis,
+  mockLongChampionSearch,
+  mockPeople,
+  mockSpace,
+} from "./mockData";
 
 //
 // Space KPIs — proof of concept (frontend, Storybook only).
@@ -30,6 +37,7 @@ type HarnessArgs = {
   emptySpace?: boolean;
   failMutations?: boolean;
   initialSelectedKpiId?: string | null;
+  championSearch?: (query: string) => Promise<SpaceKpisPageNS.Person[]>;
 };
 
 const meta = {
@@ -143,7 +151,7 @@ function Harness(args: HarnessArgs) {
       navigation={[{ to: mockSpace.link, label: mockSpace.name }]}
       kpis={kpis}
       currentUser={mockCurrentUser}
-      championSearch={mockChampionSearch}
+      championSearch={args.championSearch ?? mockChampionSearch}
       onCreateKpi={onCreateKpi}
       onEditKpi={onEditKpi}
       onDeleteKpi={onDeleteKpi}
@@ -218,5 +226,15 @@ export const ReadOnly: Story = {
 export const MutationErrors: Story = {
   args: {
     failMutations: true,
+  },
+};
+
+// Regression guard for the clipped champion dropdown: open "New KPI" and click
+// the Champion picker. The search returns 18 people — more than fit in the
+// small modal — so the menu is portaled to <body> and floats above the modal
+// (fully visible/scrollable) instead of being clipped by its `overflow-auto`.
+export const LongChampionList: Story = {
+  args: {
+    championSearch: mockLongChampionSearch,
   },
 };
