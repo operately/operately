@@ -30,7 +30,6 @@ type HarnessArgs = {
   emptySpace?: boolean;
   failMutations?: boolean;
   initialSelectedKpiId?: string | null;
-  championSearch?: (query: string) => Promise<SpaceKpisPageNS.Person[]>;
 };
 
 const meta = {
@@ -144,7 +143,7 @@ function Harness(args: HarnessArgs) {
       navigation={[{ to: mockSpace.link, label: mockSpace.name }]}
       kpis={kpis}
       currentUser={mockCurrentUser}
-      championSearch={args.championSearch ?? mockChampionSearch}
+      championSearch={mockChampionSearch}
       onCreateKpi={onCreateKpi}
       onEditKpi={onEditKpi}
       onDeleteKpi={onDeleteKpi}
