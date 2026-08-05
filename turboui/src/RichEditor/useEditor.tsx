@@ -112,10 +112,14 @@ export function useEditor(props: UseEditorProps): EditorState {
 
   const editor = TipTap.useEditor({
     shouldRerenderOnTransaction: true,
-    // Markdown shortcuts convert while typing (input rules) but pasted raw
-    // markdown must stay literal, so paste rules are disabled for everything
-    // except Highlight, whose existing "==text==" paste behavior is preserved.
-    enablePasteRules: ["highlight"],
+    // Markdown shortcuts convert both while typing (input rules) and on paste.
+    // Paste rules are allow-listed to exactly the markdown subset that has an
+    // input rule: the inline marks (bold/italic/strike/link/highlight) plus the
+    // block nodes wired up by MarkdownBlockPasteRules (headings, blockquote,
+    // lists, code block). Extensions without a markdown paste rule (e.g.
+    // MentionPeople "@" search, Blob uploads) stay off so programmatic and
+    // placeholder content is never rewritten on paste.
+    enablePasteRules: ["highlight", "bold", "italic", "strike", "link", "markdownBlockPasteRules"],
     editable: props.editable,
     content: initialContent,
     autofocus: props.autoFocus,
