@@ -2447,7 +2447,7 @@ export interface WorkMapItem {
   state: WorkMapItemState;
   status: WorkMapItemStatus;
   taskStatus: TaskStatus | null;
-  progress: number;
+  progress: number | null;
   space: Space | null;
   spacePath: string | null;
   project: Project | null;

@@ -2589,7 +2589,7 @@ defmodule OperatelyWeb.Api.Types do
     field :state, :work_map_item_state, null: false
     field :status, :work_map_item_status, null: false
     field :task_status, :task_status, null: true
-    field :progress, :float, null: false
+    field :progress, :float, null: true
     field :space, :space, null: true
     field :space_path, :string, null: true
     field :project, :project, null: true

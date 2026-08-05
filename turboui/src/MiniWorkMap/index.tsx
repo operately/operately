@@ -41,7 +41,6 @@ export namespace MiniWorkMap {
       | "outdated";
     name: string;
     itemPath: string;
-    progress: number;
     children?: WorkItem[];
     assignees: Person[];
   }

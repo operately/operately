@@ -516,4 +516,42 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
       assert Enum.map(project.milestones, & &1.title) == ["Late title", "Mid", "Zebra"]
     end
   end
+
+  describe "completed work" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space, name: "Completed goal", targets: [])
+      |> Factory.add_goal_target(:target, :goal, name: "Target", from: 0, to: 100, value: 40, unit: "%", index: 1)
+      |> Factory.add_goal_check(:check, :goal, name: "Check")
+      |> Factory.add_project(:project, :space, name: "Completed project", goal: :goal)
+      |> Factory.add_project_milestone(:milestone, :project, title: "Milestone")
+      |> Factory.close_project(:project)
+      |> Factory.close_goal(:goal)
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "preserves core fields and hierarchy without progress details", ctx do
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space)})
+
+      goal = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.goal)))
+      assert goal.name == "Completed goal"
+      assert goal.state == "closed"
+      assert goal.status == "achieved"
+      assert goal.progress == nil
+      assert goal.next_step == ""
+      assert goal.targets == []
+      assert goal.checklist == []
+
+      assert [project] = goal.children
+      assert project.id == Paths.project_id(ctx.project)
+      assert project.name == "Completed project"
+      assert project.state == "closed"
+      assert project.status == "achieved"
+      assert project.progress == nil
+      assert project.next_step == ""
+      assert project.milestones == []
+    end
+  end
 end
