@@ -5290,6 +5290,8 @@ export interface ProjectsUpdateCheckInInput {
   description: Json;
   state?: CheckInState | null;
   scheduledAt?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface ProjectsUpdateCheckInResult {

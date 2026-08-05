@@ -12,6 +12,8 @@ export async function loader({ params }): Promise<LoaderResult> {
     includeProject: true,
     includeSpace: true,
     includeReactions: true,
+    includeSubscriptionsList: true,
+    includePotentialSubscribers: true,
   });
 
   return {
