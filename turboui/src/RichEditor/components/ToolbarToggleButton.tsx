@@ -21,7 +21,14 @@ export function ToolbarToggleButton({ children, isActive, title, onClick }): JSX
   );
 
   return (
-    <button onClick={handleClick} className={className} title={title} data-test-id={testId} tabIndex={-1}>
+    <button
+      onClick={handleClick}
+      className={className}
+      title={title}
+      aria-pressed={isActive}
+      data-test-id={testId}
+      tabIndex={-1}
+    >
       {children}
     </button>
   );

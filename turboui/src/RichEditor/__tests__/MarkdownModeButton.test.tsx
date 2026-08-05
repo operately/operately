@@ -25,15 +25,14 @@ describe("MarkdownModeButton", () => {
     renderButton({ enabled: true, onToggle: jest.fn() });
 
     const button = screen.getByRole("button", { name: "Markdown shortcuts" });
-    expect(button.className).toContain("bg-toggle-active");
+    expect(button.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("reflects the inactive (disabled) state", () => {
     renderButton({ enabled: false, onToggle: jest.fn() });
 
     const button = screen.getByRole("button", { name: "Markdown shortcuts" });
-    expect(button.className).not.toContain("bg-toggle-active");
-    expect(button.className).toContain("hover:bg-surface-highlight");
+    expect(button.getAttribute("aria-pressed")).toBe("false");
   });
 
   it("invokes the toggle handler (mutation) on click", () => {
