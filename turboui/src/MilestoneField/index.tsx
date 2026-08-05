@@ -40,7 +40,7 @@ export interface MilestoneFieldProps extends TestableElement {
   milestones: Milestone[];
   onSearch: (query: string) => Promise<void>;
   extraDialogMenuOptions?: DialogMenuOptionProps[];
-  formattedTimePreferences: FormattedTimePreferences;
+  formattedTimePreferences?: FormattedTimePreferences;
 }
 
 export interface State {
@@ -63,7 +63,7 @@ export interface State {
   milestones: Milestone[];
 
   testId: string;
-  formattedTimePreferences: FormattedTimePreferences;
+  formattedTimePreferences?: FormattedTimePreferences;
 }
 
 export function MilestoneField(props: MilestoneFieldProps) {
@@ -161,12 +161,15 @@ function Trigger({ state }: { state: State }) {
         <div className="flex items-start gap-1.5 min-w-0" data-test-id={state.testId}>
           <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
           <div className="truncate min-w-0">
-            <div className="text-sm font-medium truncate">
-              {state.milestone.name || state.milestone.title}
-            </div>
-            {state.milestone.dueDate?.date && (
+            <div className="text-sm font-medium truncate">{state.milestone.name || state.milestone.title}</div>
+            {state.milestone.dueDate?.date && state.formattedTimePreferences && (
               <div className="text-xs text-content-dimmed">
-                Due <FormattedTime {...state.formattedTimePreferences} time={state.milestone.dueDate.date} format="short-date" />
+                Due{" "}
+                <FormattedTime
+                  {...state.formattedTimePreferences}
+                  time={state.milestone.dueDate.date}
+                  format="short-date"
+                />
               </div>
             )}
           </div>
@@ -304,7 +307,6 @@ function DialogSearch({ state }: { state: State }) {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
-
   // Reset selected index when search results change
   React.useEffect(() => {
     setSelectedIndex(0);
@@ -381,9 +383,14 @@ function DialogSearch({ state }: { state: State }) {
               <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
               <div className="truncate">
                 <div className="text-sm truncate">{milestone.name || milestone.title}</div>
-                {milestone.dueDate?.date && (
+                {milestone.dueDate?.date && state.formattedTimePreferences && (
                   <div className="text-xs text-content-dimmed">
-                    Due <FormattedTime {...state.formattedTimePreferences} time={milestone.dueDate.date} format="short-date" />
+                    Due{" "}
+                    <FormattedTime
+                      {...state.formattedTimePreferences}
+                      time={milestone.dueDate.date}
+                      format="short-date"
+                    />
                   </div>
                 )}
               </div>

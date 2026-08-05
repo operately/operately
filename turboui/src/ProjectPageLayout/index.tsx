@@ -37,18 +37,20 @@ export namespace ProjectPageLayout {
   }
 
   export type Props = SpaceProps & {
+    mode?: "project" | "template";
     title: string[];
     testId?: string;
 
     projectName: string;
     taskCompletion?: TaskCompletionStats | null;
-    status: BadgeStatus;
+    status?: BadgeStatus;
     updateProjectName: (name: string) => Promise<boolean>;
     permissions: ProjectPermissions;
     accessLevels?: PrivacyField.AccessLevels;
 
     state?: "paused" | "closed" | "active";
-    closedAt: Date | null;
+    closedAt?: Date | null;
+    projectTemplatesLink?: string;
     reopenLink?: string;
     retrospectiveLink?: string;
 
