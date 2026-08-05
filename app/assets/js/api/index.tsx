@@ -1843,6 +1843,7 @@ export interface Person {
   dailySummaryDeliveryTime?: string;
   notifyOnMention?: boolean;
   notifyAboutAssignments?: boolean;
+  markdownHints?: boolean;
   suspended?: boolean | null;
   company?: Company | null;
   manager?: Person | null;
@@ -4969,6 +4970,7 @@ export interface PeopleUpdateInput {
   title?: string;
   timezone?: string;
   timeFormat?: TimeFormat;
+  markdownHints?: boolean;
   managerId?: Id | null;
   theme?: string;
   notifyAboutAssignments?: boolean;
