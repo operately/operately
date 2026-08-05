@@ -117,6 +117,12 @@ function PersonSearch(props: PersonSearchProps) {
       filterOption={props.filterOption || (() => true)}
       classNames={asyncSelectClassNames(!!props.error)}
       styles={asyncSelectStyles()}
+      // Render the menu in a body-level portal so it floats above (and is not
+      // clipped by) overflow/scroll boundaries of ancestors such as the Modal's
+      // `overflow-auto` container. `menuPlacement="auto"` lets it flip above the
+      // control when there's more room there than below.
+      menuPortalTarget={typeof document !== "undefined" ? document.body : undefined}
+      menuPlacement="auto"
     />
   );
 }
@@ -180,6 +186,12 @@ function asyncSelectStyles() {
       "input:focus": {
         boxShadow: "none",
       },
+    }),
+    // The menu is portaled to <body>, so it needs a z-index above the Modal
+    // (z-50) to remain visible above the dialog and its backdrop.
+    menuPortal: (provided: Record<string, unknown>) => ({
+      ...provided,
+      zIndex: 60,
     }),
   };
 }
