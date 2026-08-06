@@ -286,14 +286,14 @@ This phase delivers the first end-to-end vertical slice: a blank core template c
 
 #### PR 3.1 — `feat: Materialize core projects from templates`
 
-- [ ] Add one transactional materialization service for the project root, description, duration, custom task statuses, milestone/task structure, ordering, priority, size, and due-relative task reminders.
-- [ ] Read only from template-owned tables and create fresh runtime project, milestone, and task rows with explicit old-ID to new-ID maps.
-- [ ] Require a start date and materialize project end, milestone due, and task due dates with calendar-day `Date.add/2` semantics.
-- [ ] Create normal project access context and baseline bindings from the creation input; never copy a parent goal or Company-members/Space-members baseline from the template.
-- [ ] Reset health, completion, closed/reopened state, check-ins, and retrospective. Rebuild the generated Kanban state so every task starts in the first open template status while preserving the copied status definitions and relative board ordering.
-- [ ] Persist source-template provenance for measurement only. No later template edit, archive, or deletion may update the generated project.
-- [ ] Create only the normal new-project activity and runtime subscriptions required by ordinary project creation; do not replay template edit history.
-- [ ] Cover zero-day offsets, leap years, month/year boundaries, missing start dates, ordering, reset fields, access baselines, and rollback on any invalid child.
+- [x] Add one transactional materialization service for the project root, description, duration, custom task statuses, milestone/task structure, ordering, priority, size, and due-relative task reminders.
+- [x] Read only from template-owned tables and create fresh runtime project, milestone, and task rows with explicit old-ID to new-ID maps.
+- [x] Require a start date and materialize project end, milestone due, and task due dates with calendar-day `Date.add/2` semantics.
+- [x] Create normal project access context and baseline bindings from the creation input; never copy a parent goal or Company-members/Space-members baseline from the template.
+- [x] Reset health, completion, closed/reopened state, check-ins, and retrospective. Rebuild the generated Kanban state so every task starts in the first open template status while preserving the copied status definitions and relative board ordering.
+- [x] Persist source-template provenance for measurement only. No later template edit, archive, or deletion may update the generated project.
+- [x] Create only the normal new-project activity and runtime subscriptions required by ordinary project creation; do not replay template edit history.
+- [x] Cover zero-day offsets, leap years, month/year boundaries, missing start dates, ordering, reset fields, access baselines, and rollback on any invalid child.
 
 #### PR 3.2 — `feat: Create projects from project templates`
 
