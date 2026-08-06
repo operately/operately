@@ -1,20 +1,33 @@
 import React from "react";
+import { captureException } from "@sentry/react";
 
-export class ErrorBoundary extends React.Component {
-  props: { children: React.ReactNode; fallback?: React.ReactNode };
-  state: { hasError: boolean };
+type Props = {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+};
 
-  constructor(props: any) {
+type State = {
+  hasError: boolean;
+};
+
+export class ErrorBoundary extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(): State {
     return { hasError: true };
   }
 
-  componentDidCatch(error: any, info: any) {
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error(error, info.componentStack);
+
+    if (window.appConfig?.sentry?.enabled) {
+      captureException(error, {
+        extra: { componentStack: info.componentStack },
+      });
+    }
   }
 
   render() {

@@ -78,6 +78,21 @@ describe("installSentryAxiosInterceptor", () => {
     expect(Sentry.captureException).not.toHaveBeenCalled();
   });
 
+  it.each([401, 403, 410])("ignores axios %s errors", async (status) => {
+    const client = axios.create();
+    installSentryAxiosInterceptor(client);
+
+    const error = {
+      isAxiosError: true,
+      response: { status },
+      config: { method: "get", url: "/api/v2/projects/get" },
+    };
+
+    await expect(getRejectedHandler(client)(error)).rejects.toBe(error);
+
+    expect(Sentry.captureException).not.toHaveBeenCalled();
+  });
+
   it("reports network errors without a response", async () => {
     const client = axios.create();
     installSentryAxiosInterceptor(client);
