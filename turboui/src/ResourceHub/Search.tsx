@@ -16,7 +16,7 @@ export function ResourceHubSearchInput({
   const testId = search.testId ?? "resource-hub-search";
 
   return (
-    <div className="relative w-full max-w-sm">
+    <div className="relative w-64 max-w-full shrink-0">
       <IconSearch
         size={16}
         aria-hidden="true"
@@ -29,7 +29,7 @@ export function ResourceHubSearchInput({
         placeholder={placeholder}
         value={searchState.query}
         onChange={(event) => searchState.setQuery(event.target.value)}
-        className="py-2 pl-9 pr-9 text-sm rounded-md focus:outline-none focus:ring-1 focus:ring-accent-base focus:border-accent-base"
+        className="pl-9 pr-9 text-sm rounded-md focus:outline-none focus:ring-1 focus:ring-accent-base focus:border-accent-base"
         testId={testId}
       />
       {searchState.query && (
