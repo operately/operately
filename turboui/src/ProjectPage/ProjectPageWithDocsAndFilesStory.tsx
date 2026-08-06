@@ -365,7 +365,7 @@ function useMockProjectDocsAndFiles(
     search: {
       search: async ({ query }) =>
         nodes.filter((node) => getNodeName(node).toLowerCase().includes(query.toLowerCase())),
-      placeholder: "Search this resource hub…",
+      placeholder: "Search documents and files…",
       testId: "resource-hub-search",
     },
   };

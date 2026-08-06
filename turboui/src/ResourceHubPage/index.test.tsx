@@ -87,7 +87,7 @@ function ResourceHubPageHarness({
   }, [openAddFolderOnMount, sharedProps.newFileModals]);
 
   return (
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <ResourceHubPage
         {...sharedProps}
         title={resourceHub.name ?? "Resource Hub"}
@@ -101,7 +101,7 @@ function ResourceHubPageHarness({
           showSearch
             ? {
                 search: search ?? (async () => []),
-                placeholder: "Search this resource hub…",
+                placeholder: "Search documents and files…",
                 testId: "resource-hub-search",
               }
             : undefined
@@ -135,7 +135,7 @@ describe("ResourceHubPage", () => {
   test("renders inline search before the sort control", () => {
     render(<ResourceHubPageHarness showSearch initialNodes={[createMockDocumentNode()]} />);
 
-    const searchInput = screen.getByRole("searchbox", { name: "Search this resource hub…" });
+    const searchInput = screen.getByRole("searchbox", { name: "Search documents and files…" });
     const sortControl = screen.getByRole("button", { name: /Sort by/ });
 
     expect(searchInput).toHaveAttribute("type", "text");
@@ -145,7 +145,7 @@ describe("ResourceHubPage", () => {
   test("disables sorting while search is active", () => {
     render(<ResourceHubPageHarness showSearch initialNodes={[createMockDocumentNode()]} />);
 
-    const searchInput = screen.getByRole("searchbox", { name: "Search this resource hub…" });
+    const searchInput = screen.getByRole("searchbox", { name: "Search documents and files…" });
 
     expect(screen.getByRole("button", { name: /Sort by/ })).toBeEnabled();
 
@@ -184,7 +184,7 @@ describe("ResourceHubPage", () => {
 
     render(<ResourceHubPageHarness showSearch initialNodes={[originalNode]} search={search} />);
 
-    const searchInput = screen.getByRole("searchbox", { name: "Search this resource hub…" });
+    const searchInput = screen.getByRole("searchbox", { name: "Search documents and files…" });
     fireEvent.change(searchInput, { target: { value: "approval" } });
 
     expect(search).not.toHaveBeenCalled();

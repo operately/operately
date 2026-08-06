@@ -95,7 +95,7 @@ function StoryPage({
             }),
           ];
         },
-        placeholder: "Search this resource hub…",
+        placeholder: "Search documents and files…",
         testId: "resource-hub-search",
       }}
       drafts={{
