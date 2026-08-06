@@ -19982,6 +19982,17 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          },
+          {
+            "default": null,
+            "name": "tasks_view",
+            "type": {
+              "name": "project_tasks_view",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -20771,6 +20782,10 @@
         "notion",
         "other"
       ],
+      "project_tasks_view": [
+        "list",
+        "board"
+      ],
       "subscription_parent_type": [
         "project_check_in",
         "project_retrospective",
@@ -21005,9 +21020,9 @@
       ]
     }
   },
-  "endpoint_count": 218,
+  "endpoint_count": 219,
   "query_count": 71,
-  "mutation_count": 147,
+  "mutation_count": 148,
   "endpoints": [
     {
       "name": "create",
@@ -33104,6 +33119,53 @@
       ],
       "docstring": "Updates the available task statuses for a project.",
       "full_name": "projects/update_task_statuses",
+      "method": "POST"
+    },
+    {
+      "name": "update_tasks_view",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_tasks_view",
+      "handler": "OperatelyWeb.Api.Projects.UpdateTasksView",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "tasks_view",
+          "type": {
+            "name": "project_tasks_view",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Updates the shared tasks List/Board view for a project.",
+      "full_name": "projects/update_tasks_view",
       "method": "POST"
     },
     {

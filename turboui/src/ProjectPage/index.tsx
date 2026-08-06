@@ -182,6 +182,9 @@ export namespace ProjectPage {
       deletedStatusReplacements: Record<string, string>;
     }) => void;
 
+    tasksView: TaskBoardTypes.TaskDisplayMode;
+    onTasksViewChange: (mode: TaskBoardTypes.TaskDisplayMode) => void | Promise<void>;
+
     contributors: Person[];
     checkIns: CheckIn[];
     discussions: Discussion[];

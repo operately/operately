@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router";
 import { KanbanBoard, TaskBoard, TasksMenu, TaskDisplayMenu } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { compareIds } from "../utils/ids";
-import { useLocalStorage } from "../utils/useLocalStorage";
 
 import type { ProjectPage } from "./index";
 import { MilestoneViewSelector } from "./MilestoneViewSelector";
@@ -15,12 +14,11 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     tasks: state.tasks,
   });
 
-  const projectDisplayStorageKey = React.useMemo(() => {
-    return normalizeStorageKeyPart(state.project.id);
-  }, [state.project.id]);
-
+  const canPersistTasksView = state.permissions.canEdit || false;
   const [taskDisplayMode, setTaskDisplayMode] = useTaskDisplayMode({
-    storageKey: projectDisplayStorageKey,
+    tasksView: state.tasksView,
+    canPersistTasksView,
+    onTasksViewChange: state.onTasksViewChange,
   });
 
   // When creating tasks from the kanban, create them within the selected milestone (if any).
@@ -145,55 +143,25 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
 }
 
 const TASK_DISPLAY_MODE_PARAM = "taskDisplay";
-const TASK_DISPLAY_STORAGE_NAMESPACE = "project-task-display";
 
-function useTaskDisplayMode({ storageKey }: { storageKey: string }) {
+function useTaskDisplayMode({
+  tasksView,
+  canPersistTasksView,
+  onTasksViewChange,
+}: {
+  tasksView: TaskBoardTypes.TaskDisplayMode;
+  canPersistTasksView: boolean;
+  onTasksViewChange: (mode: TaskBoardTypes.TaskDisplayMode) => void | Promise<void>;
+}) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const fullStorageKey = `${TASK_DISPLAY_STORAGE_NAMESPACE}:${storageKey}`;
-
-  const readStoredMode = React.useCallback(() => {
-    const { getItem, setItem } = useLocalStorage(fullStorageKey);
-    const storedValue = getItem();
-
-    if (storedValue === null) {
-      return null;
-    }
-
-    try {
-      const parsed = JSON.parse(storedValue);
-      const mode = parseTaskDisplayMode(parsed);
-
-      if (!mode) {
-        setItem(null);
-      }
-
-      return mode;
-    } catch (error) {
-      console.error(`Error reading localStorage key "${fullStorageKey}":`, error);
-      setItem(null);
-      return null;
-    }
-  }, [fullStorageKey]);
-
-  const writeStoredMode = React.useCallback(
-    (mode: TaskBoardTypes.TaskDisplayMode) => {
-      const { setItem } = useLocalStorage(fullStorageKey);
-
-      try {
-        setItem(JSON.stringify(mode));
-      } catch (error) {
-        console.error(`Error writing localStorage key "${fullStorageKey}":`, error);
-      }
-    },
-    [fullStorageKey],
+  const [urlOverride, setUrlOverride] = React.useState<TaskBoardTypes.TaskDisplayMode | null>(() =>
+    parseTaskDisplayMode(searchParams.get(TASK_DISPLAY_MODE_PARAM)),
   );
+  const [localMode, setLocalMode] = React.useState<TaskBoardTypes.TaskDisplayMode | null>(null);
 
-  const [mode, setModeState] = React.useState<TaskBoardTypes.TaskDisplayMode>(() => {
-    const urlMode = parseTaskDisplayMode(searchParams.get(TASK_DISPLAY_MODE_PARAM));
-    const storedMode = readStoredMode();
-
-    return urlMode ?? storedMode ?? "list";
-  });
+  React.useEffect(() => {
+    setLocalMode(null);
+  }, [tasksView]);
 
   React.useEffect(() => {
     const rawUrlValue = searchParams.get(TASK_DISPLAY_MODE_PARAM);
@@ -205,24 +173,26 @@ function useTaskDisplayMode({ storageKey }: { storageKey: string }) {
     const urlMode = parseTaskDisplayMode(rawUrlValue);
 
     if (urlMode) {
-      if (mode !== urlMode) {
-        setModeState(urlMode);
-      }
-
-      writeStoredMode(urlMode);
+      setUrlOverride(urlMode);
     }
 
     const next = new URLSearchParams(searchParams);
     next.delete(TASK_DISPLAY_MODE_PARAM);
     setSearchParams(next, { replace: true });
-  }, [mode, searchParams, setSearchParams, writeStoredMode]);
+  }, [searchParams, setSearchParams]);
+
+  const mode = urlOverride ?? localMode ?? tasksView;
 
   const setMode = React.useCallback(
     (nextMode: TaskBoardTypes.TaskDisplayMode) => {
-      setModeState(nextMode);
-      writeStoredMode(nextMode);
+      setUrlOverride(null);
+      setLocalMode(nextMode);
+
+      if (canPersistTasksView) {
+        void onTasksViewChange(nextMode);
+      }
     },
-    [writeStoredMode],
+    [canPersistTasksView, onTasksViewChange],
   );
 
   return [mode, setMode] as const;
@@ -304,8 +274,4 @@ function useMilestoneFilter({
     tasks: filteredTasks,
     onMilestoneFilterChange,
   };
-}
-
-function normalizeStorageKeyPart(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9_-]/g, "_");
 }

@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 218
+- Endpoints: 219
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -184,6 +184,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects update_reviewer` | `op projects update_reviewer` | `POST` | `/api/external/v1/projects/update_reviewer` |
 | `projects update_start_date` | `op projects update_start_date` | `POST` | `/api/external/v1/projects/update_start_date` |
 | `projects update_task_statuses` | `op projects update_task_statuses` | `POST` | `/api/external/v1/projects/update_task_statuses` |
+| `projects update_tasks_view` | `op projects update_tasks_view` | `POST` | `/api/external/v1/projects/update_tasks_view` |
 | `reactions create` | `op reactions create` | `POST` | `/api/external/v1/reactions/create` |
 | `reactions delete` | `op reactions delete` | `POST` | `/api/external/v1/reactions/delete` |
 | `spaces add_members` | `op spaces add_members` | `POST` | `/api/external/v1/spaces/add_members` |

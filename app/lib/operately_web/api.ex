@@ -87,6 +87,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
         mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
         mutation(:update_task_statuses, OperatelyWeb.Api.Projects.UpdateTaskStatuses)
+        mutation(:update_tasks_view, OperatelyWeb.Api.Projects.UpdateTasksView)
         mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
         mutation(:update_contributor, OperatelyWeb.Api.Projects.UpdateContributor)
         mutation(:update_description, OperatelyWeb.Api.Projects.UpdateDescription)

@@ -777,6 +777,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :milestones_ordering_state, list_of(:string), null: true
     field? :task_statuses, list_of(:task_status), null: true
     field? :tasks_kanban_state, :json, null: true
+    field? :tasks_view, :project_tasks_view, null: true
   end
 
   object :project_children_count do
@@ -2623,6 +2624,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:success_status, values: [:achieved, :missed])
+  enum(:project_tasks_view, values: Operately.Projects.Project.valid_tasks_views())
 
   object :company_export_run, for: Operately.CompanyTransfers.ExportRun do
     field :id, :id, null: false
