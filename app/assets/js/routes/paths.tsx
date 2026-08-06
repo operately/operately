@@ -406,6 +406,18 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "kpis"]);
   }
 
+  projectTemplatesPath() {
+    return this.createCompanyPath(["project-templates"]);
+  }
+
+  spaceProjectTemplatesPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "project-templates"]);
+  }
+
+  projectTemplatePath(templateId: string) {
+    return this.createCompanyPath(["project-templates", templateId]);
+  }
+
   spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {
     if (opts?.taskId) {
       return this.createCompanyPath(["spaces", spaceId, "kanban"]) + "?taskId=" + opts.taskId;
@@ -616,8 +628,8 @@ export function includesId(idsList: ID[], id: ID) {
   if (!id) return false;
 
   const ids = idsList
-    .filter((id) => id)
-    .map((id: string) => {
+    .filter((id): id is string => Boolean(id))
+    .map((id) => {
       if (isUUID(id)) return id;
       return idWithoutComments(id);
     });

@@ -36,7 +36,7 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
             <TasksMenu
               canManageStatuses={Boolean(props.onStatusesChange)}
               statuses={props.statuses}
-              onSaveCustomStatuses={({ nextStatuses }) => props.onStatusesChange?.(nextStatuses)}
+              onSaveCustomStatuses={(payload) => props.onStatusesChange?.(payload)}
             />
           </div>
         </div>

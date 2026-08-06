@@ -701,6 +701,14 @@ defmodule OperatelyWeb.Api.Types do
     field? :tasks_kanban_state, :json, null: true
     field? :milestones, list_of(:project_template_milestone), null: true
     field? :tasks, list_of(:project_template_task), null: true
+    field? :permissions, :project_template_permissions, null: true
+  end
+
+  object :project_template_permissions, for: Operately.ProjectTemplates.Permissions do
+    field :can_view, :boolean, null: false
+    field :can_comment, :boolean, null: false
+    field :can_edit, :boolean, null: false
+    field :has_full_access, :boolean, null: false
   end
 
   object :project_template_milestone, for: Operately.ProjectTemplates.Milestone do
