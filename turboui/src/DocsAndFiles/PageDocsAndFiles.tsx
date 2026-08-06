@@ -8,6 +8,7 @@ import {
   NewFileModalsProvider,
   NodeMenu,
   ResourceHubNodesListProvider,
+  ResourceHubSearchInput,
   type AddFileWidgetProps,
   type AddFolderModalProps,
   type NewFileModalsContextValue,
@@ -33,6 +34,7 @@ import {
 } from "../ResourceHub/selectors";
 import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
 import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
+import { SortControl } from "../SortControl";
 import { nodeDisplayInsertedAt } from "../utils/drafts";
 import { plurarize } from "../utils/plurarize";
 import { truncate } from "../utils/strings";
@@ -76,19 +78,23 @@ function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAn
     <ResourceHubNodesListProvider value={docsAndFiles.nodesListProps.listContext}>
       <FileDragAndDropArea onFilesDropped={docsAndFiles.newFileModals.setFiles}>
         <div className="flex-1 overflow-auto p-4 max-w-6xl mx-auto my-6" data-test-id="docs-and-files-tab">
-          <div className="flex items-start justify-between gap-4 border-b border-surface-outline pb-4">
-            <div className="min-w-0">
-              <div className="truncate text-xl font-semibold tracking-tight">
-                {docsAndFiles.resourceHub.name ?? "Documents & Files"}
-              </div>
+          <div className="flex items-center justify-between gap-4 border-b border-surface-outline pb-4">
+            <div className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">
+              {docsAndFiles.resourceHub.name ?? "Documents & Files"}
             </div>
-            <AddFilesButton
-              permissions={docsAndFiles.resourceHub.permissions}
-              onNewDocument={navigateToNewDocument}
-              onNewFolder={toggleShowAddFolder}
-              onUploadFiles={selectFiles}
-              onNewLink={navigateToNewLink}
-            />
+            <div className="flex shrink-0 items-center gap-3">
+              {docsAndFiles.search && (
+                <ResourceHubSearchInput search={docsAndFiles.search} searchState={searchState} />
+              )}
+              <SortControl sortBy={sortBy} onSortChange={setSortBy} disabled={searchState.isActive} />
+              <AddFilesButton
+                permissions={docsAndFiles.resourceHub.permissions}
+                onNewDocument={navigateToNewDocument}
+                onNewFolder={toggleShowAddFolder}
+                onUploadFiles={selectFiles}
+                onNewLink={navigateToNewLink}
+              />
+            </div>
           </div>
 
           <DocsAndFilesDraftPrompt prompt={draftPrompt} />
@@ -98,7 +104,6 @@ function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAn
             emptyStateKind="resourceHub"
             hideEmptyState={filesSelected}
             sortBy={sortBy}
-            onSortChange={setSortBy}
             search={
               docsAndFiles.search
                 ? {

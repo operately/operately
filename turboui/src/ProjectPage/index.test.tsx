@@ -314,7 +314,6 @@ describe("ProjectPage", () => {
     render(<ProjectPageHarness includeDocsAndFiles initialEntry="/projects/project-1?tab=docs-and-files" />);
 
     expect(screen.getByText("Continue writing your draft document...")).toBeInTheDocument();
-    expect(screen.getByText("6 items")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sort by Name" })).toBeInTheDocument();
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
     expect(screen.getByText("Roadmap Screenshot")).toBeInTheDocument();

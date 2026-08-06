@@ -20,7 +20,7 @@ export function SortControl({ sortBy, onSortChange, disabled = false }: SortCont
       disabled={disabled}
       data-test-id="sort-control"
       className={classNames(
-        "flex items-center gap-2 px-3 py-2 text-sm text-content-dimmed border border-surface-outline rounded-md transition-colors",
+        "flex shrink-0 items-center gap-2 whitespace-nowrap px-3 py-1.5 text-sm text-content-dimmed border border-surface-outline rounded-md transition-colors",
         disabled ? "cursor-not-allowed opacity-50" : "hover:text-content-accent",
       )}
     >

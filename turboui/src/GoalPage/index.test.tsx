@@ -73,6 +73,7 @@ import {
   createMockResourceHub,
   useMockSharedListPageProps,
 } from "../ResourceHubPage/mockData";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
 function GoalPageHarness({
   includeDocsAndFiles = false,
@@ -199,7 +200,7 @@ function GoalPageHarness({
     : undefined;
 
   return (
-    <MemoryRouter initialEntries={[initialEntry]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <GoalPage
         companyWorkMapLink="/work-map?tab=goals"
         closeLink="#"
@@ -251,6 +252,7 @@ function GoalPageHarness({
         deleteGoal={async () => undefined}
         activityFeed={<div>Activity feed</div>}
         richTextHandlers={createMockRichEditorHandlers()}
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />
     </MemoryRouter>
   );
@@ -276,7 +278,6 @@ describe("GoalPage", () => {
     render(<GoalPageHarness includeDocsAndFiles initialEntry="/goals/goal-1?tab=docs-and-files" />);
 
     expect(screen.getByText("Continue writing your draft document...")).toBeInTheDocument();
-    expect(screen.getByText("6 items")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sort by Name" })).toBeInTheDocument();
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
     expect(screen.getByText("Roadmap Screenshot")).toBeInTheDocument();
