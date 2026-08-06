@@ -82,6 +82,7 @@ dev.build:
 
 dev.server:
 	./devenv bash -c "scripts/kill_vite_servers.sh" # prevent multiple vite servers running
+	./devenv bash -c "cd app && mix local.hex --force --if-missing && mix local.rebar --force --if-missing"
 	./devenv bash -c "cd app && iex -S mix phx.server"
 
 turboui.storybook:
