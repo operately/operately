@@ -119,16 +119,14 @@ export function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
             </button>
           </div>
 
-          <div className="max-h-[60vh] overflow-y-auto">
-            <SearchResults
-              state={state}
-              onClose={onClose}
-              groups={visibleGroups}
-              options={options}
-              fullTextSearchOption={fullTextSearchOption}
-              listboxId={listboxId}
-            />
-          </div>
+          <SearchResults
+            state={state}
+            onClose={onClose}
+            groups={visibleGroups}
+            options={options}
+            fullTextSearchOption={fullTextSearchOption}
+            listboxId={listboxId}
+          />
         </div>
       </div>
     </div>,
@@ -227,23 +225,30 @@ function SearchResults({
       )}
 
       {hasListbox && (
-        <div id={listboxId} role="listbox" aria-label="Quick search results" className="py-1">
-          {groups.map((group) => (
-            <div key={group.title} role="group" aria-label={group.title} className="mb-2 last:mb-0">
-              <SearchResultGroupHeader title={group.title} />
-              {group.options.map((option) => (
-                <SearchResultItem
-                  key={`${option.resourceType}-${option.id}`}
-                  option={option}
-                  isSelected={options[state.selectedIndex]?.optionId === option.optionId}
-                  onClick={handleItemClick}
-                />
-              ))}
-            </div>
-          ))}
+        <div
+          id={listboxId}
+          role="listbox"
+          aria-label="Quick search results"
+          className="flex max-h-[60vh] min-h-0 flex-col"
+        >
+          <div className="min-h-0 overflow-y-auto py-1">
+            {groups.map((group) => (
+              <div key={group.title} role="group" aria-label={group.title} className="mb-2 last:mb-0">
+                <SearchResultGroupHeader title={group.title} />
+                {group.options.map((option) => (
+                  <SearchResultItem
+                    key={`${option.resourceType}-${option.id}`}
+                    option={option}
+                    isSelected={options[state.selectedIndex]?.optionId === option.optionId}
+                    onClick={handleItemClick}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
 
           {fullTextSearchOption && (
-            <div role="presentation" className="mt-1 border-t border-surface-outline pt-1">
+            <div role="presentation" className="shrink-0 border-t border-surface-outline bg-surface-base py-1">
               <SearchResultItem
                 option={fullTextSearchOption}
                 isSelected={options[state.selectedIndex]?.optionId === fullTextSearchOption.optionId}
