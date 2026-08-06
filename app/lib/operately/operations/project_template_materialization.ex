@@ -457,9 +457,9 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     end
 
     defp insert_tasks(repo, tasks, project, statuses) do
-      Enum.reduce_while(tasks, {:ok, []}, fn planned, {:ok, inserted} ->
-        status = first_open_status!(statuses)
+      status = first_open_status!(statuses)
 
+      Enum.reduce_while(tasks, {:ok, []}, fn planned, {:ok, inserted} ->
         with {:ok, subscription_list} <- insert_subscription_list(repo, planned.target.id, :project_task),
              changeset <-
                ProjectTask.changeset(planned.target, %{
