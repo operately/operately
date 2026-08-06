@@ -76,6 +76,28 @@ defmodule Prosemirror2Html do
     "<hr>"
   end
 
+  def convert_node(%{"type" => "table", "content" => content}, opts) do
+    content
+    |> Enum.map(fn node -> convert_node(node, opts) end)
+    |> Enum.join("")
+    |> wrap("table")
+  end
+
+  def convert_node(%{"type" => "tableRow", "content" => content}, opts) do
+    content
+    |> Enum.map(fn node -> convert_node(node, opts) end)
+    |> Enum.join("")
+    |> wrap("tr")
+  end
+
+  def convert_node(%{"type" => "tableHeader"} = node, opts) do
+    convert_table_cell(node, "th", opts)
+  end
+
+  def convert_node(%{"type" => "tableCell"} = node, opts) do
+    convert_table_cell(node, "td", opts)
+  end
+
   def convert_node(%{"type" => "text", "text" => text, "marks" => marks}, opts) do
     marks
     |> Enum.reverse()
@@ -93,6 +115,20 @@ defmodule Prosemirror2Html do
 
   def convert_node(%{"type" => "blob", "attrs" => %{"title" => title, "src" => src}}, opts) do
     "<div>&#128206; <a href=\"#{opts.domain}#{src}\">#{title}</a></div>"
+  end
+
+  defp convert_table_cell(%{"type" => _} = node, tag, opts) do
+    attrs = Map.get(node, "attrs", %{})
+
+    cell_attrs =
+      [{"colspan", Map.get(attrs, "colspan", 1)}, {"rowspan", Map.get(attrs, "rowspan", 1)}]
+      |> Enum.filter(fn {_key, value} -> is_integer(value) and value > 1 end)
+
+    node
+    |> Map.get("content", [])
+    |> Enum.map(fn child -> convert_node(child, opts) end)
+    |> Enum.join("")
+    |> wrap(tag, cell_attrs)
   end
 
   #
