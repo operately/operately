@@ -26,6 +26,7 @@ import "./i18n";
 import "@/api/socket";
 import { ToasterBar } from "turboui";
 import { installSentryAxiosInterceptor } from "@/utils/axiosErrorReporting";
+import { configureSentryUser } from "@/utils/sentryContext";
 
 Api.default.setBasePath("/api/v2");
 AdminApi.default.setBasePath("/admin/api/v1");
@@ -36,6 +37,7 @@ if (window.appConfig.sentry.enabled) {
   Sentry.init({
     dsn: window.appConfig.sentry.dsn,
     release: window.appConfig.version,
+    environment: window.appConfig.environment,
     integrations: [
       Sentry.reactRouterV7BrowserTracingIntegration({
         useEffect: React.useEffect,
@@ -48,6 +50,7 @@ if (window.appConfig.sentry.enabled) {
     tracesSampleRate: 0,
   });
 
+  configureSentryUser();
   installSentryAxiosInterceptor(axios);
 }
 
