@@ -382,7 +382,6 @@ const mockRelatedWorkItems: MiniWorkMap.WorkItem[] = [
     status: "on_track",
     name: "Backend Infrastructure",
     itemPath: "/goals/1",
-    progress: 75,
     state: "active",
     children: [
       {
@@ -391,7 +390,6 @@ const mockRelatedWorkItems: MiniWorkMap.WorkItem[] = [
         status: "caution",
         name: "API Development",
         itemPath: "/projects/3",
-        progress: 60,
         state: "active",
         children: [],
         assignees: genPeople(10, { random: true }),
@@ -402,7 +400,6 @@ const mockRelatedWorkItems: MiniWorkMap.WorkItem[] = [
         status: "on_track",
         name: "Database Optimization",
         itemPath: "/goals/4",
-        progress: 90,
         state: "active",
         children: [
           {
@@ -411,7 +408,6 @@ const mockRelatedWorkItems: MiniWorkMap.WorkItem[] = [
             status: "on_track",
             name: "Query Performance",
             itemPath: "/projects/5",
-            progress: 100,
             state: "closed",
             children: [],
             assignees: genPeople(2, { random: true }),
@@ -428,7 +424,6 @@ const mockRelatedWorkItems: MiniWorkMap.WorkItem[] = [
     status: "on_track",
     name: "UI/UX Design",
     itemPath: "/goals/2",
-    progress: 100,
     state: "closed",
     assignees: genPeople(7, { random: true }),
     children: [
@@ -438,7 +433,6 @@ const mockRelatedWorkItems: MiniWorkMap.WorkItem[] = [
         status: "on_track",
         name: "Design System",
         itemPath: "/projects/6",
-        progress: 100,
         state: "closed",
         children: [],
         assignees: genPeople(3, { random: true }),
@@ -674,7 +668,7 @@ function useMockGoalDocsAndFiles(
     search: {
       search: async ({ query }) =>
         nodes.filter((node) => getNodeName(node).toLowerCase().includes(query.toLowerCase())),
-      placeholder: "Search this resource hub…",
+      placeholder: "Search documents and files…",
       testId: "resource-hub-search",
     },
   };

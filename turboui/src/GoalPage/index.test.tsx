@@ -191,7 +191,7 @@ function GoalPageHarness({
         search: search
           ? {
               search,
-              placeholder: "Search this resource hub…",
+              placeholder: "Search documents and files…",
               testId: "resource-hub-search",
             }
           : undefined,
@@ -287,7 +287,7 @@ describe("GoalPage", () => {
       <GoalPageHarness includeDocsAndFiles initialEntry="/goals/goal-1?tab=docs-and-files" search={async () => []} />,
     );
 
-    const searchInput = screen.getByRole("searchbox", { name: "Search this resource hub…" });
+    const searchInput = screen.getByRole("searchbox", { name: "Search documents and files…" });
     const sortControl = screen.getByRole("button", { name: "Sort by Name" });
 
     expect(searchInput.compareDocumentPosition(sortControl) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
