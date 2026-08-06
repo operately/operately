@@ -260,23 +260,25 @@ At the end of this phase, a Space administrator can create and edit a blank core
 - [x] Keep all template edits authorized by Edit Access to the owning Space.
 - [x] Add operation tests proving template edits do not create activities, notifications, subscriptions, check-ins, or search entries.
 
-#### PR 2.2 — `feat: Add a project template mode to TurboUI`
+#### PR 2.2 — `feat: Add a project template page to TurboUI`
 
-- [x] Reuse the relevant TurboUI project-page components through an explicit template presentation model instead of making template records pretend to be project API records or creating a second visual implementation.
-- [x] Add reusable relative-day controls with the copy **On the project start date** and **N days after project starts**.
-- [x] In template mode, replace project status with the **Template** pill and hide runtime-only controls and sections: project start date, health/status actions, check-ins, retrospective, activity feed, subscriptions, parent goal, and project access baselines.
-- [x] Keep normal project rendering and date editing unchanged.
-- [x] Add focused TurboUI tests and Storybook stories for empty and populated templates, relative dates, responsive layouts, permissions, and rejected invalid offsets.
+- [x] Add a standalone `TemplateProjectPage` with template-specific presentation types and callbacks. Reuse `ProjectPageLayout` and lower-level TurboUI controls without converting template records into project API records or adding template branches to `ProjectPage`.
+- [x] Give the page **Overview** and **Tasks** tabs. The overview edits the template name, description, duration, and milestone list and displays the workflow; the task view groups root and milestone tasks, provides template-specific create and edit forms, and exposes workflow settings when a status-change callback is available.
+- [x] Extend the shared project-page layout with a template presentation mode for the **Space > Project Templates** breadcrumb and **Template** pill. Omit project status, task completion, privacy/access baselines, contextual dates, health actions, check-ins, discussions, Docs & Files, activity, retrospective, subscriptions, parent goals, and other runtime-only UI.
+- [x] Add a reusable `RelativeDayField` for template duration and milestone/task due offsets. Support empty, zero, singular, plural, read-only, inline, and form-field states; reject negative, fractional, and malformed values with **Enter zero or a positive number of days.**
+- [x] Treat View and Comment Access as read-only, and enable template editing for Edit and Full Access.
+- [x] Keep the existing `ProjectPage` and its contextual-date behavior unchanged.
+- [x] Add focused TurboUI tests for template navigation, omitted runtime UI, permissions, create/edit interactions, relative offsets, and invalid relative-day input, plus Storybook stories for populated, task-focused, empty, zero-offset, read-only, and mobile states.
 
 #### PR 2.3 — `feat: Add project template library pages`
 
-- [ ] Add the company-level **Project Templates** route and a Space-level **Project Templates** route.
-- [ ] Build the app bridge for the template page, including the **Space > Project Templates** breadcrumb and template-mode handlers.
-- [ ] Render searchable cards with description, Space, creator, last update, milestone count, and task count.
-- [ ] Group the company view by Space and add a Space filter; omit inaccessible Spaces and templates rather than rendering disabled results.
-- [ ] Add **New template** entry points. Preselect the current Space on the Space page and require a Space choice on the company page.
-- [ ] Initially wire create, open, and edit only; Phase 6 adds the complete duplicate/archive/delete card lifecycle after the full graph copier exists.
-- [ ] Add page/component tests and company feature coverage for both library scopes, filtering, empty states, access changes, and navigation.
+- [x] Add the company-level **Project Templates** route and a Space-level **Project Templates** route.
+- [x] Build the app bridge for the template page, including the **Space > Project Templates** breadcrumb and template-mode handlers.
+- [x] Render searchable cards with description, Space, creator, last update, milestone count, and task count.
+- [x] Group the company view by Space and add a Space filter; omit inaccessible Spaces and templates rather than rendering disabled results.
+- [x] Add **New template** entry points. Preselect the current Space on the Space page and require a Space choice on the company page.
+- [x] Initially wire create, open, and edit only; Phase 6 adds the complete duplicate/archive/delete card lifecycle after the full graph copier exists.
+- [x] Add page/component tests and company feature coverage for both library scopes, filtering, empty states, access changes, and navigation.
 
 ### Phase 3 — Core project materialization
 

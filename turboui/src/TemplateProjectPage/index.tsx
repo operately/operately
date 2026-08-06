@@ -9,6 +9,7 @@ import { Overview } from "./Overview";
 import { TaskBoard } from "./TaskBoard";
 
 export function TemplateProjectPage(props: TemplateProjectPage.Props) {
+  const orderedProps = React.useMemo(() => orderTemplateGraph(props), [props]);
   const canEdit = Boolean(props.permissions.canEdit || props.permissions.hasFullAccess);
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
@@ -30,9 +31,9 @@ export function TemplateProjectPage(props: TemplateProjectPage.Props) {
     >
       <div className="flex-1 overflow-auto">
         {tabs.active === "tasks" ? (
-          <TaskBoard props={props} canEdit={canEdit} />
+          <TaskBoard props={orderedProps} canEdit={canEdit} />
         ) : (
-          <Overview props={props} canEdit={canEdit} />
+          <Overview props={orderedProps} canEdit={canEdit} />
         )}
       </div>
     </ProjectPageLayout>
@@ -89,7 +90,10 @@ export namespace TemplateProjectPage {
     tasks: Task[];
     richTextHandlers: RichEditorHandlers;
     onTemplateUpdate: (updates: Partial<Props["template"]>) => void | boolean | Promise<void | boolean>;
-    onStatusesChange?: (statuses: StatusSelector.StatusOption[]) => void;
+    onStatusesChange?: (payload: {
+      nextStatuses: StatusSelector.StatusOption[];
+      deletedStatusReplacements: Record<string, string>;
+    }) => void;
     onMilestoneCreate?: (milestone: Omit<Milestone, "id" | "tasksOrderingState" | "tasksKanbanState">) => void;
     onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void | Promise<void>;
     onMilestoneDelete?: (milestoneId: string) => void | Promise<void>;
@@ -99,4 +103,44 @@ export namespace TemplateProjectPage {
     onTaskDelete?: (taskId: string) => void | Promise<void>;
     onTaskReorder?: (taskId: string, milestoneId: string | null, destinationIndex: number) => void | Promise<void>;
   }
+}
+
+function orderTemplateGraph(props: TemplateProjectPage.Props): TemplateProjectPage.Props {
+  const milestones = orderByIds(props.milestones, props.template.milestonesOrderingState);
+  const milestoneOrder = new Map(milestones.map((milestone) => [milestone.id, milestone.tasksOrderingState]));
+  const rootOrder = flattenKanban(
+    props.template.tasksKanbanState,
+    props.statuses.map((status) => status.value || status.id),
+  );
+
+  return {
+    ...props,
+    milestones,
+    tasks: props.tasks.slice().sort((left, right) => taskIndex(left) - taskIndex(right)),
+  };
+
+  function taskIndex(task: TemplateProjectPage.Task) {
+    const ids = task.milestoneId ? (milestoneOrder.get(task.milestoneId) ?? []) : rootOrder;
+    const index = ids.indexOf(task.id);
+    return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+  }
+}
+
+function orderByIds<T extends { id: string }>(items: T[], ids: string[]): T[] {
+  const positions = new Map(ids.map((id, index) => [id, index]));
+  return items
+    .slice()
+    .sort(
+      (left, right) =>
+        (positions.get(left.id) ?? Number.MAX_SAFE_INTEGER) - (positions.get(right.id) ?? Number.MAX_SAFE_INTEGER),
+    );
+}
+
+function flattenKanban(state: unknown, statusIds: string[]): string[] {
+  if (!state || typeof state !== "object" || Array.isArray(state)) return [];
+  const columns = state as Record<string, unknown>;
+  return statusIds.flatMap((statusId) => {
+    const column = columns[statusId];
+    return Array.isArray(column) ? column.filter((id): id is string => typeof id === "string") : [];
+  });
 }

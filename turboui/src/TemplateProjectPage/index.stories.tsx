@@ -131,7 +131,7 @@ function TemplateStory({ props }: { props: Types.Props }) {
     milestones,
     tasks,
     onTemplateUpdate: (updates) => setTemplate((current) => ({ ...current, ...updates })),
-    onStatusesChange: setStatuses,
+    onStatusesChange: ({ nextStatuses }) => setStatuses(nextStatuses),
     onMilestoneUpdate: (id, updates) =>
       setMilestones((current) => current.map((item) => (item.id === id ? { ...item, ...updates } : item))),
     onMilestoneReorder: reorderMilestones,

@@ -2070,6 +2070,65 @@
           }
         ]
       },
+      "work_map_milestone": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "status",
+            "type": {
+              "name": "milestone_status",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "timeframe",
+            "type": {
+              "name": "timeframe",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "activity_content_goal_target_updating": {
         "fields": [
           {
@@ -2932,7 +2991,7 @@
             },
             "optional": false,
             "has_default": false,
-            "nullable": false
+            "nullable": true
           },
           {
             "default": null,
@@ -3082,7 +3141,7 @@
             "name": "milestones",
             "type": {
               "item": {
-                "name": "milestone",
+                "name": "work_map_milestone",
                 "kind": "named"
               },
               "kind": "list"
@@ -6465,6 +6524,17 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          },
+          {
+            "default": null,
+            "name": "permissions",
+            "type": {
+              "name": "project_template_permissions",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
           }
         ]
       },
@@ -8761,6 +8831,17 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           },
           {
             "default": null,
@@ -16886,6 +16967,65 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "project_template_permissions": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "can_view",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "can_comment",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "can_edit",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "has_full_access",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },

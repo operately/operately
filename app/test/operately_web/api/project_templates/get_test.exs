@@ -5,10 +5,10 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
   alias OperatelyWeb.Paths
 
   @permissions_table [
-    %{permissions: :view_access, expected: 200},
-    %{permissions: :comment_access, expected: 200},
-    %{permissions: :edit_access, expected: 200},
-    %{permissions: :full_access, expected: 200}
+    %{permissions: :view_access, expected: 200, can_comment: false, can_edit: false, has_full_access: false},
+    %{permissions: :comment_access, expected: 200, can_comment: true, can_edit: false, has_full_access: false},
+    %{permissions: :edit_access, expected: 200, can_comment: true, can_edit: true, has_full_access: false},
+    %{permissions: :full_access, expected: 200, can_comment: true, can_edit: true, has_full_access: true}
   ]
 
   setup ctx do
@@ -97,9 +97,32 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     test "returns #{@test.expected} for #{@test.permissions}", ctx do
       ctx = ctx |> Factory.add_space_member(:person, :space, permissions: @test.permissions) |> Factory.log_in_person(:person)
 
-      assert {code, _} = request(ctx)
+      assert {code, res} = request(ctx)
       assert code == @test.expected
+
+      assert res.template.permissions.can_view
+      assert res.template.permissions.can_comment == @test.can_comment
+      assert res.template.permissions.can_edit == @test.can_edit
+      assert res.template.permissions.has_full_access == @test.has_full_access
     end
+  end
+
+  test "returns view-only permissions for archived templates", ctx do
+    {:ok, archived} = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update()
+
+    assert {200, res} = request(%{ctx | template: archived})
+    assert res.template.permissions == %{__typename: "project_template_permissions", can_view: true, can_comment: false, can_edit: false, has_full_access: false}
+  end
+
+  test "returns view-only permissions in company read-only mode", ctx do
+    alias Operately.Billing.CompanyBillingAccount
+
+    %{company_id: ctx.company.id, access_state: :read_only}
+    |> CompanyBillingAccount.changeset()
+    |> Repo.insert!()
+
+    assert {200, res} = request(ctx)
+    assert res.template.permissions == %{__typename: "project_template_permissions", can_view: true, can_comment: false, can_edit: false, has_full_access: false}
   end
 
   test "does not use source-project access", ctx do

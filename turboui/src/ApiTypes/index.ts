@@ -1909,6 +1909,7 @@ export interface ProjectTemplate {
   tasksKanbanState?: Json | null;
   milestones?: ProjectTemplateMilestone[] | null;
   tasks?: ProjectTemplateTask[] | null;
+  permissions?: ProjectTemplatePermissions | null;
 }
 
 export interface ProjectTemplateMilestone {
@@ -1922,6 +1923,14 @@ export interface ProjectTemplateMilestone {
   tasksOrderingState: string[];
   insertedAt: string;
   updatedAt: string;
+}
+
+export interface ProjectTemplatePermissions {
+  __typename: "project_template_permissions";
+  canView: boolean;
+  canComment: boolean;
+  canEdit: boolean;
+  hasFullAccess: boolean;
 }
 
 export interface ProjectTemplateTask {
