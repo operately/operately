@@ -10,6 +10,8 @@ defmodule Operately.Projects.Project do
 
   @behaviour WorkMapItem
 
+  @valid_tasks_views [:list, :board]
+
   schema "projects" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
@@ -61,6 +63,7 @@ defmodule Operately.Projects.Project do
 
     field :milestones_ordering_state, {:array, :string}, default: Operately.Projects.OrderingState.initialize()
     field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
+    field :tasks_view, Ecto.Enum, values: @valid_tasks_views, default: :list
 
     # populated with after load hooks
     field :next_milestone, :any, virtual: true
@@ -104,7 +107,8 @@ defmodule Operately.Projects.Project do
       :deadline,
       :milestones_ordering_state,
       :subscription_list_id,
-      :tasks_kanban_state
+      :tasks_kanban_state,
+      :tasks_view
     ])
     |> cast_embed(:timeframe)
     |> cast_embed(:task_statuses)
@@ -128,6 +132,8 @@ defmodule Operately.Projects.Project do
   end
 
   defp put_default_task_statuses(changeset), do: changeset
+
+  def valid_tasks_views, do: @valid_tasks_views
 
   def task_status_values(project = %__MODULE__{}) do
     project.task_statuses
