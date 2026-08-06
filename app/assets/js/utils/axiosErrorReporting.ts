@@ -3,6 +3,11 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 const instrumentedClients = new WeakSet<AxiosInstance>();
 
+// 401/403: auth/permission denials (expected app flow)
+// 404: missing resource (already excluded)
+// 410: stale-client version mismatch reload flow
+const IGNORED_AXIOS_STATUSES = new Set([401, 403, 404, 410]);
+
 export function installSentryAxiosInterceptor(client: AxiosInstance): AxiosInstance {
   if (instrumentedClients.has(client)) {
     return client;
@@ -37,7 +42,12 @@ function shouldCaptureAxiosError(error: unknown): boolean {
     return true;
   }
 
-  return error.response?.status !== 404;
+  const status = error.response?.status;
+  if (status === undefined) {
+    return true;
+  }
+
+  return !IGNORED_AXIOS_STATUSES.has(status);
 }
 
 function captureAxiosError(error: unknown) {
