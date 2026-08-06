@@ -32,3 +32,13 @@ describe("Paths.companyBillingPlansPath", () => {
     ).toBe("/acme/admin/billing/plans?plan=team&billing_period=yearly");
   });
 });
+
+describe("project template paths", () => {
+  const paths = new Paths({ companyId: "acme" });
+
+  it("builds company, Space, and editor paths", () => {
+    expect(paths.projectTemplatesPath()).toBe("/acme/project-templates");
+    expect(paths.spaceProjectTemplatesPath("growth")).toBe("/acme/spaces/growth/project-templates");
+    expect(paths.projectTemplatePath("launch")).toBe("/acme/project-templates/launch");
+  });
+});

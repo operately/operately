@@ -30,6 +30,7 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
 
     field :milestone_count, :integer, virtual: true, default: 0
     field :task_count, :integer, virtual: true, default: 0
+    field :permissions, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -58,6 +59,13 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
     |> validate_required([:company_id, :space_id, :creator_id, :name])
     |> validate_number(:duration_days, greater_than_or_equal_to: 0)
     |> check_constraint(:duration_days, name: :project_templates_duration_days_non_negative)
+  end
+
+  def set_permissions(template, company_read_only \\ false) do
+    permissions = Operately.ProjectTemplates.Permissions.calculate(template.request_info.access_level, company_read_only: company_read_only)
+    permissions = if template.archived_at, do: Operately.Permissions.ReadOnly.view_only(permissions), else: permissions
+
+    %{template | permissions: permissions}
   end
 
   defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do

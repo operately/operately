@@ -139,6 +139,7 @@ export { ProfilePage } from "./ProfilePage";
 export { ProjectField } from "./ProjectField";
 export { ProjectPage } from "./ProjectPage";
 export { TemplateProjectPage } from "./TemplateProjectPage";
+export { ProjectTemplatesPage } from "./ProjectTemplatesPage";
 export { ResourceHubDraftsPage } from "./ResourceHubDraftsPage";
 export { ResourceHubFolderPage } from "./ResourceHubFolderPage";
 export { ResourceHubPage } from "./ResourceHubPage";
