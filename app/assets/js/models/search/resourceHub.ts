@@ -29,7 +29,7 @@ export function useResourceHubSearchProps(
       resourceHubId
         ? {
             search,
-            placeholder: "Search this resource hub…",
+            placeholder: "Search documents and files…",
             testId: "resource-hub-search",
           }
         : undefined,
