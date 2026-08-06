@@ -4,15 +4,9 @@ defmodule Operately.Application do
   @moduledoc false
 
   use Application
-  require Logger
 
   @impl true
   def start(_type, _args) do
-    # Initialize Sentry if DSN is configured
-    if System.get_env("SENTRY_DSN") do
-      Logger.metadata(sentry: :enabled)
-    end
-
     children = [
       OperatelyWeb.Telemetry,
       Operately.Repo,
@@ -28,9 +22,10 @@ defmodule Operately.Application do
     ]
 
     :ok = Oban.Telemetry.attach_default_logger()
-    
-    # Attach Sentry telemetry for Oban job failures
+
+    # Attach Sentry telemetry for Oban job failures and Logger errors
     if System.get_env("SENTRY_DSN") do
+      :ok = Operately.Sentry.setup_logger_handler()
       attach_sentry_telemetry()
     end
 
