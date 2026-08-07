@@ -20,13 +20,41 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckIn do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "goals"},
-      examples: [%{"title" => "Create a goal check-in", "arguments" => %{"goal_id" => "growth-goal--abc123", "status" => "caution", "content" => "We are blocked on external dependencies."}}],
+      examples: [
+        %{
+          "title" => "Create a goal check-in",
+          "arguments" => %{
+            "goal_id" => "growth-goal--abc123",
+            "status" => "caution",
+            "content" => "We are blocked on external dependencies."
+          }
+        },
+        %{
+          "title" => "Create a check-in and notify people",
+          "arguments" => %{
+            "goal_id" => "growth-goal--abc123",
+            "status" => "on_track",
+            "content" => "Progress is on track.",
+            "notify_person_ids" => ["person_123"],
+            "notify_everyone" => false
+          }
+        }
+      ],
       input_schema:
         JsonSchema.object(
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
             "status" => JsonSchema.string("The goal status for this check-in.", enum: @valid_statuses),
-            "content" => JsonSchema.string("Plain text or simple markdown content for the check-in.")
+            "content" => JsonSchema.string("Plain text or simple markdown content for the check-in."),
+            "notify_person_ids" =>
+              JsonSchema.array(
+                JsonSchema.string("A person identifier."),
+                description: "Optional people to notify about this check-in. Defaults to none beyond the author."
+              ),
+            "notify_everyone" =>
+              JsonSchema.boolean(
+                "When true, notify everyone eligible for this goal. Defaults to false."
+              )
           },
           required: ["goal_id", "status", "content"]
         ),
@@ -41,16 +69,22 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateCheckIn do
   end
 
   @impl true
-  def call(conn, %{"goal_id" => goal_id, "status" => status, "content" => content}) do
+  def call(conn, %{"goal_id" => goal_id, "status" => status, "content" => content} = arguments) do
     with {:ok, goal_id} <- Helpers.decode_id(goal_id),
          {:ok, rich_content} <- FromMarkdown.to_rich_text(content),
+         {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments),
          {:ok, %{update: check_in}} <-
-           GoalCreateCheckIn.call(conn, %{
-             goal_id: goal_id,
-             status: status,
-             content: rich_content,
-             subscriber_ids: []
-           }) do
+           GoalCreateCheckIn.call(
+             conn,
+             Map.merge(
+               %{
+                 goal_id: goal_id,
+                 status: status,
+                 content: rich_content
+               },
+               notification_inputs
+             )
+           ) do
       {:ok, %{check_in: check_in}}
     end
   end

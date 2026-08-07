@@ -17,13 +17,31 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.PublishDocument do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "docs_and_files"},
-      examples: [%{"title" => "Publish a draft document", "arguments" => %{"document_id" => "document_123"}}],
+      examples: [
+        %{
+          "title" => "Publish a draft document",
+          "arguments" => %{"document_id" => "document_123"}
+        },
+        %{
+          "title" => "Publish a document and notify everyone",
+          "arguments" => %{"document_id" => "document_123", "notify_everyone" => true}
+        }
+      ],
       input_schema:
         JsonSchema.object(
           %{
             "document_id" => JsonSchema.string("The document identifier."),
             "name" => JsonSchema.string("An optional final document name."),
-            "content" => JsonSchema.string("An optional final plain text or markdown body.")
+            "content" => JsonSchema.string("An optional final plain text or markdown body."),
+            "notify_person_ids" =>
+              JsonSchema.array(
+                JsonSchema.string("A person identifier."),
+                description: "Optional people to notify about this publish. Defaults to none beyond the author."
+              ),
+            "notify_everyone" =>
+              JsonSchema.boolean(
+                "When true, notify everyone eligible for this document. Defaults to false."
+              )
           },
           required: ["document_id"]
         ),
@@ -38,13 +56,25 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.PublishDocument do
   @impl true
   def call(conn, arguments) do
     with {:ok, document_id} <- Helpers.decode_id(arguments["document_id"]),
-         {:ok, content} <- decode_optional_content(arguments["content"]) do
+         {:ok, content} <- decode_optional_content(arguments["content"]),
+         {:ok, notification_inputs} <- decode_optional_notification_inputs(arguments) do
       inputs =
         %{document_id: document_id}
         |> Helpers.put_optional(:name, arguments["name"])
         |> Helpers.put_optional(:content, content)
+        |> Map.merge(notification_inputs)
 
       DocumentPublish.call(conn, inputs)
+    end
+  end
+
+  # Only pass notification fields when the client sets them, so omitting them
+  # does not wipe existing document subscriptions on publish.
+  defp decode_optional_notification_inputs(arguments) do
+    if Map.has_key?(arguments, "notify_person_ids") or Map.has_key?(arguments, "notify_everyone") do
+      Helpers.decode_notification_inputs(arguments)
+    else
+      {:ok, %{}}
     end
   end
 

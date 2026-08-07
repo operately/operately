@@ -17,7 +17,21 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocument do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "docs_and_files"},
-      examples: [%{"title" => "Create a project document", "arguments" => %{"project_id" => "project_123", "name" => "Launch plan", "content" => "# Launch plan"}}],
+      examples: [
+        %{
+          "title" => "Create a project document",
+          "arguments" => %{"project_id" => "project_123", "name" => "Launch plan", "content" => "# Launch plan"}
+        },
+        %{
+          "title" => "Create a document and notify people",
+          "arguments" => %{
+            "project_id" => "project_123",
+            "name" => "Launch plan",
+            "content" => "# Launch plan",
+            "notify_person_ids" => ["person_123"]
+          }
+        }
+      ],
       input_schema:
         JsonSchema.object(
           %{
@@ -26,7 +40,16 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocument do
             "goal_id" => JsonSchema.string("The parent goal identifier."),
             "folder_id" => JsonSchema.string("An optional parent folder identifier."),
             "name" => JsonSchema.string("The document name."),
-            "content" => JsonSchema.string("The document body in plain text or markdown.")
+            "content" => JsonSchema.string("The document body in plain text or markdown."),
+            "notify_person_ids" =>
+              JsonSchema.array(
+                JsonSchema.string("A person identifier."),
+                description: "Optional people to notify about this document. Defaults to none beyond the author."
+              ),
+            "notify_everyone" =>
+              JsonSchema.boolean(
+                "When true, notify everyone eligible for this resource hub. Defaults to false."
+              )
           },
           required: ["name", "content"]
         ),
@@ -42,14 +65,20 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocument do
   def call(conn, arguments) do
     with {:ok, scope_inputs} <- Helpers.decode_hub_scope(arguments),
          {:ok, folder_id} <- Helpers.decode_optional_id(arguments["folder_id"]),
-         {:ok, content} <- Helpers.markdown_to_rich_text_allow_blank(arguments["content"]) do
-      DocumentCreate.call(conn, Map.merge(scope_inputs, %{
-        folder_id: folder_id,
-        name: arguments["name"],
-        content: content,
-        post_as_draft: false,
-        subscriber_ids: []
-      }))
+         {:ok, content} <- Helpers.markdown_to_rich_text_allow_blank(arguments["content"]),
+         {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
+      DocumentCreate.call(
+        conn,
+        Map.merge(
+          Map.merge(scope_inputs, %{
+            folder_id: folder_id,
+            name: arguments["name"],
+            content: content,
+            post_as_draft: false
+          }),
+          notification_inputs
+        )
+      )
     end
   end
 end
