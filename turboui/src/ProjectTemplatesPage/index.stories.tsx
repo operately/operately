@@ -58,6 +58,7 @@ function StoryPage(props: Partial<ProjectTemplatesPage.Props>) {
       editableSpaces={spaces}
       canCreate
       templatePath={(id) => `/project-templates/${id}`}
+      projectCreationPath={(template) => `/projects/new?spaceId=${template.space.id}&templateId=${template.id}`}
       spaceTemplatesPath={(id) => `/spaces/${id}/project-templates`}
       onFilter={async ({ search, spaceId }) => {
         const filtered = templates.filter(

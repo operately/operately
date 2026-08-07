@@ -188,6 +188,24 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.queryByRole("button", { name: "New template" })).not.toBeInTheDocument();
   });
 
+  it("shows project creation only when the bridge supplies an allowed path", () => {
+    const { rerender, props } = renderPage({
+      projectCreationPath: (projectTemplate) => `/projects/new?templateId=${projectTemplate.id}`,
+    });
+
+    const createProjectLink = screen.getAllByRole("link", { name: "Create project" })[0];
+
+    expect(createProjectLink).toHaveAttribute("href", "/projects/new?templateId=template-1");
+    expect(createProjectLink).toHaveClass("flex", "w-full", "justify-between", "rounded-b-xl", "border-t");
+
+    rerender(
+      <MemoryRouter>
+        <ProjectTemplatesPage {...props} projectCreationPath={() => null} />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByRole("link", { name: "Create project" })).not.toBeInTheDocument();
+  });
+
   it("requires a name and creates in the fixed Space", async () => {
     const onCreate = jest.fn().mockResolvedValue({ success: true });
     const result = renderPage({ scope: "space", fixedSpace: spaces[0], templates: [templates[0]!], onCreate });

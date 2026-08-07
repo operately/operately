@@ -2,7 +2,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   require Logger
   import Ecto.Query, only: [from: 2]
 
+  alias Operately.Access.Binding
   alias Operately.Groups.Group
+  alias Operately.Operations.{ProjectCreation, ProjectTemplateMaterialization}
   alias Operately.ProjectTemplates
   alias Operately.ProjectTemplates.{Milestone, Permissions, ProjectTemplate, Task}
   alias Operately.Repo
@@ -50,6 +52,22 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   def check_template_permissions(multi, permission) do
     Ecto.Multi.run(multi, :permissions, fn _repo, %{template: template, company_read_only: company_read_only} ->
       Permissions.check(template.request_info.access_level, permission, company_read_only: company_read_only)
+    end)
+  end
+
+  def ensure_template_belongs_to_space(multi) do
+    Ecto.Multi.run(multi, :template_space, fn _repo, %{space: space, template: template} ->
+      if template.space_id == space.id, do: {:ok, :same_space}, else: {:error, :template_scope_mismatch}
+    end)
+  end
+
+  def create_project_from_template(multi, inputs) do
+    Ecto.Multi.run(multi, :project, fn _repo, %{me: creator, space: space, template: template} ->
+      ProjectTemplateMaterialization.run(%ProjectTemplateMaterialization{
+        template_id: template.id,
+        start_date: inputs.start_date,
+        project: project_creation_attrs(creator, space, inputs)
+      })
     end)
   end
 
@@ -312,6 +330,26 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     end
   end
 
+  defp project_creation_attrs(creator, space, inputs) do
+    space = Group.preload_access_levels(space)
+    company_access_level = if space.access_levels.company == Binding.no_access(), do: Binding.no_access(), else: inputs.company_access_level
+
+    %ProjectCreation{
+      name: inputs.name,
+      champion_id: inputs[:champion_id],
+      reviewer_id: inputs[:reviewer_id],
+      creator_role: "Contributor",
+      visibility: "everyone",
+      creator_id: creator.id,
+      company_id: creator.company_id,
+      group_id: space.id,
+      goal_id: inputs[:goal_id],
+      anonymous_access_level: inputs.anonymous_access_level,
+      company_access_level: company_access_level,
+      space_access_level: inputs.space_access_level
+    }
+  end
+
   defp delete!(resource) do
     case Repo.delete(resource) do
       {:ok, resource} -> resource
@@ -340,6 +378,11 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp handle_error({:error, _step, :not_found, _changes}), do: {:error, :not_found}
   defp handle_error({:error, _step, {:not_found, _resource}, _changes}), do: {:error, :not_found}
   defp handle_error({:error, _step, :forbidden, _changes}), do: {:error, :forbidden}
+  defp handle_error({:error, _step, :template_not_found, _changes}), do: {:error, :not_found}
+  defp handle_error({:error, _step, :template_scope_mismatch, _changes}), do: {:error, :not_found}
+  defp handle_error({:error, _step, :template_not_active, _changes}), do: {:error, :forbidden}
+  defp handle_error({:error, _step, {:invalid_template, _reason}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:validation, message}, _changes}), do: {:error, :bad_request, message}
   defp handle_error({:error, _step, %Ecto.Changeset{}, _changes}), do: {:error, :bad_request}
 

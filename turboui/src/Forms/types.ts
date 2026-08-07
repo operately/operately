@@ -97,6 +97,15 @@ export interface TextInputProps {
   okSign?: boolean;
 }
 
+export interface DateInputProps {
+  field: string;
+  label?: string;
+  testId?: string;
+  hidden?: boolean;
+  required?: boolean;
+  requiredMessage?: string;
+}
+
 export interface SubmitProps {
   saveText?: string;
   cancelText?: string;

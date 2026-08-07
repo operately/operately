@@ -4,16 +4,17 @@ import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
+import Api from "@/api";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useLoadedData } from "./loader";
 
 import { PermissionLevels } from "@/features/Permissions";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
-import { AccessLevelSummary, Forms, SecondaryButton } from "turboui";
+import { AccessLevelSummary, Forms, ProjectTemplateSelection, SecondaryButton } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
@@ -49,14 +50,21 @@ function Form() {
   const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [add] = Projects.useCreateProject();
-  const { space, spaces, spaceOptions, goal, goals } = useLoadedData();
+  const [createFromTemplate] = Api.project_templates.useCreateProject();
+  const { space, spaces, spaceOptions, goal, goals, templates, projectTemplatesEnabled } = useLoadedData();
   const search = People.usePeopleSearch(People.CompanyWideSearchScope);
+  const initialTemplateID = templates.find(
+    (template) => template.id === searchParams.get("templateId") && template.space.id === space?.id,
+  )?.id;
 
   const form = Forms.useForm({
     fields: {
       name: "",
       space: space?.id,
+      template: initialTemplateID ?? "",
+      startDate: "",
       champion: "",
       reviewer: "",
       goal: goal,
@@ -68,6 +76,8 @@ function Form() {
 
       if (field === "space") {
         newValues.access = initialAccessLevels(null, parentAccessLevel);
+        newValues.template = "";
+        newValues.startDate = "";
       } else {
         newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
       }
@@ -81,7 +91,7 @@ function Form() {
       }
     },
     submit: async () => {
-      const res = await add({
+      const projectInput = {
         name: form.values.name,
         championId: form.values.champion,
         reviewerId: form.values.reviewer,
@@ -90,9 +100,21 @@ function Form() {
         anonymousAccessLevel: form.values.access.anonymous,
         companyAccessLevel: form.values.access.companyMembers,
         spaceAccessLevel: form.values.access.spaceMembers,
-      });
+      };
+      const res = form.values.template
+        ? await createFromTemplate({
+            ...projectInput,
+            templateId: form.values.template,
+            startDate: form.values.startDate,
+          })
+        : await add(projectInput);
 
       navigate(paths.projectPath(res.project.id!));
+    },
+    onError: () => {
+      form.actions.addErrors({
+        form: "The project could not be created. Check the form and try again.",
+      });
     },
   });
 
@@ -102,6 +124,16 @@ function Form() {
         <Forms.FieldGroup>
           <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" autoFocus required />
           <Forms.SelectBox label="Space" field="space" options={spaceOptions} required />
+          {projectTemplatesEnabled ? (
+            <ProjectTemplateSelection
+              spaceId={form.values.space}
+              templates={templates.map((template) => ({
+                id: template.id,
+                name: template.name,
+                spaceId: template.space.id,
+              }))}
+            />
+          ) : null}
           <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
 
           <Forms.FieldGroup layout="grid">
@@ -111,6 +143,7 @@ function Form() {
         </Forms.FieldGroup>
 
         <PrivacyLevel />
+        <Forms.FormError message={form.errors.form} />
       </Paper.Body>
 
       <Forms.Submit saveText="Add Project" layout="centered" buttonSize="lg" />
