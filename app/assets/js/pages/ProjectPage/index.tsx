@@ -237,6 +237,32 @@ function Page() {
   });
 
   const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
+
+  const handleTasksViewChange = React.useCallback(
+    async (tasksView: "list" | "board") => {
+      try {
+        await Api.projects.updateTasksView({
+          projectId: project.id,
+          tasksView,
+        });
+
+        PageCache.invalidate(pageCacheKey(project.id));
+
+        if (refresh) {
+          await refresh();
+        }
+      } catch (error) {
+        console.error("Failed to update tasks view", error);
+        showErrorToast("Error", "Failed to update tasks view");
+
+        if (refresh) {
+          await refresh();
+        }
+      }
+    },
+    [project.id, refresh],
+  );
+
   const taskProjectSearch = Projects.useProjectSearch({
     accessLevel: "edit_access",
     ignoredIds: [project.id],
@@ -398,6 +424,8 @@ function Page() {
 
     statuses,
     onSaveCustomStatuses: handleSaveStatuses,
+    tasksView: project.tasksView === "board" ? "board" : "list",
+    onTasksViewChange: handleTasksViewChange,
 
     richTextHandlers: richEditorHandlers,
     localDraftKeyBase: `project:${project.id}`,
@@ -581,13 +609,13 @@ function useSpaceProps({
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
-  const [champion, setChampion] = usePageField({
+  const [champion, setChampion] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
     update: (v) => Api.projects.updateChampion({ projectId: project.id, championId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
-  const [reviewer, setReviewer] = usePageField({
+  const [reviewer, setReviewer] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
     update: (v) => Api.projects.updateReviewer({ projectId: project.id, reviewerId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
@@ -619,8 +647,8 @@ function useSpaceProps({
       spaceProps: {
         homeLink: paths.homePath(),
       },
-      champion: champion as ProjectPage.Person | null,
-      reviewer: reviewer as ProjectPage.Person | null | undefined,
+      champion,
+      reviewer,
     };
   }
 
@@ -637,8 +665,8 @@ function useSpaceProps({
       setReviewer,
       reviewerSearch,
     },
-    champion: champion as ProjectPage.Person | null,
-    reviewer: reviewer as ProjectPage.Person | null | undefined,
+    champion,
+    reviewer,
   };
 }
 

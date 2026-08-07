@@ -1900,6 +1900,7 @@ export interface Project {
   milestonesOrderingState?: string[] | null;
   taskStatuses?: TaskStatus[] | null;
   tasksKanbanState?: Json | null;
+  tasksView?: ProjectTasksView | null;
 }
 
 export interface ProjectCheckIn {
@@ -2796,6 +2797,8 @@ export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
 export type ProjectContributorRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
+
+export type ProjectTasksView = "list" | "board";
 
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
 
@@ -5489,6 +5492,15 @@ export interface ProjectsUpdateTaskStatusesResult {
   success: boolean | null;
 }
 
+export interface ProjectsUpdateTasksViewInput {
+  projectId: Id;
+  tasksView: ProjectTasksView;
+}
+
+export interface ProjectsUpdateTasksViewResult {
+  project: Project;
+}
+
 export interface ReactionsCreateInput {
   entityId: Id;
   entityType: ReactionEntityType;
@@ -6931,6 +6943,10 @@ class ApiNamespaceProjects {
 
   async updateTaskStatuses(input: ProjectsUpdateTaskStatusesInput): Promise<ProjectsUpdateTaskStatusesResult> {
     return this.client.post("/projects/update_task_statuses", input);
+  }
+
+  async updateTasksView(input: ProjectsUpdateTasksViewInput): Promise<ProjectsUpdateTasksViewResult> {
+    return this.client.post("/projects/update_tasks_view", input);
   }
 }
 
@@ -8771,6 +8787,13 @@ export default {
     useUpdateMilestoneKanban: () =>
       useMutation<ProjectsUpdateMilestoneKanbanInput, ProjectsUpdateMilestoneKanbanResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateMilestoneKanban(input),
+      ),
+
+    updateTasksView: (input: ProjectsUpdateTasksViewInput) =>
+      defaultApiClient.apiNamespaceProjects.updateTasksView(input),
+    useUpdateTasksView: () =>
+      useMutation<ProjectsUpdateTasksViewInput, ProjectsUpdateTasksViewResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateTasksView(input),
       ),
 
     createContributor: (input: ProjectsCreateContributorInput) =>
