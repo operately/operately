@@ -354,7 +354,7 @@ Each PR in this phase extends the same copy service in both directions: project 
 - [ ] Deleting a template person removes their template task assignments atomically. Allow unavailable copied people to be removed or replaced and refresh the inactive-people summary after every mutation.
 - [ ] Make the template People section editable for Edit and Full Access. Keep View and Comment Access read-only and create no template access bindings, subscriptions, activities, or notifications.
 - [x] Add assignee selection to template task creation and task rows for Edit and Full Access, keep View and Comment Access read-only, and roll back optimistic row updates when persistence fails.
-- [ ] Recover cleanly when task creation succeeds but its follow-up assignee update fails, showing the persisted task and an assignment-specific error.
+- [x] Create each task and its initial assignees in one mutation and transaction so assignment failure rolls back the task, contributor records, assignments, and ordering state together.
 - [ ] Ensure materialization uses the latest edited roles, responsibilities, access levels, and assignments, with template champion and reviewer remaining authoritative.
 - [x] Register the task-assignee mutation in the shared and external API catalogs, regenerate clients, and add endpoint, permission-table, app-boundary filtering, and TurboUI coverage.
 - [ ] Register the template-person mutations in the shared and external API catalogs, regenerate clients, and complete contributor and materialization coverage.
