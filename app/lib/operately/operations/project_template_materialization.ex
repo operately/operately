@@ -5,7 +5,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
   alias Operately.Operations.ProjectCreation
   alias Operately.ProjectTemplates.ProjectTemplate
   alias Operately.Repo
-  alias __MODULE__.{ChildrenCreator, CopyPlanner, ProjectCreator, Validator}
+  alias __MODULE__.{ChildrenCreator, CopyPlanner, PeopleCreator, ProjectCreator, Validator}
 
   defstruct [:template_id, :start_date, :project]
 
@@ -15,6 +15,9 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     |> Multi.merge(fn %{copy_plan: plan} -> ProjectCreator.build(params.project, plan) end)
     |> Multi.run(:materialized_children, fn repo, %{copy_plan: plan, project: project} ->
       ChildrenCreator.insert(repo, plan, project)
+    end)
+    |> Multi.run(:materialized_people, fn repo, %{copy_plan: plan, project: project} ->
+      PeopleCreator.insert(repo, plan, project)
     end)
     |> Repo.transaction()
     |> extract_result()
@@ -38,6 +41,8 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
         {:ok,
          repo.preload(template,
            milestones: from(m in Operately.ProjectTemplates.Milestone, order_by: [asc: m.inserted_at, asc: m.id]),
+           people: from(p in Operately.ProjectTemplates.Person, order_by: [asc: p.inserted_at, asc: p.id], preload: [:person]),
+           task_assignments: from(a in Operately.ProjectTemplates.TaskAssignment, order_by: [asc: a.inserted_at, asc: a.id]),
            tasks: from(t in Operately.ProjectTemplates.Task, order_by: [asc: t.inserted_at, asc: t.id])
          )}
     end
@@ -51,15 +56,19 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
   defmodule CopyPlanner do
     alias Operately.ContextualDates.ContextualDate
     alias Operately.ProjectTemplates.{Copy, ProjectTemplate}
+    alias Operately.Operations.ProjectTemplateMaterialization.PeoplePlanner
     alias Operately.Projects.Milestone, as: ProjectMilestone
     alias Operately.Tasks.Task, as: ProjectTask
     alias OperatelyWeb.Paths
 
     def build(%ProjectTemplate{} = template, %Date{} = start_date) do
       with {:ok, statuses} <- Copy.copy_workflow(template.task_statuses),
-           {:ok, graph} <- plan_graph(template, statuses, start_date) do
+           {:ok, graph} <- plan_graph(template, statuses, start_date),
+           {:ok, people_graph} <- PeoplePlanner.build(template, graph.tasks) do
         {:ok,
-         Map.merge(graph, %{
+         graph
+         |> Map.merge(people_graph)
+         |> Map.merge(%{
            source_template_id: template.id,
            description: template.description,
            timeframe: timeframe(start_date, Copy.date_from_offset(start_date, template.duration_days)),
@@ -137,6 +146,47 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     defp milestone_tasks(tasks, milestone_id), do: Enum.filter(tasks, &(&1.source.project_template_milestone_id == milestone_id))
   end
 
+  defmodule PeoplePlanner do
+    alias Operately.Access.Binding
+
+    def build(template, tasks) do
+      task_ids = Map.new(tasks, &{&1.source.id, &1.target.id})
+      active_people = Enum.filter(template.people, &active?(&1.person, template.company_id))
+      active_people_by_id = Map.new(active_people, &{&1.id, &1})
+
+      people =
+        Enum.map(active_people, fn template_person ->
+          %{
+            source: template_person,
+            person: template_person.person,
+            access_level: required_access(template_person)
+          }
+        end)
+
+      assignments =
+        template.task_assignments
+        |> Enum.filter(&Map.has_key?(active_people_by_id, &1.project_template_person_id))
+        |> Enum.map(fn assignment ->
+          %{
+            source: assignment,
+            person: Map.fetch!(active_people_by_id, assignment.project_template_person_id).person,
+            task_id: Map.fetch!(task_ids, assignment.project_template_task_id)
+          }
+        end)
+
+      {:ok, %{people: people, task_assignments: assignments}}
+    end
+
+    defp active?(nil, _company_id), do: false
+
+    defp active?(person, company_id) do
+      person.company_id == company_id and person.suspended != true and is_nil(person.suspended_at)
+    end
+
+    defp required_access(%{role: role}) when role in [:champion, :reviewer], do: Binding.full_access()
+    defp required_access(person), do: person.access_level
+  end
+
   defmodule ProjectCreator do
     alias Ecto.Multi
     alias Operately.Access
@@ -153,6 +203,8 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     alias Operately.Search.IndexUpdates
 
     def build(%ProjectCreation{} = params, plan) do
+      params = %{params | champion_id: nil, reviewer_id: nil}
+
       Multi.new()
       |> insert_project(params, plan)
       |> insert_default_resource_hub()
@@ -350,6 +402,95 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     end
   end
 
+  defmodule PeopleCreator do
+    alias Operately.Access.Binding
+    alias Operately.Projects.ProjectParticipation
+
+    def insert(repo, plan, project) do
+      with {:ok, contributors} <- insert_contributors(repo, plan.people, project),
+           :ok <- insert_assignments(repo, plan.task_assignments, project),
+           :ok <- subscribe_champion_to_milestones(repo, plan.people, project) do
+        {:ok, %{contributors: contributors, assignments: plan.task_assignments}}
+      end
+    end
+
+    defp insert_contributors(repo, people, project) do
+      Enum.reduce_while(people, {:ok, []}, fn planned, {:ok, inserted} ->
+        with {:ok, contributor} <- upsert_contributor(repo, planned, project),
+             :ok <- upsert_binding(repo, planned, project),
+             :ok <- ensure_subscription(repo, project.subscription_list_id, planned.person.id, :invited) do
+          {:cont, {:ok, inserted ++ [contributor]}}
+        else
+          error -> {:halt, error}
+        end
+      end)
+    end
+
+    defp upsert_contributor(repo, planned, project) do
+      ProjectParticipation.upsert_contributor(repo, project, planned.person.id, %{
+        role: planned.source.role,
+        responsibility: planned.source.responsibility
+      })
+    end
+
+    defp upsert_binding(repo, planned, project) do
+      ProjectParticipation.ensure_access(repo, project, planned.person.id, planned.access_level, tag: role_tag(planned.source.role))
+    end
+
+    defp insert_assignments(repo, assignments, project) do
+      Enum.reduce_while(assignments, :ok, fn planned, :ok ->
+        task = repo.get!(Operately.Tasks.Task, planned.task_id)
+
+        with {:ok, _assignee} <- ProjectParticipation.insert_assignment(repo, task, planned.person.id),
+             :ok <- ensure_subscription(repo, task.subscription_list_id, planned.person.id, :invited),
+             :ok <- ensure_assignment_access(repo, planned.person.id, project) do
+          {:cont, :ok}
+        else
+          error -> {:halt, error}
+        end
+      end)
+    end
+
+    defp ensure_assignment_access(repo, person_id, project) do
+      ProjectParticipation.ensure_assignee_contributor(repo, project, person_id)
+      |> case do
+        {:ok, _contributor} -> :ok
+        error -> error
+      end
+    end
+
+    defp subscribe_champion_to_milestones(repo, people, project) do
+      case Enum.find(people, &(&1.source.role == :champion)) do
+        nil ->
+          :ok
+
+        champion ->
+          project.id
+          |> milestone_subscription_list_ids(repo)
+          |> Enum.reduce_while(:ok, fn list_id, :ok ->
+            case ensure_subscription(repo, list_id, champion.person.id, :invited) do
+              :ok -> {:cont, :ok}
+              error -> {:halt, error}
+            end
+          end)
+      end
+    end
+
+    defp milestone_subscription_list_ids(project_id, repo) do
+      import Ecto.Query, only: [from: 2]
+
+      repo.all(from(m in Operately.Projects.Milestone, where: m.project_id == ^project_id, select: m.subscription_list_id))
+    end
+
+    defp ensure_subscription(repo, subscription_list_id, person_id, type) do
+      ProjectParticipation.ensure_subscription(repo, subscription_list_id, person_id, type)
+    end
+
+    defp role_tag(:champion), do: :champion
+    defp role_tag(:reviewer), do: :reviewer
+    defp role_tag(:contributor), do: nil
+  end
+
   defmodule ChildrenCreator do
     alias Operately.ContextualDates.ContextualDate
     alias Operately.Notifications
@@ -502,7 +643,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
   defmodule Validator do
     alias Operately.Operations.ProjectCreation
-    alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, Task}
+    alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task, TaskAssignment}
 
     def validate(%ProjectTemplate{} = template, %ProjectCreation{} = project) do
       with :ok <- validate_active(template),
@@ -510,8 +651,11 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
            :ok <- validate_changeset(template, :template, &ProjectTemplate.changeset(&1, %{})),
            :ok <- validate_changesets(template.milestones, :milestone, &Milestone.changeset(&1, %{})),
            :ok <- validate_changesets(template.tasks, :task, &Task.changeset(&1, %{})),
+           :ok <- validate_changesets(template.people, :person, &Person.changeset(&1, %{})),
+           :ok <- validate_changesets(template.task_assignments, :task_assignment, &TaskAssignment.changeset(&1, %{})),
            :ok <- validate_task_containers(template),
-           :ok <- validate_task_status_references(template) do
+           :ok <- validate_task_status_references(template),
+           :ok <- validate_assignment_references(template) do
         :ok
       end
     end
@@ -565,6 +709,29 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       else
         {:error, {:invalid_template, :unknown_task_status}}
       end
+    end
+
+    defp validate_assignment_references(template) do
+      task_ids = MapSet.new(template.tasks, & &1.id)
+      person_ids = MapSet.new(template.people, & &1.id)
+      assignment_keys = Enum.map(template.task_assignments, &{&1.project_template_task_id, &1.project_template_person_id})
+
+      cond do
+        not Enum.all?(template.task_assignments, &valid_assignment_reference?(&1, template.id, task_ids, person_ids)) ->
+          {:error, {:invalid_template, :foreign_assignment_reference}}
+
+        MapSet.size(MapSet.new(assignment_keys)) != length(assignment_keys) ->
+          {:error, {:invalid_template, :duplicate_assignment}}
+
+        true ->
+          :ok
+      end
+    end
+
+    defp valid_assignment_reference?(assignment, template_id, task_ids, person_ids) do
+      assignment.project_template_id == template_id and
+        MapSet.member?(task_ids, assignment.project_template_task_id) and
+        MapSet.member?(person_ids, assignment.project_template_person_id)
     end
 
     defp invalid_child(type, changeset), do: {:error, {:invalid_child, type, changeset}}

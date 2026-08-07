@@ -5,7 +5,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   alias Operately.ContextualDates.ContextualDate
   alias Operately.Operations.ProjectTemplateCreationFromProject
-  alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, Task}
+  alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task, TaskAssignment}
   alias Operately.Projects.Project
   alias Operately.Repo
   alias Operately.Support.Factory
@@ -156,6 +156,55 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert scheduled.duration_days == 1
   end
 
+  test "copies people and assignments only when selected", ctx do
+    source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
+
+    ctx =
+      ctx
+      |> Map.put(:source, source)
+      |> Factory.add_company_member(:assignee)
+      |> Factory.add_project_contributor(:champion_contributor, :source,
+        role: :champion,
+        permissions: :full_access,
+        responsibility: "Leads delivery"
+      )
+      |> Factory.add_project_contributor(:guest_contributor, :source,
+        permissions: :view_access,
+        responsibility: "Advises",
+        person_type: :guest
+      )
+      |> Factory.add_project_task(:task, nil,
+        project_id: source.id,
+        due_date: nil,
+        task_status: source.task_statuses |> List.first() |> Map.from_struct()
+      )
+      |> Factory.add_task_assignee(:assignment, :task, :assignee)
+
+    assert {:ok, excluded} = create_template(ctx)
+    assert Repo.aggregate(from(p in Person, where: p.project_template_id == ^excluded.id), :count) == 0
+    assert Repo.aggregate(from(a in TaskAssignment, where: a.project_template_id == ^excluded.id), :count) == 0
+
+    assert {:ok, included} = create_template(ctx, name: "With people", include_people_and_assignments: true)
+    included = Repo.preload(included, people: :person, task_assignments: [:project_template_person, :project_template_task])
+
+    champion = Enum.find(included.people, &(&1.person_id == ctx.champion_contributor.person_id))
+    guest = Enum.find(included.people, &(&1.person_id == ctx.guest_contributor.person_id))
+    assignee = Enum.find(included.people, &(&1.person_id == ctx.assignee.id))
+
+    assert champion.role == :champion
+    assert champion.responsibility == "Leads delivery"
+    assert champion.access_level == Operately.Access.Binding.full_access()
+    assert guest.person.type == :guest
+    assert guest.responsibility == "Advises"
+    assert guest.access_level == Operately.Access.Binding.view_access()
+    assert assignee.role == :contributor
+    assert assignee.access_level == Operately.Access.Binding.edit_access()
+
+    assert [assignment] = included.task_assignments
+    assert assignment.project_template_person_id == assignee.id
+    assert assignment.project_template_task.name == ctx.task.name
+  end
+
   test "returns every date before the project start in one structured error", ctx do
     start_date = ~D[2028-01-10]
 
@@ -180,11 +229,45 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     assert issues == [
              %{resource_type: :project, resource_id: source.id, resource_name: source.name, field: :end_date, date: ~D[2028-01-09], reason: :before_project_start},
-             %{resource_type: :milestone, resource_id: ctx.milestone.id, resource_name: "Early milestone", field: :due_date, date: ~D[2028-01-08], reason: :before_project_start},
-             %{resource_type: :task, resource_id: ctx.task.id, resource_name: "Early task", field: :due_date, date: ~D[2028-01-07], reason: :before_project_start}
+             %{resource_type: :milestone, resource_id: ctx.milestone.id, resource_name: "Early milestone", field: :due_date, date: ~D[2028-01-08], reason: :before_project_start}
            ]
 
     assert Repo.aggregate(ProjectTemplate, :count) == 0
+  end
+
+  test "clears task due dates and reminders that fall before the project start", ctx do
+    start_date = ~D[2028-01-10]
+    source = ctx.source |> Project.changeset(%{timeframe: timeframe(start_date, ~D[2028-01-20])}) |> Repo.update!()
+    task_status = source.task_statuses |> List.first() |> Map.from_struct()
+
+    ctx =
+      ctx
+      |> Map.put(:source, source)
+      |> Factory.add_project_task(:early_task, nil,
+        project_id: source.id,
+        name: "Early task",
+        due_date: ContextualDate.create_day_date(~D[2028-01-07]),
+        reminders: [%{type: :before_due, days: 2}],
+        task_status: task_status
+      )
+      |> Factory.add_project_task(:on_time_task, nil,
+        project_id: source.id,
+        name: "On-time task",
+        due_date: ContextualDate.create_day_date(start_date),
+        reminders: [%{type: :before_due, days: 1}],
+        task_status: task_status
+      )
+
+    assert {:ok, template} = create_template(ctx)
+    template = Repo.preload(template, :tasks)
+
+    early_task = Enum.find(template.tasks, &(&1.name == "Early task"))
+    on_time_task = Enum.find(template.tasks, &(&1.name == "On-time task"))
+
+    assert early_task.due_offset_days == nil
+    assert early_task.reminders == []
+    assert on_time_task.due_offset_days == 0
+    assert [%{type: :before_due, days: 1}] = on_time_task.reminders
   end
 
   test "returns a structured missing-start issue", ctx do
@@ -316,7 +399,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       project_id: ctx.source.id,
       creator_id: Keyword.get(opts, :creator_id, ctx.creator.id),
       name: Keyword.get(opts, :name, "Reusable project"),
-      description: Keyword.get(opts, :description)
+      description: Keyword.get(opts, :description),
+      include_people_and_assignments: Keyword.get(opts, :include_people_and_assignments, false)
     })
   end
 

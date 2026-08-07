@@ -89,7 +89,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
            project_id: changes.project.id,
            creator_id: changes.me.id,
            name: inputs.name,
-           description: inputs[:description]
+           description: inputs[:description],
+           include_people_and_assignments: inputs[:include_people_and_assignments] || false
          }) do
       {:ok, template} -> {:ok, Map.put(changes, :template_creation, %{template: template, schedule_issues: []})}
       {:error, {:invalid_schedule, %{issues: issues}}} -> {:ok, Map.put(changes, :template_creation, %{template: nil, schedule_issues: issues})}
@@ -364,8 +365,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
     %ProjectCreation{
       name: inputs.name,
-      champion_id: inputs[:champion_id],
-      reviewer_id: inputs[:reviewer_id],
+      champion_id: nil,
+      reviewer_id: nil,
       creator_role: "Contributor",
       visibility: "everyone",
       creator_id: creator.id,

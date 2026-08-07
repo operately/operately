@@ -175,6 +175,7 @@ A template is visible only to people with View Access to its Space. Every other 
 
 When a project is created from the template:
 
+- The template's champion and reviewer are authoritative. Template-based project creation does not ask for or accept separate champion and reviewer selections. A template without copied people creates a project with both roles unassigned.
 - Active people who still belong to the company, including guests, are copied automatically. They are not merely suggested and the user does not have to confirm each person.
 - The champion and reviewer keep their roles and receive Full Access, matching Operately's existing project behavior.
 - Other contributors keep their responsibility and direct project access level.
@@ -183,6 +184,8 @@ When a project is created from the template:
 - Copied contributors and task assignees follow Operately's normal automatic subscription behavior.
 
 If a referenced person has been removed or suspended since the template was saved, Operately skips that person and leaves their role or tasks unassigned. This does not block project creation or require a replacement step. Before creation, show one plain-language summary, for example: **1 person in this template is no longer active. Their project role and 3 tasks will be left unassigned.** The user can make replacements later using the normal project team and task controls.
+
+The template editor shows copied roles, responsibilities, access levels, and task assignees as read-only context. Editing template people and assignments is deferred; this phase does not expose people or assignment mutations.
 
 ## Acceptance Criteria
 
@@ -314,16 +317,16 @@ This phase adds the reverse core transformation and centralizes schedule validat
 - [x] Add a transactional internal project-to-template operation for description, project duration, workflow, milestones, tasks, ordering, priority, size, and due-relative reminders, backed by copy primitives shared with template materialization.
 - [x] Write the copied graph only to template-owned tables; saving a project as a template must not create a second project row or reuse runtime milestone/task rows.
 - [x] Require a concrete source-project start date and derive each supported offset from that date.
-- [x] Validate the complete source graph before writing. Return one structured result for a missing start date and every project end, milestone due date, or task due date earlier than the start date.
+- [x] Validate the complete source graph before writing. Return one structured result for a missing start date and every project end or milestone due date earlier than the start date. Clear task due dates (and due-relative reminders) that fall before the start instead of treating them as schedule issues.
 - [x] Exclude fixed-date reminders and reset health, completion, closed/reopened state, check-ins, retrospective, goal, access baselines, activities, notifications, and subscriptions.
 - [x] Create the template in the source project's Space with source-project provenance; defer feature gating, read-only handling, and Space Edit authorization to the endpoint/action boundary.
-- [x] Cover source dates at offset zero, mixed contextual-date precision, invalid pre-start dates, nil dates, state resets, malformed graphs, and all-or-nothing rollback.
+- [x] Cover source dates at offset zero, mixed contextual-date precision, invalid pre-start project/milestone dates, cleared pre-start task due dates, nil dates, state resets, malformed graphs, and all-or-nothing rollback.
 
 #### PR 4.2 — `feat: Add save project as template validation UI`
 
 - [x] Build the name, description, and include-option dialog and connect it to the source validation response.
 - [x] Keep the project actions entry point and submission disabled until Phase 5 supports every include option end to end; do not expose a dialog whose switches are only partially honored.
-- [x] Show pre-start date validation in plain language and link or identify every offending project, milestone, and task date so the user can fix or remove it.
+- [x] Show pre-start date validation in plain language and link or identify every offending project end and milestone due date so the user can fix or remove it.
 - [x] Open the created template after a successful save and leave the source project unchanged.
 - [x] Add component and feature coverage for permission gating, defaults, validation, cancellation, retry, and success navigation.
 - [x] Register `project_templates/create_from_project` in the shared API namespace, publish it in the external API and CLI catalogs, and cover its token authorization contract with an external mutation smoke test.
@@ -334,12 +337,12 @@ Each PR in this phase extends the same copy service in both directions: project 
 
 #### PR 5.1 — `feat: Copy project template people and assignments`
 
-- [ ] Add template-specific people and assignment records. When **Include people and assignments** is selected, copy champion, reviewer, contributors, responsibilities, contributor access levels, and task assignees into those records; otherwise copy none of them.
-- [ ] Do not grant copied people direct access to the template itself. Template visibility and management continue to come only from the owning Space.
-- [ ] When materializing, keep active company people and guests, skip removed or suspended people, and calculate one summary with affected project roles and task counts.
-- [ ] Recreate champion/reviewer Full Access, contributor direct access, task assignments, assignee Edit Access, and automatic subscriptions through shared access/assignment helpers.
-- [ ] Preserve author attribution in descriptions and other copied content independently of this option; content authors are not project contributors unless they are also copied by this option.
-- [ ] Add backend and feature coverage for on/off behavior, guests, inactive people, duplicate roles, assignment-implied contribution, most-permissive access, and the pre-creation warning.
+- [x] Add template-specific people and assignment records. When **Include people and assignments** is selected, copy champion, reviewer, contributors, responsibilities, contributor access levels, and task assignees into those records; otherwise copy none of them.
+- [x] Do not grant copied people direct access to the template itself. Template visibility and management continue to come only from the owning Space.
+- [x] When materializing, keep active company people and guests, skip removed or suspended people, and calculate one summary with affected project roles and task counts.
+- [x] Recreate champion/reviewer Full Access, contributor direct access, task assignments, assignee Edit Access, and automatic subscriptions through shared access/assignment helpers. Treat stored template roles as authoritative and omit Champion and Reviewer from template-based project creation.
+- [x] Preserve author attribution in descriptions and other copied content independently of this option; content authors are not project contributors unless they are also copied by this option. Display copied people and task assignees read-only in the template editor.
+- [x] Add backend and UI coverage for on/off behavior, guests, inactive people, duplicate roles, assignment-implied contribution, most-permissive access, and the pre-creation warning.
 
 #### PR 5.2 — `feat: Copy project template discussions`
 

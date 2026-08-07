@@ -4,6 +4,7 @@ import { RelativeDayField } from "../RelativeDayField";
 import { StatusSelector } from "../StatusSelector";
 import { MilestoneList } from "./MilestoneList";
 import type { TemplateProjectPage } from ".";
+import { TemplatePeople } from "./People";
 
 export function Overview({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   return (
@@ -37,6 +38,7 @@ export function Overview({ props, canEdit }: { props: TemplateProjectPage.Props;
             />
           </section>
           <Workflow props={props} />
+          <TemplatePeople people={props.people ?? []} />
         </aside>
       </div>
     </div>

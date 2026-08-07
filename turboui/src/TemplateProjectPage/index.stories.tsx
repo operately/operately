@@ -11,6 +11,24 @@ const statuses: Types.Props["statuses"] = [
   { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 2, closed: true },
 ];
 
+const champion: Types.TemplatePerson = {
+  id: "template-person-ada",
+  person: { id: "ada", fullName: "Ada Lovelace", avatarUrl: null },
+  role: "champion",
+  responsibility: "Leads delivery",
+  accessLevel: 100,
+  active: true,
+};
+
+const unavailableContributor: Types.TemplatePerson = {
+  id: "template-person-unavailable",
+  person: null,
+  role: "contributor",
+  responsibility: "Coordinates launch support",
+  accessLevel: 70,
+  active: false,
+};
+
 const populatedProps: Types.Props = {
   template: {
     id: "launch-template",
@@ -75,8 +93,10 @@ const populatedProps: Types.Props = {
       dueOffsetDays: 21,
       status: statuses[0]!,
       reminders: [{ type: "due_day" }],
+      assignees: [champion, unavailableContributor],
     },
   ],
+  people: [champion, unavailableContributor],
   richTextHandlers: createMockRichEditorHandlers(),
   onTemplateUpdate: () => undefined,
   onStatusesChange: () => undefined,

@@ -9,8 +9,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateProject do
     field :space_id, :id, null: false
     field :start_date, :date, null: false
     field :name, :string, null: false
-    field? :champion_id, :id, null: true
-    field? :reviewer_id, :id, null: true
     field? :goal_id, :id, null: true
     field :anonymous_access_level, :access_options_int, null: false
     field :company_access_level, :access_options_int, null: false

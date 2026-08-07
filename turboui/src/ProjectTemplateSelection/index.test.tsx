@@ -32,7 +32,12 @@ jest.mock("react-select", () => {
 });
 
 const templates = [
-  { id: "marketing", name: "Campaign", spaceId: "space-1" },
+  {
+    id: "marketing",
+    name: "Campaign",
+    spaceId: "space-1",
+    inactivePeopleSummary: { personCount: 1, roleCount: 1, taskCount: 3 },
+  },
   { id: "product", name: "Launch", spaceId: "space-2" },
 ];
 
@@ -70,11 +75,25 @@ describe("ProjectTemplateSelection", () => {
     await waitFor(() => expect(screen.getByLabelText("Template")).toHaveValue(""));
     expect(screen.queryByLabelText(/Project start date/)).not.toBeInTheDocument();
   });
+
+  it("warns about inactive people only for the selected template", () => {
+    render(<Harness />);
+
+    expect(screen.queryByText(/no longer active/)).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "marketing" } });
+
+    expect(screen.getByRole("status")).toHaveTextContent("1 person in this template is no longer active.");
+    expect(screen.getByRole("status")).toHaveTextContent("Their project role and 3 tasks will be left unassigned.");
+  });
 });
 
 function selectCurrentDate(label: string) {
   const date = new Date();
-  const isoDate = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+  const isoDate = [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
 
   fireEvent.click(screen.getByLabelText(label));
 

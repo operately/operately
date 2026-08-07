@@ -59,6 +59,22 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ListTest do
     refute Map.has_key?(launch, :tasks_kanban_state)
   end
 
+  test "returns an inactive-people summary without loading the people graph", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:inactive)
+      |> Factory.add_project_template_person(:template_person, :launch, :inactive)
+      |> Factory.add_project_template_task_assignment(:assignment, :launch, :task, :template_person)
+      |> Factory.suspend_company_member(:inactive)
+
+    assert {200, res} = query(ctx.conn, [:project_templates, :list], %{})
+    launch = Enum.find(res.templates, &(&1.id == Paths.project_template_id(ctx.launch)))
+
+    assert launch.inactive_people_summary == %{person_count: 1, role_count: 1, task_count: 1}
+    refute Map.has_key?(launch, :people)
+    refute Map.has_key?(launch, :task_assignments)
+  end
+
   test "filters by Space and search across name and description", ctx do
     assert {200, res} = query(ctx.conn, [:project_templates, :list], %{space_id: Paths.space_id(ctx.beta_space)})
     assert Enum.map(res.templates, & &1.name) == ["Onboarding"]

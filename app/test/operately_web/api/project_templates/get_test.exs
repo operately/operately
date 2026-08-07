@@ -71,6 +71,29 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     assert task.reminders == [%{type: "before_due", days: 2, date: nil, __typename: "task_reminder"}]
   end
 
+  test "returns copied people, task assignments, and inactive counts", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:champion)
+      |> Factory.add_company_member(:inactive)
+      |> Factory.add_project_template_person(:template_champion, :template, :champion,
+        role: :champion,
+        access_level: Operately.Access.Binding.full_access()
+      )
+      |> Factory.add_project_template_person(:template_inactive, :template, :inactive, access_level: Operately.Access.Binding.edit_access())
+      |> Factory.add_project_template_task_assignment(:assignment, :template, :root_task, :template_inactive)
+      |> Factory.suspend_company_member(:inactive)
+
+    assert {200, res} = request(ctx)
+
+    assert Enum.find(res.template.people, &(&1.id == Paths.project_template_person_id(ctx.template_champion))).active
+    refute Enum.find(res.template.people, &(&1.id == Paths.project_template_person_id(ctx.template_inactive))).active
+    assert [assignment] = res.template.task_assignments
+    assert assignment.project_template_task_id == Paths.project_template_task_id(ctx.root_task)
+    assert assignment.project_template_person_id == Paths.project_template_person_id(ctx.template_inactive)
+    assert res.template.inactive_people_summary == %{person_count: 1, role_count: 1, task_count: 1}
+  end
+
   test "returns archived templates", ctx do
     {:ok, archived} = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update()
     ctx = %{ctx | template: archived}

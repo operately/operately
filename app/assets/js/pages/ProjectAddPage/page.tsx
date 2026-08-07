@@ -83,7 +83,7 @@ function Form() {
       }
     },
     validate: (addError) => {
-      if (compareIds(form.values.champion, form.values.reviewer)) {
+      if (!form.values.template && compareIds(form.values.champion, form.values.reviewer)) {
         addError("reviewer", "Can't be the same as the champion");
       }
       if (!form.values.space) {
@@ -103,7 +103,12 @@ function Form() {
       };
       const res = form.values.template
         ? await createFromTemplate({
-            ...projectInput,
+            name: projectInput.name,
+            spaceId: projectInput.spaceId,
+            goalId: projectInput.goalId,
+            anonymousAccessLevel: projectInput.anonymousAccessLevel,
+            companyAccessLevel: projectInput.companyAccessLevel,
+            spaceAccessLevel: projectInput.spaceAccessLevel,
             templateId: form.values.template,
             startDate: form.values.startDate,
           })
@@ -131,15 +136,18 @@ function Form() {
                 id: template.id,
                 name: template.name,
                 spaceId: template.space.id,
+                inactivePeopleSummary: template.inactivePeopleSummary,
               }))}
             />
           ) : null}
           <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
 
-          <Forms.FieldGroup layout="grid">
-            <SelectChampion me={me} search={search} />
-            <SelectReviewer me={me} search={search} />
-          </Forms.FieldGroup>
+          {!form.values.template && (
+            <Forms.FieldGroup layout="grid">
+              <SelectChampion me={me} search={search} />
+              <SelectReviewer me={me} search={search} />
+            </Forms.FieldGroup>
+          )}
         </Forms.FieldGroup>
 
         <PrivacyLevel />

@@ -40,6 +40,10 @@ export const AllLevels: Story = {
         <span className="w-32 text-sm font-medium">View Access:</span>
         <AccessLevelBadge accessLevel={10} />
       </div>
+      <div className="flex items-center gap-4">
+        <span className="w-32 text-sm font-medium">No Access:</span>
+        <AccessLevelBadge accessLevel={0} />
+      </div>
     </div>
   ),
 };
@@ -71,6 +75,12 @@ export const CommentAccess: Story = {
 export const ViewAccess: Story = {
   args: {
     accessLevel: 10,
+  },
+};
+
+export const NoAccess: Story = {
+  args: {
+    accessLevel: 0,
   },
 };
 
