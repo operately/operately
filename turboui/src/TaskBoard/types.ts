@@ -195,7 +195,7 @@ export interface TaskBoardProps {
   onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
   onTaskDelete?: (taskId: string) => void | Promise<unknown>;
   onMoveTask?: TaskPage.ContentProps["onMoveTask"];
-  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: UpdateMilestonePayload) => void;
   onMilestoneSearch: (query: string) => Promise<void>;
   assigneePersonSearch?: PersonField.SearchData;
   projectSearch?: ProjectField.SearchProjectFn;

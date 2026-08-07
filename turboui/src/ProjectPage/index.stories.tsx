@@ -282,6 +282,7 @@ export const Default: Story = {
     const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones });
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
+    const [tasksView, setTasksView] = useState<TaskBoardTypes.TaskDisplayMode>("list");
     const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
       id: "1",
       name: "Improve Customer Experience",
@@ -398,6 +399,8 @@ export const Default: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
+        tasksView={tasksView}
+        onTasksViewChange={setTasksView}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
         parentGoalSearch={mockParentGoalSearch}
@@ -442,6 +445,7 @@ export const OverdueCheckIn: Story = {
     const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
+    const [tasksView, setTasksView] = useState<TaskBoardTypes.TaskDisplayMode>("list");
     const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
       id: "2",
       name: "Increase Product Adoption",
@@ -523,6 +527,8 @@ export const OverdueCheckIn: Story = {
         onSaveCustomStatuses={(data) => {
           setStatuses(data.nextStatuses);
         }}
+        tasksView={tasksView}
+        onTasksViewChange={setTasksView}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
         parentGoalSearch={mockParentGoalSearch}
@@ -628,6 +634,8 @@ export const ReadOnly: Story = {
         onFiltersChange={() => {}}
         statuses={DEFAULT_STATUSES}
         onSaveCustomStatuses={() => {}}
+        tasksView="list"
+        onTasksViewChange={() => {}}
         parentGoal={{
           id: "2",
           name: "Increase Product Adoption",
@@ -666,6 +674,7 @@ export const EmptyTasks: Story = {
     const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones: [] });
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
+    const [tasksView, setTasksView] = useState<TaskBoardTypes.TaskDisplayMode>("list");
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[3] || null);
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(() => {
       const startDate = new Date(2025, 3, 1); // April 1, 2025
@@ -752,6 +761,8 @@ export const EmptyTasks: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
+        tasksView={tasksView}
+        onTasksViewChange={setTasksView}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -785,6 +796,7 @@ export const EmptyProject: Story = {
     const [tasks, setTasks] = useState<TaskBoardTypes.Task[]>([]);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
+    const [tasksView, setTasksView] = useState<TaskBoardTypes.TaskDisplayMode>("list");
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(null);
     const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(null);
     const [space, setSpace] = useState(defaultSpace);
@@ -871,6 +883,8 @@ export const EmptyProject: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
+        tasksView={tasksView}
+        onTasksViewChange={setTasksView}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -970,6 +984,8 @@ export const EmptyProjectReadOnly: Story = {
         onFiltersChange={() => {}}
         statuses={statuses}
         onSaveCustomStatuses={() => {}}
+        tasksView="list"
+        onTasksViewChange={() => {}}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -1004,6 +1020,7 @@ export const PausedProject: Story = {
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
+    const [tasksView, setTasksView] = useState<TaskBoardTypes.TaskDisplayMode>("list");
     const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
       id: "1",
       name: "Improve Customer Experience",
@@ -1112,6 +1129,8 @@ export const PausedProject: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
+        tasksView={tasksView}
+        onTasksViewChange={setTasksView}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
         parentGoalSearch={mockParentGoalSearch}
@@ -1224,6 +1243,8 @@ export const ClosedProject: Story = {
         onFiltersChange={() => {}}
         statuses={DEFAULT_STATUSES}
         onSaveCustomStatuses={() => {}}
+        tasksView="list"
+        onTasksViewChange={() => {}}
         richTextHandlers={createMockRichEditorHandlers()}
         formattedTimePreferences={defaultFormattedTimePreferences}
         parentGoal={parentGoal}
@@ -1292,6 +1313,7 @@ export const ProjectWithoutSpace: Story = {
     const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones });
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
+    const [tasksView, setTasksView] = useState<TaskBoardTypes.TaskDisplayMode>("list");
     const [reviewer, _] = useState<ProjectPage.Person | null>(people[2] || null);
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(() =>
       createContextualDate(daysAgo(7), "day"),
@@ -1395,6 +1417,8 @@ export const ProjectWithoutSpace: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
+        tasksView={tasksView}
+        onTasksViewChange={setTasksView}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}

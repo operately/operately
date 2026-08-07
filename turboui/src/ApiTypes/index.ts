@@ -1780,6 +1780,7 @@ export interface Project {
   milestonesOrderingState?: string[] | null;
   taskStatuses?: TaskStatus[] | null;
   tasksKanbanState?: Json | null;
+  tasksView?: ProjectTasksView | null;
 }
 
 export interface ProjectCheckIn {
@@ -2676,6 +2677,8 @@ export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
 export type ProjectContributorRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
+
+export type ProjectTasksView = "list" | "board";
 
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
 

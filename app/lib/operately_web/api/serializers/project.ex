@@ -43,6 +43,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       subscription_list: OperatelyWeb.Api.Serializer.serialize(project.subscription_list),
       task_statuses: OperatelyWeb.Api.Serializer.serialize(project.task_statuses),
       tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: project.tasks_kanban_state}),
+      tasks_view: Atom.to_string(project.tasks_view),
     })
   end
 

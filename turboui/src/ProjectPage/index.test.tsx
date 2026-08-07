@@ -276,6 +276,8 @@ function ProjectPageHarness({
         assigneePersonSearch={{} as any}
         statuses={[]}
         onSaveCustomStatuses={() => undefined}
+        tasksView="list"
+        onTasksViewChange={() => undefined}
         contributors={[]}
         checkIns={[]}
         discussions={[]}
