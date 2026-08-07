@@ -124,6 +124,7 @@ defmodule OperatelyWeb.Api do
         query(:list, OperatelyWeb.Api.ProjectTemplates.List)
 
         mutation(:create, OperatelyWeb.Api.ProjectTemplates.Create)
+        mutation(:create_project, OperatelyWeb.Api.ProjectTemplates.CreateProject)
         mutation(:update, OperatelyWeb.Api.ProjectTemplates.Update)
         mutation(:create_milestone, OperatelyWeb.Api.ProjectTemplates.CreateMilestone)
         mutation(:update_milestone, OperatelyWeb.Api.ProjectTemplates.UpdateMilestone)

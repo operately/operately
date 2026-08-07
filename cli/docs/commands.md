@@ -124,6 +124,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
 | `project_templates create` | `op project_templates create` | `POST` | `/api/external/v1/project_templates/create` |
 | `project_templates create_milestone` | `op project_templates create_milestone` | `POST` | `/api/external/v1/project_templates/create_milestone` |
+| `project_templates create_project` | `op project_templates create_project` | `POST` | `/api/external/v1/project_templates/create_project` |
 | `project_templates create_task` | `op project_templates create_task` | `POST` | `/api/external/v1/project_templates/create_task` |
 | `project_templates delete_milestone` | `op project_templates delete_milestone` | `POST` | `/api/external/v1/project_templates/delete_milestone` |
 | `project_templates delete_task` | `op project_templates delete_task` | `POST` | `/api/external/v1/project_templates/delete_task` |
