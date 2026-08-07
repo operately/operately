@@ -95,6 +95,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     ctx =
       ctx
       |> Factory.add_space(:space)
+      |> Factory.add_company_member(:template_member)
       |> Factory.add_project(:source_project, :space)
       |> Factory.add_project(:generated_project, :space)
       |> Factory.add_project_template(:template, :space,
@@ -113,6 +114,11 @@ defmodule Operately.CompanyTransfers.ImporterTest do
         name: "Ship",
         due_offset_days: 14
       )
+      |> Factory.add_project_template_person(:template_person, :template, :template_member,
+        responsibility: "Launch communications",
+        access_level: Operately.Access.Binding.edit_access()
+      )
+      |> Factory.add_project_template_task_assignment(:template_assignment, :template, :root_task, :template_person)
 
     template =
       ctx.template
@@ -139,6 +145,8 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
     assert {:ok, import_run} =
              export_and_stage_import(ctx, fn package ->
+               assignment_table = Enum.find(package["tables"], &(&1["name"] == "project_template_task_assignments"))
+               assert assignment_table["row_count"] == 1
                replace_company_short_id(package, short_id)
              end)
 
@@ -146,22 +154,30 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert {:ok, completed_run} = Importer.run(import_run)
 
     imported_template = Repo.get_by!(ProjectTemplate, company_id: completed_run.company_id, name: "Launch template")
-    imported_template = Repo.preload(imported_template, [:milestones, :tasks])
+    imported_template = Repo.preload(imported_template, [:milestones, :tasks, :people, :task_assignments])
     imported_milestone = Enum.find(imported_template.milestones, &(&1.title == "Launch"))
     imported_root_task = Enum.find(imported_template.tasks, &(&1.name == "Prepare"))
     imported_milestone_task = Enum.find(imported_template.tasks, &(&1.name == "Ship"))
     imported_source_project = Repo.get_by!(Project, company_id: completed_run.company_id, name: ctx.source_project.name)
     imported_generated_project = Repo.get_by!(Project, company_id: completed_run.company_id, name: ctx.generated_project.name)
+    imported_person = Repo.get_by!(Operately.People.Person, company_id: completed_run.company_id, full_name: ctx.template_member.full_name)
+    [imported_template_person] = imported_template.people
+    [imported_assignment] = imported_template.task_assignments
 
     assert imported_template.id != ctx.template.id
     assert imported_milestone.id != ctx.milestone.id
     assert imported_root_task.id != ctx.root_task.id
     assert imported_milestone_task.id != ctx.milestone_task.id
+    assert imported_template_person.id != ctx.template_person.id
+    assert imported_assignment.id != ctx.template_assignment.id
 
     assert imported_template.source_project_id == imported_source_project.id
     assert imported_generated_project.source_template_id == imported_template.id
     assert imported_milestone_task.project_template_milestone_id == imported_milestone.id
     assert imported_root_task.project_template_milestone_id == nil
+    assert imported_template_person.person_id == imported_person.id
+    assert imported_assignment.project_template_person_id == imported_template_person.id
+    assert imported_assignment.project_template_task_id == imported_root_task.id
 
     assert imported_template.duration_days == 30
     assert imported_milestone.due_offset_days == 14
