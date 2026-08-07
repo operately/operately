@@ -182,7 +182,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     defp date_issue(_resource, _type, _name, _field, nil, _start_date), do: nil
 
     defp date_issue(resource, type, name, field, date, start_date) do
-      if Date.before?(date, start_date) do
+      if Date.compare(date, start_date) == :lt do
         %{
           resource_type: type,
           resource_id: resource.id,
