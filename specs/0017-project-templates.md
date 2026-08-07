@@ -311,13 +311,13 @@ This phase adds the reverse core transformation and centralizes schedule validat
 
 #### PR 4.1 — `feat: Build core templates from existing projects`
 
-- [ ] Add a transactional project-to-template path to the shared copy service for description, project duration, workflow, milestones, tasks, ordering, priority, size, and due-relative reminders.
-- [ ] Write the copied graph only to template-owned tables; saving a project as a template must not create a second project row or reuse runtime milestone/task rows.
-- [ ] Require a concrete source-project start date and derive each supported offset from that date.
-- [ ] Validate the complete source graph before writing. Return one structured result for a missing start date and every project end, milestone due date, or task due date earlier than the start date.
-- [ ] Exclude fixed-date reminders and reset health, completion, closed/reopened state, check-ins, retrospective, goal, access baselines, activities, notifications, and subscriptions.
-- [ ] Create the template in the source project's Space and authorize against Edit Access to that Space.
-- [ ] Cover source dates at offset zero, mixed contextual-date precision, invalid pre-start dates, nil dates, state resets, and all-or-nothing rollback.
+- [x] Add a transactional internal project-to-template operation for description, project duration, workflow, milestones, tasks, ordering, priority, size, and due-relative reminders, backed by copy primitives shared with template materialization.
+- [x] Write the copied graph only to template-owned tables; saving a project as a template must not create a second project row or reuse runtime milestone/task rows.
+- [x] Require a concrete source-project start date and derive each supported offset from that date.
+- [x] Validate the complete source graph before writing. Return one structured result for a missing start date and every project end, milestone due date, or task due date earlier than the start date.
+- [x] Exclude fixed-date reminders and reset health, completion, closed/reopened state, check-ins, retrospective, goal, access baselines, activities, notifications, and subscriptions.
+- [x] Create the template in the source project's Space with source-project provenance; defer feature gating, read-only handling, and Space Edit authorization to the endpoint/action boundary.
+- [x] Cover source dates at offset zero, mixed contextual-date precision, invalid pre-start dates, nil dates, state resets, malformed graphs, and all-or-nothing rollback.
 
 #### PR 4.2 — `feat: Add save project as template validation UI`
 
