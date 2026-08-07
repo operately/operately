@@ -3,6 +3,7 @@ import { ProjectPageLayout } from "../ProjectPageLayout";
 import type { ProjectPermissions } from "../ProjectPage/types";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { StatusSelector } from "../StatusSelector";
+import type { PersonField } from "../PersonField";
 import { IconClipboardText, IconListCheck } from "../icons";
 import { useTabs } from "../Tabs";
 import { Overview } from "./Overview";
@@ -71,6 +72,16 @@ export namespace TemplateProjectPage {
     dueOffsetDays: number | null;
     status: StatusSelector.StatusOption;
     reminders: Reminder[];
+    assignees?: TemplatePerson[];
+  }
+
+  export interface TemplatePerson {
+    id: string;
+    person: PersonField.Person | null;
+    role: "champion" | "reviewer" | "contributor";
+    responsibility: string | null;
+    accessLevel: number;
+    active: boolean;
   }
 
   export interface Props {
@@ -88,6 +99,7 @@ export namespace TemplateProjectPage {
     statuses: StatusSelector.StatusOption[];
     milestones: Milestone[];
     tasks: Task[];
+    people?: TemplatePerson[];
     richTextHandlers: RichEditorHandlers;
     onTemplateUpdate: (updates: Partial<Props["template"]>) => void | boolean | Promise<void | boolean>;
     onStatusesChange?: (payload: {

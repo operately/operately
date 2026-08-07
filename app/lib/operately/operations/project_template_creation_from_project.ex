@@ -3,11 +3,11 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
 
   alias Ecto.Multi
   alias Operately.People.Person
-  alias Operately.Projects.Project
+  alias Operately.Projects.{Contributor, Project}
   alias Operately.Repo
   alias __MODULE__.{CopyPlanner, ScheduleValidator, TemplateCreator, Validator}
 
-  defstruct [:project_id, :creator_id, :name, :description]
+  defstruct [:project_id, :creator_id, :name, :description, include_people_and_assignments: false]
 
   def run(%__MODULE__{} = params) do
     Multi.new()
@@ -35,11 +35,14 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
         {:error, :project_not_found}
 
       project ->
-        {:ok,
-         repo.preload(project,
-           milestones: from(m in Operately.Projects.Milestone, order_by: [asc: m.inserted_at, asc: m.id]),
-           tasks: from(t in Operately.Tasks.Task, order_by: [asc: t.inserted_at, asc: t.id])
-         )}
+        project =
+          repo.preload(project,
+            contributors: from(c in Contributor, order_by: [asc: c.inserted_at, asc: c.id]),
+            milestones: from(m in Operately.Projects.Milestone, order_by: [asc: m.inserted_at, asc: m.id]),
+            tasks: from(t in Operately.Tasks.Task, order_by: [asc: t.inserted_at, asc: t.id], preload: [:assignees])
+          )
+
+        {:ok, %{project | contributors: Contributor.load_project_access_levels(project.contributors)}}
     end
   end
 
@@ -58,13 +61,17 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   defmodule CopyPlanner do
     alias Operately.Operations.ProjectTemplateCreationFromProject
     alias Operately.ProjectTemplates.{Copy, Milestone, Task}
+    alias Operately.Operations.ProjectTemplateCreationFromProject.PeoplePlanner
     alias OperatelyWeb.Paths
 
     def build(project, creator, %ProjectTemplateCreationFromProject{} = params) do
       with {:ok, workflow} <- copy_workflow(project.task_statuses),
-           {:ok, graph} <- plan_graph(project, workflow) do
+           {:ok, graph} <- plan_graph(project, workflow),
+           {:ok, people_graph} <- PeoplePlanner.build(project, graph.tasks, params.include_people_and_assignments) do
         {:ok,
-         Map.put(graph, :template_attrs, %{
+         graph
+         |> Map.merge(people_graph)
+         |> Map.put(:template_attrs, %{
            company_id: project.company_id,
            space_id: project.group_id,
            creator_id: creator.id,
@@ -111,12 +118,13 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
 
     defp plan_task(source, milestone_ids, workflow, start_date) do
       target_milestone_id = source.milestone_id && Map.fetch!(milestone_ids, source.milestone_id)
+      due_date = task_due_date(source, start_date)
 
       %{
         source: source,
         target: %Task{id: Ecto.UUID.generate(), project_template_milestone_id: target_milestone_id},
-        due_offset_days: Copy.offset_from_date(start_date, task_due_date(source)),
-        reminders: Copy.due_relative_reminders(source.reminders),
+        due_offset_days: Copy.offset_from_date(start_date, due_date),
+        reminders: if(due_date, do: Copy.due_relative_reminders(source.reminders), else: []),
         task_status: Copy.status_attrs(workflow.first_open)
       }
     end
@@ -149,14 +157,91 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     defp start_date(project), do: Operately.ContextualDates.Timeframe.start_date(project.timeframe)
     defp end_date(project), do: Operately.ContextualDates.Timeframe.end_date(project.timeframe)
     defp milestone_due_date(milestone), do: Operately.ContextualDates.Timeframe.end_date(milestone.timeframe)
-    defp task_due_date(%{due_date: nil}), do: nil
-    defp task_due_date(task), do: task.due_date.date
+    defp task_due_date(%{due_date: nil}, _start_date), do: nil
+
+    defp task_due_date(task, start_date) do
+      date = task.due_date.date
+      if Date.compare(date, start_date) == :lt, do: nil, else: date
+    end
+
     defp source_milestone_path(planned), do: Paths.milestone_id(planned.source)
     defp target_milestone_path(planned), do: Paths.project_template_milestone_id(planned.target)
     defp source_task_path(planned), do: Paths.task_id(planned.source)
     defp target_task_path(planned), do: Paths.project_template_task_id(planned.target)
     defp root_tasks(tasks), do: Enum.filter(tasks, &is_nil(&1.source.milestone_id))
     defp milestone_tasks(tasks, milestone_id), do: Enum.filter(tasks, &(&1.source.milestone_id == milestone_id))
+  end
+
+  defmodule PeoplePlanner do
+    alias Operately.Access.Binding
+    alias Operately.ProjectTemplates.Person, as: TemplatePerson
+    alias Operately.ProjectTemplates.TaskAssignment
+
+    @role_priority %{champion: 3, reviewer: 2, contributor: 1}
+
+    def build(_project, _tasks, false), do: {:ok, %{people: [], task_assignments: []}}
+
+    def build(project, tasks, true) do
+      people = planned_people(project)
+      people_by_person_id = Map.new(people, &{&1.person_id, &1})
+      task_ids = Map.new(tasks, &{&1.source.id, &1.target.id})
+
+      assignments =
+        for task <- project.tasks,
+            assignee <- task.assignees do
+          %{
+            target: %TaskAssignment{id: Ecto.UUID.generate()},
+            project_template_task_id: Map.fetch!(task_ids, task.id),
+            project_template_person_id: Map.fetch!(people_by_person_id, assignee.person_id).target.id
+          }
+        end
+        |> Enum.uniq_by(&{&1.project_template_task_id, &1.project_template_person_id})
+
+      {:ok, %{people: people, task_assignments: assignments}}
+    end
+
+    defp planned_people(project) do
+      contributor_entries =
+        Enum.map(project.contributors, fn contributor ->
+          %{
+            person_id: contributor.person_id,
+            role: contributor.role,
+            responsibility: contributor.responsibility,
+            access_level: contributor.access_level || Binding.no_access()
+          }
+        end)
+
+      assignment_entries =
+        project.tasks
+        |> Enum.flat_map(& &1.assignees)
+        |> Enum.map(fn assignee ->
+          %{
+            person_id: assignee.person_id,
+            role: :contributor,
+            responsibility: "Contributor",
+            access_level: Binding.edit_access()
+          }
+        end)
+
+      (contributor_entries ++ assignment_entries)
+      |> Enum.group_by(& &1.person_id)
+      |> Enum.map(fn {person_id, entries} ->
+        role_entry = Enum.max_by(entries, &Map.fetch!(@role_priority, &1.role))
+
+        %{
+          target: %TemplatePerson{id: Ecto.UUID.generate()},
+          person_id: person_id,
+          role: role_entry.role,
+          responsibility: role_entry.responsibility,
+          access_level: entries |> Enum.map(& &1.access_level) |> Enum.max()
+        }
+      end)
+      |> Enum.sort_by(&{role_order(&1.role), &1.person_id})
+    end
+
+    defp role_order(:champion), do: 0
+    defp role_order(:reviewer), do: 1
+    defp role_order(:contributor), do: 2
   end
 
   defmodule ScheduleValidator do
@@ -176,8 +261,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     defp validate_dates(project, start_date) do
       issues =
         [date_issue(project, :project, project.name, :end_date, Timeframe.end_date(project.timeframe), start_date)] ++
-          Enum.map(project.milestones, &date_issue(&1, :milestone, &1.title, :due_date, Timeframe.end_date(&1.timeframe), start_date)) ++
-          Enum.map(project.tasks, &date_issue(&1, :task, &1.name, :due_date, task_due_date(&1), start_date))
+          Enum.map(project.milestones, &date_issue(&1, :milestone, &1.title, :due_date, Timeframe.end_date(&1.timeframe), start_date))
 
       issues = Enum.reject(issues, &is_nil/1)
       if issues == [], do: :ok, else: {:error, {:invalid_schedule, %{issues: issues}}}
@@ -208,9 +292,6 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
         reason: :missing
       }
     end
-
-    defp task_due_date(%{due_date: nil}), do: nil
-    defp task_due_date(task), do: task.due_date.date
   end
 
   defmodule Validator do
@@ -273,20 +354,23 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   end
 
   defmodule TemplateCreator do
-    alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, Task}
+    alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task, TaskAssignment}
 
     def template_changeset(plan), do: ProjectTemplate.changeset(plan.template_attrs)
 
     def insert_children(repo, plan, template) do
       with {:ok, milestones} <- insert_milestones(repo, plan.milestones, template),
-           {:ok, tasks} <- insert_tasks(repo, plan.tasks, template) do
-        {:ok, %{milestones: milestones, tasks: tasks}}
+           {:ok, tasks} <- insert_tasks(repo, plan.tasks, template),
+           {:ok, people} <- insert_people(repo, plan.people, template),
+           {:ok, assignments} <- insert_assignments(repo, plan.task_assignments, template) do
+        {:ok, %{milestones: milestones, tasks: tasks, people: people, task_assignments: assignments}}
       end
     end
 
     defp insert_milestones(repo, milestones, template) do
-      Enum.reduce_while(milestones, {:ok, []}, fn planned, {:ok, inserted} ->
-        changeset =
+      insert_all(
+        milestones,
+        fn planned ->
           Milestone.changeset(planned.target, %{
             project_template_id: template.id,
             title: planned.source.title,
@@ -295,17 +379,16 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
             tasks_ordering_state: planned.tasks_ordering_state,
             tasks_kanban_state: planned.tasks_kanban_state
           })
-
-        case repo.insert(changeset) do
-          {:ok, milestone} -> {:cont, {:ok, inserted ++ [milestone]}}
-          {:error, changeset} -> {:halt, invalid_child(:milestone, changeset)}
-        end
-      end)
+        end,
+        repo,
+        :milestone
+      )
     end
 
     defp insert_tasks(repo, tasks, template) do
-      Enum.reduce_while(tasks, {:ok, []}, fn planned, {:ok, inserted} ->
-        changeset =
+      insert_all(
+        tasks,
+        fn planned ->
           Task.changeset(planned.target, %{
             project_template_id: template.id,
             name: planned.source.name,
@@ -316,10 +399,49 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
             reminders: Enum.map(planned.reminders, &reminder_attrs/1),
             task_status: planned.task_status
           })
+        end,
+        repo,
+        :task
+      )
+    end
 
-        case repo.insert(changeset) do
-          {:ok, task} -> {:cont, {:ok, inserted ++ [task]}}
-          {:error, changeset} -> {:halt, invalid_child(:task, changeset)}
+    defp insert_people(repo, people, template) do
+      insert_all(
+        people,
+        fn planned ->
+          Person.changeset(planned.target, %{
+            project_template_id: template.id,
+            person_id: planned.person_id,
+            role: planned.role,
+            responsibility: planned.responsibility,
+            access_level: planned.access_level
+          })
+        end,
+        repo,
+        :person
+      )
+    end
+
+    defp insert_assignments(repo, assignments, template) do
+      insert_all(
+        assignments,
+        fn planned ->
+          TaskAssignment.changeset(planned.target, %{
+            project_template_id: template.id,
+            project_template_task_id: planned.project_template_task_id,
+            project_template_person_id: planned.project_template_person_id
+          })
+        end,
+        repo,
+        :task_assignment
+      )
+    end
+
+    defp insert_all(resources, changeset_fun, repo, type) do
+      Enum.reduce_while(resources, {:ok, []}, fn resource, {:ok, inserted} ->
+        case repo.insert(changeset_fun.(resource)) do
+          {:ok, value} -> {:cont, {:ok, inserted ++ [value]}}
+          {:error, changeset} -> {:halt, invalid_child(type, changeset)}
         end
       end)
     end

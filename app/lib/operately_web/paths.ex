@@ -500,6 +500,12 @@ defmodule OperatelyWeb.Paths do
   def project_template_task_id(%{id: id}), do: project_template_task_id(id)
   def project_template_task_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
 
+  def project_template_person_id(%{id: id}), do: project_template_person_id(id)
+  def project_template_person_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
+
+  def project_template_task_assignment_id(%{id: id}), do: project_template_task_assignment_id(id)
+  def project_template_task_assignment_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
+
   def task_id(task) do
     id = Operately.ShortUuid.encode!(task.id)
     OperatelyWeb.Api.Helpers.id_with_comments(task.name, id)

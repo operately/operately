@@ -2903,6 +2903,43 @@
           }
         ]
       },
+      "project_template_inactive_people_summary": {
+        "fields": [
+          {
+            "default": null,
+            "name": "person_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "role_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "task_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "work_map_item": {
         "fields": [
           {
@@ -5112,6 +5149,54 @@
           }
         ]
       },
+      "project_template_task_assignment": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "project_template_task_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "project_template_person_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "quick_search_resource": {
         "fields": [
           {
@@ -6460,6 +6545,17 @@
           },
           {
             "default": null,
+            "name": "inactive_people_summary",
+            "type": {
+              "name": "project_template_inactive_people_summary",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "task_statuses",
             "type": {
               "item": {
@@ -6517,6 +6613,34 @@
             "type": {
               "item": {
                 "name": "project_template_task",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "people",
+            "type": {
+              "item": {
+                "name": "project_template_person",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "task_assignments",
+            "type": {
+              "item": {
+                "name": "project_template_task_assignment",
                 "kind": "named"
               },
               "kind": "list"
@@ -11112,6 +11236,87 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "project_template_person": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "person",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "role",
+            "type": {
+              "name": "project_template_person_role",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "responsibility",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "access_level",
+            "type": {
+              "name": "access_options_int",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "active",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -20906,6 +21111,11 @@
         "owner",
         "reviewer"
       ],
+      "project_template_person_role": [
+        "champion",
+        "reviewer",
+        "contributor"
+      ],
       "project_task_status_color": [
         "gray",
         "blue",
@@ -28946,6 +29156,17 @@
           "optional": true,
           "has_default": false,
           "nullable": true
+        },
+        {
+          "default": "false",
+          "name": "include_people_and_assignments",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": null,
@@ -29084,28 +29305,6 @@
           "optional": false,
           "has_default": false,
           "nullable": false
-        },
-        {
-          "default": null,
-          "name": "champion_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "reviewer_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
         },
         {
           "default": null,

@@ -38,13 +38,20 @@ describe("save project as template bridge", () => {
         updatedAt: "2028-01-10T00:00:00Z",
         milestoneCount: 0,
         taskCount: 0,
+        inactivePeopleSummary: { personCount: 0, roleCount: 0, taskCount: 0 },
       },
       scheduleIssues: [],
     } satisfies ProjectTemplatesCreateFromProjectResult);
     const handler = createSaveProjectAsTemplateHandler({ projectId: "project-1", paths, createFromProject, navigate });
+    const description = { type: "doc", content: [{ type: "paragraph" }] };
 
-    expect(await handler(values())).toEqual({ success: true });
-    expect(createFromProject).toHaveBeenCalledWith({ projectId: "project-1", name: "Reusable", description: null });
+    expect(await handler(values({ description }))).toEqual({ success: true });
+    expect(createFromProject).toHaveBeenCalledWith({
+      projectId: "project-1",
+      name: "Reusable",
+      description: JSON.stringify(description),
+      includePeopleAndAssignments: false,
+    });
     expect(navigate).toHaveBeenCalledWith("/project-templates/template-1");
   });
 
@@ -83,10 +90,14 @@ describe("save project as template bridge", () => {
   });
 });
 
-function values() {
+function values(overrides: Partial<ReturnType<typeof baseValues>> = {}) {
+  return { ...baseValues(), ...overrides };
+}
+
+function baseValues() {
   return {
     name: " Reusable ",
-    description: null,
+    description: null as unknown,
     includePeopleAndAssignments: false,
     includeDiscussions: true,
     includeComments: false,

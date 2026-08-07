@@ -227,4 +227,39 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByText("Milestone")).toBeInTheDocument();
     expect(screen.queryByText("Assignees")).not.toBeInTheDocument();
   });
+
+  it("shows copied people and task assignees read-only", () => {
+    const champion: Types.TemplatePerson = {
+      id: "template-person-1",
+      person: { id: "person-1", fullName: "Ada Lovelace", avatarUrl: null },
+      role: "champion",
+      responsibility: "Leads delivery",
+      accessLevel: 100,
+      active: true,
+    };
+    const unavailable: Types.TemplatePerson = {
+      id: "template-person-2",
+      person: null,
+      role: "contributor",
+      responsibility: null,
+      accessLevel: 70,
+      active: false,
+    };
+    const props = createProps({
+      people: [champion, unavailable],
+      tasks: [{ ...createProps().tasks[0]!, assignees: [champion, unavailable] }],
+    });
+
+    renderPage(props);
+    const peopleSection = document.querySelector('[data-test-id="template-people"]');
+    expect(peopleSection).toHaveTextContent("Ada Lovelace");
+    expect(peopleSection).toHaveTextContent("Champion");
+    expect(peopleSection).toHaveTextContent("Full Access");
+    expect(peopleSection).toHaveTextContent("Unavailable person");
+
+    fireEvent.click(screen.getByText("Tasks"));
+    fireEvent.click(screen.getByText("Publish announcement"));
+    expect(screen.getByText("Assignees")).toBeInTheDocument();
+    expect(screen.getAllByTitle("Ada Lovelace").length).toBeGreaterThan(0);
+  });
 });

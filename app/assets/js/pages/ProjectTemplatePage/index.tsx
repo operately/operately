@@ -16,6 +16,7 @@ function Page() {
   const { template } = Pages.useLoadedData<LoadedData>();
   const refresh = Pages.useRefresh();
   const paths = usePaths();
+  const { people, assigneesByTaskId } = useTemplatePeople(template);
   const statuses = Tasks.parseTaskStatusesForTurboUi(template.taskStatuses);
   const permissions = template.permissions ?? {
     canView: true,
@@ -35,7 +36,9 @@ function Page() {
     }
   };
 
-  const tasks = (template.tasks ?? []).map(toTask).filter((task): task is TemplateProjectPage.Task => task !== null);
+  const tasks = (template.tasks ?? [])
+    .map((task) => toTask(task, assigneesByTaskId.get(task.id) ?? []))
+    .filter((task): task is TemplateProjectPage.Task => task !== null);
   const milestones = (template.milestones ?? []).map((milestone) => ({
     id: milestone.id,
     title: milestone.title,
@@ -105,6 +108,7 @@ function Page() {
       statuses={statuses}
       milestones={milestones}
       tasks={tasks}
+      people={people}
       richTextHandlers={useRichEditorHandlers()}
       onTemplateUpdate={onTemplateUpdate}
       onStatusesChange={onStatusesChange}
@@ -118,6 +122,38 @@ function Page() {
       onTaskReorder={onTaskReorder}
     />
   );
+}
+
+function useTemplatePeople(template: LoadedData["template"]) {
+  const paths = usePaths();
+  const people = (template.people ?? []).map((templatePerson) => ({
+    id: templatePerson.id,
+    person: templatePerson.person
+      ? {
+          id: templatePerson.person.id,
+          fullName: templatePerson.person.fullName,
+          avatarUrl: templatePerson.person.avatarUrl ?? null,
+          title: templatePerson.person.title ?? undefined,
+          profileLink: paths.profilePath(templatePerson.person.id),
+        }
+      : null,
+    role: templatePerson.role,
+    responsibility: templatePerson.responsibility ?? null,
+    accessLevel: templatePerson.accessLevel,
+    active: templatePerson.active,
+  }));
+  const peopleById = new Map(people.map((person) => [person.id, person]));
+  const assigneesByTaskId = new Map<string, TemplateProjectPage.TemplatePerson[]>();
+
+  for (const assignment of template.taskAssignments ?? []) {
+    const person = peopleById.get(assignment.projectTemplatePersonId);
+    if (!person) continue;
+
+    const taskAssignees = assigneesByTaskId.get(assignment.projectTemplateTaskId) ?? [];
+    assigneesByTaskId.set(assignment.projectTemplateTaskId, [...taskAssignees, person]);
+  }
+
+  return { people, assigneesByTaskId };
 }
 
 function useMilestoneOperations({
@@ -247,7 +283,10 @@ function parseJson(value?: string | null): unknown {
   }
 }
 
-function toTask(task: ProjectTemplateTask): TemplateProjectPage.Task | null {
+function toTask(
+  task: ProjectTemplateTask,
+  assignees: TemplateProjectPage.TemplatePerson[],
+): TemplateProjectPage.Task | null {
   const status = Tasks.parseTaskStatusForTurboUi(task.taskStatus);
   if (!status) return null;
   return {
@@ -260,6 +299,7 @@ function toTask(task: ProjectTemplateTask): TemplateProjectPage.Task | null {
     dueOffsetDays: task.dueOffsetDays ?? null,
     reminders: task.reminders.flatMap(toReminder),
     status,
+    assignees,
   };
 }
 

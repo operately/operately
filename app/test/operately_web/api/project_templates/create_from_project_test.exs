@@ -1,8 +1,10 @@
 defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
   use OperatelyWeb.TurboCase
 
+  import Ecto.Query, only: [from: 2]
+
   alias Operately.ContextualDates.ContextualDate
-  alias Operately.ProjectTemplates.ProjectTemplate
+  alias Operately.ProjectTemplates.{Person, ProjectTemplate}
   alias Operately.Projects.Project
   alias Operately.Repo
 
@@ -40,6 +42,16 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
     assert template.source_project_id == ctx.source.id
     assert template.space_id == ctx.space.id
     assert Repo.aggregate(Project, :count) == source_count
+  end
+
+  test "copies project people only when requested", ctx do
+    assert {200, excluded} = request(ctx, name: "Without people")
+    excluded_id = decode_id!(excluded.template.id)
+    assert Repo.aggregate(from(p in Person, where: p.project_template_id == ^excluded_id), :count) == 0
+
+    assert {200, included} = request(ctx, name: "With people", include_people_and_assignments: true)
+    included_id = decode_id!(included.template.id)
+    assert Repo.aggregate(from(p in Person, where: p.project_template_id == ^included_id), :count) > 0
   end
 
   test "returns every schedule issue without creating a template", ctx do
@@ -133,5 +145,10 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
       |> Repo.update!()
 
     %{ctx | source: source}
+  end
+
+  defp decode_id!(id) do
+    {:ok, decoded} = OperatelyWeb.Api.Helpers.decode_id(id)
+    decoded
   end
 end

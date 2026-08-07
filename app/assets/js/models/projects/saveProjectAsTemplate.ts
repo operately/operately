@@ -9,6 +9,7 @@ interface Dependencies {
     projectId: string;
     name: string;
     description?: Json | null;
+    includePeopleAndAssignments?: boolean;
   }) => Promise<ProjectTemplatesCreateFromProjectResult>;
   navigate: (path: string) => void;
 }
@@ -19,7 +20,8 @@ export function createSaveProjectAsTemplateHandler(dependencies: Dependencies) {
       const response = await dependencies.createFromProject({
         projectId: dependencies.projectId,
         name: values.name.trim(),
-        description: values.description as Json,
+        description: serializeDescription(values.description),
+        includePeopleAndAssignments: values.includePeopleAndAssignments,
       });
 
       if (response.scheduleIssues.length > 0) {
@@ -54,6 +56,12 @@ export function mapScheduleIssue(
     reason: issue.reason,
     link: scheduleIssuePath(issue, paths),
   };
+}
+
+function serializeDescription(description: unknown): Json | null {
+  if (description == null) return null;
+  if (typeof description === "string") return description;
+  return JSON.stringify(description);
 }
 
 function scheduleIssuePath(

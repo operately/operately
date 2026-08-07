@@ -603,8 +603,6 @@ defmodule OperatelyWeb.Api.Tasks do
     import Ecto.Query, only: [from: 2]
     use OperatelyWeb.Api.Helpers
     alias Operately.Operations.Notifications
-    alias Operately.Access.Binding
-    alias Operately.Projects.Contributor
     alias Operately.Notifications.Subscription
     alias Operately.Operations.Notifications.Subscription, as: SubscriptionOps
 
@@ -1028,11 +1026,11 @@ defmodule OperatelyWeb.Api.Tasks do
     defp maybe_add_assignee_contributors(multi, assignee_ids) when assignee_ids == [] or is_nil(assignee_ids), do: multi
 
     defp maybe_add_assignee_contributors(multi, assignee_ids) do
-      Ecto.Multi.run(multi, :assignee_contributor, fn _repo, changes ->
+      Ecto.Multi.run(multi, :assignee_contributor, fn repo, changes ->
         cond do
           Map.has_key?(changes, :project) and changes.project ->
             assignee_ids
-            |> Enum.map(&ensure_project_contributor(changes.project, &1))
+            |> Enum.map(&ensure_project_contributor(repo, changes.project, &1))
             |> collect_results()
 
           Map.has_key?(changes, :space) and changes.space ->
@@ -1051,33 +1049,8 @@ defmodule OperatelyWeb.Api.Tasks do
       end
     end
 
-    defp ensure_project_contributor(project, assignee_id) do
-      case Operately.Repo.get_by(Contributor, project_id: project.id, person_id: assignee_id) do
-        nil ->
-          access_group = Operately.Access.get_group!(person_id: assignee_id)
-
-          Ecto.Multi.new()
-          |> Ecto.Multi.insert(
-            :contributor,
-            Contributor.changeset(%{
-              project_id: project.id,
-              person_id: assignee_id,
-              responsibility: "contributor"
-            })
-          )
-          |> Ecto.Multi.run(:context, fn _, _ ->
-            {:ok, Operately.Access.get_context!(project_id: project.id)}
-          end)
-          |> Operately.Access.insert_binding(:contributor_binding, access_group, Binding.edit_access())
-          |> Ecto.Multi.run(:subscription, fn _repo, _ ->
-            ensure_subscription(project.subscription_list_id, assignee_id, :invited)
-          end)
-          |> Operately.Repo.transaction()
-          |> Operately.Repo.extract_result(:contributor)
-
-        contributor ->
-          {:ok, contributor}
-      end
+    defp ensure_project_contributor(repo, project, assignee_id) do
+      Operately.Projects.ProjectParticipation.ensure_assignee_contributor(repo, project, assignee_id)
     end
 
     defp ensure_subscriptions(subscription_list_id, person_ids, type) do

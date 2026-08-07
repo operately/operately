@@ -15,7 +15,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ProjectTemplates.ProjectTe
       inserted_at: Serializer.serialize(template.inserted_at),
       updated_at: Serializer.serialize(template.updated_at),
       milestone_count: template.milestone_count,
-      task_count: template.task_count
+      task_count: template.task_count,
+      inactive_people_summary: template.inactive_people_summary
     }
   end
 
@@ -28,6 +29,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ProjectTemplates.ProjectTe
       tasks_kanban_state: Serializer.serialize(%KanbanState{state: template.tasks_kanban_state}),
       milestones: Serializer.serialize(template.milestones, level: :full),
       tasks: Serializer.serialize(template.tasks, level: :full),
+      people: Serializer.serialize(template.people, level: :full),
+      task_assignments: Serializer.serialize(template.task_assignments, level: :full),
       permissions: Serializer.serialize(template.permissions)
     })
   end

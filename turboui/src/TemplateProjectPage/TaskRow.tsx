@@ -3,6 +3,7 @@ import { RelativeDayField } from "../RelativeDayField";
 import { StatusSelector } from "../StatusSelector";
 import { GhostButton } from "../Button";
 import type { TemplateProjectPage } from ".";
+import { TemplateTaskAssignees } from "./People";
 
 export function TaskRow({
   task,
@@ -35,6 +36,7 @@ export function TaskRow({
         >
           {task.name}
         </button>
+        <TemplateTaskAssignees assignees={task.assignees ?? []} />
         <RelativeDayField
           value={task.dueOffsetDays}
           onChange={(dueOffsetDays) => props.onTaskUpdate?.(task.id, { dueOffsetDays })}

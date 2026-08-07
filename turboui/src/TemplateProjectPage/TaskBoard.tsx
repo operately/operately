@@ -13,6 +13,7 @@ import { TasksMenu } from "../TaskBoard";
 import { TaskRow } from "./TaskRow";
 import { MilestoneFormModal } from "./MilestoneFormModal";
 import type { TemplateProjectPage } from ".";
+import { TemplateTaskAssignees } from "./People";
 
 export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   const [isCreating, setIsCreating] = React.useState(false);
@@ -145,7 +146,7 @@ function TaskFormModal({
       return;
     }
 
-    props.onTaskCreate?.({ ...taskFields, priority: null, size: null, reminders: [] });
+    props.onTaskCreate?.({ ...taskFields, priority: null, size: null, reminders: [], assignees: [] });
 
     if (createMore) {
       setName("");
@@ -203,6 +204,13 @@ function TaskFormModal({
           <label className="mb-1 block text-sm font-medium text-content-base">Notes</label>
           <TaskNotesField key={descriptionEditorKey} props={props} content={description} onChange={setDescription} />
         </div>
+
+        {task && (task.assignees?.length ?? 0) > 0 && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-content-base">Assignees</label>
+            <TemplateTaskAssignees assignees={task.assignees ?? []} />
+          </div>
+        )}
 
         <div className="mt-8 flex items-center">
           {!isUpdating && (
