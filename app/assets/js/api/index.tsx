@@ -5193,6 +5193,16 @@ export interface ProjectTemplatesUpdateTaskResult {
   task: ProjectTemplateTask;
 }
 
+export interface ProjectTemplatesUpdateTaskAssigneesInput {
+  templateId: Id;
+  taskId: Id;
+  assigneeIds: Id[];
+}
+
+export interface ProjectTemplatesUpdateTaskAssigneesResult {
+  assignments: ProjectTemplateTaskAssignment[];
+}
+
 export interface ProjectsAcknowledgeCheckInInput {
   id: Id;
 }
@@ -6795,6 +6805,12 @@ class ApiNamespaceProjectTemplates {
 
   async updateTask(input: ProjectTemplatesUpdateTaskInput): Promise<ProjectTemplatesUpdateTaskResult> {
     return this.client.post("/project_templates/update_task", input);
+  }
+
+  async updateTaskAssignees(
+    input: ProjectTemplatesUpdateTaskAssigneesInput,
+  ): Promise<ProjectTemplatesUpdateTaskAssigneesResult> {
+    return this.client.post("/project_templates/update_task_assignees", input);
   }
 }
 
@@ -8569,6 +8585,13 @@ export default {
     useDeleteTask: () =>
       useMutation<ProjectTemplatesDeleteTaskInput, ProjectTemplatesDeleteTaskResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.deleteTask(input),
+      ),
+
+    updateTaskAssignees: (input: ProjectTemplatesUpdateTaskAssigneesInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
+    useUpdateTaskAssignees: () =>
+      useMutation<ProjectTemplatesUpdateTaskAssigneesInput, ProjectTemplatesUpdateTaskAssigneesResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
       ),
   },
 

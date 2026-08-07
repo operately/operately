@@ -21314,9 +21314,9 @@
       ]
     }
   },
-  "endpoint_count": 221,
+  "endpoint_count": 222,
   "query_count": 71,
-  "mutation_count": 150,
+  "mutation_count": 151,
   "endpoints": [
     {
       "name": "create",
@@ -30036,6 +30036,70 @@
       ],
       "docstring": null,
       "full_name": "project_templates/update_task",
+      "method": "POST"
+    },
+    {
+      "name": "update_task_assignees",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_task_assignees",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdateTaskAssignees",
+      "outputs": [
+        {
+          "default": null,
+          "name": "assignments",
+          "type": {
+            "item": {
+              "name": "project_template_task_assignment",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "task_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "assignee_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_task_assignees",
       "method": "POST"
     },
     {

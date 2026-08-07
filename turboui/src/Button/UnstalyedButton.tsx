@@ -23,6 +23,7 @@ interface MenuOptions {
 
 export interface BaseButtonProps extends MenuOptions, Linkable, Clickable, TestableElement {
   children: React.ReactNode;
+  ariaLabel?: string;
   loading?: boolean;
   type?: "button" | "submit";
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
@@ -127,6 +128,7 @@ function UnstyledActionButton(props: UnstyledButtonProps) {
       className={props.className}
       onClick={handleClick}
       disabled={disabled}
+      aria-label={props.ariaLabel}
       data-test-id={props.testId}
     >
       {children}

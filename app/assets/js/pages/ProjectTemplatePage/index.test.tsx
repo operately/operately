@@ -1,6 +1,7 @@
 import Api from "@/api";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { loader } from "./loader";
+import { activePersonIds } from "./people";
 
 jest.mock("@/api", () => ({
   __esModule: true,
@@ -35,4 +36,27 @@ test("redirects home before loading the template when the feature is disabled", 
   await expect(loader({ params: { companyId: "acme", id: "template-1" } } as any)).rejects.toThrow("redirect");
 
   expect(getTemplate).not.toHaveBeenCalled();
+});
+
+test("sends only available people when replacing task assignees", () => {
+  expect(
+    activePersonIds([
+      {
+        id: "template-person-1",
+        person: { id: "person-1", fullName: "Ada", avatarUrl: null },
+        role: "contributor",
+        responsibility: null,
+        accessLevel: 70,
+        active: true,
+      },
+      {
+        id: "template-person-2",
+        person: { id: "person-2", fullName: "Bob", avatarUrl: null },
+        role: "contributor",
+        responsibility: null,
+        accessLevel: 70,
+        active: false,
+      },
+    ]),
+  ).toEqual(["person-1"]);
 });
