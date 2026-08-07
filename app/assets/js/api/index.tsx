@@ -5040,6 +5040,23 @@ export interface ProjectTemplatesCreateMilestoneResult {
   milestone: ProjectTemplateMilestone;
 }
 
+export interface ProjectTemplatesCreateProjectInput {
+  templateId: Id;
+  spaceId: Id;
+  startDate: string;
+  name: string;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  goalId?: Id | null;
+  anonymousAccessLevel: AccessOptionsInt;
+  companyAccessLevel: AccessOptionsInt;
+  spaceAccessLevel: AccessOptionsInt;
+}
+
+export interface ProjectTemplatesCreateProjectResult {
+  project: Project;
+}
+
 export interface ProjectTemplatesCreateTaskInput {
   templateId: Id;
   milestoneId?: Id | null;
@@ -6679,6 +6696,10 @@ class ApiNamespaceProjectTemplates {
 
   async createMilestone(input: ProjectTemplatesCreateMilestoneInput): Promise<ProjectTemplatesCreateMilestoneResult> {
     return this.client.post("/project_templates/create_milestone", input);
+  }
+
+  async createProject(input: ProjectTemplatesCreateProjectInput): Promise<ProjectTemplatesCreateProjectResult> {
+    return this.client.post("/project_templates/create_project", input);
   }
 
   async createTask(input: ProjectTemplatesCreateTaskInput): Promise<ProjectTemplatesCreateTaskResult> {
@@ -8411,6 +8432,13 @@ export default {
     useCreate: () =>
       useMutation<ProjectTemplatesCreateInput, ProjectTemplatesCreateResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.create(input),
+      ),
+
+    createProject: (input: ProjectTemplatesCreateProjectInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createProject(input),
+    useCreateProject: () =>
+      useMutation<ProjectTemplatesCreateProjectInput, ProjectTemplatesCreateProjectResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createProject(input),
       ),
 
     createTask: (input: ProjectTemplatesCreateTaskInput) =>

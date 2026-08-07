@@ -2,10 +2,12 @@ import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
 import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
+import Api, { type ProjectTemplate } from "@/api";
 
 export interface UrlParams {
   goalId?: string;
   spaceId?: string;
+  templateId?: string;
 
   backPath?: string;
   backPathName?: string;
@@ -25,6 +27,8 @@ interface LoaderResult {
   backPathName?: string;
 
   spaceOptions: { value: string; label: string }[];
+  templates: ProjectTemplate[];
+  projectTemplatesEnabled: boolean;
 }
 
 export async function loader({ request, params }): Promise<LoaderResult> {
@@ -41,13 +45,29 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const goal = goalID ? await Goals.getGoal({ id: goalID }).then((data) => data.goal!) : undefined;
 
   const company = await Companies.getCompany({}).then((data) => data.company!);
+  const projectTemplatesEnabled = Companies.hasFeature(company, "project_templates");
   const goals = await Goals.getGoals({ includeSpace: true, includeChampion: true }).then((data) => data.goals!);
 
   const spaces = await Spaces.getSpaces({ includeAccessLevels: true, accessLevel: "edit_access" });
   const space = spaceID ? await Spaces.getSpace({ id: spaceID }) : undefined;
   const spaceOptions = spaces.map((space) => ({ value: space.id!, label: space.name! }));
+  const templates = projectTemplatesEnabled
+    ? await Api.project_templates.list({ archiveStatus: "active" }).then((data) => data.templates ?? [])
+    : [];
 
-  return { company, spaceID, space, spaces, goal, goals, spaceOptions, backPath, backPathName };
+  return {
+    company,
+    spaceID,
+    space,
+    spaces,
+    goal,
+    goals,
+    spaceOptions,
+    templates,
+    projectTemplatesEnabled,
+    backPath,
+    backPathName,
+  };
 }
 
 export function useLoadedData(): LoaderResult {

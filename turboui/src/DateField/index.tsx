@@ -37,13 +37,16 @@ export namespace DateField {
     readonly?: boolean;
     showOverdueWarning?: boolean;
     showOverdueMessage?: boolean;
-    variant?: "inline" | "form-field";
+    variant?: "inline" | "form-field" | "form-input";
     hideCalendarIcon?: boolean;
     useStartOfPeriod?: boolean;
     size?: "std" | "small" | "xs" | "lg";
     error?: boolean;
     calendarOnly?: boolean;
+    id?: string;
     ariaLabel?: string;
+    ariaDescribedBy?: string;
+    ariaRequired?: boolean;
     className?: string;
     isOpen?: boolean;
     onOpenChange?: (isOpen: boolean) => void;
@@ -94,7 +97,10 @@ export function DateField({
   maxDateLimit,
   error = false,
   calendarOnly = false,
+  id,
   ariaLabel,
+  ariaDescribedBy,
+  ariaRequired,
   className = "",
   isOpen: controlledOpen,
   onOpenChange,
@@ -190,7 +196,10 @@ export function DateField({
             testId={testId}
             size={size}
             error={error}
+            id={id}
             ariaLabel={ariaLabel}
+            ariaDescribedBy={ariaDescribedBy}
+            ariaRequired={ariaRequired}
             className={className}
           />
         </div>
@@ -235,11 +244,14 @@ interface DatePickerTriggerProps extends TestableElement {
   readonly: boolean;
   showOverdueWarning: boolean;
   showOverdueMessage: boolean;
-  variant: "inline" | "form-field";
+  variant: "inline" | "form-field" | "form-input";
   hideCalendarIcon: boolean;
   size: "std" | "small" | "xs" | "lg";
   error: boolean;
+  id?: string;
   ariaLabel?: string;
+  ariaDescribedBy?: string;
+  ariaRequired?: boolean;
   className?: string;
 }
 
@@ -255,11 +267,15 @@ function DatePickerTrigger({
   size,
   testId,
   error,
+  id,
   ariaLabel,
+  ariaDescribedBy,
+  ariaRequired,
   className = "",
 }: DatePickerTriggerProps) {
   let displayText = selectedDate ? getDateWithoutCurrentYear(selectedDate) : label;
   const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
+  const isFormInput = variant === "form-input";
 
   const fieldSize = match(size)
     .with("std", () => `border ${error ? "border-red-500" : "border-surface-outline"} rounded-lg w-full px-2 py-1.5`)
@@ -279,15 +295,21 @@ function DatePickerTrigger({
     "flex items-center",
     {
       "text-content-error": isDateOverdue && showOverdueWarning,
-      "text-content-dimmed": !selectedDate,
+      "text-content-dimmed": !selectedDate && !isFormInput,
+      "text-content-subtle": !selectedDate && isFormInput,
+      "text-content-accent": selectedDate && isFormInput,
+      "w-full justify-between": isFormInput,
     },
-    elementSize,
+    isFormInput ? "gap-2" : elementSize,
   );
 
   const triggerClassName = classNames(
-    "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
-    variant === "inline" ? `rounded-lg px-1.5 py-1 -mx-1.5 -my-1 ${error ? "border border-red-500" : ""}` : fieldSize,
-    !readonly ? "hover:bg-surface-dimmed" : "",
+    "focus:outline-none focus:ring-2 focus:ring-primary-base",
+    variant === "inline" && `inline-block rounded-lg px-1.5 py-1 -mx-1.5 -my-1 ${error ? "border border-red-500" : ""}`,
+    variant === "form-field" && `inline-block ${fieldSize}`,
+    isFormInput &&
+      `flex w-full bg-surface-base border rounded-lg px-3 py-1.5 ${error ? "border-red-500" : "border-surface-outline"}`,
+    !readonly && !isFormInput ? "hover:bg-surface-dimmed" : "",
     className,
   );
 
@@ -300,31 +322,45 @@ function DatePickerTrigger({
   const overdueMessage = shouldShowMessage && selectedDate?.date
     ? `Overdue by ${durationHumanized(selectedDate.date, new Date())}`
     : null;
+  const calendarIcon = !hideCalendarIcon ? (
+    <IconCalendarEvent
+      size={match(size)
+        .with("small", () => 12)
+        .with("xs", () => 11)
+        .with("std", () => 16)
+        .with("lg", () => 18)
+        .exhaustive()}
+      className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
+    />
+  ) : null;
 
   return (
-    <div className="inline-block">
+    <div className={isFormInput ? "block w-full" : "inline-block"}>
       <button
+        id={id}
         type="button"
         className={triggerClassName}
         onClick={handleClick}
         disabled={readonly}
         aria-readonly={readonly}
         aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={error || undefined}
+        aria-required={ariaRequired}
         data-test-id={testId}
       >
         <span className={elemClass}>
-          {!hideCalendarIcon && (
-            <IconCalendarEvent
-              size={match(size)
-                .with("small", () => 12)
-                .with("xs", () => 11)
-                .with("std", () => 16)
-                .with("lg", () => 18)
-                .exhaustive()}
-              className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
-            />
+          {isFormInput ? (
+            <>
+              <span className="truncate">{displayText}</span>
+              {calendarIcon}
+            </>
+          ) : (
+            <>
+              {calendarIcon}
+              <span className="truncate">{displayText}</span>
+            </>
           )}
-          <span className="truncate">{displayText}</span>
         </span>
       </button>
 

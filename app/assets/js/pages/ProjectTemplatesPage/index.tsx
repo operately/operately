@@ -19,6 +19,8 @@ function Page() {
   const fixedSpace = data.fixedSpace ? toSpace(data.fixedSpace, paths) : undefined;
   const editableSpaces = data.editableSpaces.map((space) => toSpace(space, paths));
   const readOnly = billingAccessState?.accessState === "read_only";
+  const editableSpaceIds = new Set(editableSpaces.map((space) => space.id));
+  const libraryPath = fixedSpace ? paths.spaceProjectTemplatesPath(fixedSpace.id) : paths.projectTemplatesPath();
 
   async function onFilter({ search, spaceId }: ProjectTemplatesPage.Filters) {
     const result = await Api.project_templates.list({
@@ -57,6 +59,16 @@ function Page() {
       editableSpaces={editableSpaces}
       fixedSpace={fixedSpace}
       templatePath={(id) => paths.projectTemplatePath(id)}
+      projectCreationPath={(template) =>
+        !readOnly && editableSpaceIds.has(template.space.id)
+          ? paths.newProjectPath({
+              templateId: template.id,
+              spaceId: template.space.id,
+              backPath: libraryPath,
+              backPathName: "Project Templates",
+            })
+          : null
+      }
       spaceTemplatesPath={(id) => paths.spaceProjectTemplatesPath(id)}
       formattedTimePreferences={useFormattedTimePreferences()}
       canCreate={

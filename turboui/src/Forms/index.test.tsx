@@ -6,6 +6,7 @@ import { emptyContent } from "../RichContent/contentOps";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import {
   AccessSelectors,
+  DateInput,
   Form,
   FormError,
   NumberInput,
@@ -55,9 +56,12 @@ jest.mock("../icons", () => ({
   IconBuilding: () => <svg data-testid="icon-building" />,
   IconBuildingEstate: () => <svg data-testid="icon-building-estate" />,
   IconTent: () => <svg data-testid="icon-tent" />,
+  IconCalendarEvent: () => <svg data-testid="icon-calendar-event" />,
   IconChevronDown: () => <svg data-testid="icon-chevron-down" />,
+  IconChevronLeft: () => <svg data-testid="icon-chevron-left" />,
   IconChevronRight: () => <svg data-testid="icon-chevron-right" />,
   IconGoalPlain: () => <svg data-testid="icon-goal-plain" />,
+  IconX: () => <svg data-testid="icon-x" />,
 }));
 
 jest.mock("react-select", () => {
@@ -137,6 +141,38 @@ jest.mock("../Avatar", () => ({
 }));
 
 describe("Forms", () => {
+  test("date inputs preserve ISO dates and support custom required copy", async () => {
+    const onSubmit = jest.fn();
+
+    function Harness() {
+      const form = useForm({
+        fields: { startDate: "" },
+        submit: async () => onSubmit(form.values.startDate),
+      });
+
+      return (
+        <Form form={form}>
+          <DateInput
+            field="startDate"
+            label="Project start date"
+            required
+            requiredMessage="Select a project start date."
+          />
+          <Submit />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Select a project start date.");
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    const selectedDate = selectCurrentDate("Project start date");
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(selectedDate));
+  });
+
   test("updates nested field paths and submits the latest values", async () => {
     const onSubmit = jest.fn();
 
@@ -1154,3 +1190,18 @@ describe("Forms", () => {
     expect(screen.getByText("Space members")).toBeInTheDocument();
   });
 });
+
+function selectCurrentDate(label: string) {
+  const date = new Date();
+  const isoDate = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+
+  fireEvent.click(screen.getByLabelText(label));
+
+  const day = document.querySelector(`[data-date="${isoDate}"]`);
+  if (!day) throw new Error(`Could not find calendar day ${isoDate}`);
+
+  fireEvent.click(day);
+  fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+  return isoDate;
+}

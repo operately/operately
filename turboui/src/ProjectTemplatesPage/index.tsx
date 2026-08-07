@@ -10,7 +10,7 @@ import { Page } from "../Page";
 import type { Navigation } from "../Page/Navigation";
 import { richContentToString, parseContent } from "../RichContent";
 import { SpaceField } from "../SpaceField";
-import { IconSearch, IconX } from "../icons";
+import { IconArrowRight, IconSearch, IconX } from "../icons";
 
 type SearchStatus = "idle" | "loading" | "error";
 
@@ -40,6 +40,7 @@ export namespace ProjectTemplatesPage {
     editableSpaces: Space[];
     fixedSpace?: Space;
     templatePath: (templateId: string) => string;
+    projectCreationPath?: (template: ProjectTemplate) => string | null;
     spaceTemplatesPath: (spaceId: string) => string;
     onFilter: (filters: Filters) => Promise<ProjectTemplate[]>;
     onCreate: (input: CreateInput) => Promise<MutationResult>;
@@ -205,32 +206,52 @@ function TemplateGrid(props: ProjectTemplatesPage.Props & { templates: ProjectTe
 function TemplateCard({
   template,
   templatePath,
+  projectCreationPath,
   formattedTimePreferences,
-}: Pick<ProjectTemplatesPage.Props, "templatePath" | "formattedTimePreferences"> & { template: ProjectTemplate }) {
+}: Pick<ProjectTemplatesPage.Props, "templatePath" | "projectCreationPath" | "formattedTimePreferences"> & {
+  template: ProjectTemplate;
+}) {
   const description = plainDescription(template.description);
+  const createProjectPath = projectCreationPath?.(template);
 
   return (
-    <DivLink
-      to={templatePath(template.id)}
-      className="flex min-h-52 flex-col rounded-xl border border-surface-outline bg-surface-base p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-      testId={`project-template-${template.id}`}
-    >
-      <div className="text-lg font-semibold">{template.name}</div>
-      <p className="mt-2 line-clamp-3 flex-1 text-sm text-content-dimmed">{description || "No description"}</p>
-      <div className="mt-5 text-sm font-medium">
-        {pluralize(template.milestoneCount, "milestone")} · {pluralize(template.taskCount, "task")}
-      </div>
-      <div className="mt-3 flex items-center justify-between gap-3 border-t border-surface-outline pt-3 text-xs text-content-dimmed">
-        <div className="flex min-w-0 items-center gap-2">
-          {template.creator ? <Avatar person={template.creator} size={20} /> : null}
-          <span className="truncate">{template.creator?.fullName ?? "Creator unavailable"}</span>
+    <article className="flex min-h-52 flex-col rounded-xl border border-surface-outline bg-surface-base shadow-sm">
+      <DivLink
+        to={templatePath(template.id)}
+        className="flex flex-1 flex-col rounded-t-xl p-5 transition hover:bg-surface-highlight"
+        testId={`project-template-${template.id}`}
+      >
+        <div className="text-lg font-semibold">{template.name}</div>
+        <p className="mt-2 line-clamp-3 flex-1 text-sm text-content-dimmed">{description || "No description"}</p>
+        <div className="mt-5 text-sm font-medium">
+          {pluralize(template.milestoneCount, "milestone")} · {pluralize(template.taskCount, "task")}
         </div>
-        <span className="shrink-0">
-          Updated{" "}
-          <FormattedTime {...formattedTimePreferences} time={template.updatedAt} format="relative-time-or-date" />
-        </span>
-      </div>
-    </DivLink>
+        <div className="mt-3 flex items-center justify-between gap-3 border-t border-surface-outline pt-3 text-xs text-content-dimmed">
+          <div className="flex min-w-0 items-center gap-2">
+            {template.creator ? <Avatar person={template.creator} size={20} /> : null}
+            <span className="truncate">{template.creator?.fullName ?? "Creator unavailable"}</span>
+          </div>
+          <span className="shrink-0">
+            Updated{" "}
+            <FormattedTime {...formattedTimePreferences} time={template.updatedAt} format="relative-time-or-date" />
+          </span>
+        </div>
+      </DivLink>
+      {createProjectPath ? (
+        <DivLink
+          to={createProjectPath}
+          className="group flex w-full items-center justify-between rounded-b-xl border-t border-surface-outline px-5 py-3 text-sm font-semibold text-content-accent transition-colors hover:bg-surface-highlight focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-base"
+          testId={`create-project-from-template-${template.id}`}
+        >
+          <span>Create project</span>
+          <IconArrowRight
+            size={16}
+            aria-hidden="true"
+            className="text-content-dimmed transition-transform group-hover:translate-x-0.5"
+          />
+        </DivLink>
+      ) : null}
+    </article>
   );
 }
 
