@@ -684,6 +684,24 @@ defmodule OperatelyWeb.Api.Types do
 
   enum :project_template_archive_status, values: Operately.ProjectTemplates.archive_statuses()
 
+  enum :project_template_schedule_resource_type,
+    values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.resource_types()
+
+  enum :project_template_schedule_field,
+    values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.fields()
+
+  enum :project_template_schedule_reason,
+    values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.reasons()
+
+  object :project_template_schedule_issue do
+    field :resource_type, :project_template_schedule_resource_type, null: false
+    field :resource_id, :string, null: false
+    field :resource_name, :string, null: false
+    field :field, :project_template_schedule_field, null: false
+    field? :date, :date, null: true
+    field :reason, :project_template_schedule_reason, null: false
+  end
+
   object :project_template, for: Operately.ProjectTemplates.ProjectTemplate do
     field :id, :string, null: false
     field :name, :string, null: false

@@ -1934,6 +1934,15 @@ export interface ProjectTemplatePermissions {
   hasFullAccess: boolean;
 }
 
+export interface ProjectTemplateScheduleIssue {
+  resourceType: ProjectTemplateScheduleResourceType;
+  resourceId: string;
+  resourceName: string;
+  field: ProjectTemplateScheduleField;
+  date?: string | null;
+  reason: ProjectTemplateScheduleReason;
+}
+
 export interface ProjectTemplateTask {
   __typename: "project_template_task";
   id: string;
@@ -2681,6 +2690,12 @@ export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 export type ProjectTasksView = "list" | "board";
 
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
+
+export type ProjectTemplateScheduleField = "start_date" | "end_date" | "due_date";
+
+export type ProjectTemplateScheduleReason = "missing" | "before_project_start";
+
+export type ProjectTemplateScheduleResourceType = "project" | "milestone" | "task";
 
 export type ReactionEntityType =
   | "project_check_in"

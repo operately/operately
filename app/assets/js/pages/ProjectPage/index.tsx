@@ -3,6 +3,7 @@ import { PageModule } from "@/routes/types";
 import * as React from "react";
 import { useNavigate } from "react-router";
 
+import * as Companies from "@/models/companies";
 import { accessLevelsAsNumbers, accessLevelsAsStrings, parseParentGoalForTurboUi } from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
@@ -32,6 +33,7 @@ import {
 import { useSubscription } from "@/models/subscriptions";
 import type * as Hub from "@/models/resourceHubs";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -134,6 +136,7 @@ async function loadProjectDocsAndFiles(project: Projects.Project): Promise<Proje
 
 function Page() {
   const paths = usePaths();
+  const { company } = useCompanyLoaderData();
   const { data, refresh } = PageCache.useData(loader);
   const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles } = data;
   const navigate = useNavigate();
@@ -343,6 +346,17 @@ function Page() {
     window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
   }, [paths, project.id]);
 
+  const saveAsTemplate = {
+    canSave: Companies.hasFeature(company, "project_templates") && Boolean(project.permissions?.canEdit),
+    submissionEnabled: true,
+    onSave: Projects.createSaveProjectAsTemplateHandler({
+      projectId: project.id,
+      paths,
+      createFromProject: Api.project_templates.createFromProject,
+      navigate,
+    }),
+  };
+
   const projectDocsAndFilesProps = useProjectDocsAndFilesProps({
     docsAndFiles,
     projectId: project.id,
@@ -357,6 +371,7 @@ function Page() {
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
     exportMarkdown,
+    saveAsTemplate,
     childrenCount,
 
     project: {

@@ -11,6 +11,7 @@ import {
   IconInfoCircle,
   IconPlayerPause,
   IconRotateDot,
+  IconStack2,
   IconTrash,
 } from "../icons";
 import { LastCheckIn } from "../LastCheckIn";
@@ -329,6 +330,14 @@ function Actions(props: ProjectPage.State) {
       icon: IconFileExport,
       testId: "export-as-markdown",
       hidden: !props.exportMarkdown,
+    },
+    {
+      type: "action" as const,
+      label: "Save as template",
+      onClick: props.openSaveAsTemplateModal ?? (() => undefined),
+      icon: IconStack2,
+      testId: "save-project-as-template-action",
+      hidden: !props.saveAsTemplate?.canSave,
     },
     {
       type: "action" as const,
