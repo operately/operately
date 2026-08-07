@@ -162,6 +162,10 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   defmodule ScheduleValidator do
     alias Operately.ContextualDates.Timeframe
 
+    def resource_types, do: [:project, :milestone, :task]
+    def fields, do: [:start_date, :end_date, :due_date]
+    def reasons, do: [:missing, :before_project_start]
+
     def validate(project) do
       case Timeframe.start_date(project.timeframe) do
         nil -> {:error, {:invalid_schedule, %{issues: [missing_start_issue(project)]}}}

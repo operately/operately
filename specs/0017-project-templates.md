@@ -307,7 +307,7 @@ This phase delivers the first end-to-end vertical slice: a blank core template c
 
 ### Phase 4 — Saving an existing project as a core template
 
-This phase adds the reverse core transformation and centralizes schedule validation. The user-facing **Save as template** action remains flagged until the optional copy families in Phase 5 honor every switch in the final dialog.
+This phase adds the reverse core transformation and centralizes schedule validation. The `project_templates/create_from_project` mutation is part of the shared internal and external API immediately, while the user-facing **Save as template** action remains flagged until the optional copy families in Phase 5 honor every switch in the final dialog.
 
 #### PR 4.1 — `feat: Build core templates from existing projects`
 
@@ -321,11 +321,12 @@ This phase adds the reverse core transformation and centralizes schedule validat
 
 #### PR 4.2 — `feat: Add save project as template validation UI`
 
-- [ ] Build the name, description, and include-option dialog and connect it to the source validation response.
-- [ ] Keep the project actions entry point and submission disabled until Phase 5 supports every include option end to end; do not expose a dialog whose switches are only partially honored.
-- [ ] Show pre-start date validation in plain language and link or identify every offending project, milestone, and task date so the user can fix or remove it.
-- [ ] Open the created template after a successful save and leave the source project unchanged.
-- [ ] Add component and feature coverage for permission gating, defaults, validation, cancellation, retry, and success navigation.
+- [x] Build the name, description, and include-option dialog and connect it to the source validation response.
+- [x] Keep the project actions entry point and submission disabled until Phase 5 supports every include option end to end; do not expose a dialog whose switches are only partially honored.
+- [x] Show pre-start date validation in plain language and link or identify every offending project, milestone, and task date so the user can fix or remove it.
+- [x] Open the created template after a successful save and leave the source project unchanged.
+- [x] Add component and feature coverage for permission gating, defaults, validation, cancellation, retry, and success navigation.
+- [x] Register `project_templates/create_from_project` in the shared API namespace, publish it in the external API and CLI catalogs, and cover its token authorization contract with an external mutation smoke test.
 
 ### Phase 5 — Selected people, discussions, comments, and Docs & Files
 

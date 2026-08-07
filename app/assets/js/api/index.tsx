@@ -2054,6 +2054,15 @@ export interface ProjectTemplatePermissions {
   hasFullAccess: boolean;
 }
 
+export interface ProjectTemplateScheduleIssue {
+  resourceType: ProjectTemplateScheduleResourceType;
+  resourceId: string;
+  resourceName: string;
+  field: ProjectTemplateScheduleField;
+  date?: string | null;
+  reason: ProjectTemplateScheduleReason;
+}
+
 export interface ProjectTemplateTask {
   __typename: "project_template_task";
   id: string;
@@ -2801,6 +2810,12 @@ export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 export type ProjectTasksView = "list" | "board";
 
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
+
+export type ProjectTemplateScheduleField = "start_date" | "end_date" | "due_date";
+
+export type ProjectTemplateScheduleReason = "missing" | "before_project_start";
+
+export type ProjectTemplateScheduleResourceType = "project" | "milestone" | "task";
 
 export type ReactionEntityType =
   | "project_check_in"
@@ -5032,6 +5047,17 @@ export interface ProjectTemplatesCreateResult {
   template: ProjectTemplate;
 }
 
+export interface ProjectTemplatesCreateFromProjectInput {
+  projectId: Id;
+  name: string;
+  description?: Json | null;
+}
+
+export interface ProjectTemplatesCreateFromProjectResult {
+  template?: ProjectTemplate | null;
+  scheduleIssues: ProjectTemplateScheduleIssue[];
+}
+
 export interface ProjectTemplatesCreateMilestoneInput {
   templateId: Id;
   title: string;
@@ -6704,6 +6730,12 @@ class ApiNamespaceProjectTemplates {
 
   async create(input: ProjectTemplatesCreateInput): Promise<ProjectTemplatesCreateResult> {
     return this.client.post("/project_templates/create", input);
+  }
+
+  async createFromProject(
+    input: ProjectTemplatesCreateFromProjectInput,
+  ): Promise<ProjectTemplatesCreateFromProjectResult> {
+    return this.client.post("/project_templates/create_from_project", input);
   }
 
   async createMilestone(input: ProjectTemplatesCreateMilestoneInput): Promise<ProjectTemplatesCreateMilestoneResult> {
@@ -8489,6 +8521,13 @@ export default {
     useUpdate: () =>
       useMutation<ProjectTemplatesUpdateInput, ProjectTemplatesUpdateResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.update(input),
+      ),
+
+    createFromProject: (input: ProjectTemplatesCreateFromProjectInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createFromProject(input),
+    useCreateFromProject: () =>
+      useMutation<ProjectTemplatesCreateFromProjectInput, ProjectTemplatesCreateFromProjectResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createFromProject(input),
       ),
 
     updateTask: (input: ProjectTemplatesUpdateTaskInput) =>

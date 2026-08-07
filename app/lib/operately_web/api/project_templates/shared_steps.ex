@@ -4,9 +4,10 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
   alias Operately.Access.Binding
   alias Operately.Groups.Group
-  alias Operately.Operations.{ProjectCreation, ProjectTemplateMaterialization}
+  alias Operately.Operations.{ProjectCreation, ProjectTemplateCreationFromProject, ProjectTemplateMaterialization}
   alias Operately.ProjectTemplates
   alias Operately.ProjectTemplates.{Milestone, Permissions, ProjectTemplate, Task}
+  alias Operately.Projects.Project
   alias Operately.Repo
   alias OperatelyWeb.Api.Helpers, as: ApiHelpers
   alias OperatelyWeb.Api.ProjectTemplates.Helpers, as: TemplateHelpers
@@ -43,6 +44,18 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     end)
   end
 
+  def load_project(multi, project_id) do
+    Ecto.Multi.run(multi, :project, fn _repo, %{me: requester} ->
+      Project.get(requester, id: project_id, company_id: requester.company_id)
+    end)
+  end
+
+  def load_project_space(multi) do
+    Ecto.Multi.run(multi, :space, fn _repo, %{me: requester, project: project} ->
+      Group.get(requester, id: project.group_id, company_id: requester.company_id)
+    end)
+  end
+
   def check_space_permissions(multi, permission) do
     Ecto.Multi.run(multi, :permissions, fn _repo, %{space: space, company_read_only: company_read_only} ->
       Permissions.check(space.request_info.access_level, permission, company_read_only: company_read_only)
@@ -70,6 +83,21 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       })
     end)
   end
+
+  def create_template_from_project({:ok, changes}, inputs) do
+    case ProjectTemplateCreationFromProject.run(%ProjectTemplateCreationFromProject{
+           project_id: changes.project.id,
+           creator_id: changes.me.id,
+           name: inputs.name,
+           description: inputs[:description]
+         }) do
+      {:ok, template} -> {:ok, Map.put(changes, :template_creation, %{template: template, schedule_issues: []})}
+      {:error, {:invalid_schedule, %{issues: issues}}} -> {:ok, Map.put(changes, :template_creation, %{template: nil, schedule_issues: issues})}
+      {:error, reason} -> {:error, :template_creation, reason, changes}
+    end
+  end
+
+  def create_template_from_project(error, _inputs), do: error
 
   def load_milestone(multi, milestone_id) do
     Ecto.Multi.run(multi, :milestone, fn repo, %{template: template} ->
@@ -383,6 +411,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp handle_error({:error, _step, :template_not_active, _changes}), do: {:error, :forbidden}
   defp handle_error({:error, _step, {:invalid_template, _reason}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:invalid_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_source, _reason}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_source_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_template_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:validation, message}, _changes}), do: {:error, :bad_request, message}
   defp handle_error({:error, _step, %Ecto.Changeset{}, _changes}), do: {:error, :bad_request}
 

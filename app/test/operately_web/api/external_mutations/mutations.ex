@@ -122,6 +122,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Projects.AcknowledgeRetrospective,
       Mutations.Projects.DeleteCheckIn,
       Mutations.ProjectTemplates.Create,
+      Mutations.ProjectTemplates.CreateFromProject,
       Mutations.ProjectTemplates.CreateProject,
       Mutations.ProjectTemplates.Update,
       Mutations.ProjectTemplates.CreateMilestone,

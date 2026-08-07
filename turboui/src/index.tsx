@@ -156,6 +156,7 @@ export { SpaceKpisPage } from "./SpaceKpisPage";
 export { KpiSummaryCard } from "./SpaceKpisPage/KpiSummaryCard";
 export { SpaceToolsConfigurationPage } from "./SpaceToolsConfigurationPage";
 export { SwitchToggle } from "./SwitchToggle";
+export { SaveProjectAsTemplateModal } from "./SaveProjectAsTemplateModal";
 export { Tabs, useTabs } from "./Tabs";
 export { TaskBoard } from "./TaskBoard";
 export { StatusSelector } from "./StatusSelector";
