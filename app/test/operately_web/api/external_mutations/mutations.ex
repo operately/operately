@@ -111,6 +111,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Projects.UpdateRetrospective,
       Mutations.Projects.UpdateStartDate,
       Mutations.Projects.UpdateTaskStatuses,
+      Mutations.Projects.UpdateTasksView,
       Mutations.Projects.UpdateContributor,
       Mutations.Projects.UpdateDescription,
       Mutations.Projects.CreateContributor,
