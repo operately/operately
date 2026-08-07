@@ -57,7 +57,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
   def ensure_template_belongs_to_space(multi) do
     Ecto.Multi.run(multi, :template_space, fn _repo, %{space: space, template: template} ->
-      if template.space_id == space.id, do: {:ok, :same_space}, else: {:error, :not_found}
+      if template.space_id == space.id, do: {:ok, :same_space}, else: {:error, :template_scope_mismatch}
     end)
   end
 
