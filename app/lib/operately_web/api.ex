@@ -133,6 +133,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_task, OperatelyWeb.Api.ProjectTemplates.CreateTask)
         mutation(:update_task, OperatelyWeb.Api.ProjectTemplates.UpdateTask)
         mutation(:delete_task, OperatelyWeb.Api.ProjectTemplates.DeleteTask)
+        mutation(:update_task_assignees, OperatelyWeb.Api.ProjectTemplates.UpdateTaskAssignees)
       end
 
       @doc "Get, list, create and manage tasks across projects and spaces"

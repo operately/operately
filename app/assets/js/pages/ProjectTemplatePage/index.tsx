@@ -2,11 +2,13 @@ import Api, { type ProjectTemplateTask, type TaskReminder } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as Tasks from "@/models/tasks";
+import * as People from "@/models/people";
 import { usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { parseContent, showErrorToast, TemplateProjectPage } from "turboui";
 import React from "react";
 import { loader, type LoadedData } from "./loader";
+import { activePersonIds } from "./people";
 
 export default { name: "ProjectTemplatePage", loader, Page } as PageModule;
 
@@ -24,6 +26,14 @@ function Page() {
     canEdit: false,
     hasFullAccess: false,
   };
+  const transformPerson = React.useCallback(
+    (person: People.Person) => People.parsePersonForTurboUi(paths, person)!,
+    [paths],
+  );
+  const personSearch = People.usePersonFieldSearch({
+    scope: { type: "space", id: template.space.id },
+    transformResult: transformPerson,
+  });
 
   const mutate: Mutate = async (message, operation) => {
     try {
@@ -109,6 +119,7 @@ function Page() {
       milestones={milestones}
       tasks={tasks}
       people={people}
+      personSearch={personSearch}
       richTextHandlers={useRichEditorHandlers()}
       onTemplateUpdate={onTemplateUpdate}
       onStatusesChange={onStatusesChange}
@@ -222,13 +233,32 @@ function useTaskOperations({
   mutate: Mutate;
 }) {
   function onTaskCreate(task: Omit<TemplateProjectPage.Task, "id">) {
-    void mutate("Task not created", () => Api.project_templates.createTask(taskInput(templateId, task)));
+    void mutate("Task not created", async () => {
+      const result = await Api.project_templates.createTask(taskInput(templateId, task));
+      await Api.project_templates.updateTaskAssignees({
+        templateId,
+        taskId: result.task.id,
+        assigneeIds: activePersonIds(task.assignees),
+      });
+    });
   }
 
   function onTaskUpdate(taskId: string, updates: Partial<TemplateProjectPage.Task>) {
-    return mutate("Task not updated", () =>
-      Api.project_templates.updateTask({ templateId, taskId, ...taskUpdates(updates) }),
-    ).then(() => undefined);
+    return mutate("Task not updated", async () => {
+      const { assignees, ...taskFields } = updates;
+
+      if (Object.keys(taskFields).length > 0) {
+        await Api.project_templates.updateTask({ templateId, taskId, ...taskUpdates(taskFields) });
+      }
+
+      if (assignees) {
+        await Api.project_templates.updateTaskAssignees({
+          templateId,
+          taskId,
+          assigneeIds: activePersonIds(assignees),
+        });
+      }
+    });
   }
 
   function onTaskDelete(taskId: string) {

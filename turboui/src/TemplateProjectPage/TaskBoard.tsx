@@ -13,7 +13,7 @@ import { TasksMenu } from "../TaskBoard";
 import { TaskRow } from "./TaskRow";
 import { MilestoneFormModal } from "./MilestoneFormModal";
 import type { TemplateProjectPage } from ".";
-import { TemplateTaskAssignees } from "./People";
+import { AssigneesField } from "../AssigneesField";
 
 export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   const [isCreating, setIsCreating] = React.useState(false);
@@ -105,6 +105,7 @@ function TaskFormModal({
   const [description, setDescription] = React.useState<RichTextJSON | null>(null);
   const [descriptionEditorKey, setDescriptionEditorKey] = React.useState(0);
   const [createMore, setCreateMore] = React.useState(false);
+  const [assignees, setAssignees] = React.useState<AssigneesField.Person[]>([]);
   const milestoneOptions: MilestoneFieldMilestone[] = props.milestones.map((milestone) => ({
     id: milestone.id,
     name: milestone.title,
@@ -119,6 +120,7 @@ function TaskFormModal({
     setMilestoneId(task?.milestoneId ?? null);
     setStatusId(task?.status.id ?? props.statuses[0]?.id ?? "");
     setDescription(task?.description ?? null);
+    setAssignees((task?.assignees ?? []).flatMap((assignee) => (assignee.person ? [assignee.person] : [])));
     setDescriptionEditorKey((key) => key + 1);
   };
 
@@ -146,7 +148,20 @@ function TaskFormModal({
       return;
     }
 
-    props.onTaskCreate?.({ ...taskFields, priority: null, size: null, reminders: [], assignees: [] });
+    props.onTaskCreate?.({
+      ...taskFields,
+      priority: null,
+      size: null,
+      reminders: [],
+      assignees: assignees.map((person) => ({
+        id: person.id,
+        person,
+        role: "contributor",
+        responsibility: null,
+        accessLevel: 70,
+        active: true,
+      })),
+    });
 
     if (createMore) {
       setName("");
@@ -205,10 +220,16 @@ function TaskFormModal({
           <TaskNotesField key={descriptionEditorKey} props={props} content={description} onChange={setDescription} />
         </div>
 
-        {task && (task.assignees?.length ?? 0) > 0 && (
+        {!task && props.personSearch && (
           <div>
             <label className="mb-1 block text-sm font-medium text-content-base">Assignees</label>
-            <TemplateTaskAssignees assignees={task.assignees ?? []} />
+            <AssigneesField
+              people={assignees}
+              setPeople={setAssignees}
+              searchData={props.personSearch}
+              variant="form-field"
+              emptyStateMessage="Assign people"
+            />
           </div>
         )}
 
