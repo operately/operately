@@ -50,54 +50,24 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
   defmodule CopyPlanner do
     alias Operately.ContextualDates.ContextualDate
-    alias Operately.ProjectTemplates.ProjectTemplate
+    alias Operately.ProjectTemplates.{Copy, ProjectTemplate}
     alias Operately.Projects.Milestone, as: ProjectMilestone
-    alias Operately.Tasks.Status
     alias Operately.Tasks.Task, as: ProjectTask
     alias OperatelyWeb.Paths
 
     def build(%ProjectTemplate{} = template, %Date{} = start_date) do
-      statuses = copy_statuses(template.task_statuses)
-
-      with {:ok, graph} <- plan_graph(template, statuses, start_date) do
+      with {:ok, statuses} <- Copy.copy_workflow(template.task_statuses),
+           {:ok, graph} <- plan_graph(template, statuses, start_date) do
         {:ok,
          Map.merge(graph, %{
            source_template_id: template.id,
            description: template.description,
-           timeframe: timeframe(start_date, relative_date(start_date, template.duration_days)),
-           task_statuses: Enum.map(statuses.copied, &status_attrs/1)
+           timeframe: timeframe(start_date, Copy.date_from_offset(start_date, template.duration_days)),
+           task_statuses: Enum.map(statuses.copied, &Copy.status_attrs/1)
          })}
+      else
+        {:error, reason} -> {:error, {:invalid_template, reason}}
       end
-    end
-
-    defp copy_statuses(statuses) do
-      first_open = first_open_status(statuses)
-      copied_by_source_id = Map.new(statuses, &{&1.id, copy_status(&1)})
-
-      %{
-        source: statuses,
-        copied: Enum.map(statuses, &Map.fetch!(copied_by_source_id, &1.id)),
-        copied_by_source_id: copied_by_source_id,
-        first_open: Map.fetch!(copied_by_source_id, first_open.id)
-      }
-    end
-
-    defp first_open_status(statuses) do
-      statuses
-      |> Enum.with_index()
-      |> Enum.sort_by(fn {status, position} -> {status.index, position} end)
-      |> Enum.find_value(fn {status, _position} -> if status.closed, do: nil, else: status end)
-    end
-
-    defp copy_status(status) do
-      %Status{
-        id: Ecto.UUID.generate(),
-        label: status.label,
-        color: status.color,
-        index: status.index,
-        value: status.value,
-        closed: status.closed
-      }
     end
 
     defp plan_graph(template, statuses, start_date) do
@@ -106,7 +76,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       tasks = Enum.map(template.tasks, &plan_task(&1, milestone_ids, start_date))
       task_ids = Map.new(tasks, &{&1.source.id, &1.target.id})
 
-      with {:ok, milestone_ordering} <- map_ordering(template.milestones_ordering_state, milestones, &source_milestone_path/1, &target_milestone_path/1),
+      with {:ok, milestone_ordering} <- Copy.map_ordering(template.milestones_ordering_state, milestones, &source_milestone_path/1, &target_milestone_path/1),
            {:ok, root_kanban} <- map_kanban(template.tasks_kanban_state, root_tasks(tasks), statuses),
            {:ok, milestones} <- plan_milestone_states(milestones, tasks, statuses) do
         {:ok,
@@ -123,20 +93,20 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
     defp plan_milestone(source, start_date) do
       target = %ProjectMilestone{id: Ecto.UUID.generate(), title: source.title}
-      %{source: source, target: target, due_date: relative_date(start_date, source.due_offset_days)}
+      %{source: source, target: target, due_date: Copy.date_from_offset(start_date, source.due_offset_days)}
     end
 
     defp plan_task(source, milestone_ids, start_date) do
       target_milestone_id = source.project_template_milestone_id && Map.fetch!(milestone_ids, source.project_template_milestone_id)
       target = %ProjectTask{id: Ecto.UUID.generate(), name: source.name, milestone_id: target_milestone_id}
-      %{source: source, target: target, due_date: relative_date(start_date, source.due_offset_days)}
+      %{source: source, target: target, due_date: Copy.date_from_offset(start_date, source.due_offset_days)}
     end
 
     defp plan_milestone_states(milestones, tasks, statuses) do
       Enum.reduce_while(milestones, {:ok, []}, fn milestone, {:ok, planned} ->
         container_tasks = milestone_tasks(tasks, milestone.source.id)
 
-        with {:ok, ordering} <- map_ordering(milestone.source.tasks_ordering_state, container_tasks, &source_task_path/1, &target_task_path/1),
+        with {:ok, ordering} <- Copy.map_ordering(milestone.source.tasks_ordering_state, container_tasks, &source_task_path/1, &target_task_path/1),
              {:ok, kanban} <- map_kanban(milestone.source.tasks_kanban_state, container_tasks, statuses) do
           {:cont, {:ok, planned ++ [Map.merge(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban})]}}
         else
@@ -145,33 +115,9 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       end)
     end
 
-    defp map_ordering(ordering, resources, source_path, target_path) do
-      valid_paths = Enum.map(resources, source_path)
-      ordered = ordering ++ (valid_paths -- ordering)
-      targets = Map.new(resources, &{source_path.(&1), target_path.(&1)})
-
-      {:ok, Enum.map(ordered, &Map.fetch!(targets, &1))}
-    end
-
     defp map_kanban(state, tasks, statuses) do
-      state = Map.new(state, fn {key, ids} -> {to_string(key), ids} end)
-      {:ok, reset_kanban(state, tasks, statuses)}
+      Copy.reset_kanban(state, tasks, statuses, &source_task_path/1, &target_task_path/1, & &1.source.task_status)
     end
-
-    defp reset_kanban(state, tasks, statuses) do
-      source_keys = statuses.source |> Enum.sort_by(& &1.index) |> Enum.map(&status_key/1)
-      destination_keys = Enum.map(statuses.copied, &status_key/1)
-      source_paths = Enum.map(tasks, &source_task_path/1)
-      ordered_source_paths = source_keys |> Enum.flat_map(&List.wrap(Map.get(state, &1, []))) |> then(&(&1 ++ (source_paths -- &1)))
-      target_paths = Map.new(tasks, &{source_task_path(&1), target_task_path(&1)})
-      ordered_target_paths = Enum.map(ordered_source_paths, &Map.fetch!(target_paths, &1))
-      empty_state = Map.new(destination_keys, &{&1, []})
-
-      Map.put(empty_state, status_key(statuses.first_open), ordered_target_paths)
-    end
-
-    defp relative_date(_start_date, nil), do: nil
-    defp relative_date(start_date, offset), do: Date.add(start_date, offset)
 
     defp timeframe(start_date, end_date) do
       %{
@@ -183,18 +129,6 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     defp contextual_date(nil), do: nil
     defp contextual_date(date), do: ContextualDate.create_day_date(date)
 
-    defp status_attrs(status) do
-      %{
-        id: status.id,
-        label: status.label,
-        color: status.color,
-        index: status.index,
-        value: status.value,
-        closed: status.closed
-      }
-    end
-
-    defp status_key(status), do: status.value || status.id
     defp source_milestone_path(planned), do: Paths.project_template_milestone_id(planned.source)
     defp target_milestone_path(planned), do: Paths.milestone_id(planned.target)
     defp source_task_path(planned), do: Paths.project_template_task_id(planned.source)
@@ -569,8 +503,6 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
   defmodule Validator do
     alias Operately.Operations.ProjectCreation
     alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, Task}
-    alias Operately.Tasks.Status
-    alias OperatelyWeb.Paths
 
     def validate(%ProjectTemplate{} = template, %ProjectCreation{} = project) do
       with :ok <- validate_active(template),
@@ -579,9 +511,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
            :ok <- validate_changesets(template.milestones, :milestone, &Milestone.changeset(&1, %{})),
            :ok <- validate_changesets(template.tasks, :task, &Task.changeset(&1, %{})),
            :ok <- validate_task_containers(template),
-           :ok <- validate_task_status_references(template),
-           :ok <- validate_workflow(template.task_statuses),
-           :ok <- validate_graph_states(template) do
+           :ok <- validate_task_status_references(template) do
         :ok
       end
     end
@@ -637,78 +567,6 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       end
     end
 
-    defp validate_workflow([]), do: {:error, {:invalid_template, :empty_workflow}}
-
-    defp validate_workflow(statuses) when is_list(statuses) do
-      changesets = Enum.map(statuses, &Status.changeset(&1, %{}))
-      ids = Enum.map(statuses, & &1.id)
-      keys = Enum.map(statuses, &status_key/1)
-
-      cond do
-        Enum.any?(changesets, &(not &1.valid?)) -> {:error, {:invalid_template, :invalid_task_status}}
-        Enum.uniq(ids) != ids -> {:error, {:invalid_template, :duplicate_task_status}}
-        Enum.any?(keys, &is_nil/1) or Enum.uniq(keys) != keys -> {:error, {:invalid_template, :duplicate_task_status_key}}
-        Enum.all?(statuses, & &1.closed) -> {:error, {:invalid_template, :no_open_task_status}}
-        true -> :ok
-      end
-    end
-
-    defp validate_workflow(_statuses), do: {:error, {:invalid_template, :empty_workflow}}
-
-    defp validate_graph_states(template) do
-      milestone_paths = Enum.map(template.milestones, &Paths.project_template_milestone_id/1)
-      root_tasks = Enum.filter(template.tasks, &is_nil(&1.project_template_milestone_id))
-
-      with :ok <- validate_ordering(template.milestones_ordering_state, milestone_paths),
-           :ok <- validate_kanban(template.tasks_kanban_state, root_tasks, template.task_statuses) do
-        validate_milestone_states(template.milestones, template.tasks, template.task_statuses)
-      end
-    end
-
-    defp validate_milestone_states(milestones, tasks, statuses) do
-      Enum.reduce_while(milestones, :ok, fn milestone, :ok ->
-        milestone_tasks = Enum.filter(tasks, &(&1.project_template_milestone_id == milestone.id))
-        task_paths = Enum.map(milestone_tasks, &Paths.project_template_task_id/1)
-
-        with :ok <- validate_ordering(milestone.tasks_ordering_state, task_paths),
-             :ok <- validate_kanban(milestone.tasks_kanban_state, milestone_tasks, statuses) do
-          {:cont, :ok}
-        else
-          error -> {:halt, error}
-        end
-      end)
-    end
-
-    defp validate_ordering(ordering, valid_paths) when is_list(ordering) do
-      cond do
-        Enum.uniq(ordering) != ordering -> {:error, {:invalid_template, :duplicate_ordering_id}}
-        not Enum.all?(ordering, &(&1 in valid_paths)) -> {:error, {:invalid_template, :foreign_ordering_id}}
-        true -> :ok
-      end
-    end
-
-    defp validate_ordering(_ordering, _valid_paths), do: {:error, {:invalid_template, :malformed_ordering_state}}
-
-    defp validate_kanban(state, tasks, statuses) when is_map(state) do
-      state = Map.new(state, fn {key, ids} -> {to_string(key), ids} end)
-      status_keys = Enum.map(statuses, &status_key/1)
-      task_paths = Enum.map(tasks, &Paths.project_template_task_id/1)
-      provided_paths = status_keys |> Enum.flat_map(&List.wrap(Map.get(state, &1, [])))
-      task_statuses = Map.new(tasks, &{Paths.project_template_task_id(&1), status_key(&1.task_status)})
-
-      cond do
-        not Enum.all?(Map.keys(state), &(&1 in status_keys)) -> {:error, {:invalid_template, :unknown_kanban_status}}
-        not Enum.all?(Map.values(state), &is_list/1) -> {:error, {:invalid_template, :malformed_kanban_state}}
-        Enum.uniq(provided_paths) != provided_paths -> {:error, {:invalid_template, :duplicate_kanban_task}}
-        not Enum.all?(provided_paths, &(&1 in task_paths)) -> {:error, {:invalid_template, :foreign_kanban_task}}
-        Enum.any?(state, fn {key, paths} -> Enum.any?(paths, &(task_statuses[&1] != key)) end) -> {:error, {:invalid_template, :mismatched_kanban_status}}
-        true -> :ok
-      end
-    end
-
-    defp validate_kanban(_state, _tasks, _statuses), do: {:error, {:invalid_template, :malformed_kanban_state}}
-
-    defp status_key(status), do: status.value || status.id
     defp invalid_child(type, changeset), do: {:error, {:invalid_child, type, changeset}}
   end
 end
