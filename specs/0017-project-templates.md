@@ -297,13 +297,13 @@ This phase delivers the first end-to-end vertical slice: a blank core template c
 
 #### PR 3.2 — `feat: Create projects from project templates`
 
-- [ ] Extend New Project so Space is selected before Template and the Template selector lists only active templates from that Space.
-- [ ] Require a project start date when a template is selected while keeping the existing non-template creation flow unchanged.
-- [ ] Keep name, parent goal, and baseline access selection in the normal creation flow and submit them with the selected template and start date.
-- [ ] Add **Create project from template** to template cards and carry the template and owning Space into New Project.
-- [ ] Clear an incompatible template selection if the user changes Space.
-- [ ] Navigate directly to the independent generated project after the transaction commits.
-- [ ] Add form, route, API, and feature coverage for Space scoping, archived templates, start-date validation, direct card entry, creation failure, and successful navigation.
+- [x] Extend New Project so Space is selected before Template and the Template selector lists only active templates from that Space.
+- [x] Add a dedicated `project_templates/create_project` mutation that requires a project start date, while keeping `projects/create` and the existing non-template creation flow unchanged.
+- [x] Keep name, parent goal, and baseline access selection in the normal creation flow and submit them with the selected template and start date.
+- [x] Add **Create project from template** to template cards and carry the template and owning Space into New Project.
+- [x] Clear an incompatible template selection if the user changes Space.
+- [x] Navigate directly to the independent generated project after the transaction commits.
+- [x] Add form, route, API, and feature coverage for Space scoping, archived templates, start-date validation, direct card entry, creation failure, and successful navigation.
 
 ### Phase 4 — Saving an existing project as a core template
 
