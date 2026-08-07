@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -258,8 +258,118 @@ describe("TemplateProjectPage", () => {
     expect(peopleSection).toHaveTextContent("Unavailable person");
 
     fireEvent.click(screen.getByText("Tasks"));
-    fireEvent.click(screen.getByText("Publish announcement"));
-    expect(screen.getByText("Assignees")).toBeInTheDocument();
     expect(screen.getAllByTitle("Ada Lovelace").length).toBeGreaterThan(0);
+  });
+
+  it("keeps unavailable assignees visible while submitting active assignees only", () => {
+    const onTaskUpdate = jest.fn();
+    const activeAssignee: Types.TemplatePerson = {
+      id: "template-person-1",
+      person: { id: "person-1", fullName: "Ada Lovelace", avatarUrl: null },
+      role: "contributor",
+      responsibility: null,
+      accessLevel: 70,
+      active: true,
+    };
+    const unavailableAssignee: Types.TemplatePerson = {
+      id: "template-person-2",
+      person: { id: "person-2", fullName: "Bob Williams", avatarUrl: null },
+      role: "contributor",
+      responsibility: null,
+      accessLevel: 70,
+      active: false,
+    };
+    const replacement = { id: "person-3", fullName: "Emily Davis", avatarUrl: null };
+
+    renderPage(
+      createProps({
+        tasks: [{ ...createProps().tasks[0]!, assignees: [activeAssignee, unavailableAssignee] }],
+        personSearch: { people: [replacement], onSearch: async () => undefined },
+        onTaskUpdate,
+      }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    expect(screen.getByTitle("Bob Williams")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove unavailable assignees" })).toBeInTheDocument();
+
+    fireEvent.click(document.querySelector('[data-test-id="template-task-task-1-assignees"]')!);
+    fireEvent.click(screen.getByText("Emily Davis"));
+    expect(onTaskUpdate).toHaveBeenCalledWith("task-1", {
+      assignees: [
+        activeAssignee,
+        {
+          id: replacement.id,
+          person: replacement,
+          role: "contributor",
+          responsibility: null,
+          accessLevel: 70,
+          active: true,
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove unavailable assignees" }));
+    expect(onTaskUpdate).toHaveBeenLastCalledWith("task-1", {
+      assignees: [activeAssignee, expect.objectContaining({ person: replacement, active: true })],
+    });
+
+    fireEvent.click(screen.getByText("Publish announcement"));
+    expect(screen.queryByText("Assignees")).not.toBeInTheDocument();
+  });
+
+  it("keeps an optimistic assignee visible while stale props rerender", async () => {
+    let finishUpdate: (successful: boolean) => void = () => undefined;
+    const updateResult = new Promise<boolean>((resolve) => {
+      finishUpdate = resolve;
+    });
+    const replacement = { id: "person-3", fullName: "Emily Davis", avatarUrl: null };
+    const staleProps = createProps({
+      personSearch: { people: [replacement], onSearch: async () => undefined },
+      onTaskUpdate: jest.fn(() => updateResult),
+    });
+    const view = renderPage(staleProps, "/templates/template-1?tab=tasks");
+
+    fireEvent.click(document.querySelector('[data-test-id="template-task-task-1-assignees"]')!);
+    fireEvent.click(screen.getByText("Emily Davis"));
+    expect(screen.getByTitle("Emily Davis")).toBeInTheDocument();
+
+    view.rerender(
+      <MemoryRouter initialEntries={["/templates/template-1?tab=tasks"]}>
+        <TemplateProjectPage
+          {...createProps({
+            ...staleProps,
+            tasks: staleProps.tasks.map((task) => ({ ...task, assignees: [] })),
+          })}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTitle("Emily Davis")).toBeInTheDocument();
+
+    await act(async () => finishUpdate(true));
+    expect(screen.getByTitle("Emily Davis")).toBeInTheDocument();
+  });
+
+  it("rolls an optimistic assignee back when the update fails", async () => {
+    let finishUpdate: (successful: boolean) => void = () => undefined;
+    const updateResult = new Promise<boolean>((resolve) => {
+      finishUpdate = resolve;
+    });
+    const replacement = { id: "person-3", fullName: "Emily Davis", avatarUrl: null };
+
+    renderPage(
+      createProps({
+        personSearch: { people: [replacement], onSearch: async () => undefined },
+        onTaskUpdate: jest.fn(() => updateResult),
+      }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    fireEvent.click(document.querySelector('[data-test-id="template-task-task-1-assignees"]')!);
+    fireEvent.click(screen.getByText("Emily Davis"));
+    expect(screen.getByTitle("Emily Davis")).toBeInTheDocument();
+
+    await act(async () => finishUpdate(false));
+    expect(screen.queryByTitle("Emily Davis")).not.toBeInTheDocument();
   });
 });

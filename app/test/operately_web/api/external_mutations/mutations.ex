@@ -131,6 +131,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.ProjectTemplates.CreateTask,
       Mutations.ProjectTemplates.UpdateTask,
       Mutations.ProjectTemplates.DeleteTask,
+      Mutations.ProjectTemplates.UpdateTaskAssignees,
       Mutations.Projects.Discussions.Create,
       Mutations.Projects.Discussions.Update,
       Mutations.Spaces.ArchiveDiscussion,
