@@ -137,6 +137,7 @@ import IconSpeakerphone from "@tabler/icons-react/dist/esm/icons/IconSpeakerphon
 import IconSquare from "@tabler/icons-react/dist/esm/icons/IconSquare.mjs";
 import IconSquareCheckFilled from "@tabler/icons-react/dist/esm/icons/IconSquareCheckFilled.mjs";
 import IconSquareChevronsLeftFilled from "@tabler/icons-react/dist/esm/icons/IconSquareChevronsLeftFilled.mjs";
+import IconStack2 from "@tabler/icons-react/dist/esm/icons/IconStack2.mjs";
 import IconStar from "@tabler/icons-react/dist/esm/icons/IconStar.mjs";
 import IconStrikethrough from "@tabler/icons-react/dist/esm/icons/IconStrikethrough.mjs";
 import IconSun from "@tabler/icons-react/dist/esm/icons/IconSun.mjs";
@@ -300,6 +301,7 @@ export {
   IconSquare,
   IconSquareCheckFilled,
   IconSquareChevronsLeftFilled,
+  IconStack2,
   IconStar,
   IconStrikethrough,
   IconSun,

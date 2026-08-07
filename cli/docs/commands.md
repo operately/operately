@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 219
+- Endpoints: 221
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -123,6 +123,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
 | `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
 | `project_templates create` | `op project_templates create` | `POST` | `/api/external/v1/project_templates/create` |
+| `project_templates create_from_project` | `op project_templates create_from_project` | `POST` | `/api/external/v1/project_templates/create_from_project` |
 | `project_templates create_milestone` | `op project_templates create_milestone` | `POST` | `/api/external/v1/project_templates/create_milestone` |
 | `project_templates create_project` | `op project_templates create_project` | `POST` | `/api/external/v1/project_templates/create_project` |
 | `project_templates create_task` | `op project_templates create_task` | `POST` | `/api/external/v1/project_templates/create_task` |

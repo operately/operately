@@ -6608,6 +6608,76 @@
           }
         ]
       },
+      "project_template_schedule_issue": {
+        "fields": [
+          {
+            "default": null,
+            "name": "resource_type",
+            "type": {
+              "name": "project_template_schedule_resource_type",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "resource_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "resource_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "field",
+            "type": {
+              "name": "project_template_schedule_field",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "date",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "reason",
+            "type": {
+              "name": "project_template_schedule_reason",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_project_review_commented": {
         "fields": [
           {
@@ -20698,6 +20768,11 @@
         "project_retrospective",
         "goal_retrospective"
       ],
+      "project_template_schedule_resource_type": [
+        "project",
+        "milestone",
+        "task"
+      ],
       "account_theme": [
         "dark",
         "light",
@@ -20799,6 +20874,11 @@
         "milestone",
         "project_task",
         "space_task"
+      ],
+      "project_template_schedule_field": [
+        "start_date",
+        "end_date",
+        "due_date"
       ],
       "reaction_entity_type": [
         "project_check_in",
@@ -20967,6 +21047,10 @@
         "caution",
         "off_track"
       ],
+      "project_template_schedule_reason": [
+        "missing",
+        "before_project_start"
+      ],
       "resource_access_types": [
         "space",
         "goal",
@@ -21020,9 +21104,9 @@
       ]
     }
   },
-  "endpoint_count": 219,
+  "endpoint_count": 221,
   "query_count": 71,
-  "mutation_count": 148,
+  "mutation_count": 150,
   "endpoints": [
     {
       "name": "create",
@@ -28794,6 +28878,78 @@
       ],
       "docstring": null,
       "full_name": "project_templates/create",
+      "method": "POST"
+    },
+    {
+      "name": "create_from_project",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/create_from_project",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.CreateFromProject",
+      "outputs": [
+        {
+          "default": null,
+          "name": "template",
+          "type": {
+            "name": "project_template",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "schedule_issues",
+          "type": {
+            "item": {
+              "name": "project_template_schedule_issue",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/create_from_project",
       "method": "POST"
     },
     {
