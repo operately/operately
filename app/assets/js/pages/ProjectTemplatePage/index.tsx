@@ -233,14 +233,7 @@ function useTaskOperations({
   mutate: Mutate;
 }) {
   function onTaskCreate(task: Omit<TemplateProjectPage.Task, "id">) {
-    void mutate("Task not created", async () => {
-      const result = await Api.project_templates.createTask(taskInput(templateId, task));
-      await Api.project_templates.updateTaskAssignees({
-        templateId,
-        taskId: result.task.id,
-        assigneeIds: activePersonIds(task.assignees),
-      });
-    });
+    void mutate("Task not created", () => Api.project_templates.createTask(taskInput(templateId, task)));
   }
 
   function onTaskUpdate(taskId: string, updates: Partial<TemplateProjectPage.Task>) {
@@ -344,6 +337,7 @@ function taskInput(templateId: string, task: Omit<TemplateProjectPage.Task, "id"
     dueOffsetDays: task.dueOffsetDays,
     reminders: task.reminders.map(toApiReminder),
     taskStatus: serializeTaskStatus(task.status),
+    assigneeIds: activePersonIds(task.assignees),
   };
 }
 
