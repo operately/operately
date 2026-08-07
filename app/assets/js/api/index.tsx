@@ -5123,6 +5123,7 @@ export interface ProjectTemplatesCreateTaskInput {
   dueOffsetDays?: number | null;
   reminders?: TaskReminder[];
   taskStatus?: TaskStatus;
+  assigneeIds?: Id[];
 }
 
 export interface ProjectTemplatesCreateTaskResult {

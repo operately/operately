@@ -29476,6 +29476,20 @@
           "optional": true,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": [],
+          "name": "assignee_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": null,
