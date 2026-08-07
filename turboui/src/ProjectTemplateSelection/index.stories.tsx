@@ -5,7 +5,12 @@ import * as Forms from "../Forms";
 import { ProjectTemplateSelection } from ".";
 
 const templates = [
-  { id: "campaign", name: "Campaign launch", spaceId: "marketing" },
+  {
+    id: "campaign",
+    name: "Campaign launch",
+    spaceId: "marketing",
+    inactivePeopleSummary: { personCount: 1, roleCount: 1, taskCount: 3 },
+  },
   { id: "event", name: "Customer event", spaceId: "marketing" },
   { id: "release", name: "Product release", spaceId: "product" },
 ];

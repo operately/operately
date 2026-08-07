@@ -683,6 +683,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum :project_template_archive_status, values: Operately.ProjectTemplates.archive_statuses()
+  enum :project_template_person_role, values: Operately.ProjectTemplates.Person.roles()
 
   enum :project_template_schedule_resource_type,
     values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.resource_types()
@@ -714,12 +715,36 @@ defmodule OperatelyWeb.Api.Types do
     field :updated_at, :datetime, null: false
     field :milestone_count, :integer, null: false
     field :task_count, :integer, null: false
+    field :inactive_people_summary, :project_template_inactive_people_summary, null: false
     field? :task_statuses, list_of(:task_status), null: true
     field? :milestones_ordering_state, list_of(:string), null: true
     field? :tasks_kanban_state, :json, null: true
     field? :milestones, list_of(:project_template_milestone), null: true
     field? :tasks, list_of(:project_template_task), null: true
+    field? :people, list_of(:project_template_person), null: true
+    field? :task_assignments, list_of(:project_template_task_assignment), null: true
     field? :permissions, :project_template_permissions, null: true
+  end
+
+  object :project_template_inactive_people_summary do
+    field :person_count, :integer, null: false
+    field :role_count, :integer, null: false
+    field :task_count, :integer, null: false
+  end
+
+  object :project_template_person, for: Operately.ProjectTemplates.Person do
+    field :id, :string, null: false
+    field? :person, :person, null: true
+    field :role, :project_template_person_role, null: false
+    field? :responsibility, :string, null: true
+    field :access_level, :access_options_int, null: false
+    field :active, :boolean, null: false
+  end
+
+  object :project_template_task_assignment, for: Operately.ProjectTemplates.TaskAssignment do
+    field :id, :string, null: false
+    field :project_template_task_id, :string, null: false
+    field :project_template_person_id, :string, null: false
   end
 
   object :project_template_permissions, for: Operately.ProjectTemplates.Permissions do

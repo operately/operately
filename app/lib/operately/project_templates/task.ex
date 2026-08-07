@@ -3,12 +3,14 @@ defmodule Operately.ProjectTemplates.Task do
 
   use Operately.Schema
 
-  alias Operately.ProjectTemplates.{Milestone, ProjectTemplate}
+  alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, TaskAssignment}
   alias Operately.Tasks.{Reminder, Status}
 
   schema "project_template_tasks" do
     belongs_to :project_template, ProjectTemplate
     belongs_to :project_template_milestone, Milestone
+
+    has_many :assignments, TaskAssignment, foreign_key: :project_template_task_id
 
     field :name, :string
     field :description, :map

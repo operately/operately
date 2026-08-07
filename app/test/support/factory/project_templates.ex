@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory.ProjectTemplates do
-  alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, Task}
+  alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task, TaskAssignment}
   alias Operately.Repo
   alias Operately.Support.Factory.Utils
 
@@ -62,6 +62,32 @@ defmodule Operately.Support.Factory.ProjectTemplates do
 
     task = attrs |> Task.changeset() |> Repo.insert!()
     Map.put(ctx, testid, task)
+  end
+
+  def add_project_template_person(ctx, testid, template_name, person_name, opts \\ []) do
+    attrs = %{
+      project_template_id: ctx[template_name].id,
+      person_id: ctx[person_name].id,
+      role: Keyword.get(opts, :role, :contributor),
+      responsibility: Keyword.get(opts, :responsibility),
+      access_level: Keyword.get(opts, :access_level, Operately.Access.Binding.view_access())
+    }
+
+    person = attrs |> Person.changeset() |> Repo.insert!()
+    Map.put(ctx, testid, person)
+  end
+
+  def add_project_template_task_assignment(ctx, testid, template_name, task_name, person_name) do
+    assignment =
+      %{
+        project_template_id: ctx[template_name].id,
+        project_template_task_id: ctx[task_name].id,
+        project_template_person_id: ctx[person_name].id
+      }
+      |> TaskAssignment.changeset()
+      |> Repo.insert!()
+
+    Map.put(ctx, testid, assignment)
   end
 
   defp maybe_put(attrs, _key, nil), do: attrs

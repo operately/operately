@@ -8,6 +8,7 @@ const PERMISSION_LEVELS = {
   COMMENT_ACCESS: 40,
   VIEW_ACCESS: 10,
   MINIMAL_ACCESS: 1,
+  NO_ACCESS: 0,
 };
 
 const sizeClasses = {
@@ -44,6 +45,10 @@ const accessLevelData: Record<
     colors: "bg-callout-success-bg text-callout-success-content",
   },
   [PERMISSION_LEVELS.MINIMAL_ACCESS]: {
+    title: "No Access",
+    colors: "bg-callout-info-bg text-callout-info-content",
+  },
+  [PERMISSION_LEVELS.NO_ACCESS]: {
     title: "No Access",
     colors: "bg-callout-info-bg text-callout-info-content",
   },

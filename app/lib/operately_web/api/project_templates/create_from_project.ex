@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProject do
     field :project_id, :id, null: false
     field :name, :string, null: false
     field? :description, :json, null: true
+    field? :include_people_and_assignments, :boolean, null: false, default: false
   end
 
   outputs do

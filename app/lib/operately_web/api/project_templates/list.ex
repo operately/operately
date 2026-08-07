@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.List do
 
   alias Operately.Access.Filters
   alias Operately.ProjectTemplates
-  alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, Task}
+  alias Operately.ProjectTemplates.{Milestone, People, ProjectTemplate, Task}
   alias Operately.Repo
 
   inputs do
@@ -38,6 +38,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.List do
     |> order_and_preload()
     |> Repo.all()
     |> put_child_counts()
+    |> People.put_inactive_summaries()
     |> Enum.sort_by(fn template -> {template.space.name, template.name, template.id} end)
   end
 

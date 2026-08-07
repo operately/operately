@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.ProjectTemplates
-  alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, Task}
+  alias Operately.ProjectTemplates.{Milestone, People, ProjectTemplate, Task}
 
   inputs do
     field :id, :id, null: false
@@ -28,11 +28,12 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
              id: id,
              company_id: requester.company_id,
              opts: [
-               preload: [:space, :creator, milestones: milestones_query(), tasks: tasks_query()],
+               preload: [:space, :creator, people: [:person, :project_template], task_assignments: [], milestones: milestones_query(), tasks: tasks_query()],
                after_load: [&ProjectTemplate.set_permissions(&1, company_read_only)]
              ]
            ) do
-      {:ok, %{template | milestone_count: length(template.milestones), task_count: length(template.tasks)}}
+      template = %{template | milestone_count: length(template.milestones), task_count: length(template.tasks)}
+      {:ok, template |> List.wrap() |> People.put_inactive_summaries() |> List.first()}
     end
   end
 

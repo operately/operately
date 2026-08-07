@@ -1905,12 +1905,21 @@ export interface ProjectTemplate {
   updatedAt: string;
   milestoneCount: number;
   taskCount: number;
+  inactivePeopleSummary: ProjectTemplateInactivePeopleSummary;
   taskStatuses?: TaskStatus[] | null;
   milestonesOrderingState?: string[] | null;
   tasksKanbanState?: Json | null;
   milestones?: ProjectTemplateMilestone[] | null;
   tasks?: ProjectTemplateTask[] | null;
+  people?: ProjectTemplatePerson[] | null;
+  taskAssignments?: ProjectTemplateTaskAssignment[] | null;
   permissions?: ProjectTemplatePermissions | null;
+}
+
+export interface ProjectTemplateInactivePeopleSummary {
+  personCount: number;
+  roleCount: number;
+  taskCount: number;
 }
 
 export interface ProjectTemplateMilestone {
@@ -1932,6 +1941,16 @@ export interface ProjectTemplatePermissions {
   canComment: boolean;
   canEdit: boolean;
   hasFullAccess: boolean;
+}
+
+export interface ProjectTemplatePerson {
+  __typename: "project_template_person";
+  id: string;
+  person?: Person | null;
+  role: ProjectTemplatePersonRole;
+  responsibility?: string | null;
+  accessLevel: AccessOptionsInt;
+  active: boolean;
 }
 
 export interface ProjectTemplateScheduleIssue {
@@ -1957,6 +1976,13 @@ export interface ProjectTemplateTask {
   taskStatus: TaskStatus;
   insertedAt: string;
   updatedAt: string;
+}
+
+export interface ProjectTemplateTaskAssignment {
+  __typename: "project_template_task_assignment";
+  id: string;
+  projectTemplateTaskId: string;
+  projectTemplatePersonId: string;
 }
 
 export interface QuickSearchDiscussion {
@@ -2690,6 +2716,8 @@ export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 export type ProjectTasksView = "list" | "board";
 
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
+
+export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTemplateScheduleField = "start_date" | "end_date" | "due_date";
 

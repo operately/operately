@@ -9,8 +9,8 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   alias Operately.ContextualDates.Timeframe
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Operations.{ProjectCreation, ProjectTemplateMaterialization}
-  alias Operately.ProjectTemplates.ProjectTemplate
-  alias Operately.Projects.{Milestone, Project}
+  alias Operately.ProjectTemplates.{ProjectTemplate, TaskAssignment}
+  alias Operately.Projects.{Contributor, Milestone, Project}
   alias Operately.Repo
   alias Operately.ResourceHubs.ResourceHub
   alias Operately.Support.Factory
@@ -139,6 +139,10 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     ctx =
       ctx
       |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_person(:template_champion, :template, :champion,
+        role: :champion,
+        access_level: Binding.full_access()
+      )
       |> Factory.add_project_template_milestone(:milestone, :template)
       |> Factory.add_project_template_task(:task, :template, milestone: :milestone)
 
@@ -161,6 +165,61 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert {:ok, _} = Subscription.get(:system, subscription_list_id: milestone.subscription_list_id, person_id: ctx.champion.id)
     assert {:ok, _} = Subscription.get(:system, subscription_list_id: task.subscription_list_id, person_id: ctx.creator.id)
     assert Repo.aggregate(from(r in ResourceHub, where: r.project_id == ^project.id), :count) == 1
+  end
+
+  test "restores active roles and assignments while skipping inactive people", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:contributor)
+      |> Factory.add_company_member(:inactive)
+      |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_task(:task, :template)
+      |> Factory.add_project_template_person(:template_champion, :template, :champion,
+        role: :champion,
+        responsibility: "Leads",
+        access_level: Binding.view_access()
+      )
+      |> Factory.add_project_template_person(:template_reviewer, :template, :reviewer,
+        role: :reviewer,
+        access_level: Binding.full_access()
+      )
+      |> Factory.add_project_template_person(:template_contributor, :template, :contributor,
+        responsibility: "Advises",
+        access_level: Binding.comment_access()
+      )
+      |> Factory.add_project_template_person(:template_inactive, :template, :inactive,
+        role: :contributor,
+        access_level: Binding.edit_access()
+      )
+      |> Factory.add_project_template_task_assignment(:active_assignment, :template, :task, :template_contributor)
+      |> Factory.add_project_template_task_assignment(:inactive_assignment, :template, :task, :template_inactive)
+      |> Factory.suspend_company_member(:inactive)
+
+    assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
+
+    contributors = Repo.all(from(c in Contributor, where: c.project_id == ^project.id))
+    champion = Enum.find(contributors, &(&1.person_id == ctx.champion.id))
+    reviewer = Enum.find(contributors, &(&1.person_id == ctx.reviewer.id))
+    contributor = Enum.find(contributors, &(&1.person_id == ctx.contributor.id))
+
+    assert champion.role == :champion
+    assert champion.responsibility == "Leads"
+    assert reviewer.role == :reviewer
+    assert contributor.role == :contributor
+    assert contributor.responsibility == "Advises"
+    refute Enum.any?(contributors, &(&1.person_id == ctx.inactive.id))
+
+    context = Access.get_context!(project_id: project.id)
+    champion_group = Access.get_group!(person_id: ctx.champion.id)
+    contributor_group = Access.get_group!(person_id: ctx.contributor.id)
+
+    assert Access.get_binding(context_id: context.id, group_id: champion_group.id).access_level == Binding.full_access()
+    assert Access.get_binding(context_id: context.id, group_id: contributor_group.id).access_level == Binding.edit_access()
+
+    [task] = Repo.all(from(t in Task, where: t.project_id == ^project.id))
+    assert Repo.get_by!(Operately.Tasks.Assignee, task_id: task.id, person_id: ctx.contributor.id)
+    refute Repo.get_by(Operately.Tasks.Assignee, task_id: task.id, person_id: ctx.inactive.id)
+    assert {:ok, _subscription} = Subscription.get(:system, subscription_list_id: task.subscription_list_id, person_id: ctx.contributor.id)
   end
 
   test "rejects missing dates, inactive templates, and workflows without an open status", ctx do
@@ -196,6 +255,39 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
 
     template = template |> ProjectTemplate.changeset(%{milestones_ordering_state: [milestone_id], tasks_kanban_state: %{"unknown" => []}}) |> Repo.update!()
     assert {:error, {:invalid_template, :unknown_kanban_status}} = materialize(%{ctx | template: template}, ~D[2028-01-01])
+  end
+
+  test "rejects foreign and duplicate assignment references", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_task(:task, :template)
+      |> Factory.add_project_template_person(:template_person, :template, :champion)
+      |> Factory.add_project_template(:other_template, :space)
+      |> Factory.add_project_template_task(:other_task, :other_template)
+
+    foreign_assignment =
+      %{
+        project_template_id: ctx.template.id,
+        project_template_task_id: ctx.other_task.id,
+        project_template_person_id: ctx.template_person.id
+      }
+      |> TaskAssignment.changeset()
+      |> Repo.insert!()
+
+    assert {:error, {:invalid_template, :foreign_assignment_reference}} = materialize(ctx, ~D[2028-01-01])
+    Repo.delete!(foreign_assignment)
+
+    assignment_attrs = %{
+      project_template_id: ctx.template.id,
+      project_template_task_id: ctx.task.id,
+      project_template_person_id: ctx.template_person.id
+    }
+
+    Repo.insert!(TaskAssignment.changeset(assignment_attrs))
+    Repo.insert!(TaskAssignment.changeset(assignment_attrs))
+
+    assert {:error, {:invalid_template, :duplicate_assignment}} = materialize(ctx, ~D[2028-01-01])
   end
 
   test "later template edits and deletion do not change the generated graph", ctx do
