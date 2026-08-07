@@ -1,13 +1,14 @@
 defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocumentTest do
   use Operately.DataCase, async: true
 
+  alias Operately.Notifications.SubscriptionList
   alias Operately.ResourceHubs.Document
   alias Operately.Support.Factory
   alias OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocument
   alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Paths
 
-  test "call/2 creates a document in a space hub" do
+  test "call/2 creates a document in a space hub with safe notification defaults" do
     ctx =
       %{}
       |> Factory.setup()
@@ -29,6 +30,11 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocumentTest do
 
     assert document.name == "MCP Document"
     assert ToolConnHelper.rich_text_to_string(document.content) == "Document"
+
+    list = subscription_list!(document.id)
+
+    refute list.send_to_everyone
+    assert Enum.map(list.subscriptions, & &1.person_id) == [ctx.creator.id]
   end
 
   test "call/2 creates a document in a project hub" do
@@ -54,6 +60,48 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocumentTest do
 
     assert document.name == "Project MCP Document"
     assert ToolConnHelper.rich_text_to_string(document.content) == "Project body"
+  end
+
+  test "subscribes selected people from notify_person_ids" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_company_member(:other)
+      |> Factory.add_space(:space)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
+
+    assert {:ok, %{document: document}} =
+             CreateDocument.call(ToolConnHelper.conn(ctx), %{
+               "space_id" => Paths.space_id(ctx.space),
+               "name" => "MCP Document",
+               "content" => "Notify selected people",
+               "notify_person_ids" => [Paths.person_id(ctx.other)]
+             })
+
+    list = subscription_list!(ToolConnHelper.decode_id!(document.id))
+
+    refute list.send_to_everyone
+    assert Enum.sort(Enum.map(list.subscriptions, & &1.person_id)) == Enum.sort([ctx.creator.id, ctx.other.id])
+  end
+
+  test "sets send_to_everyone when notify_everyone is true" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
+
+    assert {:ok, %{document: document}} =
+             CreateDocument.call(ToolConnHelper.conn(ctx), %{
+               "space_id" => Paths.space_id(ctx.space),
+               "name" => "MCP Document",
+               "content" => "Notify everyone",
+               "notify_everyone" => true
+             })
+
+    list = subscription_list!(ToolConnHelper.decode_id!(document.id))
+
+    assert list.send_to_everyone
   end
 
   test "returns invalid_arguments when hub scope is missing" do
@@ -82,5 +130,26 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocumentTest do
                "name" => "Invalid",
                "content" => "Body"
              })
+  end
+
+  test "returns invalid_arguments for malformed notify_person_ids" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.fetch_default_resource_hub(:hub, :space)
+
+    assert {:error, :invalid_arguments} =
+             CreateDocument.call(ToolConnHelper.conn(ctx), %{
+               "space_id" => Paths.space_id(ctx.space),
+               "name" => "MCP Document",
+               "content" => "Body",
+               "notify_person_ids" => ["definitely-not-a-valid-operately-id-%%%"]
+             })
+  end
+
+  defp subscription_list!(parent_id) do
+    {:ok, list} = SubscriptionList.get(:system, parent_id: parent_id, opts: [preload: :subscriptions])
+    list
   end
 end
