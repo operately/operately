@@ -19,13 +19,40 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Close do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "goals"},
-      examples: [%{"title" => "Close a goal", "arguments" => %{"goal_id" => "goal_123", "success_status" => "achieved", "retrospective" => "We reached the target."}}],
+      examples: [
+        %{
+          "title" => "Close a goal",
+          "arguments" => %{
+            "goal_id" => "goal_123",
+            "success_status" => "achieved",
+            "retrospective" => "We reached the target."
+          }
+        },
+        %{
+          "title" => "Close a goal and notify everyone",
+          "arguments" => %{
+            "goal_id" => "goal_123",
+            "success_status" => "achieved",
+            "retrospective" => "We reached the target.",
+            "notify_everyone" => true
+          }
+        }
+      ],
       input_schema:
         JsonSchema.object(
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
             "success_status" => JsonSchema.string("Whether the goal was achieved or missed.", enum: @valid_success_statuses),
-            "retrospective" => JsonSchema.string("The closing retrospective in plain text or markdown.")
+            "retrospective" => JsonSchema.string("The closing retrospective in plain text or markdown."),
+            "notify_person_ids" =>
+              JsonSchema.array(
+                JsonSchema.string("A person identifier."),
+                description: "Optional people to notify about this close. Defaults to none beyond the author."
+              ),
+            "notify_everyone" =>
+              JsonSchema.boolean(
+                "When true, notify everyone eligible for this goal. Defaults to false."
+              )
           },
           required: ["goal_id", "success_status", "retrospective"]
         ),
@@ -38,17 +65,23 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Close do
   end
 
   @impl true
-  def call(conn, %{"goal_id" => goal_id, "success_status" => success_status, "retrospective" => retrospective}) do
+  def call(conn, %{"goal_id" => goal_id, "success_status" => success_status, "retrospective" => retrospective} = arguments) do
     with {:ok, goal_id} <- Helpers.decode_id(goal_id),
          {:ok, success_status} <- decode_success_status(success_status),
-         {:ok, retrospective} <- Helpers.markdown_to_rich_text(retrospective) do
-      GoalClose.call(conn, %{
-        goal_id: goal_id,
-        success_status: success_status,
-        success: success_text(success_status),
-        retrospective: retrospective,
-        subscriber_ids: []
-      })
+         {:ok, retrospective} <- Helpers.markdown_to_rich_text(retrospective),
+         {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
+      GoalClose.call(
+        conn,
+        Map.merge(
+          %{
+            goal_id: goal_id,
+            success_status: success_status,
+            success: success_text(success_status),
+            retrospective: retrospective
+          },
+          notification_inputs
+        )
+      )
     end
   end
 

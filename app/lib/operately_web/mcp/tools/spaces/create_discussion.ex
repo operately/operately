@@ -17,13 +17,40 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.CreateDiscussion do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "spaces"},
-      examples: [%{"title" => "Start a space discussion", "arguments" => %{"space_id" => "space_123", "title" => "Planning", "content" => "Let us align on next quarter."}}],
+      examples: [
+        %{
+          "title" => "Start a space discussion",
+          "arguments" => %{
+            "space_id" => "space_123",
+            "title" => "Planning",
+            "content" => "Let us align on next quarter."
+          }
+        },
+        %{
+          "title" => "Start a discussion and notify everyone",
+          "arguments" => %{
+            "space_id" => "space_123",
+            "title" => "Planning",
+            "content" => "Let us align on next quarter.",
+            "notify_everyone" => true
+          }
+        }
+      ],
       input_schema:
         JsonSchema.object(
           %{
             "space_id" => JsonSchema.string("The space identifier."),
             "title" => JsonSchema.string("The discussion title."),
-            "content" => JsonSchema.string("The discussion body in plain text or markdown.")
+            "content" => JsonSchema.string("The discussion body in plain text or markdown."),
+            "notify_person_ids" =>
+              JsonSchema.array(
+                JsonSchema.string("A person identifier."),
+                description: "Optional people to notify about this discussion. Defaults to none beyond the author."
+              ),
+            "notify_everyone" =>
+              JsonSchema.boolean(
+                "When true, notify everyone eligible for this space. Defaults to false."
+              )
           },
           required: ["space_id", "title", "content"]
         ),
@@ -36,10 +63,22 @@ defmodule OperatelyWeb.Mcp.Tools.Spaces.CreateDiscussion do
   end
 
   @impl true
-  def call(conn, %{"space_id" => space_id, "title" => title, "content" => content}) do
+  def call(conn, %{"space_id" => space_id, "title" => title, "content" => content} = arguments) do
     with {:ok, space_id} <- Helpers.decode_id(space_id),
-         {:ok, content} <- Helpers.markdown_to_rich_text(content) do
-      SpaceCreateDiscussion.call(conn, %{space_id: space_id, title: title, body: content, post_as_draft: false, subscriber_ids: []})
+         {:ok, content} <- Helpers.markdown_to_rich_text(content),
+         {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
+      SpaceCreateDiscussion.call(
+        conn,
+        Map.merge(
+          %{
+            space_id: space_id,
+            title: title,
+            body: content,
+            post_as_draft: false
+          },
+          notification_inputs
+        )
+      )
     end
   end
 end

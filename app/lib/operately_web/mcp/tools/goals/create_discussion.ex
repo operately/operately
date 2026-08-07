@@ -17,13 +17,36 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateDiscussion do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "goals"},
-      examples: [%{"title" => "Start a goal discussion", "arguments" => %{"goal_id" => "goal_123", "title" => "Risks", "content" => "We need to discuss risks."}}],
+      examples: [
+        %{
+          "title" => "Start a goal discussion",
+          "arguments" => %{"goal_id" => "goal_123", "title" => "Risks", "content" => "We need to discuss risks."}
+        },
+        %{
+          "title" => "Start a discussion and notify people",
+          "arguments" => %{
+            "goal_id" => "goal_123",
+            "title" => "Risks",
+            "content" => "We need to discuss risks.",
+            "notify_person_ids" => ["person_123"]
+          }
+        }
+      ],
       input_schema:
         JsonSchema.object(
           %{
             "goal_id" => JsonSchema.string("The goal identifier."),
             "title" => JsonSchema.string("The discussion title."),
-            "content" => JsonSchema.string("The discussion body in plain text or markdown.")
+            "content" => JsonSchema.string("The discussion body in plain text or markdown."),
+            "notify_person_ids" =>
+              JsonSchema.array(
+                JsonSchema.string("A person identifier."),
+                description: "Optional people to notify about this discussion. Defaults to none beyond the author."
+              ),
+            "notify_everyone" =>
+              JsonSchema.boolean(
+                "When true, notify everyone eligible for this goal. Defaults to false."
+              )
           },
           required: ["goal_id", "title", "content"]
         ),
@@ -39,16 +62,21 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateDiscussion do
   end
 
   @impl true
-  def call(conn, %{"goal_id" => goal_id, "title" => title, "content" => content}) do
+  def call(conn, %{"goal_id" => goal_id, "title" => title, "content" => content} = arguments) do
     with {:ok, goal_id} <- Helpers.decode_id(goal_id),
-         {:ok, content} <- Helpers.markdown_to_rich_text(content) do
-      GoalCreateDiscussion.call(conn, %{
-        goal_id: goal_id,
-        title: title,
-        message: content,
-        send_notifications_to_everyone: false,
-        subscriber_ids: []
-      })
+         {:ok, content} <- Helpers.markdown_to_rich_text(content),
+         {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
+      GoalCreateDiscussion.call(
+        conn,
+        Map.merge(
+          %{
+            goal_id: goal_id,
+            title: title,
+            message: content
+          },
+          notification_inputs
+        )
+      )
     end
   end
 end

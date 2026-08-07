@@ -78,6 +78,17 @@ defmodule OperatelyWeb.Mcp.Helpers do
 
   def decode_id_list(_ids), do: {:error, :invalid_arguments}
 
+  def decode_notification_inputs(arguments) do
+    with {:ok, subscriber_ids} <- decode_id_list(arguments["notify_person_ids"]),
+         {:ok, notify_everyone} <- decode_optional_boolean(arguments["notify_everyone"]) do
+      {:ok,
+       %{
+         subscriber_ids: subscriber_ids,
+         send_notifications_to_everyone: notify_everyone
+       }}
+    end
+  end
+
   def put_optional(map, _key, nil), do: map
   def put_optional(map, key, value), do: Map.put(map, key, value)
 
@@ -186,6 +197,10 @@ defmodule OperatelyWeb.Mcp.Helpers do
 
     comments
   end
+
+  defp decode_optional_boolean(nil), do: {:ok, false}
+  defp decode_optional_boolean(value) when is_boolean(value), do: {:ok, value}
+  defp decode_optional_boolean(_), do: {:error, :invalid_arguments}
 
   defp task_statuses(task), do: Task.available_statuses(task)
 end
