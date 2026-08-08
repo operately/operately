@@ -7,14 +7,17 @@ import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
+import { useEditSubscriptionsList, useSubscribeToNotifications, useUnsubscribeFromNotifications } from "@/models/notifications";
 
 import { usePaths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const paths = usePaths();
   const refresh = useRefresh();
+  const me = useMe();
   const { company } = useCompanyLoaderData();
   const { space, kpis } = useLoadedData();
 
@@ -24,8 +27,14 @@ export function Page() {
   const [editKpi] = Kpis.useEditKpi();
   const [deleteKpi] = Kpis.useDeleteKpi();
   const [logKpiEntry] = Kpis.useLogKpiEntry();
+  const [subscribeToNotifications] = useSubscribeToNotifications();
+  const [unsubscribeFromNotifications] = useUnsubscribeFromNotifications();
+  const [editSubscriptionsList] = useEditSubscriptionsList();
 
-  const parsedKpis = React.useMemo(() => kpis.map((kpi) => Kpis.parseKpiForTurboUi(paths, kpi)), [kpis, paths]);
+  const parsedKpis = React.useMemo(
+    () => kpis.map((kpi) => Kpis.parseKpiForTurboUi(paths, kpi, me?.id)),
+    [kpis, paths, me?.id],
+  );
 
   const championSearch = React.useCallback(
     async (query: string) => People.parsePeopleForTurboUi(paths, await peopleSearch(query)),
@@ -77,21 +86,41 @@ export function Page() {
       refresh();
     });
 
-  const onLoadKpi = async (kpiId: string) => Kpis.parseKpiForTurboUi(paths, (await Kpis.getKpi({ kpiId })).kpi);
+  const kpiSubscriptions: SpaceKpisPageTypes.KpiSubscriptionsHandlers = {
+    onSubscribe: async ({ subscriptionListId }) =>
+      run(async () => {
+        await subscribeToNotifications({ subscriptionListId, type: "kpi" });
+        refresh();
+      }),
+    onUnsubscribe: async ({ subscriptionListId }) =>
+      run(async () => {
+        await unsubscribeFromNotifications({ subscriptionListId });
+        refresh();
+      }),
+    onEditSubscribers: async ({ subscriptionListId, subscriberIds }) =>
+      run(async () => {
+        await editSubscriptionsList({ subscriptionListId, subscriberIds, type: "kpi" });
+        refresh();
+      }),
+  };
+
+  const onLoadKpi = async (kpiId: string) => Kpis.parseKpiForTurboUi(paths, (await Kpis.getKpi({ kpiId })).kpi, me?.id);
 
   return (
     <SpaceKpisPage
       space={{ id: space.id!, name: space.name!, link: paths.spacePath(space.id!) }}
       navigation={[{ to: paths.spacePath(space.id!), label: space.name! }]}
       kpis={parsedKpis}
-      currentUser={null}
+      currentUser={me ? People.parsePersonForTurboUi(paths, me) : null}
       canManage={space.permissions?.canEdit ?? false}
+      canEditKpiSubscribers={space.permissions?.canEdit ?? false}
       championSearch={championSearch}
       onLoadKpi={onLoadKpi}
       onCreateKpi={onCreateKpi}
       onEditKpi={onEditKpi}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      kpiSubscriptions={kpiSubscriptions}
     />
   );
 }

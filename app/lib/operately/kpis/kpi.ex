@@ -4,6 +4,9 @@ defmodule Operately.Kpis.Kpi do
   schema "kpis" do
     belongs_to(:space, Operately.Groups.Group, foreign_key: :space_id)
     belongs_to(:champion, Operately.People.Person, foreign_key: :champion_id)
+    belongs_to(:subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id)
+
+    has_one(:access_context, through: [:space, :access_context])
 
     has_many(:entries, Operately.Kpis.KpiEntry)
 
@@ -14,8 +17,20 @@ defmodule Operately.Kpis.Kpi do
     # Populated by ListKpis via Kpis.load_latest_entries/1 so the list view can
     # show the most recent value without preloading the full entry history.
     field(:latest_entry, :any, virtual: true)
+    field(:potential_subscribers, :any, virtual: true)
 
     timestamps()
+  end
+
+  def load_potential_subscribers(kpi = %__MODULE__{}) do
+    kpi =
+      Operately.Repo.preload(kpi, [
+        :champion,
+        subscription_list: [subscriptions: :person],
+        space: :members
+      ], force: true)
+
+    %{kpi | potential_subscribers: Operately.Notifications.Subscriber.from_kpi(kpi)}
   end
 
   def changeset(attrs = %{}) do
@@ -24,7 +39,7 @@ defmodule Operately.Kpis.Kpi do
 
   def changeset(kpi, attrs) do
     kpi
-    |> cast(attrs, [:space_id, :champion_id, :name, :unit, :cadence])
+    |> cast(attrs, [:space_id, :champion_id, :name, :unit, :cadence, :subscription_list_id])
     |> validate_required([:space_id, :name, :unit, :cadence])
   end
 end

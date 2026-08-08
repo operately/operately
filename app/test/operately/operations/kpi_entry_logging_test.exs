@@ -74,6 +74,53 @@ defmodule Operately.Operations.KpiEntryLoggingTest do
     assert ctx.champion.id in notified_ids
   end
 
+  test "notifies people who explicitly subscribed to the KPI", ctx do
+    subscriber = person_fixture_with_account(%{company_id: ctx.company.id})
+    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [%{id: subscriber.id, access_level: 70}])
+    {:ok, _} = Operately.Operations.NotificationsSubscribing.run(subscriber.id, ctx.kpi.subscription_list_id)
+
+    {:ok, entry} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Kpis.log_entry(ctx.creator, ctx.kpi, %{value: 10.0, period: ~D[2026-01-01], recorded_by_id: ctx.creator.id})
+      end)
+
+    activity =
+      from(a in Activity, where: a.action == "kpi_entry_logged" and a.content["entry_id"] == ^entry.id)
+      |> Repo.one()
+
+    perform_job(activity.id)
+
+    notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
+
+    assert subscriber.id in notified_ids
+    assert ctx.champion.id in notified_ids
+  end
+
+  test "does not notify a person who canceled their subscription", ctx do
+    subscriber = person_fixture_with_account(%{company_id: ctx.company.id})
+    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [%{id: subscriber.id, access_level: 70}])
+    {:ok, _} = Operately.Operations.NotificationsSubscribing.run(subscriber.id, ctx.kpi.subscription_list_id)
+
+    # The champion (subscribed by default) opts out; other subscribers are unaffected.
+    {:ok, _} = Operately.Operations.NotificationsUnsubscribing.run(ctx.champion.id, ctx.kpi.subscription_list_id)
+
+    {:ok, entry} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Kpis.log_entry(ctx.creator, ctx.kpi, %{value: 10.0, period: ~D[2026-01-01], recorded_by_id: ctx.creator.id})
+      end)
+
+    activity =
+      from(a in Activity, where: a.action == "kpi_entry_logged" and a.content["entry_id"] == ^entry.id)
+      |> Repo.one()
+
+    perform_job(activity.id)
+
+    notified_ids = activity.id |> fetch_notifications() |> Enum.map(& &1.person_id)
+
+    refute ctx.champion.id in notified_ids
+    assert subscriber.id in notified_ids
+  end
+
   test "fails validation when value is missing", ctx do
     assert {:error, :entry, changeset, _} =
              Kpis.log_entry(ctx.creator, ctx.kpi, %{period: ~D[2026-01-01], recorded_by_id: ctx.creator.id})

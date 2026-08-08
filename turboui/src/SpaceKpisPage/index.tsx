@@ -72,6 +72,27 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
     return result;
   };
 
+  const reloadDetailAfterSubscriptionsChange = React.useCallback(
+    async (result: SpaceKpisPageNS.MutationResult) => {
+      if (result.success && selectedKpiId) await loadDetail(selectedKpiId);
+      return result;
+    },
+    [selectedKpiId, loadDetail],
+  );
+
+  const kpiSubscriptions = React.useMemo(() => {
+    if (!props.kpiSubscriptions) return undefined;
+
+    return {
+      onSubscribe: (input: { subscriptionListId: string }) =>
+        reloadDetailAfterSubscriptionsChange(props.kpiSubscriptions!.onSubscribe(input)),
+      onUnsubscribe: (input: { subscriptionListId: string }) =>
+        reloadDetailAfterSubscriptionsChange(props.kpiSubscriptions!.onUnsubscribe(input)),
+      onEditSubscribers: (input: { subscriptionListId: string; subscriberIds: string[] }) =>
+        reloadDetailAfterSubscriptionsChange(props.kpiSubscriptions!.onEditSubscribers(input)),
+    };
+  }, [props.kpiSubscriptions, reloadDetailAfterSubscriptionsChange]);
+
   const contentReady = !props.loading && !props.error;
 
   // The primary header action mirrors what the visible content offers: "New KPI"
@@ -118,6 +139,8 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             onOpenLog={setLogKpiId}
             onOpenEdit={setEditKpiId}
             onOpenDelete={setDeleteKpiId}
+            kpiSubscriptions={kpiSubscriptions}
+            canEditKpiSubscribers={props.canEditKpiSubscribers}
           />
         </div>
       </div>
@@ -247,7 +270,7 @@ function PageHeader(props: PageHeaderProps) {
   );
 }
 
-interface KpisContentProps extends SpaceKpisPageNS.Props {
+interface KpisContentProps extends Omit<SpaceKpisPageNS.Props, "kpiSubscriptions"> {
   canManage: boolean;
   selectedKpi: SpaceKpisPageNS.Kpi | null;
   detailLoading: boolean;
@@ -256,6 +279,7 @@ interface KpisContentProps extends SpaceKpisPageNS.Props {
   onOpenLog: (id: string) => void;
   onOpenEdit: (id: string) => void;
   onOpenDelete: (id: string) => void;
+  kpiSubscriptions?: SpaceKpisPageNS.KpiSubscriptionsHandlers;
 }
 
 function KpisContent(props: KpisContentProps) {
@@ -268,7 +292,15 @@ function KpisContent(props: KpisContentProps) {
   }
 
   if (props.selectedKpi) {
-    return <KpiDetail kpi={props.selectedKpi} loadingHistory={props.detailLoading} />;
+    const kpi = props.selectedKpi;
+    return (
+      <KpiDetail
+        kpi={kpi}
+        loadingHistory={props.detailLoading}
+        kpiSubscriptions={props.kpiSubscriptions}
+        canEditKpiSubscribers={props.canEditKpiSubscribers}
+      />
+    );
   }
 
   return (

@@ -50,6 +50,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Kpis.EditKpi,
       Mutations.Kpis.DeleteKpi,
       Mutations.Kpis.LogKpiEntry,
+      Mutations.Kpis.SubscribeToKpi,
+      Mutations.Kpis.UnsubscribeFromKpi,
       Mutations.Goals.CreateAccessMembers,
       Mutations.Goals.CreateCheck,
       Mutations.Goals.CreateTarget,

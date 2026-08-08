@@ -3,7 +3,7 @@ import React from "react";
 
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
-import { mockChampionSearch, mockCurrentUser, mockKpis, mockPeople, mockSpace } from "./mockData";
+import { mockChampionSearch, mockCurrentUser, mockKpisWithSubscriptions, mockPeople, mockSpace, withKpiSubscriptions } from "./mockData";
 
 //
 // Space KPIs — proof of concept (frontend, Storybook only).
@@ -51,7 +51,9 @@ function clone(kpis: SpaceKpisPageNS.Kpi[]): SpaceKpisPageNS.Kpi[] {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function Harness(args: HarnessArgs) {
-  const [kpis, setKpis] = React.useState<SpaceKpisPageNS.Kpi[]>(() => (args.emptySpace ? [] : clone(mockKpis)));
+  const [kpis, setKpis] = React.useState<SpaceKpisPageNS.Kpi[]>(() =>
+    args.emptySpace ? [] : clone(mockKpisWithSubscriptions),
+  );
 
   const onCreateKpi = async (input: SpaceKpisPageNS.NewKpiInput): Promise<SpaceKpisPageNS.MutationResult> => {
     console.log("createKpi", input);
@@ -62,7 +64,7 @@ function Harness(args: HarnessArgs) {
     }
 
     const champion = mockPeople.find((p) => p.id === input.championId) ?? null;
-    const newKpi: SpaceKpisPageNS.Kpi = {
+    const newKpi = withKpiSubscriptions({
       id: `kpi-${crypto.randomUUID()}`,
       name: input.name,
       unit: input.unit,
@@ -71,7 +73,7 @@ function Harness(args: HarnessArgs) {
       insertedAt: new Date(),
       latestEntry: null,
       entries: [],
-    };
+    });
 
     setKpis((prev) => [newKpi, ...prev]);
     return { success: true, id: newKpi.id };
@@ -90,7 +92,7 @@ function Harness(args: HarnessArgs) {
     setKpis((prev) =>
       prev.map((kpi) =>
         kpi.id === input.id
-          ? { ...kpi, name: input.name, unit: input.unit, cadence: input.cadence, champion }
+          ? withKpiSubscriptions({ ...kpi, name: input.name, unit: input.unit, cadence: input.cadence, champion })
           : kpi,
       ),
     );
@@ -137,6 +139,80 @@ function Harness(args: HarnessArgs) {
     return { success: true };
   };
 
+  const updateSubscriptionState = (
+    subscriptionListId: string,
+    updater: (kpi: SpaceKpisPageNS.Kpi) => SpaceKpisPageNS.Kpi,
+  ) => {
+    setKpis((prev) =>
+      prev.map((kpi) => (kpi.subscriptionListId === subscriptionListId ? updater(kpi) : kpi)),
+    );
+  };
+
+  const kpiSubscriptions: SpaceKpisPageNS.KpiSubscriptionsHandlers = {
+    onSubscribe: async ({ subscriptionListId }) => {
+      console.log("subscribeToKpi", subscriptionListId);
+      await delay(300);
+
+      if (args.failMutations) {
+        return { success: false, error: "You don't have permission to change your subscription." };
+      }
+
+      updateSubscriptionState(subscriptionListId, (kpi) =>
+        withKpiSubscriptions(
+          {
+            ...kpi,
+            potentialSubscribers: (kpi.potentialSubscribers ?? []).map((subscriber) =>
+              subscriber.person?.id === mockCurrentUser.id ? { ...subscriber, isSubscribed: true } : subscriber,
+            ),
+          },
+          { isCurrentUserSubscribed: true },
+        ),
+      );
+
+      return { success: true };
+    },
+    onUnsubscribe: async ({ subscriptionListId }) => {
+      console.log("unsubscribeFromKpi", subscriptionListId);
+      await delay(300);
+
+      if (args.failMutations) {
+        return { success: false, error: "You don't have permission to change your subscription." };
+      }
+
+      updateSubscriptionState(subscriptionListId, (kpi) =>
+        withKpiSubscriptions(
+          {
+            ...kpi,
+            potentialSubscribers: (kpi.potentialSubscribers ?? []).map((subscriber) =>
+              subscriber.person?.id === mockCurrentUser.id ? { ...subscriber, isSubscribed: false } : subscriber,
+            ),
+          },
+          { isCurrentUserSubscribed: false },
+        ),
+      );
+
+      return { success: true };
+    },
+    onEditSubscribers: async ({ subscriptionListId, subscriberIds }) => {
+      console.log("editKpiSubscribers", subscriptionListId, subscriberIds);
+      await delay(300);
+
+      if (args.failMutations) {
+        return { success: false, error: "You don't have permission to change subscribers." };
+      }
+
+      updateSubscriptionState(subscriptionListId, (kpi) => ({
+        ...kpi,
+        potentialSubscribers: (kpi.potentialSubscribers ?? []).map((subscriber) => ({
+          ...subscriber,
+          isSubscribed: subscriber.person?.id ? subscriberIds.includes(subscriber.person.id) : false,
+        })),
+      }));
+
+      return { success: true };
+    },
+  };
+
   return (
     <SpaceKpisPage
       space={mockSpace}
@@ -148,6 +224,8 @@ function Harness(args: HarnessArgs) {
       onEditKpi={onEditKpi}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      kpiSubscriptions={kpiSubscriptions}
+      canEditKpiSubscribers={args.canManage ?? true}
       loading={args.loading}
       error={args.error}
       canManage={args.canManage}

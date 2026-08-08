@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Kpis do
   alias Operately.Groups.{Group, Permissions}
   alias Operately.Kpis
   alias Operately.Kpis.Kpi
+  alias Operately.Operations.{NotificationsSubscribing, NotificationsUnsubscribing}
 
   defmodule ListKpis do
     @moduledoc "Lists the KPIs of a space."
@@ -85,7 +86,14 @@ defmodule OperatelyWeb.Api.Kpis do
         kpi ->
           # Entries are ordered by period so the chart renders history in order.
           entries = Kpis.list_entries(kpi_id) |> Repo.preload(:recorded_by)
-          {:ok, %{Repo.preload(kpi, :champion) | entries: entries}}
+
+          kpi =
+            kpi
+            |> Repo.preload([:champion, subscription_list: [subscriptions: :person]])
+            |> Kpi.load_potential_subscribers()
+            |> then(&%{&1 | entries: entries})
+
+          {:ok, kpi}
       end
     end
 
@@ -288,6 +296,90 @@ defmodule OperatelyWeb.Api.Kpis do
         {:error, :space, _} -> {:error, :not_found}
         {:error, :check_permissions, _} -> {:error, :forbidden}
         {:error, :operation, _} -> {:error, :bad_request}
+        _ -> {:error, :internal_server_error}
+      end
+    end
+  end
+
+  defmodule SubscribeToKpi do
+    @moduledoc "Subscribes the current user to a KPI so they are notified when new entries are logged."
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :kpi_id, :id, null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: false
+    end
+
+    def call(conn, inputs) do
+      Action.new()
+      |> run(:me, fn -> find_me(conn) end)
+      |> run(:kpi, fn -> load_kpi(inputs.kpi_id) end)
+      |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.kpi.space_id) end)
+      |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
+      |> run(:operation, fn ctx -> NotificationsSubscribing.run(ctx.me.id, ctx.kpi.subscription_list_id) end)
+      |> respond()
+    end
+
+    defp load_kpi(kpi_id) do
+      case Kpis.get_kpi(kpi_id) do
+        nil -> {:error, :not_found}
+        %Kpi{} = kpi -> {:ok, kpi}
+      end
+    end
+
+    defp respond(result) do
+      case result do
+        {:ok, _} -> {:ok, %{success: true}}
+        {:error, :kpi, _} -> {:error, :not_found}
+        {:error, :space, _} -> {:error, :not_found}
+        {:error, :check_permissions, _} -> {:error, :forbidden}
+        _ -> {:error, :internal_server_error}
+      end
+    end
+  end
+
+  defmodule UnsubscribeFromKpi do
+    @moduledoc "Unsubscribes the current user from a KPI so they stop receiving its notifications."
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :kpi_id, :id, null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: false
+    end
+
+    def call(conn, inputs) do
+      Action.new()
+      |> run(:me, fn -> find_me(conn) end)
+      |> run(:kpi, fn -> load_kpi(inputs.kpi_id) end)
+      |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.kpi.space_id) end)
+      |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
+      |> run(:operation, fn ctx -> NotificationsUnsubscribing.run(ctx.me.id, ctx.kpi.subscription_list_id) end)
+      |> respond()
+    end
+
+    defp load_kpi(kpi_id) do
+      case Kpis.get_kpi(kpi_id) do
+        nil -> {:error, :not_found}
+        %Kpi{} = kpi -> {:ok, kpi}
+      end
+    end
+
+    defp respond(result) do
+      case result do
+        {:ok, _} -> {:ok, %{success: true}}
+        {:error, :kpi, _} -> {:error, :not_found}
+        {:error, :space, _} -> {:error, :not_found}
+        {:error, :check_permissions, _} -> {:error, :forbidden}
         _ -> {:error, :internal_server_error}
       end
     end

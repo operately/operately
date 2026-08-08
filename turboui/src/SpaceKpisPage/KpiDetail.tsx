@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
+import { CurrentSubscriptions } from "../Subscriptions/CurrentSubscriptions";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -13,14 +14,26 @@ interface KpiDetailProps {
   // omits them). Shows a placeholder in place of the chart/history so we don't
   // flash a misleading "No data" state.
   loadingHistory?: boolean;
+
+  kpiSubscriptions?: SpaceKpisPage.KpiSubscriptionsHandlers;
+  canEditKpiSubscribers?: boolean;
 }
 
 // The KPI name, back navigation and the "Log update" action live in the shared
 // page header (see index.tsx), so the detail body focuses on the metadata,
 // latest value, history chart and the recorded-updates log.
-export function KpiDetail({ kpi, loadingHistory = false }: KpiDetailProps) {
+export function KpiDetail({
+  kpi,
+  loadingHistory = false,
+  kpiSubscriptions,
+  canEditKpiSubscribers = false,
+}: KpiDetailProps) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
+
+  const subscribedPeople = (kpi.potentialSubscribers ?? []).filter((subscriber) => subscriber.isSubscribed);
+  const subscriptionsReady = Boolean(kpi.subscriptionListId);
+  const showSubscriptions = Boolean(kpiSubscriptions);
 
   return (
     <div data-test-id="kpi-detail">
@@ -71,7 +84,75 @@ export function KpiDetail({ kpi, loadingHistory = false }: KpiDetailProps) {
           <EntriesTable entries={kpi.entries} unit={kpi.unit} />
         </>
       )}
+
+      {showSubscriptions && (
+        <div className="mt-6 border-t border-stroke-dimmed pt-4" data-test-id="kpi-subscriptions">
+          {loadingHistory || !subscriptionsReady ? (
+            <SubscriptionsLoading />
+          ) : (
+            <KpiSubscriptionsSection
+              kpi={kpi}
+              kpiSubscriptions={kpiSubscriptions!}
+              canEditKpiSubscribers={canEditKpiSubscribers}
+              subscribedPeople={subscribedPeople}
+            />
+          )}
+        </div>
+      )}
     </div>
+  );
+}
+
+function SubscriptionsLoading() {
+  return (
+    <div className="space-y-3" data-test-id="kpi-subscriptions-loading">
+      <div className="h-4 w-24 animate-pulse rounded bg-surface-dimmed" />
+      <div className="h-4 w-64 animate-pulse rounded bg-surface-dimmed" />
+      <div className="h-8 w-28 animate-pulse rounded bg-surface-dimmed" />
+    </div>
+  );
+}
+
+function KpiSubscriptionsSection({
+  kpi,
+  kpiSubscriptions,
+  canEditKpiSubscribers,
+  subscribedPeople,
+}: {
+  kpi: SpaceKpisPage.Kpi;
+  kpiSubscriptions: SpaceKpisPage.KpiSubscriptionsHandlers;
+  canEditKpiSubscribers: boolean;
+  subscribedPeople: NonNullable<SpaceKpisPage.Kpi["potentialSubscribers"]>;
+}) {
+  const subscriptionListId = kpi.subscriptionListId!;
+  const [isSubscribeLoading, setIsSubscribeLoading] = React.useState(false);
+  const [isUnsubscribeLoading, setIsUnsubscribeLoading] = React.useState(false);
+
+  const run = async (action: () => Promise<SpaceKpisPage.MutationResult>, loading: (value: boolean) => void) => {
+    loading(true);
+    try {
+      await action();
+    } finally {
+      loading(false);
+    }
+  };
+
+  return (
+    <CurrentSubscriptions
+      subscribers={kpi.potentialSubscribers ?? []}
+      subscribedPeople={subscribedPeople}
+      isCurrentUserSubscribed={kpi.isSubscribed ?? false}
+      resourceName="KPI"
+      notifyWhen="a new update is logged on this KPI"
+      canEditSubscribers={canEditKpiSubscribers}
+      isSubscribeLoading={isSubscribeLoading}
+      isUnsubscribeLoading={isUnsubscribeLoading}
+      onSubscribe={() => run(() => kpiSubscriptions.onSubscribe({ subscriptionListId }), setIsSubscribeLoading)}
+      onUnsubscribe={() => run(() => kpiSubscriptions.onUnsubscribe({ subscriptionListId }), setIsUnsubscribeLoading)}
+      onEditSubscribers={(subscriberIds) =>
+        kpiSubscriptions.onEditSubscribers({ subscriptionListId, subscriberIds })
+      }
+    />
   );
 }
 
