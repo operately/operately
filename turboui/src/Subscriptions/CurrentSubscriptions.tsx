@@ -12,6 +12,10 @@ export namespace CurrentSubscriptions {
     subscribedPeople: SubscribersSelector.Subscriber[];
     isCurrentUserSubscribed: boolean;
     resourceName: string;
+    // Optional override for the notification sentence shown in the subscribers
+    // section and subscribe/unsubscribe copy. When omitted, defaults to comment
+    // wording for backwards compatibility with existing screens.
+    notifyWhen?: string;
     onSubscribe: () => void;
     onUnsubscribe: () => void;
     onEditSubscribers: (subscriberIds: string[]) => void;
@@ -26,6 +30,7 @@ export function CurrentSubscriptions({
   subscribedPeople,
   isCurrentUserSubscribed,
   resourceName,
+  notifyWhen,
   onSubscribe,
   onUnsubscribe,
   onEditSubscribers,
@@ -41,7 +46,7 @@ export function CurrentSubscriptions({
   };
 
   const sortedSubscribers = sortSubscribersByName(subscribedPeople);
-  const label = buildLabel(subscribedPeople.length, resourceName);
+  const label = buildLabel(subscribedPeople.length, resourceName, notifyWhen);
 
   return (
     <div>
@@ -56,11 +61,12 @@ export function CurrentSubscriptions({
         {isCurrentUserSubscribed ? (
           <UnsubscribeSection
             resourceName={resourceName}
+            notifyWhen={notifyWhen}
             onUnsubscribe={onUnsubscribe}
             isLoading={isUnsubscribeLoading}
           />
         ) : (
-          <SubscribeSection onSubscribe={onSubscribe} isLoading={isSubscribeLoading} />
+          <SubscribeSection notifyWhen={notifyWhen} onSubscribe={onSubscribe} isLoading={isSubscribeLoading} />
         )}
       </div>
 
@@ -120,7 +126,7 @@ function CurrentSubscribersSection({
   );
 }
 
-function buildLabel(count: number, resourceName: string): string {
+function buildLabel(count: number, resourceName: string, notifyWhen?: string): string {
   let prefix: string;
 
   if (count === 0) {
@@ -131,19 +137,26 @@ function buildLabel(count: number, resourceName: string): string {
     prefix = `${count} people`;
   }
 
+  if (notifyWhen) {
+    return `${prefix} will be notified when ${notifyWhen}.`;
+  }
+
   return `${prefix} will be notified when someone comments on this ${resourceName}.`;
 }
 
 interface SubscribeSectionProps {
   onSubscribe: () => void;
   isLoading: boolean;
+  notifyWhen?: string;
 }
 
-function SubscribeSection({ onSubscribe, isLoading }: SubscribeSectionProps) {
+function SubscribeSection({ onSubscribe, isLoading, notifyWhen }: SubscribeSectionProps) {
   return (
     <div>
       <div className="font-bold">You&apos;re not subscribed</div>
-      <p className="text-sm">You won&apos;t be notified when comments are posted.</p>
+      <p className="text-sm">
+        {notifyWhen ? `You won't be notified when ${notifyWhen}.` : "You won't be notified when comments are posted."}
+      </p>
       <div className="flex mt-2">
         <SecondaryButton onClick={onSubscribe} loading={isLoading} size="xs" testId="subscribe">
           Subscribe me
@@ -157,14 +170,17 @@ interface UnsubscribeSectionProps {
   resourceName: string;
   onUnsubscribe: () => void;
   isLoading: boolean;
+  notifyWhen?: string;
 }
 
-function UnsubscribeSection({ resourceName, onUnsubscribe, isLoading }: UnsubscribeSectionProps) {
+function UnsubscribeSection({ resourceName, onUnsubscribe, isLoading, notifyWhen }: UnsubscribeSectionProps) {
   return (
     <div>
       <div className="font-bold text-sm sm:text-[16px]">You&apos;re subscribed</div>
       <p className="text-xs sm:text-sm mt-1">
-        You&apos;ll get a notification when someone comments on this {resourceName}.
+        {notifyWhen
+          ? `You'll get a notification when ${notifyWhen}.`
+          : `You'll get a notification when someone comments on this ${resourceName}.`}
       </p>
       <div className="flex mt-2">
         <SecondaryButton onClick={onUnsubscribe} loading={isLoading} size="xs" testId="unsubscribe">

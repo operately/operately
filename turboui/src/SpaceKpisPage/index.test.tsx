@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router";
 
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
-import { mockChampionSearch, mockCurrentUser, mockKpis, mockLongChampionSearch, mockSpace } from "./mockData";
+import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisWithSubscriptions, mockLongChampionSearch, mockSpace, withKpiSubscriptions } from "./mockData";
 
 // This codebase tags elements with `data-test-id` (not the default
 // `data-testid`), so we resolve them via the attribute selector, polling until
@@ -293,41 +293,66 @@ describe("SpaceKpisPage create & log", () => {
   });
 });
 
-// The detail view lets the current user follow/unfollow a KPI so they are
-// notified when new entries are logged, reusing the shared NotificationToggle.
-describe("SpaceKpisPage subscription toggle", () => {
-  test("no follow control is shown when onToggleSubscription is omitted", () => {
-    const target = mockKpis[0]!;
-    const { container } = renderPage({ initialSelectedKpiId: target.id });
+// The detail view shows who is subscribed to a KPI and lets the current user
+// follow/unfollow, reusing the shared CurrentSubscriptions component.
+describe("SpaceKpisPage subscriptions", () => {
+  test("no subscribers section is shown when kpiSubscriptions is omitted", () => {
+    const target = mockKpisWithSubscriptions[0]!;
+    const { container } = renderPage({ initialSelectedKpiId: target.id, kpis: mockKpisWithSubscriptions });
 
-    expect(container.querySelector('[data-test-id="project-subscribe-button"]')).not.toBeInTheDocument();
-    expect(container.querySelector('[data-test-id="project-unsubscribe-button"]')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="kpi-subscriptions"]')).not.toBeInTheDocument();
   });
 
   test("an unsubscribed user can subscribe to the open KPI", async () => {
     const user = userEvent.setup();
-    const target = { ...mockKpis[0]!, isSubscribed: false };
-    const onToggleSubscription = jest.fn(async () => ({ success: true }));
+    const target = withKpiSubscriptions(mockKpis[0]!, { isCurrentUserSubscribed: false });
+    const onSubscribe = jest.fn(async () => ({ success: true }));
+    const kpiSubscriptions = {
+      onSubscribe,
+      onUnsubscribe: jest.fn(async () => ({ success: true })),
+      onEditSubscribers: jest.fn(async () => ({ success: true })),
+    };
 
     const { container } = renderPage({
       kpis: [target, ...mockKpis.slice(1)],
       initialSelectedKpiId: target.id,
-      onToggleSubscription,
+      kpiSubscriptions,
     });
 
-    await user.click(container.querySelector('[data-test-id="project-subscribe-button"]')!);
+    await user.click(container.querySelector('[data-test-id="subscribe"]')!);
 
-    expect(onToggleSubscription).toHaveBeenCalledWith({ kpiId: target.id, subscribed: true });
+    expect(onSubscribe).toHaveBeenCalledWith({ subscriptionListId: target.subscriptionListId });
   });
 
   test("a subscribed user sees an unsubscribe control", () => {
-    const target = { ...mockKpis[0]!, isSubscribed: true };
+    const target = withKpiSubscriptions(mockKpis[0]!, { isCurrentUserSubscribed: true });
     const { container } = renderPage({
       kpis: [target, ...mockKpis.slice(1)],
       initialSelectedKpiId: target.id,
-      onToggleSubscription: async () => ({ success: true }),
+      kpiSubscriptions: {
+        onSubscribe: async () => ({ success: true }),
+        onUnsubscribe: async () => ({ success: true }),
+        onEditSubscribers: async () => ({ success: true }),
+      },
     });
 
-    expect(container.querySelector('[data-test-id="project-unsubscribe-button"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="unsubscribe"]')).toBeInTheDocument();
+  });
+
+  test("shows avatars for subscribed people", () => {
+    const target = withKpiSubscriptions(mockKpis[0]!, { isCurrentUserSubscribed: false });
+    const { container } = renderPage({
+      kpis: [target, ...mockKpis.slice(1)],
+      initialSelectedKpiId: target.id,
+      kpiSubscriptions: {
+        onSubscribe: async () => ({ success: true }),
+        onUnsubscribe: async () => ({ success: true }),
+        onEditSubscribers: async () => ({ success: true }),
+      },
+    });
+
+    expect(container.querySelector('[data-test-id="kpi-subscriptions"]')).toBeInTheDocument();
+    expect(screen.getByText("Subscribers")).toBeInTheDocument();
+    expect(container.querySelector('[data-test-id^="subscriber-"]')).toBeInTheDocument();
   });
 });

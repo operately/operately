@@ -129,6 +129,30 @@ export const mockKpis: SpaceKpisPage.Kpi[] = ([
   },
 ] as Omit<SpaceKpisPage.Kpi, "latestEntry">[]).map(withLatestEntry);
 
+export function withKpiSubscriptions(
+  kpi: SpaceKpisPage.Kpi,
+  opts: { isCurrentUserSubscribed?: boolean } = {},
+): SpaceKpisPage.Kpi {
+  const isCurrentUserSubscribed = opts.isCurrentUserSubscribed ?? false;
+
+  const potentialSubscribers = mockPeople.map((person) => ({
+    person,
+    role: person.id === kpi.champion?.id ? "Champion" : person.title,
+    priority: person.id === kpi.champion?.id,
+    isSubscribed:
+      person.id === kpi.champion?.id || (person.id === mockCurrentUser.id && isCurrentUserSubscribed),
+  }));
+
+  return {
+    ...kpi,
+    subscriptionListId: `sub-list-${kpi.id}`,
+    potentialSubscribers,
+    isSubscribed: isCurrentUserSubscribed,
+  };
+}
+
+export const mockKpisWithSubscriptions: SpaceKpisPage.Kpi[] = mockKpis.map((kpi) => withKpiSubscriptions(kpi));
+
 // A trimmed set of KPIs used by the KpiSummaryCard stories to show a mix of
 // trends within a single space: rising (MRR), volatile (NPS), and a brand-new
 // KPI with no data yet (Logo Churn).

@@ -17,8 +17,20 @@ defmodule Operately.Kpis.Kpi do
     # Populated by ListKpis via Kpis.load_latest_entries/1 so the list view can
     # show the most recent value without preloading the full entry history.
     field(:latest_entry, :any, virtual: true)
+    field(:potential_subscribers, :any, virtual: true)
 
     timestamps()
+  end
+
+  def load_potential_subscribers(kpi = %__MODULE__{}) do
+    kpi =
+      Operately.Repo.preload(kpi, [
+        :champion,
+        subscription_list: [subscriptions: :person],
+        space: :members
+      ], force: true)
+
+    %{kpi | potential_subscribers: Operately.Notifications.Subscriber.from_kpi(kpi)}
   end
 
   def changeset(attrs = %{}) do

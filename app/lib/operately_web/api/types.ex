@@ -947,6 +947,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :latest_entry, :kpi_entry, null: true
     field? :entries, list_of(:kpi_entry), null: true
     field? :subscription_list, :subscription_list, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
   end

@@ -37,6 +37,22 @@ defmodule OperatelyWeb.Api.Kpis.GetKpiTest do
       assert periods == ["2026-01-01", "2026-02-01", "2026-03-01"]
     end
 
+    test "includes potential subscribers so the detail view can show who receives notifications", ctx do
+      ctx = Factory.log_in_person(ctx, :member)
+
+      assert {200, res} = query(ctx.conn, [:kpis, :get_kpi], %{kpi_id: Paths.kpi_id(ctx.kpi)})
+
+      assert res.kpi.subscription_list != nil
+      assert length(res.kpi.potential_subscribers) >= 2
+
+      champion =
+        res.kpi.potential_subscribers
+        |> Enum.find(&(&1.person.id == Paths.person_id(ctx.champion)))
+
+      assert champion.is_subscribed == true
+      assert champion.role == "Champion"
+    end
+
     test "a non-space-member cannot get a KPI", ctx do
       ctx = Factory.log_in_person(ctx, :outsider)
       assert {404, _} = query(ctx.conn, [:kpis, :get_kpi], %{kpi_id: Paths.kpi_id(ctx.kpi)})

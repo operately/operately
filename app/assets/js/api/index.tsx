@@ -1747,6 +1747,7 @@ export interface Kpi {
   latestEntry?: KpiEntry | null;
   entries?: KpiEntry[] | null;
   subscriptionList?: SubscriptionList | null;
+  potentialSubscribers?: Subscriber[] | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }

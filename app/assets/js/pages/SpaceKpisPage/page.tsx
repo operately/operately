@@ -7,6 +7,7 @@ import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
+import { useEditSubscriptionsList, useSubscribeToNotifications, useUnsubscribeFromNotifications } from "@/models/notifications";
 
 import { usePaths } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -26,8 +27,9 @@ export function Page() {
   const [editKpi] = Kpis.useEditKpi();
   const [deleteKpi] = Kpis.useDeleteKpi();
   const [logKpiEntry] = Kpis.useLogKpiEntry();
-  const [subscribeToKpi] = Kpis.useSubscribeToKpi();
-  const [unsubscribeFromKpi] = Kpis.useUnsubscribeFromKpi();
+  const [subscribeToNotifications] = useSubscribeToNotifications();
+  const [unsubscribeFromNotifications] = useUnsubscribeFromNotifications();
+  const [editSubscriptionsList] = useEditSubscriptionsList();
 
   const parsedKpis = React.useMemo(
     () => kpis.map((kpi) => Kpis.parseKpiForTurboUi(paths, kpi, me?.id)),
@@ -84,14 +86,23 @@ export function Page() {
       refresh();
     });
 
-  const onToggleSubscription = async (input: { kpiId: string; subscribed: boolean }) =>
-    run(async () => {
-      if (input.subscribed) {
-        await subscribeToKpi({ kpiId: input.kpiId });
-      } else {
-        await unsubscribeFromKpi({ kpiId: input.kpiId });
-      }
-    });
+  const kpiSubscriptions: SpaceKpisPageTypes.KpiSubscriptionsHandlers = {
+    onSubscribe: async ({ subscriptionListId }) =>
+      run(async () => {
+        await subscribeToNotifications({ subscriptionListId, type: "kpi" });
+        refresh();
+      }),
+    onUnsubscribe: async ({ subscriptionListId }) =>
+      run(async () => {
+        await unsubscribeFromNotifications({ subscriptionListId });
+        refresh();
+      }),
+    onEditSubscribers: async ({ subscriptionListId, subscriberIds }) =>
+      run(async () => {
+        await editSubscriptionsList({ subscriptionListId, subscriberIds, type: "kpi" });
+        refresh();
+      }),
+  };
 
   const onLoadKpi = async (kpiId: string) => Kpis.parseKpiForTurboUi(paths, (await Kpis.getKpi({ kpiId })).kpi, me?.id);
 
@@ -102,13 +113,14 @@ export function Page() {
       kpis={parsedKpis}
       currentUser={me ? People.parsePersonForTurboUi(paths, me) : null}
       canManage={space.permissions?.canEdit ?? false}
+      canEditKpiSubscribers={space.permissions?.canEdit ?? false}
       championSearch={championSearch}
       onLoadKpi={onLoadKpi}
       onCreateKpi={onCreateKpi}
       onEditKpi={onEditKpi}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
-      onToggleSubscription={onToggleSubscription}
+      kpiSubscriptions={kpiSubscriptions}
     />
   );
 }

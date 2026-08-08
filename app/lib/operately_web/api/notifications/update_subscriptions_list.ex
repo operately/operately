@@ -56,6 +56,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
       :resource_hub_file -> ResourceHubs.Permissions.check(access_level, :can_edit_file, company_read_only: company_read_only)
       :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_edit_link, company_read_only: company_read_only)
       :comment_thread -> Activities.Permissions.check(access_level, :can_edit_comment_thread, company_read_only: company_read_only)
+      :kpi -> Groups.Permissions.check(access_level, :can_edit, company_read_only: company_read_only)
     end
   end
 end

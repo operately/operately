@@ -9,6 +9,8 @@
 // target/threshold fields.
 //
 import type { Navigation } from "../Page/Navigation";
+import type { CurrentSubscriptions } from "../Subscriptions/CurrentSubscriptions";
+import type { SubscribersSelector } from "../Subscriptions/SubscribersSelector";
 
 export namespace SpaceKpisPage {
   // Ecto.Enum :weekly | :monthly on the backend.
@@ -57,6 +59,10 @@ export namespace SpaceKpisPage {
     // when new entries are logged). Populated by the detail endpoint; undefined
     // in the list payload where subscription state isn't loaded.
     isSubscribed?: boolean;
+
+    // Populated by the detail endpoint for the subscribers section.
+    subscriptionListId?: string | null;
+    potentialSubscribers?: SubscribersSelector.Subscriber[];
   }
 
   // Payload for the `createKpi` mutation / `KpiCreating` operation.
@@ -89,6 +95,14 @@ export namespace SpaceKpisPage {
 
   export type MutationResult = { success: boolean; id?: string; error?: string };
 
+  export interface KpiSubscriptionsHandlers {
+    onSubscribe: (input: { subscriptionListId: string }) => Promise<MutationResult>;
+    onUnsubscribe: (input: { subscriptionListId: string }) => Promise<MutationResult>;
+    onEditSubscribers: (input: { subscriptionListId: string; subscriberIds: string[] }) => Promise<MutationResult>;
+  }
+
+  export type KpiSubscriptionsSectionProps = Omit<CurrentSubscriptions.Props, "subscribers" | "subscribedPeople">;
+
   export interface Props {
     space: Space;
 
@@ -118,9 +132,10 @@ export namespace SpaceKpisPage {
     onDeleteKpi: (kpiId: string) => Promise<MutationResult>;
     onRecordEntry: (input: RecordEntryInput) => Promise<MutationResult>;
 
-    // Subscribe/unsubscribe the current user to a KPI's notifications. Optional
-    // so stories and read-only contexts can omit the follow control.
-    onToggleSubscription?: (input: { kpiId: string; subscribed: boolean }) => Promise<MutationResult>;
+    // Manage who receives notifications when new KPI entries are logged. Optional
+    // so stories and read-only contexts can omit the subscribers section.
+    kpiSubscriptions?: KpiSubscriptionsHandlers;
+    canEditKpiSubscribers?: boolean;
 
     // Route-loader driven data states.
     loading?: boolean;

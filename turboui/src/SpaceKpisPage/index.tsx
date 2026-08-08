@@ -72,15 +72,26 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
     return result;
   };
 
-  const { onToggleSubscription } = props;
-  const handleToggleSubscription = React.useCallback(
-    async (kpiId: string, subscribed: boolean) => {
-      if (!onToggleSubscription) return;
-      const result = await onToggleSubscription({ kpiId, subscribed });
-      if (result.success && kpiId === selectedKpiId) await loadDetail(kpiId);
+  const reloadDetailAfterSubscriptionsChange = React.useCallback(
+    async (result: SpaceKpisPageNS.MutationResult) => {
+      if (result.success && selectedKpiId) await loadDetail(selectedKpiId);
+      return result;
     },
-    [onToggleSubscription, selectedKpiId, loadDetail],
+    [selectedKpiId, loadDetail],
   );
+
+  const kpiSubscriptions = React.useMemo(() => {
+    if (!props.kpiSubscriptions) return undefined;
+
+    return {
+      onSubscribe: (input: { subscriptionListId: string }) =>
+        reloadDetailAfterSubscriptionsChange(props.kpiSubscriptions!.onSubscribe(input)),
+      onUnsubscribe: (input: { subscriptionListId: string }) =>
+        reloadDetailAfterSubscriptionsChange(props.kpiSubscriptions!.onUnsubscribe(input)),
+      onEditSubscribers: (input: { subscriptionListId: string; subscriberIds: string[] }) =>
+        reloadDetailAfterSubscriptionsChange(props.kpiSubscriptions!.onEditSubscribers(input)),
+    };
+  }, [props.kpiSubscriptions, reloadDetailAfterSubscriptionsChange]);
 
   const contentReady = !props.loading && !props.error;
 
@@ -128,7 +139,8 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             onOpenLog={setLogKpiId}
             onOpenEdit={setEditKpiId}
             onOpenDelete={setDeleteKpiId}
-            onToggleSubscription={onToggleSubscription ? handleToggleSubscription : undefined}
+            kpiSubscriptions={kpiSubscriptions}
+            canEditKpiSubscribers={props.canEditKpiSubscribers}
           />
         </div>
       </div>
@@ -258,7 +270,7 @@ function PageHeader(props: PageHeaderProps) {
   );
 }
 
-interface KpisContentProps extends Omit<SpaceKpisPageNS.Props, "onToggleSubscription"> {
+interface KpisContentProps extends Omit<SpaceKpisPageNS.Props, "kpiSubscriptions"> {
   canManage: boolean;
   selectedKpi: SpaceKpisPageNS.Kpi | null;
   detailLoading: boolean;
@@ -267,7 +279,7 @@ interface KpisContentProps extends Omit<SpaceKpisPageNS.Props, "onToggleSubscrip
   onOpenLog: (id: string) => void;
   onOpenEdit: (id: string) => void;
   onOpenDelete: (id: string) => void;
-  onToggleSubscription?: (kpiId: string, subscribed: boolean) => void;
+  kpiSubscriptions?: SpaceKpisPageNS.KpiSubscriptionsHandlers;
 }
 
 function KpisContent(props: KpisContentProps) {
@@ -285,9 +297,8 @@ function KpisContent(props: KpisContentProps) {
       <KpiDetail
         kpi={kpi}
         loadingHistory={props.detailLoading}
-        onToggleSubscription={
-          props.onToggleSubscription ? (subscribed) => props.onToggleSubscription!(kpi.id, subscribed) : undefined
-        }
+        kpiSubscriptions={props.kpiSubscriptions}
+        canEditKpiSubscribers={props.canEditKpiSubscribers}
       />
     );
   }

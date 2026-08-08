@@ -19,6 +19,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Kpis.Kpi do
     serialize(kpi, level: :essential)
     |> Map.put(:entries, Serializer.serialize(kpi.entries, level: :essential))
     |> Map.put(:subscription_list, serialize_subscription_list(kpi))
+    |> Map.put(:potential_subscribers, Serializer.serialize(kpi.potential_subscribers))
   end
 
   defp serialize_subscription_list(%{subscription_list: %Operately.Notifications.SubscriptionList{} = list}) do

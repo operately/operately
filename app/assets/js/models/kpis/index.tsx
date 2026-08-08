@@ -1,4 +1,4 @@
-import Api, { Kpi as ApiKpi, KpiEntry as ApiKpiEntry } from "@/api";
+import Api, { Kpi as ApiKpi, KpiEntry as ApiKpiEntry, Subscriber as ApiSubscriber } from "@/api";
 import { Paths } from "@/routes/paths";
 import { parsePersonForTurboUi } from "@/models/people";
 import type { SpaceKpisPage } from "turboui/SpaceKpisPage/types";
@@ -29,6 +29,10 @@ export function parseKpiForTurboUi(paths: Paths, kpi: ApiKpi, currentUserId?: st
     latestEntry: kpi.latestEntry ? parseKpiEntryForTurboUi(paths, kpi.latestEntry) : null,
     entries: (kpi.entries ?? []).map((entry) => parseKpiEntryForTurboUi(paths, entry)),
     isSubscribed: isCurrentUserSubscribed(kpi, currentUserId),
+    subscriptionListId: kpi.subscriptionList?.id ?? null,
+    potentialSubscribers: (kpi.potentialSubscribers ?? []).map((subscriber) =>
+      parseSubscriberForTurboUi(paths, subscriber),
+    ),
   };
 }
 
@@ -36,6 +40,18 @@ function isCurrentUserSubscribed(kpi: ApiKpi, currentUserId?: string | null): bo
   if (!kpi.subscriptionList || !currentUserId) return undefined;
 
   return (kpi.subscriptionList.subscriptions ?? []).some((sub) => !sub.canceled && sub.person?.id === currentUserId);
+}
+
+function parseSubscriberForTurboUi(
+  paths: Paths,
+  subscriber: ApiSubscriber,
+): NonNullable<SpaceKpisPage.Kpi["potentialSubscribers"]>[number] {
+  return {
+    role: subscriber.role,
+    priority: subscriber.priority,
+    isSubscribed: subscriber.isSubscribed ?? false,
+    person: subscriber.person ? parsePersonForTurboUi(paths, subscriber.person) : null,
+  };
 }
 
 function parseKpiEntryForTurboUi(paths: Paths, entry: ApiKpiEntry): SpaceKpisPage.KpiEntry {
