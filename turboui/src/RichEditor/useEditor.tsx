@@ -79,6 +79,19 @@ const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
   tabindex: "",
 };
 
+export function normalizeRichTextContent(content: any): any {
+  if (!content || typeof content !== "object" || !Array.isArray(content.content)) return content;
+
+  const normalizedChildren = content.content
+    .filter((child: any) => child?.type !== "text" || child.text !== "")
+    .map(normalizeRichTextContent);
+  const contentChanged =
+    normalizedChildren.length !== content.content.length ||
+    normalizedChildren.some((child: any, index: number) => child !== content.content[index]);
+
+  return contentChanged ? { ...content, content: normalizedChildren } : content;
+}
+
 export function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
 
@@ -86,9 +99,9 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
-  const baseContent = React.useRef(props.content);
+  const baseContent = React.useRef(normalizeRichTextContent(props.content));
   const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent.current));
-  const initialContent = restoredDraft ?? props.content;
+  const initialContent = normalizeRichTextContent(restoredDraft ?? baseContent.current);
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
   const extensions = React.useMemo(
@@ -167,7 +180,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(content, { emitUpdate: false });
+      editor.commands.setContent(normalizeRichTextContent(content), { emitUpdate: false });
     },
     [editor],
   );
