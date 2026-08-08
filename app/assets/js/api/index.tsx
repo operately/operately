@@ -1901,6 +1901,7 @@ export interface Project {
   milestonesOrderingState?: string[] | null;
   taskStatuses?: TaskStatus[] | null;
   tasksKanbanState?: Json | null;
+  tasksView?: ProjectTasksView | null;
 }
 
 export interface ProjectCheckIn {
@@ -2025,11 +2026,21 @@ export interface ProjectTemplate {
   updatedAt: string;
   milestoneCount: number;
   taskCount: number;
+  inactivePeopleSummary: ProjectTemplateInactivePeopleSummary;
   taskStatuses?: TaskStatus[] | null;
   milestonesOrderingState?: string[] | null;
   tasksKanbanState?: Json | null;
   milestones?: ProjectTemplateMilestone[] | null;
   tasks?: ProjectTemplateTask[] | null;
+  people?: ProjectTemplatePerson[] | null;
+  taskAssignments?: ProjectTemplateTaskAssignment[] | null;
+  permissions?: ProjectTemplatePermissions | null;
+}
+
+export interface ProjectTemplateInactivePeopleSummary {
+  personCount: number;
+  roleCount: number;
+  taskCount: number;
 }
 
 export interface ProjectTemplateMilestone {
@@ -2043,6 +2054,33 @@ export interface ProjectTemplateMilestone {
   tasksOrderingState: string[];
   insertedAt: string;
   updatedAt: string;
+}
+
+export interface ProjectTemplatePermissions {
+  __typename: "project_template_permissions";
+  canView: boolean;
+  canComment: boolean;
+  canEdit: boolean;
+  hasFullAccess: boolean;
+}
+
+export interface ProjectTemplatePerson {
+  __typename: "project_template_person";
+  id: string;
+  person?: Person | null;
+  role: ProjectTemplatePersonRole;
+  responsibility?: string | null;
+  accessLevel: AccessOptionsInt;
+  active: boolean;
+}
+
+export interface ProjectTemplateScheduleIssue {
+  resourceType: ProjectTemplateScheduleResourceType;
+  resourceId: string;
+  resourceName: string;
+  field: ProjectTemplateScheduleField;
+  date?: string | null;
+  reason: ProjectTemplateScheduleReason;
 }
 
 export interface ProjectTemplateTask {
@@ -2059,6 +2097,13 @@ export interface ProjectTemplateTask {
   taskStatus: TaskStatus;
   insertedAt: string;
   updatedAt: string;
+}
+
+export interface ProjectTemplateTaskAssignment {
+  __typename: "project_template_task_assignment";
+  id: string;
+  projectTemplateTaskId: string;
+  projectTemplatePersonId: string;
 }
 
 export interface QuickSearchDiscussion {
@@ -2568,7 +2613,7 @@ export interface WorkMapItem {
   state: WorkMapItemState;
   status: WorkMapItemStatus;
   taskStatus: TaskStatus | null;
-  progress: number;
+  progress: number | null;
   space: Space | null;
   spacePath: string | null;
   project: Project | null;
@@ -2582,7 +2627,7 @@ export interface WorkMapItem {
   completedOn: string | null;
   timeframe: Timeframe | null;
   assignedAt: string | null;
-  milestones: Milestone[];
+  milestones: WorkMapMilestone[];
   targets: Target[];
   checklist: GoalCheck[];
   children: WorkMapItem[];
@@ -2590,6 +2635,14 @@ export interface WorkMapItem {
   itemPath: string;
   privacy: WorkMapItemPrivacy;
   assignees?: Person[] | null;
+}
+
+export interface WorkMapMilestone {
+  __typename: "work_map_milestone";
+  id: string;
+  title: string;
+  status: MilestoneStatus;
+  timeframe: Timeframe | null;
 }
 
 export type ActivityContent =
@@ -2781,7 +2834,17 @@ export type ProjectContributorRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 
+export type ProjectTasksView = "list" | "board";
+
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
+
+export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
+
+export type ProjectTemplateScheduleField = "start_date" | "end_date" | "due_date";
+
+export type ProjectTemplateScheduleReason = "missing" | "before_project_start";
+
+export type ProjectTemplateScheduleResourceType = "project" | "milestone" | "task";
 
 export type ReactionEntityType =
   | "project_check_in"
@@ -5030,6 +5093,18 @@ export interface ProjectTemplatesCreateResult {
   template: ProjectTemplate;
 }
 
+export interface ProjectTemplatesCreateFromProjectInput {
+  projectId: Id;
+  name: string;
+  description?: Json | null;
+  includePeopleAndAssignments?: boolean;
+}
+
+export interface ProjectTemplatesCreateFromProjectResult {
+  template?: ProjectTemplate | null;
+  scheduleIssues: ProjectTemplateScheduleIssue[];
+}
+
 export interface ProjectTemplatesCreateMilestoneInput {
   templateId: Id;
   title: string;
@@ -5039,6 +5114,21 @@ export interface ProjectTemplatesCreateMilestoneInput {
 
 export interface ProjectTemplatesCreateMilestoneResult {
   milestone: ProjectTemplateMilestone;
+}
+
+export interface ProjectTemplatesCreateProjectInput {
+  templateId: Id;
+  spaceId: Id;
+  startDate: string;
+  name: string;
+  goalId?: Id | null;
+  anonymousAccessLevel: AccessOptionsInt;
+  companyAccessLevel: AccessOptionsInt;
+  spaceAccessLevel: AccessOptionsInt;
+}
+
+export interface ProjectTemplatesCreateProjectResult {
+  project: Project;
 }
 
 export interface ProjectTemplatesCreateTaskInput {
@@ -5051,6 +5141,7 @@ export interface ProjectTemplatesCreateTaskInput {
   dueOffsetDays?: number | null;
   reminders?: TaskReminder[];
   taskStatus?: TaskStatus;
+  assigneeIds?: Id[];
 }
 
 export interface ProjectTemplatesCreateTaskResult {
@@ -5119,6 +5210,16 @@ export interface ProjectTemplatesUpdateTaskInput {
 
 export interface ProjectTemplatesUpdateTaskResult {
   task: ProjectTemplateTask;
+}
+
+export interface ProjectTemplatesUpdateTaskAssigneesInput {
+  templateId: Id;
+  taskId: Id;
+  assigneeIds: Id[];
+}
+
+export interface ProjectTemplatesUpdateTaskAssigneesResult {
+  assignments: ProjectTemplateTaskAssignment[];
 }
 
 export interface ProjectsAcknowledgeCheckInInput {
@@ -5488,6 +5589,15 @@ export interface ProjectsUpdateTaskStatusesInput {
 
 export interface ProjectsUpdateTaskStatusesResult {
   success: boolean | null;
+}
+
+export interface ProjectsUpdateTasksViewInput {
+  projectId: Id;
+  tasksView: ProjectTasksView;
+}
+
+export interface ProjectsUpdateTasksViewResult {
+  project: Project;
 }
 
 export interface ReactionsCreateInput {
@@ -6686,8 +6796,18 @@ class ApiNamespaceProjectTemplates {
     return this.client.post("/project_templates/create", input);
   }
 
+  async createFromProject(
+    input: ProjectTemplatesCreateFromProjectInput,
+  ): Promise<ProjectTemplatesCreateFromProjectResult> {
+    return this.client.post("/project_templates/create_from_project", input);
+  }
+
   async createMilestone(input: ProjectTemplatesCreateMilestoneInput): Promise<ProjectTemplatesCreateMilestoneResult> {
     return this.client.post("/project_templates/create_milestone", input);
+  }
+
+  async createProject(input: ProjectTemplatesCreateProjectInput): Promise<ProjectTemplatesCreateProjectResult> {
+    return this.client.post("/project_templates/create_project", input);
   }
 
   async createTask(input: ProjectTemplatesCreateTaskInput): Promise<ProjectTemplatesCreateTaskResult> {
@@ -6712,6 +6832,12 @@ class ApiNamespaceProjectTemplates {
 
   async updateTask(input: ProjectTemplatesUpdateTaskInput): Promise<ProjectTemplatesUpdateTaskResult> {
     return this.client.post("/project_templates/update_task", input);
+  }
+
+  async updateTaskAssignees(
+    input: ProjectTemplatesUpdateTaskAssigneesInput,
+  ): Promise<ProjectTemplatesUpdateTaskAssigneesResult> {
+    return this.client.post("/project_templates/update_task_assignees", input);
   }
 }
 
@@ -6940,6 +7066,10 @@ class ApiNamespaceProjects {
 
   async updateTaskStatuses(input: ProjectsUpdateTaskStatusesInput): Promise<ProjectsUpdateTaskStatusesResult> {
     return this.client.post("/projects/update_task_statuses", input);
+  }
+
+  async updateTasksView(input: ProjectsUpdateTasksViewInput): Promise<ProjectsUpdateTasksViewResult> {
+    return this.client.post("/projects/update_tasks_view", input);
   }
 }
 
@@ -8435,6 +8565,13 @@ export default {
         defaultApiClient.apiNamespaceProjectTemplates.create(input),
       ),
 
+    createProject: (input: ProjectTemplatesCreateProjectInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createProject(input),
+    useCreateProject: () =>
+      useMutation<ProjectTemplatesCreateProjectInput, ProjectTemplatesCreateProjectResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createProject(input),
+      ),
+
     createTask: (input: ProjectTemplatesCreateTaskInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createTask(input),
     useCreateTask: () =>
@@ -8469,6 +8606,13 @@ export default {
         defaultApiClient.apiNamespaceProjectTemplates.update(input),
       ),
 
+    createFromProject: (input: ProjectTemplatesCreateFromProjectInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createFromProject(input),
+    useCreateFromProject: () =>
+      useMutation<ProjectTemplatesCreateFromProjectInput, ProjectTemplatesCreateFromProjectResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createFromProject(input),
+      ),
+
     updateTask: (input: ProjectTemplatesUpdateTaskInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateTask(input),
     useUpdateTask: () =>
@@ -8481,6 +8625,13 @@ export default {
     useDeleteTask: () =>
       useMutation<ProjectTemplatesDeleteTaskInput, ProjectTemplatesDeleteTaskResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.deleteTask(input),
+      ),
+
+    updateTaskAssignees: (input: ProjectTemplatesUpdateTaskAssigneesInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
+    useUpdateTaskAssignees: () =>
+      useMutation<ProjectTemplatesUpdateTaskAssigneesInput, ProjectTemplatesUpdateTaskAssigneesResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
       ),
   },
 
@@ -8793,6 +8944,13 @@ export default {
     useUpdateMilestoneKanban: () =>
       useMutation<ProjectsUpdateMilestoneKanbanInput, ProjectsUpdateMilestoneKanbanResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateMilestoneKanban(input),
+      ),
+
+    updateTasksView: (input: ProjectsUpdateTasksViewInput) =>
+      defaultApiClient.apiNamespaceProjects.updateTasksView(input),
+    useUpdateTasksView: () =>
+      useMutation<ProjectsUpdateTasksViewInput, ProjectsUpdateTasksViewResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateTasksView(input),
       ),
 
     createContributor: (input: ProjectsCreateContributorInput) =>

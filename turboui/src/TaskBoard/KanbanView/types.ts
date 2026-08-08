@@ -24,7 +24,7 @@ export interface TaskSlideInContext {
   onTaskMilestoneChange?: (taskId: string, milestone: TaskBoard.Milestone | null) => void;
   onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
   onTaskNameChange?: (taskId: string, name: string) => void;
-  onTaskDelete?: (taskId: string) => void | Promise<void>;
+  onTaskDelete?: (taskId: string) => void | Promise<unknown>;
   onMoveTask?: TaskPage.ContentProps["onMoveTask"];
   projectSearch?: ProjectField.SearchProjectFn;
   spaceSearch?: SpaceField.SearchSpaceFn;

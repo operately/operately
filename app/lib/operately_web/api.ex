@@ -87,6 +87,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
         mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
         mutation(:update_task_statuses, OperatelyWeb.Api.Projects.UpdateTaskStatuses)
+        mutation(:update_tasks_view, OperatelyWeb.Api.Projects.UpdateTasksView)
         mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
         mutation(:update_contributor, OperatelyWeb.Api.Projects.UpdateContributor)
         mutation(:update_description, OperatelyWeb.Api.Projects.UpdateDescription)
@@ -123,6 +124,8 @@ defmodule OperatelyWeb.Api do
         query(:list, OperatelyWeb.Api.ProjectTemplates.List)
 
         mutation(:create, OperatelyWeb.Api.ProjectTemplates.Create)
+        mutation(:create_from_project, OperatelyWeb.Api.ProjectTemplates.CreateFromProject)
+        mutation(:create_project, OperatelyWeb.Api.ProjectTemplates.CreateProject)
         mutation(:update, OperatelyWeb.Api.ProjectTemplates.Update)
         mutation(:create_milestone, OperatelyWeb.Api.ProjectTemplates.CreateMilestone)
         mutation(:update_milestone, OperatelyWeb.Api.ProjectTemplates.UpdateMilestone)
@@ -130,6 +133,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_task, OperatelyWeb.Api.ProjectTemplates.CreateTask)
         mutation(:update_task, OperatelyWeb.Api.ProjectTemplates.UpdateTask)
         mutation(:delete_task, OperatelyWeb.Api.ProjectTemplates.DeleteTask)
+        mutation(:update_task_assignees, OperatelyWeb.Api.ProjectTemplates.UpdateTaskAssignees)
       end
 
       @doc "Get, list, create and manage tasks across projects and spaces"

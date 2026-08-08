@@ -3,6 +3,7 @@ import { PageModule } from "@/routes/types";
 import * as React from "react";
 import { useNavigate } from "react-router";
 
+import * as Companies from "@/models/companies";
 import { accessLevelsAsNumbers, accessLevelsAsStrings, parseParentGoalForTurboUi } from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
@@ -32,6 +33,7 @@ import {
 import { useSubscription } from "@/models/subscriptions";
 import type * as Hub from "@/models/resourceHubs";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -134,6 +136,7 @@ async function loadProjectDocsAndFiles(project: Projects.Project): Promise<Proje
 
 function Page() {
   const paths = usePaths();
+  const { company } = useCompanyLoaderData();
   const { data, refresh } = PageCache.useData(loader);
   const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles } = data;
   const navigate = useNavigate();
@@ -237,6 +240,32 @@ function Page() {
   });
 
   const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
+
+  const handleTasksViewChange = React.useCallback(
+    async (tasksView: "list" | "board") => {
+      try {
+        await Api.projects.updateTasksView({
+          projectId: project.id,
+          tasksView,
+        });
+
+        PageCache.invalidate(pageCacheKey(project.id));
+
+        if (refresh) {
+          await refresh();
+        }
+      } catch (error) {
+        console.error("Failed to update tasks view", error);
+        showErrorToast("Error", "Failed to update tasks view");
+
+        if (refresh) {
+          await refresh();
+        }
+      }
+    },
+    [project.id, refresh],
+  );
+
   const taskProjectSearch = Projects.useProjectSearch({
     accessLevel: "edit_access",
     ignoredIds: [project.id],
@@ -317,6 +346,17 @@ function Page() {
     window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
   }, [paths, project.id]);
 
+  const saveAsTemplate = {
+    canSave: Companies.hasFeature(company, "project_templates") && Boolean(project.permissions?.canEdit),
+    submissionEnabled: true,
+    onSave: Projects.createSaveProjectAsTemplateHandler({
+      projectId: project.id,
+      paths,
+      createFromProject: Api.project_templates.createFromProject,
+      navigate,
+    }),
+  };
+
   const projectDocsAndFilesProps = useProjectDocsAndFilesProps({
     docsAndFiles,
     projectId: project.id,
@@ -331,6 +371,7 @@ function Page() {
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
     exportMarkdown,
+    saveAsTemplate,
     childrenCount,
 
     project: {
@@ -398,6 +439,8 @@ function Page() {
 
     statuses,
     onSaveCustomStatuses: handleSaveStatuses,
+    tasksView: project.tasksView === "board" ? "board" : "list",
+    onTasksViewChange: handleTasksViewChange,
 
     richTextHandlers: richEditorHandlers,
     localDraftKeyBase: `project:${project.id}`,
@@ -581,13 +624,13 @@ function useSpaceProps({
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
-  const [champion, setChampion] = usePageField({
+  const [champion, setChampion] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
     update: (v) => Api.projects.updateChampion({ projectId: project.id, championId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
-  const [reviewer, setReviewer] = usePageField({
+  const [reviewer, setReviewer] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
     update: (v) => Api.projects.updateReviewer({ projectId: project.id, reviewerId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
@@ -619,8 +662,8 @@ function useSpaceProps({
       spaceProps: {
         homeLink: paths.homePath(),
       },
-      champion: champion as ProjectPage.Person | null,
-      reviewer: reviewer as ProjectPage.Person | null | undefined,
+      champion,
+      reviewer,
     };
   }
 
@@ -637,8 +680,8 @@ function useSpaceProps({
       setReviewer,
       reviewerSearch,
     },
-    champion: champion as ProjectPage.Person | null,
-    reviewer: reviewer as ProjectPage.Person | null | undefined,
+    champion,
+    reviewer,
   };
 }
 

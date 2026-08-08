@@ -683,6 +683,25 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum :project_template_archive_status, values: Operately.ProjectTemplates.archive_statuses()
+  enum :project_template_person_role, values: Operately.ProjectTemplates.Person.roles()
+
+  enum :project_template_schedule_resource_type,
+    values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.resource_types()
+
+  enum :project_template_schedule_field,
+    values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.fields()
+
+  enum :project_template_schedule_reason,
+    values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.reasons()
+
+  object :project_template_schedule_issue do
+    field :resource_type, :project_template_schedule_resource_type, null: false
+    field :resource_id, :string, null: false
+    field :resource_name, :string, null: false
+    field :field, :project_template_schedule_field, null: false
+    field? :date, :date, null: true
+    field :reason, :project_template_schedule_reason, null: false
+  end
 
   object :project_template, for: Operately.ProjectTemplates.ProjectTemplate do
     field :id, :string, null: false
@@ -696,11 +715,43 @@ defmodule OperatelyWeb.Api.Types do
     field :updated_at, :datetime, null: false
     field :milestone_count, :integer, null: false
     field :task_count, :integer, null: false
+    field :inactive_people_summary, :project_template_inactive_people_summary, null: false
     field? :task_statuses, list_of(:task_status), null: true
     field? :milestones_ordering_state, list_of(:string), null: true
     field? :tasks_kanban_state, :json, null: true
     field? :milestones, list_of(:project_template_milestone), null: true
     field? :tasks, list_of(:project_template_task), null: true
+    field? :people, list_of(:project_template_person), null: true
+    field? :task_assignments, list_of(:project_template_task_assignment), null: true
+    field? :permissions, :project_template_permissions, null: true
+  end
+
+  object :project_template_inactive_people_summary do
+    field :person_count, :integer, null: false
+    field :role_count, :integer, null: false
+    field :task_count, :integer, null: false
+  end
+
+  object :project_template_person, for: Operately.ProjectTemplates.Person do
+    field :id, :string, null: false
+    field? :person, :person, null: true
+    field :role, :project_template_person_role, null: false
+    field? :responsibility, :string, null: true
+    field :access_level, :access_options_int, null: false
+    field :active, :boolean, null: false
+  end
+
+  object :project_template_task_assignment, for: Operately.ProjectTemplates.TaskAssignment do
+    field :id, :string, null: false
+    field :project_template_task_id, :string, null: false
+    field :project_template_person_id, :string, null: false
+  end
+
+  object :project_template_permissions, for: Operately.ProjectTemplates.Permissions do
+    field :can_view, :boolean, null: false
+    field :can_comment, :boolean, null: false
+    field :can_edit, :boolean, null: false
+    field :has_full_access, :boolean, null: false
   end
 
   object :project_template_milestone, for: Operately.ProjectTemplates.Milestone do
@@ -769,6 +820,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :milestones_ordering_state, list_of(:string), null: true
     field? :task_statuses, list_of(:task_status), null: true
     field? :tasks_kanban_state, :json, null: true
+    field? :tasks_view, :project_tasks_view, null: true
   end
 
   object :project_children_count do
@@ -2577,6 +2629,13 @@ defmodule OperatelyWeb.Api.Types do
   enum(:work_map_item_privacy, values: [:public, :internal, :confidential, :secret])
   enum(:work_map_item_state, values: [:active, :paused, :closed])
 
+  object :work_map_milestone, for: Operately.WorkMaps.WorkMapMilestone do
+    field :id, :string, null: false
+    field :title, :string, null: false
+    field :status, :milestone_status, null: false
+    field :timeframe, :timeframe, null: true
+  end
+
   object :work_map_item, for: Operately.WorkMaps.WorkMapItem do
     field :id, :string, null: false
     field :parent_id, :string, null: true
@@ -2584,7 +2643,7 @@ defmodule OperatelyWeb.Api.Types do
     field :state, :work_map_item_state, null: false
     field :status, :work_map_item_status, null: false
     field :task_status, :task_status, null: true
-    field :progress, :float, null: false
+    field :progress, :float, null: true
     field :space, :space, null: true
     field :space_path, :string, null: true
     field :project, :project, null: true
@@ -2598,7 +2657,7 @@ defmodule OperatelyWeb.Api.Types do
     field :completed_on, :date, null: true
     field :timeframe, :timeframe, null: true
     field :assigned_at, :datetime, null: true
-    field :milestones, list_of(:milestone), null: false
+    field :milestones, list_of(:work_map_milestone), null: false
     field :targets, list_of(:target), null: false
     field :checklist, list_of(:goal_check), null: false
     field :children, list_of(:work_map_item), null: false
@@ -2610,6 +2669,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:success_status, values: [:achieved, :missed])
+  enum(:project_tasks_view, values: Operately.Projects.Project.valid_tasks_views())
 
   object :company_export_run, for: Operately.CompanyTransfers.ExportRun do
     field :id, :id, null: false

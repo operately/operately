@@ -17,12 +17,34 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.Resume do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "projects"},
-      examples: [%{"title" => "Resume a project", "arguments" => %{"project_id" => "project_123", "message" => "We can continue now."}}],
+      examples: [
+        %{
+          "title" => "Resume a project",
+          "arguments" => %{"project_id" => "project_123", "message" => "We can continue now."}
+        },
+        %{
+          "title" => "Resume a project and notify everyone",
+          "arguments" => %{
+            "project_id" => "project_123",
+            "message" => "We can continue now.",
+            "notify_everyone" => true
+          }
+        }
+      ],
       input_schema:
         JsonSchema.object(
           %{
             "project_id" => JsonSchema.string("The project identifier."),
-            "message" => JsonSchema.string("The resume message in plain text or markdown.")
+            "message" => JsonSchema.string("The resume message in plain text or markdown."),
+            "notify_person_ids" =>
+              JsonSchema.array(
+                JsonSchema.string("A person identifier."),
+                description: "Optional people to notify about this resume. Defaults to none beyond the author."
+              ),
+            "notify_everyone" =>
+              JsonSchema.boolean(
+                "When true, notify everyone eligible for this project. Defaults to false."
+              )
           },
           required: ["project_id", "message"]
         ),
@@ -35,10 +57,20 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.Resume do
   end
 
   @impl true
-  def call(conn, %{"project_id" => project_id, "message" => message}) do
+  def call(conn, %{"project_id" => project_id, "message" => message} = arguments) do
     with {:ok, project_id} <- Helpers.decode_id(project_id),
-         {:ok, message} <- Helpers.markdown_to_rich_text(message) do
-      ProjectResume.call(conn, %{project_id: project_id, message: message, subscriber_ids: []})
+         {:ok, message} <- Helpers.markdown_to_rich_text(message),
+         {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
+      ProjectResume.call(
+        conn,
+        Map.merge(
+          %{
+            project_id: project_id,
+            message: message
+          },
+          notification_inputs
+        )
+      )
     end
   end
 end

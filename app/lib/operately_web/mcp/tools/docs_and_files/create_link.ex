@@ -20,7 +20,27 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateLink do
       annotations: write_annotations(),
       security_schemes: write_security_schemes(),
       discovery_metadata: %{"category" => "docs_and_files"},
-      examples: [%{"title" => "Create a project link", "arguments" => %{"project_id" => "project_123", "name" => "Dashboard", "url" => "https://example.com", "type" => "other"}}],
+      examples: [
+        %{
+          "title" => "Create a project link",
+          "arguments" => %{
+            "project_id" => "project_123",
+            "name" => "Dashboard",
+            "url" => "https://example.com",
+            "type" => "other"
+          }
+        },
+        %{
+          "title" => "Create a link and notify everyone",
+          "arguments" => %{
+            "project_id" => "project_123",
+            "name" => "Dashboard",
+            "url" => "https://example.com",
+            "type" => "other",
+            "notify_everyone" => true
+          }
+        }
+      ],
       input_schema:
         JsonSchema.object(
           %{
@@ -31,7 +51,16 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateLink do
             "name" => JsonSchema.string("The link name."),
             "url" => JsonSchema.string("The absolute URL for the link.", format: "uri"),
             "type" => JsonSchema.string("The link type.", enum: @valid_link_types),
-            "description" => JsonSchema.string("An optional plain text or markdown link description.")
+            "description" => JsonSchema.string("An optional plain text or markdown link description."),
+            "notify_person_ids" =>
+              JsonSchema.array(
+                JsonSchema.string("A person identifier."),
+                description: "Optional people to notify about this link. Defaults to none beyond the author."
+              ),
+            "notify_everyone" =>
+              JsonSchema.boolean(
+                "When true, notify everyone eligible for this resource hub. Defaults to false."
+              )
           },
           required: ["name", "url", "type"]
         ),
@@ -48,15 +77,21 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateLink do
     with {:ok, scope_inputs} <- Helpers.decode_hub_scope(arguments),
          {:ok, folder_id} <- Helpers.decode_optional_id(arguments["folder_id"]),
          {:ok, type} <- decode_link_type(arguments["type"]),
-         {:ok, description} <- decode_optional_description(arguments["description"]) do
-      LinkCreate.call(conn, Map.merge(scope_inputs, %{
-        folder_id: folder_id,
-        name: arguments["name"],
-        url: arguments["url"],
-        type: type,
-        description: description,
-        subscriber_ids: []
-      }))
+         {:ok, description} <- decode_optional_description(arguments["description"]),
+         {:ok, notification_inputs} <- Helpers.decode_notification_inputs(arguments) do
+      LinkCreate.call(
+        conn,
+        Map.merge(
+          Map.merge(scope_inputs, %{
+            folder_id: folder_id,
+            name: arguments["name"],
+            url: arguments["url"],
+            type: type,
+            description: description
+          }),
+          notification_inputs
+        )
+      )
     end
   end
 

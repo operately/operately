@@ -12,7 +12,7 @@ export function ResourceHubSearchInput({
   search: ResourceHubSearchProps;
   searchState: ResourceHubSearchState;
 }) {
-  const placeholder = search.placeholder ?? "Search this resource hub…";
+  const placeholder = search.placeholder ?? "Search documents and files…";
   const testId = search.testId ?? "resource-hub-search";
 
   return (

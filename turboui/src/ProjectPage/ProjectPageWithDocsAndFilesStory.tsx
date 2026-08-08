@@ -89,6 +89,7 @@ export function ProjectPageWithDocsAndFilesStory({
   const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones });
   const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
   const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(storyData.defaultStatuses);
+  const [tasksView, setTasksView] = useState<TaskBoardTypes.TaskDisplayMode>("list");
   const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
     id: "1",
     name: "Improve Customer Experience",
@@ -201,6 +202,8 @@ export function ProjectPageWithDocsAndFilesStory({
       onSaveCustomStatuses={(data) => {
         setStatuses(data.nextStatuses);
       }}
+      tasksView={tasksView}
+      onTasksViewChange={setTasksView}
       parentGoal={parentGoal}
       setParentGoal={setParentGoal}
       parentGoalSearch={storyData.parentGoalSearch}
@@ -365,7 +368,7 @@ function useMockProjectDocsAndFiles(
     search: {
       search: async ({ query }) =>
         nodes.filter((node) => getNodeName(node).toLowerCase().includes(query.toLowerCase())),
-      placeholder: "Search this resource hub…",
+      placeholder: "Search documents and files…",
       testId: "resource-hub-search",
     },
   };

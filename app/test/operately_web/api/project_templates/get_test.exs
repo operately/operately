@@ -5,10 +5,10 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
   alias OperatelyWeb.Paths
 
   @permissions_table [
-    %{permissions: :view_access, expected: 200},
-    %{permissions: :comment_access, expected: 200},
-    %{permissions: :edit_access, expected: 200},
-    %{permissions: :full_access, expected: 200}
+    %{permissions: :view_access, expected: 200, can_comment: false, can_edit: false, has_full_access: false},
+    %{permissions: :comment_access, expected: 200, can_comment: true, can_edit: false, has_full_access: false},
+    %{permissions: :edit_access, expected: 200, can_comment: true, can_edit: true, has_full_access: false},
+    %{permissions: :full_access, expected: 200, can_comment: true, can_edit: true, has_full_access: true}
   ]
 
   setup ctx do
@@ -71,6 +71,29 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     assert task.reminders == [%{type: "before_due", days: 2, date: nil, __typename: "task_reminder"}]
   end
 
+  test "returns copied people, task assignments, and inactive counts", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:champion)
+      |> Factory.add_company_member(:inactive)
+      |> Factory.add_project_template_person(:template_champion, :template, :champion,
+        role: :champion,
+        access_level: Operately.Access.Binding.full_access()
+      )
+      |> Factory.add_project_template_person(:template_inactive, :template, :inactive, access_level: Operately.Access.Binding.edit_access())
+      |> Factory.add_project_template_task_assignment(:assignment, :template, :root_task, :template_inactive)
+      |> Factory.suspend_company_member(:inactive)
+
+    assert {200, res} = request(ctx)
+
+    assert Enum.find(res.template.people, &(&1.id == Paths.project_template_person_id(ctx.template_champion))).active
+    refute Enum.find(res.template.people, &(&1.id == Paths.project_template_person_id(ctx.template_inactive))).active
+    assert [assignment] = res.template.task_assignments
+    assert assignment.project_template_task_id == Paths.project_template_task_id(ctx.root_task)
+    assert assignment.project_template_person_id == Paths.project_template_person_id(ctx.template_inactive)
+    assert res.template.inactive_people_summary == %{person_count: 1, role_count: 1, task_count: 1}
+  end
+
   test "returns archived templates", ctx do
     {:ok, archived} = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update()
     ctx = %{ctx | template: archived}
@@ -97,9 +120,32 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     test "returns #{@test.expected} for #{@test.permissions}", ctx do
       ctx = ctx |> Factory.add_space_member(:person, :space, permissions: @test.permissions) |> Factory.log_in_person(:person)
 
-      assert {code, _} = request(ctx)
+      assert {code, res} = request(ctx)
       assert code == @test.expected
+
+      assert res.template.permissions.can_view
+      assert res.template.permissions.can_comment == @test.can_comment
+      assert res.template.permissions.can_edit == @test.can_edit
+      assert res.template.permissions.has_full_access == @test.has_full_access
     end
+  end
+
+  test "returns view-only permissions for archived templates", ctx do
+    {:ok, archived} = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update()
+
+    assert {200, res} = request(%{ctx | template: archived})
+    assert res.template.permissions == %{__typename: "project_template_permissions", can_view: true, can_comment: false, can_edit: false, has_full_access: false}
+  end
+
+  test "returns view-only permissions in company read-only mode", ctx do
+    alias Operately.Billing.CompanyBillingAccount
+
+    %{company_id: ctx.company.id, access_state: :read_only}
+    |> CompanyBillingAccount.changeset()
+    |> Repo.insert!()
+
+    assert {200, res} = request(ctx)
+    assert res.template.permissions == %{__typename: "project_template_permissions", can_view: true, can_comment: false, can_edit: false, has_full_access: false}
   end
 
   test "does not use source-project access", ctx do

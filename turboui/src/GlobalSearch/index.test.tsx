@@ -115,6 +115,21 @@ describe("GlobalSearch", () => {
     expect(screen.getByRole("combobox")).toHaveValue("");
   });
 
+  test("keeps the full-text action outside the scrollable quick results", async () => {
+    const fullTextSearchPath = (query: string) => `/search?${new URLSearchParams({ q: query })}`;
+    const { input } = openSearch(jest.fn().mockResolvedValue(results), jest.fn(), fullTextSearchPath);
+
+    await enterQuery(input, "result");
+
+    const listbox = await screen.findByRole("listbox");
+    const quickResult = screen.getByRole("option", { name: "Space result" });
+    const fullTextAction = screen.getByRole("option", { name: "Search all content for “result”" });
+    const scrollableResults = quickResult.closest(".overflow-y-auto");
+
+    expect(listbox).toContainElement(scrollableResults);
+    expect(scrollableResults).not.toContainElement(fullTextAction);
+  });
+
   test("includes the full-text action in keyboard wraparound and Enter navigation", async () => {
     const scrollIntoView = jest.fn();
     Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {

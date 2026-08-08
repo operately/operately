@@ -582,6 +582,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.refute_text("Move to another space", testid: "actions-section")
   end
 
+  step :assert_save_as_template_is_visible, ctx do
+    ctx |> UI.assert_text("Save as template", testid: "actions-section")
+  end
+
   step :edit_project_start_date, ctx, date do
     formatted_date = Operately.Support.Time.format_month_day(date)
 

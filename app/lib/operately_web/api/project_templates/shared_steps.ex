@@ -2,9 +2,13 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   require Logger
   import Ecto.Query, only: [from: 2]
 
+  alias Operately.Access.Binding
   alias Operately.Groups.Group
+  alias Operately.Operations.{ProjectCreation, ProjectTemplateCreationFromProject, ProjectTemplateMaterialization}
   alias Operately.ProjectTemplates
-  alias Operately.ProjectTemplates.{Milestone, Permissions, ProjectTemplate, Task}
+  alias Operately.People.Person, as: CompanyPerson
+  alias Operately.ProjectTemplates.{Milestone, Permissions, Person, ProjectTemplate, Task, TaskAssignment}
+  alias Operately.Projects.Project
   alias Operately.Repo
   alias OperatelyWeb.Api.Helpers, as: ApiHelpers
   alias OperatelyWeb.Api.ProjectTemplates.Helpers, as: TemplateHelpers
@@ -41,6 +45,18 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     end)
   end
 
+  def load_project(multi, project_id) do
+    Ecto.Multi.run(multi, :project, fn _repo, %{me: requester} ->
+      Project.get(requester, id: project_id, company_id: requester.company_id)
+    end)
+  end
+
+  def load_project_space(multi) do
+    Ecto.Multi.run(multi, :space, fn _repo, %{me: requester, project: project} ->
+      Group.get(requester, id: project.group_id, company_id: requester.company_id)
+    end)
+  end
+
   def check_space_permissions(multi, permission) do
     Ecto.Multi.run(multi, :permissions, fn _repo, %{space: space, company_read_only: company_read_only} ->
       Permissions.check(space.request_info.access_level, permission, company_read_only: company_read_only)
@@ -52,6 +68,38 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       Permissions.check(template.request_info.access_level, permission, company_read_only: company_read_only)
     end)
   end
+
+  def ensure_template_belongs_to_space(multi) do
+    Ecto.Multi.run(multi, :template_space, fn _repo, %{space: space, template: template} ->
+      if template.space_id == space.id, do: {:ok, :same_space}, else: {:error, :template_scope_mismatch}
+    end)
+  end
+
+  def create_project_from_template(multi, inputs) do
+    Ecto.Multi.run(multi, :project, fn _repo, %{me: creator, space: space, template: template} ->
+      ProjectTemplateMaterialization.run(%ProjectTemplateMaterialization{
+        template_id: template.id,
+        start_date: inputs.start_date,
+        project: project_creation_attrs(creator, space, inputs)
+      })
+    end)
+  end
+
+  def create_template_from_project({:ok, changes}, inputs) do
+    case ProjectTemplateCreationFromProject.run(%ProjectTemplateCreationFromProject{
+           project_id: changes.project.id,
+           creator_id: changes.me.id,
+           name: inputs.name,
+           description: inputs[:description],
+           include_people_and_assignments: inputs[:include_people_and_assignments] || false
+         }) do
+      {:ok, template} -> {:ok, Map.put(changes, :template_creation, %{template: template, schedule_issues: []})}
+      {:error, {:invalid_schedule, %{issues: issues}}} -> {:ok, Map.put(changes, :template_creation, %{template: nil, schedule_issues: issues})}
+      {:error, reason} -> {:error, :template_creation, reason, changes}
+    end
+  end
+
+  def create_template_from_project(error, _inputs), do: error
 
   def load_milestone(multi, milestone_id) do
     Ecto.Multi.run(multi, :milestone, fn repo, %{template: template} ->
@@ -67,6 +115,15 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       case repo.get_by(Task, id: task_id, project_template_id: template.id) do
         nil -> {:error, :not_found}
         task -> {:ok, task}
+      end
+    end)
+  end
+
+  def load_template_person(multi, template_person_id) do
+    Ecto.Multi.run(multi, :template_person, fn repo, %{template: template} ->
+      case repo.get_by(Person, id: template_person_id, project_template_id: template.id) do
+        nil -> {:error, :not_found}
+        template_person -> {:ok, template_person}
       end
     end)
   end
@@ -184,6 +241,68 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       deleted = delete!(task)
       rebuild_container!(template, task.project_template_milestone_id)
       deleted
+    end)
+  end
+
+  def create_person(multi, attrs) do
+    run_step(multi, :template_person, fn %{template: template} ->
+      company_person = active_company_person!(template, attrs.person_id)
+      ensure_person_is_not_represented!(template, company_person.id)
+      demote_current_role_holder!(template, attrs.role)
+
+      attrs
+      |> Map.put(:project_template_id, template.id)
+      |> normalize_role_access()
+      |> Person.changeset()
+      |> persist!()
+      |> preload_template_person()
+    end)
+  end
+
+  def update_person(multi, attrs) do
+    run_step(multi, :updated_template_person, fn %{template: template, template_person: template_person} ->
+      role = Map.get(attrs, :role, template_person.role)
+      {template_person, attrs} = prepare_person_update!(template, template_person, attrs, role)
+      demote_current_role_holder!(template, role, template_person.id)
+
+      template_person
+      |> Person.changeset(normalize_role_access(attrs, role))
+      |> persist!()
+      |> preload_template_person()
+    end)
+  end
+
+  def delete_person(multi) do
+    run_step(multi, :deleted_template_person, fn %{template_person: template_person} ->
+      delete!(template_person)
+    end)
+  end
+
+  def update_task_assignees(multi, person_ids) do
+    run_step(multi, :task_assignments, fn %{template: template, task: task} ->
+      person_ids = Enum.uniq(person_ids)
+      company_people = Enum.map(person_ids, &active_company_person!(template, &1))
+      template_people = Enum.map(company_people, &find_or_create_contributor!(template, &1))
+      desired_ids = MapSet.new(template_people, & &1.id)
+
+      Repo.all(from a in TaskAssignment, where: a.project_template_id == ^template.id and a.project_template_task_id == ^task.id)
+      |> Enum.each(fn assignment ->
+        unless MapSet.member?(desired_ids, assignment.project_template_person_id), do: delete!(assignment)
+      end)
+
+      existing_ids =
+        Repo.all(from a in TaskAssignment, where: a.project_template_id == ^template.id and a.project_template_task_id == ^task.id, select: a.project_template_person_id)
+        |> MapSet.new()
+
+      template_people
+      |> Enum.reject(&MapSet.member?(existing_ids, &1.id))
+      |> Enum.each(fn template_person ->
+        %{project_template_id: template.id, project_template_task_id: task.id, project_template_person_id: template_person.id}
+        |> TaskAssignment.changeset()
+        |> persist!()
+      end)
+
+      Repo.all(from a in TaskAssignment, where: a.project_template_id == ^template.id and a.project_template_task_id == ^task.id)
     end)
   end
 
@@ -312,6 +431,95 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     end
   end
 
+  defp active_company_person!(template, person_id) do
+    case Repo.get_by(CompanyPerson, id: person_id, company_id: template.company_id) do
+      %{suspended: false, suspended_at: nil} = person -> person
+      _ -> fail!(:not_found)
+    end
+  end
+
+  defp ensure_person_is_not_represented!(template, person_id, except_id \\ nil) do
+    query = from p in Person, where: p.project_template_id == ^template.id and p.person_id == ^person_id
+    query = if except_id, do: from(p in query, where: p.id != ^except_id), else: query
+    if Repo.exists?(query), do: fail!({:validation, "Person is already part of this template"})
+  end
+
+  defp prepare_person_update!(template, template_person, attrs, role) do
+    case Map.fetch(attrs, :person_id) do
+      {:ok, person_id} ->
+        active_company_person!(template, person_id)
+
+        case Repo.get_by(Person, project_template_id: template.id, person_id: person_id) do
+          nil ->
+            {template_person, attrs}
+
+          %{id: id} when id == template_person.id ->
+            {template_person, attrs}
+
+          existing when role in [:champion, :reviewer] ->
+            template_person |> Person.changeset(%{role: :contributor}) |> persist!()
+            {existing, Map.delete(attrs, :person_id)}
+
+          _existing ->
+            fail!({:validation, "Person is already part of this template"})
+        end
+
+      :error ->
+        {template_person, attrs}
+    end
+  end
+
+  defp demote_current_role_holder!(template, role, except_id \\ nil)
+  defp demote_current_role_holder!(_template, :contributor, _except_id), do: :ok
+
+  defp demote_current_role_holder!(template, role, except_id) when role in [:champion, :reviewer] do
+    query = from p in Person, where: p.project_template_id == ^template.id and p.role == ^role
+    query = if except_id, do: from(p in query, where: p.id != ^except_id), else: query
+
+    Repo.all(query)
+    |> Enum.each(fn person -> person |> Person.changeset(%{role: :contributor}) |> persist!() end)
+  end
+
+  defp normalize_role_access(attrs), do: normalize_role_access(attrs, attrs.role)
+  defp normalize_role_access(attrs, role) when role in [:champion, :reviewer], do: Map.put(attrs, :access_level, Binding.full_access())
+  defp normalize_role_access(attrs, _role), do: attrs
+
+  defp find_or_create_contributor!(template, company_person) do
+    case Repo.get_by(Person, project_template_id: template.id, person_id: company_person.id) do
+      nil ->
+        %{project_template_id: template.id, person_id: company_person.id, role: :contributor, access_level: Binding.edit_access()}
+        |> Person.changeset()
+        |> persist!()
+
+      template_person ->
+        template_person
+    end
+  end
+
+  defp preload_template_person(template_person) do
+    Repo.preload(template_person, [:person, :project_template], force: true)
+  end
+
+  defp project_creation_attrs(creator, space, inputs) do
+    space = Group.preload_access_levels(space)
+    company_access_level = if space.access_levels.company == Binding.no_access(), do: Binding.no_access(), else: inputs.company_access_level
+
+    %ProjectCreation{
+      name: inputs.name,
+      champion_id: nil,
+      reviewer_id: nil,
+      creator_role: "Contributor",
+      visibility: "everyone",
+      creator_id: creator.id,
+      company_id: creator.company_id,
+      group_id: space.id,
+      goal_id: inputs[:goal_id],
+      anonymous_access_level: inputs.anonymous_access_level,
+      company_access_level: company_access_level,
+      space_access_level: inputs.space_access_level
+    }
+  end
+
   defp delete!(resource) do
     case Repo.delete(resource) do
       {:ok, resource} -> resource
@@ -340,6 +548,14 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp handle_error({:error, _step, :not_found, _changes}), do: {:error, :not_found}
   defp handle_error({:error, _step, {:not_found, _resource}, _changes}), do: {:error, :not_found}
   defp handle_error({:error, _step, :forbidden, _changes}), do: {:error, :forbidden}
+  defp handle_error({:error, _step, :template_not_found, _changes}), do: {:error, :not_found}
+  defp handle_error({:error, _step, :template_scope_mismatch, _changes}), do: {:error, :not_found}
+  defp handle_error({:error, _step, :template_not_active, _changes}), do: {:error, :forbidden}
+  defp handle_error({:error, _step, {:invalid_template, _reason}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_source, _reason}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_source_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_template_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:validation, message}, _changes}), do: {:error, :bad_request, message}
   defp handle_error({:error, _step, %Ecto.Changeset{}, _changes}), do: {:error, :bad_request}
 

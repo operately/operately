@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Endpoint do
+  use Sentry.PlugCapture
   use SiteEncrypt.Phoenix.Endpoint, otp_app: :operately
 
   # Allow running wallaby tests in parallel
@@ -54,6 +55,7 @@ defmodule OperatelyWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug Sentry.PlugContext
 
   plug OperatelyWeb.Logger
   plug :put_version_header

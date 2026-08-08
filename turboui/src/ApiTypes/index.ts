@@ -1781,6 +1781,7 @@ export interface Project {
   milestonesOrderingState?: string[] | null;
   taskStatuses?: TaskStatus[] | null;
   tasksKanbanState?: Json | null;
+  tasksView?: ProjectTasksView | null;
 }
 
 export interface ProjectCheckIn {
@@ -1905,11 +1906,21 @@ export interface ProjectTemplate {
   updatedAt: string;
   milestoneCount: number;
   taskCount: number;
+  inactivePeopleSummary: ProjectTemplateInactivePeopleSummary;
   taskStatuses?: TaskStatus[] | null;
   milestonesOrderingState?: string[] | null;
   tasksKanbanState?: Json | null;
   milestones?: ProjectTemplateMilestone[] | null;
   tasks?: ProjectTemplateTask[] | null;
+  people?: ProjectTemplatePerson[] | null;
+  taskAssignments?: ProjectTemplateTaskAssignment[] | null;
+  permissions?: ProjectTemplatePermissions | null;
+}
+
+export interface ProjectTemplateInactivePeopleSummary {
+  personCount: number;
+  roleCount: number;
+  taskCount: number;
 }
 
 export interface ProjectTemplateMilestone {
@@ -1923,6 +1934,33 @@ export interface ProjectTemplateMilestone {
   tasksOrderingState: string[];
   insertedAt: string;
   updatedAt: string;
+}
+
+export interface ProjectTemplatePermissions {
+  __typename: "project_template_permissions";
+  canView: boolean;
+  canComment: boolean;
+  canEdit: boolean;
+  hasFullAccess: boolean;
+}
+
+export interface ProjectTemplatePerson {
+  __typename: "project_template_person";
+  id: string;
+  person?: Person | null;
+  role: ProjectTemplatePersonRole;
+  responsibility?: string | null;
+  accessLevel: AccessOptionsInt;
+  active: boolean;
+}
+
+export interface ProjectTemplateScheduleIssue {
+  resourceType: ProjectTemplateScheduleResourceType;
+  resourceId: string;
+  resourceName: string;
+  field: ProjectTemplateScheduleField;
+  date?: string | null;
+  reason: ProjectTemplateScheduleReason;
 }
 
 export interface ProjectTemplateTask {
@@ -1939,6 +1977,13 @@ export interface ProjectTemplateTask {
   taskStatus: TaskStatus;
   insertedAt: string;
   updatedAt: string;
+}
+
+export interface ProjectTemplateTaskAssignment {
+  __typename: "project_template_task_assignment";
+  id: string;
+  projectTemplateTaskId: string;
+  projectTemplatePersonId: string;
 }
 
 export interface QuickSearchDiscussion {
@@ -2448,7 +2493,7 @@ export interface WorkMapItem {
   state: WorkMapItemState;
   status: WorkMapItemStatus;
   taskStatus: TaskStatus | null;
-  progress: number;
+  progress: number | null;
   space: Space | null;
   spacePath: string | null;
   project: Project | null;
@@ -2462,7 +2507,7 @@ export interface WorkMapItem {
   completedOn: string | null;
   timeframe: Timeframe | null;
   assignedAt: string | null;
-  milestones: Milestone[];
+  milestones: WorkMapMilestone[];
   targets: Target[];
   checklist: GoalCheck[];
   children: WorkMapItem[];
@@ -2470,6 +2515,14 @@ export interface WorkMapItem {
   itemPath: string;
   privacy: WorkMapItemPrivacy;
   assignees?: Person[] | null;
+}
+
+export interface WorkMapMilestone {
+  __typename: "work_map_milestone";
+  id: string;
+  title: string;
+  status: MilestoneStatus;
+  timeframe: Timeframe | null;
 }
 
 export type ActivityContent =
@@ -2661,7 +2714,17 @@ export type ProjectContributorRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 
+export type ProjectTasksView = "list" | "board";
+
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
+
+export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
+
+export type ProjectTemplateScheduleField = "start_date" | "end_date" | "due_date";
+
+export type ProjectTemplateScheduleReason = "missing" | "before_project_start";
+
+export type ProjectTemplateScheduleResourceType = "project" | "milestone" | "task";
 
 export type ReactionEntityType =
   | "project_check_in"

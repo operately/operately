@@ -22,6 +22,7 @@ import { TasksSection } from "./TasksSection";
 import { getTaskCompletionStats } from "./taskCompletion";
 import { ProjectPermissions } from "./types";
 import type { FormattedTimePreferences } from "../FormattedTime";
+import { SaveProjectAsTemplateModal } from "../SaveProjectAsTemplateModal";
 
 export namespace ProjectPage {
   export interface Space {
@@ -30,13 +31,7 @@ export namespace ProjectPage {
     link: string;
   }
 
-  export interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl: string | null;
-    title: string;
-    profileLink: string;
-  }
+  export type Person = PersonField.Person;
 
   export interface CheckIn {
     id: string;
@@ -182,6 +177,9 @@ export namespace ProjectPage {
       deletedStatusReplacements: Record<string, string>;
     }) => void;
 
+    tasksView: TaskBoardTypes.TaskDisplayMode;
+    onTasksViewChange: (mode: TaskBoardTypes.TaskDisplayMode) => void | Promise<void>;
+
     contributors: Person[];
     checkIns: CheckIn[];
     discussions: Discussion[];
@@ -198,6 +196,12 @@ export namespace ProjectPage {
     subscriptions: SidebarNotificationSection.Props;
     docsAndFiles?: DocsAndFiles;
     formattedTimePreferences: FormattedTimePreferences;
+    saveAsTemplate?: {
+      canSave: boolean;
+      submissionEnabled: boolean;
+      onSave: (values: SaveProjectAsTemplateModal.Values) => Promise<SaveProjectAsTemplateModal.Result>;
+      onSuccess?: () => void;
+    };
   }
 
   export type Props = CommonProps & SpaceProps;
@@ -210,12 +214,17 @@ export namespace ProjectPage {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
+
+    isSaveAsTemplateModalOpen?: boolean;
+    openSaveAsTemplateModal?: () => void;
+    closeSaveAsTemplateModal?: () => void;
   };
 }
 
 function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
   const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModalOpen || false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  const [isSaveAsTemplateModalOpen, setIsSaveAsTemplateModalOpen] = React.useState(false);
 
   return {
     ...props,
@@ -227,6 +236,10 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
+
+    isSaveAsTemplateModalOpen,
+    openSaveAsTemplateModal: () => setIsSaveAsTemplateModalOpen(true),
+    closeSaveAsTemplateModal: () => setIsSaveAsTemplateModalOpen(false),
   };
 }
 
@@ -263,6 +276,19 @@ export function ProjectPage(props: ProjectPage.Props) {
 
       {"space" in state && <MoveModal {...state} />}
       <DeleteModal {...state} />
+      {state.saveAsTemplate && (
+        <SaveProjectAsTemplateModal
+          isOpen={Boolean(state.isSaveAsTemplateModalOpen)}
+          onClose={state.closeSaveAsTemplateModal ?? (() => undefined)}
+          projectName={state.project.name}
+          projectDescription={state.description}
+          richTextHandlers={state.richTextHandlers}
+          formattedTimePreferences={state.formattedTimePreferences}
+          submissionEnabled={state.saveAsTemplate.submissionEnabled}
+          onSave={state.saveAsTemplate.onSave}
+          onSuccess={state.saveAsTemplate.onSuccess}
+        />
+      )}
     </ProjectPageLayout>
   );
 }

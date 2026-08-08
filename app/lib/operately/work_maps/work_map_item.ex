@@ -24,7 +24,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
           status: String.t() | nil,
           task_status: Status.t() | nil,
           state: String.t(),
-          progress: float(),
+          progress: float() | nil,
           space: map() | nil,
           owner: map() | nil,
           champion: map() | nil,
@@ -78,13 +78,13 @@ defmodule Operately.WorkMaps.WorkMapItem do
       status: Goal.status(goal),
       task_status: nil,
       state: Goal.state(goal),
-      progress: Goal.progress_percentage(goal),
+      progress: progress_percentage(goal, Goal),
       space: goal.group,
       project: nil,
       owner: goal.champion,
       champion: goal.champion,
       reviewer: goal.reviewer,
-      next_step: Goal.next_step(goal),
+      next_step: next_step(goal, Goal),
       is_new: false,
       children: children,
       completed_on: goal.closed_at,
@@ -141,13 +141,13 @@ defmodule Operately.WorkMaps.WorkMapItem do
       status: Project.status(project),
       task_status: nil,
       state: Project.state(project),
-      progress: Project.progress_percentage(project),
+      progress: progress_percentage(project, Project),
       space: project.group,
       project: nil,
       owner: project.champion,
       champion: project.champion,
       reviewer: project.reviewer,
-      next_step: Project.next_step(project),
+      next_step: next_step(project, Project),
       is_new: false,
       children: children,
       completed_on: project.closed_at,
@@ -173,6 +173,12 @@ defmodule Operately.WorkMaps.WorkMapItem do
     ]
     |> Enum.reject(&is_nil/1)
   end
+
+  defp progress_percentage(%{closed_at: nil} = item, module), do: module.progress_percentage(item)
+  defp progress_percentage(_item, _module), do: nil
+
+  defp next_step(%{closed_at: nil} = item, module), do: module.next_step(item)
+  defp next_step(_item, _module), do: ""
 
   defp find_privacy(item) do
     build_access_levels_from_context(item.access_context, item.company_id, item.group_id)

@@ -30,8 +30,10 @@ import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 
 function SidebarHarness({
   accessLevels,
+  saveAsTemplate,
 }: {
   accessLevels: ProjectPage.State["accessLevels"];
+  saveAsTemplate?: ProjectPage.State["saveAsTemplate"];
 }) {
   const subscriptions = useMockSubscriptions({ entityType: "project" });
 
@@ -87,6 +89,7 @@ function SidebarHarness({
     getTaskPageProps: () => ({}) as any,
     subscriptions,
     formattedTimePreferences: defaultFormattedTimePreferences,
+    saveAsTemplate,
     homeLink: "/",
     isMoveModalOpen: false,
     openMoveModal: () => undefined,
@@ -116,5 +119,29 @@ describe("OverviewSidebar privacy", () => {
 
     const privacyField = container.querySelector('[data-test-id="project-privacy-field"]');
     expect(privacyField).toHaveTextContent("Only assigned people have access");
+  });
+});
+
+describe("OverviewSidebar save as template action", () => {
+  const accessLevels = { company: "no_access", space: "no_access" } as ProjectPage.State["accessLevels"];
+  const onSave = jest.fn().mockResolvedValue({ success: true });
+
+  it("is absent without the optional contract", () => {
+    const { queryByText } = render(<SidebarHarness accessLevels={accessLevels} />);
+    expect(queryByText("Save as template")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["View", false],
+    ["Comment", false],
+    ["Edit", true],
+    ["Full", true],
+  ])("follows the %s access projection", (_level, canSave) => {
+    const { queryByText } = render(
+      <SidebarHarness accessLevels={accessLevels} saveAsTemplate={{ canSave, submissionEnabled: true, onSave }} />,
+    );
+
+    if (canSave) expect(queryByText("Save as template")).toBeInTheDocument();
+    else expect(queryByText("Save as template")).not.toBeInTheDocument();
   });
 });

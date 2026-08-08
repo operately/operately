@@ -29,6 +29,12 @@ Write interface copy as part of the design, not as decoration after the layout i
 - Match the platform and interaction. Use `tap` for touch surfaces and `click` only where pointer interaction is the assumption.
 - Use humor sparingly. Never use humor in repetitive, high-friction, high-risk, error, payment, privacy, or destructive flows.
 
+## Product Vocabulary
+
+Some names exist only in code, schemas, and internal discussion. Never put them in UI copy — placeholders, labels, empty states, errors, confirmations, notifications, or help text.
+
+- **Resource Hub** is an internal name. Users do not know what a resource hub is. Never use `resource hub`, `Resource Hub`, or similar phrasing in UI copy. Prefer the user-facing terms already in the product, such as `Documents & Files`, `documents and files`, or the specific item types (`document`, `folder`, `link`, `file`) when that is clearer.
+
 ## Buttons
 
 Buttons should describe the action or outcome. A user should not be surprised by what happens after clicking.

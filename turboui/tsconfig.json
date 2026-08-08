@@ -2,12 +2,10 @@
   "compilerOptions": {
     // project options
     "lib": ["ESNext", "dom"], // specifies which default set of type definitions to use
-    "outDir": "./dist", // .js (as well as .d.ts, .js.map, etc.) files will be emitted into this directory
     "removeComments": true, // Strips all comments from TypeScript files when converting into JavaScript
     "target": "ES6", // Target environment. Most modern browsers support ES6
-    "declaration": true, // Generate .d.ts files (needed for library)
     "jsx": "react", // Match app's jsx handling
-    "rootDir": "./src",
+    "noEmit": true, // IDE/typecheck only — library emit lives in tsconfig.build.json
 
     // Module resolution
     "baseUrl": ".",
@@ -37,7 +35,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    
+
     // Paths for dependencies — app paths first for local dev parity, turboui paths as CI fallback
     "paths": {
       "react-router": ["./node_modules/react-router", "../app/node_modules/react-router"],
@@ -57,15 +55,6 @@
     },
     "typeRoots": ["../app/node_modules/@types", "./node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*", "src/types/**/*.d.ts"],
-  "exclude": [
-    "node_modules/**/*",
-    "dist",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/*.stories.tsx",
-    "src/WorkMap/tests/**"
-  ]
+  "include": ["src/**/*", "src/types/**/*.d.ts", "jest.setup.ts"],
+  "exclude": ["node_modules/**/*", "dist", "**/*.stories.tsx", "src/WorkMap/tests/**"]
 }

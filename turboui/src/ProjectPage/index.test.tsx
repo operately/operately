@@ -223,7 +223,7 @@ function ProjectPageHarness({
         search: search
           ? {
               search,
-              placeholder: "Search this resource hub…",
+              placeholder: "Search documents and files…",
               testId: "resource-hub-search",
             }
           : undefined,
@@ -231,7 +231,7 @@ function ProjectPageHarness({
     : undefined;
 
   return (
-    <MemoryRouter initialEntries={[initialEntry]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <ProjectPage
         homeLink="/"
         closeLink="#"
@@ -276,6 +276,8 @@ function ProjectPageHarness({
         assigneePersonSearch={{} as any}
         statuses={[]}
         onSaveCustomStatuses={() => undefined}
+        tasksView="list"
+        onTasksViewChange={() => undefined}
         contributors={[]}
         checkIns={[]}
         discussions={[]}
@@ -336,7 +338,7 @@ describe("ProjectPage", () => {
       <ProjectPageHarness includeDocsAndFiles initialEntry="/projects/project-1?tab=docs-and-files" search={search} />,
     );
 
-    const searchInput = screen.getByRole("searchbox", { name: "Search this resource hub…" });
+    const searchInput = screen.getByRole("searchbox", { name: "Search documents and files…" });
     fireEvent.change(searchInput, { target: { value: "approval" } });
 
     expect(search).not.toHaveBeenCalled();

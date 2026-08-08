@@ -18,6 +18,7 @@ export { SelectStatus } from "./SelectStatus";
 export { Submit } from "./Submit";
 export { SubmitButton } from "./SubmitButton";
 export { TextInput } from "./TextInput";
+export { DateInput } from "./DateInput";
 export { useFieldError, useFieldValue, useFormContext } from "./context";
 export { useForm } from "./useForm";
 export { useValidation, validatePresence, validateTextLength, validateIsNumber } from "./validation";
@@ -25,6 +26,7 @@ export type {
   AccessSelectorsProps,
   AddErrorFn,
   CheckboxInputProps,
+  DateInputProps,
   FieldGroupGridOptions,
   FieldGroupHorizontalOptions,
   FieldGroupLayoutOptions,

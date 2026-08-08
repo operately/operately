@@ -4,7 +4,7 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
   use Operately.Schema
   use Operately.Repo.Getter
 
-  alias Operately.ProjectTemplates.{Milestone, Task}
+  alias Operately.ProjectTemplates.{Milestone, Person, Task, TaskAssignment}
   alias Operately.Tasks.{KanbanState, Status}
 
   schema "project_templates" do
@@ -17,6 +17,8 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
 
     has_many :milestones, Milestone
     has_many :tasks, Task
+    has_many :people, Person
+    has_many :task_assignments, TaskAssignment
 
     field :name, :string
     field :description, :map
@@ -30,6 +32,8 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
 
     field :milestone_count, :integer, virtual: true, default: 0
     field :task_count, :integer, virtual: true, default: 0
+    field :inactive_people_summary, :any, virtual: true, default: %{person_count: 0, role_count: 0, task_count: 0}
+    field :permissions, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -58,6 +62,13 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
     |> validate_required([:company_id, :space_id, :creator_id, :name])
     |> validate_number(:duration_days, greater_than_or_equal_to: 0)
     |> check_constraint(:duration_days, name: :project_templates_duration_days_non_negative)
+  end
+
+  def set_permissions(template, company_read_only \\ false) do
+    permissions = Operately.ProjectTemplates.Permissions.calculate(template.request_info.access_level, company_read_only: company_read_only)
+    permissions = if template.archived_at, do: Operately.Permissions.ReadOnly.view_only(permissions), else: permissions
+
+    %{template | permissions: permissions}
   end
 
   defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
