@@ -97,6 +97,7 @@ const populatedProps: Types.Props = {
     },
   ],
   people: [champion, unavailableContributor],
+  personSearch: { people: [], onSearch: async () => undefined },
   richTextHandlers: createMockRichEditorHandlers(),
   onTemplateUpdate: () => undefined,
   onStatusesChange: () => undefined,
@@ -113,6 +114,8 @@ function TemplateStory({ props }: { props: Types.Props }) {
   const [statuses, setStatuses] = React.useState(props.statuses);
   const [milestones, setMilestones] = React.useState(props.milestones);
   const [tasks, setTasks] = React.useState(props.tasks);
+  const [people, setPeople] = React.useState(props.people ?? []);
+  const searchablePeople = people.flatMap((templatePerson) => (templatePerson.person ? [templatePerson.person] : []));
 
   const reorderMilestones = (milestoneId: string, destinationIndex: number) => {
     setMilestones((current) => {
@@ -150,6 +153,8 @@ function TemplateStory({ props }: { props: Types.Props }) {
     statuses,
     milestones,
     tasks,
+    people,
+    personSearch: { people: searchablePeople, onSearch: async () => undefined },
     onTemplateUpdate: (updates) => setTemplate((current) => ({ ...current, ...updates })),
     onStatusesChange: ({ nextStatuses }) => setStatuses(nextStatuses),
     onMilestoneUpdate: (id, updates) =>
@@ -167,6 +172,11 @@ function TemplateStory({ props }: { props: Types.Props }) {
       ]),
     onTaskUpdate: (id, updates) =>
       setTasks((current) => current.map((item) => (item.id === id ? { ...item, ...updates } : item))),
+    onPersonCreate: (person) =>
+      setPeople((current) => [...current, { ...person, id: crypto.randomUUID(), active: true }]),
+    onPersonUpdate: (id, updates) =>
+      setPeople((current) => current.map((item) => (item.id === id ? { ...item, ...updates } : item))),
+    onPersonDelete: (id) => setPeople((current) => current.filter((item) => item.id !== id)),
   };
 
   return <TemplateProjectPage {...pageProps} />;
