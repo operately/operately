@@ -5098,6 +5098,18 @@ export interface ProjectTemplatesCreateMilestoneResult {
   milestone: ProjectTemplateMilestone;
 }
 
+export interface ProjectTemplatesCreatePersonInput {
+  templateId: Id;
+  personId: Id;
+  role: ProjectTemplatePersonRole;
+  responsibility?: string | null;
+  accessLevel: AccessOptionsInt;
+}
+
+export interface ProjectTemplatesCreatePersonResult {
+  person: ProjectTemplatePerson;
+}
+
 export interface ProjectTemplatesCreateProjectInput {
   templateId: Id;
   spaceId: Id;
@@ -5139,6 +5151,15 @@ export interface ProjectTemplatesDeleteMilestoneResult {
   success: boolean;
 }
 
+export interface ProjectTemplatesDeletePersonInput {
+  templateId: Id;
+  templatePersonId: Id;
+}
+
+export interface ProjectTemplatesDeletePersonResult {
+  success: boolean;
+}
+
 export interface ProjectTemplatesDeleteTaskInput {
   templateId: Id;
   taskId: Id;
@@ -5175,6 +5196,19 @@ export interface ProjectTemplatesUpdateMilestoneInput {
 
 export interface ProjectTemplatesUpdateMilestoneResult {
   milestone: ProjectTemplateMilestone;
+}
+
+export interface ProjectTemplatesUpdatePersonInput {
+  templateId: Id;
+  templatePersonId: Id;
+  personId?: Id;
+  role?: ProjectTemplatePersonRole;
+  responsibility?: string | null;
+  accessLevel?: AccessOptionsInt;
+}
+
+export interface ProjectTemplatesUpdatePersonResult {
+  person: ProjectTemplatePerson;
 }
 
 export interface ProjectTemplatesUpdateTaskInput {
@@ -6780,6 +6814,10 @@ class ApiNamespaceProjectTemplates {
     return this.client.post("/project_templates/create_milestone", input);
   }
 
+  async createPerson(input: ProjectTemplatesCreatePersonInput): Promise<ProjectTemplatesCreatePersonResult> {
+    return this.client.post("/project_templates/create_person", input);
+  }
+
   async createProject(input: ProjectTemplatesCreateProjectInput): Promise<ProjectTemplatesCreateProjectResult> {
     return this.client.post("/project_templates/create_project", input);
   }
@@ -6792,6 +6830,10 @@ class ApiNamespaceProjectTemplates {
     return this.client.post("/project_templates/delete_milestone", input);
   }
 
+  async deletePerson(input: ProjectTemplatesDeletePersonInput): Promise<ProjectTemplatesDeletePersonResult> {
+    return this.client.post("/project_templates/delete_person", input);
+  }
+
   async deleteTask(input: ProjectTemplatesDeleteTaskInput): Promise<ProjectTemplatesDeleteTaskResult> {
     return this.client.post("/project_templates/delete_task", input);
   }
@@ -6802,6 +6844,10 @@ class ApiNamespaceProjectTemplates {
 
   async updateMilestone(input: ProjectTemplatesUpdateMilestoneInput): Promise<ProjectTemplatesUpdateMilestoneResult> {
     return this.client.post("/project_templates/update_milestone", input);
+  }
+
+  async updatePerson(input: ProjectTemplatesUpdatePersonInput): Promise<ProjectTemplatesUpdatePersonResult> {
+    return this.client.post("/project_templates/update_person", input);
   }
 
   async updateTask(input: ProjectTemplatesUpdateTaskInput): Promise<ProjectTemplatesUpdateTaskResult> {
@@ -8520,6 +8566,13 @@ export default {
     useGet: (input: ProjectTemplatesGetInput) =>
       useQuery<ProjectTemplatesGetResult>(() => defaultApiClient.apiNamespaceProjectTemplates.get(input)),
 
+    updatePerson: (input: ProjectTemplatesUpdatePersonInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updatePerson(input),
+    useUpdatePerson: () =>
+      useMutation<ProjectTemplatesUpdatePersonInput, ProjectTemplatesUpdatePersonResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updatePerson(input),
+      ),
+
     create: (input: ProjectTemplatesCreateInput) => defaultApiClient.apiNamespaceProjectTemplates.create(input),
     useCreate: () =>
       useMutation<ProjectTemplatesCreateInput, ProjectTemplatesCreateResult>((input) =>
@@ -8561,6 +8614,13 @@ export default {
         defaultApiClient.apiNamespaceProjectTemplates.updateMilestone(input),
       ),
 
+    createPerson: (input: ProjectTemplatesCreatePersonInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createPerson(input),
+    useCreatePerson: () =>
+      useMutation<ProjectTemplatesCreatePersonInput, ProjectTemplatesCreatePersonResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createPerson(input),
+      ),
+
     update: (input: ProjectTemplatesUpdateInput) => defaultApiClient.apiNamespaceProjectTemplates.update(input),
     useUpdate: () =>
       useMutation<ProjectTemplatesUpdateInput, ProjectTemplatesUpdateResult>((input) =>
@@ -8572,6 +8632,13 @@ export default {
     useCreateFromProject: () =>
       useMutation<ProjectTemplatesCreateFromProjectInput, ProjectTemplatesCreateFromProjectResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createFromProject(input),
+      ),
+
+    deletePerson: (input: ProjectTemplatesDeletePersonInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.deletePerson(input),
+    useDeletePerson: () =>
+      useMutation<ProjectTemplatesDeletePersonInput, ProjectTemplatesDeletePersonResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.deletePerson(input),
       ),
 
     updateTask: (input: ProjectTemplatesUpdateTaskInput) =>

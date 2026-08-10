@@ -1,4 +1,4 @@
-import Api, { type ProjectTemplateTask, type TaskReminder } from "@/api";
+import Api, { type AccessOptionsInt, type ProjectTemplateTask, type TaskReminder } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as Tasks from "@/models/tasks";
@@ -102,6 +102,43 @@ function Page() {
     mutate,
   });
 
+  async function onPersonCreate(person: Omit<TemplateProjectPage.TemplatePerson, "id" | "active">) {
+    if (!person.person) return;
+    const personId = person.person.id;
+
+    await mutate("Contributor not added", () =>
+      Api.project_templates.createPerson({
+        templateId: template.id,
+        personId,
+        role: person.role,
+        responsibility: person.responsibility,
+        accessLevel: person.accessLevel as AccessOptionsInt,
+      }),
+    );
+  }
+
+  async function onPersonUpdate(
+    templatePersonId: string,
+    updates: Partial<Omit<TemplateProjectPage.TemplatePerson, "id" | "active">>,
+  ) {
+    return mutate("Contributor not updated", () =>
+      Api.project_templates.updatePerson({
+        templateId: template.id,
+        templatePersonId,
+        personId: updates.person?.id,
+        role: updates.role,
+        responsibility: updates.responsibility,
+        accessLevel: updates.accessLevel as AccessOptionsInt | undefined,
+      }),
+    );
+  }
+
+  async function onPersonDelete(templatePersonId: string) {
+    await mutate("Contributor not removed", () =>
+      Api.project_templates.deletePerson({ templateId: template.id, templatePersonId }),
+    );
+  }
+
   return (
     <TemplateProjectPage
       template={{
@@ -131,6 +168,9 @@ function Page() {
       onTaskUpdate={onTaskUpdate}
       onTaskDelete={onTaskDelete}
       onTaskReorder={onTaskReorder}
+      onPersonCreate={onPersonCreate}
+      onPersonUpdate={onPersonUpdate}
+      onPersonDelete={onPersonDelete}
     />
   );
 }

@@ -73,6 +73,7 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
         reminders: [{ type: "before_due", days: 2 }],
       },
     ],
+    personSearch: { people: [], onSearch: async () => undefined },
     richTextHandlers: createMockRichEditorHandlers(),
     onTemplateUpdate: jest.fn(),
     onMilestoneCreate: jest.fn(),
@@ -254,11 +255,120 @@ describe("TemplateProjectPage", () => {
     const peopleSection = document.querySelector('[data-test-id="template-people"]');
     expect(peopleSection).toHaveTextContent("Ada Lovelace");
     expect(peopleSection).toHaveTextContent("Champion");
-    expect(peopleSection).toHaveTextContent("Full Access");
+    expect(peopleSection).toHaveTextContent("Reviewer");
+    expect(peopleSection).toHaveTextContent("Contributors");
     expect(peopleSection).toHaveTextContent("Unavailable person");
 
     fireEvent.click(screen.getByText("Tasks"));
     expect(screen.getAllByTitle("Ada Lovelace").length).toBeGreaterThan(0);
+  });
+
+  it("keeps people controls read-only for View and Comment Access", () => {
+    renderPage(createProps({ permissions: { canView: true, canComment: true }, people: [] }));
+
+    expect(screen.queryByText("Add contributor")).not.toBeInTheDocument();
+  });
+
+  it("allows Edit Access to add contributors", async () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+
+    const person = { id: "person-1", fullName: "Ada Lovelace", avatarUrl: null };
+    const onPersonCreate = jest.fn();
+    renderPage(
+      createProps({
+        people: [],
+        personSearch: { people: [person], onSearch: async () => undefined },
+        onPersonCreate,
+      }),
+    );
+
+    fireEvent.click(screen.getByText("Add contributor"));
+    expect(screen.getByRole("heading", { name: "Add contributor" })).toBeInTheDocument();
+    expect(screen.getByText("Access level")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Select person"));
+    expect(screen.getByPlaceholderText("Search...")).toBeInTheDocument();
+    fireEvent.click(screen.getByText(person.fullName));
+    fireEvent.click(screen.getByRole("button", { name: "Save contributor" }));
+
+    await waitFor(() => {
+      expect(onPersonCreate).toHaveBeenCalledWith({
+        person,
+        role: "contributor",
+        responsibility: null,
+        accessLevel: 70,
+      });
+      expect(screen.queryByRole("heading", { name: "Add contributor" })).not.toBeInTheDocument();
+    });
+  });
+
+  it("shows contributor actions in the person field", () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+
+    const contributor: Types.TemplatePerson = {
+      id: "template-person-1",
+      person: {
+        id: "person-1",
+        fullName: "Ada Lovelace",
+        avatarUrl: null,
+        title: "Mathematician",
+        profileLink: "/people/person-1",
+      },
+      role: "contributor",
+      responsibility: "Leads delivery",
+      accessLevel: 70,
+      active: true,
+    };
+    const onPersonDelete = jest.fn();
+
+    renderPage(createProps({ people: [contributor], onPersonDelete }));
+
+    fireEvent.click(screen.getByText("Ada Lovelace"));
+
+    expect(screen.getByText("View profile")).toBeInTheDocument();
+    expect(screen.getByText("Edit contributor")).toBeInTheDocument();
+    expect(screen.getByText("Remove contributor")).toBeInTheDocument();
+    expect(screen.queryByText("Choose someone else")).not.toBeInTheDocument();
+    expect(screen.queryByText("Clear assignment")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Edit contributor"));
+    expect(screen.getByRole("heading", { name: "Edit contributor" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(screen.getByText("Ada Lovelace"));
+    fireEvent.click(screen.getByText("Remove contributor"));
+    expect(onPersonDelete).toHaveBeenCalledWith(contributor.id);
+  });
+
+  it("optimistically updates contributor access and rolls back failed updates", async () => {
+    let finishUpdate: (successful: boolean) => void = () => undefined;
+    const updateResult = new Promise<boolean>((resolve) => {
+      finishUpdate = resolve;
+    });
+    const contributor: Types.TemplatePerson = {
+      id: "template-person-1",
+      person: { id: "person-1", fullName: "Ada Lovelace", avatarUrl: null },
+      role: "contributor",
+      responsibility: null,
+      accessLevel: 70,
+      active: true,
+    };
+    const onPersonUpdate = jest.fn(() => updateResult);
+
+    renderPage(createProps({ people: [contributor], onPersonUpdate }));
+
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+    fireEvent.click(screen.getByText("Ada Lovelace"));
+    fireEvent.click(screen.getByText("Edit contributor"));
+    fireEvent.keyDown(document.querySelector('[data-test-id="template-contributor-access"]')!, { key: "Enter" });
+    expect(screen.queryByText("No Access")).not.toBeInTheDocument();
+    fireEvent.click(document.querySelector('[data-test-id="template-contributor-access-10"]')!);
+
+    expect(screen.getByText("View Access")).toBeInTheDocument();
+    expect(onPersonUpdate).toHaveBeenCalledWith(contributor.id, { accessLevel: 10 });
+
+    await act(async () => finishUpdate(false));
+    expect(screen.getByText("Edit Access")).toBeInTheDocument();
   });
 
   it("keeps unavailable assignees visible while submitting active assignees only", () => {
