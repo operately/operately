@@ -5222,6 +5222,7 @@ export interface ProjectTemplatesUpdateTaskInput {
   dueOffsetDays?: number | null;
   reminders?: TaskReminder[];
   taskStatus?: TaskStatus;
+  index?: number;
 }
 
 export interface ProjectTemplatesUpdateTaskResult {

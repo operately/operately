@@ -2,15 +2,31 @@ import Api from "@/api";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { loader } from "./loader";
 import { activePersonIds } from "./people";
+import { createTaskMove } from ".";
+
+jest.mock("@/components/Pages", () => ({}));
+jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn() }));
+jest.mock("@/models/people", () => ({}));
+jest.mock("@/models/tasks", () => ({}));
+jest.mock("@/routes/paths", () => ({
+  Paths: { companyHomePath: (companyId: string) => `/${companyId}` },
+  usePaths: jest.fn(),
+}));
+jest.mock("turboui", () => ({
+  parseContent: jest.fn(),
+  showErrorToast: jest.fn(),
+  TemplateProjectPage: jest.fn(),
+}));
 
 jest.mock("@/api", () => ({
   __esModule: true,
-  default: { project_templates: { get: jest.fn() } },
+  default: { project_templates: { get: jest.fn(), updateTask: jest.fn() } },
 }));
 
 jest.mock("@/routes/redirectUtils", () => ({ redirectIfFeatureNotEnabled: jest.fn() }));
 
 const getTemplate = Api.project_templates.get as jest.Mock;
+const updateTask = Api.project_templates.updateTask as jest.Mock;
 const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
 beforeEach(() => {
@@ -59,4 +75,29 @@ test("sends only available people when replacing task assignees", () => {
       },
     ]),
   ).toEqual(["person-1"]);
+});
+
+test("moves a task with its destination milestone and index in one request", async () => {
+  updateTask.mockResolvedValue({ task: { id: "task-1" } });
+  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
+    await operation();
+    return true;
+  });
+  const moveTask = createTaskMove({ templateId: "template-1", mutate });
+
+  await expect(moveTask("task-1", "milestone-2", 3)).resolves.toBe(true);
+
+  expect(updateTask).toHaveBeenCalledWith({
+    templateId: "template-1",
+    taskId: "task-1",
+    milestoneId: "milestone-2",
+    index: 3,
+  });
+});
+
+test("returns false when a task move fails", async () => {
+  const mutate = jest.fn().mockResolvedValue(false);
+  const moveTask = createTaskMove({ templateId: "template-1", mutate });
+
+  await expect(moveTask("task-1", null, 0)).resolves.toBe(false);
 });

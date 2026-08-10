@@ -1,3 +1,4 @@
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import React, { useEffect } from "react";
 import { RelativeDayField } from "../RelativeDayField";
 import { MilestoneField, type Milestone as MilestoneFieldMilestone } from "../MilestoneField";
@@ -14,12 +15,72 @@ import { TaskRow } from "./TaskRow";
 import { MilestoneFormModal } from "./MilestoneFormModal";
 import type { TemplateProjectPage } from ".";
 import { AssigneesField } from "../AssigneesField";
+import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../utils/PragmaticDragAndDrop";
+import type { BoardLocation, BoardMove } from "../utils/PragmaticDragAndDrop";
+
+const ROOT_TASKS_CONTAINER_ID = "no-milestone";
 
 export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   const [isCreating, setIsCreating] = React.useState(false);
   const [isCreatingMilestone, setIsCreatingMilestone] = React.useState(false);
   const [taskBeingEdited, setTaskBeingEdited] = React.useState<TemplateProjectPage.Task | null>(null);
+  const [tasks, setTasks] = React.useState(props.tasks);
+  const confirmedTasks = React.useRef(props.tasks);
+  const confirmedLayout = React.useRef(taskLayoutKey(props.tasks));
+  const pendingMove = React.useRef<PendingTaskMove | null>(null);
+  const nextMoveId = React.useRef(0);
+  const isDraggingEnabled = canEdit && Boolean(props.onTaskReorder);
   const orderedMilestones: Array<TemplateProjectPage.Milestone | null> = [null, ...props.milestones];
+
+  React.useLayoutEffect(() => {
+    const incomingLayout = taskLayoutKey(props.tasks);
+
+    confirmedTasks.current = props.tasks;
+    confirmedLayout.current = incomingLayout;
+
+    const pending = pendingMove.current;
+    if (!pending || incomingLayout === pending.optimisticLayout) {
+      setTasks(props.tasks);
+    }
+  }, [props.tasks]);
+
+  const handleTaskMove = React.useCallback(
+    async (move: BoardMove) => {
+      if (!isDraggingEnabled || !props.onTaskReorder) return;
+
+      const milestoneId =
+        move.destination.containerId === ROOT_TASKS_CONTAINER_ID ? null : move.destination.containerId;
+      const moveId = ++nextMoveId.current;
+      const previousLayout = taskLayoutKey(tasks);
+      const optimisticTasks = moveTask(tasks, move.itemId, milestoneId, move.destination.index, props.statuses);
+
+      pendingMove.current = {
+        id: moveId,
+        optimisticLayout: taskLayoutKey(optimisticTasks),
+      };
+      setTasks(optimisticTasks);
+
+      let successful = false;
+      try {
+        successful = (await props.onTaskReorder(move.itemId, milestoneId, move.destination.index)) !== false;
+      } catch (_error) {
+        successful = false;
+      }
+
+      if (pendingMove.current?.id !== moveId) return;
+      pendingMove.current = null;
+
+      if (!successful) {
+        setTasks(confirmedTasks.current);
+      } else if (confirmedLayout.current !== previousLayout) {
+        setTasks(confirmedTasks.current);
+      }
+    },
+    [isDraggingEnabled, props.onTaskReorder, props.statuses, tasks],
+  );
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
+  const activeDraggedItemId = isDraggingEnabled ? draggedItemId : null;
+  const activeDestination = isDraggingEnabled ? destination : null;
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col pb-8" data-test-id="template-task-board">
@@ -56,28 +117,28 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
       />
       <div className="overflow-hidden rounded-md border border-surface-outline bg-surface-base">
         {orderedMilestones.map((milestone) => {
-          const tasks = props.tasks.filter((task) => task.milestoneId === (milestone?.id ?? null));
-          if (tasks.length === 0 && milestone === null) return null;
+          const milestoneTasks = tasks.filter((task) => task.milestoneId === (milestone?.id ?? null));
+          const containerId = milestone?.id ?? ROOT_TASKS_CONTAINER_ID;
+          const isEmptyRootDropTarget = milestone === null && activeDraggedItemId !== null;
+          if (milestoneTasks.length === 0 && milestone === null && !isEmptyRootDropTarget) return null;
+
           return (
-            <section key={milestone?.id ?? "root"}>
-              <div className="border-b border-surface-outline bg-surface-dimmed px-4 py-3 text-sm font-semibold">
-                {milestone?.title ?? "No milestone"}
-              </div>
-              {tasks.map((task) => (
-                <TaskRow
-                  key={task.id}
-                  task={task}
-                  props={props}
-                  canEdit={canEdit}
-                  onClick={() => setTaskBeingEdited(task)}
-                  index={tasks.indexOf(task)}
-                />
-              ))}
-              {tasks.length === 0 && <div className="px-4 py-3 text-sm text-content-dimmed">No tasks</div>}
-            </section>
+            <TaskSection
+              key={milestone?.id ?? "root"}
+              title={milestone?.title ?? "No milestone"}
+              tasks={milestoneTasks}
+              containerId={containerId}
+              props={props}
+              canEdit={canEdit}
+              isDraggingEnabled={isDraggingEnabled}
+              draggedItemId={activeDraggedItemId}
+              destination={activeDestination}
+              placeholderHeight={draggedItemDimensions?.height ?? null}
+              onTaskClick={setTaskBeingEdited}
+            />
           );
         })}
-        {props.tasks.length === 0 && props.milestones.length === 0 && (
+        {tasks.length === 0 && props.milestones.length === 0 && (
           <div className="px-4 py-8 text-center text-sm text-content-dimmed">
             Add the first task to define the work.
           </div>
@@ -85,6 +146,147 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
       </div>
     </div>
   );
+}
+
+interface PendingTaskMove {
+  id: number;
+  optimisticLayout: string;
+}
+
+function taskLayoutKey(tasks: TemplateProjectPage.Task[]) {
+  const taskIdsByContainer = new Map<string, string[]>();
+
+  for (const task of tasks) {
+    const containerId = task.milestoneId ?? ROOT_TASKS_CONTAINER_ID;
+    const taskIds = taskIdsByContainer.get(containerId) ?? [];
+    taskIdsByContainer.set(containerId, [...taskIds, task.id]);
+  }
+
+  return [...taskIdsByContainer.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([containerId, taskIds]) => `${containerId}:${taskIds.join(",")}`)
+    .join("|");
+}
+
+function TaskSection({
+  title,
+  tasks,
+  containerId,
+  props,
+  canEdit,
+  isDraggingEnabled,
+  draggedItemId,
+  destination,
+  placeholderHeight,
+  onTaskClick,
+}: {
+  title: string;
+  tasks: TemplateProjectPage.Task[];
+  containerId: string;
+  props: TemplateProjectPage.Props;
+  canEdit: boolean;
+  isDraggingEnabled: boolean;
+  draggedItemId: string | null;
+  destination: BoardLocation | null;
+  placeholderHeight: number | null;
+  onTaskClick: (task: TemplateProjectPage.Task) => void;
+}) {
+  const sectionRef = React.useRef<HTMLElement>(null);
+  const { items: projectedTasks, placeholderIndex } = React.useMemo(
+    () =>
+      projectItemsWithPlaceholder({
+        items: tasks,
+        getId: (task) => task.id,
+        draggedItemId,
+        targetLocation: destination,
+        containerId,
+      }),
+    [containerId, destination, draggedItemId, tasks],
+  );
+
+  useEffect(() => {
+    if (!isDraggingEnabled) return;
+
+    const element = sectionRef.current;
+    if (!element) return;
+
+    return dropTargetForElements({
+      element,
+      getData: () => ({ containerId, index: projectedTasks.length }),
+    });
+  }, [containerId, isDraggingEnabled, projectedTasks.length]);
+
+  return (
+    <section ref={sectionRef} data-test-id={`template-task-section-${containerId}`}>
+      <div className="border-b border-surface-outline bg-surface-dimmed px-4 py-3 text-sm font-semibold">{title}</div>
+      {projectedTasks.map((task, index) => (
+        <React.Fragment key={task.id}>
+          {placeholderIndex === index && (
+            <SubtleDropPlaceholder containerId={containerId} index={index} height={placeholderHeight} />
+          )}
+          <TaskRow
+            task={task}
+            props={props}
+            canEdit={canEdit}
+            onClick={() => onTaskClick(task)}
+            index={index}
+            containerId={containerId}
+            isDraggable={isDraggingEnabled}
+          />
+        </React.Fragment>
+      ))}
+      {placeholderIndex !== null && placeholderIndex === projectedTasks.length && (
+        <SubtleDropPlaceholder containerId={containerId} index={projectedTasks.length} height={placeholderHeight} />
+      )}
+      {tasks.length === 0 && placeholderIndex === null && (
+        <div className="px-4 py-3 text-sm text-content-dimmed">No tasks</div>
+      )}
+    </section>
+  );
+}
+
+function moveTask(
+  tasks: TemplateProjectPage.Task[],
+  taskId: string,
+  milestoneId: string | null,
+  destinationIndex: number,
+  statuses: TemplateProjectPage.Props["statuses"],
+) {
+  const task = tasks.find((candidate) => candidate.id === taskId);
+  if (!task) return tasks;
+
+  const remainingTasks = tasks.filter((candidate) => candidate.id !== taskId);
+  const destinationTasks = remainingTasks.filter((candidate) => candidate.milestoneId === milestoneId);
+  const boundedIndex = Math.max(0, Math.min(destinationIndex, destinationTasks.length));
+  const movedTask = { ...task, milestoneId };
+  const nextDestinationTask = destinationTasks[boundedIndex];
+
+  if (nextDestinationTask) {
+    const insertionIndex = remainingTasks.findIndex((candidate) => candidate.id === nextDestinationTask.id);
+    remainingTasks.splice(insertionIndex, 0, movedTask);
+  } else {
+    const lastDestinationTask = destinationTasks[destinationTasks.length - 1];
+    const insertionIndex = lastDestinationTask
+      ? remainingTasks.findIndex((candidate) => candidate.id === lastDestinationTask.id) + 1
+      : remainingTasks.length;
+    remainingTasks.splice(insertionIndex, 0, movedTask);
+  }
+
+  return milestoneId === null ? normalizeRootTaskOrder(remainingTasks, statuses) : remainingTasks;
+}
+
+function normalizeRootTaskOrder(tasks: TemplateProjectPage.Task[], statuses: TemplateProjectPage.Props["statuses"]) {
+  const statusPositions = new Map(statuses.map((status, index) => [status.value || status.id, index]));
+  const rootTasks = tasks
+    .filter((task) => task.milestoneId === null)
+    .sort(
+      (left, right) =>
+        (statusPositions.get(left.status.value || left.status.id) ?? Number.MAX_SAFE_INTEGER) -
+        (statusPositions.get(right.status.value || right.status.id) ?? Number.MAX_SAFE_INTEGER),
+    );
+  let rootIndex = 0;
+
+  return tasks.map((task) => (task.milestoneId === null ? rootTasks[rootIndex++]! : task));
 }
 
 function TaskFormModal({
