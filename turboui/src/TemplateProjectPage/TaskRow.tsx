@@ -1,12 +1,14 @@
 import React, { useCallback } from "react";
 import { RelativeDayField } from "../RelativeDayField";
 import { StatusSelector } from "../StatusSelector";
-import { GhostButton, SecondaryButton } from "../Button";
+import { SecondaryButton } from "../Button";
 import { AssigneesField } from "../AssigneesField";
 import { AvatarList } from "../Avatar";
 import { Tooltip } from "../Tooltip";
 import { IconAlertTriangleFilled, IconX } from "../icons";
 import type { TemplateProjectPage } from ".";
+import { useSortableItem } from "../utils/PragmaticDragAndDrop";
+import classNames from "../utils/classnames";
 
 export function TaskRow({
   task,
@@ -14,12 +16,16 @@ export function TaskRow({
   canEdit,
   onClick,
   index,
+  containerId,
+  isDraggable,
 }: {
   task: TemplateProjectPage.Task;
   props: TemplateProjectPage.Props;
   canEdit: boolean;
   onClick: () => void;
   index: number;
+  containerId: string;
+  isDraggable: boolean;
 }) {
   const activeAssignees = React.useMemo(
     () => (task.assignees ?? []).filter((assignee) => assignee.active && assignee.person),
@@ -37,6 +43,12 @@ export function TaskRow({
   const confirmedAssignees = React.useRef(activePeople);
   const pendingAssignees = React.useRef<AssigneesField.Person[] | null>(null);
   const latestUpdate = React.useRef(0);
+  const { ref, isDragging } = useSortableItem<HTMLDivElement>({
+    itemId: task.id,
+    index,
+    containerId,
+    disabled: !isDraggable,
+  });
 
   React.useEffect(() => {
     confirmedAssignees.current = activePeople;
@@ -70,25 +82,42 @@ export function TaskRow({
     [activeAssignees, props.onTaskUpdate, task.id],
   );
 
+  const stopDragFromInteractive = (event: React.MouseEvent) => event.stopPropagation();
+
   return (
-    <div className="border-b border-surface-outline last:border-b-0" data-test-id={`template-task-${task.id}`}>
+    <div
+      ref={ref}
+      className={classNames("border-b border-surface-outline last:border-b-0", {
+        "cursor-grab active:cursor-grabbing": isDraggable && !isDragging,
+        "cursor-grabbing bg-surface-accent": isDragging,
+      })}
+      data-test-id={`template-task-${task.id}`}
+      data-task-row-id={task.id}
+    >
       <div className="flex items-center gap-3 px-4 py-2.5">
-        <StatusSelector
-          statusOptions={props.statuses}
-          status={task.status}
-          onChange={(status) => props.onTaskUpdate?.(task.id, { status })}
-          readonly={!canEdit}
-          size="md"
-        />
-        <button
-          type="button"
-          className="min-w-0 flex-1 truncate text-left text-sm font-medium"
-          onClick={onClick}
-          disabled={!canEdit}
+        <div onMouseDown={stopDragFromInteractive}>
+          <StatusSelector
+            statusOptions={props.statuses}
+            status={task.status}
+            onChange={(status) => props.onTaskUpdate?.(task.id, { status })}
+            readonly={!canEdit}
+            size="md"
+          />
+        </div>
+        <div className="min-w-0 flex-1" onMouseDown={stopDragFromInteractive}>
+          <button
+            type="button"
+            className="w-full truncate text-left text-sm font-medium"
+            onClick={onClick}
+            disabled={!canEdit}
+          >
+            {task.name}
+          </button>
+        </div>
+        <div
+          className="flex h-6 min-w-6 max-w-[10rem] flex-shrink-0 items-center justify-end gap-1"
+          onMouseDown={stopDragFromInteractive}
         >
-          {task.name}
-        </button>
-        <div className="flex h-6 min-w-6 max-w-[10rem] flex-shrink-0 items-center justify-end gap-1">
           <UnavailableTaskAssignees
             assignees={unavailableAssignees}
             onRemove={canEdit ? () => updateAssignees(currentAssignees) : undefined}
@@ -114,28 +143,16 @@ export function TaskRow({
             />
           )}
         </div>
-        <RelativeDayField
-          value={task.dueOffsetDays}
-          onChange={(dueOffsetDays) => {
-            void props.onTaskUpdate?.(task.id, { dueOffsetDays });
-          }}
-          readonly={!canEdit}
-          testId={`template-task-${task.id}-due-offset`}
-        />
-        {canEdit && props.onTaskReorder && (
-          <div className="flex gap-1">
-            <GhostButton
-              size="xs"
-              onClick={() => props.onTaskReorder?.(task.id, task.milestoneId, Math.max(0, index - 1))}
-              disabled={index === 0}
-            >
-              Move up
-            </GhostButton>
-            <GhostButton size="xs" onClick={() => props.onTaskReorder?.(task.id, task.milestoneId, index + 1)}>
-              Move down
-            </GhostButton>
-          </div>
-        )}
+        <div onMouseDown={stopDragFromInteractive}>
+          <RelativeDayField
+            value={task.dueOffsetDays}
+            onChange={(dueOffsetDays) => {
+              void props.onTaskUpdate?.(task.id, { dueOffsetDays });
+            }}
+            readonly={!canEdit}
+            testId={`template-task-${task.id}-due-offset`}
+          />
+        </div>
       </div>
     </div>
   );

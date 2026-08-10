@@ -30264,6 +30264,17 @@
           "optional": true,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "index",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
         }
       ],
       "docstring": null,

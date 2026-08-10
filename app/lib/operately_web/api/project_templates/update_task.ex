@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateTask do
     field? :due_offset_days, :integer, null: true
     field? :reminders, list_of(:task_reminder), null: false
     field? :task_status, :task_status, null: false
+    field? :index, :integer, null: false
   end
 
   outputs do
