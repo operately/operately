@@ -100,42 +100,10 @@ function Page() {
     mutate,
   });
 
-  async function onPersonCreate(person: Omit<TemplateProjectPage.TemplatePerson, "id" | "active">) {
-    if (!person.person) return;
-    const personId = person.person.id;
-
-    await mutate("Contributor not added", () =>
-      Api.project_templates.createPerson({
-        templateId: template.id,
-        personId,
-        role: person.role,
-        responsibility: person.responsibility,
-        accessLevel: person.accessLevel as AccessOptionsInt,
-      }),
-    );
-  }
-
-  async function onPersonUpdate(
-    templatePersonId: string,
-    updates: Partial<Omit<TemplateProjectPage.TemplatePerson, "id" | "active">>,
-  ) {
-    return mutate("Contributor not updated", () =>
-      Api.project_templates.updatePerson({
-        templateId: template.id,
-        templatePersonId,
-        personId: updates.person?.id,
-        role: updates.role,
-        responsibility: updates.responsibility,
-        accessLevel: updates.accessLevel as AccessOptionsInt | undefined,
-      }),
-    );
-  }
-
-  async function onPersonDelete(templatePersonId: string) {
-    await mutate("Contributor not removed", () =>
-      Api.project_templates.deletePerson({ templateId: template.id, templatePersonId }),
-    );
-  }
+  const { onPersonCreate, onPersonUpdate, onPersonDelete } = createPeopleOperations({
+    templateId: template.id,
+    mutate,
+  });
 
   return (
     <TemplateProjectPage
@@ -303,6 +271,47 @@ export function createTaskMove({ templateId, mutate }: { templateId: string; mut
         index: destinationIndex,
       }),
     );
+}
+
+export function createPeopleOperations({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
+  function onPersonCreate(person: Omit<TemplateProjectPage.TemplatePerson, "id" | "active">) {
+    const selectedPerson = person.person;
+    if (!selectedPerson) return false;
+
+    return mutate("Contributor not added", () =>
+      Api.project_templates.createPerson({
+        templateId,
+        personId: selectedPerson.id,
+        role: person.role,
+        responsibility: person.responsibility,
+        accessLevel: person.accessLevel as AccessOptionsInt,
+      }),
+    );
+  }
+
+  function onPersonUpdate(
+    templatePersonId: string,
+    updates: Partial<Omit<TemplateProjectPage.TemplatePerson, "id" | "active">>,
+  ) {
+    return mutate("Contributor not updated", () =>
+      Api.project_templates.updatePerson({
+        templateId,
+        templatePersonId,
+        personId: updates.person?.id,
+        role: updates.role,
+        responsibility: updates.responsibility,
+        accessLevel: updates.accessLevel as AccessOptionsInt | undefined,
+      }),
+    );
+  }
+
+  function onPersonDelete(templatePersonId: string) {
+    return mutate("Contributor not removed", () =>
+      Api.project_templates.deletePerson({ templateId, templatePersonId }),
+    );
+  }
+
+  return { onPersonCreate, onPersonUpdate, onPersonDelete };
 }
 
 function content(value?: string | null) {

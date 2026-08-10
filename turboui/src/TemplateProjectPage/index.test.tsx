@@ -15,7 +15,7 @@ let mockBoardState: {
   destination: { containerId: string; index: number } | null;
   draggedItemDimensions: { width: number; height: number } | null;
 } = { draggedItemId: null, destination: null, draggedItemDimensions: null };
-const mockUseSortableItem = jest.fn(() => ({
+const mockUseSortableItem = jest.fn((_options?: unknown) => ({
   ref: { current: null },
   dragHandleRef: { current: null },
   isDragging: false,
@@ -504,6 +504,7 @@ describe("TemplateProjectPage", () => {
     expect(peopleSection).toHaveTextContent("Reviewer");
     expect(peopleSection).toHaveTextContent("Contributors");
     expect(peopleSection).toHaveTextContent("Unavailable person");
+    expect(peopleSection).toHaveTextContent("Not active");
 
     fireEvent.click(screen.getByText("Tasks"));
     expect(screen.getAllByTitle("Ada Lovelace").length).toBeGreaterThan(0);
@@ -582,11 +583,98 @@ describe("TemplateProjectPage", () => {
 
     fireEvent.click(screen.getByText("Edit contributor"));
     expect(screen.getByRole("heading", { name: "Edit contributor" })).toBeInTheDocument();
+    expect(screen.queryByText("Select person")).not.toBeInTheDocument();
+    expect(screen.queryByText("Select replacement")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
     fireEvent.click(screen.getByText("Ada Lovelace"));
     fireEvent.click(screen.getByText("Remove contributor"));
     expect(onPersonDelete).toHaveBeenCalledWith(contributor.id);
+  });
+
+  it("replaces an unavailable contributor while preserving their role details", async () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+
+    const unavailableContributor: Types.TemplatePerson = {
+      id: "template-person-1",
+      person: { id: "person-1", fullName: "Bob Williams", avatarUrl: null },
+      role: "contributor",
+      responsibility: "Coordinates launch support",
+      accessLevel: 70,
+      active: false,
+    };
+    const replacement = { id: "person-2", fullName: "Emily Davis", avatarUrl: null };
+    const onPersonUpdate = jest.fn().mockResolvedValue(true);
+
+    renderPage(
+      createProps({
+        people: [unavailableContributor],
+        personSearch: { people: [replacement], onSearch: async () => undefined },
+        onPersonUpdate,
+      }),
+    );
+
+    fireEvent.click(screen.getByText("Bob Williams"));
+    fireEvent.click(screen.getByText("Replace unavailable contributor"));
+
+    expect(screen.getByRole("heading", { name: "Replace unavailable contributor" })).toBeInTheDocument();
+    expect(screen.getByText("Select replacement")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Coordinates launch support")).toBeInTheDocument();
+    expect(screen.getByText("Edit Access")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Select replacement"));
+    fireEvent.click(screen.getByText(replacement.fullName));
+    fireEvent.click(screen.getByRole("button", { name: "Replace contributor" }));
+
+    await waitFor(() => {
+      expect(onPersonUpdate).toHaveBeenCalledWith(unavailableContributor.id, {
+        person: replacement,
+        role: "contributor",
+        responsibility: "Coordinates launch support",
+        accessLevel: 70,
+      });
+      expect(screen.queryByRole("heading", { name: "Replace unavailable contributor" })).not.toBeInTheDocument();
+    });
+  });
+
+  it("keeps an unavailable contributor replacement open after a failed update", async () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+
+    let resolveUpdate: (successful: boolean) => void = () => undefined;
+    const onPersonUpdate = jest.fn(
+      () => new Promise<boolean>((resolve) => {
+        resolveUpdate = resolve;
+      }),
+    );
+    const unavailableContributor: Types.TemplatePerson = {
+      id: "template-person-1",
+      person: null,
+      role: "contributor",
+      responsibility: "Coordinates launch support",
+      accessLevel: 70,
+      active: false,
+    };
+    const replacement = { id: "person-2", fullName: "Emily Davis", avatarUrl: null };
+
+    renderPage(
+      createProps({
+        people: [unavailableContributor],
+        personSearch: { people: [replacement], onSearch: async () => undefined },
+        onPersonUpdate,
+      }),
+    );
+
+    fireEvent.click(screen.getByText("Unavailable person"));
+    fireEvent.click(screen.getByText("Replace unavailable contributor"));
+    fireEvent.click(screen.getByText("Select replacement"));
+    fireEvent.click(screen.getByText(replacement.fullName));
+    fireEvent.click(screen.getByRole("button", { name: "Replace contributor" }));
+
+    await act(async () => resolveUpdate(false));
+
+    expect(screen.getByRole("heading", { name: "Replace unavailable contributor" })).toBeInTheDocument();
+    expect(screen.getByText(replacement.fullName)).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Coordinates launch support")).toBeInTheDocument();
   });
 
   it("optimistically updates contributor access and rolls back failed updates", async () => {

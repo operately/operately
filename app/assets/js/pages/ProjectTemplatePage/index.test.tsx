@@ -2,7 +2,7 @@ import Api from "@/api";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { loader } from "./loader";
 import { activePersonIds } from "./people";
-import { createTaskMove } from ".";
+import { createPeopleOperations, createTaskMove } from ".";
 
 jest.mock("@/components/Pages", () => ({}));
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn() }));
@@ -20,13 +20,24 @@ jest.mock("turboui", () => ({
 
 jest.mock("@/api", () => ({
   __esModule: true,
-  default: { project_templates: { get: jest.fn(), updateTask: jest.fn() } },
+  default: {
+    project_templates: {
+      get: jest.fn(),
+      updateTask: jest.fn(),
+      createPerson: jest.fn(),
+      updatePerson: jest.fn(),
+      deletePerson: jest.fn(),
+    },
+  },
 }));
 
 jest.mock("@/routes/redirectUtils", () => ({ redirectIfFeatureNotEnabled: jest.fn() }));
 
 const getTemplate = Api.project_templates.get as jest.Mock;
 const updateTask = Api.project_templates.updateTask as jest.Mock;
+const createPerson = Api.project_templates.createPerson as jest.Mock;
+const updatePerson = Api.project_templates.updatePerson as jest.Mock;
+const deletePerson = Api.project_templates.deletePerson as jest.Mock;
 const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
 beforeEach(() => {
@@ -100,4 +111,62 @@ test("returns false when a task move fails", async () => {
   const moveTask = createTaskMove({ templateId: "template-1", mutate });
 
   await expect(moveTask("task-1", null, 0)).resolves.toBe(false);
+});
+
+test("serializes contributor create, update, replacement, and deletion mutations", async () => {
+  createPerson.mockResolvedValue({ person: { id: "template-person-1" } });
+  updatePerson.mockResolvedValue({ person: { id: "template-person-1" } });
+  deletePerson.mockResolvedValue({ success: true });
+  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
+    await operation();
+    return true;
+  });
+  const people = createPeopleOperations({ templateId: "template-1", mutate });
+  const replacement = { id: "person-2", fullName: "Emily Davis", avatarUrl: null };
+
+  await expect(
+    people.onPersonCreate({
+      person: replacement,
+      role: "contributor",
+      responsibility: "Coordinates launch support",
+      accessLevel: 70,
+    }),
+  ).resolves.toBe(true);
+  await expect(
+    people.onPersonUpdate("template-person-1", {
+      person: replacement,
+      role: "contributor",
+      responsibility: "Coordinates launch support",
+      accessLevel: 70,
+    }),
+  ).resolves.toBe(true);
+  await expect(people.onPersonDelete("template-person-1")).resolves.toBe(true);
+
+  expect(createPerson).toHaveBeenCalledWith({
+    templateId: "template-1",
+    personId: "person-2",
+    role: "contributor",
+    responsibility: "Coordinates launch support",
+    accessLevel: 70,
+  });
+  expect(updatePerson).toHaveBeenCalledWith({
+    templateId: "template-1",
+    templatePersonId: "template-person-1",
+    personId: "person-2",
+    role: "contributor",
+    responsibility: "Coordinates launch support",
+    accessLevel: 70,
+  });
+  expect(deletePerson).toHaveBeenCalledWith({ templateId: "template-1", templatePersonId: "template-person-1" });
+});
+
+test("returns false from contributor mutations without invoking their operations", async () => {
+  const mutate = jest.fn().mockResolvedValue(false);
+  const people = createPeopleOperations({ templateId: "template-1", mutate });
+
+  await expect(people.onPersonUpdate("template-person-1", { responsibility: "Updated" })).resolves.toBe(false);
+  await expect(people.onPersonDelete("template-person-1")).resolves.toBe(false);
+  expect(people.onPersonCreate({ person: null, role: "contributor", responsibility: null, accessLevel: 70 })).toBe(
+    false,
+  );
 });

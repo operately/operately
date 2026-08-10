@@ -29,6 +29,8 @@ const unavailableContributor: Types.TemplatePerson = {
   active: false,
 };
 
+const replacementCandidate = { id: "grace", fullName: "Grace Hopper", avatarUrl: null };
+
 const populatedProps: Types.Props = {
   template: {
     id: "launch-template",
@@ -115,7 +117,10 @@ function TemplateStory({ props }: { props: Types.Props }) {
   const [milestones, setMilestones] = React.useState(props.milestones);
   const [tasks, setTasks] = React.useState(props.tasks);
   const [people, setPeople] = React.useState(props.people ?? []);
-  const searchablePeople = people.flatMap((templatePerson) => (templatePerson.person ? [templatePerson.person] : []));
+  const searchablePeople =
+    props.personSearch.people.length > 0
+      ? props.personSearch.people
+      : people.flatMap((templatePerson) => (templatePerson.person ? [templatePerson.person] : []));
 
   const reorderMilestones = (milestoneId: string, destinationIndex: number) => {
     setMilestones((current) => {
@@ -175,7 +180,7 @@ function TemplateStory({ props }: { props: Types.Props }) {
     onPersonCreate: (person) =>
       setPeople((current) => [...current, { ...person, id: crypto.randomUUID(), active: true }]),
     onPersonUpdate: (id, updates) =>
-      setPeople((current) => current.map((item) => (item.id === id ? { ...item, ...updates } : item))),
+      setPeople((current) => current.map((item) => (item.id === id ? { ...item, ...updates, active: Boolean(updates.person) } : item))),
     onPersonDelete: (id) => setPeople((current) => current.filter((item) => item.id !== id)),
   };
 
@@ -217,6 +222,13 @@ export const ZeroOffsets: Story = {
 };
 export const ReadOnly: Story = {
   render: () => <TemplateStory props={{ ...populatedProps, permissions: { canView: true, canComment: true } }} />,
+};
+export const ReplaceUnavailableContributor: Story = {
+  render: () => (
+    <TemplateStory
+      props={{ ...populatedProps, personSearch: { people: [replacementCandidate], onSearch: async () => undefined } }}
+    />
+  ),
 };
 export const Mobile: Story = {
   parameters: { viewport: { defaultViewport: "mobile1" }, reactRouter: { path: "/?tab=tasks" } },
