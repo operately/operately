@@ -193,11 +193,13 @@ function ContributorModal({
   const accessLevelLabel = CONTRIBUTOR_ACCESS_LEVELS.find((level) => level.value === accessLevel)?.label;
 
   const updateAccessLevel = async (nextAccessLevel: number) => {
-    if (!templatePerson || nextAccessLevel === accessLevel) return;
+    if (nextAccessLevel === accessLevel) return;
 
     const previousAccessLevel = accessLevel;
     const updateId = ++accessUpdateId.current;
     setAccessLevel(nextAccessLevel);
+
+    if (!templatePerson) return;
 
     const successful = (await onUpdate?.(templatePerson.id, { accessLevel: nextAccessLevel })) !== false;
     if (!successful && updateId === accessUpdateId.current) setAccessLevel(previousAccessLevel);

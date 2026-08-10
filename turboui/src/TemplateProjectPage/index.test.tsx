@@ -289,6 +289,9 @@ describe("TemplateProjectPage", () => {
     fireEvent.click(screen.getByText("Select person"));
     expect(screen.getByPlaceholderText("Search...")).toBeInTheDocument();
     fireEvent.click(screen.getByText(person.fullName));
+    fireEvent.keyDown(document.querySelector('[data-test-id="template-contributor-access"]')!, { key: "Enter" });
+    fireEvent.click(document.querySelector('[data-test-id="template-contributor-access-10"]')!);
+    expect(screen.getByText("View Access")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Save contributor" }));
 
     await waitFor(() => {
@@ -296,7 +299,7 @@ describe("TemplateProjectPage", () => {
         person,
         role: "contributor",
         responsibility: null,
-        accessLevel: 70,
+        accessLevel: 10,
       });
       expect(screen.queryByRole("heading", { name: "Add contributor" })).not.toBeInTheDocument();
     });
