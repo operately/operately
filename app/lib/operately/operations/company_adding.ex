@@ -57,7 +57,8 @@ defmodule Operately.Operations.CompanyAdding do
       tools: %{
         tasks_enabled: true,
         discussions_enabled: true,
-        resource_hub_enabled: true
+        resource_hub_enabled: true,
+        templates_enabled: true
       }
     }
 

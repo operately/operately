@@ -5,11 +5,12 @@ import { MemoryRouter } from "react-router";
 import { ToolsSection } from "./ToolsSection";
 
 // Render the surrounding tools as no-ops; this suite only exercises the
-// experimental-feature gating of the KPIs tool card.
+// experimental-feature gating of optional Space tool cards.
 jest.mock("./GoalsAndProjects", () => ({ GoalsAndProjects: () => null }));
 jest.mock("./Discussions", () => ({ Discussions: () => null }));
 jest.mock("./ResourceHub", () => ({ ResourceHub: () => null }));
 jest.mock("./Tasks", () => ({ Tasks: () => null }));
+jest.mock("./Templates", () => ({ Templates: () => <div data-test-id="templates-tool" /> }));
 
 // The shared Container renders turboui's DivLink, which pulls a duplicate
 // React/react-router under jest. Swap it for a plain anchor so the gating test
@@ -25,21 +26,22 @@ jest.mock("./components", () => ({
 // turboui bundles its own React instance, so stub the KPI summary content.
 jest.mock("turboui", () => ({ KpiSummaryCard: () => null }));
 
-jest.mock("@/routes/paths", () => ({
-  usePaths: () => ({ spaceKpisPath: (id: string) => `/spaces/${id}/kpis` }),
-}));
+jest.mock("@/routes/paths", () => ({ usePaths: () => ({ spaceKpisPath: (id: string) => `/spaces/${id}/kpis` }) }));
 
 const mockCompany = jest.fn();
 jest.mock("@/routes/useCompanyLoaderData", () => ({
   useCompanyLoaderData: () => ({ company: mockCompany() }),
 }));
 
-function renderSection(enabledExperimentalFeatures: string[], kpisEnabled: boolean): string {
+function renderSection(enabledExperimentalFeatures: string[], kpisEnabled: boolean, templatesEnabled = true): string {
   mockCompany.mockReturnValue({ enabledExperimentalFeatures });
 
   return renderToStaticMarkup(
     <MemoryRouter>
-      <ToolsSection space={{ id: "space-1", name: "Growth" } as any} tools={{ kpisEnabled } as any} />
+      <ToolsSection
+        space={{ id: "space-1", name: "Growth" } as any}
+        tools={{ kpisEnabled, templatesEnabled, templates: [] } as any}
+      />
     </MemoryRouter>,
   );
 }
@@ -59,5 +61,22 @@ describe("ToolsSection KPIs gating", () => {
     const html = renderSection(["space_kpis"], true);
     expect(html).toContain('data-test-id="kpis-tool"');
     expect(html).toContain('href="/spaces/space-1/kpis"');
+  });
+});
+
+describe("ToolsSection Templates gating", () => {
+  test("hides the Templates tool when the project_templates feature is off", () => {
+    const html = renderSection([], false, true);
+    expect(html).not.toContain('data-test-id="templates-tool"');
+  });
+
+  test("hides the Templates tool when the feature is on but the space has it disabled", () => {
+    const html = renderSection(["project_templates"], false, false);
+    expect(html).not.toContain('data-test-id="templates-tool"');
+  });
+
+  test("shows the Templates tool when the feature and space tool are enabled", () => {
+    const html = renderSection(["project_templates"], false, true);
+    expect(html).toContain('data-test-id="templates-tool"');
   });
 });

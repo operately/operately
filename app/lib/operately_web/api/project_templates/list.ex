@@ -21,13 +21,13 @@ defmodule OperatelyWeb.Api.ProjectTemplates.List do
 
   def call(conn, inputs) do
     with {:ok, :enabled} <- ProjectTemplates.ensure_feature_enabled(company(conn)) do
-      templates = list_project_templates(me(conn), inputs)
+      templates = list_accessible(me(conn), inputs)
 
       {:ok, %{templates: Serializer.serialize(templates, level: :essential)}}
     end
   end
 
-  defp list_project_templates(requester, filters) do
+  def list_accessible(requester, filters) do
     ProjectTemplate
     |> from(as: :template)
     |> where_company(requester.company_id)

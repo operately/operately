@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.UpdateTools do
   def inputs(ctx) do
     %{
       space_id: Paths.space_id(ctx.space),
-      tools: %{tasks_enabled: true, discussions_enabled: true, resource_hub_enabled: true, kpis_enabled: true}
+      tools: %{tasks_enabled: true, discussions_enabled: true, resource_hub_enabled: true, kpis_enabled: true, templates_enabled: true}
     }
   end
 

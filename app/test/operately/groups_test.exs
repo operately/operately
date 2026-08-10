@@ -69,6 +69,20 @@ defmodule Operately.GroupsTest do
       assert group.tools.tasks_enabled == false
       assert group.tools.discussions_enabled == true
       assert group.tools.resource_hub_enabled == true
+      assert group.tools.templates_enabled == true
+    end
+
+    test "loads templates as enabled from a legacy tools map", ctx do
+      legacy_tools = %{
+        tasks_enabled: false,
+        discussions_enabled: true,
+        resource_hub_enabled: true,
+        kpis_enabled: false
+      }
+
+      Repo.query!("UPDATE groups SET tools = $1::text::jsonb WHERE id = $2", [Jason.encode!(legacy_tools), Ecto.UUID.dump!(ctx.group.id)])
+
+      assert Groups.get_group!(ctx.group.id).tools.templates_enabled == true
     end
 
     test "create_group/1 creates group with custom tools", ctx do
@@ -88,6 +102,7 @@ defmodule Operately.GroupsTest do
       assert group.tools.tasks_enabled == true
       assert group.tools.discussions_enabled == false
       assert group.tools.resource_hub_enabled == false
+      assert group.tools.templates_enabled == true
     end
 
     test "create_group/1 with invalid data returns error changeset", ctx do
@@ -134,6 +149,7 @@ defmodule Operately.GroupsTest do
       assert updated_group.tools.tasks_enabled == true
       assert updated_group.tools.discussions_enabled == true
       assert updated_group.tools.resource_hub_enabled == true
+      assert updated_group.tools.templates_enabled == true
     end
 
     test "update_group/2 does not overwrite tools when updating other fields", ctx do

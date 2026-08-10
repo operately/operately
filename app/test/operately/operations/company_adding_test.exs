@@ -73,6 +73,7 @@ defmodule Operately.Operations.CompanyAddingTest do
     assert space.tools.tasks_enabled == true
     assert space.tools.discussions_enabled == true
     assert space.tools.resource_hub_enabled == true
+    assert space.tools.templates_enabled == true
   end
 
   test "CompanyAdding operation creates admin user's access group and membership" do

@@ -9,6 +9,7 @@ defmodule Operately.Groups.SpaceTools do
     field :discussions_enabled, :boolean, default: true
     field :resource_hub_enabled, :boolean, default: true
     field :kpis_enabled, :boolean, default: false
+    field :templates_enabled, :boolean, default: true
 
     field :projects, {:array, :map}, virtual: true
     field :goals, {:array, :map}, virtual: true
@@ -16,6 +17,7 @@ defmodule Operately.Groups.SpaceTools do
     field :resource_hubs, {:array, :map}, virtual: true
     field :tasks, {:array, :map}, virtual: true
     field :kpis, {:array, :map}, virtual: true
+    field :templates, {:array, :map}, virtual: true
   end
 
   def changeset(space_tools, attrs) when is_struct(attrs, __MODULE__) do
@@ -24,7 +26,7 @@ defmodule Operately.Groups.SpaceTools do
 
   def changeset(space_tools, attrs) do
     space_tools
-    |> cast(attrs, [:tasks_enabled, :discussions_enabled, :resource_hub_enabled, :kpis_enabled])
+    |> cast(attrs, [:tasks_enabled, :discussions_enabled, :resource_hub_enabled, :kpis_enabled, :templates_enabled])
   end
 
   def default_settings do
@@ -32,7 +34,8 @@ defmodule Operately.Groups.SpaceTools do
       tasks_enabled: false,
       discussions_enabled: true,
       resource_hub_enabled: true,
-      kpis_enabled: false
+      kpis_enabled: false,
+      templates_enabled: true
     }
   end
 
@@ -47,7 +50,8 @@ defmodule Operately.Groups.SpaceTools do
       messages_boards: Map.get(attrs, :messages_boards),
       resource_hubs: Map.get(attrs, :resource_hubs),
       tasks: Map.get(attrs, :tasks),
-      kpis: Map.get(attrs, :kpis)
+      kpis: Map.get(attrs, :kpis),
+      templates: Map.get(attrs, :templates)
     }
   end
 end
