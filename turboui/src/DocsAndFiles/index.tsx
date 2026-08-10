@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { DivLink, Link } from "../Link";
-import { ResourceHubSearchInput, ResourceHubSearchMessage } from "../ResourceHub";
+import { ResourceHubSearchMessage } from "../ResourceHub";
 import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
 import type { ResourceHubSearchState } from "../ResourceHub/useResourceHubSearch";
 import { SortControl } from "../SortControl";
@@ -29,7 +29,6 @@ import {
 import type { ResourceHubNode } from "../ResourceHub/types";
 import classNames from "../utils/classnames";
 import { getRecentPreviewNodes, sortDocsAndFilesItems } from "./sorting";
-import { plurarize } from "../utils/plurarize";
 
 export namespace DocsAndFiles {
   export type ItemType = "document" | "folder" | "file" | "link";
@@ -144,10 +143,13 @@ export function DocsAndFilesTab({
 
   return (
     <div className={className} data-test-id="docs-and-files-tab">
-      <div className="flex items-start justify-between gap-4 border-b border-surface-outline pb-4">
-        <div className="min-w-0">
-          <Breadcrumbs breadcrumbs={breadcrumbs} />
-          <div className="truncate text-xl font-semibold tracking-tight">{title}</div>
+      <div className="flex items-center justify-between gap-4 border-b border-surface-outline pb-4">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="min-w-0">
+            <Breadcrumbs breadcrumbs={breadcrumbs} />
+            <div className="truncate text-xl font-semibold tracking-tight">{title}</div>
+          </div>
+          <SortControl sortBy={sortBy} onSortChange={setSortBy} />
         </div>
       </div>
 
@@ -157,7 +159,6 @@ export function DocsAndFilesTab({
         emptyStateKind={emptyStateKind}
         hideEmptyState={hideEmptyState}
         sortBy={sortBy}
-        onSortChange={setSortBy}
       />
     </div>
   );
@@ -232,44 +233,26 @@ export function DocsAndFilesBody({
   emptyStateKind = "resourceHub",
   hideEmptyState = false,
   sortBy,
-  onSortChange,
   search,
 }: {
   items: DocsAndFiles.Item[];
   emptyStateKind?: "resourceHub" | "folder";
   hideEmptyState?: boolean;
   sortBy: DocsAndFiles.SortBy;
-  onSortChange: (sortBy: DocsAndFiles.SortBy) => void;
   search?: DocsAndFilesSearch;
 }) {
   const displayedItems = React.useMemo(
     () => (search?.state.isActive ? items : sortDocsAndFilesItems(items, sortBy)),
     [items, search?.state.isActive, sortBy],
   );
-  const searchIsActive = search?.state.isActive ?? false;
-  const showToolbar = Boolean(search) || displayedItems.length > 0;
 
   return (
-    <>
-      {showToolbar && (
-        <div className="flex items-center justify-between gap-3 border-b border-surface-outline py-3">
-          <div className="text-sm font-medium text-content-dimmed">
-            {displayedItems.length > 0 ? plurarize(displayedItems.length, "item", "items") : null}
-          </div>
-          <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
-            {search && <ResourceHubSearchInput search={search.configuration} searchState={search.state} />}
-            <SortControl sortBy={sortBy} onSortChange={onSortChange} disabled={searchIsActive} />
-          </div>
-        </div>
-      )}
-
-      <DocsAndFilesContent
-        items={displayedItems}
-        emptyStateKind={emptyStateKind}
-        hideEmptyState={hideEmptyState}
-        search={search}
-      />
-    </>
+    <DocsAndFilesContent
+      items={displayedItems}
+      emptyStateKind={emptyStateKind}
+      hideEmptyState={hideEmptyState}
+      search={search}
+    />
   );
 }
 
