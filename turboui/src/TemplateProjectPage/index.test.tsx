@@ -3,6 +3,25 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
+type MockBoardMove = {
+  itemId: string;
+  source: { containerId: string; index: number };
+  destination: { containerId: string; index: number };
+};
+
+let mockBoardMoveHandler: ((move: MockBoardMove) => unknown) | null = null;
+let mockBoardState: {
+  draggedItemId: string | null;
+  destination: { containerId: string; index: number } | null;
+  draggedItemDimensions: { width: number; height: number } | null;
+} = { draggedItemId: null, destination: null, draggedItemDimensions: null };
+const mockUseSortableItem = jest.fn(() => ({
+  ref: { current: null },
+  dragHandleRef: { current: null },
+  isDragging: false,
+  closestEdge: null,
+}));
+
 jest.mock("@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box", () => ({
   DropIndicator: () => null,
 }));
@@ -12,17 +31,35 @@ jest.mock("@atlaskit/pragmatic-drag-and-drop/element/adapter", () => ({
 }));
 
 jest.mock("../utils/PragmaticDragAndDrop", () => ({
-  projectItemsWithPlaceholder: ({ items }: { items: unknown[] }) => ({ items, placeholderIndex: null }),
-  SubtleDropPlaceholder: () => null,
+  projectItemsWithPlaceholder: ({
+    items,
+    getId,
+    draggedItemId,
+    targetLocation,
+    containerId,
+  }: {
+    items: unknown[];
+    getId: (item: unknown) => string;
+    draggedItemId: string | null;
+    targetLocation: { containerId: string; index: number } | null;
+    containerId: string;
+  }) => {
+    const projectedItems = draggedItemId ? items.filter((item) => getId(item) !== draggedItemId) : items;
+    return {
+      items: projectedItems,
+      placeholderIndex: targetLocation?.containerId === containerId ? targetLocation.index : null,
+    };
+  },
+  SubtleDropPlaceholder: ({ containerId, index }: { containerId: string; index: number }) => (
+    <div data-testid={`drop-placeholder-${containerId}-${index}`} />
+  ),
   DropIndicator: () => null,
   DragHandle: () => null,
-  useBoardDnD: () => ({ draggedItemId: null, destination: null, draggedItemDimensions: null }),
-  useSortableItem: () => ({
-    ref: () => undefined,
-    dragHandleRef: () => undefined,
-    isDragging: false,
-    closestEdge: null,
-  }),
+  useBoardDnD: (handler: (move: MockBoardMove) => unknown) => {
+    mockBoardMoveHandler = handler;
+    return mockBoardState;
+  },
+  useSortableItem: (options: unknown) => mockUseSortableItem(options),
   useSortableList: () => undefined,
 }));
 
@@ -94,6 +131,12 @@ function renderPage(props: Types.Props, initialEntry = "/templates/template-1") 
   );
 }
 
+beforeEach(() => {
+  mockBoardMoveHandler = null;
+  mockBoardState = { draggedItemId: null, destination: null, draggedItemDimensions: null };
+  mockUseSortableItem.mockClear();
+});
+
 describe("TemplateProjectPage", () => {
   it("renders template navigation, scheduling, and only template tabs", () => {
     renderPage(createProps());
@@ -146,6 +189,209 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByRole("heading", { name: "Create Task" })).toBeInTheDocument();
     expect(screen.getByText("Relative due date")).toBeInTheDocument();
     expect(screen.getByText("Create more")).toBeInTheDocument();
+  });
+
+  it("reorders tasks optimistically and keeps the confirmed order", async () => {
+    let confirmMove: (successful: boolean) => void = () => undefined;
+    const onTaskReorder = jest.fn(() => new Promise<boolean>((resolve) => (confirmMove = resolve)));
+    const first = createProps().tasks[0]!;
+    const second = { ...first, id: "task-2", name: "Prepare screenshots" };
+    renderPage(createProps({ tasks: [first, second], onTaskReorder }), "/templates/template-1?tab=tasks");
+
+    let move: unknown;
+    act(() => {
+      move = mockBoardMoveHandler?.({
+        itemId: first.id,
+        source: { containerId: "milestone-1", index: 0 },
+        destination: { containerId: "milestone-1", index: 2 },
+      });
+    });
+
+    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
+    expect(onTaskReorder).toHaveBeenCalledWith("task-1", "milestone-1", 2);
+
+    await act(async () => {
+      confirmMove(true);
+      await move;
+    });
+
+    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
+  });
+
+  it("keeps the optimistic order while a stale refresh render is replaced by the confirmed order", async () => {
+    let confirmMove: (successful: boolean) => void = () => undefined;
+    const onTaskReorder = jest.fn(() => new Promise<boolean>((resolve) => (confirmMove = resolve)));
+    const first = createProps().tasks[0]!;
+    const second = { ...first, id: "task-2", name: "Prepare screenshots" };
+    const tasks = [first, second];
+    const view = renderPage(createProps({ tasks, onTaskReorder }), "/templates/template-1?tab=tasks");
+
+    let move: unknown;
+    act(() => {
+      move = mockBoardMoveHandler?.({
+        itemId: first.id,
+        source: { containerId: "milestone-1", index: 0 },
+        destination: { containerId: "milestone-1", index: 2 },
+      });
+    });
+
+    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
+
+    view.rerender(
+      <MemoryRouter initialEntries={["/templates/template-1?tab=tasks"]}>
+        <TemplateProjectPage {...createProps({ tasks: [...tasks], onTaskReorder })} />
+      </MemoryRouter>,
+    );
+
+    await act(async () => {
+      confirmMove(true);
+      await move;
+    });
+
+    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
+
+    const confirmedMilestone = {
+      ...createProps().milestones[0]!,
+      tasksOrderingState: ["task-2", "task-1"],
+    };
+    view.rerender(
+      <MemoryRouter initialEntries={["/templates/template-1?tab=tasks"]}>
+        <TemplateProjectPage
+          {...createProps({ tasks: [...tasks], milestones: [confirmedMilestone], onTaskReorder })}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
+  });
+
+  it("moves a task into another milestone optimistically", async () => {
+    const onTaskReorder = jest.fn().mockResolvedValue(true);
+    const first = createProps().tasks[0]!;
+    const secondMilestone: Types.Milestone = {
+      ...createProps().milestones[0]!,
+      id: "milestone-2",
+      title: "Launch",
+      tasksOrderingState: ["task-2"],
+    };
+    const second = { ...first, id: "task-2", name: "Publish release", milestoneId: "milestone-2" };
+    renderPage(
+      createProps({
+        milestones: [...createProps().milestones, secondMilestone],
+        tasks: [first, second],
+        onTaskReorder,
+      }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    await act(async () => {
+      await mockBoardMoveHandler?.({
+        itemId: first.id,
+        source: { containerId: "milestone-1", index: 0 },
+        destination: { containerId: "milestone-2", index: 1 },
+      });
+    });
+
+    expect(taskIdsIn("milestone-1")).toEqual([]);
+    expect(taskIdsIn("milestone-2")).toEqual(["task-2", "task-1"]);
+    expect(onTaskReorder).toHaveBeenCalledWith("task-1", "milestone-2", 1);
+  });
+
+  it("allows dropping a task into an empty milestone", async () => {
+    const onTaskReorder = jest.fn().mockResolvedValue(true);
+    const emptyMilestone: Types.Milestone = {
+      ...createProps().milestones[0]!,
+      id: "milestone-2",
+      title: "Empty milestone",
+      tasksOrderingState: [],
+    };
+    renderPage(
+      createProps({ milestones: [...createProps().milestones, emptyMilestone], onTaskReorder }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    await act(async () => {
+      await mockBoardMoveHandler?.({
+        itemId: "task-1",
+        source: { containerId: "milestone-1", index: 0 },
+        destination: { containerId: "milestone-2", index: 0 },
+      });
+    });
+
+    expect(taskIdsIn("milestone-2")).toEqual(["task-1"]);
+  });
+
+  it("allows dropping a task into the empty root container", async () => {
+    const onTaskReorder = jest.fn().mockResolvedValue(true);
+    renderPage(createProps({ onTaskReorder }), "/templates/template-1?tab=tasks");
+
+    await act(async () => {
+      await mockBoardMoveHandler?.({
+        itemId: "task-1",
+        source: { containerId: "milestone-1", index: 0 },
+        destination: { containerId: "no-milestone", index: 0 },
+      });
+    });
+
+    expect(taskIdsIn("no-milestone")).toEqual(["task-1"]);
+    expect(onTaskReorder).toHaveBeenCalledWith("task-1", null, 0);
+  });
+
+  it("rolls an optimistic task move back when persistence fails", async () => {
+    const onTaskReorder = jest.fn().mockResolvedValue(false);
+    const first = createProps().tasks[0]!;
+    const second = { ...first, id: "task-2", name: "Prepare screenshots" };
+    renderPage(createProps({ tasks: [first, second], onTaskReorder }), "/templates/template-1?tab=tasks");
+
+    await act(async () => {
+      await mockBoardMoveHandler?.({
+        itemId: first.id,
+        source: { containerId: "milestone-1", index: 0 },
+        destination: { containerId: "milestone-1", index: 2 },
+      });
+    });
+
+    expect(taskIdsIn("milestone-1")).toEqual(["task-1", "task-2"]);
+  });
+
+  it("projects a placeholder into the active drop container", () => {
+    mockBoardState = {
+      draggedItemId: "task-1",
+      destination: { containerId: "milestone-2", index: 0 },
+      draggedItemDimensions: { width: 300, height: 44 },
+    };
+    const emptyMilestone: Types.Milestone = {
+      ...createProps().milestones[0]!,
+      id: "milestone-2",
+      title: "Empty milestone",
+      tasksOrderingState: [],
+    };
+
+    renderPage(
+      createProps({ milestones: [...createProps().milestones, emptyMilestone], onTaskReorder: jest.fn() }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    expect(screen.getByTestId("drop-placeholder-milestone-2-0")).toBeInTheDocument();
+    expect(screen.queryByTestId("template-task-task-1")).not.toBeInTheDocument();
+  });
+
+  it("keeps task rows non-draggable without edit access and removes move buttons", () => {
+    const onTaskReorder = jest.fn();
+    renderPage(createProps({ permissions: { canView: true }, onTaskReorder }), "/templates/template-1?tab=tasks");
+
+    expect(screen.queryByText("Move up")).not.toBeInTheDocument();
+    expect(screen.queryByText("Move down")).not.toBeInTheDocument();
+    expect(mockUseSortableItem).toHaveBeenCalledWith(expect.objectContaining({ disabled: true }));
+
+    act(() => {
+      mockBoardMoveHandler?.({
+        itemId: "task-1",
+        source: { containerId: "milestone-1", index: 0 },
+        destination: { containerId: "milestone-1", index: 1 },
+      });
+    });
+    expect(onTaskReorder).not.toHaveBeenCalled();
   });
 
   it("edits a task in the task form modal", () => {
@@ -486,3 +732,10 @@ describe("TemplateProjectPage", () => {
     expect(screen.queryByTitle("Emily Davis")).not.toBeInTheDocument();
   });
 });
+
+function taskIdsIn(milestoneId: string) {
+  const section = document.querySelector(`[data-test-id="template-task-section-${milestoneId}"]`);
+  if (!section) throw new Error(`Missing task section for ${milestoneId}`);
+
+  return Array.from(section.querySelectorAll("[data-task-row-id]")).map((row) => row.getAttribute("data-task-row-id"));
+}

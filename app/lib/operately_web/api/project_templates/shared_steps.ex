@@ -214,9 +214,11 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
   def update_task(multi, attrs) do
     run_step(multi, :updated_task, fn %{template: template, task: task} ->
+      {destination_index, attrs} = Map.pop(attrs, :index)
       old_milestone_id = task.project_template_milestone_id
       new_milestone_id = if Map.has_key?(attrs, :project_template_milestone_id), do: attrs.project_template_milestone_id, else: old_milestone_id
       validate_milestone!(template, new_milestone_id)
+      validate_task_index!(destination_index)
 
       attrs =
         if Map.has_key?(attrs, :task_status) do
@@ -228,9 +230,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
       updated_task = task |> Task.changeset(attrs) |> persist!()
 
-      [old_milestone_id, new_milestone_id]
-      |> Enum.uniq()
-      |> Enum.each(&rebuild_container!(template, &1))
+      update_task_containers!(template, updated_task, old_milestone_id, new_milestone_id, destination_index)
 
       updated_task
     end)
@@ -400,6 +400,47 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     kanban = TemplateHelpers.normalize_kanban(milestone.tasks_kanban_state, tasks, template.task_statuses)
     persist!(Milestone.changeset(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban}))
   end
+
+  defp update_task_containers!(template, _task, old_milestone_id, new_milestone_id, nil) do
+    [old_milestone_id, new_milestone_id]
+    |> Enum.uniq()
+    |> Enum.each(&rebuild_container!(template, &1))
+  end
+
+  defp update_task_containers!(template, task, milestone_id, milestone_id, destination_index) do
+    reorder_container!(template, task, milestone_id, destination_index)
+  end
+
+  defp update_task_containers!(template, task, old_milestone_id, new_milestone_id, destination_index) do
+    rebuild_container!(template, old_milestone_id)
+    reorder_container!(template, task, new_milestone_id, destination_index)
+  end
+
+  defp reorder_container!(template, task, nil, destination_index) do
+    template = Repo.reload!(template)
+    tasks = tasks_for(template.id, nil)
+    kanban = TemplateHelpers.normalize_kanban(template.tasks_kanban_state, tasks, template.task_statuses)
+    task_ids = TemplateHelpers.flatten_kanban(kanban, template.task_statuses)
+    task_id = Paths.project_template_task_id(task)
+    task_ids = require_ok!(TemplateHelpers.move_task_id(task_ids, task_id, destination_index))
+    kanban = TemplateHelpers.kanban_from_order(task_ids, tasks, template.task_statuses)
+    persist!(ProjectTemplate.changeset(template, %{tasks_kanban_state: kanban}))
+  end
+
+  defp reorder_container!(template, task, milestone_id, destination_index) do
+    milestone = Repo.get_by!(Milestone, id: milestone_id, project_template_id: template.id)
+    tasks = tasks_for(template.id, milestone_id)
+    task_ids = Enum.map(tasks, &Paths.project_template_task_id/1)
+    ordering = TemplateHelpers.normalize_ordering(milestone.tasks_ordering_state, task_ids)
+    task_id = Paths.project_template_task_id(task)
+    ordering = require_ok!(TemplateHelpers.move_task_id(ordering, task_id, destination_index))
+    kanban = TemplateHelpers.kanban_from_order(ordering, tasks, template.task_statuses)
+    persist!(Milestone.changeset(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban}))
+  end
+
+  defp validate_task_index!(nil), do: :ok
+  defp validate_task_index!(index) when is_integer(index) and index >= 0, do: :ok
+  defp validate_task_index!(_index), do: fail!({:validation, "Task index must be zero or greater"})
 
   defp validate_milestone!(_template, nil), do: :ok
 

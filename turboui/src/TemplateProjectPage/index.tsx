@@ -114,7 +114,11 @@ export namespace TemplateProjectPage {
     onTaskCreate?: (task: Omit<Task, "id">) => void;
     onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void | boolean | Promise<void | boolean>;
     onTaskDelete?: (taskId: string) => void | Promise<void>;
-    onTaskReorder?: (taskId: string, milestoneId: string | null, destinationIndex: number) => void | Promise<void>;
+    onTaskReorder?: (
+      taskId: string,
+      milestoneId: string | null,
+      destinationIndex: number,
+    ) => void | boolean | Promise<void | boolean>;
     onPersonCreate?: (person: Omit<TemplatePerson, "id" | "active">) => void | Promise<void>;
     onPersonUpdate?: (
       templatePersonId: string,

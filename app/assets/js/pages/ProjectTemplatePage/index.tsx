@@ -95,10 +95,8 @@ function Page() {
     mutate,
   });
 
-  const { onTaskCreate, onTaskUpdate, onTaskDelete, onTaskReorder } = useTaskOperations({
+  const { onTaskCreate, onTaskUpdate, onTaskDelete, onTaskReorder } = createTaskOperations({
     templateId: template.id,
-    tasks,
-    statuses,
     mutate,
   });
 
@@ -261,17 +259,7 @@ function useMilestoneOperations({
   return { onMilestoneCreate, onMilestoneUpdate, onMilestoneDelete, onMilestoneReorder };
 }
 
-function useTaskOperations({
-  templateId,
-  tasks,
-  statuses,
-  mutate,
-}: {
-  templateId: string;
-  tasks: TemplateProjectPage.Task[];
-  statuses: TemplateProjectPage.Props["statuses"];
-  mutate: Mutate;
-}) {
+function createTaskOperations({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
   function onTaskCreate(task: Omit<TemplateProjectPage.Task, "id">) {
     void mutate("Task not created", () => Api.project_templates.createTask(taskInput(templateId, task)));
   }
@@ -300,26 +288,21 @@ function useTaskOperations({
     );
   }
 
-  function onTaskReorder(taskId: string, milestoneId: string | null, destinationIndex: number) {
-    const ids = tasks.filter((task) => task.milestoneId === milestoneId).map((task) => task.id);
-    const ordered = reorder(ids, taskId, destinationIndex);
-    if (milestoneId)
-      return mutate("Tasks not reordered", () =>
-        Api.project_templates.updateMilestone({
-          templateId,
-          milestoneId,
-          tasksOrderingState: ordered,
-        }),
-      ).then(() => undefined);
-    return mutate("Tasks not reordered", () =>
-      Api.project_templates.update({
-        id: templateId,
-        tasksKanbanState: serializeJson(rootKanban(ordered, tasks, statuses)),
-      }),
-    ).then(() => undefined);
-  }
+  const onTaskReorder = createTaskMove({ templateId, mutate });
 
   return { onTaskCreate, onTaskUpdate, onTaskDelete, onTaskReorder };
+}
+
+export function createTaskMove({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
+  return (taskId: string, milestoneId: string | null, destinationIndex: number) =>
+    mutate("Tasks not reordered", () =>
+      Api.project_templates.updateTask({
+        templateId,
+        taskId,
+        milestoneId,
+        index: destinationIndex,
+      }),
+    );
 }
 
 function content(value?: string | null) {
@@ -412,14 +395,4 @@ function reorder(ids: string[], id: string, destination: number) {
   const next = ids.filter((item) => item !== id);
   next.splice(Math.max(0, Math.min(destination, next.length)), 0, id);
   return next;
-}
-
-function rootKanban(ids: string[], tasks: TemplateProjectPage.Task[], statuses: TemplateProjectPage.Props["statuses"]) {
-  const taskStatuses = new Map(tasks.map((task) => [task.id, task.status.value || task.status.id]));
-  return Object.fromEntries(
-    statuses.map((status) => {
-      const key = status.value || status.id;
-      return [key, ids.filter((id) => taskStatuses.get(id) === key)];
-    }),
-  );
 }
