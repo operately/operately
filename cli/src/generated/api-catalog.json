@@ -21314,9 +21314,9 @@
       ]
     }
   },
-  "endpoint_count": 222,
+  "endpoint_count": 225,
   "query_count": 71,
-  "mutation_count": 151,
+  "mutation_count": 154,
   "endpoints": [
     {
       "name": "create",
@@ -29243,6 +29243,86 @@
       "method": "POST"
     },
     {
+      "name": "create_person",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/create_person",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.CreatePerson",
+      "outputs": [
+        {
+          "default": null,
+          "name": "person",
+          "type": {
+            "name": "project_template_person",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "role",
+          "type": {
+            "name": "project_template_person_role",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "responsibility",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "access_level",
+          "type": {
+            "name": "access_options_int",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/create_person",
+      "method": "POST"
+    },
+    {
       "name": "create_project",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/create_project",
@@ -29541,6 +29621,53 @@
       ],
       "docstring": null,
       "full_name": "project_templates/delete_milestone",
+      "method": "POST"
+    },
+    {
+      "name": "delete_person",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/delete_person",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.DeletePerson",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "template_person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/delete_person",
       "method": "POST"
     },
     {
@@ -29912,6 +30039,97 @@
       ],
       "docstring": null,
       "full_name": "project_templates/update_milestone",
+      "method": "POST"
+    },
+    {
+      "name": "update_person",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_person",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdatePerson",
+      "outputs": [
+        {
+          "default": null,
+          "name": "person",
+          "type": {
+            "name": "project_template_person",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "template_person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "role",
+          "type": {
+            "name": "project_template_person_role",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "responsibility",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "access_level",
+          "type": {
+            "name": "access_options_int",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_person",
       "method": "POST"
     },
     {

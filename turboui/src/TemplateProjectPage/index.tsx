@@ -100,7 +100,7 @@ export namespace TemplateProjectPage {
     milestones: Milestone[];
     tasks: Task[];
     people?: TemplatePerson[];
-    personSearch?: PersonField.SearchData;
+    personSearch: PersonField.SearchData;
     richTextHandlers: RichEditorHandlers;
     onTemplateUpdate: (updates: Partial<Props["template"]>) => void | boolean | Promise<void | boolean>;
     onStatusesChange?: (payload: {
@@ -115,6 +115,12 @@ export namespace TemplateProjectPage {
     onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void | boolean | Promise<void | boolean>;
     onTaskDelete?: (taskId: string) => void | Promise<void>;
     onTaskReorder?: (taskId: string, milestoneId: string | null, destinationIndex: number) => void | Promise<void>;
+    onPersonCreate?: (person: Omit<TemplatePerson, "id" | "active">) => void | Promise<void>;
+    onPersonUpdate?: (
+      templatePersonId: string,
+      updates: Partial<Omit<TemplatePerson, "id" | "active">>,
+    ) => void | boolean | Promise<void | boolean>;
+    onPersonDelete?: (templatePersonId: string) => void | Promise<void>;
   }
 }
 
