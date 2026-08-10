@@ -9,7 +9,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   alias Operately.ContextualDates.Timeframe
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Operations.{ProjectCreation, ProjectTemplateMaterialization}
-  alias Operately.ProjectTemplates.{ProjectTemplate, TaskAssignment}
+  alias Operately.ProjectTemplates.{Person, ProjectTemplate, TaskAssignment}
   alias Operately.Projects.{Contributor, Milestone, Project}
   alias Operately.Repo
   alias Operately.ResourceHubs.ResourceHub
@@ -220,6 +220,41 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert Repo.get_by!(Operately.Tasks.Assignee, task_id: task.id, person_id: ctx.contributor.id)
     refute Repo.get_by(Operately.Tasks.Assignee, task_id: task.id, person_id: ctx.inactive.id)
     assert {:ok, _subscription} = Subscription.get(:system, subscription_list_id: task.subscription_list_id, person_id: ctx.contributor.id)
+  end
+
+  test "uses a replaced contributor's latest details and task assignment", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:former_contributor)
+      |> Factory.add_company_member(:replacement)
+      |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_task(:task, :template)
+      |> Factory.add_project_template_person(:template_person, :template, :former_contributor,
+        responsibility: "Original responsibility",
+        access_level: Binding.comment_access()
+      )
+      |> Factory.add_project_template_task_assignment(:assignment, :template, :task, :template_person)
+
+    ctx.template_person
+    |> Person.changeset(%{
+      person_id: ctx.replacement.id,
+      responsibility: "Own launch messaging",
+      access_level: Binding.full_access()
+    })
+    |> Repo.update!()
+
+    assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
+
+    contributor = Repo.get_by!(Contributor, project_id: project.id, person_id: ctx.replacement.id)
+    context = Access.get_context!(project_id: project.id)
+    replacement_group = Access.get_group!(person_id: ctx.replacement.id)
+    [task] = Repo.all(from t in Task, where: t.project_id == ^project.id)
+
+    assert contributor.role == :contributor
+    assert contributor.responsibility == "Own launch messaging"
+    assert Access.get_binding(context_id: context.id, group_id: replacement_group.id).access_level == Binding.full_access()
+    assert Repo.get_by!(Operately.Tasks.Assignee, task_id: task.id, person_id: ctx.replacement.id)
+    refute Repo.get_by(Contributor, project_id: project.id, person_id: ctx.former_contributor.id)
   end
 
   test "rejects missing dates, inactive templates, and workflows without an open status", ctx do

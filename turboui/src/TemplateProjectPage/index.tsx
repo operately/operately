@@ -119,12 +119,12 @@ export namespace TemplateProjectPage {
       milestoneId: string | null,
       destinationIndex: number,
     ) => void | boolean | Promise<void | boolean>;
-    onPersonCreate?: (person: Omit<TemplatePerson, "id" | "active">) => void | Promise<void>;
+    onPersonCreate?: (person: Omit<TemplatePerson, "id" | "active">) => void | boolean | Promise<void | boolean>;
     onPersonUpdate?: (
       templatePersonId: string,
       updates: Partial<Omit<TemplatePerson, "id" | "active">>,
     ) => void | boolean | Promise<void | boolean>;
-    onPersonDelete?: (templatePersonId: string) => void | Promise<void>;
+    onPersonDelete?: (templatePersonId: string) => void | boolean | Promise<void | boolean>;
   }
 }
 

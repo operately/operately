@@ -1,4 +1,11 @@
 defmodule Operately.Operations.ProjectTemplateMaterialization do
+  @moduledoc """
+  Materializes an active project template into an independent runtime project.
+
+  The operation validates and copies the template's core graph, people, and assignments in one transaction.
+  Authorization and feature-gate checks belong to the API boundary.
+  """
+
   import Ecto.Query, only: [from: 2]
 
   alias Ecto.Multi

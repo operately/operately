@@ -1,7 +1,7 @@
 import React from "react";
 import { AvatarList } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { IconChevronDown, IconEdit, IconTrash } from "../icons";
+import { IconAlertTriangleFilled, IconChevronDown, IconEdit, IconTrash } from "../icons";
 import { Menu, MenuActionItem } from "../Menu";
 import { Modal } from "../Modal";
 import { PersonField } from "../PersonField";
@@ -109,39 +109,50 @@ function ContributorsSection({
       <div className="space-y-3">
         {contributors.length > 0 ? (
           contributors.map((templatePerson) => (
-            <PersonField
-              key={templatePerson.id}
-              person={templatePerson.person}
-              readonly
-              showTitle
-              emptyStateReadOnlyMessage="Unavailable person"
-              testId={`template-person-${templatePerson.id}`}
-              extraDialogMenuOptions={
-                canEdit
-                  ? [
-                      {
-                        icon: IconEdit,
-                        label: "Edit contributor",
-                        onClick: () => onEdit(templatePerson),
-                        testId: `edit-template-person-${templatePerson.id}`,
-                      },
-                      {
-                        icon: IconTrash,
-                        label: "Remove contributor",
-                        onClick: () => onDelete?.(templatePerson.id),
-                        testId: `remove-template-person-${templatePerson.id}`,
-                        danger: true,
-                      },
-                    ]
-                  : undefined
-              }
-            />
+            <div key={templatePerson.id} className="flex items-center gap-2 justify-between">
+              <PersonField
+                person={templatePerson.person}
+                readonly
+                showTitle
+                emptyStateReadOnlyMessage="Unavailable person"
+                testId={`template-person-${templatePerson.id}`}
+                extraDialogMenuOptions={
+                  canEdit
+                    ? [
+                        {
+                          icon: IconEdit,
+                          label: templatePerson.active ? "Edit contributor" : "Replace unavailable contributor",
+                          onClick: () => onEdit(templatePerson),
+                          testId: `edit-template-person-${templatePerson.id}`,
+                        },
+                        {
+                          icon: IconTrash,
+                          label: "Remove contributor",
+                          onClick: () => onDelete?.(templatePerson.id),
+                          testId: `remove-template-person-${templatePerson.id}`,
+                          danger: true,
+                        },
+                      ]
+                    : undefined
+                }
+              />
+              {!templatePerson.active && <UnavailableContributorLabel />}
+            </div>
           ))
         ) : (
           <div className="text-sm text-content-dimmed">No contributors</div>
         )}
       </div>
     </SidebarSection>
+  );
+}
+
+function UnavailableContributorLabel() {
+  return (
+    <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400">
+      <IconAlertTriangleFilled size={14} />
+      Not active
+    </span>
   );
 }
 
@@ -186,7 +197,8 @@ function ContributorModal({
   onCreate?: TemplateProjectPage.Props["onPersonCreate"];
   onUpdate?: TemplateProjectPage.Props["onPersonUpdate"];
 }) {
-  const [person, setPerson] = React.useState(templatePerson?.person ?? null);
+  const isReplacingUnavailableContributor = Boolean(templatePerson && !templatePerson.active);
+  const [person, setPerson] = React.useState(isReplacingUnavailableContributor ? null : (templatePerson?.person ?? null));
   const [responsibility, setResponsibility] = React.useState(templatePerson?.responsibility ?? "");
   const [accessLevel, setAccessLevel] = React.useState(templatePerson?.accessLevel ?? 70);
   const accessUpdateId = React.useRef(0);
@@ -207,23 +219,31 @@ function ContributorModal({
 
   const save = async () => {
     if (!person) return;
-    if (templatePerson)
-      await onUpdate?.(templatePerson.id, {
-        person,
-        role: "contributor",
-        responsibility: responsibility || null,
-        accessLevel,
-      });
-    else await onCreate?.({ person, role: "contributor", responsibility: responsibility || null, accessLevel });
-    onClose();
+    const successful = templatePerson
+      ? await onUpdate?.(templatePerson.id, {
+          person,
+          role: "contributor",
+          responsibility: responsibility || null,
+          accessLevel,
+        })
+      : await onCreate?.({ person, role: "contributor", responsibility: responsibility || null, accessLevel });
+
+    if (successful !== false) onClose();
   };
 
+  const modalTitle = isReplacingUnavailableContributor
+    ? "Replace unavailable contributor"
+    : templatePerson
+      ? "Edit contributor"
+      : "Add contributor";
+  const saveLabel = isReplacingUnavailableContributor ? "Replace contributor" : "Save contributor";
+
   return (
-    <Modal isOpen onClose={onClose} title={templatePerson ? "Edit contributor" : "Add contributor"} size="small">
+    <Modal isOpen onClose={onClose} title={modalTitle} size="small">
       <div className="space-y-5" data-test-id="template-contributor-form">
         <div>
-          <label className={FORM_FIELD_LABEL_CLASS}>Person</label>
-          {templatePerson ? (
+          <label className={FORM_FIELD_LABEL_CLASS}>{isReplacingUnavailableContributor ? "Replacement" : "Person"}</label>
+          {templatePerson && !isReplacingUnavailableContributor ? (
             <PersonField person={person} variant="form-field" readonly />
           ) : (
             <PersonField
@@ -231,7 +251,7 @@ function ContributorModal({
               setPerson={setPerson}
               searchData={searchData}
               variant="form-field"
-              emptyStateMessage="Select person"
+              emptyStateMessage={isReplacingUnavailableContributor ? "Select replacement" : "Select person"}
             />
           )}
         </div>
@@ -271,7 +291,7 @@ function ContributorModal({
         <div className="flex justify-end gap-2">
           <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
           <PrimaryButton onClick={() => void save()} disabled={!person}>
-            Save contributor
+            {saveLabel}
           </PrimaryButton>
         </div>
       </div>
