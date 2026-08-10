@@ -281,6 +281,7 @@ At the end of this phase, a Space administrator can create and edit a blank core
 - [x] Render searchable cards with description, Space, creator, last update, milestone count, and task count.
 - [x] Group the company view by Space and add a Space filter; omit inaccessible Spaces and templates rather than rendering disabled results.
 - [x] Add **New template** entry points. Preselect the current Space on the Space page and require a Space choice on the company page.
+- [x] Add a configurable **Templates** Space tool, enabled by default and hidden behind the `project_templates` feature gate. The card links to the Space library and shows either a reusable-project zero state or the Space's active, accessible templates.
 - [x] Initially wire create, open, and edit only; Phase 6 adds the complete duplicate/archive/delete card lifecycle after the full graph copier exists.
 - [x] Add page/component tests and company feature coverage for both library scopes, filtering, empty states, access changes, and navigation.
 

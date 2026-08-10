@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -19,6 +19,7 @@ function renderPage(overrides: Partial<SpaceToolsConfigurationPage.Props> = {}) 
       resourceHubEnabled: true,
       tasksEnabled: false,
       kpisEnabled: false,
+      templatesEnabled: true,
     },
     onToolsChange: () => {},
     onSave: async () => {},
@@ -27,7 +28,7 @@ function renderPage(overrides: Partial<SpaceToolsConfigurationPage.Props> = {}) 
   };
 
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <SpaceToolsConfigurationPage {...props} />
     </MemoryRouter>,
   );
@@ -42,5 +43,35 @@ describe("SpaceToolsConfigurationPage KPIs gating", () => {
   test("shows the KPIs tool row when showKpis is enabled", () => {
     renderPage({ showKpis: true });
     expect(queryByTestId("kpis")).toBeInTheDocument();
+  });
+});
+
+describe("SpaceToolsConfigurationPage Templates gating", () => {
+  test("hides the Templates tool row by default", () => {
+    renderPage();
+    expect(queryByTestId("templates")).not.toBeInTheDocument();
+  });
+
+  test("shows the Templates tool row when showTemplates is enabled", () => {
+    renderPage({ showTemplates: true });
+    expect(queryByTestId("templates")).toBeInTheDocument();
+  });
+
+  test("reflects and updates the Templates setting", () => {
+    const onToolsChange = jest.fn();
+    renderPage({ showTemplates: true, onToolsChange });
+
+    const toggle = queryByTestId("templates");
+    expect(toggle).toHaveAttribute("data-state", "checked");
+
+    fireEvent.click(toggle!);
+
+    expect(onToolsChange).toHaveBeenCalledWith({
+      discussionsEnabled: true,
+      resourceHubEnabled: true,
+      tasksEnabled: false,
+      kpisEnabled: false,
+      templatesEnabled: false,
+    });
   });
 });

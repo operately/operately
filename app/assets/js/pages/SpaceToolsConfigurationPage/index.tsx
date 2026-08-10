@@ -35,12 +35,14 @@ function Page() {
   const { space, tools: loadedTools } = Pages.useLoadedData() as LoaderResult;
 
   const kpisEnabled = Companies.hasFeature(company, "space_kpis");
+  const templatesEnabled = Companies.hasFeature(company, "project_templates");
 
   const [tools, setTools] = React.useState<SpaceToolsConfigurationPage.ToolSettings>({
     discussionsEnabled: loadedTools.discussionsEnabled,
     resourceHubEnabled: loadedTools.resourceHubEnabled,
     tasksEnabled: loadedTools.tasksEnabled,
     kpisEnabled: loadedTools.kpisEnabled,
+    templatesEnabled: loadedTools.templatesEnabled,
   });
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -56,6 +58,7 @@ function Page() {
           resourceHubEnabled: tools.resourceHubEnabled,
           tasksEnabled: tools.tasksEnabled,
           kpisEnabled: tools.kpisEnabled,
+          templatesEnabled: tools.templatesEnabled,
         },
       });
 
@@ -71,6 +74,7 @@ function Page() {
     tools.resourceHubEnabled,
     tools.tasksEnabled,
     tools.kpisEnabled,
+    tools.templatesEnabled,
   ]);
 
   const handleCancel = React.useCallback(() => {
@@ -87,6 +91,7 @@ function Page() {
       onCancel={handleCancel}
       isSubmitting={isSubmitting}
       showKpis={kpisEnabled}
+      showTemplates={templatesEnabled}
     />
   );
 }

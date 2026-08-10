@@ -7132,6 +7132,17 @@
           },
           {
             "default": null,
+            "name": "templates_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "projects",
             "type": {
               "item": {
@@ -7206,6 +7217,20 @@
             "type": {
               "item": {
                 "name": "kpi",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "templates",
+            "type": {
+              "item": {
+                "name": "project_template",
                 "kind": "named"
               },
               "kind": "list"
@@ -12135,6 +12160,17 @@
           {
             "default": null,
             "name": "kpis_enabled",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "templates_enabled",
             "type": {
               "name": "boolean",
               "kind": "named"

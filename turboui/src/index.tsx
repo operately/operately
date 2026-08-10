@@ -155,6 +155,7 @@ export { SpaceKpisPage } from "./SpaceKpisPage";
 // KPI summary card for the space home page (see KpiSummaryCard.stories.tsx).
 export { KpiSummaryCard } from "./SpaceKpisPage/KpiSummaryCard";
 export { SpaceToolsConfigurationPage } from "./SpaceToolsConfigurationPage";
+export { SpaceTemplatesTool } from "./SpaceTemplatesTool";
 export { SwitchToggle } from "./SwitchToggle";
 export { SaveProjectAsTemplateModal } from "./SaveProjectAsTemplateModal";
 export { Tabs, useTabs } from "./Tabs";

@@ -2399,12 +2399,14 @@ export interface SpaceTools {
   discussionsEnabled: boolean;
   resourceHubEnabled: boolean;
   kpisEnabled: boolean;
+  templatesEnabled: boolean;
   projects: Project[] | null;
   goals: Goal[] | null;
   messagesBoards: MessagesBoard[] | null;
   resourceHubs: ResourceHub[] | null;
   tasks: Task[] | null;
   kpis: Kpi[] | null;
+  templates: ProjectTemplate[] | null;
 }
 
 export interface Subscriber {
@@ -2593,6 +2595,7 @@ export interface UpdateSpaceToolsPayload {
   discussionsEnabled: boolean;
   resourceHubEnabled: boolean;
   kpisEnabled: boolean;
+  templatesEnabled: boolean;
 }
 
 export interface UpdateTargetInput {
