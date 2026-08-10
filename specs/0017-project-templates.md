@@ -352,14 +352,14 @@ Each PR in this phase extends the same copy service in both directions: project 
 - [x] Allow at most one champion and one reviewer. Changing a person to either role demotes the previous holder to contributor while preserving their responsibility, access, and assignments. Champion and reviewer access is always Full Access; contributor access remains configurable.
 - [x] Match normal project assignment behavior: assigning a person who is not already represented adds them as a contributor with Edit Access, while removing their last assignment does not automatically remove their contributor record.
 - [x] Delete a template person's task assignments atomically, allow unavailable copied people to be removed, and refresh the inactive-people summary after every mutation.
-- [ ] Allow unavailable contributors to be replaced from the template editor while preserving their responsibility, access, and task assignments.
+- [x] Allow unavailable contributors to be replaced from the template editor while preserving their responsibility, access, and task assignments.
 - [x] Make the template People section editable for Edit and Full Access. Keep View and Comment Access read-only and create no template access bindings, subscriptions, activities, or notifications.
 - [x] Add assignee selection to template task creation and task rows for Edit and Full Access, keep View and Comment Access read-only, and roll back optimistic row updates when persistence fails.
 - [x] Create each task and its initial assignees in one mutation and transaction so assignment failure rolls back the task, contributor records, assignments, and ordering state together.
 - [x] Ensure materialization uses the latest edited roles, responsibilities, access levels, and assignments, with template champion and reviewer remaining authoritative.
 - [x] Register the task-assignee mutation in the shared and external API catalogs, regenerate clients, and add endpoint, permission-table, app-boundary filtering, and TurboUI coverage.
 - [x] Register the template-person mutations in the shared and external API catalogs, regenerate clients, and add external mutation smoke coverage.
-- [ ] Complete contributor mutation coverage for authentication, feature gating, archived and read-only templates, company isolation, unavailable-person replacement, rollback, app-bridge payloads, and materialization from edited records.
+- [x] Complete contributor mutation coverage for authentication, feature gating, archived and read-only templates, company isolation, unavailable-person replacement, rollback, app-bridge payloads, and materialization from edited records.
 
 #### PR 5.3 — `feat: Copy project template discussions`
 
