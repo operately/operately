@@ -13,6 +13,7 @@ interface DialogMenuOptionProps {
   linkTo?: string;
   onClick?: () => void;
   testId?: string;
+  danger?: boolean;
 }
 
 export namespace PersonField {
@@ -49,7 +50,7 @@ export namespace PersonField {
   interface ReadonlyProps extends BaseProps {
     readonly: true;
     // Optional for readonly
-    searchData?: SearchData; 
+    searchData?: SearchData;
     setPerson?: (person: Person | null) => void;
   }
 
@@ -104,7 +105,9 @@ export function PersonField(props: PersonField.Props) {
 export function useState(props: PersonField.Props): PersonField.State {
   const isOpenControlled = props.isOpen !== undefined;
   const [internalIsOpen, changeOpen] = React.useState(!!props.isOpen);
-  const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
+  const [dialogMode, setDialogMode] = React.useState<"menu" | "search">(
+    props.person || props.readonly ? "menu" : "search",
+  );
 
   const [searchQuery, setSearchQuery] = React.useState("");
 
@@ -122,7 +125,7 @@ export function useState(props: PersonField.Props): PersonField.State {
 
   React.useEffect(() => {
     if (!isOpen) {
-      setDialogMode(props.person ? "menu" : "search");
+      setDialogMode(props.person || readonly ? "menu" : "search");
       setSearchQuery(""); // Clear search query when dialog closes
     }
   }, [isOpen, props.person]);
@@ -141,7 +144,7 @@ export function useState(props: PersonField.Props): PersonField.State {
   }, [searchQuery, isOpen]);
 
   const setIsOpen = (open: boolean) => {
-    const nextOpen = readonly ? false : open;
+    const nextOpen = readonly && extraDialogMenuOptions.length === 0 ? false : open;
 
     if (!isOpenControlled) {
       changeOpen(nextOpen);
@@ -184,7 +187,7 @@ function Trigger({ state }: { state: PersonField.State }) {
     </>
   );
 
-  if (state.readonly && state.person && state.person.profileLink) {
+  if (state.readonly && state.person && state.person.profileLink && state.extraDialogMenuOptions.length === 0) {
     return (
       <DivLink to={state.person.profileLink} className={calcTriggerClass(state)} testId={state.testId}>
         {triggerContent}
@@ -210,31 +213,32 @@ function Trigger({ state }: { state: PersonField.State }) {
 
 function calcTriggerClass(state: PersonField.State) {
   const hasClickableProfile = state.readonly && state.person && state.person.profileLink;
+  const hasMenuActions = state.extraDialogMenuOptions.length > 0;
   const isFormField = state.variant === "form-field";
 
   if (state.avatarOnly) {
     return classNames({
       "flex items-center justify-center": true,
-      "focus:outline-none focus:ring-2 focus:ring-primary-base rounded-full": !state.readonly,
-      "cursor-pointer": !state.readonly || hasClickableProfile,
-      "cursor-default": state.readonly && !hasClickableProfile,
+      "focus:outline-none focus:ring-2 focus:ring-primary-base rounded-full": !state.readonly || hasMenuActions,
+      "cursor-pointer": !state.readonly || hasClickableProfile || hasMenuActions,
+      "cursor-default": state.readonly && !hasClickableProfile && !hasMenuActions,
       "ring-2 ring-surface-accent": state.isOpen,
     });
   } else if (isFormField) {
     return classNames({
       "flex items-center gap-2 truncate text-left": true,
       "w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base": true,
-      "focus:outline-none focus:ring-2 focus:ring-primary-base": !state.readonly,
-      "cursor-pointer": !state.readonly || hasClickableProfile,
-      "cursor-default": state.readonly && !hasClickableProfile,
+      "focus:outline-none focus:ring-2 focus:ring-primary-base": !state.readonly || hasMenuActions,
+      "cursor-pointer": !state.readonly || hasClickableProfile || hasMenuActions,
+      "cursor-default": state.readonly && !hasClickableProfile && !hasMenuActions,
     });
   } else {
     return classNames({
       "flex items-center gap-2 truncate text-left": true,
       "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded":
-        !state.readonly,
-      "cursor-pointer": !state.readonly || hasClickableProfile,
-      "cursor-default": state.readonly && !hasClickableProfile,
+        !state.readonly || hasMenuActions,
+      "cursor-pointer": !state.readonly || hasClickableProfile || hasMenuActions,
+      "cursor-default": state.readonly && !hasClickableProfile && !hasMenuActions,
       "bg-surface-dimmed": state.isOpen,
     });
   }
@@ -303,7 +307,7 @@ function TriggerText({ state }: { state: PersonField.State }) {
 }
 
 function Dialog({ state }: { state: PersonField.State }) {
-  if (state.readonly) return null;
+  if (state.readonly && state.extraDialogMenuOptions.length === 0) return null;
 
   return (
     <Popover.Portal>
@@ -344,6 +348,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       label: string;
       linkTo?: string;
       onClick?: () => void;
+      danger?: boolean;
     }> = [];
 
     if (state.person?.profileLink) {
@@ -355,21 +360,25 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       });
     }
 
-    options.push({
-      testId: `${state.testId}-assign-another`,
-      icon: IconSearch,
-      label: "Choose someone else",
-      onClick: () => {
-        state.setSearchQuery(""); // Clear any previous search
-        state.setDialogMode("search");
-      },
-    });
+    if (!state.readonly) {
+      options.push({
+        testId: `${state.testId}-assign-another`,
+        icon: IconSearch,
+        label: "Choose someone else",
+        onClick: () => {
+          state.setSearchQuery(""); // Clear any previous search
+          state.setDialogMode("search");
+        },
+      });
+    }
 
     state.extraDialogMenuOptions.forEach((option, index) => {
       options.push({
         key: `extra-${index}`,
+        testId: option.testId,
         icon: option.icon,
         label: option.label,
+        danger: option.danger,
         onClick: () => {
           option.onClick && option.onClick();
           state.setIsOpen(false);
@@ -378,15 +387,17 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       });
     });
 
-    options.push({
-      testId: `${state.testId}-clear-assignment`,
-      icon: IconCircleX,
-      label: "Clear assignment",
-      onClick: () => {
-        state?.setPerson?.(null);
-        state.setIsOpen(false);
-      },
-    });
+    if (!state.readonly) {
+      options.push({
+        testId: `${state.testId}-clear-assignment`,
+        icon: IconCircleX,
+        label: "Clear assignment",
+        onClick: () => {
+          state?.setPerson?.(null);
+          state.setIsOpen(false);
+        },
+      });
+    }
 
     return options;
   }, [state]);
@@ -444,6 +455,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
             "bg-brand-1/10 text-content-accent ring-1 ring-inset ring-brand-1/20 dark:bg-brand-1/25 dark:ring-brand-1/40":
               index === selectedIndex,
             "hover:bg-surface-dimmed hover:text-content-accent": index !== selectedIndex,
+            "text-content-error": option.danger,
           })}
           data-test-id={option.testId}
           onClick={() => {

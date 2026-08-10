@@ -1,7 +1,6 @@
 import React from "react";
 import { PageDescription } from "../PageDescription";
 import { RelativeDayField } from "../RelativeDayField";
-import { StatusSelector } from "../StatusSelector";
 import { MilestoneList } from "./MilestoneList";
 import type { TemplateProjectPage } from ".";
 import { TemplatePeople } from "./People";
@@ -37,31 +36,9 @@ export function Overview({ props, canEdit }: { props: TemplateProjectPage.Props;
               testId="template-duration"
             />
           </section>
-          <Workflow props={props} />
-          <TemplatePeople people={props.people ?? []} />
+          <TemplatePeople props={props} canEdit={canEdit} />
         </aside>
       </div>
     </div>
-  );
-}
-
-function Workflow({ props }: { props: TemplateProjectPage.Props }) {
-  return (
-    <section data-test-id="template-workflow">
-      <h2 className="mb-2 text-sm font-bold">Workflow</h2>
-      <div className="flex flex-wrap gap-2">
-        {props.statuses.map((status) => (
-          <StatusSelector
-            key={status.id}
-            statusOptions={props.statuses}
-            status={status}
-            onChange={() => undefined}
-            readonly
-            showFullBadge
-            size="sm"
-          />
-        ))}
-      </div>
-    </section>
   );
 }
