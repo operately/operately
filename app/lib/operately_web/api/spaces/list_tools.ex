@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
   alias Operately.ResourceHubs.{ResourceHub, Node}
   alias Operately.Groups.Group
   alias Operately.Groups.SpaceTools
+  alias OperatelyWeb.Api.ProjectTemplates.List, as: ProjectTemplateList
   alias Operately.Access.Filters
   alias Operately.Kpis.{Kpi, KpiEntry}
 
@@ -95,12 +96,22 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
         end
       end)
 
+    templates_task =
+      Task.async(fn ->
+        if space.tools.templates_enabled do
+          load_templates(space, me)
+        else
+          {:ok, []}
+        end
+      end)
+
     {:ok, projects} = Task.await(projects_task)
     {:ok, goals} = Task.await(goals_task)
     {:ok, tasks} = Task.await(tasks_task)
     {:ok, messages_boards} = Task.await(messages_boards_task)
     {:ok, resource_hubs} = Task.await(resource_hubs_task)
     {:ok, kpis} = Task.await(kpis_task)
+    {:ok, templates} = Task.await(templates_task)
 
     {:ok,
      %{
@@ -109,7 +120,8 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
        tasks: tasks,
        messages_boards: messages_boards,
        resource_hubs: resource_hubs,
-       kpis: kpis
+       kpis: kpis,
+       templates: templates
      }}
   end
 
@@ -201,5 +213,9 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
       |> Repo.all()
 
     {:ok, kpis}
+  end
+
+  defp load_templates(space, me) do
+    {:ok, ProjectTemplateList.list_accessible(me, %{space_id: space.id, archive_status: :active})}
   end
 end

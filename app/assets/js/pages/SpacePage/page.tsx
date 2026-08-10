@@ -3,14 +3,12 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Companies from "@/models/companies";
 import * as Spaces from "@/models/spaces";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import {
   AvatarList,
   DangerButton,
-  IconClipboardText,
   IconPencil,
   IconSettings,
   IconTrash,
@@ -29,7 +27,6 @@ import { useJoinSpace } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useNavigate } from "react-router";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
@@ -152,7 +149,6 @@ function ManageAccessButton({ space }: { space: Spaces.Space }) {
 
 function SpaceOptions() {
   const { space, tools } = useLoadedData();
-  const { company } = useCompanyLoaderData();
   const navigate = useNavigate();
   const [deleteSpace, { loading: isDeleting }] = Spaces.useDeleteSpace();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -210,23 +206,13 @@ function SpaceOptions() {
   }, [isDeleting]);
 
   const editLink = paths.spaceEditPath(space.id!);
-  const projectTemplatesLink = paths.spaceProjectTemplatesPath(space.id!);
   const toolsConfigLink = paths.spaceToolsConfigPath(space.id!);
-  const projectTemplatesEnabled = Companies.hasFeature(company, "project_templates");
 
   return (
     <>
       <PageOptions.Root testId="options-button">
         {space.permissions?.canEdit && (
           <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
-        )}
-        {projectTemplatesEnabled && (
-          <PageOptions.Link
-            icon={IconClipboardText}
-            to={projectTemplatesLink}
-            title="Project templates"
-            testId="project-templates"
-          />
         )}
         {space.permissions?.canEdit && (
           <PageOptions.Link icon={IconSettings} to={toolsConfigLink} title="Configure tools" testId="configure-tools" />

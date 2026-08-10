@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
   import Operately.TasksFixtures
 
   alias Operately.Access.Binding
+  alias Operately.ProjectTemplates.ProjectTemplate
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -246,7 +247,8 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
 
     test "excludes paused projects from the list", ctx do
       # Create an additional paused project using the factory
-      ctx = ctx
+      ctx =
+        ctx
         |> Factory.add_project(:project_paused, :space, name: "Paused Project")
         |> Factory.pause_project(:project_paused)
 
@@ -300,6 +302,68 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
       assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.tools.resource_hubs) == 0
     end
+
+    test "when templates are disabled it returns an empty list", ctx do
+      ctx =
+        ctx
+        |> Factory.enable_feature("project_templates")
+        |> Factory.disable_space_tool(:space, :templates)
+        |> Factory.add_project_template(:template, :space)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
+      assert res.tools.templates_enabled == false
+      assert res.tools.templates == []
+    end
+  end
+
+  describe "templates" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.enable_feature("project_templates")
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+    end
+
+    test "returns active accessible templates in deterministic order with card counts", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_template(:zeta, :space, name: "Zeta")
+        |> Factory.add_project_template_milestone(:zeta_milestone, :zeta)
+        |> Factory.add_project_template_task(:zeta_task, :zeta, milestone: :zeta_milestone)
+        |> Factory.add_project_template(:alpha, :space, name: "Alpha")
+        |> Factory.add_project_template_task(:alpha_task, :alpha)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
+
+      assert res.tools.templates_enabled == true
+      assert Enum.map(res.tools.templates, & &1.name) == ["Alpha", "Zeta"]
+
+      zeta = Enum.find(res.tools.templates, &(&1.id == Paths.project_template_id(ctx.zeta)))
+      assert zeta.milestone_count == 1
+      assert zeta.task_count == 1
+    end
+
+    test "omits archived templates", ctx do
+      ctx = Factory.add_project_template(ctx, :template, :space)
+      ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update!()
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
+      assert res.tools.templates == []
+    end
+
+    test "omits templates from inaccessible Spaces", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:viewer)
+        |> Factory.add_space(:private_space, company_permissions: Binding.no_access())
+        |> Factory.add_project_template(:template, :private_space)
+        |> Factory.log_in_person(:viewer)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.private_space)})
+      assert res.tools.templates == []
+    end
+
   end
 
   #

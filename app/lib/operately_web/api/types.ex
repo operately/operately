@@ -1452,6 +1452,7 @@ defmodule OperatelyWeb.Api.Types do
     field :discussions_enabled, :boolean, null: false
     field :resource_hub_enabled, :boolean, null: false
     field :kpis_enabled, :boolean, null: false
+    field :templates_enabled, :boolean, null: false
   end
 
   object :space_tools, for: Operately.Groups.SpaceTools do
@@ -1459,6 +1460,7 @@ defmodule OperatelyWeb.Api.Types do
     field :discussions_enabled, :boolean, null: false
     field :resource_hub_enabled, :boolean, null: false
     field :kpis_enabled, :boolean, null: false
+    field :templates_enabled, :boolean, null: false
 
     field :projects, list_of(:project), null: true
     field :goals, list_of(:goal), null: true
@@ -1466,6 +1468,7 @@ defmodule OperatelyWeb.Api.Types do
     field :resource_hubs, list_of(:resource_hub), null: true
     field :tasks, list_of(:task), null: true
     field :kpis, list_of(:kpi), null: true
+    field :templates, list_of(:project_template), null: true
   end
 
   object :blob_creation_input do
