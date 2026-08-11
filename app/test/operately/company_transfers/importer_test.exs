@@ -19,7 +19,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.People.Account
   alias Operately.People.Person
   alias Operately.Goals.{Goal, Update}
-  alias Operately.ProjectTemplates.ProjectTemplate
+  alias Operately.ProjectTemplates.{ProjectTemplate, ResourceNode}
   alias Operately.Projects.Project
   alias Operately.ResourceHubs.Document
   alias Operately.ResourceHubs.DocumentVersion
@@ -194,6 +194,112 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
     assert imported_milestone.tasks_ordering_state == [WebPaths.task_id(imported_milestone_task)]
     assert imported_milestone.tasks_kanban_state == %{"pending" => [WebPaths.task_id(imported_milestone_task)]}
+  end
+
+  test "run/1 round-trips a project template resource tree and its blob payloads", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:embedded_blob)
+      |> Factory.add_blob(:file_blob)
+      |> Factory.add_blob(:preview_blob)
+      |> Factory.add_space(:space)
+      |> Factory.add_project_template(:template, :space, name: "Resource template")
+      |> Factory.add_project_template_resource_folder(:folder, :template, name: "Launch assets")
+
+    ctx =
+      ctx
+      |> Factory.add_project_template_resource_document(:document, :template,
+        parent_folder: :folder,
+        position: 0,
+        name: "Launch guide",
+        content: blob_document(ctx.embedded_blob)
+      )
+      |> Factory.add_project_template_resource_file(:file, :template, :file_blob,
+        parent_folder: :folder,
+        position: 1,
+        preview_blob: :preview_blob,
+        name: "Launch artwork"
+      )
+      |> Factory.add_project_template_resource_link(:link, :template,
+        parent_folder: :folder,
+        position: 2,
+        name: "Launch dashboard"
+      )
+
+    on_exit(fn -> cleanup_blob_storage([ctx.embedded_blob, ctx.file_blob, ctx.preview_blob]) end)
+
+    upload_blob_payload!(ctx.embedded_blob, "embedded template payload")
+    upload_blob_payload!(ctx.file_blob, "template file payload")
+    upload_blob_payload!(ctx.preview_blob, "template preview payload")
+
+    assert {:ok, export_run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
+    assert {:ok, export_run} = CompanyTransfers.mark_export_run_running(export_run)
+    assert {:ok, export_run} = Exporter.run(export_run)
+
+    assert {:ok, import_run} =
+             CompanyTransfers.create_import_run(
+               ctx.account,
+               %{package_blob_id: export_run.package_blob_id},
+               dispatch: false
+             )
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_template = Repo.get_by!(ProjectTemplate, company_id: completed_run.company_id, name: "Resource template")
+
+    imported_nodes =
+      from(node in ResourceNode,
+        where: node.project_template_id == ^imported_template.id,
+        order_by: [asc: node.position]
+      )
+      |> Repo.all()
+      |> Repo.preload([:folder, :document, :link, file: [:blob, :preview_blob]])
+
+    imported_folder_node = Enum.find(imported_nodes, &(&1.type == :folder))
+    imported_document_node = Enum.find(imported_nodes, &(&1.type == :document))
+    imported_file_node = Enum.find(imported_nodes, &(&1.type == :file))
+    imported_link_node = Enum.find(imported_nodes, &(&1.type == :link))
+
+    assert imported_folder_node.id != ctx.folder.node.id
+    assert imported_document_node.id != ctx.document.node.id
+    assert imported_file_node.id != ctx.file.node.id
+    assert imported_link_node.id != ctx.link.node.id
+    assert imported_folder_node.folder.id != ctx.folder.id
+    assert imported_document_node.document.id != ctx.document.id
+    assert imported_file_node.file.id != ctx.file.id
+    assert imported_link_node.link.id != ctx.link.id
+
+    assert Enum.all?(imported_nodes, &(&1.project_template_id == imported_template.id))
+
+    assert imported_folder_node.folder.name == "Launch assets"
+    assert imported_document_node.document.name == "Launch guide"
+    assert imported_file_node.file.name == "Launch artwork"
+    assert imported_link_node.link.name == "Launch dashboard"
+
+    assert imported_document_node.parent_folder_id == imported_folder_node.folder.id
+    assert imported_file_node.parent_folder_id == imported_folder_node.folder.id
+    assert imported_link_node.parent_folder_id == imported_folder_node.folder.id
+    assert Enum.map([imported_document_node, imported_file_node, imported_link_node], & &1.position) == [0, 1, 2]
+
+    [imported_embedded_blob_id] = Operately.RichContent.Blob.find_ids(imported_document_node.document.content)
+    imported_embedded_blob = Blobs.get_blob!(imported_embedded_blob_id)
+    imported_file_blob = imported_file_node.file.blob
+    imported_preview_blob = imported_file_node.file.preview_blob
+
+    assert imported_embedded_blob.id != ctx.embedded_blob.id
+    assert imported_file_blob.id != ctx.file_blob.id
+    assert imported_preview_blob.id != ctx.preview_blob.id
+
+    assert File.read!(storage_path(imported_embedded_blob)) == "embedded template payload"
+    assert File.read!(storage_path(imported_file_blob)) == "template file payload"
+    assert File.read!(storage_path(imported_preview_blob)) == "template preview payload"
+
+    [blob_node] = imported_document_node.document.content["content"]
+    assert blob_node["attrs"]["id"] == WebPaths.blob_id(imported_embedded_blob)
+    assert blob_node["attrs"]["src"] == Blob.url(imported_embedded_blob)
+
+    on_exit(fn -> cleanup_blob_storage([imported_embedded_blob, imported_file_blob, imported_preview_blob]) end)
   end
 
   test "run/1 generates new short_id when the package short_id is already taken", ctx do

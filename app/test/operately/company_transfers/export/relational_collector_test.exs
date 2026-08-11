@@ -96,6 +96,11 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
       |> Factory.add_project_template_person(:template_person, :template, :member)
       |> Factory.add_project_template_task_assignment(:template_assignment, :template, :task, :template_person)
       |> Factory.add_project_template_discussion(:template_discussion, :template)
+      |> Factory.add_blob(:template_blob)
+      |> Factory.add_project_template_resource_folder(:template_folder, :template)
+      |> Factory.add_project_template_resource_document(:template_document, :template, parent_folder: :template_folder, position: 0)
+      |> Factory.add_project_template_resource_file(:template_file, :template, :template_blob, parent_folder: :template_folder, position: 1)
+      |> Factory.add_project_template_resource_link(:template_link, :template, parent_folder: :template_folder, position: 2)
 
     other_ctx =
       %{}
@@ -108,6 +113,11 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
       |> Factory.add_project_template_person(:template_person, :template, :member)
       |> Factory.add_project_template_task_assignment(:template_assignment, :template, :task, :template_person)
       |> Factory.add_project_template_discussion(:template_discussion, :template)
+      |> Factory.add_blob(:template_blob)
+      |> Factory.add_project_template_resource_folder(:template_folder, :template)
+      |> Factory.add_project_template_resource_document(:template_document, :template, parent_folder: :template_folder, position: 0)
+      |> Factory.add_project_template_resource_file(:template_file, :template, :template_blob, parent_folder: :template_folder, position: 1)
+      |> Factory.add_project_template_resource_link(:template_link, :template, parent_folder: :template_folder, position: 2)
 
     assert {:ok, collected} = RelationalCollector.collect(ctx.company.id)
 
@@ -119,6 +129,15 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     assert ctx.template_person.id in row_ids(tables, "project_template_people")
     assert ctx.template_assignment.id in row_ids(tables, "project_template_task_assignments")
     assert ctx.template_discussion.id in row_ids(tables, "project_template_discussions")
+    assert ctx.template_folder.node.id in row_ids(tables, "project_template_resource_nodes")
+    assert ctx.template_document.node.id in row_ids(tables, "project_template_resource_nodes")
+    assert ctx.template_file.node.id in row_ids(tables, "project_template_resource_nodes")
+    assert ctx.template_link.node.id in row_ids(tables, "project_template_resource_nodes")
+    assert ctx.template_folder.id in row_ids(tables, "project_template_resource_folders")
+    assert ctx.template_document.id in row_ids(tables, "project_template_resource_documents")
+    assert ctx.template_file.id in row_ids(tables, "project_template_resource_files")
+    assert ctx.template_link.id in row_ids(tables, "project_template_resource_links")
+    assert ctx.template_blob.id in row_ids(tables, "blobs")
 
     refute other_ctx.template.id in row_ids(tables, "project_templates")
     refute other_ctx.milestone.id in row_ids(tables, "project_template_milestones")
@@ -126,6 +145,15 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     refute other_ctx.template_person.id in row_ids(tables, "project_template_people")
     refute other_ctx.template_assignment.id in row_ids(tables, "project_template_task_assignments")
     refute other_ctx.template_discussion.id in row_ids(tables, "project_template_discussions")
+    refute other_ctx.template_folder.node.id in row_ids(tables, "project_template_resource_nodes")
+    refute other_ctx.template_document.node.id in row_ids(tables, "project_template_resource_nodes")
+    refute other_ctx.template_file.node.id in row_ids(tables, "project_template_resource_nodes")
+    refute other_ctx.template_link.node.id in row_ids(tables, "project_template_resource_nodes")
+    refute other_ctx.template_folder.id in row_ids(tables, "project_template_resource_folders")
+    refute other_ctx.template_document.id in row_ids(tables, "project_template_resource_documents")
+    refute other_ctx.template_file.id in row_ids(tables, "project_template_resource_files")
+    refute other_ctx.template_link.id in row_ids(tables, "project_template_resource_links")
+    refute other_ctx.template_blob.id in row_ids(tables, "blobs")
   end
 
   test "keeps empty included tables present in the minimal slice", ctx do

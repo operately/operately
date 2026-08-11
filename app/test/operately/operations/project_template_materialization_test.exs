@@ -136,6 +136,46 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert Enum.find(project.tasks, &(&1.name == ctx.undated_task.name)).due_date == nil
   end
 
+  test "materializes template Docs & Files as independent published runtime resources", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_resource_folder(:folder, :template, name: "Launch assets")
+      |> Factory.add_project_template_resource_document(:document, :template,
+        parent_folder: :folder,
+        position: 0,
+        name: "Launch plan",
+        content: %{"type" => "doc", "content" => []}
+      )
+      |> Factory.add_blob(:blob)
+      |> Factory.add_project_template_resource_file(:file, :template, :blob, parent_folder: :folder, position: 1, name: "Launch file")
+      |> Factory.add_project_template_resource_link(:link, :template, parent_folder: :folder, position: 2, name: "Launch link")
+
+    assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
+
+    hub = Repo.preload(project, :resource_hub).resource_hub
+
+    nodes =
+      Repo.all(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id)
+      |> Repo.preload([:folder, :document, :file, :link])
+
+    [folder_node] = Enum.filter(nodes, &(&1.type == :folder))
+    [document_node] = Enum.filter(nodes, &(&1.type == :document))
+    document = document_node.document
+
+    assert folder_node.folder.name == "Launch assets"
+    assert document.name == "Launch plan"
+    assert document.content == %{"type" => "doc", "content" => []}
+    assert document.state == :published
+    assert document.current_version == 1
+    assert document_node.parent_folder_id == folder_node.folder.id
+    assert document_node.id != ctx.document.node_id
+    assert Repo.aggregate(from(version in Operately.ResourceHubs.DocumentVersion, where: version.document_id == ^document.id), :count) == 1
+    assert Repo.get_by!(SubscriptionList, parent_id: document.id, parent_type: :resource_hub_document)
+    assert Enum.any?(nodes, &(&1.file && &1.file.name == "Launch file" && &1.file.blob_id == ctx.blob.id))
+    assert Enum.any?(nodes, &(&1.link && &1.link.name == "Launch link"))
+  end
+
   test "uses creation access baselines and creates only normal runtime side effects", ctx do
     ctx =
       ctx
