@@ -11,6 +11,7 @@ interface Dependencies {
     description?: Json | null;
     includePeopleAndAssignments?: boolean;
     includeDiscussions?: boolean;
+    includeDocsAndFiles?: boolean;
   }) => Promise<ProjectTemplatesCreateFromProjectResult>;
   navigate: (path: string) => void;
 }
@@ -24,6 +25,7 @@ export function createSaveProjectAsTemplateHandler(dependencies: Dependencies) {
         description: serializeDescription(values.description),
         includePeopleAndAssignments: values.includePeopleAndAssignments,
         includeDiscussions: values.includeDiscussions,
+        includeDocsAndFiles: values.includeDocsAndFiles,
       });
 
       if (response.scheduleIssues.length > 0) {

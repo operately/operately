@@ -141,6 +141,7 @@ export { ProjectField } from "./ProjectField";
 export { ProjectPage } from "./ProjectPage";
 export { TemplateProjectPage } from "./TemplateProjectPage";
 export { TemplateDiscussionPage } from "./TemplateDiscussionPage";
+export { TemplateResourcePage } from "./TemplateResourcePage";
 export { TemplateDiscussionForm } from "./TemplateDiscussionForm";
 export { ProjectTemplatesPage } from "./ProjectTemplatesPage";
 export { ResourceHubDraftsPage } from "./ResourceHubDraftsPage";

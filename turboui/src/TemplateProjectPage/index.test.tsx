@@ -1,6 +1,7 @@
 import React from "react";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 
 type MockBoardMove = {
@@ -154,7 +155,7 @@ describe("TemplateProjectPage", () => {
 
     expect(screen.getByText("Discussions")).toBeInTheDocument();
 
-    for (const runtimeLabel of ["Check-ins", "Docs & Files", "Activity", "Retrospective"]) {
+    for (const runtimeLabel of ["Check-ins", "Activity", "Retrospective"]) {
       expect(screen.queryByText(runtimeLabel)).not.toBeInTheDocument();
     }
     expect(screen.queryByText("Start date")).not.toBeInTheDocument();
@@ -182,6 +183,79 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByText("Reusable context")).toBeInTheDocument();
     expect(screen.getByText("Start discussion")).toBeInTheDocument();
     expect(screen.queryByText("Subscribe")).not.toBeInTheDocument();
+  });
+
+  it("shows the standard non-functional resource menu for editable template Docs & Files", async () => {
+    const user = userEvent.setup();
+
+    renderPage(
+      createProps({
+        resourceNodes: [
+          {
+            id: "folder-node-1",
+            parentFolderId: null,
+            type: "folder",
+            position: 0,
+            name: "Launch assets",
+            link: "/templates/template-1/docs-and-files/folder-node-1",
+            insertedAt: "2026-08-11T12:00:00Z",
+            updatedAt: "2026-08-11T12:00:00Z",
+          },
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    expect(screen.getByText("Launch assets")).toBeInTheDocument();
+    await user.click(document.querySelector('[data-test-id="add-options"]')!);
+
+    await waitFor(() => {
+      expect(screen.getByText("New document")).toBeInTheDocument();
+      expect(screen.getByText("New folder")).toBeInTheDocument();
+      expect(screen.getByText("Upload files")).toBeInTheDocument();
+      expect(screen.getByText("Add link")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText("New folder"));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByText("Versions")).not.toBeInTheDocument();
+  });
+
+  it("keeps template Docs & Files read-only for View Access", () => {
+    renderPage(
+      createProps({ permissions: { canView: true }, resourceNodes: [] }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    expect(screen.queryByText("Add")).not.toBeInTheDocument();
+  });
+
+  it("shows template Docs & Files with template-specific resource links", () => {
+    renderPage(
+      createProps({
+        resourceNodes: [
+          {
+            id: "node-1",
+            parentFolderId: null,
+            type: "document",
+            position: 0,
+            name: "Launch guide",
+            link: "/templates/template-1/docs-and-files/node-1",
+            insertedAt: "2026-08-11T12:00:00Z",
+            updatedAt: "2026-08-11T12:00:00Z",
+          },
+        ],
+      }),
+    );
+
+    fireEvent.click(screen.getByText("Docs & Files"));
+
+    expect(screen.getByText("Launch guide")).toBeInTheDocument();
+    expect(screen.getByText("Launch guide").closest("a")).toHaveAttribute(
+      "href",
+      "/templates/template-1/docs-and-files/node-1",
+    );
   });
 
   it.each([

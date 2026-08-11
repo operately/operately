@@ -60,6 +60,11 @@ export namespace DocsAndFiles {
     link: string;
   }
 
+  export interface Search {
+    configuration: ResourceHubSearchProps;
+    state: ResourceHubSearchState;
+  }
+
   export interface TabProps {
     title: string;
     items: Item[];
@@ -68,6 +73,10 @@ export namespace DocsAndFiles {
     emptyStateKind?: "resourceHub" | "folder";
     hideEmptyState?: boolean;
     className?: string;
+    search?: Search;
+    toolbar?: React.ReactNode;
+    actions?: React.ReactNode;
+    beforeItems?: React.ReactNode;
   }
 }
 
@@ -138,6 +147,10 @@ export function DocsAndFilesTab({
   emptyStateKind = "resourceHub",
   hideEmptyState = false,
   className = "p-4 max-w-6xl mx-auto my-6",
+  search,
+  toolbar,
+  actions,
+  beforeItems,
 }: DocsAndFiles.TabProps) {
   const [sortBy, setSortBy] = React.useState<DocsAndFiles.SortBy>("name");
 
@@ -149,16 +162,22 @@ export function DocsAndFilesTab({
             <Breadcrumbs breadcrumbs={breadcrumbs} />
             <div className="truncate text-xl font-semibold tracking-tight">{title}</div>
           </div>
-          <SortControl sortBy={sortBy} onSortChange={setSortBy} />
+        </div>
+        <div className="flex shrink-0 items-center gap-3">
+          {toolbar}
+          <SortControl sortBy={sortBy} onSortChange={setSortBy} disabled={search?.state.isActive} />
+          {actions}
         </div>
       </div>
 
       <DocsAndFilesDraftPrompt prompt={draftPrompt} />
+      {beforeItems}
       <DocsAndFilesBody
         items={items}
         emptyStateKind={emptyStateKind}
         hideEmptyState={hideEmptyState}
         sortBy={sortBy}
+        search={search}
       />
     </div>
   );
@@ -223,11 +242,6 @@ export function DocsAndFilesDraftPrompt({ prompt }: { prompt?: DocsAndFiles.Draf
   );
 }
 
-type DocsAndFilesSearch = {
-  configuration: ResourceHubSearchProps;
-  state: ResourceHubSearchState;
-};
-
 export function DocsAndFilesBody({
   items,
   emptyStateKind = "resourceHub",
@@ -239,7 +253,7 @@ export function DocsAndFilesBody({
   emptyStateKind?: "resourceHub" | "folder";
   hideEmptyState?: boolean;
   sortBy: DocsAndFiles.SortBy;
-  search?: DocsAndFilesSearch;
+  search?: DocsAndFiles.Search;
 }) {
   const displayedItems = React.useMemo(
     () => (search?.state.isActive ? items : sortDocsAndFilesItems(items, sortBy)),
@@ -265,7 +279,7 @@ function DocsAndFilesContent({
   items: DocsAndFiles.Item[];
   emptyStateKind: "resourceHub" | "folder";
   hideEmptyState: boolean;
-  search?: DocsAndFilesSearch;
+  search?: DocsAndFiles.Search;
 }) {
   if (search?.state.isActive) {
     if (search.state.status === "success" && items.length > 0) {
