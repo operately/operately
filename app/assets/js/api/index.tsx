@@ -2033,7 +2033,21 @@ export interface ProjectTemplate {
   tasks?: ProjectTemplateTask[] | null;
   people?: ProjectTemplatePerson[] | null;
   taskAssignments?: ProjectTemplateTaskAssignment[] | null;
+  discussions?: ProjectTemplateDiscussion[] | null;
+  inactiveDiscussionCount: number;
   permissions?: ProjectTemplatePermissions | null;
+}
+
+export interface ProjectTemplateDiscussion {
+  __typename: "project_template_discussion";
+  id: string;
+  projectTemplateId: string;
+  title: string;
+  body: string;
+  author?: Person | null;
+  position: number;
+  insertedAt: string;
+  updatedAt: string;
 }
 
 export interface ProjectTemplateInactivePeopleSummary {
@@ -3511,6 +3525,15 @@ export interface ProjectTemplatesGetInput {
 
 export interface ProjectTemplatesGetResult {
   template: ProjectTemplate;
+}
+
+export interface ProjectTemplatesGetDiscussionInput {
+  templateId: Id;
+  discussionId: Id;
+}
+
+export interface ProjectTemplatesGetDiscussionResult {
+  discussion: ProjectTemplateDiscussion;
 }
 
 export interface ProjectTemplatesListInput {
@@ -5078,11 +5101,22 @@ export interface ProjectTemplatesCreateResult {
   template: ProjectTemplate;
 }
 
+export interface ProjectTemplatesCreateDiscussionInput {
+  templateId: Id;
+  title: string;
+  body: Json;
+}
+
+export interface ProjectTemplatesCreateDiscussionResult {
+  discussion: ProjectTemplateDiscussion;
+}
+
 export interface ProjectTemplatesCreateFromProjectInput {
   projectId: Id;
   name: string;
   description?: Json | null;
   includePeopleAndAssignments?: boolean;
+  includeDiscussions?: boolean;
 }
 
 export interface ProjectTemplatesCreateFromProjectResult {
@@ -5185,6 +5219,17 @@ export interface ProjectTemplatesUpdateInput {
 
 export interface ProjectTemplatesUpdateResult {
   success: boolean;
+}
+
+export interface ProjectTemplatesUpdateDiscussionInput {
+  templateId: Id;
+  discussionId: Id;
+  title: string;
+  body: Json;
+}
+
+export interface ProjectTemplatesUpdateDiscussionResult {
+  discussion: ProjectTemplateDiscussion;
 }
 
 export interface ProjectTemplatesUpdateMilestoneInput {
@@ -6800,12 +6845,22 @@ class ApiNamespaceProjectTemplates {
     return this.client.get("/project_templates/get", input);
   }
 
+  async getDiscussion(input: ProjectTemplatesGetDiscussionInput): Promise<ProjectTemplatesGetDiscussionResult> {
+    return this.client.get("/project_templates/get_discussion", input);
+  }
+
   async list(input: ProjectTemplatesListInput): Promise<ProjectTemplatesListResult> {
     return this.client.get("/project_templates/list", input);
   }
 
   async create(input: ProjectTemplatesCreateInput): Promise<ProjectTemplatesCreateResult> {
     return this.client.post("/project_templates/create", input);
+  }
+
+  async createDiscussion(
+    input: ProjectTemplatesCreateDiscussionInput,
+  ): Promise<ProjectTemplatesCreateDiscussionResult> {
+    return this.client.post("/project_templates/create_discussion", input);
   }
 
   async createFromProject(
@@ -6844,6 +6899,12 @@ class ApiNamespaceProjectTemplates {
 
   async update(input: ProjectTemplatesUpdateInput): Promise<ProjectTemplatesUpdateResult> {
     return this.client.post("/project_templates/update", input);
+  }
+
+  async updateDiscussion(
+    input: ProjectTemplatesUpdateDiscussionInput,
+  ): Promise<ProjectTemplatesUpdateDiscussionResult> {
+    return this.client.post("/project_templates/update_discussion", input);
   }
 
   async updateMilestone(input: ProjectTemplatesUpdateMilestoneInput): Promise<ProjectTemplatesUpdateMilestoneResult> {
@@ -8562,6 +8623,13 @@ export default {
   },
 
   project_templates: {
+    getDiscussion: (input: ProjectTemplatesGetDiscussionInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.getDiscussion(input),
+    useGetDiscussion: (input: ProjectTemplatesGetDiscussionInput) =>
+      useQuery<ProjectTemplatesGetDiscussionResult>(() =>
+        defaultApiClient.apiNamespaceProjectTemplates.getDiscussion(input),
+      ),
+
     list: (input: ProjectTemplatesListInput) => defaultApiClient.apiNamespaceProjectTemplates.list(input),
     useList: (input: ProjectTemplatesListInput) =>
       useQuery<ProjectTemplatesListResult>(() => defaultApiClient.apiNamespaceProjectTemplates.list(input)),
@@ -8575,6 +8643,13 @@ export default {
     useUpdatePerson: () =>
       useMutation<ProjectTemplatesUpdatePersonInput, ProjectTemplatesUpdatePersonResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updatePerson(input),
+      ),
+
+    updateDiscussion: (input: ProjectTemplatesUpdateDiscussionInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateDiscussion(input),
+    useUpdateDiscussion: () =>
+      useMutation<ProjectTemplatesUpdateDiscussionInput, ProjectTemplatesUpdateDiscussionResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateDiscussion(input),
       ),
 
     create: (input: ProjectTemplatesCreateInput) => defaultApiClient.apiNamespaceProjectTemplates.create(input),
@@ -8609,6 +8684,13 @@ export default {
     useCreateMilestone: () =>
       useMutation<ProjectTemplatesCreateMilestoneInput, ProjectTemplatesCreateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
+      ),
+
+    createDiscussion: (input: ProjectTemplatesCreateDiscussionInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createDiscussion(input),
+    useCreateDiscussion: () =>
+      useMutation<ProjectTemplatesCreateDiscussionInput, ProjectTemplatesCreateDiscussionResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createDiscussion(input),
       ),
 
     updateMilestone: (input: ProjectTemplatesUpdateMilestoneInput) =>

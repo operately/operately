@@ -122,6 +122,7 @@ defmodule OperatelyWeb.Api do
       namespace(:project_templates) do
         query(:get, OperatelyWeb.Api.ProjectTemplates.Get)
         query(:list, OperatelyWeb.Api.ProjectTemplates.List)
+        query(:get_discussion, OperatelyWeb.Api.ProjectTemplates.GetDiscussion)
 
         mutation(:create, OperatelyWeb.Api.ProjectTemplates.Create)
         mutation(:create_from_project, OperatelyWeb.Api.ProjectTemplates.CreateFromProject)
@@ -137,6 +138,8 @@ defmodule OperatelyWeb.Api do
         mutation(:update_person, OperatelyWeb.Api.ProjectTemplates.UpdatePerson)
         mutation(:delete_person, OperatelyWeb.Api.ProjectTemplates.DeletePerson)
         mutation(:update_task_assignees, OperatelyWeb.Api.ProjectTemplates.UpdateTaskAssignees)
+        mutation(:create_discussion, OperatelyWeb.Api.ProjectTemplates.CreateDiscussion)
+        mutation(:update_discussion, OperatelyWeb.Api.ProjectTemplates.UpdateDiscussion)
       end
 
       @doc "Get, list, create and manage tasks across projects and spaces"
