@@ -32,6 +32,12 @@ defmodule OperatelyWeb.EmailPreview do
     preview :mixed_grouped_and_individual, label: "Grouped by Author"
   end
 
+  group "product-updates", module: Previews.ProductUpdates do
+    preview :full_text_search, slug: "full-text-search", label: "Full-text Search"
+    preview :document_versioning, slug: "document-versioning", label: "Document Versioning"
+    preview :project_templates, slug: "project-templates", label: "Project Templates"
+  end
+
   group "project-champion-updating", module: Previews.ProjectChampionUpdating do
     preview :champion_removed
     preview :champion_assigned_to_you, label: "Assigned To You"
