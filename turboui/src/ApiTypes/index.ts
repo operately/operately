@@ -388,6 +388,15 @@ export interface ActivityContentGuestInvited {
   person: Person;
 }
 
+export interface ActivityContentKpiCreated {
+  __typename: "activity_content_kpi_created";
+  company: Company;
+  space: Space;
+  kpi: Kpi;
+  champion?: Person | null;
+  kpiName: string;
+}
+
 export interface ActivityContentMessageArchiving {
   __typename: "activity_content_message_archiving";
   companyId?: string | null;
@@ -2554,6 +2563,7 @@ export type ActivityContent =
   | ActivityContentDiscussionCommentSubmitted
   | ActivityContentDiscussionEditing
   | ActivityContentDiscussionPosting
+  | ActivityContentKpiCreated
   | ActivityContentGoalArchived
   | ActivityContentGoalCheckIn
   | ActivityContentGoalCheckInAcknowledgement
