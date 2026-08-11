@@ -732,8 +732,75 @@ defmodule OperatelyWeb.Api.Types do
     field? :people, list_of(:project_template_person), null: true
     field? :task_assignments, list_of(:project_template_task_assignment), null: true
     field? :discussions, list_of(:project_template_discussion), null: true
+    field? :resource_nodes, list_of(:project_template_resource_node), null: true
     field :inactive_discussion_count, :integer, null: false
     field? :permissions, :project_template_permissions, null: true
+  end
+
+  enum(:project_template_resource_type, values: [:folder, :document, :file, :link])
+  enum(:project_template_resource_link_type, values: Operately.ProjectTemplates.ResourceLink.valid_types())
+
+  object :project_template_resource_folder, for: Operately.ProjectTemplates.ResourceFolder do
+    field :id, :string, null: false
+    field :node_id, :string, null: false
+    field :name, :string, null: false
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
+  object :project_template_resource_document, for: Operately.ProjectTemplates.ResourceDocument do
+    field :id, :string, null: false
+    field :node_id, :string, null: false
+    field? :author, :person, null: true
+    field :name, :string, null: false
+    field :content, :string, null: false
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
+  object :project_template_resource_file, for: Operately.ProjectTemplates.ResourceFile do
+    field :id, :string, null: false
+    field :node_id, :string, null: false
+    field? :author, :person, null: true
+    field :name, :string, null: false
+    field? :description, :string, null: true
+    field? :blob, :blob, null: true
+    field? :preview_blob, :blob, null: true
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
+  object :project_template_uploaded_file do
+    field :blob_id, :id, null: false
+    field? :preview_blob_id, :id, null: true
+    field :name, :string, null: false
+    field? :description, :json, null: true
+  end
+
+  object :project_template_resource_link, for: Operately.ProjectTemplates.ResourceLink do
+    field :id, :string, null: false
+    field :node_id, :string, null: false
+    field? :author, :person, null: true
+    field :name, :string, null: false
+    field :url, :string, null: false
+    field? :description, :string, null: true
+    field :type, :project_template_resource_link_type, null: false
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
+  object :project_template_resource_node, for: Operately.ProjectTemplates.ResourceNode do
+    field :id, :string, null: false
+    field :project_template_id, :string, null: false
+    field? :parent_folder_id, :string, null: true
+    field :type, :project_template_resource_type, null: false
+    field :position, :integer, null: false
+    field? :folder, :project_template_resource_folder, null: true
+    field? :document, :project_template_resource_document, null: true
+    field? :file, :project_template_resource_file, null: true
+    field? :link, :project_template_resource_link, null: true
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
   end
 
   object :project_template_discussion, for: Operately.ProjectTemplates.Discussion do

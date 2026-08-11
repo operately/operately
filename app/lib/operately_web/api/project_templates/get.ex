@@ -35,7 +35,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
                  task_assignments: [],
                  discussions: discussions_query(),
                  milestones: milestones_query(),
-                 tasks: tasks_query()
+                 tasks: tasks_query(),
+                 resource_nodes: resource_nodes_query()
                ],
                after_load: [&ProjectTemplate.set_permissions(&1, company_read_only)]
              ]
@@ -55,5 +56,12 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
 
   defp discussions_query do
     from(discussion in Discussion, order_by: [asc: discussion.position, asc: discussion.id], preload: [:author])
+  end
+
+  defp resource_nodes_query do
+    from(node in Operately.ProjectTemplates.ResourceNode,
+      order_by: [asc: node.parent_folder_id, asc: node.position],
+      preload: [folder: [], document: [:author], file: [:author, :blob, :preview_blob], link: [:author]]
+    )
   end
 end

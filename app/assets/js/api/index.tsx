@@ -2043,6 +2043,7 @@ export interface ProjectTemplate {
   people?: ProjectTemplatePerson[] | null;
   taskAssignments?: ProjectTemplateTaskAssignment[] | null;
   discussions?: ProjectTemplateDiscussion[] | null;
+  resourceNodes?: ProjectTemplateResourceNode[] | null;
   inactiveDiscussionCount: number;
   permissions?: ProjectTemplatePermissions | null;
 }
@@ -2096,6 +2097,67 @@ export interface ProjectTemplatePerson {
   active: boolean;
 }
 
+export interface ProjectTemplateResourceDocument {
+  __typename: "project_template_resource_document";
+  id: string;
+  nodeId: string;
+  author?: Person | null;
+  name: string;
+  content: string;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateResourceFile {
+  __typename: "project_template_resource_file";
+  id: string;
+  nodeId: string;
+  author?: Person | null;
+  name: string;
+  description?: string | null;
+  blob?: Blob | null;
+  previewBlob?: Blob | null;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateResourceFolder {
+  __typename: "project_template_resource_folder";
+  id: string;
+  nodeId: string;
+  name: string;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateResourceLink {
+  __typename: "project_template_resource_link";
+  id: string;
+  nodeId: string;
+  author?: Person | null;
+  name: string;
+  url: string;
+  description?: string | null;
+  type: ProjectTemplateResourceLinkType;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateResourceNode {
+  __typename: "project_template_resource_node";
+  id: string;
+  projectTemplateId: string;
+  parentFolderId?: string | null;
+  type: ProjectTemplateResourceType;
+  position: number;
+  folder?: ProjectTemplateResourceFolder | null;
+  document?: ProjectTemplateResourceDocument | null;
+  file?: ProjectTemplateResourceFile | null;
+  link?: ProjectTemplateResourceLink | null;
+  insertedAt: string;
+  updatedAt: string;
+}
+
 export interface ProjectTemplateScheduleIssue {
   resourceType: ProjectTemplateScheduleResourceType;
   resourceId: string;
@@ -2126,6 +2188,13 @@ export interface ProjectTemplateTaskAssignment {
   id: string;
   projectTemplateTaskId: string;
   projectTemplatePersonId: string;
+}
+
+export interface ProjectTemplateUploadedFile {
+  blobId: Id;
+  previewBlobId?: Id | null;
+  name: string;
+  description?: Json | null;
 }
 
 export interface QuickSearchDiscussion {
@@ -2865,6 +2934,19 @@ export type ProjectTasksView = "list" | "board";
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
 
 export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
+
+export type ProjectTemplateResourceLinkType =
+  | "airtable"
+  | "dropbox"
+  | "figma"
+  | "google"
+  | "google_doc"
+  | "google_sheet"
+  | "google_slides"
+  | "notion"
+  | "other";
+
+export type ProjectTemplateResourceType = "folder" | "document" | "file" | "link";
 
 export type ProjectTemplateScheduleField = "start_date" | "end_date" | "due_date";
 
@@ -5121,17 +5203,62 @@ export interface ProjectTemplatesCreateDiscussionResult {
   discussion: ProjectTemplateDiscussion;
 }
 
+export interface ProjectTemplatesCreateDocumentInput {
+  templateId: Id;
+  parentFolderId?: Id | null;
+  name: string;
+  content: Json;
+}
+
+export interface ProjectTemplatesCreateDocumentResult {
+  document: ProjectTemplateResourceDocument;
+}
+
+export interface ProjectTemplatesCreateFilesInput {
+  templateId: Id;
+  parentFolderId?: Id | null;
+  files: ProjectTemplateUploadedFile[];
+}
+
+export interface ProjectTemplatesCreateFilesResult {
+  files: ProjectTemplateResourceFile[];
+}
+
+export interface ProjectTemplatesCreateFolderInput {
+  templateId: Id;
+  parentFolderId?: Id | null;
+  name: string;
+}
+
+export interface ProjectTemplatesCreateFolderResult {
+  folder: ProjectTemplateResourceFolder;
+}
+
 export interface ProjectTemplatesCreateFromProjectInput {
   projectId: Id;
   name: string;
   description?: Json | null;
   includePeopleAndAssignments?: boolean;
   includeDiscussions?: boolean;
+  includeDocsAndFiles?: boolean;
 }
 
 export interface ProjectTemplatesCreateFromProjectResult {
   template?: ProjectTemplate | null;
   scheduleIssues: ProjectTemplateScheduleIssue[];
+}
+
+export interface ProjectTemplatesCreateLinkInput {
+  templateId: Id;
+  parentFolderId?: Id | null;
+  name: string;
+  url: string;
+  description?: Json | null;
+  type: ProjectTemplateResourceLinkType;
+}
+
+export interface ProjectTemplatesCreateLinkResult {
+  link: ProjectTemplateResourceLink;
 }
 
 export interface ProjectTemplatesCreateMilestoneInput {
@@ -5207,12 +5334,31 @@ export interface ProjectTemplatesDeletePersonResult {
   success: boolean;
 }
 
+export interface ProjectTemplatesDeleteResourceInput {
+  templateId: Id;
+  nodeId: Id;
+}
+
+export interface ProjectTemplatesDeleteResourceResult {
+  success: boolean;
+}
+
 export interface ProjectTemplatesDeleteTaskInput {
   templateId: Id;
   taskId: Id;
 }
 
 export interface ProjectTemplatesDeleteTaskResult {
+  success: boolean;
+}
+
+export interface ProjectTemplatesMoveResourceInput {
+  templateId: Id;
+  nodeId: Id;
+  parentFolderId?: Id | null;
+}
+
+export interface ProjectTemplatesMoveResourceResult {
   success: boolean;
 }
 
@@ -5240,6 +5386,51 @@ export interface ProjectTemplatesUpdateDiscussionInput {
 
 export interface ProjectTemplatesUpdateDiscussionResult {
   discussion: ProjectTemplateDiscussion;
+}
+
+export interface ProjectTemplatesUpdateDocumentInput {
+  templateId: Id;
+  documentId: Id;
+  name: string;
+  content: Json;
+}
+
+export interface ProjectTemplatesUpdateDocumentResult {
+  document: ProjectTemplateResourceDocument;
+}
+
+export interface ProjectTemplatesUpdateFileInput {
+  templateId: Id;
+  fileId: Id;
+  name: string;
+  description?: Json | null;
+}
+
+export interface ProjectTemplatesUpdateFileResult {
+  file: ProjectTemplateResourceFile;
+}
+
+export interface ProjectTemplatesUpdateFolderInput {
+  templateId: Id;
+  folderId: Id;
+  name: string;
+}
+
+export interface ProjectTemplatesUpdateFolderResult {
+  folder: ProjectTemplateResourceFolder;
+}
+
+export interface ProjectTemplatesUpdateLinkInput {
+  templateId: Id;
+  linkId: Id;
+  name: string;
+  url: string;
+  description?: Json | null;
+  type: ProjectTemplateResourceLinkType;
+}
+
+export interface ProjectTemplatesUpdateLinkResult {
+  link: ProjectTemplateResourceLink;
 }
 
 export interface ProjectTemplatesUpdateMilestoneInput {
@@ -6873,10 +7064,26 @@ class ApiNamespaceProjectTemplates {
     return this.client.post("/project_templates/create_discussion", input);
   }
 
+  async createDocument(input: ProjectTemplatesCreateDocumentInput): Promise<ProjectTemplatesCreateDocumentResult> {
+    return this.client.post("/project_templates/create_document", input);
+  }
+
+  async createFiles(input: ProjectTemplatesCreateFilesInput): Promise<ProjectTemplatesCreateFilesResult> {
+    return this.client.post("/project_templates/create_files", input);
+  }
+
+  async createFolder(input: ProjectTemplatesCreateFolderInput): Promise<ProjectTemplatesCreateFolderResult> {
+    return this.client.post("/project_templates/create_folder", input);
+  }
+
   async createFromProject(
     input: ProjectTemplatesCreateFromProjectInput,
   ): Promise<ProjectTemplatesCreateFromProjectResult> {
     return this.client.post("/project_templates/create_from_project", input);
+  }
+
+  async createLink(input: ProjectTemplatesCreateLinkInput): Promise<ProjectTemplatesCreateLinkResult> {
+    return this.client.post("/project_templates/create_link", input);
   }
 
   async createMilestone(input: ProjectTemplatesCreateMilestoneInput): Promise<ProjectTemplatesCreateMilestoneResult> {
@@ -6903,8 +7110,16 @@ class ApiNamespaceProjectTemplates {
     return this.client.post("/project_templates/delete_person", input);
   }
 
+  async deleteResource(input: ProjectTemplatesDeleteResourceInput): Promise<ProjectTemplatesDeleteResourceResult> {
+    return this.client.post("/project_templates/delete_resource", input);
+  }
+
   async deleteTask(input: ProjectTemplatesDeleteTaskInput): Promise<ProjectTemplatesDeleteTaskResult> {
     return this.client.post("/project_templates/delete_task", input);
+  }
+
+  async moveResource(input: ProjectTemplatesMoveResourceInput): Promise<ProjectTemplatesMoveResourceResult> {
+    return this.client.post("/project_templates/move_resource", input);
   }
 
   async update(input: ProjectTemplatesUpdateInput): Promise<ProjectTemplatesUpdateResult> {
@@ -6915,6 +7130,22 @@ class ApiNamespaceProjectTemplates {
     input: ProjectTemplatesUpdateDiscussionInput,
   ): Promise<ProjectTemplatesUpdateDiscussionResult> {
     return this.client.post("/project_templates/update_discussion", input);
+  }
+
+  async updateDocument(input: ProjectTemplatesUpdateDocumentInput): Promise<ProjectTemplatesUpdateDocumentResult> {
+    return this.client.post("/project_templates/update_document", input);
+  }
+
+  async updateFile(input: ProjectTemplatesUpdateFileInput): Promise<ProjectTemplatesUpdateFileResult> {
+    return this.client.post("/project_templates/update_file", input);
+  }
+
+  async updateFolder(input: ProjectTemplatesUpdateFolderInput): Promise<ProjectTemplatesUpdateFolderResult> {
+    return this.client.post("/project_templates/update_folder", input);
+  }
+
+  async updateLink(input: ProjectTemplatesUpdateLinkInput): Promise<ProjectTemplatesUpdateLinkResult> {
+    return this.client.post("/project_templates/update_link", input);
   }
 
   async updateMilestone(input: ProjectTemplatesUpdateMilestoneInput): Promise<ProjectTemplatesUpdateMilestoneResult> {
@@ -8648,6 +8879,13 @@ export default {
     useGet: (input: ProjectTemplatesGetInput) =>
       useQuery<ProjectTemplatesGetResult>(() => defaultApiClient.apiNamespaceProjectTemplates.get(input)),
 
+    createLink: (input: ProjectTemplatesCreateLinkInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createLink(input),
+    useCreateLink: () =>
+      useMutation<ProjectTemplatesCreateLinkInput, ProjectTemplatesCreateLinkResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createLink(input),
+      ),
+
     updatePerson: (input: ProjectTemplatesUpdatePersonInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updatePerson(input),
     useUpdatePerson: () =>
@@ -8675,11 +8913,25 @@ export default {
         defaultApiClient.apiNamespaceProjectTemplates.createProject(input),
       ),
 
+    createFolder: (input: ProjectTemplatesCreateFolderInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createFolder(input),
+    useCreateFolder: () =>
+      useMutation<ProjectTemplatesCreateFolderInput, ProjectTemplatesCreateFolderResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createFolder(input),
+      ),
+
     createTask: (input: ProjectTemplatesCreateTaskInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createTask(input),
     useCreateTask: () =>
       useMutation<ProjectTemplatesCreateTaskInput, ProjectTemplatesCreateTaskResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createTask(input),
+      ),
+
+    createFiles: (input: ProjectTemplatesCreateFilesInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createFiles(input),
+    useCreateFiles: () =>
+      useMutation<ProjectTemplatesCreateFilesInput, ProjectTemplatesCreateFilesResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createFiles(input),
       ),
 
     deleteMilestone: (input: ProjectTemplatesDeleteMilestoneInput) =>
@@ -8689,11 +8941,39 @@ export default {
         defaultApiClient.apiNamespaceProjectTemplates.deleteMilestone(input),
       ),
 
+    moveResource: (input: ProjectTemplatesMoveResourceInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.moveResource(input),
+    useMoveResource: () =>
+      useMutation<ProjectTemplatesMoveResourceInput, ProjectTemplatesMoveResourceResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.moveResource(input),
+      ),
+
+    updateFile: (input: ProjectTemplatesUpdateFileInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateFile(input),
+    useUpdateFile: () =>
+      useMutation<ProjectTemplatesUpdateFileInput, ProjectTemplatesUpdateFileResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateFile(input),
+      ),
+
     createMilestone: (input: ProjectTemplatesCreateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
     useCreateMilestone: () =>
       useMutation<ProjectTemplatesCreateMilestoneInput, ProjectTemplatesCreateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
+      ),
+
+    deleteResource: (input: ProjectTemplatesDeleteResourceInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.deleteResource(input),
+    useDeleteResource: () =>
+      useMutation<ProjectTemplatesDeleteResourceInput, ProjectTemplatesDeleteResourceResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.deleteResource(input),
+      ),
+
+    updateFolder: (input: ProjectTemplatesUpdateFolderInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateFolder(input),
+    useUpdateFolder: () =>
+      useMutation<ProjectTemplatesUpdateFolderInput, ProjectTemplatesUpdateFolderResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateFolder(input),
       ),
 
     createDiscussion: (input: ProjectTemplatesCreateDiscussionInput) =>
@@ -8721,6 +9001,13 @@ export default {
     useUpdate: () =>
       useMutation<ProjectTemplatesUpdateInput, ProjectTemplatesUpdateResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.update(input),
+      ),
+
+    updateDocument: (input: ProjectTemplatesUpdateDocumentInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateDocument(input),
+    useUpdateDocument: () =>
+      useMutation<ProjectTemplatesUpdateDocumentInput, ProjectTemplatesUpdateDocumentResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateDocument(input),
       ),
 
     createFromProject: (input: ProjectTemplatesCreateFromProjectInput) =>
@@ -8751,11 +9038,25 @@ export default {
         defaultApiClient.apiNamespaceProjectTemplates.deleteTask(input),
       ),
 
+    createDocument: (input: ProjectTemplatesCreateDocumentInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createDocument(input),
+    useCreateDocument: () =>
+      useMutation<ProjectTemplatesCreateDocumentInput, ProjectTemplatesCreateDocumentResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createDocument(input),
+      ),
+
     updateTaskAssignees: (input: ProjectTemplatesUpdateTaskAssigneesInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
     useUpdateTaskAssignees: () =>
       useMutation<ProjectTemplatesUpdateTaskAssigneesInput, ProjectTemplatesUpdateTaskAssigneesResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
+      ),
+
+    updateLink: (input: ProjectTemplatesUpdateLinkInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateLink(input),
+    useUpdateLink: () =>
+      useMutation<ProjectTemplatesUpdateLinkInput, ProjectTemplatesUpdateLinkResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateLink(input),
       ),
   },
 
