@@ -5,18 +5,29 @@ import { SecondaryButton } from "../Button";
 import { type FormattedTimePreferences } from "../FormattedTime";
 import { IconSparkles } from "../icons";
 import { NotificationRow } from "../NotificationRow";
+import { OperatelyNotificationRow } from "../NotificationRow/OperatelyNotificationRow";
 import { Page } from "../Page";
 
 export namespace NotificationsPage {
-  export interface Notification {
+  interface BaseNotification {
     id: string;
     read: boolean;
-    author: AvatarPerson;
     title: React.ReactNode;
-    location: React.ReactNode;
     insertedAt: string;
     testId: string;
   }
+
+  export interface PersonNotification extends BaseNotification {
+    type?: "person";
+    author: AvatarPerson;
+    location: React.ReactNode;
+  }
+
+  export interface OperatelyNotification extends BaseNotification {
+    type: "operately";
+  }
+
+  export type Notification = PersonNotification | OperatelyNotification;
 
   export interface Props {
     notifications: Notification[];
@@ -148,19 +159,40 @@ function NotificationList({
   return (
     <>
       {notifications.map((notification) => (
-        <NotificationRow
+        <NotificationItem
           key={notification.id}
-          author={notification.author}
-          title={notification.title}
-          location={notification.location}
-          insertedAt={notification.insertedAt}
+          notification={notification}
           formattedTimePreferences={formattedTimePreferences}
-          read={notification.read}
-          testId={notification.testId}
-          onOpen={() => onOpenNotification(notification)}
-          onMarkAsRead={() => onMarkNotificationAsRead(notification)}
+          onOpenNotification={onOpenNotification}
+          onMarkNotificationAsRead={onMarkNotificationAsRead}
         />
       ))}
     </>
   );
+}
+
+function NotificationItem({
+  notification,
+  formattedTimePreferences,
+  onOpenNotification,
+  onMarkNotificationAsRead,
+}: {
+  notification: NotificationsPage.Notification;
+  formattedTimePreferences: FormattedTimePreferences;
+  onOpenNotification: NotificationsPage.Props["onOpenNotification"];
+  onMarkNotificationAsRead: NotificationsPage.Props["onMarkNotificationAsRead"];
+}) {
+  const rowProps = {
+    title: notification.title,
+    insertedAt: notification.insertedAt,
+    formattedTimePreferences,
+    read: notification.read,
+    testId: notification.testId,
+    onOpen: () => onOpenNotification(notification),
+    onMarkAsRead: () => onMarkNotificationAsRead(notification),
+  };
+
+  if (notification.type === "operately") return <OperatelyNotificationRow {...rowProps} />;
+
+  return <NotificationRow {...rowProps} author={notification.author} location={notification.location} />;
 }

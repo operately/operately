@@ -5,9 +5,12 @@ import React from "react";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { NotificationsPage } from ".";
 
-function notification(overrides: Partial<NotificationsPage.Notification> = {}): NotificationsPage.Notification {
+function notification(
+  overrides: Partial<NotificationsPage.PersonNotification> = {},
+): NotificationsPage.PersonNotification {
   return {
     id: "notification-1",
+    type: "person",
     read: false,
     author: {
       id: "person-1",
@@ -63,6 +66,25 @@ describe("NotificationsPage", () => {
     expect(screen.getByText("Previous Notifications")).toBeInTheDocument();
     expect(getByDataTestId("notification-item-project-updated")).toBeInTheDocument();
     expect(getByDataTestId("notification-item-project-created")).toBeInTheDocument();
+  });
+
+  it("renders Operately notifications in the inbox", () => {
+    renderPage({
+      notifications: [
+        {
+          id: "notification-1",
+          type: "operately",
+          read: false,
+          title: "New: Faster search",
+          insertedAt: "2026-08-10T12:00:00Z",
+          testId: "notification-item-operately-update",
+        },
+      ],
+    });
+
+    expect(screen.getByText("New: Faster search")).toBeInTheDocument();
+    expect(screen.getByText("Operately")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="operately-notification-logo"]')).toBeInTheDocument();
   });
 
   it("shows an empty state when there are no unread notifications", () => {

@@ -48,6 +48,38 @@ const notifications: NotificationsPage.Notification[] = [
   },
 ];
 
+const operatelyNotifications: NotificationsPage.OperatelyNotification[] = [
+  {
+    id: "notification-operately-full-text-search",
+    type: "operately",
+    read: false,
+    title: "New: Full-text search",
+    insertedAt: "2026-08-10T12:00:00Z",
+    testId: "notification-item-operately-full-text-search",
+  },
+  {
+    id: "notification-operately-document-versioning",
+    type: "operately",
+    read: false,
+    title: "New: Document versioning",
+    insertedAt: "2026-08-09T12:00:00Z",
+    testId: "notification-item-operately-document-versioning",
+  },
+  {
+    id: "notification-operately-project-templates",
+    type: "operately",
+    read: false,
+    title: "New: Project templates",
+    insertedAt: "2026-08-08T12:00:00Z",
+    testId: "notification-item-operately-project-templates",
+  },
+];
+
+const notificationsWithOperatelyUpdates: NotificationsPage.Notification[] = [
+  ...operatelyNotifications,
+  ...notifications,
+];
+
 function InteractiveNotificationsPage({
   initialNotifications = notifications,
 }: {
@@ -96,6 +128,17 @@ export const Empty: Story = {
     onMarkAllNotificationsAsRead: () => undefined,
   },
   render: () => <InteractiveNotificationsPage initialNotifications={[]} />,
+};
+
+export const WithOperatelyUpdates: Story = {
+  args: {
+    notifications: notificationsWithOperatelyUpdates,
+    formattedTimePreferences: defaultFormattedTimePreferences,
+    onOpenNotification: () => undefined,
+    onMarkNotificationAsRead: () => undefined,
+    onMarkAllNotificationsAsRead: () => undefined,
+  },
+  render: () => <InteractiveNotificationsPage initialNotifications={notificationsWithOperatelyUpdates} />,
 };
 
 export const MarkingAllAsRead: Story = {
