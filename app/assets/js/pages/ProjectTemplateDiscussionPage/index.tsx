@@ -33,7 +33,7 @@ async function loader({ params }): Promise<LoadedData> {
 function Page() {
   const { template, discussion } = Pages.useLoadedData<LoadedData>();
   const paths = usePaths();
-  const richTextHandlers = useRichEditorHandlers();
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
