@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 225
+- Endpoints: 228
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -123,6 +123,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
 | `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
 | `project_templates create` | `op project_templates create` | `POST` | `/api/external/v1/project_templates/create` |
+| `project_templates create_discussion` | `op project_templates create_discussion` | `POST` | `/api/external/v1/project_templates/create_discussion` |
 | `project_templates create_from_project` | `op project_templates create_from_project` | `POST` | `/api/external/v1/project_templates/create_from_project` |
 | `project_templates create_milestone` | `op project_templates create_milestone` | `POST` | `/api/external/v1/project_templates/create_milestone` |
 | `project_templates create_person` | `op project_templates create_person` | `POST` | `/api/external/v1/project_templates/create_person` |
@@ -132,8 +133,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `project_templates delete_person` | `op project_templates delete_person` | `POST` | `/api/external/v1/project_templates/delete_person` |
 | `project_templates delete_task` | `op project_templates delete_task` | `POST` | `/api/external/v1/project_templates/delete_task` |
 | `project_templates get` | `op project_templates get` | `GET` | `/api/external/v1/project_templates/get` |
+| `project_templates get_discussion` | `op project_templates get_discussion` | `GET` | `/api/external/v1/project_templates/get_discussion` |
 | `project_templates list` | `op project_templates list` | `GET` | `/api/external/v1/project_templates/list` |
 | `project_templates update` | `op project_templates update` | `POST` | `/api/external/v1/project_templates/update` |
+| `project_templates update_discussion` | `op project_templates update_discussion` | `POST` | `/api/external/v1/project_templates/update_discussion` |
 | `project_templates update_milestone` | `op project_templates update_milestone` | `POST` | `/api/external/v1/project_templates/update_milestone` |
 | `project_templates update_person` | `op project_templates update_person` | `POST` | `/api/external/v1/project_templates/update_person` |
 | `project_templates update_task` | `op project_templates update_task` | `POST` | `/api/external/v1/project_templates/update_task` |

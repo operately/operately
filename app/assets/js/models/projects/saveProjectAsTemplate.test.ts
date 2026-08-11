@@ -39,6 +39,7 @@ describe("save project as template bridge", () => {
         milestoneCount: 0,
         taskCount: 0,
         inactivePeopleSummary: { personCount: 0, roleCount: 0, taskCount: 0 },
+        inactiveDiscussionCount: 0,
       },
       scheduleIssues: [],
     } satisfies ProjectTemplatesCreateFromProjectResult);
@@ -51,6 +52,7 @@ describe("save project as template bridge", () => {
       name: "Reusable",
       description: JSON.stringify(description),
       includePeopleAndAssignments: false,
+      includeDiscussions: true,
     });
     expect(navigate).toHaveBeenCalledWith("/project-templates/template-1");
   });

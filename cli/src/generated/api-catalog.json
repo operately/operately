@@ -3822,6 +3822,109 @@
           }
         ]
       },
+      "project_template_discussion": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "project_template_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "body",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "author",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "update_content_message": {
         "fields": [
           {
@@ -6648,6 +6751,31 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          },
+          {
+            "default": null,
+            "name": "discussions",
+            "type": {
+              "item": {
+                "name": "project_template_discussion",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inactive_discussion_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           },
           {
             "default": null,
@@ -21350,9 +21478,9 @@
       ]
     }
   },
-  "endpoint_count": 225,
-  "query_count": 71,
-  "mutation_count": 154,
+  "endpoint_count": 228,
+  "query_count": 72,
+  "mutation_count": 156,
   "endpoints": [
     {
       "name": "create",
@@ -29127,6 +29255,64 @@
       "method": "POST"
     },
     {
+      "name": "create_discussion",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/create_discussion",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.CreateDiscussion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "project_template_discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "body",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/create_discussion",
+      "method": "POST"
+    },
+    {
       "name": "create_from_project",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/create_from_project",
@@ -29196,6 +29382,17 @@
         {
           "default": "false",
           "name": "include_people_and_assignments",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": "true",
+          "name": "include_discussions",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -29790,6 +29987,53 @@
       "method": "GET"
     },
     {
+      "name": "get_discussion",
+      "type": "query",
+      "path": "/api/external/v1/project_templates/get_discussion",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.GetDiscussion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "project_template_discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "discussion_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/get_discussion",
+      "method": "GET"
+    },
+    {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/project_templates/list",
@@ -29970,6 +30214,75 @@
       ],
       "docstring": null,
       "full_name": "project_templates/update",
+      "method": "POST"
+    },
+    {
+      "name": "update_discussion",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_discussion",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdateDiscussion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "project_template_discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "discussion_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "body",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_discussion",
       "method": "POST"
     },
     {
