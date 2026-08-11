@@ -179,6 +179,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "project_phase_history",
     "project_retrospectives",
     "project_template_milestones",
+    "project_template_discussions",
     "project_template_people",
     "project_template_task_assignments",
     "project_template_tasks",

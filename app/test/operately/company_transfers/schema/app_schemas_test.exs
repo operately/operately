@@ -19,6 +19,7 @@ defmodule Operately.CompanyTransfers.Schema.AppSchemasTest do
 
   test "schema_for_table/1 resolves project template schemas" do
     assert AppSchemas.schema_for_table("project_templates") == Operately.ProjectTemplates.ProjectTemplate
+    assert AppSchemas.schema_for_table("project_template_discussions") == Operately.ProjectTemplates.Discussion
     assert AppSchemas.schema_for_table("project_template_milestones") == Operately.ProjectTemplates.Milestone
     assert AppSchemas.schema_for_table("project_template_people") == Operately.ProjectTemplates.Person
     assert AppSchemas.schema_for_table("project_template_task_assignments") == Operately.ProjectTemplates.TaskAssignment
