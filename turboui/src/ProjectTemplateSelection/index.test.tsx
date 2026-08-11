@@ -38,6 +38,8 @@ const templates = [
     spaceId: "space-1",
     inactivePeopleSummary: { personCount: 1, roleCount: 1, taskCount: 3 },
   },
+  { id: "discussion-singular", name: "Editorial", spaceId: "space-1", inactiveDiscussionCount: 1 },
+  { id: "discussion-plural", name: "Release", spaceId: "space-1", inactiveDiscussionCount: 2 },
   { id: "product", name: "Launch", spaceId: "space-2" },
 ];
 
@@ -84,6 +86,21 @@ describe("ProjectTemplateSelection", () => {
 
     expect(screen.getByRole("status")).toHaveTextContent("1 person in this template is no longer active.");
     expect(screen.getByRole("status")).toHaveTextContent("Their project role and 3 tasks will be left unassigned.");
+  });
+
+  it("warns only for the selected template when discussion authors are inactive", () => {
+    render(<Harness />);
+
+    expect(screen.queryByText(/discussion.*attributed to you/i)).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "marketing" } });
+    expect(screen.queryByText(/discussion.*attributed to you/i)).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "discussion-singular" } });
+    expect(screen.getByText("1 discussion in this template will be attributed to you because its original author is no longer active.")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "discussion-plural" } });
+    expect(screen.getByText("2 discussions in this template will be attributed to you because their original authors are no longer active.")).toBeInTheDocument();
   });
 });
 
