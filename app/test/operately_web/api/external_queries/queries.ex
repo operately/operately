@@ -33,6 +33,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Projects.Get,
       Queries.Projects.List,
       Queries.ProjectTemplates.Get,
+      Queries.ProjectTemplates.GetDiscussion,
       Queries.ProjectTemplates.List,
       Queries.Documents.Get,
       Queries.Documents.GetVersion,

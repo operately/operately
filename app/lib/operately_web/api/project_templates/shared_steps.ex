@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   alias Operately.Operations.{ProjectCreation, ProjectTemplateCreationFromProject, ProjectTemplateMaterialization}
   alias Operately.ProjectTemplates
   alias Operately.People.Person, as: CompanyPerson
-  alias Operately.ProjectTemplates.{Milestone, Permissions, Person, ProjectTemplate, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Discussion, Milestone, Permissions, Person, ProjectTemplate, Task, TaskAssignment}
   alias Operately.Projects.Project
   alias Operately.Repo
   alias OperatelyWeb.Api.Helpers, as: ApiHelpers
@@ -42,6 +42,16 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
            :ok <- ensure_active(template) do
         {:ok, template}
       end
+    end)
+  end
+
+  @doc """
+  Loads a visible template without requiring it to be active, so archived
+  templates remain readable.
+  """
+  def load_template_for_view(multi, template_id) do
+    Ecto.Multi.run(multi, :template, fn _repo, %{me: requester} ->
+      ProjectTemplate.get(requester, id: template_id, company_id: requester.company_id)
     end)
   end
 
@@ -91,7 +101,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
            creator_id: changes.me.id,
            name: inputs.name,
            description: inputs[:description],
-           include_people_and_assignments: inputs[:include_people_and_assignments] || false
+           include_people_and_assignments: inputs[:include_people_and_assignments] || false,
+           include_discussions: inputs[:include_discussions] != false
          }) do
       {:ok, template} -> {:ok, Map.put(changes, :template_creation, %{template: template, schedule_issues: []})}
       {:error, {:invalid_schedule, %{issues: issues}}} -> {:ok, Map.put(changes, :template_creation, %{template: nil, schedule_issues: issues})}
@@ -115,6 +126,15 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       case repo.get_by(Task, id: task_id, project_template_id: template.id) do
         nil -> {:error, :not_found}
         task -> {:ok, task}
+      end
+    end)
+  end
+
+  def load_discussion(multi, discussion_id) do
+    Ecto.Multi.run(multi, :discussion, fn repo, %{template: template} ->
+      case repo.get_by(Discussion, id: discussion_id, project_template_id: template.id) do
+        nil -> {:error, :not_found}
+        discussion -> {:ok, repo.preload(discussion, :author)}
       end
     end)
   end
@@ -303,6 +323,27 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       end)
 
       Repo.all(from a in TaskAssignment, where: a.project_template_id == ^template.id and a.project_template_task_id == ^task.id)
+    end)
+  end
+
+  def create_discussion(multi, attrs) do
+    run_step(multi, :discussion, fn %{template: template, me: author} ->
+      Repo.update_all(from(d in Discussion, where: d.project_template_id == ^template.id), inc: [position: 1])
+
+      attrs
+      |> Map.merge(%{project_template_id: template.id, author_id: author.id, position: 0})
+      |> Discussion.changeset()
+      |> persist!()
+      |> Repo.preload(:author)
+    end)
+  end
+
+  def update_discussion(multi, attrs) do
+    run_step(multi, :updated_discussion, fn %{discussion: discussion} ->
+      discussion
+      |> Discussion.changeset(attrs)
+      |> persist!()
+      |> Repo.preload(:author)
     end)
   end
 

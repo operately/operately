@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.ProjectTemplates
-  alias Operately.ProjectTemplates.{Milestone, People, ProjectTemplate, Task}
+  alias Operately.ProjectTemplates.{Discussion, Milestone, People, ProjectTemplate, Task}
 
   inputs do
     field :id, :id, null: false
@@ -28,12 +28,20 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
              id: id,
              company_id: requester.company_id,
              opts: [
-               preload: [:space, :creator, people: [:person, :project_template], task_assignments: [], milestones: milestones_query(), tasks: tasks_query()],
+               preload: [
+                 :space,
+                 :creator,
+                 people: [:person, :project_template],
+                 task_assignments: [],
+                 discussions: discussions_query(),
+                 milestones: milestones_query(),
+                 tasks: tasks_query()
+               ],
                after_load: [&ProjectTemplate.set_permissions(&1, company_read_only)]
              ]
            ) do
       template = %{template | milestone_count: length(template.milestones), task_count: length(template.tasks)}
-      {:ok, template |> List.wrap() |> People.put_inactive_summaries() |> List.first()}
+      {:ok, template |> List.wrap() |> People.put_inactive_summaries() |> Discussion.put_inactive_counts() |> List.first()}
     end
   end
 
@@ -43,5 +51,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
 
   defp tasks_query do
     from(task in Task, order_by: [asc: task.inserted_at, asc: task.id])
+  end
+
+  defp discussions_query do
+    from(discussion in Discussion, order_by: [asc: discussion.position, asc: discussion.id], preload: [:author])
   end
 end
