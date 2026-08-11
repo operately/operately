@@ -81,6 +81,9 @@ import ProjectPausePage from "./ProjectPausePage";
 import ProjectResumePage from "./ProjectResumePage";
 import ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import ProjectRetrospectivePage from "./ProjectRetrospectivePage";
+import ProjectTemplateDiscussionEditPage from "./ProjectTemplateDiscussionEditPage";
+import ProjectTemplateDiscussionNewPage from "./ProjectTemplateDiscussionNewPage";
+import ProjectTemplateDiscussionPage from "./ProjectTemplateDiscussionPage";
 import ProjectTemplatePage from "./ProjectTemplatePage";
 import ProjectTemplatesPage from "./ProjectTemplatesPage";
 import ResetPasswordPage from "./ResetPasswordPage";
@@ -198,6 +201,9 @@ export default {
   ProjectResumePage,
   ProjectRetrospectiveEditPage,
   ProjectRetrospectivePage,
+  ProjectTemplateDiscussionEditPage,
+  ProjectTemplateDiscussionNewPage,
+  ProjectTemplateDiscussionPage,
   ProjectTemplatePage,
   ProjectTemplatesPage,
   ResetPasswordPage,

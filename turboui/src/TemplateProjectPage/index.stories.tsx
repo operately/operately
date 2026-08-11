@@ -4,6 +4,7 @@ import { asRichText } from "../utils/storybook/richContent";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { TemplateProjectPage } from ".";
 import type { TemplateProjectPage as Types } from ".";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 
 const statuses: Types.Props["statuses"] = [
   { id: "todo", value: "todo", label: "To do", color: "gray", icon: "circleDashed", index: 0 },
@@ -98,9 +99,23 @@ const populatedProps: Types.Props = {
       assignees: [champion, unavailableContributor],
     },
   ],
+  discussions: [
+    {
+      id: "template-discussion-1",
+      title: "Launch communication guidance",
+      author: champion.person,
+      date: new Date("2028-01-10T12:00:00Z"),
+      link: "/project-templates/launch-template/discussions/template-discussion-1",
+      content: asRichText(
+        "Use this discussion to preserve context that should accompany every generated launch project.",
+      ),
+    },
+  ],
+  newDiscussionLink: "/templates/launch-template/discussions/new",
   people: [champion, unavailableContributor],
   personSearch: { people: [], onSearch: async () => undefined },
   richTextHandlers: createMockRichEditorHandlers(),
+  formattedTimePreferences: defaultFormattedTimePreferences,
   onTemplateUpdate: () => undefined,
   onStatusesChange: () => undefined,
   onMilestoneCreate: () => undefined,
@@ -180,7 +195,9 @@ function TemplateStory({ props }: { props: Types.Props }) {
     onPersonCreate: (person) =>
       setPeople((current) => [...current, { ...person, id: crypto.randomUUID(), active: true }]),
     onPersonUpdate: (id, updates) =>
-      setPeople((current) => current.map((item) => (item.id === id ? { ...item, ...updates, active: Boolean(updates.person) } : item))),
+      setPeople((current) =>
+        current.map((item) => (item.id === id ? { ...item, ...updates, active: Boolean(updates.person) } : item)),
+      ),
     onPersonDelete: (id) => setPeople((current) => current.filter((item) => item.id !== id)),
   };
 

@@ -140,6 +140,8 @@ export { ProfilePage } from "./ProfilePage";
 export { ProjectField } from "./ProjectField";
 export { ProjectPage } from "./ProjectPage";
 export { TemplateProjectPage } from "./TemplateProjectPage";
+export { TemplateDiscussionPage } from "./TemplateDiscussionPage";
+export { TemplateDiscussionForm } from "./TemplateDiscussionForm";
 export { ProjectTemplatesPage } from "./ProjectTemplatesPage";
 export { ResourceHubDraftsPage } from "./ResourceHubDraftsPage";
 export { ResourceHubFolderPage } from "./ResourceHubFolderPage";
@@ -177,12 +179,7 @@ export { Editor, hasLocalDraft, useEditor } from "./RichEditor";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
 export { createRichEditorExtensions } from "./RichEditor/createRichEditorExtensions";
 export { RichContent };
-export {
-  RichContentDiff,
-  DiffLegend,
-  diffRichContent,
-  createRichContentSchema,
-} from "./RichContentDiff";
+export { RichContentDiff, DiffLegend, diffRichContent, createRichContentSchema } from "./RichContentDiff";
 export type { RichContentDiffProps, RichContentChange, DiffRichContentResult } from "./RichContentDiff";
 
 export {

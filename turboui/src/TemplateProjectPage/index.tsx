@@ -2,12 +2,14 @@ import React from "react";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import type { ProjectPermissions } from "../ProjectPage/types";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { FormattedTimePreferences } from "../FormattedTime";
 import type { StatusSelector } from "../StatusSelector";
 import type { PersonField } from "../PersonField";
-import { IconClipboardText, IconListCheck } from "../icons";
+import { IconClipboardText, IconListCheck, IconMessageCircle } from "../icons";
 import { useTabs } from "../Tabs";
 import { Overview } from "./Overview";
 import { TaskBoard } from "./TaskBoard";
+import { Discussions } from "./Discussions";
 
 export function TemplateProjectPage(props: TemplateProjectPage.Props) {
   const orderedProps = React.useMemo(() => orderTemplateGraph(props), [props]);
@@ -15,6 +17,7 @@ export function TemplateProjectPage(props: TemplateProjectPage.Props) {
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
     { id: "tasks", label: "Tasks", icon: <IconListCheck size={14} />, count: props.tasks.length },
+    { id: "discussions", label: "Discussions", icon: <IconMessageCircle size={14} />, count: props.discussions.length },
   ]);
 
   return (
@@ -31,11 +34,9 @@ export function TemplateProjectPage(props: TemplateProjectPage.Props) {
       tabs={tabs}
     >
       <div className="flex-1 overflow-auto">
-        {tabs.active === "tasks" ? (
-          <TaskBoard props={orderedProps} canEdit={canEdit} />
-        ) : (
-          <Overview props={orderedProps} canEdit={canEdit} />
-        )}
+        {tabs.active === "tasks" && <TaskBoard props={orderedProps} canEdit={canEdit} />}
+        {tabs.active === "discussions" && <Discussions props={orderedProps} canEdit={canEdit} />}
+        {tabs.active === "overview" && <Overview props={orderedProps} canEdit={canEdit} />}
       </div>
     </ProjectPageLayout>
   );
@@ -84,6 +85,15 @@ export namespace TemplateProjectPage {
     active: boolean;
   }
 
+  export interface Discussion {
+    id: string;
+    title: string;
+    author: PersonField.Person | null;
+    date: Date;
+    link: string;
+    content: any;
+  }
+
   export interface Props {
     template: {
       id: string;
@@ -99,9 +109,12 @@ export namespace TemplateProjectPage {
     statuses: StatusSelector.StatusOption[];
     milestones: Milestone[];
     tasks: Task[];
+    discussions: Discussion[];
+    newDiscussionLink?: string;
     people?: TemplatePerson[];
     personSearch: PersonField.SearchData;
     richTextHandlers: RichEditorHandlers;
+    formattedTimePreferences: FormattedTimePreferences;
     onTemplateUpdate: (updates: Partial<Props["template"]>) => void | boolean | Promise<void | boolean>;
     onStatusesChange?: (payload: {
       nextStatuses: StatusSelector.StatusOption[];
