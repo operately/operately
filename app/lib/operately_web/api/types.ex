@@ -237,6 +237,14 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string
   end
 
+  object :activity_content_kpi_created, for: Operately.Activities.Content.KpiCreated do
+    field :company, :company
+    field :space, :space
+    field :kpi, :kpi
+    field? :champion, :person, null: true
+    field :kpi_name, :string
+  end
+
   object :activity_content_goal_target_updating, for: Operately.Activities.Content.GoalTargetUpdating do
     field :company, :company
     field :space, :space
@@ -1028,6 +1036,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_discussion_comment_submitted,
       :activity_content_discussion_editing,
       :activity_content_discussion_posting,
+      :activity_content_kpi_created,
       :activity_content_goal_archived,
       :activity_content_goal_check_in,
       :activity_content_goal_check_in_acknowledgement,
