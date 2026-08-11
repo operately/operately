@@ -48,6 +48,7 @@ export { AccountApiTokensPage } from "./AccountApiTokensPage";
 export { AccountMcpConnectionsPage } from "./AccountMcpConnectionsPage";
 export { AccountApiTokensUsagePage } from "./AccountApiTokensUsagePage";
 export { AccountNotificationSettingsPage } from "./AccountNotificationSettingsPage";
+export { NotificationsPage } from "./NotificationsPage";
 export { AccountSettingsPage } from "./AccountSettingsPage";
 export { AccountSecurityPage } from "./AccountSecurityPage";
 export { InfoCallout, WarningCallout } from "./Callouts";
