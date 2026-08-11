@@ -53,6 +53,7 @@ describe("save project as template bridge", () => {
       description: JSON.stringify(description),
       includePeopleAndAssignments: false,
       includeDiscussions: true,
+      includeDocsAndFiles: true,
     });
     expect(navigate).toHaveBeenCalledWith("/project-templates/template-1");
   });
