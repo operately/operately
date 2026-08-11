@@ -13,7 +13,8 @@ defmodule Operately.CompanyTransfers.Export.FileDiscovery do
 
   @direct_blob_fields %{
     "people" => ["avatar_blob_id"],
-    "resource_files" => ["blob_id", "preview_blob_id"]
+    "resource_files" => ["blob_id", "preview_blob_id"],
+    "project_template_resource_files" => ["blob_id", "preview_blob_id"]
   }
 
   def discover(%{"tables" => tables}) when is_list(tables), do: discover(tables)

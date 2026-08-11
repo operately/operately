@@ -82,6 +82,10 @@ defmodule Operately.Support.Factory do
   defdelegate add_project_template_person(ctx, testid, template_name, person_name, opts \\ []), to: Factory.ProjectTemplates
   defdelegate add_project_template_task_assignment(ctx, testid, template_name, task_name, person_name), to: Factory.ProjectTemplates
   defdelegate add_project_template_discussion(ctx, testid, template_name, opts \\ []), to: Factory.ProjectTemplates
+  defdelegate add_project_template_resource_folder(ctx, testid, template_name, opts \\ []), to: Factory.ProjectTemplates
+  defdelegate add_project_template_resource_document(ctx, testid, template_name, opts \\ []), to: Factory.ProjectTemplates
+  defdelegate add_project_template_resource_file(ctx, testid, template_name, blob_name, opts \\ []), to: Factory.ProjectTemplates
+  defdelegate add_project_template_resource_link(ctx, testid, template_name, opts \\ []), to: Factory.ProjectTemplates
 
   # messages
   defdelegate add_messages_board(ctx, testid, space_name, opts \\ []), to: Factory.Messages

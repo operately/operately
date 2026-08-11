@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory.ProjectTemplates do
-  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
   alias Operately.Repo
   alias Operately.Support.Factory.Utils
 
@@ -63,6 +63,69 @@ defmodule Operately.Support.Factory.ProjectTemplates do
     task = attrs |> Task.changeset() |> Repo.insert!()
     Map.put(ctx, testid, task)
   end
+
+  def add_project_template_resource_folder(ctx, testid, template_name, opts \\ []) do
+    node =
+      ResourceNode.changeset(%{project_template_id: ctx[template_name].id, parent_folder_id: parent_folder_id(ctx, opts), type: :folder, position: Keyword.get(opts, :position, 0)}) |> Repo.insert!()
+
+    folder = ResourceFolder.changeset(%{node_id: node.id, name: Keyword.get(opts, :name, Utils.testid_to_name(testid))}) |> Repo.insert!()
+    Map.put(ctx, testid, %{folder | node: node})
+  end
+
+  def add_project_template_resource_document(ctx, testid, template_name, opts \\ []) do
+    node =
+      ResourceNode.changeset(%{project_template_id: ctx[template_name].id, parent_folder_id: parent_folder_id(ctx, opts), type: :document, position: Keyword.get(opts, :position, 0)}) |> Repo.insert!()
+
+    document =
+      ResourceDocument.changeset(%{
+        node_id: node.id,
+        author_id: ctx[Keyword.get(opts, :author, :creator)].id,
+        name: Keyword.get(opts, :name, Utils.testid_to_name(testid)),
+        content: Keyword.get(opts, :content, %{})
+      })
+      |> Repo.insert!()
+
+    Map.put(ctx, testid, %{document | node: node})
+  end
+
+  def add_project_template_resource_file(ctx, testid, template_name, blob_name, opts \\ []) do
+    node =
+      ResourceNode.changeset(%{project_template_id: ctx[template_name].id, parent_folder_id: parent_folder_id(ctx, opts), type: :file, position: Keyword.get(opts, :position, 0)}) |> Repo.insert!()
+
+    file =
+      ResourceFile.changeset(%{
+        node_id: node.id,
+        author_id: ctx[Keyword.get(opts, :author, :creator)].id,
+        blob_id: ctx[blob_name].id,
+        preview_blob_id: preview_blob_id(ctx, opts),
+        name: Keyword.get(opts, :name, Utils.testid_to_name(testid)),
+        description: Keyword.get(opts, :description, %{})
+      })
+      |> Repo.insert!()
+
+    Map.put(ctx, testid, %{file | node: node})
+  end
+
+  def add_project_template_resource_link(ctx, testid, template_name, opts \\ []) do
+    node =
+      ResourceNode.changeset(%{project_template_id: ctx[template_name].id, parent_folder_id: parent_folder_id(ctx, opts), type: :link, position: Keyword.get(opts, :position, 0)}) |> Repo.insert!()
+
+    link =
+      ResourceLink.changeset(%{
+        node_id: node.id,
+        author_id: ctx[Keyword.get(opts, :author, :creator)].id,
+        name: Keyword.get(opts, :name, Utils.testid_to_name(testid)),
+        url: Keyword.get(opts, :url, "https://operately.com"),
+        description: Keyword.get(opts, :description, %{}),
+        type: Keyword.get(opts, :type, :other)
+      })
+      |> Repo.insert!()
+
+    Map.put(ctx, testid, %{link | node: node})
+  end
+
+  defp parent_folder_id(ctx, opts), do: Keyword.get(opts, :parent_folder) && ctx[Keyword.fetch!(opts, :parent_folder)].id
+  defp preview_blob_id(ctx, opts), do: Keyword.get(opts, :preview_blob) && ctx[Keyword.fetch!(opts, :preview_blob)].id
 
   def add_project_template_person(ctx, testid, template_name, person_name, opts \\ []) do
     attrs = %{
