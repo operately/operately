@@ -509,6 +509,21 @@ defmodule OperatelyWeb.Paths do
   def project_template_discussion_id(%{id: id}), do: project_template_discussion_id(id)
   def project_template_discussion_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
 
+  def project_template_resource_node_id(%{id: id}), do: project_template_resource_node_id(id)
+  def project_template_resource_node_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
+
+  def project_template_resource_folder_id(%{id: id}), do: project_template_resource_folder_id(id)
+  def project_template_resource_folder_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
+
+  def project_template_resource_document_id(%{id: id}), do: project_template_resource_document_id(id)
+  def project_template_resource_document_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
+
+  def project_template_resource_file_id(%{id: id}), do: project_template_resource_file_id(id)
+  def project_template_resource_file_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
+
+  def project_template_resource_link_id(%{id: id}), do: project_template_resource_link_id(id)
+  def project_template_resource_link_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
+
   def task_id(task) do
     id = Operately.ShortUuid.encode!(task.id)
     OperatelyWeb.Api.Helpers.id_with_comments(task.name, id)

@@ -1923,6 +1923,7 @@ export interface ProjectTemplate {
   people?: ProjectTemplatePerson[] | null;
   taskAssignments?: ProjectTemplateTaskAssignment[] | null;
   discussions?: ProjectTemplateDiscussion[] | null;
+  resourceNodes?: ProjectTemplateResourceNode[] | null;
   inactiveDiscussionCount: number;
   permissions?: ProjectTemplatePermissions | null;
 }
@@ -1976,6 +1977,67 @@ export interface ProjectTemplatePerson {
   active: boolean;
 }
 
+export interface ProjectTemplateResourceDocument {
+  __typename: "project_template_resource_document";
+  id: string;
+  nodeId: string;
+  author?: Person | null;
+  name: string;
+  content: string;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateResourceFile {
+  __typename: "project_template_resource_file";
+  id: string;
+  nodeId: string;
+  author?: Person | null;
+  name: string;
+  description?: string | null;
+  blob?: Blob | null;
+  previewBlob?: Blob | null;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateResourceFolder {
+  __typename: "project_template_resource_folder";
+  id: string;
+  nodeId: string;
+  name: string;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateResourceLink {
+  __typename: "project_template_resource_link";
+  id: string;
+  nodeId: string;
+  author?: Person | null;
+  name: string;
+  url: string;
+  description?: string | null;
+  type: ProjectTemplateResourceLinkType;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTemplateResourceNode {
+  __typename: "project_template_resource_node";
+  id: string;
+  projectTemplateId: string;
+  parentFolderId?: string | null;
+  type: ProjectTemplateResourceType;
+  position: number;
+  folder?: ProjectTemplateResourceFolder | null;
+  document?: ProjectTemplateResourceDocument | null;
+  file?: ProjectTemplateResourceFile | null;
+  link?: ProjectTemplateResourceLink | null;
+  insertedAt: string;
+  updatedAt: string;
+}
+
 export interface ProjectTemplateScheduleIssue {
   resourceType: ProjectTemplateScheduleResourceType;
   resourceId: string;
@@ -2006,6 +2068,13 @@ export interface ProjectTemplateTaskAssignment {
   id: string;
   projectTemplateTaskId: string;
   projectTemplatePersonId: string;
+}
+
+export interface ProjectTemplateUploadedFile {
+  blobId: Id;
+  previewBlobId?: Id | null;
+  name: string;
+  description?: Json | null;
 }
 
 export interface QuickSearchDiscussion {
@@ -2745,6 +2814,19 @@ export type ProjectTasksView = "list" | "board";
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
 
 export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
+
+export type ProjectTemplateResourceLinkType =
+  | "airtable"
+  | "dropbox"
+  | "figma"
+  | "google"
+  | "google_doc"
+  | "google_sheet"
+  | "google_slides"
+  | "notion"
+  | "other";
+
+export type ProjectTemplateResourceType = "folder" | "document" | "file" | "link";
 
 export type ProjectTemplateScheduleField = "start_date" | "end_date" | "due_date";
 

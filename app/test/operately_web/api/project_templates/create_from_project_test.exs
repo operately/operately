@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.ContextualDates.ContextualDate
-  alias Operately.ProjectTemplates.{Discussion, Person, ProjectTemplate}
+  alias Operately.ProjectTemplates.{Discussion, Person, ProjectTemplate, ResourceDocument}
   alias Operately.Projects.Project
   alias Operately.Repo
 
@@ -69,6 +69,21 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
     excluded_id = decode_id!(excluded.template.id)
 
     assert Repo.aggregate(from(discussion in Discussion, where: discussion.project_template_id == ^excluded_id), :count) == 0
+  end
+
+  test "copies published Docs & Files by default and excludes them when requested", ctx do
+    ctx =
+      ctx
+      |> Factory.fetch_default_project_resource_hub(:hub, :source)
+      |> Factory.add_document(:document, :hub, name: "Reusable guide")
+
+    assert {200, included} = request(ctx, name: "With resources")
+    included_id = decode_id!(included.template.id)
+    assert Repo.exists?(from(document in ResourceDocument, join: node in assoc(document, :node), where: node.project_template_id == ^included_id and document.name == "Reusable guide"))
+
+    assert {200, excluded} = request(ctx, name: "Without resources", include_docs_and_files: false)
+    excluded_id = decode_id!(excluded.template.id)
+    assert Repo.aggregate(from(document in ResourceDocument, join: node in assoc(document, :node), where: node.project_template_id == ^excluded_id), :count) == 0
   end
 
   test "returns every schedule issue without creating a template", ctx do

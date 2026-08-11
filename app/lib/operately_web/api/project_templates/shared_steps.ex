@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   alias Operately.Operations.{ProjectCreation, ProjectTemplateCreationFromProject, ProjectTemplateMaterialization}
   alias Operately.ProjectTemplates
   alias Operately.People.Person, as: CompanyPerson
-  alias Operately.ProjectTemplates.{Discussion, Milestone, Permissions, Person, ProjectTemplate, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Discussion, Milestone, Permissions, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
   alias Operately.Projects.Project
   alias Operately.Repo
   alias OperatelyWeb.Api.Helpers, as: ApiHelpers
@@ -102,7 +102,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
            name: inputs.name,
            description: inputs[:description],
            include_people_and_assignments: inputs[:include_people_and_assignments] || false,
-           include_discussions: inputs[:include_discussions] != false
+           include_discussions: inputs[:include_discussions] != false,
+           include_docs_and_files: inputs[:include_docs_and_files] != false
          }) do
       {:ok, template} -> {:ok, Map.put(changes, :template_creation, %{template: template, schedule_issues: []})}
       {:error, {:invalid_schedule, %{issues: issues}}} -> {:ok, Map.put(changes, :template_creation, %{template: nil, schedule_issues: issues})}
@@ -347,6 +348,80 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     end)
   end
 
+  def load_resource_node(multi, node_id) do
+    Ecto.Multi.run(multi, :resource_node, fn repo, %{template: template} ->
+      case repo.get_by(ResourceNode, id: node_id, project_template_id: template.id) do
+        nil -> {:error, :not_found}
+        node -> {:ok, node}
+      end
+    end)
+  end
+
+  def load_resource(multi, name, schema, id) do
+    Ecto.Multi.run(multi, name, fn repo, %{template: template} ->
+      query = from resource in schema, join: node in assoc(resource, :node), where: resource.id == ^id and node.project_template_id == ^template.id, preload: [node: []]
+
+      case repo.one(query) do
+        nil -> {:error, :not_found}
+        resource -> {:ok, resource}
+      end
+    end)
+  end
+
+  def create_resource(multi, type, attrs) do
+    run_step(multi, :resource, fn %{template: template, me: author} ->
+      parent_folder_id = Map.get(attrs, :parent_folder_id)
+      validate_resource_parent!(template, parent_folder_id)
+      position = insert_position!(template.id, parent_folder_id)
+      node = persist!(ResourceNode.changeset(%{project_template_id: template.id, parent_folder_id: parent_folder_id, type: type, position: position}))
+
+      create_resource_content!(type, node.id, author.id, template.company_id, attrs)
+      |> preload_resource()
+    end)
+  end
+
+  def create_files(multi, parent_folder_id, files) do
+    run_step(multi, :files, fn %{template: template, me: author} ->
+      validate_resource_parent!(template, parent_folder_id)
+
+      Enum.map(files, fn attrs ->
+        position = insert_position!(template.id, parent_folder_id)
+        node = persist!(ResourceNode.changeset(%{project_template_id: template.id, parent_folder_id: parent_folder_id, type: :file, position: position}))
+
+        create_resource_content!(:file, node.id, author.id, template.company_id, attrs)
+        |> preload_resource()
+      end)
+    end)
+  end
+
+  def update_resource(multi, name, schema, attrs) do
+    run_step(multi, :updated_resource, fn changes ->
+      resource = Map.fetch!(changes, name)
+
+      schema
+      |> apply(:changeset, [resource, attrs])
+      |> persist!()
+      |> preload_resource()
+    end)
+  end
+
+  def delete_resource(multi) do
+    run_step(multi, :deleted_resource, fn %{resource_node: node} -> delete!(node) end)
+  end
+
+  def move_resource(multi, attrs) do
+    run_step(multi, :moved_resource, fn %{template: template, resource_node: node} ->
+      parent_folder_id = Map.get(attrs, :parent_folder_id)
+      validate_resource_parent!(template, parent_folder_id)
+      ensure_not_descendant!(node, parent_folder_id)
+      old_parent_id = node.parent_folder_id
+      node = node |> ResourceNode.changeset(%{parent_folder_id: parent_folder_id, position: 0}) |> persist!()
+      normalize_resource_positions!(template.id, old_parent_id)
+      normalize_resource_positions!(template.id, parent_folder_id, node.id)
+      node
+    end)
+  end
+
   def commit(multi), do: Repo.transaction(multi)
 
   def respond(result, success) do
@@ -513,12 +588,88 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     end
   end
 
+  defp create_resource_content!(:folder, node_id, _author_id, _company_id, attrs), do: persist!(ResourceFolder.changeset(%{node_id: node_id, name: attrs.name}))
+
+  defp create_resource_content!(:document, node_id, author_id, _company_id, attrs),
+    do: persist!(ResourceDocument.changeset(%{node_id: node_id, author_id: author_id, name: attrs.name, content: attrs.content}))
+
+  defp create_resource_content!(:file, node_id, author_id, company_id, attrs) do
+    validate_blob!(attrs.blob_id, company_id)
+    if attrs[:preview_blob_id], do: validate_blob!(attrs.preview_blob_id, company_id)
+    persist!(ResourceFile.changeset(%{node_id: node_id, author_id: author_id, blob_id: attrs.blob_id, preview_blob_id: attrs[:preview_blob_id], name: attrs.name, description: attrs[:description]}))
+  end
+
+  defp create_resource_content!(:link, node_id, author_id, _company_id, attrs),
+    do: persist!(ResourceLink.changeset(%{node_id: node_id, author_id: author_id, name: attrs.name, url: attrs.url, description: attrs[:description], type: attrs.type}))
+
+  defp validate_resource_parent!(_template, nil), do: :ok
+
+  defp validate_resource_parent!(template, parent_folder_id) do
+    if Repo.exists?(from folder in ResourceFolder, join: node in assoc(folder, :node), where: folder.id == ^parent_folder_id and node.project_template_id == ^template.id) do
+      :ok
+    else
+      fail!(:not_found)
+    end
+  end
+
+  defp insert_position!(template_id, parent_folder_id) do
+    nodes_in_resource_container(template_id, parent_folder_id)
+    |> Repo.update_all(inc: [position: 1])
+
+    0
+  end
+
+  defp normalize_resource_positions!(template_id, parent_folder_id, first_node_id \\ nil) do
+    nodes = Repo.all(from node in nodes_in_resource_container(template_id, parent_folder_id), order_by: [asc: node.position, asc: node.id])
+    nodes = if first_node_id, do: [Enum.find(nodes, &(&1.id == first_node_id)) | Enum.reject(nodes, &(&1.id == first_node_id))], else: nodes
+    Enum.with_index(nodes) |> Enum.each(fn {node, position} -> persist!(ResourceNode.changeset(node, %{position: position})) end)
+  end
+
+  defp nodes_in_resource_container(template_id, nil) do
+    from node in ResourceNode,
+      where: node.project_template_id == ^template_id and is_nil(node.parent_folder_id)
+  end
+
+  defp nodes_in_resource_container(template_id, parent_folder_id) do
+    from node in ResourceNode,
+      where: node.project_template_id == ^template_id and node.parent_folder_id == ^parent_folder_id
+  end
+
+  defp ensure_not_descendant!(%{type: :folder, id: node_id}, parent_folder_id) when not is_nil(parent_folder_id) do
+    folder = Repo.get_by!(ResourceFolder, node_id: node_id)
+    if descendant_folder?(folder.id, parent_folder_id), do: fail!({:validation, "A folder cannot be moved into itself"})
+  end
+
+  defp ensure_not_descendant!(_node, _parent_folder_id), do: :ok
+
+  defp descendant_folder?(folder_id, folder_id), do: true
+
+  defp descendant_folder?(folder_id, candidate_folder_id) do
+    case Repo.get(ResourceFolder, candidate_folder_id) |> Repo.preload(:node) do
+      %{node: %{parent_folder_id: nil}} -> false
+      %{node: %{parent_folder_id: parent_id}} -> descendant_folder?(folder_id, parent_id)
+      _ -> false
+    end
+  end
+
   defp active_company_person!(template, person_id) do
     case Repo.get_by(CompanyPerson, id: person_id, company_id: template.company_id) do
       %{suspended: false, suspended_at: nil} = person -> person
       _ -> fail!(:not_found)
     end
   end
+
+  defp validate_blob!(blob_id, company_id) do
+    case Repo.get(Operately.Blobs.Blob, blob_id) do
+      %{company_id: ^company_id, status: :uploaded} -> :ok
+      _ -> fail!({:validation, "The uploaded file is unavailable"})
+    end
+  end
+
+  defp preload_resource(%ResourceFolder{} = resource), do: Repo.preload(resource, :node)
+  defp preload_resource(%ResourceDocument{} = resource), do: Repo.preload(resource, [:node, :author])
+  defp preload_resource(%ResourceFile{} = resource), do: Repo.preload(resource, [:node, :author, :blob, :preview_blob])
+  defp preload_resource(%ResourceLink{} = resource), do: Repo.preload(resource, [:node, :author])
 
   defp ensure_person_is_not_represented!(template, person_id, except_id \\ nil) do
     query = from p in Person, where: p.project_template_id == ^template.id and p.person_id == ^person_id
@@ -638,6 +789,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp handle_error({:error, _step, {:invalid_source, _reason}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:invalid_source_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:invalid_template_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, {:invalid_resource_tree, _reason}, _changes}), do: {:error, :bad_request}
+  defp handle_error({:error, _step, :invalid_resource_parent, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:validation, message}, _changes}), do: {:error, :bad_request, message}
   defp handle_error({:error, _step, %Ecto.Changeset{}, _changes}), do: {:error, :bad_request}
 

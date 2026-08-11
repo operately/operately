@@ -110,6 +110,27 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     assert Enum.find(res.template.discussions, &(&1.title == "Older")).author.id == Paths.person_id(ctx.inactive_author)
   end
 
+  test "returns the complete template Docs & Files graph", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_template_resource_folder(:folder, :template, name: "Assets")
+      |> Factory.add_project_template_resource_document(:document, :template,
+        parent_folder: :folder,
+        name: "Launch guide",
+        content: %{"type" => "doc", "content" => []}
+      )
+
+    assert {200, res} = request(ctx)
+
+    folder = Enum.find(res.template.resource_nodes, &(&1.type in [:folder, "folder"]))
+    document = Enum.find(res.template.resource_nodes, &(&1.type in [:document, "document"]))
+
+    assert folder.folder.name == "Assets"
+    assert document.document.name == "Launch guide"
+    assert document.document.content == Jason.encode!(%{"type" => "doc", "content" => []})
+    assert document.parent_folder_id == folder.folder.id
+  end
+
   test "returns archived templates", ctx do
     {:ok, archived} = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update()
     ctx = %{ctx | template: archived}
