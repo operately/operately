@@ -6,8 +6,9 @@ import { TextSeparator } from "../TextSeparator";
 
 export interface NotificationRowProps {
   author: AvatarPerson;
+  authorAvatar?: React.ReactNode;
   title: React.ReactNode;
-  location: React.ReactNode;
+  location?: React.ReactNode;
   insertedAt: string;
   formattedTimePreferences: FormattedTimePreferences;
   read: boolean;
@@ -18,6 +19,7 @@ export interface NotificationRowProps {
 
 export function NotificationRow({
   author,
+  authorAvatar,
   title,
   location,
   insertedAt,
@@ -38,17 +40,19 @@ export function NotificationRow({
       onClick={onOpen}
       data-test-id={testId}
     >
-      <div className="shrink-0">
-        <Avatar person={author} size="small" />
-      </div>
+      <div className="shrink-0">{authorAvatar ?? <Avatar person={author} size="small" />}</div>
 
       <div className="min-w-0 flex-1">
         <div className="truncate text-content-accent font-semibold">{title}</div>
 
         <div className="text-content-dimmed font-medium text-sm leading-snug">
-          {location}
-          <TextSeparator />
-          {author.fullName}
+          {location && (
+            <>
+              {location}
+              <TextSeparator />
+            </>
+          )}
+          <span>{author.fullName}</span>
           <TextSeparator />
           <FormattedTime {...formattedTimePreferences} time={insertedAt} format="long-date" />
         </div>
