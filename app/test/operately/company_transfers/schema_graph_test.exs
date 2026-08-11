@@ -385,7 +385,6 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert metadata.polymorphic_config == nil
       assert metadata.type_id_reference_configs == []
     end
-
   end
 
   describe "SchemaDiscovery.classify_table/1" do
@@ -414,6 +413,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert Discovery.classify_table("projects") == :included
       assert Discovery.classify_table("milestone_comments") == :included
       assert Discovery.classify_table("project_templates") == :included
+      assert Discovery.classify_table("project_template_discussions") == :included
       assert Discovery.classify_table("project_template_milestones") == :included
       assert Discovery.classify_table("project_template_people") == :included
       assert Discovery.classify_table("project_template_task_assignments") == :included
@@ -435,9 +435,10 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     end
 
     test "keeps included tables closed under hard foreign keys for the minimal slice" do
-      allowed_refs = MapSet.new([
-        {"milestone_comments", "comment_id", "comments", :polymorphic}
-      ])
+      allowed_refs =
+        MapSet.new([
+          {"milestone_comments", "comment_id", "comments", :polymorphic}
+        ])
 
       invalid_refs =
         PolicyRegistry.included_tables()
@@ -445,6 +446,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
           Graph.get_foreign_keys(table)
           |> Enum.reject(fn fk ->
             classification = Discovery.classify_table(fk.references_table)
+
             classification in [:included, :dependency_parent] or
               MapSet.member?(allowed_refs, {table, fk.column, fk.references_table, classification})
           end)

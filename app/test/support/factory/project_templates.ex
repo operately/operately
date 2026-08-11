@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory.ProjectTemplates do
-  alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
   alias Operately.Repo
   alias Operately.Support.Factory.Utils
 
@@ -88,6 +88,24 @@ defmodule Operately.Support.Factory.ProjectTemplates do
       |> Repo.insert!()
 
     Map.put(ctx, testid, assignment)
+  end
+
+  def add_project_template_discussion(ctx, testid, template_name, opts \\ []) do
+    template = Map.fetch!(ctx, template_name)
+    author = Keyword.get(opts, :author, ctx.creator)
+
+    discussion =
+      %{
+        project_template_id: template.id,
+        author_id: author && author.id,
+        title: Keyword.get(opts, :title, Utils.testid_to_name(testid)),
+        body: Keyword.get(opts, :body, %{}),
+        position: Keyword.get(opts, :position, 0)
+      }
+      |> Discussion.changeset()
+      |> Repo.insert!()
+
+    Map.put(ctx, testid, discussion)
   end
 
   defp maybe_put(attrs, _key, nil), do: attrs

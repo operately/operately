@@ -2,12 +2,13 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   import Ecto.Query, only: [from: 2]
 
   alias Ecto.Multi
+  alias Operately.Comments.CommentThread
   alias Operately.People.Person
   alias Operately.Projects.{Contributor, Project}
   alias Operately.Repo
   alias __MODULE__.{CopyPlanner, ScheduleValidator, TemplateCreator, Validator}
 
-  defstruct [:project_id, :creator_id, :name, :description, include_people_and_assignments: false]
+  defstruct [:project_id, :creator_id, :name, :description, include_people_and_assignments: false, include_discussions: true]
 
   def run(%__MODULE__{} = params) do
     Multi.new()
@@ -25,7 +26,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
          {:ok, creator} <- load_creator(repo, params.creator_id),
          :ok <- Validator.validate(project, creator),
          :ok <- ScheduleValidator.validate(project) do
-      CopyPlanner.build(project, creator, params)
+      CopyPlanner.build(project, creator, params, load_project_discussions(repo, project.id))
     end
   end
 
@@ -46,6 +47,15 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     end
   end
 
+  defp load_project_discussions(repo, project_id) do
+    from(discussion in CommentThread,
+      where: discussion.parent_id == ^project_id and discussion.parent_type == :project,
+      order_by: [desc: discussion.inserted_at, desc: discussion.id],
+      preload: [:author]
+    )
+    |> repo.all()
+  end
+
   defp load_creator(repo, creator_id) do
     case repo.get(Person, creator_id) do
       nil -> {:error, :creator_not_found}
@@ -64,13 +74,14 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     alias Operately.Operations.ProjectTemplateCreationFromProject.PeoplePlanner
     alias OperatelyWeb.Paths
 
-    def build(project, creator, %ProjectTemplateCreationFromProject{} = params) do
+    def build(project, creator, %ProjectTemplateCreationFromProject{} = params, discussions) do
       with {:ok, workflow} <- copy_workflow(project.task_statuses),
            {:ok, graph} <- plan_graph(project, workflow),
            {:ok, people_graph} <- PeoplePlanner.build(project, graph.tasks, params.include_people_and_assignments) do
         {:ok,
          graph
          |> Map.merge(people_graph)
+         |> Map.put(:discussions, plan_discussions(discussions, params.include_discussions))
          |> Map.put(:template_attrs, %{
            company_id: project.company_id,
            space_id: project.group_id,
@@ -170,6 +181,16 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     defp target_task_path(planned), do: Paths.project_template_task_id(planned.target)
     defp root_tasks(tasks), do: Enum.filter(tasks, &is_nil(&1.source.milestone_id))
     defp milestone_tasks(tasks, milestone_id), do: Enum.filter(tasks, &(&1.source.milestone_id == milestone_id))
+
+    defp plan_discussions(_discussions, false), do: []
+
+    defp plan_discussions(discussions, true) do
+      discussions
+      |> Enum.with_index()
+      |> Enum.map(fn {source, position} ->
+        %{source: source, target: %Operately.ProjectTemplates.Discussion{id: Ecto.UUID.generate()}, position: position}
+      end)
+    end
   end
 
   defmodule PeoplePlanner do
@@ -354,7 +375,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   end
 
   defmodule TemplateCreator do
-    alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task, TaskAssignment}
+    alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
 
     def template_changeset(plan), do: ProjectTemplate.changeset(plan.template_attrs)
 
@@ -362,8 +383,9 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
       with {:ok, milestones} <- insert_milestones(repo, plan.milestones, template),
            {:ok, tasks} <- insert_tasks(repo, plan.tasks, template),
            {:ok, people} <- insert_people(repo, plan.people, template),
-           {:ok, assignments} <- insert_assignments(repo, plan.task_assignments, template) do
-        {:ok, %{milestones: milestones, tasks: tasks, people: people, task_assignments: assignments}}
+           {:ok, assignments} <- insert_assignments(repo, plan.task_assignments, template),
+           {:ok, discussions} <- insert_discussions(repo, plan.discussions, template) do
+        {:ok, %{milestones: milestones, tasks: tasks, people: people, task_assignments: assignments, discussions: discussions}}
       end
     end
 
@@ -434,6 +456,23 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
         end,
         repo,
         :task_assignment
+      )
+    end
+
+    defp insert_discussions(repo, discussions, template) do
+      insert_all(
+        discussions,
+        fn planned ->
+          Discussion.changeset(planned.target, %{
+            project_template_id: template.id,
+            author_id: planned.source.author_id,
+            title: planned.source.title,
+            body: planned.source.message,
+            position: planned.position
+          })
+        end,
+        repo,
+        :discussion
       )
     end
 

@@ -3,9 +3,10 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   import Ecto.Query, only: [from: 2]
 
+  alias Operately.Comments.CommentThread
   alias Operately.ContextualDates.ContextualDate
   alias Operately.Operations.ProjectTemplateCreationFromProject
-  alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
   alias Operately.Projects.Project
   alias Operately.Repo
   alias Operately.Support.Factory
@@ -205,6 +206,23 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert assignment.project_template_task.name == ctx.task.name
   end
 
+  test "copies discussions in newest-first order unless they are excluded", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_discussion(:older_discussion, :source, title: "Older discussion")
+      |> Factory.add_project_discussion(:newer_discussion, :source, title: "Newer discussion")
+
+    assert {:ok, template} = create_template(ctx)
+    discussions = Repo.all(from d in Discussion, where: d.project_template_id == ^template.id, order_by: [asc: d.position])
+
+    assert Enum.map(discussions, & &1.title) == ctx.source.id |> CommentThread.list_for_project() |> Enum.map(& &1.title)
+    assert Enum.map(discussions, & &1.author_id) == [ctx.creator.id, ctx.creator.id]
+    assert Enum.map(discussions, & &1.position) == [0, 1]
+
+    assert {:ok, without_discussions} = create_template(ctx, name: "Without discussions", include_discussions: false)
+    assert Repo.aggregate(from(d in Discussion, where: d.project_template_id == ^without_discussions.id), :count) == 0
+  end
+
   test "returns every date before the project start in one structured error", ctx do
     start_date = ~D[2028-01-10]
 
@@ -400,7 +418,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       creator_id: Keyword.get(opts, :creator_id, ctx.creator.id),
       name: Keyword.get(opts, :name, "Reusable project"),
       description: Keyword.get(opts, :description),
-      include_people_and_assignments: Keyword.get(opts, :include_people_and_assignments, false)
+      include_people_and_assignments: Keyword.get(opts, :include_people_and_assignments, false),
+      include_discussions: Keyword.get(opts, :include_discussions, true)
     })
   end
 

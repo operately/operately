@@ -6,6 +6,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
+  alias Operately.Comments.CommentThread
   alias Operately.ContextualDates.Timeframe
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Operations.{ProjectCreation, ProjectTemplateMaterialization}
@@ -165,6 +166,27 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert {:ok, _} = Subscription.get(:system, subscription_list_id: milestone.subscription_list_id, person_id: ctx.champion.id)
     assert {:ok, _} = Subscription.get(:system, subscription_list_id: task.subscription_list_id, person_id: ctx.creator.id)
     assert Repo.aggregate(from(r in ResourceHub, where: r.project_id == ^project.id), :count) == 1
+  end
+
+  test "materializes discussions with fresh subscription lists and falls back to the project creator", ctx do
+    ctx = ctx |> Factory.add_company_member(:unavailable) |> Factory.add_project_template(:template, :space)
+
+    ctx =
+      ctx
+      |> Factory.add_project_template_discussion(:newest, :template, title: "Newest", position: 0)
+      |> Factory.add_project_template_discussion(:older, :template, title: "Older", position: 1, author: ctx.unavailable)
+      |> Factory.suspend_company_member(:unavailable)
+
+    assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
+
+    discussions = Repo.all(from d in CommentThread, where: d.parent_type == :project and d.parent_id == ^project.id, order_by: [desc: d.inserted_at])
+
+    assert Enum.map(discussions, & &1.title) == ["Newest", "Older"]
+    assert Enum.all?(discussions, &(&1.id not in [ctx.newest.id, ctx.older.id]))
+    assert Enum.all?(discussions, &(&1.subscription_list_id != nil))
+    assert Enum.find(discussions, &(&1.title == "Newest")).author_id == ctx.creator.id
+    assert Enum.find(discussions, &(&1.title == "Older")).author_id == ctx.creator.id
+    assert Repo.aggregate(from(a in Activity, where: a.comment_thread_id in ^Enum.map(discussions, & &1.id)), :count) == 0
   end
 
   test "restores active roles and assignments while skipping inactive people", ctx do

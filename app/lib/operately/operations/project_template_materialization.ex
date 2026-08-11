@@ -35,7 +35,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
   defp build_copy_plan(repo, params) do
     with {:ok, template} <- load_template(repo, params),
          :ok <- Validator.validate(template, params.project) do
-      CopyPlanner.build(template, params.start_date)
+      CopyPlanner.build(template, params.start_date, params.project.creator_id)
     end
   end
 
@@ -50,6 +50,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
            milestones: from(m in Operately.ProjectTemplates.Milestone, order_by: [asc: m.inserted_at, asc: m.id]),
            people: from(p in Operately.ProjectTemplates.Person, order_by: [asc: p.inserted_at, asc: p.id], preload: [:person]),
            task_assignments: from(a in Operately.ProjectTemplates.TaskAssignment, order_by: [asc: a.inserted_at, asc: a.id]),
+           discussions: from(d in Operately.ProjectTemplates.Discussion, order_by: [asc: d.position, asc: d.id], preload: [:author]),
            tasks: from(t in Operately.ProjectTemplates.Task, order_by: [asc: t.inserted_at, asc: t.id])
          )}
     end
@@ -68,7 +69,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     alias Operately.Tasks.Task, as: ProjectTask
     alias OperatelyWeb.Paths
 
-    def build(%ProjectTemplate{} = template, %Date{} = start_date) do
+    def build(%ProjectTemplate{} = template, %Date{} = start_date, creator_id) do
       with {:ok, statuses} <- Copy.copy_workflow(template.task_statuses),
            {:ok, graph} <- plan_graph(template, statuses, start_date),
            {:ok, people_graph} <- PeoplePlanner.build(template, graph.tasks) do
@@ -77,6 +78,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
          |> Map.merge(people_graph)
          |> Map.merge(%{
            source_template_id: template.id,
+           discussions: plan_discussions(template, creator_id),
            description: template.description,
            timeframe: timeframe(start_date, Copy.date_from_offset(start_date, template.duration_days)),
            task_statuses: Enum.map(statuses.copied, &Copy.status_attrs/1)
@@ -151,6 +153,13 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     defp target_task_path(planned), do: Paths.task_id(planned.target)
     defp root_tasks(tasks), do: Enum.filter(tasks, &is_nil(&1.source.project_template_milestone_id))
     defp milestone_tasks(tasks, milestone_id), do: Enum.filter(tasks, &(&1.source.project_template_milestone_id == milestone_id))
+
+    defp plan_discussions(template, creator_id) do
+      Enum.map(template.discussions, fn source ->
+        author_id = if Operately.ProjectTemplates.Discussion.author_active?(source.author, template.company_id), do: source.author_id, else: creator_id
+        %{source: source, author_id: author_id}
+      end)
+    end
   end
 
   defmodule PeoplePlanner do
@@ -508,8 +517,9 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
     def insert(repo, plan, project) do
       with {:ok, milestones} <- insert_milestones(repo, plan.milestones, project),
-           {:ok, tasks} <- insert_tasks(repo, plan.tasks, project, plan.task_statuses) do
-        {:ok, %{milestones: milestones, tasks: tasks}}
+           {:ok, tasks} <- insert_tasks(repo, plan.tasks, project, plan.task_statuses),
+           {:ok, discussions} <- insert_discussions(repo, plan.discussions, project) do
+        {:ok, %{milestones: milestones, tasks: tasks, discussions: discussions}}
       end
     end
 
@@ -563,6 +573,38 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
              {:ok, task} <- insert_child(repo, changeset, :task),
              :ok <- subscribe_task_creator(subscription_list.id, project.creator_id) do
           {:cont, {:ok, inserted ++ [task]}}
+        else
+          error -> {:halt, error}
+        end
+      end)
+    end
+
+    defp insert_discussions(repo, discussions, project) do
+      inserted_at = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+      discussions
+      |> Enum.reverse()
+      |> Enum.with_index()
+      |> Enum.reduce_while({:ok, []}, fn {planned, position}, {:ok, inserted} ->
+        discussion = %Operately.Comments.CommentThread{
+          id: Ecto.UUID.generate(),
+          inserted_at: NaiveDateTime.add(inserted_at, position, :second),
+          updated_at: NaiveDateTime.add(inserted_at, position, :second)
+        }
+
+        with {:ok, subscription_list} <- insert_subscription_list(repo, discussion.id, :comment_thread),
+             changeset <-
+               Operately.Comments.CommentThread.changeset(discussion, %{
+                 author_id: planned.author_id,
+                 parent_id: project.id,
+                 parent_type: :project,
+                 title: planned.source.title,
+                 has_title: true,
+                 message: planned.source.body,
+                 subscription_list_id: subscription_list.id
+               }),
+             {:ok, inserted_discussion} <- insert_child(repo, changeset, :discussion) do
+          {:cont, {:ok, inserted ++ [inserted_discussion]}}
         else
           error -> {:halt, error}
         end
@@ -650,7 +692,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
   defmodule Validator do
     alias Operately.Operations.ProjectCreation
-    alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task, TaskAssignment}
+    alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
 
     def validate(%ProjectTemplate{} = template, %ProjectCreation{} = project) do
       with :ok <- validate_active(template),
@@ -658,6 +700,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
            :ok <- validate_changeset(template, :template, &ProjectTemplate.changeset(&1, %{})),
            :ok <- validate_changesets(template.milestones, :milestone, &Milestone.changeset(&1, %{})),
            :ok <- validate_changesets(template.tasks, :task, &Task.changeset(&1, %{})),
+           :ok <- validate_changesets(template.discussions, :discussion, &Discussion.changeset(&1, %{})),
            :ok <- validate_changesets(template.people, :person, &Person.changeset(&1, %{})),
            :ok <- validate_changesets(template.task_assignments, :task_assignment, &TaskAssignment.changeset(&1, %{})),
            :ok <- validate_task_containers(template),

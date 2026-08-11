@@ -95,6 +95,7 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
       |> Factory.add_project_template_task(:task, :template, milestone: :milestone)
       |> Factory.add_project_template_person(:template_person, :template, :member)
       |> Factory.add_project_template_task_assignment(:template_assignment, :template, :task, :template_person)
+      |> Factory.add_project_template_discussion(:template_discussion, :template)
 
     other_ctx =
       %{}
@@ -106,6 +107,7 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
       |> Factory.add_project_template_task(:task, :template, milestone: :milestone)
       |> Factory.add_project_template_person(:template_person, :template, :member)
       |> Factory.add_project_template_task_assignment(:template_assignment, :template, :task, :template_person)
+      |> Factory.add_project_template_discussion(:template_discussion, :template)
 
     assert {:ok, collected} = RelationalCollector.collect(ctx.company.id)
 
@@ -116,12 +118,14 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     assert ctx.task.id in row_ids(tables, "project_template_tasks")
     assert ctx.template_person.id in row_ids(tables, "project_template_people")
     assert ctx.template_assignment.id in row_ids(tables, "project_template_task_assignments")
+    assert ctx.template_discussion.id in row_ids(tables, "project_template_discussions")
 
     refute other_ctx.template.id in row_ids(tables, "project_templates")
     refute other_ctx.milestone.id in row_ids(tables, "project_template_milestones")
     refute other_ctx.task.id in row_ids(tables, "project_template_tasks")
     refute other_ctx.template_person.id in row_ids(tables, "project_template_people")
     refute other_ctx.template_assignment.id in row_ids(tables, "project_template_task_assignments")
+    refute other_ctx.template_discussion.id in row_ids(tables, "project_template_discussions")
   end
 
   test "keeps empty included tables present in the minimal slice", ctx do
