@@ -152,7 +152,7 @@ blocks:
 
       jobs:
         - name: Unit Tests
-          parallelism: 3
+          parallelism: 2
           commands:
             - artifact pull workflow test-manifests --force
             - make test.setup.unit
