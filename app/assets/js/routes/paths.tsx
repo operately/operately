@@ -418,6 +418,18 @@ export class Paths {
     return this.createCompanyPath(["project-templates", templateId]);
   }
 
+  projectTemplateDiscussionNewPath(templateId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "discussions", "new"]);
+  }
+
+  projectTemplateDiscussionPath(templateId: string, discussionId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "discussions", discussionId]);
+  }
+
+  projectTemplateDiscussionEditPath(templateId: string, discussionId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "discussions", discussionId, "edit"]);
+  }
+
   spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {
     if (opts?.taskId) {
       return this.createCompanyPath(["spaces", spaceId, "kanban"]) + "?taskId=" + opts.taskId;

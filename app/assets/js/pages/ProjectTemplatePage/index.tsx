@@ -1,6 +1,7 @@
 import Api, { type AccessOptionsInt, type ProjectTemplateTask, type TaskReminder } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import { usePaths } from "@/routes/paths";
@@ -18,6 +19,8 @@ function Page() {
   const { template } = Pages.useLoadedData<LoadedData>();
   const refresh = Pages.useRefresh();
   const paths = usePaths();
+  const richTextHandlers = useRichEditorHandlers();
+  const formattedTimePreferences = useFormattedTimePreferences();
   const { people, assigneesByTaskId } = useTemplatePeople(template);
   const statuses = Tasks.parseTaskStatusesForTurboUi(template.taskStatuses);
   const permissions = template.permissions ?? {
@@ -56,6 +59,14 @@ function Page() {
     dueOffsetDays: milestone.dueOffsetDays ?? null,
     tasksOrderingState: milestone.tasksOrderingState,
     tasksKanbanState: parseJson(milestone.tasksKanbanState),
+  }));
+  const discussions = (template.discussions ?? []).map((discussion) => ({
+    id: discussion.id,
+    title: discussion.title,
+    author: discussion.author ? People.parsePersonForTurboUi(paths, discussion.author) : null,
+    date: new Date(discussion.insertedAt),
+    link: paths.projectTemplateDiscussionPath(template.id, discussion.id),
+    content: content(discussion.body),
   }));
 
   async function onTemplateUpdate(updates: Partial<TemplateProjectPage.Props["template"]>) {
@@ -121,9 +132,12 @@ function Page() {
       statuses={statuses}
       milestones={milestones}
       tasks={tasks}
+      discussions={discussions}
+      newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
       people={people}
       personSearch={personSearch}
-      richTextHandlers={useRichEditorHandlers()}
+      richTextHandlers={richTextHandlers}
+      formattedTimePreferences={formattedTimePreferences}
       onTemplateUpdate={onTemplateUpdate}
       onStatusesChange={onStatusesChange}
       onMilestoneCreate={onMilestoneCreate}

@@ -67,6 +67,7 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { TemplateProjectPage } from ".";
 import type { TemplateProjectPage as Types } from ".";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 
 const statuses: Types.Props["statuses"] = [
   { id: "todo", value: "todo", label: "To do", color: "gray", icon: "circleDashed", index: 0 },
@@ -110,8 +111,11 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
         reminders: [{ type: "before_due", days: 2 }],
       },
     ],
+    discussions: [],
+    newDiscussionLink: "/templates/template-1/discussions/new",
     personSearch: { people: [], onSearch: async () => undefined },
     richTextHandlers: createMockRichEditorHandlers(),
+    formattedTimePreferences: defaultFormattedTimePreferences,
     onTemplateUpdate: jest.fn(),
     onMilestoneCreate: jest.fn(),
     onMilestoneUpdate: jest.fn(),
@@ -148,11 +152,36 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByText("Overview")).toBeInTheDocument();
     expect(screen.getByText("Tasks")).toBeInTheDocument();
 
-    for (const runtimeLabel of ["Check-ins", "Discussions", "Docs & Files", "Activity", "Retrospective"]) {
+    expect(screen.getByText("Discussions")).toBeInTheDocument();
+
+    for (const runtimeLabel of ["Check-ins", "Docs & Files", "Activity", "Retrospective"]) {
       expect(screen.queryByText(runtimeLabel)).not.toBeInTheDocument();
     }
     expect(screen.queryByText("Start date")).not.toBeInTheDocument();
     expect(screen.queryByText(/tasks completed/i)).not.toBeInTheDocument();
+  });
+
+  it("shows template discussions without runtime discussion controls", () => {
+    renderPage(
+      createProps({
+        discussions: [
+          {
+            id: "discussion-1",
+            title: "Reusable context",
+            author: null,
+            date: new Date("2028-01-01T00:00:00Z"),
+            link: "/templates/template-1/discussions/discussion-1",
+            content: asRichText("Keep this guidance with every generated project."),
+          },
+        ],
+      }),
+    );
+
+    fireEvent.click(screen.getByText("Discussions"));
+
+    expect(screen.getByText("Reusable context")).toBeInTheDocument();
+    expect(screen.getByText("Start discussion")).toBeInTheDocument();
+    expect(screen.queryByText("Subscribe")).not.toBeInTheDocument();
   });
 
   it.each([
@@ -256,9 +285,7 @@ describe("TemplateProjectPage", () => {
     };
     view.rerender(
       <MemoryRouter initialEntries={["/templates/template-1?tab=tasks"]}>
-        <TemplateProjectPage
-          {...createProps({ tasks: [...tasks], milestones: [confirmedMilestone], onTaskReorder })}
-        />
+        <TemplateProjectPage {...createProps({ tasks: [...tasks], milestones: [confirmedMilestone], onTaskReorder })} />
       </MemoryRouter>,
     );
 
@@ -642,9 +669,10 @@ describe("TemplateProjectPage", () => {
 
     let resolveUpdate: (successful: boolean) => void = () => undefined;
     const onPersonUpdate = jest.fn(
-      () => new Promise<boolean>((resolve) => {
-        resolveUpdate = resolve;
-      }),
+      () =>
+        new Promise<boolean>((resolve) => {
+          resolveUpdate = resolve;
+        }),
     );
     const unavailableContributor: Types.TemplatePerson = {
       id: "template-person-1",
