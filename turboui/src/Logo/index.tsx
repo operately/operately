@@ -1,9 +1,17 @@
 import React from "react";
 
-export function OperatelyLogo(props: { width?: string; height?: string }) {
-  const width = props.width || "22px";
-  const height = props.height || "22px";
+export interface OperatelyLogoProps extends React.SVGProps<SVGSVGElement> {
+  size?: string | number;
+  width?: string | number;
+  height?: string | number;
+}
 
+export function OperatelyLogo({
+  size,
+  width = size ?? "22px",
+  height = size ?? "22px",
+  ...svgProps
+}: OperatelyLogoProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -11,6 +19,7 @@ export function OperatelyLogo(props: { width?: string; height?: string }) {
       viewBox="193.04 193.04 613.92 613.92"
       width={width}
       height={height}
+      {...svgProps}
     >
       <polygon points="602.32 806.96 397.68 806.96 397.68 602.32 602.32 806.96" fill="#024fac"></polygon>
       <polygon points="397.68 193.04 602.32 193.04 602.32 397.68 397.68 193.04" fill="#024fac"></polygon>
