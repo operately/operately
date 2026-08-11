@@ -33,6 +33,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ProjectTemplates.ProjectTe
       people: Serializer.serialize(template.people, level: :full),
       task_assignments: Serializer.serialize(template.task_assignments, level: :full),
       discussions: Serializer.serialize(template.discussions, level: :full),
+      resource_nodes: Serializer.serialize(template.resource_nodes, level: :full),
       permissions: Serializer.serialize(template.permissions)
     })
   end

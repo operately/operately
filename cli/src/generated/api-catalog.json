@@ -6768,6 +6768,20 @@
           },
           {
             "default": null,
+            "name": "resource_nodes",
+            "type": {
+              "item": {
+                "name": "project_template_resource_node",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "inactive_discussion_count",
             "type": {
               "name": "integer",
@@ -8602,6 +8616,54 @@
           }
         ]
       },
+      "project_template_uploaded_file": {
+        "fields": [
+          {
+            "default": null,
+            "name": "blob_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "preview_blob_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "description",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "update_target_input": {
         "fields": [
           {
@@ -9296,6 +9358,76 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "project_template_resource_folder": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "node_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -11580,6 +11712,120 @@
           }
         ]
       },
+      "project_template_resource_file": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "node_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "author",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "blob",
+            "type": {
+              "name": "blob",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "preview_blob",
+            "type": {
+              "name": "blob",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "invite_link": {
         "fields": [
           {
@@ -11930,6 +12176,142 @@
             "optional": false,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "project_template_resource_node": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "project_template_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "parent_folder_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "type",
+            "type": {
+              "name": "project_template_resource_type",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "folder",
+            "type": {
+              "name": "project_template_resource_folder",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "document",
+            "type": {
+              "name": "project_template_resource_document",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "file",
+            "type": {
+              "name": "project_template_resource_file",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "link",
+            "type": {
+              "name": "project_template_resource_link",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -13205,6 +13587,76 @@
           }
         ]
       },
+      "activity_content_kpi_created": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "company",
+            "type": {
+              "name": "company",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "champion",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "kpi_name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "person": {
         "fields": [
           {
@@ -13875,6 +14327,120 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "project_template_resource_link": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "node_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "author",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "type",
+            "type": {
+              "name": "project_template_resource_link_type",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -15001,6 +15567,98 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "project_template_resource_document": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "node_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "author",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "name",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "content",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -20712,6 +21370,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_kpi_created",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_goal_archived",
           "kind": "named"
         },
@@ -21350,6 +22012,17 @@
         "pending",
         "outdated"
       ],
+      "project_template_resource_link_type": [
+        "airtable",
+        "dropbox",
+        "figma",
+        "google",
+        "google_doc",
+        "google_sheet",
+        "google_slides",
+        "notion",
+        "other"
+      ],
       "search_matched_field": [
         "title",
         "name",
@@ -21430,6 +22103,12 @@
         "goal",
         "project"
       ],
+      "project_template_resource_type": [
+        "folder",
+        "document",
+        "file",
+        "link"
+      ],
       "search_result_state": [
         "closed",
         "completed",
@@ -21478,9 +22157,9 @@
       ]
     }
   },
-  "endpoint_count": 228,
+  "endpoint_count": 238,
   "query_count": 72,
-  "mutation_count": 156,
+  "mutation_count": 166,
   "endpoints": [
     {
       "name": "create",
@@ -29313,6 +29992,197 @@
       "method": "POST"
     },
     {
+      "name": "create_document",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/create_document",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.CreateDocument",
+      "outputs": [
+        {
+          "default": null,
+          "name": "document",
+          "type": {
+            "name": "project_template_resource_document",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/create_document",
+      "method": "POST"
+    },
+    {
+      "name": "create_files",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/create_files",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.CreateFiles",
+      "outputs": [
+        {
+          "default": null,
+          "name": "files",
+          "type": {
+            "item": {
+              "name": "project_template_resource_file",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "files",
+          "type": {
+            "item": {
+              "name": "project_template_uploaded_file",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/create_files",
+      "method": "POST"
+    },
+    {
+      "name": "create_folder",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/create_folder",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.CreateFolder",
+      "outputs": [
+        {
+          "default": null,
+          "name": "folder",
+          "type": {
+            "name": "project_template_resource_folder",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/create_folder",
+      "method": "POST"
+    },
+    {
       "name": "create_from_project",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/create_from_project",
@@ -29400,10 +30270,112 @@
           "optional": true,
           "has_default": true,
           "nullable": false
+        },
+        {
+          "default": "true",
+          "name": "include_docs_and_files",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": null,
       "full_name": "project_templates/create_from_project",
+      "method": "POST"
+    },
+    {
+      "name": "create_link",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/create_link",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.CreateLink",
+      "outputs": [
+        {
+          "default": null,
+          "name": "link",
+          "type": {
+            "name": "project_template_resource_link",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "url",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "type",
+          "type": {
+            "name": "project_template_resource_link_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/create_link",
       "method": "POST"
     },
     {
@@ -29904,6 +30876,53 @@
       "method": "POST"
     },
     {
+      "name": "delete_resource",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/delete_resource",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.DeleteResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "node_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/delete_resource",
+      "method": "POST"
+    },
+    {
       "name": "delete_task",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/delete_task",
@@ -30095,6 +31114,64 @@
       "method": "GET"
     },
     {
+      "name": "move_resource",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/move_resource",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.MoveResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "node_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/move_resource",
+      "method": "POST"
+    },
+    {
       "name": "update",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/update",
@@ -30283,6 +31360,293 @@
       ],
       "docstring": null,
       "full_name": "project_templates/update_discussion",
+      "method": "POST"
+    },
+    {
+      "name": "update_document",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_document",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdateDocument",
+      "outputs": [
+        {
+          "default": null,
+          "name": "document",
+          "type": {
+            "name": "project_template_resource_document",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "document_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_document",
+      "method": "POST"
+    },
+    {
+      "name": "update_file",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_file",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdateFile",
+      "outputs": [
+        {
+          "default": null,
+          "name": "file",
+          "type": {
+            "name": "project_template_resource_file",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "file_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_file",
+      "method": "POST"
+    },
+    {
+      "name": "update_folder",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_folder",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdateFolder",
+      "outputs": [
+        {
+          "default": null,
+          "name": "folder",
+          "type": {
+            "name": "project_template_resource_folder",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "folder_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_folder",
+      "method": "POST"
+    },
+    {
+      "name": "update_link",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_link",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdateLink",
+      "outputs": [
+        {
+          "default": null,
+          "name": "link",
+          "type": {
+            "name": "project_template_resource_link",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "link_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "url",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "type",
+          "type": {
+            "name": "project_template_resource_link_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_link",
       "method": "POST"
     },
     {

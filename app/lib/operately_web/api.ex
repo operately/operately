@@ -140,6 +140,16 @@ defmodule OperatelyWeb.Api do
         mutation(:update_task_assignees, OperatelyWeb.Api.ProjectTemplates.UpdateTaskAssignees)
         mutation(:create_discussion, OperatelyWeb.Api.ProjectTemplates.CreateDiscussion)
         mutation(:update_discussion, OperatelyWeb.Api.ProjectTemplates.UpdateDiscussion)
+        mutation(:create_folder, OperatelyWeb.Api.ProjectTemplates.CreateFolder)
+        mutation(:update_folder, OperatelyWeb.Api.ProjectTemplates.UpdateFolder)
+        mutation(:create_document, OperatelyWeb.Api.ProjectTemplates.CreateDocument)
+        mutation(:update_document, OperatelyWeb.Api.ProjectTemplates.UpdateDocument)
+        mutation(:create_files, OperatelyWeb.Api.ProjectTemplates.CreateFiles)
+        mutation(:update_file, OperatelyWeb.Api.ProjectTemplates.UpdateFile)
+        mutation(:create_link, OperatelyWeb.Api.ProjectTemplates.CreateLink)
+        mutation(:update_link, OperatelyWeb.Api.ProjectTemplates.UpdateLink)
+        mutation(:delete_resource, OperatelyWeb.Api.ProjectTemplates.DeleteResource)
+        mutation(:move_resource, OperatelyWeb.Api.ProjectTemplates.MoveResource)
       end
 
       @doc "Get, list, create and manage tasks across projects and spaces"
