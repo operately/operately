@@ -5,11 +5,12 @@ import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import type { StatusSelector } from "../StatusSelector";
 import type { PersonField } from "../PersonField";
-import { IconClipboardText, IconListCheck, IconMessageCircle } from "../icons";
+import { IconClipboardText, IconListCheck, IconMessageCircle, IconPaperclip } from "../icons";
 import { useTabs } from "../Tabs";
 import { Overview } from "./Overview";
 import { TaskBoard } from "./TaskBoard";
 import { Discussions } from "./Discussions";
+import { DocsAndFiles } from "./DocsAndFiles";
 
 export function TemplateProjectPage(props: TemplateProjectPage.Props) {
   const orderedProps = React.useMemo(() => orderTemplateGraph(props), [props]);
@@ -18,6 +19,12 @@ export function TemplateProjectPage(props: TemplateProjectPage.Props) {
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
     { id: "tasks", label: "Tasks", icon: <IconListCheck size={14} />, count: props.tasks.length },
     { id: "discussions", label: "Discussions", icon: <IconMessageCircle size={14} />, count: props.discussions.length },
+    {
+      id: "docs-and-files",
+      label: "Docs & Files",
+      icon: <IconPaperclip size={14} />,
+      count: props.resourceNodes?.length ?? 0,
+    },
   ]);
 
   return (
@@ -36,6 +43,7 @@ export function TemplateProjectPage(props: TemplateProjectPage.Props) {
       <div className="flex-1 overflow-auto">
         {tabs.active === "tasks" && <TaskBoard props={orderedProps} canEdit={canEdit} />}
         {tabs.active === "discussions" && <Discussions props={orderedProps} canEdit={canEdit} />}
+        {tabs.active === "docs-and-files" && <DocsAndFiles props={orderedProps} />}
         {tabs.active === "overview" && <Overview props={orderedProps} canEdit={canEdit} />}
       </div>
     </ProjectPageLayout>
@@ -94,6 +102,17 @@ export namespace TemplateProjectPage {
     content: any;
   }
 
+  export interface ResourceNode {
+    id: string;
+    parentFolderId: string | null;
+    type: "folder" | "document" | "file" | "link";
+    position: number;
+    name: string;
+    link: string;
+    insertedAt: string;
+    updatedAt: string;
+  }
+
   export interface Props {
     template: {
       id: string;
@@ -110,6 +129,7 @@ export namespace TemplateProjectPage {
     milestones: Milestone[];
     tasks: Task[];
     discussions: Discussion[];
+    resourceNodes?: ResourceNode[];
     newDiscussionLink?: string;
     people?: TemplatePerson[];
     personSearch: PersonField.SearchData;
