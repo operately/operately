@@ -137,6 +137,7 @@ function Form() {
                 name: template.name,
                 spaceId: template.space.id,
                 inactivePeopleSummary: template.inactivePeopleSummary,
+                inactiveDiscussionCount: template.inactiveDiscussionCount,
               }))}
             />
           ) : null}

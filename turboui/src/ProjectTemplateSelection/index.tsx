@@ -12,6 +12,7 @@ export namespace ProjectTemplateSelection {
       roleCount: number;
       taskCount: number;
     };
+    inactiveDiscussionCount?: number;
   }
 
   export interface Props {
@@ -48,17 +49,30 @@ export function ProjectTemplateSelection({ spaceId, templates }: ProjectTemplate
           ...compatibleTemplates.map((template) => ({ value: template.id, label: template.name })),
         ]}
       />
-      <SelectedTemplateFields templateId={templateId} summary={selectedTemplate?.inactivePeopleSummary} />
+      <SelectedTemplateFields
+        templateId={templateId}
+        peopleSummary={selectedTemplate?.inactivePeopleSummary}
+        inactiveDiscussionCount={selectedTemplate?.inactiveDiscussionCount}
+      />
     </>
   );
 }
 
-function SelectedTemplateFields({ templateId, summary }: { templateId?: string | null; summary?: ProjectTemplateSelection.Template["inactivePeopleSummary"] }) {
+function SelectedTemplateFields({
+  templateId,
+  peopleSummary,
+  inactiveDiscussionCount,
+}: {
+  templateId?: string | null;
+  peopleSummary?: ProjectTemplateSelection.Template["inactivePeopleSummary"];
+  inactiveDiscussionCount?: number;
+}) {
   if (!templateId) return null;
 
   return (
     <>
-      <InactivePeopleWarning summary={summary} />
+      <InactivePeopleWarning summary={peopleSummary} />
+      <InactiveDiscussionAuthorsWarning count={inactiveDiscussionCount} />
       <Forms.DateInput
         label="Project start date"
         field="startDate"
@@ -66,6 +80,24 @@ function SelectedTemplateFields({ templateId, summary }: { templateId?: string |
         requiredMessage="Select a project start date."
       />
     </>
+  );
+}
+
+function InactiveDiscussionAuthorsWarning({ count = 0 }: { count?: number }) {
+  if (count === 0) return null;
+
+  const discussions = count === 1 ? "1 discussion" : `${count} discussions`;
+  const author = count === 1 ? "its original author is" : "their original authors are";
+
+  return (
+    <div
+      className="rounded-lg border border-callout-warning-content bg-callout-warning-bg p-3 text-sm text-content-base"
+      role="status"
+    >
+      <span className="font-semibold">
+        {discussions} in this template will be attributed to you because {author} no longer active.
+      </span>
+    </div>
   );
 }
 

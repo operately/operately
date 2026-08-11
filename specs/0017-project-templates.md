@@ -364,11 +364,11 @@ Each PR in this phase extends the same copy service in both directions: project 
 
 #### PR 5.3 — `feat: Copy project template discussions`
 
-- [ ] Add template-specific discussion records. When **Include discussions** is selected, copy project discussion title, body, author attribution, and stable ordering; otherwise omit all project discussions.
-- [ ] Template discussions have no runtime subscription list and do not emit discussion-submitted activities or notifications. Materialized project discussions receive fresh runtime subscription lists.
-- [ ] Authorize template discussions from their owning template and Space, independently of project discussion authorization and historical creation activities.
-- [ ] Add discussion create/edit support to template mode with template permissions and no feed/notification side effects.
-- [ ] Add copy-service, API, template-page, and generated-project coverage for included/excluded discussions and author attribution.
+- [x] Add template-specific discussion records. When **Include discussions** is selected, copy project discussion title, body, author attribution, and stable ordering; otherwise omit all project discussions.
+- [x] Template discussions have no runtime subscription list and do not emit discussion-submitted activities or notifications. Materialized project discussions receive fresh runtime subscription lists.
+- [x] Authorize template discussions from their owning template and Space, independently of project discussion authorization and historical creation activities.
+- [x] Add discussion create/edit support to template mode with template permissions and no feed/notification side effects.
+- [x] Add copy-service, API, template-page, and generated-project coverage for included/excluded discussions and author attribution.
 
 #### PR 5.4 — `feat: Copy project template Docs and Files`
 
