@@ -16,7 +16,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ProjectTemplates.ProjectTe
       updated_at: Serializer.serialize(template.updated_at),
       milestone_count: template.milestone_count,
       task_count: template.task_count,
-      inactive_people_summary: template.inactive_people_summary
+      inactive_people_summary: template.inactive_people_summary,
+      inactive_discussion_count: template.inactive_discussion_count
     }
   end
 
@@ -31,6 +32,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ProjectTemplates.ProjectTe
       tasks: Serializer.serialize(template.tasks, level: :full),
       people: Serializer.serialize(template.people, level: :full),
       task_assignments: Serializer.serialize(template.task_assignments, level: :full),
+      discussions: Serializer.serialize(template.discussions, level: :full),
       permissions: Serializer.serialize(template.permissions)
     })
   end

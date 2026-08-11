@@ -723,7 +723,20 @@ defmodule OperatelyWeb.Api.Types do
     field? :tasks, list_of(:project_template_task), null: true
     field? :people, list_of(:project_template_person), null: true
     field? :task_assignments, list_of(:project_template_task_assignment), null: true
+    field? :discussions, list_of(:project_template_discussion), null: true
+    field :inactive_discussion_count, :integer, null: false
     field? :permissions, :project_template_permissions, null: true
+  end
+
+  object :project_template_discussion, for: Operately.ProjectTemplates.Discussion do
+    field :id, :string, null: false
+    field :project_template_id, :string, null: false
+    field :title, :string, null: false
+    field :body, :string, null: false
+    field? :author, :person, null: true
+    field :position, :integer, null: false
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
   end
 
   object :project_template_inactive_people_summary do

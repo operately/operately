@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.ContextualDates.ContextualDate
-  alias Operately.ProjectTemplates.{Person, ProjectTemplate}
+  alias Operately.ProjectTemplates.{Discussion, Person, ProjectTemplate}
   alias Operately.Projects.Project
   alias Operately.Repo
 
@@ -52,6 +52,23 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
     assert {200, included} = request(ctx, name: "With people", include_people_and_assignments: true)
     included_id = decode_id!(included.template.id)
     assert Repo.aggregate(from(p in Person, where: p.project_template_id == ^included_id), :count) > 0
+  end
+
+  test "copies discussions by default and excludes them when requested", ctx do
+    ctx = Factory.add_project_discussion(ctx, :discussion, :source, title: "Reusable guidance")
+
+    assert {200, included} = request(ctx, name: "With discussions")
+    included_id = decode_id!(included.template.id)
+
+    assert [%Discussion{title: "Reusable guidance", author_id: author_id, position: 0}] =
+             Repo.all(from(discussion in Discussion, where: discussion.project_template_id == ^included_id))
+
+    assert author_id == ctx.creator.id
+
+    assert {200, excluded} = request(ctx, name: "Without discussions", include_discussions: false)
+    excluded_id = decode_id!(excluded.template.id)
+
+    assert Repo.aggregate(from(discussion in Discussion, where: discussion.project_template_id == ^excluded_id), :count) == 0
   end
 
   test "returns every schedule issue without creating a template", ctx do
