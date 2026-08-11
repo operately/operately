@@ -68,6 +68,23 @@ function Page() {
     link: paths.projectTemplateDiscussionPath(template.id, discussion.id),
     content: content(discussion.body),
   }));
+  const resourceNodes = (template.resourceNodes ?? []).flatMap((node) => {
+    const resource = node.folder ?? node.document ?? node.file ?? node.link;
+    if (!resource) return [];
+
+    return [
+      {
+        id: node.id,
+        parentFolderId: node.parentFolderId ?? null,
+        type: node.type,
+        position: node.position,
+        name: resource.name,
+        link: paths.projectTemplateResourcePath(template.id, node.id),
+        insertedAt: node.insertedAt,
+        updatedAt: node.updatedAt,
+      },
+    ];
+  });
 
   async function onTemplateUpdate(updates: Partial<TemplateProjectPage.Props["template"]>) {
     return mutate("Template not updated", () =>
@@ -133,6 +150,7 @@ function Page() {
       milestones={milestones}
       tasks={tasks}
       discussions={discussions}
+      resourceNodes={resourceNodes}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
       people={people}
       personSearch={personSearch}

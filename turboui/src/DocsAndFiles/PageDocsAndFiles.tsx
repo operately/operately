@@ -17,7 +17,7 @@ import {
   useNewFileModalsContext,
   useResourceHubSearch,
 } from "../ResourceHub";
-import { DocsAndFiles, DocsAndFilesBody, DocsAndFilesDraftPrompt } from ".";
+import { DocsAndFiles, DocsAndFilesTab } from ".";
 import {
   getNodeAuthorName,
   getNodeChildrenCount,
@@ -34,7 +34,6 @@ import {
 } from "../ResourceHub/selectors";
 import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
 import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
-import { SortControl } from "../SortControl";
 import { nodeDisplayInsertedAt } from "../utils/drafts";
 import { plurarize } from "../utils/plurarize";
 import { truncate } from "../utils/strings";
@@ -72,49 +71,31 @@ function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAn
     [displayedNodes, docsAndFiles],
   );
   const draftPrompt = React.useMemo(() => buildDraftPrompt(docsAndFiles), [docsAndFiles]);
-  const [sortBy, setSortBy] = React.useState<DocsAndFiles.SortBy>("name");
-
   return (
     <ResourceHubNodesListProvider value={docsAndFiles.nodesListProps.listContext}>
       <FileDragAndDropArea onFilesDropped={docsAndFiles.newFileModals.setFiles}>
-        <div className="flex-1 overflow-auto p-4 max-w-6xl mx-auto my-6" data-test-id="docs-and-files-tab">
-          <div className="flex items-center justify-between gap-4 border-b border-surface-outline pb-4">
-            <div className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">
-              {docsAndFiles.resourceHub.name ?? "Documents & Files"}
-            </div>
-            <div className="flex shrink-0 items-center gap-3">
-              {docsAndFiles.search && (
-                <ResourceHubSearchInput search={docsAndFiles.search} searchState={searchState} />
-              )}
-              <SortControl sortBy={sortBy} onSortChange={setSortBy} disabled={searchState.isActive} />
-              <AddFilesButton
-                permissions={docsAndFiles.resourceHub.permissions}
-                onNewDocument={navigateToNewDocument}
-                onNewFolder={toggleShowAddFolder}
-                onUploadFiles={selectFiles}
-                onNewLink={navigateToNewLink}
-              />
-            </div>
-          </div>
-
-          <DocsAndFilesDraftPrompt prompt={draftPrompt} />
-          <AddFileWidget {...docsAndFiles.addFileWidgetProps} />
-          <DocsAndFilesBody
-            items={items}
-            emptyStateKind="resourceHub"
-            hideEmptyState={filesSelected}
-            sortBy={sortBy}
-            search={
-              docsAndFiles.search
-                ? {
-                    configuration: docsAndFiles.search,
-                    state: searchState,
-                  }
-                : undefined
-            }
-          />
-          <AddFolderModal {...docsAndFiles.addFolderModalProps} />
-        </div>
+        <DocsAndFilesTab
+          title={docsAndFiles.resourceHub.name ?? "Documents & Files"}
+          items={items}
+          draftPrompt={draftPrompt}
+          emptyStateKind="resourceHub"
+          hideEmptyState={filesSelected}
+          search={docsAndFiles.search ? { configuration: docsAndFiles.search, state: searchState } : undefined}
+          toolbar={
+            docsAndFiles.search && <ResourceHubSearchInput search={docsAndFiles.search} searchState={searchState} />
+          }
+          actions={
+            <AddFilesButton
+              permissions={docsAndFiles.resourceHub.permissions}
+              onNewDocument={navigateToNewDocument}
+              onNewFolder={toggleShowAddFolder}
+              onUploadFiles={selectFiles}
+              onNewLink={navigateToNewLink}
+            />
+          }
+          beforeItems={<AddFileWidget {...docsAndFiles.addFileWidgetProps} />}
+        />
+        <AddFolderModal {...docsAndFiles.addFolderModalProps} />
       </FileDragAndDropArea>
     </ResourceHubNodesListProvider>
   );

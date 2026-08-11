@@ -372,11 +372,15 @@ Each PR in this phase extends the same copy service in both directions: project 
 
 #### PR 5.4 — `feat: Copy project template Docs and Files`
 
-- [ ] Add template-specific resource-tree records. When **Include Docs & Files** is selected, copy the published resource-hub content into those records with fresh node, folder, document, file, and link IDs while preserving hierarchy and ordering.
-- [ ] Copy published native documents as independent documents with a new version 1; do not copy draft/deleted documents or historical document versions.
-- [ ] Copy links and file metadata independently. Reuse immutable blob payloads safely rather than duplicating bytes, while ensuring later metadata/content edits affect only the copy.
-- [ ] Do not copy reactions or subscribers and do not emit resource-copy activities or notifications.
-- [ ] Add full Docs & Files editing to template mode and keep draft content excluded when a template is later duplicated or materialized.
+- [x] Add template-specific resource-tree records. When **Include Docs & Files** is selected, copy the published resource-hub content into those records with fresh node, folder, document, file, and link IDs while preserving hierarchy and ordering.
+- [x] Copy published native documents as independent documents with a new version 1; do not copy draft/deleted documents or historical document versions.
+- [x] Copy links and file metadata independently. Reuse immutable blob payloads safely rather than duplicating bytes, while ensuring later metadata/content edits affect only the copy.
+- [x] Do not copy reactions or subscribers and do not emit resource-copy activities or notifications.
+- [x] Add read-only Docs & Files browsing to template mode, including folders and template-specific document, file, and link pages without runtime document controls.
+- [x] Keep draft content excluded from project-to-template copying and template-to-project materialization.
+- [ ] Wire the existing template resource mutations into the template editor: create and update folders, documents, files, and links; delete and move resources; and support nested-folder flows.
+- [ ] Replace the intentionally dummy template Add menu with the corresponding create, upload, and link dialogs once those editor flows are ready.
+- [ ] When template duplication is implemented in Phase 6, keep draft content excluded from duplicated templates.
 - [ ] Cover nested folders, mixed resource types, rich-text blobs, published/draft/deleted state, document baselines, and source independence.
 
 #### PR 5.5 — `feat: Copy comments in project templates`
