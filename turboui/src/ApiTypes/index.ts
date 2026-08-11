@@ -1913,7 +1913,21 @@ export interface ProjectTemplate {
   tasks?: ProjectTemplateTask[] | null;
   people?: ProjectTemplatePerson[] | null;
   taskAssignments?: ProjectTemplateTaskAssignment[] | null;
+  discussions?: ProjectTemplateDiscussion[] | null;
+  inactiveDiscussionCount: number;
   permissions?: ProjectTemplatePermissions | null;
+}
+
+export interface ProjectTemplateDiscussion {
+  __typename: "project_template_discussion";
+  id: string;
+  projectTemplateId: string;
+  title: string;
+  body: string;
+  author?: Person | null;
+  position: number;
+  insertedAt: string;
+  updatedAt: string;
 }
 
 export interface ProjectTemplateInactivePeopleSummary {

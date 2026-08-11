@@ -10,6 +10,7 @@ interface Dependencies {
     name: string;
     description?: Json | null;
     includePeopleAndAssignments?: boolean;
+    includeDiscussions?: boolean;
   }) => Promise<ProjectTemplatesCreateFromProjectResult>;
   navigate: (path: string) => void;
 }
@@ -22,6 +23,7 @@ export function createSaveProjectAsTemplateHandler(dependencies: Dependencies) {
         name: values.name.trim(),
         description: serializeDescription(values.description),
         includePeopleAndAssignments: values.includePeopleAndAssignments,
+        includeDiscussions: values.includeDiscussions,
       });
 
       if (response.scheduleIssues.length > 0) {

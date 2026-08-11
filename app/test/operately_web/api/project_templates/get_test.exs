@@ -94,6 +94,22 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     assert res.template.inactive_people_summary == %{person_count: 1, role_count: 1, task_count: 1}
   end
 
+  test "returns discussions in newest-first order and their inactive author count", ctx do
+    ctx = Factory.add_company_member(ctx, :inactive_author)
+
+    ctx =
+      ctx
+      |> Factory.add_project_template_discussion(:newest_discussion, :template, title: "Newest", position: 0)
+      |> Factory.add_project_template_discussion(:older_discussion, :template, title: "Older", position: 1, author: ctx.inactive_author)
+      |> Factory.suspend_company_member(:inactive_author)
+
+    assert {200, res} = request(ctx)
+
+    assert Enum.map(res.template.discussions, & &1.title) == ["Newest", "Older"]
+    assert res.template.inactive_discussion_count == 1
+    assert Enum.find(res.template.discussions, &(&1.title == "Older")).author.id == Paths.person_id(ctx.inactive_author)
+  end
+
   test "returns archived templates", ctx do
     {:ok, archived} = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update()
     ctx = %{ctx | template: archived}

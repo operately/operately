@@ -75,6 +75,21 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ListTest do
     refute Map.has_key?(launch, :task_assignments)
   end
 
+  test "returns inactive discussion counts without loading discussions", ctx do
+    ctx = Factory.add_company_member(ctx, :inactive_author)
+
+    ctx =
+      ctx
+      |> Factory.add_project_template_discussion(:discussion, :launch, author: ctx.inactive_author)
+      |> Factory.suspend_company_member(:inactive_author)
+
+    assert {200, res} = query(ctx.conn, [:project_templates, :list], %{})
+    launch = Enum.find(res.templates, &(&1.id == Paths.project_template_id(ctx.launch)))
+
+    assert launch.inactive_discussion_count == 1
+    refute Map.has_key?(launch, :discussions)
+  end
+
   test "filters by Space and search across name and description", ctx do
     assert {200, res} = query(ctx.conn, [:project_templates, :list], %{space_id: Paths.space_id(ctx.beta_space)})
     assert Enum.map(res.templates, & &1.name) == ["Onboarding"]
