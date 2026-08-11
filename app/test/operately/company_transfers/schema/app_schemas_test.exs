@@ -22,6 +22,11 @@ defmodule Operately.CompanyTransfers.Schema.AppSchemasTest do
     assert AppSchemas.schema_for_table("project_template_discussions") == Operately.ProjectTemplates.Discussion
     assert AppSchemas.schema_for_table("project_template_milestones") == Operately.ProjectTemplates.Milestone
     assert AppSchemas.schema_for_table("project_template_people") == Operately.ProjectTemplates.Person
+    assert AppSchemas.schema_for_table("project_template_resource_nodes") == Operately.ProjectTemplates.ResourceNode
+    assert AppSchemas.schema_for_table("project_template_resource_documents") == Operately.ProjectTemplates.ResourceDocument
+    assert AppSchemas.schema_for_table("project_template_resource_files") == Operately.ProjectTemplates.ResourceFile
+    assert AppSchemas.schema_for_table("project_template_resource_folders") == Operately.ProjectTemplates.ResourceFolder
+    assert AppSchemas.schema_for_table("project_template_resource_links") == Operately.ProjectTemplates.ResourceLink
     assert AppSchemas.schema_for_table("project_template_task_assignments") == Operately.ProjectTemplates.TaskAssignment
     assert AppSchemas.schema_for_table("project_template_tasks") == Operately.ProjectTemplates.Task
   end

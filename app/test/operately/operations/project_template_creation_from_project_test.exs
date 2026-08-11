@@ -6,7 +6,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   alias Operately.Comments.CommentThread
   alias Operately.ContextualDates.ContextualDate
   alias Operately.Operations.ProjectTemplateCreationFromProject
-  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
   alias Operately.Projects.Project
   alias Operately.Repo
   alias Operately.Support.Factory
@@ -143,6 +143,45 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert Enum.find(template.milestones, &(&1.title == ctx.undated.title)).due_offset_days == nil
     assert Enum.find(template.tasks, &(&1.name == ctx.dated_task.name)).due_offset_days == 0
     assert Enum.find(template.tasks, &(&1.name == ctx.undated_task.name)).due_offset_days == nil
+  end
+
+  test "copies published Docs & Files into an independent template tree", ctx do
+    ctx =
+      ctx
+      |> Factory.fetch_default_project_resource_hub(:hub, :source)
+      |> Factory.add_folder(:folder, :hub)
+      |> Factory.add_document(:published_document, :hub, folder: :folder, name: "Published guide")
+      |> Factory.add_document(:draft_document, :hub, state: :draft, name: "Draft guide")
+      |> Factory.add_file(:file, :hub, folder: :folder)
+      |> Factory.add_link(:link, :hub, folder: :folder)
+
+    assert {:ok, template} = create_template(ctx)
+
+    nodes =
+      Repo.all(from node in ResourceNode, where: node.project_template_id == ^template.id)
+      |> Repo.preload([:folder, :document, :file, :link])
+
+    [folder_node] = Enum.filter(nodes, &(&1.type == :folder))
+    [document_node] = Enum.filter(nodes, &(&1.type == :document))
+
+    assert folder_node.folder.name == ctx.folder.name
+    assert document_node.document.name == "Published guide"
+    assert document_node.document.content == ctx.published_document.content
+    assert document_node.parent_folder_id == folder_node.folder.id
+    assert Enum.any?(nodes, &(&1.file && &1.file.name == ctx.file.name))
+    assert Enum.any?(nodes, &(&1.link && &1.link.name == ctx.link.name))
+    refute Enum.any?(nodes, fn node -> node.document && node.document.name == "Draft guide" end)
+
+    assert Repo.aggregate(ResourceFolder, :count) == 1
+    assert Repo.aggregate(ResourceDocument, :count) == 1
+    assert Repo.aggregate(ResourceFile, :count) == 1
+    assert Repo.aggregate(ResourceLink, :count) == 1
+
+    ctx.published_document
+    |> Operately.ResourceHubs.Document.changeset(%{name: "Changed source"})
+    |> Repo.update!()
+
+    assert Repo.get!(ResourceDocument, document_node.document.id).name == "Published guide"
   end
 
   test "supports an unscheduled project end and year-boundary offsets", ctx do

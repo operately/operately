@@ -121,6 +121,58 @@ defmodule Operately.CompanyTransfers.Export.FileDiscoveryTest do
     assert historical_blob_id == ctx.historical_blob.id
   end
 
+  test "discover/1 finds direct and rich-text blobs in project template resources", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:embedded_blob)
+      |> Factory.add_blob(:file_blob)
+      |> Factory.add_blob(:preview_blob)
+      |> Factory.add_space(:space)
+      |> Factory.add_project_template(:template, :space)
+
+    ctx =
+      ctx
+      |> Factory.add_project_template_resource_document(:document, :template, content: blob_document(ctx.embedded_blob))
+      |> Factory.add_project_template_resource_file(:file, :template, :file_blob, preview_blob: :preview_blob)
+
+    on_exit(fn -> cleanup_blob_storage([ctx.embedded_blob, ctx.file_blob, ctx.preview_blob]) end)
+
+    upload_blob_payload!(ctx.embedded_blob, "embedded template payload")
+    upload_blob_payload!(ctx.file_blob, "template file payload")
+    upload_blob_payload!(ctx.preview_blob, "template preview payload")
+
+    package = Transfers.export!(ctx.company, ctx.account).package
+    discovery = FileDiscovery.discover(package)
+
+    assert MapSet.new(discovery.files) ==
+             MapSet.new([
+               file_entry(ctx.embedded_blob),
+               file_entry(ctx.file_blob),
+               file_entry(ctx.preview_blob)
+             ])
+
+    assert %{
+             table: "project_template_resource_files",
+             row_id: ctx.file.id,
+             column: "blob_id",
+             blob_id: ctx.file_blob.id
+           } in discovery.direct_blob_references
+
+    assert %{
+             table: "project_template_resource_files",
+             row_id: ctx.file.id,
+             column: "preview_blob_id",
+             blob_id: ctx.preview_blob.id
+           } in discovery.direct_blob_references
+
+    assert %{
+             table: "project_template_resource_documents",
+             row_id: ctx.document.id,
+             column: "content",
+             blob_id: ctx.embedded_blob.id
+           } in discovery.rich_text_blob_references
+  end
+
   defp blob_document(blob) do
     %{
       "type" => "doc",

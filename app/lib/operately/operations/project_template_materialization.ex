@@ -20,8 +20,8 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     Multi.new()
     |> Multi.run(:copy_plan, fn repo, _changes -> build_copy_plan(repo, params) end)
     |> Multi.merge(fn %{copy_plan: plan} -> ProjectCreator.build(params.project, plan) end)
-    |> Multi.run(:materialized_children, fn repo, %{copy_plan: plan, project: project} ->
-      ChildrenCreator.insert(repo, plan, project)
+    |> Multi.run(:materialized_children, fn repo, %{copy_plan: plan, project: project, resource_hub: resource_hub} ->
+      ChildrenCreator.insert(repo, plan, project, resource_hub)
     end)
     |> Multi.run(:materialized_people, fn repo, %{copy_plan: plan, project: project} ->
       PeopleCreator.insert(repo, plan, project)
@@ -51,9 +51,17 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
            people: from(p in Operately.ProjectTemplates.Person, order_by: [asc: p.inserted_at, asc: p.id], preload: [:person]),
            task_assignments: from(a in Operately.ProjectTemplates.TaskAssignment, order_by: [asc: a.inserted_at, asc: a.id]),
            discussions: from(d in Operately.ProjectTemplates.Discussion, order_by: [asc: d.position, asc: d.id], preload: [:author]),
-           tasks: from(t in Operately.ProjectTemplates.Task, order_by: [asc: t.inserted_at, asc: t.id])
+           tasks: from(t in Operately.ProjectTemplates.Task, order_by: [asc: t.inserted_at, asc: t.id]),
+           resource_nodes: resource_nodes_query()
          )}
     end
+  end
+
+  defp resource_nodes_query do
+    from(node in Operately.ProjectTemplates.ResourceNode,
+      order_by: [asc: node.parent_folder_id, asc: node.position],
+      preload: [folder: [], document: [:author], file: [:author, :blob, :preview_blob], link: [:author]]
+    )
   end
 
   defp extract_result({:ok, %{project: project}}), do: {:ok, project}
@@ -79,6 +87,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
          |> Map.merge(%{
            source_template_id: template.id,
            discussions: plan_discussions(template, creator_id),
+           resource_nodes: template.resource_nodes,
            description: template.description,
            timeframe: timeframe(start_date, Copy.date_from_offset(start_date, template.duration_days)),
            task_statuses: Enum.map(statuses.copied, &Copy.status_attrs/1)
@@ -515,11 +524,18 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     alias Operately.Tasks.Status
     alias Operately.Tasks.Task, as: ProjectTask
 
-    def insert(repo, plan, project) do
+    def insert(repo, plan, project, resource_hub) do
       with {:ok, milestones} <- insert_milestones(repo, plan.milestones, project),
            {:ok, tasks} <- insert_tasks(repo, plan.tasks, project, plan.task_statuses),
-           {:ok, discussions} <- insert_discussions(repo, plan.discussions, project) do
-        {:ok, %{milestones: milestones, tasks: tasks, discussions: discussions}}
+           {:ok, discussions} <- insert_discussions(repo, plan.discussions, project),
+           {:ok, resources} <-
+             Operately.ProjectTemplates.Resources.materialize(
+               repo,
+               %{project_template_id: plan.source_template_id, company_id: project.company_id, resource_nodes: plan.resource_nodes || []},
+               %{project | resource_hub: resource_hub},
+               project.creator_id
+             ) do
+        {:ok, %{milestones: milestones, tasks: tasks, discussions: discussions, resources: resources}}
       end
     end
 
@@ -693,6 +709,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
   defmodule Validator do
     alias Operately.Operations.ProjectCreation
     alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
+    alias Operately.ProjectTemplates.Resources
 
     def validate(%ProjectTemplate{} = template, %ProjectCreation{} = project) do
       with :ok <- validate_active(template),
@@ -705,7 +722,8 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
            :ok <- validate_changesets(template.task_assignments, :task_assignment, &TaskAssignment.changeset(&1, %{})),
            :ok <- validate_task_containers(template),
            :ok <- validate_task_status_references(template),
-           :ok <- validate_assignment_references(template) do
+           :ok <- validate_assignment_references(template),
+           :ok <- Resources.validate(template.resource_nodes) do
         :ok
       end
     end
