@@ -378,8 +378,9 @@ Each PR in this phase extends the same copy service in both directions: project 
 - [x] Do not copy reactions or subscribers and do not emit resource-copy activities or notifications.
 - [x] Add read-only Docs & Files browsing to template mode, including folders and template-specific document, file, and link pages without runtime document controls.
 - [x] Keep draft content excluded from project-to-template copying and template-to-project materialization.
-- [ ] Wire the existing template resource mutations into the template editor: create and update folders, documents, files, and links; delete and move resources; and support nested-folder flows.
-- [ ] Replace the intentionally dummy template Add menu with the corresponding create, upload, and link dialogs once those editor flows are ready.
+- [x] Enable top-level template folder creation through the shared Docs & Files menu and folder modal.
+- [ ] Wire the remaining template resource mutations into the editor: nested-folder creation; create and update documents, files, and links; delete and move resources.
+- [ ] Replace the remaining dummy template Add actions with the corresponding document, upload, and link flows once those editor capabilities are ready.
 - [ ] When template duplication is implemented in Phase 6, keep draft content excluded from duplicated templates.
 - [ ] Cover nested folders, mixed resource types, rich-text blobs, published/draft/deleted state, document baselines, and source independence.
 

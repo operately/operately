@@ -503,12 +503,11 @@ function useProjectDocsAndFilesProps({
       nodesListProps,
       search,
       addFolderModalProps: {
-        resourceHubId: resourceHub.id,
         onCreated: refresh,
         onCreateFolder: async (args) => {
           await createFolder({
-            resourceHubId: args.resourceHubId,
-            folderId: args.folderId,
+            resourceHubId: resourceHub.id,
+            folderId: args.parentFolderId,
             name: args.name,
           });
         },

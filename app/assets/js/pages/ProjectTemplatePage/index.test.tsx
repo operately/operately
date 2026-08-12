@@ -2,7 +2,7 @@ import Api from "@/api";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { loader } from "./loader";
 import { activePersonIds } from "./people";
-import { createPeopleOperations, createTaskMove } from ".";
+import { createFolderOperation, createPeopleOperations, createTaskMove } from ".";
 
 jest.mock("@/components/Pages", () => ({}));
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn() }));
@@ -27,6 +27,7 @@ jest.mock("@/api", () => ({
       createPerson: jest.fn(),
       updatePerson: jest.fn(),
       deletePerson: jest.fn(),
+      createFolder: jest.fn(),
     },
   },
 }));
@@ -38,6 +39,7 @@ const updateTask = Api.project_templates.updateTask as jest.Mock;
 const createPerson = Api.project_templates.createPerson as jest.Mock;
 const updatePerson = Api.project_templates.updatePerson as jest.Mock;
 const deletePerson = Api.project_templates.deletePerson as jest.Mock;
+const createFolder = Api.project_templates.createFolder as jest.Mock;
 const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
 beforeEach(() => {
@@ -111,6 +113,23 @@ test("returns false when a task move fails", async () => {
   const moveTask = createTaskMove({ templateId: "template-1", mutate });
 
   await expect(moveTask("task-1", null, 0)).resolves.toBe(false);
+});
+
+test("creates a template folder in the selected parent", async () => {
+  createFolder.mockResolvedValue({ folder: { id: "folder-1" } });
+  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
+    await operation();
+    return true;
+  });
+  const createFolderForTemplate = createFolderOperation({ templateId: "template-1", mutate });
+
+  await expect(createFolderForTemplate("parent-folder-1", "Launch assets")).resolves.toBe(true);
+
+  expect(createFolder).toHaveBeenCalledWith({
+    templateId: "template-1",
+    parentFolderId: "parent-folder-1",
+    name: "Launch assets",
+  });
 });
 
 test("serializes contributor create, update, replacement, and deletion mutations", async () => {

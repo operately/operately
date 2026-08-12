@@ -130,6 +130,7 @@ export namespace TemplateProjectPage {
     tasks: Task[];
     discussions: Discussion[];
     resourceNodes?: ResourceNode[];
+    onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
     newDiscussionLink?: string;
     people?: TemplatePerson[];
     personSearch: PersonField.SearchData;

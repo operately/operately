@@ -116,6 +116,7 @@ const populatedProps: Types.Props = {
   personSearch: { people: [], onSearch: async () => undefined },
   richTextHandlers: createMockRichEditorHandlers(),
   formattedTimePreferences: defaultFormattedTimePreferences,
+  onFolderCreate: async () => true,
   onTemplateUpdate: () => undefined,
   onStatusesChange: () => undefined,
   onMilestoneCreate: () => undefined,

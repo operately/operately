@@ -28,7 +28,7 @@ jest.mock("./NodeIcon", () => ({
   NodeIcon: ({ node }: { node: { name?: string | null } }) => <span>{node.name}</span>,
 }));
 
-const resourceHub = { id: "hub-1", name: "Hub" };
+const resourceHub = { id: "hub-1", name: "Hub", __typename: "resource_hub" as const };
 
 const parentFolder = {
   id: "folder-parent",
@@ -36,20 +36,24 @@ const parentFolder = {
   name: "Current Folder",
   pathToFolder: [],
   resourceHub,
+  __typename: "resource_hub_folder" as const,
 } as ResourceHubFolder;
 
 const folderToRename = {
   id: "folder-rename",
   resourceHubId: resourceHub.id,
   name: "Plans",
+  __typename: "resource_hub_folder" as const,
 } as ResourceHubFolder;
 
 const documentToCopy = {
   id: "document-1",
   resourceHubId: resourceHub.id,
+  parentFolderId: parentFolder.id,
   name: "Quarterly Plan",
   content: "{\"type\":\"doc\",\"content\":[]}",
   state: "published",
+  __typename: "resource_hub_document" as const,
 } as ResourceHubDocument;
 
 const documentToMove = {
@@ -59,6 +63,7 @@ const documentToMove = {
   name: "Roadmap",
   content: "{\"type\":\"doc\",\"content\":[]}",
   state: "published",
+  __typename: "resource_hub_document" as const,
 } as ResourceHubDocument;
 
 function buildNewFileModalsValue(
@@ -86,8 +91,9 @@ describe("resource hub modal forms", () => {
     render(
       <NewFileModalsProvider value={buildNewFileModalsValue({ toggleShowAddFolder })}>
         <AddFolderModal
-          resourceHubId={resourceHub.id}
-          folderId={parentFolder.id}
+          parentFolderId={parentFolder.id}
+          isOpen={true}
+          onClose={toggleShowAddFolder}
           onCreated={onCreated}
           onCreateFolder={onCreateFolder}
         />
@@ -104,8 +110,7 @@ describe("resource hub modal forms", () => {
 
     await waitFor(() =>
       expect(onCreateFolder).toHaveBeenCalledWith({
-        resourceHubId: resourceHub.id,
-        folderId: parentFolder.id,
+        parentFolderId: parentFolder.id,
         name: "Monthly Reports",
       }),
     );

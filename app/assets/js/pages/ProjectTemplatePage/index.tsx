@@ -132,6 +132,7 @@ function Page() {
     templateId: template.id,
     mutate,
   });
+  const onFolderCreate = createFolderOperation({ templateId: template.id, mutate });
 
   return (
     <TemplateProjectPage
@@ -151,6 +152,7 @@ function Page() {
       tasks={tasks}
       discussions={discussions}
       resourceNodes={resourceNodes}
+      onFolderCreate={onFolderCreate}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
       people={people}
       personSearch={personSearch}
@@ -344,6 +346,17 @@ export function createPeopleOperations({ templateId, mutate }: { templateId: str
   }
 
   return { onPersonCreate, onPersonUpdate, onPersonDelete };
+}
+
+export function createFolderOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
+  return (parentFolderId: string | null, name: string) =>
+    mutate("Folder not created", () =>
+      Api.project_templates.createFolder({
+        templateId,
+        parentFolderId,
+        name,
+      }),
+    );
 }
 
 function content(value?: string | null) {

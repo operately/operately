@@ -113,6 +113,7 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
       },
     ],
     discussions: [],
+    onFolderCreate: jest.fn().mockResolvedValue(true),
     newDiscussionLink: "/templates/template-1/discussions/new",
     personSearch: { people: [], onSearch: async () => undefined },
     richTextHandlers: createMockRichEditorHandlers(),
@@ -185,11 +186,13 @@ describe("TemplateProjectPage", () => {
     expect(screen.queryByText("Subscribe")).not.toBeInTheDocument();
   });
 
-  it("shows the standard non-functional resource menu for editable template Docs & Files", async () => {
+  it("creates a folder from the standard template resource menu", async () => {
     const user = userEvent.setup();
+    const onFolderCreate = jest.fn().mockResolvedValue(true);
 
     renderPage(
       createProps({
+        onFolderCreate,
         resourceNodes: [
           {
             id: "folder-node-1",
@@ -218,6 +221,11 @@ describe("TemplateProjectPage", () => {
 
     await user.click(screen.getByText("New folder"));
 
+    expect(screen.getByRole("heading", { name: "New folder" })).toBeInTheDocument();
+    await user.type(screen.getByLabelText("Name"), "Campaign assets");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onFolderCreate).toHaveBeenCalledWith(null, "Campaign assets"));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.queryByText("Versions")).not.toBeInTheDocument();
   });
