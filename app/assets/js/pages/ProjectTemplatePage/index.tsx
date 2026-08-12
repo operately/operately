@@ -70,7 +70,10 @@ function Page() {
     content: content(discussion.body),
   }));
   const resourceNodes = (template.resourceNodes ?? []).flatMap((node) =>
-    toResourceNode(node, paths.projectTemplateResourcePath(template.id, node.id)),
+    toResourceNode(
+      node,
+      node.type === "document" ? paths.projectTemplateDocumentPath(template.id, node.id) : "#",
+    ),
   );
 
   async function onTemplateUpdate(updates: Partial<TemplateProjectPage.Props["template"]>) {

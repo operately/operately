@@ -78,8 +78,8 @@ export const WithoutSubscriptionsOrDraft: Story = {
   args: {} as NewDocumentPage.Props,
   parameters: {
     reactRouter: {
-      path: "/project-templates/template-1/docs-and-files/new",
-      routePath: "/project-templates/:templateId/docs-and-files/new",
+      path: "/project-templates/template-1/documents/new",
+      routePath: "/project-templates/:templateId/documents/new",
     },
   },
   render: () => (

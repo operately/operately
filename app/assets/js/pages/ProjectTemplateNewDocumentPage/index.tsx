@@ -43,7 +43,7 @@ function Page() {
         name: values.title,
         content: JSON.stringify(values.content),
       });
-      navigate(paths.projectTemplateResourcePath(template.id, result.document.nodeId));
+      navigate(paths.projectTemplateDocumentPath(template.id, result.document.nodeId));
       return true;
     } catch {
       showErrorToast("Document not created", "Check the form and try again.");

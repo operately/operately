@@ -432,14 +432,14 @@ export class Paths {
 
   projectTemplateNewDocumentPath(templateId: string, folderId?: string) {
     if (folderId) {
-      return this.createCompanyPath(["project-templates", templateId, "docs-and-files", "new"]) + "?folderId=" + folderId;
+      return this.createCompanyPath(["project-templates", templateId, "documents", "new"]) + "?folderId=" + folderId;
     } else {
-      return this.createCompanyPath(["project-templates", templateId, "docs-and-files", "new"]);
+      return this.createCompanyPath(["project-templates", templateId, "documents", "new"]);
     }
   }
 
-  projectTemplateResourcePath(templateId: string, nodeId: string) {
-    return this.createCompanyPath(["project-templates", templateId, "docs-and-files", nodeId]);
+  projectTemplateDocumentPath(templateId: string, documentId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "documents", documentId]);
   }
 
   spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {

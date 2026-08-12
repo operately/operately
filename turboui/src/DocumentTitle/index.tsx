@@ -1,21 +1,35 @@
 import * as React from "react";
-import * as People from "@/models/people";
-import { Avatar, BulletDot, FormattedTime, ScheduledPostDate, ScheduledPostLabel } from "turboui";
-import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
-const validStates = ["draft", "scheduled", "published"];
+import { Avatar, type AvatarPerson } from "../Avatar";
+import { BulletDot } from "../BulletDot";
+import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
+import { ScheduledPostDate, ScheduledPostLabel } from "../SchedulePosting";
 
-interface TitleProps {
-  title: string;
-  state: string;
-  author: People.Person | null;
-  publishedAt?: string;
-  scheduledAt?: string | null;
-  modifiedAt?: string | null;
+const validStates = ["draft", "scheduled", "published"] as const;
+
+export namespace DocumentTitle {
+  export type State = (typeof validStates)[number];
+
+  export interface Props {
+    title: string;
+    state: string;
+    author: AvatarPerson | null;
+    publishedAt?: string;
+    scheduledAt?: string | null;
+    modifiedAt?: string | null;
+    formattedTimePreferences: FormattedTimePreferences;
+  }
 }
 
-export function DocumentTitle({ title, author, state, publishedAt, scheduledAt, modifiedAt }: TitleProps) {
-  const formattedTimePreferences = useFormattedTimePreferences();
+export function DocumentTitle({
+  title,
+  author,
+  state,
+  publishedAt,
+  scheduledAt,
+  modifiedAt,
+  formattedTimePreferences,
+}: DocumentTitle.Props) {
   verifyState(state);
   verifyPublishedAt(state, publishedAt);
   const showModifiedAt = shouldShowModifiedAt(publishedAt, modifiedAt);
@@ -61,7 +75,7 @@ export function DocumentTitle({ title, author, state, publishedAt, scheduledAt, 
 }
 
 function verifyState(state: string) {
-  if (!validStates.includes(state)) {
+  if (!validStates.includes(state as DocumentTitle.State)) {
     throw new Error(`Invalid state: ${state}`);
   }
 }
