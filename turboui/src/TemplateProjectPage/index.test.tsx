@@ -118,6 +118,7 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
     formatFileSize: (size) => `${size} bytes`,
     newDiscussionLink: "/templates/template-1/discussions/new",
     newDocumentLink: "/templates/template-1/documents/new",
+    newLinkLink: "/templates/template-1/links/new",
     personSearch: { people: [], onSearch: async () => undefined },
     richTextHandlers: createMockRichEditorHandlers(),
     formattedTimePreferences: defaultFormattedTimePreferences,

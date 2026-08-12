@@ -113,6 +113,7 @@ const populatedProps: Types.Props = {
   ],
   newDiscussionLink: "/templates/launch-template/discussions/new",
   newDocumentLink: "/templates/launch-template/documents/new",
+  newLinkLink: "/templates/launch-template/links/new",
   people: [champion, unavailableContributor],
   personSearch: { people: [], onSearch: async () => undefined },
   richTextHandlers: createMockRichEditorHandlers(),

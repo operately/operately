@@ -39,6 +39,7 @@ interface TemplateDocsAndFilesProps {
   resourceNodes: ResourceNode[];
   canEdit: boolean;
   newDocumentLink: string;
+  newLinkLink: string;
   onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
   onFilesUpload: TemplateProjectPage.Props["onFilesUpload"];
   formatFileSize: TemplateProjectPage.Props["formatFileSize"];
@@ -54,6 +55,7 @@ export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
       resourceNodes={props.resourceNodes ?? []}
       canEdit={Boolean(props.permissions.canEdit || props.permissions.hasFullAccess)}
       newDocumentLink={props.newDocumentLink}
+      newLinkLink={props.newLinkLink}
       onFolderCreate={props.onFolderCreate}
       onFilesUpload={props.onFilesUpload}
       formatFileSize={props.formatFileSize}
@@ -69,15 +71,21 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
   const navigateToNewDocument = React.useCallback(() => {
     navigate(props.newDocumentLink);
   }, [navigate, props.newDocumentLink]);
+  const navigateToNewLink = React.useCallback(
+    (type?: ResourceHubLinkType) => {
+      navigate(type ? `${props.newLinkLink}?type=${type}` : props.newLinkLink);
+    },
+    [navigate, props.newLinkLink],
+  );
   const modalContext = React.useMemo(
     () => ({
       ...fileSelection,
       showAddFolder: showNewFolder,
       toggleShowAddFolder: () => setShowNewFolder((open) => !open),
       navigateToNewDocument,
-      navigateToNewLink: ignoreLinkAction,
+      navigateToNewLink,
     }),
-    [fileSelection, showNewFolder, navigateToNewDocument],
+    [fileSelection, showNewFolder, navigateToNewDocument, navigateToNewLink],
   );
   const items = props.resourceNodes
     .filter((node) => node.parentFolderId === props.parentFolderId)
@@ -102,7 +110,7 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
               onNewDocument={navigateToNewDocument}
               onNewFolder={() => setShowNewFolder(true)}
               onUploadFiles={fileSelection.selectFiles}
-              onNewLink={ignoreLinkAction}
+              onNewLink={navigateToNewLink}
             />
           ) : undefined
         }
@@ -143,8 +151,6 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
 }
 
 function ignoreResourceAction() {}
-
-function ignoreLinkAction(_type?: ResourceHubLinkType) {}
 
 function toDocsAndFilesItem(node: ResourceNode) {
   return {
