@@ -117,6 +117,7 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
     onFilesUpload: jest.fn().mockResolvedValue(true),
     formatFileSize: (size) => `${size} bytes`,
     newDiscussionLink: "/templates/template-1/discussions/new",
+    newDocumentLink: "/templates/template-1/documents/new",
     personSearch: { people: [], onSearch: async () => undefined },
     richTextHandlers: createMockRichEditorHandlers(),
     formattedTimePreferences: defaultFormattedTimePreferences,
@@ -202,7 +203,7 @@ describe("TemplateProjectPage", () => {
             type: "folder",
             position: 0,
             name: "Launch assets",
-            link: "/templates/template-1/docs-and-files/folder-node-1",
+            link: "#",
             insertedAt: "2026-08-11T12:00:00Z",
             updatedAt: "2026-08-11T12:00:00Z",
           },
@@ -323,7 +324,7 @@ describe("TemplateProjectPage", () => {
             type: "document",
             position: 0,
             name: "Launch guide",
-            link: "/templates/template-1/docs-and-files/node-1",
+            link: "/templates/template-1/documents/node-1",
             insertedAt: "2026-08-11T12:00:00Z",
             updatedAt: "2026-08-11T12:00:00Z",
           },
@@ -336,7 +337,7 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByText("Launch guide")).toBeInTheDocument();
     expect(screen.getByText("Launch guide").closest("a")).toHaveAttribute(
       "href",
-      "/templates/template-1/docs-and-files/node-1",
+      "/templates/template-1/documents/node-1",
     );
   });
 
@@ -350,7 +351,7 @@ describe("TemplateProjectPage", () => {
             type: "file",
             position: 0,
             name: "Launch.png",
-            link: "/templates/template-1/docs-and-files/image-node-1",
+            link: "#",
             insertedAt: "2026-08-11T12:00:00Z",
             updatedAt: "2026-08-11T12:00:00Z",
             fileKind: "image",

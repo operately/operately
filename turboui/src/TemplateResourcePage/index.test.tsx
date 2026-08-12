@@ -39,7 +39,7 @@ describe("TemplateResourcePage", () => {
           id: "document-1",
           name: "Launch guide",
           type: "document",
-          link: "/templates/template-1/docs-and-files/document-1",
+          link: "/templates/template-1/documents/document-1",
           insertedAt: "2026-08-11T12:00:00Z",
           updatedAt: "2026-08-11T12:00:00Z",
         },
@@ -48,7 +48,7 @@ describe("TemplateResourcePage", () => {
 
     expect(screen.getByText("Launch guide").closest("a")).toHaveAttribute(
       "href",
-      "/templates/template-1/docs-and-files/document-1",
+      "/templates/template-1/documents/document-1",
     );
     expect(screen.queryByText("Add")).not.toBeInTheDocument();
   });

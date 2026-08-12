@@ -430,8 +430,20 @@ export class Paths {
     return this.createCompanyPath(["project-templates", templateId, "discussions", discussionId, "edit"]);
   }
 
-  projectTemplateResourcePath(templateId: string, nodeId: string) {
-    return this.createCompanyPath(["project-templates", templateId, "docs-and-files", nodeId]);
+  projectTemplateNewDocumentPath(templateId: string, folderId?: string) {
+    if (folderId) {
+      return this.createCompanyPath(["project-templates", templateId, "documents", "new"]) + "?folderId=" + folderId;
+    } else {
+      return this.createCompanyPath(["project-templates", templateId, "documents", "new"]);
+    }
+  }
+
+  projectTemplateDocumentPath(templateId: string, documentId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "documents", documentId]);
+  }
+
+  projectTemplateEditDocumentPath(templateId: string, documentId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "documents", documentId, "edit"]);
   }
 
   spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {
