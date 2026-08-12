@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Comments.List do
 
   import Operately.Access.Filters, only: [filter_by_view_access: 3]
 
+  alias Operately.Access.{Binding, Context}
   alias Operately.Updates.Comment
   alias Operately.Projects.CheckIn
   alias Operately.Comments.CommentThread
@@ -95,11 +96,13 @@ defmodule OperatelyWeb.Api.Comments.List do
     from(c in Comment,
       join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id,
       join: hub in assoc(d, :resource_hub),
+      left_join: goal in assoc(hub, :goal), as: :goal,
+      left_join: project in assoc(hub, :project), as: :project,
       left_join: space in assoc(hub, :space), as: :space,
-      where: d.id == ^id
+      where: d.id == ^id and c.entity_type == :resource_hub_document
     )
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :space)
+    |> filter_by_resource_hub_parent_view_access(person.id)
     |> Repo.all()
     |> load_notifications(person, action: "resource_hub_document_commented")
   end
@@ -108,25 +111,47 @@ defmodule OperatelyWeb.Api.Comments.List do
     from(c in Comment,
       join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id,
       join: hub in assoc(f, :resource_hub),
+      left_join: goal in assoc(hub, :goal), as: :goal,
+      left_join: project in assoc(hub, :project), as: :project,
       left_join: space in assoc(hub, :space), as: :space,
-      where: f.id == ^id
+      where: f.id == ^id and c.entity_type == :resource_hub_file
     )
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :space)
+    |> filter_by_resource_hub_parent_view_access(person.id)
     |> Repo.all()
     |> load_notifications(person, action: "resource_hub_file_commented")
   end
 
   defp load(id, :resource_hub_link, person) do
-    from(c in Comment, join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id,
+    from(c in Comment,
+      join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id,
       join: hub in assoc(l, :resource_hub),
+      left_join: goal in assoc(hub, :goal), as: :goal,
+      left_join: project in assoc(hub, :project), as: :project,
       left_join: space in assoc(hub, :space), as: :space,
-      where: l.id == ^id
+      where: l.id == ^id and c.entity_type == :resource_hub_link
     )
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :space)
+    |> filter_by_resource_hub_parent_view_access(person.id)
     |> Repo.all()
     |> load_notifications(person, action: "resource_hub_link_commented")
+  end
+
+  # Resource hubs can belong to a space, project, or goal. Access is granted via
+  # whichever parent context is present (same pattern as ResourceHubs.ListNodes).
+  defp filter_by_resource_hub_parent_view_access(query, requester_id) do
+    from([goal: goal, project: project, space: space] in query,
+      join: context in Context,
+      on: context.goal_id == goal.id or context.project_id == project.id or context.group_id == space.id,
+      join: binding in assoc(context, :bindings),
+      join: access_group in assoc(binding, :group),
+      join: membership in assoc(access_group, :memberships),
+      join: person in assoc(membership, :person),
+      where: membership.person_id == ^requester_id,
+      where: is_nil(person.suspended_at),
+      where: binding.access_level >= ^Binding.view_access(),
+      distinct: true
+    )
   end
 
   defp preload_resources(query) do
