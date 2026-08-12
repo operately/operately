@@ -8,20 +8,21 @@ import * as React from "react";
 import { CommentSection, useComments } from "@/features/CommentSection";
 
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
-import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { compareIds } from "@/routes/paths";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { OngoingDraftActions } from "@/features/drafts";
 import { useBoolState } from "@/hooks/useBoolState";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router";
 import { useLoadedData } from "./loader";
 import {
   DiscardDiscussionDraftModal,
+  DocumentTitle,
   IconEdit,
   IconTrash,
+  OngoingDraftActions,
   Reactions,
   RichContent,
   CurrentSubscriptions,
@@ -145,6 +146,7 @@ function DiscussionReactions() {
 
 function DiscussionTitle() {
   const { discussion } = useLoadedData();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <DocumentTitle
@@ -153,6 +155,7 @@ function DiscussionTitle() {
       state={discussion.state}
       publishedAt={displayDate(discussion)}
       scheduledAt={discussion.scheduledAt}
+      formattedTimePreferences={formattedTimePreferences}
     />
   );
 }
@@ -250,15 +253,29 @@ function DicusssionComments() {
 function ContinueEditingDraft() {
   const paths = usePaths();
   const { discussion } = useLoadedData();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const [publish] = Discussions.usePublishDiscussion();
   const refresh = Pages.useRefresh();
   const editPath = paths.discussionEditPath(discussion.id!);
+
+  if (discussion.state !== "draft" && discussion.state !== "scheduled") {
+    return null;
+  }
 
   const publishHandler = async () => {
     await publish({ id: discussion.id! });
     refresh();
   };
 
-  return <OngoingDraftActions resource={discussion} editResourcePath={editPath} publish={publishHandler} />;
+  return (
+    <OngoingDraftActions
+      state={discussion.state}
+      updatedAt={discussion.updatedAt!}
+      scheduledAt={discussion.scheduledAt}
+      editPath={editPath}
+      onPublish={publishHandler}
+      formattedTimePreferences={formattedTimePreferences}
+    />
+  );
 }
