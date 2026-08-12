@@ -146,6 +146,7 @@ export namespace TemplateProjectPage {
     formatFileSize: AddFileWidgetProps["formatFileSize"];
     newDiscussionLink?: string;
     newDocumentLink: string;
+    newLinkLink: string;
     people?: TemplatePerson[];
     personSearch: PersonField.SearchData;
     richTextHandlers: RichEditorHandlers;

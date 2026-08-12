@@ -5,10 +5,10 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { compareIds, Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
-import { DocumentPage, IconEdit } from "turboui";
+import { IconEdit, LinkPage, type ResourceHubLinkType } from "turboui";
 import React from "react";
 
-export default { name: "ProjectTemplateDocumentPage", loader, Page } as PageModule;
+export default { name: "ProjectTemplateLinkPage", loader, Page } as PageModule;
 
 interface LoadedData {
   template: ProjectTemplate;
@@ -25,7 +25,7 @@ async function loader({ params }): Promise<LoadedData> {
   const node = template.resourceNodes?.find((resourceNode) => compareIds(resourceNode.id, params.id));
 
   if (!node) throw new Response("Not found", { status: 404 });
-  if (node.type !== "document" || !node.document) {
+  if (node.type !== "link" || !node.link) {
     throw new Response("Not found", { status: 404 });
   }
 
@@ -37,36 +37,34 @@ function Page() {
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
-  const document = node.document!;
+  const link = node.link!;
 
   return (
-    <DocumentPage
-      pageTitle={[document.name, template.name]}
+    <LinkPage
+      pageTitle={[link.name, template.name]}
       navigation={navigation(template, paths)}
       options={[
         {
           type: "link",
           icon: IconEdit,
           label: "Edit",
-          link: paths.projectTemplateEditDocumentPath(template.id, node.id),
+          link: paths.projectTemplateEditLinkPath(template.id, node.id),
           keepOutsideOnBigScreen: true,
-          testId: "edit-document-link",
+          testId: "edit-link-link",
         },
       ]}
-      testId="project-template-document-page"
-      title={document.name}
-      author={document.author ?? null}
-      state="published"
-      publishedAt={document.insertedAt}
-      modifiedAt={document.updatedAt}
+      testId="project-template-link-page"
+      linkType={link.type as ResourceHubLinkType}
+      title={link.name}
+      url={link.url}
+      author={link.author ?? null}
+      postedAt={link.insertedAt}
       formattedTimePreferences={formattedTimePreferences}
-      content={document.content}
+      description={link.description ?? null}
       mentionedPersonLookup={mentionedPersonLookup}
-      hideDraftActions
       hideReactions
       hideComments
       hideSubscriptions
-      hideCopyModal
       hideDeleteModal
     />
   );

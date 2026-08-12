@@ -414,7 +414,11 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "project-templates"]);
   }
 
-  projectTemplatePath(templateId: string) {
+  projectTemplatePath(templateId: string, attrs?: { tab?: "overview" | "tasks" | "discussions" | "docs-and-files" }) {
+    if (attrs?.tab) {
+      return this.createCompanyPath(["project-templates", templateId]) + `?tab=${attrs.tab}`;
+    }
+
     return this.createCompanyPath(["project-templates", templateId]);
   }
 
@@ -444,6 +448,30 @@ export class Paths {
 
   projectTemplateEditDocumentPath(templateId: string, documentId: string) {
     return this.createCompanyPath(["project-templates", templateId, "documents", documentId, "edit"]);
+  }
+
+  projectTemplateNewLinkPath(templateId: string, attrs?: { folderId?: string; type?: ResourceHubLinkType }) {
+    const folderId = attrs?.folderId;
+    const type = attrs?.type;
+    const base = this.createCompanyPath(["project-templates", templateId, "links", "new"]);
+
+    if (folderId && type) {
+      return base + `?folderId=${folderId}&type=${type}`;
+    } else if (folderId) {
+      return base + "?folderId=" + folderId;
+    } else if (type) {
+      return base + "?type=" + type;
+    } else {
+      return base;
+    }
+  }
+
+  projectTemplateLinkPath(templateId: string, linkId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "links", linkId]);
+  }
+
+  projectTemplateEditLinkPath(templateId: string, linkId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "links", linkId, "edit"]);
   }
 
   spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {

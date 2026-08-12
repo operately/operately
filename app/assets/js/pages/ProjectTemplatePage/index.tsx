@@ -5,7 +5,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import { findFileSize, uploadFilesWithPreviews } from "@/models/blobs";
-import { usePaths } from "@/routes/paths";
+import { usePaths, type Paths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { parseContent, showErrorToast, TemplateProjectPage, type AddFileUploadItem } from "turboui";
 import React from "react";
@@ -70,10 +70,7 @@ function Page() {
     content: content(discussion.body),
   }));
   const resourceNodes = (template.resourceNodes ?? []).flatMap((node) =>
-    toResourceNode(
-      node,
-      node.type === "document" ? paths.projectTemplateDocumentPath(template.id, node.id) : "#",
-    ),
+    toResourceNode(node, resourceNodeLink(node, template.id, paths)),
   );
 
   async function onTemplateUpdate(updates: Partial<TemplateProjectPage.Props["template"]>) {
@@ -148,6 +145,7 @@ function Page() {
       formatFileSize={findFileSize}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
       newDocumentLink={paths.projectTemplateNewDocumentPath(template.id)}
+      newLinkLink={paths.projectTemplateNewLinkPath(template.id)}
       people={people}
       personSearch={personSearch}
       richTextHandlers={richTextHandlers}
@@ -409,6 +407,22 @@ export function toResourceNode(
           : null,
     },
   ];
+}
+
+function resourceNodeLink(
+  node: NonNullable<LoadedData["template"]["resourceNodes"]>[number],
+  templateId: string,
+  paths: Paths,
+): string {
+  switch (node.type) {
+    case "document":
+      return paths.projectTemplateDocumentPath(templateId, node.id);
+    case "link":
+      return paths.projectTemplateLinkPath(templateId, node.id);
+    case "file":
+    case "folder":
+      return "#";
+  }
 }
 
 function fileKind(contentType: string | null): TemplateProjectPage.ResourceNode["fileKind"] {

@@ -4,12 +4,12 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { compareIds, Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
-import { DocumentEditPage, showErrorToast } from "turboui";
-import type { DocumentEditPage as DocumentEditPageTypes } from "turboui/DocumentEditPage/types";
+import { LinkEditPage, emptyContent, showErrorToast } from "turboui";
+import type { LinkEditPage as LinkEditPageTypes } from "turboui/LinkEditPage/types";
 import { useNavigate } from "react-router";
 import React from "react";
 
-export default { name: "ProjectTemplateEditDocumentPage", loader, Page } as PageModule;
+export default { name: "ProjectTemplateEditLinkPage", loader, Page } as PageModule;
 
 interface LoadedData {
   template: ProjectTemplate;
@@ -26,7 +26,7 @@ async function loader({ params }): Promise<LoadedData> {
   const node = template.resourceNodes?.find((resourceNode) => compareIds(resourceNode.id, params.id));
 
   if (!node) throw new Response("Not found", { status: 404 });
-  if (node.type !== "document" || !node.document) {
+  if (node.type !== "link" || !node.link) {
     throw new Response("Not found", { status: 404 });
   }
 
@@ -37,53 +37,52 @@ function Page() {
   const { template, node } = Pages.useLoadedData<LoadedData>();
   const paths = usePaths();
   const navigate = useNavigate();
-  const document = node.document!;
+  const link = node.link!;
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
-  const cancelLink = paths.projectTemplateDocumentPath(template.id, node.id);
+  const cancelLink = paths.projectTemplateLinkPath(template.id, node.id);
+  const initialDescription = link.description ? JSON.parse(link.description) : emptyContent();
 
-  async function handleSubmit(
-    values: DocumentEditPageTypes.Values,
-    meta: { action: "save" | "publish-draft"; contentChanged: boolean },
-  ) {
+  async function handleSubmit(values: LinkEditPageTypes.Values, meta: { contentChanged: boolean }) {
     try {
       if (meta.contentChanged) {
-        await Api.project_templates.updateDocument({
+        await Api.project_templates.updateLink({
           templateId: template.id,
-          documentId: document.id,
+          linkId: link.id,
           name: values.title,
-          content: JSON.stringify(values.content),
+          url: values.url,
+          description: JSON.stringify(values.description),
+          type: link.type,
         });
       }
       navigate(cancelLink);
       return true;
     } catch {
-      showErrorToast("Document not updated", "Check the form and try again.");
+      showErrorToast("Link not updated", "Check the form and try again.");
       return false;
     }
   }
 
   return (
-    <DocumentEditPage
-      pageTitle={["Edit Document", template.name]}
-      navigation={navigation(template, document.name, cancelLink, paths)}
-      testId="project-template-edit-document-page"
+    <LinkEditPage
+      pageTitle={["Edit Link", template.name]}
+      navigation={navigation(template, link.name, cancelLink, paths)}
+      testId="project-template-edit-link-page"
       richTextHandlers={richTextHandlers}
-      initialTitle={document.name}
-      initialContent={JSON.parse(document.content)}
+      initialTitle={link.name}
+      initialUrl={link.url}
+      initialDescription={initialDescription}
       cancelLink={cancelLink}
-      hideSubscriptions
-      hidePublishAction
       onSubmit={handleSubmit}
     />
   );
 }
 
-function navigation(template: ProjectTemplate, documentName: string, documentLink: string, paths: Paths) {
+function navigation(template: ProjectTemplate, linkName: string, linkPath: string, paths: Paths) {
   return [
     { to: paths.spacePath(template.space.id), label: template.space.name },
     { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
     { to: paths.projectTemplatePath(template.id), label: template.name },
     { to: paths.projectTemplatePath(template.id, { tab: "docs-and-files" }), label: "Docs & Files" },
-    { to: documentLink, label: documentName },
+    { to: linkPath, label: linkName },
   ];
 }
