@@ -8,7 +8,8 @@ import { NewFileModalsProvider, type NewFileModalsContextValue } from "./context
 import { CopyDocumentModalWrapper } from "./nodeMenus/CopyDocumentModal";
 import { RenameFolderModal } from "./nodeMenus/FolderMenu";
 import { MoveResourceModal } from "./nodeMenus/MoveResource";
-import type { ResourceHubDocument, ResourceHubFolder } from "./types";
+import { createMockDocumentNode, createMockFolder, createMockResourceHub } from "../ResourceHubPage/mockData";
+import type { ResourceHubDocument } from "./types";
 
 jest.mock("../icons", () => {
   const HiddenIcon = (props: React.ComponentProps<"span">) => <span {...props} />;
@@ -28,38 +29,43 @@ jest.mock("./NodeIcon", () => ({
   NodeIcon: ({ node }: { node: { name?: string | null } }) => <span>{node.name}</span>,
 }));
 
-const resourceHub = { id: "hub-1", name: "Hub" };
+const resourceHub = createMockResourceHub({ id: "hub-1", name: "Hub" });
 
-const parentFolder = {
+const parentFolder = createMockFolder({
   id: "folder-parent",
   resourceHubId: resourceHub.id,
   name: "Current Folder",
   pathToFolder: [],
   resourceHub,
-} as ResourceHubFolder;
+});
 
-const folderToRename = {
+const folderToRename = createMockFolder({
   id: "folder-rename",
   resourceHubId: resourceHub.id,
   name: "Plans",
-} as ResourceHubFolder;
+  resourceHub,
+});
 
-const documentToCopy = {
-  id: "document-1",
-  resourceHubId: resourceHub.id,
-  name: "Quarterly Plan",
-  content: "{\"type\":\"doc\",\"content\":[]}",
-  state: "published",
-} as ResourceHubDocument;
+const documentToCopy = createMockDocumentNode({
+  document: {
+    id: "document-1",
+    resourceHubId: resourceHub.id,
+    name: "Quarterly Plan",
+    content: "{\"type\":\"doc\",\"content\":[]}",
+    state: "published",
+  },
+}).document as ResourceHubDocument;
 
-const documentToMove = {
-  id: "document-2",
-  resourceHubId: resourceHub.id,
-  parentFolderId: parentFolder.id,
-  name: "Roadmap",
-  content: "{\"type\":\"doc\",\"content\":[]}",
-  state: "published",
-} as ResourceHubDocument;
+const documentToMove = createMockDocumentNode({
+  document: {
+    id: "document-2",
+    resourceHubId: resourceHub.id,
+    parentFolderId: parentFolder.id,
+    name: "Roadmap",
+    content: "{\"type\":\"doc\",\"content\":[]}",
+    state: "published",
+  },
+}).document as ResourceHubDocument;
 
 function buildNewFileModalsValue(
   overrides: Partial<NewFileModalsContextValue> = {},
