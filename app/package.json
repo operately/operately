@@ -44,6 +44,7 @@
     "dev": "vite",
     "build": "NODE_ENV=test vite build",
     "build:prod": "NODE_ENV=production vite build",
+    "build:css": "tailwindcss --config=assets/tailwind.config.js --input=assets/css/app.css --output=priv/static/assets/app.css --minify",
     "preview": "vite preview",
     "test": "jest",
     "knip": "knip --no-progress",
