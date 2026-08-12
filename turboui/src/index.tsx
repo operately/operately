@@ -10,7 +10,6 @@ export * from "./Chronometer";
 export * from "./CheckInHeader";
 export * from "./CommentSection";
 export * from "./Circle";
-export { useDraftActivatedInput } from "./CommentSection/useDraftActivatedInput";
 export * from "./CopyToClipboard";
 export * from "./ConfirmDialog";
 export * from "./FormattedTime";

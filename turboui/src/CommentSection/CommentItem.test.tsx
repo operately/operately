@@ -35,7 +35,14 @@ const form: CommentFormState = {
   submitting: false,
   postComment: jest.fn(),
   editComment: jest.fn(),
+  deleteComment: jest.fn(),
 };
+
+function getByTestId(testId: string) {
+  const el = document.querySelector<HTMLElement>(`[data-test-id="${testId}"]`);
+  if (!el) throw new Error(`Could not find element with data-test-id="${testId}"`);
+  return el;
+}
 
 describe("CommentItem", () => {
   it("keeps long code blocks inside shrinkable comment content", async () => {
@@ -60,5 +67,28 @@ describe("CommentItem", () => {
     await waitFor(() => {
       expect(commentContent?.querySelector("pre")).toHaveTextContent(longCodeLine);
     });
+  });
+
+  it("uses flat appearance and legacy test ids for comment feeds", () => {
+    const { container, getByText } = render(
+      <MemoryRouter>
+        <CommentItem
+          comment={comment}
+          form={form}
+          commentParentType="project_check_in"
+          canComment
+          currentUserId="author-1"
+          appearance="flat"
+          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
+      </MemoryRouter>,
+    );
+
+    const commentElement = container.querySelector(`[data-test-id="comment-${comment.id}"]`);
+    expect(commentElement).toHaveClass("py-3");
+    expect(commentElement).not.toHaveClass("bg-surface-dimmed");
+    expect(getByText("Jane Doe")).toBeInTheDocument();
+    expect(getByTestId("comment-options")).toBeInTheDocument();
   });
 });

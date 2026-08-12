@@ -1,4 +1,5 @@
 export { CommentSection } from "./CommentSection";
+export { useCommentSectionProps } from "./useCommentSectionProps";
 
 export { useComments } from "./useComments";
 export { useForProjectCheckIn } from "./useForProjectCheckIn";
