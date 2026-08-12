@@ -36,8 +36,11 @@ config :operately, OperatelyWeb.Endpoint,
 config :swoosh, :api_client, Finch
 
 # Configure tailwind (the version is required)
+# Use the npm-managed CLI so Docker/CI never downloads the standalone binary from GitHub
+# via Mix's Erlang HTTP client (which fails with :socket_closed_remotely).
 config :tailwind,
-  version: "3.2.4",
+  version: "3.4.17",
+  path: Path.expand("../node_modules/.bin/tailwindcss", __DIR__),
   default: [
     args: ~w(
       --config=tailwind.config.js
