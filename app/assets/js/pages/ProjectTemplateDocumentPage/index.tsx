@@ -5,7 +5,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { compareIds, Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
-import { DocumentPage } from "turboui";
+import { DocumentPage, IconEdit } from "turboui";
 import React from "react";
 
 export default { name: "ProjectTemplateDocumentPage", loader, Page } as PageModule;
@@ -43,6 +43,16 @@ export function Page() {
     <DocumentPage
       pageTitle={[document.name, template.name]}
       navigation={navigation(template, paths)}
+      options={[
+        {
+          type: "link",
+          icon: IconEdit,
+          label: "Edit",
+          link: paths.projectTemplateEditDocumentPath(template.id, node.id),
+          keepOutsideOnBigScreen: true,
+          testId: "edit-document-link",
+        },
+      ]}
       testId="project-template-document-page"
       title={document.name}
       author={document.author ?? null}

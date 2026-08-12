@@ -144,6 +144,7 @@ export { TemplateDiscussionPage } from "./TemplateDiscussionPage";
 export { TemplateResourcePage } from "./TemplateResourcePage";
 export { TemplateDiscussionForm } from "./TemplateDiscussionForm";
 export { NewDocumentPage } from "./NewDocumentPage";
+export { DocumentEditPage } from "./DocumentEditPage";
 export { DocumentPage } from "./DocumentPage";
 export { DocumentTitle } from "./DocumentTitle";
 export { OngoingDraftActions } from "./OngoingDraftActions";

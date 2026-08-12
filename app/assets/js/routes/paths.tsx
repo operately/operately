@@ -442,6 +442,10 @@ export class Paths {
     return this.createCompanyPath(["project-templates", templateId, "documents", documentId]);
   }
 
+  projectTemplateEditDocumentPath(templateId: string, documentId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "documents", documentId, "edit"]);
+  }
+
   spaceKanbanPath(spaceId: string, opts?: { taskId?: string }) {
     if (opts?.taskId) {
       return this.createCompanyPath(["spaces", spaceId, "kanban"]) + "?taskId=" + opts.taskId;
