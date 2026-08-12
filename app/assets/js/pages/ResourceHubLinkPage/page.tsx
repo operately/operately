@@ -1,212 +1,56 @@
 import React from "react";
-
-import { resourceHubLandingPath } from "@/models/resourceHubs";
-import { usePaths } from "@/routes/paths";
-import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router";
-import { links } from "@/models/resourceHubs";
 
-import * as ReactionsModel from "@/models/reactions";
 import * as Pages from "@/components/Pages";
-import { assertPresent } from "@/utils/assertions";
+import * as ReactionsModel from "@/models/reactions";
+import { links, resourceHubLandingPath } from "@/models/resourceHubs";
+import { usePaths } from "@/routes/paths";
 
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
-import { CommentSection, useComments } from "@/features/CommentSection";
-import {
-  FormattedTime,
-  Forms,
-  LinkIcon,
-  Modal,
-  Page as TurboUIPage,
-  Reactions,
-  Spacer,
-  type ResourceHubLinkType,
-} from "turboui";
+import { useComments, useCommentSectionProps } from "@/features/CommentSection";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useBoolState } from "@/hooks/useBoolState";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { assertPresent } from "@/utils/assertions";
+import { LinkPage, type ResourceHubLinkType } from "turboui";
 
 import { useLinkPageOptions } from "./Options";
 import { useLoadedData } from "./loader";
 import { buildLinkPageNavigation } from "./navigation";
-import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions, BulletDot } from "turboui";
-import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export function Page() {
-  const { link } = useLoadedData();
+  const { link, isCurrentUserSubscribed } = useLoadedData();
   const paths = usePaths();
+  const navigate = useNavigate();
+  const refresh = Pages.useRefresh();
+  const formattedTimePreferences = useFormattedTimePreferences();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
+  const [remove] = links.useDelete();
   const options = useLinkPageOptions({ showDeleteModal: toggleDeleteModal });
 
   assertPresent(link.notifications, "notifications must be present in link");
-  useClearNotificationsOnLoad(link.notifications);
-
-  return (
-    <TurboUIPage
-      title={link.name!}
-      size="medium"
-      navigation={buildLinkPageNavigation(link, paths)}
-      options={options}
-      testId="resource-hub-link-page"
-    >
-      <div className="px-12 py-10 lg:px-28">
-        <Title />
-        <Actions />
-        <Description />
-
-        <LinkReactions />
-        <LinkComments />
-        <LinkSubscriptions />
-      </div>
-
-      <DeleteLinkModal isOpen={showDeleteModal} hideModal={toggleDeleteModal} linkName={link.name || ""} />
-    </TurboUIPage>
-  );
-}
-
-function Actions() {
-  const { link } = useLoadedData();
-
-  assertPresent(link.url, "url must be present in link");
-
-  return (
-    <div className="flex flex-col items-center mt-4">
-      <div className="flex flex-col rounded gap-4">
-        <div className="flex items-center gap-2">
-          <PrimaryButton linkTo={link.url} linkTarget="_blank">
-            Open Link
-          </PrimaryButton>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Title() {
-  const { link } = useLoadedData();
-  const formattedTimePreferences = useFormattedTimePreferences();
-
   assertPresent(link.name, "name must be present in link");
   assertPresent(link.url, "url must be present in link");
   assertPresent(link.author, "author must be present in link");
   assertPresent(link.insertedAt, "insertedAt must be present in link");
-
-  return (
-    <div className="flex flex-col items-center">
-      <LinkIcon type={link.type! as ResourceHubLinkType} size={70} />
-      <div className="text-2xl font-extrabold mt-4">{link.name}</div>
-      <div className="font-medium inline-flex gap-1">
-        <span>{link.author.fullName}</span>
-        <BulletDot />
-        <span>Posted</span>
-        <FormattedTime {...formattedTimePreferences} time={link.insertedAt} format="relative-time-or-date" />
-      </div>
-    </div>
-  );
-}
-
-function Description() {
-  const { link } = useLoadedData();
   assertPresent(link.description, "description must be present in link");
-
-  const hasDescription = link.description != null && !isContentEmpty(link.description);
-  const { mentionedPersonLookup } = useRichEditorHandlers();
-
-  if (!hasDescription) return <></>;
-
-  return (
-    <>
-      <Spacer size={2} />
-      <div className="font-bold text-content-accent">Notes:</div>
-      <RichContent content={link.description} mentionedPersonLookup={mentionedPersonLookup} parseContent />
-    </>
-  );
-}
-
-function LinkReactions() {
-  const { link } = useLoadedData();
-
   assertPresent(link.permissions?.canCommentOnLink, "permissions must be present in link");
   assertPresent(link.reactions, "reactions must be present in link");
+  assertPresent(link.potentialSubscribers, "potentialSubscribers must be present in link");
+  assertPresent(link.subscriptionList, "subscriptionList must be present in link");
+  useClearNotificationsOnLoad(link.notifications);
 
   const reactions = link.reactions.map((r) => r!);
   const entity = ReactionsModel.entity(link.id!, "resource_hub_link");
-  const form = ReactionsModel.useReactionsForm(entity, reactions);
-
-  return (
-    <>
-      <Spacer size={2} />
-      <Reactions {...form} size={24} canAddReaction={link.permissions.canCommentOnLink} />
-    </>
-  );
-}
-
-function LinkComments() {
-  const { link } = useLoadedData();
-  const commentsForm = useComments({ parentType: "resource_hub_link", link: link });
-
-  assertPresent(link.permissions?.canCommentOnLink, "permissions must be present in link");
-
-  return (
-    <>
-      <Spacer size={4} />
-      <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="resource_hub_link"
-        canComment={link.permissions.canCommentOnLink}
-      />
-    </>
-  );
-}
-
-interface DeleteLinkModalProps {
-  isOpen: boolean;
-  hideModal: () => void;
-  linkName: string;
-}
-
-function DeleteLinkModal({ isOpen, hideModal, linkName }: DeleteLinkModalProps) {
-  const { link } = useLoadedData();
-  const navigate = useNavigate();
-  const [remove] = links.useDelete();
-  const paths = usePaths();
-
-  const handleDeleteLink = async () => {
-    await remove({ linkId: link.id });
-
-    if (link.parentFolder) {
-      navigate(paths.resourceHubFolderPath(link.parentFolder.id!));
-    } else {
-      navigate(resourceHubLandingPath(paths, link));
-    }
-  };
-
-  const form = Forms.useForm({
-    fields: {},
-    cancel: hideModal,
-    submit: handleDeleteLink,
+  const reactionsForm = ReactionsModel.useReactionsForm(entity, reactions);
+  const commentsForm = useComments({ parentType: "resource_hub_link", link });
+  const comments = useCommentSectionProps({
+    form: commentsForm,
+    commentParentType: "resource_hub_link",
+    canComment: link.permissions.canCommentOnLink,
   });
-
-  return (
-    <Modal isOpen={isOpen} onClose={hideModal}>
-      <Forms.Form form={form}>
-        <p>
-          Are you sure you want to delete the link "<b>{linkName}</b>"?
-        </p>
-        <Forms.Submit saveText="Delete" cancelText="Cancel" />
-      </Forms.Form>
-    </Modal>
-  );
-}
-
-function LinkSubscriptions() {
-  const { link, isCurrentUserSubscribed } = useLoadedData();
-  const refresh = Pages.useRefresh();
-
-  if (!link.potentialSubscribers || !link.subscriptionList) {
-    return null;
-  }
-
   const subscriptionsState = useCurrentSubscriptionsAdapter({
     potentialSubscribers: link.potentialSubscribers,
     subscriptionList: link.subscriptionList,
@@ -215,15 +59,49 @@ function LinkSubscriptions() {
     onRefresh: refresh,
   });
 
-  return (
-    <>
-      <div className="border-t border-stroke-base mt-16 mb-8" />
+  async function handleDelete() {
+    await remove({ linkId: link.id });
 
-      <CurrentSubscriptions
-        {...subscriptionsState}
-        isCurrentUserSubscribed={isCurrentUserSubscribed}
-        canEditSubscribers={link.permissions?.canEditLink || false}
-      />
-    </>
+    if (link.parentFolder) {
+      navigate(paths.resourceHubFolderPath(link.parentFolder.id!));
+    } else {
+      navigate(resourceHubLandingPath(paths, link));
+    }
+  }
+
+  if (!comments) return null;
+
+  return (
+    <LinkPage
+      pageTitle={link.name}
+      navigation={buildLinkPageNavigation(link, paths)}
+      options={options}
+      testId="resource-hub-link-page"
+      linkType={link.type! as ResourceHubLinkType}
+      title={link.name}
+      url={link.url}
+      author={link.author}
+      postedAt={link.insertedAt}
+      formattedTimePreferences={formattedTimePreferences}
+      description={link.description}
+      mentionedPersonLookup={mentionedPersonLookup}
+      reactions={{
+        ...reactionsForm,
+        size: 24,
+        canAddReaction: link.permissions.canCommentOnLink,
+      }}
+      comments={comments}
+      subscriptions={{
+        ...subscriptionsState,
+        isCurrentUserSubscribed,
+        canEditSubscribers: link.permissions?.canEditLink || false,
+      }}
+      deleteModal={{
+        isOpen: showDeleteModal,
+        onClose: toggleDeleteModal,
+        linkName: link.name,
+        onConfirm: handleDelete,
+      }}
+    />
   );
 }

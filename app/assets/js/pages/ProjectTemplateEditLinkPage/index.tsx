@@ -39,7 +39,7 @@ function Page() {
   const navigate = useNavigate();
   const link = node.link!;
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
-  const docsAndFilesLink = paths.projectTemplatePath(template.id, { tab: "docs-and-files" });
+  const cancelLink = paths.projectTemplateLinkPath(template.id, node.id);
   const initialDescription = link.description ? JSON.parse(link.description) : emptyContent();
 
   async function handleSubmit(values: LinkEditPageTypes.Values, meta: { contentChanged: boolean }) {
@@ -54,7 +54,7 @@ function Page() {
           type: link.type,
         });
       }
-      navigate(docsAndFilesLink);
+      navigate(cancelLink);
       return true;
     } catch {
       showErrorToast("Link not updated", "Check the form and try again.");
@@ -65,23 +65,24 @@ function Page() {
   return (
     <LinkEditPage
       pageTitle={["Edit Link", template.name]}
-      navigation={navigation(template, paths)}
+      navigation={navigation(template, link.name, cancelLink, paths)}
       testId="project-template-edit-link-page"
       richTextHandlers={richTextHandlers}
       initialTitle={link.name}
       initialUrl={link.url}
       initialDescription={initialDescription}
-      cancelLink={docsAndFilesLink}
+      cancelLink={cancelLink}
       onSubmit={handleSubmit}
     />
   );
 }
 
-function navigation(template: ProjectTemplate, paths: Paths) {
+function navigation(template: ProjectTemplate, linkName: string, linkPath: string, paths: Paths) {
   return [
     { to: paths.spacePath(template.space.id), label: template.space.name },
     { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
     { to: paths.projectTemplatePath(template.id), label: template.name },
     { to: paths.projectTemplatePath(template.id, { tab: "docs-and-files" }), label: "Docs & Files" },
+    { to: linkPath, label: linkName },
   ];
 }

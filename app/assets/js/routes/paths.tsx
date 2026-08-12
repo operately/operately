@@ -466,6 +466,10 @@ export class Paths {
     }
   }
 
+  projectTemplateLinkPath(templateId: string, linkId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "links", linkId]);
+  }
+
   projectTemplateEditLinkPath(templateId: string, linkId: string) {
     return this.createCompanyPath(["project-templates", templateId, "links", linkId, "edit"]);
   }

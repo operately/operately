@@ -40,7 +40,7 @@ function Page() {
 
   async function createLink(values: LinkNewPageTypes.Values) {
     try {
-      await Api.project_templates.createLink({
+      const result = await Api.project_templates.createLink({
         templateId: template.id,
         parentFolderId,
         name: values.title,
@@ -48,7 +48,7 @@ function Page() {
         type: values.type || "other",
         description: JSON.stringify(values.description),
       });
-      navigate(docsAndFilesLink);
+      navigate(paths.projectTemplateLinkPath(template.id, result.link.nodeId));
       return true;
     } catch {
       showErrorToast("Link not created", "Check the form and try again.");
