@@ -161,6 +161,92 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
     end
   end
 
+  describe "resource hub documents" do
+    test "lists comments on space-backed documents", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_resource_hub(:hub, :space, :creator)
+        |> Factory.add_document(:document, :hub)
+
+      comments = add_document_comments(ctx)
+
+      assert {200, res} =
+               query(ctx.conn, [:comments, :list], %{
+                 entity_id: Paths.document_id(ctx.document),
+                 entity_type: "resource_hub_document"
+               })
+
+      assert_comments(res, comments)
+    end
+
+    test "lists comments on project-backed documents", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.fetch_default_project_resource_hub(:hub, :project)
+        |> Factory.add_document(:document, :hub, state: :draft)
+
+      comments = add_document_comments(ctx)
+
+      assert {200, res} =
+               query(ctx.conn, [:comments, :list], %{
+                 entity_id: Paths.document_id(ctx.document),
+                 entity_type: "resource_hub_document"
+               })
+
+      assert_comments(res, comments)
+    end
+
+    test "lists comments on goal-backed documents", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :creator)
+        |> Factory.add_resource_hub(:hub, :goal, :creator)
+        |> Factory.add_document(:document, :hub)
+
+      comments = add_document_comments(ctx)
+
+      assert {200, res} =
+               query(ctx.conn, [:comments, :list], %{
+                 entity_id: Paths.document_id(ctx.document),
+                 entity_type: "resource_hub_document"
+               })
+
+      assert_comments(res, comments)
+    end
+
+    test "does not list comments without project access", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_company_member(:person)
+        |> Factory.log_in_person(:person)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+        |> Factory.fetch_default_project_resource_hub(:hub, :project)
+        |> Factory.add_document(:document, :hub)
+
+      add_document_comments(ctx)
+
+      assert {200, res} =
+               query(ctx.conn, [:comments, :list], %{
+                 entity_id: Paths.document_id(ctx.document),
+                 entity_type: "resource_hub_document"
+               })
+
+      assert res.comments == []
+    end
+  end
+
   describe "permissions - goal update" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
@@ -610,6 +696,23 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
 
     Repo.preload(comment, :author)
     |> serialize(level: :full)
+  end
+
+  defp add_document_comments(ctx) do
+    document = Repo.preload(ctx.document, [:resource_hub, :node])
+
+    Enum.map(1..3, fn _ ->
+      {:ok, comment} =
+        Operately.Operations.CommentAdding.run(
+          ctx.creator,
+          document,
+          "resource_hub_document",
+          RichText.rich_text("Hello World")
+        )
+
+      Repo.preload(comment, :author)
+      |> serialize(level: :full)
+    end)
   end
 
   defp create_message(creator_id, space_id) do
