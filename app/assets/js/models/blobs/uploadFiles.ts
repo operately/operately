@@ -2,7 +2,7 @@ import type { AddFileUploadItem } from "turboui";
 import { uploadFile } from "./uploadFile";
 import { resizeImage } from "./utils";
 
-export interface UploadedFile {
+interface UploadedFile {
   name: string;
   description: unknown;
   blobId: string;
