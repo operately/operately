@@ -5,6 +5,7 @@ import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import type { StatusSelector } from "../StatusSelector";
 import type { PersonField } from "../PersonField";
+import type { AddFileWidgetProps } from "../ResourceHub/AddFileWidget";
 import { IconClipboardText, IconListCheck, IconMessageCircle, IconPaperclip } from "../icons";
 import { useTabs } from "../Tabs";
 import { Overview } from "./Overview";
@@ -111,6 +112,13 @@ export namespace TemplateProjectPage {
     link: string;
     insertedAt: string;
     updatedAt: string;
+    fileKind?: "audio" | "default" | "image" | "mov" | "pdf" | "video" | "zip";
+    thumbnail?: {
+      url: string;
+      alt: string;
+      width?: number | null;
+      height?: number | null;
+    } | null;
   }
 
   export interface Props {
@@ -130,6 +138,12 @@ export namespace TemplateProjectPage {
     tasks: Task[];
     discussions: Discussion[];
     resourceNodes?: ResourceNode[];
+    onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
+    onFilesUpload: (
+      items: Parameters<AddFileWidgetProps["onUpload"]>[0],
+      onProgress: Parameters<AddFileWidgetProps["onUpload"]>[1],
+    ) => Promise<boolean>;
+    formatFileSize: AddFileWidgetProps["formatFileSize"];
     newDiscussionLink?: string;
     people?: TemplatePerson[];
     personSearch: PersonField.SearchData;

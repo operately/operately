@@ -68,6 +68,13 @@ config :operately, Operately.CompanyTransfers.Package.Limits,
   max_rows_count: String.to_integer(System.get_env("OPERATELY_MAX_ROWS_COUNT") || "1000000"),
   max_tables_count: String.to_integer(System.get_env("OPERATELY_MAX_TABLES_COUNT") || "200")
 
+if config_env() == :dev do
+  public_port = String.to_integer(System.get_env("PORT_OFFSET") || "4000")
+
+  config :operately, OperatelyWeb.Endpoint,
+    url: [host: "localhost", port: public_port, scheme: "http"]
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
