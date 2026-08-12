@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 import { DocsAndFilesTab } from "../DocsAndFiles";
 import { AddFileWidget, type AddFileWidgetProps } from "../ResourceHub/AddFileWidget";
@@ -37,6 +38,7 @@ interface TemplateDocsAndFilesProps {
   parentFolderId: string | null;
   resourceNodes: ResourceNode[];
   canEdit: boolean;
+  newDocumentLink: string;
   onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
   onFilesUpload: TemplateProjectPage.Props["onFilesUpload"];
   formatFileSize: TemplateProjectPage.Props["formatFileSize"];
@@ -51,6 +53,7 @@ export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
       parentFolderId={null}
       resourceNodes={props.resourceNodes ?? []}
       canEdit={Boolean(props.permissions.canEdit || props.permissions.hasFullAccess)}
+      newDocumentLink={props.newDocumentLink}
       onFolderCreate={props.onFolderCreate}
       onFilesUpload={props.onFilesUpload}
       formatFileSize={props.formatFileSize}
@@ -60,17 +63,21 @@ export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
 }
 
 function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
+  const navigate = useNavigate();
   const [showNewFolder, setShowNewFolder] = React.useState(false);
   const fileSelection = useAddFile();
+  const navigateToNewDocument = React.useCallback(() => {
+    navigate(props.newDocumentLink);
+  }, [navigate, props.newDocumentLink]);
   const modalContext = React.useMemo(
     () => ({
       ...fileSelection,
       showAddFolder: showNewFolder,
       toggleShowAddFolder: () => setShowNewFolder((open) => !open),
-      navigateToNewDocument: ignoreResourceAction,
+      navigateToNewDocument,
       navigateToNewLink: ignoreLinkAction,
     }),
-    [fileSelection, showNewFolder],
+    [fileSelection, showNewFolder, navigateToNewDocument],
   );
   const items = props.resourceNodes
     .filter((node) => node.parentFolderId === props.parentFolderId)
@@ -92,7 +99,7 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
           props.canEdit ? (
             <AddFilesButton
               permissions={templateResourcePermissions}
-              onNewDocument={ignoreResourceAction}
+              onNewDocument={navigateToNewDocument}
               onNewFolder={() => setShowNewFolder(true)}
               onUploadFiles={fileSelection.selectFiles}
               onNewLink={ignoreLinkAction}

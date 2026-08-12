@@ -430,6 +430,14 @@ export class Paths {
     return this.createCompanyPath(["project-templates", templateId, "discussions", discussionId, "edit"]);
   }
 
+  projectTemplateNewDocumentPath(templateId: string, folderId?: string) {
+    if (folderId) {
+      return this.createCompanyPath(["project-templates", templateId, "docs-and-files", "new"]) + "?folderId=" + folderId;
+    } else {
+      return this.createCompanyPath(["project-templates", templateId, "docs-and-files", "new"]);
+    }
+  }
+
   projectTemplateResourcePath(templateId: string, nodeId: string) {
     return this.createCompanyPath(["project-templates", templateId, "docs-and-files", nodeId]);
   }

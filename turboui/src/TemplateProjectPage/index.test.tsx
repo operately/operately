@@ -117,6 +117,7 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
     onFilesUpload: jest.fn().mockResolvedValue(true),
     formatFileSize: (size) => `${size} bytes`,
     newDiscussionLink: "/templates/template-1/discussions/new",
+    newDocumentLink: "/templates/template-1/docs-and-files/new",
     personSearch: { people: [], onSearch: async () => undefined },
     richTextHandlers: createMockRichEditorHandlers(),
     formattedTimePreferences: defaultFormattedTimePreferences,

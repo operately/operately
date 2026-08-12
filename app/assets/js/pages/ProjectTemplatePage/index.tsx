@@ -144,6 +144,7 @@ function Page() {
       onFilesUpload={onFilesUpload}
       formatFileSize={findFileSize}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
+      newDocumentLink={paths.projectTemplateNewDocumentPath(template.id)}
       people={people}
       personSearch={personSearch}
       richTextHandlers={richTextHandlers}

@@ -143,6 +143,7 @@ export { TemplateProjectPage } from "./TemplateProjectPage";
 export { TemplateDiscussionPage } from "./TemplateDiscussionPage";
 export { TemplateResourcePage } from "./TemplateResourcePage";
 export { TemplateDiscussionForm } from "./TemplateDiscussionForm";
+export { NewDocumentPage } from "./NewDocumentPage";
 export { ProjectTemplatesPage } from "./ProjectTemplatesPage";
 export { ResourceHubDraftsPage } from "./ResourceHubDraftsPage";
 export { ResourceHubFolderPage } from "./ResourceHubFolderPage";
