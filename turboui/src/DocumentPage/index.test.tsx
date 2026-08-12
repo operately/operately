@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router";
 import userEvent from "@testing-library/user-event";
 
 import { DocumentPage } from "./index";
+import type { CommentSectionProps } from "../CommentSection";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
@@ -29,10 +30,13 @@ jest.mock("../icons", () => {
     IconX: HiddenIcon,
     IconMoodPlus: HiddenIcon,
     IconTrash: HiddenIcon,
+    IconEdit: HiddenIcon,
+    IconLink: HiddenIcon,
   };
 });
 
 const author = genPeople(1)[0]!;
+const richTextHandlers = createMockRichEditorHandlers();
 
 const subscriptions: CurrentSubscriptions.Props = {
   subscribers: [{ person: author, isSubscribed: true, priority: false, role: null }],
@@ -60,6 +64,21 @@ const reactions = {
   ],
   size: 24,
   canAddReaction: true,
+};
+
+const comments: CommentSectionProps = {
+  items: [],
+  currentUser: {
+    id: author.id,
+    fullName: author.fullName,
+    avatarUrl: author.avatarUrl ?? null,
+    profileLink: "#",
+  },
+  canComment: true,
+  onAddComment: jest.fn(),
+  onEditComment: jest.fn(),
+  richTextHandlers,
+  formattedTimePreferences: defaultFormattedTimePreferences,
 };
 
 const mockDocument: ResourceHubDocument = {
@@ -103,7 +122,7 @@ const baseProps = {
   publishedAt: "2026-05-13T12:00:00Z",
   formattedTimePreferences: defaultFormattedTimePreferences,
   content: JSON.stringify(asRichText("Body")),
-  mentionedPersonLookup: createMockRichEditorHandlers().mentionedPersonLookup,
+  mentionedPersonLookup: richTextHandlers.mentionedPersonLookup,
 };
 
 function renderPage(ui: React.ReactElement) {
@@ -125,7 +144,7 @@ describe("DocumentPage", () => {
           formattedTimePreferences: defaultFormattedTimePreferences,
         }}
         reactions={reactions}
-        comments={<div>Comments section</div>}
+        comments={comments}
         subscriptions={subscriptions}
         copyModal={{
           isOpen: false,
@@ -145,7 +164,7 @@ describe("DocumentPage", () => {
     expect(screen.getByText("Interview Guide")).toBeInTheDocument();
     expect(screen.getByText("This is an unpublished draft.")).toBeInTheDocument();
     expect(screen.getByText("👍")).toBeInTheDocument();
-    expect(screen.getByText("Comments section")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="add-comment"]')).toBeInTheDocument();
     expect(screen.getByText("You're subscribed")).toBeInTheDocument();
   });
 
@@ -166,7 +185,7 @@ describe("DocumentPage", () => {
     expect(document.querySelector('[data-test-id="project-template-document-page"]')).toBeInTheDocument();
     expect(screen.queryByText("This is an unpublished draft.")).not.toBeInTheDocument();
     expect(screen.queryByText("👍")).not.toBeInTheDocument();
-    expect(screen.queryByText("Comments section")).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="add-comment"]')).not.toBeInTheDocument();
     expect(screen.queryByText("You're subscribed")).not.toBeInTheDocument();
   });
 

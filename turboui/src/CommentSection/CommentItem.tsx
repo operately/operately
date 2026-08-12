@@ -6,7 +6,7 @@ import { FormattedTime } from "../FormattedTime";
 import RichContent from "../RichContent";
 import { parseContent } from "../RichContent/contentOps";
 import { IconEdit, IconTrash, IconLink } from "../icons";
-import { CommentItemProps } from "./types";
+import { CommentAppearance, CommentItemProps } from "./types";
 import { compareIds } from "../utils/ids";
 import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -15,15 +15,14 @@ import { createTestId } from "../TestableElement";
 import { Reactions } from "../Reactions";
 import { useScrollIntoViewOnLoad } from "../utils/useScrollIntoViewOnLoad";
 import { showErrorToast, showSuccessToast } from "../Toasts";
+import { useCommentVisibility } from "./useCommentVisibility";
 
-// Function to shorten name for display
 function shortName(name: string | undefined): string {
   if (!name) return "";
   const firstPart = name.split(" ")[0];
   return firstPart || "";
 }
 
-// BlackLink component for consistent styling
 function BlackLink({
   to,
   underline,
@@ -49,10 +48,13 @@ export function CommentItem({
   onAddReaction,
   onRemoveReaction,
   formattedTimePreferences,
+  appearance = "card",
+  onVisible,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const parsedContent = parseContent(comment.content);
   const isOwnComment = compareIds(currentUserId, comment.author.id);
+  const visibilityRef = useCommentVisibility(onVisible, comment.id);
 
   useScrollIntoViewOnLoad(comment.id);
 
@@ -86,13 +88,14 @@ export function CommentItem({
   );
 
   const testId = "comment-" + comment.id;
+  const isFlat = appearance === "flat";
+  const displayName = isFlat ? comment.author.fullName : shortName(comment.author.fullName);
+  const containerClassName = isFlat
+    ? "flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative"
+    : "flex items-start gap-3 py-4 not-first:border-t border-stroke-base text-content-accent relative bg-surface-dimmed rounded-lg px-4 my-2";
 
   return (
-    <div
-      className="flex items-start gap-3 py-4 not-first:border-t border-stroke-base text-content-accent relative bg-surface-dimmed rounded-lg px-4 my-2"
-      data-test-id={testId}
-      id={comment.id}
-    >
+    <div className={containerClassName} data-test-id={testId} id={comment.id} ref={visibilityRef}>
       <div className="shrink-0">
         <Avatar person={comment.author} size="normal" />
       </div>
@@ -100,12 +103,12 @@ export function CommentItem({
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between">
           <div className="font-bold -mt-0.5">
-            {comment.author.profileLink ? (
+            {!isFlat && comment.author.profileLink ? (
               <BlackLink to={comment.author.profileLink} underline="hover">
-                {shortName(comment.author.fullName)}
+                {displayName}
               </BlackLink>
             ) : (
-              shortName(comment.author.fullName)
+              displayName
             )}
           </div>
 
@@ -118,6 +121,7 @@ export function CommentItem({
               <CommentMenu
                 comment={comment}
                 isOwnComment={isOwnComment}
+                appearance={appearance}
                 onEdit={() => setIsEditing(true)}
                 onDelete={form.deleteComment ? () => form.deleteComment?.(comment.id) : undefined}
               />
@@ -152,11 +156,12 @@ export function CommentItem({
 interface CommentMenuProps {
   comment: CommentItemProps["comment"];
   isOwnComment: boolean;
+  appearance: CommentAppearance;
   onEdit: () => void;
   onDelete?: () => void;
 }
 
-function CommentMenu({ comment, isOwnComment, onEdit, onDelete }: CommentMenuProps) {
+function CommentMenu({ comment, isOwnComment, appearance, onEdit, onDelete }: CommentMenuProps) {
   const handleCopyLink = useCallback(async () => {
     try {
       const url = new URL(window.location.href);
@@ -168,22 +173,20 @@ function CommentMenu({ comment, isOwnComment, onEdit, onDelete }: CommentMenuPro
     }
   }, [comment.id]);
 
+  const isFlat = appearance === "flat";
+
   return (
-    <Menu size="small" testId={createTestId("comment-menu", comment.id)}>
+    <Menu size="small" testId={isFlat ? "comment-options" : createTestId("comment-menu", comment.id)}>
       <MenuActionItem
         onClick={handleCopyLink}
         icon={IconLink}
-        testId={createTestId("copy-link", comment.id)}
+        testId={isFlat ? "copy-comment-link" : createTestId("copy-link", comment.id)}
       >
         Copy link
       </MenuActionItem>
       {isOwnComment && (
         <>
-          <MenuActionItem
-            onClick={onEdit}
-            icon={IconEdit}
-            testId={createTestId("edit", comment.id)}
-          >
+          <MenuActionItem onClick={onEdit} icon={IconEdit} testId={isFlat ? "edit-comment" : createTestId("edit", comment.id)}>
             Edit
           </MenuActionItem>
           {onDelete && (
@@ -191,7 +194,7 @@ function CommentMenu({ comment, isOwnComment, onEdit, onDelete }: CommentMenuPro
               onClick={onDelete}
               icon={IconTrash}
               danger
-              testId={createTestId("delete", comment.id)}
+              testId={isFlat ? "delete-comment" : createTestId("delete", comment.id)}
             >
               Delete
             </MenuActionItem>
@@ -277,8 +280,8 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers, localDra
     <div className="bg-surface-base rounded-lg border border-stroke-base p-2 mt-1" data-test-id="edit-comment-form">
       <Editor editor={editor} hideBorder />
       <div className="flex gap-2 p-2 mt-2">
-        <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty}>
-          Save
+        <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty} testId="post-comment">
+          Save Changes
         </PrimaryButton>
         <SecondaryButton size="xs" onClick={handleCancel}>
           Cancel
