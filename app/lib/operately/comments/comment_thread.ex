@@ -112,7 +112,7 @@ defmodule Operately.Comments.CommentThread do
   def list_for_project(project_id) do
     from(ct in __MODULE__,
       where: ct.parent_type == :project and ct.parent_id == ^project_id,
-      order_by: [desc: ct.inserted_at]
+      order_by: [desc: ct.inserted_at, desc: ct.id]
     )
     |> Operately.Repo.all()
   end
