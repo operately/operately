@@ -102,7 +102,7 @@ defmodule Operately.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "compile --warnings-as-errors", "test"],
-      "assets.setup": ["tailwind.install --if-missing"],
+      "assets.setup": ["cmd npm install"],
       "assets.build": ["tailwind default"],
       "assets.deploy": ["tailwind default --minify", "phx.digest"]
     ]
