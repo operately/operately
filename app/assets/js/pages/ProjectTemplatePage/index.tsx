@@ -148,6 +148,7 @@ function Page() {
       formatFileSize={findFileSize}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
       newDocumentLink={paths.projectTemplateNewDocumentPath(template.id)}
+      newLinkLink={paths.projectTemplateNewLinkPath(template.id)}
       people={people}
       personSearch={personSearch}
       richTextHandlers={richTextHandlers}

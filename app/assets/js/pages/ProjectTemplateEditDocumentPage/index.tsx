@@ -83,7 +83,7 @@ function navigation(template: ProjectTemplate, documentName: string, documentLin
     { to: paths.spacePath(template.space.id), label: template.space.name },
     { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
     { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id) + "?tab=docs-and-files", label: "Docs & Files" },
+    { to: paths.projectTemplatePath(template.id, { tab: "docs-and-files" }), label: "Docs & Files" },
     { to: documentLink, label: documentName },
   ];
 }

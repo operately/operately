@@ -49,7 +49,7 @@ function Page() {
       pageTitle={["New Discussion", template.name]}
       navigation={navigation(template, paths)}
       richTextHandlers={richTextHandlers}
-      cancelLink={paths.projectTemplatePath(template.id) + "?tab=discussions"}
+      cancelLink={paths.projectTemplatePath(template.id, { tab: "discussions" })}
       submitLabel="Post Discussion"
       onSubmit={createDiscussion}
     />
@@ -61,6 +61,6 @@ function navigation(template: ProjectTemplate, paths: Paths) {
     { to: paths.spacePath(template.space.id), label: template.space.name },
     { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
     { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id) + "?tab=discussions", label: "Discussions" },
+    { to: paths.projectTemplatePath(template.id, { tab: "discussions" }), label: "Discussions" },
   ];
 }

@@ -147,6 +147,7 @@ export { DocumentEditPage } from "./DocumentEditPage";
 export { DocumentPage } from "./DocumentPage";
 export { DocumentTitle } from "./DocumentTitle";
 export { OngoingDraftActions } from "./OngoingDraftActions";
+export { LinkNewPage } from "./LinkNewPage";
 export { ProjectTemplatesPage } from "./ProjectTemplatesPage";
 export { ResourceHubDraftsPage } from "./ResourceHubDraftsPage";
 export { ResourceHubFolderPage } from "./ResourceHubFolderPage";

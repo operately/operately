@@ -87,6 +87,7 @@ import ProjectTemplateDiscussionPage from "./ProjectTemplateDiscussionPage";
 import ProjectTemplateDocumentPage from "./ProjectTemplateDocumentPage";
 import ProjectTemplateEditDocumentPage from "./ProjectTemplateEditDocumentPage";
 import ProjectTemplateNewDocumentPage from "./ProjectTemplateNewDocumentPage";
+import ProjectTemplateNewLinkPage from "./ProjectTemplateNewLinkPage";
 import ProjectTemplatePage from "./ProjectTemplatePage";
 import ProjectTemplatesPage from "./ProjectTemplatesPage";
 import ResetPasswordPage from "./ResetPasswordPage";
@@ -210,6 +211,7 @@ export default {
   ProjectTemplateDocumentPage,
   ProjectTemplateEditDocumentPage,
   ProjectTemplateNewDocumentPage,
+  ProjectTemplateNewLinkPage,
   ProjectTemplatePage,
   ProjectTemplatesPage,
   ResetPasswordPage,
