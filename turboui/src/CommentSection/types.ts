@@ -4,6 +4,8 @@ import { Reactions } from "../Reactions";
 import type { AvatarPerson } from "../Avatar";
 import type { FormattedTimePreferences } from "../FormattedTime";
 
+export type CommentAppearance = "flat" | "card";
+
 export interface Person {
   id: string;
   fullName: string;
@@ -20,7 +22,7 @@ export interface Comment {
   notification?: any; // For notification intersection handling
 }
 
-export type CommentItem =
+export type CommentSectionItem =
   | {
       type: "comment";
       value: Comment;
@@ -35,8 +37,11 @@ export type CommentItem =
       insertedAt: string;
     };
 
+/** @deprecated Use CommentSectionItem */
+export type CommentItem = CommentSectionItem;
+
 export interface CommentFormState {
-  items: CommentItem[];
+  items: CommentSectionItem[];
   submitting: boolean;
   mentionSearchScope?: any;
   postComment: (content: any) => Promise<boolean | void> | boolean | void;
@@ -57,6 +62,8 @@ export interface CommentItemProps {
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
   formattedTimePreferences: FormattedTimePreferences;
+  appearance?: CommentAppearance;
+  onVisible?: (commentId: string) => void;
 }
 
 export interface CommentInputProps {
@@ -72,4 +79,27 @@ export interface CommentNotificationInfo {
   subscribedPeople: AvatarPerson[];
   isCurrentUserSubscribed: boolean;
   currentUserId: string;
+}
+
+export interface CommentSectionProps {
+  items: CommentSectionItem[];
+  currentUser: Person;
+  canComment: boolean;
+  submitting?: boolean;
+
+  onAddComment: (content: any) => Promise<boolean | void> | boolean | void;
+  onEditComment: (id: string, content: any) => Promise<boolean | void> | boolean | void;
+  onDeleteComment?: (id: string) => Promise<void> | void;
+  onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
+  onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
+
+  richTextHandlers: RichEditorHandlers;
+  formattedTimePreferences: FormattedTimePreferences;
+
+  commentParentType?: string;
+  commentDraftKey?: string;
+  editCommentDraftKey?: (id: string) => string | undefined;
+  commentNotificationInfo?: CommentNotificationInfo;
+  ackLabel?: string;
+  onCommentVisible?: (commentId: string) => void;
 }

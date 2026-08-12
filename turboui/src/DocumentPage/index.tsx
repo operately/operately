@@ -1,6 +1,7 @@
 import React from "react";
 
 import type { AvatarPerson } from "../Avatar";
+import { CommentSection, type CommentSectionProps } from "../CommentSection";
 import { DocumentTitle } from "../DocumentTitle";
 import * as Forms from "../Forms";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -57,7 +58,7 @@ export namespace DocumentPage {
   };
 
   type WithComments = {
-    comments: React.ReactNode;
+    comments: CommentSectionProps;
     hideComments?: never;
   };
 
@@ -156,7 +157,7 @@ export function DocumentPage(props: DocumentPage.Props) {
           <>
             <Spacer size={4} />
             <div className="border-t border-stroke-base mt-8" />
-            {props.comments}
+            <CommentSection {...props.comments} />
           </>
         )}
 
