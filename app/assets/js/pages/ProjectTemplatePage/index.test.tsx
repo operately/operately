@@ -1,13 +1,23 @@
-import Api from "@/api";
+import Api, { type ProjectTemplateResourceNode } from "@/api";
+import { uploadFiles } from "@/models/resourceHubs";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { loader } from "./loader";
 import { activePersonIds } from "./people";
-import { createFolderOperation, createPeopleOperations, createTaskMove } from ".";
+import {
+  createFilesUploadOperation,
+  createFolderOperation,
+  createPeopleOperations,
+  createTaskMove,
+  toResourceNode,
+} from ".";
+import type { AddFileUploadItem } from "turboui";
 
 jest.mock("@/components/Pages", () => ({}));
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn() }));
 jest.mock("@/models/people", () => ({}));
 jest.mock("@/models/tasks", () => ({}));
+jest.mock("@/models/blobs", () => ({ findFileSize: jest.fn() }));
+jest.mock("@/models/resourceHubs", () => ({ uploadFiles: jest.fn() }));
 jest.mock("@/routes/paths", () => ({
   Paths: { companyHomePath: (companyId: string) => `/${companyId}` },
   usePaths: jest.fn(),
@@ -28,6 +38,7 @@ jest.mock("@/api", () => ({
       updatePerson: jest.fn(),
       deletePerson: jest.fn(),
       createFolder: jest.fn(),
+      createFiles: jest.fn(),
     },
   },
 }));
@@ -40,6 +51,8 @@ const createPerson = Api.project_templates.createPerson as jest.Mock;
 const updatePerson = Api.project_templates.updatePerson as jest.Mock;
 const deletePerson = Api.project_templates.deletePerson as jest.Mock;
 const createFolder = Api.project_templates.createFolder as jest.Mock;
+const createFiles = Api.project_templates.createFiles as jest.Mock;
+const uploadSelectedFiles = uploadFiles as jest.Mock;
 const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
 beforeEach(() => {
@@ -130,6 +143,106 @@ test("creates a template folder in the selected parent", async () => {
     parentFolderId: "parent-folder-1",
     name: "Launch assets",
   });
+});
+
+test("uploads blobs and creates template files in one batch", async () => {
+  const uploadedFiles = [
+    {
+      name: "Launch-plan.pdf",
+      description: { type: "doc", content: [] },
+      blobId: "blob-1",
+      previewBlobId: "preview-1",
+    },
+  ];
+  const selectedItems: AddFileUploadItem[] = [
+    {
+      name: "Launch-plan",
+      nameWithExtension: "Launch-plan.pdf",
+      extension: "pdf",
+      description: { type: "doc", content: [] },
+      mainFile: new File(["plan"], "Launch-plan.pdf", { type: "application/pdf" }),
+      fileType: "pdf",
+    },
+  ];
+  const setProgress = jest.fn();
+  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
+    await operation();
+    return true;
+  });
+  uploadSelectedFiles.mockImplementation(async ({ persist }) => persist(uploadedFiles));
+  createFiles.mockResolvedValue({ files: [{ id: "file-1" }] });
+  const uploadTemplateFiles = createFilesUploadOperation({
+    templateId: "template-1",
+    parentFolderId: "folder-1",
+    mutate,
+  });
+
+  await expect(uploadTemplateFiles(selectedItems, setProgress)).resolves.toBe(true);
+
+  expect(uploadSelectedFiles).toHaveBeenCalledWith({
+    items: selectedItems,
+    setProgress,
+    persist: expect.any(Function),
+  });
+  expect(createFiles).toHaveBeenCalledWith({
+    templateId: "template-1",
+    parentFolderId: "folder-1",
+    files: [
+      {
+        ...uploadedFiles[0],
+        description: JSON.stringify(uploadedFiles[0]!.description),
+      },
+    ],
+  });
+});
+
+test("maps a template image file to its preview thumbnail", () => {
+  const node: ProjectTemplateResourceNode = {
+    __typename: "project_template_resource_node",
+    id: "node-1",
+    projectTemplateId: "template-1",
+    parentFolderId: null,
+    type: "file",
+    position: 0,
+    file: {
+      __typename: "project_template_resource_file",
+      id: "file-1",
+      nodeId: "node-1",
+      name: "Launch.png",
+      blob: {
+        __typename: "blob",
+        id: "blob-1",
+        contentType: "image/png",
+        width: 1200,
+        height: 800,
+        url: "/blobs/blob-1",
+      },
+      previewBlob: {
+        __typename: "blob",
+        id: "preview-1",
+        contentType: "image/png",
+        width: 100,
+        height: 67,
+        url: "/blobs/preview-1",
+      },
+      insertedAt: "2026-08-12T12:00:00Z",
+      updatedAt: "2026-08-12T12:00:00Z",
+    },
+    insertedAt: "2026-08-12T12:00:00Z",
+    updatedAt: "2026-08-12T12:00:00Z",
+  };
+
+  expect(toResourceNode(node, "/templates/template-1/files/node-1")).toEqual([
+    expect.objectContaining({
+      fileKind: "image",
+      thumbnail: {
+        url: "/blobs/preview-1",
+        alt: "Launch.png",
+        width: 100,
+        height: 67,
+      },
+    }),
+  ]);
 });
 
 test("serializes contributor create, update, replacement, and deletion mutations", async () => {

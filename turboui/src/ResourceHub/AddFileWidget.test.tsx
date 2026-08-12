@@ -54,8 +54,10 @@ function buildSubscriptions(): React.ComponentProps<typeof AddFileWidget>["subsc
 
 function Harness({
   onUpload,
+  showSubscriptions = true,
 }: {
   onUpload: React.ComponentProps<typeof AddFileWidget>["onUpload"];
+  showSubscriptions?: boolean;
 }) {
   const [files, setFiles] = React.useState<File[] | undefined>([
     new File(["hello world"], "Roadmap.pdf", { type: "application/pdf" }),
@@ -78,7 +80,7 @@ function Harness({
   return (
     <NewFileModalsProvider value={value}>
       <AddFileWidget
-        subscriptions={buildSubscriptions()}
+        subscriptions={showSubscriptions ? buildSubscriptions() : undefined}
         richTextHandlers={createMockRichEditorHandlers()}
         formatFileSize={(size) => `${size} bytes`}
         onUpload={onUpload}
@@ -88,6 +90,13 @@ function Harness({
 }
 
 describe("AddFileWidget", () => {
+  test("supports upload flows without subscription controls", async () => {
+    render(<Harness showSubscriptions={false} onUpload={async () => undefined} />);
+
+    expect(await screen.findByDisplayValue("Roadmap")).toBeInTheDocument();
+    expect(screen.queryByText("When I post this, notify:")).not.toBeInTheDocument();
+  });
+
   test("renders selected file details and editable file names", async () => {
     render(<Harness onUpload={async () => undefined} />);
 
@@ -115,5 +124,13 @@ describe("AddFileWidget", () => {
     resolveUpload?.();
 
     await waitFor(() => expect(screen.queryByText("Uploading file")).not.toBeInTheDocument());
+  });
+
+  test("keeps selected files when persistence reports a failure", async () => {
+    render(<Harness onUpload={async () => false} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Save" }));
+
+    expect(await screen.findByDisplayValue("Roadmap")).toBeInTheDocument();
   });
 });

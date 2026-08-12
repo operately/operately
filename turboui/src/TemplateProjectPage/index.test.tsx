@@ -114,6 +114,8 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
     ],
     discussions: [],
     onFolderCreate: jest.fn().mockResolvedValue(true),
+    onFilesUpload: jest.fn().mockResolvedValue(true),
+    formatFileSize: (size) => `${size} bytes`,
     newDiscussionLink: "/templates/template-1/discussions/new",
     personSearch: { people: [], onSearch: async () => undefined },
     richTextHandlers: createMockRichEditorHandlers(),
@@ -230,6 +232,38 @@ describe("TemplateProjectPage", () => {
     expect(screen.queryByText("Versions")).not.toBeInTheDocument();
   });
 
+  it("uploads files through the standard template resource flow", async () => {
+    const user = userEvent.setup();
+    const onFilesUpload = jest.fn().mockResolvedValue(true);
+    const originalCreateElement = document.createElement.bind(document);
+    const createElement = jest.spyOn(document, "createElement").mockImplementation((tagName, options) => {
+      const element = originalCreateElement(tagName, options);
+
+      if (tagName === "input") {
+        jest.spyOn(element, "click").mockImplementation(() => {
+          Object.defineProperty(element, "files", {
+            configurable: true,
+            value: [new File(["launch plan"], "Launch-plan.pdf", { type: "application/pdf" })],
+          });
+          element.onchange?.({ target: element } as unknown as Event);
+        });
+      }
+
+      return element;
+    });
+
+    renderPage(createProps({ onFilesUpload }), "/templates/template-1?tab=docs-and-files");
+
+    await user.click(document.querySelector('[data-test-id="add-options"]')!);
+    await user.click(await screen.findByText("Upload files"));
+    expect(await screen.findByDisplayValue("Launch-plan")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onFilesUpload).toHaveBeenCalledWith(expect.any(Array), expect.any(Function)));
+    expect(screen.queryByDisplayValue("Launch-plan")).not.toBeInTheDocument();
+    createElement.mockRestore();
+  });
+
   it("keeps template Docs & Files read-only for View Access", () => {
     renderPage(
       createProps({ permissions: { canView: true }, resourceNodes: [] }),
@@ -264,6 +298,35 @@ describe("TemplateProjectPage", () => {
       "href",
       "/templates/template-1/docs-and-files/node-1",
     );
+  });
+
+  it("shows image previews for template files", () => {
+    renderPage(
+      createProps({
+        resourceNodes: [
+          {
+            id: "image-node-1",
+            parentFolderId: null,
+            type: "file",
+            position: 0,
+            name: "Launch.png",
+            link: "/templates/template-1/docs-and-files/image-node-1",
+            insertedAt: "2026-08-11T12:00:00Z",
+            updatedAt: "2026-08-11T12:00:00Z",
+            fileKind: "image",
+            thumbnail: {
+              url: "/blobs/preview-1",
+              alt: "Launch.png",
+              width: 100,
+              height: 67,
+            },
+          },
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    expect(screen.getByRole("img", { name: "Launch.png" })).toHaveAttribute("src", "/blobs/preview-1");
   });
 
   it.each([

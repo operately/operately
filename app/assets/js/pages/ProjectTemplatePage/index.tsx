@@ -4,9 +4,11 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
+import { findFileSize } from "@/models/blobs";
+import { uploadFiles } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
-import { parseContent, showErrorToast, TemplateProjectPage } from "turboui";
+import { parseContent, showErrorToast, TemplateProjectPage, type AddFileUploadItem } from "turboui";
 import React from "react";
 import { loader, type LoadedData } from "./loader";
 import { activePersonIds } from "./people";
@@ -68,23 +70,9 @@ function Page() {
     link: paths.projectTemplateDiscussionPath(template.id, discussion.id),
     content: content(discussion.body),
   }));
-  const resourceNodes = (template.resourceNodes ?? []).flatMap((node) => {
-    const resource = node.folder ?? node.document ?? node.file ?? node.link;
-    if (!resource) return [];
-
-    return [
-      {
-        id: node.id,
-        parentFolderId: node.parentFolderId ?? null,
-        type: node.type,
-        position: node.position,
-        name: resource.name,
-        link: paths.projectTemplateResourcePath(template.id, node.id),
-        insertedAt: node.insertedAt,
-        updatedAt: node.updatedAt,
-      },
-    ];
-  });
+  const resourceNodes = (template.resourceNodes ?? []).flatMap((node) =>
+    toResourceNode(node, paths.projectTemplateResourcePath(template.id, node.id)),
+  );
 
   async function onTemplateUpdate(updates: Partial<TemplateProjectPage.Props["template"]>) {
     return mutate("Template not updated", () =>
@@ -133,6 +121,7 @@ function Page() {
     mutate,
   });
   const onFolderCreate = createFolderOperation({ templateId: template.id, mutate });
+  const onFilesUpload = createFilesUploadOperation({ templateId: template.id, parentFolderId: null, mutate });
 
   return (
     <TemplateProjectPage
@@ -153,6 +142,8 @@ function Page() {
       discussions={discussions}
       resourceNodes={resourceNodes}
       onFolderCreate={onFolderCreate}
+      onFilesUpload={onFilesUpload}
+      formatFileSize={findFileSize}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
       people={people}
       personSearch={personSearch}
@@ -357,6 +348,75 @@ export function createFolderOperation({ templateId, mutate }: { templateId: stri
         name,
       }),
     );
+}
+
+export function createFilesUploadOperation({
+  templateId,
+  parentFolderId,
+  mutate,
+}: {
+  templateId: string;
+  parentFolderId: string | null;
+  mutate: Mutate;
+}) {
+  return (items: AddFileUploadItem[], setProgress: (progress: number) => void) =>
+    mutate("Files not uploaded", () =>
+      uploadFiles({
+        items,
+        setProgress,
+        persist: (files) =>
+          Api.project_templates.createFiles({
+            templateId,
+            parentFolderId,
+            files: files.map((file) => ({ ...file, description: JSON.stringify(file.description) })),
+          }),
+      }),
+    );
+}
+
+export function toResourceNode(
+  node: NonNullable<LoadedData["template"]["resourceNodes"]>[number],
+  link: string,
+): TemplateProjectPage.ResourceNode[] {
+  const resource = node.folder ?? node.document ?? node.file ?? node.link;
+  if (!resource) return [];
+
+  const contentType = node.file?.blob?.contentType ?? null;
+  const thumbnailBlob = node.file?.previewBlob ?? node.file?.blob;
+
+  return [
+    {
+      id: node.id,
+      parentFolderId: node.parentFolderId ?? null,
+      type: node.type,
+      position: node.position,
+      name: resource.name,
+      link,
+      insertedAt: node.insertedAt,
+      updatedAt: node.updatedAt,
+      fileKind: fileKind(contentType),
+      thumbnail:
+        contentType?.includes("image") && thumbnailBlob?.url
+          ? {
+              url: thumbnailBlob.url,
+              alt: resource.name,
+              width: thumbnailBlob.width,
+              height: thumbnailBlob.height,
+            }
+          : null,
+    },
+  ];
+}
+
+function fileKind(contentType: string | null): TemplateProjectPage.ResourceNode["fileKind"] {
+  if (!contentType) return undefined;
+  if (contentType.includes("image")) return "image";
+  if (contentType.includes("pdf")) return "pdf";
+  if (contentType.includes("quicktime") || contentType.includes("mov")) return "mov";
+  if (contentType.includes("video")) return "video";
+  if (contentType.includes("audio")) return "audio";
+  if (contentType.includes("zip")) return "zip";
+  return "default";
 }
 
 function content(value?: string | null) {

@@ -117,6 +117,8 @@ const populatedProps: Types.Props = {
   richTextHandlers: createMockRichEditorHandlers(),
   formattedTimePreferences: defaultFormattedTimePreferences,
   onFolderCreate: async () => true,
+  onFilesUpload: async () => true,
+  formatFileSize: (size) => `${size} bytes`,
   onTemplateUpdate: () => undefined,
   onStatusesChange: () => undefined,
   onMilestoneCreate: () => undefined,

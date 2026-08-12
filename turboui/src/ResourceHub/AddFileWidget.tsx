@@ -22,10 +22,10 @@ export interface AddFileUploadItem {
 }
 
 export interface AddFileWidgetProps {
-  subscriptions: SubscribersSelector.Props;
+  subscriptions?: SubscribersSelector.Props;
   richTextHandlers: RichEditorHandlers;
   formatFileSize: (size: number) => string;
-  onUpload: (items: AddFileUploadItem[], onProgress: (progress: number) => void) => Promise<void>;
+  onUpload: (items: AddFileUploadItem[], onProgress: (progress: number) => void) => Promise<void | boolean>;
 }
 
 export function AddFileWidget({ subscriptions, richTextHandlers, formatFileSize, onUpload }: AddFileWidgetProps) {
@@ -46,7 +46,9 @@ export function AddFileWidget({ subscriptions, richTextHandlers, formatFileSize,
     cancel: () => setFiles(undefined),
     submit: async () => {
       const items = (form.values.items as PayloadItem[]).map((item) => item.toUploadItem());
-      await onUpload(items, setProgress);
+      const uploaded = await onUpload(items, setProgress);
+      if (uploaded === false) return;
+
       setFiles(undefined);
     },
   });
@@ -72,7 +74,7 @@ export function AddFileWidget({ subscriptions, richTextHandlers, formatFileSize,
         <Files field="items" formatFileSize={formatFileSize} richTextHandlers={richTextHandlers} />
 
         <div className="mt-4" />
-        <SubscribersSelector {...subscriptions} />
+        {subscriptions ? <SubscribersSelector {...subscriptions} /> : null}
 
         <Forms.Submit cancelText="Cancel" />
       </Forms.Form>
@@ -188,9 +190,12 @@ class PayloadItem {
   description: unknown;
 
   constructor(file: File) {
+    const { name, extension } = findNameAndExtension(file.name);
+
     this.mainFile = file;
+    this.name = name;
+    this.extension = extension;
     this.description = emptyContent();
-    this.setNameAndExtension(file.name);
   }
 
   get fileType() {
@@ -220,12 +225,5 @@ class PayloadItem {
       previewFile: this.previewFile,
       fileType: this.fileType,
     };
-  }
-
-  private setNameAndExtension(fileName: string) {
-    const { name, extension } = findNameAndExtension(fileName);
-
-    this.name = name;
-    this.extension = extension;
   }
 }

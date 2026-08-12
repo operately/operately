@@ -16,15 +16,17 @@ type UseSubscriptionsAdapterOpts = {
   sendNotificationsToEveryone?: boolean;
 } & LabelContext;
 
+type TurboSubscriber = SubscribersSelector.Subscriber;
+
 interface SubscriptionsAdapterState {
-  subscribers: Subscriber[];
-  selectedSubscribers: Subscriber[];
-  onSelectedSubscribersChange: (subscribers: Subscriber[]) => void;
+  subscribers: TurboSubscriber[];
+  selectedSubscribers: TurboSubscriber[];
+  onSelectedSubscribersChange: (subscribers: TurboSubscriber[]) => void;
   subscriptionType: SubscribersSelector.SubscriptionOption;
   onSubscriptionTypeChange: (type: SubscribersSelector.SubscriptionOption) => void;
-  alwaysNotify: Subscriber[];
-  currentSubscribersList: string[];
+  alwaysNotify: TurboSubscriber[];
   allSubscribersLabel: string;
+  currentSubscribersList: string[];
   notifyEveryone: boolean;
 }
 
@@ -40,19 +42,18 @@ export function useSubscriptionsAdapter(
 ): SubscriptionsAdapterState {
   const me = useMe();
 
-  const subscribers = opts.ignoreMe ? allSubscribers.filter((s) => !compareIds(s.person!.id, me?.id)) : allSubscribers;
+  const subscribers: TurboSubscriber[] = opts.ignoreMe
+    ? allSubscribers.filter((s) => !compareIds(s.person!.id, me?.id))
+    : allSubscribers;
 
-  const alwaysNotify = useMemo(
-    () => findPrioritySubscribers(subscribers, opts),
-    [subscribers, opts.notifyPrioritySubscribers],
-  );
+  const alwaysNotify = useMemo(() => findPrioritySubscribers(subscribers, opts), [subscribers, opts.notifyPrioritySubscribers]);
 
   const initialSelectedSubscribers = useMemo(
     () => findAlreadySelected(subscribers, alwaysNotify),
     [subscribers, alwaysNotify],
   );
 
-  const [selectedSubscribers, setSelectedSubscribers] = useState<Subscriber[]>(initialSelectedSubscribers);
+  const [selectedSubscribers, setSelectedSubscribers] = useState<TurboSubscriber[]>(initialSelectedSubscribers);
   const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(() =>
     determineInitialSubscriptionType(opts, initialSelectedSubscribers, alwaysNotify),
   );
@@ -73,7 +74,7 @@ export function useSubscriptionsAdapter(
   return {
     subscribers,
     selectedSubscribers,
-    onSelectedSubscribersChange: setSelectedSubscribers,
+    onSelectedSubscribersChange: (next) => setSelectedSubscribers(next),
     subscriptionType,
     onSubscriptionTypeChange: setSubscriptionType,
     alwaysNotify,
@@ -83,20 +84,20 @@ export function useSubscriptionsAdapter(
   };
 }
 
-function findPrioritySubscribers(subscribers: Subscriber[], opts: UseSubscriptionsAdapterOpts) {
+function findPrioritySubscribers(subscribers: TurboSubscriber[], opts: UseSubscriptionsAdapterOpts) {
   if (!opts.notifyPrioritySubscribers) return [];
   return subscribers.filter((subscriber) => subscriber.priority);
 }
 
-function findAlreadySelected(subscribers: Subscriber[], alwaysNotify: Subscriber[]) {
+function findAlreadySelected(subscribers: TurboSubscriber[], alwaysNotify: TurboSubscriber[]) {
   const alreadySubscribed = subscribers.filter((subscriber) => subscriber.isSubscribed);
   return [...alwaysNotify, ...alreadySubscribed];
 }
 
 function determineInitialSubscriptionType(
   opts: UseSubscriptionsAdapterOpts,
-  selectedSubscribers: Subscriber[],
-  alwaysNotify: Subscriber[],
+  selectedSubscribers: TurboSubscriber[],
+  alwaysNotify: TurboSubscriber[],
 ): SubscribersSelector.SubscriptionOption {
   if (opts.sendNotificationsToEveryone === true) {
     return SubscribersSelector.SubscriptionOption.ALL;
@@ -114,11 +115,11 @@ function determineInitialSubscriptionType(
   return SubscribersSelector.SubscriptionOption.ALL;
 }
 
-function isSubscriberInList(list: Subscriber[], subscriber: Subscriber) {
+function isSubscriberInList(list: TurboSubscriber[], subscriber: TurboSubscriber) {
   return list.some((item) => compareIds(item.person?.id, subscriber.person?.id));
 }
 
-function buildAllSubscribersLabel(subscribers: Subscriber[], opts: UseSubscriptionsAdapterOpts): string {
+function buildAllSubscribersLabel(subscribers: TurboSubscriber[], opts: UseSubscriptionsAdapterOpts): string {
   const count = subscribers.length;
   const part1 = count > 1 ? `All ${count} people` : "The 1 person";
 
