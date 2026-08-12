@@ -4,6 +4,7 @@ import React from "react";
 import { DocumentPage } from "./index";
 import { CurrentSubscriptions } from "../Subscriptions";
 import { SubscribersSelector } from "../Subscriptions";
+import type { CommentSectionProps } from "../CommentSection";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
@@ -28,6 +29,8 @@ type Story = StoryObj<typeof meta>;
 
 const people = genPeople(4);
 const author = people[0]!;
+const commentAuthor = people[1]!;
+const richTextHandlers = createMockRichEditorHandlers();
 
 const mockSubscribers: SubscribersSelector.Subscriber[] = people.map((person) => ({
   person,
@@ -100,6 +103,38 @@ const reactionsProps = {
   onRemoveReaction: async (id: string) => console.log("remove", id),
 };
 
+const commentsProps: CommentSectionProps = {
+  items: [
+    {
+      type: "comment",
+      value: {
+        id: "comment-1",
+        content: JSON.stringify(asRichText("This looks great — thanks for writing it up.")),
+        author: {
+          id: commentAuthor.id,
+          fullName: commentAuthor.fullName,
+          avatarUrl: commentAuthor.avatarUrl ?? null,
+          profileLink: "#",
+        },
+        insertedAt: "2026-05-14T10:00:00Z",
+        reactions: [],
+      },
+    },
+  ],
+  currentUser: {
+    id: author.id,
+    fullName: author.fullName,
+    avatarUrl: author.avatarUrl ?? null,
+    profileLink: "#",
+  },
+  canComment: true,
+  onAddComment: async () => true,
+  onEditComment: async () => true,
+  onDeleteComment: async () => undefined,
+  richTextHandlers,
+  formattedTimePreferences: defaultFormattedTimePreferences,
+};
+
 const basePublished = {
   pageTitle: "Interview Guide",
   navigation,
@@ -111,7 +146,7 @@ const basePublished = {
   modifiedAt: "2026-05-14T12:00:00Z",
   formattedTimePreferences: defaultFormattedTimePreferences,
   content: JSON.stringify(asRichText("How we interview candidates at Operately.")),
-  mentionedPersonLookup: createMockRichEditorHandlers().mentionedPersonLookup,
+  mentionedPersonLookup: richTextHandlers.mentionedPersonLookup,
 };
 
 export const Default: Story = {
@@ -121,7 +156,7 @@ export const Default: Story = {
       {...basePublished}
       hideDraftActions
       reactions={reactionsProps}
-      comments={<div className="py-4 text-content-dimmed">Comments section</div>}
+      comments={commentsProps}
       subscriptions={subscriptionsProps}
       copyModal={{
         isOpen: false,
@@ -154,7 +189,7 @@ export const Draft: Story = {
         formattedTimePreferences: defaultFormattedTimePreferences,
       }}
       reactions={reactionsProps}
-      comments={<div className="py-4 text-content-dimmed">Comments section</div>}
+      comments={commentsProps}
       subscriptions={subscriptionsProps}
       copyModal={{
         isOpen: false,
@@ -197,7 +232,7 @@ export const TemplateReadOnly: Story = {
       modifiedAt="2026-05-13T12:00:00Z"
       formattedTimePreferences={defaultFormattedTimePreferences}
       content={JSON.stringify(asRichText("Template document content used when creating projects."))}
-      mentionedPersonLookup={createMockRichEditorHandlers().mentionedPersonLookup}
+      mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
       hideDraftActions
       hideReactions
       hideComments
