@@ -33,7 +33,7 @@ export interface SharedListPageProps {
     listContext: ResourceHubNodesListContextValue;
     getNodeTestId?: (node: ResourceHubNode, index: number) => string;
   };
-  addFolderModalProps: Omit<AddFolderModalProps, "isOpen" | "onClose">;
+  addFolderModalProps: AddFolderModalProps;
   search?: ResourceHubSearchProps;
 }
 
@@ -76,11 +76,7 @@ function SharedListContent({
       {beforeList}
       <AddFileWidget {...addFileWidgetProps} />
       <NodesList {...nodesListProps} search={search} />
-      <AddFolderModal
-        {...addFolderModalProps}
-        isOpen={newFileModals.showAddFolder}
-        onClose={newFileModals.toggleShowAddFolder}
-      />
+      <AddFolderModal {...addFolderModalProps} />
     </div>
   );
 }

@@ -183,13 +183,13 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
   });
 
-  const [champion, setChampion] = usePageField<GoalPage.Person | null>({
+  const [champion, setChampion] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.goal.champion),
     update: (v) => Api.goals.updateChampion({ goalId: goal.id, championId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
-  const [reviewer, setReviewer] = usePageField<GoalPage.Person | null>({
+  const [reviewer, setReviewer] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.goal.reviewer),
     update: (v) => Api.goals.updateReviewer({ goalId: goal.id, reviewerId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
@@ -402,11 +402,12 @@ function useGoalDocsAndFilesProps({
       nodesListProps,
       search,
       addFolderModalProps: {
+        resourceHubId: resourceHub.id,
         onCreated: refresh,
         onCreateFolder: async (args) => {
           await createFolder({
-            resourceHubId: resourceHub.id,
-            folderId: args.parentFolderId,
+            resourceHubId: args.resourceHubId,
+            folderId: args.folderId,
             name: args.name,
           });
         },

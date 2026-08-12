@@ -306,7 +306,8 @@ export function useMockSharedListPageProps({
       getNodeTestId: (_node, index) => `node-${index}`,
     },
     addFolderModalProps: {
-      parentFolderId: folderId,
+      resourceHubId: resourceHub.id,
+      folderId,
       onCreated: onCreated ?? (() => undefined),
       onCreateFolder: onCreateFolder ?? (async () => undefined),
     },

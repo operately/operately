@@ -50,7 +50,7 @@ export interface PageDocsAndFiles {
   newFileModals: NewFileModalsContextValue;
   addFileWidgetProps: Pick<AddFileWidgetProps, "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload">;
   nodesListProps: SharedListPageProps["nodesListProps"];
-  addFolderModalProps: Omit<AddFolderModalProps, "isOpen" | "onClose">;
+  addFolderModalProps: AddFolderModalProps;
   search?: ResourceHubSearchProps;
 }
 
@@ -63,8 +63,7 @@ export function PageDocsAndFilesTab({ docsAndFiles }: { docsAndFiles: PageDocsAn
 }
 
 function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAndFiles }) {
-  const { filesSelected, navigateToNewDocument, navigateToNewLink, selectFiles, showAddFolder, toggleShowAddFolder } =
-    useNewFileModalsContext();
+  const { filesSelected, navigateToNewDocument, navigateToNewLink, selectFiles, toggleShowAddFolder } = useNewFileModalsContext();
   const searchState = useResourceHubSearch(docsAndFiles.search);
   const displayedNodes = searchState.isActive ? searchState.results : docsAndFiles.nodesListProps.nodes;
   const items = React.useMemo(
@@ -96,7 +95,7 @@ function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAn
           }
           beforeItems={<AddFileWidget {...docsAndFiles.addFileWidgetProps} />}
         />
-        <AddFolderModal {...docsAndFiles.addFolderModalProps} isOpen={showAddFolder} onClose={toggleShowAddFolder} />
+        <AddFolderModal {...docsAndFiles.addFolderModalProps} />
       </FileDragAndDropArea>
     </ResourceHubNodesListProvider>
   );

@@ -139,7 +139,10 @@ export namespace TemplateProjectPage {
     discussions: Discussion[];
     resourceNodes?: ResourceNode[];
     onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
-    onFilesUpload: AddFileWidgetProps["onUpload"];
+    onFilesUpload: (
+      items: Parameters<AddFileWidgetProps["onUpload"]>[0],
+      onProgress: Parameters<AddFileWidgetProps["onUpload"]>[1],
+    ) => Promise<boolean>;
     formatFileSize: AddFileWidgetProps["formatFileSize"];
     newDiscussionLink?: string;
     people?: TemplatePerson[];

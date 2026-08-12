@@ -39,11 +39,12 @@ export function Page() {
     nodesListProps,
     search,
     addFolderModalProps: {
+      resourceHubId: resourceHub.id!,
       onCreated: refresh,
       onCreateFolder: async (args) => {
         await createFolder({
-          resourceHubId: resourceHub.id!,
-          folderId: args.parentFolderId,
+          resourceHubId: args.resourceHubId,
+          folderId: args.folderId,
           name: args.name,
         });
       },

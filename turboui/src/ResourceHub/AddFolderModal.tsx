@@ -2,16 +2,18 @@ import * as React from "react";
 
 import * as Forms from "../Forms";
 import Modal from "../Modal";
+import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
 export interface AddFolderModalProps {
-  parentFolderId?: string;
-  isOpen: boolean;
-  onClose: () => void;
+  resourceHubId: string;
+  folderId?: string;
   onCreated: () => void;
-  onCreateFolder: (args: { parentFolderId?: string; name: string }) => Promise<boolean | void>;
+  onCreateFolder: (args: { resourceHubId: string; folderId?: string; name: string }) => Promise<void>;
 }
 
-export function AddFolderModal({ parentFolderId, isOpen, onClose, onCreated, onCreateFolder }: AddFolderModalProps) {
+export function AddFolderModal({ resourceHubId, folderId, onCreated, onCreateFolder }: AddFolderModalProps) {
+  const { showAddFolder, toggleShowAddFolder } = useNewFileModalsContext();
+
   const form = Forms.useForm({
     fields: {
       name: "",
@@ -21,23 +23,21 @@ export function AddFolderModal({ parentFolderId, isOpen, onClose, onCreated, onC
         addError("name", "Name is required");
       }
     },
-    cancel: onClose,
+    cancel: toggleShowAddFolder,
     submit: async () => {
-      const created = await onCreateFolder({
-        parentFolderId,
+      await onCreateFolder({
+        resourceHubId,
+        folderId,
         name: form.values.name as string,
       });
-
-      if (created === false) return;
-
       onCreated();
-      onClose();
+      toggleShowAddFolder();
       form.actions.reset();
     },
   });
 
   return (
-    <Modal title="New folder" isOpen={isOpen} onClose={onClose}>
+    <Modal title="New folder" isOpen={showAddFolder} onClose={toggleShowAddFolder}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
           <Forms.TextInput

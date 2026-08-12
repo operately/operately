@@ -21,7 +21,6 @@ export { useResourceHubNodesListContext, type NodesProps } from "./useResourceHu
 export { useResourceHubNodesListProps } from "./useResourceHubNodesListProps";
 export { useCopyDocumentListContext } from "./useCopyDocumentListContext";
 export { useAddFileWidgetProps } from "./useAddFileWidgetProps";
-export { uploadFiles, type UploadedFile } from "./uploadFiles";
 export const resource_hubs = Api.resource_hubs;
 export const documents = Api.documents;
 export const files = Api.files;

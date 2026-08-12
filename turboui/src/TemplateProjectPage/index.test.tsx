@@ -264,6 +264,72 @@ describe("TemplateProjectPage", () => {
     createElement.mockRestore();
   });
 
+  it("accepts files dropped onto the template Docs & Files tab", async () => {
+    const droppedFile = new File(["launch plan"], "Launch-plan.pdf", { type: "application/pdf" });
+
+    renderPage(createProps(), "/templates/template-1?tab=docs-and-files");
+
+    fireEvent.drop(document, {
+      dataTransfer: {
+        files: [droppedFile],
+        types: ["Files"],
+      },
+    });
+
+    expect(await screen.findByDisplayValue("Launch-plan")).toBeInTheDocument();
+  });
+
+  it("keeps selected files when template persistence fails", async () => {
+    const user = userEvent.setup();
+    const onFilesUpload = jest.fn().mockResolvedValue(false);
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    const originalCreateElement = document.createElement.bind(document);
+    const createElement = jest.spyOn(document, "createElement").mockImplementation((tagName, options) => {
+      const element = originalCreateElement(tagName, options);
+
+      if (tagName === "input") {
+        jest.spyOn(element, "click").mockImplementation(() => {
+          Object.defineProperty(element, "files", {
+            configurable: true,
+            value: [new File(["launch plan"], "Launch-plan.pdf", { type: "application/pdf" })],
+          });
+          element.onchange?.({ target: element } as unknown as Event);
+        });
+      }
+
+      return element;
+    });
+
+    renderPage(createProps({ onFilesUpload }), "/templates/template-1?tab=docs-and-files");
+
+    await user.click(document.querySelector('[data-test-id="add-options"]')!);
+    await user.click(await screen.findByText("Upload files"));
+    await user.click(await screen.findByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onFilesUpload).toHaveBeenCalled());
+    expect(screen.getByDisplayValue("Launch-plan")).toBeInTheDocument();
+    createElement.mockRestore();
+    consoleError.mockRestore();
+  });
+
+  it("keeps the folder modal and entered name when template persistence fails", async () => {
+    const user = userEvent.setup();
+    const onFolderCreate = jest.fn().mockResolvedValue(false);
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => undefined);
+
+    renderPage(createProps({ onFolderCreate }), "/templates/template-1?tab=docs-and-files");
+
+    await user.click(document.querySelector('[data-test-id="add-options"]')!);
+    await user.click(await screen.findByText("New folder"));
+    await user.type(screen.getByLabelText("Name"), "Campaign assets");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onFolderCreate).toHaveBeenCalledWith(null, "Campaign assets"));
+    expect(screen.getByRole("heading", { name: "New folder" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Name")).toHaveValue("Campaign assets");
+    consoleError.mockRestore();
+  });
+
   it("keeps template Docs & Files read-only for View Access", () => {
     renderPage(
       createProps({ permissions: { canView: true }, resourceNodes: [] }),

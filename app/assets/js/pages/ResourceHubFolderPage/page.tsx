@@ -21,7 +21,6 @@ export function Page() {
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
   assertPresent(folder.permissions, "permissions must be present in folder");
 
-  const resourceHubId = folder.resourceHub.id;
   const newFileModalsContext = useNewFileModalsContextValue({
     resourceHub: folder.resourceHub,
     folder,
@@ -48,12 +47,13 @@ export function Page() {
     addFileWidgetProps,
     nodesListProps,
     addFolderModalProps: {
-      parentFolderId: folder.id,
+      resourceHubId: folder.resourceHub.id!,
+      folderId: folder.id,
       onCreated: refresh,
       onCreateFolder: async (args) => {
         await createFolder({
-          resourceHubId,
-          folderId: args.parentFolderId,
+          resourceHubId: args.resourceHubId,
+          folderId: args.folderId,
           name: args.name,
         });
       },

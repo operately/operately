@@ -1,5 +1,5 @@
 import Api, { type ProjectTemplateResourceNode } from "@/api";
-import { uploadFiles } from "@/models/resourceHubs";
+import { uploadFilesWithPreviews } from "@/models/blobs";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { loader } from "./loader";
 import { activePersonIds } from "./people";
@@ -16,8 +16,10 @@ jest.mock("@/components/Pages", () => ({}));
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn() }));
 jest.mock("@/models/people", () => ({}));
 jest.mock("@/models/tasks", () => ({}));
-jest.mock("@/models/blobs", () => ({ findFileSize: jest.fn() }));
-jest.mock("@/models/resourceHubs", () => ({ uploadFiles: jest.fn() }));
+jest.mock("@/models/blobs", () => ({
+  findFileSize: jest.fn(),
+  uploadFilesWithPreviews: jest.fn(),
+}));
 jest.mock("@/routes/paths", () => ({
   Paths: { companyHomePath: (companyId: string) => `/${companyId}` },
   usePaths: jest.fn(),
@@ -52,7 +54,7 @@ const updatePerson = Api.project_templates.updatePerson as jest.Mock;
 const deletePerson = Api.project_templates.deletePerson as jest.Mock;
 const createFolder = Api.project_templates.createFolder as jest.Mock;
 const createFiles = Api.project_templates.createFiles as jest.Mock;
-const uploadSelectedFiles = uploadFiles as jest.Mock;
+const uploadSelectedFiles = uploadFilesWithPreviews as jest.Mock;
 const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
 beforeEach(() => {

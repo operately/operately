@@ -1,5 +1,6 @@
-import { resizeImage, uploadFile } from "@/models/blobs";
 import type { AddFileUploadItem } from "turboui";
+import { uploadFile } from "./uploadFile";
+import { resizeImage } from "./utils";
 
 export interface UploadedFile {
   name: string;
@@ -14,7 +15,11 @@ interface UploadFilesArgs<Result> {
   persist: (files: UploadedFile[]) => Promise<Result>;
 }
 
-export async function uploadFiles<Result>({ items, setProgress, persist }: UploadFilesArgs<Result>): Promise<Result> {
+export async function uploadFilesWithPreviews<Result>({
+  items,
+  setProgress,
+  persist,
+}: UploadFilesArgs<Result>): Promise<Result> {
   const uploader = new FileUploader(items, setProgress);
   const files = await uploader.upload();
 
@@ -98,8 +103,9 @@ class UploadItem {
   }
 
   toUploadedFile(): UploadedFile {
-    if (!this.mainFile.blobId)
+    if (!this.mainFile.blobId) {
       throw new Error(`File upload did not return a blob ID for ${this.source.nameWithExtension}`);
+    }
 
     return {
       name: this.source.nameWithExtension,

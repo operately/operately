@@ -4,8 +4,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
-import { findFileSize } from "@/models/blobs";
-import { uploadFiles } from "@/models/resourceHubs";
+import { findFileSize, uploadFilesWithPreviews } from "@/models/blobs";
 import { usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { parseContent, showErrorToast, TemplateProjectPage, type AddFileUploadItem } from "turboui";
@@ -361,7 +360,7 @@ export function createFilesUploadOperation({
 }) {
   return (items: AddFileUploadItem[], setProgress: (progress: number) => void) =>
     mutate("Files not uploaded", () =>
-      uploadFiles({
+      uploadFilesWithPreviews({
         items,
         setProgress,
         persist: (files) =>
