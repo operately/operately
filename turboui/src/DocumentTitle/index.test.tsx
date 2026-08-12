@@ -1,21 +1,30 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-jest.mock("@/hooks/useFormattedTimePreferences", () => ({
-  useFormattedTimePreferences: () => ({
+import { DocumentTitle } from "./index";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
+
+jest.mock("../Avatar", () => ({
+  Avatar: ({ person }: { person: { fullName: string } }) => <span>{person.fullName}</span>,
+}));
+
+jest.mock("../BulletDot", () => ({
+  BulletDot: () => <span>&bull;</span>,
+}));
+
+jest.mock("../FormattedTime", () => ({
+  FormattedTime: ({ time }: { time: string }) => <time dateTime={time} />,
+  defaultFormattedTimePreferences: {
     locale: "en-US",
     timezone: "UTC",
     timeFormat: "automatic",
-  }),
+  },
 }));
 
-jest.mock("turboui", () => ({
-  Avatar: ({ person }: { person: { fullName: string } }) => <span>{person.fullName}</span>,
-  BulletDot: () => <span>&bull;</span>,
-  FormattedTime: ({ time }: { time: string }) => <time dateTime={time} />,
+jest.mock("../SchedulePosting", () => ({
+  ScheduledPostLabel: () => <span>Scheduled</span>,
+  ScheduledPostDate: ({ scheduledAt }: { scheduledAt: string }) => <time dateTime={scheduledAt} />,
 }));
-
-import { DocumentTitle } from "./DocumentTitle";
 
 describe("DocumentTitle", () => {
   it("renders without an author", () => {
@@ -25,6 +34,7 @@ describe("DocumentTitle", () => {
         author={null}
         state="published"
         publishedAt="2026-05-13T12:00:00Z"
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />,
     );
 
@@ -41,6 +51,7 @@ describe("DocumentTitle", () => {
         state="published"
         publishedAt="2026-05-13T12:00:00Z"
         modifiedAt="2026-05-14T12:00:00Z"
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />,
     );
 
@@ -55,6 +66,7 @@ describe("DocumentTitle", () => {
         state="published"
         publishedAt="2026-05-13T12:00:00Z"
         modifiedAt="2026-05-13T12:00:00Z"
+        formattedTimePreferences={defaultFormattedTimePreferences}
       />,
     );
 
