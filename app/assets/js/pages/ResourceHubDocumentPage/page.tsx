@@ -6,7 +6,7 @@ import * as ReactionsModel from "@/models/reactions";
 import { documents, resourceHubLandingPath, useCopyDocumentListContext } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
-import { CommentSection, useComments } from "@/features/CommentSection";
+import { useComments, useCommentSectionProps } from "@/features/CommentSection";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
@@ -49,6 +49,11 @@ export function Page() {
   const entity = ReactionsModel.entity(document.id!, "resource_hub_document");
   const reactionsForm = ReactionsModel.useReactionsForm(entity, reactions);
   const commentsForm = useComments({ parentType: "resource_hub_document", document });
+  const comments = useCommentSectionProps({
+    form: commentsForm,
+    commentParentType: "resource_hub_document",
+    canComment: document.permissions.canCommentOnDocument,
+  });
   const subscriptionsState = useCurrentSubscriptionsAdapter({
     potentialSubscribers: document.potentialSubscribers,
     subscriptionList: document.subscriptionList,
@@ -74,6 +79,8 @@ export function Page() {
     refresh();
   }
 
+  if (!comments) return null;
+
   const shared = {
     pageTitle: document.name!,
     navigation: buildDocumentPageNavigation(document, resourceHub, paths),
@@ -92,13 +99,7 @@ export function Page() {
       size: 24,
       canAddReaction: document.permissions.canCommentOnDocument,
     },
-    comments: (
-      <CommentSection
-        form={commentsForm}
-        commentParentType="resource_hub_document"
-        canComment={document.permissions.canCommentOnDocument}
-      />
-    ),
+    comments,
     subscriptions: {
       ...subscriptionsState,
       isCurrentUserSubscribed,
