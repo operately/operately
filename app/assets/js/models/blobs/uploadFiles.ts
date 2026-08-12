@@ -48,6 +48,7 @@ class FileUploader {
     await this.generatePreviews();
     this.calculateTotalSize();
     await Promise.all(this.items.map((item) => this.uploadItem(item)));
+    if (this.totalSize === 0) this.setProgress(100);
 
     return this.items.map((item) => item.toUploadedFile());
   }
@@ -66,6 +67,11 @@ class FileUploader {
     if (!file) return undefined;
 
     const blob = await uploadFile(file.file, (progress) => {
+      if (this.totalSize === 0) {
+        file.progress = progress;
+        return;
+      }
+
       const ratio = file.file.size / this.totalSize;
       this.totalProgress += (progress - file.progress) * ratio;
       file.progress = progress;

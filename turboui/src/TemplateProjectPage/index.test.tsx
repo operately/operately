@@ -235,22 +235,9 @@ describe("TemplateProjectPage", () => {
   it("uploads files through the standard template resource flow", async () => {
     const user = userEvent.setup();
     const onFilesUpload = jest.fn().mockResolvedValue(true);
-    const originalCreateElement = document.createElement.bind(document);
-    const createElement = jest.spyOn(document, "createElement").mockImplementation((tagName, options) => {
-      const element = originalCreateElement(tagName, options);
-
-      if (tagName === "input") {
-        jest.spyOn(element, "click").mockImplementation(() => {
-          Object.defineProperty(element, "files", {
-            configurable: true,
-            value: [new File(["launch plan"], "Launch-plan.pdf", { type: "application/pdf" })],
-          });
-          element.onchange?.({ target: element } as unknown as Event);
-        });
-      }
-
-      return element;
-    });
+    const teardownFileMock = setupFileInputMock([
+      new File(["launch plan"], "Launch-plan.pdf", { type: "application/pdf" }),
+    ]);
 
     renderPage(createProps({ onFilesUpload }), "/templates/template-1?tab=docs-and-files");
 
@@ -261,7 +248,7 @@ describe("TemplateProjectPage", () => {
 
     await waitFor(() => expect(onFilesUpload).toHaveBeenCalledWith(expect.any(Array), expect.any(Function)));
     expect(screen.queryByDisplayValue("Launch-plan")).not.toBeInTheDocument();
-    createElement.mockRestore();
+    teardownFileMock();
   });
 
   it("accepts files dropped onto the template Docs & Files tab", async () => {
@@ -283,22 +270,9 @@ describe("TemplateProjectPage", () => {
     const user = userEvent.setup();
     const onFilesUpload = jest.fn().mockResolvedValue(false);
     const consoleError = jest.spyOn(console, "error").mockImplementation(() => undefined);
-    const originalCreateElement = document.createElement.bind(document);
-    const createElement = jest.spyOn(document, "createElement").mockImplementation((tagName, options) => {
-      const element = originalCreateElement(tagName, options);
-
-      if (tagName === "input") {
-        jest.spyOn(element, "click").mockImplementation(() => {
-          Object.defineProperty(element, "files", {
-            configurable: true,
-            value: [new File(["launch plan"], "Launch-plan.pdf", { type: "application/pdf" })],
-          });
-          element.onchange?.({ target: element } as unknown as Event);
-        });
-      }
-
-      return element;
-    });
+    const teardownFileMock = setupFileInputMock([
+      new File(["launch plan"], "Launch-plan.pdf", { type: "application/pdf" }),
+    ]);
 
     renderPage(createProps({ onFilesUpload }), "/templates/template-1?tab=docs-and-files");
 
@@ -308,7 +282,7 @@ describe("TemplateProjectPage", () => {
 
     await waitFor(() => expect(onFilesUpload).toHaveBeenCalled());
     expect(screen.getByDisplayValue("Launch-plan")).toBeInTheDocument();
-    createElement.mockRestore();
+    teardownFileMock();
     consoleError.mockRestore();
   });
 
@@ -1059,6 +1033,27 @@ describe("TemplateProjectPage", () => {
     expect(screen.queryByTitle("Emily Davis")).not.toBeInTheDocument();
   });
 });
+
+function setupFileInputMock(files: File[]) {
+  const originalCreateElement = document.createElement.bind(document);
+  const createElementSpy = jest.spyOn(document, "createElement").mockImplementation((tagName, options) => {
+    const element = originalCreateElement(tagName, options);
+
+    if (tagName === "input") {
+      jest.spyOn(element, "click").mockImplementation(() => {
+        Object.defineProperty(element, "files", {
+          configurable: true,
+          value: files,
+        });
+        element.onchange?.({ target: element } as unknown as Event);
+      });
+    }
+
+    return element;
+  });
+
+  return () => createElementSpy.mockRestore();
+}
 
 function taskIdsIn(milestoneId: string) {
   const section = document.querySelector(`[data-test-id="template-task-section-${milestoneId}"]`);

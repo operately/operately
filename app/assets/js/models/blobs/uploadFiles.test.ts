@@ -56,6 +56,24 @@ test("uploads an image and its generated preview", async () => {
   expect(persist).toHaveBeenCalledWith([expect.objectContaining({ blobId: "blob-1", previewBlobId: "preview-1" })]);
 });
 
+test("completes progress without NaN when uploading zero-byte files", async () => {
+  const empty = new File([], "Empty.txt", { type: "text/plain" });
+  const setProgress = jest.fn();
+  const persist = jest.fn().mockResolvedValue(undefined);
+  uploadBlob.mockImplementation(async (_file: File, onProgress: (progress: number) => void) => {
+    onProgress(100);
+    return { id: "blob-empty" };
+  });
+
+  await uploadFilesWithPreviews({ items: [uploadItem(empty)], setProgress, persist });
+
+  expect(setProgress).not.toHaveBeenCalledWith(NaN);
+  expect(setProgress).toHaveBeenLastCalledWith(100);
+  expect(persist).toHaveBeenCalledWith([
+    expect.objectContaining({ name: "Empty.txt", blobId: "blob-empty" }),
+  ]);
+});
+
 test("waits for the original and preview uploads before persisting files", async () => {
   const image = new File(["image"], "Launch.png", { type: "image/png" });
   const preview = new File(["preview"], "Launch.png", { type: "image/png" });
