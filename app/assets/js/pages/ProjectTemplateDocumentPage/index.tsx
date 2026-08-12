@@ -32,7 +32,7 @@ async function loader({ params }): Promise<LoadedData> {
   return { template, node };
 }
 
-export function Page() {
+function Page() {
   const { template, node } = Pages.useLoadedData<LoadedData>();
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
