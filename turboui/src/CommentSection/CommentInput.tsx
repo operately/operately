@@ -46,10 +46,11 @@ function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProp
   return (
     <div
       className="py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
+      data-test-id="add-comment"
       onClick={onClick}
     >
       <Avatar person={currentUser} size="normal" />
-      <span className="text-content-dimmed ml-2">Write a comment here...</span>
+      Write a comment here...
     </div>
   );
 }
@@ -123,6 +124,7 @@ function CommentInputActive({
                 onClick={handlePost}
                 loading={form.submitting || uploading}
                 disabled={editor.empty}
+                testId="post-comment"
               >
                 {uploading ? "Uploading..." : "Post"}
               </PrimaryButton>

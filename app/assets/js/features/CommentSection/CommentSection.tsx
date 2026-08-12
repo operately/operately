@@ -1,36 +1,23 @@
 import React from "react";
 
+import Api, { CommentParentType } from "@/api";
+import * as Comments from "@/models/comments";
 import * as People from "@/models/people";
+import { useMarkNotificationAsRead } from "@/models/notifications";
+import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { compareIds, usePaths } from "@/routes/paths";
+import {
+  Comment,
+  CommentSection as TurboUICommentSection,
+  CommentSectionItem,
+  Reactions,
+  showErrorToast,
+} from "turboui";
 import * as ReactionsModel from "@/models/reactions";
 
-import { Avatar, FormattedTime, PrimaryButton, SecondaryButton } from "turboui";
-import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useClearNotificationOnIntersection } from "@/features/notifications";
-
 import { FormState } from "./form";
-import { useBoolState } from "@/hooks/useBoolState";
-import { useMe } from "@/contexts/CurrentCompanyContext";
-import { compareIds } from "@/routes/paths";
-import { CommentParentType, parseCommentContent } from "@/models/comments";
-import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
-import {
-  Menu,
-  MenuActionItem,
-  Reactions,
-  RichContent,
-  IconSquareCheckFilled,
-  IconSquareChevronsLeftFilled,
-  IconEdit,
-  IconTrash,
-  IconLink,
-  useEditor,
-  Editor,
-  useDraftActivatedInput,
-  showSuccessToast,
-  showErrorToast,
-  emptyContent,
-} from "turboui";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 interface CommentSectionProps {
   form: FormState;
@@ -39,367 +26,253 @@ interface CommentSectionProps {
   ackLabel?: string;
 }
 
-export function CommentSection(props: CommentSectionProps) {
-  return (
-    <>
-      <div className="flex flex-col">
-        {props.form.items.map((item, index) => {
-          const key = commentItemKey(item, index);
-
-          if (item.type === "comment") {
-            return (
-              <Comment
-                key={key}
-                comment={item.value}
-                form={props.form}
-                commentParentType={props.commentParentType}
-                canComment={props.canComment}
-              />
-            );
-          } else if (item.type === "milestone-completed") {
-            return <MilestoneCompleted key={key} comment={item.value} />;
-          } else if (item.type === "milestone-reopened") {
-            return <MilestoneReopened key={key} comment={item.value} />;
-          } else {
-            return <AckComment key={key} person={item.value} ackAt={item.insertedAt} label={props.ackLabel} />;
-          }
-        })}
-
-        {props.canComment && <CommentBox form={props.form} />}
-      </div>
-    </>
-  );
-}
-
-function commentItemKey(item: { type: string; insertedAt: Date; value: { id?: string } }, index: number): string {
-  if (item.type === "acknowledgement") {
-    return `acknowledgement-${item.insertedAt.toISOString()}`;
-  }
-
-  if (item.value?.id) {
-    return `${item.type}-${item.value.id}`;
-  }
-
-  return `${item.type}-${index}`;
-}
-
-function Comment({ comment, form, commentParentType, canComment }) {
-  const [editing, _, startEditing, stopEditing] = useBoolState(false);
-
-  if (editing) {
-    return <EditComment comment={comment} onCancel={stopEditing} form={form} />;
-  } else {
-    return (
-      <ViewComment
-        comment={comment}
-        onEdit={startEditing}
-        onDelete={() => void form.deleteComment(comment.id)}
-        commentParentType={commentParentType}
-        canComment={canComment}
-      />
-    );
-  }
-}
-
-function EditComment({ comment, onCancel, form }) {
-  const me = useMe()!;
-
-  const handlers = useRichEditorHandlers({ scope: form.mentionSearchScope });
-  const editor = useEditor({
-    placeholder: "Write a comment here...",
-    className: "min-h-[200px] p-4",
-    content: parseCommentContent(comment.content) ?? emptyContent(),
-    handlers,
-    localDraft: { key: form.editCommentDraftKey?.(comment.id) },
-  });
-
-  const handlePost = async () => {
-    if (!editor) return;
-    if (editor.uploading) return;
-
-    const success = await form.editComment(comment.id, editor.editor.getJSON());
-    if (success === false) return;
-
-    editor.clearLocalDraft();
-    onCancel();
-  };
-
-  const handleCancel = () => {
-    editor.clearLocalDraft();
-    onCancel();
-  };
-
-  return (
-    <div className="py-6 not-first:border-t border-surface-outline flex items-start gap-3">
-      <Avatar person={me} size="normal" />
-      <div className="flex-1">
-        <div className="border border-surface-outline rounded-lg overflow-hidden">
-          <Editor editor={editor} hideBorder padding="p-0" />
-
-          <div className="flex justify-between items-center m-4">
-            <div className="flex items-center gap-2">
-              <PrimaryButton onClick={handlePost} testId="post-comment" size="xs" loading={form.submitting}>
-                {editor.uploading ? "Uploading..." : "Save Changes"}
-              </PrimaryButton>
-
-              <SecondaryButton onClick={handleCancel} size="xs">
-                Cancel
-              </SecondaryButton>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MilestoneCompleted({ comment }) {
+export function CommentSection({ form, commentParentType, canComment, ackLabel }: CommentSectionProps) {
+  const me = useMe();
+  const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
+  const richTextHandlers = useRichEditorHandlers({ scope: form.mentionSearchScope });
+  const [markNotificationAsRead] = useMarkNotificationAsRead();
 
-  return (
-    <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
-      <div className="shrink-0 mt-1">
-        <Avatar person={comment.author} size="normal" />
-      </div>
-
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <IconSquareCheckFilled size={20} className="text-accent-1" />
-            <div className="flex-1 pr-2 font-semibold text-content-accent">Completed the Milestone</div>
-          </div>
-
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-content-dimmed text-sm">
-              <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+  const currentUser = People.parsePersonForTurboUi(paths, me);
+  const mappedItems = React.useMemo(
+    () => mapFormItemsToCommentSectionItems(paths, form.items),
+    [paths, form.items],
   );
-}
 
-function MilestoneReopened({ comment }) {
-  const formattedTimePreferences = useFormattedTimePreferences();
-
-  return (
-    <div className="flex items-center justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
-      <div className="shrink-0 mt-1">
-        <Avatar person={comment.author} size="normal" />
-      </div>
-
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
-            <div className="flex-1 pr-2 font-semibold text-content-accent">Re-Opened the Milestone</div>
-          </div>
-
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-content-dimmed text-sm">
-              <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment }) {
-  const formattedTimePreferences = useFormattedTimePreferences();
-  const commentRef = useClearNotificationOnIntersection(comment.notification);
-  useScrollIntoViewOnLoad(comment.id);
-
-  const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
-  const entity = ReactionsModel.entity(comment.id, "comment", commentParentType);
-  const form = ReactionsModel.useReactionsForm(entity, comment.reactions);
-
-  const testId = "comment-" + comment.id;
-  const content = parseCommentContent(comment.content);
-
-  return (
-    <div
-      className="flex items-start justify-between gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative"
-      data-test-id={testId}
-      id={comment.id}
-      ref={commentRef}
-    >
-      <div className="shrink-0">
-        <Avatar person={comment.author} size="normal" />
-      </div>
-
-      <div className="flex-1">
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
-
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-content-dimmed text-sm">
-                <FormattedTime {...formattedTimePreferences} time={comment.insertedAt} format="relative" />
-              </span>
-
-              <CommentDropdownMenu comment={comment} onEdit={onEdit} onDelete={onDelete} />
-            </div>
-          </div>
-        </div>
-
-        {content && (
-          <div className="mb-2">
-            <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
-          </div>
-        )}
-
-        <Reactions {...form} size={20} canAddReaction={canComment} />
-      </div>
-    </div>
-  );
-}
-
-function CommentDropdownMenu({ comment, onEdit, onDelete }) {
-  const me = useMe()!;
-  const canManageComment = compareIds(me.id, comment.author.id);
-
-  const handleCopyLink = React.useCallback(async () => {
-    try {
-      const url = new URL(window.location.href);
-      url.hash = comment.id;
-      await navigator.clipboard.writeText(url.toString());
-      showSuccessToast("Success", "The comment link has been copied to your clipboard");
-    } catch (err) {
-      showErrorToast("Unexpected error", "Failed to copy comment link to clipboard");
-    }
-  }, [comment.id]);
-
-  return (
-    <Menu size="small" testId="comment-options">
-      <MenuActionItem onClick={handleCopyLink} testId="copy-comment-link" icon={IconLink}>
-        Copy link
-      </MenuActionItem>
-      {canManageComment && (
-        <>
-          <MenuActionItem onClick={onEdit} testId="edit-comment" icon={IconEdit}>
-            Edit
-          </MenuActionItem>
-          {onDelete && (
-            <MenuActionItem onClick={onDelete} testId="delete-comment" icon={IconTrash} danger>
-              Delete
-            </MenuActionItem>
-          )}
-        </>
-      )}
-    </Menu>
-  );
-}
-
-function AckComment({ person, ackAt, label }: { person: People.Person; ackAt: Date; label?: string }) {
-  const formattedTimePreferences = useFormattedTimePreferences();
-  const ackLabel = label || "Check-In";
-
-  return (
-    <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
-      <div className="shrink-0">
-        <Avatar person={person} size="normal" />
-      </div>
-
-      <div className="flex items-center justify-between flex-1">
-        <div className="flex items-center gap-2 font-bold flex-1">
-          {person.fullName} acknowledged this {ackLabel}
-          <IconSquareCheckFilled size={24} className="text-accent-1" />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-content-dimmed text-sm">
-            <FormattedTime {...formattedTimePreferences} time={ackAt} format="relative" />
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CommentBox({ form }) {
-  const { active, activate, deactivate } = useDraftActivatedInput(form.commentDraftKey);
-
-  if (active) {
-    return <AddCommentActive onBlur={deactivate} onPost={deactivate} form={form} />;
-  } else {
-    return <AddCommentNonActive onClick={activate} />;
-  }
-}
-
-function AddCommentNonActive({ onClick }) {
-  const me = useMe()!;
-
-  return (
-    <div
-      className="py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
-      data-test-id="add-comment"
-      onClick={onClick}
-    >
-      <Avatar person={me} size="normal" />
-      Write a comment here...
-    </div>
-  );
-}
-
-function AddCommentActive({ onBlur, onPost, form }) {
-  const me = useMe()!;
-
-  const handlers = useRichEditorHandlers({ scope: form.mentionSearchScope });
-  const editor = useEditor({
-    placeholder: "Write a comment here...",
-    className: "min-h-[200px] px-4 py-3",
-    autoFocus: true,
-    handlers,
-    localDraft: { key: form.commentDraftKey },
-  });
-
-  const handlePost = async () => {
-    if (!editor) return;
-    if (editor.uploading) return;
-
-    const content = editor.editor.getJSON();
-    // Close the composer before the optimistic comment lands so the new row
-    // never appears while the active comment box is still open.
-    editor.clearLocalDraft();
-    onPost();
-
-    await form.postComment(content);
-  };
-
-  const handleCancel = () => {
-    editor.clearLocalDraft();
-    onBlur();
-  };
+  const [items, setItems] = React.useState(mappedItems);
 
   React.useEffect(() => {
-    if (editor) {
-      editor.editor.commands.focus();
-    }
-  }, [editor.editor]);
+    setItems(mappedItems);
+  }, [mappedItems]);
+
+  const handleAddReaction = useCommentFeedAddReaction(setItems, commentParentType, paths);
+  const handleRemoveReaction = useCommentFeedRemoveReaction(setItems);
+
+  const handleCommentVisible = React.useCallback(
+    (commentId: string) => {
+      const item = items.find((entry) => entry.type === "comment" && compareIds(entry.value.id, commentId));
+      if (!item || item.type !== "comment") return;
+
+      const notification = item.value.notification;
+      if (!notification?.id || notification.read) return;
+
+      markNotificationAsRead({ id: notification.id });
+    },
+    [items, markNotificationAsRead],
+  );
+
+  if (!currentUser) return null;
 
   return (
-    <div className="py-6 not-first:border-t border-surface-outline flex items-start gap-3">
-      <Avatar person={me} size="normal" />
-      <div className="flex-1">
-        <div className="border border-surface-outline rounded-lg overflow-hidden">
-          <Editor editor={editor} hideBorder padding="p-0" />
+    <TurboUICommentSection
+      items={items}
+      currentUser={currentUser}
+      canComment={canComment}
+      submitting={form.submitting}
+      onAddComment={form.postComment}
+      onEditComment={form.editComment}
+      onDeleteComment={form.deleteComment}
+      onAddReaction={handleAddReaction}
+      onRemoveReaction={handleRemoveReaction}
+      richTextHandlers={richTextHandlers}
+      formattedTimePreferences={formattedTimePreferences}
+      commentParentType={commentParentType}
+      commentDraftKey={form.commentDraftKey}
+      editCommentDraftKey={form.editCommentDraftKey}
+      ackLabel={ackLabel}
+      onCommentVisible={handleCommentVisible}
+    />
+  );
+}
 
-          <div className="flex justify-between items-center m-4">
-            <div className="flex items-center gap-2">
-              <PrimaryButton onClick={handlePost} loading={form.submitting} testId="post-comment" size="xs">
-                {editor.uploading ? "Uploading..." : "Post"}
-              </PrimaryButton>
+function mapFormItemsToCommentSectionItems(
+  paths: ReturnType<typeof usePaths>,
+  items: Comments.CommentItem[],
+): CommentSectionItem[] {
+  return items.map((item) => {
+    switch (item.type) {
+      case "comment":
+        return { type: "comment", value: mapCommentForTurboUi(paths, item.value) };
 
-              <SecondaryButton onClick={handleCancel} size="xs">
-                Cancel
-              </SecondaryButton>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      case "acknowledgement": {
+        const person = People.parsePersonForTurboUi(paths, item.value);
+        if (!person) {
+          throw new Error("Acknowledgement person is required");
+        }
+
+        return {
+          type: "acknowledgment",
+          value: person,
+          insertedAt: toIsoString(item.insertedAt),
+        };
+      }
+
+      case "milestone-completed":
+      case "milestone-reopened": {
+        const author = People.parsePersonForTurboUi(paths, item.value.author);
+        if (!author) {
+          throw new Error("Milestone activity author is required");
+        }
+
+        return {
+          type: item.type,
+          value: {
+            id: item.value.id,
+            type: item.type,
+            author,
+            insertedAt: toIsoString(item.value.insertedAt ?? item.insertedAt),
+          },
+        };
+      }
+
+      default:
+        throw new Error(`Unknown comment feed item type: ${(item as Comments.CommentItem).type}`);
+    }
+  });
+}
+
+function mapCommentForTurboUi(paths: ReturnType<typeof usePaths>, comment: Comments.Comment): Comment {
+  const author = People.parsePersonForTurboUi(paths, comment.author);
+  if (!author || !comment.id || !comment.insertedAt) {
+    throw new Error("Comment author, id, and insertedAt are required");
+  }
+
+  return {
+    id: comment.id,
+    content: comment.content || "{}",
+    author,
+    insertedAt: comment.insertedAt,
+    reactions: ReactionsModel.parseReactionsForTurboUi(paths, comment.reactions),
+    notification: comment.notification,
+  };
+}
+
+function toIsoString(value: Date | string) {
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  return value;
+}
+
+function useCommentFeedAddReaction(
+  setItems: React.Dispatch<React.SetStateAction<CommentSectionItem[]>>,
+  parentType: CommentParentType,
+  paths: ReturnType<typeof usePaths>,
+) {
+  const me = useMe();
+  const [add] = Api.reactions.useCreate();
+
+  return React.useCallback(
+    async (commentId: string, emoji: string) => {
+      const person = People.parsePersonForTurboUi(paths, me);
+      if (!person) return;
+
+      const tempId = `temp-${emoji}-${Date.now()}`;
+
+      setItems((prev) =>
+        prev.map((item) => {
+          if (item.type !== "comment" || !compareIds(item.value.id, commentId)) return item;
+
+          return {
+            ...item,
+            value: {
+              ...item.value,
+              reactions: [...item.value.reactions, { id: tempId, emoji, person }],
+            },
+          };
+        }),
+      );
+
+      try {
+        const res = await add({
+          entityId: commentId,
+          entityType: "comment",
+          parentType,
+          emoji,
+        });
+
+        setItems((prev) =>
+          prev.map((item) => {
+            if (item.type !== "comment" || !compareIds(item.value.id, commentId)) return item;
+
+            return {
+              ...item,
+              value: {
+                ...item.value,
+                reactions: item.value.reactions.map((reaction) =>
+                  reaction.id === tempId ? { ...reaction, id: res.reaction!.id! } : reaction,
+                ),
+              },
+            };
+          }),
+        );
+      } catch {
+        setItems((prev) =>
+          prev.map((item) => {
+            if (item.type !== "comment" || !compareIds(item.value.id, commentId)) return item;
+
+            return {
+              ...item,
+              value: {
+                ...item.value,
+                reactions: item.value.reactions.filter((reaction) => reaction.id !== tempId),
+              },
+            };
+          }),
+        );
+        showErrorToast("Error", "Failed to add reaction.");
+      }
+    },
+    [add, me, parentType, paths, setItems],
+  );
+}
+
+function useCommentFeedRemoveReaction(setItems: React.Dispatch<React.SetStateAction<CommentSectionItem[]>>) {
+  const [removeReaction] = Api.reactions.useDelete();
+
+  return React.useCallback(
+    async (commentId: string, reactionId: string) => {
+      let removedReaction: Reactions.Reaction | null = null;
+
+      setItems((prev) =>
+        prev.map((item) => {
+          if (item.type !== "comment" || !compareIds(item.value.id, commentId)) return item;
+
+          removedReaction = item.value.reactions.find((entry) => entry.id === reactionId) ?? null;
+
+          return {
+            ...item,
+            value: {
+              ...item.value,
+              reactions: item.value.reactions.filter((entry) => entry.id !== reactionId),
+            },
+          };
+        }),
+      );
+
+      try {
+        await removeReaction({ reactionId });
+      } catch {
+        if (removedReaction) {
+          const reactionToRestore = removedReaction;
+          setItems((prev) =>
+            prev.map((item) => {
+              if (item.type !== "comment" || !compareIds(item.value.id, commentId)) return item;
+
+              return {
+                ...item,
+                value: {
+                  ...item.value,
+                  reactions: [...item.value.reactions, reactionToRestore],
+                },
+              };
+            }),
+          );
+        }
+        showErrorToast("Error", "Failed to remove reaction.");
+      }
+    },
+    [removeReaction, setItems],
   );
 }
