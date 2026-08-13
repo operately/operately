@@ -56,16 +56,27 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
   const [status, setStatus] = React.useState<SearchStatus>("idle");
   const [isCreating, setIsCreating] = React.useState(false);
   const requestSequence = React.useRef(0);
+  const onFilterRef = React.useRef(props.onFilter);
+  const previousSearch = React.useRef(search);
+  const previousSpaceId = React.useRef(selectedSpace?.id);
+
+  onFilterRef.current = props.onFilter;
 
   React.useEffect(() => setTemplates(props.templates), [props.templates]);
 
   React.useEffect(() => {
+    const spaceId = selectedSpace?.id;
+    if (previousSearch.current === search && previousSpaceId.current === spaceId) return;
+
+    previousSearch.current = search;
+    previousSpaceId.current = spaceId;
+
     const requestId = ++requestSequence.current;
     const timeout = window.setTimeout(
       async () => {
         setStatus("loading");
         try {
-          const nextTemplates = await props.onFilter({ search: search.trim(), spaceId: selectedSpace?.id ?? null });
+          const nextTemplates = await onFilterRef.current({ search: search.trim(), spaceId: spaceId ?? null });
           if (requestSequence.current !== requestId) return;
           setTemplates(nextTemplates);
           setStatus("idle");
@@ -78,7 +89,7 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
     );
 
     return () => window.clearTimeout(timeout);
-  }, [props.onFilter, search, selectedSpace?.id]);
+  }, [search, selectedSpace?.id]);
 
   const filterSpaceSearch = React.useCallback(
     async ({ query }: { query: string }) => filterSpaces(props.spaces, query),
@@ -223,10 +234,7 @@ function TemplateCard({
       >
         <div className="text-lg font-semibold">{template.name}</div>
         <p className="mt-2 line-clamp-3 flex-1 text-sm text-content-dimmed">{description || "No description"}</p>
-        <div className="mt-5 text-sm font-medium">
-          {pluralize(template.milestoneCount, "milestone")} · {pluralize(template.taskCount, "task")}
-        </div>
-        <div className="mt-3 flex items-center justify-between gap-3 border-t border-surface-outline pt-3 text-xs text-content-dimmed">
+        <div className="mt-5 flex items-center justify-between gap-3 border-t border-surface-outline pt-3 text-xs text-content-dimmed">
           <div className="flex min-w-0 items-center gap-2">
             {template.creator ? <Avatar person={template.creator} size={20} /> : null}
             <span className="truncate">{template.creator?.fullName ?? "Creator unavailable"}</span>
@@ -361,8 +369,4 @@ function plainDescription(description?: string | null) {
   } catch (_error) {
     return "";
   }
-}
-
-function pluralize(count: number, noun: string) {
-  return `${count} ${noun}${count === 1 ? "" : "s"}`;
 }

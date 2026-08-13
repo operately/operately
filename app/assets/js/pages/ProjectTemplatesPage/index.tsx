@@ -22,15 +22,18 @@ function Page() {
   const editableSpaceIds = new Set(editableSpaces.map((space) => space.id));
   const libraryPath = fixedSpace ? paths.spaceProjectTemplatesPath(fixedSpace.id) : paths.projectTemplatesPath();
 
-  async function onFilter({ search, spaceId }: ProjectTemplatesPage.Filters) {
-    const result = await Api.project_templates.list({
-      search: search || undefined,
-      spaceId: fixedSpace?.id ?? spaceId,
-      archiveStatus: "active",
-    });
+  const onFilter = React.useCallback(
+    async ({ search, spaceId }: ProjectTemplatesPage.Filters) => {
+      const result = await Api.project_templates.list({
+        search: search || undefined,
+        spaceId: fixedSpace?.id ?? spaceId,
+        archiveStatus: "active",
+      });
 
-    return result.templates ?? [];
-  }
+      return result.templates ?? [];
+    },
+    [fixedSpace?.id],
+  );
 
   async function onCreate({ name, spaceId }: ProjectTemplatesPage.CreateInput) {
     try {
