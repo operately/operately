@@ -23,7 +23,11 @@ const templates: ProjectTemplate[] = [
   }),
 ];
 
-function template(overrides: Partial<ProjectTemplate>): ProjectTemplate {
+function template({
+  inactivePeopleSummary = { personCount: 0, roleCount: 0, taskCount: 0 },
+  inactiveDiscussionCount = 0,
+  ...overrides
+}: Partial<ProjectTemplate> = {}): ProjectTemplate {
   return {
     __typename: "project_template",
     id: "template",
@@ -47,6 +51,8 @@ function template(overrides: Partial<ProjectTemplate>): ProjectTemplate {
     milestoneCount: 0,
     taskCount: 0,
     ...overrides,
+    inactivePeopleSummary,
+    inactiveDiscussionCount,
   };
 }
 
@@ -91,8 +97,8 @@ describe("ProjectTemplatesPage", () => {
       "/spaces/space-1/project-templates",
     );
     expect(screen.getByRole("link", { name: "Product" })).toHaveAttribute("href", "/spaces/space-2/project-templates");
-    expect(screen.getByText("0 milestones · 0 tasks")).toBeInTheDocument();
-    expect(screen.getByText("1 milestone · 2 tasks")).toBeInTheDocument();
+    expect(screen.queryByText("0 milestones · 0 tasks")).not.toBeInTheDocument();
+    expect(screen.queryByText("1 milestone · 2 tasks")).not.toBeInTheDocument();
     expect(screen.getByText("Creator unavailable")).toBeInTheDocument();
     expect(screen.getAllByText("Reusable plan")).toHaveLength(2);
   });
@@ -138,14 +144,46 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.queryByRole("button", { name: "Clear search" })).not.toBeInTheDocument();
   });
 
+  it("does not reload templates when the filter callback identity changes", async () => {
+    jest.useFakeTimers();
+    const onFilter = jest.fn().mockResolvedValue(templates);
+    const { rerender, props } = renderPage({
+      onFilter,
+      projectCreationPath: (projectTemplate) => `/projects/new?templateId=${projectTemplate.id}`,
+    });
+
+    expect(screen.getByText("Campaign launch")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Create project" })).toHaveLength(2);
+
+    await act(async () => {
+      jest.advanceTimersByTime(0);
+    });
+    expect(onFilter).not.toHaveBeenCalled();
+    expect(screen.queryByText("Loading templates…")).not.toBeInTheDocument();
+
+    const nextOnFilter = jest.fn().mockResolvedValue(templates);
+    rerender(
+      <MemoryRouter>
+        <ProjectTemplatesPage {...props} onFilter={nextOnFilter} />
+      </MemoryRouter>,
+    );
+
+    await act(async () => {
+      jest.advanceTimersByTime(0);
+    });
+
+    expect(nextOnFilter).not.toHaveBeenCalled();
+    expect(screen.queryByText("Loading templates…")).not.toBeInTheDocument();
+    expect(screen.getByText("Campaign launch")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Create project" })).toHaveLength(2);
+    jest.useRealTimers();
+  });
+
   it("ignores a stale search response", async () => {
     jest.useFakeTimers();
     let resolveCampaign: (templates: ProjectTemplate[]) => void = () => undefined;
     const onFilter = jest.fn().mockResolvedValue(templates);
     renderPage({ onFilter });
-    await act(async () => {
-      jest.advanceTimersByTime(0);
-    });
 
     onFilter
       .mockImplementationOnce(
