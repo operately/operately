@@ -120,6 +120,7 @@ function Page() {
     mutate,
   });
   const onFolderCreate = createFolderOperation({ templateId: template.id, mutate });
+  const onFolderRename = createFolderRenameOperation({ templateId: template.id, mutate });
   const onResourceDelete = createResourceDeleteOperation({ templateId: template.id, mutate });
   const onResourceMove = createResourceMoveOperation({ templateId: template.id, mutate });
   const onFilesUpload = createFilesUploadOperation({ templateId: template.id, mutate });
@@ -143,6 +144,7 @@ function Page() {
       discussions={discussions}
       resourceNodes={resourceNodes}
       onFolderCreate={onFolderCreate}
+      onFolderRename={onFolderRename}
       onResourceDelete={onResourceDelete}
       onResourceMove={onResourceMove}
       onFilesUpload={onFilesUpload}
@@ -353,6 +355,11 @@ export function createFolderOperation({ templateId, mutate }: { templateId: stri
         name,
       }),
     );
+}
+
+export function createFolderRenameOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
+  return (folderId: string, name: string) =>
+    mutate("Folder not renamed", () => Api.project_templates.updateFolder({ templateId, folderId, name }));
 }
 
 export function createResourceDeleteOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {

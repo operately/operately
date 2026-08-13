@@ -140,6 +140,7 @@ export namespace TemplateProjectPage {
     discussions: Discussion[];
     resourceNodes?: ResourceNode[];
     onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
+    onFolderRename?: (folderId: string, name: string) => Promise<boolean>;
     onResourceDelete?: (nodeId: string) => Promise<boolean>;
     onResourceMove?: (nodeId: string, parentFolderId: string | null) => Promise<boolean>;
     onFilesUpload: (

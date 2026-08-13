@@ -131,15 +131,15 @@ function DeleteFolderModal({
 }
 
 export interface RenameFolderModalProps {
-  folder: ResourceHubFolder;
+  folder: { id: string; name?: string | null };
   showForm: boolean;
   toggleForm: () => void;
   onSave: () => void;
-  onRename: (id: string, name: string) => Promise<void>;
+  onRename: (id: string, name: string) => Promise<boolean | void>;
 }
 
 export function RenameFolderModal({ folder, showForm, toggleForm, onSave, onRename }: RenameFolderModalProps) {
-  const folderName = getResourceName(folder);
+  const folderName = folder.name ?? "";
 
   const form = Forms.useForm({
     fields: {
@@ -155,7 +155,9 @@ export function RenameFolderModal({ folder, showForm, toggleForm, onSave, onRena
       const name = form.values.name as string;
 
       if (name !== folderName) {
-        await onRename(folder.id, name);
+        const renamed = await onRename(folder.id, name);
+        if (renamed === false) return;
+
         onSave();
       }
       toggleForm();

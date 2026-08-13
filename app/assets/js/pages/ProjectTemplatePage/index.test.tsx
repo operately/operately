@@ -6,6 +6,7 @@ import { activePersonIds } from "./people";
 import {
   createFilesUploadOperation,
   createFolderOperation,
+  createFolderRenameOperation,
   createPeopleOperations,
   createResourceDeleteOperation,
   createResourceMoveOperation,
@@ -45,6 +46,7 @@ jest.mock("@/api", () => ({
       createFiles: jest.fn(),
       deleteResource: jest.fn(),
       moveResource: jest.fn(),
+      updateFolder: jest.fn(),
     },
   },
 }));
@@ -60,6 +62,7 @@ const createFolder = Api.project_templates.createFolder as jest.Mock;
 const createFiles = Api.project_templates.createFiles as jest.Mock;
 const deleteResource = Api.project_templates.deleteResource as jest.Mock;
 const moveResource = Api.project_templates.moveResource as jest.Mock;
+const updateFolder = Api.project_templates.updateFolder as jest.Mock;
 const uploadSelectedFiles = uploadFilesWithPreviews as jest.Mock;
 const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
@@ -250,6 +253,23 @@ test("moves a template resource to the Docs & Files root", async () => {
     templateId: "template-1",
     nodeId: "node-1",
     parentFolderId: null,
+  });
+});
+
+test("renames a template folder", async () => {
+  updateFolder.mockResolvedValue({ folder: { id: "folder-1", name: "Campaign assets" } });
+  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
+    await operation();
+    return true;
+  });
+  const renameTemplateFolder = createFolderRenameOperation({ templateId: "template-1", mutate });
+
+  await expect(renameTemplateFolder("folder-1", "Campaign assets")).resolves.toBe(true);
+
+  expect(updateFolder).toHaveBeenCalledWith({
+    templateId: "template-1",
+    folderId: "folder-1",
+    name: "Campaign assets",
   });
 });
 
