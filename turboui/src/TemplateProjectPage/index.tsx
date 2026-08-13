@@ -139,6 +139,7 @@ export namespace TemplateProjectPage {
     discussions: Discussion[];
     resourceNodes?: ResourceNode[];
     onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
+    onResourceDelete?: (nodeId: string) => Promise<boolean>;
     onFilesUpload: (
       items: Parameters<AddFileWidgetProps["onUpload"]>[0],
       onProgress: Parameters<AddFileWidgetProps["onUpload"]>[1],
