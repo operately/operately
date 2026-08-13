@@ -1,5 +1,6 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -155,5 +156,35 @@ describe("LinkPage", () => {
     expect(screen.queryByText("👍")).not.toBeInTheDocument();
     expect(document.querySelector('[data-test-id="add-comment"]')).not.toBeInTheDocument();
     expect(screen.queryByText("You're subscribed")).not.toBeInTheDocument();
+  });
+
+  test("confirms deletion with a danger button", async () => {
+    const user = userEvent.setup();
+    const onConfirm = jest.fn().mockResolvedValue(undefined);
+
+    render(
+      <MemoryRouter>
+        <LinkPage
+          {...baseProps}
+          hideReactions
+          hideComments
+          hideSubscriptions
+          deleteModal={{
+            isOpen: true,
+            onClose: jest.fn(),
+            linkName: "Design Spec",
+            onConfirm,
+          }}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Are you sure you want to delete the link/)).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="submit"]')).toHaveClass("bg-red-500");
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+
+    await waitFor(() => {
+      expect(onConfirm).toHaveBeenCalled();
+    });
   });
 });

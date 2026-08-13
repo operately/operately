@@ -3,15 +3,14 @@ import React from "react";
 import type { AvatarPerson } from "../Avatar";
 import { CommentSection, type CommentSectionProps } from "../CommentSection";
 import { DocumentTitle } from "../DocumentTitle";
-import * as Forms from "../Forms";
 import type { FormattedTimePreferences } from "../FormattedTime";
-import { Modal } from "../Modal";
 import { OngoingDraftActions } from "../OngoingDraftActions";
 import { Page } from "../Page";
 import type { Navigation } from "../Page/Navigation";
 import { Reactions } from "../Reactions";
 import RichContent from "../RichContent";
 import type { MentionedPersonLookupFn } from "../RichEditor/useEditor";
+import { DeleteResourceConfirmModal } from "../ResourceHub/DeleteResourceConfirmModal";
 import { CopyDocumentModalWrapper } from "../ResourceHub/nodeMenus/CopyDocumentModal";
 import type { ResourceHubNodesListContextValue } from "../ResourceHub/contexts/NodesListContext";
 import type { ResourceHubDocument } from "../ResourceHub/types";
@@ -170,10 +169,11 @@ export function DocumentPage(props: DocumentPage.Props) {
       </div>
 
       {!props.hideDeleteModal && (
-        <DeleteDocumentModal
+        <DeleteResourceConfirmModal
           isOpen={props.deleteModal.isOpen}
           onClose={props.deleteModal.onClose}
-          documentName={props.deleteModal.documentName}
+          resourceType="document"
+          resourceName={props.deleteModal.documentName}
           onConfirm={props.deleteModal.onConfirm}
         />
       )}
@@ -190,33 +190,3 @@ export function DocumentPage(props: DocumentPage.Props) {
   );
 }
 
-function DeleteDocumentModal({
-  isOpen,
-  onClose,
-  documentName,
-  onConfirm,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  documentName: string;
-  onConfirm: () => void | Promise<void>;
-}) {
-  const form = Forms.useForm({
-    fields: {},
-    cancel: onClose,
-    submit: async () => {
-      await onConfirm();
-    },
-  });
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <Forms.Form form={form}>
-        <p>
-          Are you sure you want to delete the document "<b>{documentName}</b>"?
-        </p>
-        <Forms.Submit saveText="Delete" cancelText="Cancel" />
-      </Forms.Form>
-    </Modal>
-  );
-}

@@ -4,11 +4,10 @@ import { BulletDot } from "../BulletDot";
 import { PrimaryButton } from "../Button";
 import { CommentSection } from "../CommentSection";
 import { FormattedTime } from "../FormattedTime";
-import * as Forms from "../Forms";
-import { Modal } from "../Modal";
 import { Page } from "../Page";
 import { Reactions } from "../Reactions";
 import RichContent, { isContentEmpty } from "../RichContent";
+import { DeleteResourceConfirmModal } from "../ResourceHub/DeleteResourceConfirmModal";
 import { LinkIcon } from "../ResourceHub/LinkIcon";
 import { Spacer } from "../Spacer";
 import { CurrentSubscriptions } from "../Subscriptions";
@@ -84,10 +83,11 @@ export function LinkPage(props: LinkPageNS.Props) {
       </div>
 
       {!props.hideDeleteModal && (
-        <DeleteLinkModal
+        <DeleteResourceConfirmModal
           isOpen={props.deleteModal.isOpen}
           onClose={props.deleteModal.onClose}
-          linkName={props.deleteModal.linkName}
+          resourceType="link"
+          resourceName={props.deleteModal.linkName}
           onConfirm={props.deleteModal.onConfirm}
         />
       )}
@@ -95,33 +95,3 @@ export function LinkPage(props: LinkPageNS.Props) {
   );
 }
 
-function DeleteLinkModal({
-  isOpen,
-  onClose,
-  linkName,
-  onConfirm,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  linkName: string;
-  onConfirm: () => void | Promise<void>;
-}) {
-  const form = Forms.useForm({
-    fields: {},
-    cancel: onClose,
-    submit: async () => {
-      await onConfirm();
-    },
-  });
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <Forms.Form form={form}>
-        <p>
-          Are you sure you want to delete the link "<b>{linkName}</b>"?
-        </p>
-        <Forms.Submit saveText="Delete" cancelText="Cancel" />
-      </Forms.Form>
-    </Modal>
-  );
-}

@@ -9,6 +9,7 @@ export { FileDragAndDropArea } from "./FileDragAndDropArea";
 export { FileIcon, NodeIcon, ResourceHubTypeIcon } from "./NodeIcon";
 export { LinkIcon } from "./LinkIcon";
 export { Header } from "./Header";
+export { DeleteResourceConfirmModal } from "./DeleteResourceConfirmModal";
 export { NodeMenu } from "./NodeMenu";
 export { NodesList } from "./NodesList";
 export {
