@@ -35,12 +35,14 @@ export interface MilestoneFieldProps extends TestableElement {
 
   isOpen?: boolean;
   readonly?: boolean;
+  variant?: "inline" | "form-field";
   emptyStateMessage?: string;
   emptyStateReadOnlyMessage?: string;
   milestones: Milestone[];
   onSearch: (query: string) => Promise<void>;
   extraDialogMenuOptions?: DialogMenuOptionProps[];
   formattedTimePreferences?: FormattedTimePreferences;
+  className?: string;
 }
 
 export interface State {
@@ -54,6 +56,7 @@ export interface State {
   setMilestone: (milestone: Milestone | null) => void;
 
   readonly: boolean;
+  variant: "inline" | "form-field";
   emptyStateMessage: string;
   emptyStateReadOnlyMessage: string;
   extraDialogMenuOptions: DialogMenuOptionProps[];
@@ -64,6 +67,7 @@ export interface State {
 
   testId: string;
   formattedTimePreferences?: FormattedTimePreferences;
+  className?: string;
 }
 
 export function MilestoneField(props: MilestoneFieldProps) {
@@ -125,6 +129,7 @@ export function useState(props: MilestoneFieldProps): State {
     dialogMode,
     setDialogMode,
     readonly,
+    variant: props.variant ?? "inline",
     emptyStateMessage,
     emptyStateReadOnlyMessage,
     extraDialogMenuOptions,
@@ -134,18 +139,24 @@ export function useState(props: MilestoneFieldProps): State {
 
     testId: props.testId || "milestone-field",
     formattedTimePreferences: props.formattedTimePreferences,
+    className: props.className,
   };
 }
 
 function Trigger({ state }: { state: State }) {
-  const triggerClass = classNames({
-    "flex items-center gap-2 truncate text-left w-full": true,
-    "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded":
-      !state.readonly,
-    "cursor-pointer": !state.readonly,
-    "cursor-default": state.readonly,
-    "bg-surface-dimmed": state.isOpen,
-  });
+  const isFormField = state.variant === "form-field";
+  const triggerClass = classNames(
+    "flex items-center gap-2 truncate text-left w-full",
+    isFormField
+      ? "rounded-lg border border-surface-outline bg-surface-base px-2 py-1.5"
+      : !state.readonly &&
+          "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded",
+    isFormField && !state.readonly && "focus:outline-none focus:ring-2 focus:ring-primary-base",
+    !state.readonly && "cursor-pointer",
+    state.readonly && "cursor-default",
+    !isFormField && state.isOpen && "bg-surface-dimmed",
+    state.className,
+  );
 
   if (state.milestone) {
     return (

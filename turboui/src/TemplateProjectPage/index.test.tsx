@@ -929,6 +929,11 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByRole("heading", { name: "Create Task" })).toBeInTheDocument();
     expect(screen.getByText("Relative due date")).toBeInTheDocument();
     expect(screen.getByText("Create more")).toBeInTheDocument();
+
+    const form = document.querySelector('[data-test-id="template-task-form"]');
+    expect(form).toHaveClass("overflow-x-hidden");
+    expect(document.querySelector('[data-test-id="template-task-status"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="template-task-milestone"]')).toBeInTheDocument();
   });
 
   it("enables Create task as soon as the title is no longer empty", () => {
@@ -944,6 +949,15 @@ describe("TemplateProjectPage", () => {
     });
 
     expect(createButton).toBeEnabled();
+  });
+
+  it("activates relative due date when the field is clicked", () => {
+    renderPage(createProps(), "/templates/template-1?tab=tasks");
+
+    fireEvent.click(screen.getByText("New task"));
+    fireEvent.click(screen.getByText("Set relative date"));
+
+    expect(document.querySelector('[data-test-id="relative-day-field-input"]')).toBeInTheDocument();
   });
 
   it("reorders tasks optimistically and keeps the confirmed order", async () => {

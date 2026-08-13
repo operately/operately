@@ -85,7 +85,7 @@ export function RelativeDayField({
     "items-center gap-1.5 text-left text-sm",
     isFormField
       ? classNames(
-          "flex w-full rounded-md border bg-surface-base px-2 py-1.5",
+          "flex w-full rounded-lg border bg-surface-base px-2 py-1.5",
           error ? "border-red-500" : "border-surface-outline",
           isEditing && !error && "focus-within:outline focus-within:outline-indigo-600",
         )
