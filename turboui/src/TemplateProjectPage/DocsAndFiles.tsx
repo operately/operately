@@ -43,6 +43,7 @@ interface TemplateDocsAndFilesProps {
   newDocumentLink: string;
   newLinkLink: string;
   onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
+  onFolderRename?: (folderId: string, name: string) => Promise<boolean>;
   onResourceDelete?: (nodeId: string) => Promise<boolean>;
   onResourceMove?: (nodeId: string, parentFolderId: string | null) => Promise<boolean>;
   onFilesUpload: TemplateProjectPage.Props["onFilesUpload"];
@@ -59,6 +60,7 @@ export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
       newDocumentLink={props.newDocumentLink}
       newLinkLink={props.newLinkLink}
       onFolderCreate={props.onFolderCreate}
+      onFolderRename={props.onFolderRename}
       onResourceDelete={props.onResourceDelete}
       onResourceMove={props.onResourceMove}
       onFilesUpload={props.onFilesUpload}
@@ -103,6 +105,7 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
       canEdit: props.canEdit,
       resourceNodes: props.resourceNodes,
       currentFolderId: effectiveFolderId,
+      onRename: props.onFolderRename,
       onMove: props.onResourceMove,
       onDelete: props.onResourceDelete,
       onOpenFolder: node.type === "folder" && node.folderId ? () => openFolder(node.folderId!) : undefined,
@@ -195,12 +198,13 @@ function toDocsAndFilesItem(
     canEdit: boolean;
     resourceNodes: ResourceNode[];
     currentFolderId: string | null;
+    onRename?: (folderId: string, name: string) => Promise<boolean>;
     onMove?: (nodeId: string, parentFolderId: string | null) => Promise<boolean>;
     onDelete?: (nodeId: string) => Promise<boolean>;
     onOpenFolder?: () => void;
   },
 ) {
-  const showMenu = options.canEdit && (options.onMove || options.onDelete);
+  const showMenu = options.canEdit && (options.onRename || options.onMove || options.onDelete);
 
   return {
     id: node.id,
@@ -217,6 +221,7 @@ function toDocsAndFilesItem(
         node={node}
         resourceNodes={options.resourceNodes}
         currentFolderId={options.currentFolderId}
+        onRename={options.onRename}
         onMove={options.onMove}
         onDelete={options.onDelete}
       />

@@ -519,6 +519,141 @@ describe("TemplateProjectPage", () => {
     },
   );
 
+  it("shows Rename only for folders in Docs & Files", async () => {
+    const user = userEvent.setup();
+
+    renderPage(
+      createProps({
+        onFolderRename: jest.fn().mockResolvedValue(true),
+        onResourceMove: jest.fn().mockResolvedValue(true),
+        resourceNodes: [
+          resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" }),
+          resourceNode({ id: "node-1", type: "document", name: "Launch guide", position: 1 }),
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-folder-node-1"]')!);
+    expect(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="rename-folder-assets"]');
+        if (!item) throw new Error("rename menu item not found");
+        return item;
+      }),
+    ).toHaveTextContent("Rename");
+
+    await user.keyboard("{Escape}");
+    await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
+    expect(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="move-node-1"]');
+        if (!item) throw new Error("move menu item not found");
+        return item;
+      }),
+    ).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="rename-folder-assets"]')).not.toBeInTheDocument();
+  });
+
+  it.each(["document", "file", "link"] as const)("does not show Rename for a template %s", async (type) => {
+    const user = userEvent.setup();
+
+    renderPage(
+      createProps({
+        onFolderRename: jest.fn().mockResolvedValue(true),
+        onResourceMove: jest.fn().mockResolvedValue(true),
+        resourceNodes: [resourceNode({ id: "node-1", type, name: "Launch item" })],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
+    expect(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="move-node-1"]');
+        if (!item) throw new Error("move menu item not found");
+        return item;
+      }),
+    ).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id^="rename-folder-"]')).not.toBeInTheDocument();
+  });
+
+  it("renames a folder from the Docs & Files menu", async () => {
+    const user = userEvent.setup();
+    const onFolderRename = jest.fn().mockResolvedValue(true);
+
+    renderPage(
+      createProps({
+        onFolderRename,
+        resourceNodes: [resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" })],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-folder-node-1"]')!);
+    await user.click(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="rename-folder-assets"]');
+        if (!item) throw new Error("rename menu item not found");
+        return item;
+      }),
+    );
+
+    expect(await screen.findByText("Rename folder")).toBeInTheDocument();
+    const nameInput = document.querySelector('[data-test-id="new-folder-name"]') as HTMLInputElement;
+    await user.clear(nameInput);
+    await user.type(nameInput, "Campaign assets");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onFolderRename).toHaveBeenCalledWith("assets", "Campaign assets"));
+    await waitFor(() => {
+      expect(screen.queryByText("Rename folder")).not.toBeInTheDocument();
+    });
+  });
+
+  it("keeps the rename modal open when renaming a folder fails", async () => {
+    const user = userEvent.setup();
+    const onFolderRename = jest.fn().mockResolvedValue(false);
+
+    renderPage(
+      createProps({
+        onFolderRename,
+        resourceNodes: [resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" })],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-folder-node-1"]')!);
+    await user.click(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="rename-folder-assets"]');
+        if (!item) throw new Error("rename menu item not found");
+        return item;
+      }),
+    );
+
+    const nameInput = document.querySelector('[data-test-id="new-folder-name"]') as HTMLInputElement;
+    await user.clear(nameInput);
+    await user.type(nameInput, "Campaign assets");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onFolderRename).toHaveBeenCalledWith("assets", "Campaign assets"));
+    expect(screen.getByText("Rename folder")).toBeInTheDocument();
+  });
+
+  it("hides Rename when View Access", () => {
+    renderPage(
+      createProps({
+        permissions: { canView: true },
+        onFolderRename: jest.fn().mockResolvedValue(true),
+        resourceNodes: [resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" })],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    expect(document.querySelector('[data-test-id="menu-folder-node-1"]')).not.toBeInTheDocument();
+  });
+
   it("moves a resource into a folder from the Docs & Files menu", async () => {
     const user = userEvent.setup();
     const onResourceMove = jest.fn().mockResolvedValue(true);

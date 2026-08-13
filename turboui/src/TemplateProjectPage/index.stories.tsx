@@ -152,6 +152,7 @@ const populatedProps: Types.Props = {
   richTextHandlers: createMockRichEditorHandlers(),
   formattedTimePreferences: defaultFormattedTimePreferences,
   onFolderCreate: async () => true,
+  onFolderRename: async () => true,
   onResourceDelete: async () => true,
   onResourceMove: async () => true,
   onFilesUpload: async () => true,
@@ -219,6 +220,10 @@ function TemplateStory({ props }: { props: Types.Props }) {
     personSearch: { people: searchablePeople, onSearch: async () => undefined },
     onResourceDelete: async (nodeId) => {
       setResourceNodes((current) => current.filter((node) => node.id !== nodeId));
+      return true;
+    },
+    onFolderRename: async (folderId, name) => {
+      setResourceNodes((current) => current.map((node) => (node.folderId === folderId ? { ...node, name } : node)));
       return true;
     },
     onResourceMove: async (nodeId, parentFolderId) => {
