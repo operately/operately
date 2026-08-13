@@ -8,6 +8,7 @@ import {
   createFolderOperation,
   createPeopleOperations,
   createResourceDeleteOperation,
+  createResourceMoveOperation,
   createTaskMove,
   toResourceNode,
 } from ".";
@@ -43,6 +44,7 @@ jest.mock("@/api", () => ({
       createFolder: jest.fn(),
       createFiles: jest.fn(),
       deleteResource: jest.fn(),
+      moveResource: jest.fn(),
     },
   },
 }));
@@ -57,6 +59,7 @@ const deletePerson = Api.project_templates.deletePerson as jest.Mock;
 const createFolder = Api.project_templates.createFolder as jest.Mock;
 const createFiles = Api.project_templates.createFiles as jest.Mock;
 const deleteResource = Api.project_templates.deleteResource as jest.Mock;
+const moveResource = Api.project_templates.moveResource as jest.Mock;
 const uploadSelectedFiles = uploadFilesWithPreviews as jest.Mock;
 const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
@@ -194,11 +197,10 @@ test("uploads blobs and creates template files in one batch", async () => {
   createFiles.mockResolvedValue({ files: [{ id: "file-1" }] });
   const uploadTemplateFiles = createFilesUploadOperation({
     templateId: "template-1",
-    parentFolderId: "folder-1",
     mutate,
   });
 
-  await expect(uploadTemplateFiles(selectedItems, setProgress)).resolves.toBe(true);
+  await expect(uploadTemplateFiles(selectedItems, setProgress, "folder-1")).resolves.toBe(true);
 
   expect(uploadSelectedFiles).toHaveBeenCalledWith({
     items: selectedItems,
@@ -215,6 +217,70 @@ test("uploads blobs and creates template files in one batch", async () => {
       },
     ],
   });
+});
+
+test("moves a template resource to the selected folder", async () => {
+  moveResource.mockResolvedValue({ success: true });
+  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
+    await operation();
+    return true;
+  });
+  const moveTemplateResource = createResourceMoveOperation({ templateId: "template-1", mutate });
+
+  await expect(moveTemplateResource("node-1", "folder-1")).resolves.toBe(true);
+
+  expect(moveResource).toHaveBeenCalledWith({
+    templateId: "template-1",
+    nodeId: "node-1",
+    parentFolderId: "folder-1",
+  });
+});
+
+test("moves a template resource to the Docs & Files root", async () => {
+  moveResource.mockResolvedValue({ success: true });
+  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
+    await operation();
+    return true;
+  });
+  const moveTemplateResource = createResourceMoveOperation({ templateId: "template-1", mutate });
+
+  await expect(moveTemplateResource("node-1", null)).resolves.toBe(true);
+
+  expect(moveResource).toHaveBeenCalledWith({
+    templateId: "template-1",
+    nodeId: "node-1",
+    parentFolderId: null,
+  });
+});
+
+test("maps a template folder node to its folder id", () => {
+  const node: ProjectTemplateResourceNode = {
+    __typename: "project_template_resource_node",
+    id: "node-1",
+    projectTemplateId: "template-1",
+    parentFolderId: null,
+    type: "folder",
+    position: 0,
+    folder: {
+      __typename: "project_template_resource_folder",
+      id: "folder-1",
+      nodeId: "node-1",
+      name: "Assets",
+      insertedAt: "2026-08-12T12:00:00Z",
+      updatedAt: "2026-08-12T12:00:00Z",
+    },
+    insertedAt: "2026-08-12T12:00:00Z",
+    updatedAt: "2026-08-12T12:00:00Z",
+  };
+
+  expect(toResourceNode(node, "#")).toEqual([
+    expect.objectContaining({
+      id: "node-1",
+      folderId: "folder-1",
+      type: "folder",
+      name: "Assets",
+    }),
+  ]);
 });
 
 test("maps a template image file to its preview thumbnail", () => {

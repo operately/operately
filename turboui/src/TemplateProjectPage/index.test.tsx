@@ -75,6 +75,19 @@ const statuses: Types.Props["statuses"] = [
   { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 1, closed: true },
 ];
 
+function resourceNode(
+  overrides: Partial<Types.ResourceNode> & Pick<Types.ResourceNode, "id" | "name" | "type">,
+): Types.ResourceNode {
+  return {
+    parentFolderId: null,
+    position: 0,
+    link: "#",
+    insertedAt: "2026-08-11T12:00:00Z",
+    updatedAt: "2026-08-11T12:00:00Z",
+    ...overrides,
+  };
+}
+
 function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
   return {
     template: {
@@ -248,7 +261,7 @@ describe("TemplateProjectPage", () => {
     expect(await screen.findByDisplayValue("Launch-plan")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Save" }));
 
-    await waitFor(() => expect(onFilesUpload).toHaveBeenCalledWith(expect.any(Array), expect.any(Function)));
+    await waitFor(() => expect(onFilesUpload).toHaveBeenCalledWith(expect.any(Array), expect.any(Function), null));
     expect(screen.queryByDisplayValue("Launch-plan")).not.toBeInTheDocument();
     teardownFileMock();
   });
@@ -395,11 +408,13 @@ describe("TemplateProjectPage", () => {
     );
 
     await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
-    await user.click(await waitFor(() => {
-      const item = document.querySelector<HTMLElement>('[data-test-id="delete-node-1"]');
-      if (!item) throw new Error("delete menu item not found");
-      return item;
-    }));
+    await user.click(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="delete-node-1"]');
+        if (!item) throw new Error("delete menu item not found");
+        return item;
+      }),
+    );
     expect(await screen.findByText(/Are you sure you want to delete the document/)).toBeInTheDocument();
 
     await user.click(document.querySelector('[data-test-id="submit"]')!);
@@ -434,11 +449,13 @@ describe("TemplateProjectPage", () => {
     );
 
     await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
-    await user.click(await waitFor(() => {
-      const item = document.querySelector<HTMLElement>('[data-test-id="delete-node-1"]');
-      if (!item) throw new Error("delete menu item not found");
-      return item;
-    }));
+    await user.click(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="delete-node-1"]');
+        if (!item) throw new Error("delete menu item not found");
+        return item;
+      }),
+    );
     expect(await screen.findByText(/Are you sure you want to delete the folder/)).toBeInTheDocument();
     await user.click(document.querySelector('[data-test-id="submit"]')!);
 
@@ -469,6 +486,278 @@ describe("TemplateProjectPage", () => {
     );
 
     expect(document.querySelector('[data-test-id="menu-node-1"]')).not.toBeInTheDocument();
+  });
+
+  it.each(["document", "file", "link", "folder"] as const)(
+    "shows Move for a template %s in Docs & Files",
+    async (type) => {
+      const user = userEvent.setup();
+
+      renderPage(
+        createProps({
+          onResourceMove: jest.fn().mockResolvedValue(true),
+          resourceNodes: [
+            resourceNode({
+              id: "node-1",
+              folderId: type === "folder" ? "folder-1" : null,
+              type,
+              name: "Launch item",
+            }),
+          ],
+        }),
+        "/templates/template-1?tab=docs-and-files",
+      );
+
+      await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
+      expect(
+        await waitFor(() => {
+          const item = document.querySelector<HTMLElement>('[data-test-id="move-node-1"]');
+          if (!item) throw new Error("move menu item not found");
+          return item;
+        }),
+      ).toHaveTextContent("Move");
+    },
+  );
+
+  it("moves a resource into a folder from the Docs & Files menu", async () => {
+    const user = userEvent.setup();
+    const onResourceMove = jest.fn().mockResolvedValue(true);
+
+    renderPage(
+      createProps({
+        onResourceMove,
+        resourceNodes: [
+          resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" }),
+          resourceNode({
+            id: "node-1",
+            type: "document",
+            name: "Launch guide",
+            link: "/templates/template-1/documents/node-1",
+            position: 1,
+          }),
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
+    await user.click(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="move-node-1"]');
+        if (!item) throw new Error("move menu item not found");
+        return item;
+      }),
+    );
+    expect(await screen.findByText("Move Launch guide")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="folder-select-current-root"]')).toHaveTextContent(
+      "Documents & Files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="folder-select-node-assets"]')!);
+    expect(document.querySelector('[data-test-id="folder-select-current-assets"]')).toHaveTextContent("Assets");
+    await user.click(screen.getByRole("button", { name: "Move Here" }));
+
+    await waitFor(() => expect(onResourceMove).toHaveBeenCalledWith("node-1", "assets"));
+    await waitFor(() => {
+      expect(screen.queryByText("Move Launch guide")).not.toBeInTheDocument();
+    });
+  });
+
+  it("lists folders above other resources in the move destination picker", async () => {
+    const user = userEvent.setup();
+
+    renderPage(
+      createProps({
+        onResourceMove: jest.fn().mockResolvedValue(true),
+        resourceNodes: [
+          resourceNode({ id: "node-1", type: "document", name: "Launch guide" }),
+          resourceNode({ id: "folder-node-2", folderId: "zeta", type: "folder", name: "Zeta" }),
+          resourceNode({ id: "node-2", type: "link", name: "Design Spec" }),
+          resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" }),
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
+    await user.click(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="move-node-1"]');
+        if (!item) throw new Error("move menu item not found");
+        return item;
+      }),
+    );
+
+    expect(await screen.findByText("Move Launch guide")).toBeInTheDocument();
+    const modal = document.querySelector('[data-test-id="move-resource-modal"]') as HTMLElement;
+    const names = Array.from(modal.querySelectorAll(".h-\\[240px\\] > div")).map((row) => row.textContent?.trim());
+
+    expect(names).toEqual(["Assets", "Zeta", "Launch guide", "Design Spec"]);
+  });
+
+  it("keeps the move modal open when moving a resource fails", async () => {
+    const user = userEvent.setup();
+    const onResourceMove = jest.fn().mockResolvedValue(false);
+
+    renderPage(
+      createProps({
+        onResourceMove,
+        resourceNodes: [
+          resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" }),
+          resourceNode({ id: "node-1", type: "link", name: "Design Spec", position: 1 }),
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
+    await user.click(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="move-node-1"]');
+        if (!item) throw new Error("move menu item not found");
+        return item;
+      }),
+    );
+    await user.click(document.querySelector('[data-test-id="folder-select-node-assets"]')!);
+    await user.click(screen.getByRole("button", { name: "Move Here" }));
+
+    await waitFor(() => expect(onResourceMove).toHaveBeenCalledWith("node-1", "assets"));
+    expect(screen.getByText("Move Design Spec")).toBeInTheDocument();
+  });
+
+  it("does not allow a folder to be moved into itself", async () => {
+    const user = userEvent.setup();
+    const onResourceMove = jest.fn().mockResolvedValue(true);
+
+    renderPage(
+      createProps({
+        onResourceMove,
+        resourceNodes: [
+          resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" }),
+          resourceNode({ id: "folder-node-2", folderId: "other", type: "folder", name: "Other", position: 1 }),
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-folder-node-1"]')!);
+    await user.click(
+      await waitFor(() => {
+        const item = document.querySelector<HTMLElement>('[data-test-id="move-folder-node-1"]');
+        if (!item) throw new Error("move menu item not found");
+        return item;
+      }),
+    );
+
+    expect(document.querySelector('[data-test-id="folder-select-node-assets"]')).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="folder-select-node-other"]')).toBeInTheDocument();
+  });
+
+  it("opens a folder and shows only its children", async () => {
+    const user = userEvent.setup();
+
+    renderPage(
+      createProps({
+        resourceNodes: [
+          resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" }),
+          resourceNode({
+            id: "root-doc",
+            type: "document",
+            name: "Launch guide",
+            link: "/templates/template-1/documents/root-doc",
+            position: 1,
+          }),
+          resourceNode({
+            id: "nested-doc",
+            parentFolderId: "assets",
+            type: "document",
+            name: "Launch checklist",
+            link: "/templates/template-1/documents/nested-doc",
+          }),
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    expect(screen.getByText("Assets")).toBeInTheDocument();
+    expect(screen.getByText("Launch guide")).toBeInTheDocument();
+    expect(screen.queryByText("Launch checklist")).not.toBeInTheDocument();
+
+    await user.click(screen.getByText("Assets"));
+
+    expect(screen.getByText("Launch checklist")).toBeInTheDocument();
+    expect(screen.queryByText("Launch guide")).not.toBeInTheDocument();
+
+    await user.click(document.querySelector('[data-test-id="nav-item-documents-files"]')!);
+    expect(screen.getByText("Launch guide")).toBeInTheDocument();
+    expect(screen.queryByText("Launch checklist")).not.toBeInTheDocument();
+  });
+
+  it("shows a moved resource inside its destination folder", () => {
+    renderPage(
+      createProps({
+        resourceNodes: [
+          resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" }),
+          resourceNode({
+            id: "node-1",
+            parentFolderId: "assets",
+            type: "file",
+            name: "Launch.png",
+            link: "/templates/template-1/files/node-1",
+          }),
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    expect(screen.queryByText("Launch.png")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("Assets"));
+    expect(screen.getByText("Launch.png")).toBeInTheDocument();
+  });
+
+  it("creates a nested folder from inside a folder", async () => {
+    const user = userEvent.setup();
+    const onFolderCreate = jest.fn().mockResolvedValue(true);
+
+    renderPage(
+      createProps({
+        onFolderCreate,
+        resourceNodes: [resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" })],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(screen.getByText("Assets"));
+    await user.click(document.querySelector('[data-test-id="add-options"]')!);
+    await user.click(await screen.findByText("New folder"));
+    await user.type(screen.getByLabelText("Name"), "Campaign assets");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onFolderCreate).toHaveBeenCalledWith("assets", "Campaign assets"));
+  });
+
+  it("uploads files into the open folder", async () => {
+    const user = userEvent.setup();
+    const onFilesUpload = jest.fn().mockResolvedValue(true);
+    const teardownFileMock = setupFileInputMock([
+      new File(["launch plan"], "Launch-plan.pdf", { type: "application/pdf" }),
+    ]);
+
+    renderPage(
+      createProps({
+        onFilesUpload,
+        resourceNodes: [resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" })],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(screen.getByText("Assets"));
+    await user.click(document.querySelector('[data-test-id="add-options"]')!);
+    await user.click(await screen.findByText("Upload files"));
+    await user.click(await screen.findByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onFilesUpload).toHaveBeenCalledWith(expect.any(Array), expect.any(Function), "assets"));
+    teardownFileMock();
   });
 
   it.each([

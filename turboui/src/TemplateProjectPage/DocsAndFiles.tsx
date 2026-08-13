@@ -11,9 +11,12 @@ import type { ResourceHubLinkType, ResourceHubPermissions } from "../ResourceHub
 import { useAddFile } from "../ResourceHub/useAddFile";
 import { SubscribersSelector } from "../Subscriptions";
 import { TemplateProjectPage } from ".";
-import { TemplateResourceDeleteMenu } from "./TemplateResourceDeleteMenu";
+import { TemplateResourceMenu } from "./TemplateResourceMenu";
+import { findFolder, folderBreadcrumbs, nodesInFolder } from "./resourceTree";
 
 type ResourceNode = TemplateProjectPage.ResourceNode;
+
+const ROOT_TITLE = "Documents & Files";
 
 const templateResourcePermissions: ResourceHubPermissions = {
   __typename: "resource_hub_permissions",
@@ -35,14 +38,13 @@ const emptySubscriptions: SubscribersSelector.Props = {
 
 interface TemplateDocsAndFilesProps {
   templateId: string;
-  title: string;
-  parentFolderId: string | null;
   resourceNodes: ResourceNode[];
   canEdit: boolean;
   newDocumentLink: string;
   newLinkLink: string;
   onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
   onResourceDelete?: (nodeId: string) => Promise<boolean>;
+  onResourceMove?: (nodeId: string, parentFolderId: string | null) => Promise<boolean>;
   onFilesUpload: TemplateProjectPage.Props["onFilesUpload"];
   formatFileSize: TemplateProjectPage.Props["formatFileSize"];
   richTextHandlers: TemplateProjectPage.Props["richTextHandlers"];
@@ -52,14 +54,13 @@ export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
   return (
     <TemplateDocsAndFiles
       templateId={props.template.id}
-      title="Documents & Files"
-      parentFolderId={null}
       resourceNodes={props.resourceNodes ?? []}
       canEdit={Boolean(props.permissions.canEdit || props.permissions.hasFullAccess)}
       newDocumentLink={props.newDocumentLink}
       newLinkLink={props.newLinkLink}
       onFolderCreate={props.onFolderCreate}
       onResourceDelete={props.onResourceDelete}
+      onResourceMove={props.onResourceMove}
       onFilesUpload={props.onFilesUpload}
       formatFileSize={props.formatFileSize}
       richTextHandlers={props.richTextHandlers}
@@ -69,16 +70,20 @@ export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
 
 function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
   const navigate = useNavigate();
+  const [currentFolderId, setCurrentFolderId] = React.useState<string | null>(null);
   const [showNewFolder, setShowNewFolder] = React.useState(false);
   const fileSelection = useAddFile();
+  const currentFolder = findFolder(props.resourceNodes, currentFolderId);
+  const effectiveFolderId = currentFolder?.folderId ?? null;
+  const ancestorFolders = folderBreadcrumbs(props.resourceNodes, effectiveFolderId);
   const navigateToNewDocument = React.useCallback(() => {
-    navigate(props.newDocumentLink);
-  }, [navigate, props.newDocumentLink]);
+    navigate(withQuery(props.newDocumentLink, { folderId: effectiveFolderId }));
+  }, [navigate, props.newDocumentLink, effectiveFolderId]);
   const navigateToNewLink = React.useCallback(
     (type?: ResourceHubLinkType) => {
-      navigate(type ? `${props.newLinkLink}?type=${type}` : props.newLinkLink);
+      navigate(withQuery(props.newLinkLink, { folderId: effectiveFolderId, type }));
     },
-    [navigate, props.newLinkLink],
+    [navigate, props.newLinkLink, effectiveFolderId],
   );
   const modalContext = React.useMemo(
     () => ({
@@ -90,23 +95,42 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
     }),
     [fileSelection, showNewFolder, navigateToNewDocument, navigateToNewLink],
   );
-  const items = props.resourceNodes
-    .filter((node) => node.parentFolderId === props.parentFolderId)
-    .map((node) =>
-      toDocsAndFilesItem(node, props.canEdit && props.onResourceDelete ? props.onResourceDelete : undefined),
-    );
+  const openFolder = React.useCallback((folderId: string) => {
+    setCurrentFolderId(folderId);
+  }, []);
+  const items = nodesInFolder(props.resourceNodes, effectiveFolderId).map((node) =>
+    toDocsAndFilesItem(node, {
+      canEdit: props.canEdit,
+      resourceNodes: props.resourceNodes,
+      currentFolderId: effectiveFolderId,
+      onMove: props.onResourceMove,
+      onDelete: props.onResourceDelete,
+      onOpenFolder: node.type === "folder" && node.folderId ? () => openFolder(node.folderId!) : undefined,
+    }),
+  );
   const uploadFiles: AddFileWidgetProps["onUpload"] = async (files, setProgress) => {
-    const uploaded = await props.onFilesUpload(files, setProgress);
+    const uploaded = await props.onFilesUpload(files, setProgress, effectiveFolderId);
     if (!uploaded) {
       throw new Error("Template files were not uploaded");
     }
   };
+  const breadcrumbs =
+    ancestorFolders.length > 0
+      ? [
+          { label: ROOT_TITLE, onClick: () => setCurrentFolderId(null) },
+          ...ancestorFolders.slice(0, -1).map((folder) => ({
+            label: folder.name,
+            onClick: () => setCurrentFolderId(folder.folderId ?? null),
+          })),
+        ]
+      : undefined;
   const content = (
     <>
       <DocsAndFilesTab
-        title={props.title}
+        title={currentFolder?.name ?? ROOT_TITLE}
         items={items}
-        emptyStateKind={props.parentFolderId ? "folder" : "resourceHub"}
+        breadcrumbs={breadcrumbs}
+        emptyStateKind={effectiveFolderId ? "folder" : "resourceHub"}
         hideEmptyState={fileSelection.filesSelected}
         actions={
           props.canEdit ? (
@@ -132,7 +156,7 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
       />
       <AddFolderModal
         resourceHubId={props.templateId}
-        folderId={props.parentFolderId ?? undefined}
+        folderId={effectiveFolderId ?? undefined}
         onCreated={ignoreResourceAction}
         onCreateFolder={async ({ folderId, name }) => {
           const created = await props.onFolderCreate(folderId ?? null, name);
@@ -157,16 +181,45 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
 
 function ignoreResourceAction() {}
 
-function toDocsAndFilesItem(node: ResourceNode, onResourceDelete?: (nodeId: string) => Promise<boolean>) {
+function withQuery(path: string, params: { folderId?: string | null; type?: string }) {
+  const search = new URLSearchParams();
+  if (params.folderId) search.set("folderId", params.folderId);
+  if (params.type) search.set("type", params.type);
+  const query = search.toString();
+  return query ? `${path}?${query}` : path;
+}
+
+function toDocsAndFilesItem(
+  node: ResourceNode,
+  options: {
+    canEdit: boolean;
+    resourceNodes: ResourceNode[];
+    currentFolderId: string | null;
+    onMove?: (nodeId: string, parentFolderId: string | null) => Promise<boolean>;
+    onDelete?: (nodeId: string) => Promise<boolean>;
+    onOpenFolder?: () => void;
+  },
+) {
+  const showMenu = options.canEdit && (options.onMove || options.onDelete);
+
   return {
     id: node.id,
     name: node.name,
     type: node.type,
     link: node.link,
+    onClick: options.onOpenFolder,
     insertedAt: node.insertedAt,
     updatedAt: node.updatedAt,
     fileKind: node.fileKind,
     thumbnail: node.thumbnail,
-    menu: onResourceDelete ? <TemplateResourceDeleteMenu node={node} onDelete={onResourceDelete} /> : undefined,
+    menu: showMenu ? (
+      <TemplateResourceMenu
+        node={node}
+        resourceNodes={options.resourceNodes}
+        currentFolderId={options.currentFolderId}
+        onMove={options.onMove}
+        onDelete={options.onDelete}
+      />
+    ) : undefined,
   };
 }

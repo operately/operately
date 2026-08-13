@@ -111,6 +111,39 @@ const populatedProps: Types.Props = {
       ),
     },
   ],
+  resourceNodes: [
+    {
+      id: "folder-node-1",
+      folderId: "assets",
+      parentFolderId: null,
+      type: "folder",
+      position: 0,
+      name: "Assets",
+      link: "#",
+      insertedAt: "2026-08-11T12:00:00Z",
+      updatedAt: "2026-08-11T12:00:00Z",
+    },
+    {
+      id: "document-node-1",
+      parentFolderId: null,
+      type: "document",
+      position: 1,
+      name: "Launch guide",
+      link: "/templates/launch-template/documents/document-node-1",
+      insertedAt: "2026-08-11T12:00:00Z",
+      updatedAt: "2026-08-11T12:00:00Z",
+    },
+    {
+      id: "document-node-2",
+      parentFolderId: "assets",
+      type: "document",
+      position: 0,
+      name: "Launch checklist",
+      link: "/templates/launch-template/documents/document-node-2",
+      insertedAt: "2026-08-11T12:00:00Z",
+      updatedAt: "2026-08-11T12:00:00Z",
+    },
+  ],
   newDiscussionLink: "/templates/launch-template/discussions/new",
   newDocumentLink: "/templates/launch-template/documents/new",
   newLinkLink: "/templates/launch-template/links/new",
@@ -120,6 +153,7 @@ const populatedProps: Types.Props = {
   formattedTimePreferences: defaultFormattedTimePreferences,
   onFolderCreate: async () => true,
   onResourceDelete: async () => true,
+  onResourceMove: async () => true,
   onFilesUpload: async () => true,
   formatFileSize: (size) => `${size} bytes`,
   onTemplateUpdate: () => undefined,
@@ -138,6 +172,7 @@ function TemplateStory({ props }: { props: Types.Props }) {
   const [milestones, setMilestones] = React.useState(props.milestones);
   const [tasks, setTasks] = React.useState(props.tasks);
   const [people, setPeople] = React.useState(props.people ?? []);
+  const [resourceNodes, setResourceNodes] = React.useState(props.resourceNodes ?? []);
   const searchablePeople =
     props.personSearch.people.length > 0
       ? props.personSearch.people
@@ -180,7 +215,16 @@ function TemplateStory({ props }: { props: Types.Props }) {
     milestones,
     tasks,
     people,
+    resourceNodes,
     personSearch: { people: searchablePeople, onSearch: async () => undefined },
+    onResourceDelete: async (nodeId) => {
+      setResourceNodes((current) => current.filter((node) => node.id !== nodeId));
+      return true;
+    },
+    onResourceMove: async (nodeId, parentFolderId) => {
+      setResourceNodes((current) => current.map((node) => (node.id === nodeId ? { ...node, parentFolderId } : node)));
+      return true;
+    },
     onTemplateUpdate: (updates) => setTemplate((current) => ({ ...current, ...updates })),
     onStatusesChange: ({ nextStatuses }) => setStatuses(nextStatuses),
     onMilestoneUpdate: (id, updates) =>

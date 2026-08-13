@@ -22,7 +22,7 @@ interface ViewModelNode {
   parent?: ViewModelNode;
 }
 
-// View model for FolderSelectField: syncs a form "location" field with a browsable folder tree.
+// View model for ResourceHubFolderSelectField: syncs a form "location" field with a browsable folder tree.
 export interface ViewModel {
   currentNode: ViewModelNode | undefined;
   nodes: ViewModelNode[];
@@ -61,9 +61,7 @@ export function useViewModel(
     setLoading(location);
 
     const loader =
-      location.type === "folder"
-        ? folderSelect.loadFolder(location.id)
-        : folderSelect.loadResourceHub(location.id);
+      location.type === "folder" ? folderSelect.loadFolder(location.id) : folderSelect.loadResourceHub(location.id);
 
     loader
       .then((result) => {
@@ -104,7 +102,10 @@ export function useViewModel(
   };
 }
 
-function buildCurrentNode(current: FolderSelectCurrentLocation, notAllowedSelections: ResourceHubNotAllowedSelection[]): ViewModelNode {
+function buildCurrentNode(
+  current: FolderSelectCurrentLocation,
+  notAllowedSelections: ResourceHubNotAllowedSelection[],
+): ViewModelNode {
   if (current.type === "resourceHub") {
     return {
       id: current.resourceHub.id,
