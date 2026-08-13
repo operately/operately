@@ -120,6 +120,7 @@ function Page() {
     mutate,
   });
   const onFolderCreate = createFolderOperation({ templateId: template.id, mutate });
+  const onResourceDelete = createResourceDeleteOperation({ templateId: template.id, mutate });
   const onFilesUpload = createFilesUploadOperation({ templateId: template.id, parentFolderId: null, mutate });
 
   return (
@@ -141,6 +142,7 @@ function Page() {
       discussions={discussions}
       resourceNodes={resourceNodes}
       onFolderCreate={onFolderCreate}
+      onResourceDelete={onResourceDelete}
       onFilesUpload={onFilesUpload}
       formatFileSize={findFileSize}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
@@ -349,6 +351,11 @@ export function createFolderOperation({ templateId, mutate }: { templateId: stri
         name,
       }),
     );
+}
+
+export function createResourceDeleteOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
+  return (nodeId: string) =>
+    mutate("Resource not deleted", () => Api.project_templates.deleteResource({ templateId, nodeId }));
 }
 
 export function createFilesUploadOperation({

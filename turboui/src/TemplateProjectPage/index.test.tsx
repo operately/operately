@@ -371,6 +371,106 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByRole("img", { name: "Launch.png" })).toHaveAttribute("src", "/blobs/preview-1");
   });
 
+  it("confirms resource deletion from the Docs & Files menu", async () => {
+    const user = userEvent.setup();
+    const onResourceDelete = jest.fn().mockResolvedValue(true);
+
+    renderPage(
+      createProps({
+        onResourceDelete,
+        resourceNodes: [
+          {
+            id: "node-1",
+            parentFolderId: null,
+            type: "document",
+            position: 0,
+            name: "Launch guide",
+            link: "/templates/template-1/documents/node-1",
+            insertedAt: "2026-08-11T12:00:00Z",
+            updatedAt: "2026-08-11T12:00:00Z",
+          },
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
+    await user.click(await waitFor(() => {
+      const item = document.querySelector<HTMLElement>('[data-test-id="delete-node-1"]');
+      if (!item) throw new Error("delete menu item not found");
+      return item;
+    }));
+    expect(await screen.findByText(/Are you sure you want to delete the document/)).toBeInTheDocument();
+
+    await user.click(document.querySelector('[data-test-id="submit"]')!);
+
+    await waitFor(() => expect(onResourceDelete).toHaveBeenCalledWith("node-1"));
+    await waitFor(() => {
+      expect(screen.queryByText(/Are you sure you want to delete the document/)).not.toBeInTheDocument();
+    });
+  });
+
+  it("keeps the resource when Docs & Files deletion fails", async () => {
+    const user = userEvent.setup();
+    const onResourceDelete = jest.fn().mockResolvedValue(false);
+
+    renderPage(
+      createProps({
+        onResourceDelete,
+        resourceNodes: [
+          {
+            id: "node-1",
+            parentFolderId: null,
+            type: "folder",
+            position: 0,
+            name: "Campaign assets",
+            link: "#",
+            insertedAt: "2026-08-11T12:00:00Z",
+            updatedAt: "2026-08-11T12:00:00Z",
+          },
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    await user.click(document.querySelector('[data-test-id="menu-node-1"]')!);
+    await user.click(await waitFor(() => {
+      const item = document.querySelector<HTMLElement>('[data-test-id="delete-node-1"]');
+      if (!item) throw new Error("delete menu item not found");
+      return item;
+    }));
+    expect(await screen.findByText(/Are you sure you want to delete the folder/)).toBeInTheDocument();
+    await user.click(document.querySelector('[data-test-id="submit"]')!);
+
+    await waitFor(() => expect(onResourceDelete).toHaveBeenCalledWith("node-1"));
+    expect(screen.getByText(/Are you sure you want to delete the folder/)).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="node-0"]')).toHaveTextContent("Campaign assets");
+  });
+
+  it("hides the Docs & Files delete menu for View Access", () => {
+    renderPage(
+      createProps({
+        permissions: { canView: true },
+        onResourceDelete: jest.fn().mockResolvedValue(true),
+        resourceNodes: [
+          {
+            id: "node-1",
+            parentFolderId: null,
+            type: "link",
+            position: 0,
+            name: "Design Spec",
+            link: "/templates/template-1/links/node-1",
+            insertedAt: "2026-08-11T12:00:00Z",
+            updatedAt: "2026-08-11T12:00:00Z",
+          },
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files",
+    );
+
+    expect(document.querySelector('[data-test-id="menu-node-1"]')).not.toBeInTheDocument();
+  });
+
   it.each([
     ["View", { canView: true }],
     ["Comment", { canView: true, canComment: true }],
