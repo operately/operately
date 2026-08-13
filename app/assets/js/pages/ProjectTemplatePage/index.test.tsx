@@ -7,6 +7,7 @@ import {
   createFilesUploadOperation,
   createFolderOperation,
   createPeopleOperations,
+  createResourceDeleteOperation,
   createTaskMove,
   toResourceNode,
 } from ".";
@@ -41,6 +42,7 @@ jest.mock("@/api", () => ({
       deletePerson: jest.fn(),
       createFolder: jest.fn(),
       createFiles: jest.fn(),
+      deleteResource: jest.fn(),
     },
   },
 }));
@@ -54,6 +56,7 @@ const updatePerson = Api.project_templates.updatePerson as jest.Mock;
 const deletePerson = Api.project_templates.deletePerson as jest.Mock;
 const createFolder = Api.project_templates.createFolder as jest.Mock;
 const createFiles = Api.project_templates.createFiles as jest.Mock;
+const deleteResource = Api.project_templates.deleteResource as jest.Mock;
 const uploadSelectedFiles = uploadFilesWithPreviews as jest.Mock;
 const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
@@ -128,6 +131,22 @@ test("returns false when a task move fails", async () => {
   const moveTask = createTaskMove({ templateId: "template-1", mutate });
 
   await expect(moveTask("task-1", null, 0)).resolves.toBe(false);
+});
+
+test("deletes a template resource by node id", async () => {
+  deleteResource.mockResolvedValue({ success: true });
+  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
+    await operation();
+    return true;
+  });
+  const deleteTemplateResource = createResourceDeleteOperation({ templateId: "template-1", mutate });
+
+  await expect(deleteTemplateResource("node-1")).resolves.toBe(true);
+
+  expect(deleteResource).toHaveBeenCalledWith({
+    templateId: "template-1",
+    nodeId: "node-1",
+  });
 });
 
 test("creates a template folder in the selected parent", async () => {

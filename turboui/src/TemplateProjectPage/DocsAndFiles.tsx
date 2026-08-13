@@ -11,6 +11,7 @@ import type { ResourceHubLinkType, ResourceHubPermissions } from "../ResourceHub
 import { useAddFile } from "../ResourceHub/useAddFile";
 import { SubscribersSelector } from "../Subscriptions";
 import { TemplateProjectPage } from ".";
+import { TemplateResourceDeleteMenu } from "./TemplateResourceDeleteMenu";
 
 type ResourceNode = TemplateProjectPage.ResourceNode;
 
@@ -41,6 +42,7 @@ interface TemplateDocsAndFilesProps {
   newDocumentLink: string;
   newLinkLink: string;
   onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
+  onResourceDelete?: (nodeId: string) => Promise<boolean>;
   onFilesUpload: TemplateProjectPage.Props["onFilesUpload"];
   formatFileSize: TemplateProjectPage.Props["formatFileSize"];
   richTextHandlers: TemplateProjectPage.Props["richTextHandlers"];
@@ -57,6 +59,7 @@ export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
       newDocumentLink={props.newDocumentLink}
       newLinkLink={props.newLinkLink}
       onFolderCreate={props.onFolderCreate}
+      onResourceDelete={props.onResourceDelete}
       onFilesUpload={props.onFilesUpload}
       formatFileSize={props.formatFileSize}
       richTextHandlers={props.richTextHandlers}
@@ -89,7 +92,9 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
   );
   const items = props.resourceNodes
     .filter((node) => node.parentFolderId === props.parentFolderId)
-    .map(toDocsAndFilesItem);
+    .map((node) =>
+      toDocsAndFilesItem(node, props.canEdit && props.onResourceDelete ? props.onResourceDelete : undefined),
+    );
   const uploadFiles: AddFileWidgetProps["onUpload"] = async (files, setProgress) => {
     const uploaded = await props.onFilesUpload(files, setProgress);
     if (!uploaded) {
@@ -152,7 +157,7 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
 
 function ignoreResourceAction() {}
 
-function toDocsAndFilesItem(node: ResourceNode) {
+function toDocsAndFilesItem(node: ResourceNode, onResourceDelete?: (nodeId: string) => Promise<boolean>) {
   return {
     id: node.id,
     name: node.name,
@@ -162,5 +167,6 @@ function toDocsAndFilesItem(node: ResourceNode) {
     updatedAt: node.updatedAt,
     fileKind: node.fileKind,
     thumbnail: node.thumbnail,
+    menu: onResourceDelete ? <TemplateResourceDeleteMenu node={node} onDelete={onResourceDelete} /> : undefined,
   };
 }
