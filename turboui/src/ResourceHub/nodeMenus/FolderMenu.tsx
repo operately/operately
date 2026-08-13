@@ -1,11 +1,11 @@
 import * as React from "react";
 
-import { DangerButton, SecondaryButton } from "../../Button";
 import * as Forms from "../../Forms";
 import { Menu, MenuActionItem } from "../../Menu";
 import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
+import { DeleteResourceConfirmModal } from "../DeleteResourceConfirmModal";
 import { getResourceName } from "../selectors";
 import type { ResourceHubFolder } from "../types";
 import { CopyFolderModal } from "./CopyFolder";
@@ -108,37 +108,25 @@ function DeleteFolderModal({
   hideModal: () => void;
 }) {
   const { onRefetch, actions } = useResourceHubNodesListContext();
-  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
     const deleteFolder = actions.deleteFolder;
 
     if (!deleteFolder) return;
 
-    setIsDeleting(true);
-    try {
-      await deleteFolder(folder.id);
-      onRefetch?.();
-      hideModal();
-    } finally {
-      setIsDeleting(false);
-    }
+    await deleteFolder(folder.id);
+    onRefetch?.();
+    hideModal();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={hideModal}>
-      <p>
-        Are you sure you want to delete the folder "<b>{getResourceName(folder)}</b>"?
-      </p>
-      <div className="flex items-center gap-2 mt-6">
-        <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">
-          Delete
-        </DangerButton>
-        <SecondaryButton size="sm" onClick={hideModal}>
-          Cancel
-        </SecondaryButton>
-      </div>
-    </Modal>
+    <DeleteResourceConfirmModal
+      isOpen={isOpen}
+      onClose={hideModal}
+      resourceType="folder"
+      resourceName={getResourceName(folder)}
+      onConfirm={handleDelete}
+    />
   );
 }
 

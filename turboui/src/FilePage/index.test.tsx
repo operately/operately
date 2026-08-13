@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
@@ -163,5 +163,35 @@ describe("FilePage", () => {
 
     await user.click(screen.getByText("Download"));
     expect(onDownload).toHaveBeenCalled();
+  });
+
+  test("confirms deletion with a danger button", async () => {
+    const user = userEvent.setup();
+    const onConfirm = jest.fn().mockResolvedValue(undefined);
+
+    render(
+      <MemoryRouter>
+        <FilePage
+          {...baseProps}
+          hideReactions
+          hideComments
+          hideSubscriptions
+          deleteModal={{
+            isOpen: true,
+            onClose: jest.fn(),
+            fileName: "Launch photo",
+            onConfirm,
+          }}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Are you sure you want to delete the file/)).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="submit"]')).toHaveClass("bg-red-500");
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+
+    await waitFor(() => {
+      expect(onConfirm).toHaveBeenCalled();
+    });
   });
 });

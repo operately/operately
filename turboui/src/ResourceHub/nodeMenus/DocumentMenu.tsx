@@ -1,10 +1,9 @@
 import * as React from "react";
 
-import { DangerButton, SecondaryButton } from "../../Button";
 import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
-import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
+import { DeleteResourceConfirmModal } from "../DeleteResourceConfirmModal";
 import { getResourceName } from "../selectors";
 import type { ResourceHubDocument } from "../types";
 import { CopyDocumentModal } from "./CopyDocumentModal";
@@ -97,37 +96,25 @@ function DeleteDocumentModal({
   hideModal: () => void;
 }) {
   const { onRefetch, actions } = useResourceHubNodesListContext();
-  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
     const deleteDocument = actions.deleteDocument;
 
     if (!deleteDocument) return;
 
-    setIsDeleting(true);
-    try {
-      await deleteDocument(document.id);
-      onRefetch?.();
-      hideModal();
-    } finally {
-      setIsDeleting(false);
-    }
+    await deleteDocument(document.id);
+    onRefetch?.();
+    hideModal();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={hideModal}>
-      <p>
-        Are you sure you want to delete the document "<b>{getResourceName(document)}</b>"?
-      </p>
-      <div className="flex items-center gap-2 mt-6">
-        <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">
-          Delete
-        </DangerButton>
-        <SecondaryButton size="sm" onClick={hideModal}>
-          Cancel
-        </SecondaryButton>
-      </div>
-    </Modal>
+    <DeleteResourceConfirmModal
+      isOpen={isOpen}
+      onClose={hideModal}
+      resourceType="document"
+      resourceName={getResourceName(document)}
+      onConfirm={handleDelete}
+    />
   );
 }
 

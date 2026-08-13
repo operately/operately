@@ -1,10 +1,9 @@
 import * as React from "react";
 
-import { DangerButton, SecondaryButton } from "../../Button";
 import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
-import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
+import { DeleteResourceConfirmModal } from "../DeleteResourceConfirmModal";
 import { getResourceName } from "../selectors";
 import type { ResourceHubLink } from "../types";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
@@ -69,36 +68,24 @@ function DeleteLinkMenuItem({ link, toggleDeleteModal }: { link: ResourceHubLink
 
 function DeleteLinkModal({ link, isOpen, hideModal }: { link: ResourceHubLink; isOpen: boolean; hideModal: () => void }) {
   const { onRefetch, actions } = useResourceHubNodesListContext();
-  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
     const deleteLink = actions.deleteLink;
 
     if (!deleteLink) return;
 
-    setIsDeleting(true);
-    try {
-      await deleteLink(link.id);
-      onRefetch?.();
-      hideModal();
-    } finally {
-      setIsDeleting(false);
-    }
+    await deleteLink(link.id);
+    onRefetch?.();
+    hideModal();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={hideModal}>
-      <p>
-        Are you sure you want to delete the link "<b>{getResourceName(link)}</b>"?
-      </p>
-      <div className="flex items-center gap-2 mt-6">
-        <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">
-          Delete
-        </DangerButton>
-        <SecondaryButton size="sm" onClick={hideModal}>
-          Cancel
-        </SecondaryButton>
-      </div>
-    </Modal>
+    <DeleteResourceConfirmModal
+      isOpen={isOpen}
+      onClose={hideModal}
+      resourceType="link"
+      resourceName={getResourceName(link)}
+      onConfirm={handleDelete}
+    />
   );
 }

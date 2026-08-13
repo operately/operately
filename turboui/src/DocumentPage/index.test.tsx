@@ -211,6 +211,7 @@ describe("DocumentPage", () => {
     );
 
     expect(screen.getByText(/Are you sure you want to delete the document/)).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="submit"]')).toHaveClass("bg-red-500");
     await user.click(screen.getByRole("button", { name: "Delete" }));
 
     await waitFor(() => {

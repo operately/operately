@@ -1,10 +1,9 @@
 import * as React from "react";
 
-import { DangerButton, SecondaryButton } from "../../Button";
 import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
-import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
+import { DeleteResourceConfirmModal } from "../DeleteResourceConfirmModal";
 import { getResourceName } from "../selectors";
 import type { ResourceHubFile } from "../types";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
@@ -88,36 +87,24 @@ function DeleteFileMenuItem({ file, toggleDeleteModal }: { file: ResourceHubFile
 
 function DeleteFileModal({ file, isOpen, hideModal }: { file: ResourceHubFile; isOpen: boolean; hideModal: () => void }) {
   const { onRefetch, actions } = useResourceHubNodesListContext();
-  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleDelete = async () => {
     const deleteFile = actions.deleteFile;
 
     if (!deleteFile) return;
 
-    setIsDeleting(true);
-    try {
-      await deleteFile(file.id);
-      onRefetch?.();
-      hideModal();
-    } finally {
-      setIsDeleting(false);
-    }
+    await deleteFile(file.id);
+    onRefetch?.();
+    hideModal();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={hideModal}>
-      <p>
-        Are you sure you want to delete the file "<b>{getResourceName(file)}</b>"?
-      </p>
-      <div className="flex items-center gap-2 mt-6">
-        <DangerButton size="sm" onClick={handleDelete} loading={isDeleting} disabled={isDeleting} testId="submit">
-          Delete
-        </DangerButton>
-        <SecondaryButton size="sm" onClick={hideModal}>
-          Cancel
-        </SecondaryButton>
-      </div>
-    </Modal>
+    <DeleteResourceConfirmModal
+      isOpen={isOpen}
+      onClose={hideModal}
+      resourceType="file"
+      resourceName={getResourceName(file)}
+      onConfirm={handleDelete}
+    />
   );
 }

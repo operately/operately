@@ -3,12 +3,11 @@ import React from "react";
 import { Avatar } from "../Avatar";
 import { CommentSection } from "../CommentSection";
 import { FormattedTime } from "../FormattedTime";
-import * as Forms from "../Forms";
 import { calculateImageRatio, ImageWithPlaceholder } from "../ImageWithPlaceholder";
-import { Modal } from "../Modal";
 import { Page } from "../Page";
 import { Reactions } from "../Reactions";
 import RichContent, { isContentEmpty } from "../RichContent";
+import { DeleteResourceConfirmModal } from "../ResourceHub/DeleteResourceConfirmModal";
 import { Spacer } from "../Spacer";
 import { CurrentSubscriptions } from "../Subscriptions";
 import { TextSeparator } from "../TextSeparator";
@@ -75,10 +74,11 @@ export function FilePage(props: FilePageNS.Props) {
       </div>
 
       {!props.hideDeleteModal && (
-        <DeleteFileModal
+        <DeleteResourceConfirmModal
           isOpen={props.deleteModal.isOpen}
           onClose={props.deleteModal.onClose}
-          fileName={props.deleteModal.fileName}
+          resourceType="file"
+          resourceName={props.deleteModal.fileName}
           onConfirm={props.deleteModal.onConfirm}
         />
       )}
@@ -169,33 +169,3 @@ function FileInfo({
   );
 }
 
-function DeleteFileModal({
-  isOpen,
-  onClose,
-  fileName,
-  onConfirm,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  fileName: string;
-  onConfirm: () => void | Promise<void>;
-}) {
-  const form = Forms.useForm({
-    fields: {},
-    cancel: onClose,
-    submit: async () => {
-      await onConfirm();
-    },
-  });
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <Forms.Form form={form}>
-        <p>
-          Are you sure you want to delete the file "<b>{fileName}</b>"?
-        </p>
-        <Forms.Submit saveText="Delete" cancelText="Cancel" />
-      </Forms.Form>
-    </Modal>
-  );
-}
