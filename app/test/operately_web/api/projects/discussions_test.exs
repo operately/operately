@@ -106,10 +106,16 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
       ctx = Factory.add_project_discussion(ctx, :discussion1, :project)
       ctx = Factory.add_project_discussion(ctx, :discussion2, :project)
 
+      # inserted_at is second-precision; pin times so newest-first order is deterministic
+      set_inserted_at(ctx.discussion1, ~N[2024-01-01 12:00:00])
+      set_inserted_at(ctx.discussion2, ~N[2024-01-01 12:00:01])
+
       assert {200, res} = query(ctx.conn, [:projects, :list_discussions], %{project_id: Paths.project_id(ctx.project)})
       assert length(res.discussions) == 2
-      assert hd(res.discussions).id == Paths.comment_thread_id(ctx.discussion1)
-      assert hd(tl(res.discussions)).id == Paths.comment_thread_id(ctx.discussion2)
+      assert Enum.map(res.discussions, & &1.id) == [
+        Paths.comment_thread_id(ctx.discussion2),
+        Paths.comment_thread_id(ctx.discussion1)
+      ]
     end
 
     test "it returns empty list when no discussions exist", ctx do
@@ -292,5 +298,12 @@ defmodule OperatelyWeb.Api.Projects.DiscussionsTest do
       limit: 1
     )
     |> Repo.one()
+  end
+
+  defp set_inserted_at(discussion, inserted_at) do
+    Repo.update_all(
+      from(ct in Operately.Comments.CommentThread, where: ct.id == ^discussion.id),
+      set: [inserted_at: inserted_at]
+    )
   end
 end

@@ -373,8 +373,8 @@ TEST_TIMINGS_REPORT ?= app/testreports/junit.xml
 TEST_TIMINGS_FRAGMENT ?= /tmp/test-timing-$(TEST_TIMINGS_SUITE)-$(TEST_TIMINGS_SHARD).json
 TEST_TIMINGS_FRAGMENTS_DIR ?= test-timing-fragments
 TEST_TIMINGS_OUTPUT ?= /tmp/test-timings-v1.json
-TEST_TIMINGS_UNIT_SHARDS ?= 2
-TEST_TIMINGS_FEATURE_SHARDS ?= 18
+TEST_TIMINGS_UNIT_SHARDS ?= $(shell awk '/- name: Unit Tests$$/ { found=1 } found && $$1 == "parallelism:" { print $$2; exit }' .semaphore/semaphore.yml)
+TEST_TIMINGS_FEATURE_SHARDS ?= $(shell awk '/- name: Features$$/ { found=1 } found && $$1 == "parallelism:" { print $$2; exit }' .semaphore/semaphore.yml)
 TEST_TIMINGS_SOURCE_COMMIT ?= $(SEMAPHORE_GIT_SHA)
 TEST_TIMINGS_INPUT ?= ci/test-timings-v1.json
 TEST_MANIFESTS_OUTPUT ?= test-manifests
