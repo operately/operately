@@ -1160,6 +1160,21 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByText("Create more")).toBeInTheDocument();
   });
 
+  it("enables Create milestone as soon as the name is no longer empty", () => {
+    renderPage(createProps());
+
+    fireEvent.click(screen.getByText("Add milestone"));
+
+    const createButton = screen.getByRole("button", { name: "Create milestone" });
+    expect(createButton).toBeDisabled();
+
+    fireEvent.change(document.querySelector('[data-test-id="template-milestone-name-input"]') as HTMLInputElement, {
+      target: { value: "Kickoff" },
+    });
+
+    expect(createButton).toBeEnabled();
+  });
+
   it("opens the milestone creation modal from the overview", () => {
     renderPage(createProps());
 

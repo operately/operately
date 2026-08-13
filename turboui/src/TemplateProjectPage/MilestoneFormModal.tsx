@@ -53,6 +53,7 @@ export function MilestoneFormModal({
           onChange={setTitle}
           placeholder="Enter milestone name"
           autofocus
+          onChangeOnType
           testId="template-milestone-name"
         />
 
