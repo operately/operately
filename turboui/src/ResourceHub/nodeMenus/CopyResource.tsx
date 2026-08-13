@@ -5,7 +5,7 @@ import type { FormState } from "../../Forms";
 import { MenuActionItem } from "../../Menu";
 import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
-import { FolderSelectField } from "../FolderSelectField";
+import { ResourceHubFolderSelectField } from "../FolderSelectField";
 import { getResourceName } from "../selectors";
 import type { ResourceHubResource } from "../types";
 
@@ -37,7 +37,7 @@ export function CopyResourceModal({ form, resource, isOpen, hideModal }: CopyRes
       <Forms.Form form={form} testId="copy-resource-modal">
         <Forms.FieldGroup>
           <Forms.TextInput field="name" label="New document name" required />
-          <FolderSelectField field="location" label="Select destination" />
+          <ResourceHubFolderSelectField field="location" label="Select destination" />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Create Copy" cancelText="Cancel" />

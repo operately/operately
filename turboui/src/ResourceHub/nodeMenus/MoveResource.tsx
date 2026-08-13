@@ -5,7 +5,7 @@ import { MenuActionItem } from "../../Menu";
 import Modal from "../../Modal";
 import { createTestId } from "../../TestableElement";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
-import { FolderSelectField } from "../FolderSelectField";
+import { ResourceHubFolderSelectField } from "../FolderSelectField";
 import { getResourceName, getResourceParentFolderId } from "../selectors";
 import type { ResourceHubResource, ResourceHubResourceTypeName } from "../types";
 
@@ -82,7 +82,11 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
     <Modal title={`Move ${getResourceName(resource)}`} isOpen={isOpen} onClose={hideModal}>
       <Forms.Form form={form} testId="move-resource-modal">
         <Forms.FieldGroup>
-          <FolderSelectField field="location" notAllowedSelections={notAllowedSelections} label="Select destination" />
+          <ResourceHubFolderSelectField
+            field="location"
+            notAllowedSelections={notAllowedSelections}
+            label="Select destination"
+          />
         </Forms.FieldGroup>
 
         <Forms.Submit saveText="Move Here" cancelText="Cancel" />

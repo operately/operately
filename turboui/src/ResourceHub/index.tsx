@@ -23,7 +23,7 @@ export {
   type ResourceHubNodesListContextValue,
 } from "./contexts/NodesListContext";
 export { CopyDocumentModal, CopyDocumentModalWrapper } from "./nodeMenus/CopyDocumentModal";
-export { FolderSelectField } from "./FolderSelectField";
+export { ResourceHubFolderSelectField } from "./FolderSelectField";
 export * from "./Navigation";
 export { RenameFolderModal } from "./nodeMenus/FolderMenu";
 export { ResourceHubNodeRow } from "./ResourceHubNodeRow";

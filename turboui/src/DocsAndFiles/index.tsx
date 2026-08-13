@@ -40,6 +40,7 @@ export namespace DocsAndFiles {
     name: string;
     type: ItemType;
     link: string;
+    onClick?: () => void;
     insertedAt?: string | null;
     updatedAt?: string | null;
     commentsCount?: number;
@@ -57,7 +58,8 @@ export namespace DocsAndFiles {
 
   export interface Breadcrumb {
     label: string;
-    link: string;
+    link?: string;
+    onClick?: () => void;
   }
 
   export interface Search {
@@ -192,7 +194,9 @@ function DocsAndFilesPreviewItem({ node, path }: { node: ResourceHubNode; path: 
       <div className="flex min-w-0 items-center gap-2">
         <DocsAndFilesNodeIcon node={node} size={22} />
         <div className="min-w-0 flex items-baseline gap-2">
-          <div className="truncate text-sm font-medium text-content-base group-hover:text-link-base">{getNodeName(node)}</div>
+          <div className="truncate text-sm font-medium text-content-base group-hover:text-link-base">
+            {getNodeName(node)}
+          </div>
         </div>
       </div>
       <CommentsCountIndicator count={getNodeCommentsCount(node)} size={18} />
@@ -209,16 +213,9 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs?: DocsAndFiles.Breadcrumb[] 
       data-test-id="navigation"
     >
       {breadcrumbs.map((breadcrumb, index) => (
-        <React.Fragment key={`${breadcrumb.link}-${breadcrumb.label}`}>
+        <React.Fragment key={`${breadcrumb.link ?? breadcrumb.label}-${breadcrumb.label}`}>
           {index > 0 && <IconChevronRight size={14} className="shrink-0 text-content-subtle" />}
-          <Link
-            to={breadcrumb.link}
-            underline="hover"
-            testId={createTestId("nav-item", breadcrumb.label)}
-            className="shrink-0 font-medium text-content-dimmed"
-          >
-            {breadcrumb.label}
-          </Link>
+          <BreadcrumbItem breadcrumb={breadcrumb} />
         </React.Fragment>
       ))}
     </nav>
@@ -308,6 +305,30 @@ function DocsAndFilesList({ items }: { items: DocsAndFiles.Item[] }) {
   );
 }
 
+function BreadcrumbItem({ breadcrumb }: { breadcrumb: DocsAndFiles.Breadcrumb }) {
+  const className = "shrink-0 font-medium text-content-dimmed";
+  const testId = createTestId("nav-item", breadcrumb.label);
+
+  if (breadcrumb.onClick) {
+    return (
+      <button
+        type="button"
+        onClick={breadcrumb.onClick}
+        data-test-id={testId}
+        className={`${className} border-0 bg-transparent p-0 hover:underline underline-offset-2`}
+      >
+        {breadcrumb.label}
+      </button>
+    );
+  }
+
+  return (
+    <Link to={breadcrumb.link || "#"} underline="hover" testId={testId} className={className}>
+      {breadcrumb.label}
+    </Link>
+  );
+}
+
 function DocsAndFilesListItem({ item, testId }: { item: DocsAndFiles.Item; testId: string }) {
   const className = classNames(
     "group flex min-h-[72px] items-center gap-3 px-3 py-3",
@@ -316,20 +337,41 @@ function DocsAndFilesListItem({ item, testId }: { item: DocsAndFiles.Item; testI
 
   return (
     <div className={className} data-test-id={testId}>
-      <DivLink to={item.link} className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
-        <DocsAndFilesItemIcon item={item} size={40} />
-
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-base font-semibold text-content-base group-hover:text-link-base">{item.name}</div>
-          <ItemDetails item={item} />
-        </div>
-      </DivLink>
+      <ItemMain item={item} />
 
       <div className="flex w-10 shrink-0 justify-end">
         <CommentsCountIndicator count={item.commentsCount || 0} size={22} />
       </div>
       {item.menu && <div className="flex w-9 shrink-0 items-center justify-end">{item.menu}</div>}
     </div>
+  );
+}
+
+function ItemMain({ item }: { item: DocsAndFiles.Item }) {
+  const content = (
+    <>
+      <DocsAndFilesItemIcon item={item} size={40} />
+
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-base font-semibold text-content-base group-hover:text-link-base">{item.name}</div>
+        <ItemDetails item={item} />
+      </div>
+    </>
+  );
+  const className = "flex min-w-0 flex-1 cursor-pointer items-center gap-3";
+
+  if (item.onClick) {
+    return (
+      <button type="button" onClick={item.onClick} className={`${className} border-0 bg-transparent p-0 text-left`}>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <DivLink to={item.link} className={className}>
+      {content}
+    </DivLink>
   );
 }
 
@@ -396,7 +438,8 @@ function DocsAndFilesNodeIcon({ node, size }: { node: ResourceHubNode; size: num
     return <Thumbnail thumbnail={thumbnail} size={size} />;
   }
 
-  if (hasNodeContentType(node, "pdf")) return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
+  if (hasNodeContentType(node, "pdf"))
+    return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
   if (isNodeMovFile(node)) return <FileIcon size={size} filetype="mov" icon={IconVideo} />;
   if (isNodeVideoFile(node)) return <FileIcon size={size} icon={IconVideo} />;
   if (hasNodeContentType(node, "audio")) return <FileIcon size={size} filetype="audio" />;
