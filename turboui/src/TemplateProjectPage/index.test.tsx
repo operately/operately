@@ -931,6 +931,21 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByText("Create more")).toBeInTheDocument();
   });
 
+  it("enables Create task as soon as the title is no longer empty", () => {
+    renderPage(createProps(), "/templates/template-1?tab=tasks");
+
+    fireEvent.click(screen.getByText("New task"));
+
+    const createButton = screen.getByRole("button", { name: "Create task" });
+    expect(createButton).toBeDisabled();
+
+    fireEvent.change(document.querySelector('[data-test-id="template-task-title-input"]') as HTMLInputElement, {
+      target: { value: "Kickoff notes" },
+    });
+
+    expect(createButton).toBeEnabled();
+  });
+
   it("reorders tasks optimistically and keeps the confirmed order", async () => {
     let confirmMove: (successful: boolean) => void = () => undefined;
     const onTaskReorder = jest.fn(() => new Promise<boolean>((resolve) => (confirmMove = resolve)));

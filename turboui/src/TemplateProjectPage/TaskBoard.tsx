@@ -385,6 +385,7 @@ function TaskFormModal({
           onChange={setName}
           placeholder="Enter task title"
           autofocus
+          onChangeOnType
           testId="template-task-title"
         />
 
