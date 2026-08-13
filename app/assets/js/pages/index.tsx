@@ -86,6 +86,7 @@ import ProjectTemplateDiscussionNewPage from "./ProjectTemplateDiscussionNewPage
 import ProjectTemplateDiscussionPage from "./ProjectTemplateDiscussionPage";
 import ProjectTemplateDocumentPage from "./ProjectTemplateDocumentPage";
 import ProjectTemplateEditDocumentPage from "./ProjectTemplateEditDocumentPage";
+import ProjectTemplateEditFilePage from "./ProjectTemplateEditFilePage";
 import ProjectTemplateEditLinkPage from "./ProjectTemplateEditLinkPage";
 import ProjectTemplateFilePage from "./ProjectTemplateFilePage";
 import ProjectTemplateLinkPage from "./ProjectTemplateLinkPage";
@@ -213,6 +214,7 @@ export default {
   ProjectTemplateDiscussionPage,
   ProjectTemplateDocumentPage,
   ProjectTemplateEditDocumentPage,
+  ProjectTemplateEditFilePage,
   ProjectTemplateEditLinkPage,
   ProjectTemplateFilePage,
   ProjectTemplateLinkPage,

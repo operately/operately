@@ -6,7 +6,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { compareIds, Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
-import { FilePage, IconDownload } from "turboui";
+import { FilePage, IconDownload, IconEdit } from "turboui";
 import React from "react";
 
 export default { name: "ProjectTemplateFilePage", loader, Page } as PageModule;
@@ -53,6 +53,14 @@ function Page() {
           label: "Download",
           onClick: downloadFile,
           testId: "download-file-link",
+        },
+        {
+          type: "link",
+          icon: IconEdit,
+          label: "Edit",
+          link: paths.projectTemplateEditFilePath(template.id, node.id),
+          keepOutsideOnBigScreen: true,
+          testId: "edit-file-link",
         },
       ]}
       testId="project-template-file-page"
