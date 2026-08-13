@@ -420,6 +420,7 @@ function resourceNodeLink(
     case "link":
       return paths.projectTemplateLinkPath(templateId, node.id);
     case "file":
+      return paths.projectTemplateFilePath(templateId, node.id);
     case "folder":
       return "#";
   }

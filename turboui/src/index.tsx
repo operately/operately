@@ -150,6 +150,8 @@ export { OngoingDraftActions } from "./OngoingDraftActions";
 export { LinkNewPage } from "./LinkNewPage";
 export { LinkEditPage } from "./LinkEditPage";
 export { LinkPage } from "./LinkPage";
+export { FilePage } from "./FilePage";
+export { FileEditPage } from "./FileEditPage";
 export { ProjectTemplatesPage } from "./ProjectTemplatesPage";
 export { ResourceHubDraftsPage } from "./ResourceHubDraftsPage";
 export { ResourceHubFolderPage } from "./ResourceHubFolderPage";

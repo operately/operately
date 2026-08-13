@@ -1,224 +1,57 @@
 import React from "react";
-
-import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router";
-import { files } from "@/models/resourceHubs";
-import { resourceHubLandingPath } from "@/models/resourceHubs";
+
+import * as Pages from "@/components/Pages";
+import * as ReactionsModel from "@/models/reactions";
+import { files, resourceHubLandingPath } from "@/models/resourceHubs";
+import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { usePaths } from "@/routes/paths";
 
-import * as ReactionsModel from "@/models/reactions";
-import * as Pages from "@/components/Pages";
-import { findFileSize, useDownloadFile } from "@/models/blobs";
-import { CommentSection, useComments } from "@/features/CommentSection";
+import { useComments, useCommentSectionProps } from "@/features/CommentSection";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
-import { assertPresent } from "@/utils/assertions";
-import {
-  Avatar,
-  CurrentSubscriptions,
-  FormattedTime,
-  Forms,
-  Modal,
-  Page as TurboUIPage,
-  Reactions,
-  richContentToString,
-  RichContent,
-  Spacer,
-  TextSeparator,
-} from "turboui";
+import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { assertPresent } from "@/utils/assertions";
+import { FilePage } from "turboui";
 
+import { useFilePageOptions } from "./Options";
 import { useLoadedData } from "./loader";
 import { buildFilePageNavigation } from "./navigation";
-import { Content } from "./Content";
-import { useFilePageOptions } from "./Options";
 
 export function Page() {
-  const { file } = useLoadedData();
+  const { file, isCurrentUserSubscribed } = useLoadedData();
   const paths = usePaths();
+  const navigate = useNavigate();
+  const refresh = Pages.useRefresh();
+  const formattedTimePreferences = useFormattedTimePreferences();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
+  const [remove] = files.useDelete();
   const options = useFilePageOptions({ showDeleteModal: toggleDeleteModal });
 
-  return (
-    <TurboUIPage
-      title={file.name!}
-      size="medium"
-      navigation={buildFilePageNavigation(file, paths)}
-      options={options}
-      testId="resource-hub-file-page"
-    >
-      <div className="px-12 py-10">
-        <Title />
-
-        <Content />
-        <Spacer size={1} />
-
-        <FileInfo />
-        <Description />
-
-        <FileReactions />
-        <FileComments />
-        <FileSubscriptions />
-      </div>
-
-      <DeleteFileModal isOpen={showDeleteModal} hideModal={toggleDeleteModal} fileName={file.name || ""} />
-    </TurboUIPage>
-  );
-}
-
-function Title() {
-  const { file } = useLoadedData();
-  const formattedTimePreferences = useFormattedTimePreferences();
-
-  assertPresent(file.author, "author must be present in file");
-
-  return (
-    <div className="mb-8 flex flex-col items-center">
-      <div className="mb-6 text-content-accent text-lg md:text-2xl font-extrabold">{file.name!}</div>
-      <div className="flex flex-wrap justify-center gap-1 items-center text-content-accent font-medium text-sm sm:text-[16px]">
-        <div className="flex items-center gap-1">
-          <Avatar person={file.author} size="tiny" /> {file.author.fullName}
-        </div>
-
-        <TextSeparator />
-        <FormattedTime {...formattedTimePreferences} time={file.insertedAt!} format="relative-time-or-date" />
-      </div>
-    </div>
-  );
-}
-
-function FileInfo() {
-  const { file } = useLoadedData();
-  assertPresent(file.blob?.url, "url must be present in file.blob");
-  assertPresent(file.blob.size, "size must be present in file.blob");
   assertPresent(file.name, "name must be present in file");
-
-  const size = findFileSize(file.blob.size);
-  const [downloadFile] = useDownloadFile(file.blob.url, file.name);
-
-  return (
-    <div className="flex gap-2 justify-center items-center">
-      <div className="text-content-dimmed">
-        {file.blob.filename} ({size})
-      </div>
-      <div className="text-content-dimmed">•</div>
-      <div className="text-content-dimmed underline cursor-pointer" onClick={downloadFile}>
-        Download
-      </div>
-      <div className="text-content-dimmed">•</div>
-      <a className="text-content-dimmed underline cursor-pointer" href={file.blob.url!} target="_blank">
-        View
-      </a>
-    </div>
-  );
-}
-
-function Description() {
-  const { file } = useLoadedData();
+  assertPresent(file.author, "author must be present in file");
+  assertPresent(file.insertedAt, "insertedAt must be present in file");
   assertPresent(file.description, "description must be present in file");
-
-  const { mentionedPersonLookup } = useRichEditorHandlers();
-  const hasDescription = Boolean(richContentToString(JSON.parse(file.description)).trim());
-
-  if (!hasDescription) return <></>;
-
-  return (
-    <>
-      <Spacer size={2} />
-      <RichContent
-        content={file.description}
-        className="text-md sm:text-lg"
-        mentionedPersonLookup={mentionedPersonLookup}
-        parseContent
-      />
-    </>
-  );
-}
-
-function FileReactions() {
-  const { file } = useLoadedData();
-
+  assertPresent(file.blob, "blob must be present in file");
+  assertPresent(file.blob.url, "url must be present in file.blob");
+  assertPresent(file.blob.size, "size must be present in file.blob");
   assertPresent(file.permissions?.canCommentOnFile, "permissions must be present in file");
   assertPresent(file.reactions, "reactions must be present in file");
+  assertPresent(file.potentialSubscribers, "potentialSubscribers must be present in file");
+  assertPresent(file.subscriptionList, "subscriptionList must be present in file");
 
+  const [downloadFile] = useDownloadFile(file.blob.url, file.name);
+  const reactions = file.reactions.map((r) => r!);
   const entity = ReactionsModel.entity(file.id!, "resource_hub_file");
-  const form = ReactionsModel.useReactionsForm(entity, file.reactions);
-
-  return (
-    <>
-      <Spacer size={2} />
-      <Reactions {...form} size={24} canAddReaction={file.permissions.canCommentOnFile} />
-    </>
-  );
-}
-
-function FileComments() {
-  const { file } = useLoadedData();
-  const commentsForm = useComments({ parentType: "resource_hub_file", file: file });
-
-  assertPresent(file.permissions?.canCommentOnFile, "permissions must be present in file");
-
-  return (
-    <>
-      <Spacer size={4} />
-      <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="resource_hub_file"
-        canComment={file.permissions.canCommentOnFile}
-      />
-    </>
-  );
-}
-
-interface DeleteFileModalProps {
-  isOpen: boolean;
-  hideModal: () => void;
-  fileName: string;
-}
-
-function DeleteFileModal({ isOpen, hideModal, fileName }: DeleteFileModalProps) {
-  const { file } = useLoadedData();
-  const navigate = useNavigate();
-  const [remove] = files.useDelete();
-  const paths = usePaths();
-
-  const handleDeleteFile = async () => {
-    await remove({ fileId: file.id });
-
-    if (file.parentFolder) {
-      navigate(paths.resourceHubFolderPath(file.parentFolder.id!));
-    } else {
-      navigate(resourceHubLandingPath(paths, file));
-    }
-  };
-
-  const form = Forms.useForm({
-    fields: {},
-    cancel: hideModal,
-    submit: handleDeleteFile,
+  const reactionsForm = ReactionsModel.useReactionsForm(entity, reactions);
+  const commentsForm = useComments({ parentType: "resource_hub_file", file });
+  const comments = useCommentSectionProps({
+    form: commentsForm,
+    commentParentType: "resource_hub_file",
+    canComment: file.permissions.canCommentOnFile,
   });
-
-  return (
-    <Modal isOpen={isOpen} onClose={hideModal}>
-      <Forms.Form form={form}>
-        <p>
-          Are you sure you want to delete the file "<b>{fileName}</b>"?
-        </p>
-        <Forms.Submit saveText="Delete" cancelText="Cancel" />
-      </Forms.Form>
-    </Modal>
-  );
-}
-
-function FileSubscriptions() {
-  const { file, isCurrentUserSubscribed } = useLoadedData();
-  const refresh = Pages.useRefresh();
-
-  if (!file.potentialSubscribers || !file.subscriptionList) {
-    return null;
-  }
-
   const subscriptionsState = useCurrentSubscriptionsAdapter({
     potentialSubscribers: file.potentialSubscribers,
     subscriptionList: file.subscriptionList,
@@ -227,15 +60,57 @@ function FileSubscriptions() {
     onRefresh: refresh,
   });
 
-  return (
-    <>
-      <div className="border-t border-stroke-base mt-16 mb-8" />
+  async function handleDelete() {
+    await remove({ fileId: file.id });
 
-      <CurrentSubscriptions
-        {...subscriptionsState}
-        isCurrentUserSubscribed={isCurrentUserSubscribed}
-        canEditSubscribers={file.permissions?.canEditFile || false}
-      />
-    </>
+    if (file.parentFolder) {
+      navigate(paths.resourceHubFolderPath(file.parentFolder.id!));
+    } else {
+      navigate(resourceHubLandingPath(paths, file));
+    }
+  }
+
+  if (!comments) return null;
+
+  return (
+    <FilePage
+      pageTitle={file.name}
+      navigation={buildFilePageNavigation(file, paths)}
+      options={options}
+      testId="resource-hub-file-page"
+      title={file.name}
+      author={file.author}
+      postedAt={file.insertedAt}
+      formattedTimePreferences={formattedTimePreferences}
+      filename={file.blob.filename || file.name}
+      fileSize={findFileSize(file.blob.size)}
+      viewUrl={file.blob.url}
+      onDownload={downloadFile}
+      blob={{
+        url: file.blob.url,
+        contentType: file.blob.contentType,
+        width: file.blob.width,
+        height: file.blob.height,
+      }}
+      description={file.description}
+      mentionedPersonLookup={mentionedPersonLookup}
+      reactions={{
+        ...reactionsForm,
+        size: 24,
+        canAddReaction: file.permissions.canCommentOnFile,
+      }}
+      comments={comments}
+      subscriptions={{
+        ...subscriptionsState,
+        isCurrentUserSubscribed,
+        canEditSubscribers: file.permissions?.canEditFile || false,
+      }}
+      deleteModal={{
+        isOpen: showDeleteModal,
+        onClose: toggleDeleteModal,
+        fileName: file.name,
+        onConfirm: handleDelete,
+      }}
+    />
   );
 }
