@@ -1,5 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { userEvent, waitFor, within } from "storybook/test";
 import type { ProjectTemplate } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { ProjectTemplatesPage } from ".";
@@ -44,6 +45,8 @@ function mockTemplate(
     updatedAt: "2026-08-01T12:00:00Z",
     milestoneCount,
     taskCount,
+    inactivePeopleSummary: { personCount: 0, roleCount: 0, taskCount: 0 },
+    inactiveDiscussionCount: 0,
   };
 }
 
@@ -97,7 +100,14 @@ export const SpaceLibrary: Story = {
   ),
 };
 export const Empty: Story = { render: () => <StoryPage templates={[]} /> };
-export const Loading: Story = { render: () => <StoryPage onFilter={() => new Promise(() => undefined)} /> };
+export const Loading: Story = {
+  render: () => <StoryPage onFilter={() => new Promise(() => undefined)} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByRole("searchbox"), "launch");
+    await waitFor(() => canvas.getByText("Loading templates…"));
+  },
+};
 export const ErrorState: Story = {
   render: () => (
     <StoryPage
@@ -106,6 +116,11 @@ export const ErrorState: Story = {
       }}
     />
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByRole("searchbox"), "launch");
+    await waitFor(() => canvas.getByText("Templates could not be loaded. Try again."));
+  },
 };
 export const ReadOnly: Story = { render: () => <StoryPage canCreate={false} /> };
 export const Mobile: Story = { parameters: { viewport: { defaultViewport: "mobile1" } }, render: () => <StoryPage /> };
