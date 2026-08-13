@@ -121,7 +121,8 @@ function Page() {
   });
   const onFolderCreate = createFolderOperation({ templateId: template.id, mutate });
   const onResourceDelete = createResourceDeleteOperation({ templateId: template.id, mutate });
-  const onFilesUpload = createFilesUploadOperation({ templateId: template.id, parentFolderId: null, mutate });
+  const onResourceMove = createResourceMoveOperation({ templateId: template.id, mutate });
+  const onFilesUpload = createFilesUploadOperation({ templateId: template.id, mutate });
 
   return (
     <TemplateProjectPage
@@ -143,6 +144,7 @@ function Page() {
       resourceNodes={resourceNodes}
       onFolderCreate={onFolderCreate}
       onResourceDelete={onResourceDelete}
+      onResourceMove={onResourceMove}
       onFilesUpload={onFilesUpload}
       formatFileSize={findFileSize}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
@@ -358,16 +360,13 @@ export function createResourceDeleteOperation({ templateId, mutate }: { template
     mutate("Resource not deleted", () => Api.project_templates.deleteResource({ templateId, nodeId }));
 }
 
-export function createFilesUploadOperation({
-  templateId,
-  parentFolderId,
-  mutate,
-}: {
-  templateId: string;
-  parentFolderId: string | null;
-  mutate: Mutate;
-}) {
-  return (items: AddFileUploadItem[], setProgress: (progress: number) => void) =>
+export function createResourceMoveOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
+  return (nodeId: string, parentFolderId: string | null) =>
+    mutate("Resource not moved", () => Api.project_templates.moveResource({ templateId, nodeId, parentFolderId }));
+}
+
+export function createFilesUploadOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
+  return (items: AddFileUploadItem[], setProgress: (progress: number) => void, parentFolderId: string | null) =>
     mutate("Files not uploaded", () =>
       uploadFilesWithPreviews({
         items,
@@ -396,6 +395,7 @@ export function toResourceNode(
     {
       id: node.id,
       parentFolderId: node.parentFolderId ?? null,
+      folderId: node.folder?.id ?? null,
       type: node.type,
       position: node.position,
       name: resource.name,

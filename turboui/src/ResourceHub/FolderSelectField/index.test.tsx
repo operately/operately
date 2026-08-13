@@ -3,9 +3,14 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import * as Forms from "../../Forms";
+import {
+  createMockDocumentNode,
+  createMockFolder,
+  createMockFolderNode,
+  createMockResourceHub,
+} from "../../ResourceHubPage/mockData";
 import { ResourceHubNodesListProvider, type ResourceHubNodesListContextValue } from "../contexts/NodesListContext";
-import { FolderSelectField } from ".";
-import type { ResourceHubNode } from "../types";
+import { ResourceHubFolderSelectField } from ".";
 
 jest.mock("../NodeIcon", () => ({
   NodeIcon: ({ node }: { node: { name?: string | null } }) => <span>{node.name}</span>,
@@ -15,49 +20,49 @@ jest.mock("../../icons", () => ({
   IconArrowLeft: (props: React.ComponentProps<"span">) => <span {...props} />,
 }));
 
-const folderNode: ResourceHubNode = {
+const resourceHub = createMockResourceHub({ id: "hub-1", name: "Hub" });
+
+const folderNode = createMockFolderNode({
   id: "node-folder-1",
-  type: "folder",
   name: "Plans",
   folder: {
     id: "folder-1",
-    resourceHubId: "hub-1",
+    resourceHubId: resourceHub.id,
     name: "Plans",
     pathToFolder: [],
-    resourceHub: { id: "hub-1", name: "Hub" } as never,
+    resourceHub,
   },
-};
+});
 
-const documentNode: ResourceHubNode = {
+const documentNode = createMockDocumentNode({
   id: "node-doc-1",
-  type: "document",
   name: "Spec Doc",
   document: {
     id: "doc-1",
-    resourceHubId: "hub-1",
+    resourceHubId: resourceHub.id,
     parentFolderId: "folder-1",
     name: "Spec Doc",
-    content: "{\"type\":\"doc\",\"content\":[]}",
+    content: '{"type":"doc","content":[]}',
     state: "published",
   },
-};
+});
 
-describe("FolderSelectField", () => {
+describe("ResourceHubFolderSelectField", () => {
   test("loads raw folder/resource hub results and navigates into folders", async () => {
     const loadResourceHub = jest.fn().mockResolvedValue({
-      current: { type: "resourceHub", resourceHub: { id: "hub-1", name: "Hub" } },
+      current: { type: "resourceHub", resourceHub },
       nodes: [folderNode, documentNode],
     });
     const loadFolder = jest.fn().mockResolvedValue({
       current: {
         type: "folder",
-        folder: {
+        folder: createMockFolder({
           id: "folder-1",
-          resourceHubId: "hub-1",
+          resourceHubId: resourceHub.id,
           name: "Plans",
           pathToFolder: [],
-          resourceHub: { id: "hub-1", name: "Hub" },
-        },
+          resourceHub,
+        }),
       },
       nodes: [],
     });
@@ -83,15 +88,13 @@ describe("FolderSelectField", () => {
       return (
         <Forms.Form form={form}>
           <ResourceHubNodesListProvider value={listContext}>
-            <FolderSelectField label="Location" field="location" />
+            <ResourceHubFolderSelectField label="Location" field="location" />
           </ResourceHubNodesListProvider>
         </Forms.Form>
       );
     }
 
-    const { container } = render(
-      <Harness />,
-    );
+    const { container } = render(<Harness />);
 
     await waitFor(() =>
       expect(container.querySelector('[data-test-id="folder-select-current-hub-1"]')).toBeInTheDocument(),

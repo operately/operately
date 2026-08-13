@@ -106,6 +106,7 @@ export namespace TemplateProjectPage {
   export interface ResourceNode {
     id: string;
     parentFolderId: string | null;
+    folderId?: string | null;
     type: "folder" | "document" | "file" | "link";
     position: number;
     name: string;
@@ -140,9 +141,11 @@ export namespace TemplateProjectPage {
     resourceNodes?: ResourceNode[];
     onFolderCreate: (parentFolderId: string | null, name: string) => Promise<boolean>;
     onResourceDelete?: (nodeId: string) => Promise<boolean>;
+    onResourceMove?: (nodeId: string, parentFolderId: string | null) => Promise<boolean>;
     onFilesUpload: (
       items: Parameters<AddFileWidgetProps["onUpload"]>[0],
       onProgress: Parameters<AddFileWidgetProps["onUpload"]>[1],
+      parentFolderId: string | null,
     ) => Promise<boolean>;
     formatFileSize: AddFileWidgetProps["formatFileSize"];
     newDiscussionLink?: string;
