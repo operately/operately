@@ -85,7 +85,9 @@ const Template = (args: any) => {
     // Simulate search delay
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    const filtered = mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
+    const filtered = mockMilestones.filter((m) =>
+      (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()),
+    );
 
     // Sort by due date (earliest first), then by title for those without due dates
     const sorted = filtered.sort((a, b) => {
@@ -94,7 +96,7 @@ const Template = (args: any) => {
       }
       if (a.dueDate?.date && !b.dueDate?.date) return -1; // Items with due dates come first
       if (!a.dueDate?.date && b.dueDate?.date) return 1;
-      return (a.name || a.title || "").localeCompare((b.name || b.title || "")); // Alphabetical for no due dates
+      return (a.name || a.title || "").localeCompare(b.name || b.title || ""); // Alphabetical for no due dates
     });
 
     setMilestones(sorted);
@@ -111,19 +113,19 @@ const Template = (args: any) => {
       />
 
       <div className="mt-4 p-2 bg-gray-100 rounded text-sm">
-        <strong>Selected:</strong> {milestone ? (milestone.name || milestone.title) : "None"}
+        <strong>Selected:</strong> {milestone ? milestone.name || milestone.title : "None"}
       </div>
     </div>
   );
 };
 
-export const Default: Story = {
+export const FormField: Story = {
   render: Template,
   args: {
     milestone: null,
+    variant: "form-field",
     readonly: false,
     emptyStateMessage: "Select milestone",
-    emptyStateReadOnlyMessage: "No milestone",
   },
 };
 
@@ -200,7 +202,7 @@ export const EmptySearch: Story = {
         />
 
         <div className="mt-4 p-2 bg-gray-100 rounded text-sm">
-          <strong>Selected:</strong> {milestone ? (milestone.name || milestone.title) : "None"}
+          <strong>Selected:</strong> {milestone ? milestone.name || milestone.title : "None"}
         </div>
       </div>
     );
@@ -225,7 +227,9 @@ export const InteractiveDemo: Story = {
         return;
       }
 
-      const filtered = mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
+      const filtered = mockMilestones.filter((m) =>
+        (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()),
+      );
       setMilestones(filtered);
     };
 
@@ -258,7 +262,7 @@ export const InteractiveDemo: Story = {
         <div className="p-3 bg-gray-100 rounded">
           <div className="text-sm space-y-1">
             <div>
-              <strong>Selected:</strong> {milestone ? (milestone.name || milestone.title) : "None"}
+              <strong>Selected:</strong> {milestone ? milestone.name || milestone.title : "None"}
             </div>
             {milestone?.dueDate?.date && (
               <div>

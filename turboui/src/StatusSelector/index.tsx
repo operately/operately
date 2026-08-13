@@ -52,9 +52,14 @@ function NoStatusButton({ size, readonly }: { size: StatusSelector.Size; readonl
 
   return (
     <div className={buttonClassName}>
-      <IconCircleDashed size={iconSize} className={classNames("flex-shrink-0", StatusSelector.STATUS_COLOR_MAP.gray.iconClass)} />
+      <IconCircleDashed
+        size={iconSize}
+        className={classNames("flex-shrink-0", StatusSelector.STATUS_COLOR_MAP.gray.iconClass)}
+      />
       <span className="flex items-center leading-none">No status</span>
-      {!readonly && <IconChevronDown size={iconSize - 2} className="flex-shrink-0 opacity-60 flex items-center self-center" />}
+      {!readonly && (
+        <IconChevronDown size={iconSize - 2} className="flex-shrink-0 opacity-60 flex items-center self-center" />
+      )}
     </div>
   );
 }
@@ -99,6 +104,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   size = "md",
   readonly = false,
   showFullBadge = false,
+  variant = "inline",
   testId,
   isOpen: controlledIsOpen,
   onOpenChange,
@@ -194,40 +200,50 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   const activeColorClasses = currentOption
     ? StatusSelector.STATUS_COLOR_MAP[currentOption.color]
     : StatusSelector.STATUS_COLOR_MAP.gray;
-  const activeIconClass = classNames("flex items-center self-center", activeColorClasses.iconClass, !currentOption && "opacity-60");
+  const activeIconClass = classNames(
+    "flex items-center self-center",
+    activeColorClasses.iconClass,
+    !currentOption && "opacity-60",
+  );
+  const isFormField = variant === "form-field";
+  const triggerClassName = classNames(
+    isFormField &&
+      "flex w-full items-center gap-2 rounded-lg border border-surface-outline bg-surface-base px-2 py-1.5 text-left",
+    isFormField && !readonly && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-base",
+    isFormField && readonly && "cursor-default",
+    !isFormField && !readonly && "cursor-pointer",
+  );
+  const statusControl = isFormField ? (
+    <span className="flex min-w-0 items-center gap-2">
+      <ActiveIcon size={iconSize} className={classNames("shrink-0", activeIconClass)} />
+      <span className={classNames("truncate text-sm", currentOption ? "text-content-base" : "text-content-dimmed")}>
+        {currentOption?.label ?? "No status"}
+      </span>
+    </span>
+  ) : showFullBadge ? (
+    currentOption ? (
+      <StatusButton option={currentOption} size={size} readonly={readonly} />
+    ) : (
+      <NoStatusButton size={size} readonly={readonly} />
+    )
+  ) : (
+    <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
+      <ActiveIcon size={iconSize} className={activeIconClass} />
+    </div>
+  );
 
   if (readonly) {
     return (
-      <div data-test-id={testId}>
-        {showFullBadge ? (
-          currentOption ? (
-            <StatusButton option={currentOption} size={size} readonly={true} />
-          ) : (
-            <NoStatusButton size={size} readonly={true} />
-          )
-        ) : (
-          <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
-            <ActiveIcon size={iconSize} className={activeIconClass} />
-          </div>
-        )}
+      <div className={triggerClassName || undefined} data-test-id={testId}>
+        {statusControl}
       </div>
     );
   }
 
   return (
     <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
-      <Popover.Trigger className="cursor-pointer" data-test-id={testId}>
-        {showFullBadge ? (
-          currentOption ? (
-            <StatusButton option={currentOption} size={size} readonly={false} />
-          ) : (
-            <NoStatusButton size={size} readonly={false} />
-          )
-        ) : (
-          <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
-            <ActiveIcon size={iconSize} className={activeIconClass} />
-          </div>
-        )}
+      <Popover.Trigger className={triggerClassName} data-test-id={testId}>
+        {statusControl}
       </Popover.Trigger>
 
       <Popover.Portal>
@@ -264,11 +280,14 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
                     key={option.value}
                     ref={(el) => (itemRefs.current[index] = el)}
                     data-test-id={createTestId("status-option", option.value)}
-                    className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer text-content-base", {
-                      "bg-brand-1/10 text-content-accent ring-1 ring-inset ring-brand-1/20 dark:bg-brand-1/25 dark:ring-brand-1/40":
-                        isSelected,
-                      "hover:bg-surface-dimmed hover:text-content-accent": !isSelected,
-                    })}
+                    className={classNames(
+                      "flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer text-content-base",
+                      {
+                        "bg-brand-1/10 text-content-accent ring-1 ring-inset ring-brand-1/20 dark:bg-brand-1/25 dark:ring-brand-1/40":
+                          isSelected,
+                        "hover:bg-surface-dimmed hover:text-content-accent": !isSelected,
+                      },
+                    )}
                     onClick={() => handleItemClick(option as T)}
                     onMouseEnter={() => setSelectedIndex(index)}
                   >
@@ -354,6 +373,7 @@ export namespace StatusSelector {
     size?: Size;
     readonly?: boolean;
     showFullBadge?: boolean;
+    variant?: "inline" | "form-field";
     testId?: string;
     isOpen?: boolean;
     onOpenChange?: (isOpen: boolean) => void;
