@@ -10,6 +10,7 @@ export namespace TextField {
     readonly?: boolean;
     placeholder?: string;
     trimBeforeSave?: boolean;
+    onChangeOnType?: boolean;
     testId?: string;
     variant?: "inline" | "form-field";
     label?: string;
@@ -23,6 +24,7 @@ export namespace TextField {
     className: string;
     testId: string;
     trimBeforeSave: boolean;
+    onChangeOnType: boolean;
     label: string | undefined;
     error?: string;
     readonly: boolean;
@@ -68,6 +70,7 @@ function useTextFieldState(props: TextField.Props): TextField.State {
     className: props.className || "",
     testId: props.testId || "text-field",
     trimBeforeSave: props.trimBeforeSave || false,
+    onChangeOnType: props.onChangeOnType || false,
     label: props.label,
     error: props.error,
     readonly: props.readonly || false,
@@ -146,12 +149,13 @@ function FormFieldTextField(state: TextField.State & { inputRef?: React.Ref<HTML
           type="text"
           value={state.currentText}
           onChange={(e) => {
-            state.setCurrentText(e.target.value);
+            const next = e.target.value;
+            state.setCurrentText(next);
+            if (state.onChangeOnType) state.onChange(next);
           }}
           onBlur={(e) => {
             state.save();
-            // Trigger external onChange with final value on blur
-            state.onChange(e.target.value);
+            if (!state.onChangeOnType) state.onChange(e.target.value);
           }}
           onKeyDown={handleKeyDown}
           className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + state.className}

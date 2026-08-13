@@ -1,5 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { RelativeDayField } from ".";
 
 describe("RelativeDayField", () => {
@@ -75,5 +76,12 @@ describe("RelativeDayField", () => {
     fireEvent.click(screen.getByText("5 days after project starts"));
 
     expect(screen.queryByRole("textbox")).toBeNull();
+  });
+
+  it("uses a full-width bordered control in the form-field variant", () => {
+    render(<RelativeDayField variant="form-field" value={null} onChange={jest.fn()} />);
+
+    expect(screen.getByRole("button", { name: "Set relative date" })).toHaveClass("w-full");
+    expect(screen.getByRole("button", { name: "Set relative date" })).toHaveClass("border-surface-outline");
   });
 });

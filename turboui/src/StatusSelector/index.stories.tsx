@@ -138,19 +138,14 @@ const Component = (
     setStatus(next);
   }, [args.status, args.statusOptions]);
 
-  return (
-    <StatusSelector
-      {...args}
-      statusOptions={args.statusOptions}
-      status={status}
-      onChange={setStatus}
-    />
-  );
+  return <StatusSelector {...args} statusOptions={args.statusOptions} status={status} onChange={setStatus} />;
 };
 
-const NullStatusComponent = (args: {
-  statusOptions: ReadonlyArray<StatusSelector.StatusOption>;
-} & Partial<Omit<React.ComponentProps<typeof StatusSelector>, "statusOptions" | "status" | "onChange">>) => {
+const NullStatusComponent = (
+  args: {
+    statusOptions: ReadonlyArray<StatusSelector.StatusOption>;
+  } & Partial<Omit<React.ComponentProps<typeof StatusSelector>, "statusOptions" | "status" | "onChange">>,
+) => {
   const [status, setStatus] = React.useState<StatusSelector.StatusOption | null>(null);
 
   return <StatusSelector {...args} statusOptions={args.statusOptions} status={status} onChange={setStatus} />;
@@ -180,8 +175,8 @@ export const AllStates: Story = {
               </div>
 
               <div>
-                <h3 className="text-sm font-bold mb-2">Full Badge - No Status</h3>
-                <NullStatusComponent statusOptions={engineeringStatuses} showFullBadge />
+                <h3 className="text-sm font-bold mb-2">Form Field</h3>
+                <Component statusOptions={engineeringStatuses} status="in_progress" variant="form-field" />
               </div>
             </div>
           </div>

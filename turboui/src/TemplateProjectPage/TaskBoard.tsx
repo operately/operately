@@ -377,7 +377,7 @@ function TaskFormModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isUpdating ? "Update Task" : "Create Task"} size="medium">
-      <form onSubmit={submit} className="space-y-6" data-test-id="template-task-form">
+      <form onSubmit={submit} className="min-w-0 space-y-6 overflow-x-hidden" data-test-id="template-task-form">
         <TextField
           variant="form-field"
           label="Task title"
@@ -385,29 +385,34 @@ function TaskFormModal({
           onChange={setName}
           placeholder="Enter task title"
           autofocus
+          onChangeOnType
           testId="template-task-title"
         />
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-content-base">Relative due date</label>
-            <RelativeDayField value={dueOffsetDays} onChange={setDueOffsetDays} placeholder="Set relative date" />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-content-base">Status</label>
+        <div className="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2">
+          <RelativeDayField
+            variant="form-field"
+            label="Relative due date"
+            value={dueOffsetDays}
+            onChange={setDueOffsetDays}
+            placeholder="Set relative date"
+          />
+          <div className="min-w-0">
+            <FieldLabel>Status</FieldLabel>
             <StatusSelector
+              variant="form-field"
               statusOptions={props.statuses}
               status={selectedStatus}
               onChange={(status) => setStatusId(status.id)}
-              showFullBadge
               testId="template-task-status"
             />
           </div>
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-content-base">Milestone</label>
+        <div className="min-w-0">
+          <FieldLabel>Milestone</FieldLabel>
           <MilestoneField
+            variant="form-field"
             milestone={selectedMilestone}
             setMilestone={(milestone) => setMilestoneId(milestone?.id ?? null)}
             milestones={milestoneOptions}
@@ -417,19 +422,19 @@ function TaskFormModal({
           />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-content-base">Notes</label>
+        <div className="min-w-0 overflow-x-auto">
+          <FieldLabel>Notes</FieldLabel>
           <TaskNotesField key={descriptionEditorKey} props={props} content={description} onChange={setDescription} />
         </div>
 
         {!task && props.personSearch && (
-          <div>
-            <label className="mb-1 block text-sm font-medium text-content-base">Assignees</label>
+          <div className="min-w-0">
+            <FieldLabel>Assignees</FieldLabel>
             <AssigneesField
+              variant="form-field"
               people={assignees}
               setPeople={setAssignees}
               searchData={props.personSearch}
-              variant="form-field"
               emptyStateMessage="Assign people"
             />
           </div>
@@ -477,4 +482,8 @@ function TaskNotesField({
   });
 
   return <Editor editor={editor} />;
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return <label className="mb-1 block text-left text-sm font-bold">{children}</label>;
 }

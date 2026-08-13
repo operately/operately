@@ -53,12 +53,18 @@ export function MilestoneFormModal({
           onChange={setTitle}
           placeholder="Enter milestone name"
           autofocus
+          onChangeOnType
           testId="template-milestone-name"
         />
 
         <div>
           <label className="mb-1 block text-sm font-medium text-content-base">Relative due date</label>
-          <RelativeDayField value={dueOffsetDays} onChange={setDueOffsetDays} placeholder="Set relative date" />
+          <RelativeDayField
+            variant="form-field"
+            value={dueOffsetDays}
+            onChange={setDueOffsetDays}
+            placeholder="Set relative date"
+          />
         </div>
 
         <div className="mt-8 flex items-center">
