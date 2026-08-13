@@ -3,7 +3,6 @@ import { render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { PageDescription } from ".";
-import { normalizeRichTextContent } from "../RichEditor/useEditor";
 
 const emptyDoc = { type: "doc", content: [{ type: "paragraph" }] };
 const descriptionDoc = {
@@ -29,24 +28,6 @@ const descriptionWithEmptyTextNodes = {
     },
   ],
 };
-const validRichDescription = {
-  type: "doc",
-  content: [
-    { type: "paragraph" },
-    {
-      type: "paragraph",
-      content: [
-        { type: "text", text: "Hello ", marks: [{ type: "bold" }] },
-        {
-          type: "mention",
-          attrs: { id: "jane-doe-abc123", label: "Jane Doe" },
-          marks: [{ type: "bold" }],
-        },
-      ],
-    },
-  ],
-};
-
 const richTextHandlers = {
   mentionedPersonLookup: jest.fn(),
   mentionSearchScope: { type: "none" as const },
@@ -54,23 +35,6 @@ const richTextHandlers = {
 };
 
 describe("PageDescription", () => {
-  it("removes empty text nodes without mutating the source document", () => {
-    expect(normalizeRichTextContent(descriptionWithEmptyTextNodes)).toEqual({
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [{ type: "text", text: "First paragraph from the API." }],
-        },
-        {
-          type: "paragraph",
-          content: [{ type: "text", text: "Second paragraph from the API." }],
-        },
-      ],
-    });
-    expect(descriptionWithEmptyTextNodes.content[0].content[0]).toEqual({ type: "text", text: "" });
-  });
-
   it("renders meaningful content alongside empty text nodes", async () => {
     const { container } = render(
       <PageDescription
@@ -155,10 +119,6 @@ describe("PageDescription", () => {
         "Second paragraph from the API.",
       );
     });
-  });
-
-  it("leaves valid rich text, empty paragraphs, mentions, attributes, and marks unchanged", () => {
-    expect(normalizeRichTextContent(validRichDescription)).toBe(validRichDescription);
   });
 
   it.each([null, { type: "doc", content: [] }, emptyDoc])(

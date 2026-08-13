@@ -12,6 +12,7 @@ import {
   writeLocalDraft,
 } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
+import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
   id: string;
@@ -78,19 +79,6 @@ const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
   autoFocus: false,
   tabindex: "",
 };
-
-export function normalizeRichTextContent(content: any): any {
-  if (!content || typeof content !== "object" || !Array.isArray(content.content)) return content;
-
-  const normalizedChildren = content.content
-    .filter((child: any) => child?.type !== "text" || child.text !== "")
-    .map(normalizeRichTextContent);
-  const contentChanged =
-    normalizedChildren.length !== content.content.length ||
-    normalizedChildren.some((child: any, index: number) => child !== content.content[index]);
-
-  return contentChanged ? { ...content, content: normalizedChildren } : content;
-}
 
 export function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
