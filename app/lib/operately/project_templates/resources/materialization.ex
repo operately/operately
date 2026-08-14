@@ -9,7 +9,7 @@ defmodule Operately.ProjectTemplates.Resources.Materialization do
 
     source_nodes
     |> Tree.sort_by_depth()
-    |> Enum.reduce_while({:ok, [], %{}}, fn source, {:ok, copied, folder_ids} ->
+    |> Enum.reduce_while({:ok, [], %{}, empty_parent_ids()}, fn source, {:ok, copied, folder_ids, parent_ids} ->
       attrs = %{
         resource_hub_id: project.resource_hub.id,
         parent_folder_id: Tree.remapped_parent_id!(source, folder_ids),
@@ -21,16 +21,25 @@ defmodule Operately.ProjectTemplates.Resources.Materialization do
       with {:ok, node} <- insert_node(repo, attrs),
            {:ok, content} <- insert_content(repo, source, node, template.company_id, creator_id) do
         folder_ids = Tree.remember_folder_id(folder_ids, source, content)
-        {:cont, {:ok, [node | copied], folder_ids}}
+        {:cont, {:ok, [node | copied], folder_ids, remember_parent_id(parent_ids, source, content)}}
       else
         {:error, reason} -> {:halt, {:error, reason}}
       end
     end)
     |> then(fn
-      {:ok, nodes, _folder_ids} -> {:ok, Enum.reverse(nodes)}
+      {:ok, nodes, _folder_ids, parent_ids} -> {:ok, %{nodes: Enum.reverse(nodes), parent_ids: parent_ids}}
       error -> error
     end)
   end
+
+  # Maps copied documents, files, and links so their comments can be copied onto the new rows.
+  # Folders are ignored because comments are not copied onto folders.
+  defp empty_parent_ids, do: %{document: %{}, file: %{}, link: %{}}
+
+  defp remember_parent_id(parent_ids, %{type: :document, document: document}, copied), do: put_in(parent_ids, [:document, document.id], copied.id)
+  defp remember_parent_id(parent_ids, %{type: :file, file: file}, copied), do: put_in(parent_ids, [:file, file.id], copied.id)
+  defp remember_parent_id(parent_ids, %{type: :link, link: link}, copied), do: put_in(parent_ids, [:link, link.id], copied.id)
+  defp remember_parent_id(parent_ids, _source, _copied), do: parent_ids
 
   defp insert_node(repo, attrs) do
     case repo.insert(Node.changeset(attrs)) do

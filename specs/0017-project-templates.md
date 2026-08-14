@@ -380,31 +380,43 @@ Each PR in this phase extends the same copy service in both directions: project 
 - [x] Keep draft content excluded from project-to-template copying and template-to-project materialization.
 - [x] Enable top-level template folder creation through the shared Docs & Files menu and folder modal.
 - [x] Enable top-level template file uploads through the shared file picker, drag-and-drop area, metadata form, and upload-progress flow.
-- [ ] Wire the remaining template resource mutations into the editor: nested-folder creation; create and update documents and links; update files; delete and move resources.
-- [ ] Replace the remaining dummy template Add actions with the corresponding document and link flows once those editor capabilities are ready.
-- [ ] When template duplication is implemented in Phase 6, keep draft content excluded from duplicated templates.
-- [ ] Cover nested folders, mixed resource types, rich-text blobs, published/draft/deleted state, document baselines, and source independence.
+- [x] Wire the remaining template resource mutations into the editor: nested-folder creation; create and update documents and links; update files; delete and move resources.
+- [x] Replace the remaining dummy template Add actions with the corresponding document and link flows once those editor capabilities are ready.
+- [x] Cover nested folders, mixed resource types, rich-text blobs, published/draft/deleted state, document baselines, and source independence.
 
 #### PR 5.5 — `feat: Copy comments in project templates`
 
-- [ ] Add template-specific comment records. When **Include comments** is selected, copy comments only after all included template parent-resource maps are available.
-- [ ] Support comments on included discussions, milestones, tasks, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
-- [ ] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
-- [ ] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
-- [ ] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
+- [x] Add template-specific comment records. When **Include comments** is selected, copy comments only after all included template parent-resource maps are available.
+- [x] Support comments on included discussions, milestones, tasks, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
+- [x] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
+- [x] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
+- [x] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
 - [ ] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.
 - [ ] Cover the complete option matrix, permission gating, cancellation, validation, retry, success navigation, and source-project independence in backend and end-to-end tests.
+
+#### PR 5.6 — `feat: Add project template feature tests through comments and Docs & Files`
+
+Add Wallaby feature coverage for the product surface shipped through PR 5.5. Do not cover duplicate, archive, restore, or delete; those belong to PR 6.1.
+
+- [ ] Cover the company-level and Space-level template libraries: search, Space filtering, empty states, access changes, New template, and navigation into the editor.
+- [ ] Cover blank-template creation and editor flows for name, description, duration, milestones, tasks, workflow, people and assignments, discussions, and Docs & Files, including View/Comment read-only versus Edit/Full Access.
+- [ ] Cover creating a project from a template from both the library card and New Project, including Space scoping, start-date validation, archived-template exclusion, and navigation to the generated project.
+- [ ] Cover **Save as template** from a project: permission gating, include-option defaults, schedule validation, cancellation, retry, and success navigation into the created template.
+- [ ] Cover the include-option matrix for people, discussions, comments, and Docs & Files, and assert that generated projects and saved templates stay independent of later source edits.
+- [ ] Keep the feature behind `project_templates` and assert that gated companies never see library, editor, or save-as-template entry points.
 
 ### Phase 6 — Template lifecycle, rollout, and hardening
 
 #### PR 6.1 — `feat: Add project template lifecycle actions`
 
 - [ ] Implement template duplication through the complete copy service, preserving relative offsets and included reusable content while generating an independent template graph.
+- [ ] When duplicating a template, reuse the same Docs & Files copy rules: copy only published folders/documents/files/links; skip drafts, deleted items, and document version history.
 - [ ] Add archive, restore, and delete operations with Space Edit Access checks and clear confirmation UI.
 - [ ] Hide archived templates from New Project and default library results; allow archived filtering and restoration in both libraries.
 - [ ] Ensure archive or deletion never changes generated projects and that duplicate/archive/delete operations do not create project activities or notifications.
 - [ ] Finish card actions and invalidate company, Space, template-page, and New Project caches consistently.
 - [ ] Add lifecycle tests for permissions, deep-copy independence, archived visibility, restoration, deletion, stale open pages, and generated-project independence.
+- [ ] Add feature tests for duplicate, archive, restore, and delete on both library surfaces, including confirmation UI, archived filtering, permission gating, and generated-project independence.
 
 #### PR 6.2 — `feat: Roll out project templates`
 

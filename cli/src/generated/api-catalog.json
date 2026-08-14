@@ -30281,6 +30281,17 @@
           "optional": true,
           "has_default": true,
           "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_comments",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
         }
       ],
       "docstring": null,

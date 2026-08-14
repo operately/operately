@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory.ProjectTemplates do
-  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Comment, Discussion, Milestone, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
   alias Operately.Repo
   alias Operately.Support.Factory.Utils
 
@@ -170,6 +170,31 @@ defmodule Operately.Support.Factory.ProjectTemplates do
 
     Map.put(ctx, testid, discussion)
   end
+
+  def add_project_template_comment(ctx, testid, template_name, parent_name, opts \\ []) do
+    {parent_type, parent_id} = comment_parent(ctx[parent_name])
+
+    comment =
+      %{
+        project_template_id: ctx[template_name].id,
+        author_id: ctx[Keyword.get(opts, :author, :creator)].id,
+        parent_type: parent_type,
+        parent_id: parent_id,
+        content: Keyword.get(opts, :content, %{"type" => "doc", "content" => []}),
+        position: Keyword.get(opts, :position, 0)
+      }
+      |> Comment.changeset()
+      |> Repo.insert!()
+
+    Map.put(ctx, testid, comment)
+  end
+
+  defp comment_parent(%Discussion{id: id}), do: {:discussion, id}
+  defp comment_parent(%Milestone{id: id}), do: {:milestone, id}
+  defp comment_parent(%Task{id: id}), do: {:task, id}
+  defp comment_parent(%ResourceDocument{id: id}), do: {:document, id}
+  defp comment_parent(%ResourceFile{id: id}), do: {:file, id}
+  defp comment_parent(%ResourceLink{id: id}), do: {:link, id}
 
   defp maybe_put(attrs, _key, nil), do: attrs
   defp maybe_put(attrs, key, value), do: Map.put(attrs, key, value)

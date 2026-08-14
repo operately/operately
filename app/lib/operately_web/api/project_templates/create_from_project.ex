@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProject do
     field? :include_people_and_assignments, :boolean, null: false, default: false
     field? :include_discussions, :boolean, null: false, default: true
     field? :include_docs_and_files, :boolean, null: false, default: true
+    field? :include_comments, :boolean, null: false, default: false
   end
 
   outputs do
