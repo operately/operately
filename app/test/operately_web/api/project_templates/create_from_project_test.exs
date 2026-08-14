@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.ContextualDates.ContextualDate
-  alias Operately.ProjectTemplates.{Discussion, Person, ProjectTemplate, ResourceDocument}
+  alias Operately.ProjectTemplates.{Comment, Discussion, Person, ProjectTemplate, ResourceDocument}
   alias Operately.Projects.Project
   alias Operately.Repo
 
@@ -84,6 +84,21 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
     assert {200, excluded} = request(ctx, name: "Without resources", include_docs_and_files: false)
     excluded_id = decode_id!(excluded.template.id)
     assert Repo.aggregate(from(document in ResourceDocument, join: node in assoc(document, :node), where: node.project_template_id == ^excluded_id), :count) == 0
+  end
+
+  test "copies comments only when requested", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_discussion(:discussion, :source)
+      |> Factory.add_comment(:comment, :discussion)
+
+    assert {200, excluded} = request(ctx, name: "Without comments")
+    excluded_id = decode_id!(excluded.template.id)
+    assert Repo.aggregate(from(c in Comment, where: c.project_template_id == ^excluded_id), :count) == 0
+
+    assert {200, included} = request(ctx, name: "With comments", include_comments: true)
+    included_id = decode_id!(included.template.id)
+    assert Repo.aggregate(from(c in Comment, where: c.project_template_id == ^included_id), :count) == 1
   end
 
   test "returns every schedule issue without creating a template", ctx do

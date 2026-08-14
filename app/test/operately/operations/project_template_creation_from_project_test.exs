@@ -3,14 +3,21 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   import Ecto.Query, only: [from: 2]
 
+  alias Operately.Activities.Activity
+  alias Operately.Blobs.Blob
   alias Operately.Comments.CommentThread
   alias Operately.ContextualDates.ContextualDate
+  alias Operately.Notifications.Notification
   alias Operately.Operations.ProjectTemplateCreationFromProject
-  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Comment, Discussion, Milestone, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
   alias Operately.Projects.Project
   alias Operately.Repo
+  alias Operately.ResourceHubs.{Document, File}
   alias Operately.Support.Factory
+  alias Operately.Support.RichText
   alias Operately.Tasks.Status
+  alias Operately.Updates.Comment, as: RuntimeComment
+  alias Operately.Updates.Reaction
   alias OperatelyWeb.Paths
 
   setup ctx do
@@ -148,12 +155,40 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   test "copies published Docs & Files into an independent template tree", ctx do
     ctx =
       ctx
+      |> Factory.add_blob(:embedded_blob)
       |> Factory.fetch_default_project_resource_hub(:hub, :source)
-      |> Factory.add_folder(:folder, :hub)
-      |> Factory.add_document(:published_document, :hub, folder: :folder, name: "Published guide")
+      |> Factory.add_folder(:parent_folder, :hub)
+      |> Factory.add_folder(:nested_folder, :hub, :parent_folder)
+
+    ctx =
+      ctx
+      |> Factory.add_document(:published_document, :hub,
+        folder: :nested_folder,
+        name: "Published guide",
+        content: blob_document(ctx.embedded_blob)
+      )
       |> Factory.add_document(:draft_document, :hub, state: :draft, name: "Draft guide")
-      |> Factory.add_file(:file, :hub, folder: :folder)
-      |> Factory.add_link(:link, :hub, folder: :folder)
+      |> Factory.add_document(:deleted_document, :hub, name: "Deleted guide")
+      |> Factory.add_file(:file, :hub, folder: :nested_folder)
+      |> Factory.add_file(:deleted_file, :hub)
+      |> Factory.add_link(:link, :hub, folder: :nested_folder)
+      |> Factory.add_link(:deleted_link, :hub)
+
+    blob_count = Repo.aggregate(Blob, :count)
+
+    {:ok, _} =
+      Operately.ResourceHubs.create_document_version(%{
+        document_id: ctx.published_document.id,
+        version_number: 2,
+        title: "Historical title",
+        content: %{"type" => "doc", "content" => [%{"type" => "paragraph"}]},
+        editor_id: ctx.creator.id,
+        origin: :edited
+      })
+
+    ctx.deleted_document |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()}) |> Repo.update!()
+    ctx.deleted_file |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()}) |> Repo.update!()
+    ctx.deleted_link |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()}) |> Repo.update!()
 
     assert {:ok, template} = create_template(ctx)
 
@@ -161,27 +196,42 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       Repo.all(from node in ResourceNode, where: node.project_template_id == ^template.id)
       |> Repo.preload([:folder, :document, :file, :link])
 
-    [folder_node] = Enum.filter(nodes, &(&1.type == :folder))
-    [document_node] = Enum.filter(nodes, &(&1.type == :document))
+    parent_node = Enum.find(nodes, &(&1.folder && &1.folder.name == ctx.parent_folder.name))
+    nested_node = Enum.find(nodes, &(&1.folder && &1.folder.name == ctx.nested_folder.name))
+    document_node = Enum.find(nodes, &(&1.document && &1.document.name == "Published guide"))
+    file_node = Enum.find(nodes, &(&1.file && &1.file.name == ctx.file.name))
+    link_node = Enum.find(nodes, &(&1.link && &1.link.name == ctx.link.name))
 
-    assert folder_node.folder.name == ctx.folder.name
-    assert document_node.document.name == "Published guide"
+    assert parent_node.parent_folder_id == nil
+    assert nested_node.parent_folder_id == parent_node.folder.id
+    assert document_node.parent_folder_id == nested_node.folder.id
+    assert file_node.parent_folder_id == nested_node.folder.id
+    assert link_node.parent_folder_id == nested_node.folder.id
     assert document_node.document.content == ctx.published_document.content
-    assert document_node.parent_folder_id == folder_node.folder.id
-    assert Enum.any?(nodes, &(&1.file && &1.file.name == ctx.file.name))
-    assert Enum.any?(nodes, &(&1.link && &1.link.name == ctx.link.name))
-    refute Enum.any?(nodes, fn node -> node.document && node.document.name == "Draft guide" end)
+    assert Operately.RichContent.find_blob_ids(document_node.document.content) == [ctx.embedded_blob.id]
+    refute document_node.document.content == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
+    refute Enum.any?(nodes, fn node -> node.document && node.document.name in ["Draft guide", "Deleted guide"] end)
+    refute Enum.any?(nodes, &(&1.file && &1.file.id != file_node.file.id))
+    refute Enum.any?(nodes, &(&1.link && &1.link.id != link_node.link.id))
 
-    assert Repo.aggregate(ResourceFolder, :count) == 1
+    assert Enum.count(nodes, &(&1.type == :folder)) == 2
+    assert Repo.aggregate(ResourceFolder, :count) == 2
     assert Repo.aggregate(ResourceDocument, :count) == 1
     assert Repo.aggregate(ResourceFile, :count) == 1
     assert Repo.aggregate(ResourceLink, :count) == 1
+    assert Repo.aggregate(Blob, :count) == blob_count
 
     ctx.published_document
-    |> Operately.ResourceHubs.Document.changeset(%{name: "Changed source"})
+    |> Document.changeset(%{name: "Changed source", content: %{"type" => "doc", "content" => []}})
+    |> Repo.update!()
+
+    ctx.file
+    |> File.changeset(%{name: "Changed source file"})
     |> Repo.update!()
 
     assert Repo.get!(ResourceDocument, document_node.document.id).name == "Published guide"
+    assert Repo.get!(ResourceDocument, document_node.document.id).content == ctx.published_document.content
+    assert Repo.get!(ResourceFile, file_node.file.id).name == ctx.file.name
   end
 
   test "supports an unscheduled project end and year-boundary offsets", ctx do
@@ -260,6 +310,89 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     assert {:ok, without_discussions} = create_template(ctx, name: "Without discussions", include_discussions: false)
     assert Repo.aggregate(from(d in Discussion, where: d.project_template_id == ^without_discussions.id), :count) == 0
+  end
+
+  test "copies comments onto included parents and skips excluded parents and milestone actions", ctx do
+    source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
+    task_status = source.task_statuses |> List.first() |> Map.from_struct()
+
+    ctx =
+      ctx
+      |> Map.put(:source, source)
+      |> Factory.add_project_discussion(:discussion, :source, title: "Launch notes")
+      |> Factory.add_project_milestone(:milestone, :source, timeframe: timeframe(nil, ~D[2028-01-20]))
+      |> Factory.add_project_task(:task, :milestone, task_status: task_status, due_date: nil)
+
+    ctx =
+      ctx
+      |> Factory.fetch_default_project_resource_hub(:hub, :source)
+      |> Factory.add_document(:document, :hub, name: "Guide")
+      |> Factory.add_file(:file, :hub)
+      |> Factory.add_link(:link, :hub)
+      |> Factory.preload(:task, :project)
+      |> Factory.preload(:document, [:resource_hub, :node])
+      |> Factory.preload(:file, [:resource_hub, :node])
+      |> Factory.preload(:link, [:resource_hub, :node])
+      |> Factory.add_comment(:discussion_comment, :discussion, content: RichText.rich_text("Discussion note"))
+      |> Factory.add_comment(:later_discussion_comment, :discussion, content: RichText.rich_text("Later note"))
+      |> Factory.add_comment(:milestone_comment, :milestone, content: RichText.rich_text("Milestone note"))
+      |> Factory.add_comment(:task_comment, :task, content: RichText.rich_text("Task note"))
+      |> Factory.add_comment(:document_comment, :document, content: RichText.rich_text("Document note"))
+      |> Factory.add_comment(:file_comment, :file, content: RichText.rich_text("File note"))
+      |> Factory.add_comment(:link_comment, :link, content: RichText.rich_text("Link note"))
+      |> Factory.add_reactions(:discussion_reaction, :discussion_comment)
+
+    ctx = stamp_comment_times(ctx, discussion_comment: ~N[2028-01-01 00:00:00], later_discussion_comment: ~N[2028-01-01 00:00:01])
+
+    {:ok, _complete} =
+      Operately.Comments.create_milestone_comment(ctx.creator, ctx.milestone, "complete", %{
+        content: RichText.rich_text("Completed"),
+        author_id: ctx.creator.id,
+        entity_id: ctx.milestone.id,
+        entity_type: :project_milestone
+      })
+
+    {:ok, _reopen} =
+      Operately.Comments.create_milestone_comment(ctx.creator, ctx.milestone, "reopen", %{
+        content: RichText.rich_text("Reopened"),
+        author_id: ctx.creator.id,
+        entity_id: ctx.milestone.id,
+        entity_type: :project_milestone
+      })
+
+    activity_count = Repo.aggregate(Activity, :count)
+    notification_count = Repo.aggregate(Notification, :count)
+
+    assert {:ok, excluded} = create_template(ctx)
+    assert Repo.aggregate(from(c in Comment, where: c.project_template_id == ^excluded.id), :count) == 0
+
+    assert {:ok, template} = create_template(ctx, name: "With comments", include_comments: true)
+    comments = Repo.all(from c in Comment, where: c.project_template_id == ^template.id, order_by: [asc: c.position, asc: c.id])
+    source_ids = MapSet.new([ctx.discussion_comment.id, ctx.later_discussion_comment.id, ctx.milestone_comment.comment.id, ctx.task_comment.id, ctx.document_comment.id, ctx.file_comment.id, ctx.link_comment.id])
+
+    assert Enum.count(comments) == 7
+    assert MapSet.disjoint?(MapSet.new(comments, & &1.id), source_ids)
+    refute Enum.any?(comments, &(&1.parent_id in [ctx.discussion.id, ctx.milestone.id, ctx.task.id, ctx.document.id, ctx.file.id, ctx.link.id]))
+    refute Enum.any?(comments, fn comment -> comment.content in [RichText.rich_text("Completed"), RichText.rich_text("Reopened")] end)
+    assert Repo.aggregate(from(r in Reaction, where: r.entity_id in ^Enum.map(comments, & &1.id)), :count) == 0
+    assert Repo.aggregate(Activity, :count) == activity_count
+    assert Repo.aggregate(Notification, :count) == notification_count
+
+    discussion = Repo.get_by!(Discussion, project_template_id: template.id, title: "Launch notes")
+    discussion_comments = Enum.filter(comments, &(&1.parent_type == :discussion and &1.parent_id == discussion.id))
+    assert Enum.map(discussion_comments, & &1.content) == [ctx.discussion_comment.content, ctx.later_discussion_comment.content]
+    assert Enum.map(discussion_comments, & &1.position) == [0, 1]
+
+    ctx.discussion_comment |> RuntimeComment.changeset(%{content: RichText.rich_text("Changed")}) |> Repo.update!()
+    assert Repo.get!(Comment, hd(discussion_comments).id).content == ctx.discussion_comment.content
+
+    assert {:ok, without_discussions} = create_template(ctx, name: "No discussion comments", include_comments: true, include_discussions: false)
+    refute Repo.exists?(from(c in Comment, where: c.project_template_id == ^without_discussions.id and c.parent_type == :discussion))
+    assert Repo.exists?(from(c in Comment, where: c.project_template_id == ^without_discussions.id and c.parent_type == :task))
+
+    assert {:ok, without_docs} = create_template(ctx, name: "No resource comments", include_comments: true, include_docs_and_files: false)
+    refute Repo.exists?(from(c in Comment, where: c.project_template_id == ^without_docs.id and c.parent_type in [:document, :file, :link]))
+    assert Repo.exists?(from(c in Comment, where: c.project_template_id == ^without_docs.id and c.parent_type == :discussion))
   end
 
   test "returns every date before the project start in one structured error", ctx do
@@ -451,6 +584,13 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert Repo.aggregate(ProjectTemplate, :count) == 0
   end
 
+  defp stamp_comment_times(ctx, times) do
+    Enum.reduce(times, ctx, fn {key, inserted_at}, ctx ->
+      comment = Map.fetch!(ctx, key) |> RuntimeComment.changeset(%{inserted_at: inserted_at}) |> Repo.update!()
+      Map.put(ctx, key, comment)
+    end)
+  end
+
   defp create_template(ctx, opts \\ []) do
     ProjectTemplateCreationFromProject.run(%ProjectTemplateCreationFromProject{
       project_id: ctx.source.id,
@@ -458,7 +598,9 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       name: Keyword.get(opts, :name, "Reusable project"),
       description: Keyword.get(opts, :description),
       include_people_and_assignments: Keyword.get(opts, :include_people_and_assignments, false),
-      include_discussions: Keyword.get(opts, :include_discussions, true)
+      include_discussions: Keyword.get(opts, :include_discussions, true),
+      include_docs_and_files: Keyword.get(opts, :include_docs_and_files, true),
+      include_comments: Keyword.get(opts, :include_comments, false)
     })
   end
 
@@ -523,4 +665,21 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   end
 
   defp status_attrs(statuses), do: Enum.map(statuses, &Map.from_struct/1)
+
+  defp blob_document(blob) do
+    %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "blob",
+          "attrs" => %{
+            "id" => Paths.blob_id(blob),
+            "src" => Blob.url(blob),
+            "title" => blob.filename,
+            "filetype" => blob.content_type
+          }
+        }
+      ]
+    }
+  end
 end

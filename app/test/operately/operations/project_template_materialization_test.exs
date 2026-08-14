@@ -7,15 +7,18 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
   alias Operately.Comments.CommentThread
+  alias Operately.Comments.MilestoneComment
   alias Operately.ContextualDates.Timeframe
+  alias Operately.Blobs.Blob
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Operations.{ProjectCreation, ProjectTemplateMaterialization}
-  alias Operately.ProjectTemplates.{Person, ProjectTemplate, TaskAssignment}
+  alias Operately.ProjectTemplates.{Comment, Person, ProjectTemplate, ResourceDocument, ResourceFile, TaskAssignment}
   alias Operately.Projects.{Contributor, Milestone, Project}
   alias Operately.Repo
-  alias Operately.ResourceHubs.ResourceHub
+  alias Operately.ResourceHubs.{DocumentVersion, ResourceHub}
   alias Operately.Support.Factory
   alias Operately.Tasks.{Reminder, Status, Task}
+  alias Operately.Updates.Comment, as: RuntimeComment
   alias OperatelyWeb.Paths
 
   setup ctx do
@@ -139,18 +142,24 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   test "materializes template Docs & Files as independent published runtime resources", ctx do
     ctx =
       ctx
+      |> Factory.add_blob(:embedded_blob)
+      |> Factory.add_blob(:file_blob)
       |> Factory.add_project_template(:template, :space)
-      |> Factory.add_project_template_resource_folder(:folder, :template, name: "Launch assets")
+      |> Factory.add_project_template_resource_folder(:parent_folder, :template, name: "Launch assets")
+      |> Factory.add_project_template_resource_folder(:nested_folder, :template, parent_folder: :parent_folder, name: "Campaign")
+
+    ctx =
+      ctx
       |> Factory.add_project_template_resource_document(:document, :template,
-        parent_folder: :folder,
+        parent_folder: :nested_folder,
         position: 0,
         name: "Launch plan",
-        content: %{"type" => "doc", "content" => []}
+        content: blob_document(ctx.embedded_blob)
       )
-      |> Factory.add_blob(:blob)
-      |> Factory.add_project_template_resource_file(:file, :template, :blob, parent_folder: :folder, position: 1, name: "Launch file")
-      |> Factory.add_project_template_resource_link(:link, :template, parent_folder: :folder, position: 2, name: "Launch link")
+      |> Factory.add_project_template_resource_file(:file, :template, :file_blob, parent_folder: :nested_folder, position: 1, name: "Launch file")
+      |> Factory.add_project_template_resource_link(:link, :template, parent_folder: :nested_folder, position: 2, name: "Launch link")
 
+    blob_count = Repo.aggregate(Blob, :count)
     assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
 
     hub = Repo.preload(project, :resource_hub).resource_hub
@@ -159,21 +168,97 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
       Repo.all(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id)
       |> Repo.preload([:folder, :document, :file, :link])
 
-    [folder_node] = Enum.filter(nodes, &(&1.type == :folder))
-    [document_node] = Enum.filter(nodes, &(&1.type == :document))
+    parent_node = Enum.find(nodes, &(&1.folder && &1.folder.name == "Launch assets"))
+    nested_node = Enum.find(nodes, &(&1.folder && &1.folder.name == "Campaign"))
+    document_node = Enum.find(nodes, &(&1.document && &1.document.name == "Launch plan"))
+    file_node = Enum.find(nodes, &(&1.file && &1.file.name == "Launch file"))
     document = document_node.document
+    [version] = Repo.all(from version in DocumentVersion, where: version.document_id == ^document.id)
 
-    assert folder_node.folder.name == "Launch assets"
-    assert document.name == "Launch plan"
-    assert document.content == %{"type" => "doc", "content" => []}
+    assert parent_node.parent_folder_id == nil
+    assert nested_node.parent_folder_id == parent_node.folder.id
+    assert document_node.parent_folder_id == nested_node.folder.id
+    assert file_node.parent_folder_id == nested_node.folder.id
+    assert document_node.id != ctx.document.node.id
+    assert nested_node.id != ctx.nested_folder.node.id
+    assert document.content == ctx.document.content
     assert document.state == :published
     assert document.current_version == 1
-    assert document_node.parent_folder_id == folder_node.folder.id
-    assert document_node.id != ctx.document.node_id
-    assert Repo.aggregate(from(version in Operately.ResourceHubs.DocumentVersion, where: version.document_id == ^document.id), :count) == 1
+    assert Operately.RichContent.find_blob_ids(document.content) == [ctx.embedded_blob.id]
+    assert version.version_number == 1
+    assert version.title == "Launch plan"
+    assert version.content == ctx.document.content
     assert Repo.get_by!(SubscriptionList, parent_id: document.id, parent_type: :resource_hub_document)
-    assert Enum.any?(nodes, &(&1.file && &1.file.name == "Launch file" && &1.file.blob_id == ctx.blob.id))
-    assert Enum.any?(nodes, &(&1.link && &1.link.name == "Launch link"))
+    assert file_node.file.blob_id == ctx.file_blob.id
+    assert Repo.aggregate(Blob, :count) == blob_count
+
+    ctx.document
+    |> ResourceDocument.changeset(%{name: "Changed template", content: %{"type" => "doc", "content" => []}})
+    |> Repo.update!()
+
+    ctx.file
+    |> ResourceFile.changeset(%{name: "Changed template file"})
+    |> Repo.update!()
+
+    persisted_document = Repo.reload!(document)
+    persisted_file = Repo.reload!(file_node.file)
+
+    assert persisted_document.name == "Launch plan"
+    assert persisted_document.content == blob_document(ctx.embedded_blob)
+    assert persisted_file.name == "Launch file"
+    assert persisted_file.blob_id == ctx.file_blob.id
+  end
+
+  test "materializes template comments onto generated parents without activities", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:file_blob)
+      |> Factory.add_company_member(:unavailable)
+      |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_milestone(:milestone, :template)
+      |> Factory.add_project_template_task(:task, :template, milestone: :milestone)
+      |> Factory.add_project_template_discussion(:discussion, :template, title: "Launch notes")
+      |> Factory.add_project_template_resource_document(:document, :template, name: "Guide", position: 0)
+      |> Factory.add_project_template_resource_file(:file, :template, :file_blob, name: "Artwork", position: 1)
+      |> Factory.add_project_template_resource_link(:link, :template, name: "Dashboard", position: 2)
+
+    ctx =
+      ctx
+      |> Factory.add_project_template_comment(:discussion_comment, :template, :discussion, content: %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}, position: 0)
+      |> Factory.add_project_template_comment(:milestone_comment, :template, :milestone, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:task_comment, :template, :task, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:document_comment, :template, :document, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:file_comment, :template, :file, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:link_comment, :template, :link, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:unavailable_author_comment, :template, :discussion,
+        author: :unavailable,
+        content: %{"type" => "doc", "content" => [%{"type" => "text"}]},
+        position: 1
+      )
+      |> Factory.suspend_company_member(:unavailable)
+
+    assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
+
+    discussion = Repo.get_by!(CommentThread, parent_id: project.id, parent_type: :project)
+    milestone = Repo.get_by!(Milestone, project_id: project.id)
+    task = Repo.get_by!(Task, project_id: project.id)
+    hub = Repo.preload(project, :resource_hub).resource_hub
+    document = Repo.one!(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id and node.type == :document, preload: [:document]).document
+    file = Repo.one!(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id and node.type == :file, preload: [:file]).file
+    link = Repo.one!(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id and node.type == :link, preload: [:link]).link
+
+    comments = Repo.all(from c in RuntimeComment, where: c.entity_id in ^[discussion.id, milestone.id, task.id, document.id, file.id, link.id], order_by: [asc: c.inserted_at, asc: c.id])
+    template_ids = MapSet.new([ctx.discussion_comment.id, ctx.milestone_comment.id, ctx.task_comment.id, ctx.document_comment.id, ctx.file_comment.id, ctx.link_comment.id, ctx.unavailable_author_comment.id])
+
+    assert Enum.count(comments) == 7
+    assert MapSet.disjoint?(MapSet.new(comments, & &1.id), template_ids)
+    assert Repo.get_by!(MilestoneComment, milestone_id: milestone.id, action: :none).comment_id in Enum.map(comments, & &1.id)
+    assert Enum.any?(comments, &(&1.entity_type == :comment_thread and &1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == ctx.unavailable_author_comment.content))
+    assert Repo.aggregate(from(a in Activity, where: a.content["project_id"] == ^project.id and a.action != "project_created"), :count) == 0
+
+    ctx.discussion_comment |> Comment.changeset(%{content: %{"type" => "doc", "content" => []}}) |> Repo.update!()
+    copied_discussion_comment = Enum.find(comments, &(&1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}))
+    assert Repo.reload!(copied_discussion_comment).content == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
   end
 
   test "uses creation access baselines and creates only normal runtime side effects", ctx do
@@ -480,5 +565,22 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
       |> Repo.update!()
 
     ctx |> Map.put(:template, template) |> Map.put(:launch, milestone)
+  end
+
+  defp blob_document(blob) do
+    %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "blob",
+          "attrs" => %{
+            "id" => Paths.blob_id(blob),
+            "src" => Blob.url(blob),
+            "title" => blob.filename,
+            "filetype" => blob.content_type
+          }
+        }
+      ]
+    }
   end
 end

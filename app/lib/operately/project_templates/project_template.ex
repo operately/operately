@@ -4,7 +4,7 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
   use Operately.Schema
   use Operately.Repo.Getter
 
-  alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ResourceNode, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Comment, Discussion, Milestone, Person, ResourceNode, Task, TaskAssignment}
   alias Operately.Tasks.{KanbanState, Status}
 
   schema "project_templates" do
@@ -20,6 +20,7 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
     has_many :people, Person
     has_many :task_assignments, TaskAssignment
     has_many :discussions, Discussion
+    has_many :comments, Comment
     has_many :resource_nodes, ResourceNode
 
     field :name, :string

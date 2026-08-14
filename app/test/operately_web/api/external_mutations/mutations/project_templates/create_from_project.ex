@@ -26,7 +26,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectTemplates.CreateFr
     %{
       project_id: Paths.project_id(ctx.project),
       name: "Reusable project",
-      include_people_and_assignments: true
+      include_people_and_assignments: true,
+      include_comments: false
     }
   end
 

@@ -413,6 +413,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert Discovery.classify_table("projects") == :included
       assert Discovery.classify_table("milestone_comments") == :included
       assert Discovery.classify_table("project_templates") == :included
+      assert Discovery.classify_table("project_template_comments") == :included
       assert Discovery.classify_table("project_template_discussions") == :included
       assert Discovery.classify_table("project_template_milestones") == :included
       assert Discovery.classify_table("project_template_people") == :included

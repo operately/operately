@@ -8,7 +8,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   alias Operately.Repo
   alias __MODULE__.{CopyPlanner, ScheduleValidator, TemplateCreator, Validator}
 
-  defstruct [:project_id, :creator_id, :name, :description, include_people_and_assignments: false, include_discussions: true, include_docs_and_files: true]
+  defstruct [:project_id, :creator_id, :name, :description, include_people_and_assignments: false, include_discussions: true, include_docs_and_files: true, include_comments: false]
 
   def run(%__MODULE__{} = params) do
     Multi.new()
@@ -83,6 +83,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
          |> Map.merge(people_graph)
          |> Map.put(:discussions, plan_discussions(discussions, params.include_discussions))
          |> Map.put(:include_docs_and_files, params.include_docs_and_files)
+         |> Map.put(:include_comments, params.include_comments)
          |> Map.put(:template_attrs, %{
            company_id: project.company_id,
            space_id: project.group_id,
@@ -376,7 +377,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   end
 
   defmodule TemplateCreator do
-    alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
+    alias Operately.ProjectTemplates.{Comment, Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
     alias Operately.ProjectTemplates.Resources
 
     def template_changeset(plan), do: ProjectTemplate.changeset(plan.template_attrs)
@@ -387,8 +388,9 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
            {:ok, people} <- insert_people(repo, plan.people, template),
            {:ok, assignments} <- insert_assignments(repo, plan.task_assignments, template),
            {:ok, discussions} <- insert_discussions(repo, plan.discussions, template),
-           {:ok, resource_nodes} <- insert_resources(repo, plan, template) do
-        {:ok, %{milestones: milestones, tasks: tasks, people: people, task_assignments: assignments, discussions: discussions, resource_nodes: resource_nodes}}
+           {:ok, resources} <- insert_resources(repo, plan, template),
+           {:ok, comments} <- insert_comments(repo, plan, template, resources) do
+        {:ok, %{milestones: milestones, tasks: tasks, people: people, task_assignments: assignments, discussions: discussions, resource_nodes: resources.nodes, comments: comments}}
       end
     end
 
@@ -479,10 +481,23 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
       )
     end
 
-    defp insert_resources(_repo, %{include_docs_and_files: false}, _template), do: {:ok, []}
+    defp insert_resources(_repo, %{include_docs_and_files: false}, _template), do: {:ok, %{nodes: [], parent_ids: %{document: %{}, file: %{}, link: %{}}}}
 
     defp insert_resources(repo, plan, template) do
       Resources.copy_from_project(repo, plan.template_attrs.source_project_id, template)
+    end
+
+    defp insert_comments(_repo, %{include_comments: false}, _template, _resources), do: {:ok, []}
+
+    defp insert_comments(repo, plan, template, resources) do
+      Comment.copy_from_project(repo, plan.template_attrs.source_project_id, template, %{
+        discussion: Map.new(plan.discussions, &{&1.source.id, &1.target.id}),
+        milestone: Map.new(plan.milestones, &{&1.source.id, &1.target.id}),
+        task: Map.new(plan.tasks, &{&1.source.id, &1.target.id}),
+        document: resources.parent_ids.document,
+        file: resources.parent_ids.file,
+        link: resources.parent_ids.link
+      })
     end
 
     defp insert_all(resources, changeset_fun, repo, type) do
