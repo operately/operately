@@ -64,8 +64,11 @@ export function UnstyledButton(props: UnstyledButtonProps) {
 }
 
 function UnstyledLinkButton(props: UnstyledButtonProps) {
+  const to = props.linkTo!;
+  const external = to.startsWith("http://") || to.startsWith("https://");
+
   return (
-    <DivLink className={props.className} to={props.linkTo!} target={props.linkTarget} testId={props.testId}>
+    <DivLink className={props.className} to={to} target={props.linkTarget} testId={props.testId} external={external}>
       {props.children}
       {props.spinner}
     </DivLink>
