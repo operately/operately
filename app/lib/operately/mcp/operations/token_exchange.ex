@@ -102,65 +102,80 @@ defmodule Operately.Mcp.Operations.TokenExchange do
     end
   end
 
+  # Reuse of a rotated refresh token revokes the grant family (RFC 9700).
+  # An expired refresh token only fails the exchange; the grant stays active.
   defp rotate_refresh_token(%RefreshToken{} = refresh_token) do
-    Repo.transaction(fn ->
-      refresh_token =
-        Repo.one!(
-          from(t in RefreshToken,
-            where: t.id == ^refresh_token.id,
-            preload: [grant: [:account, :company]]
+    result =
+      Repo.transaction(fn ->
+        refresh_token =
+          Repo.one!(
+            from(t in RefreshToken,
+              where: t.id == ^refresh_token.id,
+              preload: [grant: [:account, :company]],
+              lock: "FOR UPDATE"
+            )
           )
-        )
 
-      cond do
-        refresh_token.revoked_at ->
-          Repo.rollback(:invalid_grant)
+        cond do
+          refresh_token.revoked_at ->
+            Repo.rollback(:invalid_grant)
 
-        refresh_token.used_at ->
-          GrantOps.revoke_grant_lineage(refresh_token.grant, Token.now(), true)
-          Repo.rollback(:invalid_grant)
+          refresh_token.used_at ->
+            GrantOps.revoke_grant_lineage(refresh_token.grant, Token.now(), true)
+            {:replay, :invalid_grant}
 
-        Token.expired?(refresh_token.expires_at) ->
-          GrantOps.revoke_grant_lineage(refresh_token.grant, Token.now(), true)
-          Repo.rollback(:invalid_grant)
+          Token.expired?(refresh_token.expires_at) ->
+            Repo.rollback(:invalid_grant)
 
-        true ->
-          now = Token.now()
+          true ->
+            rotate_unused_refresh_token!(refresh_token)
+        end
+      end)
 
-          refresh_token
-          |> RefreshToken.changeset(%{used_at: now})
-          |> Repo.update!()
-
-          {access_token, raw_access_token} = build_access_token(refresh_token.grant, refresh_token.scopes, refresh_token.resource)
-
-          access_token = Repo.insert!(access_token)
-
-          {new_refresh_token, raw_refresh_token} =
-            build_refresh_token(refresh_token.grant, refresh_token.scopes, refresh_token.resource, refresh_token.id)
-
-          new_refresh_token = Repo.insert!(new_refresh_token)
-
-          refresh_token
-          |> RefreshToken.changeset(%{replaced_by_token_id: new_refresh_token.id})
-          |> Repo.update!()
-
-          %{
-            access_token: raw_access_token,
-            refresh_token: raw_refresh_token,
-            token_type: "Bearer",
-            expires_in: @access_token_ttl_seconds,
-            scope: Resources.scopes_to_string(refresh_token.scopes),
-            access_token_record: access_token,
-            refresh_token_record: new_refresh_token,
-            grant: refresh_token.grant
-          }
-      end
-    end)
-    |> case do
+    case result do
+      {:ok, {:replay, :invalid_grant}} -> {:error, :invalid_grant}
       {:ok, tokens} -> {:ok, tokens}
       {:error, reason} -> {:error, reason}
       {:error, _step, reason, _changes} -> {:error, reason}
     end
+  rescue
+    error in Ecto.ConstraintError ->
+      if error.constraint == "mcp_refresh_tokens_previous_token_id_index" do
+        {:error, :invalid_grant}
+      else
+        reraise error, __STACKTRACE__
+      end
+  end
+
+  defp rotate_unused_refresh_token!(%RefreshToken{} = refresh_token) do
+    now = Token.now()
+
+    refresh_token
+    |> RefreshToken.changeset(%{used_at: now})
+    |> Repo.update!()
+
+    {access_token, raw_access_token} = build_access_token(refresh_token.grant, refresh_token.scopes, refresh_token.resource)
+    access_token = Repo.insert!(access_token)
+
+    {new_refresh_token, raw_refresh_token} =
+      build_refresh_token(refresh_token.grant, refresh_token.scopes, refresh_token.resource, refresh_token.id)
+
+    new_refresh_token = Repo.insert!(new_refresh_token)
+
+    refresh_token
+    |> RefreshToken.changeset(%{replaced_by_token_id: new_refresh_token.id})
+    |> Repo.update!()
+
+    %{
+      access_token: raw_access_token,
+      refresh_token: raw_refresh_token,
+      token_type: "Bearer",
+      expires_in: @access_token_ttl_seconds,
+      scope: Resources.scopes_to_string(refresh_token.scopes),
+      access_token_record: access_token,
+      refresh_token_record: new_refresh_token,
+      grant: refresh_token.grant
+    }
   end
 
   defp issue_tokens!(%Grant{} = grant, scopes, resource, previous_refresh_token_id) do

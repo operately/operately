@@ -4,8 +4,11 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import OperatelyWeb.Mcp.ToolConnHelper, except: [authorize_params: 2, authorize_params: 3]
+  import Ecto.Query
 
   alias Operately.Mcp
+  alias Operately.Mcp.{AccessToken, Grant, RefreshToken, Session, Token}
+  alias Operately.Repo
   alias OperatelyWeb.Mcp.ToolConnHelper
 
   setup do
@@ -256,11 +259,12 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     assert metadata.client_id == client.client_id
   end
 
-  test "rotates refresh tokens and rejects replay", %{conn: _conn, client: client} do
+  test "rotates refresh tokens and revokes the grant family on replay", %{conn: _conn, client: client} do
     account = account_fixture()
     company = company_fixture(%{company_name: "Rotations LLC"}, account)
 
-    %{refresh_token: refresh_token} = authorize_and_issue_tokens(account, company, client)
+    %{access_token: access_token, refresh_token: refresh_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, _session_id} = initialize_session(access_token)
 
     first_refresh_conn =
       post(build_conn(), "/oauth/token", %{
@@ -288,6 +292,68 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
 
     assert replay_conn.status == 400
     assert replay_body["error"] == "invalid_grant"
+
+    grant = Repo.one!(from(g in Grant, where: g.account_id == ^account.id and g.company_id == ^company.id))
+    assert grant.revoked_at
+
+    assert Repo.all(from(t in AccessToken, where: t.grant_id == ^grant.id and is_nil(t.revoked_at))) == []
+    assert Repo.all(from(t in RefreshToken, where: t.grant_id == ^grant.id and is_nil(t.revoked_at))) == []
+    assert Repo.all(from(s in Session, where: s.grant_id == ^grant.id and is_nil(s.closed_at))) == []
+
+    successor_refresh_conn =
+      post(build_conn(), "/oauth/token", %{
+        "grant_type" => "refresh_token",
+        "client_id" => client.client_id,
+        "refresh_token" => first_refresh_body["refresh_token"],
+        "resource" => Mcp.canonical_resource_uri()
+      })
+
+    assert successor_refresh_conn.status == 400
+    assert Jason.decode!(successor_refresh_conn.resp_body)["error"] == "invalid_grant"
+
+    successor_mcp_conn =
+      build_conn()
+      |> put_req_header("accept", "application/json, text/event-stream")
+      |> put_req_header("content-type", "application/json")
+      |> put_req_header("authorization", "Bearer #{first_refresh_body["access_token"]}")
+      |> post("/mcp", %{
+        "jsonrpc" => "2.0",
+        "id" => "1",
+        "method" => "initialize",
+        "params" => %{
+          "protocolVersion" => Mcp.latest_protocol_version(),
+          "capabilities" => %{},
+          "clientInfo" => %{"name" => "Example Client", "version" => "1.0.0"}
+        }
+      })
+
+    assert successor_mcp_conn.status == 401
+  end
+
+  test "expired refresh tokens fail without revoking the grant", %{conn: _conn, client: client} do
+    account = account_fixture()
+    company = company_fixture(%{company_name: "Expiry LLC"}, account)
+
+    %{refresh_token: refresh_token} = authorize_and_issue_tokens(account, company, client)
+
+    RefreshToken
+    |> Repo.get_by!(token_hash: Token.hash(refresh_token))
+    |> RefreshToken.changeset(%{expires_at: DateTime.add(Token.now(), -60, :second)})
+    |> Repo.update!()
+
+    expired_conn =
+      post(build_conn(), "/oauth/token", %{
+        "grant_type" => "refresh_token",
+        "client_id" => client.client_id,
+        "refresh_token" => refresh_token,
+        "resource" => Mcp.canonical_resource_uri()
+      })
+
+    assert expired_conn.status == 400
+    assert Jason.decode!(expired_conn.resp_body)["error"] == "invalid_grant"
+
+    grant = Repo.one!(from(g in Grant, where: g.account_id == ^account.id and g.company_id == ^company.id))
+    refute grant.revoked_at
   end
 
   test "registers a dynamic oauth client", %{conn: conn} do

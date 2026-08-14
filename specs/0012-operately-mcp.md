@@ -166,6 +166,10 @@ When the authorization request omits `scope` or passes an empty value, Operately
 
 Discovery metadata advertises supported scopes and the read-only default via `scopes_supported` and `default_scopes` on Protected Resource Metadata and Authorization Server Metadata.
 
+### Refresh-token rotation
+
+Refresh tokens rotate on each successful `/oauth/token` refresh. Reuse of an already-rotated refresh token returns `invalid_grant` and **revokes the grant family** (grant, access tokens, refresh tokens, sessions), per RFC 9700. An **expired** refresh token returns `invalid_grant` only; the grant stays active so the client can reauthorize without an implicit revoke. At most one successor exists per refresh token (`previous_token_id` is unique).
+
 ### Client registration
 
 PRs 1–4 accept only pre-registered OAuth clients configured on the Operately server:
