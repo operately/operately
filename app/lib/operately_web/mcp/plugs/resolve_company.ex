@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Mcp.Plugs.ResolveCompany do
     else
       {:error, :membership_revoked} ->
         Mcp.revoke_grant_for_reconnect(grant)
-        Auth.unauthorized(conn)
+        Auth.unauthorized(conn, error: "invalid_token")
     end
   end
 end
