@@ -828,6 +828,34 @@ describe("TemplateProjectPage", () => {
     expect(screen.queryByText("Launch checklist")).not.toBeInTheDocument();
   });
 
+  it("opens a nested folder from the folderId query param", () => {
+    renderPage(
+      createProps({
+        resourceNodes: [
+          resourceNode({ id: "folder-node-1", folderId: "assets", type: "folder", name: "Assets" }),
+          resourceNode({
+            id: "root-doc",
+            type: "document",
+            name: "Launch guide",
+            link: "/templates/template-1/documents/root-doc",
+            position: 1,
+          }),
+          resourceNode({
+            id: "nested-doc",
+            parentFolderId: "assets",
+            type: "document",
+            name: "Launch checklist",
+            link: "/templates/template-1/documents/nested-doc",
+          }),
+        ],
+      }),
+      "/templates/template-1?tab=docs-and-files&folderId=assets",
+    );
+
+    expect(screen.getByText("Launch checklist")).toBeInTheDocument();
+    expect(screen.queryByText("Launch guide")).not.toBeInTheDocument();
+  });
+
   it("shows a moved resource inside its destination folder", () => {
     renderPage(
       createProps({

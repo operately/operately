@@ -414,12 +414,23 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "project-templates"]);
   }
 
-  projectTemplatePath(templateId: string, attrs?: { tab?: "overview" | "tasks" | "discussions" | "docs-and-files" }) {
-    if (attrs?.tab) {
-      return this.createCompanyPath(["project-templates", templateId]) + `?tab=${attrs.tab}`;
+  projectTemplatePath(
+    templateId: string,
+    attrs?: { tab?: "overview" | "tasks" | "discussions" | "docs-and-files"; folderId?: string },
+  ) {
+    const params = new URLSearchParams();
+
+    if (attrs?.folderId) {
+      params.set("tab", "docs-and-files");
+      params.set("folderId", attrs.folderId);
+    } else if (attrs?.tab) {
+      params.set("tab", attrs.tab);
     }
 
-    return this.createCompanyPath(["project-templates", templateId]);
+    const query = params.toString();
+    const path = this.createCompanyPath(["project-templates", templateId]);
+
+    return query ? `${path}?${query}` : path;
   }
 
   projectTemplateDiscussionNewPath(templateId: string) {

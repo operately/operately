@@ -1,6 +1,7 @@
 import Api, { type ProjectTemplate, type ProjectTemplateResourceNode } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { compareIds, Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
@@ -65,7 +66,10 @@ function Page() {
   return (
     <DocumentEditPage
       pageTitle={["Edit Document", template.name]}
-      navigation={navigation(template, document.name, cancelLink, paths)}
+      navigation={buildProjectTemplateResourceNavigation(template, paths, {
+        parentFolderId: node.parentFolderId,
+        current: { to: cancelLink, label: document.name },
+      })}
       testId="project-template-edit-document-page"
       richTextHandlers={richTextHandlers}
       initialTitle={document.name}
@@ -78,12 +82,3 @@ function Page() {
   );
 }
 
-function navigation(template: ProjectTemplate, documentName: string, documentLink: string, paths: Paths) {
-  return [
-    { to: paths.spacePath(template.space.id), label: template.space.name },
-    { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
-    { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id, { tab: "docs-and-files" }), label: "Docs & Files" },
-    { to: documentLink, label: documentName },
-  ];
-}
