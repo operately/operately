@@ -487,7 +487,7 @@ Status: implemented.
 ### PR 5C: CIMD authorization integration
 
 - Extend `Operately.Mcp.ClientMetadata.resolve/1` resolution order: config allowlist → cached/fetched CIMD document → `invalid_client`
-- Keep `validate_redirect_uri/2` as exact-match against registered `redirect_uris` for both allowlisted and CIMD clients
+- Keep `validate_redirect_uri/2` as exact-match against registered `redirect_uris` for both allowlisted and CIMD clients, except loopback HTTP(S) URIs which match scheme/host/path/query and ignore port (RFC 8252 §7.3)
 - Map fetch/parse failures to existing OAuth `invalid_client` responses without leaking internals; log details server-side
 - Add OAuth and MCP integration tests for a CIMD client completing authorize → token → `tools/list`
 - Add regression tests for redirect-uri mismatch, document `client_id` mismatch, and allowlist precedence over CIMD

@@ -42,4 +42,27 @@ defmodule Operately.Mcp.ClientMetadata.RedirectUriTest do
     assert {:error, :invalid_redirect_uri} = RedirectUri.validate_all([])
     assert {:error, :invalid_redirect_uri} = RedirectUri.validate_all(["http://client.example.com/callback"])
   end
+
+  test "registered?/2 ignores port on loopback redirect uris" do
+    registered = ["http://127.0.0.1/callback/f1wQ3Hyd4h-Y", "http://localhost/callback/f1wQ3Hyd4h-Y"]
+
+    assert RedirectUri.registered?(registered, "http://127.0.0.1:51391/callback/f1wQ3Hyd4h-Y")
+    assert RedirectUri.registered?(registered, "http://localhost:51391/callback/f1wQ3Hyd4h-Y")
+    assert RedirectUri.registered?(["http://127.0.0.1:5555/callback/id"], "http://127.0.0.1:51391/callback/id")
+    assert RedirectUri.registered?(["http://[::1]/callback"], "http://[::1]:8080/callback")
+  end
+
+  test "registered?/2 still exact-matches non-loopback redirect uris" do
+    assert RedirectUri.registered?(["https://client.example.com/callback"], "https://client.example.com/callback")
+    refute RedirectUri.registered?(["https://client.example.com/callback"], "https://client.example.com:8443/callback")
+    refute RedirectUri.registered?(["cursor://anysphere.cursor-mcp/oauth/callback"], "cursor://anysphere.cursor-mcp:1/oauth/callback")
+  end
+
+  test "registered?/2 rejects loopback mismatches" do
+    registered = ["http://127.0.0.1/callback/id"]
+
+    refute RedirectUri.registered?(registered, "http://127.0.0.1:51391/callback/other")
+    refute RedirectUri.registered?(registered, "http://localhost:51391/callback/id")
+    refute RedirectUri.registered?(registered, "https://evil.example.com/callback")
+  end
 end

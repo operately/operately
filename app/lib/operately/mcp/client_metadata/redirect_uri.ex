@@ -11,6 +11,9 @@ defmodule Operately.Mcp.ClientMetadata.RedirectUri do
   Custom schemes such as `cursor://`, `vscode://`, or `windsurf://` are accepted
   when they target a real host/path and use `/oauth/callback` or `/callback`.
   Dangerous schemes (`javascript`, `data`, `file`, etc.) are always rejected.
+
+  Loopback HTTP(S) redirect URIs match registered URIs by scheme, host, path,
+  and query, ignoring port (RFC 8252 §7.3). Other URIs must match exactly.
   """
 
   @localhost_hosts ["localhost", "127.0.0.1", "::1"]
@@ -35,6 +38,18 @@ defmodule Operately.Mcp.ClientMetadata.RedirectUri do
   def allowed?(uri) when is_binary(uri) do
     native_app_redirect?(uri) or https_public?(uri) or loopback?(uri)
   end
+
+  @doc """
+  Returns true when `redirect_uri` is registered for the client.
+
+  Non-loopback URIs require an exact string match. Loopback HTTP(S) URIs
+  may use any port.
+  """
+  def registered?(registered_uris, redirect_uri) when is_list(registered_uris) and is_binary(redirect_uri) do
+    redirect_uri in registered_uris or Enum.any?(registered_uris, &loopback_match?(&1, redirect_uri))
+  end
+
+  def registered?(_, _), do: false
 
   defp native_app_redirect?(uri) do
     case URI.parse(uri) do
@@ -87,6 +102,15 @@ defmodule Operately.Mcp.ClientMetadata.RedirectUri do
       _ ->
         false
     end
+  end
+
+  defp loopback_match?(registered, requested) do
+    loopback?(registered) and loopback?(requested) and loopback_identity(registered) == loopback_identity(requested)
+  end
+
+  defp loopback_identity(uri) do
+    parsed = URI.parse(uri)
+    {parsed.scheme, parsed.host, parsed.path, parsed.query}
   end
 
   defp loopback_host?(host), do: host in @localhost_hosts
