@@ -96,7 +96,7 @@ When creating a project from a template, the user must choose a start date. Oper
 | Task workflow | Custom statuses and board ordering are copied; all tasks start in the first not-started or equivalent status |
 | Discussions | Title, body, and author attribution are copied only when **Include discussions** is selected |
 | People | Champion, reviewer, contributors, responsibilities, contributor access levels, and task assignees are retained only when **Include people and assignments** is selected |
-| Comments | Comments attached to included discussions, milestones, tasks, documents, files, and links are copied only when **Include comments** is selected |
+| Comments | Comments attached to included discussions, documents, files, and links are copied only when **Include comments** is selected |
 | Docs & Files | Published folders, native documents, links, and files are copied as independent content when selected |
 
 The following are always reset or excluded:
@@ -105,6 +105,7 @@ The following are always reset or excluded:
 - Completed task and milestone state
 - Check-ins and check-in history
 - Comments attached to excluded resources
+- Comments on milestones and tasks, including complete/reopen action rows
 - Reactions, activity, notifications, and existing subscriptions
 - Draft or deleted Docs & Files items and document version history
 - The source project's parent goal and Company-members/Space-members baseline access settings
@@ -112,7 +113,7 @@ The following are always reset or excluded:
 
 The template stores its Space. A project created from the template belongs to that same Space, but does not automatically inherit the source project's Company-members and Space-members baseline access settings. Its parent goal and baseline access levels are chosen through Operately's normal project creation flow. Direct contributor access is copied only when **Include people and assignments** is selected.
 
-When comments are included, each comment stays attached to its copied parent resource and retains its content and author attribution. Copying comments does not copy reactions or subscriptions and does not send mention or comment notifications. Comments whose parent resource is not included are never copied; this means discussion comments require both **Include discussions** and **Include comments**.
+When comments are included, each comment stays attached to its copied parent resource and retains its content and author attribution. Copying comments does not copy reactions or subscriptions and does not send mention or comment notifications. Comments whose parent resource is not included are never copied; this means discussion comments require both **Include discussions** and **Include comments**, and Docs & Files comments require both **Include Docs & Files** and **Include comments**. Comments on milestones and tasks are never copied.
 
 ## Persistence Boundary
 
@@ -193,6 +194,7 @@ The template editor initially shows copied roles, responsibilities, access level
 - Saving an existing project offers **Include discussions**, on by default.
 - Saving an existing project offers **Include comments**, off by default.
 - When selected, comments on included resources are copied without reactions, subscriptions, or notifications.
+- A template editor can view, add, edit, and delete comments on discussions, documents, files, and links. Template comments never appear on milestones or tasks.
 - When **Include people and assignments** is off, no person-specific roles, contributors, or task assignments are retained.
 - When it is on, active people retain their roles, responsibilities, contributor access levels, and task assignments without per-person confirmation.
 - Removed or suspended people are skipped with one plain-language summary and do not block project creation.
@@ -387,19 +389,29 @@ Each PR in this phase extends the same copy service in both directions: project 
 #### PR 5.5 — `feat: Copy comments in project templates`
 
 - [x] Add template-specific comment records. When **Include comments** is selected, copy comments only after all included template parent-resource maps are available.
-- [x] Support comments on included discussions, milestones, tasks, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
-- [x] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
+- [x] Support comments on included discussions, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
+- [x] Never copy or materialize comments on milestones or tasks, including complete/reopen action rows.
 - [x] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
 - [x] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
-- [ ] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.
+- [x] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.
 - [ ] Cover the complete option matrix, permission gating, cancellation, validation, retry, success navigation, and source-project independence in backend and end-to-end tests.
 
-#### PR 5.6 — `feat: Add project template feature tests through comments and Docs & Files`
+#### PR 5.6 — `feat: Edit comments in project templates`
 
-Add Wallaby feature coverage for the product surface shipped through PR 5.5. Do not cover duplicate, archive, restore, or delete; those belong to PR 6.1.
+- [ ] Show copied comments on template discussions, documents, files, and links, with author attribution and stored ordering. Do not show a comment thread on template milestones or tasks.
+- [ ] Add template-specific comment create, update, and delete mutations. Authorize them from the owning template and Space, independently of runtime comment APIs, and reject archived templates and company read-only mode.
+- [ ] Allow add, edit, and delete for Edit and Full Access. Keep View and Comment Access read-only. Template comment actions do not depend on Space Can Comment.
+- [ ] Create, edit, and delete template comments without reactions, subscriptions, activities, or notifications. Mentioned people are stored in content only and are not notified.
+- [ ] Scope every comment to an included discussion, document, file, or link on the same template. Reject cross-template parents and unknown parent types.
+- [ ] Reuse existing TurboUI comment surfaces in template mode where they fit; hide runtime-only controls such as reactions and subscriptions.
+- [ ] Register the comment mutations in the shared and external API catalogs, regenerate clients, and add endpoint, permission-table, and template-page coverage.
+
+#### PR 5.7 — `feat: Add project template feature tests through comments and Docs & Files`
+
+Add Wallaby feature coverage for the product surface shipped through PR 5.6. Do not cover duplicate, archive, restore, or delete; those belong to PR 6.1.
 
 - [ ] Cover the company-level and Space-level template libraries: search, Space filtering, empty states, access changes, New template, and navigation into the editor.
-- [ ] Cover blank-template creation and editor flows for name, description, duration, milestones, tasks, workflow, people and assignments, discussions, and Docs & Files, including View/Comment read-only versus Edit/Full Access.
+- [ ] Cover blank-template creation and editor flows for name, description, duration, milestones, tasks, workflow, people and assignments, discussions, comments, and Docs & Files, including View/Comment read-only versus Edit/Full Access.
 - [ ] Cover creating a project from a template from both the library card and New Project, including Space scoping, start-date validation, archived-template exclusion, and navigation to the generated project.
 - [ ] Cover **Save as template** from a project: permission gating, include-option defaults, schedule validation, cancellation, retry, and success navigation into the created template.
 - [ ] Cover the include-option matrix for people, discussions, comments, and Docs & Files, and assert that generated projects and saved templates stay independent of later source edits.

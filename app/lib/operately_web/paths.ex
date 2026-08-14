@@ -434,6 +434,10 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(company.name, short_id)
   end
 
+  def space_id(space_id) when is_binary(space_id) do
+    Operately.ShortUuid.encode!(space_id)
+  end
+
   def space_id(space) do
     id = Operately.ShortUuid.encode!(space.id)
     OperatelyWeb.Api.Helpers.id_with_comments(space.name, id)

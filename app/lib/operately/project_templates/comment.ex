@@ -10,7 +10,7 @@ defmodule Operately.ProjectTemplates.Comment do
   alias Operately.ProjectTemplates.ProjectTemplate
   alias Operately.ProjectTemplates.Comments.{Materialization, ReverseCopy}
 
-  @parent_types [:discussion, :milestone, :task, :document, :file, :link]
+  @parent_types [:discussion, :document, :file, :link]
 
   schema "project_template_comments" do
     belongs_to :project_template, ProjectTemplate
