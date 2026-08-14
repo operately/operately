@@ -3,12 +3,14 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
   import Ecto.Query, only: [from: 2]
 
+  alias Operately.Blobs.Blob
   alias Operately.Comments.CommentThread
   alias Operately.ContextualDates.ContextualDate
   alias Operately.Operations.ProjectTemplateCreationFromProject
   alias Operately.ProjectTemplates.{Discussion, Milestone, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
   alias Operately.Projects.Project
   alias Operately.Repo
+  alias Operately.ResourceHubs.{Document, File}
   alias Operately.Support.Factory
   alias Operately.Tasks.Status
   alias OperatelyWeb.Paths
@@ -148,12 +150,40 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   test "copies published Docs & Files into an independent template tree", ctx do
     ctx =
       ctx
+      |> Factory.add_blob(:embedded_blob)
       |> Factory.fetch_default_project_resource_hub(:hub, :source)
-      |> Factory.add_folder(:folder, :hub)
-      |> Factory.add_document(:published_document, :hub, folder: :folder, name: "Published guide")
+      |> Factory.add_folder(:parent_folder, :hub)
+      |> Factory.add_folder(:nested_folder, :hub, :parent_folder)
+
+    ctx =
+      ctx
+      |> Factory.add_document(:published_document, :hub,
+        folder: :nested_folder,
+        name: "Published guide",
+        content: blob_document(ctx.embedded_blob)
+      )
       |> Factory.add_document(:draft_document, :hub, state: :draft, name: "Draft guide")
-      |> Factory.add_file(:file, :hub, folder: :folder)
-      |> Factory.add_link(:link, :hub, folder: :folder)
+      |> Factory.add_document(:deleted_document, :hub, name: "Deleted guide")
+      |> Factory.add_file(:file, :hub, folder: :nested_folder)
+      |> Factory.add_file(:deleted_file, :hub)
+      |> Factory.add_link(:link, :hub, folder: :nested_folder)
+      |> Factory.add_link(:deleted_link, :hub)
+
+    blob_count = Repo.aggregate(Blob, :count)
+
+    {:ok, _} =
+      Operately.ResourceHubs.create_document_version(%{
+        document_id: ctx.published_document.id,
+        version_number: 2,
+        title: "Historical title",
+        content: %{"type" => "doc", "content" => [%{"type" => "paragraph"}]},
+        editor_id: ctx.creator.id,
+        origin: :edited
+      })
+
+    ctx.deleted_document |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()}) |> Repo.update!()
+    ctx.deleted_file |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()}) |> Repo.update!()
+    ctx.deleted_link |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()}) |> Repo.update!()
 
     assert {:ok, template} = create_template(ctx)
 
@@ -161,27 +191,42 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       Repo.all(from node in ResourceNode, where: node.project_template_id == ^template.id)
       |> Repo.preload([:folder, :document, :file, :link])
 
-    [folder_node] = Enum.filter(nodes, &(&1.type == :folder))
-    [document_node] = Enum.filter(nodes, &(&1.type == :document))
+    parent_node = Enum.find(nodes, &(&1.folder && &1.folder.name == ctx.parent_folder.name))
+    nested_node = Enum.find(nodes, &(&1.folder && &1.folder.name == ctx.nested_folder.name))
+    document_node = Enum.find(nodes, &(&1.document && &1.document.name == "Published guide"))
+    file_node = Enum.find(nodes, &(&1.file && &1.file.name == ctx.file.name))
+    link_node = Enum.find(nodes, &(&1.link && &1.link.name == ctx.link.name))
 
-    assert folder_node.folder.name == ctx.folder.name
-    assert document_node.document.name == "Published guide"
+    assert parent_node.parent_folder_id == nil
+    assert nested_node.parent_folder_id == parent_node.folder.id
+    assert document_node.parent_folder_id == nested_node.folder.id
+    assert file_node.parent_folder_id == nested_node.folder.id
+    assert link_node.parent_folder_id == nested_node.folder.id
     assert document_node.document.content == ctx.published_document.content
-    assert document_node.parent_folder_id == folder_node.folder.id
-    assert Enum.any?(nodes, &(&1.file && &1.file.name == ctx.file.name))
-    assert Enum.any?(nodes, &(&1.link && &1.link.name == ctx.link.name))
-    refute Enum.any?(nodes, fn node -> node.document && node.document.name == "Draft guide" end)
+    assert Operately.RichContent.find_blob_ids(document_node.document.content) == [ctx.embedded_blob.id]
+    refute document_node.document.content == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
+    refute Enum.any?(nodes, fn node -> node.document && node.document.name in ["Draft guide", "Deleted guide"] end)
+    refute Enum.any?(nodes, &(&1.file && &1.file.id != file_node.file.id))
+    refute Enum.any?(nodes, &(&1.link && &1.link.id != link_node.link.id))
 
-    assert Repo.aggregate(ResourceFolder, :count) == 1
+    assert Enum.count(nodes, &(&1.type == :folder)) == 2
+    assert Repo.aggregate(ResourceFolder, :count) == 2
     assert Repo.aggregate(ResourceDocument, :count) == 1
     assert Repo.aggregate(ResourceFile, :count) == 1
     assert Repo.aggregate(ResourceLink, :count) == 1
+    assert Repo.aggregate(Blob, :count) == blob_count
 
     ctx.published_document
-    |> Operately.ResourceHubs.Document.changeset(%{name: "Changed source"})
+    |> Document.changeset(%{name: "Changed source", content: %{"type" => "doc", "content" => []}})
+    |> Repo.update!()
+
+    ctx.file
+    |> File.changeset(%{name: "Changed source file"})
     |> Repo.update!()
 
     assert Repo.get!(ResourceDocument, document_node.document.id).name == "Published guide"
+    assert Repo.get!(ResourceDocument, document_node.document.id).content == ctx.published_document.content
+    assert Repo.get!(ResourceFile, file_node.file.id).name == ctx.file.name
   end
 
   test "supports an unscheduled project end and year-boundary offsets", ctx do
@@ -523,4 +568,21 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   end
 
   defp status_attrs(statuses), do: Enum.map(statuses, &Map.from_struct/1)
+
+  defp blob_document(blob) do
+    %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "blob",
+          "attrs" => %{
+            "id" => Paths.blob_id(blob),
+            "src" => Blob.url(blob),
+            "title" => blob.filename,
+            "filetype" => blob.content_type
+          }
+        }
+      ]
+    }
+  end
 end

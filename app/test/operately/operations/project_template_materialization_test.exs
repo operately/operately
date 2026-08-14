@@ -8,12 +8,13 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   alias Operately.Activities.Activity
   alias Operately.Comments.CommentThread
   alias Operately.ContextualDates.Timeframe
+  alias Operately.Blobs.Blob
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Operations.{ProjectCreation, ProjectTemplateMaterialization}
-  alias Operately.ProjectTemplates.{Person, ProjectTemplate, TaskAssignment}
+  alias Operately.ProjectTemplates.{Person, ProjectTemplate, ResourceDocument, ResourceFile, TaskAssignment}
   alias Operately.Projects.{Contributor, Milestone, Project}
   alias Operately.Repo
-  alias Operately.ResourceHubs.ResourceHub
+  alias Operately.ResourceHubs.{DocumentVersion, ResourceHub}
   alias Operately.Support.Factory
   alias Operately.Tasks.{Reminder, Status, Task}
   alias OperatelyWeb.Paths
@@ -139,18 +140,24 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   test "materializes template Docs & Files as independent published runtime resources", ctx do
     ctx =
       ctx
+      |> Factory.add_blob(:embedded_blob)
+      |> Factory.add_blob(:file_blob)
       |> Factory.add_project_template(:template, :space)
-      |> Factory.add_project_template_resource_folder(:folder, :template, name: "Launch assets")
+      |> Factory.add_project_template_resource_folder(:parent_folder, :template, name: "Launch assets")
+      |> Factory.add_project_template_resource_folder(:nested_folder, :template, parent_folder: :parent_folder, name: "Campaign")
+
+    ctx =
+      ctx
       |> Factory.add_project_template_resource_document(:document, :template,
-        parent_folder: :folder,
+        parent_folder: :nested_folder,
         position: 0,
         name: "Launch plan",
-        content: %{"type" => "doc", "content" => []}
+        content: blob_document(ctx.embedded_blob)
       )
-      |> Factory.add_blob(:blob)
-      |> Factory.add_project_template_resource_file(:file, :template, :blob, parent_folder: :folder, position: 1, name: "Launch file")
-      |> Factory.add_project_template_resource_link(:link, :template, parent_folder: :folder, position: 2, name: "Launch link")
+      |> Factory.add_project_template_resource_file(:file, :template, :file_blob, parent_folder: :nested_folder, position: 1, name: "Launch file")
+      |> Factory.add_project_template_resource_link(:link, :template, parent_folder: :nested_folder, position: 2, name: "Launch link")
 
+    blob_count = Repo.aggregate(Blob, :count)
     assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
 
     hub = Repo.preload(project, :resource_hub).resource_hub
@@ -159,21 +166,45 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
       Repo.all(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id)
       |> Repo.preload([:folder, :document, :file, :link])
 
-    [folder_node] = Enum.filter(nodes, &(&1.type == :folder))
-    [document_node] = Enum.filter(nodes, &(&1.type == :document))
+    parent_node = Enum.find(nodes, &(&1.folder && &1.folder.name == "Launch assets"))
+    nested_node = Enum.find(nodes, &(&1.folder && &1.folder.name == "Campaign"))
+    document_node = Enum.find(nodes, &(&1.document && &1.document.name == "Launch plan"))
+    file_node = Enum.find(nodes, &(&1.file && &1.file.name == "Launch file"))
     document = document_node.document
+    [version] = Repo.all(from version in DocumentVersion, where: version.document_id == ^document.id)
 
-    assert folder_node.folder.name == "Launch assets"
-    assert document.name == "Launch plan"
-    assert document.content == %{"type" => "doc", "content" => []}
+    assert parent_node.parent_folder_id == nil
+    assert nested_node.parent_folder_id == parent_node.folder.id
+    assert document_node.parent_folder_id == nested_node.folder.id
+    assert file_node.parent_folder_id == nested_node.folder.id
+    assert document_node.id != ctx.document.node.id
+    assert nested_node.id != ctx.nested_folder.node.id
+    assert document.content == ctx.document.content
     assert document.state == :published
     assert document.current_version == 1
-    assert document_node.parent_folder_id == folder_node.folder.id
-    assert document_node.id != ctx.document.node_id
-    assert Repo.aggregate(from(version in Operately.ResourceHubs.DocumentVersion, where: version.document_id == ^document.id), :count) == 1
+    assert Operately.RichContent.find_blob_ids(document.content) == [ctx.embedded_blob.id]
+    assert version.version_number == 1
+    assert version.title == "Launch plan"
+    assert version.content == ctx.document.content
     assert Repo.get_by!(SubscriptionList, parent_id: document.id, parent_type: :resource_hub_document)
-    assert Enum.any?(nodes, &(&1.file && &1.file.name == "Launch file" && &1.file.blob_id == ctx.blob.id))
-    assert Enum.any?(nodes, &(&1.link && &1.link.name == "Launch link"))
+    assert file_node.file.blob_id == ctx.file_blob.id
+    assert Repo.aggregate(Blob, :count) == blob_count
+
+    ctx.document
+    |> ResourceDocument.changeset(%{name: "Changed template", content: %{"type" => "doc", "content" => []}})
+    |> Repo.update!()
+
+    ctx.file
+    |> ResourceFile.changeset(%{name: "Changed template file"})
+    |> Repo.update!()
+
+    persisted_document = Repo.reload!(document)
+    persisted_file = Repo.reload!(file_node.file)
+
+    assert persisted_document.name == "Launch plan"
+    assert persisted_document.content == blob_document(ctx.embedded_blob)
+    assert persisted_file.name == "Launch file"
+    assert persisted_file.blob_id == ctx.file_blob.id
   end
 
   test "uses creation access baselines and creates only normal runtime side effects", ctx do
@@ -480,5 +511,22 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
       |> Repo.update!()
 
     ctx |> Map.put(:template, template) |> Map.put(:launch, milestone)
+  end
+
+  defp blob_document(blob) do
+    %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "blob",
+          "attrs" => %{
+            "id" => Paths.blob_id(blob),
+            "src" => Blob.url(blob),
+            "title" => blob.filename,
+            "filetype" => blob.content_type
+          }
+        }
+      ]
+    }
   end
 end
