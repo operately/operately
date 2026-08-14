@@ -22,7 +22,7 @@ const UNKNOWN_AUTHOR: TurboUiPerson = {
   profileLink: "",
 };
 
-export type TemplateCommentParentType = "discussion" | "document" | "file" | "link";
+type TemplateCommentParentType = "discussion" | "document" | "file" | "link";
 
 interface UseTemplateCommentsOptions {
   templateId: string;
