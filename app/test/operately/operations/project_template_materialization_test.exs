@@ -7,7 +7,6 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
   alias Operately.Comments.CommentThread
-  alias Operately.Comments.MilestoneComment
   alias Operately.ContextualDates.Timeframe
   alias Operately.Blobs.Blob
   alias Operately.Notifications.{Subscription, SubscriptionList}
@@ -225,8 +224,6 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     ctx =
       ctx
       |> Factory.add_project_template_comment(:discussion_comment, :template, :discussion, content: %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}, position: 0)
-      |> Factory.add_project_template_comment(:milestone_comment, :template, :milestone, content: %{"type" => "doc", "content" => []})
-      |> Factory.add_project_template_comment(:task_comment, :template, :task, content: %{"type" => "doc", "content" => []})
       |> Factory.add_project_template_comment(:document_comment, :template, :document, content: %{"type" => "doc", "content" => []})
       |> Factory.add_project_template_comment(:file_comment, :template, :file, content: %{"type" => "doc", "content" => []})
       |> Factory.add_project_template_comment(:link_comment, :template, :link, content: %{"type" => "doc", "content" => []})
@@ -247,10 +244,10 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     file = Repo.one!(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id and node.type == :file, preload: [:file]).file
     link = Repo.one!(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id and node.type == :link, preload: [:link]).link
 
-    comments = Repo.all(from c in RuntimeComment, where: c.entity_id in ^[discussion.id, milestone.id, task.id, document.id, file.id, link.id], order_by: [asc: c.inserted_at, asc: c.id])
-    template_ids = MapSet.new([ctx.discussion_comment.id, ctx.milestone_comment.id, ctx.task_comment.id, ctx.document_comment.id, ctx.file_comment.id, ctx.link_comment.id, ctx.unavailable_author_comment.id])
+    comments = Repo.all(from c in RuntimeComment, where: c.entity_id in ^[discussion.id, document.id, file.id, link.id], order_by: [asc: c.inserted_at, asc: c.id])
+    template_ids = MapSet.new([ctx.discussion_comment.id, ctx.document_comment.id, ctx.file_comment.id, ctx.link_comment.id, ctx.unavailable_author_comment.id])
 
-    assert Enum.count(comments) == 7
+    assert Enum.count(comments) == 5
     assert MapSet.disjoint?(MapSet.new(comments, & &1.id), template_ids)
     assert Repo.get_by!(MilestoneComment, milestone_id: milestone.id, action: :none).comment_id in Enum.map(comments, & &1.id)
     assert Enum.any?(comments, &(&1.entity_type == :comment_thread and &1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == ctx.unavailable_author_comment.content))

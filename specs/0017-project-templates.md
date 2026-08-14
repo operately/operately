@@ -96,7 +96,7 @@ When creating a project from a template, the user must choose a start date. Oper
 | Task workflow | Custom statuses and board ordering are copied; all tasks start in the first not-started or equivalent status |
 | Discussions | Title, body, and author attribution are copied only when **Include discussions** is selected |
 | People | Champion, reviewer, contributors, responsibilities, contributor access levels, and task assignees are retained only when **Include people and assignments** is selected |
-| Comments | Comments attached to included discussions, milestones, tasks, documents, files, and links are copied only when **Include comments** is selected |
+| Comments | Comments attached to included discussions, documents, files, and links are copied only when **Include comments** is selected |
 | Docs & Files | Published folders, native documents, links, and files are copied as independent content when selected |
 
 The following are always reset or excluded:
@@ -105,6 +105,7 @@ The following are always reset or excluded:
 - Completed task and milestone state
 - Check-ins and check-in history
 - Comments attached to excluded resources
+- Comments on milestones and tasks, including complete/reopen action rows
 - Reactions, activity, notifications, and existing subscriptions
 - Draft or deleted Docs & Files items and document version history
 - The source project's parent goal and Company-members/Space-members baseline access settings
@@ -112,7 +113,7 @@ The following are always reset or excluded:
 
 The template stores its Space. A project created from the template belongs to that same Space, but does not automatically inherit the source project's Company-members and Space-members baseline access settings. Its parent goal and baseline access levels are chosen through Operately's normal project creation flow. Direct contributor access is copied only when **Include people and assignments** is selected.
 
-When comments are included, each comment stays attached to its copied parent resource and retains its content and author attribution. Copying comments does not copy reactions or subscriptions and does not send mention or comment notifications. Comments whose parent resource is not included are never copied; this means discussion comments require both **Include discussions** and **Include comments**.
+When comments are included, each comment stays attached to its copied parent resource and retains its content and author attribution. Copying comments does not copy reactions or subscriptions and does not send mention or comment notifications. Comments whose parent resource is not included are never copied; this means discussion comments require both **Include discussions** and **Include comments**, and Docs & Files comments require both **Include Docs & Files** and **Include comments**. Comments on milestones and tasks are never copied.
 
 ## Persistence Boundary
 
@@ -387,8 +388,8 @@ Each PR in this phase extends the same copy service in both directions: project 
 #### PR 5.5 — `feat: Copy comments in project templates`
 
 - [x] Add template-specific comment records. When **Include comments** is selected, copy comments only after all included template parent-resource maps are available.
-- [x] Support comments on included discussions, milestones, tasks, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
-- [x] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
+- [x] Support comments on included discussions, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
+- [x] Never copy or materialize comments on milestones or tasks, including complete/reopen action rows.
 - [x] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
 - [x] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
 - [x] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.

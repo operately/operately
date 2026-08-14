@@ -537,7 +537,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
                %{project | resource_hub: resource_hub},
                project.creator_id
              ),
-           {:ok, comments} <- insert_comments(repo, plan, project, milestones, tasks, discussions, resources) do
+           {:ok, comments} <- insert_comments(repo, plan, project, discussions, resources) do
         {:ok, %{milestones: milestones, tasks: tasks, discussions: discussions, resources: resources.nodes, comments: comments}}
       end
     end
@@ -630,14 +630,12 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       end)
     end
 
-    defp insert_comments(repo, plan, project, milestones, tasks, discussions, resources) do
+    defp insert_comments(repo, plan, project, discussions, resources) do
       Operately.ProjectTemplates.Comment.materialize(
         repo,
         plan.comments,
         %{
           discussion: Map.new(Enum.zip(Enum.reverse(plan.discussions), discussions), fn {planned, discussion} -> {planned.source.id, discussion.id} end),
-          milestone: Map.new(Enum.zip(plan.milestones, milestones), fn {planned, milestone} -> {planned.source.id, milestone.id} end),
-          task: Map.new(Enum.zip(plan.tasks, tasks), fn {planned, task} -> {planned.source.id, task.id} end),
           document: resources.parent_ids.document,
           file: resources.parent_ids.file,
           link: resources.parent_ids.link

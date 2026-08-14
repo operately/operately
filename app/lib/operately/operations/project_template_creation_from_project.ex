@@ -492,8 +492,6 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     defp insert_comments(repo, plan, template, resources) do
       Comment.copy_from_project(repo, plan.template_attrs.source_project_id, template, %{
         discussion: Map.new(plan.discussions, &{&1.source.id, &1.target.id}),
-        milestone: Map.new(plan.milestones, &{&1.source.id, &1.target.id}),
-        task: Map.new(plan.tasks, &{&1.source.id, &1.target.id}),
         document: resources.parent_ids.document,
         file: resources.parent_ids.file,
         link: resources.parent_ids.link
