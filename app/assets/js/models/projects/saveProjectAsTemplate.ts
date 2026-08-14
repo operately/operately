@@ -12,6 +12,7 @@ interface Dependencies {
     includePeopleAndAssignments?: boolean;
     includeDiscussions?: boolean;
     includeDocsAndFiles?: boolean;
+    includeComments?: boolean;
   }) => Promise<ProjectTemplatesCreateFromProjectResult>;
   navigate: (path: string) => void;
 }
@@ -26,6 +27,7 @@ export function createSaveProjectAsTemplateHandler(dependencies: Dependencies) {
         includePeopleAndAssignments: values.includePeopleAndAssignments,
         includeDiscussions: values.includeDiscussions,
         includeDocsAndFiles: values.includeDocsAndFiles,
+        includeComments: values.includeComments,
       });
 
       if (response.scheduleIssues.length > 0) {

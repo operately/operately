@@ -15,7 +15,7 @@ function renderModal(overrides: Partial<SaveProjectAsTemplateModal.Props> = {}) 
     projectDescription: { type: "doc", content: [] },
     richTextHandlers: createMockRichEditorHandlers(),
     formattedTimePreferences: defaultFormattedTimePreferences,
-    submissionEnabled: false,
+    submissionEnabled: true,
     onSave: jest.fn().mockResolvedValue({ success: true }),
     ...overrides,
   };
@@ -31,7 +31,7 @@ function renderModal(overrides: Partial<SaveProjectAsTemplateModal.Props> = {}) 
 }
 
 describe("SaveProjectAsTemplateModal", () => {
-  it("shows source defaults, include defaults, and the disabled rollout state", () => {
+  it("shows source defaults and include defaults", () => {
     renderModal();
 
     expect(screen.getByRole("textbox", { name: /Template name/ })).toHaveValue("Launch project");
@@ -39,8 +39,11 @@ describe("SaveProjectAsTemplateModal", () => {
     expect(screen.getByLabelText("Discussions")).toBeChecked();
     expect(screen.getByLabelText("Comments")).not.toBeChecked();
     expect(screen.getByLabelText("Docs & Files")).toBeChecked();
+    expect(
+      screen.getByText("Copies the project team with their roles and access."),
+    ).toBeInTheDocument();
     expect(screen.getByText("Include")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Save as template" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Save as template" })).toBeEnabled();
   });
 
   it("retains form values and renders every linked schedule issue", async () => {

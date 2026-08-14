@@ -890,7 +890,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :milestones, list_of(:milestone), null: true
     field? :contributors, list_of(:project_contributor), null: true
     field? :is_outdated, :boolean, null: true
-    field? :space_id, :string, null: true
+    field :space_id, :string, null: false
     field? :space, :space, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :my_role, :string, null: true

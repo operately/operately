@@ -54,6 +54,7 @@ describe("save project as template bridge", () => {
       includePeopleAndAssignments: false,
       includeDiscussions: true,
       includeDocsAndFiles: true,
+      includeComments: false,
     });
     expect(navigate).toHaveBeenCalledWith("/project-templates/template-1");
   });

@@ -312,7 +312,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert Repo.aggregate(from(d in Discussion, where: d.project_template_id == ^without_discussions.id), :count) == 0
   end
 
-  test "copies comments onto included parents and skips excluded parents and milestone actions", ctx do
+  test "copies comments onto included discussions and resources and skips milestone and task comments", ctx do
     source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
     task_status = source.task_statuses |> List.first() |> Map.from_struct()
 
@@ -370,10 +370,10 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     comments = Repo.all(from c in Comment, where: c.project_template_id == ^template.id, order_by: [asc: c.position, asc: c.id])
     source_ids = MapSet.new([ctx.discussion_comment.id, ctx.later_discussion_comment.id, ctx.milestone_comment.comment.id, ctx.task_comment.id, ctx.document_comment.id, ctx.file_comment.id, ctx.link_comment.id])
 
-    assert Enum.count(comments) == 7
+    assert Enum.count(comments) == 5
     assert MapSet.disjoint?(MapSet.new(comments, & &1.id), source_ids)
     refute Enum.any?(comments, &(&1.parent_id in [ctx.discussion.id, ctx.milestone.id, ctx.task.id, ctx.document.id, ctx.file.id, ctx.link.id]))
-    refute Enum.any?(comments, fn comment -> comment.content in [RichText.rich_text("Completed"), RichText.rich_text("Reopened")] end)
+    refute Enum.any?(comments, fn comment -> comment.content in [RichText.rich_text("Milestone note"), RichText.rich_text("Task note"), RichText.rich_text("Completed"), RichText.rich_text("Reopened")] end)
     assert Repo.aggregate(from(r in Reaction, where: r.entity_id in ^Enum.map(comments, & &1.id)), :count) == 0
     assert Repo.aggregate(Activity, :count) == activity_count
     assert Repo.aggregate(Notification, :count) == notification_count
@@ -388,7 +388,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     assert {:ok, without_discussions} = create_template(ctx, name: "No discussion comments", include_comments: true, include_discussions: false)
     refute Repo.exists?(from(c in Comment, where: c.project_template_id == ^without_discussions.id and c.parent_type == :discussion))
-    assert Repo.exists?(from(c in Comment, where: c.project_template_id == ^without_discussions.id and c.parent_type == :task))
+    assert Repo.aggregate(from(c in Comment, where: c.project_template_id == ^without_discussions.id), :count) == 3
 
     assert {:ok, without_docs} = create_template(ctx, name: "No resource comments", include_comments: true, include_docs_and_files: false)
     refute Repo.exists?(from(c in Comment, where: c.project_template_id == ^without_docs.id and c.parent_type in [:document, :file, :link]))

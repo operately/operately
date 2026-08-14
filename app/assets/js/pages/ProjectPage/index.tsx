@@ -17,7 +17,7 @@ import { fetchAll } from "../../utils/async";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
-import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch } from "@/models/spaces";
+import * as Spaces from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -39,7 +39,7 @@ export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
 
 function pageCacheKey(id: string): string {
-  return `v8-ProjectV2Page.project-${id}`;
+  return `v10-ProjectV2Page.project-${id}`;
 }
 
 type ProjectDocsAndFilesData = {
@@ -56,6 +56,7 @@ type LoaderResult = {
     backendTasks: Tasks.Task[];
     childrenCount: Projects.ProjectChildrenCount;
     docsAndFiles: ProjectDocsAndFilesData | null;
+    space: Spaces.Space | null;
   };
   cacheVersion: number;
 };
@@ -68,7 +69,6 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
       const data = await fetchAll({
         project: Projects.getProject({
           id: params.id,
-          includeSpace: true,
           includeGoal: true,
           includeChampion: true,
           includeReviewer: true,
@@ -91,12 +91,32 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
       });
 
+      const [space, docsAndFiles] = await Promise.all([
+        loadSpaceWithPermissions(data.project),
+        loadProjectDocsAndFiles(data.project),
+      ]);
+
       return {
         ...data,
-        docsAndFiles: await loadProjectDocsAndFiles(data.project),
+        space,
+        docsAndFiles,
       };
     },
   });
+}
+
+async function loadSpaceWithPermissions(project: Projects.Project): Promise<Spaces.Space | null> {
+  const spaceId = project.spaceId;
+
+  if (!spaceId) {
+    return null;
+  }
+
+  try {
+    return await Spaces.getSpace({ id: spaceId, includePermissions: true });
+  } catch {
+    return null;
+  }
 }
 
 async function loadProjectDocsAndFiles(project: Projects.Project): Promise<ProjectDocsAndFilesData | null> {
@@ -138,7 +158,7 @@ function Page() {
   const paths = usePaths();
   const { company } = useCompanyLoaderData();
   const { data, refresh } = PageCache.useData(loader);
-  const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles } = data;
+  const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles, space } = data;
   const navigate = useNavigate();
   const currentUser = useMe();
 
@@ -271,7 +291,7 @@ function Page() {
     ignoredIds: [project.id],
     activeOnly: true,
   });
-  const taskSpaceSearch = useTaskDestinationSpaceSearch({ accessLevel: "edit_access", withTasksEnabledOnly: true });
+  const taskSpaceSearch = Spaces.useSpaceSearch({ accessLevel: "edit_access", withTasksEnabledOnly: true });
 
   const handleMoveTaskSuccess = React.useCallback(
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
@@ -347,7 +367,7 @@ function Page() {
   }, [paths, project.id]);
 
   const saveAsTemplate = {
-    canSave: Companies.hasFeature(company, "project_templates") && Boolean(project.permissions?.canEdit),
+    canSave: Companies.hasFeature(company, "project_templates") && Boolean(space?.permissions?.canEdit),
     submissionEnabled: true,
     onSave: Projects.createSaveProjectAsTemplateHandler({
       projectId: project.id,
@@ -619,7 +639,7 @@ function useSpaceProps({
   reviewer: ProjectPage.Person | null | undefined;
 } {
   const [space, setSpace] = usePageField({
-    value: (data) => (data.project.space ? parseSpaceForTurboUI(paths, data.project.space) : null),
+    value: (data) => (data.space ? Spaces.parseSpaceForTurboUI(paths, data.space) : null),
     update: (v) => Api.projects.moveToSpace({ projectId: project.id, spaceId: v!.id }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
