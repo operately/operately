@@ -1891,7 +1891,7 @@ export interface Project {
   milestones?: Milestone[] | null;
   contributors?: ProjectContributor[] | null;
   isOutdated?: boolean | null;
-  spaceId?: string | null;
+  spaceId: string;
   space?: Space | null;
   resourceHub?: ResourceHub | null;
   myRole?: string | null;

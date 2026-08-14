@@ -5,6 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
     %{
       id: OperatelyWeb.Paths.project_id(project),
       name: project.name,
+      space_id: project.group_id && OperatelyWeb.Paths.space_id(project.group_id),
       space: OperatelyWeb.Api.Serializer.serialize(project.group),
       privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
       status: Operately.Projects.Project.status(project) |> Atom.to_string(),

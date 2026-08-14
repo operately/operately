@@ -391,7 +391,7 @@ Each PR in this phase extends the same copy service in both directions: project 
 - [x] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
 - [x] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
 - [x] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
-- [ ] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.
+- [x] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.
 - [ ] Cover the complete option matrix, permission gating, cancellation, validation, retry, success navigation, and source-project independence in backend and end-to-end tests.
 
 #### PR 5.6 — `feat: Add project template feature tests through comments and Docs & Files`
