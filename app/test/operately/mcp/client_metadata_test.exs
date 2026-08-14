@@ -132,6 +132,18 @@ defmodule Operately.Mcp.ClientMetadataTest do
     end
   end
 
+  test "accepts loopback redirect uris with an ephemeral port" do
+    metadata = %ClientMetadata{
+      client_id: "https://chatgpt.com/oauth/codex/f1wQ3Hyd4h-Y/client.json",
+      client_name: "Codex",
+      redirect_uris: ["http://127.0.0.1/callback/f1wQ3Hyd4h-Y", "http://localhost/callback/f1wQ3Hyd4h-Y"],
+      token_endpoint_auth_method: "none"
+    }
+
+    assert :ok = ClientMetadata.validate_redirect_uri(metadata, "http://127.0.0.1:51391/callback/f1wQ3Hyd4h-Y")
+    assert {:error, :invalid_redirect_uri} = ClientMetadata.validate_redirect_uri(metadata, "http://127.0.0.1:51391/callback/other")
+  end
+
   test "rejects cimd documents with non-https redirect uris when https is required" do
     previous = Application.get_env(:operately, :mcp_cimd_require_https_redirect_uris)
     Application.put_env(:operately, :mcp_cimd_require_https_redirect_uris, true)

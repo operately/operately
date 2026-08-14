@@ -9,7 +9,7 @@ defmodule Operately.Mcp.ClientMetadata do
   defstruct [:client_id, :client_name, :client_uri, :logo_uri, :token_endpoint_auth_method, redirect_uris: []]
 
   alias __MODULE__
-  alias Operately.Mcp.ClientMetadata.{Document, Fetcher}
+  alias Operately.Mcp.ClientMetadata.{Document, Fetcher, RedirectUri}
   alias Operately.Mcp.OAuthClient
   alias Operately.Mcp.Observability
   alias Operately.Repo
@@ -61,7 +61,7 @@ defmodule Operately.Mcp.ClientMetadata do
   redirect URIs.
   """
   def validate_redirect_uri(%ClientMetadata{} = metadata, redirect_uri) when is_binary(redirect_uri) do
-    if redirect_uri in metadata.redirect_uris do
+    if RedirectUri.registered?(metadata.redirect_uris, redirect_uri) do
       :ok
     else
       {:error, :invalid_redirect_uri}
