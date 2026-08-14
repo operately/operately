@@ -394,7 +394,7 @@ Each PR in this phase extends the same copy service in both directions: project 
 - [x] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
 - [x] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
 - [x] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.
-- [ ] Cover the complete option matrix, permission gating, cancellation, validation, retry, success navigation, and source-project independence in backend and end-to-end tests.
+- [x] Cover the complete option matrix, permission gating, cancellation, validation, retry, success navigation, and source-project independence in backend and end-to-end tests.
 
 #### PR 5.6 — `feat: Edit comments in project templates`
 
@@ -410,12 +410,12 @@ Each PR in this phase extends the same copy service in both directions: project 
 
 Add Wallaby feature coverage for the product surface shipped through PR 5.6. Do not cover duplicate, archive, restore, or delete; those belong to PR 6.1.
 
-- [ ] Cover the company-level and Space-level template libraries: search, Space filtering, empty states, access changes, New template, and navigation into the editor.
-- [ ] Cover blank-template creation and editor flows for name, description, duration, milestones, tasks, workflow, people and assignments, discussions, comments, and Docs & Files, including View/Comment read-only versus Edit/Full Access.
-- [ ] Cover creating a project from a template from both the library card and New Project, including Space scoping, start-date validation, archived-template exclusion, and navigation to the generated project.
-- [ ] Cover **Save as template** from a project: permission gating, include-option defaults, schedule validation, cancellation, retry, and success navigation into the created template.
-- [ ] Cover the include-option matrix for people, discussions, comments, and Docs & Files, and assert that generated projects and saved templates stay independent of later source edits.
-- [ ] Keep the feature behind `project_templates` and assert that gated companies never see library, editor, or save-as-template entry points.
+- [x] Cover the company-level and Space-level template libraries: search, Space filtering, empty states, access changes, New template, and navigation into the editor.
+- [x] Cover blank-template creation and editor flows for name, description, duration, milestones, tasks, workflow, people and assignments, discussions, comments, and Docs & Files, including View/Comment read-only versus Edit/Full Access.
+- [x] Cover creating a project from a template from both the library card and New Project, including Space scoping, start-date validation, archived-template exclusion, and navigation to the generated project.
+- [x] Cover **Save as template** from a project: permission gating, include-option defaults, schedule validation, cancellation, retry, and success navigation into the created template.
+- [x] Cover the include-option matrix for people, discussions, comments, and Docs & Files, and assert that generated projects and saved templates stay independent of later source edits.
+- [x] Keep the feature behind `project_templates` and assert that gated companies never see library, editor, or save-as-template entry points.
 
 ### Phase 6 — Template lifecycle, rollout, and hardening
 
