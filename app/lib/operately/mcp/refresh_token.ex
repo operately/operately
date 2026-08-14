@@ -21,6 +21,7 @@ defmodule Operately.Mcp.RefreshToken do
     |> cast(attrs, [:grant_id, :token_hash, :resource, :scopes, :expires_at, :revoked_at, :used_at, :previous_token_id, :replaced_by_token_id])
     |> validate_required([:grant_id, :token_hash, :resource, :scopes, :expires_at])
     |> unique_constraint(:token_hash)
+    |> unique_constraint(:previous_token_id)
     |> foreign_key_constraint(:grant_id)
     |> foreign_key_constraint(:previous_token_id)
     |> foreign_key_constraint(:replaced_by_token_id)
