@@ -4,6 +4,7 @@ import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { useTemplateComments } from "@/models/projectTemplates/useTemplateComments";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { compareIds, Paths, usePaths } from "@/routes/paths";
@@ -77,7 +78,7 @@ function Page() {
   return (
     <FilePage
       pageTitle={[file.name, template.name]}
-      navigation={navigation(template, paths)}
+      navigation={buildProjectTemplateResourceNavigation(template, paths, { parentFolderId: node.parentFolderId })}
       options={[
         {
           type: "action",
@@ -133,11 +134,3 @@ function Page() {
   );
 }
 
-function navigation(template: ProjectTemplate, paths: Paths) {
-  return [
-    { to: paths.spacePath(template.space.id), label: template.space.name },
-    { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
-    { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id, { tab: "docs-and-files" }), label: "Docs & Files" },
-  ];
-}
