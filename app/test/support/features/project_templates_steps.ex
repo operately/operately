@@ -534,8 +534,8 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
 
   defp timeframe(start_date, end_date) do
     %{
-      contextual_start_date: start_date && ContextualDate.create_day_date(start_date),
-      contextual_end_date: end_date && ContextualDate.create_day_date(end_date)
+      contextual_start_date: ContextualDate.create_day_date(start_date),
+      contextual_end_date: ContextualDate.create_day_date(end_date)
     }
   end
 
