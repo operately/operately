@@ -1,7 +1,7 @@
 import type { ProjectTemplate, ProjectTemplateResourceNode } from "@/api";
 import { compareIds, type Paths } from "@/routes/paths";
 
-export type NavigationItem = { to: string; label: string };
+type NavigationItem = { to: string; label: string };
 
 export function buildProjectTemplateResourceNavigation(
   template: ProjectTemplate,
