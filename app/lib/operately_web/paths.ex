@@ -162,6 +162,40 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "spaces", space_id(space)])
   end
 
+  def project_templates_path(company = %Company{}) do
+    create_path([company_id(company), "project-templates"])
+  end
+
+  def space_project_templates_path(company = %Company{}, space = %Group{}) do
+    create_path([company_id(company), "spaces", space_id(space), "project-templates"])
+  end
+
+  def project_template_path(company = %Company{}, template) do
+    create_path([company_id(company), "project-templates", project_template_id(template)])
+  end
+
+  def project_template_path(company = %Company{}, template, tab: tab) do
+    project_template_path(company, template) <> "?tab=#{tab}"
+  end
+
+  def project_template_discussion_path(company = %Company{}, template, discussion) do
+    create_path([company_id(company), "project-templates", project_template_id(template), "discussions", project_template_discussion_id(discussion)])
+  end
+
+  def project_template_document_path(company = %Company{}, template, document) do
+    create_path([company_id(company), "project-templates", project_template_id(template), "documents", project_template_resource_document_id(document)])
+  end
+
+  def new_project_path(company = %Company{}, params \\ []) do
+    query =
+      []
+      |> maybe_query_param("spaceId", params[:space_id] && space_id(params[:space_id]))
+      |> maybe_query_param("templateId", params[:template_id] && project_template_id(params[:template_id]))
+
+    path = create_path([company_id(company), "projects", "new"])
+    if query == [], do: path, else: path <> "?" <> URI.encode_query(query)
+  end
+
   def new_space_path(company = %Company{}) do
     create_path([company_id(company), "spaces", "new"])
   end
@@ -699,6 +733,9 @@ defmodule OperatelyWeb.Paths do
   #
   # Path Construction Helpers
   #
+
+  defp maybe_query_param(query, _key, nil), do: query
+  defp maybe_query_param(query, key, value), do: [{key, value} | query]
 
   def create_path(parts) do
     if Enum.any?(parts, fn part -> part == nil end) do
