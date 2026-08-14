@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 import { DocsAndFilesTab } from "../DocsAndFiles";
 import { AddFileWidget, type AddFileWidgetProps } from "../ResourceHub/AddFileWidget";
@@ -70,10 +70,21 @@ export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
   );
 }
 
+function folderIdFromLocation(search: string) {
+  return new URLSearchParams(search).get("folderId");
+}
+
 function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
   const navigate = useNavigate();
-  const [currentFolderId, setCurrentFolderId] = React.useState<string | null>(null);
+  const location = useLocation();
+  const folderIdFromUrl = folderIdFromLocation(location.search);
+  const [currentFolderId, setCurrentFolderId] = React.useState<string | null>(folderIdFromUrl);
   const [showNewFolder, setShowNewFolder] = React.useState(false);
+
+  React.useEffect(() => {
+    setCurrentFolderId(folderIdFromUrl);
+  }, [folderIdFromUrl]);
+
   const fileSelection = useAddFile();
   const currentFolder = findFolder(props.resourceNodes, currentFolderId);
   const effectiveFolderId = currentFolder?.folderId ?? null;

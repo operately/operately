@@ -1,6 +1,7 @@
 import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
@@ -36,7 +37,7 @@ function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
-  const docsAndFilesLink = paths.projectTemplatePath(template.id, { tab: "docs-and-files" });
+  const docsAndFilesLink = paths.projectTemplatePath(template.id, { tab: "docs-and-files", folderId: parentFolderId });
 
   async function createLink(values: LinkNewPageTypes.Values) {
     try {
@@ -59,7 +60,7 @@ function Page() {
   return (
     <LinkNewPage
       pageTitle={["New Link", template.name]}
-      navigation={navigation(template, paths)}
+      navigation={buildProjectTemplateResourceNavigation(template, paths, { parentFolderId })}
       testId="project-template-new-link-page"
       richTextHandlers={richTextHandlers}
       initialType={linkType}
@@ -70,11 +71,3 @@ function Page() {
   );
 }
 
-function navigation(template: ProjectTemplate, paths: Paths) {
-  return [
-    { to: paths.spacePath(template.space.id), label: template.space.name },
-    { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
-    { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id, { tab: "docs-and-files" }), label: "Docs & Files" },
-  ];
-}
