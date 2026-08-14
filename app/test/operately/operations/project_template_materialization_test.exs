@@ -249,7 +249,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
 
     assert Enum.count(comments) == 5
     assert MapSet.disjoint?(MapSet.new(comments, & &1.id), template_ids)
-    assert Repo.get_by!(MilestoneComment, milestone_id: milestone.id, action: :none).comment_id in Enum.map(comments, & &1.id)
+    refute Repo.exists?(from c in RuntimeComment, where: c.entity_id in ^[milestone.id, task.id])
     assert Enum.any?(comments, &(&1.entity_type == :comment_thread and &1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == ctx.unavailable_author_comment.content))
     assert Repo.aggregate(from(a in Activity, where: a.content["project_id"] == ^project.id and a.action != "project_created"), :count) == 0
 
