@@ -64,6 +64,7 @@ export interface CommentItemProps {
   formattedTimePreferences: FormattedTimePreferences;
   appearance?: CommentAppearance;
   onVisible?: (commentId: string) => void;
+  canManageComments?: boolean;
 }
 
 export interface CommentInputProps {
@@ -102,4 +103,5 @@ export interface CommentSectionProps {
   commentNotificationInfo?: CommentNotificationInfo;
   ackLabel?: string;
   onCommentVisible?: (commentId: string) => void;
+  canManageComments?: boolean;
 }

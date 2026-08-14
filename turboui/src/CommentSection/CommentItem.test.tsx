@@ -2,6 +2,7 @@ import { render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import React from "react";
 import { MemoryRouter } from "react-router";
+import userEvent from "@testing-library/user-event";
 
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { CommentItem } from "./CommentItem";
@@ -90,5 +91,52 @@ describe("CommentItem", () => {
     expect(commentElement).not.toHaveClass("bg-surface-dimmed");
     expect(getByText("Jane Doe")).toBeInTheDocument();
     expect(getByTestId("comment-options")).toBeInTheDocument();
+  });
+
+  it("lets managers edit another person's comment", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <CommentItem
+          comment={comment}
+          form={form}
+          commentParentType="discussion"
+          canComment
+          canManageComments
+          currentUserId="someone-else"
+          appearance="flat"
+          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
+      </MemoryRouter>,
+    );
+
+    await user.click(getByTestId("comment-options"));
+
+    await waitFor(() => {
+      expect(getByTestId("edit-comment")).toBeInTheDocument();
+      expect(getByTestId("delete-comment")).toBeInTheDocument();
+    });
+  });
+
+  it("hides edit actions when commenting is disabled", () => {
+    render(
+      <MemoryRouter>
+        <CommentItem
+          comment={comment}
+          form={form}
+          commentParentType="discussion"
+          canComment={false}
+          canManageComments
+          currentUserId="author-1"
+          appearance="flat"
+          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(document.querySelector('[data-test-id="edit-comment"]')).not.toBeInTheDocument();
   });
 });

@@ -9,6 +9,7 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { TemplateDiscussionPage } from ".";
 import type { TemplateDiscussionPage as Types } from ".";
+import type { CommentSectionProps } from "../CommentSection";
 
 function renderPage(overrides: Partial<Types.Props> = {}) {
   const props: Types.Props = {
@@ -56,5 +57,33 @@ describe("TemplateDiscussionPage", () => {
     const { container } = renderPage();
 
     expect(container.querySelector('[data-test-id="options-button"]')).not.toBeInTheDocument();
+  });
+
+  it("renders comments when provided", () => {
+    const comments: CommentSectionProps = {
+      items: [
+        {
+          type: "comment",
+          value: {
+            id: "comment-1",
+            content: JSON.stringify({ type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Note" }] }] }),
+            author: { id: "author-1", fullName: "Ada Lovelace", avatarUrl: null, profileLink: "" },
+            insertedAt: "2026-08-11T12:00:00Z",
+            reactions: [],
+          },
+        },
+      ],
+      currentUser: { id: "user-1", fullName: "Current User", avatarUrl: null, profileLink: "" },
+      canComment: true,
+      onAddComment: jest.fn(),
+      onEditComment: jest.fn(),
+      richTextHandlers: createMockRichEditorHandlers(),
+      formattedTimePreferences: defaultFormattedTimePreferences,
+    };
+
+    renderPage({ comments });
+
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+    expect(screen.getByText("Note")).toBeInTheDocument();
   });
 });

@@ -513,6 +513,9 @@ defmodule OperatelyWeb.Paths do
   def project_template_discussion_id(%{id: id}), do: project_template_discussion_id(id)
   def project_template_discussion_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
 
+  def project_template_comment_id(%{id: id}), do: project_template_comment_id(id)
+  def project_template_comment_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
+
   def project_template_resource_node_id(%{id: id}), do: project_template_resource_node_id(id)
   def project_template_resource_node_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
 

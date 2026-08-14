@@ -1,9 +1,10 @@
-import Api, { type ProjectTemplate, type ProjectTemplateResourceNode } from "@/api";
+import Api, { type ProjectTemplate, type ProjectTemplateComment, type ProjectTemplateResourceNode } from "@/api";
 import * as Pages from "@/components/Pages";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useTemplateComments } from "@/models/projectTemplates/useTemplateComments";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { compareIds, Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
@@ -16,6 +17,7 @@ export default { name: "ProjectTemplateFilePage", loader, Page } as PageModule;
 interface LoadedData {
   template: ProjectTemplate;
   node: ProjectTemplateResourceNode;
+  comments: ProjectTemplateComment[];
 }
 
 async function loader({ params }): Promise<LoadedData> {
@@ -32,21 +34,36 @@ async function loader({ params }): Promise<LoadedData> {
     throw new Response("Not found", { status: 404 });
   }
 
-  return { template, node };
+  const { comments } = await Api.project_templates.listComments({
+    templateId: template.id,
+    parentType: "file",
+    parentId: node.file.id,
+  });
+
+  return { template, node, comments };
 }
 
 function Page() {
-  const { template, node } = Pages.useLoadedData<LoadedData>();
+  const { template, node, comments } = Pages.useLoadedData<LoadedData>();
   const paths = usePaths();
   const navigate = useNavigate();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mentionedPersonLookup } = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
   const file = node.file!;
   const blob = file.blob!;
   const [downloadFile] = useDownloadFile(blob.url!, file.name);
   const canEdit = Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess);
   const docsAndFilesLink = paths.projectTemplatePath(template.id, { tab: "docs-and-files" });
+  const commentsProps = useTemplateComments({
+    templateId: template.id,
+    parentType: "file",
+    parentId: file.id,
+    comments,
+    canEdit,
+    richTextHandlers,
+    formattedTimePreferences,
+  });
 
   async function handleDelete() {
     try {
@@ -102,9 +119,9 @@ function Page() {
         height: blob.height,
       }}
       description={file.description ?? null}
-      mentionedPersonLookup={mentionedPersonLookup}
+      mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
       hideReactions
-      hideComments
+      comments={commentsProps}
       hideSubscriptions
       deleteModal={{
         isOpen: showDeleteModal,
