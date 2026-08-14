@@ -123,6 +123,7 @@ defmodule OperatelyWeb.Api do
         query(:get, OperatelyWeb.Api.ProjectTemplates.Get)
         query(:list, OperatelyWeb.Api.ProjectTemplates.List)
         query(:get_discussion, OperatelyWeb.Api.ProjectTemplates.GetDiscussion)
+        query(:list_comments, OperatelyWeb.Api.ProjectTemplates.ListComments)
 
         mutation(:create, OperatelyWeb.Api.ProjectTemplates.Create)
         mutation(:create_from_project, OperatelyWeb.Api.ProjectTemplates.CreateFromProject)
@@ -140,6 +141,9 @@ defmodule OperatelyWeb.Api do
         mutation(:update_task_assignees, OperatelyWeb.Api.ProjectTemplates.UpdateTaskAssignees)
         mutation(:create_discussion, OperatelyWeb.Api.ProjectTemplates.CreateDiscussion)
         mutation(:update_discussion, OperatelyWeb.Api.ProjectTemplates.UpdateDiscussion)
+        mutation(:create_comment, OperatelyWeb.Api.ProjectTemplates.CreateComment)
+        mutation(:update_comment, OperatelyWeb.Api.ProjectTemplates.UpdateComment)
+        mutation(:delete_comment, OperatelyWeb.Api.ProjectTemplates.DeleteComment)
         mutation(:create_folder, OperatelyWeb.Api.ProjectTemplates.CreateFolder)
         mutation(:update_folder, OperatelyWeb.Api.ProjectTemplates.UpdateFolder)
         mutation(:create_document, OperatelyWeb.Api.ProjectTemplates.CreateDocument)

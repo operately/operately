@@ -22,6 +22,7 @@ export function CommentSection({
   commentNotificationInfo,
   ackLabel = "Check-In",
   onCommentVisible,
+  canManageComments = false,
 }: CommentSectionProps) {
   const form = useMemo<CommentFormState>(
     () => ({
@@ -54,6 +55,7 @@ export function CommentSection({
           onRemoveReaction={onRemoveReaction}
           onCommentVisible={onCommentVisible}
           ackLabel={ackLabel}
+          canManageComments={canManageComments}
         />
       ))}
 
@@ -81,6 +83,7 @@ function CommentSectionRow({
   onRemoveReaction,
   onCommentVisible,
   ackLabel,
+  canManageComments,
 }: {
   item: CommentSectionItem;
   form: CommentFormState;
@@ -93,6 +96,7 @@ function CommentSectionRow({
   onRemoveReaction?: CommentSectionProps["onRemoveReaction"];
   onCommentVisible?: CommentSectionProps["onCommentVisible"];
   ackLabel: string;
+  canManageComments?: boolean;
 }) {
   switch (item.type) {
     case "comment":
@@ -109,6 +113,7 @@ function CommentSectionRow({
           formattedTimePreferences={formattedTimePreferences}
           appearance="flat"
           onVisible={onCommentVisible}
+          canManageComments={canManageComments}
         />
       );
 

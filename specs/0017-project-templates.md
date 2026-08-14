@@ -398,13 +398,13 @@ Each PR in this phase extends the same copy service in both directions: project 
 
 #### PR 5.6 — `feat: Edit comments in project templates`
 
-- [ ] Show copied comments on template discussions, documents, files, and links, with author attribution and stored ordering. Do not show a comment thread on template milestones or tasks.
-- [ ] Add template-specific comment create, update, and delete mutations. Authorize them from the owning template and Space, independently of runtime comment APIs, and reject archived templates and company read-only mode.
-- [ ] Allow add, edit, and delete for Edit and Full Access. Keep View and Comment Access read-only. Template comment actions do not depend on Space Can Comment.
-- [ ] Create, edit, and delete template comments without reactions, subscriptions, activities, or notifications. Mentioned people are stored in content only and are not notified.
-- [ ] Scope every comment to an included discussion, document, file, or link on the same template. Reject cross-template parents and unknown parent types.
-- [ ] Reuse existing TurboUI comment surfaces in template mode where they fit; hide runtime-only controls such as reactions and subscriptions.
-- [ ] Register the comment mutations in the shared and external API catalogs, regenerate clients, and add endpoint, permission-table, and template-page coverage.
+- [x] Show copied comments on template discussions, documents, files, and links, with author attribution and stored ordering. Do not show a comment thread on template milestones or tasks.
+- [x] Add template-specific comment create, update, and delete mutations. Authorize them from the owning template and Space, independently of runtime comment APIs, and reject archived templates and company read-only mode.
+- [x] Allow add, edit, and delete for Edit and Full Access. Keep View and Comment Access read-only. Template comment actions do not depend on Space Can Comment.
+- [x] Create, edit, and delete template comments without reactions, subscriptions, activities, or notifications. Mentioned people are stored in content only and are not notified.
+- [x] Scope every comment to an included discussion, document, file, or link on the same template. Reject cross-template parents and unknown parent types.
+- [x] Reuse existing TurboUI comment surfaces in template mode where they fit; hide runtime-only controls such as reactions and subscriptions.
+- [x] Register the comment mutations in the shared and external API catalogs, regenerate clients, and add endpoint, permission-table, and template-page coverage.
 
 #### PR 5.7 — `feat: Add project template feature tests through comments and Docs & Files`
 

@@ -11664,6 +11664,109 @@
           }
         ]
       },
+      "project_template_comment": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "parent_type",
+            "type": {
+              "name": "project_template_comment_parent_type",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "parent_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "content",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "author",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "position",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_project_contributor_edited_contributor": {
         "fields": [
           {
@@ -21856,6 +21959,12 @@
         "caution",
         "off_track"
       ],
+      "project_template_comment_parent_type": [
+        "discussion",
+        "document",
+        "file",
+        "link"
+      ],
       "discussion_state": [
         "draft",
         "scheduled",
@@ -22157,9 +22266,9 @@
       ]
     }
   },
-  "endpoint_count": 238,
-  "query_count": 72,
-  "mutation_count": 166,
+  "endpoint_count": 242,
+  "query_count": 73,
+  "mutation_count": 169,
   "endpoints": [
     {
       "name": "create",
@@ -29934,6 +30043,75 @@
       "method": "POST"
     },
     {
+      "name": "create_comment",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/create_comment",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.CreateComment",
+      "outputs": [
+        {
+          "default": null,
+          "name": "comment",
+          "type": {
+            "name": "project_template_comment",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_type",
+          "type": {
+            "name": "project_template_comment_parent_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/create_comment",
+      "method": "POST"
+    },
+    {
       "name": "create_discussion",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/create_discussion",
@@ -30793,6 +30971,53 @@
       "method": "POST"
     },
     {
+      "name": "delete_comment",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/delete_comment",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.DeleteComment",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "comment_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/delete_comment",
+      "method": "POST"
+    },
+    {
       "name": "delete_milestone",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/delete_milestone",
@@ -31125,6 +31350,67 @@
       "method": "GET"
     },
     {
+      "name": "list_comments",
+      "type": "query",
+      "path": "/api/external/v1/project_templates/list_comments",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.ListComments",
+      "outputs": [
+        {
+          "default": null,
+          "name": "comments",
+          "type": {
+            "item": {
+              "name": "project_template_comment",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_type",
+          "type": {
+            "name": "project_template_comment_parent_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/list_comments",
+      "method": "GET"
+    },
+    {
       "name": "move_resource",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/move_resource",
@@ -31302,6 +31588,64 @@
       ],
       "docstring": null,
       "full_name": "project_templates/update",
+      "method": "POST"
+    },
+    {
+      "name": "update_comment",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_comment",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdateComment",
+      "outputs": [
+        {
+          "default": null,
+          "name": "comment",
+          "type": {
+            "name": "project_template_comment",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "comment_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_comment",
       "method": "POST"
     },
     {
