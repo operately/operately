@@ -117,17 +117,19 @@ export function SaveProjectAsTemplateModal(props: SaveProjectAsTemplateModal.Pro
               content={
                 <div className="max-w-xs">
                   <div className="font-semibold mb-2">Include in template</div>
-                  <div className="text-sm">
-                    Choose which parts of this project to copy into the template. When people and assignments are
-                    included, they keep their project roles and access.
-                  </div>
+                  <div className="text-sm">Choose which parts of this project to copy into the template.</div>
                 </div>
               }
             >
               <IconInfoCircle className="w-4 h-4 text-content-dimmed cursor-help" />
             </Tooltip>
           </h3>
-          <IncludeSwitch form={form} field="includePeopleAndAssignments" label="People and assignments" />
+          <IncludeSwitch
+            form={form}
+            field="includePeopleAndAssignments"
+            label="People and assignments"
+            helperText="Copies the project team with their roles and access."
+          />
           <IncludeSwitch form={form} field="includeDiscussions" label="Discussions" />
           <IncludeSwitch form={form} field="includeComments" label="Comments" />
           <IncludeSwitch form={form} field="includeDocsAndFiles" label="Docs & Files" />
@@ -160,13 +162,20 @@ function IncludeSwitch({
   form,
   field,
   label,
+  helperText,
 }: {
   form: Forms.FormState<SaveProjectAsTemplateModal.Values>;
   field: "includePeopleAndAssignments" | "includeDiscussions" | "includeComments" | "includeDocsAndFiles";
   label: string;
+  helperText?: string;
 }) {
   const value = Boolean(form.values[field]);
-  return <SwitchToggle label={label} value={value} setValue={(next) => form.actions.setValue(field, next)} />;
+  return (
+    <div className="space-y-1">
+      <SwitchToggle label={label} value={value} setValue={(next) => form.actions.setValue(field, next)} />
+      {helperText && <p className="ml-14 text-xs leading-snug text-content-dimmed">{helperText}</p>}
+    </div>
+  );
 }
 
 function ScheduleIssues({

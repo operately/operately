@@ -190,8 +190,6 @@ defmodule Operately.Support.Factory.ProjectTemplates do
   end
 
   defp comment_parent(%Discussion{id: id}), do: {:discussion, id}
-  defp comment_parent(%Milestone{id: id}), do: {:milestone, id}
-  defp comment_parent(%Task{id: id}), do: {:task, id}
   defp comment_parent(%ResourceDocument{id: id}), do: {:document, id}
   defp comment_parent(%ResourceFile{id: id}), do: {:file, id}
   defp comment_parent(%ResourceLink{id: id}), do: {:link, id}

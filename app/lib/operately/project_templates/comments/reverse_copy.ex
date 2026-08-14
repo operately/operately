@@ -1,11 +1,10 @@
 defmodule Operately.ProjectTemplates.Comments.ReverseCopy do
   import Ecto.Query, only: [from: 2]
 
-  alias Operately.Comments.MilestoneComment
   alias Operately.ProjectTemplates.Comment
   alias Operately.Updates.Comment, as: RuntimeComment
 
-  @source_types [:comment_thread, :project_milestone, :project_task, :resource_hub_document, :resource_hub_file, :resource_hub_link]
+  @source_types [:comment_thread, :resource_hub_document, :resource_hub_file, :resource_hub_link]
 
   def run(_repo, _project_id, _template, parent_ids) when parent_ids == %{}, do: {:ok, []}
 
@@ -53,18 +52,13 @@ defmodule Operately.ProjectTemplates.Comments.ReverseCopy do
 
   defp load_comments(repo, source_ids) do
     from(comment in RuntimeComment,
-      left_join: join in MilestoneComment,
-      on: join.comment_id == comment.id,
       where: comment.entity_id in ^source_ids and comment.entity_type in ^@source_types,
-      where: comment.entity_type != :project_milestone or join.action == :none,
       order_by: [asc: comment.inserted_at, asc: comment.id]
     )
     |> repo.all()
   end
 
   defp destination(%{entity_type: :comment_thread, entity_id: id}, parent_ids), do: lookup(parent_ids, :discussion, id)
-  defp destination(%{entity_type: :project_milestone, entity_id: id}, parent_ids), do: lookup(parent_ids, :milestone, id)
-  defp destination(%{entity_type: :project_task, entity_id: id}, parent_ids), do: lookup(parent_ids, :task, id)
   defp destination(%{entity_type: :resource_hub_document, entity_id: id}, parent_ids), do: lookup(parent_ids, :document, id)
   defp destination(%{entity_type: :resource_hub_file, entity_id: id}, parent_ids), do: lookup(parent_ids, :file, id)
   defp destination(%{entity_type: :resource_hub_link, entity_id: id}, parent_ids), do: lookup(parent_ids, :link, id)

@@ -16,7 +16,7 @@ const meta = {
     projectDescription: { type: "doc", content: [] },
     richTextHandlers: createMockRichEditorHandlers(),
     formattedTimePreferences: defaultFormattedTimePreferences,
-    submissionEnabled: false,
+    submissionEnabled: true,
     onSave: async () => ({ success: true }),
   },
 } satisfies Meta<typeof SaveProjectAsTemplateModal>;
@@ -24,7 +24,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const HiddenRollout: Story = {};
+export const Default: Story = {};
 
 export const ScheduleErrors: Story = {
   args: { submissionEnabled: true },

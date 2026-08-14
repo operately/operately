@@ -20877,9 +20877,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,

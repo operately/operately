@@ -34,11 +34,10 @@ defmodule Operately.Features.Projects.ProjectPageGoalAndExportTest do
     |> Steps.assert_project_markdown_includes_details()
   end
 
-  @tag login_as: :contributor
-  feature "offer save as template to project editors", ctx do
+  @tag login_as: :champion
+  feature "offer save as template to Space editors", ctx do
     ctx
     |> Factory.enable_feature("project_templates")
-    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.visit_project_page()
     |> Steps.assert_save_as_template_is_visible()
   end
