@@ -386,11 +386,11 @@ Each PR in this phase extends the same copy service in both directions: project 
 
 #### PR 5.5 — `feat: Copy comments in project templates`
 
-- [ ] Add template-specific comment records. When **Include comments** is selected, copy comments only after all included template parent-resource maps are available.
-- [ ] Support comments on included discussions, milestones, tasks, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
-- [ ] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
-- [ ] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
-- [ ] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
+- [x] Add template-specific comment records. When **Include comments** is selected, copy comments only after all included template parent-resource maps are available.
+- [x] Support comments on included discussions, milestones, tasks, documents, files, and links. Discussion comments require both **Include discussions** and **Include comments**; resource-hub comments require both **Include Docs & Files** and **Include comments**.
+- [x] For milestone comments, copy only actual comments and rebuild the milestone-comment association; do not turn complete/reopen action records into comments.
+- [x] Preserve comment content, author attribution, and ordering with fresh IDs. Do not copy reactions, notifications, mention deliveries, or subscriptions.
+- [x] Silently skip comments whose parent is excluded and assert that no copied comment retains a source-resource ID.
 - [ ] Wire all four include options to the save dialog with the defaults in this spec, then add **Save as template** to the project actions menu only for users with Edit Access to the project's Space.
 - [ ] Cover the complete option matrix, permission gating, cancellation, validation, retry, success navigation, and source-project independence in backend and end-to-end tests.
 

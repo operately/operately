@@ -7,16 +7,18 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
   alias Operately.Comments.CommentThread
+  alias Operately.Comments.MilestoneComment
   alias Operately.ContextualDates.Timeframe
   alias Operately.Blobs.Blob
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Operations.{ProjectCreation, ProjectTemplateMaterialization}
-  alias Operately.ProjectTemplates.{Person, ProjectTemplate, ResourceDocument, ResourceFile, TaskAssignment}
+  alias Operately.ProjectTemplates.{Comment, Person, ProjectTemplate, ResourceDocument, ResourceFile, TaskAssignment}
   alias Operately.Projects.{Contributor, Milestone, Project}
   alias Operately.Repo
   alias Operately.ResourceHubs.{DocumentVersion, ResourceHub}
   alias Operately.Support.Factory
   alias Operately.Tasks.{Reminder, Status, Task}
+  alias Operately.Updates.Comment, as: RuntimeComment
   alias OperatelyWeb.Paths
 
   setup ctx do
@@ -205,6 +207,58 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert persisted_document.content == blob_document(ctx.embedded_blob)
     assert persisted_file.name == "Launch file"
     assert persisted_file.blob_id == ctx.file_blob.id
+  end
+
+  test "materializes template comments onto generated parents without activities", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:file_blob)
+      |> Factory.add_company_member(:unavailable)
+      |> Factory.add_project_template(:template, :space)
+      |> Factory.add_project_template_milestone(:milestone, :template)
+      |> Factory.add_project_template_task(:task, :template, milestone: :milestone)
+      |> Factory.add_project_template_discussion(:discussion, :template, title: "Launch notes")
+      |> Factory.add_project_template_resource_document(:document, :template, name: "Guide", position: 0)
+      |> Factory.add_project_template_resource_file(:file, :template, :file_blob, name: "Artwork", position: 1)
+      |> Factory.add_project_template_resource_link(:link, :template, name: "Dashboard", position: 2)
+
+    ctx =
+      ctx
+      |> Factory.add_project_template_comment(:discussion_comment, :template, :discussion, content: %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}, position: 0)
+      |> Factory.add_project_template_comment(:milestone_comment, :template, :milestone, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:task_comment, :template, :task, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:document_comment, :template, :document, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:file_comment, :template, :file, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:link_comment, :template, :link, content: %{"type" => "doc", "content" => []})
+      |> Factory.add_project_template_comment(:unavailable_author_comment, :template, :discussion,
+        author: :unavailable,
+        content: %{"type" => "doc", "content" => [%{"type" => "text"}]},
+        position: 1
+      )
+      |> Factory.suspend_company_member(:unavailable)
+
+    assert {:ok, project} = materialize(ctx, ~D[2028-01-01])
+
+    discussion = Repo.get_by!(CommentThread, parent_id: project.id, parent_type: :project)
+    milestone = Repo.get_by!(Milestone, project_id: project.id)
+    task = Repo.get_by!(Task, project_id: project.id)
+    hub = Repo.preload(project, :resource_hub).resource_hub
+    document = Repo.one!(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id and node.type == :document, preload: [:document]).document
+    file = Repo.one!(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id and node.type == :file, preload: [:file]).file
+    link = Repo.one!(from node in Operately.ResourceHubs.Node, where: node.resource_hub_id == ^hub.id and node.type == :link, preload: [:link]).link
+
+    comments = Repo.all(from c in RuntimeComment, where: c.entity_id in ^[discussion.id, milestone.id, task.id, document.id, file.id, link.id], order_by: [asc: c.inserted_at, asc: c.id])
+    template_ids = MapSet.new([ctx.discussion_comment.id, ctx.milestone_comment.id, ctx.task_comment.id, ctx.document_comment.id, ctx.file_comment.id, ctx.link_comment.id, ctx.unavailable_author_comment.id])
+
+    assert Enum.count(comments) == 7
+    assert MapSet.disjoint?(MapSet.new(comments, & &1.id), template_ids)
+    assert Repo.get_by!(MilestoneComment, milestone_id: milestone.id, action: :none).comment_id in Enum.map(comments, & &1.id)
+    assert Enum.any?(comments, &(&1.entity_type == :comment_thread and &1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == ctx.unavailable_author_comment.content))
+    assert Repo.aggregate(from(a in Activity, where: a.content["project_id"] == ^project.id and a.action != "project_created"), :count) == 0
+
+    ctx.discussion_comment |> Comment.changeset(%{content: %{"type" => "doc", "content" => []}}) |> Repo.update!()
+    copied_discussion_comment = Enum.find(comments, &(&1.entity_id == discussion.id and &1.author_id == ctx.creator.id and &1.content == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}))
+    assert Repo.reload!(copied_discussion_comment).content == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
   end
 
   test "uses creation access baselines and creates only normal runtime side effects", ctx do

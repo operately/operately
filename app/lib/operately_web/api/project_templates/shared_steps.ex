@@ -103,7 +103,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
            description: inputs[:description],
            include_people_and_assignments: inputs[:include_people_and_assignments] || false,
            include_discussions: inputs[:include_discussions] != false,
-           include_docs_and_files: inputs[:include_docs_and_files] != false
+           include_docs_and_files: inputs[:include_docs_and_files] != false,
+           include_comments: inputs[:include_comments] == true
          }) do
       {:ok, template} -> {:ok, Map.put(changes, :template_creation, %{template: template, schedule_issues: []})}
       {:error, {:invalid_schedule, %{issues: issues}}} -> {:ok, Map.put(changes, :template_creation, %{template: nil, schedule_issues: issues})}

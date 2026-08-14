@@ -5241,6 +5241,7 @@ export interface ProjectTemplatesCreateFromProjectInput {
   includePeopleAndAssignments?: boolean;
   includeDiscussions?: boolean;
   includeDocsAndFiles?: boolean;
+  includeComments?: boolean;
 }
 
 export interface ProjectTemplatesCreateFromProjectResult {
