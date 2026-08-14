@@ -1928,6 +1928,18 @@ export interface ProjectTemplate {
   permissions?: ProjectTemplatePermissions | null;
 }
 
+export interface ProjectTemplateComment {
+  __typename: "project_template_comment";
+  id: string;
+  parentType: ProjectTemplateCommentParentType;
+  parentId: string;
+  content: string;
+  author?: Person | null;
+  position: number;
+  insertedAt: string;
+  updatedAt: string;
+}
+
 export interface ProjectTemplateDiscussion {
   __typename: "project_template_discussion";
   id: string;
@@ -2812,6 +2824,8 @@ export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 export type ProjectTasksView = "list" | "board";
 
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
+
+export type ProjectTemplateCommentParentType = "discussion" | "document" | "file" | "link";
 
 export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
 

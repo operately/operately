@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 238
+- Endpoints: 242
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -123,6 +123,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
 | `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
 | `project_templates create` | `op project_templates create` | `POST` | `/api/external/v1/project_templates/create` |
+| `project_templates create_comment` | `op project_templates create_comment` | `POST` | `/api/external/v1/project_templates/create_comment` |
 | `project_templates create_discussion` | `op project_templates create_discussion` | `POST` | `/api/external/v1/project_templates/create_discussion` |
 | `project_templates create_document` | `op project_templates create_document` | `POST` | `/api/external/v1/project_templates/create_document` |
 | `project_templates create_files` | `op project_templates create_files` | `POST` | `/api/external/v1/project_templates/create_files` |
@@ -133,6 +134,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `project_templates create_person` | `op project_templates create_person` | `POST` | `/api/external/v1/project_templates/create_person` |
 | `project_templates create_project` | `op project_templates create_project` | `POST` | `/api/external/v1/project_templates/create_project` |
 | `project_templates create_task` | `op project_templates create_task` | `POST` | `/api/external/v1/project_templates/create_task` |
+| `project_templates delete_comment` | `op project_templates delete_comment` | `POST` | `/api/external/v1/project_templates/delete_comment` |
 | `project_templates delete_milestone` | `op project_templates delete_milestone` | `POST` | `/api/external/v1/project_templates/delete_milestone` |
 | `project_templates delete_person` | `op project_templates delete_person` | `POST` | `/api/external/v1/project_templates/delete_person` |
 | `project_templates delete_resource` | `op project_templates delete_resource` | `POST` | `/api/external/v1/project_templates/delete_resource` |
@@ -140,8 +142,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `project_templates get` | `op project_templates get` | `GET` | `/api/external/v1/project_templates/get` |
 | `project_templates get_discussion` | `op project_templates get_discussion` | `GET` | `/api/external/v1/project_templates/get_discussion` |
 | `project_templates list` | `op project_templates list` | `GET` | `/api/external/v1/project_templates/list` |
+| `project_templates list_comments` | `op project_templates list_comments` | `GET` | `/api/external/v1/project_templates/list_comments` |
 | `project_templates move_resource` | `op project_templates move_resource` | `POST` | `/api/external/v1/project_templates/move_resource` |
 | `project_templates update` | `op project_templates update` | `POST` | `/api/external/v1/project_templates/update` |
+| `project_templates update_comment` | `op project_templates update_comment` | `POST` | `/api/external/v1/project_templates/update_comment` |
 | `project_templates update_discussion` | `op project_templates update_discussion` | `POST` | `/api/external/v1/project_templates/update_discussion` |
 | `project_templates update_document` | `op project_templates update_document` | `POST` | `/api/external/v1/project_templates/update_document` |
 | `project_templates update_file` | `op project_templates update_file` | `POST` | `/api/external/v1/project_templates/update_file` |

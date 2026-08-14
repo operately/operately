@@ -814,6 +814,19 @@ defmodule OperatelyWeb.Api.Types do
     field :updated_at, :datetime, null: false
   end
 
+  enum :project_template_comment_parent_type, values: Operately.ProjectTemplates.Comment.parent_types()
+
+  object :project_template_comment, for: Operately.ProjectTemplates.Comment do
+    field :id, :string, null: false
+    field :parent_type, :project_template_comment_parent_type, null: false
+    field :parent_id, :string, null: false
+    field :content, :string, null: false
+    field? :author, :person, null: true
+    field :position, :integer, null: false
+    field :inserted_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
   object :project_template_inactive_people_summary do
     field :person_count, :integer, null: false
     field :role_count, :integer, null: false

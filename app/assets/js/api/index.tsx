@@ -2048,6 +2048,18 @@ export interface ProjectTemplate {
   permissions?: ProjectTemplatePermissions | null;
 }
 
+export interface ProjectTemplateComment {
+  __typename: "project_template_comment";
+  id: string;
+  parentType: ProjectTemplateCommentParentType;
+  parentId: string;
+  content: string;
+  author?: Person | null;
+  position: number;
+  insertedAt: string;
+  updatedAt: string;
+}
+
 export interface ProjectTemplateDiscussion {
   __typename: "project_template_discussion";
   id: string;
@@ -2933,6 +2945,8 @@ export type ProjectTasksView = "list" | "board";
 
 export type ProjectTemplateArchiveStatus = "active" | "archived" | "all";
 
+export type ProjectTemplateCommentParentType = "discussion" | "document" | "file" | "link";
+
 export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTemplateResourceLinkType =
@@ -3636,6 +3650,16 @@ export interface ProjectTemplatesListInput {
 
 export interface ProjectTemplatesListResult {
   templates: ProjectTemplate[];
+}
+
+export interface ProjectTemplatesListCommentsInput {
+  templateId: Id;
+  parentType: ProjectTemplateCommentParentType;
+  parentId: Id;
+}
+
+export interface ProjectTemplatesListCommentsResult {
+  comments: ProjectTemplateComment[];
 }
 
 export interface ProjectsCountChildrenInput {
@@ -5193,6 +5217,17 @@ export interface ProjectTemplatesCreateResult {
   template: ProjectTemplate;
 }
 
+export interface ProjectTemplatesCreateCommentInput {
+  templateId: Id;
+  parentType: ProjectTemplateCommentParentType;
+  parentId: Id;
+  content: Json;
+}
+
+export interface ProjectTemplatesCreateCommentResult {
+  comment: ProjectTemplateComment;
+}
+
 export interface ProjectTemplatesCreateDiscussionInput {
   templateId: Id;
   title: string;
@@ -5317,6 +5352,15 @@ export interface ProjectTemplatesCreateTaskResult {
   task: ProjectTemplateTask;
 }
 
+export interface ProjectTemplatesDeleteCommentInput {
+  templateId: Id;
+  commentId: Id;
+}
+
+export interface ProjectTemplatesDeleteCommentResult {
+  success: boolean;
+}
+
 export interface ProjectTemplatesDeleteMilestoneInput {
   templateId: Id;
   milestoneId: Id;
@@ -5376,6 +5420,16 @@ export interface ProjectTemplatesUpdateInput {
 
 export interface ProjectTemplatesUpdateResult {
   success: boolean;
+}
+
+export interface ProjectTemplatesUpdateCommentInput {
+  templateId: Id;
+  commentId: Id;
+  content: Json;
+}
+
+export interface ProjectTemplatesUpdateCommentResult {
+  comment: ProjectTemplateComment;
 }
 
 export interface ProjectTemplatesUpdateDiscussionInput {
@@ -7055,8 +7109,16 @@ class ApiNamespaceProjectTemplates {
     return this.client.get("/project_templates/list", input);
   }
 
+  async listComments(input: ProjectTemplatesListCommentsInput): Promise<ProjectTemplatesListCommentsResult> {
+    return this.client.get("/project_templates/list_comments", input);
+  }
+
   async create(input: ProjectTemplatesCreateInput): Promise<ProjectTemplatesCreateResult> {
     return this.client.post("/project_templates/create", input);
+  }
+
+  async createComment(input: ProjectTemplatesCreateCommentInput): Promise<ProjectTemplatesCreateCommentResult> {
+    return this.client.post("/project_templates/create_comment", input);
   }
 
   async createDiscussion(
@@ -7103,6 +7165,10 @@ class ApiNamespaceProjectTemplates {
     return this.client.post("/project_templates/create_task", input);
   }
 
+  async deleteComment(input: ProjectTemplatesDeleteCommentInput): Promise<ProjectTemplatesDeleteCommentResult> {
+    return this.client.post("/project_templates/delete_comment", input);
+  }
+
   async deleteMilestone(input: ProjectTemplatesDeleteMilestoneInput): Promise<ProjectTemplatesDeleteMilestoneResult> {
     return this.client.post("/project_templates/delete_milestone", input);
   }
@@ -7125,6 +7191,10 @@ class ApiNamespaceProjectTemplates {
 
   async update(input: ProjectTemplatesUpdateInput): Promise<ProjectTemplatesUpdateResult> {
     return this.client.post("/project_templates/update", input);
+  }
+
+  async updateComment(input: ProjectTemplatesUpdateCommentInput): Promise<ProjectTemplatesUpdateCommentResult> {
+    return this.client.post("/project_templates/update_comment", input);
   }
 
   async updateDiscussion(
@@ -8876,6 +8946,13 @@ export default {
     useList: (input: ProjectTemplatesListInput) =>
       useQuery<ProjectTemplatesListResult>(() => defaultApiClient.apiNamespaceProjectTemplates.list(input)),
 
+    listComments: (input: ProjectTemplatesListCommentsInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.listComments(input),
+    useListComments: (input: ProjectTemplatesListCommentsInput) =>
+      useQuery<ProjectTemplatesListCommentsResult>(() =>
+        defaultApiClient.apiNamespaceProjectTemplates.listComments(input),
+      ),
+
     get: (input: ProjectTemplatesGetInput) => defaultApiClient.apiNamespaceProjectTemplates.get(input),
     useGet: (input: ProjectTemplatesGetInput) =>
       useQuery<ProjectTemplatesGetResult>(() => defaultApiClient.apiNamespaceProjectTemplates.get(input)),
@@ -8885,6 +8962,13 @@ export default {
     useCreateLink: () =>
       useMutation<ProjectTemplatesCreateLinkInput, ProjectTemplatesCreateLinkResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createLink(input),
+      ),
+
+    updateComment: (input: ProjectTemplatesUpdateCommentInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateComment(input),
+    useUpdateComment: () =>
+      useMutation<ProjectTemplatesUpdateCommentInput, ProjectTemplatesUpdateCommentResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.updateComment(input),
       ),
 
     updatePerson: (input: ProjectTemplatesUpdatePersonInput) =>
@@ -8991,6 +9075,13 @@ export default {
         defaultApiClient.apiNamespaceProjectTemplates.updateMilestone(input),
       ),
 
+    createComment: (input: ProjectTemplatesCreateCommentInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.createComment(input),
+    useCreateComment: () =>
+      useMutation<ProjectTemplatesCreateCommentInput, ProjectTemplatesCreateCommentResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.createComment(input),
+      ),
+
     createPerson: (input: ProjectTemplatesCreatePersonInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createPerson(input),
     useCreatePerson: () =>
@@ -9044,6 +9135,13 @@ export default {
     useCreateDocument: () =>
       useMutation<ProjectTemplatesCreateDocumentInput, ProjectTemplatesCreateDocumentResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createDocument(input),
+      ),
+
+    deleteComment: (input: ProjectTemplatesDeleteCommentInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.deleteComment(input),
+    useDeleteComment: () =>
+      useMutation<ProjectTemplatesDeleteCommentInput, ProjectTemplatesDeleteCommentResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.deleteComment(input),
       ),
 
     updateTaskAssignees: (input: ProjectTemplatesUpdateTaskAssigneesInput) =>
