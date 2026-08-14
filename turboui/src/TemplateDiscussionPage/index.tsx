@@ -1,6 +1,8 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
+import { CommentSection } from "../CommentSection";
+import type { CommentSectionProps } from "../CommentSection";
 import { Page } from "../Page";
 import type { Navigation } from "../Page/Navigation";
 import RichContent from "../RichContent";
@@ -20,6 +22,7 @@ export namespace TemplateDiscussionPage {
       insertedAt: Date;
     };
     editLink?: string;
+    comments?: CommentSectionProps;
     richTextHandlers: RichEditorHandlers;
     formattedTimePreferences: FormattedTimePreferences;
   }
@@ -69,6 +72,15 @@ export function TemplateDiscussionPage(props: TemplateDiscussionPage.Props) {
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
           />
         </div>
+
+        {props.comments && (
+          <>
+            <div className="border-t border-stroke-base mt-8" />
+            <div className="mt-8">
+              <CommentSection {...props.comments} />
+            </div>
+          </>
+        )}
       </main>
     </Page>
   );

@@ -1,7 +1,8 @@
-import Api, { type ProjectTemplate, type ProjectTemplateDiscussion } from "@/api";
+import Api, { type ProjectTemplate, type ProjectTemplateComment, type ProjectTemplateDiscussion } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useTemplateComments } from "@/models/projectTemplates/useTemplateComments";
 import * as People from "@/models/people";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { Paths, usePaths } from "@/routes/paths";
@@ -14,6 +15,7 @@ export default { name: "ProjectTemplateDiscussionPage", loader, Page } as PageMo
 interface LoadedData {
   template: ProjectTemplate;
   discussion: ProjectTemplateDiscussion;
+  comments: ProjectTemplateComment[];
 }
 
 async function loader({ params }): Promise<LoadedData> {
@@ -22,19 +24,30 @@ async function loader({ params }): Promise<LoadedData> {
     path: Paths.companyHomePath(params.companyId),
   });
 
-  const [templateResult, discussionResult] = await Promise.all([
+  const [templateResult, discussionResult, commentsResult] = await Promise.all([
     Api.project_templates.get({ id: params.templateId }),
     Api.project_templates.getDiscussion({ templateId: params.templateId, discussionId: params.id }),
+    Api.project_templates.listComments({ templateId: params.templateId, parentType: "discussion", parentId: params.id }),
   ]);
 
-  return { template: templateResult.template, discussion: discussionResult.discussion };
+  return { template: templateResult.template, discussion: discussionResult.discussion, comments: commentsResult.comments };
 }
 
 function Page() {
-  const { template, discussion } = Pages.useLoadedData<LoadedData>();
+  const { template, discussion, comments } = Pages.useLoadedData<LoadedData>();
   const paths = usePaths();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const formattedTimePreferences = useFormattedTimePreferences();
+  const canEdit = Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess);
+  const commentsProps = useTemplateComments({
+    templateId: template.id,
+    parentType: "discussion",
+    parentId: discussion.id,
+    comments,
+    canEdit,
+    richTextHandlers,
+    formattedTimePreferences,
+  });
 
   return (
     <TemplateDiscussionPage
@@ -46,9 +59,8 @@ function Page() {
         author: discussion.author ? People.parsePersonForTurboUi(paths, discussion.author) : null,
         insertedAt: new Date(discussion.insertedAt),
       }}
-      editLink={
-        template.permissions?.canEdit ? paths.projectTemplateDiscussionEditPath(template.id, discussion.id) : undefined
-      }
+      editLink={canEdit ? paths.projectTemplateDiscussionEditPath(template.id, discussion.id) : undefined}
+      comments={commentsProps}
       richTextHandlers={richTextHandlers}
       formattedTimePreferences={formattedTimePreferences}
     />

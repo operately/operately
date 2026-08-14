@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   alias Operately.Operations.{ProjectCreation, ProjectTemplateCreationFromProject, ProjectTemplateMaterialization}
   alias Operately.ProjectTemplates
   alias Operately.People.Person, as: CompanyPerson
-  alias Operately.ProjectTemplates.{Discussion, Milestone, Permissions, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
+  alias Operately.ProjectTemplates.{Comment, Discussion, Milestone, Permissions, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
   alias Operately.Projects.Project
   alias Operately.Repo
   alias OperatelyWeb.Api.Helpers, as: ApiHelpers
@@ -137,6 +137,72 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       case repo.get_by(Discussion, id: discussion_id, project_template_id: template.id) do
         nil -> {:error, :not_found}
         discussion -> {:ok, repo.preload(discussion, :author)}
+      end
+    end)
+  end
+
+  def load_comment_parent(multi, parent_type, parent_id) do
+    Ecto.Multi.run(multi, :comment_parent, fn repo, %{template: template} ->
+      find_comment_parent(repo, template.id, parent_type, parent_id)
+    end)
+  end
+
+  def load_comment(multi, comment_id) do
+    Ecto.Multi.run(multi, :comment, fn repo, %{template: template} ->
+      case repo.get_by(Comment, id: comment_id, project_template_id: template.id) do
+        nil -> {:error, :not_found}
+        comment -> {:ok, repo.preload(comment, :author)}
+      end
+    end)
+  end
+
+  def list_comments(multi, parent_type, parent_id) do
+    Ecto.Multi.run(multi, :comments, fn repo, %{template: template} ->
+      comments =
+        from(c in Comment,
+          where: c.project_template_id == ^template.id and c.parent_type == ^parent_type and c.parent_id == ^parent_id,
+          order_by: [asc: c.position, asc: c.id],
+          preload: [:author]
+        )
+        |> repo.all()
+
+      {:ok, comments}
+    end)
+  end
+
+  def create_comment(multi, attrs) do
+    run_step(multi, :comment, fn %{template: template, me: author, comment_parent: parent} ->
+      parent_type = attrs.parent_type
+      parent_id = parent.id
+
+      %{
+        project_template_id: template.id,
+        author_id: author.id,
+        parent_type: parent_type,
+        parent_id: parent_id,
+        content: attrs.content,
+        position: next_comment_position(template.id, parent_type, parent_id)
+      }
+      |> Comment.changeset()
+      |> persist!()
+      |> Repo.preload(:author)
+    end)
+  end
+
+  def update_comment(multi, attrs) do
+    run_step(multi, :updated_comment, fn %{comment: comment} ->
+      comment
+      |> Comment.changeset(attrs)
+      |> persist!()
+      |> Repo.preload(:author)
+    end)
+  end
+
+  def delete_comment(multi) do
+    run_step(multi, :deleted_comment, fn %{comment: comment} ->
+      case Repo.delete(comment) do
+        {:ok, deleted} -> deleted
+        {:error, changeset} -> fail!(changeset)
       end
     end)
   end
@@ -586,6 +652,43 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     case Repo.insert_or_update(changeset) do
       {:ok, resource} -> resource
       {:error, changeset} -> fail!(changeset)
+    end
+  end
+
+  defp find_comment_parent(repo, template_id, :discussion, parent_id) do
+    case repo.get_by(Discussion, id: parent_id, project_template_id: template_id) do
+      nil -> {:error, :not_found}
+      discussion -> {:ok, discussion}
+    end
+  end
+
+  defp find_comment_parent(repo, template_id, parent_type, parent_id) when parent_type in [:document, :file, :link] do
+    query =
+      from resource in comment_parent_schema(parent_type),
+        join: node in assoc(resource, :node),
+        where: resource.id == ^parent_id and node.project_template_id == ^template_id
+
+    case repo.one(query) do
+      nil -> {:error, :not_found}
+      resource -> {:ok, resource}
+    end
+  end
+
+  defp find_comment_parent(_repo, _template_id, _parent_type, _parent_id), do: {:error, :not_found}
+
+  defp comment_parent_schema(:document), do: ResourceDocument
+  defp comment_parent_schema(:file), do: ResourceFile
+  defp comment_parent_schema(:link), do: ResourceLink
+
+  defp next_comment_position(template_id, parent_type, parent_id) do
+    from(c in Comment,
+      where: c.project_template_id == ^template_id and c.parent_type == ^parent_type and c.parent_id == ^parent_id,
+      select: max(c.position)
+    )
+    |> Repo.one()
+    |> case do
+      nil -> 0
+      position -> position + 1
     end
   end
 

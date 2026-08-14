@@ -50,6 +50,7 @@ export function CommentItem({
   formattedTimePreferences,
   appearance = "card",
   onVisible,
+  canManageComments = false,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const parsedContent = parseContent(comment.content);
@@ -120,7 +121,7 @@ export function CommentItem({
             {!isEditing && (
               <CommentMenu
                 comment={comment}
-                isOwnComment={isOwnComment}
+                canEdit={canComment && (canManageComments || isOwnComment)}
                 appearance={appearance}
                 onEdit={() => setIsEditing(true)}
                 onDelete={form.deleteComment ? () => form.deleteComment?.(comment.id) : undefined}
@@ -155,13 +156,13 @@ export function CommentItem({
 
 interface CommentMenuProps {
   comment: CommentItemProps["comment"];
-  isOwnComment: boolean;
+  canEdit: boolean;
   appearance: CommentAppearance;
   onEdit: () => void;
   onDelete?: () => void;
 }
 
-function CommentMenu({ comment, isOwnComment, appearance, onEdit, onDelete }: CommentMenuProps) {
+function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: CommentMenuProps) {
   const handleCopyLink = useCallback(async () => {
     try {
       const url = new URL(window.location.href);
@@ -184,7 +185,7 @@ function CommentMenu({ comment, isOwnComment, appearance, onEdit, onDelete }: Co
       >
         Copy link
       </MenuActionItem>
-      {isOwnComment && (
+      {canEdit && (
         <>
           <MenuActionItem onClick={onEdit} icon={IconEdit} testId={isFlat ? "edit-comment" : createTestId("edit", comment.id)}>
             Edit
