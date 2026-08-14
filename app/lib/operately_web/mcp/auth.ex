@@ -20,8 +20,9 @@ defmodule OperatelyWeb.Mcp.Auth do
   def bearer_challenge(opts \\ []) do
     params =
       [
+        {"error", Keyword.get(opts, :error)},
         {"resource_metadata", Mcp.protected_resource_metadata_url(:mcp)},
-        {"scope", Keyword.get(opts, :scope, Mcp.scopes_to_string(Mcp.supported_scopes()))}
+        {"scope", Keyword.get(opts, :scope, Mcp.scopes_to_string(Mcp.default_scopes()))}
       ]
       |> Enum.reject(fn {_key, value} -> is_nil(value) or value == "" end)
 

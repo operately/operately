@@ -54,7 +54,10 @@ defmodule OperatelyWeb.McpControllerTest do
       })
 
     assert conn.status == 401
-    assert get_resp_header(conn, "www-authenticate") |> List.first() =~ "resource_metadata="
+    challenge = get_resp_header(conn, "www-authenticate") |> List.first()
+    assert challenge =~ "resource_metadata="
+    assert challenge =~ ~s(scope="mcp:read")
+    refute challenge =~ "error="
   end
 
   test "responds to OPTIONS preflight for browser connector setup" do
