@@ -153,6 +153,7 @@ export { LinkPage } from "./LinkPage";
 export { FilePage } from "./FilePage";
 export { FileEditPage } from "./FileEditPage";
 export { ProjectTemplatesPage } from "./ProjectTemplatesPage";
+export * from "./ProjectTemplateLifecycle";
 export { ResourceHubDraftsPage } from "./ResourceHubDraftsPage";
 export { ResourceHubFolderPage } from "./ResourceHubFolderPage";
 export { ResourceHubPage } from "./ResourceHubPage";

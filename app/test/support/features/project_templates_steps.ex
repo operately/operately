@@ -94,11 +94,11 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     Factory.disable_space_tool(ctx, :space, :templates)
   end
 
-  step :login_as_creator, ctx, do: Factory.log_in_person(ctx, :creator)
-  step :login_as_editor, ctx, do: Factory.log_in_person(ctx, :editor)
-  step :login_as_commenter, ctx, do: Factory.log_in_person(ctx, :commenter)
-  step :login_as_viewer, ctx, do: Factory.log_in_person(ctx, :viewer)
-  step :login_as_outsider, ctx, do: Factory.log_in_person(ctx, :outsider)
+  step(:login_as_creator, ctx, do: Factory.log_in_person(ctx, :creator))
+  step(:login_as_editor, ctx, do: Factory.log_in_person(ctx, :editor))
+  step(:login_as_commenter, ctx, do: Factory.log_in_person(ctx, :commenter))
+  step(:login_as_viewer, ctx, do: Factory.log_in_person(ctx, :viewer))
+  step(:login_as_outsider, ctx, do: Factory.log_in_person(ctx, :outsider))
 
   step :visit_company_library, ctx do
     UI.visit(ctx, Paths.project_templates_path(ctx.company))
@@ -175,6 +175,98 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
 
   step :refute_template_listed, ctx, name do
     UI.refute_text(ctx, name)
+  end
+
+  step :filter_templates_by_status, ctx, status do
+    ctx
+    |> UI.click(testid: "project-template-status-filter")
+    |> UI.click_text(status)
+    |> UI.sleep(300)
+  end
+
+  step :duplicate_template_from_library, ctx, opts do
+    template = Map.fetch!(ctx, Keyword.fetch!(opts, :template))
+    name = Keyword.fetch!(opts, :name)
+
+    ctx
+    |> UI.click(testid: "project-template-actions-#{Paths.project_template_id(template)}")
+    |> UI.click_text("Duplicate")
+    |> UI.assert_has(testid: "duplicate-project-template-form")
+    |> UI.fill(testid: "name", with: name)
+    |> UI.click(testid: "duplicate-project-template")
+    |> UI.assert_has(testid: "project-template-page")
+    |> UI.assert_text(name)
+    |> Map.put(:template, Repo.get_by!(ProjectTemplate, name: name))
+  end
+
+  step :archive_template_from_library, ctx, template_key do
+    template = Map.fetch!(ctx, template_key)
+
+    ctx
+    |> UI.click(testid: "project-template-actions-#{Paths.project_template_id(template)}")
+    |> UI.click_text("Archive")
+    |> UI.assert_text("This template will leave project creation and can be restored later.")
+    |> UI.click_button("Archive template")
+    |> UI.sleep(300)
+  end
+
+  step :restore_template_from_library, ctx, template_key do
+    template = Map.fetch!(ctx, template_key)
+
+    ctx
+    |> UI.click(testid: "project-template-actions-#{Paths.project_template_id(template)}")
+    |> UI.click_text("Restore")
+    |> UI.assert_text("This template will return to active use and project creation.")
+    |> UI.click_button("Restore template")
+    |> UI.sleep(300)
+  end
+
+  step :delete_template_from_library, ctx, template_key do
+    template = Map.fetch!(ctx, template_key)
+
+    ctx
+    |> UI.click(testid: "project-template-actions-#{Paths.project_template_id(template)}")
+    |> UI.click_text("Delete")
+    |> UI.assert_text("Existing projects created from it will remain unchanged.")
+    |> UI.click_button("Delete template")
+    |> UI.sleep(300)
+  end
+
+  step :archive_template_from_editor, ctx do
+    ctx
+    |> UI.click(testid: "archive-project-template")
+    |> UI.assert_text("This template will leave project creation and can be restored later.")
+    |> UI.click_button("Archive template")
+    |> UI.assert_text("Archived")
+  end
+
+  step :assert_template_actions_hidden, ctx, template_key do
+    template = Map.fetch!(ctx, template_key)
+    UI.refute_has(ctx, testid: "project-template-actions-#{Paths.project_template_id(template)}")
+  end
+
+  step :assert_template_editor_actions_hidden, ctx do
+    UI.refute_has(ctx, testid: "actions-section")
+  end
+
+  step :assert_template_deleted, ctx, template_key do
+    template = Map.fetch!(ctx, template_key)
+    assert Repo.get(ProjectTemplate, template.id) == nil
+    ctx
+  end
+
+  step :remember_generated_project, ctx, name do
+    Map.put(ctx, :generated_project, Repo.get_by!(Project, name: name))
+  end
+
+  step :assert_generated_project_unchanged_after_template_deletion, ctx do
+    project = Repo.get!(Project, ctx.generated_project.id)
+    assert project.source_template_id == nil
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, project))
+    |> UI.assert_has(testid: "project-page")
+    |> UI.assert_text(project.name)
   end
 
   step :open_template_from_library, ctx, name do

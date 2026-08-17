@@ -20,26 +20,26 @@ beforeEach(() => {
   jest.clearAllMocks();
   featureRedirect.mockResolvedValue(undefined);
   listTemplates.mockResolvedValue({ templates: [{ id: "template-1" }] });
-  listSpaces
-    .mockResolvedValueOnce({ spaces: [{ id: "space-1", name: "Marketing" }] })
-    .mockResolvedValueOnce({ spaces: [{ id: "space-1", name: "Marketing" }] });
+  listSpaces.mockResolvedValue({
+    spaces: [{ id: "space-1", name: "Marketing", permissions: { canEdit: true } }],
+  });
 });
 
-test("loads the active company library and editable Spaces", async () => {
+test("loads all company templates and Spaces with effective permissions", async () => {
   const result = await loader({ params: { companyId: "acme" } } as any);
 
   expect(featureRedirect).toHaveBeenCalledWith({ companyId: "acme" }, { feature: "project_templates", path: "/acme" });
-  expect(listTemplates).toHaveBeenCalledWith({ spaceId: null, archiveStatus: "active" });
-  expect(listSpaces).toHaveBeenNthCalledWith(1, {});
-  expect(listSpaces).toHaveBeenNthCalledWith(2, { accessLevel: "edit_access" });
+  expect(listTemplates).toHaveBeenCalledWith({ spaceId: null, archiveStatus: "all" });
+  expect(listSpaces).toHaveBeenCalledTimes(1);
+  expect(listSpaces).toHaveBeenCalledWith({ includePermissions: true });
   expect(result.fixedSpace).toBeNull();
 });
 
 test("loads a Space-scoped library and resolves the fixed Space", async () => {
   const result = await loader({ params: { companyId: "acme", id: "space-1" } } as any);
 
-  expect(listTemplates).toHaveBeenCalledWith({ spaceId: "space-1", archiveStatus: "active" });
-  expect(result.fixedSpace).toEqual({ id: "space-1", name: "Marketing" });
+  expect(listTemplates).toHaveBeenCalledWith({ spaceId: "space-1", archiveStatus: "all" });
+  expect(result.fixedSpace).toEqual({ id: "space-1", name: "Marketing", permissions: { canEdit: true } });
 });
 
 test("redirects home before loading templates when the feature is disabled", async () => {

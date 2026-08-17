@@ -17,23 +17,16 @@ function Page() {
   const navigate = useNavigate();
   const { billingAccessState } = useCompanyLoaderData();
   const fixedSpace = data.fixedSpace ? toSpace(data.fixedSpace, paths) : undefined;
-  const editableSpaces = data.editableSpaces.map((space) => toSpace(space, paths));
+  const editableSpaces = data.spaces
+    .filter((space) => space.permissions?.canEdit)
+    .map((space) => toSpace(space, paths));
   const readOnly = billingAccessState?.accessState === "read_only";
   const editableSpaceIds = new Set(editableSpaces.map((space) => space.id));
   const libraryPath = fixedSpace ? paths.spaceProjectTemplatesPath(fixedSpace.id) : paths.projectTemplatesPath();
-
-  const onFilter = React.useCallback(
-    async ({ search, spaceId }: ProjectTemplatesPage.Filters) => {
-      const result = await Api.project_templates.list({
-        search: search || undefined,
-        spaceId: fixedSpace?.id ?? spaceId,
-        archiveStatus: "active",
-      });
-
-      return result.templates ?? [];
-    },
-    [fixedSpace?.id],
-  );
+  const lifecycleHandlers = createProjectTemplateLifecycleHandlers({
+    navigate,
+    paths,
+  });
 
   async function onCreate({ name, spaceId }: ProjectTemplatesPage.CreateInput) {
     try {
@@ -63,7 +56,7 @@ function Page() {
       fixedSpace={fixedSpace}
       templatePath={(id) => paths.projectTemplatePath(id)}
       projectCreationPath={(template) =>
-        !readOnly && editableSpaceIds.has(template.space.id)
+        !template.archivedAt && !readOnly && editableSpaceIds.has(template.space.id)
           ? paths.newProjectPath({
               templateId: template.id,
               spaceId: template.space.id,
@@ -74,14 +67,51 @@ function Page() {
       }
       spaceTemplatesPath={(id) => paths.spaceProjectTemplatesPath(id)}
       formattedTimePreferences={useFormattedTimePreferences()}
-      canCreate={
-        !readOnly &&
-        (fixedSpace ? data.editableSpaces.some((space) => space.id === fixedSpace.id) : editableSpaces.length > 0)
-      }
-      onFilter={onFilter}
+      canCreate={!readOnly && (fixedSpace ? Boolean(data.fixedSpace?.permissions?.canEdit) : editableSpaces.length > 0)}
       onCreate={onCreate}
+      canEdit={(template) => !readOnly && editableSpaceIds.has(template.space.id)}
+      {...lifecycleHandlers}
     />
   );
+}
+
+function createProjectTemplateLifecycleHandlers({
+  navigate,
+  paths,
+}: {
+  navigate: (path: string) => void;
+  paths: Pick<Paths, "projectTemplatePath">;
+}): Pick<ProjectTemplatesPage.Props, "onDuplicate" | "onArchive" | "onRestore" | "onDelete"> {
+  async function onDuplicate(id: string, name: string) {
+    let result;
+
+    try {
+      result = await Api.project_templates.duplicate({ id, name });
+    } catch (_error) {
+      showErrorToast("Template not duplicated", "Restore archived templates before duplicating them, then try again.");
+      return { success: false, error: "The template could not be duplicated. Refresh the page and try again." };
+    }
+
+    navigate(paths.projectTemplatePath(result.template.id));
+    return { success: true };
+  }
+
+  async function lifecycleMutation(message: string, operation: () => Promise<unknown>) {
+    try {
+      await operation();
+      return { success: true };
+    } catch (_error) {
+      showErrorToast(message, "The template may have changed. Refresh the page and try again.");
+      return { success: false, error: "The template could not be changed. Refresh the page and try again." };
+    }
+  }
+
+  return {
+    onDuplicate,
+    onArchive: (id) => lifecycleMutation("Template not archived", () => Api.project_templates.archive({ id })),
+    onRestore: (id) => lifecycleMutation("Template not restored", () => Api.project_templates.restore({ id })),
+    onDelete: (id) => lifecycleMutation("Template not deleted", () => Api.project_templates.delete({ id })),
+  };
 }
 
 function toSpace(space: Space, paths: Paths): ProjectTemplatesPage.Space {
