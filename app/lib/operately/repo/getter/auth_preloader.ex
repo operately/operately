@@ -18,6 +18,21 @@ defmodule Operately.Repo.Getter.AuthPreloader do
     |> Enum.reject(&preload_association_in?(&1, auth_associations))
   end
 
+  def preload([], _requester, _args), do: []
+
+  def preload(resources, _requester, %{auth_preload: auth_preload}) when is_list(resources) and auth_preload in [nil, []], do: resources
+
+  def preload(resources, :system, %{auth_preload: auth_preload, with_deleted: with_deleted}) when is_list(resources) do
+    Repo.preload(resources, List.wrap(auth_preload) |> List.flatten(), with_deleted: with_deleted)
+  end
+
+  def preload([resource | _] = resources, requester, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
+    case requester_id(requester) do
+      nil -> resources
+      requester_id -> Repo.preload(resources, build(resource.__struct__, requester_id, auth_preload), with_deleted: with_deleted)
+    end
+  end
+
   def preload(resource, _requester, %{auth_preload: auth_preload}) when auth_preload in [nil, []], do: resource
 
   def preload(resource, :system, %{auth_preload: auth_preload, with_deleted: with_deleted}) do

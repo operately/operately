@@ -1,10 +1,10 @@
 # Operately Repo Getter
 
-`Operately.Repo.Getter` is the standard way to load one Ecto resource while
-enforcing the requester's access level. Extend it with schema-declared profiles
-when a table contains different resource kinds or a resource can inherit access
-from different parents. Do not create a resource-specific Getter wrapper for
-these cases.
+`Operately.Repo.Getter` is the standard way to load requester-aware Ecto
+resources. Use `get/2` for one resource and `list/2` for a collection. Extend
+it with schema-declared profiles when a table contains different resource kinds
+or a resource can inherit access from different parents. Do not create a
+resource-specific Getter wrapper for these cases.
 
 ## Standard usage
 
@@ -22,18 +22,23 @@ defmodule Operately.Example do
 end
 ```
 
-Then call `get/2` or `get!/2`:
+Then call `get/2`, `get!/2`, or `list/2`:
 
 ```elixir
 Example.get(person, id: id)
 Example.get(person.id, id: id, opts: [required_access_level: Binding.edit_access()])
 Example.get!(:system, id: id)
+Example.list(person, company_id: company_id, opts: [order_by: [asc: :name]])
 ```
 
 `get/2` returns `{:ok, resource}` or `{:error, :not_found}`. A loaded resource's
 `request_info` contains the canonical requester, effective access level, and
 whether it was a system request. `get!/2` raises `Ecto.NoResultsError` when the
 resource is unavailable.
+
+`list/2` returns every matching accessible resource, or `[]` when none match.
+It applies the same default view-access boundary, attaches `request_info` to
+every result, and returns full access for `:system` requests.
 
 Supported options are:
 
@@ -45,6 +50,8 @@ Supported options are:
 - `with_deleted`: includes soft-deleted records.
 - `after_load`: unary functions run after authorization and preloading.
 - `getter_profile`: selects a schema-declared profile; defaults to `:default`.
+- `order_by`: `list/2` ordering as a list of Ecto directions and schema fields,
+  such as `[asc: :name]`.
 
 Schemas without `getter_profile/1` are unchanged: Getter applies no additional
 scope and authorizes through `:access_context`. This also preserves schemas that
@@ -92,9 +99,11 @@ Project.get(person, id: id)
 Project.get(person, id: id, opts: [getter_profile: :template])
 ```
 
-Do not accept caller-provided scopes, functions, or association paths. A domain
-context such as `ProjectTemplates` should expose a focused function that selects
-the named profile internally.
+Do not accept caller-provided scopes, functions, or association paths. `list/2`
+accepts exact field matchers only; keep domain searches, ranking, and other
+specialized query shapes in focused domain modules. A domain context such as
+`ProjectTemplates` should expose a focused function that selects the named
+profile internally.
 
 Profile rules:
 
@@ -132,7 +141,7 @@ or goal.
 
 ## Tests
 
-When adding or changing a profile, cover:
+When adding or changing a profile or shared Getter behavior, cover:
 
 - Default and explicitly selected profile behavior.
 - Scope isolation, including `:system` requests.
@@ -141,6 +150,8 @@ When adding or changing a profile, cover:
 - The maximum effective level when multiple paths match.
 - `get!`, preloads, auth preloads, soft deletion, or after-load hooks when the
   resource previously customized those behaviors.
+- For `list/2`: empty results, per-row request info, required-access filtering,
+  system requests, ordering, and list auth preloads.
 
 If associations are insufficient for a recurring authorization shape, improve
 the shared Getter with focused tests and documentation instead of duplicating

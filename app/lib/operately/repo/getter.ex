@@ -1,7 +1,7 @@
 defmodule Operately.Repo.Getter do
   @moduledoc """
-  This module provides a way to get a resource from the database, taking into
-  account the requester's access level.
+  This module provides ways to get and list resources from the database, taking
+  into account the requester's access level.
 
   ## System requester
 
@@ -22,15 +22,18 @@ defmodule Operately.Repo.Getter do
       schema "my_schema" do
         ...
 
-        requester_info()             <---- Add this line
+        request_info()                <---- Add this line
       end
     end
 
-  When added, you can use the `get/2` function to get a resource with the
-  requester's access level.
+  When added, you can use `get/2` to load one resource or `list/2` to load all
+  matching resources with the requester's access level.
 
     MySchema.get(person, id: "123")
     MySchema.get(:system, id: "123")
+
+    MySchema.list(person, company_id: "123")
+    MySchema.list(:system)
 
   ## Return values
 
@@ -41,11 +44,14 @@ defmodule Operately.Repo.Getter do
     {:error, :not_found}   <-- The resource was found but the requester does not have access
     {:error, :not_found}   <-- The resource was not found
 
+  `list/2` returns a list of matching resources. It returns an empty list when
+  no resources match or the requester cannot access any matching resource.
+
   ## Requester info
 
-  Additionally, the returned resource will have a `requester_info` field which
+  Additionally, the returned resource will have a `request_info` field which
   contains information about the requester. This field is virtual and is not
-  stored in the database. The `requester_info` field contains the following
+  stored in the database. The `request_info` field contains the following
   fields:
 
     - `requester`: The requester who requested the resource
@@ -103,6 +109,15 @@ defmodule Operately.Repo.Getter do
   When the requester's highest access level for the resource is below the
   required level, `{:error, :not_found}` is returned.
 
+  `list/2` uses the same access level rule and excludes rows below the required
+  level.
+
+  ## Ordering
+
+  You can order list results by schema fields with the `:order_by` option:
+
+    MySchema.list(person, opts: [order_by: [asc: :name]])
+
   ## Getter profiles
 
   Schemas that need different row scopes or authorization paths can declare
@@ -129,7 +144,7 @@ defmodule Operately.Repo.Getter do
   Resources without `getter_profile/1` continue to use `:access_context` with
   no additional scope. Profile scopes also apply to `:system` requests.
 
-  ## Getting solf-deleted resources
+  ## Getting soft-deleted resources
 
   If you want to get soft-deleted resources, you can pass the `:with_deleted`
   option to the `get/2` function. For example:
@@ -201,79 +216,15 @@ defmodule Operately.Repo.Getter do
           {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
         end
       end
+
+      def list(requester, args \\ []) do
+        Operately.Repo.Getter.list(__MODULE__, requester, args)
+      end
     end
   end
 
-  import Ecto.Query
+  alias Operately.Repo.Getter.{Get, List}
 
-  alias Operately.Access.Binding
-  alias Operately.Repo.RequestInfo
-  alias Operately.Repo.Getter.AccessQuery
-  alias Operately.Repo.Getter.Args
-  alias Operately.Repo.Getter.AuthPreloader
-  alias Operately.Repo.Getter.Profile
-
-  def get(module, requester, args) do
-    args = Args.parse(args)
-    profile = Profile.resolve!(module, args.getter_profile)
-
-    # Auth preloads must override regular preloads for the same association.
-    preload = AuthPreloader.ordinary_preloads(args.preload, args.auth_preload)
-    query = from(r in module, as: :resource, preload: ^preload)
-    query = Profile.apply_scope!(query, module, args.getter_profile, profile)
-    query = add_where_clauses(query, args.field_matchers)
-
-    case requester do
-      :system -> get_for_system(query, :system, args)
-      %{} -> get_for_person(query, requester.id, args, profile.access_contexts)
-      requester_id when is_binary(requester_id) -> get_for_person(query, requester_id, args, profile.access_contexts)
-      _ -> {:error, :invalid_requester}
-    end
-  end
-
-  defp get_for_system(query, :system, args) do
-    case load(query, args) do
-      {:ok, resource} -> process_resource(resource, :system, Binding.full_access(), args)
-      {:error, :not_found} -> {:error, :not_found}
-    end
-  end
-
-  defp get_for_person(query, requester_id, args, access_contexts) do
-    query =
-      AccessQuery.authorize(query, requester_id, args.required_access_level, access_contexts)
-      |> group_by([resource: r, person: p], [r.id, p.id])
-      |> select([resource: r, binding: b, person: p], {r, max(b.access_level), p})
-
-    case load(query, args) do
-      {:ok, {resource, access_level, requester}} -> process_resource(resource, requester, access_level, args)
-      {:error, :not_found} -> {:error, :not_found}
-    end
-  end
-
-  defp load(query, args) do
-    Operately.Repo.one(query, with_deleted: args.with_deleted) |> to_tuple()
-  end
-
-  defp add_where_clauses(query, field_matchers) do
-    Enum.reduce(field_matchers, query, fn {name, value}, query ->
-      where(query, [resource: r], field(r, ^name) == ^value)
-    end)
-  end
-
-  defp process_resource(resource, requester, access_level, args) do
-    resource = RequestInfo.populate_request_info(resource, requester, access_level)
-    resource = AuthPreloader.preload(resource, requester, args)
-    resource = run_after_load_hooks(resource, args.after_load)
-
-    {:ok, resource}
-  end
-
-  defp run_after_load_hooks(resource, hooks) do
-    Enum.reduce(hooks, resource, fn hook, resource ->
-      hook.(resource)
-    end)
-  end
-
-  defp to_tuple(nil), do: {:error, :not_found}
-  defp to_tuple(resource), do: {:ok, resource}
+  def get(module, requester, args), do: Get.get(module, requester, args)
+  def list(module, requester, args), do: List.list(module, requester, args)
 end
