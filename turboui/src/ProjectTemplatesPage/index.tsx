@@ -1,26 +1,27 @@
 import React from "react";
 import type { ProjectTemplate } from "../ApiTypes";
-import { Avatar } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
+import type { FormattedTimePreferences } from "../FormattedTime";
 import * as Forms from "../Forms";
 import { DivLink } from "../Link";
 import Modal from "../Modal";
+import { Menu, MenuActionItem } from "../Menu";
 import { Page } from "../Page";
+import {
+  ProjectTemplateLifecycle,
+  ProjectTemplateLifecycleAction,
+  ProjectTemplateLifecycleDialogs,
+} from "../ProjectTemplateLifecycle";
 import type { Navigation } from "../Page/Navigation";
-import { richContentToString, parseContent } from "../RichContent";
 import { SpaceField } from "../SpaceField";
-import { IconArrowRight, IconSearch, IconX } from "../icons";
+import { IconChevronDown, IconSearch, IconX } from "../icons";
+import { TemplateCard } from "./TemplateCard";
+import { plainDescription } from "./utils";
 
-type SearchStatus = "idle" | "loading" | "error";
+type ArchiveStatus = "active" | "archived";
 
 export namespace ProjectTemplatesPage {
   export type Space = SpaceField.Space;
-
-  export interface Filters {
-    search: string;
-    spaceId: string | null;
-  }
 
   export interface CreateInput {
     name: string;
@@ -32,7 +33,7 @@ export namespace ProjectTemplatesPage {
     error?: string;
   }
 
-  export interface Props {
+  export interface Props extends ProjectTemplateLifecycle.Handlers {
     scope: "company" | "space";
     navigation: Navigation.Item[];
     templates: ProjectTemplate[];
@@ -42,10 +43,10 @@ export namespace ProjectTemplatesPage {
     templatePath: (templateId: string) => string;
     projectCreationPath?: (template: ProjectTemplate) => string | null;
     spaceTemplatesPath: (spaceId: string) => string;
-    onFilter: (filters: Filters) => Promise<ProjectTemplate[]>;
     onCreate: (input: CreateInput) => Promise<MutationResult>;
     formattedTimePreferences: FormattedTimePreferences;
     canCreate: boolean;
+    canEdit: (template: ProjectTemplate) => boolean;
   }
 }
 
@@ -53,43 +54,13 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
   const [templates, setTemplates] = React.useState(props.templates);
   const [search, setSearch] = React.useState("");
   const [selectedSpace, setSelectedSpace] = React.useState<ProjectTemplatesPage.Space | null>(props.fixedSpace ?? null);
-  const [status, setStatus] = React.useState<SearchStatus>("idle");
+  const [archiveStatus, setArchiveStatus] = React.useState<ArchiveStatus>("active");
   const [isCreating, setIsCreating] = React.useState(false);
-  const requestSequence = React.useRef(0);
-  const onFilterRef = React.useRef(props.onFilter);
-  const previousSearch = React.useRef(search);
-  const previousSpaceId = React.useRef(selectedSpace?.id);
-
-  onFilterRef.current = props.onFilter;
-
+  const [lifecycle, setLifecycle] = React.useState<{
+    template: ProjectTemplate;
+    action: ProjectTemplateLifecycleAction;
+  } | null>(null);
   React.useEffect(() => setTemplates(props.templates), [props.templates]);
-
-  React.useEffect(() => {
-    const spaceId = selectedSpace?.id;
-    if (previousSearch.current === search && previousSpaceId.current === spaceId) return;
-
-    previousSearch.current = search;
-    previousSpaceId.current = spaceId;
-
-    const requestId = ++requestSequence.current;
-    const timeout = window.setTimeout(
-      async () => {
-        setStatus("loading");
-        try {
-          const nextTemplates = await onFilterRef.current({ search: search.trim(), spaceId: spaceId ?? null });
-          if (requestSequence.current !== requestId) return;
-          setTemplates(nextTemplates);
-          setStatus("idle");
-        } catch (_error) {
-          if (requestSequence.current !== requestId) return;
-          setStatus("error");
-        }
-      },
-      search.trim() ? 300 : 0,
-    );
-
-    return () => window.clearTimeout(timeout);
-  }, [search, selectedSpace?.id]);
 
   const filterSpaceSearch = React.useCallback(
     async ({ query }: { query: string }) => filterSpaces(props.spaces, query),
@@ -99,7 +70,25 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
     async ({ query }: { query: string }) => filterSpaces(props.editableSpaces, query),
     [props.editableSpaces],
   );
-  const isFiltered = search.trim() !== "" || (props.scope === "company" && selectedSpace !== null);
+  const isFiltered =
+    search.trim() !== "" || (props.scope === "company" && selectedSpace !== null) || archiveStatus !== "active";
+  const visibleTemplates = filterTemplates(templates, search, selectedSpace?.id, archiveStatus);
+
+  const runOptimisticLifecycle = React.useCallback(
+    async (
+      handler: (id: string) => Promise<ProjectTemplateLifecycle.MutationResult>,
+      id: string,
+      update: (templates: ProjectTemplate[]) => ProjectTemplate[],
+    ) => {
+      const previousTemplates = templates;
+      setLifecycle(null);
+      setTemplates(update);
+      const result = await handler(id);
+      if (!result.success) setTemplates(previousTemplates);
+      return result;
+    },
+    [templates],
+  );
 
   return (
     <Page title="Project Templates" size="xxlarge" navigation={props.navigation} testId="project-templates-page">
@@ -152,9 +141,15 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
               testId="project-template-space-filter"
             />
           )}
+          <ArchiveStatusMenu value={archiveStatus} onChange={setArchiveStatus} />
         </div>
 
-        <TemplatesContent {...props} templates={templates} status={status} isFiltered={isFiltered} />
+        <TemplatesContent
+          {...props}
+          templates={visibleTemplates}
+          isFiltered={isFiltered}
+          onLifecycleAction={(template, action) => setLifecycle({ template, action })}
+        />
       </main>
 
       <CreateTemplateModal
@@ -165,6 +160,27 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
         spaceSearch={createSpaceSearch}
         onCreate={props.onCreate}
       />
+      <ProjectTemplateLifecycleDialogs
+        action={lifecycle?.action ?? null}
+        template={lifecycle?.template ?? null}
+        onClose={() => setLifecycle(null)}
+        onDuplicate={props.onDuplicate}
+        onArchive={(id) =>
+          runOptimisticLifecycle(props.onArchive, id, (items) =>
+            items.map((template) =>
+              template.id === id ? { ...template, archivedAt: new Date().toISOString() } : template,
+            ),
+          )
+        }
+        onRestore={(id) =>
+          runOptimisticLifecycle(props.onRestore, id, (items) =>
+            items.map((template) => (template.id === id ? { ...template, archivedAt: null } : template)),
+          )
+        }
+        onDelete={(id) =>
+          runOptimisticLifecycle(props.onDelete, id, (items) => items.filter((template) => template.id !== id))
+        }
+      />
     </Page>
   );
 }
@@ -172,13 +188,10 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
 function TemplatesContent(
   props: ProjectTemplatesPage.Props & {
     templates: ProjectTemplate[];
-    status: SearchStatus;
     isFiltered: boolean;
+    onLifecycleAction: (template: ProjectTemplate, action: ProjectTemplateLifecycleAction) => void;
   },
 ) {
-  if (props.status === "loading") return <PageMessage>Loading templates…</PageMessage>;
-  if (props.status === "error")
-    return <PageMessage role="alert">Templates could not be loaded. Try again.</PageMessage>;
   if (props.templates.length === 0 && props.isFiltered)
     return <PageMessage>No matching templates. Try a different search or Space.</PageMessage>;
   if (props.templates.length === 0) return <PageMessage>No project templates yet.</PageMessage>;
@@ -204,7 +217,12 @@ function TemplatesContent(
   );
 }
 
-function TemplateGrid(props: ProjectTemplatesPage.Props & { templates: ProjectTemplate[] }) {
+function TemplateGrid(
+  props: ProjectTemplatesPage.Props & {
+    templates: ProjectTemplate[];
+    onLifecycleAction: (template: ProjectTemplate, action: ProjectTemplateLifecycleAction) => void;
+  },
+) {
   return (
     <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {props.templates.map((template) => (
@@ -214,53 +232,45 @@ function TemplateGrid(props: ProjectTemplatesPage.Props & { templates: ProjectTe
   );
 }
 
-function TemplateCard({
-  template,
-  templatePath,
-  projectCreationPath,
-  formattedTimePreferences,
-}: Pick<ProjectTemplatesPage.Props, "templatePath" | "projectCreationPath" | "formattedTimePreferences"> & {
-  template: ProjectTemplate;
-}) {
-  const description = plainDescription(template.description);
-  const createProjectPath = projectCreationPath?.(template);
+function ArchiveStatusMenu({ value, onChange }: { value: ArchiveStatus; onChange: (value: ArchiveStatus) => void }) {
+  const label = value === "active" ? "Active" : "Archived";
 
   return (
-    <article className="flex min-h-52 flex-col rounded-xl border border-surface-outline bg-surface-base shadow-sm">
-      <DivLink
-        to={templatePath(template.id)}
-        className="flex flex-1 flex-col rounded-t-xl p-5 transition hover:bg-surface-highlight"
-        testId={`project-template-${template.id}`}
-      >
-        <div className="text-lg font-semibold">{template.name}</div>
-        <p className="mt-2 line-clamp-3 flex-1 text-sm text-content-dimmed">{description || "No description"}</p>
-        <div className="mt-5 flex items-center justify-between gap-3 border-t border-surface-outline pt-3 text-xs text-content-dimmed">
-          <div className="flex min-w-0 items-center gap-2">
-            {template.creator ? <Avatar person={template.creator} size={20} /> : null}
-            <span className="truncate">{template.creator?.fullName ?? "Creator unavailable"}</span>
-          </div>
-          <span className="shrink-0">
-            Updated{" "}
-            <FormattedTime {...formattedTimePreferences} time={template.updatedAt} format="relative-time-or-date" />
-          </span>
-        </div>
-      </DivLink>
-      {createProjectPath ? (
-        <DivLink
-          to={createProjectPath}
-          className="group flex w-full items-center justify-between rounded-b-xl border-t border-surface-outline px-5 py-3 text-sm font-semibold text-content-accent transition-colors hover:bg-surface-highlight focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-base"
-          testId={`create-project-from-template-${template.id}`}
+    <Menu
+      testId="project-template-status-filter"
+      align="start"
+      size="tiny"
+      customTrigger={
+        <button
+          type="button"
+          className="inline-flex items-center gap-2 rounded-md border border-surface-outline bg-surface-base px-3 py-1.5 text-sm text-content-dimmed transition hover:bg-surface-accent hover:text-content-base"
         >
-          <span>Create project</span>
-          <IconArrowRight
-            size={16}
-            aria-hidden="true"
-            className="text-content-dimmed transition-transform group-hover:translate-x-0.5"
-          />
-        </DivLink>
-      ) : null}
-    </article>
+          {label} <IconChevronDown size={16} />
+        </button>
+      }
+    >
+      <MenuActionItem onClick={() => onChange("active")}>Active</MenuActionItem>
+      <MenuActionItem onClick={() => onChange("archived")}>Archived</MenuActionItem>
+    </Menu>
   );
+}
+
+function filterTemplates(
+  templates: ProjectTemplate[],
+  search: string,
+  spaceId: string | undefined,
+  archiveStatus: ArchiveStatus,
+) {
+  const normalizedSearch = search.trim().toLowerCase();
+
+  return templates.filter((template) => {
+    const searchableText = `${template.name} ${plainDescription(template.description)}`.toLowerCase();
+    const matchesSearch = normalizedSearch === "" || searchableText.includes(normalizedSearch);
+    const matchesSpace = !spaceId || template.space.id === spaceId;
+    const matchesArchiveStatus = archiveStatus === "archived" ? Boolean(template.archivedAt) : !template.archivedAt;
+
+    return matchesSearch && matchesSpace && matchesArchiveStatus;
+  });
 }
 
 function CreateTemplateModal({
@@ -360,13 +370,4 @@ function groupBySpace(templates: ProjectTemplate[]) {
 function filterSpaces(spaces: ProjectTemplatesPage.Space[], query: string) {
   const normalized = query.trim().toLowerCase();
   return spaces.filter((space) => space.name.toLowerCase().includes(normalized));
-}
-
-function plainDescription(description?: string | null) {
-  if (!description) return "";
-  try {
-    return richContentToString(parseContent(description)).trim();
-  } catch (_error) {
-    return "";
-  }
 }

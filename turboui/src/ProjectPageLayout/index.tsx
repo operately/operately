@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { PageNew } from "../Page";
+import { Page, PageNew } from "../Page";
 import { PrivacyField } from "../PrivacyField";
 import { Tabs, TabsState } from "../Tabs";
 import { StatusBanner } from "./StatusBanner";
@@ -40,6 +40,7 @@ export namespace ProjectPageLayout {
     mode?: "project" | "template";
     title: string[];
     testId?: string;
+    options?: Page.Option[];
 
     projectName: string;
     taskCompletion?: TaskCompletionStats | null;
@@ -51,6 +52,7 @@ export namespace ProjectPageLayout {
     state?: "paused" | "closed" | "active";
     closedAt?: Date | null;
     projectTemplatesLink?: string;
+    archived?: boolean;
     reopenLink?: string;
     retrospectiveLink?: string;
 
@@ -63,7 +65,7 @@ export namespace ProjectPageLayout {
 
 export function ProjectPageLayout(props: ProjectPageLayout.Props) {
   return (
-    <PageNew title={props.title} size="fullwidth" testId={props.testId}>
+    <PageNew title={props.title} size="fullwidth" testId={props.testId} options={props.options}>
       <PageHeader {...props} />
 
       {(props.state === "paused" || props.state === "closed") && (
