@@ -1,7 +1,7 @@
 import React from "react";
 import { AvatarList } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { IconAlertTriangleFilled, IconChevronDown, IconEdit, IconTrash } from "../icons";
+import { IconAlertTriangleFilled, IconChevronDown, IconEdit, IconPlus, IconTrash } from "../icons";
 import { Menu, MenuActionItem } from "../Menu";
 import { Modal } from "../Modal";
 import { PersonField } from "../PersonField";
@@ -96,11 +96,19 @@ function ContributorsSection({
   return (
     <SidebarSection
       title={
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
           <span>Contributors</span>
           {canEdit && (
-            <SecondaryButton size="xs" onClick={onAdd} testId="add-template-contributor">
-              Add contributor
+            <SecondaryButton
+              size="xxs"
+              icon={IconPlus}
+              iconSize={12}
+              ariaLabel="Add contributor"
+              onClick={onAdd}
+              testId="add-template-contributor"
+              className="!px-0 !py-0"
+            >
+              {null}
             </SecondaryButton>
           )}
         </div>

@@ -1372,7 +1372,7 @@ describe("TemplateProjectPage", () => {
   it("keeps people controls read-only for View and Comment Access", () => {
     renderPage(createProps({ permissions: { canView: true, canComment: true }, people: [] }));
 
-    expect(screen.queryByText("Add contributor")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add contributor" })).not.toBeInTheDocument();
   });
 
   it("excludes template people from Add contributor search", () => {
@@ -1398,7 +1398,7 @@ describe("TemplateProjectPage", () => {
       }),
     );
 
-    fireEvent.click(screen.getByText("Add contributor"));
+    fireEvent.click(screen.getByRole("button", { name: "Add contributor" }));
     fireEvent.click(screen.getByText("Select person"));
 
     expect(document.querySelector('[data-test-id="person-field-search-result-grace-hopper"]')).toBeInTheDocument();
@@ -1419,7 +1419,7 @@ describe("TemplateProjectPage", () => {
       }),
     );
 
-    fireEvent.click(screen.getByText("Add contributor"));
+    fireEvent.click(screen.getByRole("button", { name: "Add contributor" }));
     fireEvent.click(screen.getByText("Select person"));
     fireEvent.change(screen.getByPlaceholderText("Search..."), { target: { value: "Grace" } });
 
@@ -1439,7 +1439,7 @@ describe("TemplateProjectPage", () => {
       }),
     );
 
-    fireEvent.click(screen.getByText("Add contributor"));
+    fireEvent.click(screen.getByRole("button", { name: "Add contributor" }));
     expect(screen.getByRole("heading", { name: "Add contributor" })).toBeInTheDocument();
     expect(screen.getByText("Access level")).toBeInTheDocument();
 
