@@ -4,9 +4,7 @@ defmodule Operately.Groups.Group do
   use Operately.Schema
   use Operately.Repo.Getter
 
-  alias Operately.Access.{Binding, Fetch}
   alias Operately.Repo
-  alias Operately.Repo.RequestInfo
 
   schema "groups" do
     belongs_to :company, Operately.Companies.Company
@@ -144,22 +142,6 @@ defmodule Operately.Groups.Group do
     |> exclude_ids(opts[:ignored_ids])
     |> order_by([s], asc: s.name)
     |> Operately.Repo.all()
-  end
-
-  def search_with_request_info(person, query, access_level \\ nil) do
-    access_level = access_level || :view_access
-    access_level = if is_atom(access_level), do: Binding.from_atom(access_level), else: access_level
-
-    search_query(person, query)
-    |> Fetch.join_access_level(person.id)
-    |> where([binding: b], b.access_level >= ^access_level)
-    |> group_by([resource: s], s.id)
-    |> select([resource: s, binding: b], {s, max(b.access_level)})
-    |> order_by([resource: s], asc: s.name)
-    |> Repo.all()
-    |> Enum.map(fn {space, effective_access_level} ->
-      RequestInfo.populate_request_info(space, person, effective_access_level)
-    end)
   end
 
   defp search_query(person, query) do

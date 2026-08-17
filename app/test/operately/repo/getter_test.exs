@@ -241,6 +241,87 @@ defmodule Operately.Repo.GetterTest do
     assert milestone.space.id == ctx.space.id
   end
 
+  describe "list" do
+    test "returns visible resources with requester info and applies collection hooks", ctx do
+      projects =
+        Project.list(ctx.viewer,
+          opts: [
+            preload: [:group],
+            auth_preload: [:goal],
+            after_load: [fn project -> %{project | permissions: %{loaded: true}} end],
+            order_by: [asc: :name]
+          ]
+        )
+
+      project_ids = Enum.map(projects, & &1.id)
+
+      assert ctx.restricted_project.id in project_ids
+      assert ctx.open_project.id in project_ids
+      refute ctx.closed_project.id in project_ids
+      assert Enum.map(projects, & &1.name) == Enum.sort(Enum.map(projects, & &1.name))
+      assert Enum.all?(projects, &(&1.request_info.requester.id == ctx.viewer.id))
+      assert Enum.all?(projects, &(&1.permissions == %{loaded: true}))
+      assert Enum.all?(projects, &(&1.group.id == ctx.space.id))
+
+      restricted_project = Enum.find(projects, &(&1.id == ctx.restricted_project.id))
+      open_project = Enum.find(projects, &(&1.id == ctx.open_project.id))
+
+      assert restricted_project.goal == nil
+      assert open_project.goal.id == ctx.open_goal.id
+    end
+
+    test "returns an empty list when no resources match", ctx do
+      assert [] = Project.list(ctx.viewer, id: Ecto.UUID.generate())
+    end
+
+    test "attaches full access for system requests", ctx do
+      [project] = Project.list(:system, id: ctx.restricted_project.id)
+
+      assert project.request_info.requester == :system
+      assert project.request_info.access_level == Binding.full_access()
+      assert project.request_info.is_system_request
+    end
+
+    test "auth preloads associations for system requests", ctx do
+      [project] =
+        Project.list(:system,
+          id: ctx.restricted_project.id,
+          opts: [auth_preload: [:goal, :group]]
+        )
+
+      assert project.goal.id == ctx.restricted_goal.id
+      assert project.group.id == ctx.space.id
+    end
+
+    test "includes soft-deleted resources only when requested", ctx do
+      Repo.soft_delete!(ctx.restricted_project)
+
+      assert [] = Project.list(:system, id: ctx.restricted_project.id)
+      assert [] = Project.list(ctx.viewer, id: ctx.restricted_project.id)
+
+      assert [system_project] =
+               Project.list(:system,
+                 id: ctx.restricted_project.id,
+                 opts: [with_deleted: true]
+               )
+
+      assert [viewer_project] =
+               Project.list(ctx.viewer,
+                 id: ctx.restricted_project.id,
+                 opts: [with_deleted: true]
+               )
+
+      assert system_project.id == ctx.restricted_project.id
+      assert viewer_project.id == ctx.restricted_project.id
+    end
+
+    test "rejects ordering by unknown fields" do
+      assert_raise ArgumentError, ~r/Invalid order_by.*:unknown/, fn ->
+        Project.list(:system, opts: [order_by: [asc: :unknown]])
+      end
+    end
+  end
+
   describe "getter profiles" do
     setup do
       ctx =
@@ -329,6 +410,32 @@ defmodule Operately.Repo.GetterTest do
                  id: ctx.regular_project.id,
                  opts: [getter_profile: :all_access_paths, required_access_level: Binding.edit_access()]
                )
+    end
+
+    test "lists resources with the highest access level from every declared access path", ctx do
+      projects =
+        ProfiledProject.list(ctx.multi_path_user,
+          opts: [getter_profile: :all_access_paths, order_by: [asc: :name]]
+        )
+
+      access_levels = Map.new(projects, &{&1.id, &1.request_info.access_level})
+
+      assert access_levels == %{
+               ctx.regular_project.id => Binding.edit_access(),
+               ctx.template_project.id => Binding.view_access()
+             }
+
+      assert [project] =
+               ProfiledProject.list(ctx.multi_path_user,
+                 opts: [getter_profile: :all_access_paths, required_access_level: Binding.edit_access()]
+               )
+
+      assert project.id == ctx.regular_project.id
+    end
+
+    test "applies profile scopes to system list requests", ctx do
+      assert [project] = ProfiledProject.list(:system, opts: [getter_profile: :template])
+      assert project.id == ctx.template_project.id
     end
 
     test "resources without getter_profile/1 keep the default getter behavior", ctx do
