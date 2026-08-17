@@ -49,9 +49,10 @@ export function PageHeader(props: ProjectPageLayout.Props) {
           )}
 
           {props.mode === "template" ? (
-            <span className="inline-flex rounded-full border border-brand-1/20 bg-brand-2 px-2 py-0.5 text-xs font-medium text-content-accent">
-              Template
-            </span>
+            <>
+              <StatusBadge status="pending" customLabel="Template" hideIcon />
+              {props.archived && <StatusBadge status="paused" customLabel="Archived" hideIcon />}
+            </>
           ) : (
             props.status && (
               <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />

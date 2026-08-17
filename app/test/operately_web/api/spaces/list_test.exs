@@ -173,6 +173,41 @@ defmodule OperatelyWeb.Api.Spaces.ListTest do
     end
   end
 
+  describe "included permissions" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "includes effective permissions when requested", ctx do
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{include_permissions: true})
+
+      space = Enum.find(res.spaces, &(&1.id == Paths.space_id(ctx.space)))
+      assert space.permissions.can_edit
+    end
+
+    test "omits effective permissions by default", ctx do
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{})
+
+      space = Enum.find(res.spaces, &(&1.id == Paths.space_id(ctx.space)))
+      assert space.permissions == nil
+    end
+
+    test "removes edit permission in company read-only mode", ctx do
+      %{company_id: ctx.company.id, access_state: :read_only}
+      |> Operately.Billing.CompanyBillingAccount.changeset()
+      |> Repo.insert!()
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{include_permissions: true})
+
+      space = Enum.find(res.spaces, &(&1.id == Paths.space_id(ctx.space)))
+      assert space.permissions.can_view
+      refute space.permissions.can_edit
+    end
+  end
+
   #
   # Helpers
   #

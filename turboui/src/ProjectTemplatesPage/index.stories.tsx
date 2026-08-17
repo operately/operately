@@ -1,6 +1,4 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { userEvent, waitFor, within } from "storybook/test";
 import type { ProjectTemplate } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { ProjectTemplatesPage } from ".";
@@ -51,27 +49,23 @@ function mockTemplate(
 }
 
 function StoryPage(props: Partial<ProjectTemplatesPage.Props>) {
-  const [items, setItems] = React.useState(props.templates ?? templates);
   return (
     <ProjectTemplatesPage
       scope="company"
       navigation={[{ to: "/home", label: "Home" }]}
-      templates={items}
+      templates={props.templates ?? templates}
       spaces={spaces}
       editableSpaces={spaces}
       canCreate
       templatePath={(id) => `/project-templates/${id}`}
       projectCreationPath={(template) => `/projects/new?spaceId=${template.space.id}&templateId=${template.id}`}
       spaceTemplatesPath={(id) => `/spaces/${id}/project-templates`}
-      onFilter={async ({ search, spaceId }) => {
-        const filtered = templates.filter(
-          (template) =>
-            (!spaceId || template.space.id === spaceId) && template.name.toLowerCase().includes(search.toLowerCase()),
-        );
-        setItems(filtered);
-        return filtered;
-      }}
       onCreate={async () => ({ success: true })}
+      canEdit={() => true}
+      onDuplicate={async () => ({ success: true })}
+      onArchive={async () => ({ success: true })}
+      onRestore={async () => ({ success: true })}
+      onDelete={async () => ({ success: true })}
       formattedTimePreferences={defaultFormattedTimePreferences}
       {...props}
     />
@@ -100,27 +94,5 @@ export const SpaceLibrary: Story = {
   ),
 };
 export const Empty: Story = { render: () => <StoryPage templates={[]} /> };
-export const Loading: Story = {
-  render: () => <StoryPage onFilter={() => new Promise(() => undefined)} />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByRole("searchbox"), "launch");
-    await waitFor(() => canvas.getByText("Loading templates…"));
-  },
-};
-export const ErrorState: Story = {
-  render: () => (
-    <StoryPage
-      onFilter={async () => {
-        throw new Error("offline");
-      }}
-    />
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByRole("searchbox"), "launch");
-    await waitFor(() => canvas.getByText("Templates could not be loaded. Try again."));
-  },
-};
 export const ReadOnly: Story = { render: () => <StoryPage canCreate={false} /> };
 export const Mobile: Story = { parameters: { viewport: { defaultViewport: "mobile1" } }, render: () => <StoryPage /> };

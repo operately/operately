@@ -97,6 +97,7 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
       durationDays: 30,
       milestonesOrderingState: ["milestone-1"],
       tasksKanbanState: {},
+      archived: false,
     },
     space: { id: "space-1", name: "Product", link: "/spaces/space-1" },
     projectTemplatesLink: "/spaces/space-1/project-templates",
@@ -142,6 +143,10 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
     onTaskCreate: jest.fn(),
     onTaskUpdate: jest.fn(),
     onTaskDelete: jest.fn(),
+    onDuplicate: jest.fn().mockResolvedValue({ success: true }),
+    onArchive: jest.fn().mockResolvedValue({ success: true }),
+    onRestore: jest.fn().mockResolvedValue({ success: true }),
+    onDelete: jest.fn().mockResolvedValue({ success: true }),
     ...overrides,
   };
 }
@@ -178,6 +183,46 @@ describe("TemplateProjectPage", () => {
     }
     expect(screen.queryByText("Start date")).not.toBeInTheDocument();
     expect(screen.queryByText(/tasks completed/i)).not.toBeInTheDocument();
+  });
+
+  it("duplicates an active template from the sidebar actions", async () => {
+    const user = userEvent.setup();
+    const onDuplicate = jest.fn().mockResolvedValue({ success: true });
+    renderPage(createProps({ onDuplicate }));
+
+    expect(screen.getByText("Actions")).toBeInTheDocument();
+    await user.click(screen.getByText("Duplicate"));
+
+    const name = screen.getByLabelText(/Template name/);
+    expect(name).toHaveValue("Copy of Product launch");
+    await user.click(screen.getByRole("button", { name: "Duplicate template" }));
+    await waitFor(() => expect(onDuplicate).toHaveBeenCalledWith("template-1", "Copy of Product launch"));
+  });
+
+  it("shows archived templates as read-only while retaining restore and delete", async () => {
+    userEvent.setup();
+    renderPage(
+      createProps({
+        template: { ...createProps().template, archived: true },
+        permissions: { canView: true, canEdit: true },
+      }),
+    );
+
+    expect(screen.getByText("Archived")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: /project name/i })).not.toBeInTheDocument();
+
+    expect(screen.getByText("Actions")).toBeInTheDocument();
+    expect(screen.getByText("Restore")).toBeInTheDocument();
+    expect(screen.getByText("Delete")).toBeInTheDocument();
+    expect(screen.queryByText("Duplicate")).not.toBeInTheDocument();
+    expect(screen.queryByText("Archive")).not.toBeInTheDocument();
+  });
+
+  it("hides editor lifecycle actions without edit permission", () => {
+    renderPage(createProps({ permissions: { canView: true, canEdit: false } }));
+
+    expect(screen.queryByText("Actions")).not.toBeInTheDocument();
+    expect(screen.queryByText("Duplicate")).not.toBeInTheDocument();
   });
 
   it("shows template discussions without runtime discussion controls", () => {

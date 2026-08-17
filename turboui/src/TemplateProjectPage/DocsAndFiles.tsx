@@ -51,12 +51,12 @@ interface TemplateDocsAndFilesProps {
   richTextHandlers: TemplateProjectPage.Props["richTextHandlers"];
 }
 
-export function DocsAndFiles({ props }: { props: TemplateProjectPage.Props }) {
+export function DocsAndFiles({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   return (
     <TemplateDocsAndFiles
       templateId={props.template.id}
       resourceNodes={props.resourceNodes ?? []}
-      canEdit={Boolean(props.permissions.canEdit || props.permissions.hasFullAccess)}
+      canEdit={canEdit}
       newDocumentLink={props.newDocumentLink}
       newLinkLink={props.newLinkLink}
       onFolderCreate={props.onFolderCreate}

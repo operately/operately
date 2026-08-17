@@ -9,6 +9,7 @@ import { usePaths, type Paths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { parseContent, showErrorToast, TemplateProjectPage, type AddFileUploadItem } from "turboui";
 import React from "react";
+import { useNavigate } from "react-router";
 import { loader, type LoadedData } from "./loader";
 import { activePersonIds } from "./people";
 
@@ -20,6 +21,7 @@ function Page() {
   const { template } = Pages.useLoadedData<LoadedData>();
   const refresh = Pages.useRefresh();
   const paths = usePaths();
+  const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { people, assigneesByTaskId } = useTemplatePeople(template);
@@ -124,6 +126,12 @@ function Page() {
   const onResourceDelete = createResourceDeleteOperation({ templateId: template.id, mutate });
   const onResourceMove = createResourceMoveOperation({ templateId: template.id, mutate });
   const onFilesUpload = createFilesUploadOperation({ templateId: template.id, mutate });
+  const lifecycleHandlers = createProjectTemplateEditorLifecycleHandlers({
+    navigate,
+    refresh,
+    paths,
+    spaceId: template.space.id,
+  });
 
   return (
     <TemplateProjectPage
@@ -134,6 +142,7 @@ function Page() {
         durationDays: template.durationDays ?? null,
         milestonesOrderingState: template.milestonesOrderingState ?? [],
         tasksKanbanState: parseJson(template.tasksKanbanState),
+        archived: Boolean(template.archivedAt),
       }}
       space={{ id: template.space.id, name: template.space.name, link: paths.spacePath(template.space.id) }}
       projectTemplatesLink={paths.spaceProjectTemplatesPath(template.space.id)}
@@ -169,8 +178,64 @@ function Page() {
       onPersonCreate={onPersonCreate}
       onPersonUpdate={onPersonUpdate}
       onPersonDelete={onPersonDelete}
+      {...lifecycleHandlers}
     />
   );
+}
+
+export function createProjectTemplateEditorLifecycleHandlers({
+  navigate,
+  refresh,
+  paths,
+  spaceId,
+}: {
+  navigate: (path: string) => void;
+  refresh: () => Promise<unknown>;
+  paths: Pick<Paths, "projectTemplatePath" | "spaceProjectTemplatesPath">;
+  spaceId: string;
+}): Pick<TemplateProjectPage.Props, "onDuplicate" | "onArchive" | "onRestore" | "onDelete"> {
+  async function onDuplicate(id: string, name: string) {
+    let result;
+
+    try {
+      result = await Api.project_templates.duplicate({ id, name });
+    } catch (_error) {
+      showErrorToast("Template not duplicated", "Restore archived templates before duplicating them, then try again.");
+      return { success: false, error: "The template could not be duplicated. Refresh the page and try again." };
+    }
+
+    navigate(paths.projectTemplatePath(result.template.id));
+    return { success: true };
+  }
+
+  async function onLifecycleChange(message: string, operation: () => Promise<unknown>) {
+    try {
+      await operation();
+      await refresh();
+      return { success: true };
+    } catch (_error) {
+      showErrorToast(message, "The template may have changed. Refresh the page and try again.");
+      return { success: false, error: "The template could not be changed. Refresh the page and try again." };
+    }
+  }
+
+  async function onDelete(id: string) {
+    try {
+      await Api.project_templates.delete({ id });
+      navigate(paths.spaceProjectTemplatesPath(spaceId));
+      return { success: true };
+    } catch (_error) {
+      showErrorToast("Template not deleted", "The template may have changed. Refresh the page and try again.");
+      return { success: false, error: "The template could not be deleted. Refresh the page and try again." };
+    }
+  }
+
+  return {
+    onDuplicate,
+    onArchive: (id) => onLifecycleChange("Template not archived", () => Api.project_templates.archive({ id })),
+    onRestore: (id) => onLifecycleChange("Template not restored", () => Api.project_templates.restore({ id })),
+    onDelete,
+  };
 }
 
 function useTemplatePeople(template: LoadedData["template"]) {

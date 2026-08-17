@@ -1,7 +1,8 @@
 import React from "react";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
+import userEvent from "@testing-library/user-event";
 import type { ProjectTemplate } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { ProjectTemplatesPage } from ".";
@@ -69,10 +70,14 @@ function renderPage(overrides: Partial<ProjectTemplatesPage.Props> = {}) {
     editableSpaces: spaces,
     templatePath: (id) => `/project-templates/${id}`,
     spaceTemplatesPath: (id) => `/spaces/${id}/project-templates`,
-    onFilter: jest.fn().mockResolvedValue(templates),
     onCreate: jest.fn().mockResolvedValue({ success: true }),
+    onDuplicate: jest.fn().mockResolvedValue({ success: true }),
+    onArchive: jest.fn().mockResolvedValue({ success: true }),
+    onRestore: jest.fn().mockResolvedValue({ success: true }),
+    onDelete: jest.fn().mockResolvedValue({ success: true }),
     formattedTimePreferences: defaultFormattedTimePreferences,
     canCreate: true,
+    canEdit: () => true,
     ...overrides,
   };
 
@@ -116,20 +121,24 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.queryByTestId("project-template-space-filter")).not.toBeInTheDocument();
   });
 
-  it("debounces search", async () => {
-    jest.useFakeTimers();
-    const onFilter = jest.fn().mockResolvedValue([templates[1]!]);
-    renderPage({ onFilter });
-
+  it("filters templates locally by search", () => {
+    renderPage();
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "Product" } });
-    expect(onFilter).not.toHaveBeenCalled();
-    await act(async () => {
-      jest.advanceTimersByTime(300);
-    });
-
-    await waitFor(() => expect(screen.getByText("Product launch")).toBeInTheDocument());
+    expect(screen.getByText("Product launch")).toBeInTheDocument();
     expect(screen.queryByText("Campaign launch")).not.toBeInTheDocument();
-    jest.useRealTimers();
+  });
+
+  it("filters templates locally by Space", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByRole("button", { name: "All Spaces" }));
+    await user.click(screen.getByRole("button", { name: "Choose another space" }));
+    const productOption = await screen.findByRole("button", { name: "Product" });
+    await user.click(productOption);
+
+    expect(screen.getByText("Product launch")).toBeInTheDocument();
+    expect(screen.queryByText("Campaign launch")).not.toBeInTheDocument();
   });
 
   it("positions one clear action inside the search field", () => {
@@ -144,77 +153,13 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.queryByRole("button", { name: "Clear search" })).not.toBeInTheDocument();
   });
 
-  it("does not reload templates when the filter callback identity changes", async () => {
-    jest.useFakeTimers();
-    const onFilter = jest.fn().mockResolvedValue(templates);
-    const { rerender, props } = renderPage({
-      onFilter,
-      projectCreationPath: (projectTemplate) => `/projects/new?templateId=${projectTemplate.id}`,
-    });
-
-    expect(screen.getByText("Campaign launch")).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Create project" })).toHaveLength(2);
-
-    await act(async () => {
-      jest.advanceTimersByTime(0);
-    });
-    expect(onFilter).not.toHaveBeenCalled();
-    expect(screen.queryByText("Loading templates…")).not.toBeInTheDocument();
-
-    const nextOnFilter = jest.fn().mockResolvedValue(templates);
-    rerender(
-      <MemoryRouter>
-        <ProjectTemplatesPage {...props} onFilter={nextOnFilter} />
-      </MemoryRouter>,
-    );
-
-    await act(async () => {
-      jest.advanceTimersByTime(0);
-    });
-
-    expect(nextOnFilter).not.toHaveBeenCalled();
-    expect(screen.queryByText("Loading templates…")).not.toBeInTheDocument();
-    expect(screen.getByText("Campaign launch")).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Create project" })).toHaveLength(2);
-    jest.useRealTimers();
-  });
-
-  it("ignores a stale search response", async () => {
-    jest.useFakeTimers();
-    let resolveCampaign: (templates: ProjectTemplate[]) => void = () => undefined;
-    const onFilter = jest.fn().mockResolvedValue(templates);
-    renderPage({ onFilter });
-
-    onFilter
-      .mockImplementationOnce(
-        () =>
-          new Promise<ProjectTemplate[]>((resolve) => {
-            resolveCampaign = resolve;
-          }),
-      )
-      .mockResolvedValueOnce([templates[1]!]);
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "Campaign" } });
-    await act(async () => {
-      jest.advanceTimersByTime(300);
-    });
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "Product" } });
-    await act(async () => {
-      jest.advanceTimersByTime(300);
-    });
-    await act(async () => resolveCampaign([templates[0]!]));
-
-    expect(screen.getByText("Product launch")).toBeInTheDocument();
-    expect(screen.queryByText("Campaign launch")).not.toBeInTheDocument();
-    jest.useRealTimers();
-  });
-
   it("shows the empty and no-results states", async () => {
     const { rerender, props } = renderPage({ templates: [] });
     expect(screen.getByText("No project templates yet.")).toBeInTheDocument();
 
     rerender(
       <MemoryRouter>
-        <ProjectTemplatesPage {...props} templates={[]} onFilter={jest.fn().mockResolvedValue([])} />
+        <ProjectTemplatesPage {...props} templates={[]} />
       </MemoryRouter>,
     );
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "missing" } });
@@ -258,5 +203,140 @@ describe("ProjectTemplatesPage", () => {
     fireEvent.change(screen.getByLabelText(/Template name/), { target: { value: "Launch plan" } });
     fireEvent.click(screen.getByRole("button", { name: "Create template" }));
     await waitFor(() => expect(onCreate).toHaveBeenCalledWith({ name: "Launch plan", spaceId: "space-1" }));
+  });
+
+  it("switches locally between active and archived templates without an All option", async () => {
+    const user = userEvent.setup();
+    const archived = template({ id: "archived", name: "Archived launch", archivedAt: "2026-08-01T12:00:00Z" });
+    const { container } = renderPage({ templates: [...templates, archived] });
+
+    expect(screen.queryByText("Archived launch")).not.toBeInTheDocument();
+
+    const trigger = container.ownerDocument.querySelector('[data-test-id="project-template-status-filter"]');
+    if (!trigger) throw new Error("Expected status filter");
+    await user.click(trigger);
+    await user.click(screen.getByRole("menuitem", { name: "Archived" }));
+
+    expect(screen.getByText("Archived launch")).toBeInTheDocument();
+    expect(screen.queryByText("Campaign launch")).not.toBeInTheDocument();
+    await user.click(trigger);
+    expect(screen.queryByRole("menuitem", { name: "All" })).not.toBeInTheDocument();
+  });
+
+  it("duplicates an active template with an editable prefilled name", async () => {
+    const user = userEvent.setup();
+    const onDuplicate = jest.fn().mockResolvedValue({ success: true });
+    const { container } = renderPage({ onDuplicate });
+
+    const actions = container.ownerDocument.querySelector('[data-test-id="project-template-actions-template-1"]');
+    if (!actions) throw new Error("Expected template actions");
+    await user.click(actions);
+    await user.click(screen.getByRole("menuitem", { name: "Duplicate" }));
+
+    const name = screen.getByLabelText(/Template name/);
+    expect(name).toHaveValue("Copy of Campaign launch");
+    await user.clear(name);
+    await user.type(name, "Campaign launch v2");
+    await user.click(screen.getByRole("button", { name: "Duplicate template" }));
+
+    await waitFor(() => expect(onDuplicate).toHaveBeenCalledWith("template-1", "Campaign launch v2"));
+  });
+
+  it("optimistically removes a template and closes the dialog while archiving", async () => {
+    const user = userEvent.setup();
+    const onArchive = jest.fn(() => new Promise<ProjectTemplatesPage.MutationResult>(() => undefined));
+    const { container } = renderPage({ onArchive });
+
+    const actions = container.ownerDocument.querySelector('[data-test-id="project-template-actions-template-1"]');
+    if (!actions) throw new Error("Expected template actions");
+    await user.click(actions);
+    await user.click(screen.getByRole("menuitem", { name: "Archive" }));
+
+    expect(
+      screen.getByText("This template will leave project creation and can be restored later."),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Archive template" }));
+    await waitFor(() => expect(onArchive).toHaveBeenCalledWith("template-1"));
+    expect(screen.queryByText("Campaign launch")).not.toBeInTheDocument();
+    expect(screen.getByText("Product launch")).toBeInTheDocument();
+    expect(screen.queryByText("This template will leave project creation and can be restored later.")).not.toBeInTheDocument();
+  });
+
+  it("rolls back an optimistic lifecycle update when the mutation fails", async () => {
+    const user = userEvent.setup();
+    const onArchive = jest.fn().mockResolvedValue({ success: false, error: "Could not archive" });
+    const { container } = renderPage({ onArchive });
+
+    const actions = container.ownerDocument.querySelector('[data-test-id="project-template-actions-template-1"]');
+    if (!actions) throw new Error("Expected template actions");
+    await user.click(actions);
+    await user.click(screen.getByRole("menuitem", { name: "Archive" }));
+    await user.click(screen.getByRole("button", { name: "Archive template" }));
+
+    await waitFor(() => expect(onArchive).toHaveBeenCalledWith("template-1"));
+    expect(screen.getByText("Campaign launch")).toBeInTheDocument();
+  });
+
+  it("optimistically removes a restored template from the archived view", async () => {
+    const user = userEvent.setup();
+    const archived = template({ ...templates[0], archivedAt: "2026-08-01T12:00:00Z" });
+    const onRestore = jest.fn().mockResolvedValue({ success: true });
+    const { container } = renderPage({ templates: [archived], onRestore });
+    const statusFilter = container.ownerDocument.querySelector('[data-test-id="project-template-status-filter"]');
+    if (!statusFilter) throw new Error("Expected status filter");
+
+    await user.click(statusFilter);
+    await user.click(screen.getByRole("menuitem", { name: "Archived" }));
+    const actions = container.ownerDocument.querySelector('[data-test-id="project-template-actions-template-1"]');
+    if (!actions) throw new Error("Expected template actions");
+    await user.click(actions);
+    await user.click(screen.getByRole("menuitem", { name: "Restore" }));
+    await user.click(screen.getByRole("button", { name: "Restore template" }));
+
+    await waitFor(() => expect(onRestore).toHaveBeenCalledWith("template-1"));
+    expect(screen.queryByText("Campaign launch")).not.toBeInTheDocument();
+  });
+
+  it("optimistically removes a deleted template", async () => {
+    const user = userEvent.setup();
+    const onDelete = jest.fn().mockResolvedValue({ success: true });
+    const { container } = renderPage({ onDelete });
+    const actions = container.ownerDocument.querySelector('[data-test-id="project-template-actions-template-1"]');
+    if (!actions) throw new Error("Expected template actions");
+
+    await user.click(actions);
+    await user.click(screen.getByRole("menuitem", { name: "Delete" }));
+    await user.click(screen.getByRole("button", { name: "Delete template" }));
+
+    await waitFor(() => expect(onDelete).toHaveBeenCalledWith("template-1"));
+    expect(screen.queryByText("Campaign launch")).not.toBeInTheDocument();
+  });
+
+  it("shows only restore and delete for manageable archived templates", async () => {
+    const user = userEvent.setup();
+    const archived = template({ ...templates[0], archivedAt: "2026-08-01T12:00:00Z" });
+    const { container } = renderPage({ templates: [archived], projectCreationPath: () => "/projects/new" });
+    const statusFilter = container.ownerDocument.querySelector('[data-test-id="project-template-status-filter"]');
+    if (!statusFilter) throw new Error("Expected status filter");
+
+    await user.click(statusFilter);
+    await user.click(screen.getByRole("menuitem", { name: "Archived" }));
+
+    expect(screen.getAllByText("Archived")).toHaveLength(2);
+    expect(screen.queryByRole("link", { name: "Create project" })).not.toBeInTheDocument();
+
+    const actions = container.ownerDocument.querySelector('[data-test-id="project-template-actions-template-1"]');
+    if (!actions) throw new Error("Expected template actions");
+    await user.click(actions);
+    expect(screen.getByRole("menuitem", { name: "Restore" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "Delete" })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "Duplicate" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "Archive" })).not.toBeInTheDocument();
+  });
+
+  it("hides lifecycle actions without edit permission", () => {
+    const { container } = renderPage({ canEdit: () => false });
+
+    expect(container.ownerDocument.querySelector('[data-test-id="project-template-actions-template-1"]')).toBeNull();
   });
 });
