@@ -70,7 +70,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
 
   defmodule CopyPlanner do
     alias Operately.Operations.ProjectTemplateCreationFromProject
-    alias Operately.ProjectTemplates.{Copy, Milestone, Task}
+    alias Operately.ProjectTemplates.{Milestone, Task}
+    alias Operately.ProjectTemplates.Graph.{Copy, Kanban}
     alias Operately.Operations.ProjectTemplateCreationFromProject.PeoplePlanner
     alias OperatelyWeb.Paths
 
@@ -157,7 +158,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     end
 
     defp plan_kanban(state, tasks, workflow) do
-      Copy.reset_kanban(state, tasks, workflow, &source_task_path/1, &target_task_path/1, & &1.source.task_status)
+      Kanban.reset(state, tasks, workflow, &source_task_path/1, &target_task_path/1, & &1.source.task_status)
     end
 
     defp copy_workflow(statuses) do

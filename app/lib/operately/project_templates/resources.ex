@@ -7,9 +7,10 @@ defmodule Operately.ProjectTemplates.Resources do
   with shared tree traversal kept separate from persistence concerns.
   """
 
-  alias __MODULE__.{Materialization, ReverseCopy, Validator}
+  alias __MODULE__.{Duplication, Materialization, ReverseCopy, Validator}
 
   def copy_from_project(repo, project_id, template), do: ReverseCopy.run(repo, project_id, template)
+  def duplicate(repo, source_nodes, template), do: Duplication.run(repo, source_nodes, template)
   def materialize(repo, template, project, creator_id), do: Materialization.run(repo, template, project, creator_id)
   def validate(nodes), do: Validator.run(nodes)
 end
