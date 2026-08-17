@@ -16,6 +16,7 @@ export interface ConfirmDialogProps {
   size?: ConfirmDialogSize;
   icon?: React.ComponentType<{ size: number; className?: string }>;
   testId?: string;
+  confirming?: boolean;
 }
 
 const SIZE_CLASSES: Record<ConfirmDialogSize, string> = {
@@ -38,6 +39,7 @@ export function ConfirmDialog({
   size = "small",
   icon,
   testId,
+  confirming = false,
 }: ConfirmDialogProps) {
   if (!isOpen) return null;
 
@@ -60,10 +62,10 @@ export function ConfirmDialog({
           <p className="text-content-base">{message}</p>
 
           <div className="flex gap-3 justify-end">
-            <SecondaryButton onClick={onCancel}>
+            <SecondaryButton onClick={onCancel} disabled={confirming}>
               {cancelText}
             </SecondaryButton>
-            <ConfirmButton onClick={onConfirm}>
+            <ConfirmButton onClick={onConfirm} loading={confirming} disabled={confirming}>
               {confirmText}
             </ConfirmButton>
           </div>

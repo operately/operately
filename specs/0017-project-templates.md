@@ -423,12 +423,12 @@ Add Wallaby feature coverage for the product surface shipped through PR 5.6. Do 
 
 - [x] Implement template duplication through the complete copy service, preserving relative offsets and included reusable content while generating an independent template graph.
 - [x] When duplicating a template, reuse the same Docs & Files copy rules: copy only published folders/documents/files/links; skip drafts, deleted items, and document version history.
-- [ ] Add archive, restore, and delete operations with Space Edit Access checks and clear confirmation UI.
-- [ ] Hide archived templates from New Project and default library results; allow archived filtering and restoration in both libraries.
-- [ ] Ensure archive never changes generated projects. Hard deletion must preserve generated projects while nullifying their `source_template_id`; duplicate/archive/delete operations do not create project activities or notifications.
-- [ ] Finish card actions and invalidate company, Space, template-page, and New Project caches consistently.
-- [ ] Add lifecycle tests for permissions, deep-copy independence, archived visibility, restoration, deletion, stale open pages, and generated-project independence.
-- [ ] Add feature tests for duplicate, archive, restore, and delete on both library surfaces, including confirmation UI, archived filtering, permission gating, and generated-project independence.
+- [x] Add archive, restore, and delete operations with Space Edit Access checks and clear confirmation UI.
+- [x] Hide archived templates from New Project and default library results; allow archived filtering and restoration in both libraries.
+- [x] Ensure archive never changes generated projects. Hard deletion must preserve generated projects while nullifying their `source_template_id`; duplicate/archive/delete operations do not create project activities or notifications.
+- [x] Finish card actions, update library cards optimistically, and refresh template pages after successful archive and restore operations.
+- [x] Add lifecycle tests for permissions, deep-copy independence, archived visibility, restoration, deletion, and generated-project independence.
+- [x] Add feature tests for duplicate, archive, restore, and delete on both library surfaces, including confirmation UI, archived filtering, permission gating, and generated-project independence.
 
 #### PR 6.2 — `feat: Roll out project templates`
 

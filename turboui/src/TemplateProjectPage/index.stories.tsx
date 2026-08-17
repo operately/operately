@@ -40,6 +40,7 @@ const populatedProps: Types.Props = {
     durationDays: 30,
     milestonesOrderingState: ["beta", "launch"],
     tasksKanbanState: {},
+    archived: false,
   },
   space: { id: "product", name: "Product", link: "/spaces/product" },
   projectTemplatesLink: "/spaces/product/project-templates",
@@ -165,6 +166,10 @@ const populatedProps: Types.Props = {
   onTaskCreate: () => undefined,
   onTaskUpdate: () => undefined,
   onTaskDelete: () => undefined,
+  onDuplicate: async () => ({ success: true }),
+  onArchive: async () => ({ success: true }),
+  onRestore: async () => ({ success: true }),
+  onDelete: async () => ({ success: true }),
 };
 
 function TemplateStory({ props }: { props: Types.Props }) {

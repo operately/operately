@@ -1,5 +1,10 @@
 import React from "react";
 import { ProjectPageLayout } from "../ProjectPageLayout";
+import {
+  ProjectTemplateLifecycle,
+  ProjectTemplateLifecycleAction,
+  ProjectTemplateLifecycleDialogs,
+} from "../ProjectTemplateLifecycle";
 import type { ProjectPermissions } from "../ProjectPage/types";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -15,7 +20,8 @@ import { DocsAndFiles } from "./DocsAndFiles";
 
 export function TemplateProjectPage(props: TemplateProjectPage.Props) {
   const orderedProps = React.useMemo(() => orderTemplateGraph(props), [props]);
-  const canEdit = Boolean(props.permissions.canEdit || props.permissions.hasFullAccess);
+  const canEdit = !props.template.archived && Boolean(props.permissions.canEdit || props.permissions.hasFullAccess);
+  const [lifecycleAction, setLifecycleAction] = React.useState<ProjectTemplateLifecycleAction | null>(null);
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
     { id: "tasks", label: "Tasks", icon: <IconListCheck size={14} />, count: props.tasks.length },
@@ -29,25 +35,39 @@ export function TemplateProjectPage(props: TemplateProjectPage.Props) {
   ]);
 
   return (
-    <ProjectPageLayout
-      mode="template"
-      title={[props.template.name]}
-      testId="project-template-page"
-      projectName={props.template.name}
-      updateProjectName={async (name) => (await props.onTemplateUpdate({ name })) !== false}
-      permissions={props.permissions}
-      space={props.space}
-      workmapLink={props.projectTemplatesLink}
-      projectTemplatesLink={props.projectTemplatesLink}
-      tabs={tabs}
-    >
-      <div className="flex-1 overflow-auto">
-        {tabs.active === "tasks" && <TaskBoard props={orderedProps} canEdit={canEdit} />}
-        {tabs.active === "discussions" && <Discussions props={orderedProps} canEdit={canEdit} />}
-        {tabs.active === "docs-and-files" && <DocsAndFiles props={orderedProps} />}
-        {tabs.active === "overview" && <Overview props={orderedProps} canEdit={canEdit} />}
-      </div>
-    </ProjectPageLayout>
+    <>
+      <ProjectPageLayout
+        mode="template"
+        title={[props.template.name]}
+        testId="project-template-page"
+        projectName={props.template.name}
+        updateProjectName={async (name) => (await props.onTemplateUpdate({ name })) !== false}
+        permissions={{ ...props.permissions, canEdit }}
+        space={props.space}
+        workmapLink={props.projectTemplatesLink}
+        projectTemplatesLink={props.projectTemplatesLink}
+        tabs={tabs}
+        archived={props.template.archived}
+      >
+        <div className="flex-1 overflow-auto">
+          {tabs.active === "tasks" && <TaskBoard props={orderedProps} canEdit={canEdit} />}
+          {tabs.active === "discussions" && <Discussions props={orderedProps} canEdit={canEdit} />}
+          {tabs.active === "docs-and-files" && <DocsAndFiles props={orderedProps} canEdit={canEdit} />}
+          {tabs.active === "overview" && (
+            <Overview props={orderedProps} canEdit={canEdit} onLifecycleAction={setLifecycleAction} />
+          )}
+        </div>
+      </ProjectPageLayout>
+      <ProjectTemplateLifecycleDialogs
+        action={lifecycleAction}
+        template={props.template}
+        onClose={() => setLifecycleAction(null)}
+        onDuplicate={props.onDuplicate}
+        onArchive={props.onArchive}
+        onRestore={props.onRestore}
+        onDelete={props.onDelete}
+      />
+    </>
   );
 }
 
@@ -130,6 +150,7 @@ export namespace TemplateProjectPage {
       durationDays: number | null;
       milestonesOrderingState: string[];
       tasksKanbanState: unknown;
+      archived: boolean;
     };
     space: Space;
     projectTemplatesLink: string;
@@ -179,6 +200,10 @@ export namespace TemplateProjectPage {
       updates: Partial<Omit<TemplatePerson, "id" | "active">>,
     ) => void | boolean | Promise<void | boolean>;
     onPersonDelete?: (templatePersonId: string) => void | boolean | Promise<void | boolean>;
+    onDuplicate: ProjectTemplateLifecycle.Handlers["onDuplicate"];
+    onArchive: ProjectTemplateLifecycle.Handlers["onArchive"];
+    onRestore: ProjectTemplateLifecycle.Handlers["onRestore"];
+    onDelete: ProjectTemplateLifecycle.Handlers["onDelete"];
   }
 }
 

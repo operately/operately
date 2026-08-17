@@ -3968,6 +3968,7 @@ export interface SpacesGetDiscussionResult {
 
 export interface SpacesListInput {
   accessLevel?: AccessOptions;
+  includePermissions?: boolean;
   includeAccessLevels?: boolean;
   includeMembers?: boolean;
 }
